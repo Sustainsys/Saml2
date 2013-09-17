@@ -59,6 +59,7 @@
     <Compile Include="CommandFactoryTests.cs" />
     <Compile Include="NotFoundCommandTests.cs" />
     <Compile Include="CommandResultTests.cs" />
+    <Compile Include="Saml2RequestBaseTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

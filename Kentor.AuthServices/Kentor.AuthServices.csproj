@@ -49,6 +49,7 @@
     <Compile Include="CommandFactory.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Saml2AuthenticationModule.cs" />
+    <Compile Include="Saml2RequestBase.cs" />
     <Compile Include="SignInCommand.cs" />
   </ItemGroup>
   <ItemGroup>
