@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -33,6 +34,20 @@ namespace Kentor.AuthServices
             get
             {
                 return "2.0";
+            }
+        }
+
+        private readonly string issueInstant = 
+            DateTime.UtcNow.ToString("s", CultureInfo.InvariantCulture) + "Z";
+
+        /// <summary>
+        /// The instant that the request was issued (well actually, created).
+        /// </summary>
+        public string IssueInstant
+        {
+            get
+            {
+                return issueInstant;
             }
         }
     }
