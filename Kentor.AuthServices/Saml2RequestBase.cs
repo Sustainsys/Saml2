@@ -59,6 +59,7 @@ namespace Kentor.AuthServices
         /// <returns></returns>
         protected IEnumerable<XObject> ToXNodes()
         {
+            yield return new XAttribute(XNamespace.Xmlns + "saml2p", Saml2Namespaces.Saml2PName);
             yield return new XAttribute("ID", Id);
             yield return new XAttribute("Version", Version);
             yield return new XAttribute("IssueInstant", IssueInstant);

@@ -85,5 +85,12 @@ namespace Kentor.AuthServices.Tests
             r.ToXElement().Attribute("Version").Should().NotBeNull()
                 .And.Subject.Value.Should().Be(r.Version);
         }
+
+        [TestMethod]
+        public void Saml2RequestBase_ToXNodes_Saml2PNamespacePrefix()
+        {
+            var r = new ConcreteSaml2Request();
+            r.ToXElement().GetPrefixOfNamespace(Saml2Namespaces.Saml2P).Should().Be("saml2p");
+        }
     }
 }
