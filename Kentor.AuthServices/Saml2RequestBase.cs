@@ -23,5 +23,17 @@ namespace Kentor.AuthServices
                 return id;
             }
         }
+
+        /// <summary>
+        /// Version of the SAML request. Always returns "2.0"
+        /// </summary>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
+        public string Version
+        {
+            get
+            {
+                return "2.0";
+            }
+        }
     }
 }

@@ -26,5 +26,11 @@ namespace Kentor.AuthServices.Tests
 
             Regex.IsMatch(id, "[^:0-9][^:]*").Should().BeTrue();
         }
+
+        [TestMethod]
+        public void Saml2RequestBase_Version()
+        {
+            new ConcreteSaml2Request().Version.Should().Be("2.0");
+        }
     }
 }
