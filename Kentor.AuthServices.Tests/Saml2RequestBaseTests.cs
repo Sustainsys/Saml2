@@ -2,10 +2,19 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using FluentAssertions;
 using System.Text.RegularExpressions;
+using System.Xml.Linq;
 
 namespace Kentor.AuthServices.Tests
 {
-    class ConcreteSaml2Request : Saml2RequestBase { }
+    class ConcreteSaml2Request : Saml2RequestBase 
+    {
+        public XElement ToXElement()
+        {
+            var x = new XElement("Foo");
+            x.Add(ToXNodes());
+            return x;
+        }
+    }
 
     [TestClass]
     public class Saml2RequestBaseTests
@@ -50,6 +59,31 @@ namespace Kentor.AuthServices.Tests
 
             parsed.Should().BeCloseTo(DateTime.UtcNow, 1200);
             parsed.Kind.Should().Be(DateTimeKind.Utc);
+        }
+
+        [TestMethod]
+        public void Saml2RequestBase_ToXNodes_Id()
+        {
+            var r = new ConcreteSaml2Request();
+
+            r.ToXElement().Attribute("ID").Should().NotBeNull()
+                .And.Subject.Value.Should().Be(r.Id);
+        }
+
+        [TestMethod]
+        public void Saml2RequestBase_ToXNodes_IssueInstant()
+        {
+            var r = new ConcreteSaml2Request();
+            r.ToXElement().Attribute("IssueInstant").Should().NotBeNull()
+                .And.Subject.Value.Should().Be(r.IssueInstant);
+        }
+
+        [TestMethod]
+        public void Saml2RequestBase_ToXNodes_Version()
+        {
+            var r = new ConcreteSaml2Request();
+            r.ToXElement().Attribute("Version").Should().NotBeNull()
+                .And.Subject.Value.Should().Be(r.Version);
         }
     }
 }

@@ -4,6 +4,7 @@ using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 
 namespace Kentor.AuthServices
 {
@@ -49,6 +50,18 @@ namespace Kentor.AuthServices
             {
                 return issueInstant;
             }
+        }
+
+        /// <summary>
+        /// Creates XNodes for the fields of the Saml2RequestBase class. These
+        /// nodes should be added when creating XML out of derived classes.
+        /// </summary>
+        /// <returns></returns>
+        protected IEnumerable<XObject> ToXNodes()
+        {
+            yield return new XAttribute("ID", Id);
+            yield return new XAttribute("Version", Version);
+            yield return new XAttribute("IssueInstant", IssueInstant);
         }
     }
 }
