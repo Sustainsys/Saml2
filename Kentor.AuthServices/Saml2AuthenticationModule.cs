@@ -38,10 +38,10 @@ namespace Kentor.AuthServices
             if(application.Request.AppRelativeCurrentExecutionFilePath
                 .StartsWith(ModulePath, StringComparison.OrdinalIgnoreCase))
             {
-                //var moduleRelativePath = application.Request.AppRelativeCurrentExecutionFilePath
-                //    .Substring(ModulePath.Length);
+                var moduleRelativePath = application.Request.AppRelativeCurrentExecutionFilePath
+                    .Substring(ModulePath.Length);
 
-                var command = CommandFactory.GetCommand();
+                var command = CommandFactory.GetCommand(moduleRelativePath);
 
                 command.Run().Apply(application.Response);
             }

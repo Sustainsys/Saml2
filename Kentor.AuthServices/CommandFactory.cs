@@ -13,8 +13,17 @@ namespace Kentor.AuthServices
     {
         private static readonly Command notFoundCommand = new NotFoundCommand();
 
-        public static Command GetCommand()
+        private static readonly IDictionary<string, Command> commands =
+        new Dictionary<string, Command>() { { "SignIn", new SignInCommand() } };
+
+        public static Command GetCommand(string path)
         {
+            Command command;
+            if (commands.TryGetValue(path, out command))
+            {
+                return command;
+            }
+            
             return notFoundCommand;
         }
     }
