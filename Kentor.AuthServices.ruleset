@@ -20,7 +20,7 @@
     <Rule Id="CA1017" Action="Error" />
     <Rule Id="CA1018" Action="Error" />
     <Rule Id="CA1019" Action="Error" />
-    <Rule Id="CA1020" Action="Error" />
+    <Rule Id="CA1020" Action="Warning" />
     <Rule Id="CA1021" Action="Error" />
     <Rule Id="CA1023" Action="Error" />
     <Rule Id="CA1024" Action="Error" />

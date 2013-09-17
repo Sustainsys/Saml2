@@ -33,15 +33,17 @@ namespace Kentor.AuthServices
         /// <param name="e">Ignored</param>
         protected virtual void OnBeginRequest(object sender, EventArgs e)
         {
-            var request = ((HttpApplication)sender).Request;
+            var application = (HttpApplication)sender;
 
-            if(request.AppRelativeCurrentExecutionFilePath
+            if(application.Request.AppRelativeCurrentExecutionFilePath
                 .StartsWith(ModulePath, StringComparison.OrdinalIgnoreCase))
             {
-                var moduleRelativePath = request.AppRelativeCurrentExecutionFilePath
-                    .Substring(ModulePath.Length);
+                //var moduleRelativePath = application.Request.AppRelativeCurrentExecutionFilePath
+                //    .Substring(ModulePath.Length);
 
-                CommandFactory.GetCommand(moduleRelativePath);
+                var command = CommandFactory.GetCommand();
+
+                command.Run().Apply(application.Response);
             }
         }
 

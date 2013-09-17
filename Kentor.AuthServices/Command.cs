@@ -7,5 +7,6 @@ namespace Kentor.AuthServices
 {
     abstract class Command
     {
+        public abstract CommandResult Run();
     }
 }
