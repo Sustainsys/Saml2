@@ -24,6 +24,8 @@ namespace Kentor.AuthServices
             context.BeginRequest += OnBeginRequest;
         }
 
+        const string ModulePath = "~/Saml2AuthenticationModule/";
+
         /// <summary>
         /// Begin request handler that captures all traffic to ~/Saml2AuthenticationModule/
         /// </summary>
@@ -31,7 +33,16 @@ namespace Kentor.AuthServices
         /// <param name="e">Ignored</param>
         protected virtual void OnBeginRequest(object sender, EventArgs e)
         {
+            var request = ((HttpApplication)sender).Request;
 
+            if(request.AppRelativeCurrentExecutionFilePath
+                .StartsWith(ModulePath, StringComparison.OrdinalIgnoreCase))
+            {
+                var moduleRelativePath = request.AppRelativeCurrentExecutionFilePath
+                    .Substring(ModulePath.Length);
+
+                CommandFactory.GetCommand(moduleRelativePath);
+            }
         }
 
         /// <summary>
@@ -39,7 +50,7 @@ namespace Kentor.AuthServices
         /// </summary>
         public virtual void Dispose()
         {
-            // Deliberately do nothing, unsubscribing from events is not,
+            // Deliberately do nothing, unsubscribing from events is not
             // needed by the IIS model. Trying to do so throws exceptions.
         }
     }

@@ -1,0 +1,24 @@
+﻿@{
+    ViewBag.Title = "Home";
+}
+
+<h1>Sample Saml2 Authentication Application</h1>
+<p>
+    This is a sample MVC application for Saml2 authentication.
+</p>
+
+@if (!User.Identity.IsAuthenticated)
+{
+    <p>
+        You are currently not signed in.
+    </p>
+    <p>
+        <a href="@Url.Content("~/Saml2AuthenticationModule/SignIn")">Sign in</a>
+    </p>
+}
+else
+{
+    <p>
+        You are signed in.
+    </p>
+}
