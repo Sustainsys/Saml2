@@ -36,7 +36,8 @@ namespace Kentor.AuthServices
             return new Saml2AuthenticationRequest()
             {
                 DestinationUri = DestinationUri,
-                AssertionConsumerServiceUrl = Saml2AuthenticationModuleSection.Current.AssertionConsumerServiceUrl
+                AssertionConsumerServiceUrl = Saml2AuthenticationModuleSection.Current.AssertionConsumerServiceUrl,
+                Issuer = Saml2AuthenticationModuleSection.Current.Issuer
             };
         }
 

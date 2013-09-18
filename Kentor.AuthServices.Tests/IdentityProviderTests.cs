@@ -33,5 +33,15 @@ namespace Kentor.AuthServices.Tests
 
             r.AssertionConsumerServiceUrl.Should().Be(new Uri("http://localhost/Saml2AuthenticationModule/acs"));
         }
+
+        [TestMethod]
+        public void IdentityProvider_CreateAuthenticateRequest_IssuerFromConfig()
+        {
+            var idp = IdentityProvider.ConfiguredIdentityProviders.First().Value;
+
+            var r = idp.CreateAuthenticateRequest();
+
+            r.Issuer.Should().Be("https://github.com/KentorIT/authservices");
+        }
     }
 }

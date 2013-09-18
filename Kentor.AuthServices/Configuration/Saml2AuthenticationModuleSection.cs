@@ -38,6 +38,15 @@ namespace Kentor.AuthServices.Configuration
             }
         }
 
+        [ConfigurationProperty("issuer")]
+        public string Issuer
+        {
+            get
+            {
+                return (string)base["issuer"];
+            }
+        }
+
         /// <summary>
         /// Set of identity providers known to the service provider.
         /// </summary>

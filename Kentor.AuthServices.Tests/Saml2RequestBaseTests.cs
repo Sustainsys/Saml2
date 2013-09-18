@@ -6,7 +6,7 @@ using System.Xml.Linq;
 
 namespace Kentor.AuthServices.Tests
 {
-    class ConcreteSaml2Request : Saml2RequestBase 
+    class ConcreteSaml2Request : Saml2RequestBase
     {
         public XElement ToXElement()
         {
@@ -101,6 +101,22 @@ namespace Kentor.AuthServices.Tests
 
             r.ToXElement().Attribute("Destination").Should().NotBeNull()
                 .And.Subject.Value.Should().Be(uri);
+        }
+
+        [TestMethod]
+        public void Saml2RequestBase_ToXNodes_Issuer()
+        {
+            var uri = "http://sp.example.com/";
+            var r = new ConcreteSaml2Request() { Issuer = uri };
+
+            r.ToXElement().Element(Saml2Namespaces.Saml2+ "Issuer").Value.Should().Be(uri);
+        }
+
+        [TestMethod]
+        public void Saml2RequestBase_ToXNodes_Saml2NamespacePrefix()
+        {
+            var r = new ConcreteSaml2Request();
+            r.ToXElement().GetPrefixOfNamespace(Saml2Namespaces.Saml2Name).Should().Be("saml2");
         }
     }
 }

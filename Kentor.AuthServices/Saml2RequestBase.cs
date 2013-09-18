@@ -58,6 +58,11 @@ namespace Kentor.AuthServices
         public Uri DestinationUri { get; set; }
 
         /// <summary>
+        /// The issuer of the request.
+        /// </summary>
+        public string Issuer { get; set; }
+
+        /// <summary>
         /// Creates XNodes for the fields of the Saml2RequestBase class. These
         /// nodes should be added when creating XML out of derived classes.
         /// </summary>
@@ -65,6 +70,7 @@ namespace Kentor.AuthServices
         protected IEnumerable<XObject> ToXNodes()
         {
             yield return new XAttribute(XNamespace.Xmlns + "saml2p", Saml2Namespaces.Saml2PName);
+            yield return new XAttribute(XNamespace.Xmlns + "saml2", Saml2Namespaces.Saml2Name);
             yield return new XAttribute("ID", Id);
             yield return new XAttribute("Version", Version);
             yield return new XAttribute("IssueInstant", IssueInstant);
@@ -72,6 +78,11 @@ namespace Kentor.AuthServices
             if (DestinationUri != null)
             {
                 yield return new XAttribute("Destination", DestinationUri);
+            }
+
+            if (!string.IsNullOrEmpty(Issuer))
+            {
+                yield return new XElement(Saml2Namespaces.Saml2 + "Issuer", Issuer);
             }
         }
     }
