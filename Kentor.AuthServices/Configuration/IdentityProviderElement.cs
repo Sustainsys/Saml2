@@ -6,8 +6,14 @@ using System.Text;
 
 namespace Kentor.AuthServices.Configuration
 {
+    /// <summary>
+    /// Config element for the identity provider element.
+    /// </summary>
     public class IdentityProviderElement : ConfigurationElement
     {
+        /// <summary>
+        /// Name of the idp in the configuration.
+        /// </summary>
         [ConfigurationProperty("name", IsRequired=true)]
         public string Name
         {
@@ -17,6 +23,9 @@ namespace Kentor.AuthServices.Configuration
             }
         }
 
+        /// <summary>
+        /// Destination url to send requests to.
+        /// </summary>
         [ConfigurationProperty("destinationUri", IsRequired=true)]
         public Uri DestinationUri
         {
@@ -26,6 +35,9 @@ namespace Kentor.AuthServices.Configuration
             }
         }
 
+        /// <summary>
+        /// The binding to use when sending requests to the Idp.
+        /// </summary>
         [ConfigurationProperty("binding", IsRequired=true)]
         public Saml2BindingType Binding
         {
