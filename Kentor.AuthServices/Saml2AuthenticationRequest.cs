@@ -21,8 +21,14 @@ namespace Kentor.AuthServices
             var x = new XElement(Saml2Namespaces.Saml2P + "AuthnRequest");
 
             x.Add(base.ToXNodes());
+            x.AddAttributeIfNotNullOrEmpty("AssertionConsumerServiceURL", AssertionConsumerServiceUrl);
 
             return x;
         }
+
+        /// <summary>
+        /// The assertion consumer url that the idp should send its response back to.
+        /// </summary>
+        public Uri AssertionConsumerServiceUrl { get; set; }
     }
 }

@@ -28,5 +28,18 @@ namespace Kentor.AuthServices.Tests
 
             x.Should().NotBeNull().And.Subject.Attribute("ID").Should().NotBeNull();
         }
+
+        [TestMethod]
+        public void Saml2AuthenticationRequest_AssertionConsumerServiceUrl()
+        {
+            string url = "http://some.example.com/Saml2AuthenticationModule/acs";
+            var x = new Saml2AuthenticationRequest()
+            {
+                AssertionConsumerServiceUrl = new Uri(url)
+            }.ToXElement();
+
+            x.Should().NotBeNull().And.Subject.Attribute("AssertionConsumerServiceURL")
+                .Should().NotBeNull().And.Subject.Value.Should().Be(url);
+        }
     }
 }

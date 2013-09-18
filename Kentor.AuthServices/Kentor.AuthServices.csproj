@@ -53,6 +53,7 @@
     <Compile Include="Saml2Namespaces.cs" />
     <Compile Include="Saml2RequestBase.cs" />
     <Compile Include="SignInCommand.cs" />
+    <Compile Include="XmlHelpers.cs" />
   </ItemGroup>
   <ItemGroup>
     <CodeAnalysisDictionary Include="CustomDictionary.xml" />
