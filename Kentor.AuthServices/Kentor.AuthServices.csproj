@@ -44,6 +44,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CommandResult.cs" />
+    <Compile Include="IdentityProvider.cs" />
     <Compile Include="NotFoundCommand.cs" />
     <Compile Include="Command.cs" />
     <Compile Include="CommandFactory.cs" />

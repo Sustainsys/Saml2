@@ -92,5 +92,15 @@ namespace Kentor.AuthServices.Tests
             var r = new ConcreteSaml2Request();
             r.ToXElement().GetPrefixOfNamespace(Saml2Namespaces.Saml2P).Should().Be("saml2p");
         }
+
+        [TestMethod]
+        public void Saml2RequestBase_ToXNodes_Destination()
+        {
+            var uri = "http://idp.example.com/";
+            var r = new ConcreteSaml2Request() { DestinationUri = new Uri(uri) };
+
+            r.ToXElement().Attribute("Destination").Should().NotBeNull()
+                .And.Subject.Value.Should().Be(uri);
+        }
     }
 }
