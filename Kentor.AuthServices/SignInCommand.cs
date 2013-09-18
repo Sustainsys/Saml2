@@ -10,10 +10,11 @@ namespace Kentor.AuthServices
     {
         public override CommandResult Run()
         {
-            // Create AuthnRequest.
-            // Get the right binding.
-            // Get the result from the binding.
-            throw new NotImplementedException();
+            var idp = IdentityProvider.ConfiguredIdentityProviders.First().Value;
+            
+            var request = idp.CreateAuthenticateRequest();
+
+            return idp.Bind(request);
         }
     }
 }

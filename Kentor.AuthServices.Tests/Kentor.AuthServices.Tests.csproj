@@ -39,6 +39,7 @@
       <HintPath>..\packages\FluentAssertions.2.1.0.0\lib\net45\FluentAssertions.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Web" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Xml.Linq" />
   </ItemGroup>
@@ -62,9 +63,11 @@
     <Compile Include="Saml2RequestBaseTests.cs" />
     <Compile Include="Saml2AuthenticationRequestTests.cs" />
     <Compile Include="IdentityProviderTests.cs" />
+    <Compile Include="SignInCommandTests.cs" />
     <Compile Include="XmlHelpersTests.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="App.config" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
