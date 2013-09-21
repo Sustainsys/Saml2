@@ -18,5 +18,11 @@ namespace Kentor.AuthServices.Tests
         {
             CommandFactory.GetCommand("SignIn").Should().BeOfType<SignInCommand>();
         }
+
+        [TestMethod]
+        public void CommandFactory_Acs_ReturnsAcs()
+        {
+            CommandFactory.GetCommand("Acs").Should().BeOfType<AcsCommand>();
+        }
     }
 }

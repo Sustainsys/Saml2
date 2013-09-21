@@ -1,12 +1,13 @@
 ﻿using System;
+using System.Collections.Specialized;
 using System.Linq;
 using System.Net;
 
 namespace Kentor.AuthServices
 {
-    class NotFoundCommand : Command
+    class NotFoundCommand : ICommand
     {
-        public override CommandResult Run()
+        public CommandResult Run(NameValueCollection formData = null)
         {
             return new CommandResult()
             {

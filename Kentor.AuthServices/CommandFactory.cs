@@ -11,19 +11,23 @@ namespace Kentor.AuthServices
     /// </summary>
     static class CommandFactory
     {
-        private static readonly Command notFoundCommand = new NotFoundCommand();
+        private static readonly ICommand notFoundCommand = new NotFoundCommand();
 
-        private static readonly IDictionary<string, Command> commands =
-        new Dictionary<string, Command>() { { "SignIn", new SignInCommand() } };
+        private static readonly IDictionary<string, ICommand> commands =
+        new Dictionary<string, ICommand>() 
+        { 
+            { "SignIn", new SignInCommand() },
+            { "Acs", new AcsCommand() }
+        };
 
-        public static Command GetCommand(string path)
+        public static ICommand GetCommand(string path)
         {
-            Command command;
+            ICommand command;
             if (commands.TryGetValue(path, out command))
             {
                 return command;
             }
-            
+
             return notFoundCommand;
         }
     }

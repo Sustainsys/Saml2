@@ -62,7 +62,8 @@ namespace Kentor.AuthServices.Tests
             e.Attribute("attribute").Should().NotBeNull().And.Subject.Value.Should().Be(uri);
         }
 
-        class EmptyToString { public override string ToString() { return string.Empty; } }
+        class EmptyToString { public override string ToString() { return string.Empty; } }
+
         [TestMethod]
         public void XmlHelpers_AddAttributeIfNotNullOrEmpty_IgnoresObjectWithEmptyToString()
         {
