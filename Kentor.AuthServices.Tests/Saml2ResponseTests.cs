@@ -13,7 +13,7 @@ namespace Kentor.AuthServices.Tests
         {
             string response =
             @"<saml2p:Response xmlns:saml2p=""urn:oasis:names:tc:SAML:2.0:protocol""
-            ID = ""id123"" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z"">
+            ID = ""Saml2Response_Read_BasicParams"" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z"">
                 <saml2p:Status>
                     <saml2p:StatusCode Value=""urn:oasis:names:tc:SAML:2.0:status:Requester"" />
                 </saml2p:Status>
@@ -21,7 +21,7 @@ namespace Kentor.AuthServices.Tests
 
             var expected = new
             {
-                Id = "id123",
+                Id = "Saml2Response_Read_BasicParams",
                 IssueInstant = new DateTime(2013, 01, 01, 0, 0, 0, DateTimeKind.Utc),
                 Status = Saml2StatusCode.Requester
             };
@@ -64,6 +64,21 @@ namespace Kentor.AuthServices.Tests
             a.ShouldThrow<XmlException>()
                 .WithMessage("Wrong or unsupported SAML2 version");
 
+        }
+
+        [TestMethod]
+        public void Saml2Respons_Read_Issuer()
+        {
+            string response =
+            @"<saml2p:Response xmlns:saml2p=""urn:oasis:names:tc:SAML:2.0:protocol""
+            ID = ""Saml2Respons_Read_Issuer"" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z""
+            Issuer = ""https://some.issuer.example.com"">
+                <saml2p:Status>
+                    <saml2p:StatusCode Value=""urn:oasis:names:tc:SAML:2.0:status:Requester"" />
+                </saml2p:Status>
+            </saml2p:Response>";
+
+            Saml2Response.Read(response).Issuer.Should().Be("https://some.issuer.example.com");
         }
     }
 }
