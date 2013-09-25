@@ -62,6 +62,7 @@
     <Compile Include="Saml2Binding.cs" />
     <Compile Include="Saml2BindingType.cs" />
     <Compile Include="Saml2Namespaces.cs" />
+    <Compile Include="Saml2PostBinding.cs" />
     <Compile Include="Saml2RedirectBinding.cs" />
     <Compile Include="Saml2RequestBase.cs" />
     <Compile Include="Saml2Response.cs" />

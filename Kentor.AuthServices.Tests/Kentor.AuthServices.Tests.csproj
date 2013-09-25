@@ -69,6 +69,7 @@
     <Compile Include="SignInCommandTests.cs" />
     <Compile Include="Saml2ResponseTests.cs" />
     <Compile Include="AcsCommandTests.cs" />
+    <Compile Include="Saml2PostBindingTests.cs" />
     <Compile Include="XmlHelpersTests.cs" />
   </ItemGroup>
   <ItemGroup>
