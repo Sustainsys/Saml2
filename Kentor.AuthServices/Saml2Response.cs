@@ -77,6 +77,9 @@ namespace Kentor.AuthServices
         /// </summary>
         public Saml2StatusCode Status { get { return status; } }
 
+        /// <summary>
+        /// Issuer (= sender) of the response.
+        /// </summary>
         public string Issuer
         {
             get
