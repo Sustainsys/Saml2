@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Xml;
 using System.Xml.Linq;
 
 namespace Kentor.AuthServices
@@ -13,6 +14,15 @@ namespace Kentor.AuthServices
                 xElement.Add(new XAttribute(attribute, value));
             }
             return xElement;
+        }
+
+        public static string GetValueIfNotNull(this XmlAttribute xmlattribute)
+        {
+            if (xmlattribute == null)
+            {
+                return null;
+            }
+            return xmlattribute.Value;
         }
     }
 }

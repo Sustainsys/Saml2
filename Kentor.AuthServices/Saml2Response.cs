@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Security.Cryptography.X509Certificates;
+using System.Security.Cryptography.Xml;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
@@ -84,8 +85,23 @@ namespace Kentor.AuthServices
         {
             get
             {
-                return xmlDocument.FirstChild.Attributes["Issuer"].Value;
+                return xmlDocument.FirstChild.Attributes["Issuer"].GetValueIfNotNull();
             }
+        }
+
+        public bool Validate(X509Certificate2 idpCertificate)
+        {
+            var signedXml = new SignedXml(xmlDocument);
+
+            var signature = xmlDocument.FirstChild["Signature", Saml2Namespaces.DsigName];
+
+            if (signature != null)
+            {
+                signedXml.LoadXml(signature);
+
+                return signedXml.CheckSignature(idpCertificate, true);
+            }
+            return false;
         }
     }
 }

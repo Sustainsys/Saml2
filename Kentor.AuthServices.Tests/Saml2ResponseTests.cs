@@ -1,7 +1,10 @@
 ﻿using System;
+using System.Security.Cryptography.Xml;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using FluentAssertions;
 using System.Xml;
+using System.Security.Cryptography;
+using System.Security.Cryptography.X509Certificates;
 
 namespace Kentor.AuthServices.Tests
 {
@@ -23,7 +26,8 @@ namespace Kentor.AuthServices.Tests
             {
                 Id = "Saml2Response_Read_BasicParams",
                 IssueInstant = new DateTime(2013, 01, 01, 0, 0, 0, DateTimeKind.Utc),
-                Status = Saml2StatusCode.Requester
+                Status = Saml2StatusCode.Requester,
+                Issuer = (string)null
             };
 
             Saml2Response.Read(response).ShouldBeEquivalentTo(expected);
@@ -67,9 +71,9 @@ namespace Kentor.AuthServices.Tests
         }
 
         [TestMethod]
-        public void Saml2Respons_Read_Issuer()
+        public void Saml2Response_Read_Issuer()
         {
-            string response =
+            var response =
             @"<saml2p:Response xmlns:saml2p=""urn:oasis:names:tc:SAML:2.0:protocol""
             ID = ""Saml2Respons_Read_Issuer"" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z""
             Issuer = ""https://some.issuer.example.com"">
@@ -79,6 +83,79 @@ namespace Kentor.AuthServices.Tests
             </saml2p:Response>";
 
             Saml2Response.Read(response).Issuer.Should().Be("https://some.issuer.example.com");
+        }
+
+        [TestMethod]
+        public void Saml2Response_Validate_FalseOnMissingSignature()
+        {
+            var response =
+            @"<saml2p:Response xmlns:saml2p=""urn:oasis:names:tc:SAML:2.0:protocol""
+            ID = ""Saml2Response_Validates_FalseOnMissingSignature"" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z""
+            Issuer = ""https://some.issuer.example.com"">
+                <saml2p:Status>
+                    <saml2p:StatusCode Value=""urn:oasis:names:tc:SAML:2.0:status:Requester"" />
+                </saml2p:Status>
+            </saml2p:Response>";
+
+            Saml2Response.Read(response).Validate(null).Should().BeFalse();
+        }
+
+        [TestMethod]
+        public void Saml2Response_Validate_TrueOnCorrectMessage()
+        {
+            var response =
+            @"<saml2p:Response xmlns:saml2p=""urn:oasis:names:tc:SAML:2.0:protocol""
+            ID = ""Saml2Response_Validate_TrueOnCorrectMessage"" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z""
+            Issuer = ""https://some.issuer.example.com"">
+                <saml2p:Status>
+                    <saml2p:StatusCode Value=""urn:oasis:names:tc:SAML:2.0:status:Requester"" />
+                </saml2p:Status>
+            </saml2p:Response>";
+
+            var signedResponse = SignXml(response);
+
+            Saml2Response.Read(signedResponse).Validate(testCert).Should().BeTrue();
+        }
+
+        [TestMethod]
+        public void Saml2Response_Validate_FalseOnTamperedMessage()
+        {
+            var response =
+            @"<saml2p:Response xmlns:saml2p=""urn:oasis:names:tc:SAML:2.0:protocol""
+            ID = ""Saml2Response_Validate_FalseOnTamperedMessage"" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z""
+            Issuer = ""https://some.issuer.example.com"">
+                <saml2p:Status>
+                    <saml2p:StatusCode Value=""urn:oasis:names:tc:SAML:2.0:status:Requester"" />
+                </saml2p:Status>
+            </saml2p:Response>";
+
+            var signedResponse = SignXml(response);
+
+            signedResponse = signedResponse.Replace("2013-01-01", "2013-01-02");
+
+            Saml2Response.Read(signedResponse).Validate(testCert).Should().BeFalse();
+        }
+
+        private static readonly X509Certificate2 testCert = new X509Certificate2("Kentor.AuthServices.Tests.pfx");
+        private string SignXml(string xml)
+        {
+            var xmlDoc = new XmlDocument();
+            xmlDoc.LoadXml(xml);
+
+            var signedXml = new SignedXml(xmlDoc);
+
+            signedXml.SigningKey = (RSACryptoServiceProvider)testCert.PrivateKey;
+
+            var reference = new Reference();
+            reference.Uri = "";
+            reference.AddTransform(new XmlDsigEnvelopedSignatureTransform());
+
+            signedXml.AddReference(reference);
+            signedXml.ComputeSignature();
+
+            xmlDoc.DocumentElement.AppendChild(xmlDoc.ImportNode(signedXml.GetXml(), true));
+
+            return xmlDoc.OuterXml;
         }
     }
 }
