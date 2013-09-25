@@ -4,6 +4,7 @@ using FluentAssertions;
 using System.Net;
 using System.Web;
 using System.Linq;
+using NSubstitute;
 
 namespace Kentor.AuthServices.Tests
 {
@@ -16,7 +17,7 @@ namespace Kentor.AuthServices.Tests
             var defaultDestination = IdentityProvider.ConfiguredIdentityProviders.First()
                 .Value.DestinationUri;
 
-            var subject = new SignInCommand().Run();
+            var subject = new SignInCommand().Run(Substitute.For<HttpRequestBase>());
 
             var expected = new CommandResult()
             {

@@ -1,14 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.Specialized;
 using System.Linq;
 using System.Text;
-using System.Web;
+using System.Threading.Tasks;
 
 namespace Kentor.AuthServices
 {
-    interface ICommand
+    enum CommandResultErrorCode
     {
-        CommandResult Run(HttpRequestBase request);
+        NoError = 0,
+
+        NoSamlResponseFound
     }
 }

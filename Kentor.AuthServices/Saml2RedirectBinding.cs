@@ -14,9 +14,10 @@ namespace Kentor.AuthServices
     {
         public override CommandResult Bind(Saml2AuthenticationRequest request)
         {
-            var encodedRequest = EncodeRequest(request);
+            var serializedReqeust = Serialize(request);
 
-            var redirectUri = new Uri(request.DestinationUri.ToString() + "?SAMLRequest=" + encodedRequest);
+            var redirectUri = new Uri(request.DestinationUri.ToString() 
+                + "?SAMLRequest=" + serializedReqeust);
 
             return new CommandResult()
             {
@@ -25,9 +26,14 @@ namespace Kentor.AuthServices
             };
         }
 
+        public override bool CanUnbind(HttpRequestBase request)
+        {
+            return false;
+        }
+
         // The MemoryStream is not disposed by the DeflateStream - we're using the keep-open flag.
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2202:Do not dispose objects multiple times")]
-        private static string EncodeRequest(Saml2AuthenticationRequest request)
+        private static string Serialize(Saml2AuthenticationRequest request)
         {
             using (var compressed = new MemoryStream())
             {

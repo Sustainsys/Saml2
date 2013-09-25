@@ -4,18 +4,19 @@ using System.Collections.Specialized;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Web;
 
 namespace Kentor.AuthServices
 {
     class SignInCommand : ICommand
     {
-        public CommandResult Run(NameValueCollection formData = null)
+        public CommandResult Run(HttpRequestBase request)
         {
             var idp = IdentityProvider.ConfiguredIdentityProviders.First().Value;
             
-            var request = idp.CreateAuthenticateRequest();
+            var authnRequest = idp.CreateAuthenticateRequest();
 
-            return idp.Bind(request);
+            return idp.Bind(authnRequest);
         }
     }
 }
