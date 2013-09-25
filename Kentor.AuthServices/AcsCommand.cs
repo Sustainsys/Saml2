@@ -5,6 +5,7 @@ using System.Linq;
 using System.Net;
 using System.Text;
 using System.Web;
+using System.Xml;
 
 namespace Kentor.AuthServices
 {
@@ -14,9 +15,24 @@ namespace Kentor.AuthServices
         {
             var binding = Saml2Binding.Get(request);
 
-            if(binding != null)
+            if (binding != null)
             {
-                return new CommandResult();
+                try
+                {
+                    binding.Unbind(request);
+                }
+                catch (Exception ex)
+                {
+                    if (ex is XmlException || ex is FormatException)
+                    {
+                        return new CommandResult()
+                        {
+                            ErrorCode = CommandResultErrorCode.BadFormatSamlResponse,
+                            HttpStatusCode = HttpStatusCode.InternalServerError
+                        };
+                    }
+                    throw;
+                }
             }
 
             return noSamlResponseFoundResult;
