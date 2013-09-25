@@ -1,17 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace Kentor.AuthServices
 {
-    enum CommandResultErrorCode
+    public enum Saml2StatusCode
     {
-        NoError = 0,
+        Success,
 
-        NoSamlResponseFound,
+        Requester,
 
-        BadFormatSamlResponse
+        Responder,
+
+        VersionMismatch,
     }
 }

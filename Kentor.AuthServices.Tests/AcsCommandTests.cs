@@ -4,6 +4,7 @@ using FluentAssertions;
 using System.Net;
 using System.Web;
 using NSubstitute;
+using System.Collections.Specialized;
 
 namespace Kentor.AuthServices.Tests
 {
@@ -25,9 +26,21 @@ namespace Kentor.AuthServices.Tests
         }
 
         [TestMethod]
-        public void AcsCommand_Run_ErrorOnWrongXmlInFormResponse()
+        public void AcsCommand_Run_ErrorOnWrongFormatInFormResponse()
         {
-            Assert.Fail("Fix test - when there is a http post binding that can help");
+            var r = Substitute.For<HttpRequestBase>();
+            r.HttpMethod.Returns("POST");
+            r.Form.Returns(new NameValueCollection() { { "SAMLResponse", "ABCD" } });
+
+            var cr = new AcsCommand().Run(r);
+
+            var expected = new CommandResult()
+            {
+                HttpStatusCode = HttpStatusCode.InternalServerError,
+                ErrorCode = CommandResultErrorCode.BadFormatSamlResponse
+            };
+
+            cr.ShouldBeEquivalentTo(expected);
         }
     }
 }

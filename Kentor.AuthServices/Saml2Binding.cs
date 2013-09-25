@@ -9,9 +9,20 @@ namespace Kentor.AuthServices
 {
     abstract class Saml2Binding
     {
-        public abstract CommandResult Bind(Saml2AuthenticationRequest request);
+        public virtual CommandResult Bind(Saml2AuthenticationRequest request)
+        {
+            throw new NotImplementedException();
+        }
 
-        public abstract bool CanUnbind(HttpRequestBase request);
+        public virtual Saml2Response Unbind(HttpRequestBase request)
+        {
+            throw new NotImplementedException();
+        }
+
+        protected virtual bool CanUnbind(HttpRequestBase request)
+        {
+            return false;
+        }
 
         private static readonly IDictionary<Saml2BindingType, Saml2Binding> bindings = 
             new Dictionary<Saml2BindingType, Saml2Binding>()
