@@ -16,7 +16,8 @@ namespace Kentor.AuthServices
         private static readonly IDictionary<Saml2BindingType, Saml2Binding> bindings = 
             new Dictionary<Saml2BindingType, Saml2Binding>()
             {
-                { Saml2BindingType.HttpRedirect, new Saml2RedirectBinding() }
+                { Saml2BindingType.HttpRedirect, new Saml2RedirectBinding() },
+                { Saml2BindingType.HttpPost, new Saml2PostBinding() }
             };
 
         public static Saml2Binding Get(Saml2BindingType binding)
