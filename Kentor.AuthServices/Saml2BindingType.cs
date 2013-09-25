@@ -12,10 +12,13 @@ namespace Kentor.AuthServices
     public enum Saml2BindingType
     {
         /// <summary>
-        /// The http redirect binding according to saml bindings section 3.4.1
+        /// The http redirect binding according to saml bindings section 3.4
         /// </summary>
         HttpRedirect,
 
+        /// <summary>
+        /// The http post binding according to saml bindings section 3.5
+        /// </summary>
         HttpPost
     }
 }

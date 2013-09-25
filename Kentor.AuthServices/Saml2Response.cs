@@ -8,8 +8,17 @@ using System.Xml;
 
 namespace Kentor.AuthServices
 {
+    /// <summary>
+    /// Represents a SAML2 response according to 3.3.3
+    /// </summary>
     public class Saml2Response
     {
+        /// <summary>
+        /// Read the supplied Xml and parse it into a response.
+        /// </summary>
+        /// <param name="xml">xml data.</param>
+        /// <returns>Saml2Response</returns>
+        /// <exception cref="XmlException">On xml errors or unexpected xml structure.</exception>
         public static Saml2Response Read(string xml)
         {
             var x = new XmlDocument();
@@ -43,12 +52,24 @@ namespace Kentor.AuthServices
         }
 
         readonly string id;
+        
+        /// <summary>
+        /// Id of the response message.
+        /// </summary>
         public string Id { get { return id; } }
 
         readonly DateTime issueInstant;
+        
+        /// <summary>
+        /// Issue instant of the response message.
+        /// </summary>
         public DateTime IssueInstant { get { return issueInstant; } }
 
         readonly Saml2StatusCode status;
+        
+        /// <summary>
+        /// Status code of the message according to the SAML2 spec section 3.2.2.2
+        /// </summary>
         public Saml2StatusCode Status { get { return status; } }
     }
 }

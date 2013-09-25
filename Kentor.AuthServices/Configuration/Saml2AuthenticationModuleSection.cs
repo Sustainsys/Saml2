@@ -38,6 +38,9 @@ namespace Kentor.AuthServices.Configuration
             }
         }
 
+        /// <summary>
+        /// Issuer name of to use when sending requests to Idp.
+        /// </summary>
         [ConfigurationProperty("issuer")]
         public string Issuer
         {
