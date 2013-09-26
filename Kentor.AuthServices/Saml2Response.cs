@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.IdentityModel.Tokens;
 using System.Linq;
+using System.Security.Claims;
 using System.Security.Cryptography.X509Certificates;
 using System.Security.Cryptography.Xml;
 using System.Text;
@@ -102,6 +104,23 @@ namespace Kentor.AuthServices
                 return signedXml.CheckSignature(idpCertificate, true);
             }
             return false;
+        }
+
+        // Method might throw expections so make it a method and not a property.
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1024:UsePropertiesWhereAppropriate")]
+        public IEnumerable<ClaimsIdentity> GetClaims()
+        {
+            foreach(XmlElement assertionNode in xmlDocument.FirstChild.ChildNodes.Cast<XmlElement>()
+                .Where(xe => xe.LocalName == "Assertion" && xe.NamespaceURI == Saml2Namespaces.Saml2Name))
+            {
+                using (var reader = new XmlNodeReader(assertionNode))
+                {
+                    var token = MorePublicSaml2SecurityTokenHandler.DefaultInstance.ReadToken(reader);
+
+                    yield return MorePublicSaml2SecurityTokenHandler.DefaultInstance
+                        .CreateClaims((Saml2SecurityToken)token);
+                }
+            }
         }
     }
 }

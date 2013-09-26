@@ -36,6 +36,7 @@
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
+    <Reference Include="System.IdentityModel" />
     <Reference Include="System.Security" />
     <Reference Include="System.Web" />
     <Reference Include="System.Xml.Linq" />
@@ -53,10 +54,12 @@
     <Compile Include="Enumerator.cs" />
     <Compile Include="GenericEnumeratorAdapter.cs" />
     <Compile Include="IdentityProvider.cs" />
+    <Compile Include="MorePublicSaml2SecurityTokenHandler.cs" />
     <Compile Include="NotFoundCommand.cs" />
     <Compile Include="ICommand.cs" />
     <Compile Include="CommandFactory.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ReturnRequestedIssuerNameRegistry.cs" />
     <Compile Include="Saml2AuthenticationModule.cs" />
     <Compile Include="Configuration\Saml2AuthenticationModuleSection.cs" />
     <Compile Include="Saml2AuthenticationRequest.cs" />
