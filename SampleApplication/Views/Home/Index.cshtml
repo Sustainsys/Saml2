@@ -11,21 +11,19 @@
 {
     <p>
         You are currently not signed in.
-    </p>
-    <p>
-        <a href="@Url.Content("~/Saml2AuthenticationModule/SignIn")">Sign in</a>
+        <a href="@Url.Content("~/Saml2AuthenticationModule/SignIn")">Sign in</a>.
     </p>
 }
 else
 {
     <p>
-        You are signed in.
+        You are signed in. <a href="@Url.Action("SignOut")">Sign out</a>.
     </p>
     <table>
         <thead>
             <tr>
-                <th>Type</th>
-                <th>Value</th>
+                <th>Claim Type</th>
+                <th>Claim Value</th>
                 <th>Issuer</th>
             </tr>
         </thead>
