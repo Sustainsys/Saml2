@@ -1,8 +1,10 @@
-﻿using System;
+﻿using Kentor.AuthServices.Configuration;
+using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
 using System.Net;
+using System.Security.Claims;
 using System.Text;
 using System.Web;
 using System.Xml;
@@ -19,7 +21,14 @@ namespace Kentor.AuthServices
             {
                 try
                 {
-                    binding.Unbind(request);
+                    var samlResponse = binding.Unbind(request);
+
+                    return new CommandResult()
+                    {
+                        HttpStatusCode = HttpStatusCode.SeeOther,
+                        Location = Saml2AuthenticationModuleSection.Current.ReturnUri,
+                        Principal = new ClaimsPrincipal(samlResponse.GetClaims())
+                    };
                 }
                 catch (Exception ex)
                 {

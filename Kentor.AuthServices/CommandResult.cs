@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Net;
+using System.Security.Claims;
 using System.Web;
 
 namespace Kentor.AuthServices
@@ -11,6 +12,7 @@ namespace Kentor.AuthServices
         public HttpCacheability Cacheability { get; set; }
         public Uri Location { get; set; }
         public CommandResultErrorCode ErrorCode { get; set; }
+        public ClaimsPrincipal Principal { get; set; }
 
         public CommandResult()
         {
@@ -22,7 +24,7 @@ namespace Kentor.AuthServices
         {
             response.Cache.SetCacheability(Cacheability);
 
-            if (HttpStatusCode == System.Net.HttpStatusCode.Found)
+            if (HttpStatusCode == HttpStatusCode.SeeOther)
             {
                 response.Redirect(Location.ToString());
             }

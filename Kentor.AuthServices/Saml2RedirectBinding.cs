@@ -21,7 +21,7 @@ namespace Kentor.AuthServices
 
             return new CommandResult()
             {
-                HttpStatusCode = HttpStatusCode.Found,
+                HttpStatusCode = HttpStatusCode.SeeOther,
                 Location = redirectUri
             };
         }

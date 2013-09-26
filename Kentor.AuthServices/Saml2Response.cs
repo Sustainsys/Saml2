@@ -91,6 +91,11 @@ namespace Kentor.AuthServices
             }
         }
 
+        /// <summary>
+        /// Validates the response.
+        /// </summary>
+        /// <param name="idpCertificate">Idp certificate that should have signed the reponse</param>
+        /// <returns>Is the response signed by the Idp and fulfills other formal requirements?</returns>
         public bool Validate(X509Certificate2 idpCertificate)
         {
             var signedXml = new SignedXml(xmlDocument);
@@ -106,6 +111,10 @@ namespace Kentor.AuthServices
             return false;
         }
 
+        /// <summary>
+        /// Extract claims from the assertions contained in the response.
+        /// </summary>
+        /// <returns>ClaimsIdentities</returns>
         // Method might throw expections so make it a method and not a property.
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1024:UsePropertiesWhereAppropriate")]
         public IEnumerable<ClaimsIdentity> GetClaims()

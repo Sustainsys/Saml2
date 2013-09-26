@@ -51,6 +51,18 @@ namespace Kentor.AuthServices.Configuration
         }
 
         /// <summary>
+        /// The Uri to redirect back to after successfull authentication.
+        /// </summary>
+        [ConfigurationProperty("returnUri", IsRequired=true)]
+        public Uri ReturnUri
+        {
+            get
+            {
+                return (Uri)base["returnUri"];
+            }
+        }
+
+        /// <summary>
         /// Set of identity providers known to the service provider.
         /// </summary>
         [ConfigurationProperty("identityProviders", IsRequired=true)]

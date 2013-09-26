@@ -21,7 +21,7 @@ namespace Kentor.AuthServices.Tests
 
             var expected = new CommandResult()
             {
-                HttpStatusCode = HttpStatusCode.Found,
+                HttpStatusCode = HttpStatusCode.SeeOther,
                 Cacheability = HttpCacheability.NoCache,
                 Location = new Uri(defaultDestination + "?SAMLRequest=XYZ")
             };

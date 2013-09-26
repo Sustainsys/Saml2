@@ -114,9 +114,9 @@ namespace Kentor.AuthServices.Tests
                 </saml2p:Status>
             </saml2p:Response>";
 
-            var signedResponse = SignXml(response);
+            var signedResponse = SignedXmlHelper.SignXml(response);
 
-            Saml2Response.Read(signedResponse).Validate(testCert).Should().BeTrue();
+            Saml2Response.Read(signedResponse).Validate(SignedXmlHelper.TestCert).Should().BeTrue();
         }
 
         [TestMethod]
@@ -131,11 +131,11 @@ namespace Kentor.AuthServices.Tests
                 </saml2p:Status>
             </saml2p:Response>";
 
-            var signedResponse = SignXml(response);
+            var signedResponse = SignedXmlHelper.SignXml(response);
 
             signedResponse = signedResponse.Replace("2013-01-01", "2013-01-02");
 
-            Saml2Response.Read(signedResponse).Validate(testCert).Should().BeFalse();
+            Saml2Response.Read(signedResponse).Validate(SignedXmlHelper.TestCert).Should().BeFalse();
         }
 
         [TestMethod]
@@ -175,7 +175,7 @@ namespace Kentor.AuthServices.Tests
 
             var expected = new ClaimsIdentity[] { c1, c2 };
 
-            Saml2Response.Read(SignXml(response)).GetClaims()
+            Saml2Response.Read(SignedXmlHelper.SignXml(response)).GetClaims()
                 .ShouldBeEquivalentTo(expected, opt => opt.IgnoringCyclicReferences());
         }
 
@@ -219,28 +219,6 @@ namespace Kentor.AuthServices.Tests
         public void Saml2Response_Validate_FalseOnIncorrectInReplyTo()
         {
             throw new NotImplementedException();
-        }
-
-        private static readonly X509Certificate2 testCert = new X509Certificate2("Kentor.AuthServices.Tests.pfx");
-        private string SignXml(string xml)
-        {
-            var xmlDoc = new XmlDocument();
-            xmlDoc.LoadXml(xml);
-
-            var signedXml = new SignedXml(xmlDoc);
-
-            signedXml.SigningKey = (RSACryptoServiceProvider)testCert.PrivateKey;
-
-            var reference = new Reference();
-            reference.Uri = "";
-            reference.AddTransform(new XmlDsigEnvelopedSignatureTransform());
-
-            signedXml.AddReference(reference);
-            signedXml.ComputeSignature();
-
-            xmlDoc.DocumentElement.AppendChild(xmlDoc.ImportNode(signedXml.GetXml(), true));
-
-            return xmlDoc.OuterXml;
         }
     }
 }

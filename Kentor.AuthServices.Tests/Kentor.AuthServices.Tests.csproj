@@ -68,6 +68,7 @@
     <Compile Include="Saml2RequestBaseTests.cs" />
     <Compile Include="Saml2AuthenticationRequestTests.cs" />
     <Compile Include="IdentityProviderTests.cs" />
+    <Compile Include="SignedXmlHelper.cs" />
     <Compile Include="SignInCommandTests.cs" />
     <Compile Include="Saml2ResponseTests.cs" />
     <Compile Include="AcsCommandTests.cs" />
