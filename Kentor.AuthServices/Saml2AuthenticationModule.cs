@@ -1,4 +1,6 @@
 ﻿using System;
+using System.IdentityModel.Services;
+using System.IdentityModel.Tokens;
 using System.Linq;
 using System.Web;
 
@@ -42,9 +44,17 @@ namespace Kentor.AuthServices
                     .Substring(ModulePath.Length);
 
                 var command = CommandFactory.GetCommand(moduleRelativePath);
+                var commandResult = command.Run(new HttpRequestWrapper(application.Request));
 
-                command.Run(new HttpRequestWrapper(application.Request))
-                    .Apply(new HttpResponseWrapper(application.Response));
+                if (commandResult.Principal != null)
+                {
+                    var sessionToken = new SessionSecurityToken(commandResult.Principal);
+
+                    FederatedAuthentication.SessionAuthenticationModule
+                        .AuthenticateSessionSecurityToken(sessionToken, true);
+                }
+
+                commandResult.Apply(new HttpResponseWrapper(application.Response));
             }
         }
 

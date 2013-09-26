@@ -5,6 +5,7 @@ using System.Net;
 using NSubstitute;
 using System.Web;
 using System.Security.Claims;
+using System.Security.Principal;
 
 namespace Kentor.AuthServices.Tests
 {
@@ -52,6 +53,50 @@ namespace Kentor.AuthServices.Tests
             }.Apply(response);
 
             cache.Received().SetCacheability(HttpCacheability.ServerAndNoCache);
+        }
+
+        [TestMethod]
+        public void CommandResult_Apply_HandleRedirect()
+        {
+            var response = Substitute.For<HttpResponseBase>();
+            var redirectTarget = "http://example.com/redirect/target/";
+
+            new CommandResult()
+            {
+                Location = new Uri(redirectTarget),
+                HttpStatusCode = HttpStatusCode.SeeOther
+            }.Apply(response);
+
+            response.Received().Redirect(redirectTarget);
+            response.StatusCode.Should().Be((int)HttpStatusCode.SeeOther);
+        }
+
+        [TestMethod]
+        public void CommandResult_Apply_ThrowsOnMissingLocation()
+        {
+            var response = Substitute.For<HttpResponseBase>();
+
+            Action a = () =>
+                new CommandResult()
+                {
+                    HttpStatusCode = HttpStatusCode.SeeOther
+                }.Apply(response);
+
+            a.ShouldThrow<InvalidOperationException>();
+        }
+
+        [TestMethod]
+        public void CommandResult_Apply_ThrowsOnLocationWithoutRedirect()
+        {
+            var response = Substitute.For<HttpResponseBase>();
+        
+            Action a = () =>
+                new CommandResult()
+                {
+                    Location = new Uri("http://example.com")
+                }.Apply(response);
+
+            a.ShouldThrow<InvalidOperationException>();
         }
     }
 }
