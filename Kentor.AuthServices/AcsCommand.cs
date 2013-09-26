@@ -5,6 +5,7 @@ using System.Collections.Specialized;
 using System.Linq;
 using System.Net;
 using System.Security.Claims;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Web;
 using System.Xml;
@@ -23,6 +24,8 @@ namespace Kentor.AuthServices
                 {
                     var samlResponse = binding.Unbind(request);
 
+                    samlResponse.Validate(GetSigningCert(samlResponse.Issuer));
+                    
                     return new CommandResult()
                     {
                         HttpStatusCode = HttpStatusCode.SeeOther,
@@ -45,6 +48,11 @@ namespace Kentor.AuthServices
             }
 
             return noSamlResponseFoundResult;
+        }
+
+        private static X509Certificate2 GetSigningCert(string issuer)
+        {
+            return IdentityProvider.ConfiguredIdentityProviders[issuer].Certificate;
         }
 
         static readonly CommandResult noSamlResponseFoundResult = new CommandResult()

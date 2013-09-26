@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 
 namespace Kentor.AuthServices
 {
@@ -9,7 +10,7 @@ namespace Kentor.AuthServices
     {
         private static readonly IDictionary<string, IdentityProvider> configuredIdentityProviders =
             Saml2AuthenticationModuleSection.Current.IdentityProviders
-            .ToDictionary(idp => idp.Name, idp => new IdentityProvider(idp));
+            .ToDictionary(idp => idp.Issuer, idp => new IdentityProvider(idp));
 
         public static IDictionary<string, IdentityProvider> ConfiguredIdentityProviders
         {
@@ -25,6 +26,11 @@ namespace Kentor.AuthServices
         {
             DestinationUri = config.DestinationUri;
             Binding = config.Binding;
+
+            if (!string.IsNullOrEmpty(config.SigningCertificateFile))
+            {
+                certificate = new X509Certificate2(config.SigningCertificateFile);
+            }
         }
 
         public Saml2BindingType Binding { get; set; }
@@ -44,6 +50,15 @@ namespace Kentor.AuthServices
         public CommandResult Bind(Saml2AuthenticationRequest request)
         {
             return Saml2Binding.Get(Binding).Bind(request);
+        }
+
+        readonly X509Certificate2 certificate;
+        public X509Certificate2 Certificate
+        {
+            get
+            {
+                return certificate;
+            }
         }
     }
 }

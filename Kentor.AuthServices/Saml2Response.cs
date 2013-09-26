@@ -50,7 +50,7 @@ namespace Kentor.AuthServices
 
             id = xml.DocumentElement.Attributes["ID"].Value;
 
-            issueInstant = DateTime.Parse(xml.DocumentElement.Attributes["IssueInstant"].Value, 
+            issueInstant = DateTime.Parse(xml.DocumentElement.Attributes["IssueInstant"].Value,
                 CultureInfo.InvariantCulture, DateTimeStyles.AdjustToUniversal);
 
             var statusString = xml.DocumentElement["Status", Saml2Namespaces.Saml2PName]
@@ -60,21 +60,21 @@ namespace Kentor.AuthServices
         }
 
         readonly string id;
-        
+
         /// <summary>
         /// Id of the response message.
         /// </summary>
         public string Id { get { return id; } }
 
         readonly DateTime issueInstant;
-        
+
         /// <summary>
         /// Issue instant of the response message.
         /// </summary>
         public DateTime IssueInstant { get { return issueInstant; } }
 
         readonly Saml2StatusCode status;
-        
+
         /// <summary>
         /// Status code of the message according to the SAML2 spec section 3.2.2.2
         /// </summary>
@@ -91,6 +91,9 @@ namespace Kentor.AuthServices
             }
         }
 
+
+        bool valid = false, validated = false;
+
         /// <summary>
         /// Validates the response.
         /// </summary>
@@ -98,17 +101,37 @@ namespace Kentor.AuthServices
         /// <returns>Is the response signed by the Idp and fulfills other formal requirements?</returns>
         public bool Validate(X509Certificate2 idpCertificate)
         {
-            var signedXml = new SignedXml(xmlDocument);
-
-            var signature = xmlDocument.DocumentElement["Signature", Saml2Namespaces.DsigName];
-
-            if (signature != null)
+            if (!validated)
             {
-                signedXml.LoadXml(signature);
+                var signedXml = new SignedXml(xmlDocument);
 
-                return signedXml.CheckSignature(idpCertificate, true);
+                var signature = xmlDocument.DocumentElement["Signature", Saml2Namespaces.DsigName];
+
+                if (signature != null)
+                {
+                    signedXml.LoadXml(signature);
+
+                    valid = signedXml.CheckSignature(idpCertificate, true);
+                }
+                else
+                {
+                    valid = false;
+                }
+                validated = true;
             }
-            return false;
+            return valid;
+        }
+
+        private void ThrowOnNotValid()
+        {
+            if (!validated)
+            {
+                throw new InvalidOperationException("The Saml2Response must be validated first.");
+            }
+            if (!valid)
+            {
+                throw new InvalidOperationException("The Saml2Response didn't pass validation");
+            }
         }
 
         /// <summary>
@@ -119,7 +142,9 @@ namespace Kentor.AuthServices
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1024:UsePropertiesWhereAppropriate")]
         public IEnumerable<ClaimsIdentity> GetClaims()
         {
-            foreach(XmlElement assertionNode in xmlDocument.DocumentElement.ChildNodes.Cast<XmlElement>()
+            ThrowOnNotValid();
+
+            foreach (XmlElement assertionNode in xmlDocument.DocumentElement.ChildNodes.Cast<XmlElement>()
                 .Where(xe => xe.LocalName == "Assertion" && xe.NamespaceURI == Saml2Namespaces.Saml2Name))
             {
                 using (var reader = new XmlNodeReader(assertionNode))

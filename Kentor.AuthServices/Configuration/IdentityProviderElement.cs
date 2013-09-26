@@ -12,21 +12,21 @@ namespace Kentor.AuthServices.Configuration
     public class IdentityProviderElement : ConfigurationElement
     {
         /// <summary>
-        /// Name of the idp in the configuration.
+        /// Issuer as presented by the idp. Used as key to configuration.
         /// </summary>
-        [ConfigurationProperty("name", IsRequired=true)]
-        public string Name
+        [ConfigurationProperty("issuer", IsRequired = true)]
+        public string Issuer
         {
             get
             {
-                return (string)base["name"];
+                return (string)base["issuer"];
             }
         }
 
         /// <summary>
         /// Destination url to send requests to.
         /// </summary>
-        [ConfigurationProperty("destinationUri", IsRequired=true)]
+        [ConfigurationProperty("destinationUri", IsRequired = true)]
         public Uri DestinationUri
         {
             get
@@ -38,12 +38,24 @@ namespace Kentor.AuthServices.Configuration
         /// <summary>
         /// The binding to use when sending requests to the Idp.
         /// </summary>
-        [ConfigurationProperty("binding", IsRequired=true)]
+        [ConfigurationProperty("binding", IsRequired = true)]
         public Saml2BindingType Binding
         {
             get
             {
                 return (Saml2BindingType)base["binding"];
+            }
+        }
+
+        /// <summary>
+        /// File to load the signing certificate from.
+        /// </summary>
+        [ConfigurationProperty("signingCertificateFile")]
+        public string SigningCertificateFile
+        {
+            get
+            {
+                return (string)base["signingCertificateFile"];
             }
         }
     }

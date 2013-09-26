@@ -73,7 +73,7 @@ namespace Kentor.AuthServices.Tests
             var response =
             @"<saml2p:Response xmlns:saml2p=""urn:oasis:names:tc:SAML:2.0:protocol""
             ID = ""AcsCommand_Run_SuccessfulResult"" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z""
-            Issuer = ""https://some.issuer.example.com"">
+            Issuer = ""https://idp.example.com"">
                 <saml2p:Status>
                     <saml2p:StatusCode Value=""urn:oasis:names:tc:SAML:2.0:status:Success"" />
                 </saml2p:Status>

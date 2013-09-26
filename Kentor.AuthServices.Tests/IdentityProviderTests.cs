@@ -43,5 +43,13 @@ namespace Kentor.AuthServices.Tests
 
             r.Issuer.Should().Be("https://github.com/KentorIT/authservices");
         }
+
+        [TestMethod]
+        public void IdentityProvider_Certificate_FromFile()
+        {
+            var idp = IdentityProvider.ConfiguredIdentityProviders.First().Value;
+
+            idp.Certificate.ShouldBeEquivalentTo(SignedXmlHelper.TestCert);
+        }
     }
 }
