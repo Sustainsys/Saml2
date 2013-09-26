@@ -21,4 +21,23 @@ else
     <p>
         You are signed in.
     </p>
+    <table>
+        <thead>
+            <tr>
+                <th>Type</th>
+                <th>Value</th>
+                <th>Issuer</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var c in System.Security.Claims.ClaimsPrincipal.Current.Claims)
+            {
+                <tr>
+                    <td>@c.Type</td>
+                    <td>@c.Value</td>
+                    <td>@c.Issuer</td>
+                </tr>                
+            }
+        </tbody>
+    </table>
 }
