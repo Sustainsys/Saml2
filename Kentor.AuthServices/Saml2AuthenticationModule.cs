@@ -44,7 +44,7 @@ namespace Kentor.AuthServices
                 var command = CommandFactory.GetCommand(moduleRelativePath);
 
                 command.Run(new HttpRequestWrapper(application.Request))
-                    .Apply(application.Response);
+                    .Apply(new HttpResponseWrapper(application.Response));
             }
         }
 
