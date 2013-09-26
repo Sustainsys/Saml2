@@ -17,7 +17,8 @@ namespace Kentor.AuthServices.Tests
         public void Saml2Response_Read_BasicParams()
         {
             string response =
-            @"<saml2p:Response xmlns:saml2p=""urn:oasis:names:tc:SAML:2.0:protocol""
+            @"<?xml version=""1.0"" encoding=""UTF-8""?>
+                <saml2p:Response xmlns:saml2p=""urn:oasis:names:tc:SAML:2.0:protocol""
             ID = ""Saml2Response_Read_BasicParams"" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z"">
                 <saml2p:Status>
                     <saml2p:StatusCode Value=""urn:oasis:names:tc:SAML:2.0:status:Requester"" />
@@ -76,7 +77,8 @@ namespace Kentor.AuthServices.Tests
         public void Saml2Response_Read_Issuer()
         {
             var response =
-            @"<saml2p:Response xmlns:saml2p=""urn:oasis:names:tc:SAML:2.0:protocol""
+            @"<?xml version=""1.0"" encoding=""UTF-8""?>
+            <saml2p:Response xmlns:saml2p=""urn:oasis:names:tc:SAML:2.0:protocol""
             ID = ""Saml2Respons_Read_Issuer"" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z""
             Issuer = ""https://some.issuer.example.com"">
                 <saml2p:Status>
@@ -91,7 +93,8 @@ namespace Kentor.AuthServices.Tests
         public void Saml2Response_Validate_FalseOnMissingSignature()
         {
             var response =
-            @"<saml2p:Response xmlns:saml2p=""urn:oasis:names:tc:SAML:2.0:protocol""
+            @"<?xml version=""1.0"" encoding=""UTF-8""?>
+            <saml2p:Response xmlns:saml2p=""urn:oasis:names:tc:SAML:2.0:protocol""
             ID = ""Saml2Response_Validates_FalseOnMissingSignature"" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z""
             Issuer = ""https://some.issuer.example.com"">
                 <saml2p:Status>
@@ -106,7 +109,8 @@ namespace Kentor.AuthServices.Tests
         public void Saml2Response_Validate_TrueOnCorrectMessage()
         {
             var response =
-            @"<saml2p:Response xmlns:saml2p=""urn:oasis:names:tc:SAML:2.0:protocol""
+            @"<?xml version=""1.0"" encoding=""UTF-8""?>
+            <saml2p:Response xmlns:saml2p=""urn:oasis:names:tc:SAML:2.0:protocol""
             ID = ""Saml2Response_Validate_TrueOnCorrectMessage"" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z""
             Issuer = ""https://some.issuer.example.com"">
                 <saml2p:Status>
@@ -123,7 +127,8 @@ namespace Kentor.AuthServices.Tests
         public void Saml2Response_Validate_FalseOnTamperedMessage()
         {
             var response =
-            @"<saml2p:Response xmlns:saml2p=""urn:oasis:names:tc:SAML:2.0:protocol""
+            @"<?xml version=""1.0"" encoding=""UTF-8""?>
+            <saml2p:Response xmlns:saml2p=""urn:oasis:names:tc:SAML:2.0:protocol""
             ID = ""Saml2Response_Validate_FalseOnTamperedMessage"" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z""
             Issuer = ""https://some.issuer.example.com"">
                 <saml2p:Status>
@@ -142,7 +147,8 @@ namespace Kentor.AuthServices.Tests
         public void Saml2Response_GetClaims_CreateIdentities()
         {
             var response =
-            @"<saml2p:Response xmlns:saml2p=""urn:oasis:names:tc:SAML:2.0:protocol""
+            @"<?xml version=""1.0"" encoding=""UTF-8""?>
+            <saml2p:Response xmlns:saml2p=""urn:oasis:names:tc:SAML:2.0:protocol""
             ID = ""Saml2Response_GetClaims_CreateIdentity"" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z""
             Issuer = ""https://some.issuer.example.com"">
                 <saml2p:Status>

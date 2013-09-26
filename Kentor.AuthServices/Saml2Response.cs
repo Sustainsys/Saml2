@@ -30,13 +30,13 @@ namespace Kentor.AuthServices
             var x = new XmlDocument();
             x.LoadXml(xml);
 
-            if (x.FirstChild.LocalName != "Response"
-                || x.FirstChild.NamespaceURI != Saml2Namespaces.Saml2P)
+            if (x.DocumentElement.LocalName != "Response"
+                || x.DocumentElement.NamespaceURI != Saml2Namespaces.Saml2P)
             {
                 throw new XmlException("Expected a SAML2 assertion document");
             }
 
-            if (x.FirstChild.Attributes["Version"].Value != "2.0")
+            if (x.DocumentElement.Attributes["Version"].Value != "2.0")
             {
                 throw new XmlException("Wrong or unsupported SAML2 version");
             }
@@ -48,12 +48,12 @@ namespace Kentor.AuthServices
         {
             xmlDocument = xml;
 
-            id = xml.FirstChild.Attributes["ID"].Value;
+            id = xml.DocumentElement.Attributes["ID"].Value;
 
-            issueInstant = DateTime.Parse(xml.FirstChild.Attributes["IssueInstant"].Value, 
+            issueInstant = DateTime.Parse(xml.DocumentElement.Attributes["IssueInstant"].Value, 
                 CultureInfo.InvariantCulture, DateTimeStyles.AdjustToUniversal);
 
-            var statusString = xml.FirstChild["Status", Saml2Namespaces.Saml2PName]
+            var statusString = xml.DocumentElement["Status", Saml2Namespaces.Saml2PName]
                 ["StatusCode", Saml2Namespaces.Saml2PName].Attributes["Value"].Value;
 
             status = StatusCodeHelper.FromString(statusString);
@@ -87,7 +87,7 @@ namespace Kentor.AuthServices
         {
             get
             {
-                return xmlDocument.FirstChild.Attributes["Issuer"].GetValueIfNotNull();
+                return xmlDocument.DocumentElement.Attributes["Issuer"].GetValueIfNotNull();
             }
         }
 
@@ -100,7 +100,7 @@ namespace Kentor.AuthServices
         {
             var signedXml = new SignedXml(xmlDocument);
 
-            var signature = xmlDocument.FirstChild["Signature", Saml2Namespaces.DsigName];
+            var signature = xmlDocument.DocumentElement["Signature", Saml2Namespaces.DsigName];
 
             if (signature != null)
             {
@@ -119,7 +119,7 @@ namespace Kentor.AuthServices
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1024:UsePropertiesWhereAppropriate")]
         public IEnumerable<ClaimsIdentity> GetClaims()
         {
-            foreach(XmlElement assertionNode in xmlDocument.FirstChild.ChildNodes.Cast<XmlElement>()
+            foreach(XmlElement assertionNode in xmlDocument.DocumentElement.ChildNodes.Cast<XmlElement>()
                 .Where(xe => xe.LocalName == "Assertion" && xe.NamespaceURI == Saml2Namespaces.Saml2Name))
             {
                 using (var reader = new XmlNodeReader(assertionNode))
