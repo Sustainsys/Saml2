@@ -52,6 +52,7 @@
     <Compile Include="CommandResultErrorCode.cs" />
     <Compile Include="Configuration\IdentityProviderCollection.cs" />
     <Compile Include="Configuration\IdentityProviderElement.cs" />
+    <Compile Include="Configuration\CertificateElement.cs" />
     <Compile Include="Enumerator.cs" />
     <Compile Include="GenericEnumeratorAdapter.cs" />
     <Compile Include="IdentityProvider.cs" />

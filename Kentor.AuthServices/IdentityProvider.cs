@@ -26,11 +26,7 @@ namespace Kentor.AuthServices
         {
             DestinationUri = config.DestinationUri;
             Binding = config.Binding;
-
-            if (!string.IsNullOrEmpty(config.SigningCertificateFile))
-            {
-                certificate = new X509Certificate2(config.SigningCertificateFile);
-            }
+            certificate = config.SigningCertificate.LoadCertificate();
         }
 
         public Saml2BindingType Binding { get; set; }

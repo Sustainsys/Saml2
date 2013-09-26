@@ -87,7 +87,7 @@ namespace Kentor.AuthServices
         {
             get
             {
-                return xmlDocument.DocumentElement.Attributes["Issuer"].GetValueIfNotNull();
+                return xmlDocument.DocumentElement["Issuer", Saml2Namespaces.Saml2Name].GetTrimmedTextIfNotNull();
             }
         }
 

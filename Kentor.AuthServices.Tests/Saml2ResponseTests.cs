@@ -81,8 +81,10 @@ namespace Kentor.AuthServices.Tests
             var response =
             @"<?xml version=""1.0"" encoding=""UTF-8""?>
             <saml2p:Response xmlns:saml2p=""urn:oasis:names:tc:SAML:2.0:protocol""
-            ID = ""Saml2Respons_Read_Issuer"" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z""
-            Issuer = ""https://some.issuer.example.com"">
+            ID = ""Saml2Respons_Read_Issuer"" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z"">
+            <saml2:Issuer xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion"">
+                https://some.issuer.example.com
+            </saml2:Issuer>
                 <saml2p:Status>
                     <saml2p:StatusCode Value=""urn:oasis:names:tc:SAML:2.0:status:Requester"" />
                 </saml2p:Status>

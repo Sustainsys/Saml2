@@ -50,12 +50,12 @@ namespace Kentor.AuthServices.Configuration
         /// <summary>
         /// File to load the signing certificate from.
         /// </summary>
-        [ConfigurationProperty("signingCertificateFile")]
-        public string SigningCertificateFile
+        [ConfigurationProperty("signingCertificate", IsRequired = true)]
+        public CertificateElement SigningCertificate
         {
             get
             {
-                return (string)base["signingCertificateFile"];
+                return (CertificateElement)base["signingCertificate"];
             }
         }
     }

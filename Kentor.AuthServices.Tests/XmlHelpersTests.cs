@@ -91,5 +91,23 @@ namespace Kentor.AuthServices.Tests
 
             a.GetValueIfNotNull().Should().Be("SomeValue");
         }
+
+        [TestMethod]
+        public void XmlHelpers_GetTrimmedTextIfNotNull_ValueOnNotNull()
+        {
+            var xd = new XmlDocument();
+            var e = xd.CreateElement("someElement");
+            e.InnerText = "\r\n     Some Text";
+
+            e.GetTrimmedTextIfNotNull().Should().Be("Some Text");
+        }
+
+        [TestMethod]
+        public void XmlHelpers_GetTrimmedTextIfNotNull_NullOnNull()
+        {
+            XmlElement e = null;
+
+            e.GetTrimmedTextIfNotNull().Should().BeNull();
+        }
     }
 }

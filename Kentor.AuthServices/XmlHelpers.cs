@@ -16,13 +16,23 @@ namespace Kentor.AuthServices
             return xElement;
         }
 
-        public static string GetValueIfNotNull(this XmlAttribute xmlattribute)
+        public static string GetValueIfNotNull(this XmlAttribute xmlAttribute)
         {
-            if (xmlattribute == null)
+            if (xmlAttribute == null)
             {
                 return null;
             }
-            return xmlattribute.Value;
+            return xmlAttribute.Value;
+        }
+
+        public static string GetTrimmedTextIfNotNull(this XmlElement xmlElement)
+        {
+            if (xmlElement == null)
+            {
+                return null;
+            }
+
+            return xmlElement.InnerText.Trim();
         }
     }
 }
