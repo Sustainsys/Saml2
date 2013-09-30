@@ -1,3 +1,5 @@
+$ErrorActionPreference = "Stop"
+
 $status = (git status)
 $clean = $status| select-string "working directory clean"
 
