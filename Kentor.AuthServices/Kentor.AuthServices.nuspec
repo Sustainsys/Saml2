@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>$id$</id>
+    <version>$version$</version>
+    <title>$title$</title>
+    <authors>$author$</authors>
+    <owners>$author$</owners>
+    <licenseUrl>https://github.com/KentorIT/authservices/blob/master/LICENSE</licenseUrl>
+    <projectUrl>https://github.com/KentorIT/authservices</projectUrl>
+    <iconUrl>https://raw.github.com/KentorIT/authservices/master/nuget/kentor.png</iconUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>$description$</description>
+    <copyright>Copyright 2013</copyright>
+    <tags>SAML2 authentication</tags>
+  </metadata>
+</package>
