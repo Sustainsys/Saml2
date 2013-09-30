@@ -1,7 +1,7 @@
 Kentor Authentication Services
 =============
 
-The Kentor Authentication services is a couple of http modules that adds 
+The Kentor Authentication services is a an http modules that adds 
 SAML2P support to IIS web sites, allowing the web site to act as a
 SAML2 Service Provider (SP).
 
@@ -16,8 +16,3 @@ highly recommended).
 The protocol handling classes that are used by the Saml2AuthenticationModule are available
 as a public API as well, making it possible to reuse some of the internals for writing
 an own service provider.
-
-##SlidingExpirationSessionAuthenticationModule
-The SlidingExpirationSessionAuthenticationModule is a bonus, it adds sliding expiration
-to sessions just like FormsAuthentication works out of the box.
-
