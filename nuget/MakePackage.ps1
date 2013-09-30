@@ -12,7 +12,7 @@ $master = $status | select-string "On branch master"
 if ("$master" -eq "")
 {
   echo "Releases are only allowed from the master branch."
-#  exit
+  exit
 }
 
 pushd ..\Kentor.AuthServices
