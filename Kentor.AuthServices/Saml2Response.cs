@@ -175,8 +175,9 @@ namespace Kentor.AuthServices
             {
                 using (var reader = new XmlNodeReader(assertionNode))
                 {
-                    var token = MorePublicSaml2SecurityTokenHandler.DefaultInstance.ReadToken(reader);
+                    var token = (Saml2SecurityToken)MorePublicSaml2SecurityTokenHandler.DefaultInstance.ReadToken(reader);
                     MorePublicSaml2SecurityTokenHandler.DefaultInstance.DetectReplayedToken(token);
+                    MorePublicSaml2SecurityTokenHandler.DefaultInstance.ValidateConditions(token.Assertion.Conditions, false);
 
                     yield return MorePublicSaml2SecurityTokenHandler.DefaultInstance
                         .CreateClaims((Saml2SecurityToken)token);

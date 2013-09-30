@@ -263,9 +263,35 @@ namespace Kentor.AuthServices.Tests
         }
 
         [TestMethod]
-        [Ignore]
         public void Saml2Response_GetClaims_ThrowsOnExpired()
         {
+            var response =
+            @"<?xml version=""1.0"" encoding=""UTF-8""?>
+            <saml2p:Response xmlns:saml2p=""urn:oasis:names:tc:SAML:2.0:protocol""
+            ID = ""Saml2Response_GetClaims_ThrowsOnExpired"" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z""
+            Issuer = ""https://some.issuer.example.com"">
+                <saml2p:Status>
+                    <saml2p:StatusCode Value=""urn:oasis:names:tc:SAML:2.0:status:Success"" />
+                </saml2p:Status>
+                <saml2:Assertion xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
+                Version=""2.0"" ID=""Saml2Response_GetClaims_ThrowsOnExpired_Assertion""
+                IssueInstant=""2013-09-25T00:00:00Z"">
+                    <saml2:Issuer>https://idp.example.com</saml2:Issuer>
+                    <saml2:Subject>
+                        <saml2:NameID>SomeUser</saml2:NameID>
+                        <saml2:SubjectConfirmation Method=""urn:oasis:names:tc:SAML:2.0:cm:bearer"" />
+                    </saml2:Subject>
+                    <saml2:Conditions NotOnOrAfter=""2013-06-30T08:00:00Z"" />
+                </saml2:Assertion>
+            </saml2p:Response>";
+
+            response = SignedXmlHelper.SignXml(response);
+            var r = Saml2Response.Read(response);
+            r.Validate(SignedXmlHelper.TestCert);
+
+            Action a = () => r.GetClaims();
+
+            a.ShouldThrow<SecurityTokenExpiredException>();
         }
 
         [TestMethod]

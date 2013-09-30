@@ -26,6 +26,11 @@ namespace Kentor.AuthServices
             base.DetectReplayedToken(token);
         }
 
+        public new void ValidateConditions(Saml2Conditions conditions, bool enforceAudienceRestriction)
+        {
+            base.ValidateConditions(conditions, enforceAudienceRestriction);
+        }
+        
         private static readonly MorePublicSaml2SecurityTokenHandler defaultInstance
             = new MorePublicSaml2SecurityTokenHandler()
             {
