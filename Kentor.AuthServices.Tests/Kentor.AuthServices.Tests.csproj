@@ -61,6 +61,7 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
+    <Compile Include="ClaimsAuthenticationManagerStub.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="CommandFactoryTests.cs" />
     <Compile Include="NotFoundCommandTests.cs" />

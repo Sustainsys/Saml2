@@ -73,7 +73,7 @@ namespace Kentor.AuthServices.Tests
             var response =
             @"<saml2p:Response xmlns:saml2p=""urn:oasis:names:tc:SAML:2.0:protocol""
                 xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
-            ID = ""AcsCommand_Run_SuccessfulResult"" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z"">
+                ID = ""AcsCommand_Run_SuccessfulResult"" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z"">
                 <saml2:Issuer>
                     https://idp.example.com
                 </saml2:Issuer>
@@ -97,12 +97,14 @@ namespace Kentor.AuthServices.Tests
 
             r.Form.Returns(new NameValueCollection() { { "SAMLResponse", formValue } });
 
-            var id = new ClaimsIdentity("Federation");
-            id.AddClaim(new Claim(ClaimTypes.NameIdentifier, "SomeUser", null, "https://idp.example.com"));
+            var ids = new ClaimsIdentity[]
+                { new ClaimsIdentity("Federation"), new ClaimsIdentity("ClaimsAuthenticationManager") };
+            ids[0].AddClaim(new Claim(ClaimTypes.NameIdentifier, "SomeUser", null, "https://idp.example.com"));
+            ids[1].AddClaim(new Claim(ClaimTypes.Role, "RoleFromClaimsAuthManager", null, "ClaimsAuthenticationManagerMock"));
 
             var expected = new CommandResult()
             {
-                Principal = new ClaimsPrincipal(id),
+                Principal = new ClaimsPrincipal(ids),
                 HttpStatusCode = HttpStatusCode.SeeOther,
                 Location = new Uri("http://localhost/LoggedIn")
             };

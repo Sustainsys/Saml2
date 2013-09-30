@@ -2,6 +2,8 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.IdentityModel.Services;
+using System.IdentityModel.Services.Configuration;
 using System.Linq;
 using System.Net;
 using System.Security.Claims;
@@ -26,11 +28,15 @@ namespace Kentor.AuthServices
 
                     samlResponse.Validate(GetSigningCert(samlResponse.Issuer));
                     
+                    var principal = new ClaimsPrincipal(samlResponse.GetClaims());
+                    FederatedAuthentication.FederationConfiguration.IdentityConfiguration
+                        .ClaimsAuthenticationManager.Authenticate(null, principal);
+
                     return new CommandResult()
                     {
                         HttpStatusCode = HttpStatusCode.SeeOther,
                         Location = Saml2AuthenticationModuleSection.Current.ReturnUri,
-                        Principal = new ClaimsPrincipal(samlResponse.GetClaims())
+                        Principal = principal
                     };
                 }
                 catch (Exception ex)
