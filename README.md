@@ -16,3 +16,17 @@ highly recommended).
 The protocol handling classes that are used by the Saml2AuthenticationModule are available
 as a public API as well, making it possible to reuse some of the internals for writing
 an own service provider.
+
+##Versioning
+Kentor Authentication services uses semantic versioning as defined on http://semver.org/.
+
+    Given a version number MAJOR.MINOR.PATCH, increment the:
+
+    MAJOR version when you make incompatible API changes,
+    MINOR version when you add functionality in a backwards-compatible manner, and
+    PATCH version when you make backwards-compatible bug fixes.
+
+Additionally *even* PATCH numbers are releases that corresponds to a tag in the 
+repository. *Odd* PATCH numbers are development versions. This means that the 
+current code in the repository will always have an *odd* PATCH number to denote that 
+it is a development version.
