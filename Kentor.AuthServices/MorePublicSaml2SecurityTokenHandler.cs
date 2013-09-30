@@ -1,5 +1,7 @@
-﻿using System;
+﻿using Kentor.AuthServices.Configuration;
+using System;
 using System.Collections.Generic;
+using System.IdentityModel.Selectors;
 using System.IdentityModel.Tokens;
 using System.Linq;
 using System.Security.Claims;
@@ -31,14 +33,23 @@ namespace Kentor.AuthServices
             base.ValidateConditions(conditions, enforceAudienceRestriction);
         }
         
-        private static readonly MorePublicSaml2SecurityTokenHandler defaultInstance
-            = new MorePublicSaml2SecurityTokenHandler()
+        private static readonly MorePublicSaml2SecurityTokenHandler defaultInstance;
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1810:InitializeReferenceTypeStaticFieldsInline")]
+        static MorePublicSaml2SecurityTokenHandler()
+        {
+            var audienceRestriction = new AudienceRestriction(AudienceUriMode.Always);
+            audienceRestriction.AllowedAudienceUris.Add(
+                new Uri(Saml2AuthenticationModuleSection.Current.Issuer));
+
+            defaultInstance = new MorePublicSaml2SecurityTokenHandler()
             {
                 Configuration = new SecurityTokenHandlerConfiguration()
                 {
                     IssuerNameRegistry = new ReturnRequestedIssuerNameRegistry(),
+                    AudienceRestriction = audienceRestriction
                 }
             };
+        }
 
         /// <summary>
         /// Get a default of the class, with a default implementation.

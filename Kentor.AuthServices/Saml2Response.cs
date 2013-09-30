@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Kentor.AuthServices.Configuration;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IdentityModel.Tokens;
@@ -175,12 +176,16 @@ namespace Kentor.AuthServices
             {
                 using (var reader = new XmlNodeReader(assertionNode))
                 {
-                    var token = (Saml2SecurityToken)MorePublicSaml2SecurityTokenHandler.DefaultInstance.ReadToken(reader);
-                    MorePublicSaml2SecurityTokenHandler.DefaultInstance.DetectReplayedToken(token);
-                    MorePublicSaml2SecurityTokenHandler.DefaultInstance.ValidateConditions(token.Assertion.Conditions, false);
+                    MorePublicSaml2SecurityTokenHandler handler = MorePublicSaml2SecurityTokenHandler.DefaultInstance;
 
-                    yield return MorePublicSaml2SecurityTokenHandler.DefaultInstance
-                        .CreateClaims((Saml2SecurityToken)token);
+                    var token = (Saml2SecurityToken)MorePublicSaml2SecurityTokenHandler.DefaultInstance.ReadToken(reader);
+                    handler.DetectReplayedToken(token);
+
+                    var validateAudience = token.Assertion.Conditions.AudienceRestrictions.Count > 0;
+
+                    handler.ValidateConditions(token.Assertion.Conditions, validateAudience);
+
+                    yield return handler.CreateClaims(token);
                 }
             }
         }
