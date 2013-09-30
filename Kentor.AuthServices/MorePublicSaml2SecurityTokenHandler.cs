@@ -21,12 +21,17 @@ namespace Kentor.AuthServices
             return base.CreateClaims(samlToken);
         }
 
+        public new void DetectReplayedToken(SecurityToken token)
+        {
+            base.DetectReplayedToken(token);
+        }
+
         private static readonly MorePublicSaml2SecurityTokenHandler defaultInstance
             = new MorePublicSaml2SecurityTokenHandler()
             {
                 Configuration = new SecurityTokenHandlerConfiguration()
                 {
-                    IssuerNameRegistry = new ReturnRequestedIssuerNameRegistry()
+                    IssuerNameRegistry = new ReturnRequestedIssuerNameRegistry(),
                 }
             };
 

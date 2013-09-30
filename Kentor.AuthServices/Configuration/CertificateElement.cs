@@ -11,6 +11,9 @@ namespace Kentor.AuthServices.Configuration
     /// </summary>
     public class CertificateElement : ConfigurationElement
     {
+        /// <summary>
+        /// File name of cert stored in file.
+        /// </summary>
         [ConfigurationProperty("fileName")]
         public string FileName
         {
@@ -68,6 +71,10 @@ namespace Kentor.AuthServices.Configuration
             }
         }
 
+        /// <summary>
+        /// Load the certificate pointed to by this configuration.
+        /// </summary>
+        /// <returns>Certificate</returns>
         public X509Certificate2 LoadCertificate()
         {
             if (!string.IsNullOrEmpty(FileName))

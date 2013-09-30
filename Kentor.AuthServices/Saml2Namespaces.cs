@@ -39,12 +39,5 @@ namespace Kentor.AuthServices
         /// Namespace for Xml Dsig Signatures
         /// </summary>
         public const string DsigName = "http://www.w3.org/2000/09/xmldsig#";
-
-        public static readonly XmlNamespaceManager XmlNamespaceManager;
-
-        static Saml2Namespaces()
-        {
-            XmlNamespaceManager = new 
-        }
     }
 }

@@ -9,6 +9,7 @@ using System.Linq;
 using System.Security.Claims;
 using System.Collections;
 using System.Collections.Generic;
+using System.IdentityModel.Tokens;
 
 namespace Kentor.AuthServices.Tests
 {
@@ -159,22 +160,24 @@ namespace Kentor.AuthServices.Tests
                     <saml2p:StatusCode Value=""urn:oasis:names:tc:SAML:2.0:status:Success"" />
                 </saml2p:Status>
                 <saml2:Assertion xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
-                Version=""2.0"" ID=""Saml2Response_GetClaims_CreateIdentity_Assertion1""
+                Version=""2.0"" ID=""Saml2Response_GetClaims_CreateIdentities1""
                 IssueInstant=""2013-09-25T00:00:00Z"">
                     <saml2:Issuer>https://idp.example.com</saml2:Issuer>
                     <saml2:Subject>
                         <saml2:NameID>SomeUser</saml2:NameID>
                         <saml2:SubjectConfirmation Method=""urn:oasis:names:tc:SAML:2.0:cm:bearer"" />
                     </saml2:Subject>
+                    <saml2:Conditions NotOnOrAfter=""2100-01-01T00:00:00Z"" />
                 </saml2:Assertion>
                 <saml2:Assertion xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
-                Version=""2.0"" ID=""Saml2Response_GetClaims_CreateIdentity_Assertion2""
+                Version=""2.0"" ID=""Saml2Response_GetClaims_CreateIdentities2""
                 IssueInstant=""2013-09-25T00:00:00Z"">
                     <saml2:Issuer>https://idp.example.com</saml2:Issuer>
                     <saml2:Subject>
                         <saml2:NameID>SomeOtherUser</saml2:NameID>
                         <saml2:SubjectConfirmation Method=""urn:oasis:names:tc:SAML:2.0:cm:bearer"" />
                     </saml2:Subject>
+                    <saml2:Conditions NotOnOrAfter=""2100-01-01T00:00:00Z"" />
                 </saml2:Assertion>            
             </saml2p:Response>";
 
@@ -197,13 +200,13 @@ namespace Kentor.AuthServices.Tests
             var response =
             @"<?xml version=""1.0"" encoding=""UTF-8""?>
             <saml2p:Response xmlns:saml2p=""urn:oasis:names:tc:SAML:2.0:protocol""
-            ID = ""Saml2Response_GetClaims_ThrowsOnResponseNotValid"" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z""
+            ID = ""Saml2Response_GetClaims_ThrowsOnNotValidated"" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z""
             Issuer = ""https://some.issuer.example.com"">
                 <saml2p:Status>
                     <saml2p:StatusCode Value=""urn:oasis:names:tc:SAML:2.0:status:Success"" />
                 </saml2p:Status>
                 <saml2:Assertion xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
-                Version=""2.0"" ID=""Saml2Response_GetClaims_CreateIdentity_Assertion""
+                Version=""2.0"" ID=""Saml2Response_GetClaims_ThrowsOnNotValidated_Assertion""
                 IssueInstant=""2013-09-25T00:00:00Z"">
                     <saml2:Issuer>https://idp.example.com</saml2:Issuer>
                     <saml2:Subject>
@@ -213,7 +216,7 @@ namespace Kentor.AuthServices.Tests
                 </saml2:Assertion>
             </saml2p:Response>";
 
-            Action a = () => Saml2Response.Read(response).GetClaims().ToList();
+            Action a = () => Saml2Response.Read(response).GetClaims();
 
             a.ShouldThrow<InvalidOperationException>()
                 .WithMessage("The Saml2Response must be validated first.");
@@ -232,7 +235,7 @@ namespace Kentor.AuthServices.Tests
                     <saml2p:StatusCode Value=""urn:oasis:names:tc:SAML:2.0:status:Success"" />
                 </saml2p:Status>
                 <saml2:Assertion xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
-                Version=""2.0"" ID=""Saml2Response_GetClaims_CreateIdentity_Assertion""
+                Version=""2.0"" ID=""Saml2Response_GetClaims_ThrowsOnResponseNotValid_Assertion""
                 IssueInstant=""2013-09-25T00:00:00Z"">
                     <saml2:Issuer>https://idp.example.com</saml2:Issuer>
                     <saml2:Subject>
@@ -247,7 +250,7 @@ namespace Kentor.AuthServices.Tests
 
             var r = Saml2Response.Read(response);
             r.Validate(SignedXmlHelper.TestCert);
-            Action a = () => r.GetClaims().ToList();
+            Action a = () => r.GetClaims();
 
             a.ShouldThrow<InvalidOperationException>()
                 .WithMessage("The Saml2Response didn't pass validation");
@@ -278,9 +281,39 @@ namespace Kentor.AuthServices.Tests
         }
 
         [TestMethod]
-        [Ignore]
-        public void Saml2Response_Validate_FalseOnReplay()
+        public void Saml2Response_GetClaims_ThrowsOnReplayAssertionId()
         {
+            var response =
+            @"<?xml version=""1.0"" encoding=""UTF-8""?>
+            <saml2p:Response xmlns:saml2p=""urn:oasis:names:tc:SAML:2.0:protocol""
+            ID = ""Saml2Response_GetClaims_ThrowsOnReplayAssertionId"" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z""
+            Issuer = ""https://some.issuer.example.com"">
+                <saml2p:Status>
+                    <saml2p:StatusCode Value=""urn:oasis:names:tc:SAML:2.0:status:Success"" />
+                </saml2p:Status>
+                <saml2:Assertion xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
+                Version=""2.0"" ID=""Saml2Response_GetClaims_ThrowsOnReplayAssertionId_Assertion""
+                IssueInstant=""2013-09-25T00:00:00Z"">
+                    <saml2:Issuer>https://idp.example.com</saml2:Issuer>
+                    <saml2:Subject>
+                        <saml2:NameID>SomeUser</saml2:NameID>
+                        <saml2:SubjectConfirmation Method=""urn:oasis:names:tc:SAML:2.0:cm:bearer"" />
+                    </saml2:Subject>
+                    <saml2:Conditions NotOnOrAfter=""2100-01-01T00:00:00Z"" />
+                </saml2:Assertion>
+            </saml2p:Response>";
+
+            response = SignedXmlHelper.SignXml(response);
+            var r1 = Saml2Response.Read(response);
+            r1.Validate(SignedXmlHelper.TestCert).Should().BeTrue();
+            r1.GetClaims();
+
+            var r2 = Saml2Response.Read(response);
+            r2.Validate(SignedXmlHelper.TestCert).Should().BeTrue();
+
+            Action a = () => r2.GetClaims();
+            
+            a.ShouldThrow<SecurityTokenReplayDetectedException>();
         }
 
         [TestMethod]

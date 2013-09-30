@@ -134,6 +134,9 @@ namespace Kentor.AuthServices
             }
         }
 
+        private IEnumerable<ClaimsIdentity> claimsIdentities;
+        private Exception createClaimsException;
+
         /// <summary>
         /// Extract claims from the assertions contained in the response.
         /// </summary>
@@ -141,6 +144,29 @@ namespace Kentor.AuthServices
         // Method might throw expections so make it a method and not a property.
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1024:UsePropertiesWhereAppropriate")]
         public IEnumerable<ClaimsIdentity> GetClaims()
+        {
+            if (createClaimsException != null)
+            {
+                throw createClaimsException;
+            }
+
+            if (claimsIdentities == null)
+            {
+                try
+                {
+                    claimsIdentities = CreateClaims().ToList();
+                }
+                catch (Exception ex)
+                {
+                    createClaimsException = ex;
+                    throw;
+                }
+            }
+
+            return claimsIdentities;
+        }
+
+        private IEnumerable<ClaimsIdentity> CreateClaims()
         {
             ThrowOnNotValid();
 
@@ -150,6 +176,7 @@ namespace Kentor.AuthServices
                 using (var reader = new XmlNodeReader(assertionNode))
                 {
                     var token = MorePublicSaml2SecurityTokenHandler.DefaultInstance.ReadToken(reader);
+                    MorePublicSaml2SecurityTokenHandler.DefaultInstance.DetectReplayedToken(token);
 
                     yield return MorePublicSaml2SecurityTokenHandler.DefaultInstance
                         .CreateClaims((Saml2SecurityToken)token);

@@ -88,6 +88,7 @@ namespace Kentor.AuthServices.Tests
                         <saml2:NameID>SomeUser</saml2:NameID>
                         <saml2:SubjectConfirmation Method=""urn:oasis:names:tc:SAML:2.0:cm:bearer"" />
                     </saml2:Subject>
+                    <saml2:Conditions NotOnOrAfter=""2100-01-01T00:00:00Z"" />
                 </saml2:Assertion>
             </saml2p:Response>";
 
