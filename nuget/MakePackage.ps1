@@ -51,7 +51,7 @@ nuget pack -build -outputdirectory ..\nuget
 
 $version = Increment-PatchNumber
 
-echo "Version updated to $version for development, committing and tagging..."
+echo "Version updated to $version for development, committing..."
 
 git commit -a -m "Updated version number to $version for development."
 
