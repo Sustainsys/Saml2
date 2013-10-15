@@ -188,14 +188,14 @@ be empty (use `<system.identityModel />`).
 </system.identityModel>
 ```
 
-###`<claimsAuthenticationManager> Element
+###`<claimsAuthenticationManager>` Element
 *Child element of the `<identityConfiguration>` element.*
 
 Specifies the type of a custom `ClaimsAuthenticationManager` for the 
 application. The default implementation just passes through the identity.
 
 
-###`<system.IdentityModelServices> Section
+###`<system.IdentityModelServices>` Section
 *Child element of `<configuration>` element.*
 
 The [<`system.identityModel.services>`](http://msdn.microsoft.com/en-us/library/hh568674.aspx)
