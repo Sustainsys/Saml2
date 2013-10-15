@@ -10,15 +10,15 @@ namespace Kentor.AuthServices.Configuration
     /// <summary>
     /// Config section for the module.
     /// </summary>
-    public class Saml2AuthenticationModuleSection : ConfigurationSection
+    public class KentorAuthServicesSection : ConfigurationSection
     {
-        private static readonly Saml2AuthenticationModuleSection current = 
-            (Saml2AuthenticationModuleSection)ConfigurationManager.GetSection("saml2AuthenticationModule");
+        private static readonly KentorAuthServicesSection current = 
+            (KentorAuthServicesSection)ConfigurationManager.GetSection("kentor.authServices");
 
         /// <summary>
         /// Current config as read from app/web.config.
         /// </summary>
-        public static Saml2AuthenticationModuleSection Current
+        public static KentorAuthServicesSection Current
         {
             get
             {
@@ -65,13 +65,13 @@ namespace Kentor.AuthServices.Configuration
         /// <summary>
         /// Set of identity providers known to the service provider.
         /// </summary>
-        [ConfigurationProperty("identityProviders", IsRequired=true)]
-        [ConfigurationCollection(typeof(IdentityProviderCollection))]
+        [ConfigurationProperty("", IsRequired=true, IsDefaultCollection=true)]
+        [ConfigurationCollection(typeof(IdentityProviderCollection), AddItemName="identityProvider")]
         public IdentityProviderCollection IdentityProviders
         {
             get
             {
-                return (IdentityProviderCollection)base["identityProviders"];
+                return (IdentityProviderCollection)base[""];
             }
         }
     }
