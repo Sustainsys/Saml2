@@ -1,4 +1,4 @@
-ClaimsAuthenticationModule
+ClaimsAuthenticationManager
 ==========================
 
 When using federated authentication the identity provider decides solely what 
