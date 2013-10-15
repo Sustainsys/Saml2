@@ -1,3 +1,7 @@
+param (
+	[string]$version = "auto"
+)
+
 $ErrorActionPreference = "Stop"
 
 $status = (git status)
@@ -22,7 +26,6 @@ del bin\Release\*.dll
 
 function Increment-PatchNumber
 {
-	$versionPattern = "[0-9]+(\.([0-9]+|\*)){1,3}"
 	$assemblyVersionPattern = '^\[assembly: AssemblyVersion\("([0-9]+(\.([0-9]+|\*)){1,3})"\)'  
 	$rawVersionNumberGroup = get-content Properties\AssemblyInfo.cs| select-string -pattern $assemblyVersionPattern | % { $_.Matches }
 
@@ -31,14 +34,23 @@ function Increment-PatchNumber
 	$versionParts[2] = ([int]$versionParts[2]) + 1  
 	$updatedAssemblyVersion = "{0}.{1}.{2}" -f $versionParts[0], $versionParts[1], $versionParts[2]
 
-	(get-content Properties\AssemblyInfo.cs) | % { 
-		% { $_ -replace $versionPattern, $updatedAssemblyVersion }
-	} | set-content Properties\AssemblyInfo.cs
-
 	return $updatedAssemblyVersion
 }
 
-$version = Increment-PatchNumber
+function Set-Version($newVersion)
+{
+	$versionPattern = "[0-9]+(\.([0-9]+|\*)){1,3}"
+	(get-content Properties\AssemblyInfo.cs) | % { 
+		% { $_ -replace $versionPattern, $newVersion }
+	} | set-content Properties\AssemblyInfo.cs	
+}
+
+if("$version" -eq "auto")
+{
+	$version = Increment-PatchNumber
+}
+
+Set-Version($version)
 
 echo "Version updated to $version, commiting and tagging..."
 
@@ -50,6 +62,7 @@ echo "Building package..."
 nuget pack -build -outputdirectory ..\nuget
 
 $version = Increment-PatchNumber
+Set-Version($version)
 
 echo "Version updated to $version for development, committing..."
 
