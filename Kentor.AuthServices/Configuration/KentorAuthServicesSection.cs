@@ -65,13 +65,13 @@ namespace Kentor.AuthServices.Configuration
         /// <summary>
         /// Set of identity providers known to the service provider.
         /// </summary>
-        [ConfigurationProperty("identityProviders", IsRequired=true)]
+        [ConfigurationProperty("", IsRequired=true, IsDefaultCollection=true)]
         [ConfigurationCollection(typeof(IdentityProviderCollection), AddItemName="identityProvider")]
         public IdentityProviderCollection IdentityProviders
         {
             get
             {
-                return (IdentityProviderCollection)base["identityProviders"];
+                return (IdentityProviderCollection)base[""];
             }
         }
     }
