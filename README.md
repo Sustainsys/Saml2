@@ -19,7 +19,7 @@ the http module and the System.IdentityModel.Services that it is using. See [con
 The Saml2AuthenticationModule is modeled after the WSFederationAuthenticationModule
 to provide Saml2 authentication to IIS web sites. In many cases it should just be
 [configured](doc/Configuration.md) in and work without any code written in the application 
-at all (even though [providing an own ClaimsAuthenticationModule](doc/ClaimsAuthenticationModule.md)
+at all (even though [providing an own ClaimsAuthenticationManager](doc/ClaimsAuthenticationManager.md)
 for claims translation is highly recommended).
 
 ###Protocol Classes

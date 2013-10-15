@@ -191,14 +191,14 @@ be empty (use `<system.identityModel />`).
 ###`<claimsAuthenticationManager>` Element
 *Child element of the `<identityConfiguration>` element.*
 
-Specifies the type of a custom `ClaimsAuthenticationManager` for the 
+Specifies the type of a custom [`ClaimsAuthenticationManager`](ClaimsAuthenticationManager.md) for the 
 application. The default implementation just passes through the identity.
 
 
 ###`<system.IdentityModelServices>` Section
 *Child element of `<configuration>` element.*
 
-The [<`system.identityModel.services>`](http://msdn.microsoft.com/en-us/library/hh568674.aspx)
+The [`<system.identityModel.services>`](http://msdn.microsoft.com/en-us/library/hh568674.aspx)
 element configures the built in servies. For testing on non ssl sites, the
 requirement for ssl for the session authentication cookie must be disabled.
 
