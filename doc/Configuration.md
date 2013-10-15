@@ -44,7 +44,7 @@ Root element of the config section.
 * [`<identityProvider>`](#identityprovider-element)
 
 ####`assertionConsumerServiceUrl` Attribute
-*Attribute of [`<kentor.authServices>`](kentor-authservices-section) element*
+*Attribute of [`<kentor.authServices>`](#kentor-authservices-section) element*
 
 The assertionConsumerServiceUrl is the Url to which the Idp will post the 
 Saml2 ticket. It should be the base Url of your application concatenated with 
@@ -52,25 +52,25 @@ Saml2 ticket. It should be the base Url of your application concatenated with
 be changed.
 
 ####`issuer` Attribute
-*Attribute of [`<kentor.authServices>`](kentor-authservices-section) element*
+*Attribute of [`<kentor.authServices>`](#kentor-authservices-section) element*
 
 The name that this service provider will use for itself when sending
 messages. The name will end up in the `issuer` field in outcoing authnRequests.
 
 ####`returnUri` Attribute
-*Attribute of [`<kentor.authServices>`](kentor-authservices-section) element*
+*Attribute of [`<kentor.authServices>`](#kentor-authservices-section) element*
 
 The Uri that you want users to be redirected to once the authentication is
 complete. This is typically the start page of the application, or a special
 signed in start page.
 
 ###`<identityProvider>` Element
-*Child element of [`<identityProviders>`](#identityproviders-element) element*
+*Child element of [`<kentor.authServices>`](#kentor-authservices-section) element*
 
 An identity provider that the Service Provider relies on for authentication.
 
 ####Attributes
-* [`issuer`](#issuer-attribute-identityProvider)
+* [`issuer`](#issuer-attribute-identityprovider)
 * [`destinationUri`](#destinationuri-attribute)
 * [`binding`](#binding-attribute)
 
@@ -119,7 +119,7 @@ will be ignored.
 * [`x509FindType`](#x509findtype-attribute)
 
 ####`fileName` Attribute
-*Attribute of [`<signingCertificate>`] element*
+*Attribute of [`<signingCertificate>`](#signingcertificate-element) element*
 
 A file name to load the certificate from. The path is relative to the execution
 path of the application.
@@ -129,7 +129,7 @@ development. In production environments it is better to use the certificate
 storage.
 
 ####`storeName` Attribute
-*Attribute of [`<signingCertificate>`] element*
+*Attribute of [`<signingCertificate>`](#signingcertificate-element) element*
 
 Name of the certificate store to search for the certificate. It is recommended
 to keep the certificate of the identity provider in the "Other People" store
@@ -140,7 +140,7 @@ Valid values are those from the
 enumeration.
 
 ####`storeLocation` Attribute
-*Attribute of [`<signingCertificate>`] element*
+*Attribute of [`<signingCertificate>`](#signingcertificate-element) element*
 
 The location of the store to search for the certificate. On production services
 it is recommended to use the `LocalMachine` value, while it makes more sense
@@ -151,17 +151,17 @@ Valid values are those from the
 enumeration.
 
 ####`findValue` Attribute
-*Attribute of [`<signingCertificate>`] element*
+*Attribute of [`<signingCertificate>`](#signingcertificate-element) element*
 
 A search term to use to find the certificate. The value will be searched for in
 the field specified by the [`x509FindType`](#x509findtype-attribute) attribute.
 
 ####`x509FindType` Attribute
-*Attribute of [`<signingCertificate>`] element*
+*Attribute of [`<signingCertificate>`](#signingcertificate-element) element*
 
 The field that will be seach for a match to the value in 
 [`findValue`](#findvalue-attribute). For security, it is recommended to use 
-the `FindBySerialNumber` entry.
+`FindBySerialNumber`.
 
 *Note: There is a nasty bug when copying a serial number from the certificate info 
 displayed by certificate manager and the browser. There is a hidden character 
