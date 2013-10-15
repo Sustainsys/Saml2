@@ -45,8 +45,10 @@ namespace Kentor.AuthServices.Tests
         [TestMethod]
         public void Saml2RequestBase_IssueInstant_Format()
         {
-            Regex.IsMatch(new ConcreteSaml2Request().IssueInstant,
-                "20[0-9]{2}-((0[0-9])|(1[12]))-(([0-2][0-9])|(3[0-1]))T(([01][0-9])|(2[0-3]))(:[0-5][0-9]){2}Z")
+            var issueInstant = new ConcreteSaml2Request().IssueInstant;
+
+            Regex.IsMatch(issueInstant,
+                "20[0-9]{2}-((0[0-9])|(1[0-2]))-(([0-2][0-9])|(3[0-1]))T(([01][0-9])|(2[0-3]))(:[0-5][0-9]){2}Z")
                 .Should().BeTrue();
         }
 
