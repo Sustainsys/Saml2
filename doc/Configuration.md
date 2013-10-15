@@ -44,7 +44,7 @@ Root element of the config section.
 * [`<identityProvider>`](#identityprovider-element)
 
 ####`assertionConsumerServiceUrl` Attribute
-*Attribute of [`<kentor.authServices>`](#kentor-authservices-section) element*
+*Attribute of the [`<kentor.authServices>`](#kentor-authservices-section) element*
 
 The assertionConsumerServiceUrl is the Url to which the Idp will post the 
 Saml2 ticket. It should be the base Url of your application concatenated with 
@@ -52,20 +52,20 @@ Saml2 ticket. It should be the base Url of your application concatenated with
 be changed.
 
 ####`issuer` Attribute
-*Attribute of [`<kentor.authServices>`](#kentor-authservices-section) element*
+*Attribute of the [`<kentor.authServices>`](#kentor-authservices-section) element*
 
 The name that this service provider will use for itself when sending
 messages. The name will end up in the `issuer` field in outcoing authnRequests.
 
 ####`returnUri` Attribute
-*Attribute of [`<kentor.authServices>`](#kentor-authservices-section) element*
+*Attribute of the [`<kentor.authServices>`](#kentor-authservices-section) element*
 
 The Uri that you want users to be redirected to once the authentication is
 complete. This is typically the start page of the application, or a special
 signed in start page.
 
 ###`<identityProvider>` Element
-*Child element of [`<kentor.authServices>`](#kentor-authservices-section) element*
+*Child element of the [`<kentor.authServices>`](#kentor-authservices-section) element*
 
 An identity provider that the Service Provider relies on for authentication.
 
@@ -78,12 +78,12 @@ An identity provider that the Service Provider relies on for authentication.
 * [`<signingCertificate>`](#signingcertificate-element)
 
 ####`issuer` Attribute (identityProvider)
-*Attribute of [`<identityProvider>`](#identityprovider-element) element*
+*Attribute of the [`<identityProvider>`](#identityprovider-element) element*
 
 The issuer name that the idp will be using when sending responses.
 
 ####`destinationUri` Attribute
-*Attribute of [`<identityProvider>`](#identityprovider-element) element*
+*Attribute of the [`<identityProvider>`](#identityprovider-element) element*
 
 The uri where the identity provider listens for incoming requests. The 
 uri has to be written in a way that the client understands, since it is
@@ -92,7 +92,7 @@ this means that using a host name only uri or a host name that only resolves
 on the network of the server won't work.
 
 ####`binding` Attribute
-*Attribute of [`<identityProvider>`](#identityprovider-element) element*
+*Attribute of the [`<identityProvider>`](#identityprovider-element) element*
 
 The binding that the services provider should use when sending requests
 to the identity provider. One of the supported values of the `Saml2BindingType`
@@ -103,7 +103,7 @@ Currently supported values:
 * `HttpRedirect`
 
 ###`<signingCertificate>` Element
-*Child element of [`<identityProvider>`](#identityprovider-element) element*
+*Child element of the [`<identityProvider>`](#identityprovider-element) element*
 
 The certificate that the identity provider uses to sign it's messages. The 
 certificate can either be loaded from file if the `fileName` attribute is
@@ -119,7 +119,7 @@ will be ignored.
 * [`x509FindType`](#x509findtype-attribute)
 
 ####`fileName` Attribute
-*Attribute of [`<signingCertificate>`](#signingcertificate-element) element*
+*Attribute of the [`<signingCertificate>`](#signingcertificate-element) element*
 
 A file name to load the certificate from. The path is relative to the execution
 path of the application.
@@ -129,7 +129,7 @@ development. In production environments it is better to use the certificate
 storage.
 
 ####`storeName` Attribute
-*Attribute of [`<signingCertificate>`](#signingcertificate-element) element*
+*Attribute of the [`<signingCertificate>`](#signingcertificate-element) element*
 
 Name of the certificate store to search for the certificate. It is recommended
 to keep the certificate of the identity provider in the "Other People" store
@@ -140,7 +140,7 @@ Valid values are those from the
 enumeration.
 
 ####`storeLocation` Attribute
-*Attribute of [`<signingCertificate>`](#signingcertificate-element) element*
+*Attribute of the [`<signingCertificate>`](#signingcertificate-element) element*
 
 The location of the store to search for the certificate. On production services
 it is recommended to use the `LocalMachine` value, while it makes more sense
@@ -151,13 +151,13 @@ Valid values are those from the
 enumeration.
 
 ####`findValue` Attribute
-*Attribute of [`<signingCertificate>`](#signingcertificate-element) element*
+*Attribute of the [`<signingCertificate>`](#signingcertificate-element) element*
 
 A search term to use to find the certificate. The value will be searched for in
 the field specified by the [`x509FindType`](#x509findtype-attribute) attribute.
 
 ####`x509FindType` Attribute
-*Attribute of [`<signingCertificate>`](#signingcertificate-element) element*
+*Attribute of the [`<signingCertificate>`](#signingcertificate-element) element*
 
 The field that will be seach for a match to the value in 
 [`findValue`](#findvalue-attribute). For security, it is recommended to use 
@@ -172,3 +172,43 @@ invisible character at the start of the serial number string.*
 Valid values are those from the
 [`System.Security.Cryptography.X509Certificates.X509FindType`](http://msdn.microsoft.com/en-us/library/system.security.cryptography.x509certificates.x509findtype.aspx)
 enumeration.
+
+##`<system.identityModel>` Section
+*Child element of `<configuration>` element.*
+
+There must be a [`<system.identityModel>`](http://msdn.microsoft.com/en-us/library/hh568638.aspx)
+section in the config file or there will be a runtime error. The section can 
+be empty (use `<system.identityModel />`).
+
+```
+<system.identityModel>
+  <identityConfiguration>
+    <claimsAuthenticationManager type="Kentor.AuthServices.Tests.ClaimsAuthenticationManagerStub, Kentor.AuthServices.Tests"/>
+  </identityConfiguration>
+</system.identityModel>
+```
+
+###`<claimsAuthenticationManager> Element
+*Child element of the `<identityConfiguration>` element.*
+
+Specifies the type of a custom `ClaimsAuthenticationManager` for the 
+application. The default implementation just passes through the identity.
+
+
+###`<system.IdentityModelServices> Section
+*Child element of `<configuration>` element.*
+
+The [<`system.identityModel.services>`](http://msdn.microsoft.com/en-us/library/hh568674.aspx)
+element configures the built in servies. For testing on non ssl sites, the
+requirement for ssl for the session authentication cookie must be disabled.
+
+***Note: It is a severe security risk to leave the `requireSsl` setting as 
+`false` in a production environment.***
+
+```
+<system.identityModel.services>
+  <federationConfiguration>
+    <cookieHandler requireSsl ="false"/>
+  </federationConfiguration>
+</system.identityModel.services>
+```
