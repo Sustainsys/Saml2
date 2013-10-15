@@ -16,12 +16,12 @@
     <copyright>Copyright 2013</copyright>
     <tags>SAML2 authentication ASP.NET SAML SSO</tags>
     <releaseNotes>
-      Version 0.2.0
-      * Documentation updated.
-      * Some breaking changes of names of configuration elements.
+  Version 0.2.0
+  * Documentation updated.
+  * Some breaking changes of names of configuration elements.
       
-      Version 0.1.0
-      * First complete working version published.
+  Version 0.1.0
+  * First complete working version published.
     </releaseNotes>
   </metadata>
   <files>
