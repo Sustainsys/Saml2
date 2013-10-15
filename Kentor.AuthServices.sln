@@ -15,6 +15,12 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SampleApplication", "Sample
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kentor.AuthServices.Tests", "Kentor.AuthServices.Tests\Kentor.AuthServices.Tests.csproj", "{D3334615-C970-464F-8F45-50CB53A5C0EE}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "doc", "doc", "{DB9690FA-2519-4D70-A831-2D6705842721}"
+	ProjectSection(SolutionItems) = preProject
+		doc\ClaimsAuthenticationModule.md = doc\ClaimsAuthenticationModule.md
+		doc\Configuration.md = doc\Configuration.md
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

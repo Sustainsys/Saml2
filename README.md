@@ -22,7 +22,7 @@ to provide Saml2 authentication to IIS web sites. In many cases it should just b
 at all (even though [providing an own ClaimsAuthenticationModule](doc/ClaimsAuthenticationModule.md)
 for claims translation is highly recommended).
 
-###Protocol classes
+###Protocol Classes
 The protocol handling classes that are used by the Saml2AuthenticationModule are available
 as a public API as well, making it possible to reuse some of the internals for writing
 an own service provider.

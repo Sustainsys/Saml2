@@ -35,7 +35,7 @@ namespace Kentor.AuthServices
                     return new CommandResult()
                     {
                         HttpStatusCode = HttpStatusCode.SeeOther,
-                        Location = Saml2AuthenticationModuleSection.Current.ReturnUri,
+                        Location = KentorAuthServicesSection.Current.ReturnUri,
                         Principal = principal
                     };
                 }

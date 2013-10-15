@@ -9,7 +9,7 @@ namespace Kentor.AuthServices
     class IdentityProvider
     {
         private static readonly IDictionary<string, IdentityProvider> configuredIdentityProviders =
-            Saml2AuthenticationModuleSection.Current.IdentityProviders
+            KentorAuthServicesSection.Current.IdentityProviders
             .ToDictionary(idp => idp.Issuer, idp => new IdentityProvider(idp));
 
         public static IDictionary<string, IdentityProvider> ConfiguredIdentityProviders
@@ -38,8 +38,8 @@ namespace Kentor.AuthServices
             return new Saml2AuthenticationRequest()
             {
                 DestinationUri = DestinationUri,
-                AssertionConsumerServiceUrl = Saml2AuthenticationModuleSection.Current.AssertionConsumerServiceUrl,
-                Issuer = Saml2AuthenticationModuleSection.Current.Issuer
+                AssertionConsumerServiceUrl = KentorAuthServicesSection.Current.AssertionConsumerServiceUrl,
+                Issuer = KentorAuthServicesSection.Current.Issuer
             };
         }
 
