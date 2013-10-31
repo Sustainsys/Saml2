@@ -23,18 +23,6 @@ using System.Runtime.InteropServices;
 // The following GUID is for the ID of the typelib if this project is exposed to COM
 [assembly: Guid("6ca3099a-e209-4c65-aaf4-1a73d8d9bd48")]
 
-// Kentor.AuthServices uses semantic versioning in three parts
-//
-//      Major Version
-//      Minor Version 
-//      Patch Number
-//
-// An odd patch number is a development version, an even patch number is
-// a relased version.
-
-[assembly: AssemblyVersion("0.2.1")]
-[assembly: AssemblyFileVersion("0.2.1")]
-
 [assembly: CLSCompliant(true)]
 
 [assembly: InternalsVisibleTo("Kentor.AuthServices.Tests")]

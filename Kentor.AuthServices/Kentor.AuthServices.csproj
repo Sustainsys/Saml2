@@ -48,6 +48,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\VersionInfo.cs">
+      <Link>VersionInfo.cs</Link>
+    </Compile>
     <Compile Include="AcsCommand.cs" />
     <Compile Include="AuthServicesException.cs" />
     <Compile Include="BadFormatSamlResponseException.cs" />
