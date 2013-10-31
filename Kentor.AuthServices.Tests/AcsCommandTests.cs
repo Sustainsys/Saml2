@@ -7,6 +7,7 @@ using NSubstitute;
 using System.Collections.Specialized;
 using System.Text;
 using System.Security.Claims;
+using System.Xml;
 
 namespace Kentor.AuthServices.Tests
 {
@@ -29,15 +30,11 @@ namespace Kentor.AuthServices.Tests
             r.HttpMethod.Returns("POST");
             r.Form.Returns(new NameValueCollection() { { "SAMLResponse", "#¤!2" } });
 
-            var cr = new AcsCommand().Run(r);
+            Action a = () => new AcsCommand().Run(r);
 
-            var expected = new CommandResult()
-            {
-                HttpStatusCode = HttpStatusCode.InternalServerError,
-                ErrorCode = CommandResultErrorCode.BadFormatSamlResponse
-            };
-
-            cr.ShouldBeEquivalentTo(expected);
+            a.ShouldThrow<BadFormatSamlResponseException>()
+                .WithMessage("The SAML Response did not contain valid BASE64 encoded data.")
+                .WithInnerException<FormatException>();
         }
 
         [TestMethod]
@@ -48,15 +45,11 @@ namespace Kentor.AuthServices.Tests
             var encoded = Convert.ToBase64String(Encoding.UTF8.GetBytes("<foo />"));
             r.Form.Returns(new NameValueCollection() { { "SAMLResponse", encoded } });
 
-            var cr = new AcsCommand().Run(r);
+            Action a = () => new AcsCommand().Run(r);
 
-            var expected = new CommandResult()
-            {
-                HttpStatusCode = HttpStatusCode.InternalServerError,
-                ErrorCode = CommandResultErrorCode.BadFormatSamlResponse
-            };
-
-            cr.ShouldBeEquivalentTo(expected);
+            a.ShouldThrow<BadFormatSamlResponseException>()
+                .WithMessage("The SAML response contains incorrect XML")
+                .WithInnerException<XmlException>();
         }
 
         [TestMethod]

@@ -50,8 +50,8 @@
   <ItemGroup>
     <Compile Include="AcsCommand.cs" />
     <Compile Include="AuthServicesException.cs" />
+    <Compile Include="BadFormatSamlResponseException.cs" />
     <Compile Include="CommandResult.cs" />
-    <Compile Include="CommandResultErrorCode.cs" />
     <Compile Include="Configuration\IdentityProviderCollection.cs" />
     <Compile Include="Configuration\IdentityProviderElement.cs" />
     <Compile Include="Configuration\CertificateElement.cs" />

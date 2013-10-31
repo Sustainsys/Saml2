@@ -1,26 +1,29 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.Serialization;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace Kentor.AuthServices
 {
     /// <summary>
-    /// Base class for authentication services specific exceptions, that might                     
-    /// require special handling for error reporting to the user.
+    /// A samle response was found, but could not be parsed due to formatting issues.
     /// </summary>
     [Serializable]
-    public abstract class AuthServicesException : Exception
+    public class BadFormatSamlResponseException: AuthServicesException
     {
         /// <summary>
-        /// Default Ctor
+        /// Ctor
         /// </summary>
-        protected AuthServicesException() { }
+        public BadFormatSamlResponseException()
+        { }
 
         /// <summary>
         /// Ctor
         /// </summary>
         /// <param name="message">Message of the exception.</param>
-        protected AuthServicesException(string message)
-            : base(message)
+        public BadFormatSamlResponseException(string message) : base(message)
         { }
 
         /// <summary>
@@ -28,8 +31,8 @@ namespace Kentor.AuthServices
         /// </summary>
         /// <param name="message">Message of the exception.</param>
         /// <param name="innerException">Inner exception.</param>
-        protected AuthServicesException(string message, Exception innerException)
-            : base(message, innerException)
+        public BadFormatSamlResponseException(string message, Exception innerException)
+            :base(message, innerException)
         { }
 
         /// <summary>
@@ -37,8 +40,10 @@ namespace Kentor.AuthServices
         /// </summary>
         /// <param name="info">Serialization info</param>
         /// <param name="context">Serialization context</param>
-        protected AuthServicesException(SerializationInfo info, StreamingContext context)
-            :base(info, context)
-        { }
+        protected BadFormatSamlResponseException(SerializationInfo info, StreamingContext context)
+            : base(info, context)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

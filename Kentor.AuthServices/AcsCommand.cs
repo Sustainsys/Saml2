@@ -22,7 +22,7 @@ namespace Kentor.AuthServices
                     var samlResponse = binding.Unbind(request);
 
                     samlResponse.Validate(GetSigningCert(samlResponse.Issuer));
-                    
+
                     var principal = new ClaimsPrincipal(samlResponse.GetClaims());
                     FederatedAuthentication.FederationConfiguration.IdentityConfiguration
                         .ClaimsAuthenticationManager.Authenticate(null, principal);
@@ -34,17 +34,15 @@ namespace Kentor.AuthServices
                         Principal = principal
                     };
                 }
-                catch (Exception ex)
+                catch (FormatException ex)
                 {
-                    if (ex is XmlException || ex is FormatException)
-                    {
-                        return new CommandResult()
-                        {
-                            ErrorCode = CommandResultErrorCode.BadFormatSamlResponse,
-                            HttpStatusCode = HttpStatusCode.InternalServerError
-                        };
-                    }
-                    throw;
+                    throw new BadFormatSamlResponseException(
+                            "The SAML Response did not contain valid BASE64 encoded data.", ex);
+                }
+                catch (XmlException ex)
+                {
+                    throw new BadFormatSamlResponseException(
+                        "The SAML response contains incorrect XML", ex);
                 }
             }
 
