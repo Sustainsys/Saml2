@@ -1,14 +1,9 @@
 ﻿using Kentor.AuthServices.Configuration;
 using System;
-using System.Collections.Generic;
-using System.Collections.Specialized;
 using System.IdentityModel.Services;
-using System.IdentityModel.Services.Configuration;
-using System.Linq;
 using System.Net;
 using System.Security.Claims;
 using System.Security.Cryptography.X509Certificates;
-using System.Text;
 using System.Web;
 using System.Xml;
 
@@ -53,18 +48,12 @@ namespace Kentor.AuthServices
                 }
             }
 
-            return noSamlResponseFoundResult;
+            throw new NoSamlResponseFoundException();
         }
 
         private static X509Certificate2 GetSigningCert(string issuer)
         {
             return IdentityProvider.ConfiguredIdentityProviders[issuer].Certificate;
         }
-
-        static readonly CommandResult noSamlResponseFoundResult = new CommandResult()
-        {
-            HttpStatusCode = HttpStatusCode.InternalServerError,
-            ErrorCode = CommandResultErrorCode.NoSamlResponseFound
-        };
     }
 }

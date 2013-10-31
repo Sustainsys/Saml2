@@ -16,15 +16,10 @@ namespace Kentor.AuthServices.Tests
         [TestMethod]
         public void AcsCommand_Run_ErrorOnNoSamlResponseFound()
         {
-            var cr = new AcsCommand().Run(Substitute.For<HttpRequestBase>());
+            Action a = () => new AcsCommand().Run(Substitute.For<HttpRequestBase>());
 
-            var expected = new CommandResult()
-            {
-                HttpStatusCode = HttpStatusCode.InternalServerError,
-                ErrorCode = CommandResultErrorCode.NoSamlResponseFound
-            };
-
-            cr.ShouldBeEquivalentTo(expected);
+            a.ShouldThrow<NoSamlResponseFoundException>()
+                .WithMessage("No Saml2 Response found in the http request.");
         }
 
         [TestMethod]

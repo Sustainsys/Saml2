@@ -10,8 +10,6 @@ namespace Kentor.AuthServices
     {
         NoError = 0,
 
-        NoSamlResponseFound,
-
         BadFormatSamlResponse
     }
 }

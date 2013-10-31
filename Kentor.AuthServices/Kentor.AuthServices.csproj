@@ -49,6 +49,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AcsCommand.cs" />
+    <Compile Include="AuthServicesException.cs" />
     <Compile Include="CommandResult.cs" />
     <Compile Include="CommandResultErrorCode.cs" />
     <Compile Include="Configuration\IdentityProviderCollection.cs" />
@@ -58,6 +59,7 @@
     <Compile Include="GenericEnumeratorAdapter.cs" />
     <Compile Include="IdentityProvider.cs" />
     <Compile Include="MorePublicSaml2SecurityTokenHandler.cs" />
+    <Compile Include="NoSamlResponseFoundException.cs" />
     <Compile Include="NotFoundCommand.cs" />
     <Compile Include="ICommand.cs" />
     <Compile Include="CommandFactory.cs" />

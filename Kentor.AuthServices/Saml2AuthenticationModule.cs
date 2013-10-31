@@ -2,6 +2,7 @@
 using System.IdentityModel.Services;
 using System.IdentityModel.Tokens;
 using System.Linq;
+using System.Net;
 using System.Web;
 
 namespace Kentor.AuthServices
@@ -44,17 +45,36 @@ namespace Kentor.AuthServices
                     .Substring(ModulePath.Length);
 
                 var command = CommandFactory.GetCommand(moduleRelativePath);
-                var commandResult = command.Run(new HttpRequestWrapper(application.Request));
+                var commandResult = RunCommand(application, command);
 
-                if (commandResult.Principal != null)
-                {
-                    var sessionToken = new SessionSecurityToken(commandResult.Principal);
-
-                    FederatedAuthentication.SessionAuthenticationModule
-                        .AuthenticateSessionSecurityToken(sessionToken, true);
-                }
-
+                ApplyPrincipal(commandResult);
                 commandResult.Apply(new HttpResponseWrapper(application.Response));
+            }
+        }
+
+        private static void ApplyPrincipal(CommandResult commandResult)
+        {
+            if (commandResult.Principal != null)
+            {
+                var sessionToken = new SessionSecurityToken(commandResult.Principal);
+
+                FederatedAuthentication.SessionAuthenticationModule
+                    .AuthenticateSessionSecurityToken(sessionToken, true);
+            }
+        }
+  
+        private static CommandResult RunCommand(HttpApplication application, ICommand command)
+        {
+            try
+            {
+                return command.Run(new HttpRequestWrapper(application.Request));
+            }
+            catch (AuthServicesException)
+            {
+                return new CommandResult()
+                {
+                    HttpStatusCode = HttpStatusCode.InternalServerError
+                };
             }
         }
 
