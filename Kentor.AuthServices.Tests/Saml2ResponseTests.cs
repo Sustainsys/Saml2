@@ -375,7 +375,7 @@ namespace Kentor.AuthServices.Tests
 
         [TestMethod]
         [Ignore]
-        public void Saml2Response_Validate_FalseOnIncorrectInReplyTo()
+        public void Saml2Response_Validate_FalseOnIncorrectInResponseTo()
         {
         }
     }
