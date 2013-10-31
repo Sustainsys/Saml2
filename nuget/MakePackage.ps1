@@ -21,13 +21,13 @@ if ("$master" -eq "")
   exit
 }
 
-pushd ..\Kentor.AuthServices
-del bin\Release\*.dll
+pushd ..
+del Kentor.AuthServices\bin\Release\*.dll
 
 function Increment-PatchNumber
 {
 	$assemblyVersionPattern = '^\[assembly: AssemblyVersion\("([0-9]+(\.([0-9]+|\*)){1,3})"\)'  
-	$rawVersionNumberGroup = get-content Properties\AssemblyInfo.cs| select-string -pattern $assemblyVersionPattern | % { $_.Matches }
+	$rawVersionNumberGroup = get-content VersionInfo.cs| select-string -pattern $assemblyVersionPattern | % { $_.Matches }
 
 	$rawVersionNumber = $rawVersionNumberGroup.Groups[1].Value  
 	$versionParts = $rawVersionNumber.Split('.')  
@@ -40,9 +40,9 @@ function Increment-PatchNumber
 function Set-Version($newVersion)
 {
 	$versionPattern = "[0-9]+(\.([0-9]+|\*)){1,3}"
-	(get-content Properties\AssemblyInfo.cs) | % { 
+	(get-content VersionInfo.cs) | % { 
 		% { $_ -replace $versionPattern, $newVersion }
-	} | set-content Properties\AssemblyInfo.cs	
+	} | set-content VersionInfo.cs	
 }
 
 if("$version" -eq "auto")
@@ -59,7 +59,7 @@ git tag v$version
 
 echo "Building package..."
 
-nuget pack -build -outputdirectory ..\nuget
+nuget pack -build -outputdirectory nuget Kentor.AuthServices\Kentor.AuthServices.csproj
 
 $version = Increment-PatchNumber
 Set-Version($version)
