@@ -24,7 +24,6 @@ namespace Kentor.AuthServices.Mvc
             {
                 case HttpStatusCode.SeeOther:
                     return new RedirectResult(commandResult.Location.ToString());
-                    break;
                 default:
                     throw new NotImplementedException();
             }

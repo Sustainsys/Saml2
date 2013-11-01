@@ -1,4 +1,6 @@
 ﻿using System;
+using System.IdentityModel.Services;
+using System.IdentityModel.Tokens;
 using System.Net;
 using System.Security.Claims;
 using System.Web;
@@ -68,6 +70,22 @@ namespace Kentor.AuthServices
             }
 
             response.StatusCode = (int)HttpStatusCode;
+        }
+
+        /// <summary>
+        /// Applies the principal found in the command result by a call to the 
+        /// session auth module.
+        /// </summary>
+        public void ApplyPrincipal()
+        {
+            // Ignore this if we're not running inside IIS, e.g. in unit tests.
+            if(Principal != null && HttpContext.Current != null)
+            {
+                var sessionToken = new SessionSecurityToken(Principal);
+
+                FederatedAuthentication.SessionAuthenticationModule
+                    .AuthenticateSessionSecurityToken(sessionToken, true);
+            }
         }
     }
 }

@@ -47,22 +47,11 @@ namespace Kentor.AuthServices
                 var command = CommandFactory.GetCommand(moduleRelativePath);
                 var commandResult = RunCommand(application, command);
 
-                ApplyPrincipal(commandResult);
+                commandResult.ApplyPrincipal();
                 commandResult.Apply(new HttpResponseWrapper(application.Response));
             }
         }
-
-        private static void ApplyPrincipal(CommandResult commandResult)
-        {
-            if (commandResult.Principal != null)
-            {
-                var sessionToken = new SessionSecurityToken(commandResult.Principal);
-
-                FederatedAuthentication.SessionAuthenticationModule
-                    .AuthenticateSessionSecurityToken(sessionToken, true);
-            }
-        }
-  
+ 
         private static CommandResult RunCommand(HttpApplication application, ICommand command)
         {
             try
