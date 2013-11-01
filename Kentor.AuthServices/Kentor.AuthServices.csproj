@@ -84,7 +84,9 @@
     <Compile Include="XmlHelpers.cs" />
   </ItemGroup>
   <ItemGroup>
-    <CodeAnalysisDictionary Include="CustomDictionary.xml" />
+    <CodeAnalysisDictionary Include="..\CustomDictionary.xml">
+      <link>CustomDictionary.xml</link>
+    </CodeAnalysisDictionary>
   </ItemGroup>
   <ItemGroup>
     <None Include="Kentor.AuthServices.nuspec">

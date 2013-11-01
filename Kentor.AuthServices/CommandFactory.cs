@@ -9,7 +9,7 @@ namespace Kentor.AuthServices
     /// <summary>
     /// Factory to create the command objects thand handles the incoming http requests.
     /// </summary>
-    static class CommandFactory
+    public static class CommandFactory
     {
         private static readonly ICommand notFoundCommand = new NotFoundCommand();
 
@@ -20,10 +20,15 @@ namespace Kentor.AuthServices
             { "Acs", new AcsCommand() }
         };
 
-        public static ICommand GetCommand(string path)
+        /// <summary>
+        /// Gets a command for a command name.
+        /// </summary>
+        /// <param name="commandName">Name of a command. Probably a path.</param>
+        /// <returns>A command implementation or notFoundCommand if invalid.</returns>
+        public static ICommand GetCommand(string commandName)
         {
             ICommand command;
-            if (commands.TryGetValue(path, out command))
+            if (commands.TryGetValue(commandName, out command))
             {
                 return command;
             }

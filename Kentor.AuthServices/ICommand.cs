@@ -1,14 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.Specialized;
-using System.Linq;
-using System.Text;
-using System.Web;
+﻿using System.Web;
 
 namespace Kentor.AuthServices
 {
-    interface ICommand
+    /// <summary>
+    /// A command - corresponds to an action in Mvc.
+    /// </summary>
+    public interface ICommand
     {
+        /// <summary>
+        /// Run the command and return a result.
+        /// </summary>
+        /// <param name="request">The current http request that the input
+        /// data can be read from.</param>
+        /// <returns>The results of the command, as a DTO.</returns>
         CommandResult Run(HttpRequestBase request);
     }
 }
