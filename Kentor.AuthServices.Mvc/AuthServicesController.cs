@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Net;
 using System.Web.Mvc;
+using System.IdentityModel.Services;
 
 namespace Kentor.AuthServices.Mvc
 {
@@ -31,6 +32,16 @@ namespace Kentor.AuthServices.Mvc
             var result = CommandFactory.GetCommand("Acs").Run(Request);
             result.ApplyPrincipal();
             return result.ToActionResult();
+        }
+
+        /// <summary>
+        /// SingOut action that invalidates user session.
+        /// </summary>
+        /// <returns>Redirect to base url / </returns>
+        public ActionResult SignOut()
+        {
+            FederatedAuthentication.SessionAuthenticationModule.SignOut();
+            return Redirect(Url.Content("~/"));
         }
     }
 }

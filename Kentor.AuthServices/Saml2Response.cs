@@ -29,6 +29,7 @@ namespace Kentor.AuthServices
         public static Saml2Response Read(string xml)
         {
             var x = new XmlDocument();
+            x.PreserveWhitespace = true;
             x.LoadXml(xml);
 
             if (x.DocumentElement.LocalName != "Response"
