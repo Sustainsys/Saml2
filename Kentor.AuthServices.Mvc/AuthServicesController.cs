@@ -35,7 +35,7 @@ namespace Kentor.AuthServices.Mvc
         }
 
         /// <summary>
-        /// SingOut action that invalidates user session.
+        /// SignOut action that signs out the current user.
         /// </summary>
         /// <returns>Redirect to base url / </returns>
         public ActionResult SignOut()
