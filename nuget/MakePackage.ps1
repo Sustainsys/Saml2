@@ -23,6 +23,7 @@ if ("$master" -eq "")
 
 pushd ..
 del Kentor.AuthServices\bin\Release\*.dll
+del Kentor.AuthServices.Mvc\bin\Release\*.dll
 
 function Increment-PatchNumber
 {
