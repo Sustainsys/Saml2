@@ -1,9 +1,9 @@
-﻿Thank you for downloading Kentor.AuthServices!
+﻿Thank you for downloading Kentor.AuthServices.Mvc!
 
-Kentor.AuthServices is copyright Kentor 2013 and licensed under LGPL which
-basically means that it is free to use, including in closed source 
-applications. If you change the code of the library itself you have to make
-those changes open source too. 
+Kentor.AuthServices is copyright Kentor and contributors 2013 and licensed 
+under LGPL which basically means that it is free to use, including in closed 
+source applications. If you change the code of the library itself you have to 
+make those changes open source. 
 
 Please see the full license for details:
 https://github.com/KentorIT/authservices/blob/master/LICENSE
@@ -27,13 +27,6 @@ Config Samples
   <section name="system.identityModel.services" type="System.IdentityModel.Services.Configuration.SystemIdentityModelServicesSection, System.IdentityModel.Services, Version=4.0.0.0, Culture=neutral, PublicKeyToken=B77A5C561934E089" />   
   <section name="kentor.authServices" type="Kentor.AuthServices.Configuration.KentorAuthServicesSection, Kentor.AuthServices"/>
 </configSections>
-
-<system.web>
-  <httpModules>
-    <add name="SessionAuthenticationModule" type="System.IdentityModel.Services.SessionAuthenticationModule, System.IdentityModel.Services, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089"/>
-    <add name="Saml2AuthenticationModule" type="Kentor.AuthServices.Saml2AuthenticationModule, Kentor.AuthServices"/>
-  </httpModules>
-</system.web>
 
 <kentor.authServices assertionConsumerServiceUrl="http://localhost:17009/SamplePath/Saml2AuthenticationModule/acs"
                             issuer="http://localhost:17009"

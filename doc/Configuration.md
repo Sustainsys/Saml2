@@ -5,7 +5,7 @@ application's `web.config`. The sample application contains a complete
 working [`web.config`](../SampleApplication/Web.config).
 
 ##Config Sections
-Three new confic sections are required. Add these under `configuration/configSections`:
+Three new config sections are required. Add these under `configuration/configSections`:
 ```
 <configSections>
   <!-- Add these sections below any existing. -->
@@ -13,6 +13,22 @@ Three new confic sections are required. Add these under `configuration/configSec
   <section name="system.identityModel.services" type="System.IdentityModel.Services.Configuration.SystemIdentityModelServicesSection, System.IdentityModel.Services, Version=4.0.0.0, Culture=neutral, PublicKeyToken=B77A5C561934E089" />   
   <section name="kentor.authServices" type="Kentor.AuthServices.Configuration.KentorAuthServicesSection, Kentor.AuthServices"/>
 </configSections>
+```
+###Loading modules
+Http modules need to be loaded. The `SessionAuthenticationModule` is always required.
+The `Saml2AuthenticationModule` is required if you use the bare Kentor.AuthServices
+library. If you are using Kentor.AuthServices.Mvc it should not be loaded.
+
+```
+<system.web>
+  <httpModules>
+	<!-- Add these modules below any existing. -->
+    <add name="SessionAuthenticationModule" type="System.IdentityModel.Services.SessionAuthenticationModule, System.IdentityModel.Services, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089"/>
+    <!-- Only add the Saml2AuthenticationModule if you're ranning the bare Kentor.AuthServices
+		library. If you are using Kentor.AuthServices.Mvc you SHOULD NOT load this module.-->
+	<add name="Saml2AuthenticationModule" type="Kentor.AuthServices.Saml2AuthenticationModule, Kentor.AuthServices"/>
+  </httpModules>
+</system.web>
 ```
 
 ##kentor.authServices Section
