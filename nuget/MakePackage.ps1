@@ -60,6 +60,7 @@ git tag v$version
 echo "Building package..."
 
 nuget pack -build -outputdirectory nuget Kentor.AuthServices\Kentor.AuthServices.csproj
+nuget pack -build -outputdirectory nuget Kentor.AuthServices.Mvc\Kentor.AuthServices.Mvc.csproj
 
 $version = Increment-PatchNumber
 Set-Version($version)
