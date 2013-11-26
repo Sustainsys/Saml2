@@ -9,9 +9,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("Kentor.AuthServices")]
 [assembly: AssemblyDescription("Saml2 Authentication for ASP.NET")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("Kentor")]
 [assembly: AssemblyProduct("Kentor.AuthServices")]
-[assembly: AssemblyCopyright("Copyright Kentor © 2013")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

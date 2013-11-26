@@ -1,5 +1,9 @@
 ﻿using System.Reflection;
 
+[assembly: AssemblyCompany("Kentor")]
+[assembly: AssemblyCopyright("Copyright Kentor and contributors 2013")]
+
+
 // Kentor.AuthServices uses semantic versioning in three parts
 //
 //      Major Version
