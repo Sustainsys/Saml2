@@ -19,7 +19,7 @@ For MVC projects there's an even easier zero coding
 [Nuget package](https://www.nuget.org/packages/Kentor.AuthServices.Mvc/) that will add a 
 new controllerto your project, containing `SignIn` and `SignOut` actions.
 
-> `PM> Install-Package Kentor.AuhtServices.Mvc`
+> `PM> Install-Package Kentor.AuthServices.Mvc`
 
 See [configuration](doc/Configuration.md) for info on how to add the needed sections to `web.config`.
 
