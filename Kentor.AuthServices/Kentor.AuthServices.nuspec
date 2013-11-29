@@ -16,16 +16,17 @@
     <copyright>Copyright Kentor and contributors 2013</copyright>
     <tags>SAML2 authentication ASP.NET SAML SSO</tags>
     <releaseNotes>
-  Version 0.3.0
-  * Refactoring to support Kentor.AuthServices.Mvc. For ASP.NET MVC projects
-    it is better to use that package than this.
+Version 0.3.0
+* Refactoring to support Kentor.AuthServices.Mvc. For ASP.NET MVC projects
+  it is better to use that package than this.
+* Compatibility with simplesamlphp idp (thanks Henning Jensen for contribution).
   
-  Version 0.2.0
-  * Documentation updated.
-  * Some breaking changes of names of configuration elements.
+Version 0.2.0
+* Documentation updated.
+* Some breaking changes of names of configuration elements.
       
-  Version 0.1.0
-  * First complete working version published.
+Version 0.1.0
+* First complete working version published.
     </releaseNotes>
   </metadata>
   <files>

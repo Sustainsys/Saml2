@@ -17,8 +17,8 @@
     <copyright>Copyright Kentor and contributors 2013</copyright>
     <tags>SAML2 authentication ASP.NET SAML SSO AspNetMvc Mvc</tags>
     <releaseNotes>
-  Version 0.3.0
-  * First version of MVC package released.
+Version 0.3.0
+* First version of MVC package released.
     </releaseNotes>
     <dependencies>
       <group>
