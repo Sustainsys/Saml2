@@ -13,7 +13,7 @@ body {
     margin-right: auto;
 }
 
-#main{
+#main {
     background-color: white;
     color: @dark-grey;
     box-shadow: 10px 10px 5px @dark-grey;
@@ -34,11 +34,41 @@ header {
     font-style: italic;
     font-size: 0.8em;
 
-    h1{
+    h1 {
         display: block;
         position: absolute;
         left: 220px;
         bottom: 47px;
         font-style: normal;
+    }
+}
+
+form {
+    @label-width: 200px;
+    @error-color: @red;
+
+    margin-top: 30px;
+    label {
+        font-weight: bold;
+        float:left;
+        width: @label-width;
+    }
+    input{
+        width: 300px;
+    }
+    .field-validation-error{
+        color: @error-color;
+        font-size: 0.9em;
+        display:block;
+        float:left;
+        margin-left: @label-width
+    }
+    div{
+        height: 50px;
+    }
+
+    .input-validation-error{
+        background-color: #ffa6a6;
+        border-color: @error-color;
     }
 }

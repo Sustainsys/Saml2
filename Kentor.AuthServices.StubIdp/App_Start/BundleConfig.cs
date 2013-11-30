@@ -18,6 +18,11 @@ namespace Kentor.AuthServices.StubIdp
                 .Include(
                 "~/Content/normalize.css",
                 "~/Content/site.less"));
+
+            bundles.Add(new ScriptBundle("~/Scripts/js").Include(
+                "~/Scripts/jquery-{version}.js",
+                "~/Scripts/jquery.validate.js",
+                "~/Scripts/jquery.validate.unobtrusive.js"));
         }
     }
 }
