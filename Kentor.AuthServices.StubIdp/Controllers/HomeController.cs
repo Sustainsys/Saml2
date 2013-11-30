@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Kentor.AuthServices.StubIdp.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
@@ -8,11 +9,19 @@ namespace Kentor.AuthServices.StubIdp.Controllers
 {
     public class HomeController : Controller
     {
-        //
-        // GET: /Home/
         public ActionResult Index()
         {
-            return View();
+            return View(AssertionModel.Default);
+        }
+
+        [HttpPost]
+        public ActionResult Index(AssertionModel model)
+        {
+            if (ModelState.IsValid)
+            {
+            }
+
+            return View(model);
         }
 	}
 }
