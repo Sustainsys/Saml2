@@ -14,12 +14,11 @@ using System.Xml;
 namespace Kentor.AuthServices
 {
     /// <summary>
-    /// Represents a SAML2 response according to 3.3.3
+    /// Represents a SAML2 response according to 3.3.3. The class is immutable (to an
+    /// external observer. Internal state is lazy initiated).
     /// </summary>
     public class Saml2Response
     {
-        private readonly XmlDocument xmlDocument;
-
         /// <summary>
         /// Read the supplied Xml and parse it into a response.
         /// </summary>
@@ -58,6 +57,61 @@ namespace Kentor.AuthServices
                 ["StatusCode", Saml2Namespaces.Saml2PName].Attributes["Value"].Value;
 
             status = StatusCodeHelper.FromString(statusString);
+
+            issuer = xmlDocument.DocumentElement["Issuer", Saml2Namespaces.Saml2Name].GetTrimmedTextIfNotNull();
+        }
+
+        /// <summary>
+        /// Create a response with the supplied data.
+        /// </summary>
+        /// <param name="issuer">Issuer of the response.</param>
+        /// <param name="claimsIdentities">Claims identities to be included in the 
+        /// response. Each identity is translated into a separate assertion.</param>
+        public Saml2Response(string issuer, params ClaimsIdentity[] claimsIdentities)
+        {
+            this.issuer = issuer;
+            this.claimsIdentities = claimsIdentities;
+        }
+
+        private  XmlDocument xmlDocument;
+
+        /// <summary>
+        /// The response as an xml docuemnt. Either the original xml, or xml that is
+        /// generated from supplied data.
+        /// </summary>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1059:MembersShouldNotExposeCertainConcreteTypes", MessageId = "System.Xml.XmlNode")]
+        public XmlDocument XmlDocument
+        {
+            get
+            {
+                if (xmlDocument == null)
+                {
+                    CreateXmlDocument();
+                }
+                
+                return xmlDocument;
+            }
+        }
+
+        private void CreateXmlDocument()
+        {
+            var xml = new XmlDocument();
+            xml.AppendChild(xml.CreateXmlDeclaration("1.0", null, null));
+
+            var responseElement = xml.CreateElement("saml2p", "Response", Saml2Namespaces.Saml2PName);
+            xml.AppendChild(responseElement);
+
+            var issuerElement = xml.CreateElement("saml2", "Issuer", Saml2Namespaces.Saml2Name);
+            issuerElement.InnerText = issuer;
+            responseElement.AppendChild(issuerElement);
+
+            foreach(var ci in CreateClaims())
+            {
+                responseElement.AppendChild(xml.ReadNode(
+                    ci.ToSaml2Assertion(issuer).ToXElement().CreateReader()));
+            }
+
+            xmlDocument = xml;
         }
 
         readonly string id;
@@ -81,6 +135,8 @@ namespace Kentor.AuthServices
         /// </summary>
         public Saml2StatusCode Status { get { return status; } }
 
+        readonly string issuer;
+
         /// <summary>
         /// Issuer (= sender) of the response.
         /// </summary>
@@ -88,7 +144,7 @@ namespace Kentor.AuthServices
         {
             get
             {
-                return xmlDocument.DocumentElement["Issuer", Saml2Namespaces.Saml2Name].GetTrimmedTextIfNotNull();
+                return issuer;
             }
         }
 

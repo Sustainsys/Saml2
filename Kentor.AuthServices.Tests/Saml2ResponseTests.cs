@@ -1,15 +1,10 @@
-﻿using System;
-using System.Security.Cryptography.Xml;
+﻿using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using FluentAssertions;
-using System.Xml;
-using System.Security.Cryptography;
-using System.Security.Cryptography.X509Certificates;
-using System.Linq;
-using System.Security.Claims;
-using System.Collections;
-using System.Collections.Generic;
+using System;
 using System.IdentityModel.Tokens;
+using System.Security.Claims;
+using System.Xml;
+using System.Linq;
 
 namespace Kentor.AuthServices.Tests
 {
@@ -36,7 +31,8 @@ namespace Kentor.AuthServices.Tests
                 Issuer = (string)null
             };
 
-            Saml2Response.Read(response).ShouldBeEquivalentTo(expected);
+            Saml2Response.Read(response).ShouldBeEquivalentTo(expected,
+                opt => opt.Excluding(s => s.XmlDocument));
         }
 
         [TestMethod]
@@ -190,7 +186,7 @@ namespace Kentor.AuthServices.Tests
 
             var r = Saml2Response.Read(SignedXmlHelper.SignXml(response));
             r.Validate(SignedXmlHelper.TestCert);
-            
+
             r.GetClaims().ShouldBeEquivalentTo(expected, opt => opt.IgnoringCyclicReferences());
         }
 
@@ -220,7 +216,7 @@ namespace Kentor.AuthServices.Tests
 
             a.ShouldThrow<InvalidOperationException>()
                 .WithMessage("The Saml2Response must be validated first.");
-        
+
         }
 
         [TestMethod]
@@ -369,13 +365,51 @@ namespace Kentor.AuthServices.Tests
             r2.Validate(SignedXmlHelper.TestCert).Should().BeTrue();
 
             Action a = () => r2.GetClaims();
-            
+
             a.ShouldThrow<SecurityTokenReplayDetectedException>();
         }
 
         [TestMethod]
         [Ignore]
         public void Saml2Response_Validate_FalseOnIncorrectInResponseTo()
+        {
+        }
+
+        [TestMethod]
+        public void Saml2Response_Ctor_FromData()
+        {
+            var issuer = "http://idp.example.com";
+            var identity = new ClaimsIdentity(new Claim[] 
+            {
+                new Claim(ClaimTypes.NameIdentifier, "JohnDoe") 
+            });
+            var response = new Saml2Response(issuer: issuer, claimsIdentities: identity);
+
+            response.Issuer.Should().Be(issuer);
+            response.GetClaims().Single().ShouldBeEquivalentTo(identity);
+        }
+
+        [TestMethod]
+        public void Saml2Response_Xml_FromData_ContainsBasicData()
+        {
+            var issuer = "http://idp.example.com";
+            var nameId = "JohnDoe";
+            var identity = new ClaimsIdentity(new Claim[] 
+            {
+                new Claim(ClaimTypes.NameIdentifier, nameId) 
+            });
+            var response = new Saml2Response(issuer: issuer, claimsIdentities: identity);
+
+            var xml = response.XmlDocument;
+
+            xml.FirstChild.OuterXml.Should().StartWith("<?xml version=\"1.0\"");
+            xml.DocumentElement["Issuer", Saml2Namespaces.Saml2Name].InnerText.Should().Be(issuer);
+            xml.DocumentElement["NameID", Saml2Namespaces.Saml2Name].Value.Should().Be(nameId);
+        }
+
+        [TestMethod]
+        [Ignore]
+        public void Saml2Response_Xml_FromData_IsSigned()
         {
         }
     }
