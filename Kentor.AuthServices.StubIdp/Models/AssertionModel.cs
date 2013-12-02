@@ -13,7 +13,7 @@ namespace Kentor.AuthServices.StubIdp.Models
         [Display(Name="Assertion Consumer Url")]
         public string AssertionConsumerUrl { get; set; }
 
-        [Display(Name="Assertion NameId")]
+        [Display(Name="Subject NameId")]
         public string NameId { get; set; }
 
         private static readonly AssertionModel defaultInstance = new AssertionModel
