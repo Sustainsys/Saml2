@@ -19,18 +19,7 @@ namespace Kentor.AuthServices.Tests
             var xmlDoc = new XmlDocument();
             xmlDoc.LoadXml(xml);
 
-            var signedXml = new SignedXml(xmlDoc);
-
-            signedXml.SigningKey = (RSACryptoServiceProvider)TestCert.PrivateKey;
-
-            var reference = new Reference();
-            reference.Uri = "";
-            reference.AddTransform(new XmlDsigEnvelopedSignatureTransform());
-
-            signedXml.AddReference(reference);
-            signedXml.ComputeSignature();
-
-            xmlDoc.DocumentElement.AppendChild(xmlDoc.ImportNode(signedXml.GetXml(), true));
+            xmlDoc.Sign(TestCert);
 
             return xmlDoc.OuterXml;
         }

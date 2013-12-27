@@ -83,6 +83,7 @@
     <Compile Include="Saml2StatusCode.cs" />
     <Compile Include="SignInCommand.cs" />
     <Compile Include="StatusCodeHelper.cs" />
+    <Compile Include="XmlDocumentExtensions.cs" />
     <Compile Include="XmlHelpers.cs" />
   </ItemGroup>
   <ItemGroup>

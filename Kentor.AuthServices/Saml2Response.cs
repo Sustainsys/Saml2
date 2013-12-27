@@ -162,7 +162,7 @@ namespace Kentor.AuthServices
             {
                 var signedXml = new SignedXml(xmlDocument);
 
-                var signature = xmlDocument.DocumentElement["Signature", Saml2Namespaces.DsigName];
+                var signature = xmlDocument.DocumentElement["Signature", SignedXml.XmlDsigNamespaceUrl];
 
                 if (signature != null)
                 {

@@ -5,6 +5,7 @@ using System.IdentityModel.Tokens;
 using System.Security.Claims;
 using System.Xml;
 using System.Linq;
+using System.Security.Cryptography.Xml;
 
 namespace Kentor.AuthServices.Tests
 {
@@ -413,6 +414,23 @@ namespace Kentor.AuthServices.Tests
         [Ignore]
         public void Saml2Response_Xml_FromData_IsSigned()
         {
+            var issuer = "http://idp.example.com";
+            var nameId = "JohnDoe";
+            var identity = new ClaimsIdentity(new Claim[] 
+            {
+                new Claim(ClaimTypes.NameIdentifier, nameId) 
+            });
+            var response = new Saml2Response(issuer: issuer, claimsIdentities: identity);
+
+            var xml = response.XmlDocument;
+
+            var signedXml = new SignedXml(xml);
+
+            var signature = xml.DocumentElement["Signature", SignedXml.XmlDsigNamespaceUrl];
+
+            signature.Should().NotBeNull();
+
+            signedXml.CheckSignature(SignedXmlHelper.TestCert, true).Should().BeTrue();
         }
     }
 }
