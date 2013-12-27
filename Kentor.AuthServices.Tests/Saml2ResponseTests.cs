@@ -6,6 +6,7 @@ using System.Security.Claims;
 using System.Xml;
 using System.Linq;
 using System.Security.Cryptography.Xml;
+using Kentor.AuthServices.Configuration;
 
 namespace Kentor.AuthServices.Tests
 {
@@ -384,7 +385,7 @@ namespace Kentor.AuthServices.Tests
             {
                 new Claim(ClaimTypes.NameIdentifier, "JohnDoe") 
             });
-            var response = new Saml2Response(issuer: issuer, claimsIdentities: identity);
+            var response = new Saml2Response(issuer: issuer, issuerCertificate: null, claimsIdentities: identity);
 
             response.Issuer.Should().Be(issuer);
             response.GetClaims().Single().ShouldBeEquivalentTo(identity);
@@ -399,7 +400,8 @@ namespace Kentor.AuthServices.Tests
             {
                 new Claim(ClaimTypes.NameIdentifier, nameId) 
             });
-            var response = new Saml2Response(issuer: issuer, claimsIdentities: identity);
+            var response = new Saml2Response(issuer: issuer, issuerCertificate: 
+                SignedXmlHelper.TestCert, claimsIdentities: identity);
 
             var xml = response.XmlDocument;
 
@@ -411,7 +413,6 @@ namespace Kentor.AuthServices.Tests
         }
 
         [TestMethod]
-        [Ignore]
         public void Saml2Response_Xml_FromData_IsSigned()
         {
             var issuer = "http://idp.example.com";
@@ -420,13 +421,15 @@ namespace Kentor.AuthServices.Tests
             {
                 new Claim(ClaimTypes.NameIdentifier, nameId) 
             });
-            var response = new Saml2Response(issuer: issuer, claimsIdentities: identity);
+
+            var response = new Saml2Response(issuer: issuer, 
+                issuerCertificate: SignedXmlHelper.TestCert, claimsIdentities: identity);
 
             var xml = response.XmlDocument;
 
             var signedXml = new SignedXml(xml);
-
             var signature = xml.DocumentElement["Signature", SignedXml.XmlDsigNamespaceUrl];
+            signedXml.LoadXml(signature);
 
             signature.Should().NotBeNull();
 

@@ -65,15 +65,21 @@ namespace Kentor.AuthServices
         /// Create a response with the supplied data.
         /// </summary>
         /// <param name="issuer">Issuer of the response.</param>
+        /// <param name="issuerCertificate">The certificate to use when signing
+        /// this response in XML form.</param>
         /// <param name="claimsIdentities">Claims identities to be included in the 
         /// response. Each identity is translated into a separate assertion.</param>
-        public Saml2Response(string issuer, params ClaimsIdentity[] claimsIdentities)
+        public Saml2Response(string issuer, X509Certificate2 issuerCertificate,
+            params ClaimsIdentity[] claimsIdentities)
         {
             this.issuer = issuer;
             this.claimsIdentities = claimsIdentities;
+            this.issuerCertificate = issuerCertificate;
         }
 
-        private  XmlDocument xmlDocument;
+        private readonly X509Certificate2 issuerCertificate;
+
+        private XmlDocument xmlDocument;
 
         /// <summary>
         /// The response as an xml docuemnt. Either the original xml, or xml that is
@@ -112,6 +118,8 @@ namespace Kentor.AuthServices
             }
 
             xmlDocument = xml;
+
+            xml.Sign(issuerCertificate);
         }
 
         readonly string id;
