@@ -14,6 +14,11 @@ namespace Kentor.AuthServices.Tests
             x.Add(ToXNodes());
             return x;
         }
+
+        public override string ToXml()
+        {
+            return ToXElement().ToString();
+        }
     }
 
     [TestClass]

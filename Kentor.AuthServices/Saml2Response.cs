@@ -156,7 +156,6 @@ namespace Kentor.AuthServices
             }
         }
 
-
         bool valid = false, validated = false;
 
         /// <summary>

@@ -12,12 +12,12 @@ namespace Kentor.AuthServices
 {
     class Saml2RedirectBinding : Saml2Binding
     {
-        public override CommandResult Bind(Saml2AuthenticationRequest request)
+        public override CommandResult Bind(ISaml2Message request)
         {
-            var serializedReqeust = Serialize(request);
+            var serializedRequest = Serialize(request);
 
             var redirectUri = new Uri(request.DestinationUri.ToString() 
-                + "?SAMLRequest=" + serializedReqeust);
+                + "?SAMLRequest=" + serializedRequest);
 
             return new CommandResult()
             {
@@ -28,13 +28,13 @@ namespace Kentor.AuthServices
 
         // The MemoryStream is not disposed by the DeflateStream - we're using the keep-open flag.
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2202:Do not dispose objects multiple times")]
-        private static string Serialize(Saml2AuthenticationRequest request)
+        private static string Serialize(ISaml2Message request)
         {
             using (var compressed = new MemoryStream())
             {
                 using (var writer = new StreamWriter(new DeflateStream(compressed, CompressionLevel.Optimal, true)))
                 {
-                    writer.Write(request.ToXElement().ToString());
+                    writer.Write(request.ToXml());
                 }
 
                 return HttpUtility.UrlEncode(Convert.ToBase64String(compressed.GetBuffer()));

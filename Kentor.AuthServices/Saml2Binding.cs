@@ -9,7 +9,7 @@ namespace Kentor.AuthServices
 {
     abstract class Saml2Binding
     {
-        public virtual CommandResult Bind(Saml2AuthenticationRequest request)
+        public virtual CommandResult Bind(ISaml2Message request)
         {
             throw new NotImplementedException();
         }
