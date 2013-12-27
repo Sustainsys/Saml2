@@ -404,7 +404,9 @@ namespace Kentor.AuthServices.Tests
 
             xml.FirstChild.OuterXml.Should().StartWith("<?xml version=\"1.0\"");
             xml.DocumentElement["Issuer", Saml2Namespaces.Saml2Name].InnerText.Should().Be(issuer);
-            xml.DocumentElement["NameID", Saml2Namespaces.Saml2Name].Value.Should().Be(nameId);
+            xml.DocumentElement["Assertion", Saml2Namespaces.Saml2Name]
+                ["Subject", Saml2Namespaces.Saml2Name]["NameID", Saml2Namespaces.Saml2Name]
+                .InnerText.Should().Be(nameId);
         }
 
         [TestMethod]

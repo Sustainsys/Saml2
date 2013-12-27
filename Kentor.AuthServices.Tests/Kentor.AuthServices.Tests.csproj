@@ -96,6 +96,8 @@
     <Compile Include="AcsCommandTests.cs" />
     <Compile Include="Saml2PostBindingTests.cs" />
     <Compile Include="Saml2BindingTests.cs" />
+    <Compile Include="ClaimsIdentityExtensionsTests.cs" />
+    <Compile Include="Saml2AssertionExtensionsTests.cs" />
     <Compile Include="XmlHelpersTests.cs" />
   </ItemGroup>
   <ItemGroup>

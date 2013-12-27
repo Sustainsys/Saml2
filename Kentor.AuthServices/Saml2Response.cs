@@ -105,7 +105,7 @@ namespace Kentor.AuthServices
             issuerElement.InnerText = issuer;
             responseElement.AppendChild(issuerElement);
 
-            foreach(var ci in CreateClaims())
+            foreach(var ci in claimsIdentities)
             {
                 responseElement.AppendChild(xml.ReadNode(
                     ci.ToSaml2Assertion(issuer).ToXElement().CreateReader()));
