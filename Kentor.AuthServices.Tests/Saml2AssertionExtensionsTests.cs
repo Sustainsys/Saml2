@@ -44,7 +44,7 @@ namespace Kentor.AuthServices.Tests
         }
 
         [TestMethod]
-        public void Saml2AssertionExtensions_ToXElement_Subject_NameId()
+        public void Saml2AssertionExtensions_ToXElement_Subject()
         {
             var subjectName = "JohnDoe";
             var assertion = new Saml2Assertion(
@@ -57,6 +57,12 @@ namespace Kentor.AuthServices.Tests
 
             subject.Element(Saml2Namespaces.Saml2 + "Subject").
                 Element(Saml2Namespaces.Saml2 + "NameID").Value.Should().Be(subjectName);
+
+            // Although SubjectConfirmation is optional in the SAML core spec, it is
+            // mandatory in the Web Browser SSO Profile and must have a value of bearer.
+            subject.Element(Saml2Namespaces.Saml2 + "Subject").
+                Element(Saml2Namespaces.Saml2 + "SubjectConfirmation")
+                .Attribute("Method").Value.Should().Be("urn:oasis:names:tc:SAML:2.0:cm:bearer");
         }
     }
 }

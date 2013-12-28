@@ -34,8 +34,10 @@ namespace Kentor.AuthServices
             {
                 xml.Add(new XElement(Saml2Namespaces.Saml2 + "Subject",
                     new XElement(Saml2Namespaces.Saml2 + "NameID",
-                    assertion.Subject.NameId.Value))
-                    );
+                    assertion.Subject.NameId.Value),
+                    new XElement(Saml2Namespaces.Saml2 + "SubjectConfirmation",
+                        new XAttribute("Method", "urn:oasis:names:tc:SAML:2.0:cm:bearer"))
+                    ));
             }
 
             return xml;
