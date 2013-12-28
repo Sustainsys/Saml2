@@ -12,11 +12,16 @@ namespace Kentor.AuthServices
 {
     class Saml2RedirectBinding : Saml2Binding
     {
-        public override CommandResult Bind(ISaml2Message request)
+        public override CommandResult Bind(ISaml2Message message)
         {
-            var serializedRequest = Serialize(request);
+            if(message == null)
+            {
+                throw new ArgumentNullException("message");
+            }
 
-            var redirectUri = new Uri(request.DestinationUri.ToString() 
+            var serializedRequest = Serialize(message);
+
+            var redirectUri = new Uri(message.DestinationUri.ToString() 
                 + "?SAMLRequest=" + serializedRequest);
 
             return new CommandResult()

@@ -57,8 +57,10 @@ namespace Kentor.AuthServices.Tests
 
             var expected = new CommandResult()
             {
-                Body = @"<!DOCTYPE html>
-<html>
+                Body = @"<?xml version=""1.0"" encoding=""UTF-8""?>
+<!DOCTYPE html PUBLIC ""-//W3C//DTD XHTML 1.1//EN""
+""http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd"">
+<html xmlns=""http://www.w3.org/1999/xhtml"" xml:lang=""en"">
 <body onload=""document.forms[0].submit()"">
 <noscript>
 <p>

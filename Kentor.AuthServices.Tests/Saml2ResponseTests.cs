@@ -19,7 +19,8 @@ namespace Kentor.AuthServices.Tests
             string response =
             @"<?xml version=""1.0"" encoding=""UTF-8""?>
                 <saml2p:Response xmlns:saml2p=""urn:oasis:names:tc:SAML:2.0:protocol""
-            ID = ""Saml2Response_Read_BasicParams"" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z"">
+            ID = ""Saml2Response_Read_BasicParams"" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z""
+            Destination=""http://destination.example.com"">
                 <saml2p:Status>
                     <saml2p:StatusCode Value=""urn:oasis:names:tc:SAML:2.0:status:Requester"" />
                 </saml2p:Status>
@@ -30,7 +31,8 @@ namespace Kentor.AuthServices.Tests
                 Id = "Saml2Response_Read_BasicParams",
                 IssueInstant = new DateTime(2013, 01, 01, 0, 0, 0, DateTimeKind.Utc),
                 Status = Saml2StatusCode.Requester,
-                Issuer = (string)null
+                Issuer = (string)null,
+                DestinationUri = new Uri("http://destination.example.com")
             };
 
             Saml2Response.Read(response).ShouldBeEquivalentTo(expected,
@@ -385,7 +387,7 @@ namespace Kentor.AuthServices.Tests
             {
                 new Claim(ClaimTypes.NameIdentifier, "JohnDoe") 
             });
-            var response = new Saml2Response(issuer: issuer, issuerCertificate: null, claimsIdentities: identity);
+            var response = new Saml2Response(issuer, null, null, identity);
 
             response.Issuer.Should().Be(issuer);
             response.GetClaims().Single().ShouldBeEquivalentTo(identity);
@@ -396,12 +398,20 @@ namespace Kentor.AuthServices.Tests
         {
             var issuer = "http://idp.example.com";
             var nameId = "JohnDoe";
+            var destination= "http://destination.example.com/";
+
             var identity = new ClaimsIdentity(new Claim[] 
             {
                 new Claim(ClaimTypes.NameIdentifier, nameId) 
             });
-            var response = new Saml2Response(issuer: issuer, issuerCertificate: 
-                SignedXmlHelper.TestCert, claimsIdentities: identity);
+
+            // Grab current time both before and after generating the response
+            // to avoid heisenbugs if the second counter is updated while creating
+            // the response.
+            string before = DateTime.UtcNow.ToString("s") + "Z";
+            var response = new Saml2Response(issuer, SignedXmlHelper.TestCert, 
+                new Uri(destination), identity);
+            string after = DateTime.UtcNow.ToString("s") + "Z";
 
             var xml = response.XmlDocument;
 
@@ -410,6 +420,30 @@ namespace Kentor.AuthServices.Tests
             xml.DocumentElement["Assertion", Saml2Namespaces.Saml2Name]
                 ["Subject", Saml2Namespaces.Saml2Name]["NameID", Saml2Namespaces.Saml2Name]
                 .InnerText.Should().Be(nameId);
+            xml.DocumentElement.GetAttribute("Destination").Should().Be(destination);
+            xml.DocumentElement.GetAttribute("ID").Should().NotBeBlank();
+            xml.DocumentElement.GetAttribute("Version").Should().Be("2.0");
+            xml.DocumentElement.GetAttribute("IssueInstant").Should().Match(
+                i => i == before || i == after);
+        }
+
+        [TestMethod]
+        public void Saml2Response_Xml_FromData_ContainsStatus_Success()
+        {
+            var identity = new ClaimsIdentity(new Claim[] 
+            {
+                new Claim(ClaimTypes.NameIdentifier, "JohnDoe") 
+            });
+
+            var response = new Saml2Response("issuer", SignedXmlHelper.TestCert,
+                new Uri("http://destination.example.com"), identity);
+
+            var xml = response.XmlDocument;
+
+            var subject = xml.DocumentElement["Status", Saml2Namespaces.Saml2PName];
+
+            subject["StatusCode", Saml2Namespaces.Saml2PName].GetAttribute("Value")
+                .Should().Be("urn:oasis:names:tc:SAML:2.0:status:Success");
         }
 
         [TestMethod]
@@ -422,8 +456,8 @@ namespace Kentor.AuthServices.Tests
                 new Claim(ClaimTypes.NameIdentifier, nameId) 
             });
 
-            var response = new Saml2Response(issuer: issuer, 
-                issuerCertificate: SignedXmlHelper.TestCert, claimsIdentities: identity);
+            var response = new Saml2Response(issuer, SignedXmlHelper.TestCert, 
+                null, claimsIdentities: identity);
 
             var xml = response.XmlDocument;
 
@@ -434,6 +468,16 @@ namespace Kentor.AuthServices.Tests
             signature.Should().NotBeNull();
 
             signedXml.CheckSignature(SignedXmlHelper.TestCert, true).Should().BeTrue();
+        }
+
+        [TestMethod]
+        public void Saml2Response_ToXml()
+        {
+            string response = @"<?xml version=""1.0"" encoding=""UTF-8""?><saml2p:Response xmlns:saml2p=""urn:oasis:names:tc:SAML:2.0:protocol"" ID=""Saml2Response_ToXml"" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z""><saml2p:Status><saml2p:StatusCode Value=""urn:oasis:names:tc:SAML:2.0:status:Requester"" /></saml2p:Status></saml2p:Response>";
+            
+            var subject = Saml2Response.Read(response).ToXml();
+
+            subject.Should().Be(response);
         }
     }
 }

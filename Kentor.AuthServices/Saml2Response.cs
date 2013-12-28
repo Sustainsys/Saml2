@@ -17,7 +17,7 @@ namespace Kentor.AuthServices
     /// Represents a SAML2 response according to 3.3.3. The class is immutable (to an
     /// external observer. Internal state is lazy initiated).
     /// </summary>
-    public class Saml2Response
+    public class Saml2Response : ISaml2Message
     {
         /// <summary>
         /// Read the supplied Xml and parse it into a response.
@@ -59,6 +59,13 @@ namespace Kentor.AuthServices
             status = StatusCodeHelper.FromString(statusString);
 
             issuer = xmlDocument.DocumentElement["Issuer", Saml2Namespaces.Saml2Name].GetTrimmedTextIfNotNull();
+
+            var destinationUriString = xmlDocument.DocumentElement.Attributes["Destination"].GetValueIfNotNull();
+
+            if (destinationUriString != null)
+            {
+                destinationUri = new Uri(destinationUriString);
+            }
         }
 
         /// <summary>
@@ -67,14 +74,18 @@ namespace Kentor.AuthServices
         /// <param name="issuer">Issuer of the response.</param>
         /// <param name="issuerCertificate">The certificate to use when signing
         /// this response in XML form.</param>
+        /// <param name="destinationUri">The destination Uri for the message</param>
         /// <param name="claimsIdentities">Claims identities to be included in the 
         /// response. Each identity is translated into a separate assertion.</param>
         public Saml2Response(string issuer, X509Certificate2 issuerCertificate,
-            params ClaimsIdentity[] claimsIdentities)
+            Uri destinationUri, params ClaimsIdentity[] claimsIdentities)
         {
             this.issuer = issuer;
             this.claimsIdentities = claimsIdentities;
             this.issuerCertificate = issuerCertificate;
+            this.destinationUri = destinationUri;
+            id = "id" + Guid.NewGuid().ToString("N");
+            status = Saml2StatusCode.Success;
         }
 
         private readonly X509Certificate2 issuerCertificate;
@@ -94,9 +105,18 @@ namespace Kentor.AuthServices
                 {
                     CreateXmlDocument();
                 }
-                
+
                 return xmlDocument;
             }
+        }
+
+        /// <summary>
+        /// string representation of the Saml2Response serialized to xml.
+        /// </summary>
+        /// <returns>string containing xml.</returns>
+        public string ToXml()
+        {
+            return XmlDocument.OuterXml;
         }
 
         private void CreateXmlDocument()
@@ -105,13 +125,29 @@ namespace Kentor.AuthServices
             xml.AppendChild(xml.CreateXmlDeclaration("1.0", null, null));
 
             var responseElement = xml.CreateElement("saml2p", "Response", Saml2Namespaces.Saml2PName);
+
+            if (DestinationUri != null)
+            {
+                responseElement.SetAttributeNode("Destination", "").Value = DestinationUri.ToString();
+            }
+
+            responseElement.SetAttributeNode("ID", "").Value = id;
+            responseElement.SetAttributeNode("Version", "").Value = "2.0";
+            responseElement.SetAttributeNode("IssueInstant", "").Value =
+                DateTime.UtcNow.ToString("s", CultureInfo.InvariantCulture) + "Z";
             xml.AppendChild(responseElement);
 
             var issuerElement = xml.CreateElement("saml2", "Issuer", Saml2Namespaces.Saml2Name);
             issuerElement.InnerText = issuer;
             responseElement.AppendChild(issuerElement);
 
-            foreach(var ci in claimsIdentities)
+            var statusElement = xml.CreateElement("saml2p", "Status", Saml2Namespaces.Saml2PName);
+            var statusCodeElement = xml.CreateElement("saml2p", "StatusCode", Saml2Namespaces.Saml2PName);
+            statusCodeElement.SetAttributeNode("Value", "").Value = StatusCodeHelper.FromCode(Status);
+            statusElement.AppendChild(statusCodeElement);
+            responseElement.AppendChild(statusElement);
+
+            foreach (var ci in claimsIdentities)
             {
                 responseElement.AppendChild(xml.ReadNode(
                     ci.ToSaml2Assertion(issuer).ToXElement().CreateReader()));
@@ -155,6 +191,20 @@ namespace Kentor.AuthServices
                 return issuer;
             }
         }
+
+        readonly Uri destinationUri;
+
+        /// <summary>
+        /// The destination of the response message.
+        /// </summary>
+        public Uri DestinationUri
+        {
+            get
+            {
+                return destinationUri;
+            }
+        }
+
 
         bool valid = false, validated = false;
 
