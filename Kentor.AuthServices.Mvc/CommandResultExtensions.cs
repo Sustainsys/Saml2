@@ -15,7 +15,7 @@ namespace Kentor.AuthServices.Mvc
         /// </summary>
         /// <param name="commandResult">The source command result.</param>
         /// <returns>Action result</returns>
-        /// <remarks>The reason to use a separate comamnd result at all, instead
+        /// <remarks>The reason to use a separate command result at all, instead
         /// of simply using ActionResult is that the core library should not
         /// be Mvc dependant.</remarks>
         public static ActionResult ToActionResult(this CommandResult commandResult)
