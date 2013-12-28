@@ -3,7 +3,10 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Configuration;
 using System.Linq;
+using System.Security.Claims;
+using System.Security.Cryptography.X509Certificates;
 using System.Web;
+using System.Web.Hosting;
 
 namespace Kentor.AuthServices.StubIdp.Models
 {
@@ -28,6 +31,20 @@ namespace Kentor.AuthServices.StubIdp.Models
             {
                 return defaultInstance;
             }
+        }
+
+        private static readonly X509Certificate2 signingCertificate = 
+            new X509Certificate2(HttpContext.Current.Server.MapPath(
+                "~\\App_Data\\Kentor.AuthServices.StubIdp.pfx"));
+
+        public Saml2Response ToSaml2Response()
+        {
+            var identity = new ClaimsIdentity(new Claim[] { 
+                new Claim(ClaimTypes.NameIdentifier, NameId )});
+
+            return new Saml2Response(
+                ConfigurationManager.AppSettings["issuerName"],
+                signingCertificate, new Uri(AssertionConsumerUrl), identity);
         }
     }
 }

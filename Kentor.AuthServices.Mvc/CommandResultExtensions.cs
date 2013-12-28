@@ -6,6 +6,13 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 
+/******************************************************************************
+ * Note: This file is located in the Kentor.AuthServices.Mvc project but is   *
+ * also linked to the Kentor.AuthServices.StubIdp project. It felt like a bit *
+ * too much work to create a shared library for just one file, so I went      *
+ * with a simple file link for now.                                           *
+ ******************************************************************************/
+
 namespace Kentor.AuthServices.Mvc
 {
     static class CommandResultExtensions
@@ -24,6 +31,11 @@ namespace Kentor.AuthServices.Mvc
             {
                 case HttpStatusCode.SeeOther:
                     return new RedirectResult(commandResult.Location.ToString());
+                case HttpStatusCode.OK:
+                    return new ContentResult()
+                    {
+                        Content = commandResult.Content
+                    };
                 default:
                     throw new NotImplementedException();
             }

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using Kentor.AuthServices.Mvc;
 
 namespace Kentor.AuthServices.StubIdp.Controllers
 {
@@ -19,6 +20,12 @@ namespace Kentor.AuthServices.StubIdp.Controllers
         {
             if (ModelState.IsValid)
             {
+                var response = model.ToSaml2Response();
+
+                var commandResult = Saml2Binding.Get(Saml2BindingType.HttpPost)
+                    .Bind(response);
+
+                return commandResult.ToActionResult();
             }
 
             return View(model);

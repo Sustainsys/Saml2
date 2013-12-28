@@ -110,6 +110,14 @@ namespace Kentor.AuthServices
             }
         }
 
+        public string MessageName
+        {
+            get
+            {
+                return "SAMLResponse";
+            }
+        }
+
         /// <summary>
         /// SAML Message name for responses, hard coded to SAMLResponse.
         /// </summary>
