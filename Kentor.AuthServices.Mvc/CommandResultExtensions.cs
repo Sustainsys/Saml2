@@ -6,16 +6,13 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 
-/******************************************************************************
- * Note: This file is located in the Kentor.AuthServices.Mvc project but is   *
- * also linked to the Kentor.AuthServices.StubIdp project. It felt like a bit *
- * too much work to create a shared library for just one file, so I went      *
- * with a simple file link for now.                                           *
- ******************************************************************************/
-
 namespace Kentor.AuthServices.Mvc
 {
-    static class CommandResultExtensions
+    /// <summary>
+    /// Extension methods for CommandResult for integrating CommandResults in
+    /// the MVC architecture.
+    /// </summary>
+    public static class CommandResultExtensions
     {
         /// <summary>
         /// Converts a command result to an action result.
@@ -27,6 +24,11 @@ namespace Kentor.AuthServices.Mvc
         /// be Mvc dependant.</remarks>
         public static ActionResult ToActionResult(this CommandResult commandResult)
         {
+            if (commandResult == null)
+            {
+                throw new ArgumentNullException("commandResult");
+            }
+
             switch (commandResult.HttpStatusCode)
             {
                 case HttpStatusCode.SeeOther:

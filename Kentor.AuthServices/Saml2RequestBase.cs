@@ -52,14 +52,6 @@ namespace Kentor.AuthServices
             }
         }
 
-        public string MessageName
-        {
-            get
-            {
-                return "SAMLRequest";
-            }
-        }
-
         /// <summary>
         /// SAML message name for requests - hard coded to SAMLRequest.
         /// </summary>
