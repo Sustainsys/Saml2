@@ -25,5 +25,11 @@ namespace Kentor.AuthServices
         /// </summary>
         /// <returns>string containing the Xml data.</returns>
         string ToXml();
+
+        /// <summary>
+        /// The name of the message to use in a query string or form input
+        /// field. Typically "SAMLRequest" or "SAMLResponse".
+        /// </summary>
+        string MessageName { get; }
     }
 }

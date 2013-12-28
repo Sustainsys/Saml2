@@ -35,7 +35,7 @@ namespace Kentor.AuthServices
         /// <summary>
         /// The response body that is the result of the command.
         /// </summary>
-        public string Body { get; set; }
+        public string Content { get; set; }
 
         /// <summary>
         /// Ctor

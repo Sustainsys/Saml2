@@ -53,6 +53,17 @@ namespace Kentor.AuthServices
         }
 
         /// <summary>
+        /// SAML message name for requests - hard coded to SAMLRequest.
+        /// </summary>
+        public string MessageName
+        {
+            get
+            {
+                return "SAMLRequest";
+            }
+        }
+
+        /// <summary>
         /// The destination of the request.
         /// </summary>
         public Uri DestinationUri { get; set; }

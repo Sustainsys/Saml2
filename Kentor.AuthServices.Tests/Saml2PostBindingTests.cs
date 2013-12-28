@@ -52,12 +52,13 @@ namespace Kentor.AuthServices.Tests
             var request = Substitute.For<ISaml2Message>();
             request.ToXml().Returns(xmlData);
             request.DestinationUri.Returns(new Uri("http://www.example.com/acs"));
+            request.MessageName.Returns("SAMLMessageName");
 
             var subject = Saml2Binding.Get(Saml2BindingType.HttpPost).Bind(request);
 
             var expected = new CommandResult()
             {
-                Body = @"<?xml version=""1.0"" encoding=""UTF-8""?>
+                Content = @"<?xml version=""1.0"" encoding=""UTF-8""?>
 <!DOCTYPE html PUBLIC ""-//W3C//DTD XHTML 1.1//EN""
 ""http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd"">
 <html xmlns=""http://www.w3.org/1999/xhtml"" xml:lang=""en"">
@@ -71,7 +72,7 @@ you must press the Continue button once to proceed.
 <form action=""http://www.example.com/acs"" 
 method=""post"">
 <div>
-<input type=""hidden"" name=""SAMLRequest"" 
+<input type=""hidden"" name=""SAMLMessageName"" 
 value=""PHJvb3Q+PGNvbnRlbnQ+ZGF0YTwvY29udGVudD48L3Jvb3Q+""/>
 </div>
 <noscript>

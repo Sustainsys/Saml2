@@ -125,5 +125,12 @@ namespace Kentor.AuthServices.Tests
             var r = new ConcreteSaml2Request();
             r.ToXElement().GetPrefixOfNamespace(Saml2Namespaces.Saml2Name).Should().Be("saml2");
         }
+
+        [TestMethod]
+        public void Saml2RequestBase_MessageName()
+        {
+            var subject = new ConcreteSaml2Request();
+            subject.MessageName.Should().Be("SAMLRequest");
+        }
     }
 }

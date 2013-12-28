@@ -44,14 +44,14 @@ namespace Kentor.AuthServices
 
             var cr = new CommandResult()
             {
-                Body = String.Format(CultureInfo.InvariantCulture, PostHtmlFormatStrign,
-                message.DestinationUri, encodedXml)
+                Content = String.Format(CultureInfo.InvariantCulture, PostHtmlFormatString,
+                message.DestinationUri, message.MessageName, encodedXml)
             };
 
             return cr;
         }
 
-        private const string PostHtmlFormatStrign = @"<?xml version=""1.0"" encoding=""UTF-8""?>
+        private const string PostHtmlFormatString = @"<?xml version=""1.0"" encoding=""UTF-8""?>
 <!DOCTYPE html PUBLIC ""-//W3C//DTD XHTML 1.1//EN""
 ""http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd"">
 <html xmlns=""http://www.w3.org/1999/xhtml"" xml:lang=""en"">
@@ -65,8 +65,8 @@ you must press the Continue button once to proceed.
 <form action=""{0}"" 
 method=""post"">
 <div>
-<input type=""hidden"" name=""SAMLRequest"" 
-value=""{1}""/>
+<input type=""hidden"" name=""{1}"" 
+value=""{2}""/>
 </div>
 <noscript>
 <div>

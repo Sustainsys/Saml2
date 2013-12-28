@@ -21,7 +21,7 @@ namespace Kentor.AuthServices.Tests
                 Cacheability = HttpCacheability.NoCache,
                 Location = (Uri)null,
                 Principal = (ClaimsPrincipal)null,
-                Body = (string)null
+                Content = (string)null
             };
 
             new CommandResult().ShouldBeEquivalentTo(expected);

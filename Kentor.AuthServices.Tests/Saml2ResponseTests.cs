@@ -32,7 +32,8 @@ namespace Kentor.AuthServices.Tests
                 IssueInstant = new DateTime(2013, 01, 01, 0, 0, 0, DateTimeKind.Utc),
                 Status = Saml2StatusCode.Requester,
                 Issuer = (string)null,
-                DestinationUri = new Uri("http://destination.example.com")
+                DestinationUri = new Uri("http://destination.example.com"),
+                MessageName = "SAMLResponse"
             };
 
             Saml2Response.Read(response).ShouldBeEquivalentTo(expected,
@@ -478,6 +479,14 @@ namespace Kentor.AuthServices.Tests
             var subject = Saml2Response.Read(response).ToXml();
 
             subject.Should().Be(response);
+        }
+
+        [TestMethod]
+        public void Saml2Response_MessageName()
+        {
+            var subject = new Saml2Response("issuer", null, null);
+
+            subject.MessageName.Should().Be("SAMLResponse");
         }
     }
 }
