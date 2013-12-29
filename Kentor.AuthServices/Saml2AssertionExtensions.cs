@@ -40,6 +40,14 @@ namespace Kentor.AuthServices
                     ));
             }
 
+            if(assertion.Conditions != null && assertion.Conditions.NotOnOrAfter != null)
+            {
+                xml.Add(new XElement(Saml2Namespaces.Saml2 + "Conditions",
+                    new XAttribute("NotOnOrAfter", 
+                        assertion.Conditions.NotOnOrAfter.Value.ToString("s", 
+                        CultureInfo.InvariantCulture) + "Z")));
+            }
+
             return xml;
         }
     }

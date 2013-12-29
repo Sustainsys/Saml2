@@ -2,6 +2,7 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.IdentityModel.Tokens;
 using FluentAssertions;
+using System.Collections.ObjectModel;
 
 namespace Kentor.AuthServices.Tests
 {
@@ -63,6 +64,24 @@ namespace Kentor.AuthServices.Tests
             subject.Element(Saml2Namespaces.Saml2 + "Subject").
                 Element(Saml2Namespaces.Saml2 + "SubjectConfirmation")
                 .Attribute("Method").Value.Should().Be("urn:oasis:names:tc:SAML:2.0:cm:bearer");
+        }
+
+        [TestMethod]
+        public void Saml2AssertionExtensions_ToXElement_Conditions()
+        {
+            var assertion = new Saml2Assertion(
+                new Saml2NameIdentifier("http://idp.example.com"))
+            {
+                Conditions = new Saml2Conditions()
+                {
+                    NotOnOrAfter = new DateTime(2099, 07, 25, 19, 52, 42, DateTimeKind.Utc)
+                }
+            };
+
+            var subject = assertion.ToXElement();
+
+            subject.Element(Saml2Namespaces.Saml2 + "Conditions")
+                .Attribute("NotOnOrAfter").Value.Should().Be("2099-07-25T19:52:42Z");
         }
     }
 }
