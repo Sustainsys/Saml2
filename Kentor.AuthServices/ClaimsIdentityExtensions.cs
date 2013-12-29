@@ -26,6 +26,11 @@ namespace Kentor.AuthServices
             assertion.Subject = new Saml2Subject(new Saml2NameIdentifier(
                 identity.Claims.Single(c => c.Type == ClaimTypes.NameIdentifier).Value));
 
+            assertion.Conditions = new Saml2Conditions()
+            {
+                NotOnOrAfter = DateTime.UtcNow.AddMinutes(2)
+            };
+
             return assertion;
         }
     }
