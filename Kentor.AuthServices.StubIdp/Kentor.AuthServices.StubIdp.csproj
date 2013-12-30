@@ -104,7 +104,7 @@
     <Content Include="Content\normalize.css" />
     <Content Include="Global.asax" />
     <Content Include="Content\Site.less" />
-    <None Include="App_Data\Kentor.AuthServices.StubIdp.pfx" />
+    <Content Include="App_Data\Kentor.AuthServices.StubIdp.pfx" />
     <None Include="Scripts\jquery-1.10.2.intellisense.js" />
     <Content Include="Scripts\jquery-1.10.2.js" />
     <Content Include="Scripts\jquery-1.10.2.min.js" />
