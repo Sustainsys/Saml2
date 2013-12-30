@@ -3,6 +3,7 @@ using System.Configuration;
 using System.Globalization;
 using System.Linq;
 using System.Security.Cryptography.X509Certificates;
+using System.Web;
 
 namespace Kentor.AuthServices.Configuration
 {
@@ -79,7 +80,13 @@ namespace Kentor.AuthServices.Configuration
         {
             if (!string.IsNullOrEmpty(FileName))
             {
-                return new X509Certificate2(FileName);
+                string fileName = FileName;
+                if (HttpContext.Current != null)
+                {
+                    fileName = HttpContext.Current.Server.MapPath(fileName);
+                }
+
+                return new X509Certificate2(fileName);
             }
             else
             {

@@ -27,6 +27,15 @@ namespace Kentor.AuthServices
         }
 
         /// <summary>
+        /// Serializes the message into wellformed Xml.
+        /// </summary>
+        /// <returns>string containing the Xml data.</returns>
+        public override string ToXml()
+        {
+            return ToXElement().ToString();
+        }
+
+        /// <summary>
         /// The assertion consumer url that the idp should send its response back to.
         /// </summary>
         public Uri AssertionConsumerServiceUrl { get; set; }

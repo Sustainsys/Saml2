@@ -11,7 +11,7 @@ namespace Kentor.AuthServices
     /// <summary>
     /// Base class for saml requests, corresponds to section 3.2.1 in SAML Core specification.
     /// </summary>
-    public abstract class Saml2RequestBase
+    public abstract class Saml2RequestBase : ISaml2Message
     {
         private readonly string id = "id" + Guid.NewGuid().ToString("N");
 
@@ -53,6 +53,17 @@ namespace Kentor.AuthServices
         }
 
         /// <summary>
+        /// SAML message name for requests - hard coded to SAMLRequest.
+        /// </summary>
+        public string MessageName
+        {
+            get
+            {
+                return "SAMLRequest";
+            }
+        }
+
+        /// <summary>
         /// The destination of the request.
         /// </summary>
         public Uri DestinationUri { get; set; }
@@ -85,5 +96,11 @@ namespace Kentor.AuthServices
                 yield return new XElement(Saml2Namespaces.Saml2 + "Issuer", Issuer);
             }
         }
+
+        /// <summary>
+        /// Serializes the message into wellformed Xml.
+        /// </summary>
+        /// <returns>string containing the Xml data.</returns>
+        public abstract string ToXml();
     }
 }

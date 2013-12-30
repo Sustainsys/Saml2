@@ -48,7 +48,7 @@ namespace Kentor.AuthServices.Configuration
         }
 
         /// <summary>
-        /// File to load the signing certificate from.
+        /// Certificate location for the certificate the Idp uses to sign its messages.
         /// </summary>
         [ConfigurationProperty("signingCertificate", IsRequired = true)]
         public CertificateElement SigningCertificate

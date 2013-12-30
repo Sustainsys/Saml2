@@ -100,7 +100,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="App_Data\" />
     <Folder Include="Models\" />
   </ItemGroup>
   <ItemGroup>
@@ -122,6 +121,7 @@
     <Content Include="Content\Site.css" />
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />
+    <Content Include="App_Data\Kentor.AuthServices.StubIdp.pfx" />
     <None Include="Scripts\jquery-1.10.2.intellisense.js" />
     <Content Include="Scripts\jquery-1.10.2.js" />
     <Content Include="Scripts\jquery-1.10.2.min.js" />
@@ -170,7 +170,7 @@
           <AutoAssignPort>True</AutoAssignPort>
           <DevelopmentServerPort>2181</DevelopmentServerPort>
           <DevelopmentServerVPath>/</DevelopmentServerVPath>
-          <IISUrl>http://localhost:2181/SampleMvcPath</IISUrl>
+          <IISUrl>http://localhost:2181</IISUrl>
           <NTLMAuthentication>False</NTLMAuthentication>
           <UseCustomServer>False</UseCustomServer>
           <CustomServerUrl>

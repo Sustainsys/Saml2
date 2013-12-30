@@ -20,7 +20,8 @@ namespace Kentor.AuthServices.Tests
                 HttpStatusCode = HttpStatusCode.OK,
                 Cacheability = HttpCacheability.NoCache,
                 Location = (Uri)null,
-                Principal = (ClaimsPrincipal)null
+                Principal = (ClaimsPrincipal)null,
+                Content = (string)null
             };
 
             new CommandResult().ShouldBeEquivalentTo(expected);

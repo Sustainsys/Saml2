@@ -33,6 +33,11 @@ namespace Kentor.AuthServices
         public ClaimsPrincipal Principal { get; set; }
 
         /// <summary>
+        /// The response body that is the result of the command.
+        /// </summary>
+        public string Content { get; set; }
+
+        /// <summary>
         /// Ctor
         /// </summary>
         public CommandResult()

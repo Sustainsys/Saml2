@@ -1,15 +1,12 @@
-﻿using System;
-using System.Security.Cryptography.Xml;
+﻿using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using FluentAssertions;
-using System.Xml;
-using System.Security.Cryptography;
-using System.Security.Cryptography.X509Certificates;
-using System.Linq;
-using System.Security.Claims;
-using System.Collections;
-using System.Collections.Generic;
+using System;
 using System.IdentityModel.Tokens;
+using System.Security.Claims;
+using System.Xml;
+using System.Linq;
+using System.Security.Cryptography.Xml;
+using Kentor.AuthServices.Configuration;
 
 namespace Kentor.AuthServices.Tests
 {
@@ -22,7 +19,8 @@ namespace Kentor.AuthServices.Tests
             string response =
             @"<?xml version=""1.0"" encoding=""UTF-8""?>
                 <saml2p:Response xmlns:saml2p=""urn:oasis:names:tc:SAML:2.0:protocol""
-            ID = ""Saml2Response_Read_BasicParams"" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z"">
+            ID = ""Saml2Response_Read_BasicParams"" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z""
+            Destination=""http://destination.example.com"">
                 <saml2p:Status>
                     <saml2p:StatusCode Value=""urn:oasis:names:tc:SAML:2.0:status:Requester"" />
                 </saml2p:Status>
@@ -33,10 +31,13 @@ namespace Kentor.AuthServices.Tests
                 Id = "Saml2Response_Read_BasicParams",
                 IssueInstant = new DateTime(2013, 01, 01, 0, 0, 0, DateTimeKind.Utc),
                 Status = Saml2StatusCode.Requester,
-                Issuer = (string)null
+                Issuer = (string)null,
+                DestinationUri = new Uri("http://destination.example.com"),
+                MessageName = "SAMLResponse"
             };
 
-            Saml2Response.Read(response).ShouldBeEquivalentTo(expected);
+            Saml2Response.Read(response).ShouldBeEquivalentTo(expected,
+                opt => opt.Excluding(s => s.XmlDocument));
         }
 
         [TestMethod]
@@ -190,7 +191,7 @@ namespace Kentor.AuthServices.Tests
 
             var r = Saml2Response.Read(SignedXmlHelper.SignXml(response));
             r.Validate(SignedXmlHelper.TestCert);
-            
+
             r.GetClaims().ShouldBeEquivalentTo(expected, opt => opt.IgnoringCyclicReferences());
         }
 
@@ -220,7 +221,7 @@ namespace Kentor.AuthServices.Tests
 
             a.ShouldThrow<InvalidOperationException>()
                 .WithMessage("The Saml2Response must be validated first.");
-        
+
         }
 
         [TestMethod]
@@ -369,7 +370,7 @@ namespace Kentor.AuthServices.Tests
             r2.Validate(SignedXmlHelper.TestCert).Should().BeTrue();
 
             Action a = () => r2.GetClaims();
-            
+
             a.ShouldThrow<SecurityTokenReplayDetectedException>();
         }
 
@@ -377,6 +378,115 @@ namespace Kentor.AuthServices.Tests
         [Ignore]
         public void Saml2Response_Validate_FalseOnIncorrectInResponseTo()
         {
+        }
+
+        [TestMethod]
+        public void Saml2Response_Ctor_FromData()
+        {
+            var issuer = "http://idp.example.com";
+            var identity = new ClaimsIdentity(new Claim[] 
+            {
+                new Claim(ClaimTypes.NameIdentifier, "JohnDoe") 
+            });
+            var response = new Saml2Response(issuer, null, null, identity);
+
+            response.Issuer.Should().Be(issuer);
+            response.GetClaims().Single().ShouldBeEquivalentTo(identity);
+        }
+
+        [TestMethod]
+        public void Saml2Response_Xml_FromData_ContainsBasicData()
+        {
+            var issuer = "http://idp.example.com";
+            var nameId = "JohnDoe";
+            var destination= "http://destination.example.com/";
+
+            var identity = new ClaimsIdentity(new Claim[] 
+            {
+                new Claim(ClaimTypes.NameIdentifier, nameId) 
+            });
+
+            // Grab current time both before and after generating the response
+            // to avoid heisenbugs if the second counter is updated while creating
+            // the response.
+            string before = DateTime.UtcNow.ToString("s") + "Z";
+            var response = new Saml2Response(issuer, SignedXmlHelper.TestCert, 
+                new Uri(destination), identity);
+            string after = DateTime.UtcNow.ToString("s") + "Z";
+
+            var xml = response.XmlDocument;
+
+            xml.FirstChild.OuterXml.Should().StartWith("<?xml version=\"1.0\"");
+            xml.DocumentElement["Issuer", Saml2Namespaces.Saml2Name].InnerText.Should().Be(issuer);
+            xml.DocumentElement["Assertion", Saml2Namespaces.Saml2Name]
+                ["Subject", Saml2Namespaces.Saml2Name]["NameID", Saml2Namespaces.Saml2Name]
+                .InnerText.Should().Be(nameId);
+            xml.DocumentElement.GetAttribute("Destination").Should().Be(destination);
+            xml.DocumentElement.GetAttribute("ID").Should().NotBeBlank();
+            xml.DocumentElement.GetAttribute("Version").Should().Be("2.0");
+            xml.DocumentElement.GetAttribute("IssueInstant").Should().Match(
+                i => i == before || i == after);
+        }
+
+        [TestMethod]
+        public void Saml2Response_Xml_FromData_ContainsStatus_Success()
+        {
+            var identity = new ClaimsIdentity(new Claim[] 
+            {
+                new Claim(ClaimTypes.NameIdentifier, "JohnDoe") 
+            });
+
+            var response = new Saml2Response("issuer", SignedXmlHelper.TestCert,
+                new Uri("http://destination.example.com"), identity);
+
+            var xml = response.XmlDocument;
+
+            var subject = xml.DocumentElement["Status", Saml2Namespaces.Saml2PName];
+
+            subject["StatusCode", Saml2Namespaces.Saml2PName].GetAttribute("Value")
+                .Should().Be("urn:oasis:names:tc:SAML:2.0:status:Success");
+        }
+
+        [TestMethod]
+        public void Saml2Response_Xml_FromData_IsSigned()
+        {
+            var issuer = "http://idp.example.com";
+            var nameId = "JohnDoe";
+            var identity = new ClaimsIdentity(new Claim[] 
+            {
+                new Claim(ClaimTypes.NameIdentifier, nameId) 
+            });
+
+            var response = new Saml2Response(issuer, SignedXmlHelper.TestCert, 
+                null, claimsIdentities: identity);
+
+            var xml = response.XmlDocument;
+
+            var signedXml = new SignedXml(xml);
+            var signature = xml.DocumentElement["Signature", SignedXml.XmlDsigNamespaceUrl];
+            signedXml.LoadXml(signature);
+
+            signature.Should().NotBeNull();
+
+            signedXml.CheckSignature(SignedXmlHelper.TestCert, true).Should().BeTrue();
+        }
+
+        [TestMethod]
+        public void Saml2Response_ToXml()
+        {
+            string response = @"<?xml version=""1.0"" encoding=""UTF-8""?><saml2p:Response xmlns:saml2p=""urn:oasis:names:tc:SAML:2.0:protocol"" ID=""Saml2Response_ToXml"" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z""><saml2p:Status><saml2p:StatusCode Value=""urn:oasis:names:tc:SAML:2.0:status:Requester"" /></saml2p:Status></saml2p:Response>";
+            
+            var subject = Saml2Response.Read(response).ToXml();
+
+            subject.Should().Be(response);
+        }
+
+        [TestMethod]
+        public void Saml2Response_MessageName()
+        {
+            var subject = new Saml2Response("issuer", null, null);
+
+            subject.MessageName.Should().Be("SAMLResponse");
         }
     }
 }
