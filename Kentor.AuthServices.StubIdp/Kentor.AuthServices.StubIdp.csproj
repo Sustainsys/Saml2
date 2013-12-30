@@ -101,6 +101,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Content\Kentor.png" />
     <Content Include="Content\normalize.css" />
     <Content Include="Global.asax" />
     <Content Include="Content\Site.less" />
