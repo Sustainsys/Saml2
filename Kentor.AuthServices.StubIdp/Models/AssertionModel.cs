@@ -33,9 +33,12 @@ namespace Kentor.AuthServices.StubIdp.Models
             }
         }
 
+        // The X509KeyStorageFlags.MachineKeySet flag is required when loading a
+        // certificate from file on a shared hosting solution such as Azure.
         private static readonly X509Certificate2 signingCertificate = 
             new X509Certificate2(HttpContext.Current.Server.MapPath(
-                "~\\App_Data\\Kentor.AuthServices.StubIdp.pfx"));
+                "~\\App_Data\\Kentor.AuthServices.StubIdp.pfx"), "", 
+                X509KeyStorageFlags.MachineKeySet);
 
         public Saml2Response ToSaml2Response()
         {
