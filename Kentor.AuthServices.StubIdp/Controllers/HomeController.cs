@@ -30,5 +30,5 @@ namespace Kentor.AuthServices.StubIdp.Controllers
 
             return View(model);
         }
-	}
+    }
 }
