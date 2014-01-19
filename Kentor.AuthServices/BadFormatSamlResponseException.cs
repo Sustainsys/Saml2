@@ -43,7 +43,6 @@ namespace Kentor.AuthServices
         protected BadFormatSamlResponseException(SerializationInfo info, StreamingContext context)
             : base(info, context)
         {
-            throw new NotImplementedException();
         }
     }
 }

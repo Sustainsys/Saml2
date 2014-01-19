@@ -49,6 +49,5 @@ namespace Kentor.AuthServices.Tests
             }
 
         }
-
     }
 }

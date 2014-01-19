@@ -100,6 +100,7 @@
     <Compile Include="ClaimsIdentityExtensionsTests.cs" />
     <Compile Include="Saml2AssertionExtensionsTests.cs" />
     <Compile Include="AuthServicesExceptionTests.cs" />
+    <Compile Include="BadFormatSamlResponseExceptionTests.cs" />
     <Compile Include="XmlDocumentExtensionsTests.cs" />
     <Compile Include="XmlHelpersTests.cs" />
   </ItemGroup>
