@@ -83,6 +83,7 @@
   <ItemGroup>
     <Compile Include="AuthServicesControllerTests.cs" />
     <Compile Include="ClaimsAuthenticationManagerStub.cs" />
+    <Compile Include="ExceptionTestHelpers.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="CommandFactoryTests.cs" />
     <Compile Include="NotFoundCommandTests.cs" />
@@ -98,6 +99,7 @@
     <Compile Include="Saml2BindingTests.cs" />
     <Compile Include="ClaimsIdentityExtensionsTests.cs" />
     <Compile Include="Saml2AssertionExtensionsTests.cs" />
+    <Compile Include="AuthServicesExceptionTests.cs" />
     <Compile Include="XmlDocumentExtensionsTests.cs" />
     <Compile Include="XmlHelpersTests.cs" />
   </ItemGroup>
