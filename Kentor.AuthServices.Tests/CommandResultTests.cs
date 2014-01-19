@@ -28,6 +28,15 @@ namespace Kentor.AuthServices.Tests
         }
 
         [TestMethod]
+        public void CommandResult_Apply_ChecksResponseNull()
+        {
+            Action a = () => new CommandResult().Apply(null);
+
+            a.ShouldThrow<ArgumentNullException>().WithMessage(
+                "Value cannot be null.\r\nParameter name: response");
+        }
+
+        [TestMethod]
         public void CommandResult_Apply_HttpStatusCode()
         {
             var response = Substitute.For<HttpResponseBase>();

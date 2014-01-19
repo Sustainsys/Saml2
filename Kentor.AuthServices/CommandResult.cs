@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.IdentityModel.Services;
 using System.IdentityModel.Tokens;
 using System.Net;
@@ -55,7 +56,7 @@ namespace Kentor.AuthServices
         {
             if(response == null)
             {
-                throw new ArgumentException("response can't be null");
+                throw new ArgumentNullException("response");
             }
 
             response.Cache.SetCacheability(Cacheability);
@@ -81,6 +82,7 @@ namespace Kentor.AuthServices
         /// Applies the principal found in the command result by a call to the 
         /// session auth module.
         /// </summary>
+        [ExcludeFromCodeCoverage]
         public void ApplyPrincipal()
         {
             // Ignore this if we're not running inside IIS, e.g. in unit tests.
