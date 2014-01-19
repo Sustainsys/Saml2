@@ -20,13 +20,13 @@ namespace Kentor.AuthServices.Tests
         }
 
         [TestMethod]
-        public void TestBasicCtor()
+        public void AuthServicesException_DefaultCtor()
         {
             ExceptionTestHelpers.TestDefaultCtor<ConcreteAuthServicesException>();
         }
 
         [TestMethod]
-        public void TestSerializationCtor()
+        public void AuthServicesException_SerializationCtor()
         {
             ExceptionTestHelpers.TestSerializationCtor<ConcreteAuthServicesException>();
         }
