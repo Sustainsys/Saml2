@@ -9,6 +9,15 @@ namespace Kentor.AuthServices.Tests
     [TestClass]
     public class Saml2AssertionExtensionsTests
     {
+        [TestMethod]
+        public void Saml2AssertionExtensions_ToXElement_NullCheck()
+        {
+            Saml2Assertion assertion = null;
+
+            Action a = () => assertion.ToXElement();
+
+            a.ShouldThrow<ArgumentNullException>().WithMessage("Value cannot be null.\r\nParameter name: assertion");
+        }
 
         [TestMethod]
         public void Saml2AssertionExtensions_ToXElement_Xml_BasicAttributes()
