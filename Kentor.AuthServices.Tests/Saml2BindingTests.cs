@@ -48,5 +48,24 @@ namespace Kentor.AuthServices.Tests
 
             Saml2PostBinding.Get(r).Should().BeOfType<Saml2PostBinding>();
         }
+
+        class ConcreteSaml2Binding : Saml2Binding
+        { }
+
+        [TestMethod]
+        public void Saml2Binding_Bind_IsNotImplemented()
+        {
+            Action a = () => new ConcreteSaml2Binding().Bind(null);
+
+            a.ShouldThrow<NotImplementedException>();
+        }
+
+        [TestMethod]
+        public void Saml2Binding_Unbind_IsNotImplemented()
+        {
+            Action a = () => new ConcreteSaml2Binding().Unbind(null);
+
+            a.ShouldThrow<NotImplementedException>();
+        }
     }
 }
