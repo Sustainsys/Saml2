@@ -9,6 +9,16 @@ namespace Kentor.AuthServices.Tests
     public class ClaimsIdentityExtensionsTests
     {
         [TestMethod]
+        public void ClaimsIdentityExtensions_ToSaml2Assertion_ThrowsOnNullIdentity()
+        {
+            ClaimsIdentity identity = null;
+
+            Action a = () => identity.ToSaml2Assertion("foo");
+
+            a.ShouldThrow<ArgumentNullException>().WithMessage("Value cannot be null.\r\nParameter name: identity");
+        }
+
+        [TestMethod]
         public void ClaimsIdentityExtensions_ToSaml2Assertion_Includes_Subject()
         {
             var subject = "JohnDoe";
