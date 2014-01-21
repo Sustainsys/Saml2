@@ -8,7 +8,7 @@ namespace Kentor.AuthServices
 {
     class Saml2PostBinding : Saml2Binding
     {
-        protected override bool CanUnbind(System.Web.HttpRequestBase request)
+        protected internal override bool CanUnbind(System.Web.HttpRequestBase request)
         {
             if (request == null)
             {

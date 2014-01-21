@@ -22,6 +22,15 @@ namespace Kentor.AuthServices.Tests
         }
 
         [TestMethod]
+        public void Saml2PostBinding_Unbind_Nullcheck()
+        {
+            Saml2Binding.Get(Saml2BindingType.HttpPost)
+                .Invoking(b => b.Unbind(null))
+                .ShouldThrow<ArgumentNullException>().WithMessage(
+                "Value cannot be null.\r\nParameter name: request");
+        }
+
+        [TestMethod]
         public void Saml2PostBinding_Unbind_ThrowsOnNotBase64Encoded()
         {
             Saml2Binding.Get(Saml2BindingType.HttpPost)
@@ -43,6 +52,14 @@ namespace Kentor.AuthServices.Tests
             var r = CreateRequest(Convert.ToBase64String(Encoding.UTF8.GetBytes(response)));
 
             Saml2Binding.Get(Saml2BindingType.HttpPost).Unbind(r).Id.Should().Be("id1");
+        }
+
+        [TestMethod]
+        public void Saml2PostBinding_Bind_Nullcheck()
+        {
+            Saml2Binding.Get(Saml2BindingType.HttpPost)
+                .Invoking(b => b.Bind(null))
+                .ShouldThrow<ArgumentNullException>("Value cannot be null.\r\nParameter name: message");
         }
 
         [TestMethod]
@@ -86,6 +103,15 @@ value=""PHJvb3Q+PGNvbnRlbnQ+ZGF0YTwvY29udGVudD48L3Jvb3Q+""/>
             };
 
             subject.ShouldBeEquivalentTo(expected);
+        }
+
+        [TestMethod]
+        public void Saml2PostBinding_CanUnbind_Nullcheck()
+        {
+            Saml2Binding.Get(Saml2BindingType.HttpPost)
+                .Invoking(b => b.CanUnbind(null))
+                .ShouldThrow<ArgumentNullException>()
+                .WithMessage("Value cannot be null.\r\nParameter name: request");
         }
     }
 }

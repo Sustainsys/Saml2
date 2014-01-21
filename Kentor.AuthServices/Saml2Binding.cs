@@ -39,7 +39,7 @@ namespace Kentor.AuthServices
         /// </summary>
         /// <param name="request">HttpRequest to check for message.</param>
         /// <returns>True if the binding supports the current request.</returns>
-        protected virtual bool CanUnbind(HttpRequestBase request)
+        protected internal virtual bool CanUnbind(HttpRequestBase request)
         {
             return false;
         }
