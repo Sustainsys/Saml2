@@ -60,7 +60,6 @@
     <Compile Include="Configuration\IdentityProviderElement.cs" />
     <Compile Include="Configuration\CertificateElement.cs" />
     <Compile Include="Enumerator.cs" />
-    <Compile Include="GenericEnumeratorAdapter.cs" />
     <Compile Include="IdentityProvider.cs" />
     <Compile Include="ISaml2Message.cs" />
     <Compile Include="MorePublicSaml2SecurityTokenHandler.cs" />
