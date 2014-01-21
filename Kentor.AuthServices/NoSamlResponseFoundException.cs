@@ -42,7 +42,6 @@ namespace Kentor.AuthServices
         protected NoSamlResponseFoundException(SerializationInfo info, StreamingContext context)
             : base(info, context)
         {
-            throw new NotImplementedException();
         }
     }
 }
