@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.IdentityModel.Services;
 using System.IdentityModel.Tokens;
 using System.Linq;
@@ -12,6 +13,8 @@ namespace Kentor.AuthServices
     /// ~/Saml2AuthenticationModule/ path of the http application to provide 
     /// authentication services.
     /// </summary>
+    // Not included in code coverage as the http module is tightly dependent on IIS.
+    [ExcludeFromCodeCoverage]
     public class Saml2AuthenticationModule : IHttpModule
     {
         /// <summary>
