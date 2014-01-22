@@ -255,6 +255,10 @@ namespace Kentor.AuthServices.Tests
 
             a.ShouldThrow<InvalidOperationException>()
                 .WithMessage("The Saml2Response didn't pass validation");
+
+            // Test that it throws again on subsequent calls.
+            a.ShouldThrow<InvalidOperationException>()
+                .WithMessage("The Saml2Response didn't pass validation");
         }
 
         [TestMethod]
