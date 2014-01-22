@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Configuration;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Linq;
 using System.Security.Cryptography.X509Certificates;
@@ -28,6 +29,7 @@ namespace Kentor.AuthServices.Configuration
         /// Store name to search.
         /// </summary>
         [ConfigurationProperty("storeName")]
+        [ExcludeFromCodeCoverage]
         public StoreName StoreName
         {
             get
@@ -40,6 +42,7 @@ namespace Kentor.AuthServices.Configuration
         /// Store location to search.
         /// </summary>
         [ConfigurationProperty("storeLocation")]
+        [ExcludeFromCodeCoverage]
         public StoreLocation StoreLocation
         {
             get
@@ -52,6 +55,7 @@ namespace Kentor.AuthServices.Configuration
         /// The search term used for searching the certificate store.
         /// </summary>
         [ConfigurationProperty("findValue")]
+        [ExcludeFromCodeCoverage]
         public string FindValue
         {
             get
@@ -64,6 +68,7 @@ namespace Kentor.AuthServices.Configuration
         /// Find type, what field to search.
         /// </summary>
         [ConfigurationProperty("x509FindType")]
+        [ExcludeFromCodeCoverage]
         public X509FindType X509FindType
         {
             get
@@ -76,6 +81,7 @@ namespace Kentor.AuthServices.Configuration
         /// Load the certificate pointed to by this configuration.
         /// </summary>
         /// <returns>Certificate</returns>
+        [ExcludeFromCodeCoverage]
         public X509Certificate2 LoadCertificate()
         {
             if (!string.IsNullOrEmpty(FileName))
