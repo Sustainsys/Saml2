@@ -14,6 +14,26 @@ namespace Kentor.AuthServices.Tests
         public static readonly X509Certificate2 TestCert = new X509Certificate2("Kentor.AuthServices.Tests.pfx");
 
         [TestMethod]
+        public void XmlDocumentExtensions_Sign_Nullcheck_xmlDocument()
+        {
+            XmlDocument xd = null;
+            Action a = () => xd.Sign(TestCert);
+
+            a.ShouldThrow<ArgumentNullException>().WithMessage(
+                "Value cannot be null.\r\nParameter name: xmlDocument");
+        }
+
+        [TestMethod]
+        public void XmlDocumentExtensions_Sign_Nullcheck_Cert()
+        {
+            XmlDocument xd = new XmlDocument();
+            Action a = () => xd.Sign(null);
+
+            a.ShouldThrow<ArgumentNullException>().WithMessage(
+                "Value cannot be null.\r\nParameter name: cert");
+        }
+
+        [TestMethod]
         public void XmlDocumentExtensions_Sign()
         {
             var xmlDoc = new XmlDocument();
