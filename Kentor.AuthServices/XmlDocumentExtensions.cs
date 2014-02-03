@@ -20,7 +20,7 @@ namespace Kentor.AuthServices
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1059:MembersShouldNotExposeCertainConcreteTypes", MessageId = "System.Xml.XmlNode")]
         public static void Sign(this XmlDocument xmlDocument, X509Certificate2 cert)
         {
-            if(xmlDocument == null)
+            if (xmlDocument == null)
             {
                 throw new ArgumentNullException("xmlDocument");
             }
@@ -35,7 +35,7 @@ namespace Kentor.AuthServices
             signedXml.SigningKey = (RSACryptoServiceProvider)cert.PrivateKey;
 
             var reference = new Reference();
-            reference.Uri = "";
+            reference.Uri = "#" + xmlDocument.DocumentElement.GetAttribute("ID");
             reference.AddTransform(new XmlDsigEnvelopedSignatureTransform());
 
             signedXml.AddReference(reference);
