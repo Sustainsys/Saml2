@@ -8,10 +8,20 @@ using FluentAssertions;
 
 namespace Kentor.AuthServices.Tests
 {
+    using System.Globalization;
+    using System.Threading;
+
     [TestClass]
     public class XmlDocumentExtensionsTests
     {
         public static readonly X509Certificate2 TestCert = new X509Certificate2("Kentor.AuthServices.Tests.pfx");
+
+        [TestInitialize]
+        public void MyTestInitialize()
+        {
+            Thread.CurrentThread.CurrentCulture = new CultureInfo("en-US");
+            Thread.CurrentThread.CurrentUICulture = new CultureInfo("en-US");
+        }
 
         [TestMethod]
         public void XmlDocumentExtensions_Sign_Nullcheck_xmlDocument()
@@ -37,7 +47,7 @@ namespace Kentor.AuthServices.Tests
         public void XmlDocumentExtensions_Sign()
         {
             var xmlDoc = new XmlDocument();
-            xmlDoc.LoadXml("<root><content>Some Content</content></root>");
+            xmlDoc.LoadXml("<root ID=\"roolElementId\"><content>Some Content</content></root>");
 
             xmlDoc.Sign(TestCert);
 
