@@ -10,6 +10,9 @@ using System.Text;
 
 namespace Kentor.AuthServices.Tests
 {
+    using System.Globalization;
+    using System.Threading;
+
     [TestClass]
     public class Saml2PostBindingTests
     {
@@ -19,6 +22,13 @@ namespace Kentor.AuthServices.Tests
             r.HttpMethod.Returns("POST");
             r.Form.Returns(new NameValueCollection() { { "SAMLResponse", encodedResponse } });
             return r;
+        }
+
+        [TestInitialize]
+        public void MyTestInitialize()
+        {
+            Thread.CurrentThread.CurrentCulture = new CultureInfo("en-US");
+            Thread.CurrentThread.CurrentUICulture = new CultureInfo("en-US");
         }
 
         [TestMethod]

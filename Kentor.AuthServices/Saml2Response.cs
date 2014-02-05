@@ -227,13 +227,8 @@ namespace Kentor.AuthServices
             {
                 if (this.allAssertionElementNodes == null)
                 {
-                    if (this.xmlDocument == null || this.xmlDocument.DocumentElement == null)
-                    {
-                        return this.allAssertionElementNodes = new XmlElement[0];
-                    }
-
                     this.allAssertionElementNodes =
-                        this.xmlDocument.DocumentElement.ChildNodes.Cast<XmlElement>()
+                        this.XmlDocument.DocumentElement.ChildNodes.Cast<XmlNode>().Where(node => node.NodeType == XmlNodeType.Element).Cast<XmlElement>()
                             .Where(xe => xe.LocalName == "Assertion" && xe.NamespaceURI == Saml2Namespaces.Saml2Name)
                             .ToArray();
                 }
@@ -253,29 +248,19 @@ namespace Kentor.AuthServices
             {
                 return this.valid;
             }
-
-            if (this.xmlDocument == null || this.xmlDocument.DocumentElement == null)
-            {
-                this.valid = false;
-                this.validated = false;
-
-                return this.valid;
-            }
-
-            var signedXml = new SignedXml(this.xmlDocument);
-
+            
             // If the response message is signed, we check just this signature because the whole content has to be correct then
-            var responseSignature = this.xmlDocument.DocumentElement["Signature", SignedXml.XmlDsigNamespaceUrl];
+            var responseSignature = this.XmlDocument.DocumentElement["Signature", SignedXml.XmlDsigNamespaceUrl];
             if (responseSignature != null)
             {
-                this.valid = CheckSignature(signedXml, this.xmlDocument.DocumentElement, idpCertificate);
+                this.valid = CheckSignature(this.XmlDocument.DocumentElement, idpCertificate);
             }
             else
             {
                 // If the response message is not signed, all assersions have to be signed correctly
                 foreach (var assertionNode in this.AllAssertionElementNodes)
                 {
-                    this.valid = CheckSignature(signedXml, assertionNode, idpCertificate);
+                    this.valid = CheckSignature(assertionNode, idpCertificate);
                     if (!this.valid)
                     {
                         break;
@@ -289,31 +274,32 @@ namespace Kentor.AuthServices
         }
 
         /// <summary>Checks the signature.</summary>
-        /// <param name="signedXml">The signed XML.</param>
         /// <param name="signedRootElement">The signed root element.</param>
         /// <param name="idpCertificate">The idp certificate.</param>
-        /// <returns><c>true</c> if the whole signature was successful; otherwise <c>false</c></returns>
-        private static bool CheckSignature(SignedXml signedXml, XmlElement signedRootElement, X509Certificate2 idpCertificate)
+        /// <returns>
+        ///   <c>true</c> if the whole signature check was successful; otherwise <c>false</c>
+        /// </returns>
+        private static bool CheckSignature(XmlElement signedRootElement, X509Certificate2 idpCertificate)
         {
-            var signature = signedRootElement["Signature", SignedXml.XmlDsigNamespaceUrl];
+            var xmlDocument = new XmlDocument { PreserveWhitespace = true };
+            xmlDocument.LoadXml(signedRootElement.OuterXml);
+
+            var signature = xmlDocument.DocumentElement["Signature", SignedXml.XmlDsigNamespaceUrl];
             if (signature == null)
             {
                 return false;
             }
-            
+
+            var signedXml = new SignedXml(xmlDocument);
             signedXml.LoadXml(signature);
-            if (!signedXml.CheckSignature(idpCertificate, true))
-            {
-                return false;
-            }
-
-            if (signedXml.SignedInfo.References.Count == 0)
-            {
-                return false;
-            }
-
+            
             var signedRootElementId = "#" + signedRootElement.GetAttribute("ID");
-            return signedXml.SignedInfo.References.Cast<Reference>().Any(reference => reference.Uri == signedRootElementId);
+            if (signedXml.SignedInfo.References.Cast<Reference>().All(reference => reference.Uri != signedRootElementId))
+            {
+                return false;
+            }
+
+            return signedXml.CheckSignature(idpCertificate, true);
         }
 
         private void ThrowOnNotValid()

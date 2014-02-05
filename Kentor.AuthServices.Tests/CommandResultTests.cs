@@ -9,9 +9,19 @@ using System.Security.Principal;
 
 namespace Kentor.AuthServices.Tests
 {
+    using System.Globalization;
+    using System.Threading;
+
     [TestClass]
     public class CommandResultTests
     {
+        [TestInitialize]
+        public void MyTestInitialize()
+        {
+            Thread.CurrentThread.CurrentCulture = new CultureInfo("en-US");
+            Thread.CurrentThread.CurrentUICulture = new CultureInfo("en-US");
+        }
+
         [TestMethod]
         public void CommandResult_Defaults()
         {
