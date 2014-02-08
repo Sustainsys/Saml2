@@ -16,7 +16,7 @@ namespace Kentor.AuthServices.Tests
 
             Action a = () => assertion.ToXElement();
 
-            a.ShouldThrow<ArgumentNullException>().WithMessage("Value cannot be null.\r\nParameter name: assertion");
+            a.ShouldThrow<ArgumentNullException>().And.Message.Contains("assertion");
         }
 
         [TestMethod]

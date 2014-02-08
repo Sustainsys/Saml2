@@ -15,7 +15,7 @@ namespace Kentor.AuthServices.Tests
 
             Action a = () => identity.ToSaml2Assertion("foo");
 
-            a.ShouldThrow<ArgumentNullException>().WithMessage("Value cannot be null.\r\nParameter name: identity");
+            a.ShouldThrow<ArgumentNullException>().And.Message.Contains("identity");
         }
 
         [TestMethod]

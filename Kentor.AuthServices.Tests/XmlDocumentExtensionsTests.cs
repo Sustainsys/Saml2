@@ -19,8 +19,7 @@ namespace Kentor.AuthServices.Tests
             XmlDocument xd = null;
             Action a = () => xd.Sign(TestCert);
 
-            a.ShouldThrow<ArgumentNullException>().WithMessage(
-                "Value cannot be null.\r\nParameter name: xmlDocument");
+            a.ShouldThrow<ArgumentNullException>().And.Message.Contains("xmlDocument");
         }
 
         [TestMethod]
@@ -29,8 +28,7 @@ namespace Kentor.AuthServices.Tests
             XmlDocument xd = new XmlDocument();
             Action a = () => xd.Sign(null);
 
-            a.ShouldThrow<ArgumentNullException>().WithMessage(
-                "Value cannot be null.\r\nParameter name: cert");
+            a.ShouldThrow<ArgumentNullException>().And.Message.Contains("cert");
         }
 
         [TestMethod]

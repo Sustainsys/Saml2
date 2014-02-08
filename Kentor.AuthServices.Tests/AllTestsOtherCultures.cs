@@ -18,6 +18,7 @@ namespace Kentor.AuthServices.Tests
         /// UI cultures. It won't pass if any of the other tests fail.
         /// </summary>
         [TestMethod]
+        [NotReRunnable]
         public void RunAllTestsWithOtherCultures()
         {
             var testClasses = (from t in Assembly.GetExecutingAssembly().DefinedTypes
@@ -61,17 +62,17 @@ namespace Kentor.AuthServices.Tests
                         }
                         foreach (var m in c.TestMethods)
                         {
-                            if(c.TestInit != null)
+                            if (c.TestInit != null)
                             {
                                 c.TestInit.Invoke(instance, emtpyObjArray);
                             }
                             m.Invoke(instance, emtpyObjArray);
-                            if(c.TestCleanup != null)
+                            if (c.TestCleanup != null)
                             {
                                 c.TestCleanup.Invoke(instance, emtpyObjArray);
                             }
                         }
-                        if(c.ClassCleanup != null)
+                        if (c.ClassCleanup != null)
                         {
                             c.ClassCleanup.Invoke(instance, emtpyObjArray);
                         }

@@ -32,8 +32,7 @@ namespace Kentor.AuthServices.Tests
         {
             Action a = () => new CommandResult().Apply(null);
 
-            a.ShouldThrow<ArgumentNullException>().WithMessage(
-                "Value cannot be null.\r\nParameter name: response");
+            a.ShouldThrow<ArgumentNullException>().And.Message.Contains("response");
         }
 
         [TestMethod]

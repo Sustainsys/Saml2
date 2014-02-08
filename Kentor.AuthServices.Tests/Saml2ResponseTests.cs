@@ -45,8 +45,7 @@ namespace Kentor.AuthServices.Tests
         {
             Action a = () => Saml2Response.Read("not xml");
 
-            a.ShouldThrow<XmlException>()
-                .WithMessage("Data at the root level is invalid. Line 1, position 1.");
+            a.ShouldThrow<XmlException>();
         }
 
         [TestMethod]
@@ -149,6 +148,7 @@ namespace Kentor.AuthServices.Tests
             Saml2Response.Read(signedResponse).Validate(SignedXmlHelper.TestCert).Should().BeFalse();
         }
 
+        [NotReRunnable]
         [TestMethod]
         public void Saml2Response_GetClaims_CreateIdentities()
         {
@@ -261,6 +261,7 @@ namespace Kentor.AuthServices.Tests
                 .WithMessage("The Saml2Response didn't pass validation");
         }
 
+        [NotReRunnable]
         [TestMethod]
         public void Saml2Response_GetClaims_ThrowsOnWrongAudience()
         {
@@ -343,6 +344,7 @@ namespace Kentor.AuthServices.Tests
         }
 
         [TestMethod]
+        [NotReRunnable]
         public void Saml2Response_GetClaims_ThrowsOnReplayAssertionId()
         {
             var response =

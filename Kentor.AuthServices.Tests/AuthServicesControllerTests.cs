@@ -25,6 +25,7 @@ namespace Kentor.AuthServices.Tests
                 .Should().Contain("?SAMLRequest");
         }
 
+        [NotReRunnable]
         [TestMethod]
         public void AuthServicesController_Acs_Works()
         {

@@ -26,8 +26,7 @@ namespace Kentor.AuthServices.Tests
         {
             Saml2Binding.Get(Saml2BindingType.HttpPost)
                 .Invoking(b => b.Unbind(null))
-                .ShouldThrow<ArgumentNullException>().WithMessage(
-                "Value cannot be null.\r\nParameter name: request");
+                .ShouldThrow<ArgumentNullException>().And.Message.Contains("request");
         }
 
         [TestMethod]
@@ -110,8 +109,7 @@ value=""PHJvb3Q+PGNvbnRlbnQ+ZGF0YTwvY29udGVudD48L3Jvb3Q+""/>
         {
             Saml2Binding.Get(Saml2BindingType.HttpPost)
                 .Invoking(b => b.CanUnbind(null))
-                .ShouldThrow<ArgumentNullException>()
-                .WithMessage("Value cannot be null.\r\nParameter name: request");
+                .ShouldThrow<ArgumentNullException>().And.Message.Contains("request");
         }
     }
 }

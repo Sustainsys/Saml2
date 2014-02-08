@@ -13,8 +13,7 @@ namespace Kentor.AuthServices.Tests
             Action a = () => Saml2Binding.Get(Saml2BindingType.HttpRedirect)
                 .Bind(null);
 
-            a.ShouldThrow<ArgumentNullException>().WithMessage(
-                "Value cannot be null.\r\nParameter name: message");
+            a.ShouldThrow<ArgumentNullException>().And.Message.Contains("message");
         }
     }
 }

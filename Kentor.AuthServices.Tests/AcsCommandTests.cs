@@ -53,6 +53,7 @@ namespace Kentor.AuthServices.Tests
         }
 
         [TestMethod]
+        [NotReRunnable]
         public void AcsCommand_Run_SuccessfulResult()
         {
             var r = Substitute.For<HttpRequestBase>();
