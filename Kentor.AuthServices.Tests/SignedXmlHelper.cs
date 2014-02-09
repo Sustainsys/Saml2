@@ -17,6 +17,7 @@ namespace Kentor.AuthServices.Tests
         public static string SignXml(string xml)
         {
             var xmlDoc = new XmlDocument();
+            xmlDoc.PreserveWhitespace = true;
             xmlDoc.LoadXml(xml);
 
             xmlDoc.Sign(TestCert);

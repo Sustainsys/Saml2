@@ -296,7 +296,7 @@ namespace Kentor.AuthServices
         {
             ThrowOnNotValid();
 
-            foreach (XmlElement assertionNode in xmlDocument.DocumentElement.ChildNodes.Cast<XmlElement>()
+            foreach (XmlElement assertionNode in xmlDocument.DocumentElement.ChildNodes.OfType<XmlElement>()
                 .Where(xe => xe.LocalName == "Assertion" && xe.NamespaceURI == Saml2Namespaces.Saml2Name))
             {
                 using (var reader = new XmlNodeReader(assertionNode))
