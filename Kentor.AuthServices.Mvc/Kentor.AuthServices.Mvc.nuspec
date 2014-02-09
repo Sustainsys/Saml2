@@ -23,6 +23,7 @@ Version 0.3.0
     <dependencies>
       <group>
         <dependency id="Kentor.AuthServices" version="$version$" />
+        <dependency id="Microsoft.AspNet.Mvc" version="1.0" />
       </group>
     </dependencies>
   </metadata>
