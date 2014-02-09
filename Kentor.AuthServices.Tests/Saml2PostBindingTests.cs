@@ -50,7 +50,7 @@ namespace Kentor.AuthServices.Tests
 
             var r = CreateRequest(Convert.ToBase64String(Encoding.UTF8.GetBytes(response)));
 
-            Saml2Binding.Get(Saml2BindingType.HttpPost).Unbind(r).Id.Should().Be("id1");
+            Saml2Binding.Get(Saml2BindingType.HttpPost).Unbind(r).Id.Value.Should().Be("id1");
         }
 
         [TestMethod]

@@ -28,7 +28,7 @@ namespace Kentor.AuthServices.Tests
 
             var expected = new
             {
-                Id = "Saml2Response_Read_BasicParams",
+                Id = new Saml2Id("Saml2Response_Read_BasicParams"),
                 IssueInstant = new DateTime(2013, 01, 01, 0, 0, 0, DateTimeKind.Utc),
                 Status = Saml2StatusCode.Requester,
                 Issuer = (string)null,

@@ -49,7 +49,7 @@ namespace Kentor.AuthServices
         {
             xmlDocument = xml;
 
-            id = xml.DocumentElement.Attributes["ID"].Value;
+            id = new Saml2Id(xml.DocumentElement.Attributes["ID"].Value);
 
             issueInstant = DateTime.Parse(xml.DocumentElement.Attributes["IssueInstant"].Value,
                 CultureInfo.InvariantCulture, DateTimeStyles.AdjustToUniversal);
@@ -85,7 +85,7 @@ namespace Kentor.AuthServices
             this.claimsIdentities = claimsIdentities;
             this.issuerCertificate = issuerCertificate;
             this.destinationUri = destinationUri;
-            id = "id" + Guid.NewGuid().ToString("N");
+            id = new Saml2Id("id" + Guid.NewGuid().ToString("N"));
             status = Saml2StatusCode.Success;
         }
 
@@ -143,7 +143,7 @@ namespace Kentor.AuthServices
                 responseElement.SetAttributeNode("Destination", "").Value = DestinationUri.ToString();
             }
 
-            responseElement.SetAttributeNode("ID", "").Value = id;
+            responseElement.SetAttributeNode("ID", "").Value = id.Value;
             responseElement.SetAttributeNode("Version", "").Value = "2.0";
             responseElement.SetAttributeNode("IssueInstant", "").Value =
                 DateTime.UtcNow.ToString("s", CultureInfo.InvariantCulture) + "Z";
@@ -170,12 +170,12 @@ namespace Kentor.AuthServices
             xml.Sign(issuerCertificate);
         }
 
-        readonly string id;
+        readonly Saml2Id id;
 
         /// <summary>
         /// Id of the response message.
         /// </summary>
-        public string Id { get { return id; } }
+        public Saml2Id Id { get { return id; } }
 
         readonly DateTime issueInstant;
 
