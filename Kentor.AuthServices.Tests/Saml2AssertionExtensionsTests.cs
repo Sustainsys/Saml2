@@ -2,7 +2,6 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.IdentityModel.Tokens;
 using FluentAssertions;
-using System.Collections.ObjectModel;
 
 namespace Kentor.AuthServices.Tests
 {
