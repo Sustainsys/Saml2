@@ -5,19 +5,9 @@ using FluentAssertions;
 
 namespace Kentor.AuthServices.Tests
 {
-    using System.Globalization;
-    using System.Threading;
-
     [TestClass]
     public class ClaimsIdentityExtensionsTests
     {
-        [TestInitialize]
-        public void MyTestInitialize()
-        {
-            Thread.CurrentThread.CurrentCulture = new CultureInfo("en-US");
-            Thread.CurrentThread.CurrentUICulture = new CultureInfo("en-US");
-        } 
-
         [TestMethod]
         public void ClaimsIdentityExtensions_ToSaml2Assertion_ThrowsOnNullIdentity()
         {

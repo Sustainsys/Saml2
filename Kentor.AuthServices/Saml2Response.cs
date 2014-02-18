@@ -1,5 +1,4 @@
-﻿using Kentor.AuthServices.Configuration;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IdentityModel.Tokens;
@@ -7,8 +6,6 @@ using System.Linq;
 using System.Security.Claims;
 using System.Security.Cryptography.X509Certificates;
 using System.Security.Cryptography.Xml;
-using System.Text;
-using System.Threading.Tasks;
 using System.Xml;
 
 namespace Kentor.AuthServices
@@ -19,6 +16,9 @@ namespace Kentor.AuthServices
     /// </summary>
     public class Saml2Response : ISaml2Message
     {
+        /// <summary>Holds all assertion element nodes</summary>
+        private XmlElement[] allAssertionElementNodes;
+
         /// <summary>
         /// Read the supplied Xml and parse it into a response.
         /// </summary>
@@ -217,8 +217,25 @@ namespace Kentor.AuthServices
             }
         }
 
-
         bool valid = false, validated = false;
+
+        /// <summary>Gets all assertion element nodes from this response message.</summary>
+        /// <value>All assertion element nodes.</value>
+        protected IEnumerable<XmlElement> AllAssertionElementNodes
+        {
+            get
+            {
+                if (this.allAssertionElementNodes == null)
+                {
+                    this.allAssertionElementNodes =
+                        this.XmlDocument.DocumentElement.ChildNodes.Cast<XmlNode>().Where(node => node.NodeType == XmlNodeType.Element).Cast<XmlElement>()
+                            .Where(xe => xe.LocalName == "Assertion" && xe.NamespaceURI == Saml2Namespaces.Saml2Name)
+                            .ToArray();
+                }
+
+                return this.allAssertionElementNodes;
+            }
+        }
 
         /// <summary>
         /// Validates the response.
@@ -227,25 +244,61 @@ namespace Kentor.AuthServices
         /// <returns>Is the response signed by the Idp and fulfills other formal requirements?</returns>
         public bool Validate(X509Certificate2 idpCertificate)
         {
-            if (!validated)
+            if (this.validated)
             {
-                var signedXml = new SignedXml(xmlDocument);
-
-                var signature = xmlDocument.DocumentElement["Signature", SignedXml.XmlDsigNamespaceUrl];
-
-                if (signature != null)
-                {
-                    signedXml.LoadXml(signature);
-
-                    valid = signedXml.CheckSignature(idpCertificate, true);
-                }
-                else
-                {
-                    valid = false;
-                }
-                validated = true;
+                return this.valid;
             }
-            return valid;
+
+            // If the response message is signed, we check just this signature because the whole content has to be correct then
+            var responseSignature = this.XmlDocument.DocumentElement["Signature", SignedXml.XmlDsigNamespaceUrl];
+            if (responseSignature != null)
+            {
+                this.valid = CheckSignature(this.XmlDocument.DocumentElement, idpCertificate);
+            }
+            else
+            {
+                // If the response message is not signed, all assersions have to be signed correctly
+                foreach (var assertionNode in this.AllAssertionElementNodes)
+                {
+                    this.valid = CheckSignature(assertionNode, idpCertificate);
+                    if (!this.valid)
+                    {
+                        break;
+                    }
+                }
+            }
+
+            this.validated = true;
+
+            return this.valid;
+        }
+
+        /// <summary>Checks the signature.</summary>
+        /// <param name="signedXml">The signed XML.</param>
+        /// <param name="signedRootElement">The signed root element.</param>
+        /// <param name="idpCertificate">The idp certificate.</param>
+        /// <returns><c>true</c> if the whole signature was successful; otherwise <c>false</c></returns>
+        private static bool CheckSignature(XmlElement signedRootElement, X509Certificate2 idpCertificate)
+        {
+            var xmlDocument = new XmlDocument { PreserveWhitespace = true };
+            xmlDocument.LoadXml(signedRootElement.OuterXml);
+
+            var signature = xmlDocument.DocumentElement["Signature", SignedXml.XmlDsigNamespaceUrl];
+            if (signature == null)
+            {
+                return false;
+            }
+
+            var signedXml = new SignedXml(xmlDocument);
+            signedXml.LoadXml(signature);
+
+            var signedRootElementId = "#" + signedRootElement.GetAttribute("ID");
+            if (signedXml.SignedInfo.References.Cast<Reference>().All(reference => reference.Uri != signedRootElementId))
+            {
+                return false;
+            }
+
+            return signedXml.CheckSignature(idpCertificate, true);
         }
 
         private void ThrowOnNotValid()
@@ -296,8 +349,7 @@ namespace Kentor.AuthServices
         {
             ThrowOnNotValid();
 
-            foreach (XmlElement assertionNode in xmlDocument.DocumentElement.ChildNodes.OfType<XmlElement>()
-                .Where(xe => xe.LocalName == "Assertion" && xe.NamespaceURI == Saml2Namespaces.Saml2Name))
+            foreach (XmlElement assertionNode in this.AllAssertionElementNodes)
             {
                 using (var reader = new XmlNodeReader(assertionNode))
                 {

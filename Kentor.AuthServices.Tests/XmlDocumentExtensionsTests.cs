@@ -1,27 +1,16 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Xml;
-using Kentor.AuthServices;
 using System.Security.Cryptography.X509Certificates;
 using System.Security.Cryptography.Xml;
 using FluentAssertions;
 
 namespace Kentor.AuthServices.Tests
 {
-    using System.Globalization;
-    using System.Threading;
-
     [TestClass]
     public class XmlDocumentExtensionsTests
     {
         public static readonly X509Certificate2 TestCert = new X509Certificate2("Kentor.AuthServices.Tests.pfx");
-
-        [TestInitialize]
-        public void MyTestInitialize()
-        {
-            Thread.CurrentThread.CurrentCulture = new CultureInfo("en-US");
-            Thread.CurrentThread.CurrentUICulture = new CultureInfo("en-US");
-        }
 
         [TestMethod]
         public void XmlDocumentExtensions_Sign_Nullcheck_xmlDocument()
