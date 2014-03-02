@@ -59,6 +59,7 @@
     <Compile Include="Configuration\IdentityProviderCollection.cs" />
     <Compile Include="Configuration\IdentityProviderElement.cs" />
     <Compile Include="Configuration\CertificateElement.cs" />
+    <Compile Include="DateTimeExtensions.cs" />
     <Compile Include="Enumerator.cs" />
     <Compile Include="IdentityProvider.cs" />
     <Compile Include="ISaml2Message.cs" />

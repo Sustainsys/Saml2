@@ -106,6 +106,7 @@
     <Compile Include="ReturnRequestedIssuerNameRegistryTests.cs" />
     <Compile Include="Saml2RedirectBindingTests.cs" />
     <Compile Include="AllTestsOtherCultures.cs" />
+    <Compile Include="DateTimeExtensionsTests.cs" />
     <Compile Include="XmlDocumentExtensionsTests.cs" />
     <Compile Include="XmlHelpersTests.cs" />
   </ItemGroup>
