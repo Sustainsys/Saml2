@@ -415,10 +415,10 @@ namespace Kentor.AuthServices.Tests
             // Grab current time both before and after generating the response
             // to avoid heisenbugs if the second counter is updated while creating
             // the response.
-            string before = DateTime.UtcNow.ToString("s") + "Z";
+            string before = DateTime.UtcNow.ToSaml2DateTimeString();
             var response = new Saml2Response(issuer, SignedXmlHelper.TestCert, 
                 new Uri(destination), identity);
-            string after = DateTime.UtcNow.ToString("s") + "Z";
+            string after = DateTime.UtcNow.ToSaml2DateTimeString();
 
             var xml = response.XmlDocument;
 

@@ -146,7 +146,7 @@ namespace Kentor.AuthServices
             responseElement.SetAttributeNode("ID", "").Value = id.Value;
             responseElement.SetAttributeNode("Version", "").Value = "2.0";
             responseElement.SetAttributeNode("IssueInstant", "").Value =
-                DateTime.UtcNow.ToString("s", CultureInfo.InvariantCulture) + "Z";
+                DateTime.UtcNow.ToSaml2DateTimeString();
             xml.AppendChild(responseElement);
 
             var issuerElement = xml.CreateElement("saml2", "Issuer", Saml2Namespaces.Saml2Name);

@@ -27,7 +27,7 @@ namespace Kentor.AuthServices
                 new XAttribute("Version", assertion.Version),
                 new XAttribute("ID", assertion.Id.Value),
                 new XAttribute("IssueInstant", 
-                    assertion.IssueInstant.ToString("s", CultureInfo.InvariantCulture) + "Z"),
+                    assertion.IssueInstant.ToSaml2DateTimeString()),
                 new XElement(Saml2Namespaces.Saml2 + "Issuer", assertion.Issuer.Value));
 
             if (assertion.Subject != null)
@@ -44,8 +44,7 @@ namespace Kentor.AuthServices
             {
                 xml.Add(new XElement(Saml2Namespaces.Saml2 + "Conditions",
                     new XAttribute("NotOnOrAfter", 
-                        assertion.Conditions.NotOnOrAfter.Value.ToString("s", 
-                        CultureInfo.InvariantCulture) + "Z")));
+                        assertion.Conditions.NotOnOrAfter.Value.ToSaml2DateTimeString())));
             }
 
             return xml;
