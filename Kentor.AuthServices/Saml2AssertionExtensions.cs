@@ -32,12 +32,7 @@ namespace Kentor.AuthServices
 
             if (assertion.Subject != null)
             {
-                xml.Add(new XElement(Saml2Namespaces.Saml2 + "Subject",
-                    new XElement(Saml2Namespaces.Saml2 + "NameID",
-                    assertion.Subject.NameId.Value),
-                    new XElement(Saml2Namespaces.Saml2 + "SubjectConfirmation",
-                        new XAttribute("Method", "urn:oasis:names:tc:SAML:2.0:cm:bearer"))
-                    ));
+                xml.Add(assertion.Subject.ToXElement());
             }
 
             if(assertion.Conditions != null && assertion.Conditions.NotOnOrAfter != null)

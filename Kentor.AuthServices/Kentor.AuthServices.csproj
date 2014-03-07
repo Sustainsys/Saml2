@@ -82,6 +82,7 @@
     <Compile Include="Saml2RequestBase.cs" />
     <Compile Include="Saml2Response.cs" />
     <Compile Include="Saml2StatusCode.cs" />
+    <Compile Include="Saml2SubjectExtensions.cs" />
     <Compile Include="SignInCommand.cs" />
     <Compile Include="StatusCodeHelper.cs" />
     <Compile Include="XmlDocumentExtensions.cs" />
