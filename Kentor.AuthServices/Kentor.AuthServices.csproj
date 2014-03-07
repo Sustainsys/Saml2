@@ -76,6 +76,7 @@
     <Compile Include="Saml2AuthenticationRequest.cs" />
     <Compile Include="Saml2Binding.cs" />
     <Compile Include="Saml2BindingType.cs" />
+    <Compile Include="Saml2ConditionsExtensions.cs" />
     <Compile Include="Saml2Namespaces.cs" />
     <Compile Include="Saml2PostBinding.cs" />
     <Compile Include="Saml2RedirectBinding.cs" />

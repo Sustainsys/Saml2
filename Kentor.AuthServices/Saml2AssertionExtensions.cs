@@ -35,11 +35,9 @@ namespace Kentor.AuthServices
                 xml.Add(assertion.Subject.ToXElement());
             }
 
-            if(assertion.Conditions != null && assertion.Conditions.NotOnOrAfter != null)
+            if(assertion.Conditions != null)
             {
-                xml.Add(new XElement(Saml2Namespaces.Saml2 + "Conditions",
-                    new XAttribute("NotOnOrAfter", 
-                        assertion.Conditions.NotOnOrAfter.Value.ToSaml2DateTimeString())));
+                xml.Add(assertion.Conditions.ToXElement());
             }
 
             return xml;
