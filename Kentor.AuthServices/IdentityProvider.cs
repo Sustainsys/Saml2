@@ -1,8 +1,10 @@
 ﻿using Kentor.AuthServices.Configuration;
 using System;
 using System.Collections.Generic;
+using System.Collections.Concurrent;
 using System.Linq;
 using System.Security.Cryptography.X509Certificates;
+using System.IdentityModel.Tokens;
 
 namespace Kentor.AuthServices
 {
@@ -35,12 +37,16 @@ namespace Kentor.AuthServices
 
         public Saml2AuthenticationRequest CreateAuthenticateRequest()
         {
-            return new Saml2AuthenticationRequest()
+            var request = new Saml2AuthenticationRequest()
             {
                 DestinationUri = DestinationUri,
                 AssertionConsumerServiceUrl = KentorAuthServicesSection.Current.AssertionConsumerServiceUrl,
                 Issuer = KentorAuthServicesSection.Current.Issuer
             };
+
+            //pendingAuthnRequestIds.TryAdd(request.Id, true);
+
+            return request;
         }
 
         public CommandResult Bind(Saml2AuthenticationRequest request)

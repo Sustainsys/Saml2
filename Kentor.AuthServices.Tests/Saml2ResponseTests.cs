@@ -19,6 +19,7 @@ namespace Kentor.AuthServices.Tests
             @"<?xml version=""1.0"" encoding=""UTF-8""?>
                 <saml2p:Response xmlns:saml2p=""urn:oasis:names:tc:SAML:2.0:protocol""
             ID = ""Saml2Response_Read_BasicParams"" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z""
+            InResponseTo = ""InResponseToId""
             Destination=""http://destination.example.com"">
                 <saml2p:Status>
                     <saml2p:StatusCode Value=""urn:oasis:names:tc:SAML:2.0:status:Requester"" />
@@ -32,7 +33,8 @@ namespace Kentor.AuthServices.Tests
                 Status = Saml2StatusCode.Requester,
                 Issuer = (string)null,
                 DestinationUri = new Uri("http://destination.example.com"),
-                MessageName = "SAMLResponse"
+                MessageName = "SAMLResponse",
+                InResponseTo = new Saml2Id("InResponseToId"),
             };
 
             Saml2Response.Read(response).ShouldBeEquivalentTo(expected,
@@ -665,11 +667,28 @@ namespace Kentor.AuthServices.Tests
         }
 
         [TestMethod]
-        [Ignore]
         public void Saml2Response_Validate_FalseOnIncorrectInResponseTo()
         {
-            // False if there is an invalid InResponseTo, even though the configured
-            // idp allowed unsolicited responses.
+            var idp = IdentityProvider.ConfiguredIdentityProviders.First().Value;
+
+            var request = idp.CreateAuthenticateRequest();
+
+            var responseXML =
+            @"<?xml version=""1.0"" encoding=""UTF-8""?>
+            <saml2p:Response xmlns:saml2p=""urn:oasis:names:tc:SAML:2.0:protocol""
+            ID = ""Saml2Response_Validate_FalseOnIncorrectInResponseTo"" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z""
+            InResponseTo = ""anothervalue""
+            Issuer = ""https://idp.example.com"">
+                <saml2p:Status>
+                    <saml2p:StatusCode Value=""urn:oasis:names:tc:SAML:2.0:status:Requester"" />
+                </saml2p:Status>
+            </saml2p:Response>";
+
+            responseXML = SignedXmlHelper.SignXml(responseXML);
+
+            var response = Saml2Response.Read(responseXML);
+
+            response.Validate(SignedXmlHelper.TestCert).Should().BeFalse();
         }
 
         [TestMethod]

@@ -68,6 +68,7 @@
     <Compile Include="NotFoundCommand.cs" />
     <Compile Include="ICommand.cs" />
     <Compile Include="CommandFactory.cs" />
+    <Compile Include="PendingAuthnRequests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ReturnRequestedIssuerNameRegistry.cs" />
     <Compile Include="Saml2AssertionExtensions.cs" />

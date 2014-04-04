@@ -51,6 +51,12 @@ namespace Kentor.AuthServices
 
             id = new Saml2Id(xml.DocumentElement.Attributes["ID"].Value);
 
+            var parsedInResponseTo = xml.DocumentElement.Attributes["InResponseTo"].GetValueIfNotNull();
+            if (parsedInResponseTo != null)
+            {
+                inResponseTo = new Saml2Id(parsedInResponseTo);
+            }
+
             issueInstant = DateTime.Parse(xml.DocumentElement.Attributes["IssueInstant"].Value,
                 CultureInfo.InvariantCulture, DateTimeStyles.AdjustToUniversal);
 
@@ -176,6 +182,13 @@ namespace Kentor.AuthServices
         /// Id of the response message.
         /// </summary>
         public Saml2Id Id { get { return id; } }
+
+        readonly Saml2Id inResponseTo;
+
+        /// <summary>
+        /// InResponseTo id.
+        /// </summary>
+        public Saml2Id InResponseTo { get { return inResponseTo; } }
 
         readonly DateTime issueInstant;
 

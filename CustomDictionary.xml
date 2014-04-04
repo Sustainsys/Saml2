@@ -4,6 +4,7 @@
   </Unrecognized>
   <Recognized>
     <Word>Auth</Word>
+    <Word>AuthnRequest</Word>
     <Word>Kentor</Word>
     <Word>Idp</Word>
     <Word>Mvc</Word>
