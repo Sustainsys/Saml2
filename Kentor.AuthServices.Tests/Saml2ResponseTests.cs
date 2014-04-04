@@ -623,16 +623,51 @@ namespace Kentor.AuthServices.Tests
             a.ShouldThrow<SecurityTokenExpiredException>();
         }
 
-        [TestMethod]
         [Ignore]
-        public void Saml2Response_Validate_FalseOnInvalidInResponseTo()
+        [TestMethod]
+        public void Saml2Response_Validate_TrueOnCorrectInResponseTo()
         {
+            // True if there is an inresponseTo that is valid
+        }
+
+        [Ignore]
+        [TestMethod]
+        public void Saml2Response_Validate_FalseOnMissingInResponseTo_IfDisallowed()
+        {
+            // False if the configuration for the current Idp disallows
+            // unsolicited responses.
+        }
+
+        [Ignore]
+        [TestMethod]
+        public void Saml2Response_Validate_TrueOnMissingInResponseTo_IfAllowed()
+        {
+            // True if there is no inresponseTo and the currently configed idp
+            // allows unsolicited responses.
         }
 
         [TestMethod]
         [Ignore]
-        public void Saml2Response_Validate_FalseOnSecondInResponseTo()
+        public void Saml2Response_Validate_FalseOnIncorrectInResponseTo()
         {
+            // False if there is an invalid InResponseTo, even though the configured
+            // idp allowed unsolicited responses.
+        }
+
+        [TestMethod]
+        [Ignore]
+        public void Saml2Response_Validate_FalseOnReplayedInResponseTo()
+        {
+            // Another response with a new ID, but with the same InResponseTo
+            // contents as a previous message is received and should return false.
+        }
+
+        [TestMethod]
+        [Ignore]
+        public void Saml2Response_Validate_FalseOnReplyFromWrongIdp()
+        {
+            // A valid response is received, but it is not from the idp that we
+            // did send the AuthnRequest to.
         }
 
         [TestMethod]
@@ -670,12 +705,6 @@ namespace Kentor.AuthServices.Tests
             Action a = () => r2.GetClaims();
 
             a.ShouldThrow<SecurityTokenReplayDetectedException>();
-        }
-
-        [TestMethod]
-        [Ignore]
-        public void Saml2Response_Validate_FalseOnIncorrectInResponseTo()
-        {
         }
 
         [TestMethod]
