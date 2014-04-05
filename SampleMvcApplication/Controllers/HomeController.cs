@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Web;
 using System.Web.Mvc;
 
@@ -15,8 +16,9 @@ namespace SampleMvcApplication.Controllers
 
         [Authorize]
         public ActionResult Secure()
-        {
-            return View();
+        {            
+            var identity = System.Web.HttpContext.Current.User.Identity as ClaimsIdentity;
+            return View(identity.Claims);
         }
     }
 }

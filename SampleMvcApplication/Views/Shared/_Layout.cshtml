@@ -22,6 +22,10 @@
                 <ul class="nav navbar-nav">
                     <li>@Html.ActionLink("Home", "Index", "Home")</li>
                     <li>@Html.ActionLink("Secure", "Secure", "Home")</li>
+                    @if(System.Web.HttpContext.Current.User.Identity.IsAuthenticated)
+                    {
+                        <li>@Html.ActionLink("SignOut", "SignOut", "AuthServices")</li>
+                    }
                 </ul>
             </div>
         </div>
