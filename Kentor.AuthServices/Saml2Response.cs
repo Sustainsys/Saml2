@@ -274,7 +274,6 @@ namespace Kentor.AuthServices
         }
 
         /// <summary>Checks the signature.</summary>
-        /// <param name="signedXml">The signed XML.</param>
         /// <param name="signedRootElement">The signed root element.</param>
         /// <param name="idpCertificate">The idp certificate.</param>
         /// <returns><c>true</c> if the whole signature was successful; otherwise <c>false</c></returns>
