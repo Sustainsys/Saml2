@@ -44,7 +44,7 @@ namespace Kentor.AuthServices
                 Issuer = KentorAuthServicesSection.Current.Issuer
             };
 
-            //pendingAuthnRequestIds.TryAdd(request.Id, true);
+            PendingAuthnRequests.Add(new Saml2Id(request.Id));
 
             return request;
         }

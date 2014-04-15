@@ -251,39 +251,54 @@ namespace Kentor.AuthServices
         }
 
         /// <summary>
-        /// Validates the response.
+        /// Validates InResponseTo and the signature of the response. Note that the status code of the
+        /// message can still be an error code, although the message itself is valid.
         /// </summary>
         /// <param name="idpCertificate">Idp certificate that should have signed the reponse</param>
         /// <returns>Is the response signed by the Idp and fulfills other formal requirements?</returns>
         public bool Validate(X509Certificate2 idpCertificate)
         {
-            if (validated)
+            if (!validated)
             {
-                return valid;
-            }
+                valid = ValidateInResponseTo() && ValidateSignature(idpCertificate);
 
+                validated = true;
+            }
+            return valid;
+        }
+
+        private bool ValidateInResponseTo()
+        {
+            if (InResponseTo == null)
+            {
+                return true;
+            }
+            else
+            {
+                return PendingAuthnRequests.TryRemove(InResponseTo);
+            }
+        }
+
+        private bool ValidateSignature(X509Certificate2 idpCertificate)
+        {
             // If the response message is signed, we check just this signature because the whole content has to be correct then
-            var responseSignature = XmlDocument.DocumentElement["Signature", SignedXml.XmlDsigNamespaceUrl];
+            var responseSignature = xmlDocument.DocumentElement["Signature", SignedXml.XmlDsigNamespaceUrl];
             if (responseSignature != null)
             {
-                valid = CheckSignature(XmlDocument.DocumentElement, idpCertificate);
+                return CheckSignature(XmlDocument.DocumentElement, idpCertificate);
             }
             else
             {
                 // If the response message is not signed, all assersions have to be signed correctly
                 foreach (var assertionNode in AllAssertionElementNodes)
                 {
-                    valid = CheckSignature(assertionNode, idpCertificate);
-                    if (!valid)
+                    if (!CheckSignature(assertionNode, idpCertificate))
                     {
-                        break;
+                        return false;
                     }
                 }
+                return true;
             }
-
-            validated = true;
-
-            return valid;
         }
 
         /// <summary>Checks the signature.</summary>
