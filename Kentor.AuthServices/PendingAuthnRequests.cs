@@ -22,14 +22,11 @@ namespace Kentor.AuthServices
             }
         }
 
-        internal static void Remove(Saml2Id id)
+        internal static bool TryRemove(Saml2Id id)
         {
             lock (pendingAuthnRequest)
             {
-                if (!pendingAuthnRequest.Remove(id))
-                {
-                    throw new InvalidOperationException("AuthnRequest id was never issued or has already been used.");
-                }
+                return pendingAuthnRequest.Remove(id);
             }
         }
     }

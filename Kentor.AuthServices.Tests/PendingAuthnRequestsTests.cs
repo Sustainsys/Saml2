@@ -13,7 +13,7 @@ namespace Kentor.AuthServices.Tests
         {
             var id = new Saml2Id();
             PendingAuthnRequests.Add(id);
-            PendingAuthnRequests.Remove(id);
+            PendingAuthnRequests.TryRemove(id).Should().BeTrue();
         }
 
         [TestMethod]
@@ -26,22 +26,19 @@ namespace Kentor.AuthServices.Tests
         }
 
         [TestMethod]
-        public void PendingAuthnRequests_Remove_ThrowsOnIdNeverIssued()
+        public void PendingAuthnRequests_Remove_FalseOnIdNeverIssued()
         {
             var id = new Saml2Id();
-            Action a = () => PendingAuthnRequests.Remove(id);
-            a.ShouldThrow<InvalidOperationException>();
+            PendingAuthnRequests.TryRemove(id).Should().BeFalse();
         }
 
         [TestMethod]
-        public void PendingAuthnRequests_Remove_ThrowsOnRemovedTwice()
+        public void PendingAuthnRequests_Remove_FalseOnRemovedTwice()
         {
             var id = new Saml2Id();
             PendingAuthnRequests.Add(id);
-            PendingAuthnRequests.Remove(id);
-            Action a = () => PendingAuthnRequests.Remove(id);
-            a.ShouldThrow<InvalidOperationException>();
-
+            PendingAuthnRequests.TryRemove(id).Should().BeTrue();
+            PendingAuthnRequests.TryRemove(id).Should().BeFalse();
         }
     }
 }
