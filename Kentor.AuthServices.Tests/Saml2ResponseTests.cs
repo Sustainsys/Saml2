@@ -102,7 +102,7 @@ namespace Kentor.AuthServices.Tests
             ID = ""Saml2Response_Validates_FalseOnMissingSignatureInResponseAndAnyAssertion"" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z""
             Issuer = ""https://some.issuer.example.com"">
                 <saml2p:Status>
-                    <saml2p:StatusCode Value=""urn:oasis:names:tc:SAML:2.0:status:Requester"" />
+                    <saml2p:StatusCode Value=""urn:oasis:names:tc:SAML:2.0:status:Success"" />
                 </saml2p:Status>
                 <saml2:Assertion xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
                 Version=""2.0"" ID=""Saml2Response_Validates_FalseOnMissingSignatureInResponseAndAnyAssertion_Assertion1""
@@ -133,11 +133,12 @@ namespace Kentor.AuthServices.Tests
         public void Saml2Response_Validate_TrueOnCorrectSignedResponseMessage()
         {
             var response =
-            @"<saml2p:Response xmlns:saml2p=""urn:oasis:names:tc:SAML:2.0:protocol""
+            @"<?xml version=""1.0"" encoding=""UTF-8""?>
+            <saml2p:Response xmlns:saml2p=""urn:oasis:names:tc:SAML:2.0:protocol""
             ID = ""Saml2Response_Validate_TrueOnCorrectSignedResponseMessage"" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z""
             Issuer = ""https://some.issuer.example.com"">
                 <saml2p:Status>
-                    <saml2p:StatusCode Value=""urn:oasis:names:tc:SAML:2.0:status:Requester"" />
+                    <saml2p:StatusCode Value=""urn:oasis:names:tc:SAML:2.0:status:Success"" />
                 </saml2p:Status>
                 <saml2:Assertion xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
                 Version=""2.0"" ID=""Saml2Response_Validate_TrueOnCorrectSignedResponseMessage_Assertion1""
@@ -164,7 +165,7 @@ namespace Kentor.AuthServices.Tests
             ID = ""Saml2Response_Validate_TrueOnCorrectSignedSingleAssertionInResponseMessage"" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z""
             Issuer = ""https://some.issuer.example.com"">
                 <saml2p:Status>
-                    <saml2p:StatusCode Value=""urn:oasis:names:tc:SAML:2.0:status:Requester"" />
+                    <saml2p:StatusCode Value=""urn:oasis:names:tc:SAML:2.0:status:Success"" />
                 </saml2p:Status>
                 {0}
             </saml2p:Response>";
@@ -196,7 +197,7 @@ namespace Kentor.AuthServices.Tests
             ID = ""Saml2Response_Validate_TrueOnCorrectSignedMultipleAssertionInResponseMessage"" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z""
             Issuer = ""https://some.issuer.example.com"">
                 <saml2p:Status>
-                    <saml2p:StatusCode Value=""urn:oasis:names:tc:SAML:2.0:status:Requester"" />
+                    <saml2p:StatusCode Value=""urn:oasis:names:tc:SAML:2.0:status:Success"" />
                 </saml2p:Status>
                 {0}
                 {1}
@@ -240,7 +241,7 @@ namespace Kentor.AuthServices.Tests
             ID = ""Saml2Response_Validate_FalseOnMultipleAssertionInUnsignedResponseMessageButNotAllSigned"" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z""
             Issuer = ""https://some.issuer.example.com"">
                 <saml2p:Status>
-                    <saml2p:StatusCode Value=""urn:oasis:names:tc:SAML:2.0:status:Requester"" />
+                    <saml2p:StatusCode Value=""urn:oasis:names:tc:SAML:2.0:status:Success"" />
                 </saml2p:Status>
                 {0}
                 {1}
@@ -283,7 +284,7 @@ namespace Kentor.AuthServices.Tests
             ID = ""Saml2Response_Validate_FalseOnTamperedMessage"" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z""
             Issuer = ""https://some.issuer.example.com"">
                 <saml2p:Status>
-                    <saml2p:StatusCode Value=""urn:oasis:names:tc:SAML:2.0:status:Requester"" />
+                    <saml2p:StatusCode Value=""urn:oasis:names:tc:SAML:2.0:status:Success"" />
                 </saml2p:Status>
             </saml2p:Response>";
 
@@ -302,7 +303,7 @@ namespace Kentor.AuthServices.Tests
             ID = ""Saml2Response_Validate_FalseOnTamperedAssertionWithMessageSignature"" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z""
             Issuer = ""https://some.issuer.example.com"">
                 <saml2p:Status>
-                    <saml2p:StatusCode Value=""urn:oasis:names:tc:SAML:2.0:status:Requester"" />
+                    <saml2p:StatusCode Value=""urn:oasis:names:tc:SAML:2.0:status:Success"" />
                 </saml2p:Status>
                 <saml2:Assertion xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
                 Version=""2.0"" ID=""Saml2Response_Validate_FalseOnTamperedAssertionWithMessageSignature_Assertion1""
@@ -329,7 +330,7 @@ namespace Kentor.AuthServices.Tests
             ID = ""Saml2Response_Validate_FalseOnTamperedAssertionWithAssertionSignature"" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z""
             Issuer = ""https://some.issuer.example.com"">
                 <saml2p:Status>
-                    <saml2p:StatusCode Value=""urn:oasis:names:tc:SAML:2.0:status:Requester"" />
+                    <saml2p:StatusCode Value=""urn:oasis:names:tc:SAML:2.0:status:Success"" />
                 </saml2p:Status>
                 {0}
                 {1}
@@ -372,7 +373,7 @@ namespace Kentor.AuthServices.Tests
             ID = ""Saml2Response_Validate_FalseOnAssertionInjectionWithAssertionSignature"" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z""
             Issuer = ""https://some.issuer.example.com"">
                 <saml2p:Status>
-                    <saml2p:StatusCode Value=""urn:oasis:names:tc:SAML:2.0:status:Requester"" />
+                    <saml2p:StatusCode Value=""urn:oasis:names:tc:SAML:2.0:status:Success"" />
                 </saml2p:Status>
                 {0}
                 {1}
