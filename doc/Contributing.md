@@ -35,6 +35,8 @@ the source. Rules should only be disabled on a global level if it really is appr
 disable the rule for the entire code base. Unknown words are added to `CustomDictionary.xml`
 instead of suppressing individual warnings.
 * Private members in classes are named with camelCasing, no underscores or similar.
+* Member variables are not prefixed with `this.` unless required to resolve ambiguity (such
+as in a constructor having parameters with the same name as the members).
 * Any single method is so short that it fits on one screen (on a typical laptop monitor, 
 not a 30-feet development monster-monitor in vertical orientation).
 
