@@ -682,12 +682,29 @@ namespace Kentor.AuthServices.Tests
             response.Validate(SignedXmlHelper.TestCert).Should().BeFalse();
         }
 
-        [Ignore]
         [TestMethod]
         public void Saml2Response_Validate_TrueOnMissingInResponseTo_IfAllowed()
         {
-            // True if there is no inresponseTo and the currently configed idp
-            // allows unsolicited responses.
+            KentorAuthServicesSection.Current.IdentityProviders.First().AllowUnsolicitedAuthnResponse = true;
+            var idp = IdentityProvider.ConfiguredIdentityProviders.First().Value;
+
+            var request = idp.CreateAuthenticateRequest();
+
+            var responseXML =
+            @"<?xml version=""1.0"" encoding=""UTF-8""?>
+            <saml2p:Response xmlns:saml2p=""urn:oasis:names:tc:SAML:2.0:protocol""
+            ID = ""Saml2Response_Validate_TrueOnCorrectInResponseTo"" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z""
+            Issuer = ""https://idp.example.com"">
+                <saml2p:Status>
+                    <saml2p:StatusCode Value=""urn:oasis:names:tc:SAML:2.0:status:Requester"" />
+                </saml2p:Status>
+            </saml2p:Response>";
+
+            responseXML = SignedXmlHelper.SignXml(responseXML);
+
+            var response = Saml2Response.Read(responseXML);
+
+            response.Validate(SignedXmlHelper.TestCert).Should().BeTrue();
         }
 
         [TestMethod]
