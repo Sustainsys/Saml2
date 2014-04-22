@@ -17,7 +17,7 @@ namespace Kentor.AuthServices
     public class Saml2Response : ISaml2Message
     {
         /// <summary>Holds all assertion element nodes</summary>
-        private XmlElement[] allAssertionElementNodes;
+        private IEnumerable<XmlElement> allAssertionElementNodes;
 
         /// <summary>
         /// Read the supplied Xml and parse it into a response.
@@ -221,19 +221,19 @@ namespace Kentor.AuthServices
 
         /// <summary>Gets all assertion element nodes from this response message.</summary>
         /// <value>All assertion element nodes.</value>
-        protected IEnumerable<XmlElement> AllAssertionElementNodes
+        private IEnumerable<XmlElement> AllAssertionElementNodes
         {
             get
             {
-                if (this.allAssertionElementNodes == null)
+                if (allAssertionElementNodes == null)
                 {
-                    this.allAssertionElementNodes =
-                        this.XmlDocument.DocumentElement.ChildNodes.Cast<XmlNode>().Where(node => node.NodeType == XmlNodeType.Element).Cast<XmlElement>()
-                            .Where(xe => xe.LocalName == "Assertion" && xe.NamespaceURI == Saml2Namespaces.Saml2Name)
-                            .ToArray();
+                    allAssertionElementNodes =
+                        XmlDocument.DocumentElement.ChildNodes.Cast<XmlNode>()
+                        .Where(node => node.NodeType == XmlNodeType.Element).Cast<XmlElement>()
+                        .Where(xe => xe.LocalName == "Assertion" && xe.NamespaceURI == Saml2Namespaces.Saml2Name);
                 }
 
-                return this.allAssertionElementNodes;
+                return allAssertionElementNodes;
             }
         }
 
@@ -244,33 +244,33 @@ namespace Kentor.AuthServices
         /// <returns>Is the response signed by the Idp and fulfills other formal requirements?</returns>
         public bool Validate(X509Certificate2 idpCertificate)
         {
-            if (this.validated)
+            if (validated)
             {
-                return this.valid;
+                return valid;
             }
 
             // If the response message is signed, we check just this signature because the whole content has to be correct then
-            var responseSignature = this.XmlDocument.DocumentElement["Signature", SignedXml.XmlDsigNamespaceUrl];
+            var responseSignature = XmlDocument.DocumentElement["Signature", SignedXml.XmlDsigNamespaceUrl];
             if (responseSignature != null)
             {
-                this.valid = CheckSignature(this.XmlDocument.DocumentElement, idpCertificate);
+                valid = CheckSignature(XmlDocument.DocumentElement, idpCertificate);
             }
             else
             {
                 // If the response message is not signed, all assersions have to be signed correctly
-                foreach (var assertionNode in this.AllAssertionElementNodes)
+                foreach (var assertionNode in AllAssertionElementNodes)
                 {
-                    this.valid = CheckSignature(assertionNode, idpCertificate);
-                    if (!this.valid)
+                    valid = CheckSignature(assertionNode, idpCertificate);
+                    if (!valid)
                     {
                         break;
                     }
                 }
             }
 
-            this.validated = true;
+            validated = true;
 
-            return this.valid;
+            return valid;
         }
 
         /// <summary>Checks the signature.</summary>
@@ -348,7 +348,7 @@ namespace Kentor.AuthServices
         {
             ThrowOnNotValid();
 
-            foreach (XmlElement assertionNode in this.AllAssertionElementNodes)
+            foreach (XmlElement assertionNode in AllAssertionElementNodes)
             {
                 using (var reader = new XmlNodeReader(assertionNode))
                 {
