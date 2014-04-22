@@ -34,5 +34,16 @@ namespace Kentor.AuthServices
         /// </summary>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2104:DoNotDeclareReadOnlyMutableReferenceTypes")]
         public static readonly XNamespace Saml2 = XNamespace.Get(Saml2Name);
+
+        /// <summary>
+        /// Namespace of SAML2 Metadata.
+        /// </summary>
+        public const string Saml2MetadataName = "urn:oasis:names:tc:SAML:2.0:metadata";
+
+        /// <summary>
+        /// Namespace of SAML2 Metadata.
+        /// </summary>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2104:DoNotDeclareReadOnlyMutableReferenceTypes")]
+        public static readonly XNamespace Saml2Metadata = XNamespace.Get(Saml2MetadataName);
     }
 }
