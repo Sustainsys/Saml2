@@ -269,7 +269,8 @@ namespace Kentor.AuthServices
 
         private bool ValidateInResponseTo()
         {
-            if (InResponseTo == null)
+            if (InResponseTo == null && 
+                KentorAuthServicesSection.Current.IdentityProviders.First().AllowUnsolicitedAuthnResponse) // TODO: check correct IDP
             {
                 return true;
             }

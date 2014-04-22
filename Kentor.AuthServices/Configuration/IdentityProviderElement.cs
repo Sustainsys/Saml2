@@ -12,6 +12,16 @@ namespace Kentor.AuthServices.Configuration
     public class IdentityProviderElement : ConfigurationElement
     {
         /// <summary>
+        /// Allows local modification of the configuration for testing purposes
+        /// </summary>
+        /// <returns></returns>
+        public override bool IsReadOnly()
+        {
+            return false;
+        }
+
+        
+        /// <summary>
         /// Issuer as presented by the idp. Used as key to configuration.
         /// </summary>
         [ConfigurationProperty("issuer", IsRequired = true)]
@@ -56,6 +66,22 @@ namespace Kentor.AuthServices.Configuration
             get
             {
                 return (CertificateElement)base["signingCertificate"];
+            }
+        }
+
+        /// <summary>
+        /// Certificate location for the certificate the Idp uses to sign its messages.
+        /// </summary>
+        [ConfigurationProperty("allowUnsolicitedAuthnResponse", IsRequired = true)]
+        public bool AllowUnsolicitedAuthnResponse 
+        {
+            get
+            {
+                return (bool)base["allowUnsolicitedAuthnResponse"];
+            }
+            internal set
+            {
+                base["allowUnsolicitedAuthnResponse"] = value;
             }
         }
     }

@@ -12,6 +12,13 @@ namespace Kentor.AuthServices.Tests
     [TestClass]
     public class Saml2ResponseTests
     {
+
+        [TestInitializeAttribute]
+        public void TestInitialize()
+        {
+            KentorAuthServicesSection.Current.IdentityProviders.First().AllowUnsolicitedAuthnResponse = true;
+        }
+
         [TestMethod]
         public void Saml2Response_Read_BasicParams()
         {
@@ -650,12 +657,29 @@ namespace Kentor.AuthServices.Tests
             response.Validate(SignedXmlHelper.TestCert).Should().BeTrue();
         }
 
-        [Ignore]
         [TestMethod]
         public void Saml2Response_Validate_FalseOnMissingInResponseTo_IfDisallowed()
         {
-            // False if the configuration for the current Idp disallows
-            // unsolicited responses.
+            KentorAuthServicesSection.Current.IdentityProviders.First().AllowUnsolicitedAuthnResponse = false;
+            var idp = IdentityProvider.ConfiguredIdentityProviders.First().Value;
+
+            var request = idp.CreateAuthenticateRequest();
+
+            var responseXML =
+            @"<?xml version=""1.0"" encoding=""UTF-8""?>
+            <saml2p:Response xmlns:saml2p=""urn:oasis:names:tc:SAML:2.0:protocol""
+            ID = ""Saml2Response_Validate_TrueOnCorrectInResponseTo"" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z""
+            Issuer = ""https://idp.example.com"">
+                <saml2p:Status>
+                    <saml2p:StatusCode Value=""urn:oasis:names:tc:SAML:2.0:status:Requester"" />
+                </saml2p:Status>
+            </saml2p:Response>";
+
+            responseXML = SignedXmlHelper.SignXml(responseXML);
+
+            var response = Saml2Response.Read(responseXML);
+
+            response.Validate(SignedXmlHelper.TestCert).Should().BeFalse();
         }
 
         [Ignore]
