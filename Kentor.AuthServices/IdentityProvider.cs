@@ -27,6 +27,7 @@ namespace Kentor.AuthServices
         public IdentityProvider(IdentityProviderElement config)
         {
             DestinationUri = config.DestinationUri;
+            Issuer = config.Issuer;
             Binding = config.Binding;
             certificate = config.SigningCertificate.LoadCertificate();
         }
@@ -34,6 +35,8 @@ namespace Kentor.AuthServices
         public Saml2BindingType Binding { get; set; }
 
         public Uri DestinationUri { get; set; }
+
+        public string Issuer { get; set; }
 
         public Saml2AuthenticationRequest CreateAuthenticateRequest()
         {
@@ -44,7 +47,7 @@ namespace Kentor.AuthServices
                 Issuer = KentorAuthServicesSection.Current.Issuer
             };
 
-            PendingAuthnRequests.Add(new Saml2Id(request.Id));
+            PendingAuthnRequests.Add(new Saml2Id(request.Id), Issuer);
 
             return request;
         }

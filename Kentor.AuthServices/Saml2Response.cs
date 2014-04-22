@@ -269,14 +269,25 @@ namespace Kentor.AuthServices
 
         private bool ValidateInResponseTo()
         {
-            if (InResponseTo == null && 
-                KentorAuthServicesSection.Current.IdentityProviders.First().AllowUnsolicitedAuthnResponse) // TODO: check correct IDP
+            if (InResponseTo == null &&
+                KentorAuthServicesSection.Current.IdentityProviders
+                .Single(idpConfig => idpConfig.Issuer == this.Issuer).AllowUnsolicitedAuthnResponse)
             {
                 return true;
             }
             else
             {
-                return PendingAuthnRequests.TryRemove(InResponseTo);
+                string sentToIdp;
+                bool knownInResponseToId = PendingAuthnRequests.TryRemove(InResponseTo, out sentToIdp);
+                if (!knownInResponseToId)
+                {
+                    return false;
+                }
+                if (sentToIdp != Issuer)
+                {
+                    return false;
+                }
+                return true;
             }
         }
 

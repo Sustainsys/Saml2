@@ -36,7 +36,7 @@ namespace Kentor.AuthServices.Tests
             @"<saml2p:Response xmlns:saml2p=""urn:oasis:names:tc:SAML:2.0:protocol""
                 xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
                 ID = ""AuthServicesController_Acs_Should_SetIdentity"" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z"">
-                <saml2:Issuer>
+                <saml2:Issuer xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion"">
                     https://idp.example.com
                 </saml2:Issuer>
                 <saml2p:Status>
