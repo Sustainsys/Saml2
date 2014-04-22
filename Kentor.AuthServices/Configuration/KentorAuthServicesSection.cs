@@ -39,14 +39,14 @@ namespace Kentor.AuthServices.Configuration
         }
 
         /// <summary>
-        /// Issuer name of to use when sending requests to Idp.
+        /// EntityId - the name of the ServiceProvider to use when sending requests to Idp.
         /// </summary>
-        [ConfigurationProperty("issuer")]
-        public string Issuer
+        [ConfigurationProperty("entityId")]
+        public string EntityId
         {
             get
             {
-                return (string)base["issuer"];
+                return (string)base["entityId"];
             }
         }
 

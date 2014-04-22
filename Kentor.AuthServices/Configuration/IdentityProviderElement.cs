@@ -29,14 +29,14 @@ namespace Kentor.AuthServices.Configuration
 
         
         /// <summary>
-        /// Issuer as presented by the idp. Used as key to configuration.
+        /// EntityId as presented by the idp. Used as key to configuration.
         /// </summary>
-        [ConfigurationProperty("issuer", IsRequired = true)]
-        public string Issuer
+        [ConfigurationProperty("entityId", IsRequired = true)]
+        public string EntityId
         {
             get
             {
-                return (string)base["issuer"];
+                return (string)base["entityId"];
             }
         }
 

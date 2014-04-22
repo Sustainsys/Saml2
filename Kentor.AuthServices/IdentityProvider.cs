@@ -12,7 +12,7 @@ namespace Kentor.AuthServices
     {
         private static readonly IDictionary<string, IdentityProvider> configuredIdentityProviders =
             KentorAuthServicesSection.Current.IdentityProviders
-            .ToDictionary(idp => idp.Issuer, idp => new IdentityProvider(idp));
+            .ToDictionary(idp => idp.EntityId, idp => new IdentityProvider(idp));
 
         public static IDictionary<string, IdentityProvider> ConfiguredIdentityProviders
         {
@@ -44,7 +44,7 @@ namespace Kentor.AuthServices
             {
                 DestinationUri = DestinationUri,
                 AssertionConsumerServiceUrl = KentorAuthServicesSection.Current.AssertionConsumerServiceUrl,
-                Issuer = KentorAuthServicesSection.Current.Issuer
+                Issuer = KentorAuthServicesSection.Current.EntityId
             };
 
             var responseData = new StoredRequestState(Issuer, returnUri);
