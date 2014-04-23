@@ -4,9 +4,19 @@ using FluentAssertions;
 
 namespace Kentor.AuthServices.Tests
 {
+    using System.Globalization;
+    using System.Threading;
+
     [TestClass]
     public class Saml2RedirectBindingTests
     {
+        [TestInitialize]
+        public void MyTestInitialize()
+        {
+            Thread.CurrentThread.CurrentCulture = new CultureInfo("en-US");
+            Thread.CurrentThread.CurrentUICulture = new CultureInfo("en-US");
+        }
+
         [TestMethod]
         public void Saml2RedirectBinding_Nullcheck()
         {
