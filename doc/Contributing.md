@@ -8,9 +8,6 @@ Sweden. The library's source code is hosted on [github](https://github.com/Kento
 Github issues are used to keep track of issues and releases. For requests of functionality or
 to report bugs, please open an issue in the github repo.
 
-There is also a [Kanban board](https://huboard.com/KentorIT/authservices/#/) powered by HuBoard that
-is used to keep track of the state of issues.
-
 ##Versioning
 Kentor Authentication services uses semantic versioning as defined on http://semver.org/.
 
