@@ -20,7 +20,7 @@ namespace Kentor.AuthServices
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1059:MembersShouldNotExposeCertainConcreteTypes", MessageId = "System.Xml.XmlNode")]
         public static void Sign(this XmlDocument xmlDocument, X509Certificate2 cert)
         {
-            if(xmlDocument == null)
+            if (xmlDocument == null)
             {
                 throw new ArgumentNullException("xmlDocument");
             }
@@ -32,11 +32,18 @@ namespace Kentor.AuthServices
 
             var signedXml = new SignedXml(xmlDocument);
 
-            signedXml.SigningKey = (RSACryptoServiceProvider)cert.PrivateKey;
+            // The transform XmlDsigExcC14NTransform and canonicalization method XmlDsigExcC14NTransformUrl is important for partially signed XML files
+            // see: http://msdn.microsoft.com/en-us/library/system.security.cryptography.xml.signedxml.xmldsigexcc14ntransformurl(v=vs.110).aspx
+            // The reference URI has to be set correctly to avoid assertion injections
+            // For both, the ID/Reference and the Transform/Canonicalization see as well: 
+            // https://www.oasis-open.org/committees/download.php/35711/sstc-saml-core-errata-2.0-wd-06-diff.pdf section 5.4.2 and 5.4.3
 
-            var reference = new Reference();
-            reference.Uri = "";
+            signedXml.SigningKey = (RSACryptoServiceProvider)cert.PrivateKey;
+            signedXml.SignedInfo.CanonicalizationMethod = SignedXml.XmlDsigExcC14NTransformUrl;
+
+            var reference = new Reference { Uri = "#" + xmlDocument.DocumentElement.GetAttribute("ID") };
             reference.AddTransform(new XmlDsigEnvelopedSignatureTransform());
+            reference.AddTransform(new XmlDsigExcC14NTransform());
 
             signedXml.AddReference(reference);
             signedXml.ComputeSignature();
