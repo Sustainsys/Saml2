@@ -11,13 +11,20 @@ namespace Kentor.AuthServices.Configuration
     /// </summary>
     public class IdentityProviderElement : ConfigurationElement
     {
+        private bool isReadOnly = true;
+
+        internal void AllowConfigEdit(bool allow)
+        {
+            isReadOnly = !allow;
+        }
+
         /// <summary>
         /// Allows local modification of the configuration for testing purposes
         /// </summary>
         /// <returns></returns>
         public override bool IsReadOnly()
         {
-            return false;
+            return isReadOnly;
         }
 
         

@@ -13,11 +13,25 @@ namespace Kentor.AuthServices.Tests
     [TestClass]
     public class Saml2ResponseTests
     {
+        private bool currentConfigValueForAllowedUnsolicitedAuthnResponse = false;
 
-        [TestInitializeAttribute]
+        [TestInitialize]
         public void TestInitialize()
         {
+            currentConfigValueForAllowedUnsolicitedAuthnResponse = 
+                KentorAuthServicesSection.Current.IdentityProviders.First().AllowUnsolicitedAuthnResponse;
+            KentorAuthServicesSection.Current.IdentityProviders.First().AllowConfigEdit(true);
             KentorAuthServicesSection.Current.IdentityProviders.First().AllowUnsolicitedAuthnResponse = true;
+            KentorAuthServicesSection.Current.IdentityProviders.First().AllowConfigEdit(false);
+        }
+
+        [TestCleanup]
+        public void TestCleanUp()
+        {
+            KentorAuthServicesSection.Current.IdentityProviders.First().AllowConfigEdit(true);
+            KentorAuthServicesSection.Current.IdentityProviders.First().AllowUnsolicitedAuthnResponse = 
+                currentConfigValueForAllowedUnsolicitedAuthnResponse;
+            KentorAuthServicesSection.Current.IdentityProviders.First().AllowConfigEdit(false);
         }
 
         [TestMethod]
@@ -678,7 +692,9 @@ namespace Kentor.AuthServices.Tests
         [TestMethod]
         public void Saml2Response_Validate_FalseOnMissingInResponseTo_IfDisallowed()
         {
+            KentorAuthServicesSection.Current.IdentityProviders.First().AllowConfigEdit(true);
             KentorAuthServicesSection.Current.IdentityProviders.First().AllowUnsolicitedAuthnResponse = false;
+            KentorAuthServicesSection.Current.IdentityProviders.First().AllowConfigEdit(false);
             var idp = IdentityProvider.ConfiguredIdentityProviders.First().Value;
 
             var request = idp.CreateAuthenticateRequest();
@@ -704,7 +720,9 @@ namespace Kentor.AuthServices.Tests
         [TestMethod]
         public void Saml2Response_Validate_TrueOnMissingInResponseTo_IfAllowed()
         {
+            KentorAuthServicesSection.Current.IdentityProviders.First().AllowConfigEdit(true);
             KentorAuthServicesSection.Current.IdentityProviders.First().AllowUnsolicitedAuthnResponse = true;
+            KentorAuthServicesSection.Current.IdentityProviders.First().AllowConfigEdit(false);
             var idp = IdentityProvider.ConfiguredIdentityProviders.First().Value;
 
             var request = idp.CreateAuthenticateRequest();
