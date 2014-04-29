@@ -38,6 +38,7 @@
       <HintPath>..\packages\NSubstitute.1.6.1.0\lib\NET40\NSubstitute.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Configuration" />
     <Reference Include="System.IdentityModel" />
     <Reference Include="System.Security" />
     <Reference Include="System.Web" />
@@ -109,6 +110,7 @@
     <Compile Include="DateTimeExtensionsTests.cs" />
     <Compile Include="Saml2SubjectExtensionsTests.cs" />
     <Compile Include="Saml2ConditionsExtensionsTests.cs" />
+    <Compile Include="PendingAuthnRequestsTests.cs" />
     <Compile Include="XmlDocumentExtensionsTests.cs" />
     <Compile Include="XmlHelpersTests.cs" />
   </ItemGroup>
