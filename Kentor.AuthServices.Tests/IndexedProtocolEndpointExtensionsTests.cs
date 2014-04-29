@@ -25,7 +25,7 @@ namespace Kentor.AuthServices.Tests
             XName xName = null;
             var endpoint = new IndexedProtocolEndpoint();
 
-            Action a = () => endpoint.ToXElement(null);
+            Action a = () => endpoint.ToXElement(xName);
 
             a.ShouldThrow<ArgumentNullException>().And.ParamName.Should().Be("elementName");
         }

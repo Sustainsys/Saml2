@@ -113,6 +113,7 @@
     <Compile Include="PendingAuthnRequestsTests.cs" />
     <Compile Include="MessageBinderTests.cs" />
     <Compile Include="IndexedProtocolEndpointExtensionsTests.cs" />
+    <Compile Include="ServiceProviderSingleSignOnDescriptorExtensionsTests.cs" />
     <Compile Include="XmlDocumentExtensionsTests.cs" />
     <Compile Include="XmlHelpersTests.cs" />
   </ItemGroup>
