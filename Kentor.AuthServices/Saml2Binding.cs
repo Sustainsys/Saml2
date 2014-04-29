@@ -14,6 +14,11 @@ namespace Kentor.AuthServices
     public abstract class Saml2Binding
     {
         /// <summary>
+        /// Uri identifier of HTTP-POST binding
+        /// </summary>
+        public static readonly Uri HttpPostUri = new Uri("urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST");
+
+        /// <summary>
         /// Bind the message to a transport.
         /// </summary>
         /// <param name="payload">(xml) payload data to bind.</param>

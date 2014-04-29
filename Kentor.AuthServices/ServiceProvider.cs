@@ -23,7 +23,13 @@ namespace Kentor.AuthServices
                 var spsso = new ServiceProviderSingleSignOnDescriptor();
                 spsso.AssertionConsumerServices.Add(0, new IndexedProtocolEndpoint()
                 {
+                    Index = 0,
+                    IsDefault = true,
+                    Binding = Saml2Binding.HttpPostUri,
+                    Location = KentorAuthServicesSection.Current.AssertionConsumerServiceUrl
                 });
+
+                ed.RoleDescriptors.Add(spsso);
 
                 return ed;
             }
