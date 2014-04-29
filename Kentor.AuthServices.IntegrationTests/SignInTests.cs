@@ -11,9 +11,7 @@ namespace Kentor.AuthServices.IntegrationTests
         public void SignInTestsInitialize()
         {
             SeleniumWebDriver.Bootstrap(SeleniumWebDriver.Browser.Chrome);
-            Settings.DefaultWaitTimeout = TimeSpan.FromSeconds(5);
-            Settings.DefaultWaitUntilThreadSleep = TimeSpan.FromSeconds(5);
-            Settings.DefaultWaitUntilTimeout = TimeSpan.FromSeconds(5);
+            Settings.WaitOnAllCommands = false;
         }
 
         [TestMethod]
