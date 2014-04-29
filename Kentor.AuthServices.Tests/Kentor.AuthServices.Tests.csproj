@@ -112,12 +112,16 @@
     <Compile Include="Saml2ConditionsExtensionsTests.cs" />
     <Compile Include="PendingAuthnRequestsTests.cs" />
     <Compile Include="MessageBinderTests.cs" />
+    <Compile Include="IndexedProtocolEndpointExtensionsTests.cs" />
     <Compile Include="XmlDocumentExtensionsTests.cs" />
     <Compile Include="XmlHelpersTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config">
       <SubType>Designer</SubType>
+    </None>
+    <None Include="Kentor.AuthServices.Tests.pfx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="packages.config" />
   </ItemGroup>
