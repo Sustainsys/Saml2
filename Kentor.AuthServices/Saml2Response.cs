@@ -7,6 +7,7 @@ using System.Security.Claims;
 using System.Security.Cryptography.X509Certificates;
 using System.Security.Cryptography.Xml;
 using System.Xml;
+using Kentor.AuthServices.Configuration;
 
 namespace Kentor.AuthServices
 {
