@@ -9,6 +9,7 @@ using System.Web;
 namespace Kentor.AuthServices
 {
     using System.Collections.Generic;
+    using System.IdentityModel.Services.Configuration;
     using System.Linq;
 
     /// <summary>
@@ -90,11 +91,33 @@ namespace Kentor.AuthServices
         {
             // We should respect the validity of the SecurityTokens to set the session lifetime
             // If there are multiple security tokens (assertions) with different validity we calculate the shortest timespan as the token lifetime
-            var validForm = SecurityTokens.Max(t => t.ValidFrom);
-            var validTo = SecurityTokens.Min(t => t.ValidTo);
-            var sessionTokenLifetime = validTo.Subtract(validForm);
+            var validForm = SecurityTokens.Max(t => t.ValidFrom).ToUniversalTime();
+            var validTo = SecurityTokens.Min(t => t.ValidTo).ToUniversalTime();
+            
+            var securityTokenHandler = FederatedAuthentication.FederationConfiguration.IdentityConfiguration.SecurityTokenHandlers[typeof(SessionSecurityToken)] as SessionSecurityTokenHandler;
 
-            return new SessionSecurityToken(Principal, sessionTokenLifetime);
+            if (validForm == DateTime.MinValue.ToUniversalTime())
+            {
+                validForm = DateTime.UtcNow;
+            }
+
+            if (validTo == DateTime.MaxValue.ToUniversalTime())
+            {
+                validTo = validForm.Add(SessionSecurityTokenHandler.DefaultTokenLifetime);
+            }
+            
+            // This is just a workarround for situations where no HttpContext is available (tests)
+            // FederatedAuthentication.SessionAuthenticationModule.CreateSessionSecurityToken needs a HttpContext
+            if (HttpContext.Current == null)
+            {
+                var sessionSecurityToken = securityTokenHandler.CreateSessionSecurityToken(Principal, null, string.Empty, validForm, validTo);
+                sessionSecurityToken.IsPersistent = false;
+                sessionSecurityToken.IsReferenceMode = false;
+                return sessionSecurityToken;
+            }
+
+            // It's better to use CreateSessionSecurityToken of SessionAuthenticationModule because this does 
+            return FederatedAuthentication.SessionAuthenticationModule.CreateSessionSecurityToken(Principal, null, validForm, validTo, false);
         }
 
         /// <summary>

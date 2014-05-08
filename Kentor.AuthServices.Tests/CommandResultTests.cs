@@ -257,7 +257,7 @@ namespace Kentor.AuthServices.Tests
         {
             var xmlUnversalDateFomat = "yyyy-MM-ddTHH:mm:ssZ";
             var issueInstant = DateTime.UtcNow;
-            var expectedNotOnOrAfter = DateTime.MaxValue;
+            var expectedNotOnOrAfter = issueInstant.Add(SessionSecurityTokenHandler.DefaultTokenLifetime);
 
             var response = string.Format(
             @"<saml2p:Response xmlns:saml2p=""urn:oasis:names:tc:SAML:2.0:protocol""
@@ -301,7 +301,7 @@ namespace Kentor.AuthServices.Tests
             var result = commandResult.CreateSessionSecurityToken();
 
             result.ValidFrom.Should().BeCloseTo(issueInstant, 1000);
-            result.ValidTo.Should().Be(expectedNotOnOrAfter);
+            result.ValidTo.Should().BeCloseTo(expectedNotOnOrAfter, 1000);
         }
     }
 }
