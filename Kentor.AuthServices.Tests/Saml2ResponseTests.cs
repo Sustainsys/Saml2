@@ -60,7 +60,7 @@ namespace Kentor.AuthServices.Tests
             };
 
             Saml2Response.Read(response).ShouldBeEquivalentTo(expected,
-                opt => opt.Excluding(s => s.XmlDocument));
+                opt => opt.Excluding(s => s.XmlDocument).Excluding(s => s.Saml2SecurityTokens));
         }
 
         [TestMethod]

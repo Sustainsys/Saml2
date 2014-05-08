@@ -11,6 +11,8 @@ using System.Xml;
 
 namespace Kentor.AuthServices.Tests
 {
+    using System.IdentityModel.Tokens;
+
     [TestClass]
     public class AcsCommandTests
     {
@@ -90,13 +92,23 @@ namespace Kentor.AuthServices.Tests
                 { new ClaimsIdentity("Federation"), new ClaimsIdentity("ClaimsAuthenticationManager") };
             ids[0].AddClaim(new Claim(ClaimTypes.NameIdentifier, "SomeUser", null, "https://idp.example.com"));
             ids[1].AddClaim(new Claim(ClaimTypes.Role, "RoleFromClaimsAuthManager", null, "ClaimsAuthenticationManagerMock"));
+            
+            SecurityToken token;
+            var document = new XmlDocument();
+            document.LoadXml(response);
+            using (var reader = new XmlNodeReader(document.DocumentElement["saml2:Assertion"]))
+            {
+                token = MorePublicSaml2SecurityTokenHandler.DefaultInstance.ReadToken(reader);
+            }
 
             var expected = new CommandResult()
-            {
-                Principal = new ClaimsPrincipal(ids),
-                HttpStatusCode = HttpStatusCode.SeeOther,
-                Location = new Uri("http://localhost/LoggedIn")
-            };
+                                   {
+                                       Principal = new ClaimsPrincipal(ids),
+                                       HttpStatusCode = HttpStatusCode.SeeOther,
+                                       Location = new Uri("http://localhost/LoggedIn"),
+                                       SecurityTokens = new[] { token }
+                                   };
+            
 
             new AcsCommand().Run(r).ShouldBeEquivalentTo(expected,
                 opt => opt.IgnoringCyclicReferences());

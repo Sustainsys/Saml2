@@ -22,7 +22,6 @@ namespace Kentor.AuthServices
                     var samlResponse = binding.Unbind(request);
 
                     samlResponse.Validate(GetSigningCert(samlResponse.Issuer));
-
                     var principal = new ClaimsPrincipal(samlResponse.GetClaims());
                     FederatedAuthentication.FederationConfiguration.IdentityConfiguration
                         .ClaimsAuthenticationManager.Authenticate(null, principal);
@@ -31,7 +30,8 @@ namespace Kentor.AuthServices
                     {
                         HttpStatusCode = HttpStatusCode.SeeOther,
                         Location = KentorAuthServicesSection.Current.ReturnUri,
-                        Principal = principal
+                        Principal = principal,
+                        SecurityTokens = samlResponse.Saml2SecurityTokens
                     };
                 }
                 catch (FormatException ex)

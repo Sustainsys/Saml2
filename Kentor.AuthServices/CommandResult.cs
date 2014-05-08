@@ -8,6 +8,9 @@ using System.Web;
 
 namespace Kentor.AuthServices
 {
+    using System.Collections.Generic;
+    using System.Linq;
+
     /// <summary>
     /// The results of a command.
     /// </summary>
@@ -33,6 +36,10 @@ namespace Kentor.AuthServices
         /// </summary>
         public ClaimsPrincipal Principal { get; set; }
 
+        /// <summary>The extracted security tokens if the command has parsed an incoming assertion.</summary>
+        /// <value>The security tokens.</value>
+        public IEnumerable<SecurityToken> SecurityTokens { get; set; }
+
         /// <summary>
         /// The response body that is the result of the command.
         /// </summary>
@@ -45,13 +52,14 @@ namespace Kentor.AuthServices
         {
             HttpStatusCode = HttpStatusCode.OK;
             Cacheability = HttpCacheability.NoCache;
+            SecurityTokens = new List<SecurityToken>();
         }
 
         /// <summary>
         /// Apply the command result to a bare HttpResponse.
         /// </summary>
         /// <param name="response">Http Response to write the result to.</param>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "HttpStatusCode")]
+        [SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "HttpStatusCode")]
         public void Apply(HttpResponseBase response)
         {
             if(response == null)
@@ -78,6 +86,17 @@ namespace Kentor.AuthServices
             response.StatusCode = (int)HttpStatusCode;
         }
 
+        internal virtual SessionSecurityToken CreateSessionSecurityToken()
+        {
+            // We should respect the validity of the SecurityTokens to set the session lifetime
+            // If there are multiple security tokens (assertions) with different validity we calculate the shortest timespan as the token lifetime
+            var validForm = SecurityTokens.Max(t => t.ValidFrom);
+            var validTo = SecurityTokens.Min(t => t.ValidTo);
+            var sessionTokenLifetime = validTo.Subtract(validForm);
+
+            return new SessionSecurityToken(Principal, sessionTokenLifetime);
+        }
+
         /// <summary>
         /// Applies the principal found in the command result by a call to the 
         /// session auth module.
@@ -88,8 +107,7 @@ namespace Kentor.AuthServices
             // Ignore this if we're not running inside IIS, e.g. in unit tests.
             if(Principal != null && HttpContext.Current != null)
             {
-                var sessionToken = new SessionSecurityToken(Principal);
-
+                var sessionToken = this.CreateSessionSecurityToken();
                 FederatedAuthentication.SessionAuthenticationModule
                     .AuthenticateSessionSecurityToken(sessionToken, true);
             }
