@@ -59,6 +59,7 @@
     <Compile Include="Configuration\IdentityProviderCollection.cs" />
     <Compile Include="Configuration\IdentityProviderElement.cs" />
     <Compile Include="Configuration\CertificateElement.cs" />
+    <Compile Include="DateTimeExtensions.cs" />
     <Compile Include="Enumerator.cs" />
     <Compile Include="IdentityProvider.cs" />
     <Compile Include="ISaml2Message.cs" />
@@ -67,6 +68,7 @@
     <Compile Include="NotFoundCommand.cs" />
     <Compile Include="ICommand.cs" />
     <Compile Include="CommandFactory.cs" />
+    <Compile Include="PendingAuthnRequests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ReturnRequestedIssuerNameRegistry.cs" />
     <Compile Include="Saml2AssertionExtensions.cs" />
@@ -75,12 +77,14 @@
     <Compile Include="Saml2AuthenticationRequest.cs" />
     <Compile Include="Saml2Binding.cs" />
     <Compile Include="Saml2BindingType.cs" />
+    <Compile Include="Saml2ConditionsExtensions.cs" />
     <Compile Include="Saml2Namespaces.cs" />
     <Compile Include="Saml2PostBinding.cs" />
     <Compile Include="Saml2RedirectBinding.cs" />
     <Compile Include="Saml2RequestBase.cs" />
     <Compile Include="Saml2Response.cs" />
     <Compile Include="Saml2StatusCode.cs" />
+    <Compile Include="Saml2SubjectExtensions.cs" />
     <Compile Include="SignInCommand.cs" />
     <Compile Include="StatusCodeHelper.cs" />
     <Compile Include="XmlDocumentExtensions.cs" />

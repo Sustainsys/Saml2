@@ -27,25 +27,17 @@ namespace Kentor.AuthServices
                 new XAttribute("Version", assertion.Version),
                 new XAttribute("ID", assertion.Id.Value),
                 new XAttribute("IssueInstant", 
-                    assertion.IssueInstant.ToString("s", CultureInfo.InvariantCulture) + "Z"),
+                    assertion.IssueInstant.ToSaml2DateTimeString()),
                 new XElement(Saml2Namespaces.Saml2 + "Issuer", assertion.Issuer.Value));
 
             if (assertion.Subject != null)
             {
-                xml.Add(new XElement(Saml2Namespaces.Saml2 + "Subject",
-                    new XElement(Saml2Namespaces.Saml2 + "NameID",
-                    assertion.Subject.NameId.Value),
-                    new XElement(Saml2Namespaces.Saml2 + "SubjectConfirmation",
-                        new XAttribute("Method", "urn:oasis:names:tc:SAML:2.0:cm:bearer"))
-                    ));
+                xml.Add(assertion.Subject.ToXElement());
             }
 
-            if(assertion.Conditions != null && assertion.Conditions.NotOnOrAfter != null)
+            if(assertion.Conditions != null)
             {
-                xml.Add(new XElement(Saml2Namespaces.Saml2 + "Conditions",
-                    new XAttribute("NotOnOrAfter", 
-                        assertion.Conditions.NotOnOrAfter.Value.ToString("s", 
-                        CultureInfo.InvariantCulture) + "Z")));
+                xml.Add(assertion.Conditions.ToXElement());
             }
 
             return xml;

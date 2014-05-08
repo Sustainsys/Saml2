@@ -25,7 +25,7 @@ namespace Kentor.AuthServices.Tests
 
             Action a = () => assertion.ToXElement();
 
-            a.ShouldThrow<ArgumentNullException>().And.Message.Contains("assertion");
+            a.ShouldThrow<ArgumentNullException>().And.ParamName.Should().Be("assertion");
         }
 
         [TestMethod]
@@ -34,12 +34,12 @@ namespace Kentor.AuthServices.Tests
             // Grab the current time before and after creating the assertion to
             // handle the unlikely event that the second part of the date time
             // is incremented during the test run. We don't want any heisenbugs.
-            var before = DateTime.UtcNow.ToString("s") + "Z";
+            var before = DateTime.UtcNow.ToSaml2DateTimeString();
 
             var issuer = "http://idp.example.com";
             var assertion = new Saml2Assertion(new Saml2NameIdentifier(issuer));
 
-            var after = DateTime.UtcNow.ToString("s") + "Z";
+            var after = DateTime.UtcNow.ToSaml2DateTimeString();
 
             var subject = assertion.ToXElement();
 
@@ -76,12 +76,6 @@ namespace Kentor.AuthServices.Tests
 
             subject.Element(Saml2Namespaces.Saml2 + "Subject").
                 Element(Saml2Namespaces.Saml2 + "NameID").Value.Should().Be(subjectName);
-
-            // Although SubjectConfirmation is optional in the SAML core spec, it is
-            // mandatory in the Web Browser SSO Profile and must have a value of bearer.
-            subject.Element(Saml2Namespaces.Saml2 + "Subject").
-                Element(Saml2Namespaces.Saml2 + "SubjectConfirmation")
-                .Attribute("Method").Value.Should().Be("urn:oasis:names:tc:SAML:2.0:cm:bearer");
         }
 
         [TestMethod]

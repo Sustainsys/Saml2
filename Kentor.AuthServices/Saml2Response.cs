@@ -7,6 +7,7 @@ using System.Security.Claims;
 using System.Security.Cryptography.X509Certificates;
 using System.Security.Cryptography.Xml;
 using System.Xml;
+using Kentor.AuthServices.Configuration;
 
 namespace Kentor.AuthServices
 {
@@ -17,7 +18,7 @@ namespace Kentor.AuthServices
     public class Saml2Response : ISaml2Message
     {
         /// <summary>Holds all assertion element nodes</summary>
-        private XmlElement[] allAssertionElementNodes;
+        private IEnumerable<XmlElement> allAssertionElementNodes;
 
         /// <summary>
         /// Read the supplied Xml and parse it into a response.
@@ -50,6 +51,12 @@ namespace Kentor.AuthServices
             xmlDocument = xml;
 
             id = new Saml2Id(xml.DocumentElement.Attributes["ID"].Value);
+
+            var parsedInResponseTo = xml.DocumentElement.Attributes["InResponseTo"].GetValueIfNotNull();
+            if (parsedInResponseTo != null)
+            {
+                inResponseTo = new Saml2Id(parsedInResponseTo);
+            }
 
             issueInstant = DateTime.Parse(xml.DocumentElement.Attributes["IssueInstant"].Value,
                 CultureInfo.InvariantCulture, DateTimeStyles.AdjustToUniversal);
@@ -146,7 +153,7 @@ namespace Kentor.AuthServices
             responseElement.SetAttributeNode("ID", "").Value = id.Value;
             responseElement.SetAttributeNode("Version", "").Value = "2.0";
             responseElement.SetAttributeNode("IssueInstant", "").Value =
-                DateTime.UtcNow.ToString("s", CultureInfo.InvariantCulture) + "Z";
+                DateTime.UtcNow.ToSaml2DateTimeString();
             xml.AppendChild(responseElement);
 
             var issuerElement = xml.CreateElement("saml2", "Issuer", Saml2Namespaces.Saml2Name);
@@ -176,6 +183,13 @@ namespace Kentor.AuthServices
         /// Id of the response message.
         /// </summary>
         public Saml2Id Id { get { return id; } }
+
+        readonly Saml2Id inResponseTo;
+
+        /// <summary>
+        /// InResponseTo id.
+        /// </summary>
+        public Saml2Id InResponseTo { get { return inResponseTo; } }
 
         readonly DateTime issueInstant;
 
@@ -221,60 +235,86 @@ namespace Kentor.AuthServices
 
         /// <summary>Gets all assertion element nodes from this response message.</summary>
         /// <value>All assertion element nodes.</value>
-        protected IEnumerable<XmlElement> AllAssertionElementNodes
+        private IEnumerable<XmlElement> AllAssertionElementNodes
         {
             get
             {
-                if (this.allAssertionElementNodes == null)
+                if (allAssertionElementNodes == null)
                 {
-                    this.allAssertionElementNodes =
-                        this.XmlDocument.DocumentElement.ChildNodes.Cast<XmlNode>().Where(node => node.NodeType == XmlNodeType.Element).Cast<XmlElement>()
-                            .Where(xe => xe.LocalName == "Assertion" && xe.NamespaceURI == Saml2Namespaces.Saml2Name)
-                            .ToArray();
+                    allAssertionElementNodes =
+                        XmlDocument.DocumentElement.ChildNodes.Cast<XmlNode>()
+                        .Where(node => node.NodeType == XmlNodeType.Element).Cast<XmlElement>()
+                        .Where(xe => xe.LocalName == "Assertion" && xe.NamespaceURI == Saml2Namespaces.Saml2Name);
                 }
 
-                return this.allAssertionElementNodes;
+                return allAssertionElementNodes;
             }
         }
 
         /// <summary>
-        /// Validates the response.
+        /// Validates InResponseTo and the signature of the response. Note that the status code of the
+        /// message can still be an error code, although the message itself is valid.
         /// </summary>
         /// <param name="idpCertificate">Idp certificate that should have signed the reponse</param>
         /// <returns>Is the response signed by the Idp and fulfills other formal requirements?</returns>
         public bool Validate(X509Certificate2 idpCertificate)
         {
-            if (this.validated)
+            if (!validated)
             {
-                return this.valid;
-            }
+                valid = ValidateInResponseTo() && ValidateSignature(idpCertificate);
 
+                validated = true;
+            }
+            return valid;
+        }
+
+        private bool ValidateInResponseTo()
+        {
+            if (InResponseTo == null &&
+                KentorAuthServicesSection.Current.IdentityProviders
+                .Single(idpConfig => idpConfig.Issuer == this.Issuer).AllowUnsolicitedAuthnResponse)
+            {
+                return true;
+            }
+            else
+            {
+                string sentToIdp;
+                bool knownInResponseToId = PendingAuthnRequests.TryRemove(InResponseTo, out sentToIdp);
+                if (!knownInResponseToId)
+                {
+                    return false;
+                }
+                if (sentToIdp != Issuer)
+                {
+                    return false;
+                }
+                return true;
+            }
+        }
+
+        private bool ValidateSignature(X509Certificate2 idpCertificate)
+        {
             // If the response message is signed, we check just this signature because the whole content has to be correct then
-            var responseSignature = this.XmlDocument.DocumentElement["Signature", SignedXml.XmlDsigNamespaceUrl];
+            var responseSignature = xmlDocument.DocumentElement["Signature", SignedXml.XmlDsigNamespaceUrl];
             if (responseSignature != null)
             {
-                this.valid = CheckSignature(this.XmlDocument.DocumentElement, idpCertificate);
+                return CheckSignature(XmlDocument.DocumentElement, idpCertificate);
             }
             else
             {
                 // If the response message is not signed, all assersions have to be signed correctly
-                foreach (var assertionNode in this.AllAssertionElementNodes)
+                foreach (var assertionNode in AllAssertionElementNodes)
                 {
-                    this.valid = CheckSignature(assertionNode, idpCertificate);
-                    if (!this.valid)
+                    if (!CheckSignature(assertionNode, idpCertificate))
                     {
-                        break;
+                        return false;
                     }
                 }
+                return true;
             }
-
-            this.validated = true;
-
-            return this.valid;
         }
 
         /// <summary>Checks the signature.</summary>
-        /// <param name="signedXml">The signed XML.</param>
         /// <param name="signedRootElement">The signed root element.</param>
         /// <param name="idpCertificate">The idp certificate.</param>
         /// <returns><c>true</c> if the whole signature was successful; otherwise <c>false</c></returns>
@@ -349,7 +389,7 @@ namespace Kentor.AuthServices
         {
             ThrowOnNotValid();
 
-            foreach (XmlElement assertionNode in this.AllAssertionElementNodes)
+            foreach (XmlElement assertionNode in AllAssertionElementNodes)
             {
                 using (var reader = new XmlNodeReader(assertionNode))
                 {

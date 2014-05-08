@@ -25,7 +25,7 @@ namespace Kentor.AuthServices.Tests
 
             Action a = () => identity.ToSaml2Assertion("foo");
 
-            a.ShouldThrow<ArgumentNullException>().And.Message.Contains("identity");
+            a.ShouldThrow<ArgumentNullException>().And.ParamName.Should().Be("identity");
         }
 
         [TestMethod]

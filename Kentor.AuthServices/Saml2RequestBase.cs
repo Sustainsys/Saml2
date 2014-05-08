@@ -39,7 +39,7 @@ namespace Kentor.AuthServices
         }
 
         private readonly string issueInstant = 
-            DateTime.UtcNow.ToString("s", CultureInfo.InvariantCulture) + "Z";
+            DateTime.UtcNow.ToSaml2DateTimeString();
 
         /// <summary>
         /// The instant that the request was issued (well actually, created).

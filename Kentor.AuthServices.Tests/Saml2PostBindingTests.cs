@@ -36,7 +36,7 @@ namespace Kentor.AuthServices.Tests
         {
             Saml2Binding.Get(Saml2BindingType.HttpPost)
                 .Invoking(b => b.Unbind(null))
-                .ShouldThrow<ArgumentNullException>().And.Message.Contains("request");
+                .ShouldThrow<ArgumentNullException>().And.ParamName.Should().Be("request");
         }
 
         [TestMethod]
@@ -119,7 +119,7 @@ value=""PHJvb3Q+PGNvbnRlbnQ+ZGF0YTwvY29udGVudD48L3Jvb3Q+""/>
         {
             Saml2Binding.Get(Saml2BindingType.HttpPost)
                 .Invoking(b => b.CanUnbind(null))
-                .ShouldThrow<ArgumentNullException>().And.Message.Contains("request");
+                .ShouldThrow<ArgumentNullException>().And.ParamName.Should().Be("request");
         }
     }
 }

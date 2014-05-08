@@ -6,12 +6,34 @@ using System.Security.Claims;
 using System.Xml;
 using System.Linq;
 using System.Security.Cryptography.Xml;
+using Kentor.AuthServices.Configuration;
 
 namespace Kentor.AuthServices.Tests
 {
     [TestClass]
     public class Saml2ResponseTests
     {
+        private bool currentConfigValueForAllowedUnsolicitedAuthnResponse = false;
+
+        [TestInitialize]
+        public void TestInitialize()
+        {
+            currentConfigValueForAllowedUnsolicitedAuthnResponse = 
+                KentorAuthServicesSection.Current.IdentityProviders.First().AllowUnsolicitedAuthnResponse;
+            KentorAuthServicesSection.Current.IdentityProviders.First().AllowConfigEdit(true);
+            KentorAuthServicesSection.Current.IdentityProviders.First().AllowUnsolicitedAuthnResponse = true;
+            KentorAuthServicesSection.Current.IdentityProviders.First().AllowConfigEdit(false);
+        }
+
+        [TestCleanup]
+        public void TestCleanUp()
+        {
+            KentorAuthServicesSection.Current.IdentityProviders.First().AllowConfigEdit(true);
+            KentorAuthServicesSection.Current.IdentityProviders.First().AllowUnsolicitedAuthnResponse = 
+                currentConfigValueForAllowedUnsolicitedAuthnResponse;
+            KentorAuthServicesSection.Current.IdentityProviders.First().AllowConfigEdit(false);
+        }
+
         [TestMethod]
         public void Saml2Response_Read_BasicParams()
         {
@@ -19,6 +41,7 @@ namespace Kentor.AuthServices.Tests
             @"<?xml version=""1.0"" encoding=""UTF-8""?>
                 <saml2p:Response xmlns:saml2p=""urn:oasis:names:tc:SAML:2.0:protocol""
             ID = ""Saml2Response_Read_BasicParams"" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z""
+            InResponseTo = ""InResponseToId""
             Destination=""http://destination.example.com"">
                 <saml2p:Status>
                     <saml2p:StatusCode Value=""urn:oasis:names:tc:SAML:2.0:status:Requester"" />
@@ -32,7 +55,8 @@ namespace Kentor.AuthServices.Tests
                 Status = Saml2StatusCode.Requester,
                 Issuer = (string)null,
                 DestinationUri = new Uri("http://destination.example.com"),
-                MessageName = "SAMLResponse"
+                MessageName = "SAMLResponse",
+                InResponseTo = new Saml2Id("InResponseToId"),
             };
 
             Saml2Response.Read(response).ShouldBeEquivalentTo(expected,
@@ -81,8 +105,9 @@ namespace Kentor.AuthServices.Tests
             var response =
             @"<?xml version=""1.0"" encoding=""UTF-8""?>
             <saml2p:Response xmlns:saml2p=""urn:oasis:names:tc:SAML:2.0:protocol""
+            xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
             ID = ""Saml2Respons_Read_Issuer"" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z"">
-            <saml2:Issuer xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion"">
+            <saml2:Issuer>
                 https://some.issuer.example.com
             </saml2:Issuer>
                 <saml2p:Status>
@@ -99,10 +124,11 @@ namespace Kentor.AuthServices.Tests
             var response =
             @"<?xml version=""1.0"" encoding=""UTF-8""?>
             <saml2p:Response xmlns:saml2p=""urn:oasis:names:tc:SAML:2.0:protocol""
-            ID = ""Saml2Response_Validates_FalseOnMissingSignatureInResponseAndAnyAssertion"" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z""
-            Issuer = ""https://some.issuer.example.com"">
+            xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
+            ID = ""Saml2Response_Validates_FalseOnMissingSignatureInResponseAndAnyAssertion"" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z"">
+                <saml2:Issuer>https://idp.example.com</saml2:Issuer>
                 <saml2p:Status>
-                    <saml2p:StatusCode Value=""urn:oasis:names:tc:SAML:2.0:status:Requester"" />
+                    <saml2p:StatusCode Value=""urn:oasis:names:tc:SAML:2.0:status:Success"" />
                 </saml2p:Status>
                 <saml2:Assertion xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
                 Version=""2.0"" ID=""Saml2Response_Validates_FalseOnMissingSignatureInResponseAndAnyAssertion_Assertion1""
@@ -133,11 +159,13 @@ namespace Kentor.AuthServices.Tests
         public void Saml2Response_Validate_TrueOnCorrectSignedResponseMessage()
         {
             var response =
-            @"<saml2p:Response xmlns:saml2p=""urn:oasis:names:tc:SAML:2.0:protocol""
-            ID = ""Saml2Response_Validate_TrueOnCorrectSignedResponseMessage"" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z""
-            Issuer = ""https://some.issuer.example.com"">
+            @"<?xml version=""1.0"" encoding=""UTF-8""?>
+            <saml2p:Response xmlns:saml2p=""urn:oasis:names:tc:SAML:2.0:protocol""
+            xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
+            ID = ""Saml2Response_Validate_TrueOnCorrectSignedResponseMessage"" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z"">
+                <saml2:Issuer>https://idp.example.com</saml2:Issuer>
                 <saml2p:Status>
-                    <saml2p:StatusCode Value=""urn:oasis:names:tc:SAML:2.0:status:Requester"" />
+                    <saml2p:StatusCode Value=""urn:oasis:names:tc:SAML:2.0:status:Success"" />
                 </saml2p:Status>
                 <saml2:Assertion xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
                 Version=""2.0"" ID=""Saml2Response_Validate_TrueOnCorrectSignedResponseMessage_Assertion1""
@@ -161,10 +189,11 @@ namespace Kentor.AuthServices.Tests
         {
             var response =
             @"<saml2p:Response xmlns:saml2p=""urn:oasis:names:tc:SAML:2.0:protocol""
-            ID = ""Saml2Response_Validate_TrueOnCorrectSignedSingleAssertionInResponseMessage"" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z""
-            Issuer = ""https://some.issuer.example.com"">
+            xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
+            ID = ""Saml2Response_Validate_TrueOnCorrectSignedSingleAssertionInResponseMessage"" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z"">
+                <saml2:Issuer>https://idp.example.com</saml2:Issuer>
                 <saml2p:Status>
-                    <saml2p:StatusCode Value=""urn:oasis:names:tc:SAML:2.0:status:Requester"" />
+                    <saml2p:StatusCode Value=""urn:oasis:names:tc:SAML:2.0:status:Success"" />
                 </saml2p:Status>
                 {0}
             </saml2p:Response>";
@@ -193,10 +222,11 @@ namespace Kentor.AuthServices.Tests
         {
             var response =
             @"<saml2p:Response xmlns:saml2p=""urn:oasis:names:tc:SAML:2.0:protocol""
-            ID = ""Saml2Response_Validate_TrueOnCorrectSignedMultipleAssertionInResponseMessage"" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z""
-            Issuer = ""https://some.issuer.example.com"">
+            xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
+            ID = ""Saml2Response_Validate_TrueOnCorrectSignedMultipleAssertionInResponseMessage"" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z"">
+                <saml2:Issuer>https://idp.example.com</saml2:Issuer>
                 <saml2p:Status>
-                    <saml2p:StatusCode Value=""urn:oasis:names:tc:SAML:2.0:status:Requester"" />
+                    <saml2p:StatusCode Value=""urn:oasis:names:tc:SAML:2.0:status:Success"" />
                 </saml2p:Status>
                 {0}
                 {1}
@@ -237,10 +267,11 @@ namespace Kentor.AuthServices.Tests
         {
             var response =
             @"<saml2p:Response xmlns:saml2p=""urn:oasis:names:tc:SAML:2.0:protocol""
-            ID = ""Saml2Response_Validate_FalseOnMultipleAssertionInUnsignedResponseMessageButNotAllSigned"" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z""
-            Issuer = ""https://some.issuer.example.com"">
+            xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
+            ID = ""Saml2Response_Validate_FalseOnMultipleAssertionInUnsignedResponseMessageButNotAllSigned"" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z"">
+                <saml2:Issuer>https://idp.example.com</saml2:Issuer>
                 <saml2p:Status>
-                    <saml2p:StatusCode Value=""urn:oasis:names:tc:SAML:2.0:status:Requester"" />
+                    <saml2p:StatusCode Value=""urn:oasis:names:tc:SAML:2.0:status:Success"" />
                 </saml2p:Status>
                 {0}
                 {1}
@@ -280,10 +311,11 @@ namespace Kentor.AuthServices.Tests
         {
             var response =
             @"<saml2p:Response xmlns:saml2p=""urn:oasis:names:tc:SAML:2.0:protocol""
-            ID = ""Saml2Response_Validate_FalseOnTamperedMessage"" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z""
-            Issuer = ""https://some.issuer.example.com"">
+            xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
+            ID = ""Saml2Response_Validate_FalseOnTamperedMessage"" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z"">
+                <saml2:Issuer>https://idp.example.com</saml2:Issuer>
                 <saml2p:Status>
-                    <saml2p:StatusCode Value=""urn:oasis:names:tc:SAML:2.0:status:Requester"" />
+                    <saml2p:StatusCode Value=""urn:oasis:names:tc:SAML:2.0:status:Success"" />
                 </saml2p:Status>
             </saml2p:Response>";
 
@@ -299,10 +331,11 @@ namespace Kentor.AuthServices.Tests
         {
             var response =
             @"<saml2p:Response xmlns:saml2p=""urn:oasis:names:tc:SAML:2.0:protocol""
-            ID = ""Saml2Response_Validate_FalseOnTamperedAssertionWithMessageSignature"" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z""
-            Issuer = ""https://some.issuer.example.com"">
+            xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
+            ID = ""Saml2Response_Validate_FalseOnTamperedAssertionWithMessageSignature"" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z"">
+                <saml2:Issuer>https://idp.example.com</saml2:Issuer>
                 <saml2p:Status>
-                    <saml2p:StatusCode Value=""urn:oasis:names:tc:SAML:2.0:status:Requester"" />
+                    <saml2p:StatusCode Value=""urn:oasis:names:tc:SAML:2.0:status:Success"" />
                 </saml2p:Status>
                 <saml2:Assertion xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
                 Version=""2.0"" ID=""Saml2Response_Validate_FalseOnTamperedAssertionWithMessageSignature_Assertion1""
@@ -326,10 +359,11 @@ namespace Kentor.AuthServices.Tests
         {
             var response =
             @"<saml2p:Response xmlns:saml2p=""urn:oasis:names:tc:SAML:2.0:protocol""
-            ID = ""Saml2Response_Validate_FalseOnTamperedAssertionWithAssertionSignature"" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z""
-            Issuer = ""https://some.issuer.example.com"">
+            xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
+            ID = ""Saml2Response_Validate_FalseOnTamperedAssertionWithAssertionSignature"" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z"">
+                <saml2:Issuer>https://idp.example.com</saml2:Issuer>
                 <saml2p:Status>
-                    <saml2p:StatusCode Value=""urn:oasis:names:tc:SAML:2.0:status:Requester"" />
+                    <saml2p:StatusCode Value=""urn:oasis:names:tc:SAML:2.0:status:Success"" />
                 </saml2p:Status>
                 {0}
                 {1}
@@ -369,10 +403,11 @@ namespace Kentor.AuthServices.Tests
         {
             var response =
             @"<saml2p:Response xmlns:saml2p=""urn:oasis:names:tc:SAML:2.0:protocol""
-            ID = ""Saml2Response_Validate_FalseOnAssertionInjectionWithAssertionSignature"" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z""
-            Issuer = ""https://some.issuer.example.com"">
+            xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
+            ID = ""Saml2Response_Validate_FalseOnAssertionInjectionWithAssertionSignature"" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z"">
+                <saml2:Issuer>https://idp.example.com</saml2:Issuer>
                 <saml2p:Status>
-                    <saml2p:StatusCode Value=""urn:oasis:names:tc:SAML:2.0:status:Requester"" />
+                    <saml2p:StatusCode Value=""urn:oasis:names:tc:SAML:2.0:status:Success"" />
                 </saml2p:Status>
                 {0}
                 {1}
@@ -424,8 +459,9 @@ namespace Kentor.AuthServices.Tests
         {
             var response =
             @"<saml2p:Response xmlns:saml2p=""urn:oasis:names:tc:SAML:2.0:protocol""
-            ID = ""Saml2Response_Validate_TrueOnCorrectSignedResponseMessage"" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z""
-            Issuer = ""https://some.issuer.example.com"">
+            xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
+            ID = ""Saml2Response_Validate_TrueOnCorrectSignedResponseMessage"" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z"">
+                <saml2:Issuer>https://idp.example.com</saml2:Issuer>
                 <saml2p:Status>
                     <saml2p:StatusCode Value=""urn:oasis:names:tc:SAML:2.0:status:Requester"" />
                 </saml2p:Status>
@@ -446,12 +482,13 @@ namespace Kentor.AuthServices.Tests
             var response =
             @"<?xml version=""1.0"" encoding=""UTF-8""?>
             <saml2p:Response xmlns:saml2p=""urn:oasis:names:tc:SAML:2.0:protocol""
-            ID = ""Saml2Response_GetClaims_CreateIdentities"" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z""
-            Issuer = ""https://some.issuer.example.com"">
+            xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
+            ID = ""Saml2Response_GetClaims_CreateIdentities"" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z"">
+                <saml2:Issuer>https://idp.example.com</saml2:Issuer>
                 <saml2p:Status>
                     <saml2p:StatusCode Value=""urn:oasis:names:tc:SAML:2.0:status:Success"" />
                 </saml2p:Status>
-                <saml2:Assertion xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
+                <saml2:Assertion
                 Version=""2.0"" ID=""Saml2Response_GetClaims_CreateIdentities1""
                 IssueInstant=""2013-09-25T00:00:00Z"">
                     <saml2:Issuer>https://idp.example.com</saml2:Issuer>
@@ -461,7 +498,7 @@ namespace Kentor.AuthServices.Tests
                     </saml2:Subject>
                     <saml2:Conditions NotOnOrAfter=""2100-01-01T00:00:00Z"" />
                 </saml2:Assertion>
-                <saml2:Assertion xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
+                <saml2:Assertion
                 Version=""2.0"" ID=""Saml2Response_GetClaims_CreateIdentities2""
                 IssueInstant=""2013-09-25T00:00:00Z"">
                     <saml2:Issuer>https://idp.example.com</saml2:Issuer>
@@ -492,12 +529,13 @@ namespace Kentor.AuthServices.Tests
             var response =
             @"<?xml version=""1.0"" encoding=""UTF-8""?>
             <saml2p:Response xmlns:saml2p=""urn:oasis:names:tc:SAML:2.0:protocol""
-            ID = ""Saml2Response_GetClaims_ThrowsOnNotValidated"" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z""
-            Issuer = ""https://some.issuer.example.com"">
+            xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
+            ID = ""Saml2Response_GetClaims_ThrowsOnNotValidated"" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z"">
+                <saml2:Issuer>https://idp.example.com</saml2:Issuer>
                 <saml2p:Status>
                     <saml2p:StatusCode Value=""urn:oasis:names:tc:SAML:2.0:status:Success"" />
                 </saml2p:Status>
-                <saml2:Assertion xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
+                <saml2:Assertion
                 Version=""2.0"" ID=""Saml2Response_GetClaims_ThrowsOnNotValidated_Assertion""
                 IssueInstant=""2013-09-25T00:00:00Z"">
                     <saml2:Issuer>https://idp.example.com</saml2:Issuer>
@@ -521,12 +559,13 @@ namespace Kentor.AuthServices.Tests
             var response =
             @"<?xml version=""1.0"" encoding=""UTF-8""?>
             <saml2p:Response xmlns:saml2p=""urn:oasis:names:tc:SAML:2.0:protocol""
-            ID = ""Saml2Response_GetClaims_ThrowsOnResponseNotValid"" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z""
-            Issuer = ""https://some.issuer.example.com"">
+            xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
+            ID = ""Saml2Response_GetClaims_ThrowsOnResponseNotValid"" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z"">
+                <saml2:Issuer>https://idp.example.com</saml2:Issuer>
                 <saml2p:Status>
                     <saml2p:StatusCode Value=""urn:oasis:names:tc:SAML:2.0:status:Success"" />
                 </saml2p:Status>
-                <saml2:Assertion xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
+                <saml2:Assertion
                 Version=""2.0"" ID=""Saml2Response_GetClaims_ThrowsOnResponseNotValid_Assertion""
                 IssueInstant=""2013-09-25T00:00:00Z"">
                     <saml2:Issuer>https://idp.example.com</saml2:Issuer>
@@ -559,12 +598,13 @@ namespace Kentor.AuthServices.Tests
             var response =
             @"<?xml version=""1.0"" encoding=""UTF-8""?>
             <saml2p:Response xmlns:saml2p=""urn:oasis:names:tc:SAML:2.0:protocol""
-            ID = ""Saml2Response_GetClaims_ThrowsOnWrongAudience"" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z""
-            Issuer = ""https://some.issuer.example.com"">
+            xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
+            ID = ""Saml2Response_GetClaims_ThrowsOnWrongAudience"" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z"">
+                <saml2:Issuer>https://idp.example.com</saml2:Issuer>
                 <saml2p:Status>
                     <saml2p:StatusCode Value=""urn:oasis:names:tc:SAML:2.0:status:Success"" />
                 </saml2p:Status>
-                <saml2:Assertion xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
+                <saml2:Assertion
                 Version=""2.0"" ID=""Saml2Response_GetClaims_ThrowsOnWrongAudience_Assertion""
                 IssueInstant=""2013-09-25T00:00:00Z"">
                     <saml2:Issuer>https://idp.example.com</saml2:Issuer>
@@ -596,12 +636,13 @@ namespace Kentor.AuthServices.Tests
             var response =
             @"<?xml version=""1.0"" encoding=""UTF-8""?>
             <saml2p:Response xmlns:saml2p=""urn:oasis:names:tc:SAML:2.0:protocol""
-            ID = ""Saml2Response_GetClaims_ThrowsOnExpired"" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z""
-            Issuer = ""https://some.issuer.example.com"">
+            xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
+            ID = ""Saml2Response_GetClaims_ThrowsOnExpired"" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z"">
+                <saml2:Issuer>https://idp.example.com</saml2:Issuer>
                 <saml2p:Status>
                     <saml2p:StatusCode Value=""urn:oasis:names:tc:SAML:2.0:status:Success"" />
                 </saml2p:Status>
-                <saml2:Assertion xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
+                <saml2:Assertion
                 Version=""2.0"" ID=""Saml2Response_GetClaims_ThrowsOnExpired_Assertion""
                 IssueInstant=""2013-09-25T00:00:00Z"">
                     <saml2:Issuer>https://idp.example.com</saml2:Issuer>
@@ -623,15 +664,166 @@ namespace Kentor.AuthServices.Tests
         }
 
         [TestMethod]
-        [Ignore]
-        public void Saml2Response_Validate_FalseOnInvalidInResponseTo()
+        public void Saml2Response_Validate_TrueOnCorrectInResponseTo()
         {
+            var idp = IdentityProvider.ConfiguredIdentityProviders.First().Value;
+
+            var request = idp.CreateAuthenticateRequest();
+
+            var responseXML =
+            @"<?xml version=""1.0"" encoding=""UTF-8""?>
+            <saml2p:Response xmlns:saml2p=""urn:oasis:names:tc:SAML:2.0:protocol""
+            xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
+            ID = ""Saml2Response_Validate_TrueOnCorrectInResponseTo"" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z""
+            InResponseTo = """ + request.Id + @""">
+                <saml2:Issuer>https://idp.example.com</saml2:Issuer>
+                <saml2p:Status>
+                    <saml2p:StatusCode Value=""urn:oasis:names:tc:SAML:2.0:status:Requester"" />
+                </saml2p:Status>
+            </saml2p:Response>";
+
+            responseXML = SignedXmlHelper.SignXml(responseXML);
+
+            var response = Saml2Response.Read(responseXML);
+
+            response.Validate(SignedXmlHelper.TestCert).Should().BeTrue();
         }
 
         [TestMethod]
-        [Ignore]
-        public void Saml2Response_Validate_FalseOnSecondInResponseTo()
+        public void Saml2Response_Validate_FalseOnMissingInResponseTo_IfDisallowed()
         {
+            KentorAuthServicesSection.Current.IdentityProviders.First().AllowConfigEdit(true);
+            KentorAuthServicesSection.Current.IdentityProviders.First().AllowUnsolicitedAuthnResponse = false;
+            KentorAuthServicesSection.Current.IdentityProviders.First().AllowConfigEdit(false);
+            var idp = IdentityProvider.ConfiguredIdentityProviders.First().Value;
+
+            var request = idp.CreateAuthenticateRequest();
+
+            var responseXML =
+            @"<?xml version=""1.0"" encoding=""UTF-8""?>
+            <saml2p:Response xmlns:saml2p=""urn:oasis:names:tc:SAML:2.0:protocol""
+            xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
+            ID = ""Saml2Response_Validate_TrueOnCorrectInResponseTo"" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z"">
+                <saml2:Issuer>https://idp.example.com</saml2:Issuer>
+                <saml2p:Status>
+                    <saml2p:StatusCode Value=""urn:oasis:names:tc:SAML:2.0:status:Requester"" />
+                </saml2p:Status>
+            </saml2p:Response>";
+
+            responseXML = SignedXmlHelper.SignXml(responseXML);
+
+            var response = Saml2Response.Read(responseXML);
+
+            response.Validate(SignedXmlHelper.TestCert).Should().BeFalse();
+        }
+
+        [TestMethod]
+        public void Saml2Response_Validate_TrueOnMissingInResponseTo_IfAllowed()
+        {
+            KentorAuthServicesSection.Current.IdentityProviders.First().AllowConfigEdit(true);
+            KentorAuthServicesSection.Current.IdentityProviders.First().AllowUnsolicitedAuthnResponse = true;
+            KentorAuthServicesSection.Current.IdentityProviders.First().AllowConfigEdit(false);
+            var idp = IdentityProvider.ConfiguredIdentityProviders.First().Value;
+
+            var request = idp.CreateAuthenticateRequest();
+
+            var responseXML =
+            @"<?xml version=""1.0"" encoding=""UTF-8""?>
+            <saml2p:Response xmlns:saml2p=""urn:oasis:names:tc:SAML:2.0:protocol""
+            xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
+            ID = ""Saml2Response_Validate_TrueOnCorrectInResponseTo"" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z"">
+                <saml2:Issuer>https://idp.example.com</saml2:Issuer>
+                <saml2p:Status>
+                    <saml2p:StatusCode Value=""urn:oasis:names:tc:SAML:2.0:status:Requester"" />
+                </saml2p:Status>
+            </saml2p:Response>";
+
+            responseXML = SignedXmlHelper.SignXml(responseXML);
+
+            var response = Saml2Response.Read(responseXML);
+
+            response.Validate(SignedXmlHelper.TestCert).Should().BeTrue();
+        }
+
+        [TestMethod]
+        public void Saml2Response_Validate_FalseOnIncorrectInResponseTo()
+        {
+            var idp = IdentityProvider.ConfiguredIdentityProviders.First().Value;
+
+            var request = idp.CreateAuthenticateRequest();
+
+            var responseXML =
+            @"<?xml version=""1.0"" encoding=""UTF-8""?>
+            <saml2p:Response xmlns:saml2p=""urn:oasis:names:tc:SAML:2.0:protocol""
+            xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
+            ID = ""Saml2Response_Validate_FalseOnIncorrectInResponseTo"" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z""
+            InResponseTo = ""anothervalue"">
+                <saml2:Issuer>https://idp.example.com</saml2:Issuer>
+                <saml2p:Status>
+                    <saml2p:StatusCode Value=""urn:oasis:names:tc:SAML:2.0:status:Requester"" />
+                </saml2p:Status>
+            </saml2p:Response>";
+
+            responseXML = SignedXmlHelper.SignXml(responseXML);
+
+            var response = Saml2Response.Read(responseXML);
+
+            response.Validate(SignedXmlHelper.TestCert).Should().BeFalse();
+        }
+
+        [TestMethod]
+        public void Saml2Response_Validate_FalseOnReplayedInResponseTo()
+        {
+            var idp = IdentityProvider.ConfiguredIdentityProviders.First().Value;
+
+            var request = idp.CreateAuthenticateRequest();
+
+            var responseXML =
+            @"<?xml version=""1.0"" encoding=""UTF-8""?>
+            <saml2p:Response xmlns:saml2p=""urn:oasis:names:tc:SAML:2.0:protocol""
+            xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
+            ID = ""Saml2Response_Validate_TrueOnCorrectInResponseTo"" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z""
+            InResponseTo = """ + request.Id + @""">
+                <saml2:Issuer>https://idp.example.com</saml2:Issuer>
+                <saml2p:Status>
+                    <saml2p:StatusCode Value=""urn:oasis:names:tc:SAML:2.0:status:Requester"" />
+                </saml2p:Status>
+            </saml2p:Response>";
+
+            responseXML = SignedXmlHelper.SignXml(responseXML);
+
+            var response = Saml2Response.Read(responseXML);
+            response.Validate(SignedXmlHelper.TestCert).Should().BeTrue();
+
+            response = Saml2Response.Read(responseXML);
+            response.Validate(SignedXmlHelper.TestCert).Should().BeFalse();
+        }
+
+        [TestMethod]
+        public void Saml2Response_Validate_FalseOnReplyFromWrongIdp()
+        {
+            // A valid response is received, but it is not from the idp that we
+            // did send the AuthnRequest to.
+            var idp = IdentityProvider.ConfiguredIdentityProviders.First().Value;
+
+            var request = idp.CreateAuthenticateRequest();
+
+            var responseXML =
+            @"<?xml version=""1.0"" encoding=""UTF-8""?>
+            <saml2p:Response xmlns:saml2p=""urn:oasis:names:tc:SAML:2.0:protocol""
+            ID = ""Saml2Response_Validate_TrueOnCorrectInResponseTo"" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z""
+            InResponseTo = """ + request.Id + @""">
+                <saml2p:Issuer>https://idp.anotheridp.com</saml2p:Issuer>
+                <saml2p:Status>
+                    <saml2p:StatusCode Value=""urn:oasis:names:tc:SAML:2.0:status:Requester"" />
+                </saml2p:Status>
+            </saml2p:Response>";
+
+            responseXML = SignedXmlHelper.SignXml(responseXML);
+
+            var response = Saml2Response.Read(responseXML);
+
+            response.Validate(SignedXmlHelper.TestCert).Should().BeFalse();
         }
 
         [TestMethod]
@@ -641,12 +833,13 @@ namespace Kentor.AuthServices.Tests
             var response =
             @"<?xml version=""1.0"" encoding=""UTF-8""?>
             <saml2p:Response xmlns:saml2p=""urn:oasis:names:tc:SAML:2.0:protocol""
-            ID = ""Saml2Response_GetClaims_ThrowsOnReplayAssertionId"" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z""
-            Issuer = ""https://some.issuer.example.com"">
+            xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
+            ID = ""Saml2Response_GetClaims_ThrowsOnReplayAssertionId"" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z"">
+                <saml2:Issuer>https://idp.example.com</saml2:Issuer>
                 <saml2p:Status>
                     <saml2p:StatusCode Value=""urn:oasis:names:tc:SAML:2.0:status:Success"" />
                 </saml2p:Status>
-                <saml2:Assertion xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
+                <saml2:Assertion
                 Version=""2.0"" ID=""Saml2Response_GetClaims_ThrowsOnReplayAssertionId_Assertion""
                 IssueInstant=""2013-09-25T00:00:00Z"">
                     <saml2:Issuer>https://idp.example.com</saml2:Issuer>
@@ -672,12 +865,6 @@ namespace Kentor.AuthServices.Tests
         }
 
         [TestMethod]
-        [Ignore]
-        public void Saml2Response_Validate_FalseOnIncorrectInResponseTo()
-        {
-        }
-
-        [TestMethod]
         public void Saml2Response_Ctor_FromData()
         {
             var issuer = "http://idp.example.com";
@@ -696,7 +883,7 @@ namespace Kentor.AuthServices.Tests
         {
             var issuer = "http://idp.example.com";
             var nameId = "JohnDoe";
-            var destination= "http://destination.example.com/";
+            var destination = "http://destination.example.com/";
 
             var identity = new ClaimsIdentity(new Claim[] 
             {
@@ -706,10 +893,10 @@ namespace Kentor.AuthServices.Tests
             // Grab current time both before and after generating the response
             // to avoid heisenbugs if the second counter is updated while creating
             // the response.
-            string before = DateTime.UtcNow.ToString("s") + "Z";
-            var response = new Saml2Response(issuer, SignedXmlHelper.TestCert, 
+            string before = DateTime.UtcNow.ToSaml2DateTimeString();
+            var response = new Saml2Response(issuer, SignedXmlHelper.TestCert,
                 new Uri(destination), identity);
-            string after = DateTime.UtcNow.ToString("s") + "Z";
+            string after = DateTime.UtcNow.ToSaml2DateTimeString();
 
             var xml = response.XmlDocument;
 
@@ -754,7 +941,7 @@ namespace Kentor.AuthServices.Tests
                 new Claim(ClaimTypes.NameIdentifier, nameId) 
             });
 
-            var response = new Saml2Response(issuer, SignedXmlHelper.TestCert, 
+            var response = new Saml2Response(issuer, SignedXmlHelper.TestCert,
                 null, claimsIdentities: identity);
 
             var xml = response.XmlDocument;
@@ -772,7 +959,7 @@ namespace Kentor.AuthServices.Tests
         public void Saml2Response_ToXml()
         {
             string response = @"<?xml version=""1.0"" encoding=""UTF-8""?><saml2p:Response xmlns:saml2p=""urn:oasis:names:tc:SAML:2.0:protocol"" ID=""Saml2Response_ToXml"" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z""><saml2p:Status><saml2p:StatusCode Value=""urn:oasis:names:tc:SAML:2.0:status:Requester"" /></saml2p:Status></saml2p:Response>";
-            
+
             var subject = Saml2Response.Read(response).ToXml();
 
             subject.Should().Be(response);

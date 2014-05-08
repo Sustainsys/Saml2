@@ -5,6 +5,9 @@ The Kentor Authentication services is an http modules that adds
 SAML2P support to IIS web sites, allowing the web site to act as a
 SAML2 Service Provider (SP).
 
+Kentor.AuthServices is open sourced and contributions are welcome, please see 
+[contributing guidelines](doc/Contributing.md) for info on coding standards etc.
+
 ##Using
 There's a [Nuget package](https://www.nuget.org/packages/Kentor.AuthServices/) available 
 for simple installation.
@@ -40,16 +43,3 @@ The MVC package contains an MVC controller that will be accessible in your appli
 by installing the package in the application. For MVC applications a controller is preferred
 over using the authentication module as it integrates with MVC's error handling.
 
-##Versioning
-Kentor Authentication services uses semantic versioning as defined on http://semver.org/.
-
-    Given a version number MAJOR.MINOR.PATCH, increment the:
-
-    MAJOR version when you make incompatible API changes,
-    MINOR version when you add functionality in a backwards-compatible manner, and
-    PATCH version when you make backwards-compatible bug fixes.
-
-Additionally *even* PATCH numbers are releases that corresponds to a tag in the 
-repository. *Odd* PATCH numbers are development versions. This means that the 
-current code in the repository will always have an *odd* PATCH number to denote that 
-it is a development version.
