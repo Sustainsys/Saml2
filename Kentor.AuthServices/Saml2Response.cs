@@ -386,7 +386,10 @@ namespace Kentor.AuthServices
         }
 
         private IEnumerable<Saml2SecurityToken> saml2SecurityTokens;
-        public IEnumerable<Saml2SecurityToken> Saml2SecurityTokens
+
+        /// <summary>Gets the saml2 security tokens converted from the assertions in the response.</summary>
+        /// <value>The saml2 security tokens.</value>
+        public virtual IEnumerable<Saml2SecurityToken> Saml2SecurityTokens
         {
             get
             {
@@ -394,6 +397,8 @@ namespace Kentor.AuthServices
             }
         }
 
+        /// <summary>Converts the assertions to validated saml2 security tokens.</summary>
+        /// <returns>A enumerable of Saml2SecurityToken</returns>
         protected virtual IEnumerable<Saml2SecurityToken> ConvertAssertionsToValidatedSaml2SecurityTokens()
         {
             ThrowOnNotValid();
@@ -406,9 +411,13 @@ namespace Kentor.AuthServices
                     var handler = MorePublicSaml2SecurityTokenHandler.DefaultInstance;
 
                     var token = (Saml2SecurityToken)handler.ReadToken(reader);
+
+                    // Replayed token detection has to be activated by configuration.
+                    // The configuration value is handled inside DetectReplayedToken
                     handler.DetectReplayedToken(token);
 
-                    var validateAudience = token.Assertion.Conditions.AudienceRestrictions.Count > 0;
+                    // The saml assertion spec does not require any conditions -> Check for null
+                    var validateAudience = token.Assertion.Conditions != null && token.Assertion.Conditions.AudienceRestrictions.Count > 0;
 
                     handler.ValidateConditions(token.Assertion.Conditions, validateAudience);
 

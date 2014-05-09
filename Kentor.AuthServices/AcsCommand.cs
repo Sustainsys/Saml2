@@ -31,7 +31,7 @@ namespace Kentor.AuthServices
                         HttpStatusCode = HttpStatusCode.SeeOther,
                         Location = KentorAuthServicesSection.Current.ReturnUri,
                         Principal = principal,
-                        SecurityTokens = samlResponse.Saml2SecurityTokens
+                        Saml2Response = samlResponse
                     };
                 }
                 catch (FormatException ex)

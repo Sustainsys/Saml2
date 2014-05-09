@@ -12,6 +12,7 @@ namespace Kentor.AuthServices.Tests
         public override ClaimsPrincipal Authenticate(string resourceName, ClaimsPrincipal incomingPrincipal)
         {
             var id = new ClaimsIdentity("ClaimsAuthenticationManager");
+            id.AddClaim(new Claim(ClaimTypes.NameIdentifier, "ClaimsAuthenticationManagerStub", null, "ClaimsAuthenticationManagerMock"));
             id.AddClaim(new Claim(ClaimTypes.Role, "RoleFromClaimsAuthManager", null, "ClaimsAuthenticationManagerMock"));
             incomingPrincipal.AddIdentity(id);
 
