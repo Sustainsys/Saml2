@@ -11,9 +11,6 @@ using System.Xml;
 
 namespace Kentor.AuthServices.Tests
 {
-    using System.IdentityModel.Tokens;
-    using System.Linq;
-
     [TestClass]
     public class AcsCommandTests
     {

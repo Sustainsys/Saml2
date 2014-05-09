@@ -8,7 +8,6 @@ using System.Security.Claims;
 
 namespace Kentor.AuthServices.Tests
 {
-    using System.Collections.Generic;
     using System.Globalization;
     using System.IdentityModel.Services;
     using System.IdentityModel.Tokens;
