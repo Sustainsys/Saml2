@@ -131,7 +131,7 @@ namespace Kentor.AuthServices.Tests
             var response = string.Format(
             @"<saml2p:Response xmlns:saml2p=""urn:oasis:names:tc:SAML:2.0:protocol""
                 xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
-                ID = ""AcsCommand_Run_SuccessfulResult"" Version=""2.0"" IssueInstant=""{0}"">
+                ID = ""CommandResult_CreateSessionSecurityToken_RespectsValidFromAndValidTo"" Version=""2.0"" IssueInstant=""{0}"">
                 <saml2:Issuer>
                     https://idp.example.com
                 </saml2:Issuer>
@@ -191,7 +191,7 @@ namespace Kentor.AuthServices.Tests
             var response = string.Format(
             @"<saml2p:Response xmlns:saml2p=""urn:oasis:names:tc:SAML:2.0:protocol""
                 xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
-                ID = ""AcsCommand_Run_SuccessfulResult"" Version=""2.0"" IssueInstant=""{0}"">
+                ID = ""CommandResult_CreateSessionSecurityToken_RespectsMaxValidFromAndMinValidTo"" Version=""2.0"" IssueInstant=""{0}"">
                 <saml2:Issuer>
                     https://idp.example.com
                 </saml2:Issuer>
@@ -270,7 +270,7 @@ namespace Kentor.AuthServices.Tests
             var response = string.Format(
             @"<saml2p:Response xmlns:saml2p=""urn:oasis:names:tc:SAML:2.0:protocol""
                 xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
-                ID = ""AcsCommand_Run_SuccessfulResult"" Version=""2.0"" IssueInstant=""{0}"">
+                ID = ""CommandResult_CreateSessionSecurityToken_HandlesValidFromAndValidToIfNotDefinedInCondition"" Version=""2.0"" IssueInstant=""{0}"">
                 <saml2:Issuer>
                     https://idp.example.com
                 </saml2:Issuer>
@@ -318,8 +318,7 @@ namespace Kentor.AuthServices.Tests
             result.ValidFrom.Should().BeCloseTo(issueInstant, 1000);
             result.ValidTo.Should().BeCloseTo(expectedNotOnOrAfter, 1000);
         }
-
-
+        
         [TestMethod]
         public void CommandResult_CreateSessionSecurityToken_RespectsTheConfiguredLifetimeIfShorter()
         {
@@ -335,7 +334,7 @@ namespace Kentor.AuthServices.Tests
             var response = string.Format(
             @"<saml2p:Response xmlns:saml2p=""urn:oasis:names:tc:SAML:2.0:protocol""
                 xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
-                ID = ""AcsCommand_Run_SuccessfulResult"" Version=""2.0"" IssueInstant=""{0}"">
+                ID = ""CommandResult_CreateSessionSecurityToken_RespectsTheConfiguredLifetimeIfShorter"" Version=""2.0"" IssueInstant=""{0}"">
                 <saml2:Issuer>
                     https://idp.example.com
                 </saml2:Issuer>
