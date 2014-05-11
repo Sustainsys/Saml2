@@ -1,0 +1,62 @@
+C:\git\authservices\Kentor.AuthServices.VSPremium.Tests\Fakes\System.Security.fakes : warning : Cannot generate stub for System.Security.Cryptography.CryptographicAttributeObject: type is sealed.
+C:\git\authservices\Kentor.AuthServices.VSPremium.Tests\Fakes\System.Security.fakes : warning : Cannot generate stub for System.Security.Cryptography.CryptographicAttributeObjectCollection: type is sealed.
+C:\git\authservices\Kentor.AuthServices.VSPremium.Tests\Fakes\System.Security.fakes : warning : Cannot generate stub for System.Security.Cryptography.CryptographicAttributeObjectEnumerator: type is sealed.
+C:\git\authservices\Kentor.AuthServices.VSPremium.Tests\Fakes\System.Security.fakes : warning : Cannot generate stub for System.Security.Cryptography.DataProtectionScope: type is a value type.
+C:\git\authservices\Kentor.AuthServices.VSPremium.Tests\Fakes\System.Security.fakes : warning : Cannot generate stub for System.Security.Cryptography.MemoryProtectionScope: type is a value type.
+C:\git\authservices\Kentor.AuthServices.VSPremium.Tests\Fakes\System.Security.fakes : warning : Cannot generate stub for System.Security.Cryptography.ProtectedData: type is sealed.
+C:\git\authservices\Kentor.AuthServices.VSPremium.Tests\Fakes\System.Security.fakes : warning : Cannot generate stub for System.Security.Cryptography.ProtectedMemory: type is sealed.
+C:\git\authservices\Kentor.AuthServices.VSPremium.Tests\Fakes\System.Security.fakes : warning : Cannot generate stub for System.Security.Cryptography.DpapiDataProtector: type is sealed.
+C:\git\authservices\Kentor.AuthServices.VSPremium.Tests\Fakes\System.Security.fakes : warning : Cannot generate stub for System.Security.Cryptography.Pkcs.EnvelopedCms: type is sealed.
+C:\git\authservices\Kentor.AuthServices.VSPremium.Tests\Fakes\System.Security.fakes : warning : Cannot generate stub for System.Security.Cryptography.Pkcs.CmsRecipient: type is sealed.
+C:\git\authservices\Kentor.AuthServices.VSPremium.Tests\Fakes\System.Security.fakes : warning : Cannot generate stub for System.Security.Cryptography.Pkcs.CmsRecipientCollection: type is sealed.
+C:\git\authservices\Kentor.AuthServices.VSPremium.Tests\Fakes\System.Security.fakes : warning : Cannot generate stub for System.Security.Cryptography.Pkcs.CmsRecipientEnumerator: type is sealed.
+C:\git\authservices\Kentor.AuthServices.VSPremium.Tests\Fakes\System.Security.fakes : warning : Cannot generate stub for System.Security.Cryptography.Pkcs.CmsSigner: type is sealed.
+C:\git\authservices\Kentor.AuthServices.VSPremium.Tests\Fakes\System.Security.fakes : warning : Cannot generate stub for System.Security.Cryptography.Pkcs.Pkcs9SigningTime: type is sealed.
+C:\git\authservices\Kentor.AuthServices.VSPremium.Tests\Fakes\System.Security.fakes : warning : Cannot generate stub for System.Security.Cryptography.Pkcs.Pkcs9DocumentName: type is sealed.
+C:\git\authservices\Kentor.AuthServices.VSPremium.Tests\Fakes\System.Security.fakes : warning : Cannot generate stub for System.Security.Cryptography.Pkcs.Pkcs9DocumentDescription: type is sealed.
+C:\git\authservices\Kentor.AuthServices.VSPremium.Tests\Fakes\System.Security.fakes : warning : Cannot generate stub for System.Security.Cryptography.Pkcs.Pkcs9ContentType: type is sealed.
+C:\git\authservices\Kentor.AuthServices.VSPremium.Tests\Fakes\System.Security.fakes : warning : Cannot generate stub for System.Security.Cryptography.Pkcs.Pkcs9MessageDigest: type is sealed.
+C:\git\authservices\Kentor.AuthServices.VSPremium.Tests\Fakes\System.Security.fakes : warning : Cannot generate stub for System.Security.Cryptography.Pkcs.RecipientInfoType: type is a value type.
+C:\git\authservices\Kentor.AuthServices.VSPremium.Tests\Fakes\System.Security.fakes : warning : Cannot generate stub for System.Security.Cryptography.Pkcs.RecipientInfo: type has no family visible contructors.
+C:\git\authservices\Kentor.AuthServices.VSPremium.Tests\Fakes\System.Security.fakes : warning : Cannot generate stub for System.Security.Cryptography.Pkcs.KeyTransRecipientInfo: type is sealed.
+C:\git\authservices\Kentor.AuthServices.VSPremium.Tests\Fakes\System.Security.fakes : warning : Cannot generate stub for System.Security.Cryptography.Pkcs.KeyAgreeRecipientInfo: type is sealed.
+C:\git\authservices\Kentor.AuthServices.VSPremium.Tests\Fakes\System.Security.fakes : warning : Cannot generate stub for System.Security.Cryptography.Pkcs.RecipientInfoCollection: type is sealed.
+C:\git\authservices\Kentor.AuthServices.VSPremium.Tests\Fakes\System.Security.fakes : warning : Cannot generate stub for System.Security.Cryptography.Pkcs.RecipientInfoEnumerator: type is sealed.
+C:\git\authservices\Kentor.AuthServices.VSPremium.Tests\Fakes\System.Security.fakes : warning : Cannot generate stub for System.Security.Cryptography.Pkcs.KeyAgreeKeyChoice: type is a value type.
+C:\git\authservices\Kentor.AuthServices.VSPremium.Tests\Fakes\System.Security.fakes : warning : Cannot generate stub for System.Security.Cryptography.Pkcs.SubjectIdentifierType: type is a value type.
+C:\git\authservices\Kentor.AuthServices.VSPremium.Tests\Fakes\System.Security.fakes : warning : Cannot generate stub for System.Security.Cryptography.Pkcs.SubjectIdentifier: type is sealed.
+C:\git\authservices\Kentor.AuthServices.VSPremium.Tests\Fakes\System.Security.fakes : warning : Cannot generate stub for System.Security.Cryptography.Pkcs.SubjectIdentifierOrKeyType: type is a value type.
+C:\git\authservices\Kentor.AuthServices.VSPremium.Tests\Fakes\System.Security.fakes : warning : Cannot generate stub for System.Security.Cryptography.Pkcs.PublicKeyInfo: type is sealed.
+C:\git\authservices\Kentor.AuthServices.VSPremium.Tests\Fakes\System.Security.fakes : warning : Cannot generate stub for System.Security.Cryptography.Pkcs.SubjectIdentifierOrKey: type is sealed.
+C:\git\authservices\Kentor.AuthServices.VSPremium.Tests\Fakes\System.Security.fakes : warning : Cannot generate stub for System.Security.Cryptography.Pkcs.AlgorithmIdentifier: type is sealed.
+C:\git\authservices\Kentor.AuthServices.VSPremium.Tests\Fakes\System.Security.fakes : warning : Cannot generate stub for System.Security.Cryptography.Pkcs.ContentInfo: type is sealed.
+C:\git\authservices\Kentor.AuthServices.VSPremium.Tests\Fakes\System.Security.fakes : warning : Cannot generate stub for System.Security.Cryptography.Pkcs.SignedCms: type is sealed.
+C:\git\authservices\Kentor.AuthServices.VSPremium.Tests\Fakes\System.Security.fakes : warning : Cannot generate stub for System.Security.Cryptography.Pkcs.SignerInfo: type is sealed.
+C:\git\authservices\Kentor.AuthServices.VSPremium.Tests\Fakes\System.Security.fakes : warning : Cannot generate stub for System.Security.Cryptography.Pkcs.SignerInfoCollection: type is sealed.
+C:\git\authservices\Kentor.AuthServices.VSPremium.Tests\Fakes\System.Security.fakes : warning : Cannot generate stub for System.Security.Cryptography.Pkcs.SignerInfoEnumerator: type is sealed.
+C:\git\authservices\Kentor.AuthServices.VSPremium.Tests\Fakes\System.Security.fakes : warning : Cannot generate stub for System.Security.Cryptography.X509Certificates.X509SelectionFlag: type is a value type.
+C:\git\authservices\Kentor.AuthServices.VSPremium.Tests\Fakes\System.Security.fakes : warning : Cannot generate stub for System.Security.Cryptography.X509Certificates.X509Certificate2UI: type is sealed.
+C:\git\authservices\Kentor.AuthServices.VSPremium.Tests\Fakes\System.Security.fakes : warning : Cannot generate stub for System.Security.Cryptography.Xml.CipherData: type is sealed.
+C:\git\authservices\Kentor.AuthServices.VSPremium.Tests\Fakes\System.Security.fakes : warning : Cannot generate stub for System.Security.Cryptography.Xml.EncryptedData: type is sealed.
+C:\git\authservices\Kentor.AuthServices.VSPremium.Tests\Fakes\System.Security.fakes : warning : Cannot generate stub for System.Security.Cryptography.Xml.EncryptedKey: type is sealed.
+C:\git\authservices\Kentor.AuthServices.VSPremium.Tests\Fakes\System.Security.fakes : warning : Cannot generate stub for System.Security.Cryptography.Xml.ReferenceList: type is sealed.
+C:\git\authservices\Kentor.AuthServices.VSPremium.Tests\Fakes\System.Security.fakes : warning : Cannot generate stub for System.Security.Cryptography.Xml.CipherReference: type is sealed.
+C:\git\authservices\Kentor.AuthServices.VSPremium.Tests\Fakes\System.Security.fakes : warning : Cannot generate stub for System.Security.Cryptography.Xml.DataReference: type is sealed.
+C:\git\authservices\Kentor.AuthServices.VSPremium.Tests\Fakes\System.Security.fakes : warning : Cannot generate stub for System.Security.Cryptography.Xml.KeyReference: type is sealed.
+C:\git\authservices\Kentor.AuthServices.VSPremium.Tests\Fakes\System.Security.fakes : warning : Cannot generate stub for System.Security.Cryptography.Xml.EncryptionProperty: type is sealed.
+C:\git\authservices\Kentor.AuthServices.VSPremium.Tests\Fakes\System.Security.fakes : warning : Cannot generate stub for System.Security.Cryptography.Xml.EncryptionPropertyCollection: type is sealed.
+C:\git\authservices\Kentor.AuthServices.VSPremium.Tests\Fakes\System.Security.fakes : warning : Cannot generate stub for System.Security.Cryptography.Xml.X509IssuerSerial: type is a value type.
+C:\git\authservices\Kentor.AuthServices.VSPremium.Tests\Fakes\System.Security.fakes : warning : Cannot generate stub for System.Security.Permissions.DataProtectionPermission: type is sealed.
+C:\git\authservices\Kentor.AuthServices.VSPremium.Tests\Fakes\System.Security.fakes : warning : Cannot generate stub for System.Security.Permissions.DataProtectionPermissionAttribute: type is sealed.
+C:\git\authservices\Kentor.AuthServices.VSPremium.Tests\Fakes\System.Security.fakes : warning : Cannot generate stub for System.Security.Permissions.DataProtectionPermissionFlags: type is a value type.
+C:\git\authservices\Kentor.AuthServices.VSPremium.Tests\Fakes\System.Security.fakes : warning : Cannot generate stub for <PrivateImplementationDetails>{D7B789EF-705B-4FD9-9F22-58E2AAC818BE}: type is not supported because of internal limitations.
+C:\git\authservices\Kentor.AuthServices.VSPremium.Tests\Fakes\System.Security.fakes : warning : Cannot generate shim for System.Security.Cryptography.DataProtectionScope: type is an enum.
+C:\git\authservices\Kentor.AuthServices.VSPremium.Tests\Fakes\System.Security.fakes : warning : Cannot generate shim for System.Security.Cryptography.MemoryProtectionScope: type is an enum.
+C:\git\authservices\Kentor.AuthServices.VSPremium.Tests\Fakes\System.Security.fakes : warning : Cannot generate shim for System.Security.Cryptography.Pkcs.RecipientInfoType: type is an enum.
+C:\git\authservices\Kentor.AuthServices.VSPremium.Tests\Fakes\System.Security.fakes : warning : Cannot generate shim for System.Security.Cryptography.Pkcs.KeyAgreeKeyChoice: type is an enum.
+C:\git\authservices\Kentor.AuthServices.VSPremium.Tests\Fakes\System.Security.fakes : warning : Cannot generate shim for System.Security.Cryptography.Pkcs.SubjectIdentifierType: type is an enum.
+C:\git\authservices\Kentor.AuthServices.VSPremium.Tests\Fakes\System.Security.fakes : warning : Cannot generate shim for System.Security.Cryptography.Pkcs.SubjectIdentifierOrKeyType: type is an enum.
+C:\git\authservices\Kentor.AuthServices.VSPremium.Tests\Fakes\System.Security.fakes : warning : Cannot generate shim for System.Security.Cryptography.X509Certificates.X509SelectionFlag: type is an enum.
+C:\git\authservices\Kentor.AuthServices.VSPremium.Tests\Fakes\System.Security.fakes : warning : Cannot generate shim for System.Security.Cryptography.Xml.IRelDecryptor: type is an interface.
+C:\git\authservices\Kentor.AuthServices.VSPremium.Tests\Fakes\System.Security.fakes : warning : Cannot generate shim for System.Security.Permissions.DataProtectionPermissionFlags: type is an enum.
+C:\git\authservices\Kentor.AuthServices.VSPremium.Tests\Fakes\System.Security.fakes : warning : Cannot generate shim for <PrivateImplementationDetails>{D7B789EF-705B-4FD9-9F22-58E2AAC818BE}: type is not supported because of internal limitations.
