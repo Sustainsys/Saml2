@@ -455,6 +455,53 @@ namespace Kentor.AuthServices.Tests
         }
 
         [TestMethod]
+        public void Saml2Response_Validate_FalseOnDualReferences()
+        {
+            var response =
+            @"<?xml version=""1.0"" encoding=""UTF-8""?>
+            <saml2p:Response xmlns:saml2p=""urn:oasis:names:tc:SAML:2.0:protocol""
+            xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
+            ID = ""Saml2Response_Validate_FalseOnDualReferences"" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z"">
+                <saml2:Issuer>https://idp.example.com</saml2:Issuer>
+                <saml2p:Status>
+                    <saml2p:StatusCode Value=""urn:oasis:names:tc:SAML:2.0:status:Success"" />
+                </saml2p:Status>
+                <saml2:Assertion
+                Version=""2.0"" ID=""Saml2Response_Validate_FalseOnDualReferences1""
+                IssueInstant=""2013-09-25T00:00:00Z"">
+                    <saml2:Issuer>https://idp.example.com</saml2:Issuer>
+                    <saml2:Subject>
+                        <saml2:NameID>SomeUser</saml2:NameID>
+                        <saml2:SubjectConfirmation Method=""urn:oasis:names:tc:SAML:2.0:cm:bearer"" />
+                    </saml2:Subject>
+                    <saml2:Conditions NotOnOrAfter=""2100-01-01T00:00:00Z"" />
+                </saml2:Assertion>
+            </saml2p:Response>";
+
+            var xmlDoc = new XmlDocument();
+            xmlDoc.LoadXml(response);
+
+            var signedXml = new SignedXml(xmlDoc);
+            signedXml.SigningKey = (RSACryptoServiceProvider)SignedXmlHelper.TestCert.PrivateKey;
+            signedXml.SignedInfo.CanonicalizationMethod = SignedXml.XmlDsigExcC14NTransformUrl;
+
+            var ref1 = new Reference { Uri = "#Saml2Response_Validate_FalseOnDualReferences" };
+            ref1.AddTransform(new XmlDsigEnvelopedSignatureTransform());
+            ref1.AddTransform(new XmlDsigExcC14NTransform());
+            signedXml.AddReference(ref1);
+
+            var ref2 = new Reference { Uri = "#Saml2Response_Validate_FalseOnDualReferences" };
+            ref2.AddTransform(new XmlDsigEnvelopedSignatureTransform());
+            ref2.AddTransform(new XmlDsigExcC14NTransform());
+            signedXml.AddReference(ref2);
+
+            signedXml.ComputeSignature();
+            xmlDoc.DocumentElement.AppendChild(xmlDoc.ImportNode(signedXml.GetXml(), true));
+
+            Saml2Response.Read(xmlDoc.OuterXml).Validate(SignedXmlHelper.TestCert).Should().BeFalse();
+        }
+
+        [TestMethod]
         public void Saml2Response_Validate_ReturnsExistingResultOnSecondValidateCall()
         {
             var response =
