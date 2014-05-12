@@ -15,7 +15,7 @@ namespace Kentor.AuthServices.VSPremium.Tests
     public class Saml2ResponseTests
     {
         [TestMethod]
-        public void Saml2Response_Validate_FalseOnMissingReference()
+        public void Saml2Response_Validate_FalseOnMissingReferenceInSignature()
         {
             var response =
             @"<saml2p:Response xmlns:saml2p=""urn:oasis:names:tc:SAML:2.0:protocol""

@@ -457,7 +457,7 @@ namespace Kentor.AuthServices.Tests
         }
 
         [TestMethod]
-        public void Saml2Response_Validate_FalseOnDualReferences()
+        public void Saml2Response_Validate_FalseOnDualReferencesInSignature()
         {
             var response =
             @"<?xml version=""1.0"" encoding=""UTF-8""?>
