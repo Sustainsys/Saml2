@@ -9,6 +9,7 @@ using System.Text;
 using System.Collections.Specialized;
 using System.Security.Claims;
 using System.Web.Routing;
+using Kentor.AuthServices.TestHelpers;
 
 namespace Kentor.AuthServices.Tests
 {

@@ -333,7 +333,8 @@ namespace Kentor.AuthServices
             signedXml.LoadXml(signature);
 
             var signedRootElementId = "#" + signedRootElement.GetAttribute("ID");
-            if (signedXml.SignedInfo.References.Cast<Reference>().All(reference => reference.Uri != signedRootElementId))
+            if (signedXml.SignedInfo.References.Count != 1 ||
+                signedXml.SignedInfo.References.Cast<Reference>().Single().Uri != signedRootElementId)
             {
                 return false;
             }

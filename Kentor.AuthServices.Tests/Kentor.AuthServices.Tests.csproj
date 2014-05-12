@@ -92,7 +92,6 @@
     <Compile Include="Saml2RequestBaseTests.cs" />
     <Compile Include="Saml2AuthenticationRequestTests.cs" />
     <Compile Include="IdentityProviderTests.cs" />
-    <Compile Include="SignedXmlHelper.cs" />
     <Compile Include="SignInCommandTests.cs" />
     <Compile Include="Saml2ResponseTests.cs" />
     <Compile Include="AcsCommandTests.cs" />
@@ -118,15 +117,16 @@
     <None Include="App.config">
       <SubType>Designer</SubType>
     </None>
-    <None Include="Kentor.AuthServices.Tests.pfx">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Kentor.AuthServices.Mvc\Kentor.AuthServices.Mvc.csproj">
       <Project>{7d32f0a3-cec8-4dc6-a096-5905ea9c3770}</Project>
       <Name>Kentor.AuthServices.Mvc</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Kentor.AuthServices.TestHelpers\Kentor.AuthServices.TestHelpers.csproj">
+      <Project>{45e0ac77-5bc6-4926-ad1a-7108a46ecb10}</Project>
+      <Name>Kentor.AuthServices.TestHelpers</Name>
     </ProjectReference>
     <ProjectReference Include="..\Kentor.AuthServices\Kentor.AuthServices.csproj">
       <Project>{93ba675e-a159-4701-b68b-c4b81015c556}</Project>

@@ -1,12 +1,13 @@
-﻿using System;
+﻿using FluentAssertions;
+using Kentor.AuthServices.TestHelpers;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using FluentAssertions;
-using System.Net;
-using System.Web;
 using NSubstitute;
+using System;
 using System.Collections.Specialized;
-using System.Text;
+using System.Net;
 using System.Security.Claims;
+using System.Text;
+using System.Web;
 using System.Xml;
 
 namespace Kentor.AuthServices.Tests

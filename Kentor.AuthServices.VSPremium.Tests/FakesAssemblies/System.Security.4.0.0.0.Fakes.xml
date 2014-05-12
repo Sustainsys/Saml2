@@ -1,0 +1,152 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>System.Security.4.0.0.0.Fakes</name>
+    </assembly>
+    <members>
+        <member name="T:System.Security.Cryptography.Xml.Fakes.ShimSignedInfo">
+            <summary>Shim type of System.Security.Cryptography.Xml.SignedInfo</summary>
+        </member>
+        <member name="M:System.Security.Cryptography.Xml.Fakes.ShimSignedInfo.#ctor">
+            <summary>Initializes a new shim instance</summary>
+        </member>
+        <member name="M:System.Security.Cryptography.Xml.Fakes.ShimSignedInfo.#ctor(System.Security.Cryptography.Xml.SignedInfo)">
+            <summary>Initializes a new shim for the given instance</summary>
+        </member>
+        <member name="M:System.Security.Cryptography.Xml.Fakes.ShimSignedInfo.BehaveAsCurrent">
+            <summary>Assigns the &apos;Current&apos; behavior for all methods of the shimmed type</summary>
+        </member>
+        <member name="M:System.Security.Cryptography.Xml.Fakes.ShimSignedInfo.BehaveAsNotImplemented">
+            <summary>Assigns the &apos;NotImplemented&apos; behavior for all methods of the shimmed type</summary>
+        </member>
+        <member name="M:System.Security.Cryptography.Xml.Fakes.ShimSignedInfo.Bind(System.Collections.ICollection)">
+            <summary>Binds the members of the interface to the shim.</summary>
+        </member>
+        <member name="M:System.Security.Cryptography.Xml.Fakes.ShimSignedInfo.Bind(System.Collections.IEnumerable)">
+            <summary>Binds the members of the interface to the shim.</summary>
+        </member>
+        <member name="P:System.Security.Cryptography.Xml.Fakes.ShimSignedInfo.AddReferenceReference">
+            <summary>Sets the shim of SignedInfo.AddReference(Reference reference)</summary>
+        </member>
+        <member name="P:System.Security.Cryptography.Xml.Fakes.ShimSignedInfo.Behavior">
+            <summary>Assigns the behavior for all methods of the shimmed type</summary>
+        </member>
+        <member name="P:System.Security.Cryptography.Xml.Fakes.ShimSignedInfo.CanonicalizationMethodGet">
+            <summary>Sets the shim of SignedInfo.get_CanonicalizationMethod()</summary>
+        </member>
+        <member name="P:System.Security.Cryptography.Xml.Fakes.ShimSignedInfo.CanonicalizationMethodObjectGet">
+            <summary>Sets the shim of SignedInfo.get_CanonicalizationMethodObject()</summary>
+        </member>
+        <member name="P:System.Security.Cryptography.Xml.Fakes.ShimSignedInfo.CanonicalizationMethodSetString">
+            <summary>Sets the shim of SignedInfo.set_CanonicalizationMethod(String value)</summary>
+        </member>
+        <member name="P:System.Security.Cryptography.Xml.Fakes.ShimSignedInfo.Constructor">
+            <summary>Sets the shim of SignedInfo.SignedInfo()</summary>
+        </member>
+        <member name="P:System.Security.Cryptography.Xml.Fakes.ShimSignedInfo.CopyToArrayInt32">
+            <summary>Sets the shim of SignedInfo.CopyTo(Array array, Int32 index)</summary>
+        </member>
+        <member name="P:System.Security.Cryptography.Xml.Fakes.ShimSignedInfo.CountGet">
+            <summary>Sets the shim of SignedInfo.get_Count()</summary>
+        </member>
+        <member name="P:System.Security.Cryptography.Xml.Fakes.ShimSignedInfo.GetEnumerator">
+            <summary>Sets the shim of SignedInfo.GetEnumerator()</summary>
+        </member>
+        <member name="P:System.Security.Cryptography.Xml.Fakes.ShimSignedInfo.GetXml">
+            <summary>Sets the shim of SignedInfo.GetXml()</summary>
+        </member>
+        <member name="P:System.Security.Cryptography.Xml.Fakes.ShimSignedInfo.IdGet">
+            <summary>Sets the shim of SignedInfo.get_Id()</summary>
+        </member>
+        <member name="P:System.Security.Cryptography.Xml.Fakes.ShimSignedInfo.IdSetString">
+            <summary>Sets the shim of SignedInfo.set_Id(String value)</summary>
+        </member>
+        <member name="P:System.Security.Cryptography.Xml.Fakes.ShimSignedInfo.IsReadOnlyGet">
+            <summary>Sets the shim of SignedInfo.get_IsReadOnly()</summary>
+        </member>
+        <member name="P:System.Security.Cryptography.Xml.Fakes.ShimSignedInfo.IsSynchronizedGet">
+            <summary>Sets the shim of SignedInfo.get_IsSynchronized()</summary>
+        </member>
+        <member name="P:System.Security.Cryptography.Xml.Fakes.ShimSignedInfo.LoadXmlXmlElement">
+            <summary>Sets the shim of SignedInfo.LoadXml(XmlElement value)</summary>
+        </member>
+        <member name="P:System.Security.Cryptography.Xml.Fakes.ShimSignedInfo.ReferencesGet">
+            <summary>Sets the shim of SignedInfo.get_References()</summary>
+        </member>
+        <member name="P:System.Security.Cryptography.Xml.Fakes.ShimSignedInfo.SignatureLengthGet">
+            <summary>Sets the shim of SignedInfo.get_SignatureLength()</summary>
+        </member>
+        <member name="P:System.Security.Cryptography.Xml.Fakes.ShimSignedInfo.SignatureLengthSetString">
+            <summary>Sets the shim of SignedInfo.set_SignatureLength(String value)</summary>
+        </member>
+        <member name="P:System.Security.Cryptography.Xml.Fakes.ShimSignedInfo.SignatureMethodGet">
+            <summary>Sets the shim of SignedInfo.get_SignatureMethod()</summary>
+        </member>
+        <member name="P:System.Security.Cryptography.Xml.Fakes.ShimSignedInfo.SignatureMethodSetString">
+            <summary>Sets the shim of SignedInfo.set_SignatureMethod(String value)</summary>
+        </member>
+        <member name="P:System.Security.Cryptography.Xml.Fakes.ShimSignedInfo.SyncRootGet">
+            <summary>Sets the shim of SignedInfo.get_SyncRoot()</summary>
+        </member>
+        <member name="T:System.Security.Cryptography.Xml.Fakes.ShimSignedInfo.AllInstances">
+            <summary>Define shims for all instances members</summary>
+        </member>
+        <member name="P:System.Security.Cryptography.Xml.Fakes.ShimSignedInfo.AllInstances.AddReferenceReference">
+            <summary>Sets the shim of SignedInfo.AddReference(Reference reference)</summary>
+        </member>
+        <member name="P:System.Security.Cryptography.Xml.Fakes.ShimSignedInfo.AllInstances.CanonicalizationMethodGet">
+            <summary>Sets the shim of SignedInfo.get_CanonicalizationMethod()</summary>
+        </member>
+        <member name="P:System.Security.Cryptography.Xml.Fakes.ShimSignedInfo.AllInstances.CanonicalizationMethodObjectGet">
+            <summary>Sets the shim of SignedInfo.get_CanonicalizationMethodObject()</summary>
+        </member>
+        <member name="P:System.Security.Cryptography.Xml.Fakes.ShimSignedInfo.AllInstances.CanonicalizationMethodSetString">
+            <summary>Sets the shim of SignedInfo.set_CanonicalizationMethod(String value)</summary>
+        </member>
+        <member name="P:System.Security.Cryptography.Xml.Fakes.ShimSignedInfo.AllInstances.CopyToArrayInt32">
+            <summary>Sets the shim of SignedInfo.CopyTo(Array array, Int32 index)</summary>
+        </member>
+        <member name="P:System.Security.Cryptography.Xml.Fakes.ShimSignedInfo.AllInstances.CountGet">
+            <summary>Sets the shim of SignedInfo.get_Count()</summary>
+        </member>
+        <member name="P:System.Security.Cryptography.Xml.Fakes.ShimSignedInfo.AllInstances.GetEnumerator">
+            <summary>Sets the shim of SignedInfo.GetEnumerator()</summary>
+        </member>
+        <member name="P:System.Security.Cryptography.Xml.Fakes.ShimSignedInfo.AllInstances.GetXml">
+            <summary>Sets the shim of SignedInfo.GetXml()</summary>
+        </member>
+        <member name="P:System.Security.Cryptography.Xml.Fakes.ShimSignedInfo.AllInstances.IdGet">
+            <summary>Sets the shim of SignedInfo.get_Id()</summary>
+        </member>
+        <member name="P:System.Security.Cryptography.Xml.Fakes.ShimSignedInfo.AllInstances.IdSetString">
+            <summary>Sets the shim of SignedInfo.set_Id(String value)</summary>
+        </member>
+        <member name="P:System.Security.Cryptography.Xml.Fakes.ShimSignedInfo.AllInstances.IsReadOnlyGet">
+            <summary>Sets the shim of SignedInfo.get_IsReadOnly()</summary>
+        </member>
+        <member name="P:System.Security.Cryptography.Xml.Fakes.ShimSignedInfo.AllInstances.IsSynchronizedGet">
+            <summary>Sets the shim of SignedInfo.get_IsSynchronized()</summary>
+        </member>
+        <member name="P:System.Security.Cryptography.Xml.Fakes.ShimSignedInfo.AllInstances.LoadXmlXmlElement">
+            <summary>Sets the shim of SignedInfo.LoadXml(XmlElement value)</summary>
+        </member>
+        <member name="P:System.Security.Cryptography.Xml.Fakes.ShimSignedInfo.AllInstances.ReferencesGet">
+            <summary>Sets the shim of SignedInfo.get_References()</summary>
+        </member>
+        <member name="P:System.Security.Cryptography.Xml.Fakes.ShimSignedInfo.AllInstances.SignatureLengthGet">
+            <summary>Sets the shim of SignedInfo.get_SignatureLength()</summary>
+        </member>
+        <member name="P:System.Security.Cryptography.Xml.Fakes.ShimSignedInfo.AllInstances.SignatureLengthSetString">
+            <summary>Sets the shim of SignedInfo.set_SignatureLength(String value)</summary>
+        </member>
+        <member name="P:System.Security.Cryptography.Xml.Fakes.ShimSignedInfo.AllInstances.SignatureMethodGet">
+            <summary>Sets the shim of SignedInfo.get_SignatureMethod()</summary>
+        </member>
+        <member name="P:System.Security.Cryptography.Xml.Fakes.ShimSignedInfo.AllInstances.SignatureMethodSetString">
+            <summary>Sets the shim of SignedInfo.set_SignatureMethod(String value)</summary>
+        </member>
+        <member name="P:System.Security.Cryptography.Xml.Fakes.ShimSignedInfo.AllInstances.SyncRootGet">
+            <summary>Sets the shim of SignedInfo.get_SyncRoot()</summary>
+        </member>
+    </members>
+</doc>
