@@ -352,6 +352,10 @@ namespace Kentor.AuthServices
             {
                 throw new InvalidOperationException("The Saml2Response didn't pass validation");
             }
+            if (status != Saml2StatusCode.Success)
+            {
+                throw new InvalidOperationException("The Saml2Response must have status success to extract claims.");
+            }
         }
 
         private IEnumerable<ClaimsIdentity> claimsIdentities;
