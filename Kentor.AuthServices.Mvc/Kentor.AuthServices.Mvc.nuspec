@@ -17,6 +17,11 @@
     <copyright>Copyright Kentor and contributors 2013</copyright>
     <tags>SAML2 authentication ASP.NET SAML SSO AspNetMvc Mvc</tags>
     <releaseNotes>
+ Version 0.4.0
+THIS RELEASE CONTAINS SECURITY FIXES
+* Dependency changed to work with MVC versions from 1.0 and up.
+* Dependency on Kentor.AuthServices updated to 0.4.0 which contains security fixes.
+
 Version 0.3.0
 * First version of MVC package released.
     </releaseNotes>

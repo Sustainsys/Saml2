@@ -16,6 +16,13 @@
     <copyright>Copyright Kentor and contributors 2013</copyright>
     <tags>SAML2 authentication ASP.NET SAML SSO</tags>
     <releaseNotes>
+ Version 0.4.0
+THIS RELEASE CONTAINS SECURITY FIXES
+* Improved verification of XML signatures to mitigate assertion injection.
+* Support for signed assertions.
+* Validates InResponseTo on incoming responses.
+* Support for SAML2 Http Post binding.
+
 Version 0.3.0
 * Refactoring to support Kentor.AuthServices.Mvc. For ASP.NET MVC projects
   it is better to use that package than this.
