@@ -77,7 +77,10 @@ namespace Kentor.AuthServices.Configuration
         }
 
         /// <summary>
-        /// Certificate location for the certificate the Idp uses to sign its messages.
+        /// Allow unsolicited responses. That is InResponseTo is missing in the AuthnRequest.
+        /// If true InResponseTo is not required.
+        /// If false InResponseTo is required.
+        /// Even though AllowUnsolicitedAuthnResponse is true the InResponseTo must be valid if existing.
         /// </summary>
         [ConfigurationProperty("allowUnsolicitedAuthnResponse", IsRequired = true)]
         public bool AllowUnsolicitedAuthnResponse 

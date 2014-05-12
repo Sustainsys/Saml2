@@ -39,7 +39,8 @@ Kentor.AuthServices module.
 <kentor.authServices assertionConsumerServiceUrl="http://localhost:17009/SamplePath/Saml2AuthenticationModule/acs"
 							issuer="http://localhost:17009"
                             returnUri="http://localhost:17009/SamplePath/">
-  <identityProvider issuer ="https://idp.example.com" destinationUri="httpss://idp.example.com" binding="HttpRedirect">
+  <identityProvider issuer ="https://idp.example.com" destinationUri="https://idp.example.com" 
+                    allowUnsolicitedAuthnResponse="true" binding="HttpRedirect">
     <signingCertificate storeName="AddressBook" storeLocation="CurrentUser" 
                           findValue="idp.example.com" x509FindType="FindBySubjectName" />
   </identityProvider>
@@ -88,6 +89,7 @@ An identity provider that the Service Provider relies on for authentication.
 ####Attributes
 * [`issuer`](#issuer-attribute-identityprovider)
 * [`destinationUri`](#destinationuri-attribute)
+* [`allowUnsolicitedAuthnResponse`](#allowunsolicitedauthnresponse-attribute)
 * [`binding`](#binding-attribute)
 
 ####Elements
@@ -106,6 +108,16 @@ uri has to be written in a way that the client understands, since it is
 the client web browser that will be redirected to the uri. Specifically
 this means that using a host name only uri or a host name that only resolves
 on the network of the server won't work.
+
+####`allowUnsolicitedAuthnResponse` Attribute
+*Attribute of the [`<identityProvider>`](#identityprovider-element) element*
+
+The allowUnsolicitedAuthnResponse attribtue is required.
+
+Allow unsolicited responses. That is InResponseTo is missing in the AuthnRequest.  
+If true InResponseTo is not required. The IDP can initiate the authentication process.  
+If false InResponseTo is required. The authentication process must be initiated by an AuthnRequest from this SP.  
+Even though allowUnsolicitedAuthnResponse is true the InResponseTo must be valid if existing.
 
 ####`binding` Attribute
 *Attribute of the [`<identityProvider>`](#identityprovider-element) element*
