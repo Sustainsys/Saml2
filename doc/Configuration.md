@@ -39,7 +39,7 @@ Kentor.AuthServices module.
 <kentor.authServices assertionConsumerServiceUrl="http://localhost:17009/SamplePath/Saml2AuthenticationModule/acs"
 							issuer="http://localhost:17009"
                             returnUri="http://localhost:17009/SamplePath/">
-  <identityProvider issuer ="https://idp.example.com" destinationUri="httpss://idp.example.com" 
+  <identityProvider issuer ="https://idp.example.com" destinationUri="https://idp.example.com" 
                     allowUnsolicitedAuthnResponse="true" binding="HttpRedirect">
     <signingCertificate storeName="AddressBook" storeLocation="CurrentUser" 
                           findValue="idp.example.com" x509FindType="FindBySubjectName" />
