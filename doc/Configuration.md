@@ -89,7 +89,7 @@ An identity provider that the Service Provider relies on for authentication.
 ####Attributes
 * [`issuer`](#issuer-attribute-identityprovider)
 * [`destinationUri`](#destinationuri-attribute)
-* [`allowUnsolicitedAuthnResponse`](#allowUnsolicitedAuthnResponse-attribute)
+* [`allowUnsolicitedAuthnResponse`](#allowunsolicitedauthnresponse-attribute)
 * [`binding`](#binding-attribute)
 
 ####Elements
