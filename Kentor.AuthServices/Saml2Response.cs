@@ -314,6 +314,13 @@ namespace Kentor.AuthServices
             }
         }
 
+        private static readonly string[] allowedTransforms = new string[]
+        {
+            "http://www.w3.org/2000/09/xmldsig#enveloped-signature",
+            "http://www.w3.org/2001/10/xml-exc-c14n#",
+            "http://www.w3.org/2001/10/xml-exc-c14n#WithComments)"
+        };
+
         /// <summary>Checks the signature.</summary>
         /// <param name="signedRootElement">The signed root element.</param>
         /// <param name="idpCertificate">The idp certificate.</param>
@@ -337,6 +344,14 @@ namespace Kentor.AuthServices
                 signedXml.SignedInfo.References.Cast<Reference>().Single().Uri != signedRootElementId)
             {
                 return false;
+            }
+
+            foreach (Transform transform in ((Reference)signedXml.SignedInfo.References[0]).TransformChain)
+            {
+                if (!allowedTransforms.Contains(transform.Algorithm))
+                {
+                    return false;
+                }
             }
 
             return signedXml.CheckSignature(idpCertificate, true);
