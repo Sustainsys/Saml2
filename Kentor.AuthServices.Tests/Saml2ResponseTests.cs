@@ -531,7 +531,7 @@ namespace Kentor.AuthServices.Tests
 
             var reference = new Reference { Uri = "#Saml2Response_Validate_FalseOnAdditionalTransformsInSignature" };
             reference.AddTransform(new XmlDsigEnvelopedSignatureTransform());
-            reference.AddTransform(new XmlDsigC14NTransform());
+            reference.AddTransform(new XmlDsigC14NTransform()); // The allowed transform is XmlDsigExcC14NTransform
             signedXml.AddReference(reference);
 
             signedXml.ComputeSignature();

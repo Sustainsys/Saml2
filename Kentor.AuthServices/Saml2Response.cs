@@ -316,9 +316,9 @@ namespace Kentor.AuthServices
 
         private static readonly string[] allowedTransforms = new string[]
         {
-            "http://www.w3.org/2000/09/xmldsig#enveloped-signature",
-            "http://www.w3.org/2001/10/xml-exc-c14n#",
-            "http://www.w3.org/2001/10/xml-exc-c14n#WithComments)"
+            SignedXml.XmlDsigEnvelopedSignatureTransformUrl,
+            SignedXml.XmlDsigExcC14NTransformUrl,
+            SignedXml.XmlDsigExcC14NWithCommentsTransformUrl
         };
 
         /// <summary>Checks the signature.</summary>
@@ -340,13 +340,15 @@ namespace Kentor.AuthServices
             signedXml.LoadXml(signature);
 
             var signedRootElementId = "#" + signedRootElement.GetAttribute("ID");
-            if (signedXml.SignedInfo.References.Count != 1 ||
-                signedXml.SignedInfo.References.Cast<Reference>().Single().Uri != signedRootElementId)
+
+            var reference = signedXml.SignedInfo.References.Cast<Reference>().FirstOrDefault();
+            
+            if (signedXml.SignedInfo.References.Count != 1 || reference.Uri != signedRootElementId)
             {
                 return false;
             }
 
-            foreach (Transform transform in ((Reference)signedXml.SignedInfo.References[0]).TransformChain)
+            foreach (Transform transform in reference.TransformChain)
             {
                 if (!allowedTransforms.Contains(transform.Algorithm))
                 {
