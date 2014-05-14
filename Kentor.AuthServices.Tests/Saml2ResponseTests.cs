@@ -504,6 +504,43 @@ namespace Kentor.AuthServices.Tests
         }
 
         [TestMethod]
+        public void Saml2Response_Validate_FalseOnIncorrectTransformsInSignature()
+        {
+            // SAML2 Core 5.4.4 states that signatures SHOULD NOT contain other transforms than
+            // the enveloped signature or exclusive canonicalization transforms and that a verifier
+            // of a signature MAY reject signatures with other transforms. We'll reject them to
+            // mitigate the risk of transforms opening up for assertion injections.
+
+            var response =
+            @"<?xml version=""1.0"" encoding=""UTF-8""?>
+            <saml2p:Response xmlns:saml2p=""urn:oasis:names:tc:SAML:2.0:protocol""
+            xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
+            ID = ""Saml2Response_Validate_FalseOnAdditionalTransformsInSignature"" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z"">
+                <saml2:Issuer>https://idp.example.com</saml2:Issuer>
+                <saml2p:Status>
+                    <saml2p:StatusCode Value=""urn:oasis:names:tc:SAML:2.0:status:Requester"" />
+                </saml2p:Status>
+            </saml2p:Response>";
+
+            var xmlDoc = new XmlDocument();
+            xmlDoc.LoadXml(response);
+
+            var signedXml = new SignedXml(xmlDoc);
+            signedXml.SigningKey = (RSACryptoServiceProvider)SignedXmlHelper.TestCert.PrivateKey;
+            signedXml.SignedInfo.CanonicalizationMethod = SignedXml.XmlDsigExcC14NTransformUrl;
+
+            var reference = new Reference { Uri = "#Saml2Response_Validate_FalseOnAdditionalTransformsInSignature" };
+            reference.AddTransform(new XmlDsigEnvelopedSignatureTransform());
+            reference.AddTransform(new XmlDsigC14NTransform()); // The allowed transform is XmlDsigExcC14NTransform
+            signedXml.AddReference(reference);
+
+            signedXml.ComputeSignature();
+            xmlDoc.DocumentElement.AppendChild(xmlDoc.ImportNode(signedXml.GetXml(), true));
+
+            Saml2Response.Read(xmlDoc.OuterXml).Validate(SignedXmlHelper.TestCert).Should().BeFalse();
+        }
+
+        [TestMethod]
         public void Saml2Response_Validate_ReturnsExistingResultOnSecondValidateCall()
         {
             var response =
