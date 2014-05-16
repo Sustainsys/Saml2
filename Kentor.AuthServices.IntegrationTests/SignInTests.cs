@@ -18,6 +18,7 @@ namespace Kentor.AuthServices.IntegrationTests
         public void SignIn_Unsolicited()
         {
             I.Open("http://localhost:52071/")
+                .Enter("http://localhost:2181/AuthServices/Acs").In("#AssertionConsumerServiceUrl")
                 .Click("#main form button")
                 .Click("a[href=\"/Home/Secure\"]")
                 .Assert.Text("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier - JohnDoe").In(".body-content ul li:first-child");

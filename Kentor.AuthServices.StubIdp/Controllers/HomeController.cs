@@ -17,7 +17,7 @@ namespace Kentor.AuthServices.StubIdp.Controllers
             if (request != null)
             {
                 model.InResponseTo = request.Id;
-                model.AssertionConsumerUrl = request.AssertionConsumerServiceUrl.ToString();
+                model.AssertionConsumerServiceUrl = request.AssertionConsumerServiceUrl.ToString();
             }
 
             return View(model);
