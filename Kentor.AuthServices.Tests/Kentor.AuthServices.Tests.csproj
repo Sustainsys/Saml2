@@ -84,7 +84,9 @@
   <ItemGroup>
     <Compile Include="AuthServicesControllerTests.cs" />
     <Compile Include="ClaimsAuthenticationManagerStub.cs" />
+    <Compile Include="EntityDescriptorExtensionsTests.cs" />
     <Compile Include="ExceptionTestHelpers.cs" />
+    <Compile Include="MetadataCommandTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="CommandFactoryTests.cs" />
     <Compile Include="NotFoundCommandTests.cs" />
