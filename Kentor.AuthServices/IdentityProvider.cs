@@ -27,7 +27,7 @@ namespace Kentor.AuthServices
         public IdentityProvider(IdentityProviderElement config)
         {
             DestinationUri = config.DestinationUri;
-            Issuer = config.Issuer;
+            Issuer = config.EntityId;
             Binding = config.Binding;
             certificate = config.SigningCertificate.LoadCertificate();
         }

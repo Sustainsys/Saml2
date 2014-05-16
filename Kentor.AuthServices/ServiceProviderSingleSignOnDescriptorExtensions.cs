@@ -28,7 +28,11 @@ namespace Kentor.AuthServices
                 throw new ArgumentNullException("elementName");
             }
 
-            return null;
+            var innerElementName = Saml2Namespaces.Saml2Metadata + "AssertionConsumerService";
+
+            return new XElement(elementName,
+                spsso.AssertionConsumerServices.Select(acs =>
+                    acs.Value.ToXElement(innerElementName)));
         }
     }
 }

@@ -2,6 +2,7 @@
 using System.IdentityModel.Metadata;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using FluentAssertions;
+using System.Linq;
 using System.Xml.Linq;
 
 namespace Kentor.AuthServices.Tests
@@ -33,7 +34,26 @@ namespace Kentor.AuthServices.Tests
         [TestMethod]
         public void ServiceProviderSingleSignOnDescriptorExtensions_ToXElement_BasicAttributes()
         {
-            throw new NotImplementedException();
+            string sampleAcsUri = "https://some.uri.example.com/acs";
+
+            var acs = new IndexedProtocolEndpoint()
+            {
+                IsDefault = false,
+                Index = 17,
+                Binding = Saml2Binding.HttpPostUri,
+                Location = new Uri(sampleAcsUri)
+            };
+
+            var spsso = new ServiceProviderSingleSignOnDescriptor();
+            spsso.AssertionConsumerServices.Add(1, acs);
+
+            var elementName = Saml2Namespaces.Saml2Metadata + "SPSSODescriptor";
+            var innerElementName = Saml2Namespaces.Saml2Metadata + "AssertionConsumerService";
+
+            var subject = spsso.ToXElement(elementName);
+
+            subject.Name.Should().Be(elementName);
+            subject.Elements().Single().Name.Should().Be(innerElementName);
         }
     }
 }
