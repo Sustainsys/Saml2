@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -10,6 +11,7 @@ namespace Kentor.AuthServices
 {
     class SignInCommand : ICommand
     {
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1062:Validate arguments of public methods", MessageId = "0")]
         public CommandResult Run(HttpRequestBase request)
         {
             IdentityProvider idp;
@@ -26,7 +28,13 @@ namespace Kentor.AuthServices
                 idp = IdentityProvider.ConfiguredIdentityProviders.First().Value;
             }
 
-            var authnRequest = idp.CreateAuthenticateRequest();
+            Uri returnUri = null;
+            if (request != null && request.Url != null && request["ReturnUrl"] != null)
+            {
+                returnUri = new Uri(string.Format(CultureInfo.InvariantCulture, "{0}://{1}{2}", request.Url.Scheme, request.Url.Authority, request["ReturnUrl"]));
+            }
+
+            var authnRequest = idp.CreateAuthenticateRequest(returnUri);
 
             return idp.Bind(authnRequest);
         }

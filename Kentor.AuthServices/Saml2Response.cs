@@ -240,6 +240,11 @@ namespace Kentor.AuthServices
             }
         }
 
+        /// <summary>
+        /// Return Uri
+        /// </summary>
+        public Uri ReturnUri { get; private set; }
+
         bool valid = false, validated = false;
 
         /// <summary>Gets all assertion element nodes from this response message.</summary>
@@ -287,15 +292,20 @@ namespace Kentor.AuthServices
             }
             else
             {
-                string sentToIdp;
-                bool knownInResponseToId = PendingAuthnRequests.TryRemove(InResponseTo, out sentToIdp);
+                PendingAuthnRequestData storedAuthnData;
+                bool knownInResponseToId = PendingAuthnRequests.TryRemove(InResponseTo, out storedAuthnData);
                 if (!knownInResponseToId)
                 {
                     return false;
                 }
-                if (sentToIdp != Issuer)
+                if (storedAuthnData.Idp != Issuer)
                 {
                     return false;
+                }
+
+                if (storedAuthnData.ReturnUri != null)
+                {
+                    ReturnUri =storedAuthnData.ReturnUri;
                 }
                 return true;
             }

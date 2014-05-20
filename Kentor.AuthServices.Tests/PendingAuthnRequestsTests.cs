@@ -12,20 +12,22 @@ namespace Kentor.AuthServices.Tests
         public void PendingAuthnRequests_AddRemove()
         {
             var id = new Saml2Id();
-            var requestIdp = "testidp";
-            PendingAuthnRequests.Add(id, requestIdp);
-            string responseIdp;
-            PendingAuthnRequests.TryRemove(id, out responseIdp).Should().BeTrue();
-            responseIdp.Should().Be(requestIdp);
+            var requestData = new PendingAuthnRequestData("testidp", new Uri("http://localhost/Return.aspx"));
+            PendingAuthnRequests.Add(id, requestData);
+            PendingAuthnRequestData responseData;
+            PendingAuthnRequests.TryRemove(id, out responseData).Should().BeTrue();
+            responseData.Should().Be(requestData);
+            responseData.Idp.Should().Be("testidp");
+            responseData.ReturnUri.Should().Be("http://localhost/Return.aspx");
         }
 
         [TestMethod]
         public void PendingAuthnRequests_Add_ThrowsOnExisting()
         {
             var id = new Saml2Id();
-            var requestIdp = "testidp";
-            PendingAuthnRequests.Add(id, requestIdp);
-            Action a = () => PendingAuthnRequests.Add(id, requestIdp);
+            var requestData = new PendingAuthnRequestData("testidp", new Uri("http://localhost/Return.aspx"));
+            PendingAuthnRequests.Add(id, requestData);
+            Action a = () => PendingAuthnRequests.Add(id, requestData);
             a.ShouldThrow<InvalidOperationException>();
         }
 
@@ -33,19 +35,19 @@ namespace Kentor.AuthServices.Tests
         public void PendingAuthnRequests_Remove_FalseOnIdNeverIssued()
         {
             var id = new Saml2Id();
-            string responseIdp;
-            PendingAuthnRequests.TryRemove(id, out responseIdp).Should().BeFalse();
+            PendingAuthnRequestData responseData;
+            PendingAuthnRequests.TryRemove(id, out responseData).Should().BeFalse();
         }
 
         [TestMethod]
         public void PendingAuthnRequests_Remove_FalseOnRemovedTwice()
         {
             var id = new Saml2Id();
-            var requestIdp = "testIdp";
-            string responseIdp;
-            PendingAuthnRequests.Add(id, requestIdp);
-            PendingAuthnRequests.TryRemove(id, out responseIdp).Should().BeTrue();
-            PendingAuthnRequests.TryRemove(id, out responseIdp).Should().BeFalse();
+            var requestData = new PendingAuthnRequestData("testidp", new Uri("http://localhost/Return.aspx"));
+            PendingAuthnRequestData responseData;
+            PendingAuthnRequests.Add(id, requestData);
+            PendingAuthnRequests.TryRemove(id, out responseData).Should().BeTrue();
+            PendingAuthnRequests.TryRemove(id, out responseData).Should().BeFalse();
         }
     }
 }

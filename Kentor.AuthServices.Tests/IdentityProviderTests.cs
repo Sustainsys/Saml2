@@ -19,7 +19,7 @@ namespace Kentor.AuthServices.Tests
                 DestinationUri = new Uri(idpUri)
             };
 
-            var r = ip.CreateAuthenticateRequest();
+            var r = ip.CreateAuthenticateRequest(null);
 
             r.ToXElement().Attribute("Destination").Should().NotBeNull()
                 .And.Subject.Value.Should().Be(idpUri);
@@ -30,7 +30,7 @@ namespace Kentor.AuthServices.Tests
         {
             var idp = IdentityProvider.ConfiguredIdentityProviders.First().Value;
 
-            var r = idp.CreateAuthenticateRequest();
+            var r = idp.CreateAuthenticateRequest(null);
 
             r.AssertionConsumerServiceUrl.Should().Be(new Uri("http://localhost/Saml2AuthenticationModule/acs"));
         }
@@ -40,7 +40,7 @@ namespace Kentor.AuthServices.Tests
         {
             var idp = IdentityProvider.ConfiguredIdentityProviders.First().Value;
 
-            var r = idp.CreateAuthenticateRequest();
+            var r = idp.CreateAuthenticateRequest(null);
 
             r.Issuer.Should().Be("https://github.com/KentorIT/authservices");
         }
