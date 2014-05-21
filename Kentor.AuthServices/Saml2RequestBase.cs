@@ -13,7 +13,7 @@ namespace Kentor.AuthServices
     /// </summary>
     public abstract class Saml2RequestBase : ISaml2Message
     {
-        private readonly string id = "id" + Guid.NewGuid().ToString("N");
+        private string id = "id" + Guid.NewGuid().ToString("N");
 
         /// <summary>
         /// The id of the request.
@@ -23,6 +23,10 @@ namespace Kentor.AuthServices
             get
             {
                 return id;
+            }
+            protected set
+            {
+                id = value;
             }
         }
 

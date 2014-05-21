@@ -5,6 +5,8 @@ provider. Please fill in the required fields.
 
 @using(Html.BeginForm())
 {
+    @Html.HiddenFor(m => m.InResponseTo)
+
     <div>
         @Html.LabelFor(m => m.AssertionConsumerUrl)
         @Html.EditorFor(m => m.AssertionConsumerUrl)

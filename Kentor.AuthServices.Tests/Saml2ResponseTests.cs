@@ -995,7 +995,7 @@ namespace Kentor.AuthServices.Tests
             {
                 new Claim(ClaimTypes.NameIdentifier, "JohnDoe") 
             });
-            var response = new Saml2Response(issuer, null, null, identity);
+            var response = new Saml2Response(issuer, null, null, null, identity);
 
             response.Issuer.Should().Be(issuer);
             response.GetClaims().Single().ShouldBeEquivalentTo(identity);
@@ -1018,7 +1018,7 @@ namespace Kentor.AuthServices.Tests
             // the response.
             string before = DateTime.UtcNow.ToSaml2DateTimeString();
             var response = new Saml2Response(issuer, SignedXmlHelper.TestCert,
-                new Uri(destination), identity);
+                new Uri(destination), null, identity);
             string after = DateTime.UtcNow.ToSaml2DateTimeString();
 
             var xml = response.XmlDocument;
@@ -1044,7 +1044,7 @@ namespace Kentor.AuthServices.Tests
             });
 
             var response = new Saml2Response("issuer", SignedXmlHelper.TestCert,
-                new Uri("http://destination.example.com"), identity);
+                new Uri("http://destination.example.com"), null, identity);
 
             var xml = response.XmlDocument;
 
@@ -1065,7 +1065,7 @@ namespace Kentor.AuthServices.Tests
             });
 
             var response = new Saml2Response(issuer, SignedXmlHelper.TestCert,
-                null, claimsIdentities: identity);
+                null, null, claimsIdentities: identity);
 
             var xml = response.XmlDocument;
 
@@ -1091,7 +1091,7 @@ namespace Kentor.AuthServices.Tests
         [TestMethod]
         public void Saml2Response_MessageName()
         {
-            var subject = new Saml2Response("issuer", null, null);
+            var subject = new Saml2Response("issuer", null, null, null);
 
             subject.MessageName.Should().Be("SAMLResponse");
         }

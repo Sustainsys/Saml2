@@ -28,7 +28,7 @@ namespace Kentor.AuthServices
         /// </summary>
         /// <param name="request">Current HttpRequest.</param>
         /// <returns>Extracted message.</returns>
-        public virtual Saml2Response Unbind(HttpRequestBase request)
+        public virtual TSaml2Message Unbind<TSaml2Message>(HttpRequestBase request) where TSaml2Message : class, ISaml2Message
         {
             throw new NotImplementedException();
         }
@@ -44,7 +44,7 @@ namespace Kentor.AuthServices
             return false;
         }
 
-        private static readonly IDictionary<Saml2BindingType, Saml2Binding> bindings = 
+        private static readonly IDictionary<Saml2BindingType, Saml2Binding> bindings =
             new Dictionary<Saml2BindingType, Saml2Binding>()
             {
                 { Saml2BindingType.HttpRedirect, new Saml2RedirectBinding() },
