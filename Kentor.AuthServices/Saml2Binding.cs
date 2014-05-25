@@ -28,7 +28,7 @@ namespace Kentor.AuthServices
         /// </summary>
         /// <param name="request">Current HttpRequest.</param>
         /// <returns>Extracted message.</returns>
-        public virtual TSaml2Message Unbind<TSaml2Message>(HttpRequestBase request) where TSaml2Message : class, ISaml2Message
+        public virtual string Unbind(HttpRequestBase request)
         {
             throw new NotImplementedException();
         }

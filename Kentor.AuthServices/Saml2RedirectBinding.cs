@@ -35,7 +35,7 @@ namespace Kentor.AuthServices
 
         // The MemoryStream is not disposed by the DeflateStream - we're using the keep-open flag.
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2202:Do not dispose objects multiple times")]
-        public override TSaml2Message Unbind<TSaml2Message>(HttpRequestBase request)
+        public override string Unbind(HttpRequestBase request)
         {
             if (request == null || request["SAMLRequest"] == null)
             {
@@ -50,18 +50,7 @@ namespace Kentor.AuthServices
                     {
                         decompressedStream.CopyTo(deCompressed);
                         var xmlData = System.Text.Encoding.UTF8.GetString(deCompressed.GetBuffer());
-                        if (typeof(TSaml2Message) == typeof(Saml2Response))
-                        {
-                            return Saml2Response.Read(xmlData) as TSaml2Message;
-                        }
-                        else if (typeof(TSaml2Message) == typeof(Saml2AuthenticationRequest))
-                        {
-                            return Saml2AuthenticationRequest.Read(xmlData) as TSaml2Message;
-                        }
-                        else
-                        {
-                            throw new NotImplementedException(string.Format(CultureInfo.InvariantCulture, "Can't unbind {0}", typeof(TSaml2Message).Name));
-                        }
+                        return xmlData;
                     }
                 }
             }
