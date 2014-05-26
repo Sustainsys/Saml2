@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -72,8 +73,6 @@ namespace Kentor.AuthServices
 
         private Saml2AuthenticationRequest(XmlDocument xml)
         {
-            //var xmlDocument = xml;
-
             Id = xml.DocumentElement.Attributes["ID"].Value;
 
             Issuer = xml.DocumentElement["Issuer", Saml2Namespaces.Saml2Name].GetTrimmedTextIfNotNull();
