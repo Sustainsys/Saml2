@@ -6,6 +6,13 @@ provider. Please fill in the required fields.
 @using(Html.BeginForm())
 {
     @Html.HiddenFor(m => m.InResponseTo)
+    if (!string.IsNullOrEmpty(Model.InResponseTo))
+    {
+        <div>
+            @Html.LabelFor(m => m.InResponseTo)
+            @Html.DisplayFor(m => m.InResponseTo)
+        </div>
+    }
 
     <div>
         @Html.LabelFor(m => m.AssertionConsumerUrl)

@@ -31,6 +31,7 @@ namespace Kentor.AuthServices.StubIdp.Models
             }
         }
 
+        [Display(Name = "In Response To ID")]
         public string InResponseTo { get; set; }
 
         // The X509KeyStorageFlags.MachineKeySet flag is required when loading a
