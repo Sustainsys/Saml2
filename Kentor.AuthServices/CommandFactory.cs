@@ -14,7 +14,7 @@ namespace Kentor.AuthServices
         private static readonly ICommand notFoundCommand = new NotFoundCommand();
 
         private static readonly IDictionary<string, ICommand> commands =
-        new Dictionary<string, ICommand>(StringComparer.InvariantCultureIgnoreCase) 
+        new Dictionary<string, ICommand>(StringComparer.OrdinalIgnoreCase) 
         { 
             { "SignIn", new SignInCommand() },
             { "Acs", new AcsCommand() }
