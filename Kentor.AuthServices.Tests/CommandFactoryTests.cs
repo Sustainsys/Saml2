@@ -20,6 +20,12 @@ namespace Kentor.AuthServices.Tests
         }
 
         [TestMethod]
+        public void CommandFactory_IsCaseInsensitive()
+        {
+          CommandFactory.GetCommand("signin").Should().BeOfType<SignInCommand>();
+        }
+
+        [TestMethod]
         public void CommandFactory_Acs_ReturnsAcs()
         {
             CommandFactory.GetCommand("Acs").Should().BeOfType<AcsCommand>();
