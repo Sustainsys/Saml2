@@ -1,15 +1,13 @@
 ﻿using Kentor.AuthServices.Configuration;
 using System;
-using System.Collections.Generic;
 using System.IdentityModel.Selectors;
 using System.IdentityModel.Tokens;
-using System.Linq;
 using System.Security.Claims;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Kentor.AuthServices
 {
+    using System.IdentityModel.Services;
+
     /// <summary>
     /// Somewhat ugly subclassing to be able to access some methods that are protected
     /// on Saml2SecurityTokenHandler. The public interface of Saml2SecurityTokenHandler
@@ -25,6 +23,11 @@ namespace Kentor.AuthServices
 
         public new void DetectReplayedToken(SecurityToken token)
         {
+            if (!FederatedAuthentication.FederationConfiguration.IdentityConfiguration.DetectReplayedTokens)
+            {
+                return;
+            }
+
             base.DetectReplayedToken(token);
         }
 

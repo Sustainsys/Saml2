@@ -87,20 +87,28 @@ namespace Kentor.AuthServices.Tests
 
             r.Form.Returns(new NameValueCollection() { { "SAMLResponse", formValue } });
 
-            var ids = new ClaimsIdentity[]
+            var ids = new[]
                 { new ClaimsIdentity("Federation"), new ClaimsIdentity("ClaimsAuthenticationManager") };
             ids[0].AddClaim(new Claim(ClaimTypes.NameIdentifier, "SomeUser", null, "https://idp.example.com"));
+            ids[1].AddClaim(new Claim(ClaimTypes.NameIdentifier, "ClaimsAuthenticationManagerStub", null, "ClaimsAuthenticationManagerMock"));
             ids[1].AddClaim(new Claim(ClaimTypes.Role, "RoleFromClaimsAuthManager", null, "ClaimsAuthenticationManagerMock"));
 
-            var expected = new CommandResult()
-            {
-                Principal = new ClaimsPrincipal(ids),
-                HttpStatusCode = HttpStatusCode.SeeOther,
-                Location = new Uri("http://localhost/LoggedIn")
-            };
+            
+            var expected = new CommandResult
+                           {
+                               Principal = new ClaimsPrincipal(ids),
+                               HttpStatusCode = HttpStatusCode.SeeOther,
+                               Location = new Uri("http://localhost/LoggedIn")
+                           };
+            
 
-            new AcsCommand().Run(r).ShouldBeEquivalentTo(expected,
-                opt => opt.IgnoringCyclicReferences());
+            var result = new AcsCommand().Run(r);
+            result.ShouldBeEquivalentTo(expected, opt => opt.IgnoringCyclicReferences().Excluding(cr => cr.Saml2Response));
+
+            // To create amd check the Saml2Response on the CommandResult with ShouldBeEquivalentTo is not possible
+            // (has to be based the same XML, has to be validated, mustn't be recognized as a replay)
+            // Therefore the property is excluded and just checked for not null
+            result.Saml2Response.Should().NotBeNull();
         }
     }
 }

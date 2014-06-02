@@ -407,25 +407,55 @@ namespace Kentor.AuthServices
             return claimsIdentities;
         }
 
-        private IEnumerable<ClaimsIdentity> CreateClaims()
+        private IEnumerable<Saml2SecurityToken> saml2SecurityTokens;
+
+        /// <summary>Gets the saml2 security tokens converted from the assertions in the response.</summary>
+        /// <value>The saml2 security tokens.</value>
+        public virtual IEnumerable<Saml2SecurityToken> Saml2SecurityTokens
+        {
+            get
+            {
+                return saml2SecurityTokens ?? (saml2SecurityTokens = ConvertAssertionsToValidatedSaml2SecurityTokens());
+            }
+        }
+
+        /// <summary>Converts the assertions to validated saml2 security tokens.</summary>
+        /// <returns>A enumerable of Saml2SecurityToken</returns>
+        protected virtual IEnumerable<Saml2SecurityToken> ConvertAssertionsToValidatedSaml2SecurityTokens()
         {
             ThrowOnNotValid();
 
+            var tokens = new List<Saml2SecurityToken>();
             foreach (XmlElement assertionNode in AllAssertionElementNodes)
             {
                 using (var reader = new XmlNodeReader(assertionNode))
                 {
-                    MorePublicSaml2SecurityTokenHandler handler = MorePublicSaml2SecurityTokenHandler.DefaultInstance;
+                    var handler = MorePublicSaml2SecurityTokenHandler.DefaultInstance;
 
-                    var token = (Saml2SecurityToken)MorePublicSaml2SecurityTokenHandler.DefaultInstance.ReadToken(reader);
+                    var token = (Saml2SecurityToken)handler.ReadToken(reader);
+
+                    // Replayed token detection has to be activated by configuration.
+                    // The configuration value is handled inside DetectReplayedToken
                     handler.DetectReplayedToken(token);
 
-                    var validateAudience = token.Assertion.Conditions.AudienceRestrictions.Count > 0;
+                    // The saml assertion spec does not require any conditions -> Check for null
+                    var validateAudience = token.Assertion.Conditions != null && token.Assertion.Conditions.AudienceRestrictions.Count > 0;
 
                     handler.ValidateConditions(token.Assertion.Conditions, validateAudience);
 
-                    yield return handler.CreateClaims(token);
+                    tokens.Add(token);
                 }
+            }
+
+            return tokens;
+        }
+
+        private IEnumerable<ClaimsIdentity> CreateClaims()
+        {
+            foreach (var token in Saml2SecurityTokens)
+            {
+                var handler = MorePublicSaml2SecurityTokenHandler.DefaultInstance;
+                yield return handler.CreateClaims(token);
             }
         }
     }

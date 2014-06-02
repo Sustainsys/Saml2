@@ -12,6 +12,8 @@ using System.Xml;
 
 namespace Kentor.AuthServices.Tests
 {
+    using System.IdentityModel.Services;
+
     [TestClass]
     public class Saml2ResponseTests
     {
@@ -62,7 +64,7 @@ namespace Kentor.AuthServices.Tests
             };
 
             Saml2Response.Read(response).ShouldBeEquivalentTo(expected,
-                opt => opt.Excluding(s => s.XmlDocument));
+                opt => opt.Excluding(s => s.XmlDocument).Excluding(s => s.Saml2SecurityTokens));
         }
 
         [TestMethod]
@@ -916,6 +918,8 @@ namespace Kentor.AuthServices.Tests
         [NotReRunnable]
         public void Saml2Response_GetClaims_ThrowsOnReplayAssertionId()
         {
+            FederatedAuthentication.FederationConfiguration.IdentityConfiguration.DetectReplayedTokens = true;
+
             var response =
             @"<?xml version=""1.0"" encoding=""UTF-8""?>
             <saml2p:Response xmlns:saml2p=""urn:oasis:names:tc:SAML:2.0:protocol""
