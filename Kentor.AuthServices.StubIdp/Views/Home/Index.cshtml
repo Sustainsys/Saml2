@@ -1,9 +1,9 @@
 ﻿@model AssertionModel
 
-This form will allow you to send an unsolicited SAML2 Response to a service 
+This form will allow you to send an unsolicited SAML2 Response to a service
 provider. Please fill in the required fields.
 
-@using(Html.BeginForm())
+@using (Html.BeginForm())
 {
     <div>
         @Html.LabelFor(m => m.InResponseTo)
@@ -16,12 +16,12 @@ provider. Please fill in the required fields.
         @Html.EditorFor(m => m.AssertionConsumerUrl)
         @Html.ValidationMessageFor(m => m.AssertionConsumerUrl)
     </div>
-    
+
     <div>
         @Html.LabelFor(m => m.NameId)
         @Html.EditorFor(m => m.NameId)
         @Html.ValidationMessageFor(m => m.NameId)
     </div>
-    
+
     <button>Submit</button>
 }
