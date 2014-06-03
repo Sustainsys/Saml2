@@ -63,6 +63,7 @@
     <Compile Include="Enumerator.cs" />
     <Compile Include="IdentityProvider.cs" />
     <Compile Include="ISaml2Message.cs" />
+    <Compile Include="MessageBinder.cs" />
     <Compile Include="MorePublicSaml2SecurityTokenHandler.cs" />
     <Compile Include="NoSamlResponseFoundException.cs" />
     <Compile Include="NotFoundCommand.cs" />

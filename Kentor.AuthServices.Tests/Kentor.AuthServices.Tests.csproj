@@ -110,6 +110,7 @@
     <Compile Include="Saml2SubjectExtensionsTests.cs" />
     <Compile Include="Saml2ConditionsExtensionsTests.cs" />
     <Compile Include="PendingAuthnRequestsTests.cs" />
+    <Compile Include="MessageBinderTests.cs" />
     <Compile Include="XmlDocumentExtensionsTests.cs" />
     <Compile Include="XmlHelpersTests.cs" />
   </ItemGroup>

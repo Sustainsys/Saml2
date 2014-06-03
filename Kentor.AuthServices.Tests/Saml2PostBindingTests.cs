@@ -54,11 +54,27 @@ namespace Kentor.AuthServices.Tests
         }
 
         [TestMethod]
-        public void Saml2PostBinding_Bind_Nullcheck()
+        public void Saml2PostBinding_Bind_Nullcheck_payload()
         {
             Saml2Binding.Get(Saml2BindingType.HttpPost)
-                .Invoking(b => b.Bind(null))
-                .ShouldThrow<ArgumentNullException>("Value cannot be null.\r\nParameter name: message");
+                .Invoking(b => b.Bind(null, new Uri("http://host"), "-"))
+                .ShouldThrow<ArgumentNullException>().And.ParamName.Should().Be("payload");
+        }
+
+        [TestMethod]
+        public void Saml2PostBinding_Bind_Nullcheck_destinationUri()
+        {
+            Saml2Binding.Get(Saml2BindingType.HttpPost)
+                .Invoking(b => b.Bind("-", null, "-"))
+                .ShouldThrow<ArgumentNullException>().And.ParamName.Should().Be("destinationUri");
+        }
+
+        [TestMethod]
+        public void Saml2PostBinding_Bind_Nullcheck_messageName()
+        {
+            Saml2Binding.Get(Saml2BindingType.HttpPost)
+                .Invoking(b => b.Bind("-", new Uri("http://host"), null))
+                .ShouldThrow<ArgumentNullException>().And.ParamName.Should().Be("messageName");
         }
 
         [TestMethod]

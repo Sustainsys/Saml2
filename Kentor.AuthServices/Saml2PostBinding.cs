@@ -32,20 +32,28 @@ namespace Kentor.AuthServices
             return xml;
         }
 
-        public override CommandResult Bind(ISaml2Message message)
+        public override CommandResult Bind(string payload, Uri destinationUri, string messageName)
         {
-            if (message == null)
+            if (payload == null)
             {
-                throw new ArgumentNullException("message");
+                throw new ArgumentNullException("payload");
+            }
+            if (destinationUri == null)
+            {
+                throw new ArgumentNullException("destinationUri");
+            }
+            if (messageName == null)
+            {
+                throw new ArgumentNullException("messageName");
             }
 
             var encodedXml = Convert.ToBase64String(
-                Encoding.UTF8.GetBytes(message.ToXml()));
+                Encoding.UTF8.GetBytes(payload));
 
             var cr = new CommandResult()
             {
                 Content = String.Format(CultureInfo.InvariantCulture, PostHtmlFormatString,
-                message.DestinationUri, message.MessageName, encodedXml)
+               destinationUri, messageName, encodedXml)
             };
 
             return cr;
