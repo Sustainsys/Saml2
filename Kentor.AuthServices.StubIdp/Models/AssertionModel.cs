@@ -19,16 +19,17 @@ namespace Kentor.AuthServices.StubIdp.Models
         [Display(Name = "Subject NameId")]
         public string NameId { get; set; }
 
-        public static AssertionModel Default
+        /// <summary>
+        /// Creates a new Assertion model with values from web.config
+        /// </summary>
+        /// <returns>An <see cref="AssertionModel"/></returns>
+        public static AssertionModel CreateFromConfiguration()
         {
-            get
+            return new AssertionModel
             {
-                return new AssertionModel
-                {
-                    AssertionConsumerUrl = ConfigurationManager.AppSettings["defaultAcsUrl"],
-                    NameId = ConfigurationManager.AppSettings["defaultNameId"]
-                };
-            }
+                AssertionConsumerUrl = ConfigurationManager.AppSettings["defaultAcsUrl"],
+                NameId = ConfigurationManager.AppSettings["defaultNameId"]
+            };
         }
 
         [Display(Name = "In Response To ID")]

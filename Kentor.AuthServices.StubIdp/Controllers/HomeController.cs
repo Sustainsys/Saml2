@@ -12,7 +12,7 @@ namespace Kentor.AuthServices.StubIdp.Controllers
     {
         public ActionResult Index()
         {
-            var model = AssertionModel.Default;
+            var model = AssertionModel.CreateFromConfiguration();
             var request = Saml2Binding.Get(Saml2BindingType.HttpRedirect).Unbind<Saml2AuthenticationRequest>(Request);
             if (request != null)
             {
