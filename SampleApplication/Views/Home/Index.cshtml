@@ -11,7 +11,16 @@
 {
     <p>
         You are currently not signed in.
-        <a href="@Url.Content("~/Saml2AuthenticationModule/SignIn")">Sign in</a>.
+    </p>
+    <p>
+        <a href="@Url.Content("~/Saml2AuthenticationModule/SignIn")">Sign in</a> - default IDP
+        @foreach (var idp in Kentor.AuthServices.Configuration.KentorAuthServicesSection.Current.IdentityProviders)
+        {
+            var issuer = idp.Issuer;
+            var destinationUri = idp.DestinationUri;
+            <br />
+            <a href="@Url.Content("~/Saml2AuthenticationModule/SignIn?issuer=" + HttpUtility.UrlEncode(issuer))">Sign in</a>@: - @issuer - @destinationUri
+        }
     </p>
 }
 else

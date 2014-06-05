@@ -35,5 +35,29 @@ namespace Kentor.AuthServices.Tests
             queries.Keys[0].Should().Be("SAMLRequest");
             queries[0].Should().NotBeEmpty();
         }
+
+        [TestMethod]
+        public void SignInCommand_Run_With_Issuer2_ReturnsAuthnRequestForSecondIdp()
+        {
+            var secondIdp = IdentityProvider.ConfiguredIdentityProviders.Skip(1).First().Value;
+            var secondDestination = secondIdp.DestinationUri;
+            var secondIssuer = secondIdp.Issuer;
+
+            var requestSubstitute = Substitute.For<HttpRequestBase>();
+            requestSubstitute["issuer"].Returns(HttpUtility.UrlEncode(secondIssuer));
+            var subject = new SignInCommand().Run(requestSubstitute);
+
+            subject.Location.Host.Should().Be(secondDestination.Host);
+        }
+
+        [TestMethod]
+        public void SignInCommand_Run_With_InvalidIssuer_ThrowsException()
+        {
+            var requestSubstitute = Substitute.For<HttpRequestBase>();
+            requestSubstitute["issuer"].Returns(HttpUtility.UrlEncode("no-such-idp-in-config"));
+            Action a = () => new SignInCommand().Run(requestSubstitute);
+
+            a.ShouldThrow<InvalidOperationException>().WithMessage("Unknown issuer");
+        }
     }
 }
