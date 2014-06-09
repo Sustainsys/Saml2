@@ -11,7 +11,7 @@ namespace Kentor.AuthServices.IntegrationTests
         public void SignInTestsInitialize()
         {
             SeleniumWebDriver.Bootstrap(SeleniumWebDriver.Browser.Chrome);
-            Settings.WaitOnAllCommands = false;
+            FluentAutomation.FluentSettings.Current.WaitOnAllActions = false;
         }
 
         [TestMethod]
@@ -33,7 +33,7 @@ namespace Kentor.AuthServices.IntegrationTests
                 .Click("a[href=\"/Home/Secure\"]")
                 .Assert.Text("http://localhost:2181/AuthServices/Acs").In("#AssertionConsumerServiceUrl");
 
-            I.Assert.False(() => string.IsNullOrEmpty(I.Find("#InResponseTo")().Value));
+            I.Assert.False(() => string.IsNullOrEmpty(I.Find("#InResponseTo").Element.Value));
 
             I.Click("#main form button")
                 // We should really implement functionality to redirect back to /secure, but it ain't there yet.
