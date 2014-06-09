@@ -136,7 +136,7 @@ namespace Kentor.AuthServices.Tests
         }
 
         [TestMethod]
-        public void Saml2AuthenticationRequest_Read_ShoudReturlNullOnNullXml()
+        public void Saml2AuthenticationRequest_Read_ShouldReturnNullOnNullXml()
         {
             string xmlData = null;
 
