@@ -59,7 +59,7 @@ namespace Kentor.AuthServices.Tests
                 DestinationUri = new Uri("http://destination.example.com"),
                 MessageName = "SAMLResponse",
                 InResponseTo = new Saml2Id("InResponseToId"),
-                ReturnUri = (Uri)null,
+                RequestState = (StoredRequestState)null,
             };
 
             Saml2Response.Read(response).ShouldBeEquivalentTo(expected,
@@ -1137,7 +1137,7 @@ namespace Kentor.AuthServices.Tests
             var response = Saml2Response.Read(responseXML);
 
             response.Validate(SignedXmlHelper.TestCert);
-            response.ReturnUri.Should().Be("http://localhost/testUrl.aspx");
+            response.RequestState.ReturnUri.Should().Be("http://localhost/testUrl.aspx");
         }
     }
 }

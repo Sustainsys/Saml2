@@ -241,9 +241,9 @@ namespace Kentor.AuthServices
         }
 
         /// <summary>
-        /// Return Uri
+        /// State stored by a corresponding request
         /// </summary>
-        public Uri ReturnUri { get; private set; }
+        public StoredRequestState RequestState { get; private set; }
 
         bool valid = false, validated = false;
 
@@ -292,20 +292,16 @@ namespace Kentor.AuthServices
             }
             else
             {
-                PendingAuthnRequestData storedAuthnData;
-                bool knownInResponseToId = PendingAuthnRequests.TryRemove(InResponseTo, out storedAuthnData);
+                StoredRequestState storedRequestState;
+                bool knownInResponseToId = PendingAuthnRequests.TryRemove(InResponseTo, out storedRequestState);
                 if (!knownInResponseToId)
                 {
                     return false;
                 }
-                if (storedAuthnData.Idp != Issuer)
+                RequestState = storedRequestState;
+                if (RequestState.Idp != Issuer)
                 {
                     return false;
-                }
-
-                if (storedAuthnData.ReturnUri != null)
-                {
-                    ReturnUri =storedAuthnData.ReturnUri;
                 }
                 return true;
             }

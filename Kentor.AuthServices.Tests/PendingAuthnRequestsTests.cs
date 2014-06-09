@@ -12,9 +12,9 @@ namespace Kentor.AuthServices.Tests
         public void PendingAuthnRequests_AddRemove()
         {
             var id = new Saml2Id();
-            var requestData = new PendingAuthnRequestData("testidp", new Uri("http://localhost/Return.aspx"));
+            var requestData = new StoredRequestState("testidp", new Uri("http://localhost/Return.aspx"));
             PendingAuthnRequests.Add(id, requestData);
-            PendingAuthnRequestData responseData;
+            StoredRequestState responseData;
             PendingAuthnRequests.TryRemove(id, out responseData).Should().BeTrue();
             responseData.Should().Be(requestData);
             responseData.Idp.Should().Be("testidp");
@@ -25,7 +25,7 @@ namespace Kentor.AuthServices.Tests
         public void PendingAuthnRequests_Add_ThrowsOnExisting()
         {
             var id = new Saml2Id();
-            var requestData = new PendingAuthnRequestData("testidp", new Uri("http://localhost/Return.aspx"));
+            var requestData = new StoredRequestState("testidp", new Uri("http://localhost/Return.aspx"));
             PendingAuthnRequests.Add(id, requestData);
             Action a = () => PendingAuthnRequests.Add(id, requestData);
             a.ShouldThrow<InvalidOperationException>();
@@ -35,7 +35,7 @@ namespace Kentor.AuthServices.Tests
         public void PendingAuthnRequests_Remove_FalseOnIdNeverIssued()
         {
             var id = new Saml2Id();
-            PendingAuthnRequestData responseData;
+            StoredRequestState responseData;
             PendingAuthnRequests.TryRemove(id, out responseData).Should().BeFalse();
         }
 
@@ -43,8 +43,8 @@ namespace Kentor.AuthServices.Tests
         public void PendingAuthnRequests_Remove_FalseOnRemovedTwice()
         {
             var id = new Saml2Id();
-            var requestData = new PendingAuthnRequestData("testidp", new Uri("http://localhost/Return.aspx"));
-            PendingAuthnRequestData responseData;
+            var requestData = new StoredRequestState("testidp", new Uri("http://localhost/Return.aspx"));
+            StoredRequestState responseData;
             PendingAuthnRequests.Add(id, requestData);
             PendingAuthnRequests.TryRemove(id, out responseData).Should().BeTrue();
             PendingAuthnRequests.TryRemove(id, out responseData).Should().BeFalse();

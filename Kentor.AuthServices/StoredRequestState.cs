@@ -10,14 +10,14 @@ namespace Kentor.AuthServices
     /// Stored data for each PendingAuthnRequest
     /// </summary>
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1702:CompoundWordsShouldBeCasedCorrectly", MessageId = "AuthnRequest")] // AuthnRequest is already in dictionary
-    public class PendingAuthnRequestData
+    public class StoredRequestState
     {
         /// <summary>
         /// Creates a PendingAuthnRequestData
         /// </summary>
         /// <param name="idp">The IDP the request was sent to</param>
         /// <param name="returnUri">The Uri to redirect back to after a succesful login</param>
-        public PendingAuthnRequestData(string idp, Uri returnUri)
+        public StoredRequestState(string idp, Uri returnUri)
         {
             Idp = idp;
             ReturnUri = returnUri;

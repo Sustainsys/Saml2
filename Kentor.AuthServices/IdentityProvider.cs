@@ -47,7 +47,7 @@ namespace Kentor.AuthServices
                 Issuer = KentorAuthServicesSection.Current.Issuer
             };
 
-            var responseData = new PendingAuthnRequestData(Issuer, returnUri);
+            var responseData = new StoredRequestState(Issuer, returnUri);
 
             PendingAuthnRequests.Add(new Saml2Id(request.Id), responseData);
 
