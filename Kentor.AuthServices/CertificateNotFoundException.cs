@@ -14,8 +14,7 @@ namespace Kentor.AuthServices
         /// </summary>
         public CertificateNotFoundException()
             : this("Certificate not found.")
-        {
-        }
+        { }
 
         /// <summary>
         /// Ctor
@@ -41,7 +40,6 @@ namespace Kentor.AuthServices
         /// <param name="context">Serialization context</param>
         protected CertificateNotFoundException(SerializationInfo info, StreamingContext context)
             : base(info, context)
-        {
-        }
+        { }
     }
 }

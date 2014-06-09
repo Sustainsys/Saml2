@@ -20,30 +20,39 @@ namespace Kentor.AuthServices
         public static bool TryGetCertificate(IEnumerable<StoreName> names, IEnumerable<StoreLocation> locations, X509FindType findType, string value, out X509Certificate2 certificate)
         {
             certificate = null;
-            if ((names == null) && (!names.Any())) {
+            if ((names == null) && (!names.Any())) 
+            {
                 return false;
             }
-            if ((locations == null) && (! locations.Any())) {
+            if ((locations == null) && (! locations.Any())) 
+            {
                 return false;
             }
             
-            foreach (StoreName name in names) {
-                foreach (StoreLocation location in locations) {
+            foreach (StoreName name in names) 
+            {
+                foreach (StoreLocation location in locations) 
+                {
                     var store = new X509Store(name, location);
                     store.Open(OpenFlags.ReadOnly);
-                    try {
+                    try 
+                    {
                         var certs = store.Certificates.Find(findType, value, false);
-                        if (certs.Count == 1) {
+                        if (certs.Count == 1) 
+                        {
                             certificate = certs[0];
                             return (true);
                         }
-                        if (certs.Count > 1) {
+                        if (certs.Count > 1) 
+                        {
                             throw new CertificateNotFoundException(
                                 string.Format(CultureInfo.InvariantCulture,
                                 "Finding cert through {0} in {1}:{2} with value {3} matched {4} certificates. A unique match is required.",
                                 findType, location, name, value, certs.Count));
                         }
-                    } finally {
+                    } 
+                    finally 
+                    {
                         store.Close();
                     }
                 }
@@ -63,7 +72,8 @@ namespace Kentor.AuthServices
         public static X509Certificate2 GetCertificate(IEnumerable<StoreName> names, IEnumerable<StoreLocation> locations, X509FindType findType, string value)
         {
             X509Certificate2 certificate;
-            if (TryGetCertificate(names, locations, findType, value, out certificate)) {
+            if (TryGetCertificate(names, locations, findType, value, out certificate)) 
+            {
                 return certificate;
             }
 
@@ -99,7 +109,8 @@ namespace Kentor.AuthServices
         public static X509Certificate2 GetCertificate(StoreName name, StoreLocation location, X509FindType findType, string value)
         {
             X509Certificate2 certificate;
-            if (TryGetCertificate(name, location, findType, value, out certificate)) {
+            if (TryGetCertificate(name, location, findType, value, out certificate))
+            {
                 return certificate;
             }
             
