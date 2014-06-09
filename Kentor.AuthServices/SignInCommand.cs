@@ -11,7 +11,6 @@ namespace Kentor.AuthServices
 {
     class SignInCommand : ICommand
     {
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1062:Validate arguments of public methods", MessageId = "0")]
         public CommandResult Run(HttpRequestBase request)
         {
             IdentityProvider idp;
@@ -31,7 +30,7 @@ namespace Kentor.AuthServices
             Uri returnUri = null;
             if (request != null && request.Url != null && request["ReturnUrl"] != null)
             {
-                returnUri = new Uri(string.Format(CultureInfo.InvariantCulture, "{0}://{1}{2}", request.Url.Scheme, request.Url.Authority, request["ReturnUrl"]));
+                Uri.TryCreate(request.Url, request["ReturnUrl"], out returnUri);
             }
 
             var authnRequest = idp.CreateAuthenticateRequest(returnUri);
