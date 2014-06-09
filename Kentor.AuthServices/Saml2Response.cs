@@ -240,6 +240,11 @@ namespace Kentor.AuthServices
             }
         }
 
+        /// <summary>
+        /// State stored by a corresponding request
+        /// </summary>
+        public StoredRequestState RequestState { get; private set; }
+
         bool valid = false, validated = false;
 
         /// <summary>Gets all assertion element nodes from this response message.</summary>
@@ -287,13 +292,14 @@ namespace Kentor.AuthServices
             }
             else
             {
-                string sentToIdp;
-                bool knownInResponseToId = PendingAuthnRequests.TryRemove(InResponseTo, out sentToIdp);
+                StoredRequestState storedRequestState;
+                bool knownInResponseToId = PendingAuthnRequests.TryRemove(InResponseTo, out storedRequestState);
                 if (!knownInResponseToId)
                 {
                     return false;
                 }
-                if (sentToIdp != Issuer)
+                RequestState = storedRequestState;
+                if (RequestState.Idp != Issuer)
                 {
                     return false;
                 }

@@ -58,8 +58,8 @@ namespace Kentor.AuthServices.Tests
         private HttpRequestBase CreateRequest(string encodedResponse)
         {
             var r = Substitute.For<HttpRequestBase>();
-            r.HttpMethod.Returns("POST");
             r["SAMLRequest"].Returns(encodedResponse);
+            r.HttpMethod.Returns("GET");
             return r;
         }
 

@@ -36,8 +36,6 @@ namespace Kentor.AuthServices.IntegrationTests
             I.Assert.False(() => string.IsNullOrEmpty(I.Find("#InResponseTo").Element.Value));
 
             I.Click("#main form button")
-                // We should really implement functionality to redirect back to /secure, but it ain't there yet.
-                .Click("a[href=\"/Home/Secure\"]")
                 .Assert.Text("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier - JohnDoe").In(".body-content ul li:first-child");
 
             I.Click("a[href=\"/AuthServices/SignOut\"");

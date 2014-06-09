@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -26,7 +27,13 @@ namespace Kentor.AuthServices
                 idp = IdentityProvider.ConfiguredIdentityProviders.First().Value;
             }
 
-            var authnRequest = idp.CreateAuthenticateRequest();
+            Uri returnUri = null;
+            if (request != null && request.Url != null && request["ReturnUrl"] != null)
+            {
+                Uri.TryCreate(request.Url, request["ReturnUrl"], out returnUri);
+            }
+
+            var authnRequest = idp.CreateAuthenticateRequest(returnUri);
 
             return idp.Bind(authnRequest);
         }

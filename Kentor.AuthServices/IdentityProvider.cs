@@ -38,7 +38,7 @@ namespace Kentor.AuthServices
 
         public string Issuer { get; set; }
 
-        public Saml2AuthenticationRequest CreateAuthenticateRequest()
+        public Saml2AuthenticationRequest CreateAuthenticateRequest(Uri returnUri)
         {
             var request = new Saml2AuthenticationRequest()
             {
@@ -47,7 +47,9 @@ namespace Kentor.AuthServices
                 Issuer = KentorAuthServicesSection.Current.Issuer
             };
 
-            PendingAuthnRequests.Add(new Saml2Id(request.Id), Issuer);
+            var responseData = new StoredRequestState(Issuer, returnUri);
+
+            PendingAuthnRequests.Add(new Saml2Id(request.Id), responseData);
 
             return request;
         }

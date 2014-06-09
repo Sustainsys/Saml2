@@ -20,7 +20,7 @@ namespace Kentor.AuthServices.Tests
         [TestInitialize]
         public void TestInitialize()
         {
-            currentConfigValueForAllowedUnsolicitedAuthnResponse = 
+            currentConfigValueForAllowedUnsolicitedAuthnResponse =
                 KentorAuthServicesSection.Current.IdentityProviders.First().AllowUnsolicitedAuthnResponse;
             KentorAuthServicesSection.Current.IdentityProviders.First().AllowConfigEdit(true);
             KentorAuthServicesSection.Current.IdentityProviders.First().AllowUnsolicitedAuthnResponse = true;
@@ -31,7 +31,7 @@ namespace Kentor.AuthServices.Tests
         public void TestCleanUp()
         {
             KentorAuthServicesSection.Current.IdentityProviders.First().AllowConfigEdit(true);
-            KentorAuthServicesSection.Current.IdentityProviders.First().AllowUnsolicitedAuthnResponse = 
+            KentorAuthServicesSection.Current.IdentityProviders.First().AllowUnsolicitedAuthnResponse =
                 currentConfigValueForAllowedUnsolicitedAuthnResponse;
             KentorAuthServicesSection.Current.IdentityProviders.First().AllowConfigEdit(false);
         }
@@ -59,6 +59,7 @@ namespace Kentor.AuthServices.Tests
                 DestinationUri = new Uri("http://destination.example.com"),
                 MessageName = "SAMLResponse",
                 InResponseTo = new Saml2Id("InResponseToId"),
+                RequestState = (StoredRequestState)null,
             };
 
             Saml2Response.Read(response).ShouldBeEquivalentTo(expected,
@@ -754,7 +755,7 @@ namespace Kentor.AuthServices.Tests
         {
             var idp = IdentityProvider.ConfiguredIdentityProviders.First().Value;
 
-            var request = idp.CreateAuthenticateRequest();
+            var request = idp.CreateAuthenticateRequest(null);
 
             var responseXML =
             @"<?xml version=""1.0"" encoding=""UTF-8""?>
@@ -783,7 +784,7 @@ namespace Kentor.AuthServices.Tests
             KentorAuthServicesSection.Current.IdentityProviders.First().AllowConfigEdit(false);
             var idp = IdentityProvider.ConfiguredIdentityProviders.First().Value;
 
-            var request = idp.CreateAuthenticateRequest();
+            var request = idp.CreateAuthenticateRequest(null);
 
             var responseXML =
             @"<?xml version=""1.0"" encoding=""UTF-8""?>
@@ -811,7 +812,7 @@ namespace Kentor.AuthServices.Tests
             KentorAuthServicesSection.Current.IdentityProviders.First().AllowConfigEdit(false);
             var idp = IdentityProvider.ConfiguredIdentityProviders.First().Value;
 
-            var request = idp.CreateAuthenticateRequest();
+            var request = idp.CreateAuthenticateRequest(null);
 
             var responseXML =
             @"<?xml version=""1.0"" encoding=""UTF-8""?>
@@ -836,7 +837,7 @@ namespace Kentor.AuthServices.Tests
         {
             var idp = IdentityProvider.ConfiguredIdentityProviders.First().Value;
 
-            var request = idp.CreateAuthenticateRequest();
+            var request = idp.CreateAuthenticateRequest(null);
 
             var responseXML =
             @"<?xml version=""1.0"" encoding=""UTF-8""?>
@@ -862,7 +863,7 @@ namespace Kentor.AuthServices.Tests
         {
             var idp = IdentityProvider.ConfiguredIdentityProviders.First().Value;
 
-            var request = idp.CreateAuthenticateRequest();
+            var request = idp.CreateAuthenticateRequest(null);
 
             var responseXML =
             @"<?xml version=""1.0"" encoding=""UTF-8""?>
@@ -892,7 +893,7 @@ namespace Kentor.AuthServices.Tests
             // did send the AuthnRequest to.
             var idp = IdentityProvider.ConfiguredIdentityProviders.First().Value;
 
-            var request = idp.CreateAuthenticateRequest();
+            var request = idp.CreateAuthenticateRequest(null);
 
             var responseXML =
             @"<?xml version=""1.0"" encoding=""UTF-8""?>
@@ -1110,6 +1111,33 @@ namespace Kentor.AuthServices.Tests
             var subject = new Saml2Response("issuer", null, null, null);
 
             subject.MessageName.Should().Be("SAMLResponse");
+        }
+
+        [TestMethod]
+        public void Saml2Response_FromRequest_Remembers_ReturnUri()
+        {
+            var idp = IdentityProvider.ConfiguredIdentityProviders.First().Value;
+
+            var request = idp.CreateAuthenticateRequest(new Uri("http://localhost/testUrl.aspx"));
+
+            var responseXML =
+            @"<?xml version=""1.0"" encoding=""UTF-8""?>
+            <saml2p:Response xmlns:saml2p=""urn:oasis:names:tc:SAML:2.0:protocol""
+            xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
+            ID = ""Saml2Response_FromRequest_Remembers_ReturnUri"" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z""
+            InResponseTo = """ + request.Id + @""">
+                <saml2:Issuer>https://idp.example.com</saml2:Issuer>
+                <saml2p:Status>
+                    <saml2p:StatusCode Value=""urn:oasis:names:tc:SAML:2.0:status:Requester"" />
+                </saml2p:Status>
+            </saml2p:Response>";
+
+            responseXML = SignedXmlHelper.SignXml(responseXML);
+
+            var response = Saml2Response.Read(responseXML);
+
+            response.Validate(SignedXmlHelper.TestCert);
+            response.RequestState.ReturnUri.Should().Be("http://localhost/testUrl.aspx");
         }
     }
 }
