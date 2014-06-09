@@ -61,6 +61,10 @@ namespace Kentor.AuthServices
         /// <exception cref="XmlException">On xml errors or unexpected xml structure.</exception>
         public static Saml2AuthenticationRequest Read(string xml)
         {
+            if (xml == null)
+            {
+                return null;
+            }
             var x = new XmlDocument();
             x.PreserveWhitespace = true;
             x.LoadXml(xml);

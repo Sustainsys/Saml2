@@ -134,5 +134,15 @@ namespace Kentor.AuthServices.Tests
 
             a.ShouldThrow<XmlException>().WithMessage("Expected a SAML2 authentication request document");
         }
+
+        [TestMethod]
+        public void Saml2AuthenticationRequest_Read_ShoudReturlNullOnNullXml()
+        {
+            string xmlData = null;
+
+            var subject = Saml2AuthenticationRequest.Read(xmlData);
+
+            subject.Should().BeNull();
+        }
     }
 }
