@@ -1055,6 +1055,22 @@ namespace Kentor.AuthServices.Tests
         }
 
         [TestMethod]
+        public void Saml2Response_Xml_FromData_ContainsInResponseTo()
+        {
+            var identity = new ClaimsIdentity(new Claim[] 
+            {
+                new Claim(ClaimTypes.NameIdentifier, "JohnDoe") 
+            });
+
+            var response = new Saml2Response("issuer", SignedXmlHelper.TestCert,
+                new Uri("http://destination.example.com"), "InResponseToID", identity);
+
+            var xml = response.XmlDocument;
+
+            xml.DocumentElement.GetAttribute("InResponseTo").Should().Be("InResponseToID");
+        }
+
+        [TestMethod]
         public void Saml2Response_Xml_FromData_IsSigned()
         {
             var issuer = "http://idp.example.com";
