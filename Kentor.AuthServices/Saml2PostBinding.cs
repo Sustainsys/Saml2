@@ -15,13 +15,13 @@ namespace Kentor.AuthServices
                 throw new ArgumentNullException("request");
             }
 
-            return request.HttpMethod == "POST" 
+            return request.HttpMethod == "POST"
                 && request.Form.AllKeys.Contains("SAMLResponse");
         }
 
-        public override Saml2Response Unbind(HttpRequestBase request)
+        public override TSaml2Message Unbind<TSaml2Message>(HttpRequestBase request)
         {
-            if(request == null)
+            if (request == null)
             {
                 throw new ArgumentNullException("request");
             }
@@ -29,12 +29,23 @@ namespace Kentor.AuthServices
             var xml = Encoding.UTF8.GetString(
                 Convert.FromBase64String(request.Form["SAMLResponse"]));
 
-            return Saml2Response.Read(xml);            
+            if (typeof(TSaml2Message) == typeof(Saml2Response))
+            {
+                return Saml2Response.Read(xml) as TSaml2Message;
+            }
+            else if (typeof(TSaml2Message) == typeof(Saml2AuthenticationRequest))
+            {
+                return Saml2AuthenticationRequest.Read(xml) as TSaml2Message;
+            }
+            else
+            {
+                throw new NotImplementedException(string.Format(CultureInfo.InvariantCulture, "Can't unbind {0}", typeof(TSaml2Message).Name));
+            }
         }
 
         public override CommandResult Bind(ISaml2Message message)
         {
-            if(message == null)
+            if (message == null)
             {
                 throw new ArgumentNullException("message");
             }

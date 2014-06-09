@@ -1,21 +1,31 @@
 ﻿@model AssertionModel
+<p>
+    This form will allow you to send a SAML2 Response to a service provider.
+    If the In Response To ID field is empty, the Response is considered unsolicited (IDP initiated).
+</p>
+<p>
+    Please fill in the required fields.
+</p>
 
-This form will allow you to send an unsolicited SAML2 Response to a service 
-provider. Please fill in the required fields.
-
-@using(Html.BeginForm())
+@using (Html.BeginForm())
 {
+    <div>
+        @Html.LabelFor(m => m.InResponseTo)
+        @Html.EditorFor(m => m.InResponseTo)
+        @Html.ValidationMessageFor(m => m.InResponseTo)
+    </div>
+
     <div>
         @Html.LabelFor(m => m.AssertionConsumerUrl)
         @Html.EditorFor(m => m.AssertionConsumerUrl)
         @Html.ValidationMessageFor(m => m.AssertionConsumerUrl)
     </div>
-    
+
     <div>
         @Html.LabelFor(m => m.NameId)
         @Html.EditorFor(m => m.NameId)
         @Html.ValidationMessageFor(m => m.NameId)
     </div>
-    
+
     <button>Submit</button>
 }

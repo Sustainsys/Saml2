@@ -4,6 +4,7 @@ using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml;
 using System.Xml.Linq;
 
 namespace Kentor.AuthServices
@@ -13,7 +14,7 @@ namespace Kentor.AuthServices
     /// </summary>
     public abstract class Saml2RequestBase : ISaml2Message
     {
-        private readonly string id = "id" + Guid.NewGuid().ToString("N");
+        private string id = "id" + Guid.NewGuid().ToString("N");
 
         /// <summary>
         /// The id of the request.
@@ -23,6 +24,10 @@ namespace Kentor.AuthServices
             get
             {
                 return id;
+            }
+            protected set
+            {
+                id = value;
             }
         }
 
@@ -38,7 +43,7 @@ namespace Kentor.AuthServices
             }
         }
 
-        private readonly string issueInstant = 
+        private readonly string issueInstant =
             DateTime.UtcNow.ToSaml2DateTimeString();
 
         /// <summary>
@@ -73,6 +78,12 @@ namespace Kentor.AuthServices
         /// </summary>
         public string Issuer { get; set; }
 
+
+        /// <summary>
+        /// The SAML2 request name
+        /// </summary>
+        protected abstract string LocalName { get; }
+
         /// <summary>
         /// Creates XNodes for the fields of the Saml2RequestBase class. These
         /// nodes should be added when creating XML out of derived classes.
@@ -94,6 +105,38 @@ namespace Kentor.AuthServices
             if (!string.IsNullOrEmpty(Issuer))
             {
                 yield return new XElement(Saml2Namespaces.Saml2 + "Issuer", Issuer);
+            }
+        }
+
+        /// <summary>
+        /// Reads the request properties present in Saml2RequestBase
+        /// Also validates basic properties of the request
+        /// </summary>
+        /// <param name="xml">The xml document to parse</param>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1059:MembersShouldNotExposeCertainConcreteTypes", MessageId = "System.Xml.XmlNode")]
+        protected void ReadBaseProperties(XmlDocument xml)
+        {
+            if (xml == null)
+            {
+                throw new ArgumentNullException("xml");
+            }
+            ValidateCorrectDocument(xml);
+            Id = xml.DocumentElement.Attributes["ID"].Value;
+
+            Issuer = xml.DocumentElement["Issuer", Saml2Namespaces.Saml2Name].GetTrimmedTextIfNotNull();
+        }
+
+        private void ValidateCorrectDocument(XmlDocument xml)
+        {
+            if (xml.DocumentElement.LocalName != LocalName
+               || xml.DocumentElement.NamespaceURI != Saml2Namespaces.Saml2P)
+            {
+                throw new XmlException("Expected a SAML2 authentication request document");
+            }
+
+            if (xml.DocumentElement.Attributes["Version"].Value != "2.0")
+            {
+                throw new XmlException("Wrong or unsupported SAML2 version");
             }
         }
 

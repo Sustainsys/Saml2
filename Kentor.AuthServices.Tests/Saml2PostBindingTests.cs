@@ -25,7 +25,7 @@ namespace Kentor.AuthServices.Tests
         public void Saml2PostBinding_Unbind_Nullcheck()
         {
             Saml2Binding.Get(Saml2BindingType.HttpPost)
-                .Invoking(b => b.Unbind(null))
+                .Invoking(b => b.Unbind<Saml2Response>(null))
                 .ShouldThrow<ArgumentNullException>().And.ParamName.Should().Be("request");
         }
 
@@ -33,7 +33,7 @@ namespace Kentor.AuthServices.Tests
         public void Saml2PostBinding_Unbind_ThrowsOnNotBase64Encoded()
         {
             Saml2Binding.Get(Saml2BindingType.HttpPost)
-                .Invoking(b => b.Unbind(CreateRequest("foo")))
+                .Invoking(b => b.Unbind<Saml2Response>(CreateRequest("foo")))
                 .ShouldThrow<FormatException>();
         }
 
@@ -50,7 +50,7 @@ namespace Kentor.AuthServices.Tests
 
             var r = CreateRequest(Convert.ToBase64String(Encoding.UTF8.GetBytes(response)));
 
-            Saml2Binding.Get(Saml2BindingType.HttpPost).Unbind(r).Id.Value.Should().Be("id1");
+            Saml2Binding.Get(Saml2BindingType.HttpPost).Unbind<Saml2Response>(r).Id.Value.Should().Be("id1");
         }
 
         [TestMethod]

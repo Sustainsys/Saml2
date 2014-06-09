@@ -83,15 +83,20 @@ namespace Kentor.AuthServices
         /// <param name="issuerCertificate">The certificate to use when signing
         /// this response in XML form.</param>
         /// <param name="destinationUri">The destination Uri for the message</param>
+        /// <param name="inResponseTo">In response to id</param>
         /// <param name="claimsIdentities">Claims identities to be included in the 
         /// response. Each identity is translated into a separate assertion.</param>
         public Saml2Response(string issuer, X509Certificate2 issuerCertificate,
-            Uri destinationUri, params ClaimsIdentity[] claimsIdentities)
+            Uri destinationUri, string inResponseTo, params ClaimsIdentity[] claimsIdentities)
         {
             this.issuer = issuer;
             this.claimsIdentities = claimsIdentities;
             this.issuerCertificate = issuerCertificate;
             this.destinationUri = destinationUri;
+            if (inResponseTo != null)
+            {
+                this.inResponseTo = new Saml2Id(inResponseTo);
+            }
             id = new Saml2Id("id" + Guid.NewGuid().ToString("N"));
             status = Saml2StatusCode.Success;
         }
@@ -154,6 +159,10 @@ namespace Kentor.AuthServices
             responseElement.SetAttributeNode("Version", "").Value = "2.0";
             responseElement.SetAttributeNode("IssueInstant", "").Value =
                 DateTime.UtcNow.ToSaml2DateTimeString();
+            if (InResponseTo != null)
+            {
+                responseElement.SetAttributeNode("InResponseTo", "").Value = InResponseTo.Value;
+            }
             xml.AppendChild(responseElement);
 
             var issuerElement = xml.CreateElement("saml2", "Issuer", Saml2Namespaces.Saml2Name);
@@ -342,7 +351,7 @@ namespace Kentor.AuthServices
             var signedRootElementId = "#" + signedRootElement.GetAttribute("ID");
 
             var reference = signedXml.SignedInfo.References.Cast<Reference>().FirstOrDefault();
-            
+
             if (signedXml.SignedInfo.References.Count != 1 || reference.Uri != signedRootElementId)
             {
                 return false;
