@@ -31,7 +31,9 @@ namespace Kentor.AuthServices.IntegrationTests
         {
             I.Open("http://localhost:2181")
                 .Click("a[href=\"/Home/Secure\"]")
-                .Enter("http://localhost:2181/AuthServices/Acs").In("#AssertionConsumerServiceUrl");
+                .Assert.Text("http://localhost:2181/AuthServices/Acs").In("#AssertionConsumerServiceUrl");
+
+            I.Assert.False(() => string.IsNullOrEmpty(I.Find("#InResponseTo")().Value));
 
             I.Click("#main form button")
                 // We should really implement functionality to redirect back to /secure, but it ain't there yet.
