@@ -69,13 +69,13 @@ namespace Kentor.AuthServices
 
         // The MemoryStream is not disposed by the DeflateStream - we're using the keep-open flag.
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2202:Do not dispose objects multiple times")]
-        private static string Serialize(ISaml2Message request)
+        private static string Serialize(ISaml2Message message)
         {
             using (var compressed = new MemoryStream())
             {
                 using (var writer = new StreamWriter(new DeflateStream(compressed, CompressionLevel.Optimal, true)))
                 {
-                    writer.Write(request.ToXml());
+                    writer.Write(message.ToXml());
                 }
 
                 return HttpUtility.UrlEncode(Convert.ToBase64String(compressed.GetBuffer()));

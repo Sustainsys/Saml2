@@ -13,8 +13,8 @@ namespace Kentor.AuthServices.StubIdp.Models
     public class AssertionModel
     {
         [Required]
-        [Display(Name = "Assertion Consumer Url")]
-        public string AssertionConsumerUrl { get; set; }
+        [Display(Name="Assertion Consumer Service Url")]
+        public string AssertionConsumerServiceUrl { get; set; }
 
         [Display(Name = "Subject NameId")]
         public string NameId { get; set; }
@@ -27,7 +27,7 @@ namespace Kentor.AuthServices.StubIdp.Models
         {
             return new AssertionModel
             {
-                AssertionConsumerUrl = ConfigurationManager.AppSettings["defaultAcsUrl"],
+                AssertionConsumerServiceUrl = ConfigurationManager.AppSettings["defaultAcsUrl"],
                 NameId = ConfigurationManager.AppSettings["defaultNameId"]
             };
         }
@@ -49,7 +49,7 @@ namespace Kentor.AuthServices.StubIdp.Models
 
             return new Saml2Response(
                 ConfigurationManager.AppSettings["issuerName"],
-                signingCertificate, new Uri(AssertionConsumerUrl), InResponseTo, identity);
+                signingCertificate, new Uri(AssertionConsumerServiceUrl), InResponseTo, identity);
         }
     }
 }
