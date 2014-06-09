@@ -19,6 +19,16 @@ namespace Kentor.AuthServices.Tests
         {
             return ToXElement().ToString();
         }
+
+        protected override string LocalName
+        {
+            get { return "ConcreteRequest"; }
+        }
+
+        public void TestReadBasePropertiesWithNull()
+        {
+            ReadBaseProperties(null);
+        }
     }
 
     [TestClass]
@@ -131,6 +141,14 @@ namespace Kentor.AuthServices.Tests
         {
             var subject = new ConcreteSaml2Request();
             subject.MessageName.Should().Be("SAMLRequest");
+        }
+
+        [TestMethod]
+        public void Saml2RequestBase_ReadBasePropertiesWithNullArgument_ShouldThrow()
+        {
+            var subject = new ConcreteSaml2Request();
+            Action a = () => subject.TestReadBasePropertiesWithNull();
+            a.ShouldThrow<ArgumentNullException>().And.ParamName.Should().Be("xml");
         }
     }
 }

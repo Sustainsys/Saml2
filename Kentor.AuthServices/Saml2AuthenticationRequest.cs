@@ -23,12 +23,20 @@ namespace Kentor.AuthServices
         }
 
         /// <summary>
+        /// The SAML2 request name
+        /// </summary>
+        protected override string LocalName
+        {
+            get { return "AuthnRequest"; }
+        }
+
+        /// <summary>
         /// Serializes the request to a Xml message.
         /// </summary>
         /// <returns>XElement</returns>
         public XElement ToXElement()
         {
-            var x = new XElement(Saml2Namespaces.Saml2P + "AuthnRequest");
+            var x = new XElement(Saml2Namespaces.Saml2P + LocalName);
 
             x.Add(base.ToXNodes());
             x.AddAttributeIfNotNullOrEmpty("AssertionConsumerServiceURL", AssertionConsumerServiceUrl);
@@ -57,25 +65,12 @@ namespace Kentor.AuthServices
             x.PreserveWhitespace = true;
             x.LoadXml(xml);
 
-            if (x.DocumentElement.LocalName != "AuthnRequest"
-                || x.DocumentElement.NamespaceURI != Saml2Namespaces.Saml2P)
-            {
-                throw new XmlException("Expected a SAML2 authentication request document");
-            }
-
-            if (x.DocumentElement.Attributes["Version"].Value != "2.0")
-            {
-                throw new XmlException("Wrong or unsupported SAML2 version");
-            }
-
             return new Saml2AuthenticationRequest(x);
         }
 
         private Saml2AuthenticationRequest(XmlDocument xml)
         {
-            Id = xml.DocumentElement.Attributes["ID"].Value;
-
-            Issuer = xml.DocumentElement["Issuer", Saml2Namespaces.Saml2Name].GetTrimmedTextIfNotNull();
+            ReadBaseProperties(xml);
 
             var AssertionConsumerServiceUriString = xml.DocumentElement.Attributes["AssertionConsumerServiceURL"].GetValueIfNotNull();
 
@@ -84,6 +79,7 @@ namespace Kentor.AuthServices
                 AssertionConsumerServiceUrl = new Uri(AssertionConsumerServiceUriString);
             }
         }
+
         /// <summary>
         /// The assertion consumer url that the idp should send its response back to.
         /// </summary>
