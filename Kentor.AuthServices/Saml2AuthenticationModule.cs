@@ -50,7 +50,7 @@ namespace Kentor.AuthServices
                 var command = CommandFactory.GetCommand(moduleRelativePath);
                 var commandResult = RunCommand(application, command);
 
-                commandResult.ApplyPrincipal();
+                commandResult.SignInSessionAuthenticationModule();
                 commandResult.Apply(new HttpResponseWrapper(application.Response));
             }
         }

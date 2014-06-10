@@ -30,7 +30,7 @@ namespace Kentor.AuthServices.Mvc
         public ActionResult Acs()
         {
             var result = CommandFactory.GetCommand("Acs").Run(Request);
-            result.ApplyPrincipal();
+            result.SignInSessionAuthenticationModule();
             return result.ToActionResult();
         }
 

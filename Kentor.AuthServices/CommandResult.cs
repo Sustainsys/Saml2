@@ -90,11 +90,10 @@ namespace Kentor.AuthServices
         }
 
         /// <summary>
-        /// Applies the principal found in the command result by a call to the 
-        /// session auth module.
+        /// Establishes an application session by calling the session authentication module.
         /// </summary>
         [ExcludeFromCodeCoverage]
-        public void ApplyPrincipal()
+        public void SignInSessionAuthenticationModule()
         {
             // Ignore this if we're not running inside IIS, e.g. in unit tests.
             if(Principal != null && HttpContext.Current != null)
