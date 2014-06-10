@@ -19,7 +19,7 @@ namespace Kentor.AuthServices
             {
                 try
                 {
-                    var samlResponse = binding.Unbind<Saml2Response>(request);
+                    var samlResponse = Saml2Response.Read(binding.Unbind(request));
 
                     samlResponse.Validate(GetSigningCert(samlResponse.Issuer));
 

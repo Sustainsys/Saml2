@@ -14,16 +14,20 @@ namespace Kentor.AuthServices
 {
     class Saml2RedirectBinding : Saml2Binding
     {
-        public override CommandResult Bind(ISaml2Message message)
+        public override CommandResult Bind(string payload, Uri destinationUri, string messageName)
         {
-            if (message == null)
+            if (payload == null)
             {
-                throw new ArgumentNullException("message");
+                throw new ArgumentNullException("payload");
+            }
+            if (destinationUri == null)
+            {
+                throw new ArgumentNullException("destinationUri");
             }
 
-            var serializedRequest = Serialize(message);
+            var serializedRequest = Serialize(payload);
 
-            var redirectUri = new Uri(message.DestinationUri.ToString()
+            var redirectUri = new Uri(destinationUri.ToString()
                 + "?SAMLRequest=" + serializedRequest);
 
             return new CommandResult()
@@ -35,7 +39,7 @@ namespace Kentor.AuthServices
 
         // The MemoryStream is not disposed by the DeflateStream - we're using the keep-open flag.
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2202:Do not dispose objects multiple times")]
-        public override TSaml2Message Unbind<TSaml2Message>(HttpRequestBase request)
+        public override string Unbind(HttpRequestBase request)
         {
             if (request == null || request["SAMLRequest"] == null)
             {
@@ -50,18 +54,7 @@ namespace Kentor.AuthServices
                     {
                         decompressedStream.CopyTo(deCompressed);
                         var xmlData = System.Text.Encoding.UTF8.GetString(deCompressed.GetBuffer());
-                        if (typeof(TSaml2Message) == typeof(Saml2Response))
-                        {
-                            return Saml2Response.Read(xmlData) as TSaml2Message;
-                        }
-                        else if (typeof(TSaml2Message) == typeof(Saml2AuthenticationRequest))
-                        {
-                            return Saml2AuthenticationRequest.Read(xmlData) as TSaml2Message;
-                        }
-                        else
-                        {
-                            throw new NotImplementedException(string.Format(CultureInfo.InvariantCulture, "Can't unbind {0}", typeof(TSaml2Message).Name));
-                        }
+                        return xmlData;
                     }
                 }
             }
@@ -69,13 +62,13 @@ namespace Kentor.AuthServices
 
         // The MemoryStream is not disposed by the DeflateStream - we're using the keep-open flag.
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2202:Do not dispose objects multiple times")]
-        private static string Serialize(ISaml2Message message)
+        private static string Serialize(string payload)
         {
             using (var compressed = new MemoryStream())
             {
                 using (var writer = new StreamWriter(new DeflateStream(compressed, CompressionLevel.Optimal, true)))
                 {
-                    writer.Write(message.ToXml());
+                    writer.Write(payload);
                 }
 
                 return HttpUtility.UrlEncode(Convert.ToBase64String(compressed.GetBuffer()));

@@ -16,9 +16,13 @@ namespace Kentor.AuthServices
         /// <summary>
         /// Bind the message to a transport.
         /// </summary>
-        /// <param name="message">The message to send</param>
+        /// <param name="payload">(xml) payload data to bind.</param>
+        /// <param name="destinationUri">The destination of the message.</param>
+        /// <param name="messageName">The name of the message to use in a query string or form input field.
+        /// Typically "SAMLRequest" or "SAMLResponse".
+        /// </param>
         /// <returns>CommandResult to be returned to the client browser.</returns>
-        public virtual CommandResult Bind(ISaml2Message message)
+        public virtual CommandResult Bind(string payload, Uri destinationUri, string messageName)
         {
             throw new NotImplementedException();
         }
@@ -28,7 +32,7 @@ namespace Kentor.AuthServices
         /// </summary>
         /// <param name="request">Current HttpRequest.</param>
         /// <returns>Extracted message.</returns>
-        public virtual TSaml2Message Unbind<TSaml2Message>(HttpRequestBase request) where TSaml2Message : class, ISaml2Message
+        public virtual string Unbind(HttpRequestBase request)
         {
             throw new NotImplementedException();
         }
