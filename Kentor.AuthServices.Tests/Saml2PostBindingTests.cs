@@ -41,16 +41,11 @@ namespace Kentor.AuthServices.Tests
         public void Saml2PostBinding_Unbind_ReadsSaml2ResponseId()
         {
             string response =
-            @"<saml2p:Response xmlns:saml2p=""urn:oasis:names:tc:SAML:2.0:protocol""
-            ID = ""id1"" Version=""2.0"" IssueInstant=""2013-01-01T01:04:01Z"">
-                <saml2p:Status>
-                    <saml2p:StatusCode Value=""urn:oasis:names:tc:SAML:2.0:status:Requester"" />
-                </saml2p:Status>
-            </saml2p:Response>";
+            @"responsestring";
 
             var r = CreateRequest(Convert.ToBase64String(Encoding.UTF8.GetBytes(response)));
 
-            Saml2Response.Read(Saml2Binding.Get(Saml2BindingType.HttpPost).Unbind(r)).Id.Value.Should().Be("id1");
+            Saml2Binding.Get(Saml2BindingType.HttpPost).Unbind(r).Should().Be(response);
         }
 
         [TestMethod]
@@ -81,12 +76,10 @@ namespace Kentor.AuthServices.Tests
         public void Saml2PostBinding_Bind()
         {
             var xmlData = "<root><content>data</content></root>";
-            var request = Substitute.For<ISaml2Message>();
-            request.ToXml().Returns(xmlData);
-            request.DestinationUri.Returns(new Uri("http://www.example.com/acs"));
-            request.MessageName.Returns("SAMLMessageName");
+            var destinationUri = new Uri("http://www.example.com/acs");
+            var messageName = "SAMLMessageName";
 
-            var subject = Saml2Binding.Get(Saml2BindingType.HttpPost).Bind(request);
+            var subject = Saml2Binding.Get(Saml2BindingType.HttpPost).Bind(xmlData, destinationUri, messageName);
 
             var expected = new CommandResult()
             {
