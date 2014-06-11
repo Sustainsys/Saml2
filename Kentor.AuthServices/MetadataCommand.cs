@@ -8,7 +8,8 @@ using System.Web;
 
 namespace Kentor.AuthServices
 {
-    class MetadataCommand : ICommand
+    class 
+        MetadataCommand : ICommand
     {
         public CommandResult Run(HttpRequestBase request)
         {

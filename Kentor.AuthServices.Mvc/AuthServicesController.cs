@@ -43,5 +43,15 @@ namespace Kentor.AuthServices.Mvc
             FederatedAuthentication.SessionAuthenticationModule.SignOut();
             return Redirect(Url.Content("~/"));
         }
+
+        /// <summary>
+        /// Metadata of the service provider.
+        /// </summary>
+        /// <returns>ActionResult with Metadata</returns>
+        public ActionResult Index()
+        {
+            var result = CommandFactory.GetCommand("").Run(Request);
+            return result.ToActionResult();
+        }
     }
 }
