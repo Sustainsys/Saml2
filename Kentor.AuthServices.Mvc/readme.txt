@@ -28,7 +28,7 @@ Config Samples
   <section name="kentor.authServices" type="Kentor.AuthServices.Configuration.KentorAuthServicesSection, Kentor.AuthServices"/>
 </configSections>
 
-<kentor.authServices assertionConsumerServiceUrl="http://localhost:17009/SamplePath/Saml2AuthenticationModule/acs"
+<kentor.authServices assertionConsumerServiceUrl="http://localhost:17009/SamplePath/AuthServices/acs"
                             issuer="http://localhost:17009"
                             returnUri="http://localhost:17009/SamplePath/">
   <identityProvider issuer ="https://idp.example.com" destinationUri="httpss://idp.example.com" binding="HttpRedirect">
