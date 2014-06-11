@@ -15,20 +15,9 @@ namespace Kentor.AuthServices.Tests
         {
             EntityDescriptor entityDescriptor = null;
 
-            Action a = () => entityDescriptor.ToXElement(null);
+            Action a = () => entityDescriptor.ToXElement();
 
             a.ShouldThrow<ArgumentNullException>().And.ParamName.Should().Be("entityDescriptor");
-        }
-
-        [TestMethod]
-        public void EntityDescriptorExtensions_ToXElement_NullCheck_ElementName()
-        {
-            XName xName = null;
-            var entityDescriptor = new EntityDescriptor();
-
-            Action a = () => entityDescriptor.ToXElement(xName);
-
-            a.ShouldThrow<ArgumentNullException>().And.ParamName.Should().Be("elementName");
         }
 
         [TestMethod]
@@ -54,7 +43,7 @@ namespace Kentor.AuthServices.Tests
             var rootName = Saml2Namespaces.Saml2Metadata + "EntityDescriptor";
             var elementName = Saml2Namespaces.Saml2Metadata + "SPSSODescriptor";
 
-            var subject = entityDescriptor.ToXElement(rootName);
+            var subject = entityDescriptor.ToXElement();
 
             subject.Name.Should().Be(rootName);
             subject.Elements().Single().Name.Should().Be(elementName);

@@ -14,23 +14,22 @@ namespace Kentor.AuthServices
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1726:UsePreferredTerms", MessageId = "SignOn")]
     public static class ServiceProviderSingleSignOnDescriptorExtensions
     {
+        /// <summary>
+        /// Creates an XML structure for this service provider.
+        /// </summary>
+        /// <param name="spsso">Source data</param>
+        /// <returns>XML data according to the SAML2 metadata spec.</returns>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "spsso")]
-        public static XElement ToXElement(this ServiceProviderSingleSignOnDescriptor spsso,
-            XName elementName)
+        public static XElement ToXElement(this ServiceProviderSingleSignOnDescriptor spsso)
         {
             if (spsso == null)
             {
                 throw new ArgumentNullException("spsso");
             }
 
-            if (elementName == null)
-            {
-                throw new ArgumentNullException("elementName");
-            }
-
             var innerElementName = Saml2Namespaces.Saml2Metadata + "AssertionConsumerService";
 
-            return new XElement(elementName,
+            return new XElement(Saml2Namespaces.Saml2Metadata + "SPSSODescriptor",
                 spsso.AssertionConsumerServices.Select(acs =>
                     acs.Value.ToXElement(innerElementName)));
         }

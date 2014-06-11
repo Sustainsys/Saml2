@@ -15,20 +15,9 @@ namespace Kentor.AuthServices.Tests
         {
             ServiceProviderSingleSignOnDescriptor spsso = null;
 
-            Action a = () => spsso.ToXElement(null);
+            Action a = () => spsso.ToXElement();
 
             a.ShouldThrow<ArgumentNullException>().And.ParamName.Should().Be("spsso");
-        }
-
-        [TestMethod]
-        public void ServiceProviderSingleSignOnDescriptorExtensions_ToXElement_NullCheck_ElementName()
-        {
-            XName xName = null;
-            var spsso = new ServiceProviderSingleSignOnDescriptor();
-
-            Action a = () => spsso.ToXElement(xName);
-
-            a.ShouldThrow<ArgumentNullException>().And.ParamName.Should().Be("elementName");
         }
 
         [TestMethod]
@@ -50,7 +39,7 @@ namespace Kentor.AuthServices.Tests
             var elementName = Saml2Namespaces.Saml2Metadata + "SPSSODescriptor";
             var innerElementName = Saml2Namespaces.Saml2Metadata + "AssertionConsumerService";
 
-            var subject = spsso.ToXElement(elementName);
+            var subject = spsso.ToXElement();
 
             subject.Name.Should().Be(elementName);
             subject.Elements().Single().Name.Should().Be(innerElementName);

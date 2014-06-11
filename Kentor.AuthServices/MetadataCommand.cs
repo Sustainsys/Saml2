@@ -13,10 +13,9 @@ namespace Kentor.AuthServices
     {
         public CommandResult Run(HttpRequestBase request)
         {
-            var rootName = Saml2Namespaces.Saml2Metadata + "EntityDescriptor";
             return new CommandResult()
             {
-                Content = ServiceProvider.Metadata.ToXElement(rootName).ToString(),
+                Content = ServiceProvider.Metadata.ToXElement().ToString(),
                 ContentType = "application/samlmetadata+xml"
             };
         }
