@@ -34,8 +34,8 @@ namespace Kentor.AuthServices.Tests
         [TestMethod]
         public void Saml2AuthenticationRequest_AssertionConsumerServiceUrl()
         {
-            string url = "http://some.example.com/Saml2AuthenticationModule/acs";
-            var x = new Saml2AuthenticationRequest()
+            string url = "http://some.example.com/AuthServices/acs";
+            var x = new Saml2AuthenticationRequest() 
             {
                 AssertionConsumerServiceUrl = new Uri(url)
             }.ToXElement();

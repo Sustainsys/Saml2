@@ -12,8 +12,10 @@ namespace Kentor.AuthServices.Configuration
     /// </summary>
     public class KentorAuthServicesSection : ConfigurationSection
     {
-        private static readonly KentorAuthServicesSection current = 
-            (KentorAuthServicesSection)ConfigurationManager.GetSection("kentor.authServices");
+        private string modulePath;
+
+        private static readonly KentorAuthServicesSection current =
+        (KentorAuthServicesSection)ConfigurationManager.GetSection("kentor.authServices");
 
         /// <summary>
         /// Current config as read from app/web.config.
@@ -24,6 +26,26 @@ namespace Kentor.AuthServices.Configuration
             {
                 return current;
             }
+        }
+
+        /// <summary>
+        /// Base Uri for where requests will be intercepted and processed for auth services. 
+        /// </summary>
+        [ConfigurationProperty("modulePath")]
+        public string ModulePath
+        {
+          get
+          {
+              if (modulePath != null) 
+              {
+                  return (modulePath);
+              }
+              return (modulePath = (! String.IsNullOrEmpty((string) base["modulePath"]) ? (string) base["modulePath"] : "~/AuthServices"));
+          }
+          internal set // marked internal for testing only.
+          {
+              modulePath = value;
+          }
         }
 
         /// <summary>

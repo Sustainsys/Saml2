@@ -1,5 +1,6 @@
 ﻿@{
     ViewBag.Title = "Home";
+    string modulePath = ViewBag.ModulePath ?? Kentor.AuthServices.Configuration.KentorAuthServicesSection.Current.ModulePath;
 }
 
 <h1>Sample Saml2 Authentication Application</h1>
@@ -13,38 +14,38 @@
         You are currently not signed in.
     </p>
     <p>
-        <a href="@Url.Content("~/Saml2AuthenticationModule/SignIn")">Sign in</a> - default IDP
+        <a href="@Url.Content(String.Format("~/{0}/SignIn", modulePath))">Sign in</a> - default IDP
         @foreach (var idp in Kentor.AuthServices.Configuration.KentorAuthServicesSection.Current.IdentityProviders)
         {
             var issuer = idp.Issuer;
             var destinationUri = idp.DestinationUri;
             <br />
-            <a href="@Url.Content("~/Saml2AuthenticationModule/SignIn?issuer=" + HttpUtility.UrlEncode(issuer))">Sign in</a>@: - @issuer - @destinationUri
+            <a href="@Url.Content(String.Format("~/{0}/SignIn?issuer={1}", modulePath, HttpUtility.UrlEncode(issuer)))">Sign in</a>@: - @issuer - @destinationUri
         }
-    </p>
-}
-else
-{
-    <p>
-        You are signed in. <a href="@Url.Action("SignOut")">Sign out</a>.
-    </p>
-    <table>
-        <thead>
-            <tr>
-                <th>Claim Type</th>
-                <th>Claim Value</th>
-                <th>Issuer</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var c in System.Security.Claims.ClaimsPrincipal.Current.Claims)
+</p>
+        }
+        else
+        {
+<p>
+    You are signed in. <a href="@Url.Action("SignOut")">Sign out</a>.
+</p>
+<table>
+    <thead>
+        <tr>
+            <th>Claim Type</th>
+            <th>Claim Value</th>
+            <th>Issuer</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var c in System.Security.Claims.ClaimsPrincipal.Current.Claims)
             {
-                <tr>
-                    <td>@c.Type</td>
-                    <td>@c.Value</td>
-                    <td>@c.Issuer</td>
-                </tr>                
+            <tr>
+                <td>@c.Type</td>
+                <td>@c.Value</td>
+                <td>@c.Issuer</td>
+            </tr>
             }
-        </tbody>
-    </table>
-}
+    </tbody>
+</table>
+        }

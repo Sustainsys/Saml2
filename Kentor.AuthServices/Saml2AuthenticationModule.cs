@@ -5,18 +5,30 @@ using System.IdentityModel.Tokens;
 using System.Linq;
 using System.Net;
 using System.Web;
+using Kentor.AuthServices.Configuration;
 
 namespace Kentor.AuthServices
 {
     /// <summary>
     /// Http Module for SAML2 authentication. The module hijacks the 
-    /// ~/Saml2AuthenticationModule/ path of the http application to provide 
-    /// authentication services.
+    /// configurable ~/AuthServices path of the http application to provide 
+    /// authentication services. 
     /// </summary>
     // Not included in code coverage as the http module is tightly dependent on IIS.
     [ExcludeFromCodeCoverage]
     public class Saml2AuthenticationModule : IHttpModule
     {
+        /// <summary>
+        /// Base Uri for where requests will be intercepted and processed for auth services. 
+        /// </summary>
+        public static string ModulePath 
+        {
+            get
+            {
+                return KentorAuthServicesSection.Current.ModulePath;
+            }
+        }
+
         /// <summary>
         /// Init the module and subscribe to events.
         /// </summary>
@@ -30,10 +42,9 @@ namespace Kentor.AuthServices
             context.BeginRequest += OnBeginRequest;
         }
 
-        const string ModulePath = "~/Saml2AuthenticationModule/";
-
         /// <summary>
-        /// Begin request handler that captures all traffic to ~/Saml2AuthenticationModule/
+        /// Begin request handler that captures all traffic to ~/AuthServices/
+        /// or the configured <seealso cref="ModulePath" />.
         /// </summary>
         /// <param name="sender">The http application.</param>
         /// <param name="e">Ignored</param>
