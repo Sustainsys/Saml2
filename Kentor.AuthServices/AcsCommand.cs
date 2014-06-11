@@ -11,7 +11,7 @@ namespace Kentor.AuthServices
 {
     class AcsCommand : ICommand
     {
-        public CommandResult Run(HttpRequestBase request)
+        public CommandResult Run(HttpRequestData request)
         {
             var binding = Saml2Binding.Get(request);
 

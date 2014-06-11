@@ -62,6 +62,7 @@
     <Compile Include="DateTimeExtensions.cs" />
     <Compile Include="EntityDescriptorExtension.cs" />
     <Compile Include="Enumerator.cs" />
+    <Compile Include="HttpRequestData.cs" />
     <Compile Include="IdentityProvider.cs" />
     <Compile Include="IndexedProtocolEndpointExtensions.cs" />
     <Compile Include="ISaml2Message.cs" />

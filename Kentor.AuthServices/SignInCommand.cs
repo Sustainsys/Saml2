@@ -11,12 +11,12 @@ namespace Kentor.AuthServices
 {
     class SignInCommand : ICommand
     {
-        public CommandResult Run(HttpRequestBase request)
+        public CommandResult Run(HttpRequestData request)
         {
             IdentityProvider idp;
-            if (request != null && !string.IsNullOrEmpty(request["idp"]))
+            if (request != null && !string.IsNullOrEmpty(request.QueryString["idp"]))
             {
-                var selectedIssuer = HttpUtility.UrlDecode(request["idp"]);
+                var selectedIssuer = HttpUtility.UrlDecode(request.QueryString["idp"]);
                 if (!IdentityProvider.ConfiguredIdentityProviders.TryGetValue(selectedIssuer, out idp))
                 {
                     throw new InvalidOperationException("Unknown issuer");
@@ -28,9 +28,9 @@ namespace Kentor.AuthServices
             }
 
             Uri returnUri = null;
-            if (request != null && request.Url != null && request["ReturnUrl"] != null)
+            if (request != null && request.Url != null && request.QueryString["ReturnUrl"] != null)
             {
-                Uri.TryCreate(request.Url, request["ReturnUrl"], out returnUri);
+                Uri.TryCreate(request.Url, request.QueryString["ReturnUrl"], out returnUri);
             }
 
             var authnRequest = idp.CreateAuthenticateRequest(returnUri);

@@ -10,9 +10,9 @@ namespace Kentor.AuthServices
         /// <summary>
         /// Run the command and return a result.
         /// </summary>
-        /// <param name="request">The current http request that the input
+        /// <param name="request">The http request that the input
         /// data can be read from.</param>
         /// <returns>The results of the command, as a DTO.</returns>
-        CommandResult Run(HttpRequestBase request);
+        CommandResult Run(HttpRequestData request);
     }
 }

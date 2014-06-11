@@ -8,7 +8,7 @@ namespace Kentor.AuthServices
 {
     class Saml2PostBinding : Saml2Binding
     {
-        protected internal override bool CanUnbind(System.Web.HttpRequestBase request)
+        protected internal override bool CanUnbind(HttpRequestData request)
         {
             if (request == null)
             {
@@ -16,10 +16,10 @@ namespace Kentor.AuthServices
             }
 
             return request.HttpMethod == "POST"
-                && request.Form.AllKeys.Contains("SAMLResponse");
+                && request.Form.Keys.Contains("SAMLResponse");
         }
 
-        public override string Unbind(HttpRequestBase request)
+        public override string Unbind(HttpRequestData request)
         {
             if (request == null)
             {
