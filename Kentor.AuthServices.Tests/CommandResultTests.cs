@@ -21,7 +21,7 @@ namespace Kentor.AuthServices.Tests
                 Cacheability = HttpCacheability.NoCache,
                 Location = (Uri)null,
                 Principal = (ClaimsPrincipal)null,
-                MimeType = (string)null,
+                ContentType = (string)null,
                 Content = (string)null
             };
 
@@ -77,7 +77,6 @@ namespace Kentor.AuthServices.Tests
             }.Apply(response);
 
             response.Received().Redirect(redirectTarget);
-            response.StatusCode.Should().Be((int)HttpStatusCode.SeeOther);
         }
 
         [TestMethod]
@@ -106,6 +105,23 @@ namespace Kentor.AuthServices.Tests
                 }.Apply(response);
 
             a.ShouldThrow<InvalidOperationException>();
+        }
+
+        [TestMethod]
+        public void Command_Result_Apply_Content()
+        {
+            var response = Substitute.For<HttpResponseBase>();
+
+            var commandResult = new CommandResult
+            {
+                Content = "Some Content!",
+                ContentType = "text"
+            };
+
+            commandResult.Apply(response);
+
+            response.Received().ContentType = "text";
+            response.Received().Write("Some Content!");
         }
     }
 }

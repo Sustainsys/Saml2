@@ -16,7 +16,7 @@ namespace Kentor.AuthServices
             return new CommandResult()
             {
                 Content = ServiceProvider.Metadata.ToXElement(rootName).ToString(),
-                MimeType = "application/samlmetadata+xml"
+                ContentType = "application/samlmetadata+xml"
             };
         }
     }

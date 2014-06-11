@@ -33,7 +33,7 @@ namespace Kentor.AuthServices.Tests
             // See (http://stackoverflow.com/questions/24156689/xnode-deepequals-unexpectedly-returns-false/24156847#24156847)
             XNode.DeepEquals(payloadXml, XDocument.Parse(expectedXml.ToString())).Should().BeTrue();
 
-            subject.MimeType.Should().Be("application/samlmetadata+xml");
+            subject.ContentType.Should().Be("application/samlmetadata+xml");
         }
     }
 }

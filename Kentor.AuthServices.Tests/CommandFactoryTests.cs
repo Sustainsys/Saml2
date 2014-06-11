@@ -30,5 +30,11 @@ namespace Kentor.AuthServices.Tests
         {
             CommandFactory.GetCommand("Acs").Should().BeOfType<AcsCommand>();
         }
+
+        [TestMethod]
+        public void CommandFactory_Root_ReturnsMetadata()
+        {
+            CommandFactory.GetCommand("").Should().BeOfType<MetadataCommand>();
+        }        
     }
 }
