@@ -21,6 +21,7 @@ namespace Kentor.AuthServices.Tests
                 Cacheability = HttpCacheability.NoCache,
                 Location = (Uri)null,
                 Principal = (ClaimsPrincipal)null,
+                MimeType = (string)null,
                 Content = (string)null
             };
 

@@ -39,6 +39,11 @@ namespace Kentor.AuthServices
         public string Content { get; set; }
 
         /// <summary>
+        /// The Mime-type
+        /// </summary>
+        public string MimeType { get; set; }
+
+        /// <summary>
         /// Ctor
         /// </summary>
         public CommandResult()

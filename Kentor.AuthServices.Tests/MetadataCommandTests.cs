@@ -20,11 +20,20 @@ namespace Kentor.AuthServices.Tests
 
             XDocument payloadXml = XDocument.Parse(subject.Content);
 
-            payloadXml.Root.Name.Should().Be(Saml2Namespaces.Saml2Metadata + "EntityDescriptor");
-            payloadXml.Elements().Single().Attribute(XName.Get("entityId")).Value.Should().Be("https://github.com/KentorIT/authservices");
+            var expectedXml = new XDocument(new XElement(Saml2Namespaces.Saml2Metadata + "EntityDescriptor",
+                new XAttribute("entityId", "https://github.com/KentorIT/authservices"),
+                new XElement(Saml2Namespaces.Saml2Metadata + "SPSSODescriptor",
+                    new XElement(Saml2Namespaces.Saml2Metadata + "AssertionConsumerService",
+                        new XAttribute("isDefault", true),
+                        new XAttribute("index", 0),
+                        new XAttribute("Binding", Saml2Binding.HttpPostUri),
+                        new XAttribute("Location", "http://localhost/Saml2AuthenticationModule/acs")))));
 
-            throw new NotImplementedException("TODO: Check all attributes from app.config");
-            throw new NotImplementedException("TODO: mime type according to spec");
+            // Must parse expectedXml-string. 
+            // See (http://stackoverflow.com/questions/24156689/xnode-deepequals-unexpectedly-returns-false/24156847#24156847)
+            XNode.DeepEquals(payloadXml, XDocument.Parse(expectedXml.ToString())).Should().BeTrue();
+
+            subject.MimeType.Should().Be("application/samlmetadata+xml");
         }
     }
 }
