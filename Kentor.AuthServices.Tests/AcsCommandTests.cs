@@ -10,6 +10,7 @@ using System.Text;
 using System.Web;
 using System.Xml;
 using System.Linq;
+using System.Collections.Generic;
 
 namespace Kentor.AuthServices.Tests
 {
@@ -19,7 +20,7 @@ namespace Kentor.AuthServices.Tests
         [TestMethod]
         public void AcsCommand_Run_ErrorOnNoSamlResponseFound()
         {
-            Action a = () => new AcsCommand().Run(Substitute.For<HttpRequestBase>());
+            Action a = () => new AcsCommand().Run(new HttpRequestData("GET", null));
 
             a.ShouldThrow<NoSamlResponseFoundException>()
                 .WithMessage("No Saml2 Response found in the http request.");
@@ -28,9 +29,10 @@ namespace Kentor.AuthServices.Tests
         [TestMethod]
         public void AcsCommand_Run_ErrorOnNotBase64InFormResponse()
         {
-            var r = Substitute.For<HttpRequestBase>();
-            r.HttpMethod.Returns("POST");
-            r.Form.Returns(new NameValueCollection() { { "SAMLResponse", "#¤!2" } });
+            var r = new HttpRequestData("POST", null, new KeyValuePair<string, string[]>[] 
+            { 
+                new KeyValuePair<string, string[]>("SAMLResponse", new string[] { "#¤!2" }) 
+            });
 
             Action a = () => new AcsCommand().Run(r);
 
@@ -42,10 +44,11 @@ namespace Kentor.AuthServices.Tests
         [TestMethod]
         public void AcsCommand_Run_ErrorOnIncorrectXml()
         {
-            var r = Substitute.For<HttpRequestBase>();
-            r.HttpMethod.Returns("POST");
             var encoded = Convert.ToBase64String(Encoding.UTF8.GetBytes("<foo />"));
-            r.Form.Returns(new NameValueCollection() { { "SAMLResponse", encoded } });
+            var r = new HttpRequestData("POST", null, new KeyValuePair<string, string[]>[] 
+            { 
+                new KeyValuePair<string, string[]>("SAMLResponse", new string[] { encoded })
+            });
 
             Action a = () => new AcsCommand().Run(r);
 
@@ -58,9 +61,6 @@ namespace Kentor.AuthServices.Tests
         [NotReRunnable]
         public void AcsCommand_Run_SuccessfulResult()
         {
-            var r = Substitute.For<HttpRequestBase>();
-            r.HttpMethod.Returns("POST");
-
             var response =
             @"<saml2p:Response xmlns:saml2p=""urn:oasis:names:tc:SAML:2.0:protocol""
                 xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
@@ -86,10 +86,12 @@ namespace Kentor.AuthServices.Tests
             var formValue = Convert.ToBase64String(Encoding.UTF8.GetBytes(
                 SignedXmlHelper.SignXml(response)));
 
-            r.Form.Returns(new NameValueCollection() { { "SAMLResponse", formValue } });
+            var r = new HttpRequestData("POST", null, new KeyValuePair<string, string[]>[]
+                {
+                    new KeyValuePair<string, string[]>("SAMLResponse", new string[] { formValue })
+                });
 
-            var ids = new ClaimsIdentity[]
-                { new ClaimsIdentity("Federation"), new ClaimsIdentity("ClaimsAuthenticationManager") };
+            var ids = new ClaimsIdentity[] { new ClaimsIdentity("Federation"), new ClaimsIdentity("ClaimsAuthenticationManager") };
             ids[0].AddClaim(new Claim(ClaimTypes.NameIdentifier, "SomeUser", null, "https://idp.example.com"));
             ids[1].AddClaim(new Claim(ClaimTypes.Role, "RoleFromClaimsAuthManager", null, "ClaimsAuthenticationManagerMock"));
 
@@ -110,9 +112,6 @@ namespace Kentor.AuthServices.Tests
         {
             var idp = IdentityProvider.ConfiguredIdentityProviders.First().Value;
             var request = idp.CreateAuthenticateRequest(new Uri("http://localhost/testUrl.aspx"));
-
-            var r = Substitute.For<HttpRequestBase>();
-            r.HttpMethod.Returns("POST");
 
             var response =
             @"<saml2p:Response xmlns:saml2p=""urn:oasis:names:tc:SAML:2.0:protocol""
@@ -139,7 +138,10 @@ namespace Kentor.AuthServices.Tests
             var formValue = Convert.ToBase64String(Encoding.UTF8.GetBytes(
                 SignedXmlHelper.SignXml(response)));
 
-            r.Form.Returns(new NameValueCollection() { { "SAMLResponse", formValue } });
+            var r = new HttpRequestData("POST", null, new KeyValuePair<string, string[]>[]
+                {
+                    new KeyValuePair<string, string[]>("SAMLResponse", new string[] { formValue })
+                });
 
             var ids = new ClaimsIdentity[] { new ClaimsIdentity("Federation"), new ClaimsIdentity("ClaimsAuthenticationManager") };
             ids[0].AddClaim(new Claim(ClaimTypes.NameIdentifier, "SomeUser", null, "https://idp.example.com"));

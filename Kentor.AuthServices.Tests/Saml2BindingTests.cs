@@ -4,6 +4,7 @@ using NSubstitute;
 using System.Web;
 using System.Collections.Specialized;
 using FluentAssertions;
+using System.Collections.Generic;
 
 namespace Kentor.AuthServices.Tests
 {
@@ -13,9 +14,10 @@ namespace Kentor.AuthServices.Tests
         [TestMethod]
         public void Saml2Binding_Get_ReturnsSaml2Postbinding()
         {
-            var r = Substitute.For<HttpRequestBase>();
-            r.HttpMethod.Returns("POST");
-            r.Form.Returns(new NameValueCollection() { { "SAMLResponse", "Some Data" } });
+            var r = new HttpRequestData("POST", null, new KeyValuePair<string, string[]>[]
+                {
+                    new KeyValuePair<string, string[]>("SAMLResponse", new string[] { "Some Data" })
+                });
 
             Saml2Binding.Get(r).Should().BeOfType<Saml2PostBinding>();
         }
@@ -23,18 +25,15 @@ namespace Kentor.AuthServices.Tests
         [TestMethod]
         public void Saml2Binding_Get_NullOnPlainGet()
         {
-            var r = Substitute.For<HttpRequestBase>();
-            r.HttpMethod.Returns("GET");
-
+            var r = new HttpRequestData("GET", null);
+            
             Saml2PostBinding.Get(r).Should().BeNull();
         }
 
         [TestMethod]
         public void Saml2Binding_Get_NullOnPlainPost()
         {
-            var r = Substitute.For<HttpRequestBase>();
-            r.HttpMethod.Returns("POST");
-            r.Form.Returns(new NameValueCollection());
+            var r = new HttpRequestData("GET", null);
 
             Saml2PostBinding.Get(r).Should().BeNull();
         }

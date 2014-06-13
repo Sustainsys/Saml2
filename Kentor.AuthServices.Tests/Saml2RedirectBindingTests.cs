@@ -67,12 +67,9 @@ namespace Kentor.AuthServices.Tests
             subject.ShouldBeEquivalentTo(expected);
         }
 
-        private HttpRequestBase CreateRequest(string encodedResponse)
+        private HttpRequestData CreateRequest(string encodedResponse)
         {
-            var r = Substitute.For<HttpRequestBase>();
-            r["SAMLRequest"].Returns(encodedResponse);
-            r.HttpMethod.Returns("GET");
-            return r;
+            return new HttpRequestData("GET", new Uri("http://localhost?SAMLRequest=" + encodedResponse));
         }
 
         [TestMethod]

@@ -1,24 +1,24 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using NSubstitute;
 using System.Web;
 using FluentAssertions;
 using System.Collections.Specialized;
 using System.IdentityModel.Tokens;
 using System.Xml;
 using System.Text;
+using System.Collections.Generic;
 
 namespace Kentor.AuthServices.Tests
 {
     [TestClass]
     public class Saml2PostBindingTests
     {
-        private HttpRequestBase CreateRequest(string encodedResponse)
+        private HttpRequestData CreateRequest(string encodedResponse)
         {
-            var r = Substitute.For<HttpRequestBase>();
-            r.HttpMethod.Returns("POST");
-            r.Form.Returns(new NameValueCollection() { { "SAMLResponse", encodedResponse } });
-            return r;
+            return new HttpRequestData("POST", null, new KeyValuePair<string, string[]>[] 
+            { 
+                new KeyValuePair<string, string[]>("SAMLResponse", new string[] {encodedResponse }) 
+            });
         }
 
         [TestMethod]

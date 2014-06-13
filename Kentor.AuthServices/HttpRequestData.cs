@@ -16,22 +16,20 @@ namespace Kentor.AuthServices
     /// </summary>
     public class HttpRequestData
     {
-        internal HttpRequestData(HttpRequestBase request)
+        /// <summary>
+        /// Create a HttpRequestData from a HttpRequestBase.
+        /// </summary>
+        /// <param name="request">HttpRequestBase with source data.</param>
+        public HttpRequestData(HttpRequestBase request)
             : this(request.HttpMethod, request.Url, 
             request.Form.Cast<DictionaryEntry>().Select(de => 
                 new KeyValuePair<string, string[]>((string)de.Key, ((string)de.Value).Split(','))))
         {
         }
 
-        /// <summary>
-        /// Ctror
-        /// </summary>
-        /// <param name="httpMethod">The name of the http method.</param>
-        /// <param name="url">The complete url of the request.</param>
-        /// <param name="formData">The form data of the request.</param>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
-        public HttpRequestData(string httpMethod, Uri url, 
-            IEnumerable<KeyValuePair<string, string[]>> formData)
+        internal HttpRequestData(string httpMethod, Uri url, 
+            IEnumerable<KeyValuePair<string, string[]>> formData = null)
         {
             HttpMethod = httpMethod;
             Url = url;
