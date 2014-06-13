@@ -28,7 +28,7 @@ namespace Kentor.AuthServices.Configuration
         /// <returns>element.Name</returns>
         protected override object GetElementKey(ConfigurationElement element)
         {
-            return ((IdentityProviderElement)element).Issuer;
+            return ((IdentityProviderElement)element).EntityId;
         }
 
         /// <summary>

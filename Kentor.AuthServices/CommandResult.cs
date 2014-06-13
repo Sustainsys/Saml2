@@ -39,6 +39,11 @@ namespace Kentor.AuthServices
         public string Content { get; set; }
 
         /// <summary>
+        /// The Mime-type
+        /// </summary>
+        public string ContentType { get; set; }
+
+        /// <summary>
         /// Ctor
         /// </summary>
         public CommandResult()
@@ -74,8 +79,14 @@ namespace Kentor.AuthServices
 
                 response.Redirect(Location.ToString());
             }
+            else
+            {
+                response.StatusCode = (int)HttpStatusCode;
+                response.ContentType = ContentType;
+                response.Write(Content);
 
-            response.StatusCode = (int)HttpStatusCode;
+                response.End();
+            }
         }
 
         /// <summary>

@@ -282,11 +282,15 @@ namespace Kentor.AuthServices
             return valid;
         }
 
+        /// <summary>
+        /// Validates the in response to.
+        /// </summary>
+        /// <returns></returns>
         private bool ValidateInResponseTo()
         {
             if (InResponseTo == null &&
                 KentorAuthServicesSection.Current.IdentityProviders
-                .Single(idpConfig => idpConfig.Issuer == this.Issuer).AllowUnsolicitedAuthnResponse)
+                .Single(idpConfig => idpConfig.EntityId == this.Issuer).AllowUnsolicitedAuthnResponse)
             {
                 return true;
             }

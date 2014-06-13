@@ -14,9 +14,9 @@ namespace Kentor.AuthServices
         public CommandResult Run(HttpRequestBase request)
         {
             IdentityProvider idp;
-            if (request != null && !string.IsNullOrEmpty(request["issuer"]))
+            if (request != null && !string.IsNullOrEmpty(request["idp"]))
             {
-                var selectedIssuer = HttpUtility.UrlDecode(request["issuer"]);
+                var selectedIssuer = HttpUtility.UrlDecode(request["idp"]);
                 if (!IdentityProvider.ConfiguredIdentityProviders.TryGetValue(selectedIssuer, out idp))
                 {
                     throw new InvalidOperationException("Unknown issuer");

@@ -28,19 +28,17 @@ Config Samples
   <section name="kentor.authServices" type="Kentor.AuthServices.Configuration.KentorAuthServicesSection, Kentor.AuthServices"/>
 </configSections>
 
-<kentor.authServices assertionConsumerServiceUrl="http://localhost:17009/SamplePath/Saml2AuthenticationModule/acs"
-                            issuer="http://localhost:17009"
-                            returnUri="http://localhost:17009/SamplePath/">
-  <identityProvider issuer ="https://idp.example.com" destinationUri="httpss://idp.example.com" binding="HttpRedirect">
+<kentor.authServices assertionConsumerServiceUrl="http://localhost:17009/AuthServices/acs"
+                            entityId="http://localhost:17009"
+                            returnUri="http://localhost:17009/">
+  <identityProvider issuer ="http://stubidp.kentor.se" destinationUri="http://stubidp.kentor.se" binding="HttpRedirect">
     <signingCertificate storeName="AddressBook" storeLocation="CurrentUser" 
-                          findValue="idp.example.com" x509FindType="FindBySubjectName" />
+                          findValue="stubidp.kentor.se" x509FindType="FindBySubjectName" />
   </identityProvider>
 </kentor.authServices>
 
 <system.identityModel>
-  <identityConfiguration>
-    <claimsAuthenticationManager type="Kentor.AuthServices.Tests.ClaimsAuthenticationManagerStub, Kentor.AuthServices.Tests"/>
-  </identityConfiguration>
+  <identityConfiguration />
 </system.identityModel>
 
 <system.identityModel.services>

@@ -79,24 +79,24 @@ namespace Kentor.AuthServices.Tests
         }
 
         [TestMethod]
-        public void SignInCommand_Run_With_Issuer2_ReturnsAuthnRequestForSecondIdp()
+        public void SignInCommand_Run_With_Idp2_ReturnsAuthnRequestForSecondIdp()
         {
             var secondIdp = IdentityProvider.ConfiguredIdentityProviders.Skip(1).First().Value;
             var secondDestination = secondIdp.DestinationUri;
             var secondIssuer = secondIdp.Issuer;
 
             var requestSubstitute = Substitute.For<HttpRequestBase>();
-            requestSubstitute["issuer"].Returns(HttpUtility.UrlEncode(secondIssuer));
+            requestSubstitute["idp"].Returns(HttpUtility.UrlEncode(secondIssuer));
             var subject = new SignInCommand().Run(requestSubstitute);
 
             subject.Location.Host.Should().Be(secondDestination.Host);
         }
 
         [TestMethod]
-        public void SignInCommand_Run_With_InvalidIssuer_ThrowsException()
+        public void SignInCommand_Run_With_InvalidIdp_ThrowsException()
         {
             var requestSubstitute = Substitute.For<HttpRequestBase>();
-            requestSubstitute["issuer"].Returns(HttpUtility.UrlEncode("no-such-idp-in-config"));
+            requestSubstitute["idp"].Returns(HttpUtility.UrlEncode("no-such-idp-in-config"));
             Action a = () => new SignInCommand().Run(requestSubstitute);
 
             a.ShouldThrow<InvalidOperationException>().WithMessage("Unknown issuer");

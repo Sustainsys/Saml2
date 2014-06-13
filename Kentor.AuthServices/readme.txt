@@ -36,18 +36,16 @@ Config Samples
 </system.web>
 
 <kentor.authServices assertionConsumerServiceUrl="http://localhost:17009/SamplePath/Saml2AuthenticationModule/acs"
-                            issuer="http://localhost:17009"
+                            entityId="http://localhost:17009"
                             returnUri="http://localhost:17009/SamplePath/">
-  <identityProvider issuer ="https://idp.example.com" destinationUri="httpss://idp.example.com" binding="HttpRedirect">
+  <identityProvider issuer ="http://stubidp.kentor.se" destinationUri="https://stubidp.kentor.se" binding="HttpRedirect">
     <signingCertificate storeName="AddressBook" storeLocation="CurrentUser" 
-                          findValue="idp.example.com" x509FindType="FindBySubjectName" />
+                          findValue="stubidp.kentor.se" x509FindType="FindBySubjectName" />
   </identityProvider>
 </kentor.authServices>
 
 <system.identityModel>
-  <identityConfiguration>
-    <claimsAuthenticationManager type="Kentor.AuthServices.Tests.ClaimsAuthenticationManagerStub, Kentor.AuthServices.Tests"/>
-  </identityConfiguration>
+  <identityConfiguration />
 </system.identityModel>
 
 <system.identityModel.services>

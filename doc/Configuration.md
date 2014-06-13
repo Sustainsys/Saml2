@@ -1,4 +1,4 @@
-Kentor.AuthServices Configuration
+kentor.AuthServices Configuration
 =============
 To use Kentor.AuthServices in an application it must be enabled in the
 application's `web.config`. The sample application contains a complete
@@ -37,9 +37,9 @@ Kentor.AuthServices module.
 
 ```
 <kentor.authServices assertionConsumerServiceUrl="http://localhost:17009/SamplePath/Saml2AuthenticationModule/acs"
-							issuer="http://localhost:17009"
+							entityId="http://localhost:17009"
                             returnUri="http://localhost:17009/SamplePath/">
-  <identityProvider issuer ="https://idp.example.com" destinationUri="https://idp.example.com" 
+  <identityProvider entityId ="https://idp.example.com" destinationUri="https://idp.example.com" 
                     allowUnsolicitedAuthnResponse="true" binding="HttpRedirect">
     <signingCertificate storeName="AddressBook" storeLocation="CurrentUser" 
                           findValue="idp.example.com" x509FindType="FindBySubjectName" />
@@ -55,7 +55,8 @@ Root element of the config section.
 ####Attributes
 * [`assertionConsumerServiceUrl`](#assertionconsumerserviceurl-attribute)
 * [`returnUri`](#returnuri-attribute)
-* [`issuer`](#issuer-attribute)
+* [`entityId`](#entityid-attribute)
+* [`metadataCacheDuration`](#metadatacacheduration-attribute)
 
 ####Elements
 * [`<identityProvider>`](#identityprovider-element)
@@ -68,11 +69,14 @@ Saml2 ticket. It should be the base Url of your application concatenated with
 `/Saml2AuthenticationModule/acs`. The relative Url is hard coded and cannot 
 be changed.
 
-####`issuer` Attribute
+####`entityId` Attribute
 *Attribute of the [`<kentor.authServices>`](#kentor-authservices-section) element*
 
 The name that this service provider will use for itself when sending
-messages. The name will end up in the `issuer` field in outcoing authnRequests.
+messages. The name will end up in the `entityId` field in outcoing authnRequests.
+
+The `entityId` should typically be the URL where the metadata is presented. E.g.
+`http://sp.example.com/AuthServices/`.
 
 ####`returnUri` Attribute
 *Attribute of the [`<kentor.authServices>`](#kentor-authservices-section) element*
@@ -81,13 +85,19 @@ The Uri that you want users to be redirected to once the authentication is
 complete. This is typically the start page of the application, or a special
 signed in start page.
 
+####`metadataCacheDuration Attribute
+*Optional Attribute of the [`<kentor.authServices>`](#kentor-authservices-section) element*
+
+Optional attribute that describes for how long in seconds anyone may cache the metadata 
+presented by the service provider. Defaults to 3600 seconds.
+
 ###`<identityProvider>` Element
 *Child element of the [`<kentor.authServices>`](#kentor-authservices-section) element*
 
 An identity provider that the Service Provider relies on for authentication.
 
 ####Attributes
-* [`issuer`](#issuer-attribute-identityprovider)
+* [`entityID`](#entityId-attribute-identityprovider)
 * [`destinationUri`](#destinationuri-attribute)
 * [`allowUnsolicitedAuthnResponse`](#allowunsolicitedauthnresponse-attribute)
 * [`binding`](#binding-attribute)
@@ -95,7 +105,7 @@ An identity provider that the Service Provider relies on for authentication.
 ####Elements
 * [`<signingCertificate>`](#signingcertificate-element)
 
-####`issuer` Attribute (identityProvider)
+####`entityID` Attribute (identityProvider)
 *Attribute of the [`<identityProvider>`](#identityprovider-element) element*
 
 The issuer name that the idp will be using when sending responses.

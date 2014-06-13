@@ -60,10 +60,13 @@
     <Compile Include="Configuration\IdentityProviderElement.cs" />
     <Compile Include="Configuration\CertificateElement.cs" />
     <Compile Include="DateTimeExtensions.cs" />
+    <Compile Include="EntityDescriptorExtension.cs" />
     <Compile Include="Enumerator.cs" />
     <Compile Include="IdentityProvider.cs" />
+    <Compile Include="IndexedProtocolEndpointExtensions.cs" />
     <Compile Include="ISaml2Message.cs" />
     <Compile Include="MessageBinder.cs" />
+    <Compile Include="MetadataCommand.cs" />
     <Compile Include="MorePublicSaml2SecurityTokenHandler.cs" />
     <Compile Include="NoSamlResponseFoundException.cs" />
     <Compile Include="NotFoundCommand.cs" />
@@ -87,6 +90,8 @@
     <Compile Include="Saml2Response.cs" />
     <Compile Include="Saml2StatusCode.cs" />
     <Compile Include="Saml2SubjectExtensions.cs" />
+    <Compile Include="ServiceProvider.cs" />
+    <Compile Include="ServiceProviderSingleSignOnDescriptorExtensions.cs" />
     <Compile Include="SignInCommand.cs" />
     <Compile Include="StatusCodeHelper.cs" />
     <Compile Include="XmlDocumentExtensions.cs" />

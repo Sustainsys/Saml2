@@ -16,10 +16,10 @@
         <a href="@Url.Content("~/Saml2AuthenticationModule/SignIn")">Sign in</a> - default IDP
         @foreach (var idp in Kentor.AuthServices.Configuration.KentorAuthServicesSection.Current.IdentityProviders)
         {
-            var issuer = idp.Issuer;
+            var entityId = idp.EntityId;
             var destinationUri = idp.DestinationUri;
             <br />
-            <a href="@Url.Content("~/Saml2AuthenticationModule/SignIn?issuer=" + HttpUtility.UrlEncode(issuer))">Sign in</a>@: - @issuer - @destinationUri
+            <a href="@Url.Content("~/Saml2AuthenticationModule/SignIn?idp=" + HttpUtility.UrlEncode(entityId))">Sign in</a>@: - @entityId - @destinationUri
         }
     </p>
 }
@@ -48,3 +48,7 @@ else
         </tbody>
     </table>
 }
+
+<p>
+<a href="@Url.Content("~/Saml2AuthenticationModule/")">Service Provider Metadata.</a>
+</p>

@@ -34,10 +34,17 @@ namespace Kentor.AuthServices.Mvc
                 case HttpStatusCode.SeeOther:
                     return new RedirectResult(commandResult.Location.ToString());
                 case HttpStatusCode.OK:
-                    return new ContentResult()
+                    var result = new ContentResult()
                     {
                         Content = commandResult.Content
                     };
+
+                    if(!string.IsNullOrEmpty(commandResult.ContentType))
+                    {
+                        result.ContentType = commandResult.ContentType;
+                    }
+
+                    return result;
                 default:
                     throw new NotImplementedException();
             }
