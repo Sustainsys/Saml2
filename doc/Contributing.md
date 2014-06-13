@@ -8,6 +8,10 @@ Sweden. The library's source code is hosted on [github](https://github.com/Kento
 Github issues are used to keep track of issues and releases. For requests of functionality or
 to report bugs, please open an issue in the github repo.
 
+It is adviced to open an issue describing the plans before starting any major coding work.
+Discussing before writing code significantly reduces the risk of getting a pull request
+denied.
+
 ##Versioning
 Kentor Authentication services uses semantic versioning as defined on http://semver.org/.
 
@@ -37,7 +41,7 @@ as in a constructor having parameters with the same name as the members).
 * Any single method is so short that it fits on one screen (on a typical laptop monitor, 
 not a 30-feet development monster-monitor in vertical orientation).
 
-##Unit tests
+##Unit Tests
 The core Kentor.AuthServices library has been developed using TDD (Test Drive Development). All
 functionality is covered by tests, and it will remain that way. Pull requests will only be
 merged if they contain tests covering the added functionality. Parts of the code that aren't
@@ -45,6 +49,24 @@ practically possible to test because of tight integration with the web server (s
 `CommandResult.ApplyPrincipal`) are excluded from this rule and should be marked with a
 `[ExcludeFromCodeCoverage]` attribute. The code coverage report for Kentor.AuthServices
 is at 100.00% coverage and should remain so.
+
+If you hare using Visual Studio Premium or Ultimate, please use the "VsPremium" solution,
+that contains an extra unit test project which requires VS Premium features to run.
+
+##Integration Tests
+There are also some integration tests that runs through the sample applications and make
+sure that they work. To run the integration tests:
+* Make sure that you have Google Chrome installed.
+* Open the main solution.
+* Set multiple startup projects: Kentor.AuthServices.StubIdp, SampleApplication & SampleMvcApplication.
+* Debug the solution.
+* Open Kentor.AuthServices.IntegrationTests in a separate Visual Studio Instance.
+* Run all tests in the integrationtests solution.
+
+##Branching
+To make a clean pull request, it is important to follow some git best practices. Nancy
+has an [excellent guide](https://github.com/NancyFx/Nancy/blob/master/CONTRIBUTING.md) that outlines
+the steps required.
 
 ##Licensing
 The library is licensed under LGPL and by submitting code it is accepted that the submitted
