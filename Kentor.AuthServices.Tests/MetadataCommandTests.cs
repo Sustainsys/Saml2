@@ -22,6 +22,12 @@ namespace Kentor.AuthServices.Tests
 
             var expectedXml = new XDocument(new XElement(Saml2Namespaces.Saml2Metadata + "EntityDescriptor",
                 new XAttribute("entityId", "https://github.com/KentorIT/authservices"),
+                // Have to manually add the xmlns attribute here, as it will be present in the subject
+                // data and XNode.DeepEquals will fail if it is not present in both. Just setting the 
+                // namespace of the elements does not inject the xmlns attribute into the node tree. It is
+                // only done when outputting a string.
+                // See http://stackoverflow.com/questions/24156689/xnode-deepequals-unexpectedly-returns-false
+                new XAttribute("xmlns", Saml2Namespaces.Saml2MetadataName),
                 new XElement(Saml2Namespaces.Saml2Metadata + "SPSSODescriptor",
                     new XElement(Saml2Namespaces.Saml2Metadata + "AssertionConsumerService",
                         new XAttribute("isDefault", true),
@@ -29,9 +35,7 @@ namespace Kentor.AuthServices.Tests
                         new XAttribute("Binding", Saml2Binding.HttpPostUri),
                         new XAttribute("Location", "http://localhost/Saml2AuthenticationModule/acs")))));
 
-            // Must parse expectedXml-string. 
-            // See (http://stackoverflow.com/questions/24156689/xnode-deepequals-unexpectedly-returns-false/24156847#24156847)
-            XNode.DeepEquals(payloadXml, XDocument.Parse(expectedXml.ToString())).Should().BeTrue();
+            XNode.DeepEquals(payloadXml, expectedXml).Should().BeTrue();
 
             subject.ContentType.Should().Be("application/samlmetadata+xml");
         }
