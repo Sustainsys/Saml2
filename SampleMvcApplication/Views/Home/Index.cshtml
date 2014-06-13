@@ -20,7 +20,7 @@
             var entityID = idp.EntityId;
             var destinationUri = idp.DestinationUri;
             <br />
-            <a href="@Url.Content("~/AuthServices/SignIn?issuer=" + HttpUtility.UrlEncode(entityID))">Sign in</a>@: - @entityID - @destinationUri
+            <a href="@Url.Content("~/AuthServices/SignIn?idp=" + HttpUtility.UrlEncode(entityID))">Sign in</a>@: - @entityID - @destinationUri
         }
     </p>
 }
