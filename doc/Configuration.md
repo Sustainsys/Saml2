@@ -56,6 +56,7 @@ Root element of the config section.
 * [`assertionConsumerServiceUrl`](#assertionconsumerserviceurl-attribute)
 * [`returnUri`](#returnuri-attribute)
 * [`entityId`](#entityid-attribute)
+* [`metadataCacheDuration`](#metadatacacheduration-attribute)
 
 ####Elements
 * [`<identityProvider>`](#identityprovider-element)
@@ -83,6 +84,12 @@ The `entityId` should typically be the URL where the metadata is presented. E.g.
 The Uri that you want users to be redirected to once the authentication is
 complete. This is typically the start page of the application, or a special
 signed in start page.
+
+####`metadataCacheDuration Attribute
+*Optional Attribute of the [`<kentor.authServices>`](#kentor-authservices-section) element*
+
+Optional attribute that describes for how long in seconds anyone may cache the metadata 
+presented by the service provider. Defaults to 3600 seconds.
 
 ###`<identityProvider>` Element
 *Child element of the [`<kentor.authServices>`](#kentor-authservices-section) element*

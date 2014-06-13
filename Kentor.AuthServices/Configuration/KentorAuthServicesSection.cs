@@ -63,6 +63,19 @@ namespace Kentor.AuthServices.Configuration
         }
 
         /// <summary>
+        /// Optional attribute that describes for how long in seconds anyone may cache the metadata 
+        /// presented by the service provider. Defaults to 3600 seconds.
+        /// </summary>
+        [ConfigurationProperty("metadataCacheDuration", IsRequired=false, DefaultValue=3600)]
+        public int MetadataCacheDuration
+        {
+            get
+            {
+                return (int)base["metadataCacheDuration"];
+            }
+        }
+
+        /// <summary>
         /// Set of identity providers known to the service provider.
         /// </summary>
         [ConfigurationProperty("", IsRequired=true, IsDefaultCollection=true)]
