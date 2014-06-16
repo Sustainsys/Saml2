@@ -28,8 +28,8 @@ namespace Kentor.AuthServices
             }
 
             Init(request.HttpMethod, request.Url,
-            request.Form.Cast<DictionaryEntry>().Select(de =>
-                new KeyValuePair<string, string[]>((string)de.Key, ((string)de.Value).Split(','))));
+            request.Form.Cast<string>().Select((de, i) =>
+                new KeyValuePair<string, string[]>(de, ((string)request.Form[i]).Split(','))));
         }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
@@ -38,11 +38,13 @@ namespace Kentor.AuthServices
             Init(httpMethod, url, formData);
         }
 
-        private void Init(string httpMethod, Uri url, IEnumerable<KeyValuePair<string, string[]>> formData = null)
+        private void Init(string httpMethod, Uri url, IEnumerable<KeyValuePair<string, string[]>> formData)
         {
             HttpMethod = httpMethod;
             Url = url;
-            Form = new ReadOnlyDictionary<string, string>(formData.ToDictionary(kv => kv.Key, kv => kv.Value.Single()));
+            Form = new ReadOnlyDictionary<string, string>(
+                (formData ?? Enumerable.Empty<KeyValuePair<string, string[]>>())
+                .ToDictionary(kv => kv.Key, kv => kv.Value.Single()));
             QueryString = HttpUtility.ParseQueryString(url.Query);
         }
 
