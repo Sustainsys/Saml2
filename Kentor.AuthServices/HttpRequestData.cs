@@ -21,15 +21,24 @@ namespace Kentor.AuthServices
         /// </summary>
         /// <param name="request">HttpRequestBase with source data.</param>
         public HttpRequestData(HttpRequestBase request)
-            : this(request.HttpMethod, request.Url, 
-            request.Form.Cast<DictionaryEntry>().Select(de => 
-                new KeyValuePair<string, string[]>((string)de.Key, ((string)de.Value).Split(','))))
         {
+            if(request == null)
+            {
+                throw new ArgumentNullException("request");
+            }
+
+            Init(request.HttpMethod, request.Url,
+            request.Form.Cast<DictionaryEntry>().Select(de =>
+                new KeyValuePair<string, string[]>((string)de.Key, ((string)de.Value).Split(','))));
         }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
-        internal HttpRequestData(string httpMethod, Uri url, 
-            IEnumerable<KeyValuePair<string, string[]>> formData = null)
+        internal HttpRequestData(string httpMethod, Uri url, IEnumerable<KeyValuePair<string, string[]>> formData = null)
+        {
+            Init(httpMethod, url, formData);
+        }
+
+        private void Init(string httpMethod, Uri url, IEnumerable<KeyValuePair<string, string[]>> formData = null)
         {
             HttpMethod = httpMethod;
             Url = url;
