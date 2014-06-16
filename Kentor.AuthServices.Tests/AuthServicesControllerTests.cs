@@ -20,7 +20,14 @@ namespace Kentor.AuthServices.Tests
         [TestMethod]
         public void AuthServicesController_SignIn_Returns_SignIn()
         {
-            var subject = new AuthServicesController().SignIn();
+            var request = Substitute.For<HttpRequestBase>();
+            request.Url.Returns(new Uri("http://example.com"));
+            request.Form.Returns(new NameValueCollection());
+            var controllerContext = Substitute.For<ControllerContext>();
+            controllerContext.HttpContext = Substitute.For<HttpContextBase>();
+            controllerContext.HttpContext.Request.Returns(request);
+
+            var subject = new AuthServicesController() { ControllerContext = controllerContext }.SignIn();
 
             subject.Should().BeOfType<RedirectResult>().And
                 .Subject.As<RedirectResult>().Url
@@ -60,6 +67,7 @@ namespace Kentor.AuthServices.Tests
                 SignedXmlHelper.SignXml(response)));
 
             request.Form.Returns(new NameValueCollection() { { "SAMLResponse", formValue } });
+            request.Url.Returns(new Uri("http://url.example.com/url"));
 
             var httpContext = Substitute.For<HttpContextBase>();
             httpContext.Request.Returns(request);
