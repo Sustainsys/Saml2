@@ -13,8 +13,13 @@ namespace Kentor.AuthServices
     {
         public CommandResult Run(HttpRequestData request)
         {
+            if(request == null)
+            {
+                throw new ArgumentNullException("request");
+            }
+
             IdentityProvider idp;
-            if (request != null && !string.IsNullOrEmpty(request.QueryString["idp"]))
+            if (!string.IsNullOrEmpty(request.QueryString["idp"]))
             {
                 var selectedIssuer = HttpUtility.UrlDecode(request.QueryString["idp"]);
                 if (!IdentityProvider.ConfiguredIdentityProviders.TryGetValue(selectedIssuer, out idp))
@@ -28,7 +33,7 @@ namespace Kentor.AuthServices
             }
 
             Uri returnUri = null;
-            if (request != null && request.Url != null && request.QueryString["ReturnUrl"] != null)
+            if (!string.IsNullOrEmpty(request.QueryString["ReturnUrl"]))
             {
                 Uri.TryCreate(request.Url, request.QueryString["ReturnUrl"], out returnUri);
             }

@@ -100,5 +100,13 @@ namespace Kentor.AuthServices.Tests
 
             a.ShouldThrow<InvalidOperationException>().WithMessage("Unknown idp");
         }
+
+        [TestMethod]
+        public void SignInCommand_Run_NullCheck()
+        {
+            Action a = () => new SignInCommand().Run(null);
+
+            a.ShouldThrow<ArgumentNullException>().And.ParamName.Should().Be("request");
+        }
     }
 }
