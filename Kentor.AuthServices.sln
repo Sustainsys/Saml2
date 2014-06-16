@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
-VisualStudioVersion = 12.0.21005.1
+VisualStudioVersion = 12.0.30501.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kentor.AuthServices", "Kentor.AuthServices\Kentor.AuthServices.csproj", "{93BA675E-A159-4701-B68B-C4B81015C556}"
 EndProject
@@ -39,6 +39,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kentor.AuthServices.StubIdp
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kentor.AuthServices.TestHelpers", "Kentor.AuthServices.TestHelpers\Kentor.AuthServices.TestHelpers.csproj", "{45E0AC77-5BC6-4926-AD1A-7108A46ECB10}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kentor.AuthServices.Owin", "Kentor.AuthServices.Owin\Kentor.AuthServices.Owin.csproj", "{FA1E7723-124C-4D2D-A731-E16400B0073B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -70,6 +72,10 @@ Global
 		{45E0AC77-5BC6-4926-AD1A-7108A46ECB10}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{45E0AC77-5BC6-4926-AD1A-7108A46ECB10}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{45E0AC77-5BC6-4926-AD1A-7108A46ECB10}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FA1E7723-124C-4D2D-A731-E16400B0073B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FA1E7723-124C-4D2D-A731-E16400B0073B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FA1E7723-124C-4D2D-A731-E16400B0073B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FA1E7723-124C-4D2D-A731-E16400B0073B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
