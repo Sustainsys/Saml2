@@ -10,6 +10,7 @@ using System.Collections.Specialized;
 using System.Security.Claims;
 using System.Web.Routing;
 using Kentor.AuthServices.TestHelpers;
+using System.Xml.Linq;
 
 namespace Kentor.AuthServices.Tests
 {
@@ -74,6 +75,18 @@ namespace Kentor.AuthServices.Tests
             var expected = new { Permanent = false, Url = "http://localhost/LoggedIn"};
 
             controller.Acs().As<RedirectResult>().ShouldBeEquivalentTo(expected);
+        }
+
+        [TestMethod]
+        public void AuthServicesController_Metadata()
+        {
+            var subject = ((ContentResult)new AuthServicesController().Index());
+
+            subject.ContentType.Should().Contain("application/samlmetadata+xml");
+
+            var xmlData = XDocument.Parse(subject.Content);
+
+            xmlData.Root.Name.Should().Be(Saml2Namespaces.Saml2Metadata + "EntityDescriptor");
         }
     }
 }
