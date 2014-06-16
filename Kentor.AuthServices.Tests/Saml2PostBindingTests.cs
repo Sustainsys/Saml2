@@ -15,7 +15,7 @@ namespace Kentor.AuthServices.Tests
     {
         private HttpRequestData CreateRequest(string encodedResponse)
         {
-            return new HttpRequestData("POST", null, new KeyValuePair<string, string[]>[] 
+            return new HttpRequestData("POST", new Uri("http://example.com"), new KeyValuePair<string, string[]>[] 
             { 
                 new KeyValuePair<string, string[]>("SAMLResponse", new string[] {encodedResponse }) 
             });
@@ -38,10 +38,9 @@ namespace Kentor.AuthServices.Tests
         }
 
         [TestMethod]
-        public void Saml2PostBinding_Unbind_ReadsSaml2ResponseId()
+        public void Saml2PostBinding_Unbind_ReadsSaml2Response()
         {
-            string response =
-            @"responsestring";
+            string response = "responsestring";
 
             var r = CreateRequest(Convert.ToBase64String(Encoding.UTF8.GetBytes(response)));
 

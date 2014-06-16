@@ -19,7 +19,7 @@ namespace Kentor.AuthServices
                 var selectedIssuer = HttpUtility.UrlDecode(request.QueryString["idp"]);
                 if (!IdentityProvider.ConfiguredIdentityProviders.TryGetValue(selectedIssuer, out idp))
                 {
-                    throw new InvalidOperationException("Unknown issuer");
+                    throw new InvalidOperationException("Unknown idp");
                 }
             }
             else

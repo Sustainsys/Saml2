@@ -14,7 +14,7 @@ namespace Kentor.AuthServices.Tests
         [TestMethod]
         public void Saml2Binding_Get_ReturnsSaml2Postbinding()
         {
-            var r = new HttpRequestData("POST", null, new KeyValuePair<string, string[]>[]
+            var r = new HttpRequestData("POST", new Uri("http://example.com"), new KeyValuePair<string, string[]>[]
                 {
                     new KeyValuePair<string, string[]>("SAMLResponse", new string[] { "Some Data" })
                 });
@@ -25,7 +25,7 @@ namespace Kentor.AuthServices.Tests
         [TestMethod]
         public void Saml2Binding_Get_NullOnPlainGet()
         {
-            var r = new HttpRequestData("GET", null);
+            var r = new HttpRequestData("GET", new Uri("http://example.com"));
             
             Saml2PostBinding.Get(r).Should().BeNull();
         }
@@ -33,7 +33,7 @@ namespace Kentor.AuthServices.Tests
         [TestMethod]
         public void Saml2Binding_Get_NullOnPlainPost()
         {
-            var r = new HttpRequestData("GET", null);
+            var r = new HttpRequestData("GET", new Uri("http://example.com"));
 
             Saml2PostBinding.Get(r).Should().BeNull();
         }

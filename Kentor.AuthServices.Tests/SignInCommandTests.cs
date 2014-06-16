@@ -20,7 +20,7 @@ namespace Kentor.AuthServices.Tests
             var defaultDestination = IdentityProvider.ConfiguredIdentityProviders.First()
                 .Value.DestinationUri;
 
-            var subject = new SignInCommand().Run(new HttpRequestData(null, null));
+            var subject = new SignInCommand().Run(new HttpRequestData("GET", new Uri("http://example.com")));
 
             var expected = new CommandResult()
             {
@@ -84,7 +84,7 @@ namespace Kentor.AuthServices.Tests
             var secondDestination = secondIdp.DestinationUri;
             var secondIssuer = secondIdp.Issuer;
 
-            var request = new HttpRequestData("GET", new Uri("http://sp.example.com?ìdp=" +
+            var request = new HttpRequestData("GET", new Uri("http://sp.example.com?idp=" +
             HttpUtility.UrlEncode(secondIssuer)));
             var subject = new SignInCommand().Run(request);
 
