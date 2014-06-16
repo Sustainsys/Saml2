@@ -17,10 +17,26 @@ namespace Kentor.AuthServices.Tests
     [TestClass]
     public class AuthServicesControllerTests
     {
+        private AuthServicesController CreateInstanceWithContext()
+        {
+            var request = Substitute.For<HttpRequestBase>();
+            request.Url.Returns(new Uri("http://example.com"));
+            request.Form.Returns(new NameValueCollection());
+            var controllerContext = Substitute.For<ControllerContext>();
+            controllerContext.HttpContext = Substitute.For<HttpContextBase>();
+            controllerContext.HttpContext.Request.Returns(request);
+
+            return new AuthServicesController()
+            {
+                ControllerContext = controllerContext
+            };
+        }
+
         [TestMethod]
         public void AuthServicesController_SignIn_Returns_SignIn()
         {
-            var subject = new AuthServicesController().SignIn();
+
+            var subject = CreateInstanceWithContext().SignIn();
 
             subject.Should().BeOfType<RedirectResult>().And
                 .Subject.As<RedirectResult>().Url
@@ -60,6 +76,7 @@ namespace Kentor.AuthServices.Tests
                 SignedXmlHelper.SignXml(response)));
 
             request.Form.Returns(new NameValueCollection() { { "SAMLResponse", formValue } });
+            request.Url.Returns(new Uri("http://url.example.com/url"));
 
             var httpContext = Substitute.For<HttpContextBase>();
             httpContext.Request.Returns(request);
@@ -80,7 +97,7 @@ namespace Kentor.AuthServices.Tests
         [TestMethod]
         public void AuthServicesController_Metadata()
         {
-            var subject = ((ContentResult)new AuthServicesController().Index());
+            var subject = ((ContentResult)CreateInstanceWithContext().Index());
 
             subject.ContentType.Should().Contain("application/samlmetadata+xml");
 

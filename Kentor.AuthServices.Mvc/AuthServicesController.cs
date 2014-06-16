@@ -17,7 +17,7 @@ namespace Kentor.AuthServices.Mvc
         /// <returns>Redirect with sign in request</returns>
         public ActionResult SignIn()
         {
-            return CommandFactory.GetCommand("SignIn").Run(Request).ToActionResult();
+            return CommandFactory.GetCommand("SignIn").Run(new HttpRequestData(Request)).ToActionResult();
         }
 
         /// <summary>
@@ -29,8 +29,8 @@ namespace Kentor.AuthServices.Mvc
         /// http request.</remarks>
         public ActionResult Acs()
         {
-            var result = CommandFactory.GetCommand("Acs").Run(Request);
-            result.ApplyPrincipal();
+            var result = CommandFactory.GetCommand("Acs").Run(new HttpRequestData(Request));
+            result.SignInSessionAuthenticationModule();
             return result.ToActionResult();
         }
 
@@ -50,7 +50,7 @@ namespace Kentor.AuthServices.Mvc
         /// <returns>ActionResult with Metadata</returns>
         public ActionResult Index()
         {
-            var result = CommandFactory.GetCommand("").Run(Request);
+            var result = CommandFactory.GetCommand("").Run(new HttpRequestData(Request));
             return result.ToActionResult();
         }
     }

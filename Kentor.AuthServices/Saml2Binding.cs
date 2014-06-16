@@ -37,7 +37,7 @@ namespace Kentor.AuthServices
         /// </summary>
         /// <param name="request">Current HttpRequest.</param>
         /// <returns>Extracted message.</returns>
-        public virtual string Unbind(HttpRequestBase request)
+        public virtual string Unbind(HttpRequestData request)
         {
             throw new NotImplementedException();
         }
@@ -48,7 +48,7 @@ namespace Kentor.AuthServices
         /// </summary>
         /// <param name="request">HttpRequest to check for message.</param>
         /// <returns>True if the binding supports the current request.</returns>
-        protected internal virtual bool CanUnbind(HttpRequestBase request)
+        protected internal virtual bool CanUnbind(HttpRequestData request)
         {
             return false;
         }
@@ -76,7 +76,7 @@ namespace Kentor.AuthServices
         /// <param name="request">Current HttpRequest</param>
         /// <returns>A derived class instance that supports the requested binding,
         /// or null if no binding supports the current request.</returns>
-        public static Saml2Binding Get(HttpRequestBase request)
+        public static Saml2Binding Get(HttpRequestData request)
         {
             return bindings.FirstOrDefault(b => b.Value.CanUnbind(request)).Value;
         }

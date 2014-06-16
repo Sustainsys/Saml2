@@ -14,7 +14,8 @@ namespace Kentor.AuthServices.Tests
         public void NotFoundCommand_Run_Sets404()
         {
             var command = new NotFoundCommand();
-            var result = command.Run(Substitute.For<HttpRequestBase>());
+            var result = command.Run(new HttpRequestData("GET", 
+                new Uri("http://localhost/Saml2AuthenticationModule/NonExistingPath")));
 
             result.HttpStatusCode.Should().Be(HttpStatusCode.NotFound);
         }

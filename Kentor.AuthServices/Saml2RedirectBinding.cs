@@ -39,13 +39,13 @@ namespace Kentor.AuthServices
 
         // The MemoryStream is not disposed by the DeflateStream - we're using the keep-open flag.
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2202:Do not dispose objects multiple times")]
-        public override string Unbind(HttpRequestBase request)
+        public override string Unbind(HttpRequestData request)
         {
-            if (request == null || request["SAMLRequest"] == null)
+            if (request == null || request.QueryString["SAMLRequest"] == null)
             {
                 return null;
             }
-            var payload = Convert.FromBase64String(request["SAMLRequest"]);
+            var payload = Convert.FromBase64String(request.QueryString["SAMLRequest"]);
             using (var compressed = new MemoryStream(payload))
             {
                 using (var decompressedStream = new DeflateStream(compressed, CompressionMode.Decompress, true))

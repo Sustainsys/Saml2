@@ -16,7 +16,7 @@ namespace Kentor.AuthServices.Tests
         [TestMethod]
         public void MetadataCommand_Run_SuccessfulResult()
         {
-            var subject = new MetadataCommand().Run(Substitute.For<HttpRequestBase>());
+            var subject = new MetadataCommand().Run(null);
 
             XDocument payloadXml = XDocument.Parse(subject.Content);
 

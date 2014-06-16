@@ -20,7 +20,7 @@ namespace Kentor.AuthServices.Tests
             var defaultDestination = IdentityProvider.ConfiguredIdentityProviders.First()
                 .Value.DestinationUri;
 
-            var subject = new SignInCommand().Run(Substitute.For<HttpRequestBase>());
+            var subject = new SignInCommand().Run(new HttpRequestData("GET", new Uri("http://example.com")));
 
             var expected = new CommandResult()
             {
@@ -45,9 +45,8 @@ namespace Kentor.AuthServices.Tests
             var defaultDestination = IdentityProvider.ConfiguredIdentityProviders.First()
                 .Value.DestinationUri;
 
-            var httpRequest = Substitute.For<HttpRequestBase>();
-            httpRequest["ReturnUrl"].Returns("/Return.aspx");
-            httpRequest.Url.Returns(new Uri("http://localhost/signin"));
+            var httpRequest = new HttpRequestData("GET", new Uri("http://localhost/signin?ReturnUrl=/Return.aspx"));
+
             var subject = new SignInCommand().Run(httpRequest);
 
             var idp = IdentityProvider.ConfiguredIdentityProviders.First().Value;
@@ -85,9 +84,9 @@ namespace Kentor.AuthServices.Tests
             var secondDestination = secondIdp.DestinationUri;
             var secondIssuer = secondIdp.Issuer;
 
-            var requestSubstitute = Substitute.For<HttpRequestBase>();
-            requestSubstitute["idp"].Returns(HttpUtility.UrlEncode(secondIssuer));
-            var subject = new SignInCommand().Run(requestSubstitute);
+            var request = new HttpRequestData("GET", new Uri("http://sp.example.com?idp=" +
+            HttpUtility.UrlEncode(secondIssuer)));
+            var subject = new SignInCommand().Run(request);
 
             subject.Location.Host.Should().Be(secondDestination.Host);
         }
@@ -95,11 +94,19 @@ namespace Kentor.AuthServices.Tests
         [TestMethod]
         public void SignInCommand_Run_With_InvalidIdp_ThrowsException()
         {
-            var requestSubstitute = Substitute.For<HttpRequestBase>();
-            requestSubstitute["idp"].Returns(HttpUtility.UrlEncode("no-such-idp-in-config"));
-            Action a = () => new SignInCommand().Run(requestSubstitute);
+            var request = new HttpRequestData("GET", new Uri("http://localhost/signin?idp=no-such-idp-in-config"));
+            
+            Action a = () => new SignInCommand().Run(request);
 
-            a.ShouldThrow<InvalidOperationException>().WithMessage("Unknown issuer");
+            a.ShouldThrow<InvalidOperationException>().WithMessage("Unknown idp");
+        }
+
+        [TestMethod]
+        public void SignInCommand_Run_NullCheck()
+        {
+            Action a = () => new SignInCommand().Run(null);
+
+            a.ShouldThrow<ArgumentNullException>().And.ParamName.Should().Be("request");
         }
     }
 }

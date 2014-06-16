@@ -8,7 +8,7 @@ namespace Kentor.AuthServices
 {
     class NotFoundCommand : ICommand
     {
-        public CommandResult Run(HttpRequestBase request)
+        public CommandResult Run(HttpRequestData request)
         {
             return new CommandResult()
             {

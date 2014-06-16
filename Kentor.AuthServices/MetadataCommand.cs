@@ -13,7 +13,7 @@ namespace Kentor.AuthServices
     class 
         MetadataCommand : ICommand
     {
-        public CommandResult Run(HttpRequestBase request)
+        public CommandResult Run(HttpRequestData request)
         {
             var xmlData = ServiceProvider.Metadata.ToXElement();
 
