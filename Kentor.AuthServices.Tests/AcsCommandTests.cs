@@ -20,7 +20,7 @@ namespace Kentor.AuthServices.Tests
         [TestMethod]
         public void AcsCommand_Run_ErrorOnNoSamlResponseFound()
         {
-            Action a = () => new AcsCommand().Run(new HttpRequestData("GET", null));
+            Action a = () => new AcsCommand().Run(new HttpRequestData("GET", new Uri("http://localhost")));
 
             a.ShouldThrow<NoSamlResponseFoundException>()
                 .WithMessage("No Saml2 Response found in the http request.");
@@ -29,7 +29,7 @@ namespace Kentor.AuthServices.Tests
         [TestMethod]
         public void AcsCommand_Run_ErrorOnNotBase64InFormResponse()
         {
-            var r = new HttpRequestData("POST", null, new KeyValuePair<string, string[]>[] 
+            var r = new HttpRequestData("POST", new Uri("http://localhost"), new KeyValuePair<string, string[]>[] 
             { 
                 new KeyValuePair<string, string[]>("SAMLResponse", new string[] { "#¤!2" }) 
             });
@@ -45,7 +45,7 @@ namespace Kentor.AuthServices.Tests
         public void AcsCommand_Run_ErrorOnIncorrectXml()
         {
             var encoded = Convert.ToBase64String(Encoding.UTF8.GetBytes("<foo />"));
-            var r = new HttpRequestData("POST", null, new KeyValuePair<string, string[]>[] 
+            var r = new HttpRequestData("POST", new Uri("http://localhost"), new KeyValuePair<string, string[]>[] 
             { 
                 new KeyValuePair<string, string[]>("SAMLResponse", new string[] { encoded })
             });
@@ -86,7 +86,7 @@ namespace Kentor.AuthServices.Tests
             var formValue = Convert.ToBase64String(Encoding.UTF8.GetBytes(
                 SignedXmlHelper.SignXml(response)));
 
-            var r = new HttpRequestData("POST", null, new KeyValuePair<string, string[]>[]
+            var r = new HttpRequestData("POST", new Uri("http://localhost"), new KeyValuePair<string, string[]>[]
                 {
                     new KeyValuePair<string, string[]>("SAMLResponse", new string[] { formValue })
                 });
@@ -138,7 +138,7 @@ namespace Kentor.AuthServices.Tests
             var formValue = Convert.ToBase64String(Encoding.UTF8.GetBytes(
                 SignedXmlHelper.SignXml(response)));
 
-            var r = new HttpRequestData("POST", null, new KeyValuePair<string, string[]>[]
+            var r = new HttpRequestData("POST", new Uri("http://localhost"), new KeyValuePair<string, string[]>[]
                 {
                     new KeyValuePair<string, string[]>("SAMLResponse", new string[] { formValue })
                 });
