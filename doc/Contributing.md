@@ -68,6 +68,10 @@ To make a clean pull request, it is important to follow some git best practices.
 has an [excellent guide](https://github.com/NancyFx/Nancy/blob/master/CONTRIBUTING.md) that outlines
 the steps required.
 
+##Contributors File
+There is a [contributors list](../CONTRIBUTORS.txt) with a list of all contributors to the library. If
+you want to be listed there, please add yourself as part of the pull request.
+
 ##Licensing
 The library is licensed under LGPL and by submitting code it is accepted that the submitted
 code will be released under the same license. Third party code may only be added to the library
