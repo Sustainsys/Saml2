@@ -1,4 +1,6 @@
-﻿using Kentor.AuthServices.StubIdp.Models;
+﻿using System.IO;
+using System.Net.Mime;
+using Kentor.AuthServices.StubIdp.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,6 +24,14 @@ namespace Kentor.AuthServices.StubIdp.Controllers
             }
 
             return View(model);
+        }
+
+        public ActionResult Certificate()
+        {
+            var path = HttpContext.Server.MapPath("~\\App_Data\\Kentor.AuthServices.StubIdp.cer");
+            var disposition = new ContentDisposition { Inline = false, FileName = Path.GetFileName(path) };
+            Response.AppendHeader("Content-Disposition", disposition.ToString());
+            return File(path, MediaTypeNames.Text.Plain);
         }
 
         [HttpPost]

@@ -106,6 +106,7 @@
     <Content Include="Global.asax" />
     <Content Include="Content\Site.less" />
     <Content Include="App_Data\Kentor.AuthServices.StubIdp.pfx" />
+    <Content Include="App_Data\Kentor.AuthServices.StubIdp.cer" />
     <None Include="Scripts\jquery-1.10.2.intellisense.js" />
     <Content Include="Scripts\jquery-1.10.2.js" />
     <Content Include="Scripts\jquery-1.10.2.min.js" />
