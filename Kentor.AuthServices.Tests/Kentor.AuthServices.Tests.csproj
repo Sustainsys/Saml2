@@ -37,6 +37,9 @@
     <Reference Include="NSubstitute">
       <HintPath>..\packages\NSubstitute.1.6.1.0\lib\NET40\NSubstitute.dll</HintPath>
     </Reference>
+    <Reference Include="Owin">
+      <HintPath>..\packages\Owin.1.0\lib\net40\Owin.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.IdentityModel" />
@@ -118,6 +121,7 @@
     <Compile Include="ServiceProviderSingleSignOnDescriptorExtensionsTests.cs" />
     <Compile Include="HttpRequestDataTests.cs" />
     <Compile Include="CommandResultExtensionsTests.cs" />
+    <Compile Include="KentorAuthServicesAuthenticationExtensionsTests.cs" />
     <Compile Include="XmlDocumentExtensionsTests.cs" />
     <Compile Include="XmlHelpersTests.cs" />
   </ItemGroup>
@@ -131,6 +135,10 @@
     <ProjectReference Include="..\Kentor.AuthServices.Mvc\Kentor.AuthServices.Mvc.csproj">
       <Project>{7d32f0a3-cec8-4dc6-a096-5905ea9c3770}</Project>
       <Name>Kentor.AuthServices.Mvc</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Kentor.AuthServices.Owin\Kentor.AuthServices.Owin.csproj">
+      <Project>{fa1e7723-124c-4d2d-a731-e16400b0073b}</Project>
+      <Name>Kentor.AuthServices.Owin</Name>
     </ProjectReference>
     <ProjectReference Include="..\Kentor.AuthServices.TestHelpers\Kentor.AuthServices.TestHelpers.csproj">
       <Project>{45e0ac77-5bc6-4926-ad1a-7108a46ecb10}</Project>
