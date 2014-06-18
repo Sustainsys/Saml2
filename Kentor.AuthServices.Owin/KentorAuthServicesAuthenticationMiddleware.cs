@@ -1,4 +1,7 @@
-﻿using System;
+﻿using Microsoft.Owin;
+using Microsoft.Owin.Security.Infrastructure;
+using Owin;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -9,7 +12,28 @@ namespace Kentor.AuthServices.Owin
     /// <summary>
     /// Owin middleware for SAML2 authentication.
     /// </summary>
-    public class KentorAuthServicesAuthenticationMiddleware
+    public class KentorAuthServicesAuthenticationMiddleware 
+        : AuthenticationMiddleware<KentorAuthServicesAuthenticationOptions>
     {
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="next">The next middleware in the pipeline.</param>
+        /// <param name="options">Settings for the middleware.</param>
+        public KentorAuthServicesAuthenticationMiddleware(OwinMiddleware next,
+            KentorAuthServicesAuthenticationOptions options)
+            :base (next, options)
+        {
+
+        }
+
+        /// <summary>
+        /// Creates a handler instance for use when processing a request.
+        /// </summary>
+        /// <returns>Handler instance.</returns>
+        protected override AuthenticationHandler<KentorAuthServicesAuthenticationOptions> CreateHandler()
+        {
+            return new KentorAuthServicesAuthenticationHandler();
+        }
     }
 }
