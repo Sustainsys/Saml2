@@ -70,9 +70,12 @@ namespace Kentor.AuthServices.Tests
                             {
                                 m.Invoke(instance, emtpyObjArray);
                             }
-                            catch(AssertInconclusiveException)
+                            catch(TargetInvocationException ex)
                             {
-                                // Deliberatey ignore.
+                                if (!(ex.InnerException is AssertInconclusiveException))
+                                {
+                                    throw;
+                                }
                             }
                             finally
                             {
