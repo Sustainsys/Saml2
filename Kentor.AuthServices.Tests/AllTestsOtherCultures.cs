@@ -66,10 +66,20 @@ namespace Kentor.AuthServices.Tests
                             {
                                 c.TestInit.Invoke(instance, emtpyObjArray);
                             }
-                            m.Invoke(instance, emtpyObjArray);
-                            if (c.TestCleanup != null)
+                            try
                             {
-                                c.TestCleanup.Invoke(instance, emtpyObjArray);
+                                m.Invoke(instance, emtpyObjArray);
+                            }
+                            catch(AssertInconclusiveException)
+                            {
+                                // Deliberatey ignore.
+                            }
+                            finally
+                            {
+                                if (c.TestCleanup != null)
+                                {
+                                    c.TestCleanup.Invoke(instance, emtpyObjArray);
+                                }
                             }
                         }
                         if (c.ClassCleanup != null)
