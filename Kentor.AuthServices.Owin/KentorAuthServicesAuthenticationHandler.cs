@@ -8,18 +8,21 @@ using System.Threading.Tasks;
 
 namespace Kentor.AuthServices.Owin
 {
-    /// <summary>
-    /// Owin handler that does the actual job when processing Owin requests.
-    /// </summary>
-    public class KentorAuthServicesAuthenticationHandler : AuthenticationHandler<KentorAuthServicesAuthenticationOptions>
+    internal class KentorAuthServicesAuthenticationHandler : AuthenticationHandler<KentorAuthServicesAuthenticationOptions>
     {
-        /// <summary>
-        /// Core authentication method.
-        /// </summary>
-        /// <returns>Task of AuthenticationTicket.</returns>
         protected override Task<AuthenticationTicket> AuthenticateCoreAsync()
         {
-            throw new NotImplementedException();
+            return Task.FromResult<AuthenticationTicket>(null);
+        }
+
+        protected override Task ApplyResponseChallengeAsync()
+        {
+            var result = CommandFactory.GetCommand("signin")
+                .Run(new HttpRequestData("GET", new Uri("http://sp.example.com")));
+
+            Response.Redirect(result.Location.ToString());
+
+            return Task.FromResult(0);
         }
     }
 }
