@@ -129,7 +129,6 @@
     <Compile Include="CommandResultExtensionsTests.cs" />
     <Compile Include="KentorAuthServicesAuthenticationExtensionsTests.cs" />
     <Compile Include="KentorAuthServicesAuthenticationMiddlewareTests.cs" />
-    <Compile Include="KentorAuthServicesAuthenticationHandlerTests.cs" />
     <Compile Include="StubOwinMiddleware.cs" />
     <Compile Include="XmlDocumentExtensionsTests.cs" />
     <Compile Include="XmlHelpersTests.cs" />

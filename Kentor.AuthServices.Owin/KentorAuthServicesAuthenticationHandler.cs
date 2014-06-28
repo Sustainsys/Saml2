@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Kentor.AuthServices.Owin
 {
-    internal class KentorAuthServicesAuthenticationHandler : AuthenticationHandler<KentorAuthServicesAuthenticationOptions>
+    class KentorAuthServicesAuthenticationHandler : AuthenticationHandler<KentorAuthServicesAuthenticationOptions>
     {
         protected override Task<AuthenticationTicket> AuthenticateCoreAsync()
         {
@@ -17,10 +17,13 @@ namespace Kentor.AuthServices.Owin
 
         protected override Task ApplyResponseChallengeAsync()
         {
-            var result = CommandFactory.GetCommand("signin")
-                .Run(new HttpRequestData("GET", new Uri("http://sp.example.com")));
+            if (Response.StatusCode == 401)
+            {
+                var result = CommandFactory.GetCommand("signin")
+                    .Run(new HttpRequestData("GET", new Uri("http://sp.example.com")));
 
-            Response.Redirect(result.Location.ToString());
+                Response.Redirect(result.Location.ToString());
+            }
 
             return Task.FromResult(0);
         }
