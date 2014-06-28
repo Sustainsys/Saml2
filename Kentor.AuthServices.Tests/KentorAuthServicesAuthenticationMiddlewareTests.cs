@@ -68,7 +68,15 @@ namespace Kentor.AuthServices.Tests
         [TestMethod]
         public void KentorAuthServicesAuthenticationMiddleware_NoRedirectWithoutChallenge()
         {
-            Assert.Inconclusive();
+            var middleware = new KentorAuthServicesAuthenticationMiddleware(
+                new StubOwinMiddleware(401, null),
+                new KentorAuthServicesAuthenticationOptions());
+
+            var context = CreateOwinContext();
+
+            middleware.Invoke(context).Wait();
+
+            context.Response.StatusCode.Should().Be(401);
         }
 
         [TestMethod]
@@ -77,5 +85,10 @@ namespace Kentor.AuthServices.Tests
             Assert.Inconclusive();
         }
 
+        [TestMethod]
+        public void KentorAuthServicesAuthenticationMiddleware_RedirectOnChallengeForAuthTypeInOptions()
+        {
+            Assert.Inconclusive();
+        }
     }
 }

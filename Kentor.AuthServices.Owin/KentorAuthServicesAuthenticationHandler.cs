@@ -19,10 +19,15 @@ namespace Kentor.AuthServices.Owin
         {
             if (Response.StatusCode == 401)
             {
-                var result = CommandFactory.GetCommand("signin")
-                    .Run(new HttpRequestData("GET", new Uri("http://sp.example.com")));
+                var challenge = Helper.LookupChallenge(Constants.DefaultAuthenticationType, AuthenticationMode.Passive);
 
-                Response.Redirect(result.Location.ToString());
+                if (challenge != null)
+                {
+                    var result = CommandFactory.GetCommand("signin")
+                        .Run(new HttpRequestData("GET", new Uri("http://sp.example.com")));
+
+                    Response.Redirect(result.Location.ToString());
+                }
             }
 
             return Task.FromResult(0);
