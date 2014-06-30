@@ -6,6 +6,8 @@ using Microsoft.Owin.Security.Infrastructure;
 using Microsoft.Owin;
 using Owin;
 using Microsoft.Owin.Security;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Kentor.AuthServices.Tests
 {
@@ -46,6 +48,9 @@ namespace Kentor.AuthServices.Tests
             var context = new OwinContext();
             Action<Action<object>, object> onSendingHeaders = (Action, obj) => { };
             context.Environment["server.OnSendingHeaders"] = onSendingHeaders;
+            context.Environment["owin.RequestScheme"] = "http";
+            context.Request.Host = new HostString("sp.example.com");
+            context.Request.Path = new PathString("/");
             return context;
         }
 
@@ -82,11 +87,34 @@ namespace Kentor.AuthServices.Tests
         [TestMethod]
         public void KentorAuthServicesAuthenticationMiddleware_RedirectoToSecondIdp()
         {
-            Assert.Inconclusive();
+            var secondIdp = IdentityProvider.ConfiguredIdentityProviders.Skip(1).First().Value;
+            var secondDestination = secondIdp.DestinationUri;
+            var secondEntityId = secondIdp.Issuer;
+
+            var middleware = new KentorAuthServicesAuthenticationMiddleware(
+                new StubOwinMiddleware(401, new AuthenticationResponseChallenge(
+                    new string[] { "KentorAuthServices" }, new AuthenticationProperties(
+                        new Dictionary<string, string>()
+                        {
+                            { "idp", secondEntityId }
+                        }))),
+                        new KentorAuthServicesAuthenticationOptions());
+
+            var context = CreateOwinContext();
+            middleware.Invoke(context).Wait();
+
+            context.Response.StatusCode.Should().Be(302);
+            context.Response.Headers["Location"].Should().StartWith(secondDestination.ToString());
         }
 
         [TestMethod]
         public void KentorAuthServicesAuthenticationMiddleware_RedirectOnChallengeForAuthTypeInOptions()
+        {
+            Assert.Inconclusive();
+        }
+
+        [TestMethod]
+        public void KentorAuthServicesAuthenticationMiddleware_RedirectRemembersReturnPath()
         {
             Assert.Inconclusive();
         }

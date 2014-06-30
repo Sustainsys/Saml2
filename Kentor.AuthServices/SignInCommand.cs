@@ -18,10 +18,15 @@ namespace Kentor.AuthServices
                 throw new ArgumentNullException("request");
             }
 
+            return CreateResult(request.QueryString["idp"], request.QueryString["ReturnUrl"], request.Url);
+        }
+
+        public static CommandResult CreateResult(string idpName, string returnPath, Uri requestUrl)
+        {
             IdentityProvider idp;
-            if (!string.IsNullOrEmpty(request.QueryString["idp"]))
+            if (!string.IsNullOrEmpty(idpName))
             {
-                var selectedIssuer = HttpUtility.UrlDecode(request.QueryString["idp"]);
+                var selectedIssuer = HttpUtility.UrlDecode(idpName);
                 if (!IdentityProvider.ConfiguredIdentityProviders.TryGetValue(selectedIssuer, out idp))
                 {
                     throw new InvalidOperationException("Unknown idp");
@@ -33,9 +38,9 @@ namespace Kentor.AuthServices
             }
 
             Uri returnUri = null;
-            if (!string.IsNullOrEmpty(request.QueryString["ReturnUrl"]))
+            if (!string.IsNullOrEmpty(returnPath))
             {
-                Uri.TryCreate(request.Url, request.QueryString["ReturnUrl"], out returnUri);
+                Uri.TryCreate(requestUrl, returnPath, out returnUri);
             }
 
             var authnRequest = idp.CreateAuthenticateRequest(returnUri);

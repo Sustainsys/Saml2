@@ -23,9 +23,9 @@ namespace Kentor.AuthServices.Owin
 
                 if (challenge != null)
                 {
-                    var result = CommandFactory.GetCommand("signin")
-                        .Run(new HttpRequestData("GET", new Uri("http://sp.example.com")));
-
+                    string idp;
+                    challenge.Properties.Dictionary.TryGetValue("idp", out idp);
+                    var result = SignInCommand.CreateResult(idp, null, Context.Request.Uri);
                     Response.Redirect(result.Location.ToString());
                 }
             }

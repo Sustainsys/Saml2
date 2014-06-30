@@ -82,10 +82,10 @@ namespace Kentor.AuthServices.Tests
         {
             var secondIdp = IdentityProvider.ConfiguredIdentityProviders.Skip(1).First().Value;
             var secondDestination = secondIdp.DestinationUri;
-            var secondIssuer = secondIdp.Issuer;
+            var secondEntityId = secondIdp.Issuer;
 
             var request = new HttpRequestData("GET", new Uri("http://sp.example.com?idp=" +
-            HttpUtility.UrlEncode(secondIssuer)));
+            HttpUtility.UrlEncode(secondEntityId)));
             var subject = new SignInCommand().Run(request);
 
             subject.Location.Host.Should().Be(secondDestination.Host);
