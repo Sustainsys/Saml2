@@ -24,7 +24,15 @@ namespace Kentor.AuthServices.Owin
             KentorAuthServicesAuthenticationOptions options)
             :base (next, options)
         {
+            if(options == null)
+            {
+                throw new ArgumentNullException("options");
+            }
 
+            if(string.IsNullOrEmpty(options.AuthenticationType))
+            {
+                options.AuthenticationType = Constants.DefaultAuthenticationType;
+            }
         }
 
         /// <summary>

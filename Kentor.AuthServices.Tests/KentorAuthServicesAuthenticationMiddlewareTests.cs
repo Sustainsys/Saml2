@@ -18,13 +18,23 @@ namespace Kentor.AuthServices.Tests
         {
             public ProtectedCaller(OwinMiddleware next,
                 KentorAuthServicesAuthenticationOptions options)
-                : base (next, options)
-            {}
+                : base(next, options)
+            { }
 
             public AuthenticationHandler<KentorAuthServicesAuthenticationOptions> CallCreateHandler()
             {
                 return CreateHandler();
             }
+        }
+
+        [TestMethod]
+        public void KentorAuthServicesAuthenticationMiddleware_CtorNullChecksOptions()
+        {
+            Action a = () => new KentorAuthServicesAuthenticationMiddleware(
+                new StubOwinMiddleware(0, null),
+                null);
+
+            a.ShouldThrow<ArgumentNullException>("options");
         }
 
         [TestMethod]
@@ -110,7 +120,22 @@ namespace Kentor.AuthServices.Tests
         [TestMethod]
         public void KentorAuthServicesAuthenticationMiddleware_RedirectOnChallengeForAuthTypeInOptions()
         {
-            Assert.Inconclusive();
+            var authenticationType = "someAuthName";
+
+            var middleware = new KentorAuthServicesAuthenticationMiddleware(
+                new StubOwinMiddleware(401, new AuthenticationResponseChallenge(
+                    new string[] { authenticationType }, null)),
+                new KentorAuthServicesAuthenticationOptions()
+                {
+                    AuthenticationType = authenticationType
+                });
+
+            var context = CreateOwinContext();
+
+            middleware.Invoke(context).Wait();
+
+            context.Response.StatusCode.Should().Be(302);
+            context.Response.Headers["Location"].Should().StartWith("https://idp.example.com/idp");
         }
 
         [TestMethod]

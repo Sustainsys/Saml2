@@ -19,7 +19,7 @@ namespace Kentor.AuthServices.Owin
         {
             if (Response.StatusCode == 401)
             {
-                var challenge = Helper.LookupChallenge(Constants.DefaultAuthenticationType, AuthenticationMode.Passive);
+                var challenge = Helper.LookupChallenge(Options.AuthenticationType, AuthenticationMode.Passive);
 
                 if (challenge != null)
                 {
