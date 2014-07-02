@@ -25,7 +25,7 @@ namespace Kentor.AuthServices.Owin
                 {
                     string idp;
                     challenge.Properties.Dictionary.TryGetValue("idp", out idp);
-                    var result = SignInCommand.CreateResult(idp, null, Context.Request.Uri);
+                    var result = SignInCommand.CreateResult(idp, challenge.Properties.RedirectUri, Context.Request.Uri);
                     Response.Redirect(result.Location.ToString());
                 }
             }

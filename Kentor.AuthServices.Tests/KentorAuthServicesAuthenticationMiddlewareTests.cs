@@ -8,6 +8,8 @@ using Owin;
 using Microsoft.Owin.Security;
 using System.Collections.Generic;
 using System.Linq;
+using System.Web;
+using Kentor.AuthServices.TestHelpers;
 
 namespace Kentor.AuthServices.Tests
 {
@@ -141,7 +143,26 @@ namespace Kentor.AuthServices.Tests
         [TestMethod]
         public void KentorAuthServicesAuthenticationMiddleware_RedirectRemembersReturnPath()
         {
-            Assert.Inconclusive();
+            var returnUri = "http://sp.example.com/returnuri";
+
+            var middleware = new KentorAuthServicesAuthenticationMiddleware(
+                new StubOwinMiddleware(401, new AuthenticationResponseChallenge(
+                    new string[] { "KentorAuthServices" }, new AuthenticationProperties()
+                    {
+                        RedirectUri = returnUri
+                    })),
+                    new KentorAuthServicesAuthenticationOptions());
+
+            var context = CreateOwinContext();
+
+            middleware.Invoke(context).Wait();
+
+            var requestId = AuthnRequestHelper.GetRequestId(new Uri(context.Response.Headers["Location"]));
+
+            StoredRequestState storedAuthnData;
+            PendingAuthnRequests.TryRemove(new System.IdentityModel.Tokens.Saml2Id(requestId), out storedAuthnData);
+
+            storedAuthnData.ReturnUri.Should().Be(returnUri);
         }
     }
 }
