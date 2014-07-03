@@ -97,7 +97,7 @@ namespace Kentor.AuthServices.Tests
         }
 
         [TestMethod]
-        public void KentorAuthServicesAuthenticationMiddleware_RedirectoToSecondIdp()
+        public void KentorAuthServicesAuthenticationMiddleware_RedirectoToSecondIdp_AuthenticationProperties()
         {
             var secondIdp = IdentityProvider.ConfiguredIdentityProviders.Skip(1).First().Value;
             var secondDestination = secondIdp.DestinationUri;
@@ -113,6 +113,26 @@ namespace Kentor.AuthServices.Tests
                         new KentorAuthServicesAuthenticationOptions());
 
             var context = CreateOwinContext();
+            middleware.Invoke(context).Wait();
+
+            context.Response.StatusCode.Should().Be(302);
+            context.Response.Headers["Location"].Should().StartWith(secondDestination.ToString());
+        }
+
+        [TestMethod]
+        public void KentorAuthServicesAuthenticationMiddleware_RedirectoToSecondIdp_OwinEnvironment()
+        {
+            var secondIdp = IdentityProvider.ConfiguredIdentityProviders.Skip(1).First().Value;
+            var secondDestination = secondIdp.DestinationUri;
+            var secondEntityId = secondIdp.Issuer;
+
+            var middleware = new KentorAuthServicesAuthenticationMiddleware(
+                new StubOwinMiddleware(401, new AuthenticationResponseChallenge(
+                    new string[] { "KentorAuthServices" }, new AuthenticationProperties())),
+                        new KentorAuthServicesAuthenticationOptions());
+
+            var context = CreateOwinContext();
+            context.Environment["KentorAuthServices.idp"] = secondEntityId;
             middleware.Invoke(context).Wait();
 
             context.Response.StatusCode.Should().Be(302);
