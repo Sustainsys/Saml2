@@ -1,0 +1,1 @@
+* Use AuthenticationProperties.Dictionary["idp"] to select idp, or use owin environment["KentorAuthServices.idp"].

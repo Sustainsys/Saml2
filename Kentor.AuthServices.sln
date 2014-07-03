@@ -23,6 +23,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "doc", "doc", "{DB9690FA-251
 		doc\ClaimsAuthenticationManager.md = doc\ClaimsAuthenticationManager.md
 		doc\Configuration.md = doc\Configuration.md
 		doc\Contributing.md = doc\Contributing.md
+		doc\OwinMiddleware.md = doc\OwinMiddleware.md
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "nuget", "nuget", "{8EE1C45E-A81F-4D3F-A645-4C20528E327F}"
