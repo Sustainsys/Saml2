@@ -22,3 +22,5 @@ using System.Runtime.InteropServices;
 [assembly: Guid("ed933f1f-3e63-45c9-b60e-5cb7fab7c052")]
 
 [assembly: CLSCompliant(true)]
+
+[assembly: InternalsVisibleTo("Kentor.AuthServices.Tests")]

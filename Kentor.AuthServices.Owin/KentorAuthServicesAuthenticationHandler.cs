@@ -1,4 +1,5 @@
-﻿using Microsoft.Owin.Security;
+﻿using Kentor.AuthServices.Configuration;
+using Microsoft.Owin.Security;
 using Microsoft.Owin.Security.Infrastructure;
 using System;
 using System.Collections.Generic;
@@ -12,7 +13,15 @@ namespace Kentor.AuthServices.Owin
     {
         protected override Task<AuthenticationTicket> AuthenticateCoreAsync()
         {
-            return Task.FromResult<AuthenticationTicket>(null);
+            var result = CommandFactory.GetCommand("acs").Run(Context.ToHttpRequestData());
+
+            var properties = new AuthenticationProperties()
+            {
+                RedirectUri = result.Location.ToString()
+            };
+
+            return Task.FromResult<AuthenticationTicket>(
+                new MultipleIdentityAuthenticationTicket(result.Principal.Identities, properties));
         }
 
         protected override Task ApplyResponseChallengeAsync()
@@ -24,7 +33,7 @@ namespace Kentor.AuthServices.Owin
                 if (challenge != null)
                 {
                     string idp;
-                    if(!challenge.Properties.Dictionary.TryGetValue("idp", out idp))
+                    if (!challenge.Properties.Dictionary.TryGetValue("idp", out idp))
                     {
                         object objIdp = null;
                         Context.Environment.TryGetValue("KentorAuthServices.idp", out objIdp);
@@ -36,6 +45,22 @@ namespace Kentor.AuthServices.Owin
             }
 
             return Task.FromResult(0);
+        }
+
+        public override async Task<bool> InvokeAsync()
+        {
+            if (KentorAuthServicesSection.Current.AssertionConsumerServiceUrl == Request.Uri)
+            {
+                var ticket = (MultipleIdentityAuthenticationTicket)await AuthenticateAsync();
+
+                Context.Authentication.SignIn(ticket.Properties, ticket.Identities.ToArray());
+
+                Response.Redirect(ticket.Properties.RedirectUri);
+
+                return true;
+            }
+
+            return false;
         }
     }
 }

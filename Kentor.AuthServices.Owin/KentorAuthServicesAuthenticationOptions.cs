@@ -17,6 +17,8 @@ namespace Kentor.AuthServices.Owin
         /// </summary>
         public KentorAuthServicesAuthenticationOptions()
             : base(Constants.DefaultAuthenticationType)
-        { }
+        {
+            AuthenticationMode = AuthenticationMode.Passive;
+        }
     }
 }
