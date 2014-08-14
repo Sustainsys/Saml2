@@ -133,6 +133,7 @@
     <Compile Include="StubOwinMiddleware.cs" />
     <Compile Include="MultipleIdentityAuthenticationTicketTests.cs" />
     <Compile Include="OwinContextExtensionsTests.cs" />
+    <Compile Include="KentorAuthServicesAuthenticationOptionsTests.cs" />
     <Compile Include="XmlDocumentExtensionsTests.cs" />
     <Compile Include="XmlHelpersTests.cs" />
   </ItemGroup>
