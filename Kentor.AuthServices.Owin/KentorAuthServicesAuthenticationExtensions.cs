@@ -16,15 +16,17 @@ namespace Kentor.AuthServices.Owin
         /// Add Kentor AuthServices SAML2 authentication to the Owin pipeline.
         /// </summary>
         /// <param name="app">Owin pipeline builder.</param>
+        /// <param name="options">Options for the middleware.</param>
         /// <returns></returns>
-        public static IAppBuilder UseKentorAuthServicesAuthentication(this IAppBuilder app)
+        public static IAppBuilder UseKentorAuthServicesAuthentication(this IAppBuilder app, 
+            KentorAuthServicesAuthenticationOptions options)
         {
             if (app == null)
             {
                 throw new ArgumentNullException("app");
             }
 
-            app.Use(typeof(KentorAuthServicesAuthenticationMiddleware));
+            app.Use(typeof(KentorAuthServicesAuthenticationMiddleware), options);
 
             return app;
         }

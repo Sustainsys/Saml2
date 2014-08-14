@@ -15,15 +15,17 @@ namespace Kentor.AuthServices.Tests
         {
             var app = Substitute.For<IAppBuilder>();
 
-            app.UseKentorAuthServicesAuthentication();
+            var options = new KentorAuthServicesAuthenticationOptions();
 
-            app.Received().Use(typeof(KentorAuthServicesAuthenticationMiddleware));
+            app.UseKentorAuthServicesAuthentication(options);
+
+            app.Received().Use(typeof(KentorAuthServicesAuthenticationMiddleware), options);
         }
 
         [TestMethod]
         public void KentorAuthServicesAuthenticationExtensions_UseKentorAuthServicesAuthentication_Nullcheck()
         {
-            Action a = () => ((IAppBuilder)null).UseKentorAuthServicesAuthentication();
+            Action a = () => ((IAppBuilder)null).UseKentorAuthServicesAuthentication(null);
 
             a.ShouldThrow<ArgumentNullException>("app");
         }
