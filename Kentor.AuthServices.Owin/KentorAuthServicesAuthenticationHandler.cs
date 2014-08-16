@@ -4,6 +4,7 @@ using Microsoft.Owin.Security.Infrastructure;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -20,7 +21,10 @@ namespace Kentor.AuthServices.Owin
                 RedirectUri = result.Location.ToString()
             };
 
-            return new MultipleIdentityAuthenticationTicket(result.Principal.Identities, properties);
+            var identities = result.Principal.Identities.Select(i =>
+                new ClaimsIdentity(i, null, Options.SignInAsAuthenticationType, i.NameClaimType, i.RoleClaimType));
+
+            return new MultipleIdentityAuthenticationTicket(identities, properties);
         }
 
         protected override Task ApplyResponseChallengeAsync()

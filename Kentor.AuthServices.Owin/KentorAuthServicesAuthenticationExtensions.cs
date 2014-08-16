@@ -26,7 +26,7 @@ namespace Kentor.AuthServices.Owin
                 throw new ArgumentNullException("app");
             }
 
-            app.Use(typeof(KentorAuthServicesAuthenticationMiddleware), options);
+            app.Use(typeof(KentorAuthServicesAuthenticationMiddleware), app, options);
 
             return app;
         }

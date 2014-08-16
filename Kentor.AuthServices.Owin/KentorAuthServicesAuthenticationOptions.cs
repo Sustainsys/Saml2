@@ -23,5 +23,11 @@ namespace Kentor.AuthServices.Owin
             AuthenticationMode = AuthenticationMode.Passive;
             Description.Caption = Constants.DefaultAuthenticationType;
         }
+
+        /// <summary>
+        /// The authentication type that will be used to sign in with. Typically this will be "ExternalCookie"
+        /// to be picked up by the external cookie authentication middleware that persists the identity in a cookie.
+        /// </summary>
+        public string SignInAsAuthenticationType { get; set; }
     }
 }

@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Owin.Security;
 
 namespace Kentor.AuthServices.Owin
 {
@@ -19,8 +20,9 @@ namespace Kentor.AuthServices.Owin
         /// Constructor
         /// </summary>
         /// <param name="next">The next middleware in the pipeline.</param>
+        /// <param name="app">The app that this middleware will be registered with.</param>
         /// <param name="options">Settings for the middleware.</param>
-        public KentorAuthServicesAuthenticationMiddleware(OwinMiddleware next,
+        public KentorAuthServicesAuthenticationMiddleware(OwinMiddleware next, IAppBuilder app,
             KentorAuthServicesAuthenticationOptions options)
             :base (next, options)
         {
@@ -29,9 +31,19 @@ namespace Kentor.AuthServices.Owin
                 throw new ArgumentNullException("options");
             }
 
+            if(app == null)
+            {
+                throw new ArgumentNullException("app");
+            }
+
             if(string.IsNullOrEmpty(options.AuthenticationType))
             {
                 options.AuthenticationType = Constants.DefaultAuthenticationType;
+            }
+
+            if(string.IsNullOrEmpty(options.SignInAsAuthenticationType))
+            {
+                options.SignInAsAuthenticationType = app.GetDefaultSignInAsAuthenticationType();
             }
         }
 

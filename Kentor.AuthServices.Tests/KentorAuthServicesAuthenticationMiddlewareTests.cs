@@ -15,6 +15,7 @@ using System.Text;
 using System.Security.Claims;
 using Kentor.AuthServices.Configuration;
 using System.Net.Http;
+using NSubstitute;
 
 namespace Kentor.AuthServices.Tests
 {
@@ -23,9 +24,9 @@ namespace Kentor.AuthServices.Tests
     {
         class ProtectedCaller : KentorAuthServicesAuthenticationMiddleware
         {
-            public ProtectedCaller(OwinMiddleware next,
+            public ProtectedCaller(OwinMiddleware next, IAppBuilder app,
                 KentorAuthServicesAuthenticationOptions options)
-                : base(next, options)
+                : base(next, app, options)
             { }
 
             public AuthenticationHandler<KentorAuthServicesAuthenticationOptions> CallCreateHandler()
@@ -38,10 +39,42 @@ namespace Kentor.AuthServices.Tests
         public void KentorAuthServicesAuthenticationMiddleware_CtorNullChecksOptions()
         {
             Action a = () => new KentorAuthServicesAuthenticationMiddleware(
-                new StubOwinMiddleware(0, null),
+                new StubOwinMiddleware(0, null), CreateAppBuilder(),
                 null);
 
             a.ShouldThrow<ArgumentNullException>("options");
+        }
+
+        [TestMethod]
+        public void KentorAuthServicesAuthenticationMiddleware_CtorNullChecksApp()
+        {
+            Action a = () => new KentorAuthServicesAuthenticationMiddleware(
+                new StubOwinMiddleware(0, null), null, new KentorAuthServicesAuthenticationOptions());
+
+            a.ShouldThrow<ArgumentNullException>("app");
+        }
+
+        const string DefaultSignInAsAuthenticationType = "MyDefaultSignAsAuthTypeForTesting";
+
+        private static IAppBuilder CreateAppBuilder()
+        {
+            var app = Substitute.For<IAppBuilder>();
+            app.Properties.Returns(new Dictionary<string, object>());
+            app.SetDefaultSignInAsAuthenticationType(DefaultSignInAsAuthenticationType);
+            return app;
+        }
+
+        [TestMethod]
+        public void KentorAuthServicesAuthenticationMiddleware_CtorSetsDefaultAuthOption()
+        {
+            var options = new KentorAuthServicesAuthenticationOptions();
+
+            options.SignInAsAuthenticationType.Should().BeNull();
+
+            var middleware = new KentorAuthServicesAuthenticationMiddleware(new StubOwinMiddleware(0, null),  
+                CreateAppBuilder(), options);
+
+            options.SignInAsAuthenticationType.Should().Be(DefaultSignInAsAuthenticationType);
         }
 
         [TestMethod]
@@ -49,7 +82,7 @@ namespace Kentor.AuthServices.Tests
         {
             var middleware = new KentorAuthServicesAuthenticationMiddleware(
                 new StubOwinMiddleware(401, new AuthenticationResponseChallenge(
-                    new string[] { "KentorAuthServices" }, null)),
+                    new string[] { "KentorAuthServices" }, null)), CreateAppBuilder(),
                 new KentorAuthServicesAuthenticationOptions());
 
             var context = OwinTestHelpers.CreateOwinContext();
@@ -65,7 +98,7 @@ namespace Kentor.AuthServices.Tests
         {
             var middleware = new KentorAuthServicesAuthenticationMiddleware(
                 new StubOwinMiddleware(200, new AuthenticationResponseChallenge(
-                    new string[] { "KentorAuthServices" }, null)),
+                    new string[] { "KentorAuthServices" }, null)), CreateAppBuilder(),
                 new KentorAuthServicesAuthenticationOptions());
 
             var context = OwinTestHelpers.CreateOwinContext();
@@ -80,7 +113,7 @@ namespace Kentor.AuthServices.Tests
         public void KentorAuthServicesAuthenticationMiddleware_NoRedirectWithoutChallenge()
         {
             var middleware = new KentorAuthServicesAuthenticationMiddleware(
-                new StubOwinMiddleware(401, null),
+                new StubOwinMiddleware(401, null), CreateAppBuilder(),
                 new KentorAuthServicesAuthenticationOptions());
 
             var context = OwinTestHelpers.CreateOwinContext();
@@ -103,8 +136,8 @@ namespace Kentor.AuthServices.Tests
                         new Dictionary<string, string>()
                         {
                             { "idp", secondEntityId }
-                        }))),
-                        new KentorAuthServicesAuthenticationOptions());
+                        }))), 
+                        CreateAppBuilder(), new KentorAuthServicesAuthenticationOptions());
 
             var context = OwinTestHelpers.CreateOwinContext();
             middleware.Invoke(context).Wait();
@@ -123,7 +156,7 @@ namespace Kentor.AuthServices.Tests
             var middleware = new KentorAuthServicesAuthenticationMiddleware(
                 new StubOwinMiddleware(401, new AuthenticationResponseChallenge(
                     new string[] { "KentorAuthServices" }, new AuthenticationProperties())),
-                        new KentorAuthServicesAuthenticationOptions());
+                        CreateAppBuilder(), new KentorAuthServicesAuthenticationOptions());
 
             var context = OwinTestHelpers.CreateOwinContext();
             context.Environment["KentorAuthServices.idp"] = secondEntityId;
@@ -141,6 +174,7 @@ namespace Kentor.AuthServices.Tests
             var middleware = new KentorAuthServicesAuthenticationMiddleware(
                 new StubOwinMiddleware(401, new AuthenticationResponseChallenge(
                     new string[] { authenticationType }, null)),
+                CreateAppBuilder(),
                 new KentorAuthServicesAuthenticationOptions()
                 {
                     AuthenticationType = authenticationType
@@ -165,7 +199,7 @@ namespace Kentor.AuthServices.Tests
                     {
                         RedirectUri = returnUri
                     })),
-                    new KentorAuthServicesAuthenticationOptions());
+                    CreateAppBuilder(), new KentorAuthServicesAuthenticationOptions());
 
             var context = OwinTestHelpers.CreateOwinContext();
 
@@ -219,12 +253,19 @@ namespace Kentor.AuthServices.Tests
             context.Request.ContentType = encodedBodyData.Headers.ContentType.ToString();
             context.Request.Host = new HostString("localhost");
             context.Request.Path = new PathString("/Saml2AuthenticationModule/acs");
-            
-            var ids = new ClaimsIdentity[] { new ClaimsIdentity("Federation"), new ClaimsIdentity("ClaimsAuthenticationManager") };
-            ids[0].AddClaim(new Claim(ClaimTypes.NameIdentifier, "SomeUser", null, "https://idp.example.com"));
-            ids[1].AddClaim(new Claim(ClaimTypes.Role, "RoleFromClaimsAuthManager", null, "ClaimsAuthenticationManagerMock"));
 
-            var middleware = new KentorAuthServicesAuthenticationMiddleware(null, new KentorAuthServicesAuthenticationOptions());
+            var signInAsAuthenticationType = "AuthType";
+            var ids = new ClaimsIdentity[] { new ClaimsIdentity(signInAsAuthenticationType),
+                new ClaimsIdentity(signInAsAuthenticationType) };
+            ids[0].AddClaim(new Claim(ClaimTypes.NameIdentifier, "SomeUser", null, "https://idp.example.com"));
+            ids[1].AddClaim(new Claim(ClaimTypes.Role, "RoleFromClaimsAuthManager", 
+                null, "ClaimsAuthenticationManagerMock"));
+
+            var middleware = new KentorAuthServicesAuthenticationMiddleware(null, CreateAppBuilder(),
+                new KentorAuthServicesAuthenticationOptions()
+                {
+                    SignInAsAuthenticationType = "AuthType"
+                });
 
             middleware.Invoke(context).Wait();
 

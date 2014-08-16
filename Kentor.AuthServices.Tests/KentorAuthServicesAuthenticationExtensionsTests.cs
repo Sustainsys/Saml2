@@ -19,7 +19,7 @@ namespace Kentor.AuthServices.Tests
 
             app.UseKentorAuthServicesAuthentication(options);
 
-            app.Received().Use(typeof(KentorAuthServicesAuthenticationMiddleware), options);
+            app.Received().Use(typeof(KentorAuthServicesAuthenticationMiddleware), app, options);
         }
 
         [TestMethod]
