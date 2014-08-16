@@ -1,6 +1,8 @@
 ﻿using Microsoft.Owin;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -9,7 +11,7 @@ namespace Kentor.AuthServices.Owin
 {
     static class OwinContextExtensions
     {
-        public static HttpRequestData ToHttpRequestData(this IOwinContext context)
+        public async static Task<HttpRequestData> ToHttpRequestData(this IOwinContext context)
         {
             if(context == null)
             {
@@ -19,7 +21,7 @@ namespace Kentor.AuthServices.Owin
             IFormCollection formData = null;
             if(context.Request.Body != null)
             {
-                formData = context.Request.ReadFormAsync().Result;
+                formData = await context.Request.ReadFormAsync();
             }
             return new HttpRequestData(context.Request.Method, context.Request.Uri, formData);
         }

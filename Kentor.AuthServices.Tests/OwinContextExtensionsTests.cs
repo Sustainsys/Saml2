@@ -6,6 +6,7 @@ using FluentAssertions;
 using Kentor.AuthServices.TestHelpers;
 using System.IO;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace Kentor.AuthServices.Tests
 {
@@ -13,15 +14,17 @@ namespace Kentor.AuthServices.Tests
     public class OwinContextExtensionsTests
     {
         [TestMethod]
-        public void OwinContextExtensionsTests_ToHttpRequestData_NullYieldsNull()
+        public async Task OwinContextExtensionsTests_ToHttpRequestData_NullYieldsNull()
         {
             IOwinContext ctx = null;
 
-            ctx.ToHttpRequestData().Should().BeNull();
+            var result = await ctx.ToHttpRequestData();
+
+            result.Should().BeNull();
         }
 
         [TestMethod]
-        public void OwinContextExtensionsTests_ToHttpRequestData()
+        public async Task OwinContextExtensionsTests_ToHttpRequestData()
         {
             IOwinContext ctx = OwinTestHelpers.CreateOwinContext();
 
@@ -29,7 +32,7 @@ namespace Kentor.AuthServices.Tests
             ctx.Request.Method = "POST";
             ctx.Request.ContentType = "application/x-www-form-urlencoded";
 
-            var subject = ctx.ToHttpRequestData();
+            var subject = await ctx.ToHttpRequestData();
 
             subject.Url.Should().Be(ctx.Request.Uri);
             subject.Form.Count.Should().Be(2);

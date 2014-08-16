@@ -11,17 +11,16 @@ namespace Kentor.AuthServices.Owin
 {
     class KentorAuthServicesAuthenticationHandler : AuthenticationHandler<KentorAuthServicesAuthenticationOptions>
     {
-        protected override Task<AuthenticationTicket> AuthenticateCoreAsync()
+        protected async override Task<AuthenticationTicket> AuthenticateCoreAsync()
         {
-            var result = CommandFactory.GetCommand("acs").Run(Context.ToHttpRequestData());
+            var result = CommandFactory.GetCommand("acs").Run(await Context.ToHttpRequestData());
 
             var properties = new AuthenticationProperties()
             {
                 RedirectUri = result.Location.ToString()
             };
 
-            return Task.FromResult<AuthenticationTicket>(
-                new MultipleIdentityAuthenticationTicket(result.Principal.Identities, properties));
+            return new MultipleIdentityAuthenticationTicket(result.Principal.Identities, properties);
         }
 
         protected override Task ApplyResponseChallengeAsync()
