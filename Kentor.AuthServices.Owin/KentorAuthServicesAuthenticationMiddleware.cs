@@ -22,23 +22,14 @@ namespace Kentor.AuthServices.Owin
         /// <param name="next">The next middleware in the pipeline.</param>
         /// <param name="app">The app that this middleware will be registered with.</param>
         /// <param name="options">Settings for the middleware.</param>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1062:Validate arguments of public methods", MessageId = "2", Justification="options is validated by base ctor. Test case for null options giving ArgumentNullException works.")]
         public KentorAuthServicesAuthenticationMiddleware(OwinMiddleware next, IAppBuilder app,
             KentorAuthServicesAuthenticationOptions options)
             :base (next, options)
         {
-            if(options == null)
-            {
-                throw new ArgumentNullException("options");
-            }
-
             if(app == null)
             {
                 throw new ArgumentNullException("app");
-            }
-
-            if(string.IsNullOrEmpty(options.AuthenticationType))
-            {
-                options.AuthenticationType = Constants.DefaultAuthenticationType;
             }
 
             if(string.IsNullOrEmpty(options.SignInAsAuthenticationType))

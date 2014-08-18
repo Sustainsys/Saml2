@@ -25,19 +25,6 @@ namespace Kentor.AuthServices.Tests
     [TestClass]
     public class KentorAuthServicesAuthenticationMiddlewareTests
     {
-        class ProtectedCaller : KentorAuthServicesAuthenticationMiddleware
-        {
-            public ProtectedCaller(OwinMiddleware next, IAppBuilder app,
-                KentorAuthServicesAuthenticationOptions options)
-                : base(next, app, options)
-            { }
-
-            public AuthenticationHandler<KentorAuthServicesAuthenticationOptions> CallCreateHandler()
-            {
-                return CreateHandler();
-            }
-        }
-
         [TestMethod]
         public void KentorAuthServicesAuthenticationMiddleware_CtorNullChecksOptions()
         {
