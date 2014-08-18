@@ -1,4 +1,5 @@
-﻿using Microsoft.Owin.Security;
+﻿using Microsoft.Owin;
+using Microsoft.Owin.Security;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,6 +23,7 @@ namespace Kentor.AuthServices.Owin
         {
             AuthenticationMode = AuthenticationMode.Passive;
             Description.Caption = Constants.DefaultAuthenticationType;
+            MetadataPath = new PathString(Constants.DefaultMetadataPath);
         }
 
         /// <summary>
@@ -29,5 +31,10 @@ namespace Kentor.AuthServices.Owin
         /// to be picked up by the external cookie authentication middleware that persists the identity in a cookie.
         /// </summary>
         public string SignInAsAuthenticationType { get; set; }
+
+        /// <summary>
+        /// Path for metadata.
+        /// </summary>
+        public PathString MetadataPath { get; set;  }
     }
 }

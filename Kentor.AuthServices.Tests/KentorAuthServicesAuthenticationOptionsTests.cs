@@ -2,6 +2,7 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Kentor.AuthServices.Owin;
 using FluentAssertions;
+using Microsoft.Owin.Security;
 
 namespace Kentor.AuthServices.Tests
 {
@@ -9,11 +10,13 @@ namespace Kentor.AuthServices.Tests
     public class KentorAuthServicesAuthenticationOptionsTests
     {
         [TestMethod]
-        public void KentorAuthServicesAuthenticationOptions_SetsDefaultDescriptionCaption()
+        public void KentorAuthServicesAuthenticationOptions_SetsDefault()
         {
             var subject = new KentorAuthServicesAuthenticationOptions();
 
             subject.Description.Caption.Should().Be(Constants.DefaultAuthenticationType);
+            subject.AuthenticationMode.Should().Be(AuthenticationMode.Passive);
+            subject.MetadataPath.ToString().Should().Be("/AuthServices");
         }
     }
 }

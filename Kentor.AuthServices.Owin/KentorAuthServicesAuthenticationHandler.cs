@@ -62,6 +62,12 @@ namespace Kentor.AuthServices.Owin
 
                 return true;
             }
+            
+            if(Request.Path == Options.MetadataPath)
+            {
+                CommandFactory.GetCommand("").Run(await Context.ToHttpRequestData()).Apply(Context);
+                return true;
+            }
 
             return false;
         }

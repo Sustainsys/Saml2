@@ -16,6 +16,9 @@ using System.Security.Claims;
 using Kentor.AuthServices.Configuration;
 using System.Net.Http;
 using NSubstitute;
+using System.Xml.Linq;
+using System.Xml;
+using System.Threading.Tasks;
 
 namespace Kentor.AuthServices.Tests
 {
@@ -274,6 +277,30 @@ namespace Kentor.AuthServices.Tests
 
             context.Authentication.AuthenticationResponseGrant.Principal.Identities.ShouldBeEquivalentTo(ids,
                 opt => opt.IgnoringCyclicReferences());
+        }
+
+        [TestMethod]
+        public async Task KentorAuthServicesAuthenticationMiddleware_MetadataWorks()
+        {
+            var context = OwinTestHelpers.CreateOwinContext();
+            context.Request.Host = new HostString("localhost");
+            var metadataPath = "/SomeMetadataPath";
+            context.Request.Path = new PathString(metadataPath);
+
+            var middleware = new KentorAuthServicesAuthenticationMiddleware(null, CreateAppBuilder(),
+                new KentorAuthServicesAuthenticationOptions()
+                {
+                    MetadataPath = new PathString(metadataPath)
+                });
+
+            await middleware.Invoke(context);
+            context.Response.Body.Seek(0, SeekOrigin.Begin);
+
+            context.Response.ContentType.Should().Contain("application/samlmetadata+xml");
+
+            var xmlData = XDocument.Load(context.Response.Body);
+            
+            xmlData.Document.Root.Name.Should().Be(Saml2Namespaces.Saml2Metadata + "EntityDescriptor");
         }
     }
 }
