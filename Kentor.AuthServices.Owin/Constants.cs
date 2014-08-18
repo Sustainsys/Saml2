@@ -10,5 +10,6 @@ namespace Kentor.AuthServices.Owin
     {
         public const string DefaultAuthenticationType = "KentorAuthServices";
         public const string DefaultMetadataPath = "/AuthServices";
+        public const string DefaultCaption = "SAML2 Federation";
     }
 }

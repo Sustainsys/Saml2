@@ -22,7 +22,7 @@ namespace Kentor.AuthServices.Owin
             : base(Constants.DefaultAuthenticationType)
         {
             AuthenticationMode = AuthenticationMode.Passive;
-            Description.Caption = Constants.DefaultAuthenticationType;
+            Description.Caption = Constants.DefaultCaption;
             MetadataPath = new PathString(Constants.DefaultMetadataPath);
         }
 

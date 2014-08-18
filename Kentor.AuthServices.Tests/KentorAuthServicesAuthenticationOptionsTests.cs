@@ -14,7 +14,7 @@ namespace Kentor.AuthServices.Tests
         {
             var subject = new KentorAuthServicesAuthenticationOptions();
 
-            subject.Description.Caption.Should().Be(Constants.DefaultAuthenticationType);
+            subject.Description.Caption.Should().Be(Constants.DefaultCaption);
             subject.AuthenticationMode.Should().Be(AuthenticationMode.Passive);
             subject.MetadataPath.ToString().Should().Be("/AuthServices");
         }
