@@ -81,7 +81,7 @@ namespace Kentor.AuthServices.Tests
         }
 
         [TestMethod]
-        public void KentorAuthServicesAuthenticationMiddleware_RedirectsOnAuthChallenge()
+        public async Task KentorAuthServicesAuthenticationMiddleware_RedirectsOnAuthChallenge()
         {
             var middleware = new KentorAuthServicesAuthenticationMiddleware(
                 new StubOwinMiddleware(401, new AuthenticationResponseChallenge(
@@ -90,14 +90,14 @@ namespace Kentor.AuthServices.Tests
 
             var context = OwinTestHelpers.CreateOwinContext();
 
-            middleware.Invoke(context).Wait();
+            await middleware.Invoke(context);
 
             context.Response.StatusCode.Should().Be(302);
             context.Response.Headers["Location"].Should().StartWith("https://idp.example.com/idp");
         }
 
         [TestMethod]
-        public void KentorAuthServicesAuthenticationMiddleware_NoRedirectOnNon401()
+        public async Task KentorAuthServicesAuthenticationMiddleware_NoRedirectOnNon401()
         {
             var middleware = new KentorAuthServicesAuthenticationMiddleware(
                 new StubOwinMiddleware(200, new AuthenticationResponseChallenge(
@@ -106,14 +106,14 @@ namespace Kentor.AuthServices.Tests
 
             var context = OwinTestHelpers.CreateOwinContext();
 
-            middleware.Invoke(context).Wait();
+            await middleware.Invoke(context);
 
             context.Response.StatusCode.Should().Be(200);
             context.Response.Headers["Location"].Should().BeNull();
         }
 
         [TestMethod]
-        public void KentorAuthServicesAuthenticationMiddleware_NoRedirectWithoutChallenge()
+        public async Task KentorAuthServicesAuthenticationMiddleware_NoRedirectWithoutChallenge()
         {
             var middleware = new KentorAuthServicesAuthenticationMiddleware(
                 new StubOwinMiddleware(401, null), CreateAppBuilder(),
@@ -121,13 +121,13 @@ namespace Kentor.AuthServices.Tests
 
             var context = OwinTestHelpers.CreateOwinContext();
 
-            middleware.Invoke(context).Wait();
+            await middleware.Invoke(context);
 
             context.Response.StatusCode.Should().Be(401);
         }
 
         [TestMethod]
-        public void KentorAuthServicesAuthenticationMiddleware_RedirectoToSecondIdp_AuthenticationProperties()
+        public async Task KentorAuthServicesAuthenticationMiddleware_RedirectoToSecondIdp_AuthenticationProperties()
         {
             var secondIdp = IdentityProvider.ConfiguredIdentityProviders.Skip(1).First().Value;
             var secondDestination = secondIdp.DestinationUri;
@@ -143,14 +143,14 @@ namespace Kentor.AuthServices.Tests
                         CreateAppBuilder(), new KentorAuthServicesAuthenticationOptions());
 
             var context = OwinTestHelpers.CreateOwinContext();
-            middleware.Invoke(context).Wait();
+            await middleware.Invoke(context);
 
             context.Response.StatusCode.Should().Be(302);
             context.Response.Headers["Location"].Should().StartWith(secondDestination.ToString());
         }
 
         [TestMethod]
-        public void KentorAuthServicesAuthenticationMiddleware_RedirectoToSecondIdp_OwinEnvironment()
+        public async Task KentorAuthServicesAuthenticationMiddleware_RedirectoToSecondIdp_OwinEnvironment()
         {
             var secondIdp = IdentityProvider.ConfiguredIdentityProviders.Skip(1).First().Value;
             var secondDestination = secondIdp.DestinationUri;
@@ -163,14 +163,14 @@ namespace Kentor.AuthServices.Tests
 
             var context = OwinTestHelpers.CreateOwinContext();
             context.Environment["KentorAuthServices.idp"] = secondEntityId;
-            middleware.Invoke(context).Wait();
+            await middleware.Invoke(context);
 
             context.Response.StatusCode.Should().Be(302);
             context.Response.Headers["Location"].Should().StartWith(secondDestination.ToString());
         }
 
         [TestMethod]
-        public void KentorAuthServicesAuthenticationMiddleware_RedirectOnChallengeForAuthTypeInOptions()
+        public async Task KentorAuthServicesAuthenticationMiddleware_RedirectOnChallengeForAuthTypeInOptions()
         {
             var authenticationType = "someAuthName";
 
@@ -185,14 +185,14 @@ namespace Kentor.AuthServices.Tests
 
             var context = OwinTestHelpers.CreateOwinContext();
 
-            middleware.Invoke(context).Wait();
+            await middleware.Invoke(context);
 
             context.Response.StatusCode.Should().Be(302);
             context.Response.Headers["Location"].Should().StartWith("https://idp.example.com/idp");
         }
 
         [TestMethod]
-        public void KentorAuthServicesAuthenticationMiddleware_RedirectRemembersReturnPath()
+        public async Task KentorAuthServicesAuthenticationMiddleware_RedirectRemembersReturnPath()
         {
             var returnUri = "http://sp.example.com/returnuri";
 
@@ -206,7 +206,7 @@ namespace Kentor.AuthServices.Tests
 
             var context = OwinTestHelpers.CreateOwinContext();
 
-            middleware.Invoke(context).Wait();
+            await middleware.Invoke(context);
 
             var requestId = AuthnRequestHelper.GetRequestId(new Uri(context.Response.Headers["Location"]));
 
@@ -218,7 +218,7 @@ namespace Kentor.AuthServices.Tests
 
         [NotReRunnable]
         [TestMethod]
-        public void KentorAuthServicesAuthenticationMiddleware_AcsWorks()
+        public async Task KentorAuthServicesAuthenticationMiddleware_AcsWorks()
         {
             var context = OwinTestHelpers.CreateOwinContext();
             context.Request.Method = "POST";
@@ -270,7 +270,7 @@ namespace Kentor.AuthServices.Tests
                     SignInAsAuthenticationType = "AuthType"
                 });
 
-            middleware.Invoke(context).Wait();
+            await middleware.Invoke(context);
 
             context.Response.StatusCode.Should().Be(302);
             context.Response.Headers["Location"].Should().Be("http://localhost/LoggedIn");
