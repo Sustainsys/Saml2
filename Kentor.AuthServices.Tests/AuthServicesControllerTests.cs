@@ -81,11 +81,6 @@ namespace Kentor.AuthServices.Tests
             var httpContext = Substitute.For<HttpContextBase>();
             httpContext.Request.Returns(request);
 
-            var ids = new ClaimsIdentity[]
-                { new ClaimsIdentity("Federation"), new ClaimsIdentity("ClaimsAuthenticationManager") };
-            ids[0].AddClaim(new Claim(ClaimTypes.NameIdentifier, "SomeUser", null, "https://idp.example.com"));
-            ids[1].AddClaim(new Claim(ClaimTypes.Role, "RoleFromClaimsAuthManager", null, "ClaimsAuthenticationManagerMock"));
-
             var controller = new AuthServicesController();
             controller.ControllerContext = new ControllerContext(httpContext, new RouteData(), controller);
 

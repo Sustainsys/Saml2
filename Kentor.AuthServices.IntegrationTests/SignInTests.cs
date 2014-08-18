@@ -73,5 +73,32 @@ namespace Kentor.AuthServices.IntegrationTests
             I.Open("http://localhost:2181/AuthServices/SignIn?idp=Kentor.AuthServices.StubIdp")
                 .Assert.Url(u => u.Host == "stubidp.kentor.se");            
         }
+
+        [TestMethod]
+        public void SignIn_Unsolicited_Owin()
+        {
+            I.Open("http://localhost:52071/")
+                .Enter("http://localhost:57294/AuthServices/Acs").In("#AssertionConsumerServiceUrl")
+                .Enter("SomeUnusedNameId").In("#NameId")
+                .Click("#main form button")
+                .Assert.Text("You've successfully authenticated with Kentor.AuthServices.Local.StubIdp. Please enter a user name for this site below and click the Register button to finish logging in.")
+                .In("p.text-info");
+        }
+
+        [TestMethod]
+        public void SignIn_AuthnRequest_Owin()
+        {
+            I.Open("http://localhost:57294/Account/Login")
+                .Click("#KentorAuthServices")
+                .Assert.Text("http://localhost:57294/AuthServices/Acs").In("#AssertionConsumerServiceUrl");
+
+            I.Assert.False(() => string.IsNullOrEmpty(I.Find("#InResponseTo").Element.Value));
+
+            I.Enter("SomeUnusedNameId").In("#NameId");
+
+            I.Click("#main form button")
+                .Assert.Text("You've successfully authenticated with Kentor.AuthServices.Local.StubIdp. Please enter a user name for this site below and click the Register button to finish logging in.")
+                .In("p.text-info");
+        }
     }
 }

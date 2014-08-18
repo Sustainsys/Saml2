@@ -32,10 +32,26 @@ namespace Kentor.AuthServices
                 new KeyValuePair<string, string[]>(de, ((string)request.Form[i]).Split(','))));
         }
 
+        /// <summary>
+        /// Ctor
+        /// </summary>
+        /// <param name="httpMethod">Http method of the request</param>
+        /// <param name="url">Full url requested</param>
+        /// <param name="formData">Form data, if present (only for POST requests)</param>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
-        internal HttpRequestData(string httpMethod, Uri url, IEnumerable<KeyValuePair<string, string[]>> formData = null)
+        public HttpRequestData(string httpMethod, Uri url, IEnumerable<KeyValuePair<string, string[]>> formData)
         {
             Init(httpMethod, url, formData);
+        }
+
+        /// <summary>
+        /// Ctor
+        /// </summary>
+        /// <param name="httpMethod">Http method of the request</param>
+        /// <param name="url">Full url requested</param>
+        public HttpRequestData(string httpMethod, Uri url)
+        {
+            Init(httpMethod, url, null);
         }
 
         private void Init(string httpMethod, Uri url, IEnumerable<KeyValuePair<string, string[]>> formData)

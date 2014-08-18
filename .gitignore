@@ -108,3 +108,5 @@ Backup*/
 UpgradeLog*.XML
 
 nuget/*nupkg
+*/App_Data/*.mdf
+*/App_Data/*.ldf

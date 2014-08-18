@@ -36,5 +36,13 @@ namespace Kentor.AuthServices.IntegrationTests
 
             TestMetadata(url);
         }
+
+        [TestMethod]
+        public void Metadata_GetMetadata_Owin()
+        {
+            var url = "http://localhost:57294/AuthServices";
+
+            TestMetadata(url);
+        }
     }
 }

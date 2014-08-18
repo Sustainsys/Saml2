@@ -8,6 +8,7 @@ using NSubstitute;
 using System.IO.Compression;
 using System.IO;
 using System.Xml.Linq;
+using Kentor.AuthServices.TestHelpers;
 
 namespace Kentor.AuthServices.Tests
 {
@@ -53,23 +54,7 @@ namespace Kentor.AuthServices.Tests
 
             var authnRequest = idp.CreateAuthenticateRequest(null);
 
-            // Dig out requestId from the signincommand
-            string requestId;
-            var tmp = Convert.FromBase64String(HttpUtility.UrlDecode(subject.Location.Query.Replace("?SAMLRequest=", "")));
-            using (var compressed = new MemoryStream(tmp))
-            {
-                compressed.Seek(0, SeekOrigin.Begin);
-                using (var decompressedStream = new DeflateStream(compressed, CompressionMode.Decompress))
-                {
-                    using (var deCompressed = new MemoryStream())
-                    {
-                        decompressedStream.CopyTo(deCompressed);
-                        var xmlData = System.Text.Encoding.UTF8.GetString(deCompressed.GetBuffer());
-                        var requestXml = XDocument.Parse(xmlData);
-                        requestId = requestXml.Document.Root.Attribute(XName.Get("ID")).Value;
-                    }
-                }
-            }
+            var requestId = AuthnRequestHelper.GetRequestId(subject.Location);
 
             StoredRequestState storedAuthnData;
             PendingAuthnRequests.TryRemove(new System.IdentityModel.Tokens.Saml2Id(requestId), out storedAuthnData);
@@ -82,10 +67,10 @@ namespace Kentor.AuthServices.Tests
         {
             var secondIdp = IdentityProvider.ConfiguredIdentityProviders.Skip(1).First().Value;
             var secondDestination = secondIdp.DestinationUri;
-            var secondIssuer = secondIdp.Issuer;
+            var secondEntityId = secondIdp.Issuer;
 
             var request = new HttpRequestData("GET", new Uri("http://sp.example.com?idp=" +
-            HttpUtility.UrlEncode(secondIssuer)));
+            HttpUtility.UrlEncode(secondEntityId)));
             var subject = new SignInCommand().Run(request);
 
             subject.Location.Host.Should().Be(secondDestination.Host);
