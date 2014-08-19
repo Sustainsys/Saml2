@@ -20,6 +20,11 @@
 * First release of owin middleware. 
 * Supports authentication with on or more configured identity providers.
     </releaseNotes>
+    <dependencies>
+      <group>
+        <dependency id="Kentor.AuthServices" version="$version$" />
+      </group>
+    </dependencies>
   </metadata>
   <files>
     <file src="readme.txt" target="" />
