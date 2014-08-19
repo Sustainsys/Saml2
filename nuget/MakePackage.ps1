@@ -24,6 +24,7 @@ if ("$master" -eq "")
 pushd ..
 del Kentor.AuthServices\bin\Release\*.dll
 del Kentor.AuthServices.Mvc\bin\Release\*.dll
+del Kentor.AuthServices.Owin\bin\Release\*.dll
 
 function Increment-PatchNumber
 {
@@ -62,6 +63,7 @@ echo "Building package..."
 
 nuget pack -build -outputdirectory nuget Kentor.AuthServices\Kentor.AuthServices.csproj
 nuget pack -build -outputdirectory nuget Kentor.AuthServices.Mvc\Kentor.AuthServices.Mvc.csproj
+nuget pack -build -outputdirectory nuget Kentor.AuthServices.Owin\Kentor.AuthServices.Owin.csproj
 
 $version = Increment-PatchNumber
 Set-Version($version)

@@ -17,7 +17,12 @@
     <copyright>Copyright Kentor and contributors 2013</copyright>
     <tags>SAML2 authentication ASP.NET SAML SSO AspNetMvc Mvc</tags>
     <releaseNotes>
- Version 0.4.0
+ Version 0.5.0
+* Service provider metadata.
+* Support for multiple Identity Providers.
+* Kentor.AuthServices.Owin package now available for MVC projects using ASP.NET Identity.
+
+Version 0.4.0
 THIS RELEASE CONTAINS SECURITY FIXES
 * Dependency changed to work with MVC versions from 1.0 and up.
 * Dependency on Kentor.AuthServices updated to 0.4.0 which contains security fixes.
