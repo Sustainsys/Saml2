@@ -16,7 +16,10 @@
     <copyright>Copyright Kentor and contributors 2013</copyright>
     <tags>SAML2 authentication ASP.NET SAML SSO Owin</tags>
     <releaseNotes>
- Version 0.5.0
+ Version 0.5.2
+* Fixed missing dependency on Kentor.AuthServices package.
+
+Version 0.5.0
 * First release of owin middleware. 
 * Supports authentication with on or more configured identity providers.
     </releaseNotes>
