@@ -43,6 +43,23 @@ namespace Kentor.AuthServices
                 throw new XmlException("Wrong or unsupported SAML2 version");
             }
 
+            if (Saml2EncryptedAssertion.IsEncrypted(x)) 
+            {
+                var encryptedAssertions = x.DocumentElement.ChildNodes.Cast<XmlNode>()
+                    .Where(node => node.NodeType == XmlNodeType.Element && node.NamespaceURI == Saml2Namespaces.Saml2Name).Cast<XmlElement>()
+                    .Where(xe => xe.LocalName == "EncryptedAssertion");
+                foreach (var encryptedAssertion in encryptedAssertions) 
+                {
+                    XmlElement decryptedAssertion = Saml2EncryptedAssertion.Decrypt(encryptedAssertion);
+                    if (decryptedAssertion != null) 
+                    {
+                        var parent = encryptedAssertion.ParentNode;
+                        XmlNode assertion = parent.OwnerDocument.ImportNode(decryptedAssertion as XmlNode, true);
+                        parent.ReplaceChild(assertion, encryptedAssertion);
+                    }
+                }
+            }
+              
             return new Saml2Response(x);
         }
 

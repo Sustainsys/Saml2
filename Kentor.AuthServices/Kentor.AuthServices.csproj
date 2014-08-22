@@ -23,6 +23,7 @@
     <RunCodeAnalysis>true</RunCodeAnalysis>
     <CodeAnalysisRuleSet>..\Kentor.AuthServices.ruleset</CodeAnalysisRuleSet>
     <DocumentationFile>bin\Debug\Kentor.AuthServices.XML</DocumentationFile>
+    <CodeAnalysisIgnoreGeneratedCode>true</CodeAnalysisIgnoreGeneratedCode>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -54,11 +55,14 @@
     <Compile Include="AcsCommand.cs" />
     <Compile Include="AuthServicesException.cs" />
     <Compile Include="BadFormatSamlResponseException.cs" />
+    <Compile Include="CertificateUtilities.cs" />
     <Compile Include="ClaimsIdentityExtensions.cs" />
     <Compile Include="CommandResult.cs" />
     <Compile Include="Configuration\IdentityProviderCollection.cs" />
     <Compile Include="Configuration\IdentityProviderElement.cs" />
     <Compile Include="Configuration\CertificateElement.cs" />
+    <Compile Include="CertificateNotFoundException.cs" />
+    <Compile Include="CertificatePrivateKeyNotFoundException.cs" />
     <Compile Include="DateTimeExtensions.cs" />
     <Compile Include="EntityDescriptorExtension.cs" />
     <Compile Include="Enumerator.cs" />
@@ -84,6 +88,7 @@
     <Compile Include="Saml2Binding.cs" />
     <Compile Include="Saml2BindingType.cs" />
     <Compile Include="Saml2ConditionsExtensions.cs" />
+    <Compile Include="Saml2EncryptedAssertion.cs" />
     <Compile Include="Saml2Namespaces.cs" />
     <Compile Include="Saml2PostBinding.cs" />
     <Compile Include="Saml2RedirectBinding.cs" />
