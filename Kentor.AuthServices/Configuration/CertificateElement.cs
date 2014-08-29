@@ -13,6 +13,22 @@ namespace Kentor.AuthServices.Configuration
     /// </summary>
     public class CertificateElement : ConfigurationElement
     {
+        private bool isReadOnly = true;
+
+        internal void AllowConfigEdit(bool allow)
+        {
+            isReadOnly = !allow;
+        }
+
+        /// <summary>
+        /// Allows local modification of the configuration for testing purposes
+        /// </summary>
+        /// <returns></returns>
+        public override bool IsReadOnly()
+        {
+            return isReadOnly;
+        }
+
         /// <summary>
         /// File name of cert stored in file.
         /// </summary>
@@ -22,6 +38,10 @@ namespace Kentor.AuthServices.Configuration
             get
             {
                 return (string)this["fileName"];
+            }
+            internal set
+            {
+                base["fileName"] = value;
             }
         }
 
@@ -96,25 +116,34 @@ namespace Kentor.AuthServices.Configuration
             }
             else
             {
-                var store = new X509Store(StoreName, StoreLocation);              
-                store.Open(OpenFlags.ReadOnly);
-                try
+                // A 0 store location indicates that attributes to load from store are not present
+                // in the config.
+                if (StoreLocation != 0)
                 {
-                    var certs = store.Certificates.Find(X509FindType, FindValue, false);
-
-                    if (certs.Count != 1)
+                    var store = new X509Store(StoreName, StoreLocation);
+                    store.Open(OpenFlags.ReadOnly);
+                    try
                     {
-                        throw new InvalidOperationException(
-                            string.Format(CultureInfo.InvariantCulture, 
-                            "Finding cert through {0} in {1}:{2} with value {3} matched {4} certificates. A unique match is required.",
-                            X509FindType, StoreLocation, StoreName, FindValue, certs.Count));
-                    }
+                        var certs = store.Certificates.Find(X509FindType, FindValue, false);
 
-                    return certs[0];
+                        if (certs.Count != 1)
+                        {
+                            throw new InvalidOperationException(
+                                string.Format(CultureInfo.InvariantCulture,
+                                "Finding cert through {0} in {1}:{2} with value {3} matched {4} certificates. A unique match is required.",
+                                X509FindType, StoreLocation, StoreName, FindValue, certs.Count));
+                        }
+
+                        return certs[0];
+                    }
+                    finally
+                    {
+                        store.Close();
+                    }
                 }
-                finally
+                else
                 {
-                    store.Close();
+                    return null;
                 }
             }
         }

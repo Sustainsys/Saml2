@@ -38,41 +38,57 @@ namespace Kentor.AuthServices.Configuration
             {
                 return (string)base["entityId"];
             }
+            internal set
+            {
+                base["entityId"] = value;
+            }
         }
 
         /// <summary>
         /// Destination url to send requests to.
         /// </summary>
-        [ConfigurationProperty("destinationUri", IsRequired = true)]
+        [ConfigurationProperty("destinationUri")]
         public Uri DestinationUri
         {
             get
             {
                 return (Uri)base["destinationUri"];
             }
+            internal set
+            {
+                base["destinationUri"] = value;
+            }
         }
 
         /// <summary>
         /// The binding to use when sending requests to the Idp.
         /// </summary>
-        [ConfigurationProperty("binding", IsRequired = true)]
+        [ConfigurationProperty("binding")]
         public Saml2BindingType Binding
         {
             get
             {
                 return (Saml2BindingType)base["binding"];
             }
+            internal set
+            {
+                base["binding"] = value;
+            }
         }
 
         /// <summary>
         /// Certificate location for the certificate the Idp uses to sign its messages.
         /// </summary>
-        [ConfigurationProperty("signingCertificate", IsRequired = true)]
+        [ConfigurationProperty("signingCertificate")]
         public CertificateElement SigningCertificate
         {
             get
             {
                 return (CertificateElement)base["signingCertificate"];
+            }
+            internal set
+            {
+                base["signingCertificate"] = value;
             }
         }
 

@@ -5,6 +5,9 @@ using System.Collections.Concurrent;
 using System.Linq;
 using System.Security.Cryptography.X509Certificates;
 using System.IdentityModel.Tokens;
+using System.Net;
+using System.IdentityModel.Metadata;
+using System.Xml.Linq;
 
 namespace Kentor.AuthServices
 {
@@ -24,19 +27,25 @@ namespace Kentor.AuthServices
 
         public IdentityProvider() { }
 
-        public IdentityProvider(IdentityProviderElement config)
+        // Ctor used for testing.
+        internal IdentityProvider(Uri destinationUri)
+        {
+            DestinationUri = destinationUri;
+        }
+
+        internal IdentityProvider(IdentityProviderElement config)
         {
             DestinationUri = config.DestinationUri;
-            Issuer = config.EntityId;
+            EntityId = config.EntityId;
             Binding = config.Binding;
             certificate = config.SigningCertificate.LoadCertificate();
         }
 
-        public Saml2BindingType Binding { get; set; }
+        public Saml2BindingType Binding { get; private set; }
 
-        public Uri DestinationUri { get; set; }
+        public Uri DestinationUri { get; private set; }
 
-        public string Issuer { get; set; }
+        public string EntityId { get; private set; }
 
         public Saml2AuthenticationRequest CreateAuthenticateRequest(Uri returnUri)
         {
@@ -47,7 +56,7 @@ namespace Kentor.AuthServices
                 Issuer = KentorAuthServicesSection.Current.EntityId
             };
 
-            var responseData = new StoredRequestState(Issuer, returnUri);
+            var responseData = new StoredRequestState(EntityId, returnUri);
 
             PendingAuthnRequests.Add(new Saml2Id(request.Id), responseData);
 
