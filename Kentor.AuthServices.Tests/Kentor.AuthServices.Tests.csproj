@@ -145,6 +145,8 @@
     <Compile Include="MultipleIdentityAuthenticationTicketTests.cs" />
     <Compile Include="OwinContextExtensionsTests.cs" />
     <Compile Include="KentorAuthServicesAuthenticationOptionsTests.cs" />
+    <Compile Include="MetadataLoaderTests.cs" />
+    <Compile Include="InvalidMetadataExceptionTests.cs" />
     <Compile Include="XmlDocumentExtensionsTests.cs" />
     <Compile Include="XmlHelpersTests.cs" />
   </ItemGroup>

@@ -65,9 +65,11 @@
     <Compile Include="HttpRequestData.cs" />
     <Compile Include="IdentityProvider.cs" />
     <Compile Include="IndexedProtocolEndpointExtensions.cs" />
+    <Compile Include="InvalidMetadataException.cs" />
     <Compile Include="ISaml2Message.cs" />
     <Compile Include="MessageBinder.cs" />
     <Compile Include="MetadataCommand.cs" />
+    <Compile Include="MetadataLoader.cs" />
     <Compile Include="MorePublicSaml2SecurityTokenHandler.cs" />
     <Compile Include="NoSamlResponseFoundException.cs" />
     <Compile Include="NotFoundCommand.cs" />

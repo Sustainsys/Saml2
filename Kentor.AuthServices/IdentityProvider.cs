@@ -39,6 +39,8 @@ namespace Kentor.AuthServices
             EntityId = config.EntityId;
             Binding = config.Binding;
             certificate = config.SigningCertificate.LoadCertificate();
+
+            LoadMetadata();
         }
 
         public Saml2BindingType Binding { get; private set; }
@@ -75,6 +77,11 @@ namespace Kentor.AuthServices
             {
                 return certificate;
             }
+        }
+
+        private static void LoadMetadata()
+        {
+            
         }
     }
 }
