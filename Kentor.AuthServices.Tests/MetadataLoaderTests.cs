@@ -17,7 +17,7 @@ namespace Kentor.AuthServices.Tests
 
             var subject = MetadataLoader.Load(new Uri(entityId));
 
-            subject.EntityId.Should().Be(entityId);
+            subject.EntityId.Id.Should().Be(entityId);
         }
 
         [TestMethod]
@@ -60,6 +60,27 @@ namespace Kentor.AuthServices.Tests
             Action a = () => MetadataLoader.ParseEntityDescriptor(null);
 
             a.ShouldThrow<ArgumentNullException>("metadataXml");
+        }
+
+        [TestMethod]
+        public void MetadataLoader_ParseEntityDescriptor_EntityId()
+        {
+            var metadata = new XElement(Saml2Namespaces.Saml2Metadata + "EntityDescriptor",
+                new XAttribute("EntityID", "SomeEntityID"));
+
+            var subject = MetadataLoader.ParseEntityDescriptor(metadata);
+
+            subject.EntityId.Id.Should().Be("SomeEntityID");
+        }
+
+        [TestMethod]
+        public void MetadataLoader_ParseEntityDescriptor_MissingEntityId()
+        {
+            var metadata = new XElement(Saml2Namespaces.Saml2Metadata + "EntityDescriptor");
+
+            Action a = () => MetadataLoader.ParseEntityDescriptor(metadata);
+
+            a.ShouldThrow<InvalidMetadataException>().And.Message.Should().Be("Missing EntityID in EntityDescriptor.");
         }
     }
 }

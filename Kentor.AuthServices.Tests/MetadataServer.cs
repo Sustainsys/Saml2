@@ -26,7 +26,7 @@ namespace Kentor.AuthServices.Tests
                     {
                         ctx.Response.Write(
 @"<EntityDescriptor xmlns=""urn:oasis:names:tc:SAML:2.0:metadata""
-  entityID=""http://localhost:13428/idpmetadata"" />
+  EntityID=""http://localhost:13428/idpmetadata"" />
 ");
                     }
                     else
