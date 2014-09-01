@@ -64,6 +64,7 @@
     <Compile Include="Enumerator.cs" />
     <Compile Include="HttpRequestData.cs" />
     <Compile Include="IdentityProvider.cs" />
+    <Compile Include="IdentityProviderSingleSignOnDescriptorExtensions.cs" />
     <Compile Include="IndexedProtocolEndpointExtensions.cs" />
     <Compile Include="InvalidMetadataException.cs" />
     <Compile Include="ISaml2Message.cs" />

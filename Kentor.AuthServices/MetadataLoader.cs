@@ -29,7 +29,7 @@ namespace Kentor.AuthServices
 
             var metaDataXml = XDocument.Load(metadataUri.ToString());
 
-            return ParseEntityDescriptor(metaDataXml.Root);
+            return LoadEntityDescriptor(metaDataXml.Root);
         }
 
         /// <summary>
@@ -37,7 +37,7 @@ namespace Kentor.AuthServices
         /// </summary>
         /// <param name="metadataXml"></param>
         /// <returns>EntityDescriptor with parsed data.</returns>
-        public static EntityDescriptor ParseEntityDescriptor(XElement metadataXml)
+        public static EntityDescriptor LoadEntityDescriptor(XElement metadataXml)
         {
             if (metadataXml == null)
             {
@@ -50,6 +50,8 @@ namespace Kentor.AuthServices
             {
                 EntityId = new EntityId(metadataXml.Attribute("EntityID").Value)
             };
+
+            LoadRoleDescriptors(metadataXml, entityDescriptor);
 
             return entityDescriptor;
         }
@@ -71,6 +73,16 @@ namespace Kentor.AuthServices
             if (metadataXml.Attribute("EntityID") == null)
             {
                 throw new InvalidMetadataException("Missing EntityID in EntityDescriptor.");
+            }
+        }
+
+        private static void LoadRoleDescriptors(XElement metadataXml, EntityDescriptor entityDescriptor)
+        {
+            foreach(var idpSsoDescriptorXml in metadataXml.Elements(Saml2Namespaces.Saml2Metadata + "IDPSSODescriptor"))
+            {
+                var idpSsoDescriptor = new IdentityProviderSingleSignOnDescriptor();
+                idpSsoDescriptor.Load(idpSsoDescriptorXml);
+                entityDescriptor.RoleDescriptors.Add(idpSsoDescriptor);
             }
         }
     }
