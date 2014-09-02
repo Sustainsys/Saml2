@@ -125,7 +125,7 @@ namespace Kentor.AuthServices.Tests
                     new string[] { "KentorAuthServices" }, new AuthenticationProperties(
                         new Dictionary<string, string>()
                         {
-                            { "idp", secondEntityId }
+                            { "idp", secondEntityId.Id }
                         }))), 
                         CreateAppBuilder(), new KentorAuthServicesAuthenticationOptions());
 

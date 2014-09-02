@@ -70,7 +70,7 @@ namespace Kentor.AuthServices.Tests
             var secondEntityId = secondIdp.EntityId;
 
             var request = new HttpRequestData("GET", new Uri("http://sp.example.com?idp=" +
-            HttpUtility.UrlEncode(secondEntityId)));
+            HttpUtility.UrlEncode(secondEntityId.Id)));
             var subject = new SignInCommand().Run(request);
 
             subject.Location.Host.Should().Be(secondDestination.Host);

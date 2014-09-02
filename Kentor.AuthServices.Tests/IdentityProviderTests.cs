@@ -5,6 +5,7 @@ using FluentAssertions;
 using Kentor.AuthServices.TestHelpers;
 using Kentor.AuthServices.Configuration;
 using System.Configuration;
+using System.IdentityModel.Metadata;
 
 namespace Kentor.AuthServices.Tests
 {
@@ -55,13 +56,13 @@ namespace Kentor.AuthServices.Tests
         [TestMethod]
         public void IdentityProvider_ConfigFromMetadata()
         {
-            var entityId = "http://localhost:13428/idpmetadata";
+            var entityId = new EntityId("http://localhost:13428/idpmetadata");
             var idpFromMetadata = IdentityProvider.ConfiguredIdentityProviders[entityId];
 
+            idpFromMetadata.EntityId.Id.Should().Be(entityId.Id);
             idpFromMetadata.Binding.Should().Be(Saml2BindingType.HttpPost);
-            idpFromMetadata.Certificate.Thumbprint.Should().Be(SignedXmlHelper.TestCert.Thumbprint);
             idpFromMetadata.DestinationUri.Should().Be(new Uri("http://localhost:13428/acs"));
-            idpFromMetadata.EntityId.Should().Be(entityId);
+            idpFromMetadata.Certificate.Thumbprint.Should().Be(SignedXmlHelper.TestCert.Thumbprint);
         }
 
         private IdentityProviderElement CreateConfig()

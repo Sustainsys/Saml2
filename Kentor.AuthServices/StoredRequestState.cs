@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IdentityModel.Metadata;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -15,9 +16,9 @@ namespace Kentor.AuthServices
         /// <summary>
         /// Creates a PendingAuthnRequestData
         /// </summary>
-        /// <param name="idp">The IDP the request was sent to</param>
+        /// <param name="idp">The EntityId of the IDP the request was sent to</param>
         /// <param name="returnUri">The Uri to redirect back to after a succesful login</param>
-        public StoredRequestState(string idp, Uri returnUri)
+        public StoredRequestState(EntityId idp, Uri returnUri)
         {
             Idp = idp;
             ReturnUri = returnUri;
@@ -26,7 +27,7 @@ namespace Kentor.AuthServices
         /// <summary>
         /// The IDP the request was sent to
         /// </summary>
-        public string Idp { get; private set; }
+        public EntityId Idp { get; private set; }
 
         /// <summary>
         /// The Uri to redirect back to after a succesful login

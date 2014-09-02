@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -84,6 +85,36 @@ namespace Kentor.AuthServices
         public static Saml2Binding Get(HttpRequestData request)
         {
             return bindings.FirstOrDefault(b => b.Value.CanUnbind(request)).Value;
+        }
+
+        private readonly static IDictionary<Uri, Saml2BindingType> bindingTypeMap = new Dictionary<Uri, Saml2BindingType>()
+        {
+            { HttpRedirectUri, Saml2BindingType.HttpRedirect },
+            { HttpPostUri, Saml2BindingType.HttpPost }
+        };
+
+        /// <summary>
+        /// Gets the Saml2BindingType enum value for a Saml2Binding type uri, where the
+        /// uri should be one specified in the standard.
+        /// </summary>
+        /// <param name="uri">Uri for the binding.</param>
+        /// <returns>Binding type enum value.</returns>
+        /// <exception cref="ArgumentException">If the uri doesn't correspond to a known binding.</exception>
+        public static Saml2BindingType UriToSaml2BindingType(Uri uri)
+        {
+            if(uri == null)
+            {
+                throw new ArgumentNullException("uri");
+            }
+
+            Saml2BindingType bindingType;
+            if(bindingTypeMap.TryGetValue(uri, out bindingType))
+            {
+                return bindingType;
+            }
+
+            var msg = string.Format(CultureInfo.InvariantCulture, "Unknown Saml2 Binding Uri \"{0}\".", uri);
+            throw new ArgumentException(msg);
         }
     }
 }

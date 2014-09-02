@@ -1,5 +1,6 @@
 ﻿using Kentor.AuthServices.Configuration;
 using System;
+using System.IdentityModel.Metadata;
 using System.IdentityModel.Services;
 using System.Net;
 using System.Security.Claims;
@@ -49,7 +50,7 @@ namespace Kentor.AuthServices
             throw new NoSamlResponseFoundException();
         }
 
-        private static X509Certificate2 GetSigningCert(string issuer)
+        private static X509Certificate2 GetSigningCert(EntityId issuer)
         {
             return IdentityProvider.ConfiguredIdentityProviders[issuer].Certificate;
         }

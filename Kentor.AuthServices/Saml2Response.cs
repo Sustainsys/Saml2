@@ -8,6 +8,7 @@ using System.Security.Cryptography.X509Certificates;
 using System.Security.Cryptography.Xml;
 using System.Xml;
 using Kentor.AuthServices.Configuration;
+using System.IdentityModel.Metadata;
 
 namespace Kentor.AuthServices
 {
@@ -66,7 +67,7 @@ namespace Kentor.AuthServices
 
             status = StatusCodeHelper.FromString(statusString);
 
-            issuer = xmlDocument.DocumentElement["Issuer", Saml2Namespaces.Saml2Name].GetTrimmedTextIfNotNull();
+            issuer = new EntityId(xmlDocument.DocumentElement["Issuer", Saml2Namespaces.Saml2Name].GetTrimmedTextIfNotNull());
 
             var destinationUriString = xmlDocument.DocumentElement.Attributes["Destination"].GetValueIfNotNull();
 
@@ -86,7 +87,7 @@ namespace Kentor.AuthServices
         /// <param name="inResponseTo">In response to id</param>
         /// <param name="claimsIdentities">Claims identities to be included in the 
         /// response. Each identity is translated into a separate assertion.</param>
-        public Saml2Response(string issuer, X509Certificate2 issuerCertificate,
+        public Saml2Response(EntityId issuer, X509Certificate2 issuerCertificate,
             Uri destinationUri, string inResponseTo, params ClaimsIdentity[] claimsIdentities)
         {
             this.issuer = issuer;
@@ -166,7 +167,7 @@ namespace Kentor.AuthServices
             xml.AppendChild(responseElement);
 
             var issuerElement = xml.CreateElement("saml2", "Issuer", Saml2Namespaces.Saml2Name);
-            issuerElement.InnerText = issuer;
+            issuerElement.InnerText = issuer.Id;
             responseElement.AppendChild(issuerElement);
 
             var statusElement = xml.CreateElement("saml2p", "Status", Saml2Namespaces.Saml2PName);
@@ -214,12 +215,12 @@ namespace Kentor.AuthServices
         /// </summary>
         public Saml2StatusCode Status { get { return status; } }
 
-        readonly string issuer;
+        readonly EntityId issuer;
 
         /// <summary>
         /// Issuer (= sender) of the response.
         /// </summary>
-        public string Issuer
+        public EntityId Issuer
         {
             get
             {
@@ -290,7 +291,7 @@ namespace Kentor.AuthServices
         {
             if (InResponseTo == null &&
                 KentorAuthServicesSection.Current.IdentityProviders
-                .Single(idpConfig => idpConfig.EntityId == this.Issuer).AllowUnsolicitedAuthnResponse)
+                .Single(idpConfig => idpConfig.EntityId == this.Issuer.Id).AllowUnsolicitedAuthnResponse)
             {
                 return true;
             }
@@ -303,7 +304,7 @@ namespace Kentor.AuthServices
                     return false;
                 }
                 RequestState = storedRequestState;
-                if (RequestState.Idp != Issuer)
+                if (RequestState.Idp.Id != Issuer.Id)
                 {
                     return false;
                 }

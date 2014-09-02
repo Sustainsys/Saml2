@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Configuration;
+using System.IdentityModel.Metadata;
 using System.Linq;
 using System.Security.Claims;
 using System.Security.Cryptography.X509Certificates;
@@ -48,7 +49,7 @@ namespace Kentor.AuthServices.StubIdp.Models
                 new Claim(ClaimTypes.NameIdentifier, NameId )});
 
             return new Saml2Response(
-                ConfigurationManager.AppSettings["issuerName"],
+                new EntityId(ConfigurationManager.AppSettings["issuerName"]),
                 signingCertificate, new Uri(AssertionConsumerServiceUrl), InResponseTo, identity);
         }
     }

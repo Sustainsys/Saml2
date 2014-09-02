@@ -13,11 +13,13 @@ namespace Kentor.AuthServices
 {
     class IdentityProvider
     {
-        private static readonly IDictionary<string, IdentityProvider> configuredIdentityProviders =
+        private static readonly IDictionary<EntityId, IdentityProvider> configuredIdentityProviders =
             KentorAuthServicesSection.Current.IdentityProviders
-            .ToDictionary(idp => idp.EntityId, idp => new IdentityProvider(idp));
+            .ToDictionary(idp => new EntityId(idp.EntityId), 
+                          idp => new IdentityProvider(idp),
+                          EntityIdEqualityComparer.Instance);
 
-        public static IDictionary<string, IdentityProvider> ConfiguredIdentityProviders
+        public static IDictionary<EntityId, IdentityProvider> ConfiguredIdentityProviders
         {
             get
             {
@@ -36,18 +38,21 @@ namespace Kentor.AuthServices
         internal IdentityProvider(IdentityProviderElement config)
         {
             DestinationUri = config.DestinationUri;
-            EntityId = config.EntityId;
+            EntityId = new EntityId(config.EntityId);
             Binding = config.Binding;
             certificate = config.SigningCertificate.LoadCertificate();
 
-            LoadMetadata();
+            if (config.LoadMetadata)
+            {
+                LoadMetadata();
+            }
         }
 
         public Saml2BindingType Binding { get; private set; }
 
         public Uri DestinationUri { get; private set; }
 
-        public string EntityId { get; private set; }
+        public EntityId EntityId { get; private set; }
 
         public Saml2AuthenticationRequest CreateAuthenticateRequest(Uri returnUri)
         {
@@ -79,9 +84,17 @@ namespace Kentor.AuthServices
             }
         }
 
-        private static void LoadMetadata()
+        private void LoadMetadata()
         {
-            
+            // So far only support for metadata at well known location.
+            var metadata = MetadataLoader.Load(new Uri(EntityId.Id));
+
+            var ssoService = metadata.RoleDescriptors
+                .OfType<IdentityProviderSingleSignOnDescriptor>().First()
+                .SingleSignOnServices.First();
+
+            Binding = Saml2Binding.UriToSaml2BindingType(ssoService.Binding);
+            DestinationUri = ssoService.Location;
         }
     }
 }

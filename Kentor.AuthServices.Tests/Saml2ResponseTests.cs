@@ -3,6 +3,7 @@ using Kentor.AuthServices.Configuration;
 using Kentor.AuthServices.TestHelpers;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
+using System.IdentityModel.Metadata;
 using System.IdentityModel.Tokens;
 using System.Linq;
 using System.Security.Claims;
@@ -55,7 +56,7 @@ namespace Kentor.AuthServices.Tests
                 Id = new Saml2Id("Saml2Response_Read_BasicParams"),
                 IssueInstant = new DateTime(2013, 01, 01, 0, 0, 0, DateTimeKind.Utc),
                 Status = Saml2StatusCode.Requester,
-                Issuer = (string)null,
+                Issuer = new EntityId(null),
                 DestinationUri = new Uri("http://destination.example.com"),
                 MessageName = "SAMLResponse",
                 InResponseTo = new Saml2Id("InResponseToId"),
@@ -118,7 +119,7 @@ namespace Kentor.AuthServices.Tests
                 </saml2p:Status>
             </saml2p:Response>";
 
-            Saml2Response.Read(response).Issuer.Should().Be("https://some.issuer.example.com");
+            Saml2Response.Read(response).Issuer.Id.Should().Be("https://some.issuer.example.com");
         }
 
         [TestMethod]
@@ -991,7 +992,7 @@ namespace Kentor.AuthServices.Tests
         [TestMethod]
         public void Saml2Response_Ctor_FromData()
         {
-            var issuer = "http://idp.example.com";
+            var issuer = new EntityId("http://idp.example.com");
             var identity = new ClaimsIdentity(new Claim[] 
             {
                 new Claim(ClaimTypes.NameIdentifier, "JohnDoe") 
@@ -1005,7 +1006,7 @@ namespace Kentor.AuthServices.Tests
         [TestMethod]
         public void Saml2Response_Xml_FromData_ContainsBasicData()
         {
-            var issuer = "http://idp.example.com";
+            var issuer = new EntityId("http://idp.example.com");
             var nameId = "JohnDoe";
             var destination = "http://destination.example.com/";
 
@@ -1025,7 +1026,7 @@ namespace Kentor.AuthServices.Tests
             var xml = response.XmlDocument;
 
             xml.FirstChild.OuterXml.Should().StartWith("<?xml version=\"1.0\"");
-            xml.DocumentElement["Issuer", Saml2Namespaces.Saml2Name].InnerText.Should().Be(issuer);
+            xml.DocumentElement["Issuer", Saml2Namespaces.Saml2Name].InnerText.Should().Be(issuer.Id);
             xml.DocumentElement["Assertion", Saml2Namespaces.Saml2Name]
                 ["Subject", Saml2Namespaces.Saml2Name]["NameID", Saml2Namespaces.Saml2Name]
                 .InnerText.Should().Be(nameId);
@@ -1044,7 +1045,7 @@ namespace Kentor.AuthServices.Tests
                 new Claim(ClaimTypes.NameIdentifier, "JohnDoe") 
             });
 
-            var response = new Saml2Response("issuer", SignedXmlHelper.TestCert,
+            var response = new Saml2Response(new EntityId("issuer"), SignedXmlHelper.TestCert,
                 new Uri("http://destination.example.com"), null, identity);
 
             var xml = response.XmlDocument;
@@ -1063,7 +1064,7 @@ namespace Kentor.AuthServices.Tests
                 new Claim(ClaimTypes.NameIdentifier, "JohnDoe") 
             });
 
-            var response = new Saml2Response("issuer", SignedXmlHelper.TestCert,
+            var response = new Saml2Response(new EntityId("issuer"), SignedXmlHelper.TestCert,
                 new Uri("http://destination.example.com"), "InResponseToID", identity);
 
             var xml = response.XmlDocument;
@@ -1074,7 +1075,7 @@ namespace Kentor.AuthServices.Tests
         [TestMethod]
         public void Saml2Response_Xml_FromData_IsSigned()
         {
-            var issuer = "http://idp.example.com";
+            var issuer = new EntityId("http://idp.example.com");
             var nameId = "JohnDoe";
             var identity = new ClaimsIdentity(new Claim[] 
             {
@@ -1108,7 +1109,7 @@ namespace Kentor.AuthServices.Tests
         [TestMethod]
         public void Saml2Response_MessageName()
         {
-            var subject = new Saml2Response("issuer", null, null, null);
+            var subject = new Saml2Response(new EntityId("issuer"), null, null, null);
 
             subject.MessageName.Should().Be("SAMLResponse");
         }

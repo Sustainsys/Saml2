@@ -110,5 +110,18 @@ namespace Kentor.AuthServices.Configuration
                 base["allowUnsolicitedAuthnResponse"] = value;
             }
         }
+
+        /// <summary>
+        /// Enable automatic downloading of metadata form the well-known uri (i.e. interpret
+        /// the EntityID as an uri and download metadata from it).
+        /// </summary>
+        [ConfigurationProperty("loadMetadata", IsRequired = false, DefaultValue = false)]
+        public bool LoadMetadata
+        {
+            get
+            {
+                return (bool)base["loadMetadata"];
+            }
+        }
     }
 }

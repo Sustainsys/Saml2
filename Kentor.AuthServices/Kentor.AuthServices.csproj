@@ -61,6 +61,7 @@
     <Compile Include="Configuration\CertificateElement.cs" />
     <Compile Include="DateTimeExtensions.cs" />
     <Compile Include="EntityDescriptorExtension.cs" />
+    <Compile Include="EntityIdEqualityComparer.cs" />
     <Compile Include="Enumerator.cs" />
     <Compile Include="HttpRequestData.cs" />
     <Compile Include="IdentityProvider.cs" />
