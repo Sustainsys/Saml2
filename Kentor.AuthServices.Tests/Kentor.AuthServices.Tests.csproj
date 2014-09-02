@@ -148,6 +148,7 @@
     <Compile Include="MetadataLoaderTests.cs" />
     <Compile Include="InvalidMetadataExceptionTests.cs" />
     <Compile Include="IdentityProviderSingleSignOnDescriptorTests.cs" />
+    <Compile Include="ProtocolEndpointExtensionsTests.cs" />
     <Compile Include="XmlDocumentExtensionsTests.cs" />
     <Compile Include="XmlHelpersTests.cs" />
   </ItemGroup>

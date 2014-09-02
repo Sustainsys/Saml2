@@ -3,6 +3,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using FluentAssertions;
 using System.IdentityModel.Metadata;
 using System.Xml.Linq;
+using System.Linq;
 
 namespace Kentor.AuthServices.Tests
 {
@@ -32,7 +33,7 @@ namespace Kentor.AuthServices.Tests
 
             Action a = () => new IdentityProviderSingleSignOnDescriptor().Load(xml);
 
-            a.ShouldThrow<InvalidMetadataException>().And.Message.Should().Be("Missing protocolSupportEnumeration attribute in SingleSignOnService.");
+            a.ShouldThrow<InvalidMetadataException>().And.Message.Should().Be("Missing protocolSupportEnumeration attribute in IDPSSODescriptor.");
         }
 
         [TestMethod]
@@ -46,15 +47,24 @@ namespace Kentor.AuthServices.Tests
             a.ShouldThrow<InvalidMetadataException>().And.Message.Should().Be("Invalid protocolSupportEnumeration \"SomeInvalidData\".");
         }
 
-        [TestMethod]
-        public void IdentityProviderSingleSignOnDescriptor_CheckProtocolSupportEnumerationCorrect()
+        XElement CreateSingleSignOnServiceXml()
         {
-            var xml = new XElement(Saml2Namespaces.Saml2Metadata + "SingleSignOnService",
-                new XAttribute("protocolSupportEnumeration", "urn:oasis:names:tc:SAML:2.0:protocol"));
+            return new XElement(Saml2Namespaces.Saml2Metadata + "IDPSSODescriptor",
+                new XAttribute("protocolSupportEnumeration", "urn:oasis:names:tc:SAML:2.0:protocol"),
+                new XElement(Saml2Namespaces.Saml2Metadata + "SingleSignOnService",
+                new XAttribute("Binding", Saml2Binding.HttpRedirectUri),
+                new XAttribute("Location", "https://idp.example.com/ssoservice")));
+        }
 
-            Action a = () => new IdentityProviderSingleSignOnDescriptor().Load(xml);
+        [TestMethod]
+        public void IdentityProviderSingleSignOnDescriptor_Load_SingleSignOnServiceContainsBinding()
+        {
+            var xml = CreateSingleSignOnServiceXml();
 
-            a.ShouldNotThrow();
+            var subject = new IdentityProviderSingleSignOnDescriptor();
+            subject.Load(xml);
+
+            subject.SingleSignOnServices.Single().Binding.Should().Be(Saml2Binding.HttpRedirectUri);
         }
     }
 }

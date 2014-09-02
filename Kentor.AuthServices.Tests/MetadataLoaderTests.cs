@@ -87,7 +87,9 @@ namespace Kentor.AuthServices.Tests
                 new XAttribute("EntityID", "SomeEntityID"),
                 new XElement(Saml2Namespaces.Saml2Metadata + "IDPSSODescriptor",
                     new XAttribute("protocolSupportEnumeration", "urn:oasis:names:tc:SAML:2.0:protocol"),
-                    new XElement(Saml2Namespaces.Saml2Metadata + "SingleSignOnService")));
+                    new XElement(Saml2Namespaces.Saml2Metadata + "SingleSignOnService",
+                        new XAttribute("Binding", Saml2Binding.HttpRedirectUri),
+                        new XAttribute("Location", "http://idp.example.com/SomeSSOService"))));
         }
 
         [TestMethod]
@@ -110,9 +112,11 @@ namespace Kentor.AuthServices.Tests
         public void MetadataLoader_LoadEntityDescriptor_IdpContainsSignOnServices()
         {
             var metadata = CreateBasicMetadata();
+            var ssoDescriptorXml = metadata.Element(Saml2Namespaces.Saml2Metadata + "IDPSSODescriptor");
+            var ssoServiceXml = ssoDescriptorXml.Element(Saml2Namespaces.Saml2Metadata + "SingleSignOnService");
+
             metadata.Element(Saml2Namespaces.Saml2Metadata + "IDPSSODescriptor")
-                .Add(new XElement(Saml2Namespaces.Saml2Metadata + "SingleSignOnService"),
-                new XElement(Saml2Namespaces.Saml2Metadata + "SingleSignOnService"));
+                .Add(new XElement(ssoServiceXml), new XElement(ssoServiceXml));
 
             var subject = MetadataLoader.LoadEntityDescriptor(metadata);
 
