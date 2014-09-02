@@ -26,7 +26,7 @@ namespace Kentor.AuthServices.Tests
                     {
                         ctx.Response.Write(
 @"<EntityDescriptor xmlns=""urn:oasis:names:tc:SAML:2.0:metadata""
-    EntityID=""http://localhost:13428/idpmetadata"">
+    entityID=""http://localhost:13428/idpmetadata"">
     <IDPSSODescriptor
       protocolSupportEnumeration=""urn:oasis:names:tc:SAML:2.0:protocol"">
       <SingleSignOnService

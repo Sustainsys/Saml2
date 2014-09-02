@@ -65,9 +65,7 @@
     <Compile Include="Enumerator.cs" />
     <Compile Include="HttpRequestData.cs" />
     <Compile Include="IdentityProvider.cs" />
-    <Compile Include="IdentityProviderSingleSignOnDescriptorExtensions.cs" />
     <Compile Include="IndexedProtocolEndpointExtensions.cs" />
-    <Compile Include="InvalidMetadataException.cs" />
     <Compile Include="ISaml2Message.cs" />
     <Compile Include="MessageBinder.cs" />
     <Compile Include="MetadataCommand.cs" />
@@ -77,7 +75,6 @@
     <Compile Include="NotFoundCommand.cs" />
     <Compile Include="ICommand.cs" />
     <Compile Include="CommandFactory.cs" />
-    <Compile Include="ProtocolEndpointExtensions.cs" />
     <Compile Include="StoredRequestState.cs" />
     <Compile Include="PendingAuthnRequests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
