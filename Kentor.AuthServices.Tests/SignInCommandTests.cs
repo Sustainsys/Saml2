@@ -19,7 +19,7 @@ namespace Kentor.AuthServices.Tests
         public void SignInCommand_Run_ReturnsAuthnRequestForDefaultIdp()
         {
             var defaultDestination = IdentityProvider.ConfiguredIdentityProviders.First()
-                .Value.DestinationUri;
+                .Value.AssertionConsumerServiceUrl;
 
             var subject = new SignInCommand().Run(new HttpRequestData("GET", new Uri("http://example.com")));
 
@@ -44,7 +44,7 @@ namespace Kentor.AuthServices.Tests
         public void SignInCommand_Run_MapsReturnUrl()
         {
             var defaultDestination = IdentityProvider.ConfiguredIdentityProviders.First()
-                .Value.DestinationUri;
+                .Value.AssertionConsumerServiceUrl;
 
             var httpRequest = new HttpRequestData("GET", new Uri("http://localhost/signin?ReturnUrl=/Return.aspx"));
 
@@ -66,7 +66,7 @@ namespace Kentor.AuthServices.Tests
         public void SignInCommand_Run_With_Idp2_ReturnsAuthnRequestForSecondIdp()
         {
             var secondIdp = IdentityProvider.ConfiguredIdentityProviders.Skip(1).First().Value;
-            var secondDestination = secondIdp.DestinationUri;
+            var secondDestination = secondIdp.AssertionConsumerServiceUrl;
             var secondEntityId = secondIdp.EntityId;
 
             var request = new HttpRequestData("GET", new Uri("http://sp.example.com?idp=" +

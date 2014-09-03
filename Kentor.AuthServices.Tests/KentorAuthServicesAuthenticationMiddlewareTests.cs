@@ -117,7 +117,7 @@ namespace Kentor.AuthServices.Tests
         public async Task KentorAuthServicesAuthenticationMiddleware_RedirectoToSecondIdp_AuthenticationProperties()
         {
             var secondIdp = IdentityProvider.ConfiguredIdentityProviders.Skip(1).First().Value;
-            var secondDestination = secondIdp.DestinationUri;
+            var secondDestination = secondIdp.AssertionConsumerServiceUrl;
             var secondEntityId = secondIdp.EntityId;
 
             var middleware = new KentorAuthServicesAuthenticationMiddleware(
@@ -140,7 +140,7 @@ namespace Kentor.AuthServices.Tests
         public async Task KentorAuthServicesAuthenticationMiddleware_RedirectoToSecondIdp_OwinEnvironment()
         {
             var secondIdp = IdentityProvider.ConfiguredIdentityProviders.Skip(1).First().Value;
-            var secondDestination = secondIdp.DestinationUri;
+            var secondDestination = secondIdp.AssertionConsumerServiceUrl;
             var secondEntityId = secondIdp.EntityId;
 
             var middleware = new KentorAuthServicesAuthenticationMiddleware(

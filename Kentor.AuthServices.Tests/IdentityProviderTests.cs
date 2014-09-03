@@ -61,7 +61,7 @@ namespace Kentor.AuthServices.Tests
 
             idpFromMetadata.EntityId.Id.Should().Be(entityId.Id);
             idpFromMetadata.Binding.Should().Be(Saml2BindingType.HttpPost);
-            idpFromMetadata.DestinationUri.Should().Be(new Uri("http://localhost:13428/acs"));
+            idpFromMetadata.AssertionConsumerServiceUrl.Should().Be(new Uri("http://localhost:13428/acs"));
             idpFromMetadata.SigningKey.ShouldBeEquivalentTo(SignedXmlHelper.TestKey);
         }
 
@@ -73,7 +73,7 @@ namespace Kentor.AuthServices.Tests
             config.SigningCertificate = new CertificateElement();
             config.SigningCertificate.AllowConfigEdit(true);
             config.SigningCertificate.FileName = "Kentor.AuthServices.Tests.pfx";
-            config.DestinationUri = new Uri("http://idp.example.com/acs");
+            config.AssertionConsumerServiceUrl = new Uri("http://idp.example.com/acs");
             config.EntityId = "http://idp.example.com";
 
             return config;
@@ -84,11 +84,11 @@ namespace Kentor.AuthServices.Tests
             Action a = () => new IdentityProvider(config);
 
             string expectedMessage = "Missing " + missingElement + " configuration on Idp " + config.EntityId + ".";
-            a.ShouldThrow<ConfigurationException>(expectedMessage);
+            a.ShouldThrow<ConfigurationErrorsException>(expectedMessage);
         }
 
         [TestMethod]
-        public void IdentityProvider_MissingBindingThrows()
+        public void IdentityProvider_Ctor_MissingBindingThrows()
         {
             var config = CreateConfig();
             config.Binding = 0;
@@ -96,19 +96,42 @@ namespace Kentor.AuthServices.Tests
         }
 
         [TestMethod]
-        public void IdentityProvider_MissingCertificateThrows()
+        public void IdentityProvider_Ctor_MissingCertificateThrows()
         {
             var config = CreateConfig();
-            config.SigningCertificate = null;
+            
+            // Don't set to null; if the section isn't present in the config the
+            // loaded configuration will contain an empty SigningCertificate element.
+            config.SigningCertificate = new CertificateElement();
             TestMissingConfig(config, "signing certificate");
         }
 
         [TestMethod]
-        public void IdentityProvider_MissingDestinationUriThrows()
+        public void IdentityProvider_Ctor_MissingDestinationUriThrows()
         {
             var config = CreateConfig();
-            config.DestinationUri = null;
-            TestMissingConfig(config, "destination Uri");
+            config.AssertionConsumerServiceUrl = null;
+            TestMissingConfig(config, "assertion consumer service url");
+        }
+
+        [TestMethod]
+        public void IdentityProvider_Ctor_HandlesConfiguredCertificateWhenReadingMetadata()
+        {
+            var config = CreateConfig();
+            config.LoadMetadata = true;
+            config.EntityId = "http://localhost:13428/idpMetadataNoCertificate";
+
+            var subject = new IdentityProvider(config);
+
+            // Check that metadata was read and overrides configured values.
+            subject.Binding.Should().Be(Saml2BindingType.HttpRedirect);
+            subject.SigningKey.ShouldBeEquivalentTo(SignedXmlHelper.TestKey);
+        }
+
+        [TestMethod]
+        public void IdentityProvider_Ctor_WrongEntityIdInMetadata()
+        {
+            Assert.Inconclusive();
         }
     }
 }

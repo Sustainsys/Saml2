@@ -13,7 +13,7 @@ namespace Kentor.AuthServices.Tests
         [TestMethod]
         public void MetadataLoader_Load_IdpMetadata()
         {
-            var entityId = "http://localhost:13428/idpmetadata";
+            var entityId = "http://localhost:13428/idpMetadata";
             var subject = MetadataLoader.Load(new Uri(entityId));
 
             subject.EntityId.Id.Should().Be(entityId);

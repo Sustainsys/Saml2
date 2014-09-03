@@ -10,6 +10,7 @@ using System.IdentityModel.Metadata;
 using System.Xml.Linq;
 using System.Security.Cryptography;
 using System.Security.Cryptography.Xml;
+using System.Configuration;
 
 namespace Kentor.AuthServices
 {
@@ -34,12 +35,12 @@ namespace Kentor.AuthServices
         // Ctor used for testing.
         internal IdentityProvider(Uri destinationUri)
         {
-            DestinationUri = destinationUri;
+            AssertionConsumerServiceUrl = destinationUri;
         }
 
         internal IdentityProvider(IdentityProviderElement config)
         {
-            DestinationUri = config.DestinationUri;
+            AssertionConsumerServiceUrl = config.AssertionConsumerServiceUrl;
             EntityId = new EntityId(config.EntityId);
             Binding = config.Binding;
 
@@ -54,11 +55,31 @@ namespace Kentor.AuthServices
             {
                 LoadMetadata();
             }
+
+            Validate();
+        }
+
+        private void Validate()
+        {
+            if(Binding == 0)
+            {
+                throw new ConfigurationErrorsException("Missing binding configuration on Idp " + EntityId.Id + ".");
+            }
+
+            if(SigningKey == null)
+            {
+                throw new ConfigurationErrorsException("Missing signing certificate configuration on Idp " + EntityId.Id + ".");
+            }
+
+            if (AssertionConsumerServiceUrl == null)
+            {
+                throw new ConfigurationErrorsException("Missing assertion consumer service url configuration on Idp " + EntityId.Id + ".");
+            }
         }
 
         public Saml2BindingType Binding { get; private set; }
 
-        public Uri DestinationUri { get; private set; }
+        public Uri AssertionConsumerServiceUrl { get; private set; }
 
         public EntityId EntityId { get; private set; }
 
@@ -66,7 +87,7 @@ namespace Kentor.AuthServices
         {
             var request = new Saml2AuthenticationRequest()
             {
-                DestinationUri = DestinationUri,
+                DestinationUri = AssertionConsumerServiceUrl,
                 AssertionConsumerServiceUrl = KentorAuthServicesSection.Current.AssertionConsumerServiceUrl,
                 Issuer = KentorAuthServicesSection.Current.EntityId
             };
@@ -96,10 +117,15 @@ namespace Kentor.AuthServices
             var ssoService = idpDescriptor.SingleSignOnServices.First();
 
             Binding = Saml2Binding.UriToSaml2BindingType(ssoService.Binding);
-            DestinationUri = ssoService.Location;
+            AssertionConsumerServiceUrl = ssoService.Location;
 
-            SigningKey = ((AsymmetricSecurityKey)idpDescriptor.Keys.Single().KeyInfo.CreateKey())
-                .GetAsymmetricAlgorithm(SignedXml.XmlDsigRSASHA1Url, false);
+            var key = idpDescriptor.Keys.SingleOrDefault();
+
+            if(key != null)
+            {
+                SigningKey = ((AsymmetricSecurityKey)key.KeyInfo.CreateKey())
+                    .GetAsymmetricAlgorithm(SignedXml.XmlDsigRSASHA1Url, false);
+            }
         }
     }
 }

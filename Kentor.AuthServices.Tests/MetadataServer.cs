@@ -15,19 +15,15 @@ namespace Kentor.AuthServices.Tests
     public class MetadataServer
     {
         private static IDisposable host;
-        
-        [AssemblyInitialize]
-        public static void Start(TestContext testContext)
-        {
-            host = WebApp.Start("http://localhost:13428", app =>
+
+        static IDictionary<PathString, Func<IOwinContext, Task>> actions =
+            new Dictionary<PathString, Func<IOwinContext, Task>>()
             {
-                app.Use(async (ctx, next) =>
-                {
-                    if(ctx.Request.Path == new PathString("/idpmetadata"))
+                { new PathString("/idpMetadata"), async ctx =>
                     {
                         var metadataXml = string.Format(
  @"<EntityDescriptor xmlns=""urn:oasis:names:tc:SAML:2.0:metadata""
-    entityID=""http://localhost:13428/idpmetadata"">
+    entityID=""http://localhost:13428/idpMetadata"">
     <IDPSSODescriptor
       protocolSupportEnumeration=""urn:oasis:names:tc:SAML:2.0:protocol"">
       <KeyDescriptor use=""signing"">
@@ -40,7 +36,37 @@ namespace Kentor.AuthServices.Tests
   </EntityDescriptor>
 ", SignedXmlHelper.KeyInfoXml);
 
-                        ctx.Response.Write(metadataXml);
+                        await ctx.Response.WriteAsync(metadataXml);
+                    }
+                },
+                { new PathString("/idpMetadataNoCertificate"), async ctx =>
+                    {
+                        var metadataXml =
+@"<EntityDescriptor xmlns=""urn:oasis:names:tc:SAML:2.0:metadata""
+    entityID=""http://localhost:13428/idpMetadataNoCertificate"">
+    <IDPSSODescriptor
+      protocolSupportEnumeration=""urn:oasis:names:tc:SAML:2.0:protocol"">
+      <SingleSignOnService
+        Binding=""urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect""
+        Location=""http://localhost:13428/acs""/>
+    </IDPSSODescriptor>
+  </EntityDescriptor>";
+                        await ctx.Response.WriteAsync(metadataXml);
+                    }
+                }
+            };
+
+        [AssemblyInitialize]
+        public static void Start(TestContext testContext)
+        {
+            host = WebApp.Start("http://localhost:13428", app =>
+            {
+                app.Use(async (ctx, next) =>
+                {
+                    Func<IOwinContext, Task> action;
+                    if(actions.TryGetValue(ctx.Request.Path, out action))
+                    {
+                        await action(ctx);
                     }
                     else
                     {
