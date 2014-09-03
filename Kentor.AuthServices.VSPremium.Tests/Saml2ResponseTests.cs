@@ -153,7 +153,7 @@ namespace Kentor.AuthServices.VSPremium.Tests
 
                 var samlResponse = Saml2Response.Read(xmlDoc.OuterXml);
 
-                samlResponse.Validate(SignedXmlHelper.TestCert).Should().BeFalse();
+                samlResponse.Validate(SignedXmlHelper.TestKey).Should().BeFalse();
             }
         }
     }

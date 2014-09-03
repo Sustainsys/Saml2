@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Owin;
+using Kentor.AuthServices.TestHelpers;
 
 namespace Kentor.AuthServices.Tests
 {
@@ -24,17 +25,22 @@ namespace Kentor.AuthServices.Tests
                 {
                     if(ctx.Request.Path == new PathString("/idpmetadata"))
                     {
-                        ctx.Response.Write(
-@"<EntityDescriptor xmlns=""urn:oasis:names:tc:SAML:2.0:metadata""
+                        var metadataXml = string.Format(
+ @"<EntityDescriptor xmlns=""urn:oasis:names:tc:SAML:2.0:metadata""
     entityID=""http://localhost:13428/idpmetadata"">
     <IDPSSODescriptor
       protocolSupportEnumeration=""urn:oasis:names:tc:SAML:2.0:protocol"">
+      <KeyDescriptor use=""signing"">
+        {0}
+      </KeyDescriptor>
       <SingleSignOnService
         Binding=""urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST""
         Location=""http://localhost:13428/acs""/>
     </IDPSSODescriptor>
   </EntityDescriptor>
-");
+", SignedXmlHelper.KeyInfoXml);
+
+                        ctx.Response.Write(metadataXml);
                     }
                     else
                     {

@@ -8,6 +8,8 @@ using System.IdentityModel.Tokens;
 using System.Net;
 using System.IdentityModel.Metadata;
 using System.Xml.Linq;
+using System.Security.Cryptography;
+using System.Security.Cryptography.Xml;
 
 namespace Kentor.AuthServices
 {
@@ -40,7 +42,13 @@ namespace Kentor.AuthServices
             DestinationUri = config.DestinationUri;
             EntityId = new EntityId(config.EntityId);
             Binding = config.Binding;
-            certificate = config.SigningCertificate.LoadCertificate();
+
+            var certificate = config.SigningCertificate.LoadCertificate();
+
+            if (certificate != null)
+            {
+                SigningKey = certificate.PublicKey.Key;
+            }
 
             if (config.LoadMetadata)
             {
@@ -75,26 +83,23 @@ namespace Kentor.AuthServices
             return Saml2Binding.Get(Binding).Bind(request);
         }
 
-        readonly X509Certificate2 certificate;
-        public X509Certificate2 Certificate
-        {
-            get
-            {
-                return certificate;
-            }
-        }
+        public AsymmetricAlgorithm SigningKey { get; private set; }
 
         private void LoadMetadata()
         {
             // So far only support for metadata at well known location.
             var metadata = MetadataLoader.Load(new Uri(EntityId.Id));
 
-            var ssoService = metadata.RoleDescriptors
-                .OfType<IdentityProviderSingleSignOnDescriptor>().First()
-                .SingleSignOnServices.First();
+            var idpDescriptor = metadata.RoleDescriptors
+                .OfType<IdentityProviderSingleSignOnDescriptor>().Single();
+
+            var ssoService = idpDescriptor.SingleSignOnServices.First();
 
             Binding = Saml2Binding.UriToSaml2BindingType(ssoService.Binding);
             DestinationUri = ssoService.Location;
+
+            SigningKey = ((AsymmetricSecurityKey)idpDescriptor.Keys.Single().KeyInfo.CreateKey())
+                .GetAsymmetricAlgorithm(SignedXml.XmlDsigRSASHA1Url, false);
         }
     }
 }

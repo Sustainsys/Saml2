@@ -50,7 +50,7 @@ namespace Kentor.AuthServices.Tests
         {
             var idp = IdentityProvider.ConfiguredIdentityProviders.First().Value;
 
-            idp.Certificate.ShouldBeEquivalentTo(SignedXmlHelper.TestCert);
+            idp.SigningKey.ShouldBeEquivalentTo(SignedXmlHelper.TestKey);
         }
 
         [TestMethod]
@@ -62,7 +62,7 @@ namespace Kentor.AuthServices.Tests
             idpFromMetadata.EntityId.Id.Should().Be(entityId.Id);
             idpFromMetadata.Binding.Should().Be(Saml2BindingType.HttpPost);
             idpFromMetadata.DestinationUri.Should().Be(new Uri("http://localhost:13428/acs"));
-            idpFromMetadata.Certificate.Thumbprint.Should().Be(SignedXmlHelper.TestCert.Thumbprint);
+            idpFromMetadata.SigningKey.ShouldBeEquivalentTo(SignedXmlHelper.TestKey);
         }
 
         private IdentityProviderElement CreateConfig()
@@ -83,8 +83,8 @@ namespace Kentor.AuthServices.Tests
         {
             Action a = () => new IdentityProvider(config);
 
-            string expectgedMessage = "Missing " + missingElement + " configuration on Idp " + config.EntityId + ".";
-            a.ShouldThrow<ConfigurationException>(expectgedMessage);
+            string expectedMessage = "Missing " + missingElement + " configuration on Idp " + config.EntityId + ".";
+            a.ShouldThrow<ConfigurationException>(expectedMessage);
         }
 
         [TestMethod]
