@@ -7,6 +7,10 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using Kentor.AuthServices.Mvc;
+using System.IdentityModel.Metadata;
+using Kentor.AuthServices.Configuration;
+using System.IdentityModel.Tokens;
+using System.Configuration;
 
 namespace Kentor.AuthServices.StubIdp.Controllers
 {
@@ -24,14 +28,6 @@ namespace Kentor.AuthServices.StubIdp.Controllers
             }
 
             return View(model);
-        }
-
-        public ActionResult Certificate()
-        {
-            var path = HttpContext.Server.MapPath("~\\App_Data\\Kentor.AuthServices.StubIdp.cer");
-            var disposition = new ContentDisposition { Inline = false, FileName = Path.GetFileName(path) };
-            Response.AppendHeader("Content-Disposition", disposition.ToString());
-            return File(path, MediaTypeNames.Text.Plain);
         }
 
         [HttpPost]
