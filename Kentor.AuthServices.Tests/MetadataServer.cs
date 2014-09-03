@@ -53,6 +53,21 @@ namespace Kentor.AuthServices.Tests
   </EntityDescriptor>";
                         await ctx.Response.WriteAsync(metadataXml);
                     }
+                },
+                { new PathString("/idpMetadataWrongEntityId"), async ctx =>
+                    {
+                        var metadataXml =
+@"<EntityDescriptor xmlns=""urn:oasis:names:tc:SAML:2.0:metadata""
+    entityID=""http://wrong.entityid.example.com"">
+    <IDPSSODescriptor
+      protocolSupportEnumeration=""urn:oasis:names:tc:SAML:2.0:protocol"">
+      <SingleSignOnService
+        Binding=""urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect""
+        Location=""http://wrong.entityid.example.com/acs""/>
+    </IDPSSODescriptor>
+  </EntityDescriptor>";
+                        await ctx.Response.WriteAsync(metadataXml);
+                    }
                 }
             };
 

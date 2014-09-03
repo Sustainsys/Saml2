@@ -48,7 +48,7 @@ namespace Kentor.AuthServices.Configuration
         /// Destination url to send requests to.
         /// </summary>
         [ConfigurationProperty("destinationUri")]
-        public Uri AssertionConsumerServiceUrl
+        public Uri DestinationUri
         {
             get
             {

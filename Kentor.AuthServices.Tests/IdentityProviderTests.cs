@@ -56,7 +56,7 @@ namespace Kentor.AuthServices.Tests
         [TestMethod]
         public void IdentityProvider_ConfigFromMetadata()
         {
-            var entityId = new EntityId("http://localhost:13428/idpmetadata");
+            var entityId = new EntityId("http://localhost:13428/idpMetadata");
             var idpFromMetadata = IdentityProvider.ConfiguredIdentityProviders[entityId];
 
             idpFromMetadata.EntityId.Id.Should().Be(entityId.Id);
@@ -73,7 +73,7 @@ namespace Kentor.AuthServices.Tests
             config.SigningCertificate = new CertificateElement();
             config.SigningCertificate.AllowConfigEdit(true);
             config.SigningCertificate.FileName = "Kentor.AuthServices.Tests.pfx";
-            config.AssertionConsumerServiceUrl = new Uri("http://idp.example.com/acs");
+            config.DestinationUri = new Uri("http://idp.example.com/acs");
             config.EntityId = "http://idp.example.com";
 
             return config;
@@ -110,7 +110,7 @@ namespace Kentor.AuthServices.Tests
         public void IdentityProvider_Ctor_MissingDestinationUriThrows()
         {
             var config = CreateConfig();
-            config.AssertionConsumerServiceUrl = null;
+            config.DestinationUri = null;
             TestMissingConfig(config, "assertion consumer service url");
         }
 
@@ -131,7 +131,14 @@ namespace Kentor.AuthServices.Tests
         [TestMethod]
         public void IdentityProvider_Ctor_WrongEntityIdInMetadata()
         {
-            Assert.Inconclusive();
+            var config = CreateConfig();
+            config.LoadMetadata = true;
+            config.EntityId = "http://localhost:13428/idpMetadataWrongEntityId";
+
+            Action a = () => new IdentityProvider(config);
+
+            a.ShouldThrow<ConfigurationErrorsException>().And.Message.Should()
+                .Be("Unexpected entity id \"http://wrong.entityid.example.com\" found when loading metadata for \"http://localhost:13428/idpMetadataWrongEntityId\".");
         }
     }
 }

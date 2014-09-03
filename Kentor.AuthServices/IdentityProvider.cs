@@ -11,6 +11,7 @@ using System.Xml.Linq;
 using System.Security.Cryptography;
 using System.Security.Cryptography.Xml;
 using System.Configuration;
+using System.Globalization;
 
 namespace Kentor.AuthServices
 {
@@ -40,7 +41,7 @@ namespace Kentor.AuthServices
 
         internal IdentityProvider(IdentityProviderElement config)
         {
-            AssertionConsumerServiceUrl = config.AssertionConsumerServiceUrl;
+            AssertionConsumerServiceUrl = config.DestinationUri;
             EntityId = new EntityId(config.EntityId);
             Binding = config.Binding;
 
@@ -110,6 +111,14 @@ namespace Kentor.AuthServices
         {
             // So far only support for metadata at well known location.
             var metadata = MetadataLoader.Load(new Uri(EntityId.Id));
+
+            if(metadata.EntityId.Id != EntityId.Id)
+            {
+                var msg = string.Format(CultureInfo.InvariantCulture, 
+                    "Unexpected entity id \"{0}\" found when loading metadata for \"{1}\".",
+                    metadata.EntityId.Id, EntityId.Id);
+                throw new ConfigurationErrorsException(msg);
+            }
 
             var idpDescriptor = metadata.RoleDescriptors
                 .OfType<IdentityProviderSingleSignOnDescriptor>().Single();
