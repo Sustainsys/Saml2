@@ -23,7 +23,7 @@ namespace Kentor.AuthServices
                           idp => new IdentityProvider(idp),
                           EntityIdEqualityComparer.Instance);
 
-        public static IDictionary<EntityId, IdentityProvider> ConfiguredIdentityProviders
+        public static IDictionary<EntityId, IdentityProvider> ActiveIdentityProviders
         {
             get
             {

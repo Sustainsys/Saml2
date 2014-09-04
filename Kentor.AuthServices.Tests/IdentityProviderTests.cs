@@ -28,7 +28,7 @@ namespace Kentor.AuthServices.Tests
         [TestMethod]
         public void IdentityProvider_CreateAuthenticateRequest_AssertionConsumerServiceUrlFromConfig()
         {
-            var idp = IdentityProvider.ConfiguredIdentityProviders.First().Value;
+            var idp = IdentityProvider.ActiveIdentityProviders.First().Value;
 
             var r = idp.CreateAuthenticateRequest(null);
 
@@ -38,7 +38,7 @@ namespace Kentor.AuthServices.Tests
         [TestMethod]
         public void IdentityProvider_CreateAuthenticateRequest_IssuerFromConfig()
         {
-            var idp = IdentityProvider.ConfiguredIdentityProviders.First().Value;
+            var idp = IdentityProvider.ActiveIdentityProviders.First().Value;
 
             var r = idp.CreateAuthenticateRequest(null);
 
@@ -48,7 +48,7 @@ namespace Kentor.AuthServices.Tests
         [TestMethod]
         public void IdentityProvider_Certificate_FromFile()
         {
-            var idp = IdentityProvider.ConfiguredIdentityProviders.First().Value;
+            var idp = IdentityProvider.ActiveIdentityProviders.First().Value;
 
             idp.SigningKey.ShouldBeEquivalentTo(SignedXmlHelper.TestKey);
         }
@@ -57,7 +57,7 @@ namespace Kentor.AuthServices.Tests
         public void IdentityProvider_ConfigFromMetadata()
         {
             var entityId = new EntityId("http://localhost:13428/idpMetadata");
-            var idpFromMetadata = IdentityProvider.ConfiguredIdentityProviders[entityId];
+            var idpFromMetadata = IdentityProvider.ActiveIdentityProviders[entityId];
 
             idpFromMetadata.EntityId.Id.Should().Be(entityId.Id);
             idpFromMetadata.Binding.Should().Be(Saml2BindingType.HttpPost);

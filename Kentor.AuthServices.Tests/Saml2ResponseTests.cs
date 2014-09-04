@@ -754,7 +754,7 @@ namespace Kentor.AuthServices.Tests
         [TestMethod]
         public void Saml2Response_Validate_TrueOnCorrectInResponseTo()
         {
-            var idp = IdentityProvider.ConfiguredIdentityProviders.First().Value;
+            var idp = IdentityProvider.ActiveIdentityProviders.First().Value;
 
             var request = idp.CreateAuthenticateRequest(null);
 
@@ -783,7 +783,7 @@ namespace Kentor.AuthServices.Tests
             KentorAuthServicesSection.Current.IdentityProviders.First().AllowConfigEdit(true);
             KentorAuthServicesSection.Current.IdentityProviders.First().AllowUnsolicitedAuthnResponse = false;
             KentorAuthServicesSection.Current.IdentityProviders.First().AllowConfigEdit(false);
-            var idp = IdentityProvider.ConfiguredIdentityProviders.First().Value;
+            var idp = IdentityProvider.ActiveIdentityProviders.First().Value;
 
             var request = idp.CreateAuthenticateRequest(null);
 
@@ -811,7 +811,7 @@ namespace Kentor.AuthServices.Tests
             KentorAuthServicesSection.Current.IdentityProviders.First().AllowConfigEdit(true);
             KentorAuthServicesSection.Current.IdentityProviders.First().AllowUnsolicitedAuthnResponse = true;
             KentorAuthServicesSection.Current.IdentityProviders.First().AllowConfigEdit(false);
-            var idp = IdentityProvider.ConfiguredIdentityProviders.First().Value;
+            var idp = IdentityProvider.ActiveIdentityProviders.First().Value;
 
             var request = idp.CreateAuthenticateRequest(null);
 
@@ -836,7 +836,7 @@ namespace Kentor.AuthServices.Tests
         [TestMethod]
         public void Saml2Response_Validate_FalseOnIncorrectInResponseTo()
         {
-            var idp = IdentityProvider.ConfiguredIdentityProviders.First().Value;
+            var idp = IdentityProvider.ActiveIdentityProviders.First().Value;
 
             var request = idp.CreateAuthenticateRequest(null);
 
@@ -862,7 +862,7 @@ namespace Kentor.AuthServices.Tests
         [TestMethod]
         public void Saml2Response_Validate_FalseOnReplayedInResponseTo()
         {
-            var idp = IdentityProvider.ConfiguredIdentityProviders.First().Value;
+            var idp = IdentityProvider.ActiveIdentityProviders.First().Value;
 
             var request = idp.CreateAuthenticateRequest(null);
 
@@ -892,7 +892,7 @@ namespace Kentor.AuthServices.Tests
         {
             // A valid response is received, but it is not from the idp that we
             // did send the AuthnRequest to.
-            var idp = IdentityProvider.ConfiguredIdentityProviders.First().Value;
+            var idp = IdentityProvider.ActiveIdentityProviders.First().Value;
 
             var request = idp.CreateAuthenticateRequest(null);
 
@@ -1117,7 +1117,7 @@ namespace Kentor.AuthServices.Tests
         [TestMethod]
         public void Saml2Response_FromRequest_Remembers_ReturnUri()
         {
-            var idp = IdentityProvider.ConfiguredIdentityProviders.First().Value;
+            var idp = IdentityProvider.ActiveIdentityProviders.First().Value;
 
             var request = idp.CreateAuthenticateRequest(new Uri("http://localhost/testUrl.aspx"));
 

@@ -28,14 +28,14 @@ namespace Kentor.AuthServices
             IdentityProvider idp;
             if (idpEntityId != null && idpEntityId.Id != null)
             {
-                if (!IdentityProvider.ConfiguredIdentityProviders.TryGetValue(idpEntityId, out idp))
+                if (!IdentityProvider.ActiveIdentityProviders.TryGetValue(idpEntityId, out idp))
                 {
                     throw new InvalidOperationException("Unknown idp");
                 }
             }
             else
             {
-                idp = IdentityProvider.ConfiguredIdentityProviders.First().Value;
+                idp = IdentityProvider.ActiveIdentityProviders.First().Value;
             }
 
             Uri returnUri = null;
