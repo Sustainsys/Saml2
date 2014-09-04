@@ -18,21 +18,41 @@ namespace Kentor.AuthServices
         /// <summary>
         /// Load and parse metadata.
         /// </summary>
-        /// <param name="metadataUri">Uri to metadata</param>
+        /// <param name="metadataUrl">Url to metadata</param>
         /// <returns>EntityDescriptor containing metadata</returns>
-        public static EntityDescriptor Load(Uri metadataUri)
+        public static EntityDescriptor LoadIdp(Uri metadataUrl)
         {
-            if (metadataUri == null)
+            if (metadataUrl == null)
             {
-                throw new ArgumentNullException("metadataUri");
+                throw new ArgumentNullException("metadataUrl");
             }
-            
-            using(var client = new WebClient())
-            using(var stream = client.OpenRead(metadataUri.ToString()))
+
+            return (EntityDescriptor)Load(metadataUrl);
+        }
+
+        private static MetadataBase Load(Uri metadataUrl)
+        {
+            using (var client = new WebClient())
+            using (var stream = client.OpenRead(metadataUrl.ToString()))
             {
                 var serializer = new MetadataSerializer();
-                return (EntityDescriptor) serializer.ReadMetadata(stream);
+                return serializer.ReadMetadata(stream);
             }
+        }
+
+        /// <summary>
+        /// Load and parse metadata for a federation.
+        /// </summary>
+        /// <param name="metadataUrl">Url to metadata</param>
+        /// <returns></returns>
+        public static EntitiesDescriptor LoadFederation(Uri metadataUrl)
+        {
+            if (metadataUrl == null)
+            {
+                throw new ArgumentNullException("metadataUrl");
+            }
+
+            return (EntitiesDescriptor)Load(metadataUrl);
         }
     }
 }

@@ -57,6 +57,31 @@ namespace Kentor.AuthServices.Tests
         Location=""http://wrong.entityid.example.com/acs""/>
     </IDPSSODescriptor>
   </EntityDescriptor>";
+
+            content["/federationMetadata"] = string.Format(
+@"<EntitiesDescriptor xmlns=""urn:oasis:names:tc:SAML:2.0:metadata"">
+{0}
+  <EntityDescriptor entityID=""http://some.other.idp.example.com/metadata"">
+    <IDPSSODescriptor
+      protocolSupportEnumeration=""urn:oasis:names:tc:SAML:2.0:protocol"">
+      <KeyDescriptor use=""signing"">
+        {0}
+      </KeyDescriptor>
+      <SingleSignOnService
+        Binding=""urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect""
+        Location=""http://some.other.idp.example.com/ssoService"" />
+    </IDPSSODescriptor>
+  </EntityDescriptor>
+  <EntityDescriptor entityID=""http://some.other.sp.example.com/metadata"">
+    <SPSSODescriptor
+      protocolSupportEnumeration=""urn:oasis:names:tc:SAML:2.0:protocol"">
+      <AssertionConsumerService index=""0""
+        Binding=""urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST""
+        Location=""http://some.other.sp.example.com/acs"" />
+    </SPSSODescriptor>
+  </EntityDescriptor>
+</EntitiesDescriptor>
+", SignedXmlHelper.KeyInfoXml);
         }
 
         [AssemblyInitialize]

@@ -78,13 +78,26 @@ namespace Kentor.AuthServices.Configuration
         /// <summary>
         /// Set of identity providers known to the service provider.
         /// </summary>
-        [ConfigurationProperty("", IsRequired=true, IsDefaultCollection=true)]
-        [ConfigurationCollection(typeof(IdentityProviderCollection), AddItemName="identityProvider")]
+        [ConfigurationProperty("identityProviders", IsRequired=true, IsDefaultCollection=true)]
+        [ConfigurationCollection(typeof(IdentityProviderCollection))]
         public IdentityProviderCollection IdentityProviders
         {
             get
             {
-                return (IdentityProviderCollection)base[""];
+                return (IdentityProviderCollection)base["identityProviders"];
+            }
+        }
+
+        /// <summary>
+        /// Set of federations. The service provider will trust all the idps in these federations.
+        /// </summary>
+        [ConfigurationProperty("federations", IsDefaultCollection=true)]
+        [ConfigurationCollection(typeof(FederationCollection))]
+        public FederationCollection Federations
+        {
+            get
+            {
+                return (FederationCollection)base["federations"];
             }
         }
     }

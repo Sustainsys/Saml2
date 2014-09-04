@@ -6,6 +6,7 @@ using Kentor.AuthServices.TestHelpers;
 using Kentor.AuthServices.Configuration;
 using System.Configuration;
 using System.IdentityModel.Metadata;
+using System.Collections.Generic;
 
 namespace Kentor.AuthServices.Tests
 {
@@ -139,6 +140,27 @@ namespace Kentor.AuthServices.Tests
 
             a.ShouldThrow<ConfigurationErrorsException>().And.Message.Should()
                 .Be("Unexpected entity id \"http://wrong.entityid.example.com\" found when loading metadata for \"http://localhost:13428/idpMetadataWrongEntityId\".");
+        }
+
+        [TestMethod]
+        public void IdentityProvider_ActiveIdentityProviders_IncludeIdpFromFederation()
+        {
+            var subject = IdentityProvider.ActiveIdentityProviders[
+                new EntityId("http://some.other.idp.example.com/metadata")];
+
+            subject.EntityId.Id.Should().Be("http://some.other.idp.example.com/metadata");
+            subject.Binding.Should().Be(Saml2BindingType.HttpRedirect);
+        }
+
+        [TestMethod]
+        public void IdentityProvider_ActiveIdentityProviders_ThrowsOnInvalidEntityId()
+        {
+            Action a = () => { 
+                var i = IdentityProvider.ActiveIdentityProviders[
+                new EntityId("urn:Non.Existent.EntityId")];
+            };
+
+            a.ShouldThrow<KeyNotFoundException>().And.Message.Should().Be("No Idp with entity id \"urn:Non.Existent.EntityId\" found.");
         }
     }
 }

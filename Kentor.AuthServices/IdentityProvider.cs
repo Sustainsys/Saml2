@@ -12,6 +12,7 @@ using System.Security.Cryptography;
 using System.Security.Cryptography.Xml;
 using System.Configuration;
 using System.Globalization;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Kentor.AuthServices
 {
@@ -26,24 +27,48 @@ namespace Kentor.AuthServices
         public class ActiveIdentityProvidersMap : IEnumerable<IdentityProvider>
         {
             private readonly IDictionary<EntityId, IdentityProvider> configuredIdps;
+            private readonly IList<Federation> configuredFederations;
             
             internal ActiveIdentityProvidersMap(
-                IDictionary<EntityId, IdentityProvider> configuredIdps)
+                IDictionary<EntityId, IdentityProvider> configuredIdps,
+                IList<Federation> configuredFederations)
             {
                 this.configuredIdps = configuredIdps;
+                this.configuredFederations = configuredFederations;
             }
 
             public IdentityProvider this[EntityId entityId]
             {
                 get
                 {
-                    return configuredIdps[entityId];
+                    IdentityProvider idp;
+                    if (TryGetValue(entityId, out idp))
+                    {
+                        return idp;
+                    }
+                    else 
+                    {
+                        throw new KeyNotFoundException("No Idp with entity id \"" + entityId.Id + "\" found.");
+                    }
                 }
             }
 
-            public bool TryGetValue(EntityId entityIdp, out IdentityProvider idp)
+            public bool TryGetValue(EntityId entityId, out IdentityProvider idp)
             {
-                return configuredIdps.TryGetValue(entityIdp, out idp);
+                if(configuredIdps.TryGetValue(entityId, out idp))
+                {
+                    return true;
+                }
+
+                foreach(var federation in configuredFederations)
+                {
+                    if(federation.IdentityProviders.TryGetValue(entityId, out idp))
+                    {
+                        return true;
+                    }
+                }
+
+                return false;
             }
 
             public IEnumerator<IdentityProvider> GetEnumerator()
@@ -51,6 +76,7 @@ namespace Kentor.AuthServices
                 return configuredIdps.Values.GetEnumerator();
             }
 
+            [ExcludeFromCodeCoverage]
             System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
             {
                 throw new NotImplementedException();
@@ -58,7 +84,9 @@ namespace Kentor.AuthServices
         }
 
         private static readonly ActiveIdentityProvidersMap activeIdentityProviders = 
-            new ActiveIdentityProvidersMap(configuredIdentityProviders);
+            new ActiveIdentityProvidersMap(
+                configuredIdentityProviders,
+                KentorAuthServicesSection.Current.Federations.Select(f => new Federation(f)).ToList());
 
         public static ActiveIdentityProvidersMap ActiveIdentityProviders
         {
@@ -91,6 +119,13 @@ namespace Kentor.AuthServices
             {
                 LoadMetadata();
             }
+
+            Validate();
+        }
+
+        internal IdentityProvider(EntityDescriptor metadata)
+        {
+            LoadMetadata(metadata);
 
             Validate();
         }
@@ -145,14 +180,26 @@ namespace Kentor.AuthServices
         private void LoadMetadata()
         {
             // So far only support for metadata at well known location.
-            var metadata = MetadataLoader.Load(new Uri(EntityId.Id));
+            var metadata = MetadataLoader.LoadIdp(new Uri(EntityId.Id));
 
-            if(metadata.EntityId.Id != EntityId.Id)
+            LoadMetadata(metadata);
+        }
+
+        private void LoadMetadata(EntityDescriptor metadata)
+        {
+            if (EntityId != null)
             {
-                var msg = string.Format(CultureInfo.InvariantCulture, 
-                    "Unexpected entity id \"{0}\" found when loading metadata for \"{1}\".",
-                    metadata.EntityId.Id, EntityId.Id);
-                throw new ConfigurationErrorsException(msg);
+                if (metadata.EntityId.Id != EntityId.Id)
+                {
+                    var msg = string.Format(CultureInfo.InvariantCulture,
+                        "Unexpected entity id \"{0}\" found when loading metadata for \"{1}\".",
+                        metadata.EntityId.Id, EntityId.Id);
+                    throw new ConfigurationErrorsException(msg);
+                }
+            }
+            else
+            {
+                EntityId = metadata.EntityId;
             }
 
             var idpDescriptor = metadata.RoleDescriptors
@@ -165,7 +212,7 @@ namespace Kentor.AuthServices
 
             var key = idpDescriptor.Keys.SingleOrDefault();
 
-            if(key != null)
+            if (key != null)
             {
                 SigningKey = ((AsymmetricSecurityKey)key.KeyInfo.CreateKey())
                     .GetAsymmetricAlgorithm(SignedXml.XmlDsigRSASHA1Url, false);
