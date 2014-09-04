@@ -35,7 +35,7 @@ namespace Kentor.AuthServices
             }
             else
             {
-                idp = IdentityProvider.ActiveIdentityProviders.First().Value;
+                idp = IdentityProvider.ActiveIdentityProviders.First();
             }
 
             Uri returnUri = null;

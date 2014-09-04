@@ -17,19 +17,50 @@ namespace Kentor.AuthServices
 {
     class IdentityProvider
     {
-        private static readonly IDictionary<EntityId, IdentityProvider> activeIdentityProviders =
-            new Dictionary<EntityId, IdentityProvider>(EntityIdEqualityComparer.Instance);
+        private static readonly IDictionary<EntityId, IdentityProvider> configuredIdentityProviders =
+            KentorAuthServicesSection.Current.IdentityProviders.ToDictionary(
+                idp => new EntityId(idp.EntityId),
+                idp => new IdentityProvider(idp),
+                EntityIdEqualityComparer.Instance);
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1810:InitializeReferenceTypeStaticFieldsInline")]
-        static IdentityProvider()
+        public class ActiveIdentityProvidersMap : IEnumerable<IdentityProvider>
         {
-            foreach(var configIdp in KentorAuthServicesSection.Current.IdentityProviders)
+            private readonly IDictionary<EntityId, IdentityProvider> configuredIdps;
+            
+            internal ActiveIdentityProvidersMap(
+                IDictionary<EntityId, IdentityProvider> configuredIdps)
             {
-                activeIdentityProviders[new EntityId(configIdp.EntityId)] = new IdentityProvider(configIdp);
+                this.configuredIdps = configuredIdps;
+            }
+
+            public IdentityProvider this[EntityId entityId]
+            {
+                get
+                {
+                    return configuredIdps[entityId];
+                }
+            }
+
+            public bool TryGetValue(EntityId entityIdp, out IdentityProvider idp)
+            {
+                return configuredIdps.TryGetValue(entityIdp, out idp);
+            }
+
+            public IEnumerator<IdentityProvider> GetEnumerator()
+            {
+                return configuredIdps.Values.GetEnumerator();
+            }
+
+            System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
+            {
+                throw new NotImplementedException();
             }
         }
 
-        public static IDictionary<EntityId, IdentityProvider> ActiveIdentityProviders
+        private static readonly ActiveIdentityProvidersMap activeIdentityProviders = 
+            new ActiveIdentityProvidersMap(configuredIdentityProviders);
+
+        public static ActiveIdentityProvidersMap ActiveIdentityProviders
         {
             get
             {

@@ -110,7 +110,7 @@ namespace Kentor.AuthServices.Tests
         [NotReRunnable]
         public void AcsCommand_Run_WithReturnUrl_SuccessfulResult()
         {
-            var idp = IdentityProvider.ActiveIdentityProviders.First().Value;
+            var idp = IdentityProvider.ActiveIdentityProviders.First();
             var request = idp.CreateAuthenticateRequest(new Uri("http://localhost/testUrl.aspx"));
 
             var response =

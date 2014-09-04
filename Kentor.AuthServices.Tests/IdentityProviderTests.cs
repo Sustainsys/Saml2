@@ -28,7 +28,7 @@ namespace Kentor.AuthServices.Tests
         [TestMethod]
         public void IdentityProvider_CreateAuthenticateRequest_AssertionConsumerServiceUrlFromConfig()
         {
-            var idp = IdentityProvider.ActiveIdentityProviders.First().Value;
+            var idp = IdentityProvider.ActiveIdentityProviders.First();
 
             var r = idp.CreateAuthenticateRequest(null);
 
@@ -38,7 +38,7 @@ namespace Kentor.AuthServices.Tests
         [TestMethod]
         public void IdentityProvider_CreateAuthenticateRequest_IssuerFromConfig()
         {
-            var idp = IdentityProvider.ActiveIdentityProviders.First().Value;
+            var idp = IdentityProvider.ActiveIdentityProviders.First();
 
             var r = idp.CreateAuthenticateRequest(null);
 
@@ -48,7 +48,7 @@ namespace Kentor.AuthServices.Tests
         [TestMethod]
         public void IdentityProvider_Certificate_FromFile()
         {
-            var idp = IdentityProvider.ActiveIdentityProviders.First().Value;
+            var idp = IdentityProvider.ActiveIdentityProviders.First();
 
             idp.SigningKey.ShouldBeEquivalentTo(SignedXmlHelper.TestKey);
         }
