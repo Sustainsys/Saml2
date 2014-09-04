@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Globalization;
+using System.IdentityModel.Metadata;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -18,16 +19,16 @@ namespace Kentor.AuthServices
                 throw new ArgumentNullException("request");
             }
 
-            return CreateResult(request.QueryString["idp"], request.QueryString["ReturnUrl"], request.Url);
+            return CreateResult(new EntityId(request.QueryString["idp"]), 
+                request.QueryString["ReturnUrl"], request.Url);
         }
 
-        public static CommandResult CreateResult(string idpName, string returnPath, Uri requestUrl)
+        public static CommandResult CreateResult(EntityId idpEntityId, string returnPath, Uri requestUrl)
         {
             IdentityProvider idp;
-            if (!string.IsNullOrEmpty(idpName))
+            if (idpEntityId != null && idpEntityId.Id != null)
             {
-                var selectedIssuer = HttpUtility.UrlDecode(idpName);
-                if (!IdentityProvider.ConfiguredIdentityProviders.TryGetValue(selectedIssuer, out idp))
+                if (!IdentityProvider.ConfiguredIdentityProviders.TryGetValue(idpEntityId, out idp))
                 {
                     throw new InvalidOperationException("Unknown idp");
                 }

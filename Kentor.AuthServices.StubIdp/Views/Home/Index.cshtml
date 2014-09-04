@@ -1,13 +1,19 @@
 ﻿@model AssertionModel
 <p>
-    This form will allow you to send a SAML2 Response to a service provider.
-    If the In Response To ID field is empty, the Response is considered unsolicited (IDP initiated).
+    This form will allow you to send a SAML2 Response to a service provider. If the In Response To ID field is
+    empty, the Response is considered unsolicited (IDP initiated).
 </p>
 <p>
-    The SAML messages sent by the Stub Idp will be signed with <em>@Html.ActionLink("this certificate", "Certificate")</em>.
-    To validate the responses you need to download it and configure your service provider to trust it. 
-    <em>Caution</em>: Never trust this certificate in a production environment as it will allow anyone to sign in to 
+    The SAML messages sent by the Stub Idp will be signed with <em>@Html.ActionLink("this certificate", "Index", "Certificate")</em>.
+    To validate the responses you need to download it and configure your service provider to trust it.
+    <em>Caution</em>: Never trust this certificate in a production environment as it will allow anyone to sign in to
     your application as whatever user they choose.
+</p>
+
+<p>
+    Metadata for the Stub Idp is available at @Html.ActionLink("/Metadata", "Index", "Metadata") or in a
+    @Html.ActionLink("browser friendly version", "BrowserFriendly", "Metadata") version (with a content type
+    that makes the browser display the entire XML).
 </p>
 <p>
     Please fill in the required fields.

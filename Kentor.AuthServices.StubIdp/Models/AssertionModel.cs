@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Configuration;
+using System.IdentityModel.Metadata;
 using System.Linq;
 using System.Security.Claims;
 using System.Security.Cryptography.X509Certificates;
@@ -35,21 +36,15 @@ namespace Kentor.AuthServices.StubIdp.Models
         [Display(Name = "In Response To ID")]
         public string InResponseTo { get; set; }
 
-        // The X509KeyStorageFlags.MachineKeySet flag is required when loading a
-        // certificate from file on a shared hosting solution such as Azure.
-        private static readonly X509Certificate2 signingCertificate =
-            new X509Certificate2(HttpContext.Current.Server.MapPath(
-                "~\\App_Data\\Kentor.AuthServices.StubIdp.pfx"), "",
-                X509KeyStorageFlags.MachineKeySet);
-
         public Saml2Response ToSaml2Response()
         {
             var identity = new ClaimsIdentity(new Claim[] { 
                 new Claim(ClaimTypes.NameIdentifier, NameId )});
 
             return new Saml2Response(
-                ConfigurationManager.AppSettings["issuerName"],
-                signingCertificate, new Uri(AssertionConsumerServiceUrl), InResponseTo, identity);
+                new EntityId(UrlResolver.MetadataUrl.ToString()),
+                CertificateHelper.SigningCertificate, new Uri(AssertionConsumerServiceUrl), 
+                InResponseTo, identity);
         }
     }
 }

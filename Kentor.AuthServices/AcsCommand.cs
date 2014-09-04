@@ -1,8 +1,10 @@
 ﻿using Kentor.AuthServices.Configuration;
 using System;
+using System.IdentityModel.Metadata;
 using System.IdentityModel.Services;
 using System.Net;
 using System.Security.Claims;
+using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 using System.Web;
 using System.Xml;
@@ -21,7 +23,7 @@ namespace Kentor.AuthServices
                 {
                     var samlResponse = Saml2Response.Read(binding.Unbind(request));
 
-                    samlResponse.Validate(GetSigningCert(samlResponse.Issuer));
+                    samlResponse.Validate(GetSigningKey(samlResponse.Issuer));
 
                     var principal = new ClaimsPrincipal(samlResponse.GetClaims());
                     FederatedAuthentication.FederationConfiguration.IdentityConfiguration
@@ -49,9 +51,9 @@ namespace Kentor.AuthServices
             throw new NoSamlResponseFoundException();
         }
 
-        private static X509Certificate2 GetSigningCert(string issuer)
+        private static AsymmetricAlgorithm GetSigningKey(EntityId issuer)
         {
-            return IdentityProvider.ConfiguredIdentityProviders[issuer].Certificate;
+            return IdentityProvider.ConfiguredIdentityProviders[issuer].SigningKey;
         }
     }
 }

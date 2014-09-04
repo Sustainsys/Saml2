@@ -8,6 +8,8 @@ using System.Security.Cryptography.X509Certificates;
 using System.Security.Cryptography.Xml;
 using System.Xml;
 using Kentor.AuthServices.Configuration;
+using System.IdentityModel.Metadata;
+using System.Security.Cryptography;
 
 namespace Kentor.AuthServices
 {
@@ -66,7 +68,7 @@ namespace Kentor.AuthServices
 
             status = StatusCodeHelper.FromString(statusString);
 
-            issuer = xmlDocument.DocumentElement["Issuer", Saml2Namespaces.Saml2Name].GetTrimmedTextIfNotNull();
+            issuer = new EntityId(xmlDocument.DocumentElement["Issuer", Saml2Namespaces.Saml2Name].GetTrimmedTextIfNotNull());
 
             var destinationUriString = xmlDocument.DocumentElement.Attributes["Destination"].GetValueIfNotNull();
 
@@ -86,7 +88,7 @@ namespace Kentor.AuthServices
         /// <param name="inResponseTo">In response to id</param>
         /// <param name="claimsIdentities">Claims identities to be included in the 
         /// response. Each identity is translated into a separate assertion.</param>
-        public Saml2Response(string issuer, X509Certificate2 issuerCertificate,
+        public Saml2Response(EntityId issuer, X509Certificate2 issuerCertificate,
             Uri destinationUri, string inResponseTo, params ClaimsIdentity[] claimsIdentities)
         {
             this.issuer = issuer;
@@ -166,7 +168,7 @@ namespace Kentor.AuthServices
             xml.AppendChild(responseElement);
 
             var issuerElement = xml.CreateElement("saml2", "Issuer", Saml2Namespaces.Saml2Name);
-            issuerElement.InnerText = issuer;
+            issuerElement.InnerText = issuer.Id;
             responseElement.AppendChild(issuerElement);
 
             var statusElement = xml.CreateElement("saml2p", "Status", Saml2Namespaces.Saml2PName);
@@ -214,12 +216,12 @@ namespace Kentor.AuthServices
         /// </summary>
         public Saml2StatusCode Status { get { return status; } }
 
-        readonly string issuer;
+        readonly EntityId issuer;
 
         /// <summary>
         /// Issuer (= sender) of the response.
         /// </summary>
-        public string Issuer
+        public EntityId Issuer
         {
             get
             {
@@ -269,13 +271,14 @@ namespace Kentor.AuthServices
         /// Validates InResponseTo and the signature of the response. Note that the status code of the
         /// message can still be an error code, although the message itself is valid.
         /// </summary>
-        /// <param name="idpCertificate">Idp certificate that should have signed the reponse</param>
+        /// <param name="idpKey">The assymetric key of the Idp certificate that should have 
+        /// signed the reponse</param>
         /// <returns>Is the response signed by the Idp and fulfills other formal requirements?</returns>
-        public bool Validate(X509Certificate2 idpCertificate)
+        public bool Validate(AsymmetricAlgorithm idpKey)
         {
             if (!validated)
             {
-                valid = ValidateInResponseTo() && ValidateSignature(idpCertificate);
+                valid = ValidateInResponseTo() && ValidateSignature(idpKey);
 
                 validated = true;
             }
@@ -290,7 +293,7 @@ namespace Kentor.AuthServices
         {
             if (InResponseTo == null &&
                 KentorAuthServicesSection.Current.IdentityProviders
-                .Single(idpConfig => idpConfig.EntityId == this.Issuer).AllowUnsolicitedAuthnResponse)
+                .Single(idpConfig => idpConfig.EntityId == this.Issuer.Id).AllowUnsolicitedAuthnResponse)
             {
                 return true;
             }
@@ -303,7 +306,7 @@ namespace Kentor.AuthServices
                     return false;
                 }
                 RequestState = storedRequestState;
-                if (RequestState.Idp != Issuer)
+                if (RequestState.Idp.Id != Issuer.Id)
                 {
                     return false;
                 }
@@ -311,20 +314,20 @@ namespace Kentor.AuthServices
             }
         }
 
-        private bool ValidateSignature(X509Certificate2 idpCertificate)
+        private bool ValidateSignature(AsymmetricAlgorithm idpKey)
         {
             // If the response message is signed, we check just this signature because the whole content has to be correct then
             var responseSignature = xmlDocument.DocumentElement["Signature", SignedXml.XmlDsigNamespaceUrl];
             if (responseSignature != null)
             {
-                return CheckSignature(XmlDocument.DocumentElement, idpCertificate);
+                return CheckSignature(XmlDocument.DocumentElement, idpKey);
             }
             else
             {
                 // If the response message is not signed, all assersions have to be signed correctly
                 foreach (var assertionNode in AllAssertionElementNodes)
                 {
-                    if (!CheckSignature(assertionNode, idpCertificate))
+                    if (!CheckSignature(assertionNode, idpKey))
                     {
                         return false;
                     }
@@ -342,9 +345,9 @@ namespace Kentor.AuthServices
 
         /// <summary>Checks the signature.</summary>
         /// <param name="signedRootElement">The signed root element.</param>
-        /// <param name="idpCertificate">The idp certificate.</param>
+        /// <param name="idpKey">The assymetric key of the algorithm.</param>
         /// <returns><c>true</c> if the whole signature was successful; otherwise <c>false</c></returns>
-        private static bool CheckSignature(XmlElement signedRootElement, X509Certificate2 idpCertificate)
+        private static bool CheckSignature(XmlElement signedRootElement, AsymmetricAlgorithm idpKey)
         {
             var xmlDocument = new XmlDocument { PreserveWhitespace = true };
             xmlDocument.LoadXml(signedRootElement.OuterXml);
@@ -375,7 +378,7 @@ namespace Kentor.AuthServices
                 }
             }
 
-            return signedXml.CheckSignature(idpCertificate, true);
+            return signedXml.CheckSignature(idpKey);
         }
 
         private void ThrowOnNotValid()

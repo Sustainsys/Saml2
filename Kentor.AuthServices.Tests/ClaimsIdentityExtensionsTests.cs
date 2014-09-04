@@ -2,6 +2,7 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Security.Claims;
 using FluentAssertions;
+using System.IdentityModel.Metadata;
 
 namespace Kentor.AuthServices.Tests
 {
@@ -13,9 +14,19 @@ namespace Kentor.AuthServices.Tests
         {
             ClaimsIdentity identity = null;
 
-            Action a = () => identity.ToSaml2Assertion("foo");
+            Action a = () => identity.ToSaml2Assertion(new EntityId("foo"));
 
             a.ShouldThrow<ArgumentNullException>().And.ParamName.Should().Be("identity");
+        }
+
+        [TestMethod]
+        public void ClaimsIdentityExtensions_ToSaml2Assertion_ThrowsOnNullIssuer()
+        {
+            var subject = new ClaimsIdentity();
+
+            Action a = () => subject.ToSaml2Assertion(null);
+
+            a.ShouldThrow<ArgumentNullException>().And.ParamName.Should().Be("issuer");
         }
 
         [TestMethod]
@@ -27,7 +38,7 @@ namespace Kentor.AuthServices.Tests
                 new Claim(ClaimTypes.NameIdentifier, subject)
             });
 
-            var a = ci.ToSaml2Assertion("http://idp.example.com");
+            var a = ci.ToSaml2Assertion(new EntityId("http://idp.example.com"));
 
             a.Subject.NameId.Value.Should().Be(subject);
         }
@@ -39,7 +50,7 @@ namespace Kentor.AuthServices.Tests
                 new Claim(ClaimTypes.NameIdentifier, "JohnDoe")
             });
 
-            var a = ci.ToSaml2Assertion("http://idp.example.com");
+            var a = ci.ToSaml2Assertion(new EntityId("http://idp.example.com"));
 
             // Default validity time is hearby defined to two minutes.
             a.Conditions.NotOnOrAfter.Value.Should().BeCloseTo(DateTime.UtcNow.AddMinutes(2));

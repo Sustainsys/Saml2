@@ -5,16 +5,25 @@ using System.Collections.Concurrent;
 using System.Linq;
 using System.Security.Cryptography.X509Certificates;
 using System.IdentityModel.Tokens;
+using System.Net;
+using System.IdentityModel.Metadata;
+using System.Xml.Linq;
+using System.Security.Cryptography;
+using System.Security.Cryptography.Xml;
+using System.Configuration;
+using System.Globalization;
 
 namespace Kentor.AuthServices
 {
     class IdentityProvider
     {
-        private static readonly IDictionary<string, IdentityProvider> configuredIdentityProviders =
+        private static readonly IDictionary<EntityId, IdentityProvider> configuredIdentityProviders =
             KentorAuthServicesSection.Current.IdentityProviders
-            .ToDictionary(idp => idp.EntityId, idp => new IdentityProvider(idp));
+            .ToDictionary(idp => new EntityId(idp.EntityId), 
+                          idp => new IdentityProvider(idp),
+                          EntityIdEqualityComparer.Instance);
 
-        public static IDictionary<string, IdentityProvider> ConfiguredIdentityProviders
+        public static IDictionary<EntityId, IdentityProvider> ConfiguredIdentityProviders
         {
             get
             {
@@ -24,30 +33,67 @@ namespace Kentor.AuthServices
 
         public IdentityProvider() { }
 
-        public IdentityProvider(IdentityProviderElement config)
+        // Ctor used for testing.
+        internal IdentityProvider(Uri destinationUri)
         {
-            DestinationUri = config.DestinationUri;
-            Issuer = config.EntityId;
-            Binding = config.Binding;
-            certificate = config.SigningCertificate.LoadCertificate();
+            AssertionConsumerServiceUrl = destinationUri;
         }
 
-        public Saml2BindingType Binding { get; set; }
+        internal IdentityProvider(IdentityProviderElement config)
+        {
+            AssertionConsumerServiceUrl = config.DestinationUri;
+            EntityId = new EntityId(config.EntityId);
+            Binding = config.Binding;
 
-        public Uri DestinationUri { get; set; }
+            var certificate = config.SigningCertificate.LoadCertificate();
 
-        public string Issuer { get; set; }
+            if (certificate != null)
+            {
+                SigningKey = certificate.PublicKey.Key;
+            }
+
+            if (config.LoadMetadata)
+            {
+                LoadMetadata();
+            }
+
+            Validate();
+        }
+
+        private void Validate()
+        {
+            if(Binding == 0)
+            {
+                throw new ConfigurationErrorsException("Missing binding configuration on Idp " + EntityId.Id + ".");
+            }
+
+            if(SigningKey == null)
+            {
+                throw new ConfigurationErrorsException("Missing signing certificate configuration on Idp " + EntityId.Id + ".");
+            }
+
+            if (AssertionConsumerServiceUrl == null)
+            {
+                throw new ConfigurationErrorsException("Missing assertion consumer service url configuration on Idp " + EntityId.Id + ".");
+            }
+        }
+
+        public Saml2BindingType Binding { get; private set; }
+
+        public Uri AssertionConsumerServiceUrl { get; private set; }
+
+        public EntityId EntityId { get; private set; }
 
         public Saml2AuthenticationRequest CreateAuthenticateRequest(Uri returnUri)
         {
             var request = new Saml2AuthenticationRequest()
             {
-                DestinationUri = DestinationUri,
+                DestinationUri = AssertionConsumerServiceUrl,
                 AssertionConsumerServiceUrl = KentorAuthServicesSection.Current.AssertionConsumerServiceUrl,
                 Issuer = KentorAuthServicesSection.Current.EntityId
             };
 
-            var responseData = new StoredRequestState(Issuer, returnUri);
+            var responseData = new StoredRequestState(EntityId, returnUri);
 
             PendingAuthnRequests.Add(new Saml2Id(request.Id), responseData);
 
@@ -59,12 +105,35 @@ namespace Kentor.AuthServices
             return Saml2Binding.Get(Binding).Bind(request);
         }
 
-        readonly X509Certificate2 certificate;
-        public X509Certificate2 Certificate
+        public AsymmetricAlgorithm SigningKey { get; private set; }
+
+        private void LoadMetadata()
         {
-            get
+            // So far only support for metadata at well known location.
+            var metadata = MetadataLoader.Load(new Uri(EntityId.Id));
+
+            if(metadata.EntityId.Id != EntityId.Id)
             {
-                return certificate;
+                var msg = string.Format(CultureInfo.InvariantCulture, 
+                    "Unexpected entity id \"{0}\" found when loading metadata for \"{1}\".",
+                    metadata.EntityId.Id, EntityId.Id);
+                throw new ConfigurationErrorsException(msg);
+            }
+
+            var idpDescriptor = metadata.RoleDescriptors
+                .OfType<IdentityProviderSingleSignOnDescriptor>().Single();
+
+            var ssoService = idpDescriptor.SingleSignOnServices.First();
+
+            Binding = Saml2Binding.UriToSaml2BindingType(ssoService.Binding);
+            AssertionConsumerServiceUrl = ssoService.Location;
+
+            var key = idpDescriptor.Keys.SingleOrDefault();
+
+            if(key != null)
+            {
+                SigningKey = ((AsymmetricSecurityKey)key.KeyInfo.CreateKey())
+                    .GetAsymmetricAlgorithm(SignedXml.XmlDsigRSASHA1Url, false);
             }
         }
     }

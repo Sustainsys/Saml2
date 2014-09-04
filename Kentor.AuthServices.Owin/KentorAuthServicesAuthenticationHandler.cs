@@ -3,6 +3,7 @@ using Microsoft.Owin.Security;
 using Microsoft.Owin.Security.Infrastructure;
 using System;
 using System.Collections.Generic;
+using System.IdentityModel.Metadata;
 using System.Linq;
 using System.Security.Claims;
 using System.Text;
@@ -35,12 +36,17 @@ namespace Kentor.AuthServices.Owin
 
                 if (challenge != null)
                 {
-                    string idp;
-                    if (!challenge.Properties.Dictionary.TryGetValue("idp", out idp))
+                    EntityId idp;
+                    string strIdp;
+                    if (challenge.Properties.Dictionary.TryGetValue("idp", out strIdp))
+                    {
+                        idp = new EntityId(strIdp);
+                    }
+                    else
                     {
                         object objIdp = null;
                         Context.Environment.TryGetValue("KentorAuthServices.idp", out objIdp);
-                        idp = objIdp as string;
+                        idp = objIdp as EntityId;
                     }
                     var result = SignInCommand.CreateResult(idp, challenge.Properties.RedirectUri, Context.Request.Uri);
                     Response.Redirect(result.Location.ToString());

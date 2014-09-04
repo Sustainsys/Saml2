@@ -61,6 +61,7 @@
     <Compile Include="Configuration\CertificateElement.cs" />
     <Compile Include="DateTimeExtensions.cs" />
     <Compile Include="EntityDescriptorExtension.cs" />
+    <Compile Include="EntityIdEqualityComparer.cs" />
     <Compile Include="Enumerator.cs" />
     <Compile Include="HttpRequestData.cs" />
     <Compile Include="IdentityProvider.cs" />
@@ -68,6 +69,7 @@
     <Compile Include="ISaml2Message.cs" />
     <Compile Include="MessageBinder.cs" />
     <Compile Include="MetadataCommand.cs" />
+    <Compile Include="MetadataLoader.cs" />
     <Compile Include="MorePublicSaml2SecurityTokenHandler.cs" />
     <Compile Include="NoSamlResponseFoundException.cs" />
     <Compile Include="NotFoundCommand.cs" />

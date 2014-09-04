@@ -9,16 +9,17 @@ namespace Kentor.AuthServices
     /// <summary>
     /// Saml2 binding types.
     /// </summary>
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1008:EnumsShouldHaveZeroValue")]
     public enum Saml2BindingType
     {
         /// <summary>
         /// The http redirect binding according to saml bindings section 3.4
         /// </summary>
-        HttpRedirect,
+        HttpRedirect = 1,
 
         /// <summary>
         /// The http post binding according to saml bindings section 3.5
         /// </summary>
-        HttpPost
+        HttpPost = 2,
     }
 }

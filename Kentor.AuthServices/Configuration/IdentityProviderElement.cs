@@ -38,41 +38,57 @@ namespace Kentor.AuthServices.Configuration
             {
                 return (string)base["entityId"];
             }
+            internal set
+            {
+                base["entityId"] = value;
+            }
         }
 
         /// <summary>
         /// Destination url to send requests to.
         /// </summary>
-        [ConfigurationProperty("destinationUri", IsRequired = true)]
+        [ConfigurationProperty("destinationUri")]
         public Uri DestinationUri
         {
             get
             {
                 return (Uri)base["destinationUri"];
             }
+            internal set
+            {
+                base["destinationUri"] = value;
+            }
         }
 
         /// <summary>
         /// The binding to use when sending requests to the Idp.
         /// </summary>
-        [ConfigurationProperty("binding", IsRequired = true)]
+        [ConfigurationProperty("binding")]
         public Saml2BindingType Binding
         {
             get
             {
                 return (Saml2BindingType)base["binding"];
             }
+            internal set
+            {
+                base["binding"] = value;
+            }
         }
 
         /// <summary>
         /// Certificate location for the certificate the Idp uses to sign its messages.
         /// </summary>
-        [ConfigurationProperty("signingCertificate", IsRequired = true)]
+        [ConfigurationProperty("signingCertificate")]
         public CertificateElement SigningCertificate
         {
             get
             {
                 return (CertificateElement)base["signingCertificate"];
+            }
+            internal set
+            {
+                base["signingCertificate"] = value;
             }
         }
 
@@ -92,6 +108,23 @@ namespace Kentor.AuthServices.Configuration
             internal set
             {
                 base["allowUnsolicitedAuthnResponse"] = value;
+            }
+        }
+
+        /// <summary>
+        /// Enable automatic downloading of metadata form the well-known uri (i.e. interpret
+        /// the EntityID as an uri and download metadata from it).
+        /// </summary>
+        [ConfigurationProperty("loadMetadata", IsRequired = false, DefaultValue = false)]
+        public bool LoadMetadata
+        {
+            get
+            {
+                return (bool)base["loadMetadata"];
+            }
+            set
+            {
+                base["loadMetadata"] = value;
             }
         }
     }

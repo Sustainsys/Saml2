@@ -56,5 +56,35 @@ namespace Kentor.AuthServices.Tests
 
             a.ShouldThrow<NotImplementedException>();
         }
+
+        [TestMethod]
+        public void Saml2Binding_UriToSaml2BindingType_Redirect()
+        {
+            Saml2Binding.UriToSaml2BindingType(Saml2Binding.HttpRedirectUri)
+                .Should().Be(Saml2BindingType.HttpRedirect);
+        }
+
+        [TestMethod]
+        public void Saml2Binding_UriToSaml2BindingType_Post()
+        {
+            Saml2Binding.UriToSaml2BindingType(Saml2Binding.HttpPostUri)
+                .Should().Be(Saml2BindingType.HttpPost);
+        }
+
+        [TestMethod]
+        public void Saml2Binding_UriToSaml2BindingType_Unknown()
+        {
+            Action a = () => Saml2Binding.UriToSaml2BindingType(new Uri("urn:SomeUnknownUri"));
+
+            a.ShouldThrow<ArgumentException>().And.Message.Should().Be("Unknown Saml2 Binding Uri \"urn:SomeUnknownUri\".");
+        }
+
+        [TestMethod]
+        public void Saml2Binding_UriToSaml2BindingType_Nullcheck()
+        {
+            Action a = () => Saml2Binding.UriToSaml2BindingType(null);
+
+            a.ShouldThrow<ArgumentNullException>().And.ParamName.Should().Be("uri");
+        }
     }
 }

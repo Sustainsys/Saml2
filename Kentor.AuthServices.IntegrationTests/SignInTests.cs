@@ -81,7 +81,7 @@ namespace Kentor.AuthServices.IntegrationTests
                 .Enter("http://localhost:57294/AuthServices/Acs").In("#AssertionConsumerServiceUrl")
                 .Enter("SomeUnusedNameId").In("#NameId")
                 .Click("#main form button")
-                .Assert.Text("You've successfully authenticated with Kentor.AuthServices.Local.StubIdp. Please enter a user name for this site below and click the Register button to finish logging in.")
+                .Assert.Text("You've successfully authenticated with http://localhost:52071/Metadata. Please enter a user name for this site below and click the Register button to finish logging in.")
                 .In("p.text-info");
         }
 
@@ -97,7 +97,7 @@ namespace Kentor.AuthServices.IntegrationTests
             I.Enter("SomeUnusedNameId").In("#NameId");
 
             I.Click("#main form button")
-                .Assert.Text("You've successfully authenticated with Kentor.AuthServices.Local.StubIdp. Please enter a user name for this site below and click the Register button to finish logging in.")
+                .Assert.Text("You've successfully authenticated with http://localhost:52071/Metadata. Please enter a user name for this site below and click the Register button to finish logging in.")
                 .In("p.text-info");
         }
     }
