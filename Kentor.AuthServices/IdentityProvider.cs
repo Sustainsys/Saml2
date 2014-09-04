@@ -17,21 +17,25 @@ namespace Kentor.AuthServices
 {
     class IdentityProvider
     {
-        private static readonly IDictionary<EntityId, IdentityProvider> configuredIdentityProviders =
-            KentorAuthServicesSection.Current.IdentityProviders
-            .ToDictionary(idp => new EntityId(idp.EntityId), 
-                          idp => new IdentityProvider(idp),
-                          EntityIdEqualityComparer.Instance);
+        private static readonly IDictionary<EntityId, IdentityProvider> activeIdentityProviders =
+            new Dictionary<EntityId, IdentityProvider>(EntityIdEqualityComparer.Instance);
+
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1810:InitializeReferenceTypeStaticFieldsInline")]
+        static IdentityProvider()
+        {
+            foreach(var configIdp in KentorAuthServicesSection.Current.IdentityProviders)
+            {
+                activeIdentityProviders[new EntityId(configIdp.EntityId)] = new IdentityProvider(configIdp);
+            }
+        }
 
         public static IDictionary<EntityId, IdentityProvider> ActiveIdentityProviders
         {
             get
             {
-                return configuredIdentityProviders;
+                return activeIdentityProviders;
             }
         }
-
-        public IdentityProvider() { }
 
         // Ctor used for testing.
         internal IdentityProvider(Uri destinationUri)
