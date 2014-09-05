@@ -61,7 +61,7 @@ namespace Kentor.AuthServices.Tests
             content["/federationMetadata"] = string.Format(
 @"<EntitiesDescriptor xmlns=""urn:oasis:names:tc:SAML:2.0:metadata"">
 {0}
-  <EntityDescriptor entityID=""http://some.other.idp.example.com/metadata"">
+  <EntityDescriptor entityID=""http://idp.federation.example.com/metadata"">
     <IDPSSODescriptor
       protocolSupportEnumeration=""urn:oasis:names:tc:SAML:2.0:protocol"">
       <KeyDescriptor use=""signing"">
@@ -69,15 +69,15 @@ namespace Kentor.AuthServices.Tests
       </KeyDescriptor>
       <SingleSignOnService
         Binding=""urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect""
-        Location=""http://some.other.idp.example.com/ssoService"" />
+        Location=""http://idp.federation.example.com/ssoService"" />
     </IDPSSODescriptor>
   </EntityDescriptor>
-  <EntityDescriptor entityID=""http://some.other.sp.example.com/metadata"">
+  <EntityDescriptor entityID=""http://sp.federation.example.com/metadata"">
     <SPSSODescriptor
       protocolSupportEnumeration=""urn:oasis:names:tc:SAML:2.0:protocol"">
       <AssertionConsumerService index=""0""
         Binding=""urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST""
-        Location=""http://some.other.sp.example.com/acs"" />
+        Location=""http://sp.federation.example.com/acs"" />
     </SPSSODescriptor>
   </EntityDescriptor>
 </EntitiesDescriptor>

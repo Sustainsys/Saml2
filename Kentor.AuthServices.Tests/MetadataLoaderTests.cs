@@ -42,7 +42,7 @@ namespace Kentor.AuthServices.Tests
 
             var subject = MetadataLoader.LoadFederation(metadataUrl);
 
-            subject.ChildEntities.First().EntityId.Id.Should().Be("http://some.other.idp.example.com/metadata");
+            subject.ChildEntities.First().EntityId.Id.Should().Be("http://idp.federation.example.com/metadata");
         }
     }
 }

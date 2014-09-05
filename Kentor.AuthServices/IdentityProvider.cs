@@ -73,7 +73,9 @@ namespace Kentor.AuthServices
 
             public IEnumerator<IdentityProvider> GetEnumerator()
             {
-                return configuredIdps.Values.GetEnumerator();
+                return configuredIdps.Values.Union(
+                configuredFederations.SelectMany(f => f.IdentityProviders.Select(i => i.Value)))
+                .GetEnumerator();
             }
 
             [ExcludeFromCodeCoverage]
