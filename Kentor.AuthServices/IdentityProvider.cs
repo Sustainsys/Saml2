@@ -109,6 +109,7 @@ namespace Kentor.AuthServices
             AssertionConsumerServiceUrl = config.DestinationUri;
             EntityId = new EntityId(config.EntityId);
             Binding = config.Binding;
+            AllowUnsolicitedAuthnResponse = config.AllowUnsolicitedAuthnResponse;
 
             var certificate = config.SigningCertificate.LoadCertificate();
 
@@ -125,8 +126,10 @@ namespace Kentor.AuthServices
             Validate();
         }
 
-        internal IdentityProvider(EntityDescriptor metadata)
+        internal IdentityProvider(EntityDescriptor metadata, bool allowUnsolicitedAuthnResponse)
         {
+            AllowUnsolicitedAuthnResponse = allowUnsolicitedAuthnResponse;
+
             LoadMetadata(metadata);
 
             Validate();
@@ -155,6 +158,8 @@ namespace Kentor.AuthServices
         public Uri AssertionConsumerServiceUrl { get; private set; }
 
         public EntityId EntityId { get; private set; }
+
+        public bool AllowUnsolicitedAuthnResponse { get; private set; }
 
         public Saml2AuthenticationRequest CreateAuthenticateRequest(Uri returnUri)
         {

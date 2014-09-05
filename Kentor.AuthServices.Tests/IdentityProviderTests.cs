@@ -55,6 +55,23 @@ namespace Kentor.AuthServices.Tests
         }
 
         [TestMethod]
+        public void IdentityProvider_AllowUnsolicitedAuthnResponse_FromConfig()
+        {
+            IdentityProvider.ActiveIdentityProviders[new EntityId("https://idp.example.com")]
+                .AllowUnsolicitedAuthnResponse.Should().BeTrue();
+
+            IdentityProvider.ActiveIdentityProviders[new EntityId("https://idp2.example.com")]
+                .AllowUnsolicitedAuthnResponse.Should().BeFalse();
+        }
+
+        [TestMethod]
+        public void IdentityProvider_AllowUnsolicitedAuthnResponse_FromConfigForFederation()
+        {
+            IdentityProvider.ActiveIdentityProviders[new EntityId("http://idp.federation.example.com/metadata")]
+                .AllowUnsolicitedAuthnResponse.Should().BeTrue();
+        }
+
+        [TestMethod]
         public void IdentityProvider_ConfigFromMetadata()
         {
             var entityId = new EntityId("http://localhost:13428/idpMetadata");

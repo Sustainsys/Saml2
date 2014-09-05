@@ -25,7 +25,7 @@ namespace Kentor.AuthServices
 
             identityProviders = metadata.ChildEntities
                 .Where(ed => ed.RoleDescriptors.OfType<IdentityProviderSingleSignOnDescriptor>().Any())
-                .Select(ed => new IdentityProvider(ed))
+                .Select(ed => new IdentityProvider(ed, config.AllowUnsolicitedAuthnResponse))
                 .ToDictionary(idp => idp.EntityId, EntityIdEqualityComparer.Instance);
         }
     }
