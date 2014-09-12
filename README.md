@@ -37,9 +37,10 @@ by installing the package in the application. For MVC applications a controller 
 over using the authentication module as it integrates with MVC's error handling.
 
 ##Owin Middleware
-The Owin middleware is modeled after the external authentication modules for social login.
-This allows easy integration with ASP.NET Identity for keeping application specific user
-and role information.
+The Owin middleware is modeled after the external authentication modules for social login
+(such as Google, Facebook, Twitter). This allows easy integration with ASP.NET Identity 
+for keeping application specific user and role information. See the 
+[Owin Middleware](doc/OwinMiddleware.md) page for information on how to set up and use the middleware.
 
 ##Stub Idp
 The solution also contains a stub (i.e. dummy) identity provider that can be used for testing.

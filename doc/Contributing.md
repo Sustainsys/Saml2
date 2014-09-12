@@ -40,6 +40,7 @@ instead of suppressing individual warnings.
 as in a constructor having parameters with the same name as the members).
 * Any single method is so short that it fits on one screen (on a typical laptop monitor, 
 not a 30-feet development monster-monitor in vertical orientation).
+* The code is formatted to (mostly) fit in 80 columns.
 
 ##Unit Tests
 The core Kentor.AuthServices library has been developed using TDD (Test Drive Development). All
@@ -47,8 +48,8 @@ functionality is covered by tests, and it will remain that way. Pull requests wi
 merged if they contain tests covering the added functionality. Parts of the code that aren't
 practically possible to test because of tight integration with the web server (see e.g. 
 `CommandResult.ApplyPrincipal`) are excluded from this rule and should be marked with a
-`[ExcludeFromCodeCoverage]` attribute. The code coverage report for Kentor.AuthServices
-is at 100.00% coverage and should remain so.
+`[ExcludeFromCodeCoverage]` attribute. The code coverage report when using the `CodeCoverage.runsettings`
+file is at 100.00% coverage and should remain so.
 
 If you hare using Visual Studio Premium or Ultimate, please use the "VsPremium" solution,
 that contains an extra unit test project which requires VS Premium features to run.
