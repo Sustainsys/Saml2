@@ -56,6 +56,7 @@
     <Compile Include="BadFormatSamlResponseException.cs" />
     <Compile Include="ClaimsIdentityExtensions.cs" />
     <Compile Include="CommandResult.cs" />
+    <Compile Include="Configuration\FederationCollection.cs" />
     <Compile Include="Configuration\IdentityProviderCollection.cs" />
     <Compile Include="Configuration\IdentityProviderElement.cs" />
     <Compile Include="Configuration\CertificateElement.cs" />
@@ -63,6 +64,8 @@
     <Compile Include="EntityDescriptorExtension.cs" />
     <Compile Include="EntityIdEqualityComparer.cs" />
     <Compile Include="Enumerator.cs" />
+    <Compile Include="Federation.cs" />
+    <Compile Include="Configuration\FederationElement.cs" />
     <Compile Include="HttpRequestData.cs" />
     <Compile Include="IdentityProvider.cs" />
     <Compile Include="IndexedProtocolEndpointExtensions.cs" />

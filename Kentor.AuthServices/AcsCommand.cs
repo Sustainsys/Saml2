@@ -53,7 +53,7 @@ namespace Kentor.AuthServices
 
         private static AsymmetricAlgorithm GetSigningKey(EntityId issuer)
         {
-            return IdentityProvider.ConfiguredIdentityProviders[issuer].SigningKey;
+            return IdentityProvider.ActiveIdentityProviders[issuer].SigningKey;
         }
     }
 }

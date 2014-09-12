@@ -1,8 +1,8 @@
 kentor.AuthServices Configuration
 =============
-To use Kentor.AuthServices in an application it must be enabled in the
-application's `web.config`. The sample application contains a complete
-working [`web.config`](../SampleApplication/Web.config).
+To use Kentor.AuthServices in an application it must be enabled in the 
+application's `web.config`. The sample applications contains complete
+working [`web.config`](../SampleApplication/Web.config) examples.
 
 ##Config Sections
 Three new config sections are required. Add these under `configuration/configSections`:
@@ -14,10 +14,10 @@ Three new config sections are required. Add these under `configuration/configSec
   <section name="kentor.authServices" type="Kentor.AuthServices.Configuration.KentorAuthServicesSection, Kentor.AuthServices"/>
 </configSections>
 ```
-###Loading modules
-Http modules need to be loaded. The `SessionAuthenticationModule` is always required.
-The `Saml2AuthenticationModule` is required if you use the bare Kentor.AuthServices
-library. If you are using Kentor.AuthServices.Mvc it should not be loaded.
+##Loading modules
+When using the http module and the MVC controller, the `SessionAuthenticationModule` needs
+to be loaded and if using the http module that needs to be loaded as well. The owin package
+does not need any http modules, please see the separate info on the [Owin middleware](OwinMiddleware.md).
 
 ```
 <system.web>
@@ -32,18 +32,28 @@ library. If you are using Kentor.AuthServices.Mvc it should not be loaded.
 ```
 
 ##kentor.authServices Section
-The saml2AuthenticationModule section contains the configuration of the 
-Kentor.AuthServices module.
+The saml2AuthenticationModule section contains the configuration of the Kentor.AuthServices
+library. It is required for the http module, the mvc controller and the Owin middleware.
 
 ```
 <kentor.authServices assertionConsumerServiceUrl="http://localhost:17009/SamplePath/Saml2AuthenticationModule/acs"
 							entityId="http://localhost:17009"
-                            returnUri="http://localhost:17009/SamplePath/">
-  <identityProvider entityId ="https://idp.example.com" destinationUri="https://idp.example.com" 
-                    allowUnsolicitedAuthnResponse="true" binding="HttpRedirect">
-    <signingCertificate storeName="AddressBook" storeLocation="CurrentUser" 
-                          findValue="idp.example.com" x509FindType="FindBySubjectName" />
-  </identityProvider>
+                            returnUri="http://localhost:17009/SamplePath/"
+                            metadataCacheDuration="3600">
+  <identityProviders>
+    <add entityId="https://stubidp.kentor.se/Metadata" 
+         destinationUri="https://stubidp.kentor.se" 
+         allowUnsolicitedAuthnResponse="true" binding="HttpRedirect">
+      <signingCertificate storeName="AddressBook" storeLocation="CurrentUser" 
+                          findValue="Kentor.AuthServices.StubIdp" x509FindType="FindBySubjectName" />
+    </add>
+    <add entityId="https://idp.example.com/Metadata" 
+         allowUnsolicitedAuthnResponse="true" 
+         loadMetadata = "true" />
+  </identityProviders>
+  <federations>
+    <add metadataUrl="https://federation.example.com/metadata.xml" allowUnsolicitedAuthnResponse = "false" />
+  </federations>
 </kentor.authServices>
 ```
 
@@ -59,59 +69,69 @@ Root element of the config section.
 * [`metadataCacheDuration`](#metadatacacheduration-attribute)
 
 ####Elements
-* [`<identityProvider>`](#identityprovider-element)
+* [`<identityProviders>`](#identityproviders-element)
+* [`<federations>`](#federations-element)
 
 ####`assertionConsumerServiceUrl` Attribute
-*Attribute of the [`<kentor.authServices>`](#kentor-authservices-section) element*
+*Attribute of the [`<kentor.authServices>`](#kentor-authservices-section) element.*
 
 The assertionConsumerServiceUrl is the Url to which the Idp will post the 
 Saml2 ticket. It should be the base Url of your application concatenated with 
-`/Saml2AuthenticationModule/acs`. The relative Url is hard coded and cannot 
+`/Saml2AuthenticationModule/acs` for the http module and with `/AuthServices/Acs`
+for the MVC controller. The relative Url is hard coded and cannot 
 be changed.
 
 ####`entityId` Attribute
-*Attribute of the [`<kentor.authServices>`](#kentor-authservices-section) element*
+*Attribute of the [`<kentor.authServices>`](#kentor-authservices-section) element.*
 
 The name that this service provider will use for itself when sending
-messages. The name will end up in the `entityId` field in outcoing authnRequests.
+messages. The name will end up in the `Issuer` field in outcoing authnRequests.
 
 The `entityId` should typically be the URL where the metadata is presented. E.g.
 `http://sp.example.com/AuthServices/`.
 
 ####`returnUri` Attribute
-*Attribute of the [`<kentor.authServices>`](#kentor-authservices-section) element*
+*Attribute of the [`<kentor.authServices>`](#kentor-authservices-section) element.*
 
 The Uri that you want users to be redirected to once the authentication is
 complete. This is typically the start page of the application, or a special
 signed in start page.
 
-####`metadataCacheDuration Attribute
-*Optional Attribute of the [`<kentor.authServices>`](#kentor-authservices-section) element*
+####`metadataCacheDuration` Attribute
+*Optional Attribute of the [`<kentor.authServices>`](#kentor-authservices-section) element.*
 
 Optional attribute that describes for how long in seconds anyone may cache the metadata 
 presented by the service provider. Defaults to 3600 seconds.
 
-###`<identityProvider>` Element
-*Child element of the [`<kentor.authServices>`](#kentor-authservices-section) element*
+###`<identityProviders>` Element
+*Optional child element of the [`<kentor.authServices>`](#kentor-authservices-section) element.*
 
-An identity provider that the Service Provider relies on for authentication.
+A list of identity providers known to the service provider.
+
+####Elements
+* [`<add>`](#add-identityprovider-element)
+
+###`<add>` IdentityProvider Element
+*Child element of the [`<identityProviders`](#identityproviders-element) element.*
 
 ####Attributes
 * [`entityID`](#entityId-attribute-identityprovider)
 * [`destinationUri`](#destinationuri-attribute)
 * [`allowUnsolicitedAuthnResponse`](#allowunsolicitedauthnresponse-attribute)
 * [`binding`](#binding-attribute)
+* [`loadMetadata`](#loadmetadata-attribute)
 
 ####Elements
 * [`<signingCertificate>`](#signingcertificate-element)
 
-####`entityID` Attribute (identityProvider)
-*Attribute of the [`<identityProvider>`](#identityprovider-element) element*
+####`entityId` Attribute (identityProvider)
+*Attribute of the [`<add>`](#add-identityprovider-element) element*
 
-The issuer name that the idp will be using when sending responses.
+The issuer name that the idp will be using when sending responses. When `<loadMetadata>`
+is enabled, the `entityId` is treated as a URL to for downloading the metadata.
 
 ####`destinationUri` Attribute
-*Attribute of the [`<identityProvider>`](#identityprovider-element) element*
+*Optional attribute of the [`<add>`](#add-identityprovider-element) element*
 
 The uri where the identity provider listens for incoming requests. The 
 uri has to be written in a way that the client understands, since it is
@@ -120,9 +140,7 @@ this means that using a host name only uri or a host name that only resolves
 on the network of the server won't work.
 
 ####`allowUnsolicitedAuthnResponse` Attribute
-*Attribute of the [`<identityProvider>`](#identityprovider-element) element*
-
-The allowUnsolicitedAuthnResponse attribtue is required.
+*Attribute of the [`<add>`](#add-identityprovider-element) element*
 
 Allow unsolicited responses. That is InResponseTo is missing in the AuthnRequest.  
 If true InResponseTo is not required. The IDP can initiate the authentication process.  
@@ -130,7 +148,7 @@ If false InResponseTo is required. The authentication process must be initiated 
 Even though allowUnsolicitedAuthnResponse is true the InResponseTo must be valid if existing.
 
 ####`binding` Attribute
-*Attribute of the [`<identityProvider>`](#identityprovider-element) element*
+*Optional attribute of the [`<add>`](#add-identityprovider-element) element*
 
 The binding that the services provider should use when sending requests
 to the identity provider. One of the supported values of the `Saml2BindingType`
@@ -139,9 +157,17 @@ enum.
 Currently supported values:
 
 * `HttpRedirect`
+* `HttpPost`
+
+####`loadMetadata` Attribute
+*Optional attribute of the [`<add>`](#add-identityprovider-element) element*
+
+Load metadata from the idp and use that information instead of the configuration. It is
+possible to use a specific certificate even though the metadata is loaded, in that case
+the configured certificate will take precedence over any contents in the metadata.
 
 ###`<signingCertificate>` Element
-*Child element of the [`<identityProvider>`](#identityprovider-element) element*
+*Optional child element of the [`<identityProvider>`](#identityprovider-element) element*
 
 The certificate that the identity provider uses to sign it's messages. The 
 certificate can either be loaded from file if the `fileName` attribute is
@@ -210,6 +236,35 @@ invisible character at the start of the serial number string.*
 Valid values are those from the
 [`System.Security.Cryptography.X509Certificates.X509FindType`](http://msdn.microsoft.com/en-us/library/system.security.cryptography.x509certificates.x509findtype.aspx)
 enumeration.
+
+###`<federations>` Element
+*Optional child element of the `<kentor.authServices>`(#kentor-authservices-section) element.*
+
+Contains a list of federations that the service provider knows and trusts.
+
+####Elements
+* [`<add>`](#add-federation-element).
+
+###`<add>` Federation Element
+* Child element of the `<federations>`(#federations-element) element.*
+
+Adds a known federation.
+
+####Attributes
+* [`metadataUrl`](#metadataUrl-attribute).
+* [`allowUnsolicitedAuthnResponse`](#allowunsolicitedauthnresponse-attribute-federation)
+
+####`metadataUrl` Attribute
+*Attribute of [`<add>`](#add-federation-element)*
+
+URL to the full metadata of the federation. AuthServices will download the metadata and
+add all identity providers found to the list of known and trusted identity providers.
+
+####`allowUnsolicitedAuthnResponse` Attribute (Federation)
+*Attribute of [`<add>`](#add-federation-element)*
+
+Decided whether unsolicited authn responses should be allowed from the identity providers
+in the federation.
 
 ##`<system.identityModel>` Section
 *Child element of `<configuration>` element.*

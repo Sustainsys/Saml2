@@ -70,8 +70,8 @@ namespace Kentor.AuthServices.IntegrationTests
         [TestMethod]
         public void SignIn_AuthnRequest_MVC_SpecificIdp()
         {
-            I.Open("http://localhost:2181/AuthServices/SignIn?idp=Kentor.AuthServices.StubIdp")
-                .Assert.Url(u => u.Host == "stubidp.kentor.se");            
+            I.Open("http://localhost:2181/AuthServices/SignIn?idp=http%3a%2f%2fstubidp.kentor.se%2fMetadata")
+                .Assert.Url(u => u.Host == "stubidp.kentor.se");
         }
 
         [TestMethod]
@@ -97,7 +97,7 @@ namespace Kentor.AuthServices.IntegrationTests
             I.Enter("SomeUnusedNameId").In("#NameId");
 
             I.Click("#main form button")
-                .Assert.Text("You've successfully authenticated with http://localhost:52071/Metadata. Please enter a user name for this site below and click the Register button to finish logging in.")
+                .Assert.Text("You've successfully authenticated with http://stubidp.kentor.se/Metadata. Please enter a user name for this site below and click the Register button to finish logging in.")
                 .In("p.text-info");
         }
     }

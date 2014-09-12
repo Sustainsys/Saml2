@@ -37,8 +37,7 @@ namespace Kentor.AuthServices
             };
         }
 
-        // The MemoryStream is not disposed by the DeflateStream - we're using the keep-open flag.
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2202:Do not dispose objects multiple times")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2202:Do not dispose objects multiple times", Justification="The MemoryStream is not disposed by the DeflateStream - we're using the keep-open flag.")]
         public override string Unbind(HttpRequestData request)
         {
             if (request == null || request.QueryString["SAMLRequest"] == null)
@@ -60,8 +59,7 @@ namespace Kentor.AuthServices
             }
         }
 
-        // The MemoryStream is not disposed by the DeflateStream - we're using the keep-open flag.
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2202:Do not dispose objects multiple times")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2202:Do not dispose objects multiple times", Justification="The MemoryStream is not disposed by the DeflateStream - we're using the keep-open flag.")]
         private static string Serialize(string payload)
         {
             using (var compressed = new MemoryStream())

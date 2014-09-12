@@ -26,8 +26,7 @@ namespace Kentor.AuthServices.Configuration
         {
             return isReadOnly;
         }
-
-        
+                
         /// <summary>
         /// EntityId as presented by the idp. Used as key to configuration.
         /// </summary>

@@ -754,7 +754,7 @@ namespace Kentor.AuthServices.Tests
         [TestMethod]
         public void Saml2Response_Validate_TrueOnCorrectInResponseTo()
         {
-            var idp = IdentityProvider.ConfiguredIdentityProviders.First().Value;
+            var idp = IdentityProvider.ActiveIdentityProviders.First();
 
             var request = idp.CreateAuthenticateRequest(null);
 
@@ -780,19 +780,14 @@ namespace Kentor.AuthServices.Tests
         [TestMethod]
         public void Saml2Response_Validate_FalseOnMissingInResponseTo_IfDisallowed()
         {
-            KentorAuthServicesSection.Current.IdentityProviders.First().AllowConfigEdit(true);
-            KentorAuthServicesSection.Current.IdentityProviders.First().AllowUnsolicitedAuthnResponse = false;
-            KentorAuthServicesSection.Current.IdentityProviders.First().AllowConfigEdit(false);
-            var idp = IdentityProvider.ConfiguredIdentityProviders.First().Value;
-
-            var request = idp.CreateAuthenticateRequest(null);
+            var idp = IdentityProvider.ActiveIdentityProviders.First(i => !i.AllowUnsolicitedAuthnResponse);
 
             var responseXML =
             @"<?xml version=""1.0"" encoding=""UTF-8""?>
             <saml2p:Response xmlns:saml2p=""urn:oasis:names:tc:SAML:2.0:protocol""
             xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
-            ID = ""Saml2Response_Validate_TrueOnCorrectInResponseTo"" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z"">
-                <saml2:Issuer>https://idp.example.com</saml2:Issuer>
+            ID = ""Saml2Response_Validate_FalseOnMissingInResponseTo_IfDisallowed"" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z"">
+                <saml2:Issuer>https://idp2.example.com</saml2:Issuer>
                 <saml2p:Status>
                     <saml2p:StatusCode Value=""urn:oasis:names:tc:SAML:2.0:status:Requester"" />
                 </saml2p:Status>
@@ -811,7 +806,7 @@ namespace Kentor.AuthServices.Tests
             KentorAuthServicesSection.Current.IdentityProviders.First().AllowConfigEdit(true);
             KentorAuthServicesSection.Current.IdentityProviders.First().AllowUnsolicitedAuthnResponse = true;
             KentorAuthServicesSection.Current.IdentityProviders.First().AllowConfigEdit(false);
-            var idp = IdentityProvider.ConfiguredIdentityProviders.First().Value;
+            var idp = IdentityProvider.ActiveIdentityProviders.First();
 
             var request = idp.CreateAuthenticateRequest(null);
 
@@ -836,7 +831,7 @@ namespace Kentor.AuthServices.Tests
         [TestMethod]
         public void Saml2Response_Validate_FalseOnIncorrectInResponseTo()
         {
-            var idp = IdentityProvider.ConfiguredIdentityProviders.First().Value;
+            var idp = IdentityProvider.ActiveIdentityProviders.First();
 
             var request = idp.CreateAuthenticateRequest(null);
 
@@ -862,7 +857,7 @@ namespace Kentor.AuthServices.Tests
         [TestMethod]
         public void Saml2Response_Validate_FalseOnReplayedInResponseTo()
         {
-            var idp = IdentityProvider.ConfiguredIdentityProviders.First().Value;
+            var idp = IdentityProvider.ActiveIdentityProviders.First();
 
             var request = idp.CreateAuthenticateRequest(null);
 
@@ -892,7 +887,7 @@ namespace Kentor.AuthServices.Tests
         {
             // A valid response is received, but it is not from the idp that we
             // did send the AuthnRequest to.
-            var idp = IdentityProvider.ConfiguredIdentityProviders.First().Value;
+            var idp = IdentityProvider.ActiveIdentityProviders.First();
 
             var request = idp.CreateAuthenticateRequest(null);
 
@@ -1117,7 +1112,7 @@ namespace Kentor.AuthServices.Tests
         [TestMethod]
         public void Saml2Response_FromRequest_Remembers_ReturnUri()
         {
-            var idp = IdentityProvider.ConfiguredIdentityProviders.First().Value;
+            var idp = IdentityProvider.ActiveIdentityProviders.First();
 
             var request = idp.CreateAuthenticateRequest(new Uri("http://localhost/testUrl.aspx"));
 

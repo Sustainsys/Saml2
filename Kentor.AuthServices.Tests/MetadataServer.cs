@@ -16,12 +16,12 @@ namespace Kentor.AuthServices.Tests
     {
         private static IDisposable host;
 
-        static IDictionary<PathString, Func<IOwinContext, Task>> actions =
-            new Dictionary<PathString, Func<IOwinContext, Task>>()
-            {
-                { new PathString("/idpMetadata"), async ctx =>
-                    {
-                        var metadataXml = string.Format(
+        static readonly IDictionary<string, string> content =
+            new Dictionary<string, string>();
+
+        static MetadataServer()
+        {
+            content["/idpMetadata"] = string.Format(
  @"<EntityDescriptor xmlns=""urn:oasis:names:tc:SAML:2.0:metadata""
     entityID=""http://localhost:13428/idpMetadata"">
     <IDPSSODescriptor
@@ -36,12 +36,7 @@ namespace Kentor.AuthServices.Tests
   </EntityDescriptor>
 ", SignedXmlHelper.KeyInfoXml);
 
-                        await ctx.Response.WriteAsync(metadataXml);
-                    }
-                },
-                { new PathString("/idpMetadataNoCertificate"), async ctx =>
-                    {
-                        var metadataXml =
+            content["/idpMetadataNoCertificate"] = 
 @"<EntityDescriptor xmlns=""urn:oasis:names:tc:SAML:2.0:metadata""
     entityID=""http://localhost:13428/idpMetadataNoCertificate"">
     <IDPSSODescriptor
@@ -51,12 +46,8 @@ namespace Kentor.AuthServices.Tests
         Location=""http://localhost:13428/acs""/>
     </IDPSSODescriptor>
   </EntityDescriptor>";
-                        await ctx.Response.WriteAsync(metadataXml);
-                    }
-                },
-                { new PathString("/idpMetadataWrongEntityId"), async ctx =>
-                    {
-                        var metadataXml =
+
+            content["/idpMetadataWrongEntityId"] = 
 @"<EntityDescriptor xmlns=""urn:oasis:names:tc:SAML:2.0:metadata""
     entityID=""http://wrong.entityid.example.com"">
     <IDPSSODescriptor
@@ -66,10 +57,32 @@ namespace Kentor.AuthServices.Tests
         Location=""http://wrong.entityid.example.com/acs""/>
     </IDPSSODescriptor>
   </EntityDescriptor>";
-                        await ctx.Response.WriteAsync(metadataXml);
-                    }
-                }
-            };
+
+            content["/federationMetadata"] = string.Format(
+@"<EntitiesDescriptor xmlns=""urn:oasis:names:tc:SAML:2.0:metadata"">
+{0}
+  <EntityDescriptor entityID=""http://idp.federation.example.com/metadata"">
+    <IDPSSODescriptor
+      protocolSupportEnumeration=""urn:oasis:names:tc:SAML:2.0:protocol"">
+      <KeyDescriptor use=""signing"">
+        {0}
+      </KeyDescriptor>
+      <SingleSignOnService
+        Binding=""urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect""
+        Location=""http://idp.federation.example.com/ssoService"" />
+    </IDPSSODescriptor>
+  </EntityDescriptor>
+  <EntityDescriptor entityID=""http://sp.federation.example.com/metadata"">
+    <SPSSODescriptor
+      protocolSupportEnumeration=""urn:oasis:names:tc:SAML:2.0:protocol"">
+      <AssertionConsumerService index=""0""
+        Binding=""urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST""
+        Location=""http://sp.federation.example.com/acs"" />
+    </SPSSODescriptor>
+  </EntityDescriptor>
+</EntitiesDescriptor>
+", SignedXmlHelper.KeyInfoXml);
+        }
 
         [AssemblyInitialize]
         public static void Start(TestContext testContext)
@@ -78,10 +91,10 @@ namespace Kentor.AuthServices.Tests
             {
                 app.Use(async (ctx, next) =>
                 {
-                    Func<IOwinContext, Task> action;
-                    if(actions.TryGetValue(ctx.Request.Path, out action))
+                    string data;
+                    if(content.TryGetValue(ctx.Request.Path.ToString(), out data))
                     {
-                        await action(ctx);
+                        await ctx.Response.WriteAsync(data);
                     }
                     else
                     {

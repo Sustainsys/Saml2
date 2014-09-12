@@ -11,20 +11,38 @@ namespace Kentor.AuthServices.Tests
     public class MetadataLoaderTests
     {
         [TestMethod]
-        public void MetadataLoader_Load_IdpMetadata()
+        public void MetadataLoader_LoadIdp()
         {
             var entityId = "http://localhost:13428/idpMetadata";
-            var subject = MetadataLoader.Load(new Uri(entityId));
+            var subject = MetadataLoader.LoadIdp(new Uri(entityId));
 
             subject.EntityId.Id.Should().Be(entityId);
         }
 
         [TestMethod]
-        public void MetadataLoader_Load_Nullcheck()
+        public void MetadataLoader_LoadIdp_Nullcheck()
         {
-            Action a = () => MetadataLoader.Load(null);
+            Action a = () => MetadataLoader.LoadIdp(null);
 
-            a.ShouldThrow<ArgumentNullException>().And.ParamName.Should().Be("metadataUri");
+            a.ShouldThrow<ArgumentNullException>().And.ParamName.Should().Be("metadataUrl");
+        }
+
+        [TestMethod]
+        public void MetadataLoader_LoadFederation_Nullcheck()
+        {
+            Action a = () => MetadataLoader.LoadFederation(null);
+
+            a.ShouldThrow<ArgumentNullException>().And.ParamName.Should().Be("metadataUrl");
+        }
+
+        [TestMethod]
+        public void MetadataLoader_LoadFederation()
+        {
+            var metadataUrl = new Uri("http://localhost:13428/federationMetadata");
+
+            var subject = MetadataLoader.LoadFederation(metadataUrl);
+
+            subject.ChildEntities.First().EntityId.Id.Should().Be("http://idp.federation.example.com/metadata");
         }
     }
 }

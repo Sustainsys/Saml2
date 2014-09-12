@@ -1,30 +1,28 @@
 Kentor Authentication Services
 =============
 
-The Kentor Authentication services is an http modules that adds 
-SAML2P support to IIS web sites, allowing the web site to act as a
-SAML2 Service Provider (SP).
+The Kentor Authentication services is a library that adds SAML2P support to ASP.NET and IIS
+web sites, allowing the web site to act as a SAML2 Service Provider (SP).
 
 Kentor.AuthServices is open sourced and contributions are welcome, please see 
 [contributing guidelines](doc/Contributing.md) for info on coding standards etc.
 
 ##Using
-There's a [Nuget package](https://www.nuget.org/packages/Kentor.AuthServices/) available 
-for simple installation.
+The AuthServices library can be used through three different ways:
 
-> `PM> Install-Package Kentor.AuthServices`
+* An Http Module, loaded into the IIS pipeline. The module is compatible with ASP.NET web 
+forms sites.
+* An ASP.NET MVC Controller for better integration and error handling in ASP.NET Applications.
+* An Owin Middleware to use with the Owin Pipeline or for integration with ASP.NET Identity.
 
-Once installed the `web.config` of the application must be updated to load and configure
-the http module and the System.IdentityModel.Services that it is using. See [configuration]
-(doc/Configuration.md) for details.
+There are three nuget packages available. Thecore 
+[Kentor.AuthServices](https://www.nuget.org/packages/Kentor.AuthServices/) contains the core
+functionality and the Http Module. The [Kentor.AuthServices.Mvc](https://www.nuget.org/packages/Kentor.AuthServices.Mvc/)
+package contains the MVC controller and the [Kentor.AuthServices.Owin](https://www.nuget.org/packages/Kentor.AuthServices.Owin/)
+package contains the Owin middleware.
 
-For MVC projects there's an even easier zero coding 
-[Nuget package](https://www.nuget.org/packages/Kentor.AuthServices.Mvc/) that will add a 
-new controllerto your project, containing `SignIn` and `SignOut` actions.
-
-> `PM> Install-Package Kentor.AuthServices.Mvc`
-
-See [configuration](doc/Configuration.md) for info on how to add the needed sections to `web.config`.
+Once installed the `web.config` of the application must be updated with configuration.
+See [configuration] (doc/Configuration.md) for details.
 
 ##Saml2AuthenticationModule
 The Saml2AuthenticationModule is modeled after the WSFederationAuthenticationModule
@@ -33,13 +31,21 @@ to provide Saml2 authentication to IIS web sites. In many cases it should just b
 at all (even though [providing an own ClaimsAuthenticationManager](doc/ClaimsAuthenticationManager.md)
 for claims translation is highly recommended).
 
-###Protocol Classes
-The protocol handling classes that are used by the Saml2AuthenticationModule are available
-as a public API as well, making it possible to reuse some of the internals for writing
-an own service provider.
-
 ##Mvc Controller
 The MVC package contains an MVC controller that will be accessible in your application just
 by installing the package in the application. For MVC applications a controller is preferred
 over using the authentication module as it integrates with MVC's error handling.
 
+##Owin Middleware
+The Owin middleware is modeled after the external authentication modules for social login
+(such as Google, Facebook, Twitter). This allows easy integration with ASP.NET Identity 
+for keeping application specific user and role information. See the 
+[Owin Middleware](doc/OwinMiddleware.md) page for information on how to set up and use the middleware.
+
+##Stub Idp
+The solution also contains a stub (i.e. dummy) identity provider that can be used for testing.
+Download the solution, or use the instance that's provided for free at http://stubidp.kentor.se.
+
+##Protocol Classes
+The protocol handling classes are available as a public API as well, making it possible to 
+reuse some of the internals for writing an own service provider or identity provider.

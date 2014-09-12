@@ -6,6 +6,7 @@ using Kentor.AuthServices.TestHelpers;
 using Kentor.AuthServices.Configuration;
 using System.Configuration;
 using System.IdentityModel.Metadata;
+using System.Collections.Generic;
 
 namespace Kentor.AuthServices.Tests
 {
@@ -28,7 +29,7 @@ namespace Kentor.AuthServices.Tests
         [TestMethod]
         public void IdentityProvider_CreateAuthenticateRequest_AssertionConsumerServiceUrlFromConfig()
         {
-            var idp = IdentityProvider.ConfiguredIdentityProviders.First().Value;
+            var idp = IdentityProvider.ActiveIdentityProviders.First();
 
             var r = idp.CreateAuthenticateRequest(null);
 
@@ -38,7 +39,7 @@ namespace Kentor.AuthServices.Tests
         [TestMethod]
         public void IdentityProvider_CreateAuthenticateRequest_IssuerFromConfig()
         {
-            var idp = IdentityProvider.ConfiguredIdentityProviders.First().Value;
+            var idp = IdentityProvider.ActiveIdentityProviders.First();
 
             var r = idp.CreateAuthenticateRequest(null);
 
@@ -48,16 +49,33 @@ namespace Kentor.AuthServices.Tests
         [TestMethod]
         public void IdentityProvider_Certificate_FromFile()
         {
-            var idp = IdentityProvider.ConfiguredIdentityProviders.First().Value;
+            var idp = IdentityProvider.ActiveIdentityProviders.First();
 
             idp.SigningKey.ShouldBeEquivalentTo(SignedXmlHelper.TestKey);
+        }
+
+        [TestMethod]
+        public void IdentityProvider_AllowUnsolicitedAuthnResponse_FromConfig()
+        {
+            IdentityProvider.ActiveIdentityProviders[new EntityId("https://idp.example.com")]
+                .AllowUnsolicitedAuthnResponse.Should().BeTrue();
+
+            IdentityProvider.ActiveIdentityProviders[new EntityId("https://idp2.example.com")]
+                .AllowUnsolicitedAuthnResponse.Should().BeFalse();
+        }
+
+        [TestMethod]
+        public void IdentityProvider_AllowUnsolicitedAuthnResponse_FromConfigForFederation()
+        {
+            IdentityProvider.ActiveIdentityProviders[new EntityId("http://idp.federation.example.com/metadata")]
+                .AllowUnsolicitedAuthnResponse.Should().BeTrue();
         }
 
         [TestMethod]
         public void IdentityProvider_ConfigFromMetadata()
         {
             var entityId = new EntityId("http://localhost:13428/idpMetadata");
-            var idpFromMetadata = IdentityProvider.ConfiguredIdentityProviders[entityId];
+            var idpFromMetadata = IdentityProvider.ActiveIdentityProviders[entityId];
 
             idpFromMetadata.EntityId.Id.Should().Be(entityId.Id);
             idpFromMetadata.Binding.Should().Be(Saml2BindingType.HttpPost);
@@ -139,6 +157,34 @@ namespace Kentor.AuthServices.Tests
 
             a.ShouldThrow<ConfigurationErrorsException>().And.Message.Should()
                 .Be("Unexpected entity id \"http://wrong.entityid.example.com\" found when loading metadata for \"http://localhost:13428/idpMetadataWrongEntityId\".");
+        }
+
+        [TestMethod]
+        public void IdentityProvider_ActiveIdentityProviders_IncludeIdpFromFederation()
+        {
+            var subject = IdentityProvider.ActiveIdentityProviders[
+                new EntityId("http://idp.federation.example.com/metadata")];
+
+            subject.EntityId.Id.Should().Be("http://idp.federation.example.com/metadata");
+            subject.Binding.Should().Be(Saml2BindingType.HttpRedirect);
+        }
+
+        [TestMethod]
+        public void IdentityProvider_ActiveIdentityProviders_ThrowsOnInvalidEntityId()
+        {
+            Action a = () => { 
+                var i = IdentityProvider.ActiveIdentityProviders[
+                new EntityId("urn:Non.Existent.EntityId")];
+            };
+
+            a.ShouldThrow<KeyNotFoundException>().And.Message.Should().Be("No Idp with entity id \"urn:Non.Existent.EntityId\" found.");
+        }
+
+        [TestMethod]
+        public void IdentityProvider_ActiveIdentityProviders_EnumerationIncludesFederationIdps()
+        {
+            IdentityProvider.ActiveIdentityProviders.Select(idp => idp.EntityId.Id)
+                .Should().Contain("http://idp.federation.example.com/metadata");
         }
     }
 }
