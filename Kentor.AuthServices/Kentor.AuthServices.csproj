@@ -54,6 +54,7 @@
     <Compile Include="AcsCommand.cs" />
     <Compile Include="AuthServicesException.cs" />
     <Compile Include="BadFormatSamlResponseException.cs" />
+    <Compile Include="CacheAwareMetadataSerializer.cs" />
     <Compile Include="ClaimsIdentityExtensions.cs" />
     <Compile Include="CommandResult.cs" />
     <Compile Include="Configuration\FederationCollection.cs" />
@@ -71,6 +72,7 @@
     <Compile Include="IndexedProtocolEndpointExtensions.cs" />
     <Compile Include="ISaml2Message.cs" />
     <Compile Include="MessageBinder.cs" />
+    <Compile Include="MetadatabaseExtensions.cs" />
     <Compile Include="MetadataCommand.cs" />
     <Compile Include="MetadataLoader.cs" />
     <Compile Include="MorePublicSaml2SecurityTokenHandler.cs" />
