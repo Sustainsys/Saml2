@@ -27,7 +27,7 @@ namespace Kentor.AuthServices
             }
 
             return new XElement(Saml2Namespaces.Saml2Metadata + "EntityDescriptor",
-                new XAttribute(XName.Get("entityId"), entityDescriptor.EntityId.Id),
+                new XAttribute("entityID", entityDescriptor.EntityId.Id),
                 entityDescriptor.RoleDescriptors.OfType<ServiceProviderSingleSignOnDescriptor>()
                     .Select(rd => rd.ToXElement())
                 );

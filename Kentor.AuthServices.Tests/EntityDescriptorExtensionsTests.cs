@@ -47,7 +47,7 @@ namespace Kentor.AuthServices.Tests
 
             subject.Name.Should().Be(rootName);
             subject.Elements().Single().Name.Should().Be(elementName);
-            subject.Attribute("entityId").Value.Should().Be("http://dummyentityid.com");
+            subject.Attribute("entityID").Value.Should().Be("http://dummyentityid.com");
         }
     }
 }
