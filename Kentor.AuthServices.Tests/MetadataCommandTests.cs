@@ -20,6 +20,9 @@ namespace Kentor.AuthServices.Tests
 
             XDocument payloadXml = XDocument.Parse(subject.Content);
 
+            // Ignore the ID attribute, it is just filled with a GUID that can't be easily tested.
+            payloadXml.Root.Attribute("ID").Remove();
+
             var expectedXml = new XDocument(new XElement(Saml2Namespaces.Saml2Metadata + "EntityDescriptor",
                 new XAttribute("entityID", "https://github.com/KentorIT/authservices"),
                 new XAttribute("cacheDuration", 42),
@@ -30,11 +33,12 @@ namespace Kentor.AuthServices.Tests
                 // See http://stackoverflow.com/questions/24156689/xnode-deepequals-unexpectedly-returns-false
                 new XAttribute("xmlns", Saml2Namespaces.Saml2MetadataName),
                 new XElement(Saml2Namespaces.Saml2Metadata + "SPSSODescriptor",
+                    new XAttribute("protocolSupportEnumeration", "urn:oasis:names:tc:SAML:2.0:protocol"),
                     new XElement(Saml2Namespaces.Saml2Metadata + "AssertionConsumerService",
-                        new XAttribute("isDefault", true),
-                        new XAttribute("index", 0),
                         new XAttribute("Binding", Saml2Binding.HttpPostUri),
-                        new XAttribute("Location", "http://localhost/Saml2AuthenticationModule/acs")))));
+                        new XAttribute("Location", "http://localhost/Saml2AuthenticationModule/acs"),
+                        new XAttribute("index", 0),
+                        new XAttribute("isDefault", true)))));
 
             payloadXml.ShouldBeEquivalentTo(expectedXml, opt => opt.IgnoringCyclicReferences());
             subject.ContentType.Should().Be("application/samlmetadata+xml");

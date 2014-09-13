@@ -104,7 +104,6 @@
   <ItemGroup>
     <Compile Include="AuthServicesControllerTests.cs" />
     <Compile Include="ClaimsAuthenticationManagerStub.cs" />
-    <Compile Include="EntityDescriptorExtensionsTests.cs" />
     <Compile Include="ExceptionTestHelpers.cs" />
     <Compile Include="MetadataCommandTests.cs" />
     <Compile Include="MetadataServer.cs" />
@@ -135,8 +134,6 @@
     <Compile Include="Saml2ConditionsExtensionsTests.cs" />
     <Compile Include="PendingAuthnRequestsTests.cs" />
     <Compile Include="MessageBinderTests.cs" />
-    <Compile Include="IndexedProtocolEndpointExtensionsTests.cs" />
-    <Compile Include="ServiceProviderSingleSignOnDescriptorExtensionsTests.cs" />
     <Compile Include="HttpRequestDataTests.cs" />
     <Compile Include="CommandResultExtensionsTests.cs" />
     <Compile Include="KentorAuthServicesAuthenticationExtensionsTests.cs" />

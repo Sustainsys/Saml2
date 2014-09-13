@@ -138,7 +138,6 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
-    <Compile Include="MetadataBaseExtensions.cs" />
     <Compile Include="Models\AssertionModel.cs" />
     <Compile Include="Models\Metadata.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

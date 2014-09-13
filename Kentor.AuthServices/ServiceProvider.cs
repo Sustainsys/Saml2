@@ -21,6 +21,9 @@ namespace Kentor.AuthServices
                 };
 
                 var spsso = new ServiceProviderSingleSignOnDescriptor();
+
+                spsso.ProtocolsSupported.Add(new Uri("urn:oasis:names:tc:SAML:2.0:protocol"));
+
                 spsso.AssertionConsumerServices.Add(0, new IndexedProtocolEndpoint()
                 {
                     Index = 0,

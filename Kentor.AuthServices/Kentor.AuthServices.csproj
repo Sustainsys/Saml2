@@ -54,6 +54,7 @@
     <Compile Include="AcsCommand.cs" />
     <Compile Include="AuthServicesException.cs" />
     <Compile Include="BadFormatSamlResponseException.cs" />
+    <Compile Include="CacheAwareMetadataSerializer.cs" />
     <Compile Include="ClaimsIdentityExtensions.cs" />
     <Compile Include="CommandResult.cs" />
     <Compile Include="Configuration\FederationCollection.cs" />
@@ -61,16 +62,15 @@
     <Compile Include="Configuration\IdentityProviderElement.cs" />
     <Compile Include="Configuration\CertificateElement.cs" />
     <Compile Include="DateTimeExtensions.cs" />
-    <Compile Include="EntityDescriptorExtension.cs" />
     <Compile Include="EntityIdEqualityComparer.cs" />
     <Compile Include="Enumerator.cs" />
     <Compile Include="Federation.cs" />
     <Compile Include="Configuration\FederationElement.cs" />
     <Compile Include="HttpRequestData.cs" />
     <Compile Include="IdentityProvider.cs" />
-    <Compile Include="IndexedProtocolEndpointExtensions.cs" />
     <Compile Include="ISaml2Message.cs" />
     <Compile Include="MessageBinder.cs" />
+    <Compile Include="MetadatabaseExtensions.cs" />
     <Compile Include="MetadataCommand.cs" />
     <Compile Include="MetadataLoader.cs" />
     <Compile Include="MorePublicSaml2SecurityTokenHandler.cs" />
@@ -97,7 +97,6 @@
     <Compile Include="Saml2StatusCode.cs" />
     <Compile Include="Saml2SubjectExtensions.cs" />
     <Compile Include="ServiceProvider.cs" />
-    <Compile Include="ServiceProviderSingleSignOnDescriptorExtensions.cs" />
     <Compile Include="SignInCommand.cs" />
     <Compile Include="StatusCodeHelper.cs" />
     <Compile Include="XmlDocumentExtensions.cs" />
