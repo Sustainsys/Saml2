@@ -19,13 +19,16 @@ namespace Kentor.AuthServices
             }
         }
 
-        public Federation(FederationElement config)
+        public Federation(Uri metadataUrl, bool allowUnsolicitedAuthnResponse)
+            : this(MetadataLoader.LoadFederation(metadataUrl), allowUnsolicitedAuthnResponse)
         {
-            var metadata = MetadataLoader.LoadFederation(config.MetadataUrl);
+        }
 
+        internal Federation(EntitiesDescriptor metadata, bool allowUnsolicitedAuthnResponse)
+        {
             identityProviders = metadata.ChildEntities
                 .Where(ed => ed.RoleDescriptors.OfType<IdentityProviderSingleSignOnDescriptor>().Any())
-                .Select(ed => new IdentityProvider(ed, config.AllowUnsolicitedAuthnResponse))
+                .Select(ed => new IdentityProvider(ed, allowUnsolicitedAuthnResponse))
                 .ToDictionary(idp => idp.EntityId, EntityIdEqualityComparer.Instance);
         }
     }

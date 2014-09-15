@@ -1,0 +1,335 @@
+﻿<?xml version="1.0"?>
+<EntitiesDescriptor xmlns="urn:oasis:names:tc:SAML:2.0:metadata" validUntil="2014-09-17T11:00:03Z" cacheDuration="PT15M" ID="federation_root">
+  <ds:Signature xmlns:ds="http://www.w3.org/2000/09/xmldsig#">
+    <ds:SignedInfo>
+      <ds:CanonicalizationMethod Algorithm="http://www.w3.org/TR/2001/REC-xml-c14n-20010315"/>
+      <ds:SignatureMethod Algorithm="http://www.w3.org/2001/04/xmldsig-more#rsa-sha256"/>
+      <ds:Reference URI="">
+        <ds:Transforms>
+          <ds:Transform Algorithm="http://www.w3.org/2000/09/xmldsig#enveloped-signature"/>
+          <ds:Transform Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#"/>
+        </ds:Transforms>
+        <ds:DigestMethod Algorithm="http://www.w3.org/2001/04/xmlenc#sha256"/>
+        <ds:DigestValue>UbhhOs8jgepDWEtfQxMcOKufwZsODboqdTD8/KTiYo8=</ds:DigestValue>
+      </ds:Reference>
+    </ds:SignedInfo>
+    <ds:SignatureValue>
+      Hi39NVuuMwbNinVFmc0TsbxAukfrD5iIdlx/cXKE77NcM6UOBXm8RG7gKRNhR10yC0rNcfk0pPoa
+      NKFM+9w0YP0LFNV5tiO5vENJVMmS+HrzuRlGJrrlhYt4hXqNIGGKCJhZYmw2apqAbvEqS9dNgbB5
+      ccdpZVS/aWTaAczSiihkN++GY6myaPto7bMsrtXWIIeFxZlHlhTIdl5lrQghyxDI7Sksm10UQhZe
+      lcZk6rTS9jyLg9a5ZuJh9unF5mq9kRP3lMtkGUR+9cnl0RSRxg1ZuR/ql61IlYUfnY7RcA+18MBu
+      SKZ7ZBMEXm3Q2BzH9FTvd3LmPXIlqoL1pTH/GQ==
+    </ds:SignatureValue>
+  </ds:Signature>
+  <md:EntityDescriptor xmlns:md="urn:oasis:names:tc:SAML:2.0:metadata" entityID="https://m00-mg-local.extdevel.mobilityguard.se/samlv2/idp/metadata/6/1">
+    <md:IDPSSODescriptor WantAuthnRequestsSigned="true" protocolSupportEnumeration="urn:oasis:names:tc:SAML:2.0:protocol">
+      <md:KeyDescriptor use="signing">
+        <ds:KeyInfo xmlns:ds="http://www.w3.org/2000/09/xmldsig#">
+          <ds:X509Data>
+            <ds:X509Certificate>
+              MIIGPDCCBSSgAwIBAgIDB/y/MA0GCSqGSIb3DQEBBQUAMDwxCzAJBgNVBAYTAlVTMRcwFQYDVQQKEw5HZW9UcnVzdCwgSW5jLjEUMBIGA1UEAxMLUmFwaWRTU0wgQ0EwHhcNMTIwODI3MTk1NTM0WhcNMTMxMTI5MTc1ODI1WjCByjEpMCcGA1UEBRMgSWZ6cUEveGszWHRKdFN2a0pOdnpPemdHTnFzMmp1RDkxEzARBgNVBAsTCkdUMTAwNjI4MTMxMTAvBgNVBAsTKFNlZSB3d3cucmFwaWRzc2wuY29tL3Jlc291cmNlcy9jcHMgKGMpMTIxLzAtBgNVBAsTJkRvbWFpbiBDb250cm9sIFZhbGlkYXRlZCAtIFJhcGlkU1NMKFIpMSQwIgYDVQQDDBsqLmV4dGRldmVsLm1vYmlsaXR5Z3VhcmQuc2UwggIiMA0GCSqGSIb3DQEBAQUAA4ICDwAwggIKAoICAQC2EkvJdZNzKg1kJbj0XREHlm7lqY1zx1x8/42AzrOzHwnPksAYU6ch4m8bI86xV2xoBOTfEPsCOPmHEezOb7ZElJ6WGM0Z5NcclGfMYj7zTjnuPh9E3I+BBClJwYsTUsSRLRT6FgEjtlkmawOpfSs+R62TkdW3htOxEjsceIQWysa64ecK7hQ4e52CJL8UMwn0n/DMxt1yp4U/rqXD4dt2733yal6CWVZYwfOt9dJVScCprhCDBZCfiafOdnhlcB2TQao8vDR/alVpssNtcLgaJDrOfyHVx2vCHHw/y0OmpY++jwoOgOyST34SYU7F3YzP3MS0wOOhQ97bfFTNf/A5L5hEDHwX3qf7ciJsfq7edODaLj7x1eaEdNAt/gRasuTLu+vwXsneiJPMT+ZY2Aldcbs8181BGSqeDkc3bc0De9QgsaTs48gABmbwmzNO5L/kVgfSe6btlfamsAlFdNpyc54grtxKosLwIDUD0m8bKD9ae9RKPpoK2f107d3MAhCp3j0D3flue87MqTuW3k3SaI1lz8JIm7MB7kFFm63XJPWrpJR7Iz3ufWCRNHcDpFsE5WaDNcNR5kXiBeaIkvZk/4YXR9heK8gn+R0Ngp+sWDmz9bHrrIlS51NyNjHpkSapx9QUkWZixLqmJFz6VeRARgre1ExCF/yUoejuqv2+SQIDAQABo4IBtjCCAbIwHwYDVR0jBBgwFoAUa2k9ahhCSt2PAmU5/TUkhniRFjAwDgYDVR0PAQH/BAQDAgWgMB0GA1UdJQQWMBQGCCsGAQUFBwMBBggrBgEFBQcDAjAmBgNVHREEHzAdghsqLmV4dGRldmVsLm1vYmlsaXR5Z3VhcmQuc2UwQwYDVR0fBDwwOjA4oDagNIYyaHR0cDovL3JhcGlkc3NsLWNybC5nZW90cnVzdC5jb20vY3Jscy9yYXBpZHNzbC5jcmwwHQYDVR0OBBYEFEmLrJhIvwQMFY7sUuvdvJpWBddIMAwGA1UdEwEB/wQCMAAweAYIKwYBBQUHAQEEbDBqMC0GCCsGAQUFBzABhiFodHRwOi8vcmFwaWRzc2wtb2NzcC5nZW90cnVzdC5jb20wOQYIKwYBBQUHMAKGLWh0dHA6Ly9yYXBpZHNzbC1haWEuZ2VvdHJ1c3QuY29tL3JhcGlkc3NsLmNydDBMBgNVHSAERTBDMEEGCmCGSAGG+EUBBzYwMzAxBggrBgEFBQcCARYlaHR0cDovL3d3dy5nZW90cnVzdC5jb20vcmVzb3VyY2VzL2NwczANBgkqhkiG9w0BAQUFAAOCAQEAndg29Y90RnkDSBhbJ+boUZqiuaCaCaDPVkzlky+v/6fnmBckuNOLnl6N30i72AZa9zSNjNRLQ3Ejtcyg54gFO+/KgUiVXT1YjXjaFTmXT7LdXMFx0o6DAxUjPMvfPUVI0Bz/W2/Pk3gV5c2bCtkxdV43LFTkR/7aNzsR9XG6aUPcZilx1Fh8FEUeXUmf7bDI7EhsqHJ9BSiWzXoCI1ov38h+9/iPrMSgrHNMZC7MZlrAGJVwoAUYG/TFMy1o0GU2Lj/g8MEMm7kS87waB0xmhFqakH6sBoTXbVYcSkyT4tfklh6RW+EmqialLKDXAxhx34LCal/5YeEm8O0xJ6jRuQ==
+            </ds:X509Certificate>
+          </ds:X509Data>
+          <ds:KeyName>IDP sambi test-star.extdevel.mobilityguard.se.120828-cert.der </ds:KeyName>
+        </ds:KeyInfo>
+      </md:KeyDescriptor>
+      <md:SingleLogoutService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST" Location="https://m00-mg-local.extdevel.mobilityguard.se/samlv2/idp/sloreq/6/1?mgvhostparam=6" ResponseLocation="https://m00-mg-local.extdevel.mobilityguard.se/samlv2/idp/sloresp/6/1?mgvhostparam=6"/>
+      <md:SingleLogoutService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect" Location="https://m00-mg-local.extdevel.mobilityguard.se/samlv2/idp/sloreq/6/1?mgvhostparam=6" ResponseLocation="https://m00-mg-local.extdevel.mobilityguard.se/samlv2/idp/sloresp/6/1?mgvhostparam=6"/>
+      <md:NameIDFormat>
+        urn:oasis:names:tc:SAML:2.0:nameid-format:transient
+      </md:NameIDFormat>
+      <md:SingleSignOnService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST" Location="https://m00-mg-local.extdevel.mobilityguard.se/samlv2/idp/req/6/1?mgvhostparam=6"/>
+      <md:SingleSignOnService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect" Location="https://m00-mg-local.extdevel.mobilityguard.se/samlv2/idp/req/6/1?mgvhostparam=6"/>
+    </md:IDPSSODescriptor>
+    <md:Organization>
+      <md:OrganizationName xml:lang="sv">MobilityGuard AB</md:OrganizationName>
+      <md:OrganizationDisplayName xml:lang="sv">mobilityguard</md:OrganizationDisplayName>
+      <md:OrganizationURL xml:lang="sv">www.mobilityguard.com</md:OrganizationURL>
+    </md:Organization>
+    <md:ContactPerson contactType="technical">
+      <md:Company>MobilityGuard AB</md:Company>
+      <md:GivenName>Fredrik</md:GivenName>
+      <md:SurName>Seebass</md:SurName>
+      <md:EmailAddress>support@mobilityguard.com</md:EmailAddress>
+      <md:TelephoneNumber>+46317606777</md:TelephoneNumber>
+    </md:ContactPerson>
+    <md:ContactPerson contactType="support">
+      <md:Company>MobilityGuard AB</md:Company>
+      <md:GivenName>Fredrik</md:GivenName>
+      <md:SurName>Seebass</md:SurName>
+      <md:EmailAddress>support@mobilityguard.com</md:EmailAddress>
+      <md:TelephoneNumber>+46317606777</md:TelephoneNumber>
+    </md:ContactPerson>
+  </md:EntityDescriptor>
+  <md:EntityDescriptor xmlns:md="urn:oasis:names:tc:SAML:2.0:metadata" entityID="https://sambi-idp.nexusville.com/idp">
+    <md:IDPSSODescriptor protocolSupportEnumeration="urn:oasis:names:tc:SAML:2.0:protocol" WantAuthnRequestsSigned="false">
+      <md:KeyDescriptor use="signing">
+        <xd:KeyInfo xmlns:xd="http://www.w3.org/2000/09/xmldsig#">
+          <xd:X509Data>
+            <xd:X509Certificate>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</xd:X509Certificate>
+          </xd:X509Data>
+        </xd:KeyInfo>
+      </md:KeyDescriptor>
+      <md:NameIDFormat>urn:oasis:names:tc:SAML:2.0:nameid-format:persistent</md:NameIDFormat>
+      <md:NameIDFormat>urn:oasis:names:tc:SAML:2.0:nameid-format:transient</md:NameIDFormat>
+      <md:NameIDFormat>urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress</md:NameIDFormat>
+      <md:NameIDFormat>urn:oasis:names:tc:SAML:1.1:nameid-format:unspecified</md:NameIDFormat>
+      <md:SingleSignOnService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect" Location="https://sambi-idp.nexusville.com/wa/auth/saml/"/>
+      <md:SingleSignOnService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST" Location="https://sambi-idp.nexusville.com/wa/auth/saml/"/>
+    </md:IDPSSODescriptor>
+    <md:Organization>
+      <md:OrganizationName xml:lang="en">Technology Nexus AB</md:OrganizationName>
+      <md:OrganizationDisplayName xml:lang="en">neXus</md:OrganizationDisplayName>
+      <md:OrganizationURL xml:lang="en">www.nexusgroup.com</md:OrganizationURL>
+    </md:Organization>
+    <md:ContactPerson contactType="technical">
+      <md:Company>Technology Nexus AB</md:Company>
+      <md:GivenName>Lars</md:GivenName>
+      <md:SurName>Melander</md:SurName>
+      <md:EmailAddress>lars.melander@nexusgroup.com</md:EmailAddress>
+      <md:TelephoneNumber>+46 72 373 31 30</md:TelephoneNumber>
+    </md:ContactPerson>
+    <md:ContactPerson contactType="support">
+      <md:Company>Technology Nexus AB</md:Company>
+      <md:GivenName>Lars</md:GivenName>
+      <md:SurName>Melander</md:SurName>
+      <md:EmailAddress>lars.melander@nexusgroup.com</md:EmailAddress>
+      <md:TelephoneNumber>+46 72 373 31 30</md:TelephoneNumber>
+    </md:ContactPerson>
+  </md:EntityDescriptor>
+  <md:EntityDescriptor xmlns:md="urn:oasis:names:tc:SAML:2.0:metadata" entityID="https://sambi-sp.nexusville.com/sp">
+    <md:SPSSODescriptor protocolSupportEnumeration="urn:oasis:names:tc:SAML:2.0:protocol" WantAssertionsSigned="true" AuthnRequestsSigned="true">
+      <md:Extensions>
+        <idpdisc:DiscoveryResponse xmlns:idpdisc="urn:oasis:names:tc:SAML:profiles:SSO:idp-discovery-protocol" Binding="urn:oasis:names:tc:SAML:profiles:SSO:idp-discovery-protocol" Location="https://sambi-sp.nexusville.com/wa/auth/saml/" index="0" isDefault="true"/>
+      </md:Extensions>
+      <md:KeyDescriptor use="signing">
+        <xd:KeyInfo xmlns:xd="http://www.w3.org/2000/09/xmldsig#">
+          <xd:X509Data>
+            <xd:X509Certificate>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</xd:X509Certificate>
+          </xd:X509Data>
+        </xd:KeyInfo>
+      </md:KeyDescriptor>
+      <md:KeyDescriptor use="encryption">
+        <xd:KeyInfo xmlns:xd="http://www.w3.org/2000/09/xmldsig#">
+          <xd:X509Data>
+            <xd:X509Certificate>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</xd:X509Certificate>
+          </xd:X509Data>
+        </xd:KeyInfo>
+      </md:KeyDescriptor>
+      <md:SingleLogoutService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect" Location="https://sambi-sp.nexusville.com/wa/auth/saml/"/>
+      <md:NameIDFormat>urn:oasis:names:tc:SAML:1.1:nameid-format:unspecified</md:NameIDFormat>
+      <md:AssertionConsumerService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect" Location="https://sambi-sp.nexusville.com/wa/auth/saml/" index="0" isDefault="true"/>
+      <md:AssertionConsumerService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST" Location="https://sambi-sp.nexusville.com/wa/auth/saml/" index="1" isDefault="false"/>
+      <md:AssertionConsumerService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Artifact" Location="https://sambi-sp.nexusville.com/wa/auth/saml/" index="2" isDefault="false"/>
+    </md:SPSSODescriptor>
+    <md:Organization>
+      <md:OrganizationName xml:lang="en">Technology Nexus AB</md:OrganizationName>
+      <md:OrganizationDisplayName xml:lang="en">neXus</md:OrganizationDisplayName>
+      <md:OrganizationURL xml:lang="en">www.nexusgroup.com</md:OrganizationURL>
+    </md:Organization>
+    <md:ContactPerson contactType="technical">
+      <md:Company>Technology Nexus AB</md:Company>
+      <md:GivenName>Lars</md:GivenName>
+      <md:SurName>Melander</md:SurName>
+      <md:EmailAddress>lars.melander@nexusgroup.com</md:EmailAddress>
+      <md:TelephoneNumber>+46 72 373 31 30</md:TelephoneNumber>
+    </md:ContactPerson>
+    <md:ContactPerson contactType="support">
+      <md:Company>Technology Nexus AB</md:Company>
+      <md:GivenName>Lars</md:GivenName>
+      <md:SurName>Melander</md:SurName>
+      <md:EmailAddress>lars.melander@nexusgroup.com</md:EmailAddress>
+      <md:TelephoneNumber>+46 72 373 31 30</md:TelephoneNumber>
+    </md:ContactPerson>
+  </md:EntityDescriptor>
+  <md:EntityDescriptor xmlns:md="urn:oasis:names:tc:SAML:2.0:metadata" entityID="http://idp-acc.test.ek.sll.se/neas">
+
+    <md:IDPSSODescriptor WantAuthnRequestsSigned="true" protocolSupportEnumeration="urn:oasis:names:tc:SAML:2.0:protocol">
+      <md:KeyDescriptor use="signing">
+        <ds:KeyInfo xmlns:ds="http://www.w3.org/2000/09/xmldsig#">
+          <ds:X509Data>
+            <ds:X509Certificate>
+              MIIDYDCCAkgCCQDdrvhAIZlF8zANBgkqhkiG9w0BAQUFADByMQswCQYDVQQGEwJTRTEXMBUGA1UE
+              CAwOU3RvY2tob2xtcyBsYW4xEjAQBgNVBAcMCVN0b2NraG9sbTEVMBMGA1UECgwMMTYyMzIxMDAw
+              MDE2MR8wHQYDVQQDDBZpZHAtYWNjLnRlc3QuZWsuc2xsLnNlMB4XDTE0MDIxMzExMTkyOVoXDTI0
+              MDIxMTExMTkyOVowcjELMAkGA1UEBhMCU0UxFzAVBgNVBAgMDlN0b2NraG9sbXMgbGFuMRIwEAYD
+              VQQHDAlTdG9ja2hvbG0xFTATBgNVBAoMDDE2MjMyMTAwMDAxNjEfMB0GA1UEAwwWaWRwLWFjYy50
+              ZXN0LmVrLnNsbC5zZTCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBANGsLRYFrhS/iQaG
+              w410eQ3wrEW/tA8t/PTUjSoy/jWYEL8GvfMNPggC2SSb45tAhvnItnyD0wFRGUjUJ84xrCtl9fSX
+              Z7GAGfE4RaHHXoVXjztMQXMrfusSSdsu2I0QDNKeoiTRNCTAWcR45pwvqNUqIagbT15xz7vqC3tP
+              Guo9lMMp4TL32gnQmtCcskE7qdYn+LJmLlb04ZzsJvNZ1bVpbTzGKmclcpHekrt/N44EjEkFnlP5
+              Ki3KgIXPEGbUALIsImfN/y+XqXQV/KqbGRD8likTLf5mhBykzOvX5PT5E7AcZntzJa59xaMs8dWE
+              i1cHSy7Q+T6z48a/XxcQEnMCAwEAATANBgkqhkiG9w0BAQUFAAOCAQEAFO8old2aELkxryMoWpeU
+              EWECwUwQgUSGPpx4eCrGcoSw9Vf4R5EV3WQxE0VZ/IfwLEVwFoewhTCaGEwmBPjbuk7In8n+RsA1
+              WFKEi1XIX2IMiRPTszMLZY39zGVkr1aijoE7UmxMRlmH45FJlhJ0R8N2nRsLM2BylF7toTlozAGC
+              jfMzDBJshtuRdTAGWzWpJd+sijbGitCl8D9c5pB/G/iqdA770eNqcYUogjUyF2rEnaafx34h3T1r
+              gosrSG6sO3IPeL4BncKqqZO2FokfZbaqPBv6xmoKsVTUTQRfNEks84dRiG0MjqBncR+B6CIrCv2a
+              3hq3zHRCfk7EbFjuBw==
+            </ds:X509Certificate>
+          </ds:X509Data>
+          <ds:KeyName>6b66c9b9e6612b7d5d9f4078daeca7a8e0d9815e</ds:KeyName>
+        </ds:KeyInfo>
+      </md:KeyDescriptor>
+      <md:ArtifactResolutionService Binding="urn:oasis:names:tc:SAML:2.0:bindings:SOAP" Location="https://idp-acc.test.ek.sll.se/neas/SAMLConsumer" index="2"/>
+      <md:NameIDFormat>urn:oasis:names:tc:SAML:1.1:nameid-format:unspecified</md:NameIDFormat>
+      <md:SingleSignOnService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST" Location="https://idp-acc.test.ek.sll.se/neas/SSOService"/>
+      <md:SingleSignOnService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect" Location="https://idp-acc.test.ek.sll.se/neas/SSOService"/>
+    </md:IDPSSODescriptor>
+    <md:Organization>
+      <md:OrganizationName xml:lang="en">Stockholms lans landsting</md:OrganizationName>
+      <md:OrganizationDisplayName xml:lang="en">Stockholms lans landsting</md:OrganizationDisplayName>
+      <md:OrganizationURL xml:lang="en">http://www.sll.se/</md:OrganizationURL>
+    </md:Organization>
+    <md:ContactPerson contactType="administrative">
+      <md:EmailAddress>peter.granroth@sll.se</md:EmailAddress>
+    </md:ContactPerson>
+    <md:ContactPerson contactType="support">
+      <md:EmailAddress>peter.granroth@sll.se</md:EmailAddress>
+    </md:ContactPerson>
+  </md:EntityDescriptor>
+  <md:EntityDescriptor xmlns:md="urn:oasis:names:tc:SAML:2.0:metadata" entityID="https://elegitimation2.inloggning.se/simplesaml/module.php/saml/sp/metadata.php/sambi_test">
+    <md:SPSSODescriptor protocolSupportEnumeration="urn:oasis:names:tc:SAML:1.1:protocol urn:oasis:names:tc:SAML:2.0:protocol">
+      <md:Extensions>
+        <idpdisc:DiscoveryResponse xmlns:idpdisc="urn:oasis:names:tc:SAML:profiles:SSO:idp-discovery-protocol" index="1" Binding="urn:oasis:names:tc:SAML:profiles:SSO:idp-discovery-protocol" Location="https://elegitimation2.inloggning.se/simplesaml/module.php/saml/sp/discoresp.php"/>
+      </md:Extensions>
+      <md:KeyDescriptor use="signing">
+        <ds:KeyInfo xmlns:ds="http://www.w3.org/2000/09/xmldsig#">
+          <ds:X509Data>
+            <ds:X509Certificate>MIIEWjCCA8OgAwIBAgIBADANBgkqhkiG9w0BAQQFADCB1DELMAkGA1UEBhMCU0UxEDAOBgNVBAgTB1VwcGxhbmQxEDAOBgNVBAcTB1VwcHNhbGExHjAcBgNVBAoTFVN2ZW5zayBlLWlkZW50aXRldCBBQjE6MDgGA1UECxQxU3ZlbnNrIGUtaWRlbnRpdGV0IEFCX1N2ZW5zayBlLWlkZW50aXRldCBBQl9TdmVJRDEeMBwGA1UEAxMVU3ZlbnNrIGUtaWRlbnRpdGV0IEFCMSUwIwYJKoZIhvcNAQkBFhZzdXBwb3J0QGUtaWRlbnRpdGV0LnNlMCAXDTE0MDIwNDEyNTk1MloYDzIwNTYwMjI5MTI1OTUyWjCB1DELMAkGA1UEBhMCU0UxEDAOBgNVBAgTB1VwcGxhbmQxEDAOBgNVBAcTB1VwcHNhbGExHjAcBgNVBAoTFVN2ZW5zayBlLWlkZW50aXRldCBBQjE6MDgGA1UECxQxU3ZlbnNrIGUtaWRlbnRpdGV0IEFCX1N2ZW5zayBlLWlkZW50aXRldCBBQl9TdmVJRDEeMBwGA1UEAxMVU3ZlbnNrIGUtaWRlbnRpdGV0IEFCMSUwIwYJKoZIhvcNAQkBFhZzdXBwb3J0QGUtaWRlbnRpdGV0LnNlMIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDJgq42r5OITtnzVUpZFv03cffs7YI+ljGqR30KpiIjPGlXd/X8g5yfXmIr/fMU2qBiRcT+XisDk3oYRf1B7bg12PATnwNhbHkgwhBMn9PjIAiCcJOboG5OaYv0j95fGaZgdST5bnPGdsNSGPvNcfM6RX57GOlxnJ4MY0TcPKuEMQIDAQABo4IBNjCCATIwHQYDVR0OBBYEFDUG3Ep3B7W4b+IQ+4DoZQ7QIyAmMIIBAQYDVR0jBIH5MIH2gBQ1BtxKdwe1uG/iEPuA6GUO0CMgJqGB2qSB1zCB1DELMAkGA1UEBhMCU0UxEDAOBgNVBAgTB1VwcGxhbmQxEDAOBgNVBAcTB1VwcHNhbGExHjAcBgNVBAoTFVN2ZW5zayBlLWlkZW50aXRldCBBQjE6MDgGA1UECxQxU3ZlbnNrIGUtaWRlbnRpdGV0IEFCX1N2ZW5zayBlLWlkZW50aXRldCBBQl9TdmVJRDEeMBwGA1UEAxMVU3ZlbnNrIGUtaWRlbnRpdGV0IEFCMSUwIwYJKoZIhvcNAQkBFhZzdXBwb3J0QGUtaWRlbnRpdGV0LnNlggEAMAwGA1UdEwQFMAMBAf8wDQYJKoZIhvcNAQEEBQADgYEARYjT8GioebRS95x1Kj8FdxgE8oEJaQJpWKhoziFoLUsZDMUad+vlsnU9Fhb5THHjKSYs/NIWRdpxLOTs54+sSgFDNmZbtX7gTJA5zdCj5tdLMvah+AU+ZVtWQb8Ng4n7crsY6OBLwHG4/WZqEKOi6hOdVMx06c3XM8Le+8My2gg=</ds:X509Certificate>
+          </ds:X509Data>
+        </ds:KeyInfo>
+      </md:KeyDescriptor>
+      <md:KeyDescriptor use="encryption">
+        <ds:KeyInfo xmlns:ds="http://www.w3.org/2000/09/xmldsig#">
+          <ds:X509Data>
+            <ds:X509Certificate>MIIEWjCCA8OgAwIBAgIBADANBgkqhkiG9w0BAQQFADCB1DELMAkGA1UEBhMCU0UxEDAOBgNVBAgTB1VwcGxhbmQxEDAOBgNVBAcTB1VwcHNhbGExHjAcBgNVBAoTFVN2ZW5zayBlLWlkZW50aXRldCBBQjE6MDgGA1UECxQxU3ZlbnNrIGUtaWRlbnRpdGV0IEFCX1N2ZW5zayBlLWlkZW50aXRldCBBQl9TdmVJRDEeMBwGA1UEAxMVU3ZlbnNrIGUtaWRlbnRpdGV0IEFCMSUwIwYJKoZIhvcNAQkBFhZzdXBwb3J0QGUtaWRlbnRpdGV0LnNlMCAXDTE0MDIwNDEyNTk1MloYDzIwNTYwMjI5MTI1OTUyWjCB1DELMAkGA1UEBhMCU0UxEDAOBgNVBAgTB1VwcGxhbmQxEDAOBgNVBAcTB1VwcHNhbGExHjAcBgNVBAoTFVN2ZW5zayBlLWlkZW50aXRldCBBQjE6MDgGA1UECxQxU3ZlbnNrIGUtaWRlbnRpdGV0IEFCX1N2ZW5zayBlLWlkZW50aXRldCBBQl9TdmVJRDEeMBwGA1UEAxMVU3ZlbnNrIGUtaWRlbnRpdGV0IEFCMSUwIwYJKoZIhvcNAQkBFhZzdXBwb3J0QGUtaWRlbnRpdGV0LnNlMIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDJgq42r5OITtnzVUpZFv03cffs7YI+ljGqR30KpiIjPGlXd/X8g5yfXmIr/fMU2qBiRcT+XisDk3oYRf1B7bg12PATnwNhbHkgwhBMn9PjIAiCcJOboG5OaYv0j95fGaZgdST5bnPGdsNSGPvNcfM6RX57GOlxnJ4MY0TcPKuEMQIDAQABo4IBNjCCATIwHQYDVR0OBBYEFDUG3Ep3B7W4b+IQ+4DoZQ7QIyAmMIIBAQYDVR0jBIH5MIH2gBQ1BtxKdwe1uG/iEPuA6GUO0CMgJqGB2qSB1zCB1DELMAkGA1UEBhMCU0UxEDAOBgNVBAgTB1VwcGxhbmQxEDAOBgNVBAcTB1VwcHNhbGExHjAcBgNVBAoTFVN2ZW5zayBlLWlkZW50aXRldCBBQjE6MDgGA1UECxQxU3ZlbnNrIGUtaWRlbnRpdGV0IEFCX1N2ZW5zayBlLWlkZW50aXRldCBBQl9TdmVJRDEeMBwGA1UEAxMVU3ZlbnNrIGUtaWRlbnRpdGV0IEFCMSUwIwYJKoZIhvcNAQkBFhZzdXBwb3J0QGUtaWRlbnRpdGV0LnNlggEAMAwGA1UdEwQFMAMBAf8wDQYJKoZIhvcNAQEEBQADgYEARYjT8GioebRS95x1Kj8FdxgE8oEJaQJpWKhoziFoLUsZDMUad+vlsnU9Fhb5THHjKSYs/NIWRdpxLOTs54+sSgFDNmZbtX7gTJA5zdCj5tdLMvah+AU+ZVtWQb8Ng4n7crsY6OBLwHG4/WZqEKOi6hOdVMx06c3XM8Le+8My2gg=</ds:X509Certificate>
+          </ds:X509Data>
+        </ds:KeyInfo>
+      </md:KeyDescriptor>
+      <md:SingleLogoutService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect" Location="https://elegitimation2.inloggning.se/simplesaml/module.php/saml/sp/saml2-logout.php/sambi_test"/>
+      <md:AssertionConsumerService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST" Location="https://elegitimation2.inloggning.se/simplesaml/module.php/saml/sp/saml2-acs.php/sambi_test" index="0"/>
+      <md:AssertionConsumerService Binding="urn:oasis:names:tc:SAML:1.0:profiles:browser-post" Location="https://elegitimation2.inloggning.se/simplesaml/module.php/saml/sp/saml1-acs.php/sambi_test" index="1"/>
+      <md:AssertionConsumerService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Artifact" Location="https://elegitimation2.inloggning.se/simplesaml/module.php/saml/sp/saml2-acs.php/sambi_test" index="2"/>
+      <md:AssertionConsumerService Binding="urn:oasis:names:tc:SAML:1.0:profiles:artifact-01" Location="https://elegitimation2.inloggning.se/simplesaml/module.php/saml/sp/saml1-acs.php/sambi_test/artifact" index="3"/>
+    </md:SPSSODescriptor>
+    <md:Organization>
+      <md:OrganizationName xml:lang="sv">Svensk e-identitet AB</md:OrganizationName>
+      <md:OrganizationDisplayName xml:lang="en">Svensk e-identitet AB</md:OrganizationDisplayName>
+      <md:OrganizationURL xml:lang="en">www.e-identitet.se</md:OrganizationURL>
+    </md:Organization>
+    <md:ContactPerson contactType="technical">
+      <md:GivenName>Mikael</md:GivenName>
+      <md:SurName>Westoo</md:SurName>
+      <md:EmailAddress>mikael.westoo@e-identitet.se</md:EmailAddress>
+    </md:ContactPerson>
+  </md:EntityDescriptor>
+  <md:EntityDescriptor xmlns:md="urn:oasis:names:tc:SAML:2.0:metadata" xmlns:ds="http://www.w3.org/2000/09/xmldsig#" entityID="https://callback-prod.inloggning.se/simplesaml/saml2/idp/meta_e46fe1da26959ddb5319d64f5c85a7a0">
+    <md:IDPSSODescriptor protocolSupportEnumeration="urn:oasis:names:tc:SAML:2.0:protocol">
+      <md:KeyDescriptor use="signing">
+        <ds:KeyInfo>
+          <ds:X509Data>
+            <ds:X509Certificate>
+              MIIEOzCCA6SgAwIBAgIBADANBgkqhkiG9w0BAQQFADCByjELMAkGA1UEBhMCU0UxEDAOBgNVBAgTB1VwcGxhbmQxEDAOBgNVBAcTB1VwcHNhbGExHjAcBgNVBAoTFVN2ZW5zayBlLWlkZW50aXRldCBBQjEwMC4GA1UECxQnU3ZlbnNrIGUtaWRlbnRpdGV0IEFCX1NhbWJpIFRlc3QyX1N2ZUlEMR4wHAYDVQQDExVTdmVuc2sgZS1pZGVudGl0ZXQgQUIxJTAjBgkqhkiG9w0BCQEWFnN1cHBvcnRAZS1pZGVudGl0ZXQuc2UwIBcNMTQwMjA1MTM1MDE0WhgPMjA1NjAzMDExMzUwMTRaMIHKMQswCQYDVQQGEwJTRTEQMA4GA1UECBMHVXBwbGFuZDEQMA4GA1UEBxMHVXBwc2FsYTEeMBwGA1UEChMVU3ZlbnNrIGUtaWRlbnRpdGV0IEFCMTAwLgYDVQQLFCdTdmVuc2sgZS1pZGVudGl0ZXQgQUJfU2FtYmkgVGVzdDJfU3ZlSUQxHjAcBgNVBAMTFVN2ZW5zayBlLWlkZW50aXRldCBBQjElMCMGCSqGSIb3DQEJARYWc3VwcG9ydEBlLWlkZW50aXRldC5zZTCBnzANBgkqhkiG9w0BAQEFAAOBjQAwgYkCgYEAvehOyhVOcCkNPRghh5iN2Ow/iLn8TNysu/uYK5nDwREwbfL7WxW790xcj8p17KNclrWlztpC8Q9V01Jacprk2a2vbJ+o2D+lHk0UAIC/OJ3cETxIfKfkiXh/OYBqK2+OseIvtyKp3f4/NT5kYz8tIek97Fv5nNUJ7LuqqUSUwGsCAwEAAaOCASswggEnMB0GA1UdDgQWBBTDlS519KrXY+vrr2zbphxb3XWMRDCB9wYDVR0jBIHvMIHsgBTDlS519KrXY+vrr2zbphxb3XWMRKGB0KSBzTCByjELMAkGA1UEBhMCU0UxEDAOBgNVBAgTB1VwcGxhbmQxEDAOBgNVBAcTB1VwcHNhbGExHjAcBgNVBAoTFVN2ZW5zayBlLWlkZW50aXRldCBBQjEwMC4GA1UECxQnU3ZlbnNrIGUtaWRlbnRpdGV0IEFCX1NhbWJpIFRlc3QyX1N2ZUlEMR4wHAYDVQQDExVTdmVuc2sgZS1pZGVudGl0ZXQgQUIxJTAjBgkqhkiG9w0BCQEWFnN1cHBvcnRAZS1pZGVudGl0ZXQuc2WCAQAwDAYDVR0TBAUwAwEB/zANBgkqhkiG9w0BAQQFAAOBgQBw190sg/9tzpqOW29EwGogzU2beSXSaa1SzBaJEJfh5H02w76Xh4WfZPZ6AOqOcHGAB7iV3VCbUz/BDDXZ19Snd2XP4XVsTdJGkydDnfTZkvLr6P6mbCFBIb80MmEh2YYBTEK8tAjXwFXExj1YLN1bdw1T2J+cGMTTL9zlIH7X3A==
+            </ds:X509Certificate>
+          </ds:X509Data>
+        </ds:KeyInfo>
+      </md:KeyDescriptor>
+      <md:KeyDescriptor use="encryption">
+        <ds:KeyInfo>
+          <ds:X509Data>
+            <ds:X509Certificate>
+              MIIEOzCCA6SgAwIBAgIBADANBgkqhkiG9w0BAQQFADCByjELMAkGA1UEBhMCU0UxEDAOBgNVBAgTB1VwcGxhbmQxEDAOBgNVBAcTB1VwcHNhbGExHjAcBgNVBAoTFVN2ZW5zayBlLWlkZW50aXRldCBBQjEwMC4GA1UECxQnU3ZlbnNrIGUtaWRlbnRpdGV0IEFCX1NhbWJpIFRlc3QyX1N2ZUlEMR4wHAYDVQQDExVTdmVuc2sgZS1pZGVudGl0ZXQgQUIxJTAjBgkqhkiG9w0BCQEWFnN1cHBvcnRAZS1pZGVudGl0ZXQuc2UwIBcNMTQwMjA1MTM1MDE0WhgPMjA1NjAzMDExMzUwMTRaMIHKMQswCQYDVQQGEwJTRTEQMA4GA1UECBMHVXBwbGFuZDEQMA4GA1UEBxMHVXBwc2FsYTEeMBwGA1UEChMVU3ZlbnNrIGUtaWRlbnRpdGV0IEFCMTAwLgYDVQQLFCdTdmVuc2sgZS1pZGVudGl0ZXQgQUJfU2FtYmkgVGVzdDJfU3ZlSUQxHjAcBgNVBAMTFVN2ZW5zayBlLWlkZW50aXRldCBBQjElMCMGCSqGSIb3DQEJARYWc3VwcG9ydEBlLWlkZW50aXRldC5zZTCBnzANBgkqhkiG9w0BAQEFAAOBjQAwgYkCgYEAvehOyhVOcCkNPRghh5iN2Ow/iLn8TNysu/uYK5nDwREwbfL7WxW790xcj8p17KNclrWlztpC8Q9V01Jacprk2a2vbJ+o2D+lHk0UAIC/OJ3cETxIfKfkiXh/OYBqK2+OseIvtyKp3f4/NT5kYz8tIek97Fv5nNUJ7LuqqUSUwGsCAwEAAaOCASswggEnMB0GA1UdDgQWBBTDlS519KrXY+vrr2zbphxb3XWMRDCB9wYDVR0jBIHvMIHsgBTDlS519KrXY+vrr2zbphxb3XWMRKGB0KSBzTCByjELMAkGA1UEBhMCU0UxEDAOBgNVBAgTB1VwcGxhbmQxEDAOBgNVBAcTB1VwcHNhbGExHjAcBgNVBAoTFVN2ZW5zayBlLWlkZW50aXRldCBBQjEwMC4GA1UECxQnU3ZlbnNrIGUtaWRlbnRpdGV0IEFCX1NhbWJpIFRlc3QyX1N2ZUlEMR4wHAYDVQQDExVTdmVuc2sgZS1pZGVudGl0ZXQgQUIxJTAjBgkqhkiG9w0BCQEWFnN1cHBvcnRAZS1pZGVudGl0ZXQuc2WCAQAwDAYDVR0TBAUwAwEB/zANBgkqhkiG9w0BAQQFAAOBgQBw190sg/9tzpqOW29EwGogzU2beSXSaa1SzBaJEJfh5H02w76Xh4WfZPZ6AOqOcHGAB7iV3VCbUz/BDDXZ19Snd2XP4XVsTdJGkydDnfTZkvLr6P6mbCFBIb80MmEh2YYBTEK8tAjXwFXExj1YLN1bdw1T2J+cGMTTL9zlIH7X3A==
+            </ds:X509Certificate>
+          </ds:X509Data>
+        </ds:KeyInfo>
+      </md:KeyDescriptor>
+      <md:SingleLogoutService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST" Location="https://callback-prod.inloggning.se/simplesaml/saml2/idp/sls_e46fe1da26959ddb5319d64f5c85a7a0"/>
+      <md:NameIDFormat>urn:oasis:names:tc:SAML:2.0:nameid-format:transient</md:NameIDFormat>
+      <md:NameIDFormat>urn:oasis:names:tc:SAML:2.0:nameid-format:persistent</md:NameIDFormat>
+      <md:NameIDFormat>urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress</md:NameIDFormat>
+      <md:NameIDFormat>urn:oasis:names:tc:SAML:1.1:nameid-format:unspecified</md:NameIDFormat>
+      <md:SingleSignOnService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST" Location="https://callback-prod.inloggning.se/simplesaml/saml2/idp/ssos_e46fe1da26959ddb5319d64f5c85a7a0"/>
+    </md:IDPSSODescriptor>
+    <md:Organization>
+      <md:OrganizationName xml:lang="sv">Svensk e-identitet AB</md:OrganizationName>
+      <md:OrganizationName xml:lang="en">Svensk e-identitet AB</md:OrganizationName>
+      <md:OrganizationName xml:lang="no">Svensk e-identitet AB</md:OrganizationName>
+      <md:OrganizationDisplayName xml:lang="en">SITHS via dator (Svensk e-identitet)</md:OrganizationDisplayName>
+      <md:OrganizationDisplayName xml:lang="sv">SITHS via dator (Svensk e-identitet)</md:OrganizationDisplayName>
+      <md:OrganizationURL xml:lang="en">http://www.e-identitet.se/?page=idps#sambitest2</md:OrganizationURL>
+      <md:OrganizationURL xml:lang="sv">http://www.e-identitet.se/?page=idps#sambitest2</md:OrganizationURL>
+    </md:Organization>
+    <md:ContactPerson contactType="technical">
+      <md:Company>Svensk e-identitet AB</md:Company>
+      <md:GivenName>Mikael</md:GivenName>
+      <md:SurName>Westoo</md:SurName>
+      <md:EmailAddress>support@e-identitet.se</md:EmailAddress>
+      <md:TelephoneNumber>+46735110424</md:TelephoneNumber>
+    </md:ContactPerson>
+    <md:ContactPerson contactType="support">
+      <md:Company>Svensk e-identitet AB</md:Company>
+      <md:GivenName>Mikael</md:GivenName>
+      <md:SurName>Westoo</md:SurName>
+      <md:EmailAddress>support@e-identitet.se</md:EmailAddress>
+      <md:TelephoneNumber>+46735110424</md:TelephoneNumber>
+    </md:ContactPerson>
+  </md:EntityDescriptor>
+  <md:EntityDescriptor xmlns:md="urn:oasis:names:tc:SAML:2.0:metadata" entityID="test.broker.service.tieto.com">
+    <md:IDPSSODescriptor WantAuthnRequestsSigned="true" protocolSupportEnumeration="urn:oasis:names:tc:SAML:2.0:protocol">
+      <md:KeyDescriptor use="signing">
+        <ds:KeyInfo xmlns:ds="http://www.w3.org/2000/09/xmldsig#">
+          <ds:X509Data>
+            <ds:X509Certificate>
+              MIICVzCCAcACCQCtwZKMk1Yb5DANBgkqhkiG9w0BAQUFADBwMQswCQYDVQQGEwJTRTEKMAgGA1UE
+              CAwBIDESMBAGA1UECgwJVGlldG8gT3lKMRYwFAYDVQQLDA1JQU1hc2FTZXJ2aWNlMSkwJwYDVQQD
+              DCB0ZXN0LmF1dGhzaXRocy5zZXJ2aWNlLnRpZXRvLmNvbTAeFw0xMzA1MTUxNDI1NTRaFw0yMzA1
+              MTMxNDI1NTRaMHAxCzAJBgNVBAYTAlNFMQowCAYDVQQIDAEgMRIwEAYDVQQKDAlUaWV0byBPeUox
+              FjAUBgNVBAsMDUlBTWFzYVNlcnZpY2UxKTAnBgNVBAMMIHRlc3QuYXV0aHNpdGhzLnNlcnZpY2Uu
+              dGlldG8uY29tMIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDey7UqcoxQ/Et1UEED4mNifnYR
+              Z/NZIwYhfHaSmuTIl9uWvE7b0V9WHQNExh3PZWxY+MVnknYpnAOOX1XcoEZ8YrbWYy2aTr7J/9aK
+              hdQPKdNXfFRT+fBAfXb31Vqs7WaDHjFtgoAfZ8PdUaLupZtqiZDXmIgRDSbgNQpHReSfpwIDAQAB
+              MA0GCSqGSIb3DQEBBQUAA4GBALKQjGvk5fiTDwt94+b4w7AyiiXLjOCHph9QwMexOUiMNeI2oNtc
+              H8vG6BXnFns9YDBQxBtHnKetzvIb9DuuNR9yktyXXTC9tFthU6gbAgWBKKwTtUWyLLv+HR1z6fYq
+              Fn2N7eyfA7xy+mXcl94wNVBVlaZ+755Br43Xes5+6Xkz
+            </ds:X509Certificate>
+          </ds:X509Data>
+          <ds:KeyName>2dbb9d09e7c0d9eff6ad6f49799dda5db6747184</ds:KeyName>
+        </ds:KeyInfo>
+      </md:KeyDescriptor>
+      <md:SingleLogoutService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST" Location="https://test.broker.service.tieto.com/broker/SLOResponder"/>
+      <md:NameIDFormat>urn:oasis:names:tc:SAML:1.1:nameid-format:unspecified</md:NameIDFormat>
+      <md:SingleSignOnService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST" Location="https://test.broker.service.tieto.com/broker/SAMLResponder"/>
+      <md:SingleSignOnService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect" Location="https://test.broker.service.tieto.com/broker/SAMLResponder"/>
+    </md:IDPSSODescriptor>
+    <md:SPSSODescriptor AuthnRequestsSigned="true" WantAssertionsSigned="true" protocolSupportEnumeration="urn:oasis:names:tc:SAML:2.0:protocol">
+      <md:KeyDescriptor use="signing">
+        <ds:KeyInfo xmlns:ds="http://www.w3.org/2000/09/xmldsig#">
+          <ds:X509Data>
+            <ds:X509Certificate>
+              MIICVzCCAcACCQCtwZKMk1Yb5DANBgkqhkiG9w0BAQUFADBwMQswCQYDVQQGEwJTRTEKMAgGA1UE
+              CAwBIDESMBAGA1UECgwJVGlldG8gT3lKMRYwFAYDVQQLDA1JQU1hc2FTZXJ2aWNlMSkwJwYDVQQD
+              DCB0ZXN0LmF1dGhzaXRocy5zZXJ2aWNlLnRpZXRvLmNvbTAeFw0xMzA1MTUxNDI1NTRaFw0yMzA1
+              MTMxNDI1NTRaMHAxCzAJBgNVBAYTAlNFMQowCAYDVQQIDAEgMRIwEAYDVQQKDAlUaWV0byBPeUox
+              FjAUBgNVBAsMDUlBTWFzYVNlcnZpY2UxKTAnBgNVBAMMIHRlc3QuYXV0aHNpdGhzLnNlcnZpY2Uu
+              dGlldG8uY29tMIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDey7UqcoxQ/Et1UEED4mNifnYR
+              Z/NZIwYhfHaSmuTIl9uWvE7b0V9WHQNExh3PZWxY+MVnknYpnAOOX1XcoEZ8YrbWYy2aTr7J/9aK
+              hdQPKdNXfFRT+fBAfXb31Vqs7WaDHjFtgoAfZ8PdUaLupZtqiZDXmIgRDSbgNQpHReSfpwIDAQAB
+              MA0GCSqGSIb3DQEBBQUAA4GBALKQjGvk5fiTDwt94+b4w7AyiiXLjOCHph9QwMexOUiMNeI2oNtc
+              H8vG6BXnFns9YDBQxBtHnKetzvIb9DuuNR9yktyXXTC9tFthU6gbAgWBKKwTtUWyLLv+HR1z6fYq
+              Fn2N7eyfA7xy+mXcl94wNVBVlaZ+755Br43Xes5+6Xkz
+            </ds:X509Certificate>
+          </ds:X509Data>
+          <ds:KeyName>2dbb9d09e7c0d9eff6ad6f49799dda5db6747184</ds:KeyName>
+        </ds:KeyInfo>
+      </md:KeyDescriptor>
+      <md:SingleLogoutService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST" Location="https://test.broker.service.tieto.com/broker/SAMLServiceProvider"/>
+      <md:NameIDFormat>urn:oasis:names:tc:SAML:1.1:nameid-format:unspecified</md:NameIDFormat>
+      <md:AssertionConsumerService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST" Location="https://test.broker.service.tieto.com/broker/SAMLServiceProvider" index="0" isDefault="true"/>
+    </md:SPSSODescriptor>
+    <md:Organization>
+      <md:OrganizationName xml:lang="en">Tieto IAMaaS Test Broker</md:OrganizationName>
+      <md:OrganizationDisplayName xml:lang="en">Tieto IAMaaS Test Broker</md:OrganizationDisplayName>
+      <md:OrganizationURL xml:lang="en">www.tieto.com</md:OrganizationURL>
+    </md:Organization>
+  </md:EntityDescriptor>
+</EntitiesDescriptor>
