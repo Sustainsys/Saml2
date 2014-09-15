@@ -39,6 +39,7 @@
     <Reference Include="System.Core" />
     <Reference Include="System.IdentityModel" />
     <Reference Include="System.identitymodel.services" />
+    <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Security" />
     <Reference Include="System.Web" />
     <Reference Include="System.Xml.Linq" />
@@ -100,6 +101,7 @@
     <Compile Include="SignInCommand.cs" />
     <Compile Include="StatusCodeHelper.cs" />
     <Compile Include="XmlDocumentExtensions.cs" />
+    <Compile Include="XmlFilteringReader.cs" />
     <Compile Include="XmlHelpers.cs" />
   </ItemGroup>
   <ItemGroup>

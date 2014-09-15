@@ -88,7 +88,8 @@ namespace Kentor.AuthServices
         private static readonly ActiveIdentityProvidersMap activeIdentityProviders = 
             new ActiveIdentityProvidersMap(
                 configuredIdentityProviders,
-                KentorAuthServicesSection.Current.Federations.Select(f => new Federation(f)).ToList());
+                KentorAuthServicesSection.Current.Federations.Select(
+                f => new Federation(f.MetadataUrl, f.AllowUnsolicitedAuthnResponse)).ToList());
 
         public static ActiveIdentityProvidersMap ActiveIdentityProviders
         {

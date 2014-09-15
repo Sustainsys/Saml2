@@ -144,6 +144,7 @@
     <Compile Include="KentorAuthServicesAuthenticationOptionsTests.cs" />
     <Compile Include="MetadataLoaderTests.cs" />
     <Compile Include="EntityIdEqualityComparerTests.cs" />
+    <Compile Include="FederationTests.cs" />
     <Compile Include="XmlDocumentExtensionsTests.cs" />
     <Compile Include="XmlHelpersTests.cs" />
   </ItemGroup>
@@ -170,6 +171,11 @@
       <Project>{93ba675e-a159-4701-b68b-c4b81015c556}</Project>
       <Name>Kentor.AuthServices</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="SambiMetadata.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">

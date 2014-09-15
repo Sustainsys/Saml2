@@ -2,10 +2,12 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.IdentityModel.Metadata;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml;
 using System.Xml.Linq;
 
 namespace Kentor.AuthServices
@@ -35,8 +37,22 @@ namespace Kentor.AuthServices
             using (var client = new WebClient())
             using (var stream = client.OpenRead(metadataUrl.ToString()))
             {
-                var serializer = new MetadataSerializer();
-                return serializer.ReadMetadata(stream);
+                return Load(stream);
+            }
+        }
+
+        internal static MetadataBase Load(Stream metadataStream)
+        {
+            var serializer = new MetadataSerializer();
+            using (var reader = XmlDictionaryReader.CreateTextReader(metadataStream, XmlDictionaryReaderQuotas.Max))
+            {
+                // Filter out the signature from the metadata, as the built in MetadataSerializer
+                // doesn't handle the http://www.w3.org/2000/09/xmldsig# which is allowed (and for SAMLv1
+                // even recommended).
+                using (var filter = new XmlFilteringReader("http://www.w3.org/2000/09/xmldsig#", "Signature", reader))
+                {
+                    return serializer.ReadMetadata(filter);
+                }
             }
         }
 
