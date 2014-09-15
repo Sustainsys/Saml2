@@ -218,7 +218,9 @@ namespace Kentor.AuthServices
             Binding = Saml2Binding.UriToSaml2BindingType(ssoService.Binding);
             AssertionConsumerServiceUrl = ssoService.Location;
 
-            var key = idpDescriptor.Keys.SingleOrDefault();
+            var key = idpDescriptor.Keys
+                .Where(k => k.Use == KeyType.Unspecified || k.Use == KeyType.Signing)
+                .SingleOrDefault();
 
             if (key != null)
             {
