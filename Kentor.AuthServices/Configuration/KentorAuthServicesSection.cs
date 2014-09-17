@@ -76,6 +76,19 @@ namespace Kentor.AuthServices.Configuration
         }
 
         /// <summary>
+        /// Optional attribute that describes the federation manager type used to obtain identity 
+        /// providers programmatically.
+        /// </summary>
+        [ConfigurationProperty("federationManager", IsRequired = false)]
+        public string FederationManager
+        {
+            get
+            {
+                return (string)base["federationManager"];
+            }
+        }
+
+        /// <summary>
         /// Set of identity providers known to the service provider.
         /// </summary>
         [ConfigurationProperty("identityProviders", IsRequired=true, IsDefaultCollection=true)]

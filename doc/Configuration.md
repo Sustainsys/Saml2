@@ -39,7 +39,8 @@ library. It is required for the http module, the mvc controller and the Owin mid
 <kentor.authServices assertionConsumerServiceUrl="http://localhost:17009/SamplePath/Saml2AuthenticationModule/acs"
 							entityId="http://localhost:17009"
                             returnUri="http://localhost:17009/SamplePath/"
-                            metadataCacheDuration="3600">
+                            metadataCacheDuration="3600"
+                            federationManager="SampleMvcApplication.FederationManager, SampleMvcApplication">
   <identityProviders>
     <add entityId="https://stubidp.kentor.se/Metadata" 
          destinationUri="https://stubidp.kentor.se" 
@@ -67,6 +68,7 @@ Root element of the config section.
 * [`returnUri`](#returnuri-attribute)
 * [`entityId`](#entityid-attribute)
 * [`metadataCacheDuration`](#metadatacacheduration-attribute)
+* [`federationManager`](#federationManager-attribute)
 
 ####Elements
 * [`<identityProviders>`](#identityproviders-element)
@@ -102,6 +104,13 @@ signed in start page.
 
 Optional attribute that describes for how long in seconds anyone may cache the metadata 
 presented by the service provider. Defaults to 3600 seconds.
+
+####`federationManager` Attribute
+*Optional Attribute of the [`<kentor.authServices>`](#kentor-authservices-section) element.*
+
+Optional attribute that describes the type implementing a IFederationManager interface. 
+If specified, this type is called to load identity providers periodically based
+on the [`metadataCacheDuration`](#metadatacacheduration-attribute) period.
 
 ###`<identityProviders>` Element
 *Optional child element of the [`<kentor.authServices>`](#kentor-authservices-section) element.*

@@ -1,18 +1,14 @@
-﻿using Kentor.AuthServices.Configuration;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Collections.Concurrent;
-using System.Linq;
-using System.Security.Cryptography.X509Certificates;
-using System.IdentityModel.Tokens;
-using System.Net;
+using System.Configuration;
+using System.Diagnostics.CodeAnalysis;
+using System.Globalization;
 using System.IdentityModel.Metadata;
-using System.Xml.Linq;
+using System.IdentityModel.Tokens;
+using System.Linq;
 using System.Security.Cryptography;
 using System.Security.Cryptography.Xml;
-using System.Configuration;
-using System.Globalization;
-using System.Diagnostics.CodeAnalysis;
+using Kentor.AuthServices.Configuration;
 
 namespace Kentor.AuthServices
 {
@@ -28,7 +24,7 @@ namespace Kentor.AuthServices
         {
             private readonly IDictionary<EntityId, IdentityProvider> configuredIdps;
             private readonly IList<Federation> configuredFederations;
-            
+
             internal ActiveIdentityProvidersMap(
                 IDictionary<EntityId, IdentityProvider> configuredIdps,
                 IList<Federation> configuredFederations)
@@ -68,13 +64,20 @@ namespace Kentor.AuthServices
                     }
                 }
 
+                if (DynamicIdentityProviders().TryGetValue(entityId, out idp))
+                {
+                    return true;
+                }
+
                 return false;
             }
 
             public IEnumerator<IdentityProvider> GetEnumerator()
             {
-                return configuredIdps.Values.Union(
-                configuredFederations.SelectMany(f => f.IdentityProviders.Select(i => i.Value)))
+                return configuredIdps.Values
+                    .Union(configuredFederations
+                        .SelectMany(f => f.IdentityProviders.Select(i => i.Value)))
+                    .Union(DynamicIdentityProviders().Values)
                 .GetEnumerator();
             }
 
@@ -82,6 +85,46 @@ namespace Kentor.AuthServices
             System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
             {
                 throw new NotImplementedException();
+            }
+
+            internal static DateTime lastFederationLoad = DateTime.MinValue;
+            private static IDictionary<EntityId, IdentityProvider> dynamicIdentityProviders =
+                new Dictionary<EntityId, IdentityProvider>();
+            private static IFederationManager federationManager;
+
+            private static IDictionary<EntityId, IdentityProvider> DynamicIdentityProviders()
+            {
+                if (string.IsNullOrWhiteSpace(KentorAuthServicesSection.Current.FederationManager) ||
+                    DateTime.Now.Subtract(lastFederationLoad).TotalSeconds <
+                    KentorAuthServicesSection.Current.MetadataCacheDuration)
+                {
+                    return dynamicIdentityProviders;
+                }
+
+                lastFederationLoad = DateTime.Now;
+
+                Type federationManagerType;
+                if (federationManager == null &&
+                    (federationManagerType = Type.GetType(KentorAuthServicesSection.Current.FederationManager)) != null)
+                {
+                    federationManager = (IFederationManager)Activator.CreateInstance(federationManagerType);
+                }
+
+                if (federationManager == null)
+                {
+                    return dynamicIdentityProviders;
+                }
+
+                var dynamic = federationManager.Load();
+                var dynamicProviders = dynamic.ChildEntities.Select(
+                        f => new IdentityProvider(f, federationManager.AllowUnsolicitedAuthnResponse))
+                        .ToDictionary(
+                    idp => new EntityId(idp.EntityId.Id),
+                    EntityIdEqualityComparer.Instance);
+
+                dynamicIdentityProviders = dynamicProviders;
+
+                return dynamicIdentityProviders;
             }
         }
 

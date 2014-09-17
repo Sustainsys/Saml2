@@ -105,6 +105,7 @@
     <Compile Include="AuthServicesControllerTests.cs" />
     <Compile Include="ClaimsAuthenticationManagerStub.cs" />
     <Compile Include="ExceptionTestHelpers.cs" />
+    <Compile Include="TestFederationManager.cs" />
     <Compile Include="MetadataCommandTests.cs" />
     <Compile Include="MetadataServer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

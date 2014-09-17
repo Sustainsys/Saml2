@@ -83,6 +83,37 @@ namespace Kentor.AuthServices.Tests
             idpFromMetadata.SigningKey.ShouldBeEquivalentTo(SignedXmlHelper.TestKey);
         }
 
+        [TestMethod]
+        public void IdentityProvider_FederationManagerLoads()
+        {
+            var entityId = new EntityId("http://idp.test.com/metadata1");
+            var idpFromMetadata = IdentityProvider.ActiveIdentityProviders[entityId];
+
+            idpFromMetadata.EntityId.Id.Should().Be(entityId.Id);
+            idpFromMetadata.Binding.Should().Be(Saml2BindingType.HttpRedirect);
+            idpFromMetadata.AssertionConsumerServiceUrl.Should().Be(new Uri("http://idp.test.com"));
+            idpFromMetadata.SigningKey.ShouldBeEquivalentTo(SignedXmlHelper.TestKey);
+        }
+
+        [TestMethod]
+        public void IdentityProvider_FederationManagerReload()
+        {
+            // Reset manually using test hook
+            IdentityProvider.ActiveIdentityProvidersMap.lastFederationLoad = DateTime.MinValue;
+            TestFederationManager.NumberOfEntries = 1;
+
+            var startingCount = IdentityProvider.ActiveIdentityProviders.Count();
+            TestFederationManager.NumberOfEntries = 2;
+
+            // Not enough time since last should have elapsed. Value should remain the same.
+            IdentityProvider.ActiveIdentityProviders.Count().Should().Be(startingCount);
+
+            // Reset manually using test hook
+            IdentityProvider.ActiveIdentityProvidersMap.lastFederationLoad = DateTime.MinValue;
+            var count = IdentityProvider.ActiveIdentityProviders.Count();
+            count.Should().Be(startingCount + 1);
+        }
+
         private IdentityProviderElement CreateConfig()
         {
             var config = new IdentityProviderElement();
