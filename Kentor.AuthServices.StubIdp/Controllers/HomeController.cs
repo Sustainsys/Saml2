@@ -19,12 +19,17 @@ namespace Kentor.AuthServices.StubIdp.Controllers
         public ActionResult Index()
         {
             var model = AssertionModel.CreateFromConfiguration();
-            var request = Saml2AuthenticationRequest.Read(Saml2Binding.Get(Saml2BindingType.HttpRedirect)
-                .Unbind(new HttpRequestData(Request)));
+
+            var decodedXmlData = Saml2Binding.Get(Saml2BindingType.HttpRedirect)
+                .Unbind(new HttpRequestData(Request));
+
+            var request = Saml2AuthenticationRequest.Read(decodedXmlData);
+
             if (request != null)
             {
                 model.InResponseTo = request.Id;
                 model.AssertionConsumerServiceUrl = request.AssertionConsumerServiceUrl.ToString();
+                model.AuthnRequestXml = decodedXmlData;
             }
 
             return View(model);

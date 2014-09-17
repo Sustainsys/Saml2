@@ -21,6 +21,14 @@
 
 @using (Html.BeginForm(null))
 {
+    if (!string.IsNullOrEmpty(Model.AuthnRequestXml))
+    {
+        <div>
+            @Html.LabelFor(m => m.AuthnRequestXml)
+            <pre class="xml">@Model.AuthnRequestXml</pre>
+        </div>
+    }
+
     <div>
         @Html.LabelFor(m => m.InResponseTo)
         @Html.EditorFor(m => m.InResponseTo)

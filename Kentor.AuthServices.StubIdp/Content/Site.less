@@ -44,30 +44,43 @@ header {
 }
 
 form {
+
+    @input-width: 500px;
     @label-width: 200px;
     @error-color: @red;
-
     margin-top: 30px;
+
+    pre.xml {
+        font-size: 12px;
+        width: @input-width;
+        margin-left: @label-width;
+        background-color: @light-grey;
+    }
+
+
     label {
         font-weight: bold;
-        float:left;
+        float: left;
         width: @label-width;
     }
-    input{
-        width: 500px;
-    }
-    .field-validation-error{
-        color: @error-color;
-        font-size: 0.9em;
-        display:block;
-        float:left;
-        margin-left: @label-width
-    }
-    div{
-        height: 50px;
+
+    input {
+        width: @input-width;
     }
 
-    .input-validation-error{
+    .field-validation-error {
+        color: @error-color;
+        font-size: 0.9em;
+        display: block;
+        float: left;
+        margin-left: @label-width;
+    }
+
+    div {
+        min-height: 50px;
+    }
+
+    .input-validation-error {
         background-color: #ffa6a6;
         border-color: @error-color;
     }

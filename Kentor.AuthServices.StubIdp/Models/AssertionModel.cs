@@ -46,5 +46,8 @@ namespace Kentor.AuthServices.StubIdp.Models
                 CertificateHelper.SigningCertificate, new Uri(AssertionConsumerServiceUrl), 
                 InResponseTo, identity);
         }
+
+        [Display(Name="Incoming AuthnRequest")]
+        public string AuthnRequestXml { get; set; }
     }
 }
