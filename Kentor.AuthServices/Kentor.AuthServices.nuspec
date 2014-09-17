@@ -16,32 +16,19 @@
     <copyright>Copyright Kentor and contributors 2013</copyright>
     <tags>SAML2 authentication ASP.NET SAML SSO</tags>
     <releaseNotes>
- Version 0.5.2
+ Version 0.6.0
+ * Fixed entityID incorrectly cased in sp metadata.
+ * Update documentation with respect to the new Owin middleware.
+ * Federation metadata support.
+ * Idp metadata support.
+ 
+Version 0.5.2
  * Fixed missing dependencies in Kentor.AuthServices.Owin package.
 
 Version 0.5.0
 * Service provider metadata.
 * Support for multiple Identity Providers.
 * Kentor.AuthServices.Owin package now available for MVC projects using ASP.NET Identity.
-
-Version 0.4.0
-THIS RELEASE CONTAINS SECURITY FIXES
-* Improved verification of XML signatures to mitigate assertion injection.
-* Support for signed assertions.
-* Validates InResponseTo on incoming responses.
-* Support for SAML2 Http Post binding.
-
-Version 0.3.0
-* Refactoring to support Kentor.AuthServices.Mvc. For ASP.NET MVC projects
-  it is better to use that package than this.
-* Compatibility with simplesamlphp idp (thanks Henning Jensen for contribution).
-  
-Version 0.2.0
-* Documentation updated.
-* Some breaking changes of names of configuration elements.
-      
-Version 0.1.0
-* First working version published.
     </releaseNotes>
   </metadata>
   <files>
