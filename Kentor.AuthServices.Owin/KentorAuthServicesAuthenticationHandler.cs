@@ -49,7 +49,7 @@ namespace Kentor.AuthServices.Owin
                         idp = objIdp as EntityId;
                     }
                     var result = SignInCommand.CreateResult(idp, challenge.Properties.RedirectUri, Context.Request.Uri);
-                    Response.Redirect(result.Location.ToString());
+                    Response.Redirect(result.Location.OriginalString);
                 }
             }
 

@@ -77,7 +77,7 @@ namespace Kentor.AuthServices
                     throw new InvalidOperationException("Invalid HttpStatusCode for redirect, but Location is specified");
                 }
 
-                response.Redirect(Location.ToString());
+                response.Redirect(Location.OriginalString);
             }
             else
             {

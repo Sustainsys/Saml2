@@ -68,7 +68,7 @@ namespace Kentor.AuthServices.Tests
         public void CommandResult_Apply_HandleRedirect()
         {
             var response = Substitute.For<HttpResponseBase>();
-            var redirectTarget = "http://example.com/redirect/target/";
+            var redirectTarget = "http://example.com/redirect/target?X=A%20B%3d";
 
             new CommandResult()
             {
@@ -108,7 +108,7 @@ namespace Kentor.AuthServices.Tests
         }
 
         [TestMethod]
-        public void Command_Result_Apply_Content()
+        public void CommandResult_Apply_Content()
         {
             var response = Substitute.For<HttpResponseBase>();
 

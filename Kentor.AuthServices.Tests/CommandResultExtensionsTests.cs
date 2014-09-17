@@ -24,16 +24,18 @@ namespace Kentor.AuthServices.Tests
         [TestMethod]
         public void CommandResultExtensions_ToActionResult_SeeOther()
         {
+            var strLocation = "http://example.com/location?X=A%20B%3DZ";
+
             var cr = new CommandResult()
             {
                 HttpStatusCode = System.Net.HttpStatusCode.SeeOther,
-                Location = new Uri("http://example.com/location")
+                Location = new Uri(strLocation)
             };
 
             var subject = cr.ToActionResult();
 
             subject.Should().BeOfType<RedirectResult>().And
-                .Subject.As<RedirectResult>().Url.Should().Be("http://example.com/location");
+                .Subject.As<RedirectResult>().Url.Should().Be(strLocation);
         }
 
         [TestMethod]
@@ -83,7 +85,7 @@ namespace Kentor.AuthServices.Tests
         }
 
         [TestMethod]
-        public void CommandResultExtensions_Apply_Ok()
+        public void CommandResultExtensions_Apply_Content()
         {
             var cr = new CommandResult()
             {

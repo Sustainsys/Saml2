@@ -32,7 +32,7 @@ namespace Kentor.AuthServices.Mvc
             switch (commandResult.HttpStatusCode)
             {
                 case HttpStatusCode.SeeOther:
-                    return new RedirectResult(commandResult.Location.ToString());
+                    return new RedirectResult(commandResult.Location.OriginalString);
                 case HttpStatusCode.OK:
                     var result = new ContentResult()
                     {
