@@ -42,6 +42,8 @@ form pre.xml {
   width: 500px;
   margin-left: 200px;
   background-color: #cccccc;
+  overflow-x: scroll;
+  overflow-y: visible;
 }
 form label {
   font-weight: bold;
