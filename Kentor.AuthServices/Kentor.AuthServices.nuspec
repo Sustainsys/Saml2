@@ -16,7 +16,10 @@
     <copyright>Copyright Kentor and contributors 2013</copyright>
     <tags>SAML2 authentication ASP.NET SAML SSO</tags>
     <releaseNotes>
- Version 0.6.0
+ Version 0.6.2
+ * Fixed SAMLRequest querystring parameter not urlencoded
+
+Version 0.6.0
  * Fixed entityID incorrectly cased in sp metadata.
  * Update documentation with respect to the new Owin middleware.
  * Federation metadata support.
