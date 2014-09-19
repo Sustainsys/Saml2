@@ -84,6 +84,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ReturnRequestedIssuerNameRegistry.cs" />
     <Compile Include="Saml2AssertionExtensions.cs" />
+    <Compile Include="Saml2StatementExtension.cs" />
     <Compile Include="Saml2AuthenticationModule.cs" />
     <Compile Include="Configuration\KentorAuthServicesSection.cs" />
     <Compile Include="Saml2AuthenticationRequest.cs" />
