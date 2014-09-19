@@ -256,14 +256,33 @@ namespace Kentor.AuthServices
             var idpDescriptor = metadata.RoleDescriptors
                 .OfType<IdentityProviderSingleSignOnDescriptor>().Single();
 
-            var ssoService = idpDescriptor.SingleSignOnServices.First();
+            ProtocolEndpoint ssoService = null;
+            Saml2BindingType? binding = null;
+            ArgumentException lastException = null;
+            foreach (var service in idpDescriptor.SingleSignOnServices)
+            {
+                try
+                {
+                    binding = Saml2Binding.UriToSaml2BindingType(service.Binding);
+                    ssoService = service;
+                    break;
+                }
+                catch (ArgumentException ae)
+                {
+                    lastException = ae;
+                }
+            }
 
-            Binding = Saml2Binding.UriToSaml2BindingType(ssoService.Binding);
+            if (ssoService == null)
+            {
+                throw new ArgumentException("IdP does not contain a supported Saml2 Binding Protocol", lastException);
+            }
+
+            Binding = binding.Value;
             AssertionConsumerServiceUrl = ssoService.Location;
 
             var key = idpDescriptor.Keys
-                .Where(k => k.Use == KeyType.Unspecified || k.Use == KeyType.Signing)
-                .SingleOrDefault();
+                .SingleOrDefault(k => k.Use == KeyType.Unspecified || k.Use == KeyType.Signing);
 
             if (key != null)
             {
