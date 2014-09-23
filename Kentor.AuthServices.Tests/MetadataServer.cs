@@ -26,7 +26,7 @@ namespace Kentor.AuthServices.Tests
     entityID=""http://localhost:13428/idpMetadata"">
     <IDPSSODescriptor
       protocolSupportEnumeration=""urn:oasis:names:tc:SAML:2.0:protocol"">
-      <KeyDescriptor use=""signing"">
+      <KeyDescriptor>
         {0}
       </KeyDescriptor>
       <SingleSignOnService
