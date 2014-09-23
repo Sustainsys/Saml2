@@ -11,9 +11,9 @@ namespace Kentor.AuthServices
 {
     class CacheAwareMetadataSerializer : MetadataSerializer
     {
-        int cacheDuration;
+        TimeSpan cacheDuration;
 
-        public CacheAwareMetadataSerializer(int cacheDuration)
+        public CacheAwareMetadataSerializer(TimeSpan cacheDuration)
         {
             this.cacheDuration = cacheDuration;
         }
@@ -23,7 +23,7 @@ namespace Kentor.AuthServices
         {
             if (typeof(T) == typeof(EntityDescriptor))
             {
-                writer.WriteAttributeString("cacheDuration", cacheDuration.ToString(CultureInfo.InvariantCulture));
+                writer.WriteAttributeString("cacheDuration", XmlConvert.ToString(cacheDuration));
             }
         }
     }

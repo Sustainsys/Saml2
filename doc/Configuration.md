@@ -39,7 +39,7 @@ library. It is required for the http module, the mvc controller and the Owin mid
 <kentor.authServices assertionConsumerServiceUrl="http://localhost:17009/SamplePath/Saml2AuthenticationModule/acs"
 							entityId="http://localhost:17009"
                             returnUri="http://localhost:17009/SamplePath/"
-                            metadataCacheDuration="3600">
+                            metadataCacheDuration="1:00:00">
   <identityProviders>
     <add entityId="https://stubidp.kentor.se/Metadata" 
          destinationUri="https://stubidp.kentor.se" 
@@ -100,8 +100,11 @@ signed in start page.
 ####`metadataCacheDuration` Attribute
 *Optional Attribute of the [`<kentor.authServices>`](#kentor-authservices-section) element.*
 
-Optional attribute that describes for how long in seconds anyone may cache the metadata 
-presented by the service provider. Defaults to 3600 seconds.
+Optional attribute that describes for how long in anyone may cache the metadata 
+presented by the service provider. Defaults to one hour. Examples of valid format strings:
+
+* 1 day, 2 hours: `1.2:00:00`.
+* 42 seconds: `0:00:42`.
 
 ###`<identityProviders>` Element
 *Optional child element of the [`<kentor.authServices>`](#kentor-authservices-section) element.*
