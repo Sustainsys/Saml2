@@ -9,12 +9,23 @@ using System.IO.Compression;
 using System.IO;
 using System.Xml.Linq;
 using Kentor.AuthServices.TestHelpers;
+using Kentor.AuthServices.Configuration;
 
 namespace Kentor.AuthServices.Tests
 {
     [TestClass]
     public class SignInCommandTests
     {
+        [TestCleanup]
+        public void TestCleanup()
+        {
+            if (!KentorAuthServicesSection.Current.IsReadOnly())
+            {
+                KentorAuthServicesSection.Current.DiscoveryServiceUrl = null;
+                KentorAuthServicesSection.Current.AllowConfigEdit(false);
+            }
+        }
+
         [TestMethod]
         public void SignInCommand_Run_ReturnsAuthnRequestForDefaultIdp()
         {
@@ -92,6 +103,28 @@ namespace Kentor.AuthServices.Tests
             Action a = () => new SignInCommand().Run(null);
 
             a.ShouldThrow<ArgumentNullException>().And.ParamName.Should().Be("request");
+        }
+
+        [TestMethod]
+        public void SignInCommand_Run_ReturnsRedirectToDiscoveryService()
+        {
+            var dsUrl = new Uri("http://ds.example.com");
+            KentorAuthServicesSection.Current.AllowConfigEdit(true);
+            KentorAuthServicesSection.Current.DiscoveryServiceUrl = dsUrl;
+
+            var request = new HttpRequestData("GET", new Uri("http://localhost/signin"));
+
+            var result = new SignInCommand().Run(request);
+
+            result.HttpStatusCode.Should().Be(HttpStatusCode.SeeOther);
+            
+            var queryString = string.Format("?entityID={0}&return={1}&returnIDParam=idp", 
+                Uri.EscapeDataString(ServiceProvider.Metadata.EntityId.Id),
+                Uri.EscapeDataString(KentorAuthServicesSection.Current.DiscoveryServiceResponseUrl.OriginalString));
+
+            var expectedLocation = new Uri(dsUrl + queryString);
+
+            result.Location.Should().Be(expectedLocation);
         }
     }
 }

@@ -67,6 +67,8 @@ Root element of the config section.
 * [`returnUri`](#returnuri-attribute)
 * [`entityId`](#entityid-attribute)
 * [`metadataCacheDuration`](#metadatacacheduration-attribute)
+* [`discoveryServiceUrl`](#discoveryserviceurl-attribute)
+* [`discoveryServiceResponseUrl`](#discoveryservicereturnurl-attribute)
 
 ####Elements
 * [`<identityProviders>`](#identityproviders-element)
@@ -105,6 +107,19 @@ presented by the service provider. Defaults to one hour. Examples of valid forma
 
 * 1 day, 2 hours: `1.2:00:00`.
 * 42 seconds: `0:00:42`.
+
+####`discoveryServiceUrl` Attribute
+*Optional Attribute of the [`<kentor.authServices>`](#kentor-authservices-section) element.*
+
+Optional attribute that specifies an idp discovery service to use if no idp
+is specified when calling sign in. Without this attribute, the first idp known
+will be used if none is specified.
+
+####`discoveryServiceResponseUrl` Attribute
+*Optional Attribute of the [`<kentor.authServices>`](#kentor-authservices-section) element.*
+
+Optional attribute that specifies where a discovery service should redirect the
+client back to. This should be the SignIn URL.
 
 ###`<identityProviders>` Element
 *Optional child element of the [`<kentor.authServices>`](#kentor-authservices-section) element.*

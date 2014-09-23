@@ -70,7 +70,7 @@ namespace Kentor.AuthServices
         public string HttpMethod { get; private set; }
 
         /// <summary>
-        /// The Url of the 
+        /// The complete Url of the request.
         /// </summary>
         public Uri Url { get; private set; }
 
