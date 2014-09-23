@@ -4,6 +4,9 @@ Contributing
 Kentor.AuthServices is maintained by and have mostly been developed by Kentor in Stockholm,
 Sweden. The library's source code is hosted on [github](https://github.com/KentorIT/authservices).
 
+When doing work on protocol features, it is recommended to consult the
+[official SAML specifications](https://wiki.oasis-open.org/security/FrontPage#SAMLV2.0Standard).
+
 ##Issue tracking
 Github issues are used to keep track of issues and releases. For requests of functionality or
 to report bugs, please open an issue in the github repo.
