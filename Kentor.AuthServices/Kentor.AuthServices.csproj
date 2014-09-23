@@ -69,6 +69,7 @@
     <Compile Include="Configuration\FederationElement.cs" />
     <Compile Include="HttpRequestData.cs" />
     <Compile Include="IdentityProvider.cs" />
+    <Compile Include="IFederationManager.cs" />
     <Compile Include="ISaml2Message.cs" />
     <Compile Include="MessageBinder.cs" />
     <Compile Include="MetadatabaseExtensions.cs" />
