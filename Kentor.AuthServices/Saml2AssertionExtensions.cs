@@ -39,6 +39,13 @@ namespace Kentor.AuthServices
             {
                 xml.Add(assertion.Conditions.ToXElement());
             }
+            
+            if (assertion.Statements != null)
+            {
+                assertion.Statements.ToList().ForEach( delegate(Saml2Statement statement){
+                    xml.Add(statement.ToXElement());
+                });
+            }
 
             return xml;
         }
