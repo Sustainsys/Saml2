@@ -20,7 +20,7 @@ namespace Kentor.AuthServices
         /// <param name="cacheDuration">Cache duration value to include in output.</param>
         /// <returns>string with metadata contents.</returns>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2202:Do not dispose objects multiple times")]
-        public static string ToXmlString(this MetadataBase metadata, int cacheDuration)
+        public static string ToXmlString(this MetadataBase metadata, TimeSpan cacheDuration)
         {
             var serializer = new CacheAwareMetadataSerializer(cacheDuration);
 

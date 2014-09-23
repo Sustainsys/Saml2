@@ -25,7 +25,7 @@ namespace Kentor.AuthServices.Tests
 
             var expectedXml = new XDocument(new XElement(Saml2Namespaces.Saml2Metadata + "EntityDescriptor",
                 new XAttribute("entityID", "https://github.com/KentorIT/authservices"),
-                new XAttribute("cacheDuration", 42),
+                new XAttribute("cacheDuration", "PT42S"),
                 // Have to manually add the xmlns attribute here, as it will be present in the subject
                 // data and the xml tree comparison will fail if it is not present in both. Just setting the 
                 // namespace of the elements does not inject the xmlns attribute into the node tree. It is
