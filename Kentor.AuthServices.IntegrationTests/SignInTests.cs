@@ -38,25 +38,33 @@ namespace Kentor.AuthServices.IntegrationTests
         }
 
         [TestMethod]
-        public void SignIn_AuthnRequest_MVC()
+        public void SignIn_AuthnRequest_MVC_via_DiscoveryService()
         {
             I.Open("http://localhost:2181")
                 .Click("a[href=\"/Home/Secure\"]")
+                .Assert.Text("http://localhost:2181/AuthServices/SignIn?ReturnUrl=%2FHome%2FSecure").In("#return");
+
+            I.Click("#main form button")
                 .Assert.Text("http://localhost:2181/AuthServices/Acs").In("#AssertionConsumerServiceUrl");
 
             I.Assert.False(() => string.IsNullOrEmpty(I.Find("#InResponseTo").Element.Value));
 
             I.Click("#main form button")
-                .Assert.Text("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier - JohnDoe").In(".body-content ul li:first-child");
+                .Assert.Url("http://localhost:2181/Home/Secure");
+
+            I.Assert.Text("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier - JohnDoe").In(".body-content ul li:first-child");
 
             I.Click("a[href=\"/AuthServices/SignOut\"");
         }
 
         [TestMethod]
-        public void SignIn_AuthnRequest_HttpModule()
+        public void SignIn_AuthnRequest_HttpModule_via_DiscoveryService()
         {
             I.Open("http://localhost:17009/SamplePath")
                 .Click("a[href=\"/SamplePath/Saml2AuthenticationModule/SignIn\"]")
+                .Assert.Text("http://localhost:17009/SamplePath/Saml2AuthenticationModule/SignIn").In("#return");
+
+            I.Click("#main form button")
                 .Assert.Text("http://localhost:17009/SamplePath/Saml2AuthenticationModule/Acs").In("#AssertionConsumerServiceUrl");
 
             I.Assert.False(() => string.IsNullOrEmpty(I.Find("#InResponseTo").Element.Value));
@@ -86,10 +94,13 @@ namespace Kentor.AuthServices.IntegrationTests
         }
 
         [TestMethod]
-        public void SignIn_AuthnRequest_Owin()
+        public void SignIn_AuthnRequest_Owin_via_DiscoveryService()
         {
             I.Open("http://localhost:57294/Account/Login")
                 .Click("#KentorAuthServices")
+                .Assert.Text("http://localhost:52071/AuthServices/SignIn?ReturnUrl=%2FAccount%2FExternalLoginCallback");
+
+            I.Click("#main form button")
                 .Assert.Text("http://localhost:57294/AuthServices/Acs").In("#AssertionConsumerServiceUrl");
 
             I.Assert.False(() => string.IsNullOrEmpty(I.Find("#InResponseTo").Element.Value));
@@ -97,7 +108,7 @@ namespace Kentor.AuthServices.IntegrationTests
             I.Enter("SomeUnusedNameId").In("#NameId");
 
             I.Click("#main form button")
-                .Assert.Text("You've successfully authenticated with http://stubidp.kentor.se/Metadata. Please enter a user name for this site below and click the Register button to finish logging in.")
+                .Assert.Text("You've successfully authenticated with http://localhost:52071/Metadata. Please enter a user name for this site below and click the Register button to finish logging in.")
                 .In("p.text-info");
         }
     }

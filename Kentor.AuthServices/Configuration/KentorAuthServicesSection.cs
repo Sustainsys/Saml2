@@ -15,6 +15,22 @@ namespace Kentor.AuthServices.Configuration
         private static readonly KentorAuthServicesSection current = 
             (KentorAuthServicesSection)ConfigurationManager.GetSection("kentor.authServices");
 
+        private bool isReadOnly = true;
+
+        internal void AllowConfigEdit(bool allow)
+        {
+            isReadOnly = !allow;
+        }
+
+        /// <summary>
+        /// Allows local modification of the configuration for testing purposes
+        /// </summary>
+        /// <returns></returns>
+        public override bool IsReadOnly()
+        {
+            return isReadOnly;
+        }
+
         /// <summary>
         /// Current config as read from app/web.config.
         /// </summary>
@@ -78,7 +94,7 @@ namespace Kentor.AuthServices.Configuration
         /// <summary>
         /// Set of identity providers known to the service provider.
         /// </summary>
-        [ConfigurationProperty("identityProviders", IsRequired=true, IsDefaultCollection=true)]
+        [ConfigurationProperty("identityProviders")]
         [ConfigurationCollection(typeof(IdentityProviderCollection))]
         public IdentityProviderCollection IdentityProviders
         {
@@ -91,13 +107,43 @@ namespace Kentor.AuthServices.Configuration
         /// <summary>
         /// Set of federations. The service provider will trust all the idps in these federations.
         /// </summary>
-        [ConfigurationProperty("federations", IsDefaultCollection=true)]
+        [ConfigurationProperty("federations")]
         [ConfigurationCollection(typeof(FederationCollection))]
         public FederationCollection Federations
         {
             get
             {
                 return (FederationCollection)base["federations"];
+            }
+        }
+
+        const string discoveryServiceUrl = "discoveryServiceUrl";
+        /// <summary>
+        /// Url to discovery service to use if now idp is specified in the sign in call.
+        /// </summary>
+        [ConfigurationProperty(discoveryServiceUrl, IsRequired=false)]
+        public Uri DiscoveryServiceUrl
+        {
+            get
+            {
+                return (Uri)base[discoveryServiceUrl];
+            }
+            set
+            {
+                base[discoveryServiceUrl] = value;
+            }
+        }
+
+        const string discoveryServiceResponseUrl = "discoveryServiceResponseUrl";
+        /// <summary>
+        /// Url where to receive discovery service responses.
+        /// </summary>
+        [ConfigurationProperty(discoveryServiceResponseUrl, IsRequired = false)]
+        public Uri DiscoveryServiceResponseUrl
+        {
+            get
+            {
+                return (Uri)base[discoveryServiceResponseUrl];
             }
         }
     }

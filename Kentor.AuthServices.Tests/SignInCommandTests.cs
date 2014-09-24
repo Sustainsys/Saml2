@@ -9,12 +9,23 @@ using System.IO.Compression;
 using System.IO;
 using System.Xml.Linq;
 using Kentor.AuthServices.TestHelpers;
+using Kentor.AuthServices.Configuration;
 
 namespace Kentor.AuthServices.Tests
 {
     [TestClass]
     public class SignInCommandTests
     {
+        [TestCleanup]
+        public void TestCleanup()
+        {
+            if (!KentorAuthServicesSection.Current.IsReadOnly())
+            {
+                KentorAuthServicesSection.Current.DiscoveryServiceUrl = null;
+                KentorAuthServicesSection.Current.AllowConfigEdit(false);
+            }
+        }
+
         [TestMethod]
         public void SignInCommand_Run_ReturnsAuthnRequestForDefaultIdp()
         {
@@ -46,7 +57,7 @@ namespace Kentor.AuthServices.Tests
             var defaultDestination = IdentityProvider.ActiveIdentityProviders.First()
                 .AssertionConsumerServiceUrl;
 
-            var httpRequest = new HttpRequestData("GET", new Uri("http://localhost/signin?ReturnUrl=/Return.aspx"));
+            var httpRequest = new HttpRequestData("GET", new Uri("http://localhost/signin?ReturnUrl=%2FReturn.aspx"));
 
             var subject = new SignInCommand().Run(httpRequest);
 
@@ -80,7 +91,7 @@ namespace Kentor.AuthServices.Tests
         public void SignInCommand_Run_With_InvalidIdp_ThrowsException()
         {
             var request = new HttpRequestData("GET", new Uri("http://localhost/signin?idp=no-such-idp-in-config"));
-            
+
             Action a = () => new SignInCommand().Run(request);
 
             a.ShouldThrow<InvalidOperationException>().WithMessage("Unknown idp");
@@ -92,6 +103,30 @@ namespace Kentor.AuthServices.Tests
             Action a = () => new SignInCommand().Run(null);
 
             a.ShouldThrow<ArgumentNullException>().And.ParamName.Should().Be("request");
+        }
+
+        [TestMethod]
+        public void SignInCommand_Run_ReturnsRedirectToDiscoveryService()
+        {
+            var dsUrl = new Uri("http://ds.example.com");
+            KentorAuthServicesSection.Current.AllowConfigEdit(true);
+            KentorAuthServicesSection.Current.DiscoveryServiceUrl = dsUrl;
+
+            var request = new HttpRequestData("GET", new Uri("http://localhost/signin?ReturnUrl=%2FReturn%2FPath"));
+
+            var result = new SignInCommand().Run(request);
+
+            result.HttpStatusCode.Should().Be(HttpStatusCode.SeeOther);
+
+            var queryString = string.Format("?entityID={0}&return={1}&returnIDParam=idp",
+                Uri.EscapeDataString(ServiceProvider.Metadata.EntityId.Id),
+                Uri.EscapeDataString(
+                    KentorAuthServicesSection.Current.DiscoveryServiceResponseUrl
+                    + "?ReturnUrl=" + Uri.EscapeDataString("/Return/Path")));
+
+            var expectedLocation = new Uri(dsUrl + queryString);
+
+            result.Location.Should().Be(expectedLocation);
         }
     }
 }

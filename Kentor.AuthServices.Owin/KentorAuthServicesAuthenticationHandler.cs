@@ -75,6 +75,13 @@ namespace Kentor.AuthServices.Owin
                 return true;
             }
 
+            if(Request.Uri.GetLeftPart(UriPartial.Path) ==
+                KentorAuthServicesSection.Current.DiscoveryServiceResponseUrl.GetLeftPart(UriPartial.Path))
+            {
+                CommandFactory.GetCommand("SignIn").Run(await Context.ToHttpRequestData()).Apply(Context);
+                return true;
+            }
+
             return false;
         }
     }
