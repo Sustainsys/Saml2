@@ -58,10 +58,13 @@ namespace Kentor.AuthServices.IntegrationTests
         }
 
         [TestMethod]
-        public void SignIn_AuthnRequest_HttpModule()
+        public void SignIn_AuthnRequest_HttpModule_via_DiscoveryService()
         {
             I.Open("http://localhost:17009/SamplePath")
                 .Click("a[href=\"/SamplePath/Saml2AuthenticationModule/SignIn\"]")
+                .Assert.Text("http://localhost:17009/SamplePath/Saml2AuthenticationModule/SignIn").In("#return");
+
+            I.Click("#main form button")
                 .Assert.Text("http://localhost:17009/SamplePath/Saml2AuthenticationModule/Acs").In("#AssertionConsumerServiceUrl");
 
             I.Assert.False(() => string.IsNullOrEmpty(I.Find("#InResponseTo").Element.Value));
