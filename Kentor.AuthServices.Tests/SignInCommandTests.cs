@@ -57,7 +57,7 @@ namespace Kentor.AuthServices.Tests
             var defaultDestination = IdentityProvider.ActiveIdentityProviders.First()
                 .AssertionConsumerServiceUrl;
 
-            var httpRequest = new HttpRequestData("GET", new Uri("http://localhost/signin?ReturnUrl=/Return.aspx"));
+            var httpRequest = new HttpRequestData("GET", new Uri("http://localhost/signin?ReturnUrl=%2FReturn.aspx"));
 
             var subject = new SignInCommand().Run(httpRequest);
 
@@ -91,7 +91,7 @@ namespace Kentor.AuthServices.Tests
         public void SignInCommand_Run_With_InvalidIdp_ThrowsException()
         {
             var request = new HttpRequestData("GET", new Uri("http://localhost/signin?idp=no-such-idp-in-config"));
-            
+
             Action a = () => new SignInCommand().Run(request);
 
             a.ShouldThrow<InvalidOperationException>().WithMessage("Unknown idp");
@@ -112,15 +112,17 @@ namespace Kentor.AuthServices.Tests
             KentorAuthServicesSection.Current.AllowConfigEdit(true);
             KentorAuthServicesSection.Current.DiscoveryServiceUrl = dsUrl;
 
-            var request = new HttpRequestData("GET", new Uri("http://localhost/signin"));
+            var request = new HttpRequestData("GET", new Uri("http://localhost/signin?ReturnUrl=%2FReturn%2FPath"));
 
             var result = new SignInCommand().Run(request);
 
             result.HttpStatusCode.Should().Be(HttpStatusCode.SeeOther);
-            
-            var queryString = string.Format("?entityID={0}&return={1}&returnIDParam=idp", 
+
+            var queryString = string.Format("?entityID={0}&return={1}&returnIDParam=idp",
                 Uri.EscapeDataString(ServiceProvider.Metadata.EntityId.Id),
-                Uri.EscapeDataString(KentorAuthServicesSection.Current.DiscoveryServiceResponseUrl.OriginalString));
+                Uri.EscapeDataString(
+                    KentorAuthServicesSection.Current.DiscoveryServiceResponseUrl
+                    + "?ReturnUrl=" + Uri.EscapeDataString("/Return/Path")));
 
             var expectedLocation = new Uri(dsUrl + queryString);
 

@@ -32,7 +32,7 @@ namespace Kentor.AuthServices
             {
                 if (KentorAuthServicesSection.Current.DiscoveryServiceUrl != null)
                 {
-                    return RedirectToDiscoveryService();
+                    return RedirectToDiscoveryService(returnPath);
                 }
                 idp = IdentityProvider.ActiveIdentityProviders.First();
             }
@@ -55,14 +55,21 @@ namespace Kentor.AuthServices
             return idp.Bind(authnRequest);
         }
 
-        private static CommandResult RedirectToDiscoveryService()
+        private static CommandResult RedirectToDiscoveryService(string returnPath)
         {
+            string returnUrl = KentorAuthServicesSection.Current.DiscoveryServiceResponseUrl.OriginalString;
+
+            if(!string.IsNullOrEmpty(returnPath))
+            {
+                returnUrl += "?ReturnUrl=" + Uri.EscapeDataString(returnPath);
+            }
+
             var redirectLocation = string.Format(
                 CultureInfo.InvariantCulture,
                 "{0}?entityID={1}&return={2}&returnIDParam=idp",
                 KentorAuthServicesSection.Current.DiscoveryServiceUrl,
                 Uri.EscapeDataString(KentorAuthServicesSection.Current.EntityId),
-                Uri.EscapeDataString(KentorAuthServicesSection.Current.DiscoveryServiceResponseUrl.OriginalString));
+                Uri.EscapeDataString(returnUrl));
 
             return new CommandResult()
             {

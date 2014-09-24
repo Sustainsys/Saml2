@@ -38,16 +38,21 @@ namespace Kentor.AuthServices.IntegrationTests
         }
 
         [TestMethod]
-        public void SignIn_AuthnRequest_MVC()
+        public void SignIn_AuthnRequest_MVC_via_DiscoveryService()
         {
             I.Open("http://localhost:2181")
                 .Click("a[href=\"/Home/Secure\"]")
+                .Assert.Text("http://localhost:2181/AuthServices/SignIn?ReturnUrl=%2FHome%2FSecure").In("#return");
+
+            I.Click("#main form button")
                 .Assert.Text("http://localhost:2181/AuthServices/Acs").In("#AssertionConsumerServiceUrl");
 
             I.Assert.False(() => string.IsNullOrEmpty(I.Find("#InResponseTo").Element.Value));
 
             I.Click("#main form button")
-                .Assert.Text("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier - JohnDoe").In(".body-content ul li:first-child");
+                .Assert.Url("http://localhost:2181/Home/Secure");
+
+            I.Assert.Text("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier - JohnDoe").In(".body-content ul li:first-child");
 
             I.Click("a[href=\"/AuthServices/SignOut\"");
         }
