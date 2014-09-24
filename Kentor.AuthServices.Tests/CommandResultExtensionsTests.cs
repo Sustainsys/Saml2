@@ -7,6 +7,7 @@ using Kentor.AuthServices.TestHelpers;
 using Kentor.AuthServices.Owin;
 using System.IO;
 using System.Text;
+using System.Net;
 
 namespace Kentor.AuthServices.Tests
 {
@@ -106,6 +107,24 @@ namespace Kentor.AuthServices.Tests
                 var bodyText = reader.ReadToEnd();
                 bodyText.Should().Be("Some Content!");
             }
+        }
+
+        [TestMethod]
+        public void CommandResultExtensions_Apply_Redirect()
+        {
+            string redirectUrl = "http://somewhere.else.example.com?Foo=Bar%20XYZ";
+            var cr = new CommandResult()
+            {
+                HttpStatusCode = HttpStatusCode.SeeOther,
+                Location = new Uri(redirectUrl)
+            };
+
+            var context = OwinTestHelpers.CreateOwinContext();
+
+            cr.Apply(context);
+
+            context.Response.StatusCode.Should().Be(303);
+            context.Response.Headers["Location"].Should().Be(redirectUrl);
         }
     }
 }

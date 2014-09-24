@@ -19,6 +19,7 @@ using NSubstitute;
 using System.Xml.Linq;
 using System.Xml;
 using System.Threading.Tasks;
+using System.IdentityModel.Tokens;
 
 namespace Kentor.AuthServices.Tests
 {
@@ -198,7 +199,7 @@ namespace Kentor.AuthServices.Tests
             var requestId = AuthnRequestHelper.GetRequestId(new Uri(context.Response.Headers["Location"]));
 
             StoredRequestState storedAuthnData;
-            PendingAuthnRequests.TryRemove(new System.IdentityModel.Tokens.Saml2Id(requestId), out storedAuthnData);
+            PendingAuthnRequests.TryRemove(new Saml2Id(requestId), out storedAuthnData);
 
             storedAuthnData.ReturnUri.Should().Be(returnUri);
         }
@@ -288,6 +289,31 @@ namespace Kentor.AuthServices.Tests
             var xmlData = XDocument.Load(context.Response.Body);
             
             xmlData.Document.Root.Name.Should().Be(Saml2Namespaces.Saml2Metadata + "EntityDescriptor");
+        }
+
+        [TestMethod]
+        public async Task KentorAuthServicesAuthenticationMiddleware_SignInUrlRedirectsToIdp()
+        {
+            var context = OwinTestHelpers.CreateOwinContext();
+            context.Request.Host = new HostString("localhost");
+            var signinPath = "/Saml2AuthenticationModule/SignIn";
+            context.Request.Path = new PathString(signinPath);
+            context.Request.QueryString = new QueryString("ReturnUrl=%2FHome&idp=https%3A%2F%2Fidp2.example.com");
+
+            var middleware = new KentorAuthServicesAuthenticationMiddleware(null, CreateAppBuilder(),
+                new KentorAuthServicesAuthenticationOptions());
+
+            await middleware.Invoke(context);
+
+            context.Response.StatusCode.Should().Be(303);
+            context.Response.Headers["Location"].Should().StartWith("https://idp2.example.com/idp?SAMLRequest");
+
+            var requestId = AuthnRequestHelper.GetRequestId(new Uri(context.Response.Headers["Location"]));
+
+            StoredRequestState storedAuthnData;
+            PendingAuthnRequests.TryRemove(new Saml2Id(requestId), out storedAuthnData);
+
+            storedAuthnData.ReturnUri.Should().Be("http://localhost/Home");
         }
     }
 }
