@@ -91,10 +91,13 @@ namespace Kentor.AuthServices.IntegrationTests
         }
 
         [TestMethod]
-        public void SignIn_AuthnRequest_Owin()
+        public void SignIn_AuthnRequest_Owin_via_DiscoveryService()
         {
             I.Open("http://localhost:57294/Account/Login")
                 .Click("#KentorAuthServices")
+                .Assert.Text("http://localhost:52071/AuthServices/SignIn?ReturnUrl=%2FAccount%2FExternalLoginCallback");
+
+            I.Click("#main form button")
                 .Assert.Text("http://localhost:57294/AuthServices/Acs").In("#AssertionConsumerServiceUrl");
 
             I.Assert.False(() => string.IsNullOrEmpty(I.Find("#InResponseTo").Element.Value));
@@ -102,7 +105,7 @@ namespace Kentor.AuthServices.IntegrationTests
             I.Enter("SomeUnusedNameId").In("#NameId");
 
             I.Click("#main form button")
-                .Assert.Text("You've successfully authenticated with http://stubidp.kentor.se/Metadata. Please enter a user name for this site below and click the Register button to finish logging in.")
+                .Assert.Text("You've successfully authenticated with http://localhost:52071/Metadata. Please enter a user name for this site below and click the Register button to finish logging in.")
                 .In("p.text-info");
         }
     }
