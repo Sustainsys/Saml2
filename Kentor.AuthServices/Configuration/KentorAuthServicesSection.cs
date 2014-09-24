@@ -145,6 +145,10 @@ namespace Kentor.AuthServices.Configuration
             {
                 return (Uri)base[discoveryServiceResponseUrl];
             }
+            set
+            {
+                base[discoveryServiceResponseUrl] = value;
+            }
         }
     }
 }

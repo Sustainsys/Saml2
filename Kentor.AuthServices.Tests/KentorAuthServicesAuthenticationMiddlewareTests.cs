@@ -26,6 +26,17 @@ namespace Kentor.AuthServices.Tests
     [TestClass]
     public class KentorAuthServicesAuthenticationMiddlewareTests
     {
+        [TestCleanup]
+        public void TestCleanup()
+        {
+            if(!KentorAuthServicesSection.Current.IsReadOnly())
+            {
+                KentorAuthServicesSection.Current.DiscoveryServiceResponseUrl = 
+                    new Uri("http://localhost/Saml2AuthenticationModule/SignIn");
+                KentorAuthServicesSection.Current.AllowConfigEdit(false);
+            }
+        }
+
         [TestMethod]
         public void KentorAuthServicesAuthenticationMiddleware_CtorNullChecksOptions()
         {
@@ -314,6 +325,24 @@ namespace Kentor.AuthServices.Tests
             PendingAuthnRequests.TryRemove(new Saml2Id(requestId), out storedAuthnData);
 
             storedAuthnData.ReturnUri.Should().Be("http://localhost/Home");
+        }
+
+        [TestMethod]
+        public void KentorAuthServicesAuthenticationMiddleware_WorksOnNullDiscoveryResponseUrl()
+        {
+            var context = OwinTestHelpers.CreateOwinContext();
+
+            var middleware = new KentorAuthServicesAuthenticationMiddleware(
+                new StubOwinMiddleware(200, null),
+                CreateAppBuilder(),
+                new KentorAuthServicesAuthenticationOptions());
+
+            KentorAuthServicesSection.Current.AllowConfigEdit(true);
+            KentorAuthServicesSection.Current.DiscoveryServiceResponseUrl = null;
+
+            Func<Task> f = async () => await middleware.Invoke(context);
+
+            f.ShouldNotThrow();
         }
     }
 }
