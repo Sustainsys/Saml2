@@ -79,7 +79,7 @@ namespace Kentor.AuthServices.Tests
 
             idpFromMetadata.EntityId.Id.Should().Be(entityId.Id);
             idpFromMetadata.Binding.Should().Be(Saml2BindingType.HttpPost);
-            idpFromMetadata.AssertionConsumerServiceUrl.Should().Be(new Uri("http://localhost:13428/acs"));
+            idpFromMetadata.SingleSignOnServiceUrl.Should().Be(new Uri("http://localhost:13428/acs"));
             idpFromMetadata.SigningKey.ShouldBeEquivalentTo(SignedXmlHelper.TestKey);
         }
 
@@ -157,6 +157,19 @@ namespace Kentor.AuthServices.Tests
 
             a.ShouldThrow<ConfigurationErrorsException>().And.Message.Should()
                 .Be("Unexpected entity id \"http://wrong.entityid.example.com\" found when loading metadata for \"http://localhost:13428/idpMetadataWrongEntityId\".");
+        }
+
+        [TestMethod]
+        public void IdentityProvider_Ctor_PrefersRedirectBindingFromMetadata()
+        {
+            var config = CreateConfig();
+            config.LoadMetadata = true;
+            config.EntityId = "http://localhost:13428/idpMetadataWithMultipleBindings";
+
+            var subject = new IdentityProvider(config);
+
+            subject.Binding.Should().Be(Saml2BindingType.HttpRedirect);
+            subject.SingleSignOnServiceUrl.Should().Be("http://idp2Bindings.example.com/Redirect");
         }
 
         [TestMethod]
