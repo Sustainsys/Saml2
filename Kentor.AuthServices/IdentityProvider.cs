@@ -213,10 +213,12 @@ namespace Kentor.AuthServices
             var idpDescriptor = metadata.RoleDescriptors
                 .OfType<IdentityProviderSingleSignOnDescriptor>().Single();
 
-            // Prefer an endpoint with a redirect binding. If none present, take the first available.
+            // Prefer an endpoint with a redirect binding, then check for POST which 
+            // is the other supported by AuthServices.
             var ssoService = idpDescriptor.SingleSignOnServices
                 .FirstOrDefault(s => s.Binding == Saml2Binding.HttpRedirectUri) ??
-                idpDescriptor.SingleSignOnServices.First();
+                idpDescriptor.SingleSignOnServices
+                .First(s => s.Binding == Saml2Binding.HttpPostUri);
 
             Binding = Saml2Binding.UriToSaml2BindingType(ssoService.Binding);
             SingleSignOnServiceUrl = ssoService.Location;

@@ -173,6 +173,19 @@ namespace Kentor.AuthServices.Tests
         }
 
         [TestMethod]
+        public void IdentityProvider_Ctor_ChoosesSupportedBindingFromMetadata()
+        {
+            var config = CreateConfig();
+            config.LoadMetadata = true;
+            config.EntityId = "http://localhost:13428/idpMetadataWithArtifactBinding";
+
+            var subject = new IdentityProvider(config);
+
+            subject.Binding.Should().Be(Saml2BindingType.HttpPost);
+            subject.SingleSignOnServiceUrl.Should().Be("http://idpArtifact.example.com/POST");
+        }
+
+        [TestMethod]
         public void IdentityProvider_ActiveIdentityProviders_IncludeIdpFromFederation()
         {
             var subject = IdentityProvider.ActiveIdentityProviders[
