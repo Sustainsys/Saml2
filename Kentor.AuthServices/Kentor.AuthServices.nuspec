@@ -16,7 +16,10 @@
     <copyright>Copyright Kentor and contributors 2013</copyright>
     <tags>SAML2 authentication ASP.NET SAML SSO</tags>
     <releaseNotes>
- Version 0.7.0
+ Version 0.7.2
+ * Fixed null reference exception on missing discoveryServiceResponseUrl
+
+Version 0.7.0
  * Discovery Service Support
  * Fixed invalid format of cacheDuration attribute in metadata.
  * Made AuthServices prefer Http Redirect binding and ignore unsupported bindings when loading metadata.
