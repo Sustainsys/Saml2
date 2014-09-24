@@ -60,7 +60,6 @@ namespace Kentor.AuthServices.Tests
 
             content["/federationMetadata"] = string.Format(
 @"<EntitiesDescriptor xmlns=""urn:oasis:names:tc:SAML:2.0:metadata"">
-{0}
   <EntityDescriptor entityID=""http://idp.federation.example.com/metadata"">
     <IDPSSODescriptor
       protocolSupportEnumeration=""urn:oasis:names:tc:SAML:2.0:protocol"">
@@ -82,6 +81,41 @@ namespace Kentor.AuthServices.Tests
   </EntityDescriptor>
 </EntitiesDescriptor>
 ", SignedXmlHelper.KeyInfoXml);
+
+            content["/idpMetadataWithMultipleBindings"] = string.Format(
+@"<EntityDescriptor xmlns=""urn:oasis:names:tc:SAML:2.0:metadata""
+  entityID=""http://localhost:13428/idpMetadataWithMultipleBindings"">
+  <IDPSSODescriptor
+    protocolSupportEnumeration=""urn:oasis:names:tc:SAML:2.0:protocol"">
+    <KeyDescriptor use=""signing"">
+      {0}
+    </KeyDescriptor>
+    <SingleSignOnService
+      Binding=""urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST""
+      Location=""http://idp2Bindings.example.com/POST"" />
+    <SingleSignOnService
+      Binding=""urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect""
+      Location=""http://idp2Bindings.example.com/Redirect"" />
+  </IDPSSODescriptor>
+</EntityDescriptor>", SignedXmlHelper.KeyInfoXml);
+
+            content["/idpMetadataWithArtifactBinding"] = string.Format(
+@"<EntityDescriptor xmlns=""urn:oasis:names:tc:SAML:2.0:metadata""
+  entityID=""http://localhost:13428/idpMetadataWithArtifactBinding"">
+  <IDPSSODescriptor
+    protocolSupportEnumeration=""urn:oasis:names:tc:SAML:2.0:protocol"">
+    <KeyDescriptor use=""signing"">
+      {0}
+    </KeyDescriptor>
+    <SingleSignOnService
+      Binding=""urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Artifact""
+      Location=""http://idpArtifact.example.com/Artifact"" />
+    <SingleSignOnService
+      Binding=""urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST""
+      Location=""http://idpArtifact.example.com/POST"" />
+  </IDPSSODescriptor>
+</EntityDescriptor>", SignedXmlHelper.KeyInfoXml);
+
         }
 
         [AssemblyInitialize]

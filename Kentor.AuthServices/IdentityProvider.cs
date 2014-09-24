@@ -102,12 +102,12 @@ namespace Kentor.AuthServices
         // Ctor used for testing.
         internal IdentityProvider(Uri destinationUri)
         {
-            AssertionConsumerServiceUrl = destinationUri;
+            SingleSignOnServiceUrl = destinationUri;
         }
 
         internal IdentityProvider(IdentityProviderElement config)
         {
-            AssertionConsumerServiceUrl = config.DestinationUri;
+            SingleSignOnServiceUrl = config.DestinationUri;
             EntityId = new EntityId(config.EntityId);
             Binding = config.Binding;
             AllowUnsolicitedAuthnResponse = config.AllowUnsolicitedAuthnResponse;
@@ -148,7 +148,7 @@ namespace Kentor.AuthServices
                 throw new ConfigurationErrorsException("Missing signing certificate configuration on Idp " + EntityId.Id + ".");
             }
 
-            if (AssertionConsumerServiceUrl == null)
+            if (SingleSignOnServiceUrl == null)
             {
                 throw new ConfigurationErrorsException("Missing assertion consumer service url configuration on Idp " + EntityId.Id + ".");
             }
@@ -156,7 +156,7 @@ namespace Kentor.AuthServices
 
         public Saml2BindingType Binding { get; private set; }
 
-        public Uri AssertionConsumerServiceUrl { get; private set; }
+        public Uri SingleSignOnServiceUrl { get; private set; }
 
         public EntityId EntityId { get; private set; }
 
@@ -166,7 +166,7 @@ namespace Kentor.AuthServices
         {
             var request = new Saml2AuthenticationRequest()
             {
-                DestinationUri = AssertionConsumerServiceUrl,
+                DestinationUri = SingleSignOnServiceUrl,
                 AssertionConsumerServiceUrl = KentorAuthServicesSection.Current.AssertionConsumerServiceUrl,
                 Issuer = KentorAuthServicesSection.Current.EntityId
             };
@@ -213,10 +213,15 @@ namespace Kentor.AuthServices
             var idpDescriptor = metadata.RoleDescriptors
                 .OfType<IdentityProviderSingleSignOnDescriptor>().Single();
 
-            var ssoService = idpDescriptor.SingleSignOnServices.First();
+            // Prefer an endpoint with a redirect binding, then check for POST which 
+            // is the other supported by AuthServices.
+            var ssoService = idpDescriptor.SingleSignOnServices
+                .FirstOrDefault(s => s.Binding == Saml2Binding.HttpRedirectUri) ??
+                idpDescriptor.SingleSignOnServices
+                .First(s => s.Binding == Saml2Binding.HttpPostUri);
 
             Binding = Saml2Binding.UriToSaml2BindingType(ssoService.Binding);
-            AssertionConsumerServiceUrl = ssoService.Location;
+            SingleSignOnServiceUrl = ssoService.Location;
 
             var key = idpDescriptor.Keys
                 .Where(k => k.Use == KeyType.Unspecified || k.Use == KeyType.Signing)
