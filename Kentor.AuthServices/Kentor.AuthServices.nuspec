@@ -16,7 +16,12 @@
     <copyright>Copyright Kentor and contributors 2013</copyright>
     <tags>SAML2 authentication ASP.NET SAML SSO</tags>
     <releaseNotes>
- Version 0.6.2
+ Version 0.7.0
+ * Discovery Service Support
+ * Fixed invalid format of cacheDuration attribute in metadata.
+ * Made AuthServices prefer Http Redirect binding and ignore unsupported bindings when loading metadata.
+
+Version 0.6.2
  * Fixed SAMLRequest querystring parameter not urlencoded
 
 Version 0.6.0
@@ -24,7 +29,7 @@ Version 0.6.0
  * Update documentation with respect to the new Owin middleware.
  * Federation metadata support.
  * Idp metadata support.
- 
+
 Version 0.5.2
  * Fixed missing dependencies in Kentor.AuthServices.Owin package.
 
