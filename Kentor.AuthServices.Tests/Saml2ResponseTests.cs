@@ -5,11 +5,13 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.IdentityModel.Metadata;
 using System.IdentityModel.Tokens;
+using System.IdentityModel.Services;
 using System.Linq;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Security.Cryptography.Xml;
 using System.Xml;
+using System.IO;
 
 namespace Kentor.AuthServices.Tests
 {
@@ -17,6 +19,7 @@ namespace Kentor.AuthServices.Tests
     public class Saml2ResponseTests
     {
         private bool currentConfigValueForAllowedUnsolicitedAuthnResponse = false;
+        private System.IdentityModel.Configuration.IdentityConfiguration currentIdentityConfiguration = null;
 
         [TestInitialize]
         public void TestInitialize()
@@ -26,6 +29,12 @@ namespace Kentor.AuthServices.Tests
             KentorAuthServicesSection.Current.IdentityProviders.First().AllowConfigEdit(true);
             KentorAuthServicesSection.Current.IdentityProviders.First().AllowUnsolicitedAuthnResponse = true;
             KentorAuthServicesSection.Current.IdentityProviders.First().AllowConfigEdit(false);
+
+            currentIdentityConfiguration = FederatedAuthentication.FederationConfiguration.IdentityConfiguration;
+            FederatedAuthentication.FederationConfiguration.IdentityConfiguration = new System.IdentityModel.Configuration.IdentityConfiguration()
+            {
+                SaveBootstrapContext = true
+            };
         }
 
         [TestCleanup]
@@ -35,6 +44,8 @@ namespace Kentor.AuthServices.Tests
             KentorAuthServicesSection.Current.IdentityProviders.First().AllowUnsolicitedAuthnResponse =
                 currentConfigValueForAllowedUnsolicitedAuthnResponse;
             KentorAuthServicesSection.Current.IdentityProviders.First().AllowConfigEdit(false);
+
+            FederatedAuthentication.FederationConfiguration.IdentityConfiguration = currentIdentityConfiguration;
         }
 
         [TestMethod]
@@ -567,6 +578,26 @@ namespace Kentor.AuthServices.Tests
         [TestMethod]
         public void Saml2Response_GetClaims_CreateIdentities()
         {
+            var assertion1 = @"<saml2:Assertion xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
+                Version=""2.0"" ID=""Saml2Response_GetClaims_CreateIdentities1""
+                IssueInstant=""2013-09-25T00:00:00Z"">
+                    <saml2:Issuer>https://idp.example.com</saml2:Issuer>
+                    <saml2:Subject>
+                        <saml2:NameID>SomeUser</saml2:NameID>
+                        <saml2:SubjectConfirmation Method=""urn:oasis:names:tc:SAML:2.0:cm:bearer"" />
+                    </saml2:Subject>
+                    <saml2:Conditions NotOnOrAfter=""2100-01-01T00:00:00Z"" />
+                </saml2:Assertion>";
+            var assertion2 = @"<saml2:Assertion xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
+                Version=""2.0"" ID=""Saml2Response_GetClaims_CreateIdentities2""
+                IssueInstant=""2013-09-25T00:00:00Z"">
+                    <saml2:Issuer>https://idp.example.com</saml2:Issuer>
+                    <saml2:Subject>
+                        <saml2:NameID>SomeOtherUser</saml2:NameID>
+                        <saml2:SubjectConfirmation Method=""urn:oasis:names:tc:SAML:2.0:cm:bearer"" />
+                    </saml2:Subject>
+                    <saml2:Conditions NotOnOrAfter=""2100-01-01T00:00:00Z"" />
+                </saml2:Assertion>";
             var response =
             @"<?xml version=""1.0"" encoding=""UTF-8""?>
             <saml2p:Response xmlns:saml2p=""urn:oasis:names:tc:SAML:2.0:protocol""
@@ -576,32 +607,19 @@ namespace Kentor.AuthServices.Tests
                 <saml2p:Status>
                     <saml2p:StatusCode Value=""urn:oasis:names:tc:SAML:2.0:status:Success"" />
                 </saml2p:Status>
-                <saml2:Assertion
-                Version=""2.0"" ID=""Saml2Response_GetClaims_CreateIdentities1""
-                IssueInstant=""2013-09-25T00:00:00Z"">
-                    <saml2:Issuer>https://idp.example.com</saml2:Issuer>
-                    <saml2:Subject>
-                        <saml2:NameID>SomeUser</saml2:NameID>
-                        <saml2:SubjectConfirmation Method=""urn:oasis:names:tc:SAML:2.0:cm:bearer"" />
-                    </saml2:Subject>
-                    <saml2:Conditions NotOnOrAfter=""2100-01-01T00:00:00Z"" />
-                </saml2:Assertion>
-                <saml2:Assertion
-                Version=""2.0"" ID=""Saml2Response_GetClaims_CreateIdentities2""
-                IssueInstant=""2013-09-25T00:00:00Z"">
-                    <saml2:Issuer>https://idp.example.com</saml2:Issuer>
-                    <saml2:Subject>
-                        <saml2:NameID>SomeOtherUser</saml2:NameID>
-                        <saml2:SubjectConfirmation Method=""urn:oasis:names:tc:SAML:2.0:cm:bearer"" />
-                    </saml2:Subject>
-                    <saml2:Conditions NotOnOrAfter=""2100-01-01T00:00:00Z"" />
-                </saml2:Assertion>            
-            </saml2p:Response>";
+               " + assertion1 + assertion2 +            
+            "</saml2p:Response>";
+
+            var handler = Saml2PSecurityTokenHandler.DefaultInstance;
+            var token1 = (Saml2SecurityToken)handler.ReadToken( XmlReader.Create(new StringReader(assertion1)));
+            var token2 = (Saml2SecurityToken)handler.ReadToken( XmlReader.Create(new StringReader(assertion2)));
 
             var c1 = new ClaimsIdentity("Federation");
             c1.AddClaim(new Claim(ClaimTypes.NameIdentifier, "SomeUser", null, "https://idp.example.com"));
+            c1.BootstrapContext = new BootstrapContext(token1, handler);
             var c2 = new ClaimsIdentity("Federation");
             c2.AddClaim(new Claim(ClaimTypes.NameIdentifier, "SomeOtherUser", null, "https://idp.example.com"));
+            c2.BootstrapContext = new BootstrapContext(token2, handler);
 
             var expected = new ClaimsIdentity[] { c1, c2 };
 
