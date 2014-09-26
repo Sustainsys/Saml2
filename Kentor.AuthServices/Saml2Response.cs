@@ -10,6 +10,7 @@ using System.Xml;
 using Kentor.AuthServices.Configuration;
 using System.IdentityModel.Metadata;
 using System.Security.Cryptography;
+using System.IdentityModel.Services;
 
 namespace Kentor.AuthServices
 {
@@ -438,7 +439,7 @@ namespace Kentor.AuthServices
                 {
                     MorePublicSaml2SecurityTokenHandler handler = MorePublicSaml2SecurityTokenHandler.DefaultInstance;
 
-                    var token = (Saml2SecurityToken)MorePublicSaml2SecurityTokenHandler.DefaultInstance.ReadToken(reader);
+                    var token = (Saml2SecurityToken)handler.ReadToken(reader);
                     handler.DetectReplayedToken(token);
 
                     var validateAudience = token.Assertion.Conditions.AudienceRestrictions.Count > 0;

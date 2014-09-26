@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Security.Claims;
 using FluentAssertions;
 using System.IdentityModel.Metadata;
+using System.IdentityModel.Tokens;
 
 namespace Kentor.AuthServices.Tests
 {
@@ -41,6 +43,20 @@ namespace Kentor.AuthServices.Tests
             var a = ci.ToSaml2Assertion(new EntityId("http://idp.example.com"));
 
             a.Subject.NameId.Value.Should().Be(subject);
+        }
+
+        [TestMethod]
+        public void ClaimsIdentityExtensions_ToSaml2Assertion_Includes_Attributes()
+        {
+            var ci = new ClaimsIdentity(new Claim[] { 
+                new Claim(ClaimTypes.NameIdentifier, "JohnDoe"),
+                new Claim(ClaimTypes.Role, "Test")
+            });
+
+            var a = ci.ToSaml2Assertion(new EntityId("http://idp.example.com"));
+
+            a.Statements.SingleOrDefault().Should().BeOfType<Saml2AttributeStatement>();
+            (a.Statements.SingleOrDefault() as Saml2AttributeStatement).Attributes[0].Values[0].Should().Be("Test");
         }
 
         [TestMethod]

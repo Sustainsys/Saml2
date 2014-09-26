@@ -59,6 +59,7 @@
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.IdentityModel" />
+    <Reference Include="System.identitymodel.services" />
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Security" />
     <Reference Include="System.Web" />
@@ -114,6 +115,7 @@
     <Compile Include="Saml2RequestBaseTests.cs" />
     <Compile Include="Saml2AuthenticationRequestTests.cs" />
     <Compile Include="IdentityProviderTests.cs" />
+    <Compile Include="Saml2StatementExtensionsTests.cs" />
     <Compile Include="ServiceProviderTests.cs" />
     <Compile Include="SignInCommandTests.cs" />
     <Compile Include="Saml2ResponseTests.cs" />
