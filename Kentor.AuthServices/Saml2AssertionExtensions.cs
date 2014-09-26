@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Globalization;
 using System.IdentityModel.Tokens;
+using System.Linq;
 using System.Xml.Linq;
 
 namespace Kentor.AuthServices
@@ -38,6 +39,13 @@ namespace Kentor.AuthServices
             if(assertion.Conditions != null)
             {
                 xml.Add(assertion.Conditions.ToXElement());
+            }
+            
+            if (assertion.Statements != null)
+            {
+                assertion.Statements.ToList().ForEach( delegate(Saml2Statement statement){
+                    xml.Add(statement.ToXElement());
+                });
             }
 
             return xml;
