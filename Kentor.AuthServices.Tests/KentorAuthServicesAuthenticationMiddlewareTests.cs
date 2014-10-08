@@ -86,6 +86,28 @@ namespace Kentor.AuthServices.Tests
         }
 
         [TestMethod]
+        public async Task KentorAuthServicesAuthenticationMiddleware_CreatesPostOnAuthChallenge()
+        {
+            var middleware = new KentorAuthServicesAuthenticationMiddleware(
+                new StubOwinMiddleware(401, new AuthenticationResponseChallenge(
+                    new string[] { "KentorAuthServices" }, new AuthenticationProperties(
+                        new Dictionary<string, string>()
+                        {
+                            { "idp", "http://localhost:13428/idpMetadata" }
+                        }))), 
+                CreateAppBuilder(),
+                new KentorAuthServicesAuthenticationOptions());
+
+            var context = OwinTestHelpers.CreateOwinContext();
+
+            await middleware.Invoke(context);
+
+            context.Response.StatusCode.Should().Be(200);
+
+            // TODO: Should do some basic validation of body contents here.
+        }
+
+        [TestMethod]
         public async Task KentorAuthServicesAuthenticationMiddleware_NoRedirectOnNon401()
         {
             var middleware = new KentorAuthServicesAuthenticationMiddleware(
