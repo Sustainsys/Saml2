@@ -16,7 +16,12 @@ namespace Kentor.AuthServices.Tests
             // handles some real world metadata, the metadadata from Sambi's test
             // environment is used.
 
-            using(var stream = new FileStream("SambiMetadata.xml", FileMode.Open))
+            TestLoadMetadata("SambiMetadata.xml");
+        }
+
+        private static void TestLoadMetadata(string fileName)
+        {
+            using (var stream = new FileStream(fileName, FileMode.Open))
             {
                 var metadata = (EntitiesDescriptor)MetadataLoader.Load(stream);
 
@@ -24,6 +29,16 @@ namespace Kentor.AuthServices.Tests
 
                 a.ShouldNotThrow();
             }
+        }
+
+        [TestMethod]
+        public void Federation_LoadSkolfederationMetadata()
+        {
+            // Skolfederation is the Swedish national school federation. To test that
+            // AuthServices handles some real world metadata, the metdata from the
+            // skolfederation federation is used.
+
+            TestLoadMetadata("SkolfederationMetadata.xml");
         }
     }
 }
