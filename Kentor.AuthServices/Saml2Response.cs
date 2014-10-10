@@ -10,6 +10,7 @@ using System.Xml;
 using Kentor.AuthServices.Configuration;
 using System.IdentityModel.Metadata;
 using System.Security.Cryptography;
+using System.IdentityModel.Services;
 
 namespace Kentor.AuthServices
 {
@@ -438,14 +439,21 @@ namespace Kentor.AuthServices
                 {
                     MorePublicSaml2SecurityTokenHandler handler = MorePublicSaml2SecurityTokenHandler.DefaultInstance;
 
-                    var token = (Saml2SecurityToken)MorePublicSaml2SecurityTokenHandler.DefaultInstance.ReadToken(reader);
+                    var token = (Saml2SecurityToken)handler.ReadToken(reader);
                     handler.DetectReplayedToken(token);
 
                     var validateAudience = token.Assertion.Conditions.AudienceRestrictions.Count > 0;
 
                     handler.ValidateConditions(token.Assertion.Conditions, validateAudience);
 
-                    yield return handler.CreateClaims(token);
+                    var identity = handler.CreateClaims(token);
+
+                    if (FederatedAuthentication.FederationConfiguration.IdentityConfiguration.SaveBootstrapContext)
+                    {
+                        identity.BootstrapContext = new BootstrapContext(token, handler);
+                    }
+
+                    yield return identity;
                 }
             }
         }
