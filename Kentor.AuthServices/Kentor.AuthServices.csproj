@@ -75,7 +75,7 @@
     <Compile Include="MetadatabaseExtensions.cs" />
     <Compile Include="MetadataCommand.cs" />
     <Compile Include="MetadataLoader.cs" />
-    <Compile Include="MorePublicSaml2SecurityTokenHandler.cs" />
+    <Compile Include="Saml2PSecurityTokenHandler.cs" />
     <Compile Include="NoSamlResponseFoundException.cs" />
     <Compile Include="NotFoundCommand.cs" />
     <Compile Include="ICommand.cs" />
