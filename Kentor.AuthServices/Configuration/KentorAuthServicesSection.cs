@@ -10,7 +10,7 @@ namespace Kentor.AuthServices.Configuration
     /// <summary>
     /// Config section for the module.
     /// </summary>
-    public class KentorAuthServicesSection : ConfigurationSection
+    public class KentorAuthServicesSection : ConfigurationSection, ISPOptions
     {
         private static readonly KentorAuthServicesSection current = 
             (KentorAuthServicesSection)ConfigurationManager.GetSection("kentor.authServices");

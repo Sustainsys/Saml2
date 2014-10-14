@@ -15,7 +15,7 @@ namespace Kentor.AuthServices.Owin
     {
         protected async override Task<AuthenticationTicket> AuthenticateCoreAsync()
         {
-            var result = CommandFactory.GetCommand("acs").Run(await Context.ToHttpRequestData(), null);
+            var result = CommandFactory.GetCommand("acs").Run(await Context.ToHttpRequestData(), Options);
 
             var properties = new AuthenticationProperties()
             {

@@ -12,5 +12,10 @@ namespace Kentor.AuthServices.Configuration
     /// </summary>
     public interface IOptions
     {
+        /// <summary>
+        /// Options for the service provider's behaviour; i.e. everything except
+        /// the idp and federation list.
+        /// </summary>
+        ISPOptions SPOptions { get; }
     }
 }

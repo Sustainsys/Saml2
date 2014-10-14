@@ -1,4 +1,5 @@
-﻿using Microsoft.Owin;
+﻿using Kentor.AuthServices.Configuration;
+using Microsoft.Owin;
 using Microsoft.Owin.Security;
 using System;
 using System.Collections.Generic;
@@ -11,7 +12,7 @@ namespace Kentor.AuthServices.Owin
     /// <summary>
     /// Options for Kentor AuthServices Saml2 Authentication.
     /// </summary>
-    public class KentorAuthServicesAuthenticationOptions : AuthenticationOptions
+    public class KentorAuthServicesAuthenticationOptions : AuthenticationOptions, IOptions
     {
         /// <summary>
         /// Constructor
@@ -24,6 +25,7 @@ namespace Kentor.AuthServices.Owin
             AuthenticationMode = AuthenticationMode.Passive;
             Description.Caption = Constants.DefaultCaption;
             MetadataPath = new PathString(Constants.DefaultMetadataPath);
+            SPOptions = KentorAuthServicesSection.Current;
         }
 
         /// <summary>
@@ -35,6 +37,12 @@ namespace Kentor.AuthServices.Owin
         /// <summary>
         /// Path for metadata.
         /// </summary>
-        public PathString MetadataPath { get; set;  }
+        public PathString MetadataPath { get; set; }
+
+        /// <summary>
+        /// Options for the service provider's behaviour; i.e. everything except
+        /// the idp and federation list.
+        /// </summary>
+        public ISPOptions SPOptions { get; set; }
     }
 }

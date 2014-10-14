@@ -2,6 +2,7 @@
 using System.Net;
 using System.Web.Mvc;
 using System.IdentityModel.Services;
+using Kentor.AuthServices.Configuration;
 
 namespace Kentor.AuthServices.Mvc
 {
@@ -29,7 +30,10 @@ namespace Kentor.AuthServices.Mvc
         /// http request.</remarks>
         public ActionResult Acs()
         {
-            var result = CommandFactory.GetCommand("Acs").Run(new HttpRequestData(Request), null);
+            var result = CommandFactory.GetCommand("Acs").Run(
+                new HttpRequestData(Request),
+                Options.FromConfiguration);
+
             result.SignInSessionAuthenticationModule();
             return result.ToActionResult();
         }

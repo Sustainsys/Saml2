@@ -15,6 +15,11 @@ namespace Kentor.AuthServices
     {
         public CommandResult Run(HttpRequestData request, IOptions options)
         {
+            if(options == null)
+            {
+                throw new ArgumentNullException("options");
+            }
+
             var binding = Saml2Binding.Get(request);
 
             if (binding != null)
@@ -33,7 +38,10 @@ namespace Kentor.AuthServices
                     return new CommandResult()
                     {
                         HttpStatusCode = HttpStatusCode.SeeOther,
-                        Location = samlResponse.RequestState != null && samlResponse.RequestState.ReturnUri != null ? samlResponse.RequestState.ReturnUri : KentorAuthServicesSection.Current.ReturnUri,
+                        Location = 
+                            samlResponse.RequestState != null && samlResponse.RequestState.ReturnUri != null 
+                            ? samlResponse.RequestState.ReturnUri 
+                            : options.SPOptions.ReturnUri,
                         Principal = principal
                     };
                 }
