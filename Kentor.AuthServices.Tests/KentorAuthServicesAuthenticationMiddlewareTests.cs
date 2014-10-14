@@ -261,7 +261,7 @@ namespace Kentor.AuthServices.Tests
                 new ClaimsIdentity(signInAsAuthenticationType) };
             ids[0].AddClaim(new Claim(ClaimTypes.NameIdentifier, "SomeUser", null, "https://idp.example.com"));
             ids[1].AddClaim(new Claim(ClaimTypes.Role, "RoleFromClaimsAuthManager", 
-                null, "ClaimsAuthenticationManagerMock"));
+                null, "ClaimsAuthenticationManagerStub"));
 
             var middleware = new KentorAuthServicesAuthenticationMiddleware(null, CreateAppBuilder(),
                 new KentorAuthServicesAuthenticationOptions()

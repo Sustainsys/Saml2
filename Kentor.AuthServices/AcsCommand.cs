@@ -26,7 +26,8 @@ namespace Kentor.AuthServices
                     samlResponse.Validate(GetSigningKey(samlResponse.Issuer));
 
                     var principal = new ClaimsPrincipal(samlResponse.GetClaims());
-                    FederatedAuthentication.FederationConfiguration.IdentityConfiguration
+                    
+                    principal = FederatedAuthentication.FederationConfiguration.IdentityConfiguration
                         .ClaimsAuthenticationManager.Authenticate(null, principal);
 
                     return new CommandResult()
