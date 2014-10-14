@@ -23,7 +23,11 @@ namespace Kentor.AuthServices.Tests
         {
             Action a = () => new AcsCommand().Run(null, new Options(null));
 
-            a.ShouldThrow<ArgumentNullException>().And.ParamName.Should().Be("request");
+            // Verify exception is thrown and that it is thrown directly by the Run()
+            // method and not by some method being called by Run().
+            a.ShouldThrow<ArgumentNullException>()
+                .Where(e => e.ParamName == "request")
+                .Where(e => e.TargetSite.Name == "Run");
         }
 
         [TestMethod]

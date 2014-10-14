@@ -15,6 +15,11 @@ namespace Kentor.AuthServices
     {
         public CommandResult Run(HttpRequestData request, IOptions options)
         {
+            if(request == null)
+            {
+                throw new ArgumentNullException("request");
+            }
+
             if(options == null)
             {
                 throw new ArgumentNullException("options");
