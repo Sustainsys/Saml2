@@ -32,7 +32,7 @@ namespace Kentor.AuthServices.Tests
             var defaultDestination = IdentityProvider.ActiveIdentityProviders.First()
                 .SingleSignOnServiceUrl;
 
-            var subject = new SignInCommand().Run(new HttpRequestData("GET", new Uri("http://example.com")));
+            var subject = new SignInCommand().Run(new HttpRequestData("GET", new Uri("http://example.com")), null);
 
             var expected = new CommandResult()
             {
@@ -59,7 +59,7 @@ namespace Kentor.AuthServices.Tests
 
             var httpRequest = new HttpRequestData("GET", new Uri("http://localhost/signin?ReturnUrl=%2FReturn.aspx"));
 
-            var subject = new SignInCommand().Run(httpRequest);
+            var subject = new SignInCommand().Run(httpRequest, null);
 
             var idp = IdentityProvider.ActiveIdentityProviders.First();
 
@@ -82,7 +82,7 @@ namespace Kentor.AuthServices.Tests
 
             var request = new HttpRequestData("GET", new Uri("http://sp.example.com?idp=" +
             HttpUtility.UrlEncode(secondEntityId.Id)));
-            var subject = new SignInCommand().Run(request);
+            var subject = new SignInCommand().Run(request, null);
 
             subject.Location.Host.Should().Be(secondDestination.Host);
         }
@@ -92,7 +92,7 @@ namespace Kentor.AuthServices.Tests
         {
             var request = new HttpRequestData("GET", new Uri("http://localhost/signin?idp=no-such-idp-in-config"));
 
-            Action a = () => new SignInCommand().Run(request);
+            Action a = () => new SignInCommand().Run(request, null);
 
             a.ShouldThrow<InvalidOperationException>().WithMessage("Unknown idp");
         }
@@ -100,7 +100,7 @@ namespace Kentor.AuthServices.Tests
         [TestMethod]
         public void SignInCommand_Run_NullCheck()
         {
-            Action a = () => new SignInCommand().Run(null);
+            Action a = () => new SignInCommand().Run(null, null);
 
             a.ShouldThrow<ArgumentNullException>().And.ParamName.Should().Be("request");
         }
@@ -114,7 +114,7 @@ namespace Kentor.AuthServices.Tests
 
             var request = new HttpRequestData("GET", new Uri("http://localhost/signin?ReturnUrl=%2FReturn%2FPath"));
 
-            var result = new SignInCommand().Run(request);
+            var result = new SignInCommand().Run(request, null);
 
             result.HttpStatusCode.Should().Be(HttpStatusCode.SeeOther);
 

@@ -15,7 +15,7 @@ namespace Kentor.AuthServices.Owin
     {
         protected async override Task<AuthenticationTicket> AuthenticateCoreAsync()
         {
-            var result = CommandFactory.GetCommand("acs").Run(await Context.ToHttpRequestData());
+            var result = CommandFactory.GetCommand("acs").Run(await Context.ToHttpRequestData(), null);
 
             var properties = new AuthenticationProperties()
             {
@@ -71,7 +71,7 @@ namespace Kentor.AuthServices.Owin
             
             if(Request.Path == Options.MetadataPath)
             {
-                CommandFactory.GetCommand("").Run(await Context.ToHttpRequestData()).Apply(Context);
+                CommandFactory.GetCommand("").Run(await Context.ToHttpRequestData(), null).Apply(Context);
                 return true;
             }
 
@@ -79,7 +79,7 @@ namespace Kentor.AuthServices.Owin
                 Request.Uri.GetLeftPart(UriPartial.Path) ==
                 KentorAuthServicesSection.Current.DiscoveryServiceResponseUrl.GetLeftPart(UriPartial.Path))
             {
-                CommandFactory.GetCommand("SignIn").Run(await Context.ToHttpRequestData()).Apply(Context);
+                CommandFactory.GetCommand("SignIn").Run(await Context.ToHttpRequestData(), null).Apply(Context);
                 return true;
             }
 

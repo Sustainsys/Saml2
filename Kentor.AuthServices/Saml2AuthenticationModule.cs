@@ -59,7 +59,7 @@ namespace Kentor.AuthServices
         {
             try
             {
-                return command.Run(new HttpRequestData(new HttpRequestWrapper(application.Request)));
+                return command.Run(new HttpRequestData(new HttpRequestWrapper(application.Request)), null);
             }
             catch (AuthServicesException)
             {

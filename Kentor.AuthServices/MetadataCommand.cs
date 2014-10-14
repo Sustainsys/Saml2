@@ -13,7 +13,7 @@ namespace Kentor.AuthServices
 {
     class MetadataCommand : ICommand
     {
-        public CommandResult Run(HttpRequestData request)
+        public CommandResult Run(HttpRequestData request, IOptions options)
         {
             return new CommandResult()
             {

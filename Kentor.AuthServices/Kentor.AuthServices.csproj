@@ -63,6 +63,7 @@
     <Compile Include="Configuration\IdentityProviderCollection.cs" />
     <Compile Include="Configuration\IdentityProviderElement.cs" />
     <Compile Include="Configuration\CertificateElement.cs" />
+    <Compile Include="Configuration\IOptions.cs" />
     <Compile Include="DateTimeExtensions.cs" />
     <Compile Include="EntityIdEqualityComparer.cs" />
     <Compile Include="Enumerator.cs" />

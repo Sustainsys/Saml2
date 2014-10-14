@@ -14,7 +14,7 @@ namespace Kentor.AuthServices
 {
     class SignInCommand : ICommand
     {
-        public CommandResult Run(HttpRequestData request)
+        public CommandResult Run(HttpRequestData request, IOptions options)
         {
             if (request == null)
             {

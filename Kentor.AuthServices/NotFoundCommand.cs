@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Kentor.AuthServices.Configuration;
+using System;
 using System.Collections.Specialized;
 using System.Linq;
 using System.Net;
@@ -8,7 +9,7 @@ namespace Kentor.AuthServices
 {
     class NotFoundCommand : ICommand
     {
-        public CommandResult Run(HttpRequestData request)
+        public CommandResult Run(HttpRequestData request, IOptions options)
         {
             return new CommandResult()
             {

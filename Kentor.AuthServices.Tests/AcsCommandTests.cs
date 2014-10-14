@@ -20,7 +20,7 @@ namespace Kentor.AuthServices.Tests
         [TestMethod]
         public void AcsCommand_Run_ErrorOnNoSamlResponseFound()
         {
-            Action a = () => new AcsCommand().Run(new HttpRequestData("GET", new Uri("http://localhost")));
+            Action a = () => new AcsCommand().Run(new HttpRequestData("GET", new Uri("http://localhost")), null);
 
             a.ShouldThrow<NoSamlResponseFoundException>()
                 .WithMessage("No Saml2 Response found in the http request.");
@@ -34,7 +34,7 @@ namespace Kentor.AuthServices.Tests
                 new KeyValuePair<string, string[]>("SAMLResponse", new string[] { "#¤!2" }) 
             });
 
-            Action a = () => new AcsCommand().Run(r);
+            Action a = () => new AcsCommand().Run(r, null);
 
             a.ShouldThrow<BadFormatSamlResponseException>()
                 .WithMessage("The SAML Response did not contain valid BASE64 encoded data.")
@@ -50,7 +50,7 @@ namespace Kentor.AuthServices.Tests
                 new KeyValuePair<string, string[]>("SAMLResponse", new string[] { encoded })
             });
 
-            Action a = () => new AcsCommand().Run(r);
+            Action a = () => new AcsCommand().Run(r, null);
 
             a.ShouldThrow<BadFormatSamlResponseException>()
                 .WithMessage("The SAML response contains incorrect XML")
@@ -102,7 +102,7 @@ namespace Kentor.AuthServices.Tests
                 Location = new Uri("http://localhost/LoggedIn")
             };
 
-            new AcsCommand().Run(r).ShouldBeEquivalentTo(expected,
+            new AcsCommand().Run(r, null).ShouldBeEquivalentTo(expected,
                 opt => opt.IgnoringCyclicReferences());
         }
 
@@ -154,7 +154,7 @@ namespace Kentor.AuthServices.Tests
                 Location = new Uri("http://localhost/testUrl.aspx")
             };
 
-            new AcsCommand().Run(r).ShouldBeEquivalentTo(expected,
+            new AcsCommand().Run(r, null).ShouldBeEquivalentTo(expected,
                 opt => opt.IgnoringCyclicReferences());
         }
     }
