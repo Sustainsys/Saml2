@@ -71,7 +71,9 @@ namespace Kentor.AuthServices.Owin
             
             if(Request.Path == Options.MetadataPath)
             {
-                CommandFactory.GetCommand("").Run(await Context.ToHttpRequestData(), null).Apply(Context);
+                CommandFactory.GetCommand("")
+                    .Run(await Context.ToHttpRequestData(), Options)
+                    .Apply(Context);
                 return true;
             }
 

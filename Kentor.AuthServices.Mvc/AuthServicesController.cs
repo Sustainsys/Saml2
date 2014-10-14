@@ -54,7 +54,9 @@ namespace Kentor.AuthServices.Mvc
         /// <returns>ActionResult with Metadata</returns>
         public ActionResult Index()
         {
-            var result = CommandFactory.GetCommand("").Run(new HttpRequestData(Request), null);
+            var result = CommandFactory.GetCommand("").Run(
+                new HttpRequestData(Request),
+                Options.FromConfiguration);
             return result.ToActionResult();
         }
     }
