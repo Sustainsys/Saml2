@@ -11,11 +11,13 @@ namespace Kentor.AuthServices.Tests
     {
         public override ClaimsPrincipal Authenticate(string resourceName, ClaimsPrincipal incomingPrincipal)
         {
+            var newPrincipal = new ClaimsPrincipal(incomingPrincipal);
+            
             var id = new ClaimsIdentity("ClaimsAuthenticationManager");
             id.AddClaim(new Claim(ClaimTypes.Role, "RoleFromClaimsAuthManager", null, "ClaimsAuthenticationManagerStub"));
-            incomingPrincipal.AddIdentity(id);
+            newPrincipal.AddIdentity(id);
 
-            return incomingPrincipal;
+            return newPrincipal;
         }
     }
 }
