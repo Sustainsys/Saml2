@@ -446,14 +446,7 @@ namespace Kentor.AuthServices
 
                     handler.ValidateConditions(token.Assertion.Conditions, validateAudience);
 
-                    var identity = handler.CreateClaims(token);
-
-                    if (FederatedAuthentication.FederationConfiguration.IdentityConfiguration.SaveBootstrapContext)
-                    {
-                        identity.BootstrapContext = new BootstrapContext(token, handler);
-                    }
-
-                    yield return identity;
+                    yield return handler.CreateClaims(token);
                 }
             }
         }
