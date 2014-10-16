@@ -23,14 +23,14 @@ namespace Kentor.AuthServices.Tests
         [TestMethod]
         public void Saml2StatementExtensions_ToXElement_TypeCheck()
         {
-            Saml2Statement assertion = new MockSaml2Statement();
+            Saml2Statement assertion = new StubSaml2Statement();
 
             Action a = () => assertion.ToXElement();
 
             a.ShouldThrow<ArgumentNullException>().And.ParamName.Should().Be("statement");
         }
 
-        private class MockSaml2Statement : Saml2Statement
+        private class StubSaml2Statement : Saml2Statement
         {
         }
     }
