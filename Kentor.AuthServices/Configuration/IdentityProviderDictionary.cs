@@ -22,6 +22,11 @@ namespace Kentor.AuthServices.Configuration
         private Dictionary<EntityId, IdentityProvider> dictionary =
             new Dictionary<EntityId, IdentityProvider>(EntityIdEqualityComparer.Instance);
 
+        /// <summary>
+        /// Gets an idp from the entity id.
+        /// </summary>
+        /// <param name="entityID">entity Id to look up.</param>
+        /// <returns>IdentityProvider</returns>
         public IdentityProvider this[EntityId entityID]
         {
             get
@@ -40,6 +45,9 @@ namespace Kentor.AuthServices.Configuration
             }
         }
 
+        /// <summary>
+        /// The default identity provider; i.e. the first registered of the currently known.
+        /// </summary>
         public IdentityProvider Default
         {
             get
@@ -51,6 +59,12 @@ namespace Kentor.AuthServices.Configuration
             }
         }
 
+        /// <summary>
+        /// Try to get the value of an idp with a given entity id.
+        /// </summary>
+        /// <param name="idpEntityId">Entity id to search for.</param>
+        /// <param name="idp">The idp, if found.</param>
+        /// <returns>True if an idp with the given entity id was found.</returns>
         public bool TryGetValue(EntityId idpEntityId, out IdentityProvider idp)
         {
             lock (dictionary)

@@ -33,7 +33,7 @@ namespace Kentor.AuthServices
                 {
                     var samlResponse = Saml2Response.Read(binding.Unbind(request));
 
-                    return ProcessResponse(options.SPOptions, samlResponse);
+                    return ProcessResponse(options, samlResponse);
                 }
                 catch (FormatException ex)
                 {
@@ -50,11 +50,11 @@ namespace Kentor.AuthServices
             throw new NoSamlResponseFoundException();
         }
 
-        private static CommandResult ProcessResponse(ISPOptions options, Saml2Response samlResponse)
+        private static CommandResult ProcessResponse(IOptions options, Saml2Response samlResponse)
         {
-            samlResponse.Validate(GetSigningKey(samlResponse.Issuer));
+            samlResponse.Validate(GetSigningKey(samlResponse.Issuer, options));
 
-            var principal = new ClaimsPrincipal(samlResponse.GetClaims(options));
+            var principal = new ClaimsPrincipal(samlResponse.GetClaims(options.SPOptions));
 
             principal = FederatedAuthentication.FederationConfiguration.IdentityConfiguration
                 .ClaimsAuthenticationManager.Authenticate(null, principal);
@@ -65,14 +65,14 @@ namespace Kentor.AuthServices
                 Location =
                     samlResponse.RequestState != null && samlResponse.RequestState.ReturnUri != null
                     ? samlResponse.RequestState.ReturnUri
-                    : options.ReturnUri,
+                    : options.SPOptions.ReturnUri,
                 Principal = principal
             };
         }
 
-        private static AsymmetricAlgorithm GetSigningKey(EntityId issuer)
+        private static AsymmetricAlgorithm GetSigningKey(EntityId issuer, IOptions options)
         {
-            return IdentityProvider.ActiveIdentityProviders[issuer].SigningKey;
+            return options.IdentityProviders[issuer].SigningKey;
         }
     }
 }
