@@ -48,7 +48,11 @@ namespace Kentor.AuthServices.Owin
                         Context.Environment.TryGetValue("KentorAuthServices.idp", out objIdp);
                         idp = objIdp as EntityId;
                     }
-                    var result = SignInCommand.CreateResult(idp, challenge.Properties.RedirectUri, Context.Request.Uri);
+                    var result = SignInCommand.CreateResult(
+                        idp,
+                        challenge.Properties.RedirectUri,
+                        Context.Request.Uri,
+                        Options.SPOptions);
                     Response.Redirect(result.Location.OriginalString);
                 }
             }
@@ -81,7 +85,7 @@ namespace Kentor.AuthServices.Owin
                 Request.Uri.GetLeftPart(UriPartial.Path) ==
                 KentorAuthServicesSection.Current.DiscoveryServiceResponseUrl.GetLeftPart(UriPartial.Path))
             {
-                CommandFactory.GetCommand("SignIn").Run(await Context.ToHttpRequestData(), null).Apply(Context);
+                CommandFactory.GetCommand("SignIn").Run(await Context.ToHttpRequestData(), Options).Apply(Context);
                 return true;
             }
 

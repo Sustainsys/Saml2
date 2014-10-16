@@ -21,18 +21,30 @@ namespace Kentor.AuthServices
                 throw new ArgumentNullException("request");
             }
 
-            return CreateResult(new EntityId(request.QueryString["idp"]),
-                request.QueryString["ReturnUrl"], request.Url);
+            if (options == null)
+            {
+                throw new ArgumentNullException("options");
+            }
+
+            return CreateResult(
+                new EntityId(request.QueryString["idp"]),
+                request.QueryString["ReturnUrl"],
+                request.Url,
+                options.SPOptions);
         }
 
-        public static CommandResult CreateResult(EntityId idpEntityId, string returnPath, Uri requestUrl)
+        public static CommandResult CreateResult(
+            EntityId idpEntityId,
+            string returnPath,
+            Uri requestUrl,
+            ISPOptions spOptions)
         {
             IdentityProvider idp;
             if (idpEntityId == null || idpEntityId.Id == null)
             {
-                if (KentorAuthServicesSection.Current.DiscoveryServiceUrl != null)
+                if (spOptions.DiscoveryServiceUrl != null)
                 {
-                    return RedirectToDiscoveryService(returnPath);
+                    return RedirectToDiscoveryService(returnPath, spOptions);
                 }
                 idp = IdentityProvider.ActiveIdentityProviders.First();
             }
@@ -55,9 +67,9 @@ namespace Kentor.AuthServices
             return idp.Bind(authnRequest);
         }
 
-        private static CommandResult RedirectToDiscoveryService(string returnPath)
+        private static CommandResult RedirectToDiscoveryService(string returnPath, ISPOptions spOptions)
         {
-            string returnUrl = KentorAuthServicesSection.Current.DiscoveryServiceResponseUrl.OriginalString;
+            string returnUrl = spOptions.DiscoveryServiceResponseUrl.OriginalString;
 
             if(!string.IsNullOrEmpty(returnPath))
             {
@@ -67,8 +79,8 @@ namespace Kentor.AuthServices
             var redirectLocation = string.Format(
                 CultureInfo.InvariantCulture,
                 "{0}?entityID={1}&return={2}&returnIDParam=idp",
-                KentorAuthServicesSection.Current.DiscoveryServiceUrl,
-                Uri.EscapeDataString(KentorAuthServicesSection.Current.EntityId),
+                spOptions.DiscoveryServiceUrl,
+                Uri.EscapeDataString(spOptions.EntityId),
                 Uri.EscapeDataString(returnUrl));
 
             return new CommandResult()

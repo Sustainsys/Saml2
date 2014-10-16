@@ -18,7 +18,10 @@ namespace Kentor.AuthServices.Mvc
         /// <returns>Redirect with sign in request</returns>
         public ActionResult SignIn()
         {
-            return CommandFactory.GetCommand("SignIn").Run(new HttpRequestData(Request), null).ToActionResult();
+            return CommandFactory.GetCommand("SignIn").Run(
+                new HttpRequestData(Request),
+                Options.FromConfiguration)
+                .ToActionResult();
         }
 
         /// <summary>

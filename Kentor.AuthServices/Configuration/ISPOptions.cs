@@ -29,5 +29,21 @@ namespace Kentor.AuthServices.Configuration
         /// The security token handler used to process incoming assertions for this SP.
         /// </summary>
         Saml2PSecurityTokenHandler Saml2PSecurityTokenHandler { get; }
+
+        /// <summary>
+        /// Url to discovery service to use if no idp is specified in the sign in call.
+        /// </summary>
+        Uri DiscoveryServiceUrl { get; }
+
+        /// <summary>
+        /// Url where to receive discovery service responses.
+        /// </summary>
+        Uri DiscoveryServiceResponseUrl { get; }
+
+        /// <summary>
+        /// EntityId - The identity of the ServiceProvider to use when sending requests to Idp
+        /// and presenting the SP in metadata.
+        /// </summary>
+        string EntityId { get; }
     }
 }

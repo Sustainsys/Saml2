@@ -16,6 +16,9 @@ namespace Kentor.AuthServices.Configuration
         private static readonly KentorAuthServicesSection current = 
             (KentorAuthServicesSection)ConfigurationManager.GetSection("kentor.authServices");
 
+        /// <summary>
+        /// Ctor
+        /// </summary>
         public KentorAuthServicesSection()
         {
             saml2PSecurityTokenHandler = new Lazy<Saml2PSecurityTokenHandler>(
@@ -128,7 +131,7 @@ namespace Kentor.AuthServices.Configuration
 
         const string discoveryServiceUrl = "discoveryServiceUrl";
         /// <summary>
-        /// Url to discovery service to use if now idp is specified in the sign in call.
+        /// Url to discovery service to use if no idp is specified in the sign in call.
         /// </summary>
         [ConfigurationProperty(discoveryServiceUrl, IsRequired=false)]
         public Uri DiscoveryServiceUrl
