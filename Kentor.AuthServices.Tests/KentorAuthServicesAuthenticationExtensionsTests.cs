@@ -15,7 +15,7 @@ namespace Kentor.AuthServices.Tests
         {
             var app = Substitute.For<IAppBuilder>();
 
-            var options = new KentorAuthServicesAuthenticationOptions();
+            var options = new KentorAuthServicesAuthenticationOptions(true);
 
             app.UseKentorAuthServicesAuthentication(options);
 

@@ -16,7 +16,7 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace Kentor.AuthServices
 {
-    class IdentityProvider
+    public class IdentityProvider
     {
         private static readonly IDictionary<EntityId, IdentityProvider> configuredIdentityProviders =
             KentorAuthServicesSection.Current.IdentityProviders.ToDictionary(
@@ -91,6 +91,7 @@ namespace Kentor.AuthServices
                 KentorAuthServicesSection.Current.Federations.Select(
                 f => new Federation(f.MetadataUrl, f.AllowUnsolicitedAuthnResponse)).ToList());
 
+        [Obsolete]
         public static ActiveIdentityProvidersMap ActiveIdentityProviders
         {
             get

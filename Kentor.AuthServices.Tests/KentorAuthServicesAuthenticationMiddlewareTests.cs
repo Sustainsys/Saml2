@@ -51,7 +51,7 @@ namespace Kentor.AuthServices.Tests
         public void KentorAuthServicesAuthenticationMiddleware_CtorNullChecksApp()
         {
             Action a = () => new KentorAuthServicesAuthenticationMiddleware(
-                new StubOwinMiddleware(0, null), null, new KentorAuthServicesAuthenticationOptions());
+                new StubOwinMiddleware(0, null), null, new KentorAuthServicesAuthenticationOptions(true));
 
             a.ShouldThrow<ArgumentNullException>("app");
         }
@@ -69,7 +69,7 @@ namespace Kentor.AuthServices.Tests
         [TestMethod]
         public void KentorAuthServicesAuthenticationMiddleware_CtorSetsDefaultAuthOption()
         {
-            var options = new KentorAuthServicesAuthenticationOptions();
+            var options = new KentorAuthServicesAuthenticationOptions(true);
 
             options.SignInAsAuthenticationType.Should().BeNull();
 
@@ -85,7 +85,7 @@ namespace Kentor.AuthServices.Tests
             var middleware = new KentorAuthServicesAuthenticationMiddleware(
                 new StubOwinMiddleware(401, new AuthenticationResponseChallenge(
                     new string[] { "KentorAuthServices" }, null)), CreateAppBuilder(),
-                new KentorAuthServicesAuthenticationOptions());
+                new KentorAuthServicesAuthenticationOptions(true));
 
             var context = OwinTestHelpers.CreateOwinContext();
 
@@ -101,7 +101,7 @@ namespace Kentor.AuthServices.Tests
             var middleware = new KentorAuthServicesAuthenticationMiddleware(
                 new StubOwinMiddleware(200, new AuthenticationResponseChallenge(
                     new string[] { "KentorAuthServices" }, null)), CreateAppBuilder(),
-                new KentorAuthServicesAuthenticationOptions());
+                new KentorAuthServicesAuthenticationOptions(true));
 
             var context = OwinTestHelpers.CreateOwinContext();
 
@@ -116,7 +116,7 @@ namespace Kentor.AuthServices.Tests
         {
             var middleware = new KentorAuthServicesAuthenticationMiddleware(
                 new StubOwinMiddleware(401, null), CreateAppBuilder(),
-                new KentorAuthServicesAuthenticationOptions());
+                new KentorAuthServicesAuthenticationOptions(true));
 
             var context = OwinTestHelpers.CreateOwinContext();
 
@@ -139,7 +139,7 @@ namespace Kentor.AuthServices.Tests
                         {
                             { "idp", secondEntityId.Id }
                         }))), 
-                        CreateAppBuilder(), new KentorAuthServicesAuthenticationOptions());
+                        CreateAppBuilder(), new KentorAuthServicesAuthenticationOptions(true));
 
             var context = OwinTestHelpers.CreateOwinContext();
             await middleware.Invoke(context);
@@ -158,7 +158,7 @@ namespace Kentor.AuthServices.Tests
             var middleware = new KentorAuthServicesAuthenticationMiddleware(
                 new StubOwinMiddleware(401, new AuthenticationResponseChallenge(
                     new string[] { "KentorAuthServices" }, new AuthenticationProperties())),
-                        CreateAppBuilder(), new KentorAuthServicesAuthenticationOptions());
+                        CreateAppBuilder(), new KentorAuthServicesAuthenticationOptions(true));
 
             var context = OwinTestHelpers.CreateOwinContext();
             context.Environment["KentorAuthServices.idp"] = secondEntityId;
@@ -177,7 +177,7 @@ namespace Kentor.AuthServices.Tests
                 new StubOwinMiddleware(401, new AuthenticationResponseChallenge(
                     new string[] { authenticationType }, null)),
                 CreateAppBuilder(),
-                new KentorAuthServicesAuthenticationOptions()
+                new KentorAuthServicesAuthenticationOptions(true)
                 {
                     AuthenticationType = authenticationType
                 });
@@ -201,7 +201,7 @@ namespace Kentor.AuthServices.Tests
                     {
                         RedirectUri = returnUri
                     })),
-                    CreateAppBuilder(), new KentorAuthServicesAuthenticationOptions());
+                    CreateAppBuilder(), new KentorAuthServicesAuthenticationOptions(true));
 
             var context = OwinTestHelpers.CreateOwinContext();
 
@@ -264,7 +264,7 @@ namespace Kentor.AuthServices.Tests
                 null, "ClaimsAuthenticationManagerStub"));
 
             var middleware = new KentorAuthServicesAuthenticationMiddleware(null, CreateAppBuilder(),
-                new KentorAuthServicesAuthenticationOptions()
+                new KentorAuthServicesAuthenticationOptions(true)
                 {
                     SignInAsAuthenticationType = "AuthType"
                 });
@@ -287,7 +287,7 @@ namespace Kentor.AuthServices.Tests
             context.Request.Path = new PathString(metadataPath);
 
             var middleware = new KentorAuthServicesAuthenticationMiddleware(null, CreateAppBuilder(),
-                new KentorAuthServicesAuthenticationOptions()
+                new KentorAuthServicesAuthenticationOptions(true)
                 {
                     MetadataPath = new PathString(metadataPath)
                 });
@@ -312,7 +312,7 @@ namespace Kentor.AuthServices.Tests
             context.Request.QueryString = new QueryString("ReturnUrl=%2FHome&idp=https%3A%2F%2Fidp2.example.com");
 
             var middleware = new KentorAuthServicesAuthenticationMiddleware(null, CreateAppBuilder(),
-                new KentorAuthServicesAuthenticationOptions());
+                new KentorAuthServicesAuthenticationOptions(true));
 
             await middleware.Invoke(context);
 
@@ -335,7 +335,7 @@ namespace Kentor.AuthServices.Tests
             var middleware = new KentorAuthServicesAuthenticationMiddleware(
                 new StubOwinMiddleware(200, null),
                 CreateAppBuilder(),
-                new KentorAuthServicesAuthenticationOptions());
+                new KentorAuthServicesAuthenticationOptions(true));
 
             KentorAuthServicesSection.Current.AllowConfigEdit(true);
             KentorAuthServicesSection.Current.DiscoveryServiceResponseUrl = null;

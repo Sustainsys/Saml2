@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.IdentityModel.Metadata;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -17,5 +19,10 @@ namespace Kentor.AuthServices.Configuration
         /// the idp and federation list.
         /// </summary>
         ISPOptions SPOptions { get; }
+
+        /// <summary>
+        /// Information about known identity providers.
+        /// </summary>
+        ConcurrentDictionary<EntityId, IdentityProvider> IdentityProviders { get; }
     }
 }

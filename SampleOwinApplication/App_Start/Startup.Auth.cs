@@ -38,7 +38,7 @@ namespace SampleOwinApplication
             });            
             app.UseExternalSignInCookie(DefaultAuthenticationTypes.ExternalCookie);
 
-            app.UseKentorAuthServicesAuthentication(new KentorAuthServicesAuthenticationOptions());
+            app.UseKentorAuthServicesAuthentication(new KentorAuthServicesAuthenticationOptions(true));
         }
     }
 }

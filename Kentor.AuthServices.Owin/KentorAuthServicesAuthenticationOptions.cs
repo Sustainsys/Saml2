@@ -2,7 +2,9 @@
 using Microsoft.Owin;
 using Microsoft.Owin.Security;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.IdentityModel.Metadata;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -16,16 +18,21 @@ namespace Kentor.AuthServices.Owin
     {
         /// <summary>
         /// Constructor
+        /// <param name="loadConfiguration">Should the options be inited by loading app/web.config?</param>
         /// </summary>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "KentorAuthServices")]
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", "CA1303:Do not pass literals as localized parameters", MessageId = "Microsoft.Owin.Security.AuthenticationDescription.set_Caption(System.String)")]
-        public KentorAuthServicesAuthenticationOptions()
+        public KentorAuthServicesAuthenticationOptions(bool loadConfiguration)
             : base(Constants.DefaultAuthenticationType)
         {
             AuthenticationMode = AuthenticationMode.Passive;
             Description.Caption = Constants.DefaultCaption;
             MetadataPath = new PathString(Constants.DefaultMetadataPath);
-            SPOptions = KentorAuthServicesSection.Current;
+
+            if (loadConfiguration)
+            {
+                SPOptions = KentorAuthServicesSection.Current;
+            }
         }
 
         /// <summary>
@@ -44,5 +51,19 @@ namespace Kentor.AuthServices.Owin
         /// the idp and federation list.
         /// </summary>
         public ISPOptions SPOptions { get; set; }
+
+        private readonly ConcurrentDictionary<EntityId, IdentityProvider> identityProviders
+            = new ConcurrentDictionary<EntityId, IdentityProvider>();
+
+        /// <summary>
+        /// Available identity providers.
+        /// </summary>
+        public ConcurrentDictionary<EntityId, IdentityProvider> IdentityProviders
+        {
+            get
+            {
+                return identityProviders;
+            }
+        }
     }
 }

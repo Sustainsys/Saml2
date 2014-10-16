@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.IdentityModel.Metadata;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -52,6 +54,20 @@ namespace Kentor.AuthServices.Configuration
             get
             {
                 return spOptions;
+            }
+        }
+
+        private readonly ConcurrentDictionary<EntityId, IdentityProvider> identityProviders
+            = new ConcurrentDictionary<EntityId, IdentityProvider>();
+
+        /// <summary>
+        /// Available identity providers.
+        /// </summary>
+        public ConcurrentDictionary<EntityId, IdentityProvider> IdentityProviders
+        {
+            get
+            {
+                return identityProviders;
             }
         }
     }
