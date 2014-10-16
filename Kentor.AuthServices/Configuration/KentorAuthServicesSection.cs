@@ -54,7 +54,7 @@ namespace Kentor.AuthServices.Configuration
         }
 
         /// <summary>
-        /// Uri for idp to post responses to.
+        /// Url for idp to post responses to.
         /// </summary>
         [ConfigurationProperty("assertionConsumerServiceUrl")]
         public Uri AssertionConsumerServiceUrl

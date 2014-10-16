@@ -45,5 +45,10 @@ namespace Kentor.AuthServices.Configuration
         /// and presenting the SP in metadata.
         /// </summary>
         string EntityId { get; }
+
+        /// <summary>
+        /// Uri for idp to post responses to.
+        /// </summary>
+        Uri AssertionConsumerServiceUrl { get; }
     }
 }

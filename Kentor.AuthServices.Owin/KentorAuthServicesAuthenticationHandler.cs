@@ -62,7 +62,7 @@ namespace Kentor.AuthServices.Owin
 
         public override async Task<bool> InvokeAsync()
         {
-            if (KentorAuthServicesSection.Current.AssertionConsumerServiceUrl == Request.Uri)
+            if (Options.SPOptions.AssertionConsumerServiceUrl == Request.Uri)
             {
                 var ticket = (MultipleIdentityAuthenticationTicket)await AuthenticateAsync();
 
@@ -81,9 +81,9 @@ namespace Kentor.AuthServices.Owin
                 return true;
             }
 
-            if(KentorAuthServicesSection.Current.DiscoveryServiceResponseUrl != null &&
+            if(Options.SPOptions.DiscoveryServiceResponseUrl != null &&
                 Request.Uri.GetLeftPart(UriPartial.Path) ==
-                KentorAuthServicesSection.Current.DiscoveryServiceResponseUrl.GetLeftPart(UriPartial.Path))
+                Options.SPOptions.DiscoveryServiceResponseUrl.GetLeftPart(UriPartial.Path))
             {
                 CommandFactory.GetCommand("SignIn").Run(await Context.ToHttpRequestData(), Options).Apply(Context);
                 return true;
