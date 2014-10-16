@@ -53,13 +53,12 @@ namespace Kentor.AuthServices.Owin
         /// </summary>
         public ISPOptions SPOptions { get; set; }
 
-        private readonly ConcurrentDictionary<EntityId, IdentityProvider> identityProviders
-            = new ConcurrentDictionary<EntityId, IdentityProvider>(EntityIdEqualityComparer.Instance);
+        private readonly IdentityProviderDictionary identityProviders = new IdentityProviderDictionary();
 
         /// <summary>
         /// Available identity providers.
         /// </summary>
-        public ConcurrentDictionary<EntityId, IdentityProvider> IdentityProviders
+        public IdentityProviderDictionary IdentityProviders
         {
             get
             {

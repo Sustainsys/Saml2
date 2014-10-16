@@ -27,7 +27,7 @@ namespace Kentor.AuthServices.Tests
 
             subject.SPOptions.EntityId.Id.Should().Be("https://github.com/KentorIT/authservices");
 
-            subject.IdentityProviders.Should().NotBeEmpty();
+            subject.IdentityProviders.IsEmpty.Should().BeFalse();
             subject.IdentityProviders[new EntityId("https://idp.example.com")]
                 .SingleSignOnServiceUrl.Should().Be("https://idp.example.com/idp");
         }
@@ -38,7 +38,7 @@ namespace Kentor.AuthServices.Tests
             var subject = new KentorAuthServicesAuthenticationOptions(loadConfiguration: false);
 
             subject.SPOptions.Should().BeNull();
-            subject.IdentityProviders.Should().BeEmpty();
+            subject.IdentityProviders.IsEmpty.Should().BeTrue();
         }
     }
 }

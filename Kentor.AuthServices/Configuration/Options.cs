@@ -21,7 +21,9 @@ namespace Kentor.AuthServices.Configuration
         {
             get
             {
-                return new Options(KentorAuthServicesSection.Current);
+                var options = new Options(KentorAuthServicesSection.Current);
+                KentorAuthServicesSection.Current.IdentityProviders.RegisterIdentityProviders(options.IdentityProviders);
+                return options;
             }
         }
 
@@ -49,13 +51,12 @@ namespace Kentor.AuthServices.Configuration
             }
         }
 
-        private readonly ConcurrentDictionary<EntityId, IdentityProvider> identityProviders
-            = new ConcurrentDictionary<EntityId, IdentityProvider>();
+        private readonly IdentityProviderDictionary identityProviders = new IdentityProviderDictionary();
 
         /// <summary>
         /// Available identity providers.
         /// </summary>
-        public ConcurrentDictionary<EntityId, IdentityProvider> IdentityProviders
+        public IdentityProviderDictionary IdentityProviders
         {
             get
             {

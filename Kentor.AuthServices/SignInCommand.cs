@@ -30,27 +30,28 @@ namespace Kentor.AuthServices
                 new EntityId(request.QueryString["idp"]),
                 request.QueryString["ReturnUrl"],
                 request.Url,
-                options.SPOptions);
+                options);
         }
 
         public static CommandResult CreateResult(
             EntityId idpEntityId,
             string returnPath,
             Uri requestUrl,
-            ISPOptions spOptions)
+            IOptions options)
         {
             IdentityProvider idp;
             if (idpEntityId == null || idpEntityId.Id == null)
             {
-                if (spOptions.DiscoveryServiceUrl != null)
+                if (options.SPOptions.DiscoveryServiceUrl != null)
                 {
-                    return RedirectToDiscoveryService(returnPath, spOptions);
+                    return RedirectToDiscoveryService(returnPath, options.SPOptions);
                 }
-                idp = IdentityProvider.ActiveIdentityProviders.First();
+
+                idp = options.IdentityProviders.Default;
             }
             else
             {
-                if (!IdentityProvider.ActiveIdentityProviders.TryGetValue(idpEntityId, out idp))
+                if (!options.IdentityProviders.TryGetValue(idpEntityId, out idp))
                 {
                     throw new InvalidOperationException("Unknown idp");
                 }

@@ -23,6 +23,6 @@ namespace Kentor.AuthServices.Configuration
         /// <summary>
         /// Information about known identity providers.
         /// </summary>
-        ConcurrentDictionary<EntityId, IdentityProvider> IdentityProviders { get; }
+        IdentityProviderDictionary IdentityProviders { get; }
     }
 }

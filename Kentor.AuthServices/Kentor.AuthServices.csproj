@@ -59,6 +59,7 @@
     <Compile Include="CacheAwareMetadataSerializer.cs" />
     <Compile Include="ClaimsIdentityExtensions.cs" />
     <Compile Include="CommandResult.cs" />
+    <Compile Include="Configuration\IdentityProviderDictionary.cs" />
     <Compile Include="Configuration\SPOptions.cs" />
     <Compile Include="Configuration\EntityIdConverter.cs" />
     <Compile Include="Configuration\FederationCollection.cs" />
