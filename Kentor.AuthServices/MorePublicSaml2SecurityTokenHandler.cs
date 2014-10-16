@@ -1,6 +1,7 @@
 ﻿using Kentor.AuthServices.Configuration;
 using System;
 using System.IdentityModel.Selectors;
+using System.IdentityModel.Services;
 using System.IdentityModel.Tokens;
 using System.Security.Claims;
 
@@ -49,7 +50,8 @@ namespace Kentor.AuthServices
                 Configuration = new SecurityTokenHandlerConfiguration
                 {
                     IssuerNameRegistry = new ReturnRequestedIssuerNameRegistry(),
-                    AudienceRestriction = audienceRestriction
+                    AudienceRestriction = audienceRestriction,
+                    SaveBootstrapContext = FederatedAuthentication.FederationConfiguration.IdentityConfiguration.SaveBootstrapContext
                 }
             };
         }
