@@ -56,7 +56,7 @@ namespace Kentor.AuthServices
                 identity.BootstrapContext = new BootstrapContext(samlToken, this);
             }
 
-            return base.CreateClaims(samlToken);
+            return identity;
         }
 
         /// <summary>

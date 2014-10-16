@@ -19,7 +19,6 @@ namespace Kentor.AuthServices.Tests
     public class Saml2ResponseTests
     {
         private bool currentConfigValueForAllowedUnsolicitedAuthnResponse = false;
-        private bool currentSaveBootstrapContext;
 
         [TestInitialize]
         public void TestInitialize()
@@ -29,10 +28,6 @@ namespace Kentor.AuthServices.Tests
             KentorAuthServicesSection.Current.IdentityProviders.First().AllowConfigEdit(true);
             KentorAuthServicesSection.Current.IdentityProviders.First().AllowUnsolicitedAuthnResponse = true;
             KentorAuthServicesSection.Current.IdentityProviders.First().AllowConfigEdit(false);
-
-            var tokenHandlerConfig = Options.FromConfiguration.SPOptions.Saml2PSecurityTokenHandler.Configuration;
-            currentSaveBootstrapContext = tokenHandlerConfig.SaveBootstrapContext;
-            tokenHandlerConfig.SaveBootstrapContext = true;
         }
 
         [TestCleanup]
@@ -42,8 +37,6 @@ namespace Kentor.AuthServices.Tests
             KentorAuthServicesSection.Current.IdentityProviders.First().AllowUnsolicitedAuthnResponse =
                 currentConfigValueForAllowedUnsolicitedAuthnResponse;
             KentorAuthServicesSection.Current.IdentityProviders.First().AllowConfigEdit(false);
-
-            Options.FromConfiguration.SPOptions.Saml2PSecurityTokenHandler.Configuration.SaveBootstrapContext = currentSaveBootstrapContext;
         }
 
         [TestMethod]
@@ -576,26 +569,6 @@ namespace Kentor.AuthServices.Tests
         [TestMethod]
         public void Saml2Response_GetClaims_CreateIdentities()
         {
-            var assertion1 = @"<saml2:Assertion xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
-                Version=""2.0"" ID=""Saml2Response_GetClaims_CreateIdentities1""
-                IssueInstant=""2013-09-25T00:00:00Z"">
-                    <saml2:Issuer>https://idp.example.com</saml2:Issuer>
-                    <saml2:Subject>
-                        <saml2:NameID>SomeUser</saml2:NameID>
-                        <saml2:SubjectConfirmation Method=""urn:oasis:names:tc:SAML:2.0:cm:bearer"" />
-                    </saml2:Subject>
-                    <saml2:Conditions NotOnOrAfter=""2100-01-01T00:00:00Z"" />
-                </saml2:Assertion>";
-            var assertion2 = @"<saml2:Assertion xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
-                Version=""2.0"" ID=""Saml2Response_GetClaims_CreateIdentities2""
-                IssueInstant=""2013-09-25T00:00:00Z"">
-                    <saml2:Issuer>https://idp.example.com</saml2:Issuer>
-                    <saml2:Subject>
-                        <saml2:NameID>SomeOtherUser</saml2:NameID>
-                        <saml2:SubjectConfirmation Method=""urn:oasis:names:tc:SAML:2.0:cm:bearer"" />
-                    </saml2:Subject>
-                    <saml2:Conditions NotOnOrAfter=""2100-01-01T00:00:00Z"" />
-                </saml2:Assertion>";
             var response =
             @"<?xml version=""1.0"" encoding=""UTF-8""?>
             <saml2p:Response xmlns:saml2p=""urn:oasis:names:tc:SAML:2.0:protocol""
@@ -605,19 +578,32 @@ namespace Kentor.AuthServices.Tests
                 <saml2p:Status>
                     <saml2p:StatusCode Value=""urn:oasis:names:tc:SAML:2.0:status:Success"" />
                 </saml2p:Status>
-               " + assertion1 + assertion2 +            
-            "</saml2p:Response>";
-
-            var handler = Options.FromConfiguration.SPOptions.Saml2PSecurityTokenHandler;
-            var token1 = (Saml2SecurityToken)handler.ReadToken( XmlReader.Create(new StringReader(assertion1)));
-            var token2 = (Saml2SecurityToken)handler.ReadToken( XmlReader.Create(new StringReader(assertion2)));
+                <saml2:Assertion xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
+                Version=""2.0"" ID=""Saml2Response_GetClaims_CreateIdentities1""
+                IssueInstant=""2013-09-25T00:00:00Z"">
+                    <saml2:Issuer>https://idp.example.com</saml2:Issuer>
+                    <saml2:Subject>
+                        <saml2:NameID>SomeUser</saml2:NameID>
+                        <saml2:SubjectConfirmation Method=""urn:oasis:names:tc:SAML:2.0:cm:bearer"" />
+                    </saml2:Subject>
+                    <saml2:Conditions NotOnOrAfter=""2100-01-01T00:00:00Z"" />
+                </saml2:Assertion>
+                <saml2:Assertion xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
+                Version=""2.0"" ID=""Saml2Response_GetClaims_CreateIdentities2""
+                IssueInstant=""2013-09-25T00:00:00Z"">
+                    <saml2:Issuer>https://idp.example.com</saml2:Issuer>
+                    <saml2:Subject>
+                        <saml2:NameID>SomeOtherUser</saml2:NameID>
+                        <saml2:SubjectConfirmation Method=""urn:oasis:names:tc:SAML:2.0:cm:bearer"" />
+                    </saml2:Subject>
+                    <saml2:Conditions NotOnOrAfter=""2100-01-01T00:00:00Z"" />
+                </saml2:Assertion>
+            </saml2p:Response>";
 
             var c1 = new ClaimsIdentity("Federation");
             c1.AddClaim(new Claim(ClaimTypes.NameIdentifier, "SomeUser", null, "https://idp.example.com"));
-            c1.BootstrapContext = new BootstrapContext(token1, handler);
             var c2 = new ClaimsIdentity("Federation");
             c2.AddClaim(new Claim(ClaimTypes.NameIdentifier, "SomeOtherUser", null, "https://idp.example.com"));
-            c2.BootstrapContext = new BootstrapContext(token2, handler);
 
             var expected = new ClaimsIdentity[] { c1, c2 };
 
@@ -626,6 +612,51 @@ namespace Kentor.AuthServices.Tests
 
             r.GetClaims(Options.FromConfiguration.SPOptions)
                 .ShouldBeEquivalentTo(expected, opt => opt.IgnoringCyclicReferences());
+        }
+
+        [TestMethod]
+        [NotReRunnable]
+        public void Saml2Response_GetClaims_SavesBootstrapContext()
+        {
+            var assertion = 
+            @"<saml2:Assertion xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
+                Version=""2.0"" ID=""Saml2Response_GetClaims_SavesBootstrapContext_Assertion""
+                IssueInstant=""2013-09-25T00:00:00Z"">
+                <saml2:Issuer>https://idp.example.com</saml2:Issuer>
+                <saml2:Subject>
+                    <saml2:NameID>SomeUser</saml2:NameID>
+                    <saml2:SubjectConfirmation Method=""urn:oasis:names:tc:SAML:2.0:cm:bearer"" />
+                </saml2:Subject>
+                <saml2:Conditions NotOnOrAfter=""2100-01-01T00:00:00Z"" />
+            </saml2:Assertion>";
+
+            var response =
+            @"<?xml version=""1.0"" encoding=""UTF-8""?>
+            <saml2p:Response xmlns:saml2p=""urn:oasis:names:tc:SAML:2.0:protocol""
+            xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
+            ID = ""Saml2Response_GetClaims_SavesBootstrapContext"" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z"">
+                <saml2:Issuer>https://idp.example.com</saml2:Issuer>
+                <saml2p:Status>
+                    <saml2p:StatusCode Value=""urn:oasis:names:tc:SAML:2.0:status:Success"" />
+                </saml2p:Status>"
+            + assertion +
+            "</saml2p:Response>";
+
+            var spOptions = new SPOptions
+            {
+                EntityId = new EntityId("http://sp.example.com")
+            };
+
+            spOptions.Saml2PSecurityTokenHandler.Configuration.SaveBootstrapContext = true;
+
+            var expected = spOptions.Saml2PSecurityTokenHandler.ReadToken(XmlReader.Create(new StringReader(assertion)));
+
+            var r = Saml2Response.Read(SignedXmlHelper.SignXml(response));
+            r.Validate(SignedXmlHelper.TestKey);
+
+            var subject = r.GetClaims(spOptions).Single().BootstrapContext;
+
+            subject.As<BootstrapContext>().SecurityToken.ShouldBeEquivalentTo(expected);
         }
 
         [TestMethod]

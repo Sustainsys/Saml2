@@ -13,9 +13,6 @@ namespace Kentor.AuthServices.Configuration
     /// </summary>
     public class Options : IOptions
     {
-        private static Lazy<Options> configuredOptions =
-            new Lazy<Options>(ReadFromConfiguration, true);
-
         /// <summary>
         /// Reads the options from the current config file.
         /// </summary>
@@ -24,13 +21,8 @@ namespace Kentor.AuthServices.Configuration
         {
             get
             {
-                return configuredOptions.Value;
+                return new Options(KentorAuthServicesSection.Current);
             }
-        }
-
-        private static Options ReadFromConfiguration()
-        {
-            return new Options(KentorAuthServicesSection.Current);
         }
 
         /// <summary>
