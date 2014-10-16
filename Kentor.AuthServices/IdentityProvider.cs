@@ -16,6 +16,9 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace Kentor.AuthServices
 {
+    /// <summary>
+    /// Represents a known identity provider that this service provider can communicate with.
+    /// </summary>
     public class IdentityProvider
     {
         private static readonly IDictionary<EntityId, IdentityProvider> configuredIdentityProviders =
@@ -155,15 +158,34 @@ namespace Kentor.AuthServices
             }
         }
 
+        /// <summary>
+        /// The binding used when sending AuthnRequests to the identity provider.
+        /// </summary>
         public Saml2BindingType Binding { get; private set; }
 
+        /// <summary>
+        /// The Url of the single sign on service. This is where the browser is redirected or
+        /// where the post data is sent to when sending an AuthnRequest to the idp.
+        /// </summary>
         public Uri SingleSignOnServiceUrl { get; private set; }
 
+        /// <summary>
+        /// The Entity Id of the identity provider.
+        /// </summary>
         public EntityId EntityId { get; private set; }
 
+        /// <summary>
+        /// Is this idp allowed to send unsolicited responses, i.e. idp initiated sign in?
+        /// </summary>
         public bool AllowUnsolicitedAuthnResponse { get; private set; }
 
-        public Saml2AuthenticationRequest CreateAuthenticateRequest(Uri returnUri)
+        /// <summary>
+        /// Create an authenticate request aimed for this idp.
+        /// </summary>
+        /// <param name="returnUrl">The return url where the browser should be sent after
+        /// successful authentication.</param>
+        /// <returns></returns>
+        public Saml2AuthenticationRequest CreateAuthenticateRequest(Uri returnUrl)
         {
             var request = new Saml2AuthenticationRequest()
             {
@@ -172,18 +194,27 @@ namespace Kentor.AuthServices
                 Issuer = KentorAuthServicesSection.Current.EntityId
             };
 
-            var responseData = new StoredRequestState(EntityId, returnUri);
+            var responseData = new StoredRequestState(EntityId, returnUrl);
 
             PendingAuthnRequests.Add(new Saml2Id(request.Id), responseData);
 
             return request;
         }
 
+        /// <summary>
+        /// Bind a Saml2AuthenticateRequest using the active binding of the idp,
+        /// producing a CommandResult with the result of the binding.
+        /// </summary>
+        /// <param name="request">The AuthnRequest to bind.</param>
+        /// <returns>CommandResult with the bound request.</returns>
         public CommandResult Bind(Saml2AuthenticationRequest request)
         {
             return Saml2Binding.Get(Binding).Bind(request);
         }
 
+        /// <summary>
+        /// The public key of the idp that is used to verify signatures of responses/assertions.
+        /// </summary>
         public AsymmetricAlgorithm SigningKey { get; private set; }
 
         private void LoadMetadata()
