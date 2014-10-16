@@ -272,28 +272,22 @@ namespace Kentor.AuthServices
         /// Validates InResponseTo and the signature of the response. Note that the status code of the
         /// message can still be an error code, although the message itself is valid.
         /// </summary>
-        /// <param name="idpKey">The assymetric key of the Idp certificate that should have 
-        /// signed the reponse</param>
+        /// <param name="options">Options with info about trusted Idps.</param>
         /// <returns>Is the response signed by the Idp and fulfills other formal requirements?</returns>
-        public bool Validate(AsymmetricAlgorithm idpKey)
+        public bool Validate(IOptions options)
         {
             if (!validated)
             {
-                valid = ValidateInResponseTo() && ValidateSignature(idpKey);
+                valid = ValidateInResponseTo(options) && ValidateSignature(options);
 
                 validated = true;
             }
             return valid;
         }
 
-        /// <summary>
-        /// Validates the in response to.
-        /// </summary>
-        /// <returns></returns>
-        private bool ValidateInResponseTo()
+        private bool ValidateInResponseTo(IOptions options)
         {
-            if (InResponseTo == null &&
-                IdentityProvider.ActiveIdentityProviders[Issuer].AllowUnsolicitedAuthnResponse)
+            if (InResponseTo == null && options.IdentityProviders[Issuer].AllowUnsolicitedAuthnResponse)
             {
                 return true;
             }
@@ -314,8 +308,10 @@ namespace Kentor.AuthServices
             }
         }
 
-        private bool ValidateSignature(AsymmetricAlgorithm idpKey)
+        private bool ValidateSignature(IOptions options)
         {
+            var idpKey = options.IdentityProviders[Issuer].SigningKey;
+
             // If the response message is signed, we check just this signature because the whole content has to be correct then
             var responseSignature = xmlDocument.DocumentElement["Signature", SignedXml.XmlDsigNamespaceUrl];
             if (responseSignature != null)

@@ -158,7 +158,7 @@ namespace Kentor.AuthServices.Tests
                 </saml2:Assertion>
             </saml2p:Response>";
 
-            Saml2Response.Read(response).Validate(null).Should().BeFalse();
+            Saml2Response.Read(response).Validate(Options.FromConfiguration).Should().BeFalse();
         }
 
         [TestMethod]
@@ -187,7 +187,7 @@ namespace Kentor.AuthServices.Tests
 
             var signedResponse = SignedXmlHelper.SignXml(response);
 
-            Saml2Response.Read(signedResponse).Validate(SignedXmlHelper.TestKey).Should().BeTrue();
+            Saml2Response.Read(signedResponse).Validate(Options.FromConfiguration).Should().BeTrue();
         }
 
         [TestMethod]
@@ -220,7 +220,7 @@ namespace Kentor.AuthServices.Tests
             var signedAssertion = SignedXmlHelper.SignXml(assertion);
             var signedResponse = string.Format(response, signedAssertion);
 
-            Saml2Response.Read(signedResponse).Validate(SignedXmlHelper.TestKey).Should().BeTrue();
+            Saml2Response.Read(signedResponse).Validate(Options.FromConfiguration).Should().BeTrue();
         }
 
         [TestMethod]
@@ -265,7 +265,7 @@ namespace Kentor.AuthServices.Tests
             var signedAssertion2 = SignedXmlHelper.SignXml(assertion2);
             var signedResponse = string.Format(response, signedAssertion1, signedAssertion2);
 
-            Saml2Response.Read(signedResponse).Validate(SignedXmlHelper.TestKey).Should().BeTrue();
+            Saml2Response.Read(signedResponse).Validate(Options.FromConfiguration).Should().BeTrue();
         }
 
         [TestMethod]
@@ -309,7 +309,7 @@ namespace Kentor.AuthServices.Tests
             var signedAssertion1 = SignedXmlHelper.SignXml(assertion1);
             var signedResponse = string.Format(response, signedAssertion1, assertion2);
 
-            Saml2Response.Read(signedResponse).Validate(SignedXmlHelper.TestKey).Should().BeFalse();
+            Saml2Response.Read(signedResponse).Validate(Options.FromConfiguration).Should().BeFalse();
         }
 
         [TestMethod]
@@ -329,7 +329,7 @@ namespace Kentor.AuthServices.Tests
 
             signedResponse = signedResponse.Replace("2013-01-01", "2013-01-02");
 
-            Saml2Response.Read(signedResponse).Validate(SignedXmlHelper.TestKey).Should().BeFalse();
+            Saml2Response.Read(signedResponse).Validate(Options.FromConfiguration).Should().BeFalse();
         }
 
         [TestMethod]
@@ -357,7 +357,7 @@ namespace Kentor.AuthServices.Tests
 
             var signedResponse = SignedXmlHelper.SignXml(response).Replace("SomeUser", "SomeOtherUser");
 
-            Saml2Response.Read(signedResponse).Validate(SignedXmlHelper.TestKey).Should().BeFalse();
+            Saml2Response.Read(signedResponse).Validate(Options.FromConfiguration).Should().BeFalse();
         }
 
         [TestMethod]
@@ -401,7 +401,7 @@ namespace Kentor.AuthServices.Tests
             var signedAssertion2 = SignedXmlHelper.SignXml(assertion2).Replace("SomeUser2", "SomeOtherUser");
             var signedResponse = string.Format(response, signedAssertion1, signedAssertion2);
 
-            Saml2Response.Read(signedResponse).Validate(SignedXmlHelper.TestKey).Should().BeFalse();
+            Saml2Response.Read(signedResponse).Validate(Options.FromConfiguration).Should().BeFalse();
         }
 
         [TestMethod]
@@ -457,7 +457,7 @@ namespace Kentor.AuthServices.Tests
 
             var signedResponse = string.Format(response, signedAssertion1, signedAssertionToInject);
 
-            Saml2Response.Read(signedResponse).Validate(SignedXmlHelper.TestKey).Should().BeFalse();
+            Saml2Response.Read(signedResponse).Validate(Options.FromConfiguration).Should().BeFalse();
         }
 
         [TestMethod]
@@ -504,7 +504,7 @@ namespace Kentor.AuthServices.Tests
             signedXml.ComputeSignature();
             xmlDoc.DocumentElement.AppendChild(xmlDoc.ImportNode(signedXml.GetXml(), true));
 
-            Saml2Response.Read(xmlDoc.OuterXml).Validate(SignedXmlHelper.TestKey).Should().BeFalse();
+            Saml2Response.Read(xmlDoc.OuterXml).Validate(Options.FromConfiguration).Should().BeFalse();
         }
 
         [TestMethod]
@@ -541,7 +541,7 @@ namespace Kentor.AuthServices.Tests
             signedXml.ComputeSignature();
             xmlDoc.DocumentElement.AppendChild(xmlDoc.ImportNode(signedXml.GetXml(), true));
 
-            Saml2Response.Read(xmlDoc.OuterXml).Validate(SignedXmlHelper.TestKey).Should().BeFalse();
+            Saml2Response.Read(xmlDoc.OuterXml).Validate(Options.FromConfiguration).Should().BeFalse();
         }
 
         [TestMethod]
@@ -561,8 +561,8 @@ namespace Kentor.AuthServices.Tests
 
             var samlResponse = Saml2Response.Read(signedResponse);
 
-            samlResponse.Validate(SignedXmlHelper.TestKey).Should().BeTrue();
-            samlResponse.Validate(SignedXmlHelper.TestKey).Should().BeTrue();
+            samlResponse.Validate(Options.FromConfiguration).Should().BeTrue();
+            samlResponse.Validate(Options.FromConfiguration).Should().BeTrue();
         }
 
         [NotReRunnable]
@@ -608,7 +608,7 @@ namespace Kentor.AuthServices.Tests
             var expected = new ClaimsIdentity[] { c1, c2 };
 
             var r = Saml2Response.Read(SignedXmlHelper.SignXml(response));
-            r.Validate(SignedXmlHelper.TestKey);
+            r.Validate(Options.FromConfiguration);
 
             r.GetClaims(Options.FromConfiguration.SPOptions)
                 .ShouldBeEquivalentTo(expected, opt => opt.IgnoringCyclicReferences());
@@ -652,7 +652,7 @@ namespace Kentor.AuthServices.Tests
             var expected = spOptions.Saml2PSecurityTokenHandler.ReadToken(XmlReader.Create(new StringReader(assertion)));
 
             var r = Saml2Response.Read(SignedXmlHelper.SignXml(response));
-            r.Validate(SignedXmlHelper.TestKey);
+            r.Validate(Options.FromConfiguration);
 
             var subject = r.GetClaims(spOptions).Single().BootstrapContext;
 
@@ -716,7 +716,7 @@ namespace Kentor.AuthServices.Tests
             response = response.Replace("2013-09-25", "2013-09-26");
 
             var r = Saml2Response.Read(response);
-            r.Validate(SignedXmlHelper.TestKey);
+            r.Validate(Options.FromConfiguration);
             Action a = () => r.GetClaims(Options.FromConfiguration.SPOptions);
 
             a.ShouldThrow<InvalidOperationException>()
@@ -759,7 +759,7 @@ namespace Kentor.AuthServices.Tests
             response = SignedXmlHelper.SignXml(response);
 
             var r = Saml2Response.Read(response);
-            r.Validate(SignedXmlHelper.TestKey);
+            r.Validate(Options.FromConfiguration);
 
             Action a = () => r.GetClaims(Options.FromConfiguration.SPOptions);
 
@@ -792,7 +792,7 @@ namespace Kentor.AuthServices.Tests
 
             response = SignedXmlHelper.SignXml(response);
             var r = Saml2Response.Read(response);
-            r.Validate(SignedXmlHelper.TestKey);
+            r.Validate(Options.FromConfiguration);
 
             Action a = () => r.GetClaims(Options.FromConfiguration.SPOptions);
 
@@ -822,7 +822,7 @@ namespace Kentor.AuthServices.Tests
 
             var response = Saml2Response.Read(responseXML);
 
-            response.Validate(SignedXmlHelper.TestKey).Should().BeTrue();
+            response.Validate(Options.FromConfiguration).Should().BeTrue();
         }
 
         [TestMethod]
@@ -845,7 +845,7 @@ namespace Kentor.AuthServices.Tests
 
             var response = Saml2Response.Read(responseXML);
 
-            response.Validate(SignedXmlHelper.TestKey).Should().BeFalse();
+            response.Validate(Options.FromConfiguration).Should().BeFalse();
         }
 
         [TestMethod]
@@ -873,7 +873,7 @@ namespace Kentor.AuthServices.Tests
 
             var response = Saml2Response.Read(responseXML);
 
-            response.Validate(SignedXmlHelper.TestKey).Should().BeTrue();
+            response.Validate(Options.FromConfiguration).Should().BeTrue();
         }
 
         [TestMethod]
@@ -899,7 +899,7 @@ namespace Kentor.AuthServices.Tests
 
             var response = Saml2Response.Read(responseXML);
 
-            response.Validate(SignedXmlHelper.TestKey).Should().BeFalse();
+            response.Validate(Options.FromConfiguration).Should().BeFalse();
         }
 
         [TestMethod]
@@ -924,10 +924,10 @@ namespace Kentor.AuthServices.Tests
             responseXML = SignedXmlHelper.SignXml(responseXML);
 
             var response = Saml2Response.Read(responseXML);
-            response.Validate(SignedXmlHelper.TestKey).Should().BeTrue();
+            response.Validate(Options.FromConfiguration).Should().BeTrue();
 
             response = Saml2Response.Read(responseXML);
-            response.Validate(SignedXmlHelper.TestKey).Should().BeFalse();
+            response.Validate(Options.FromConfiguration).Should().BeFalse();
         }
 
         [TestMethod]
@@ -954,7 +954,7 @@ namespace Kentor.AuthServices.Tests
 
             var response = Saml2Response.Read(responseXML);
 
-            response.Validate(SignedXmlHelper.TestKey).Should().BeFalse();
+            response.Validate(Options.FromConfiguration).Should().BeFalse();
         }
 
         [TestMethod]
@@ -984,11 +984,11 @@ namespace Kentor.AuthServices.Tests
 
             response = SignedXmlHelper.SignXml(response);
             var r1 = Saml2Response.Read(response);
-            r1.Validate(SignedXmlHelper.TestKey).Should().BeTrue();
+            r1.Validate(Options.FromConfiguration).Should().BeTrue();
             r1.GetClaims(Options.FromConfiguration.SPOptions);
 
             var r2 = Saml2Response.Read(response);
-            r2.Validate(SignedXmlHelper.TestKey).Should().BeTrue();
+            r2.Validate(Options.FromConfiguration).Should().BeTrue();
 
             Action a = () => r2.GetClaims(Options.FromConfiguration.SPOptions);
 
@@ -1023,7 +1023,7 @@ namespace Kentor.AuthServices.Tests
 
             var subject = Saml2Response.Read(xml);
 
-            subject.Validate(SignedXmlHelper.TestKey).Should().BeTrue();
+            subject.Validate(Options.FromConfiguration).Should().BeTrue();
 
             Action a = () => subject.GetClaims(Options.FromConfiguration.SPOptions);
 
@@ -1182,7 +1182,7 @@ namespace Kentor.AuthServices.Tests
 
             var response = Saml2Response.Read(responseXML);
 
-            response.Validate(SignedXmlHelper.TestKey);
+            response.Validate(Options.FromConfiguration);
             response.RequestState.ReturnUri.Should().Be("http://localhost/testUrl.aspx");
         }
     }

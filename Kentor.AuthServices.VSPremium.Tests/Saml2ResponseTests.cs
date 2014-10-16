@@ -8,6 +8,7 @@ using Microsoft.QualityTools.Testing.Fakes;
 using System.Reflection;
 using System.Linq;
 using FluentAssertions;
+using Kentor.AuthServices.Configuration;
 
 namespace Kentor.AuthServices.VSPremium.Tests
 {
@@ -153,7 +154,7 @@ namespace Kentor.AuthServices.VSPremium.Tests
 
                 var samlResponse = Saml2Response.Read(xmlDoc.OuterXml);
 
-                samlResponse.Validate(SignedXmlHelper.TestKey).Should().BeFalse();
+                samlResponse.Validate(Options.FromConfiguration).Should().BeFalse();
             }
         }
     }

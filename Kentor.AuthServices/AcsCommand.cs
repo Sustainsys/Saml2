@@ -52,7 +52,7 @@ namespace Kentor.AuthServices
 
         private static CommandResult ProcessResponse(IOptions options, Saml2Response samlResponse)
         {
-            samlResponse.Validate(GetSigningKey(samlResponse.Issuer, options));
+            samlResponse.Validate(options);
 
             var principal = new ClaimsPrincipal(samlResponse.GetClaims(options.SPOptions));
 
@@ -68,11 +68,6 @@ namespace Kentor.AuthServices
                     : options.SPOptions.ReturnUri,
                 Principal = principal
             };
-        }
-
-        private static AsymmetricAlgorithm GetSigningKey(EntityId issuer, IOptions options)
-        {
-            return options.IdentityProviders[issuer].SigningKey;
         }
     }
 }
