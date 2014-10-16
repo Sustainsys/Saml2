@@ -47,6 +47,11 @@ namespace Kentor.AuthServices.Configuration
         /// <param name="idpDictionary"></param>
         public void RegisterIdentityProviders(IDictionary<EntityId, IdentityProvider> idpDictionary)
         {
+            if(idpDictionary == null)
+            {
+                throw new ArgumentNullException("idpDictionary");
+            }
+
             foreach(var idpEntry in this)
             {
                 var idp = new IdentityProvider(idpEntry);
