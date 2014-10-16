@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.IdentityModel.Metadata;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -76,8 +77,7 @@ namespace Kentor.AuthServices
         /// <summary>
         /// The issuer of the request.
         /// </summary>
-        public string Issuer { get; set; }
-
+        public EntityId Issuer { get; set; }
 
         /// <summary>
         /// The SAML2 request name
@@ -102,9 +102,9 @@ namespace Kentor.AuthServices
                 yield return new XAttribute("Destination", DestinationUri);
             }
 
-            if (!string.IsNullOrEmpty(Issuer))
+            if (Issuer != null && !string.IsNullOrEmpty(Issuer.Id))
             {
-                yield return new XElement(Saml2Namespaces.Saml2 + "Issuer", Issuer);
+                yield return new XElement(Saml2Namespaces.Saml2 + "Issuer", Issuer.Id);
             }
         }
 
@@ -123,7 +123,7 @@ namespace Kentor.AuthServices
             ValidateCorrectDocument(xml);
             Id = xml.DocumentElement.Attributes["ID"].Value;
 
-            Issuer = xml.DocumentElement["Issuer", Saml2Namespaces.Saml2Name].GetTrimmedTextIfNotNull();
+            Issuer = new EntityId(xml.DocumentElement["Issuer", Saml2Namespaces.Saml2Name].GetTrimmedTextIfNotNull());
         }
 
         private void ValidateCorrectDocument(XmlDocument xml)

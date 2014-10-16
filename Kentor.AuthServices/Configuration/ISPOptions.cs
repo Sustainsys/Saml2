@@ -44,7 +44,7 @@ namespace Kentor.AuthServices.Configuration
         /// EntityId - The identity of the ServiceProvider to use when sending requests to Idp
         /// and presenting the SP in metadata.
         /// </summary>
-        string EntityId { get; }
+        EntityId EntityId { get; }
 
         /// <summary>
         /// Uri for idp to post responses to.

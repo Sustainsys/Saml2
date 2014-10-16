@@ -3,6 +3,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using FluentAssertions;
 using System.Text.RegularExpressions;
 using System.Xml.Linq;
+using System.IdentityModel.Metadata;
 
 namespace Kentor.AuthServices.Tests
 {
@@ -124,7 +125,7 @@ namespace Kentor.AuthServices.Tests
         public void Saml2RequestBase_ToXNodes_Issuer()
         {
             var uri = "http://sp.example.com/";
-            var r = new ConcreteSaml2Request() { Issuer = uri };
+            var r = new ConcreteSaml2Request() { Issuer = new EntityId(uri) };
 
             r.ToXElement().Element(Saml2Namespaces.Saml2+ "Issuer").Value.Should().Be(uri);
         }

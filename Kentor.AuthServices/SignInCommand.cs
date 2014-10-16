@@ -80,7 +80,7 @@ namespace Kentor.AuthServices
                 CultureInfo.InvariantCulture,
                 "{0}?entityID={1}&return={2}&returnIDParam=idp",
                 spOptions.DiscoveryServiceUrl,
-                Uri.EscapeDataString(spOptions.EntityId),
+                Uri.EscapeDataString(spOptions.EntityId.Id),
                 Uri.EscapeDataString(returnUrl));
 
             return new CommandResult()

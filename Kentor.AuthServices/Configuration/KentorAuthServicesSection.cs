@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Configuration;
 using System.IdentityModel.Metadata;
 using System.Linq;
@@ -22,7 +23,7 @@ namespace Kentor.AuthServices.Configuration
         public KentorAuthServicesSection()
         {
             saml2PSecurityTokenHandler = new Lazy<Saml2PSecurityTokenHandler>(
-                () => new Saml2PSecurityTokenHandler(new EntityId(EntityId)),
+                () => new Saml2PSecurityTokenHandler(EntityId),
                 true);
         }
 
@@ -69,12 +70,13 @@ namespace Kentor.AuthServices.Configuration
         /// EntityId - The identity of the ServiceProvider to use when sending requests to Idp
         /// and presenting the SP in metadata.
         /// </summary>
+        [TypeConverter(typeof(EntityIdConverter))]
         [ConfigurationProperty("entityId")]
-        public string EntityId
+        public EntityId EntityId
         {
             get
             {
-                return (string)base["entityId"];
+                return (EntityId)base["entityId"];
             }
         }
 

@@ -43,7 +43,7 @@ namespace Kentor.AuthServices.Tests
 
             var r = idp.CreateAuthenticateRequest(null);
 
-            r.Issuer.Should().Be("https://github.com/KentorIT/authservices");
+            r.Issuer.Id.Should().Be("https://github.com/KentorIT/authservices");
         }
 
         [TestMethod]
