@@ -2,6 +2,8 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.IdentityModel.Tokens;
 using FluentAssertions;
+using System.Collections.Generic;
+using System.Security.Claims;
 
 namespace Kentor.AuthServices.Tests
 {
@@ -84,6 +86,22 @@ namespace Kentor.AuthServices.Tests
 
             subject.Element(Saml2Namespaces.Saml2 + "Conditions")
                 .Attribute("NotOnOrAfter").Value.Should().Be("2099-07-25T19:52:42Z");
+        }
+
+        [TestMethod]
+        public void Saml2AssertionExtensions_ToXElement_Statements()
+        {
+            var attributeValue = "Test";
+            var assertion = new Saml2Assertion(
+                new Saml2NameIdentifier("http://idp.example.com"));
+
+            assertion.Statements.Add(
+                new Saml2AttributeStatement(new Saml2Attribute(ClaimTypes.Role, attributeValue)));
+
+            var subject = assertion.ToXElement();
+
+            subject.Element(Saml2Namespaces.Saml2 + "AttributeStatement").Element(Saml2Namespaces.Saml2 + "Attribute").Attribute("Name").Value.Should().Be(ClaimTypes.Role);
+            subject.Element(Saml2Namespaces.Saml2 + "AttributeStatement").Element(Saml2Namespaces.Saml2 + "Attribute").Element(Saml2Namespaces.Saml2 + "AttributeValue").Value.Should().Be(attributeValue);
         }
     }
 }

@@ -1,12 +1,9 @@
 ﻿using Kentor.AuthServices.Configuration;
 using System;
-using System.Collections.Generic;
 using System.IdentityModel.Selectors;
+using System.IdentityModel.Services;
 using System.IdentityModel.Tokens;
-using System.Linq;
 using System.Security.Claims;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Kentor.AuthServices
 {
@@ -21,7 +18,14 @@ namespace Kentor.AuthServices
     {
         public new ClaimsIdentity CreateClaims(Saml2SecurityToken samlToken)
         {
-            return base.CreateClaims(samlToken);
+            var identity = base.CreateClaims(samlToken);
+
+            if (Configuration.SaveBootstrapContext)
+            {
+                identity.BootstrapContext = new BootstrapContext(samlToken, this);
+            }
+
+            return identity;
         }
 
         public new void DetectReplayedToken(SecurityToken token)
@@ -44,10 +48,11 @@ namespace Kentor.AuthServices
 
             defaultInstance = new Saml2PSecurityTokenHandler()
             {
-                Configuration = new SecurityTokenHandlerConfiguration()
+                Configuration = new SecurityTokenHandlerConfiguration
                 {
                     IssuerNameRegistry = new ReturnRequestedIssuerNameRegistry(),
-                    AudienceRestriction = audienceRestriction
+                    AudienceRestriction = audienceRestriction,
+                    SaveBootstrapContext = FederatedAuthentication.FederationConfiguration.IdentityConfiguration.SaveBootstrapContext
                 }
             };
         }
