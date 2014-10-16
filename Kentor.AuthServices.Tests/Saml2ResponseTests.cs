@@ -30,8 +30,8 @@ namespace Kentor.AuthServices.Tests
             KentorAuthServicesSection.Current.IdentityProviders.First().AllowUnsolicitedAuthnResponse = true;
             KentorAuthServicesSection.Current.IdentityProviders.First().AllowConfigEdit(false);
 
-            currentSaveBootstrapContext = MorePublicSaml2SecurityTokenHandler.DefaultInstance.Configuration.SaveBootstrapContext;
-            MorePublicSaml2SecurityTokenHandler.DefaultInstance.Configuration.SaveBootstrapContext = true;
+            currentSaveBootstrapContext = Saml2PSecurityTokenHandler.DefaultInstance.Configuration.SaveBootstrapContext;
+            Saml2PSecurityTokenHandler.DefaultInstance.Configuration.SaveBootstrapContext = true;
         }
 
         [TestCleanup]
@@ -42,7 +42,7 @@ namespace Kentor.AuthServices.Tests
                 currentConfigValueForAllowedUnsolicitedAuthnResponse;
             KentorAuthServicesSection.Current.IdentityProviders.First().AllowConfigEdit(false);
 
-            MorePublicSaml2SecurityTokenHandler.DefaultInstance.Configuration.SaveBootstrapContext = currentSaveBootstrapContext;
+            Saml2PSecurityTokenHandler.DefaultInstance.Configuration.SaveBootstrapContext = currentSaveBootstrapContext;
         }
 
         [TestMethod]
