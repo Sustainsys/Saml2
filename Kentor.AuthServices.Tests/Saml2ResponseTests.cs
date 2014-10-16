@@ -19,7 +19,7 @@ namespace Kentor.AuthServices.Tests
     public class Saml2ResponseTests
     {
         private bool currentConfigValueForAllowedUnsolicitedAuthnResponse = false;
-        private System.IdentityModel.Configuration.IdentityConfiguration currentIdentityConfiguration = null;
+        private bool currentSaveBootstrapContext;
 
         [TestInitialize]
         public void TestInitialize()
@@ -30,11 +30,8 @@ namespace Kentor.AuthServices.Tests
             KentorAuthServicesSection.Current.IdentityProviders.First().AllowUnsolicitedAuthnResponse = true;
             KentorAuthServicesSection.Current.IdentityProviders.First().AllowConfigEdit(false);
 
-            currentIdentityConfiguration = FederatedAuthentication.FederationConfiguration.IdentityConfiguration;
-            FederatedAuthentication.FederationConfiguration.IdentityConfiguration = new System.IdentityModel.Configuration.IdentityConfiguration()
-            {
-                SaveBootstrapContext = true
-            };
+            currentSaveBootstrapContext = MorePublicSaml2SecurityTokenHandler.DefaultInstance.Configuration.SaveBootstrapContext;
+            MorePublicSaml2SecurityTokenHandler.DefaultInstance.Configuration.SaveBootstrapContext = true;
         }
 
         [TestCleanup]
@@ -45,7 +42,7 @@ namespace Kentor.AuthServices.Tests
                 currentConfigValueForAllowedUnsolicitedAuthnResponse;
             KentorAuthServicesSection.Current.IdentityProviders.First().AllowConfigEdit(false);
 
-            FederatedAuthentication.FederationConfiguration.IdentityConfiguration = currentIdentityConfiguration;
+            MorePublicSaml2SecurityTokenHandler.DefaultInstance.Configuration.SaveBootstrapContext = currentSaveBootstrapContext;
         }
 
         [TestMethod]
