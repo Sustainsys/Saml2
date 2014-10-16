@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Configuration;
+using System.IdentityModel.Metadata;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -14,6 +15,13 @@ namespace Kentor.AuthServices.Configuration
     {
         private static readonly KentorAuthServicesSection current = 
             (KentorAuthServicesSection)ConfigurationManager.GetSection("kentor.authServices");
+
+        public KentorAuthServicesSection()
+        {
+            saml2PSecurityTokenHandler = new Lazy<Saml2PSecurityTokenHandler>(
+                () => new Saml2PSecurityTokenHandler(new EntityId(EntityId)),
+                true);
+        }
 
         private bool isReadOnly = true;
 
@@ -55,7 +63,8 @@ namespace Kentor.AuthServices.Configuration
         }
 
         /// <summary>
-        /// EntityId - the name of the ServiceProvider to use when sending requests to Idp.
+        /// EntityId - The identity of the ServiceProvider to use when sending requests to Idp
+        /// and presenting the SP in metadata.
         /// </summary>
         [ConfigurationProperty("entityId")]
         public string EntityId
@@ -148,6 +157,19 @@ namespace Kentor.AuthServices.Configuration
             set
             {
                 base[discoveryServiceResponseUrl] = value;
+            }
+        }
+
+        private readonly Lazy<Saml2PSecurityTokenHandler> saml2PSecurityTokenHandler;
+
+        /// <summary>
+        /// The security token handler used to process incoming assertions for this SP.
+        /// </summary>
+        public Saml2PSecurityTokenHandler Saml2PSecurityTokenHandler
+        {
+            get
+            {
+                return saml2PSecurityTokenHandler.Value;
             }
         }
     }

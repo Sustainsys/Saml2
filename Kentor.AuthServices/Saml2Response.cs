@@ -403,10 +403,11 @@ namespace Kentor.AuthServices
         /// <summary>
         /// Extract claims from the assertions contained in the response.
         /// </summary>
+        /// <param name="options">Service provider settings used when processing the response into claims.</param>
         /// <returns>ClaimsIdentities</returns>
         // Method might throw expections so make it a method and not a property.
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1024:UsePropertiesWhereAppropriate")]
-        public IEnumerable<ClaimsIdentity> GetClaims()
+        public IEnumerable<ClaimsIdentity> GetClaims(ISPOptions options)
         {
             if (createClaimsException != null)
             {
@@ -417,7 +418,7 @@ namespace Kentor.AuthServices
             {
                 try
                 {
-                    claimsIdentities = CreateClaims().ToList();
+                    claimsIdentities = CreateClaims(options).ToList();
                 }
                 catch (Exception ex)
                 {
@@ -429,7 +430,7 @@ namespace Kentor.AuthServices
             return claimsIdentities;
         }
 
-        private IEnumerable<ClaimsIdentity> CreateClaims()
+        private IEnumerable<ClaimsIdentity> CreateClaims(ISPOptions options)
         {
             ThrowOnNotValid();
 
@@ -437,7 +438,7 @@ namespace Kentor.AuthServices
             {
                 using (var reader = new XmlNodeReader(assertionNode))
                 {
-                    Saml2PSecurityTokenHandler handler = Saml2PSecurityTokenHandler.DefaultInstance;
+                    var handler = options.Saml2PSecurityTokenHandler;
 
                     var token = (Saml2SecurityToken)handler.ReadToken(reader);
                     handler.DetectReplayedToken(token);

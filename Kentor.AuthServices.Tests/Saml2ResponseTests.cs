@@ -30,8 +30,9 @@ namespace Kentor.AuthServices.Tests
             KentorAuthServicesSection.Current.IdentityProviders.First().AllowUnsolicitedAuthnResponse = true;
             KentorAuthServicesSection.Current.IdentityProviders.First().AllowConfigEdit(false);
 
-            currentSaveBootstrapContext = Saml2PSecurityTokenHandler.DefaultInstance.Configuration.SaveBootstrapContext;
-            Saml2PSecurityTokenHandler.DefaultInstance.Configuration.SaveBootstrapContext = true;
+            var tokenHandlerConfig = Options.FromConfiguration.SPOptions.Saml2PSecurityTokenHandler.Configuration;
+            currentSaveBootstrapContext = tokenHandlerConfig.SaveBootstrapContext;
+            tokenHandlerConfig.SaveBootstrapContext = true;
         }
 
         [TestCleanup]
@@ -42,7 +43,7 @@ namespace Kentor.AuthServices.Tests
                 currentConfigValueForAllowedUnsolicitedAuthnResponse;
             KentorAuthServicesSection.Current.IdentityProviders.First().AllowConfigEdit(false);
 
-            Saml2PSecurityTokenHandler.DefaultInstance.Configuration.SaveBootstrapContext = currentSaveBootstrapContext;
+            Options.FromConfiguration.SPOptions.Saml2PSecurityTokenHandler.Configuration.SaveBootstrapContext = currentSaveBootstrapContext;
         }
 
         [TestMethod]
@@ -607,7 +608,7 @@ namespace Kentor.AuthServices.Tests
                " + assertion1 + assertion2 +            
             "</saml2p:Response>";
 
-            var handler = Saml2PSecurityTokenHandler.DefaultInstance;
+            var handler = Options.FromConfiguration.SPOptions.Saml2PSecurityTokenHandler;
             var token1 = (Saml2SecurityToken)handler.ReadToken( XmlReader.Create(new StringReader(assertion1)));
             var token2 = (Saml2SecurityToken)handler.ReadToken( XmlReader.Create(new StringReader(assertion2)));
 
@@ -623,7 +624,8 @@ namespace Kentor.AuthServices.Tests
             var r = Saml2Response.Read(SignedXmlHelper.SignXml(response));
             r.Validate(SignedXmlHelper.TestKey);
 
-            r.GetClaims().ShouldBeEquivalentTo(expected, opt => opt.IgnoringCyclicReferences());
+            r.GetClaims(Options.FromConfiguration.SPOptions)
+                .ShouldBeEquivalentTo(expected, opt => opt.IgnoringCyclicReferences());
         }
 
         [TestMethod]
@@ -649,7 +651,7 @@ namespace Kentor.AuthServices.Tests
                 </saml2:Assertion>
             </saml2p:Response>";
 
-            Action a = () => Saml2Response.Read(response).GetClaims();
+            Action a = () => Saml2Response.Read(response).GetClaims(Options.FromConfiguration.SPOptions);
 
             a.ShouldThrow<InvalidOperationException>()
                 .WithMessage("The Saml2Response must be validated first.");
@@ -684,7 +686,7 @@ namespace Kentor.AuthServices.Tests
 
             var r = Saml2Response.Read(response);
             r.Validate(SignedXmlHelper.TestKey);
-            Action a = () => r.GetClaims();
+            Action a = () => r.GetClaims(Options.FromConfiguration.SPOptions);
 
             a.ShouldThrow<InvalidOperationException>()
                 .WithMessage("The Saml2Response didn't pass validation");
@@ -728,7 +730,7 @@ namespace Kentor.AuthServices.Tests
             var r = Saml2Response.Read(response);
             r.Validate(SignedXmlHelper.TestKey);
 
-            Action a = () => r.GetClaims();
+            Action a = () => r.GetClaims(Options.FromConfiguration.SPOptions);
 
             a.ShouldThrow<AudienceUriValidationFailedException>();
         }
@@ -761,7 +763,7 @@ namespace Kentor.AuthServices.Tests
             var r = Saml2Response.Read(response);
             r.Validate(SignedXmlHelper.TestKey);
 
-            Action a = () => r.GetClaims();
+            Action a = () => r.GetClaims(Options.FromConfiguration.SPOptions);
 
             a.ShouldThrow<SecurityTokenExpiredException>();
         }
@@ -952,12 +954,12 @@ namespace Kentor.AuthServices.Tests
             response = SignedXmlHelper.SignXml(response);
             var r1 = Saml2Response.Read(response);
             r1.Validate(SignedXmlHelper.TestKey).Should().BeTrue();
-            r1.GetClaims();
+            r1.GetClaims(Options.FromConfiguration.SPOptions);
 
             var r2 = Saml2Response.Read(response);
             r2.Validate(SignedXmlHelper.TestKey).Should().BeTrue();
 
-            Action a = () => r2.GetClaims();
+            Action a = () => r2.GetClaims(Options.FromConfiguration.SPOptions);
 
             a.ShouldThrow<SecurityTokenReplayDetectedException>();
         }
@@ -992,7 +994,7 @@ namespace Kentor.AuthServices.Tests
 
             subject.Validate(SignedXmlHelper.TestKey).Should().BeTrue();
 
-            Action a = () => subject.GetClaims();
+            Action a = () => subject.GetClaims(Options.FromConfiguration.SPOptions);
 
             a.ShouldThrow<InvalidOperationException>()
                 .WithMessage("The Saml2Response must have status success to extract claims.");
@@ -1010,7 +1012,9 @@ namespace Kentor.AuthServices.Tests
             var response = new Saml2Response(issuer, null, null, null, identity);
 
             response.Issuer.Should().Be(issuer);
-            response.GetClaims().Single().ShouldBeEquivalentTo(identity);
+            response.GetClaims(Options.FromConfiguration.SPOptions)
+                .Single()
+                .ShouldBeEquivalentTo(identity);
         }
 
         [TestMethod]

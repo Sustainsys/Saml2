@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IdentityModel.Metadata;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -23,5 +24,10 @@ namespace Kentor.AuthServices.Configuration
         /// presented by the service provider. Defaults to 3600 seconds.
         /// </summary>
         TimeSpan MetadataCacheDuration { get; }
+
+        /// <summary>
+        /// The security token handler used to process incoming assertions for this SP.
+        /// </summary>
+        Saml2PSecurityTokenHandler Saml2PSecurityTokenHandler { get; }
     }
 }

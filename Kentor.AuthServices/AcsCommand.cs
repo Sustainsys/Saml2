@@ -33,7 +33,7 @@ namespace Kentor.AuthServices
                 {
                     var samlResponse = Saml2Response.Read(binding.Unbind(request));
 
-                    return ProcessResponse(options, samlResponse);
+                    return ProcessResponse(options.SPOptions, samlResponse);
                 }
                 catch (FormatException ex)
                 {
@@ -50,11 +50,11 @@ namespace Kentor.AuthServices
             throw new NoSamlResponseFoundException();
         }
 
-        private static CommandResult ProcessResponse(IOptions options, Saml2Response samlResponse)
+        private static CommandResult ProcessResponse(ISPOptions options, Saml2Response samlResponse)
         {
             samlResponse.Validate(GetSigningKey(samlResponse.Issuer));
 
-            var principal = new ClaimsPrincipal(samlResponse.GetClaims());
+            var principal = new ClaimsPrincipal(samlResponse.GetClaims(options));
 
             principal = FederatedAuthentication.FederationConfiguration.IdentityConfiguration
                 .ClaimsAuthenticationManager.Authenticate(null, principal);
@@ -65,7 +65,7 @@ namespace Kentor.AuthServices
                 Location =
                     samlResponse.RequestState != null && samlResponse.RequestState.ReturnUri != null
                     ? samlResponse.RequestState.ReturnUri
-                    : options.SPOptions.ReturnUri,
+                    : options.ReturnUri,
                 Principal = principal
             };
         }

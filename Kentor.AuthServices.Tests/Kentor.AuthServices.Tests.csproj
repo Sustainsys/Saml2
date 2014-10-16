@@ -147,6 +147,7 @@
     <Compile Include="MetadataLoaderTests.cs" />
     <Compile Include="EntityIdEqualityComparerTests.cs" />
     <Compile Include="FederationTests.cs" />
+    <Compile Include="Saml2PSecurityTokenHandlerTests.cs" />
     <Compile Include="XmlDocumentExtensionsTests.cs" />
     <Compile Include="XmlHelpersTests.cs" />
   </ItemGroup>
