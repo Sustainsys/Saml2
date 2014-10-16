@@ -32,6 +32,7 @@ namespace Kentor.AuthServices.Owin
             if (loadConfiguration)
             {
                 SPOptions = KentorAuthServicesSection.Current;
+                KentorAuthServicesSection.Current.IdentityProviders.RegisterIdentityProviders(IdentityProviders);
             }
         }
 
@@ -53,7 +54,7 @@ namespace Kentor.AuthServices.Owin
         public ISPOptions SPOptions { get; set; }
 
         private readonly ConcurrentDictionary<EntityId, IdentityProvider> identityProviders
-            = new ConcurrentDictionary<EntityId, IdentityProvider>();
+            = new ConcurrentDictionary<EntityId, IdentityProvider>(EntityIdEqualityComparer.Instance);
 
         /// <summary>
         /// Available identity providers.

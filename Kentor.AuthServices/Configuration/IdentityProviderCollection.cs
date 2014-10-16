@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Configuration;
+using System.IdentityModel.Metadata;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -38,6 +39,20 @@ namespace Kentor.AuthServices.Configuration
         public new IEnumerator<IdentityProviderElement> GetEnumerator()
         {
             return base.GetEnumerator().AsGeneric<IdentityProviderElement>();
+        }
+
+        /// <summary>
+        /// Register the configured identity providers in the dictionary of active idps.
+        /// </summary>
+        /// <param name="idpDictionary"></param>
+        public void RegisterIdentityProviders(IDictionary<EntityId, IdentityProvider> idpDictionary)
+        {
+            foreach(var idpEntry in this)
+            {
+                var idp = new IdentityProvider(idpEntry);
+
+                idpDictionary[idp.EntityId] = idp;
+            }
         }
     }
 }
