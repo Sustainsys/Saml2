@@ -18,27 +18,6 @@ namespace Kentor.AuthServices.Tests
     [TestClass]
     public class Saml2ResponseTests
     {
-        private bool currentConfigValueForAllowedUnsolicitedAuthnResponse = false;
-
-        [TestInitialize]
-        public void TestInitialize()
-        {
-            currentConfigValueForAllowedUnsolicitedAuthnResponse =
-                KentorAuthServicesSection.Current.IdentityProviders.First().AllowUnsolicitedAuthnResponse;
-            KentorAuthServicesSection.Current.IdentityProviders.First().AllowConfigEdit(true);
-            KentorAuthServicesSection.Current.IdentityProviders.First().AllowUnsolicitedAuthnResponse = true;
-            KentorAuthServicesSection.Current.IdentityProviders.First().AllowConfigEdit(false);
-        }
-
-        [TestCleanup]
-        public void TestCleanUp()
-        {
-            KentorAuthServicesSection.Current.IdentityProviders.First().AllowConfigEdit(true);
-            KentorAuthServicesSection.Current.IdentityProviders.First().AllowUnsolicitedAuthnResponse =
-                currentConfigValueForAllowedUnsolicitedAuthnResponse;
-            KentorAuthServicesSection.Current.IdentityProviders.First().AllowConfigEdit(false);
-        }
-
         [TestMethod]
         public void Saml2Response_Read_BasicParams()
         {
@@ -849,9 +828,6 @@ namespace Kentor.AuthServices.Tests
         [TestMethod]
         public void Saml2Response_Validate_TrueOnMissingInResponseTo_IfAllowed()
         {
-            KentorAuthServicesSection.Current.IdentityProviders.First().AllowConfigEdit(true);
-            KentorAuthServicesSection.Current.IdentityProviders.First().AllowUnsolicitedAuthnResponse = true;
-            KentorAuthServicesSection.Current.IdentityProviders.First().AllowConfigEdit(false);
             var idp = Options.FromConfiguration.IdentityProviders.Default;
 
             var request = idp.CreateAuthenticateRequest(null);

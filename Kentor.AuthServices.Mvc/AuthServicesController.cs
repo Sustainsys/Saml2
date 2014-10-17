@@ -12,6 +12,26 @@ namespace Kentor.AuthServices.Mvc
     [AllowAnonymous]
     public class AuthServicesController : Controller
     {
+        private Options options = null;
+
+        /// <summary>
+        /// The options used by the controller. By default read from config, but can be set.
+        /// </summary>
+        public Options Options {
+            get
+            {
+                if(options == null)
+                {
+                    options = Options.FromConfiguration;
+                }
+                return options;
+            }
+            set
+            {
+                options = value;
+            }
+        }
+
         /// <summary>
         /// SignIn action that sends the AuthnRequest to the Idp.
         /// </summary>
@@ -20,7 +40,7 @@ namespace Kentor.AuthServices.Mvc
         {
             return CommandFactory.GetCommand("SignIn").Run(
                 new HttpRequestData(Request),
-                Options.FromConfiguration)
+                Options)
                 .ToActionResult();
         }
 
@@ -35,7 +55,7 @@ namespace Kentor.AuthServices.Mvc
         {
             var result = CommandFactory.GetCommand("Acs").Run(
                 new HttpRequestData(Request),
-                Options.FromConfiguration);
+                Options);
 
             result.SignInSessionAuthenticationModule();
             return result.ToActionResult();
@@ -59,7 +79,7 @@ namespace Kentor.AuthServices.Mvc
         {
             var result = CommandFactory.GetCommand("").Run(
                 new HttpRequestData(Request),
-                Options.FromConfiguration);
+                Options);
             return result.ToActionResult();
         }
     }

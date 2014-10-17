@@ -29,7 +29,7 @@ namespace Kentor.AuthServices
         /// <summary>
         /// Ctor
         /// </summary>
-        /// <param name="config">Config to use to initialize the fedration.</param>
+        /// <param name="config">Config to use to initialize the federation.</param>
         public Federation(FederationElement config)
         {
             if (config == null)

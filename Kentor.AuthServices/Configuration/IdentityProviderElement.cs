@@ -104,10 +104,6 @@ namespace Kentor.AuthServices.Configuration
             {
                 return (bool)base["allowUnsolicitedAuthnResponse"];
             }
-            internal set
-            {
-                base["allowUnsolicitedAuthnResponse"] = value;
-            }
         }
 
         /// <summary>
