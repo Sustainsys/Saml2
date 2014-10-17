@@ -58,9 +58,11 @@ namespace Kentor.AuthServices
         /// </summary>
         /// <param name="metadata">Metadata to use to configure the identity provider.</param>
         /// <param name="allowUnsolicitedAuthnResponse">Are unsolicited responses allowed from this idp?</param>
-        public IdentityProvider(EntityDescriptor metadata, bool allowUnsolicitedAuthnResponse)
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "sp")]
+        public IdentityProvider(EntityDescriptor metadata, bool allowUnsolicitedAuthnResponse, ISPOptions spOptions)
         {
             AllowUnsolicitedAuthnResponse = allowUnsolicitedAuthnResponse;
+            this.spOptions = spOptions;
             LoadMetadata(metadata);
             Validate();
         }

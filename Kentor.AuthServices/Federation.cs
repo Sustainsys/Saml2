@@ -30,14 +30,15 @@ namespace Kentor.AuthServices
         /// Ctor
         /// </summary>
         /// <param name="config">Config to use to initialize the federation.</param>
-        public Federation(FederationElement config)
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "sp")]
+        public Federation(FederationElement config, ISPOptions spOptions)
         {
             if (config == null)
             {
                 throw new ArgumentNullException("config");
             }
 
-            Init(config.MetadataUrl, config.AllowUnsolicitedAuthnResponse);
+            Init(config.MetadataUrl, config.AllowUnsolicitedAuthnResponse, spOptions);
         }
 
         /// <summary>
@@ -46,14 +47,15 @@ namespace Kentor.AuthServices
         /// <param name="metadataUrl">Url to where metadata can be fetched.</param>
         /// <param name="allowUnsolicitedAuthnResponse">Should unsolicited responses 
         /// from idps in this federation be accepted?</param>
-        public Federation(Uri metadataUrl, bool allowUnsolicitedAuthnResponse)
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "sp")]
+        public Federation(Uri metadataUrl, bool allowUnsolicitedAuthnResponse, ISPOptions spOptions)
         {
-            Init(metadataUrl, allowUnsolicitedAuthnResponse);
+            Init(metadataUrl, allowUnsolicitedAuthnResponse, spOptions);
         }
 
-        private void Init(Uri metadataUrl, bool allowUnsolicitedAuthnResponse)
+        private void Init(Uri metadataUrl, bool allowUnsolicitedAuthnResponse, ISPOptions spOptions)
         {
-            Init(MetadataLoader.LoadFederation(metadataUrl), allowUnsolicitedAuthnResponse);
+            Init(MetadataLoader.LoadFederation(metadataUrl), allowUnsolicitedAuthnResponse, spOptions);
         }
 
         /// <summary>
@@ -62,16 +64,17 @@ namespace Kentor.AuthServices
         /// <param name="metadata">Metadata to initialize this federation from.</param>
         /// <param name="allowUnsolicitedAuthnResponse">Should unsolicited responses 
         /// from idps in this federation be accepted?</param>
-        public Federation(EntitiesDescriptor metadata, bool allowUnsolicitedAuthnResponse)
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "sp")]
+        public Federation(EntitiesDescriptor metadata, bool allowUnsolicitedAuthnResponse, ISPOptions spOptions)
         {
-            Init(metadata, allowUnsolicitedAuthnResponse);
+            Init(metadata, allowUnsolicitedAuthnResponse, spOptions);
         }
 
-        private void Init(EntitiesDescriptor metadata, bool allowUnsolicitedAuthnResponse)
+        private void Init(EntitiesDescriptor metadata, bool allowUnsolicitedAuthnResponse, ISPOptions spOptions)
         {
             identityProviders = metadata.ChildEntities
                 .Where(ed => ed.RoleDescriptors.OfType<IdentityProviderSingleSignOnDescriptor>().Any())
-                .Select(ed => new IdentityProvider(ed, allowUnsolicitedAuthnResponse))
+                .Select(ed => new IdentityProvider(ed, allowUnsolicitedAuthnResponse, spOptions))
                 .ToList();
 
             readonlyIdentityProviders = identityProviders.AsReadOnly();

@@ -53,7 +53,7 @@ namespace Kentor.AuthServices.Configuration
 
             foreach(var configFederation in this)
             {
-                var federation = new Federation(configFederation);
+                var federation = new Federation(configFederation, options.SPOptions);
 
                 foreach(var idp in federation.IdentityProviders)
                 {

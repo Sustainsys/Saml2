@@ -4,6 +4,7 @@ using System.IO;
 using FluentAssertions;
 using System.IdentityModel.Metadata;
 using System.Linq;
+using Kentor.AuthServices.Configuration;
 
 namespace Kentor.AuthServices.Tests
 {
@@ -13,7 +14,7 @@ namespace Kentor.AuthServices.Tests
         [TestMethod]
         public void Federation_Ctor_NullcheckConfig()
         {
-            Action a = () => new Federation(config: null);
+            Action a = () => new Federation(null, Options.FromConfiguration.SPOptions);
 
             a.ShouldThrow<ArgumentNullException>().And.ParamName.Should().Be("config");
         }
@@ -34,7 +35,7 @@ namespace Kentor.AuthServices.Tests
             {
                 var metadata = (EntitiesDescriptor)MetadataLoader.Load(stream);
 
-                Action a = () => new Federation(metadata, true);
+                Action a = () => new Federation(metadata, true, Options.FromConfiguration.SPOptions);
 
                 a.ShouldNotThrow();
             }
@@ -53,7 +54,10 @@ namespace Kentor.AuthServices.Tests
         [TestMethod]
         public void Federation_Ctor_MetadataUrl()
         {
-            var subject = new Federation(new Uri("http://localhost:13428/federationMetadata"), false);
+            var subject = new Federation(
+                new Uri("http://localhost:13428/federationMetadata"),
+                false,
+                Options.FromConfiguration.SPOptions);
 
             subject.IdentityProviders.First().EntityId.Id.Should().Be("http://idp.federation.example.com/metadata");
         }
