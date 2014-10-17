@@ -12,15 +12,6 @@ namespace Kentor.AuthServices
         readonly List<IdentityProvider> identityProviders;
         readonly IList<IdentityProvider> readonlyIdentityProviders;
 
-        [Obsolete]
-        public IDictionary<EntityId, IdentityProvider> IdentityProviderDictionary
-        {
-            get
-            {
-                return identityProviders.ToDictionary(i => i.EntityId, EntityIdEqualityComparer.Instance);
-            }
-        }
-
         public IEnumerable<IdentityProvider> IdentityProviders
         {
             get
