@@ -3,6 +3,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.IO;
 using FluentAssertions;
 using System.IdentityModel.Metadata;
+using System.Linq;
 
 namespace Kentor.AuthServices.Tests
 {
@@ -47,6 +48,14 @@ namespace Kentor.AuthServices.Tests
             // skolfederation federation is used.
 
             TestLoadMetadata("SkolfederationMetadata.xml");
+        }
+
+        [TestMethod]
+        public void Federation_Ctor_MetadataUrl()
+        {
+            var subject = new Federation(new Uri("http://localhost:13428/federationMetadata"), false);
+
+            subject.IdentityProviders.First().EntityId.Id.Should().Be("http://idp.federation.example.com/metadata");
         }
     }
 }
