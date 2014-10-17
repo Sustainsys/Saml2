@@ -29,8 +29,7 @@ namespace Kentor.AuthServices.Tests
         [TestMethod]
         public void SignInCommand_Run_ReturnsAuthnRequestForDefaultIdp()
         {
-            var defaultDestination = IdentityProvider.ActiveIdentityProviders.First()
-                .SingleSignOnServiceUrl;
+            var defaultDestination = Options.FromConfiguration.IdentityProviders.Default.SingleSignOnServiceUrl;
 
             var subject = new SignInCommand().Run(
                 new HttpRequestData("GET", new Uri("http://example.com")),
@@ -56,14 +55,13 @@ namespace Kentor.AuthServices.Tests
         [TestMethod]
         public void SignInCommand_Run_MapsReturnUrl()
         {
-            var defaultDestination = IdentityProvider.ActiveIdentityProviders.First()
-                .SingleSignOnServiceUrl;
+            var defaultDestination = Options.FromConfiguration.IdentityProviders.Default.SingleSignOnServiceUrl;
 
             var httpRequest = new HttpRequestData("GET", new Uri("http://localhost/signin?ReturnUrl=%2FReturn.aspx"));
 
             var subject = new SignInCommand().Run(httpRequest, Options.FromConfiguration);
 
-            var idp = IdentityProvider.ActiveIdentityProviders.First();
+            var idp = Options.FromConfiguration.IdentityProviders.Default;
 
             var authnRequest = idp.CreateAuthenticateRequest(null);
 
@@ -78,7 +76,7 @@ namespace Kentor.AuthServices.Tests
         [TestMethod]
         public void SignInCommand_Run_With_Idp2_ReturnsAuthnRequestForSecondIdp()
         {
-            var secondIdp = IdentityProvider.ActiveIdentityProviders.Skip(1).First();
+            var secondIdp = Options.FromConfiguration.IdentityProviders[1];
             var secondDestination = secondIdp.SingleSignOnServiceUrl;
             var secondEntityId = secondIdp.EntityId;
 

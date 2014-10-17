@@ -62,9 +62,18 @@ namespace Kentor.AuthServices.Configuration
         {
             get
             {
-                lock (dictionary)
+                return this[0];
+            }
+        }
+
+        // Used by tests.
+        internal IdentityProvider this[int i]
+        {
+            get
+            {
+                lock(dictionary)
                 {
-                    return dictionary.Values.First();
+                    return dictionary.Values.Skip(i).First();
                 }
             }
         }
