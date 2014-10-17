@@ -184,26 +184,5 @@ namespace Kentor.AuthServices.Tests
             subject.Binding.Should().Be(Saml2BindingType.HttpPost);
             subject.SingleSignOnServiceUrl.Should().Be("http://idpArtifact.example.com/POST");
         }
-
-        [TestMethod]
-        public void IdentityProvider_ActiveIdentityProviders_IncludeIdpFromFederation()
-        {
-            var subject = Options.FromConfiguration.IdentityProviders[
-                new EntityId("http://idp.federation.example.com/metadata")];
-
-            subject.EntityId.Id.Should().Be("http://idp.federation.example.com/metadata");
-            subject.Binding.Should().Be(Saml2BindingType.HttpRedirect);
-        }
-
-        [TestMethod]
-        public void IdentityProvider_ActiveIdentityProviders_ThrowsOnInvalidEntityId()
-        {
-            Action a = () => { 
-                var i = Options.FromConfiguration.IdentityProviders[
-                new EntityId("urn:Non.Existent.EntityId")];
-            };
-
-            a.ShouldThrow<KeyNotFoundException>().And.Message.Should().Be("No Idp with entity id \"urn:Non.Existent.EntityId\" found.");
-        }
     }
 }
