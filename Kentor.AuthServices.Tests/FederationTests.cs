@@ -10,6 +10,14 @@ namespace Kentor.AuthServices.Tests
     public class FederationTests
     {
         [TestMethod]
+        public void Federation_Ctor_NullcheckConfig()
+        {
+            Action a = () => new Federation(config: null);
+
+            a.ShouldThrow<ArgumentNullException>().And.ParamName.Should().Be("config");
+        }
+
+        [TestMethod]
         public void Federation_LoadSambiTestMetadata()
         {
             // Sambi is the Swedish health care federation. To test that AuthServices
