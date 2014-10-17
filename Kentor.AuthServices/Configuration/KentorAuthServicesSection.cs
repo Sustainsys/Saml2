@@ -27,22 +27,6 @@ namespace Kentor.AuthServices.Configuration
                 true);
         }
 
-        private bool isReadOnly = true;
-
-        internal void AllowConfigEdit(bool allow)
-        {
-            isReadOnly = !allow;
-        }
-
-        /// <summary>
-        /// Allows local modification of the configuration for testing purposes
-        /// </summary>
-        /// <returns></returns>
-        public override bool IsReadOnly()
-        {
-            return isReadOnly;
-        }
-
         /// <summary>
         /// Current config as read from app/web.config.
         /// </summary>
@@ -142,10 +126,6 @@ namespace Kentor.AuthServices.Configuration
             {
                 return (Uri)base[discoveryServiceUrl];
             }
-            set
-            {
-                base[discoveryServiceUrl] = value;
-            }
         }
 
         const string discoveryServiceResponseUrl = "discoveryServiceResponseUrl";
@@ -158,10 +138,6 @@ namespace Kentor.AuthServices.Configuration
             get
             {
                 return (Uri)base[discoveryServiceResponseUrl];
-            }
-            set
-            {
-                base[discoveryServiceResponseUrl] = value;
             }
         }
 

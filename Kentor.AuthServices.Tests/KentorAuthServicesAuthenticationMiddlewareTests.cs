@@ -20,23 +20,13 @@ using System.Xml.Linq;
 using System.Xml;
 using System.Threading.Tasks;
 using System.IdentityModel.Tokens;
+using System.IdentityModel.Metadata;
 
 namespace Kentor.AuthServices.Tests
 {
     [TestClass]
     public class KentorAuthServicesAuthenticationMiddlewareTests
     {
-        [TestCleanup]
-        public void TestCleanup()
-        {
-            if(!KentorAuthServicesSection.Current.IsReadOnly())
-            {
-                KentorAuthServicesSection.Current.DiscoveryServiceResponseUrl = 
-                    new Uri("http://localhost/Saml2AuthenticationModule/SignIn");
-                KentorAuthServicesSection.Current.AllowConfigEdit(false);
-            }
-        }
-
         [TestMethod]
         public void KentorAuthServicesAuthenticationMiddleware_CtorNullChecksOptions()
         {
@@ -335,10 +325,13 @@ namespace Kentor.AuthServices.Tests
             var middleware = new KentorAuthServicesAuthenticationMiddleware(
                 new StubOwinMiddleware(200, null),
                 CreateAppBuilder(),
-                new KentorAuthServicesAuthenticationOptions(true));
-
-            KentorAuthServicesSection.Current.AllowConfigEdit(true);
-            KentorAuthServicesSection.Current.DiscoveryServiceResponseUrl = null;
+                new KentorAuthServicesAuthenticationOptions(false)
+                {
+                    SPOptions = new SPOptions()
+                    {
+                        EntityId = new EntityId("http://localhost/metadata")
+                    }
+                });
 
             Func<Task> f = async () => await middleware.Invoke(context);
 

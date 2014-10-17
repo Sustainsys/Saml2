@@ -10,22 +10,13 @@ using System.IO;
 using System.Xml.Linq;
 using Kentor.AuthServices.TestHelpers;
 using Kentor.AuthServices.Configuration;
+using System.IdentityModel.Metadata;
 
 namespace Kentor.AuthServices.Tests
 {
     [TestClass]
     public class SignInCommandTests
     {
-        [TestCleanup]
-        public void TestCleanup()
-        {
-            if (!KentorAuthServicesSection.Current.IsReadOnly())
-            {
-                KentorAuthServicesSection.Current.DiscoveryServiceUrl = null;
-                KentorAuthServicesSection.Current.AllowConfigEdit(false);
-            }
-        }
-
         [TestMethod]
         public void SignInCommand_Run_ReturnsAuthnRequestForDefaultIdp()
         {
@@ -118,12 +109,17 @@ namespace Kentor.AuthServices.Tests
         public void SignInCommand_Run_ReturnsRedirectToDiscoveryService()
         {
             var dsUrl = new Uri("http://ds.example.com");
-            KentorAuthServicesSection.Current.AllowConfigEdit(true);
-            KentorAuthServicesSection.Current.DiscoveryServiceUrl = dsUrl;
+
+            var options = new Options(new SPOptions
+                {
+                    DiscoveryServiceUrl = dsUrl,
+                    DiscoveryServiceResponseUrl = new Uri("http://localhost/Saml2AuthenticationModule/SignIn"),
+                    EntityId = new EntityId("https://github.com/KentorIT/authservices")
+                });
 
             var request = new HttpRequestData("GET", new Uri("http://localhost/signin?ReturnUrl=%2FReturn%2FPath"));
 
-            var result = new SignInCommand().Run(request, Options.FromConfiguration);
+            var result = new SignInCommand().Run(request, options);
 
             result.HttpStatusCode.Should().Be(HttpStatusCode.SeeOther);
 
