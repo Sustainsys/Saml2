@@ -21,88 +21,6 @@ namespace Kentor.AuthServices
     /// </summary>
     public class IdentityProvider
     {
-        private static readonly IDictionary<EntityId, IdentityProvider> configuredIdentityProviders =
-            KentorAuthServicesSection.Current.IdentityProviders.ToDictionary(
-                idp => new EntityId(idp.EntityId),
-                idp => new IdentityProvider(idp),
-                EntityIdEqualityComparer.Instance);
-
-        public class ActiveIdentityProvidersMap : IEnumerable<IdentityProvider>
-        {
-            private readonly IDictionary<EntityId, IdentityProvider> configuredIdps;
-            private readonly IList<Federation> configuredFederations;
-            
-            internal ActiveIdentityProvidersMap(
-                IDictionary<EntityId, IdentityProvider> configuredIdps,
-                IList<Federation> configuredFederations)
-            {
-                this.configuredIdps = configuredIdps;
-                this.configuredFederations = configuredFederations;
-            }
-
-            public IdentityProvider this[EntityId entityId]
-            {
-                get
-                {
-                    IdentityProvider idp;
-                    if (TryGetValue(entityId, out idp))
-                    {
-                        return idp;
-                    }
-                    else 
-                    {
-                        throw new KeyNotFoundException("No Idp with entity id \"" + entityId.Id + "\" found.");
-                    }
-                }
-            }
-
-            public bool TryGetValue(EntityId entityId, out IdentityProvider idp)
-            {
-                if(configuredIdps.TryGetValue(entityId, out idp))
-                {
-                    return true;
-                }
-
-                foreach(var federation in configuredFederations)
-                {
-                    if(federation.IdentityProviderDictionary.TryGetValue(entityId, out idp))
-                    {
-                        return true;
-                    }
-                }
-
-                return false;
-            }
-
-            public IEnumerator<IdentityProvider> GetEnumerator()
-            {
-                return configuredIdps.Values.Union(
-                configuredFederations.SelectMany(f => f.IdentityProviderDictionary.Select(i => i.Value)))
-                .GetEnumerator();
-            }
-
-            [ExcludeFromCodeCoverage]
-            System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
-            {
-                throw new NotImplementedException();
-            }
-        }
-
-        private static readonly ActiveIdentityProvidersMap activeIdentityProviders = 
-            new ActiveIdentityProvidersMap(
-                configuredIdentityProviders,
-                KentorAuthServicesSection.Current.Federations.Select(
-                f => new Federation(f.MetadataUrl, f.AllowUnsolicitedAuthnResponse)).ToList());
-
-        [Obsolete]
-        public static ActiveIdentityProvidersMap ActiveIdentityProviders
-        {
-            get
-            {
-                return activeIdentityProviders;
-            }
-        }
-
         // Ctor used for testing.
         internal IdentityProvider(Uri destinationUri)
         {
@@ -170,6 +88,7 @@ namespace Kentor.AuthServices
         /// The Url of the single sign on service. This is where the browser is redirected or
         /// where the post data is sent to when sending an AuthnRequest to the idp.
         /// </summary>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1726:UsePreferredTerms", MessageId = "SignOn")]
         public Uri SingleSignOnServiceUrl { get; private set; }
 
         /// <summary>
@@ -210,7 +129,7 @@ namespace Kentor.AuthServices
         /// </summary>
         /// <param name="request">The AuthnRequest to bind.</param>
         /// <returns>CommandResult with the bound request.</returns>
-        public CommandResult Bind(Saml2AuthenticationRequest request)
+        public CommandResult Bind(ISaml2Message request)
         {
             return Saml2Binding.Get(Binding).Bind(request);
         }

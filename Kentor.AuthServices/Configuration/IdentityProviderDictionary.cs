@@ -17,6 +17,7 @@ namespace Kentor.AuthServices.Configuration
     /// is dynamically loaded from a federation and later removed. Locks are simple and
     /// this part of the code shouldn't be that performance sensitive.
     /// </remarks>
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1711:IdentifiersShouldNotHaveIncorrectSuffix", Justification="It works like dictionary, even though it doesn't implement the full interface.")]
     public class IdentityProviderDictionary
     {
         private Dictionary<EntityId, IdentityProvider> dictionary =
@@ -32,6 +33,11 @@ namespace Kentor.AuthServices.Configuration
         {
             get
             {
+                if(entityId == null)
+                {
+                    throw new ArgumentNullException("entityId");
+                }
+
                 lock(dictionary)
                 {
                     try
