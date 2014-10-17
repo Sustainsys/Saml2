@@ -34,7 +34,16 @@ namespace Kentor.AuthServices.Configuration
             {
                 lock(dictionary)
                 {
-                    return dictionary[entityId];
+                    try
+                    {
+                        return dictionary[entityId];
+                    }
+                    catch (KeyNotFoundException e)
+                    {
+                        throw new KeyNotFoundException(
+                            "No Idp with entity id \"" + entityId.Id + "\" found.",
+                            e);
+                    }
                 }
             }
             set

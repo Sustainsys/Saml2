@@ -188,7 +188,7 @@ namespace Kentor.AuthServices.Tests
         [TestMethod]
         public void IdentityProvider_ActiveIdentityProviders_IncludeIdpFromFederation()
         {
-            var subject = IdentityProvider.ActiveIdentityProviders[
+            var subject = Options.FromConfiguration.IdentityProviders[
                 new EntityId("http://idp.federation.example.com/metadata")];
 
             subject.EntityId.Id.Should().Be("http://idp.federation.example.com/metadata");
@@ -199,18 +199,11 @@ namespace Kentor.AuthServices.Tests
         public void IdentityProvider_ActiveIdentityProviders_ThrowsOnInvalidEntityId()
         {
             Action a = () => { 
-                var i = IdentityProvider.ActiveIdentityProviders[
+                var i = Options.FromConfiguration.IdentityProviders[
                 new EntityId("urn:Non.Existent.EntityId")];
             };
 
             a.ShouldThrow<KeyNotFoundException>().And.Message.Should().Be("No Idp with entity id \"urn:Non.Existent.EntityId\" found.");
-        }
-
-        [TestMethod]
-        public void IdentityProvider_ActiveIdentityProviders_EnumerationIncludesFederationIdps()
-        {
-            IdentityProvider.ActiveIdentityProviders.Select(idp => idp.EntityId.Id)
-                .Should().Contain("http://idp.federation.example.com/metadata");
         }
     }
 }
