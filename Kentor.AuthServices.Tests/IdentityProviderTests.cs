@@ -29,7 +29,7 @@ namespace Kentor.AuthServices.Tests
         [TestMethod]
         public void IdentityProvider_CreateAuthenticateRequest_AssertionConsumerServiceUrlFromConfig()
         {
-            var idp = IdentityProvider.ActiveIdentityProviders.First();
+            var idp = Options.FromConfiguration.IdentityProviders.Default;
 
             var r = idp.CreateAuthenticateRequest(null);
 
@@ -39,7 +39,7 @@ namespace Kentor.AuthServices.Tests
         [TestMethod]
         public void IdentityProvider_CreateAuthenticateRequest_IssuerFromConfig()
         {
-            var idp = IdentityProvider.ActiveIdentityProviders.First();
+            var idp = Options.FromConfiguration.IdentityProviders.Default;
 
             var r = idp.CreateAuthenticateRequest(null);
 
@@ -49,7 +49,7 @@ namespace Kentor.AuthServices.Tests
         [TestMethod]
         public void IdentityProvider_Certificate_FromFile()
         {
-            var idp = IdentityProvider.ActiveIdentityProviders.First();
+            var idp = Options.FromConfiguration.IdentityProviders.Default;
 
             idp.SigningKey.ShouldBeEquivalentTo(SignedXmlHelper.TestKey);
         }
@@ -57,10 +57,10 @@ namespace Kentor.AuthServices.Tests
         [TestMethod]
         public void IdentityProvider_AllowUnsolicitedAuthnResponse_FromConfig()
         {
-            IdentityProvider.ActiveIdentityProviders[new EntityId("https://idp.example.com")]
+            Options.FromConfiguration.IdentityProviders[new EntityId("https://idp.example.com")]
                 .AllowUnsolicitedAuthnResponse.Should().BeTrue();
 
-            IdentityProvider.ActiveIdentityProviders[new EntityId("https://idp2.example.com")]
+            Options.FromConfiguration.IdentityProviders[new EntityId("https://idp2.example.com")]
                 .AllowUnsolicitedAuthnResponse.Should().BeFalse();
         }
 
@@ -75,7 +75,7 @@ namespace Kentor.AuthServices.Tests
         public void IdentityProvider_ConfigFromMetadata()
         {
             var entityId = new EntityId("http://localhost:13428/idpMetadata");
-            var idpFromMetadata = IdentityProvider.ActiveIdentityProviders[entityId];
+            var idpFromMetadata = Options.FromConfiguration.IdentityProviders[entityId];
 
             idpFromMetadata.EntityId.Id.Should().Be(entityId.Id);
             idpFromMetadata.Binding.Should().Be(Saml2BindingType.HttpPost);
