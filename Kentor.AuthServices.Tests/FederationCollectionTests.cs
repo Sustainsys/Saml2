@@ -15,7 +15,7 @@ namespace Kentor.AuthServices.Tests
 
             Action a = () => subject.RegisterFederations(null);
 
-            a.ShouldThrow<ArgumentNullException>().And.ParamName.Should().Be("identityProviderDictionary");
+            a.ShouldThrow<ArgumentNullException>().And.ParamName.Should().Be("options");
         }
     }
 }

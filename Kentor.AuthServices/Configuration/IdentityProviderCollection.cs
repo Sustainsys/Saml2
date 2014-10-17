@@ -44,19 +44,19 @@ namespace Kentor.AuthServices.Configuration
         /// <summary>
         /// Register the configured identity providers in the dictionary of active idps.
         /// </summary>
-        /// <param name="idpDictionary"></param>
-        public void RegisterIdentityProviders(IdentityProviderDictionary idpDictionary)
+        /// <param name="options">Current options.</param>
+        public void RegisterIdentityProviders(IOptions options)
         {
-            if(idpDictionary == null)
+            if(options == null)
             {
-                throw new ArgumentNullException("idpDictionary");
+                throw new ArgumentNullException("options");
             }
 
             foreach(var idpEntry in this)
             {
-                var idp = new IdentityProvider(idpEntry);
+                var idp = new IdentityProvider(idpEntry, options.SPOptions);
 
-                idpDictionary[idp.EntityId] = idp;
+                options.IdentityProviders[idp.EntityId] = idp;
             }
         }
     }

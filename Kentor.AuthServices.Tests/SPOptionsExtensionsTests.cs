@@ -7,16 +7,17 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using FluentAssertions;
 using System.Text.RegularExpressions;
 using System.IdentityModel.Metadata;
+using Kentor.AuthServices.Configuration;
 
 namespace Kentor.AuthServices.Tests
 {
     [TestClass]
-    public class ServiceProviderTests
+    public class SPOptionsExtensionsTests
     {
         [TestMethod]
-        public void ServiceProvider_Metadata_Required()
+        public void SPOPtionsExtensions_CreateMetadata_RequiredFields()
         {
-            var metadata = ServiceProvider.Metadata;
+            var metadata = Options.FromConfiguration.SPOptions.CreateMetadata();
 
             metadata.EntityId.Id.Should().Be("https://github.com/KentorIT/authservices");
 

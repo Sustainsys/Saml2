@@ -22,7 +22,7 @@ namespace Kentor.AuthServices
 
             return new CommandResult()
             {
-                Content = ServiceProvider.Metadata.ToXmlString(options.SPOptions.MetadataCacheDuration),
+                Content = options.SPOptions.CreateMetadata().ToXmlString(options.SPOptions.MetadataCacheDuration),
                 ContentType = "application/samlmetadata+xml"
             };
         }

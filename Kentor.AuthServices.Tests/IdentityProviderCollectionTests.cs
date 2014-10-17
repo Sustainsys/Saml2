@@ -15,7 +15,7 @@ namespace Kentor.AuthServices.Tests
 
             Action a = () => subject.RegisterIdentityProviders(null);
 
-            a.ShouldThrow<ArgumentNullException>().And.ParamName.Should().Be("idpDictionary");
+            a.ShouldThrow<ArgumentNullException>().And.ParamName.Should().Be("options");
         }
     }
 }

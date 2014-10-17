@@ -18,7 +18,7 @@ namespace Kentor.AuthServices.Tests
         {
             string idpUri = "http://idp.example.com/";
             
-            var ip = new IdentityProvider(new Uri(idpUri));
+            var ip = new IdentityProvider(new Uri(idpUri), Options.FromConfiguration.SPOptions);
 
             var r = ip.CreateAuthenticateRequest(null);
 
@@ -99,7 +99,7 @@ namespace Kentor.AuthServices.Tests
 
         private static void TestMissingConfig(IdentityProviderElement config, string missingElement)
         {
-            Action a = () => new IdentityProvider(config);
+            Action a = () => new IdentityProvider(config, Options.FromConfiguration.SPOptions);
 
             string expectedMessage = "Missing " + missingElement + " configuration on Idp " + config.EntityId + ".";
             a.ShouldThrow<ConfigurationErrorsException>(expectedMessage);
@@ -139,7 +139,7 @@ namespace Kentor.AuthServices.Tests
             config.LoadMetadata = true;
             config.EntityId = "http://localhost:13428/idpMetadataNoCertificate";
 
-            var subject = new IdentityProvider(config);
+            var subject = new IdentityProvider(config, Options.FromConfiguration.SPOptions);
 
             // Check that metadata was read and overrides configured values.
             subject.Binding.Should().Be(Saml2BindingType.HttpRedirect);
@@ -153,7 +153,7 @@ namespace Kentor.AuthServices.Tests
             config.LoadMetadata = true;
             config.EntityId = "http://localhost:13428/idpMetadataWrongEntityId";
 
-            Action a = () => new IdentityProvider(config);
+            Action a = () => new IdentityProvider(config, Options.FromConfiguration.SPOptions);
 
             a.ShouldThrow<ConfigurationErrorsException>().And.Message.Should()
                 .Be("Unexpected entity id \"http://wrong.entityid.example.com\" found when loading metadata for \"http://localhost:13428/idpMetadataWrongEntityId\".");
@@ -166,7 +166,7 @@ namespace Kentor.AuthServices.Tests
             config.LoadMetadata = true;
             config.EntityId = "http://localhost:13428/idpMetadataWithMultipleBindings";
 
-            var subject = new IdentityProvider(config);
+            var subject = new IdentityProvider(config, Options.FromConfiguration.SPOptions);
 
             subject.Binding.Should().Be(Saml2BindingType.HttpRedirect);
             subject.SingleSignOnServiceUrl.Should().Be("http://idp2Bindings.example.com/Redirect");
@@ -179,7 +179,7 @@ namespace Kentor.AuthServices.Tests
             config.LoadMetadata = true;
             config.EntityId = "http://localhost:13428/idpMetadataWithArtifactBinding";
 
-            var subject = new IdentityProvider(config);
+            var subject = new IdentityProvider(config, Options.FromConfiguration.SPOptions);
 
             subject.Binding.Should().Be(Saml2BindingType.HttpPost);
             subject.SingleSignOnServiceUrl.Should().Be("http://idpArtifact.example.com/POST");

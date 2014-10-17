@@ -22,8 +22,8 @@ namespace Kentor.AuthServices.Configuration
             get
             {
                 var options = new Options(KentorAuthServicesSection.Current);
-                KentorAuthServicesSection.Current.IdentityProviders.RegisterIdentityProviders(options.IdentityProviders);
-                KentorAuthServicesSection.Current.Federations.RegisterFederations(options.identityProviders);
+                KentorAuthServicesSection.Current.IdentityProviders.RegisterIdentityProviders(options);
+                KentorAuthServicesSection.Current.Federations.RegisterFederations(options);
                 return options;
             }
         }

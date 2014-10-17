@@ -124,9 +124,9 @@ namespace Kentor.AuthServices.Tests
             result.HttpStatusCode.Should().Be(HttpStatusCode.SeeOther);
 
             var queryString = string.Format("?entityID={0}&return={1}&returnIDParam=idp",
-                Uri.EscapeDataString(ServiceProvider.Metadata.EntityId.Id),
+                Uri.EscapeDataString(options.SPOptions.EntityId.Id),
                 Uri.EscapeDataString(
-                    KentorAuthServicesSection.Current.DiscoveryServiceResponseUrl
+                    options.SPOptions.DiscoveryServiceResponseUrl.OriginalString
                     + "?ReturnUrl=" + Uri.EscapeDataString("/Return/Path")));
 
             var expectedLocation = new Uri(dsUrl + queryString);

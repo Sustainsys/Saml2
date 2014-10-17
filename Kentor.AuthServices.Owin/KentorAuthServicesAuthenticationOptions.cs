@@ -32,8 +32,8 @@ namespace Kentor.AuthServices.Owin
             if (loadConfiguration)
             {
                 SPOptions = KentorAuthServicesSection.Current;
-                KentorAuthServicesSection.Current.IdentityProviders.RegisterIdentityProviders(IdentityProviders);
-                KentorAuthServicesSection.Current.Federations.RegisterFederations(IdentityProviders);
+                KentorAuthServicesSection.Current.IdentityProviders.RegisterIdentityProviders(this);
+                KentorAuthServicesSection.Current.Federations.RegisterFederations(this);
             }
         }
 

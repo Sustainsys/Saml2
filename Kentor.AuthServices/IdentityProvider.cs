@@ -22,17 +22,21 @@ namespace Kentor.AuthServices
     public class IdentityProvider
     {
         // Ctor used for testing.
-        internal IdentityProvider(Uri destinationUri)
+        internal IdentityProvider(Uri destinationUri, ISPOptions spOptions)
         {
             SingleSignOnServiceUrl = destinationUri;
+            this.spOptions = spOptions;
         }
 
-        internal IdentityProvider(IdentityProviderElement config)
+        readonly ISPOptions spOptions;
+
+        internal IdentityProvider(IdentityProviderElement config, ISPOptions spOptions)
         {
             SingleSignOnServiceUrl = config.DestinationUri;
             EntityId = new EntityId(config.EntityId);
             Binding = config.Binding;
             AllowUnsolicitedAuthnResponse = config.AllowUnsolicitedAuthnResponse;
+            this.spOptions = spOptions;
 
             var certificate = config.SigningCertificate.LoadCertificate();
 
@@ -112,8 +116,8 @@ namespace Kentor.AuthServices
             var request = new Saml2AuthenticationRequest()
             {
                 DestinationUri = SingleSignOnServiceUrl,
-                AssertionConsumerServiceUrl = KentorAuthServicesSection.Current.AssertionConsumerServiceUrl,
-                Issuer = KentorAuthServicesSection.Current.EntityId
+                AssertionConsumerServiceUrl = spOptions.AssertionConsumerServiceUrl,
+                Issuer = spOptions.EntityId
             };
 
             var responseData = new StoredRequestState(EntityId, returnUrl);
