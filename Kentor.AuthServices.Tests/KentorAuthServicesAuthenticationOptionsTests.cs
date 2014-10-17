@@ -23,7 +23,7 @@ namespace Kentor.AuthServices.Tests
         [TestMethod]
         public void KentorAuthServicesAuthenticationOptions_Ctor_LoadsConfiguration()
         {
-            var subject = new KentorAuthServicesAuthenticationOptions(loadConfiguration: true);
+            var subject = new KentorAuthServicesAuthenticationOptions(true);
 
             subject.SPOptions.EntityId.Id.Should().Be("https://github.com/KentorIT/authservices");
 
@@ -35,10 +35,31 @@ namespace Kentor.AuthServices.Tests
         [TestMethod]
         public void KentorAuthServicesAuthenticationOptions_Ctor_IgnoresConfiguration()
         {
-            var subject = new KentorAuthServicesAuthenticationOptions(loadConfiguration: false);
+            var subject = new KentorAuthServicesAuthenticationOptions(false);
 
             subject.SPOptions.Should().BeNull();
             subject.IdentityProviders.IsEmpty.Should().BeTrue();
+        }
+
+        [TestMethod]
+        public void KentorAuthServicesAuthenticationOptions_Ctor_LoadsIdpFromConfiguration()
+        {
+            var subject = new KentorAuthServicesAuthenticationOptions(true);
+
+            subject.IdentityProviders.Default.EntityId.Id.Should().Be("https://idp.example.com");
+        }
+
+        [TestMethod]
+        public void KentorAuthServicesAuthenticationOptions_Ctor_LoadsFederationFromConfigurationAndRegistersIdp()
+        {
+            var subject = new KentorAuthServicesAuthenticationOptions(true);
+
+            Action a = () =>
+            {
+                var i = subject.IdentityProviders[new EntityId("http://idp.federation.example.com/metadata")];
+            };
+
+            a.ShouldNotThrow();
         }
     }
 }
