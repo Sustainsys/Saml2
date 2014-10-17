@@ -9,14 +9,29 @@ namespace Kentor.AuthServices
 {
     class Federation
     {
-        readonly IDictionary<EntityId, IdentityProvider> identityProviders;
+        readonly List<IdentityProvider> identityProviders;
+        readonly IList<IdentityProvider> readonlyIdentityProviders;
 
-        public IDictionary<EntityId, IdentityProvider> IdentityProviders
+        [Obsolete]
+        public IDictionary<EntityId, IdentityProvider> IdentityProviderDictionary
         {
             get
             {
-                return identityProviders;
+                return identityProviders.ToDictionary(i => i.EntityId, EntityIdEqualityComparer.Instance);
             }
+        }
+
+        public IEnumerable<IdentityProvider> IdentityProviders
+        {
+            get
+            {
+                return readonlyIdentityProviders;
+            }
+        }
+
+        public Federation(FederationElement config)
+            : this(config.MetadataUrl, config.AllowUnsolicitedAuthnResponse)
+        {
         }
 
         public Federation(Uri metadataUrl, bool allowUnsolicitedAuthnResponse)
@@ -29,7 +44,9 @@ namespace Kentor.AuthServices
             identityProviders = metadata.ChildEntities
                 .Where(ed => ed.RoleDescriptors.OfType<IdentityProviderSingleSignOnDescriptor>().Any())
                 .Select(ed => new IdentityProvider(ed, allowUnsolicitedAuthnResponse))
-                .ToDictionary(idp => idp.EntityId, EntityIdEqualityComparer.Instance);
+                .ToList();
+
+            readonlyIdentityProviders = identityProviders.AsReadOnly();
         }
     }
 }

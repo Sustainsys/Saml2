@@ -150,6 +150,7 @@
     <Compile Include="Saml2PSecurityTokenHandlerTests.cs" />
     <Compile Include="SPOptionsTests.cs" />
     <Compile Include="IdentityProviderCollectionTests.cs" />
+    <Compile Include="FederationCollectionTests.cs" />
     <Compile Include="XmlDocumentExtensionsTests.cs" />
     <Compile Include="XmlHelpersTests.cs" />
   </ItemGroup>

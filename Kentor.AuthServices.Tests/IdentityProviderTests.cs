@@ -67,7 +67,7 @@ namespace Kentor.AuthServices.Tests
         [TestMethod]
         public void IdentityProvider_AllowUnsolicitedAuthnResponse_FromConfigForFederation()
         {
-            IdentityProvider.ActiveIdentityProviders[new EntityId("http://idp.federation.example.com/metadata")]
+            Options.FromConfiguration.IdentityProviders[new EntityId("http://idp.federation.example.com/metadata")]
                 .AllowUnsolicitedAuthnResponse.Should().BeTrue();
         }
 

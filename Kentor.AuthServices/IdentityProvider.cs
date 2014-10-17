@@ -65,7 +65,7 @@ namespace Kentor.AuthServices
 
                 foreach(var federation in configuredFederations)
                 {
-                    if(federation.IdentityProviders.TryGetValue(entityId, out idp))
+                    if(federation.IdentityProviderDictionary.TryGetValue(entityId, out idp))
                     {
                         return true;
                     }
@@ -77,7 +77,7 @@ namespace Kentor.AuthServices
             public IEnumerator<IdentityProvider> GetEnumerator()
             {
                 return configuredIdps.Values.Union(
-                configuredFederations.SelectMany(f => f.IdentityProviders.Select(i => i.Value)))
+                configuredFederations.SelectMany(f => f.IdentityProviderDictionary.Select(i => i.Value)))
                 .GetEnumerator();
             }
 
@@ -131,12 +131,15 @@ namespace Kentor.AuthServices
             Validate();
         }
 
-        internal IdentityProvider(EntityDescriptor metadata, bool allowUnsolicitedAuthnResponse)
+        /// <summary>
+        /// Ctor.
+        /// </summary>
+        /// <param name="metadata">Metadata to use to configure the identity provider.</param>
+        /// <param name="allowUnsolicitedAuthnResponse">Are unsolicited responses allowed from this idp?</param>
+        public IdentityProvider(EntityDescriptor metadata, bool allowUnsolicitedAuthnResponse)
         {
             AllowUnsolicitedAuthnResponse = allowUnsolicitedAuthnResponse;
-
             LoadMetadata(metadata);
-
             Validate();
         }
 

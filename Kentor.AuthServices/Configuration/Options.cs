@@ -23,6 +23,7 @@ namespace Kentor.AuthServices.Configuration
             {
                 var options = new Options(KentorAuthServicesSection.Current);
                 KentorAuthServicesSection.Current.IdentityProviders.RegisterIdentityProviders(options.IdentityProviders);
+                KentorAuthServicesSection.Current.Federations.RegisterFederations(options.identityProviders);
                 return options;
             }
         }

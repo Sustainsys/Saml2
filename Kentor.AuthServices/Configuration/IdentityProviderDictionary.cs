@@ -25,22 +25,23 @@ namespace Kentor.AuthServices.Configuration
         /// <summary>
         /// Gets an idp from the entity id.
         /// </summary>
-        /// <param name="entityID">entity Id to look up.</param>
+        /// <param name="entityId">entity Id to look up.</param>
         /// <returns>IdentityProvider</returns>
-        public IdentityProvider this[EntityId entityID]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1043:UseIntegralOrStringArgumentForIndexers")]
+        public IdentityProvider this[EntityId entityId]
         {
             get
             {
                 lock(dictionary)
                 {
-                    return dictionary[entityID];
+                    return dictionary[entityId];
                 }
             }
             set
             {
                 lock (dictionary)
                 {
-                    dictionary[entityID] = value;
+                    dictionary[entityId] = value;
                 }
             }
         }
