@@ -30,6 +30,8 @@ namespace Kentor.AuthServices
         /// Ctor
         /// </summary>
         /// <param name="config">Config to use to initialize the federation.</param>
+        /// <param name="spOptions">Service provider options to pass on to
+        /// created IdentityProvider instances.</param>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "sp")]
         public Federation(FederationElement config, ISPOptions spOptions)
         {
@@ -47,6 +49,8 @@ namespace Kentor.AuthServices
         /// <param name="metadataUrl">Url to where metadata can be fetched.</param>
         /// <param name="allowUnsolicitedAuthnResponse">Should unsolicited responses 
         /// from idps in this federation be accepted?</param>
+        /// <param name="spOptions">Service provider options to pass on to
+        /// created IdentityProvider instances.</param>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "sp")]
         public Federation(Uri metadataUrl, bool allowUnsolicitedAuthnResponse, ISPOptions spOptions)
         {
@@ -64,6 +68,8 @@ namespace Kentor.AuthServices
         /// <param name="metadata">Metadata to initialize this federation from.</param>
         /// <param name="allowUnsolicitedAuthnResponse">Should unsolicited responses 
         /// from idps in this federation be accepted?</param>
+        /// <param name="spOptions">Service provider options to pass on to
+        /// created IdentityProvider instances.</param>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "sp")]
         public Federation(EntitiesDescriptor metadata, bool allowUnsolicitedAuthnResponse, ISPOptions spOptions)
         {
