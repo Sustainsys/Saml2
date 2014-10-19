@@ -15,7 +15,7 @@ namespace Kentor.AuthServices.Owin
     {
         protected async override Task<AuthenticationTicket> AuthenticateCoreAsync()
         {
-            var result = CommandFactory.GetCommand("acs").Run(await Context.ToHttpRequestData());
+            var result = CommandFactory.GetCommand("acs").Run(await Context.ToHttpRequestData(), Options);
 
             var properties = new AuthenticationProperties()
             {
@@ -48,7 +48,12 @@ namespace Kentor.AuthServices.Owin
                         Context.Environment.TryGetValue("KentorAuthServices.idp", out objIdp);
                         idp = objIdp as EntityId;
                     }
-                    var result = SignInCommand.CreateResult(idp, challenge.Properties.RedirectUri, Context.Request.Uri);
+                    var result = SignInCommand.CreateResult(
+                        idp,
+                        challenge.Properties.RedirectUri,
+                        Context.Request.Uri,
+                        Options);
+
                     Response.Redirect(result.Location.OriginalString);
                 }
             }
@@ -58,7 +63,7 @@ namespace Kentor.AuthServices.Owin
 
         public override async Task<bool> InvokeAsync()
         {
-            if (KentorAuthServicesSection.Current.AssertionConsumerServiceUrl == Request.Uri)
+            if (Options.SPOptions.AssertionConsumerServiceUrl == Request.Uri)
             {
                 var ticket = (MultipleIdentityAuthenticationTicket)await AuthenticateAsync();
 
@@ -71,15 +76,17 @@ namespace Kentor.AuthServices.Owin
             
             if(Request.Path == Options.MetadataPath)
             {
-                CommandFactory.GetCommand("").Run(await Context.ToHttpRequestData()).Apply(Context);
+                CommandFactory.GetCommand("")
+                    .Run(await Context.ToHttpRequestData(), Options)
+                    .Apply(Context);
                 return true;
             }
 
-            if(KentorAuthServicesSection.Current.DiscoveryServiceResponseUrl != null &&
+            if(Options.SPOptions.DiscoveryServiceResponseUrl != null &&
                 Request.Uri.GetLeftPart(UriPartial.Path) ==
-                KentorAuthServicesSection.Current.DiscoveryServiceResponseUrl.GetLeftPart(UriPartial.Path))
+                Options.SPOptions.DiscoveryServiceResponseUrl.GetLeftPart(UriPartial.Path))
             {
-                CommandFactory.GetCommand("SignIn").Run(await Context.ToHttpRequestData()).Apply(Context);
+                CommandFactory.GetCommand("SignIn").Run(await Context.ToHttpRequestData(), Options).Apply(Context);
                 return true;
             }
 

@@ -13,12 +13,16 @@ namespace Kentor.AuthServices
 {
     class MetadataCommand : ICommand
     {
-        public CommandResult Run(HttpRequestData request)
+        public CommandResult Run(HttpRequestData request, IOptions options)
         {
+            if(options == null)
+            {
+                throw new ArgumentNullException("options");
+            }
+
             return new CommandResult()
             {
-                Content = ServiceProvider.Metadata.ToXmlString(
-                    KentorAuthServicesSection.Current.MetadataCacheDuration),
+                Content = options.SPOptions.CreateMetadata().ToXmlString(options.SPOptions.MetadataCacheDuration),
                 ContentType = "application/samlmetadata+xml"
             };
         }

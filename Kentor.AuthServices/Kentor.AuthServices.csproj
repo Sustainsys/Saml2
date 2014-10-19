@@ -59,10 +59,16 @@
     <Compile Include="CacheAwareMetadataSerializer.cs" />
     <Compile Include="ClaimsIdentityExtensions.cs" />
     <Compile Include="CommandResult.cs" />
+    <Compile Include="Configuration\IdentityProviderDictionary.cs" />
+    <Compile Include="Configuration\SPOptions.cs" />
+    <Compile Include="Configuration\EntityIdConverter.cs" />
     <Compile Include="Configuration\FederationCollection.cs" />
     <Compile Include="Configuration\IdentityProviderCollection.cs" />
     <Compile Include="Configuration\IdentityProviderElement.cs" />
     <Compile Include="Configuration\CertificateElement.cs" />
+    <Compile Include="Configuration\IOptions.cs" />
+    <Compile Include="Configuration\ISPOptions.cs" />
+    <Compile Include="Configuration\Options.cs" />
     <Compile Include="DateTimeExtensions.cs" />
     <Compile Include="EntityIdEqualityComparer.cs" />
     <Compile Include="Enumerator.cs" />
@@ -99,7 +105,7 @@
     <Compile Include="Saml2Response.cs" />
     <Compile Include="Saml2StatusCode.cs" />
     <Compile Include="Saml2SubjectExtensions.cs" />
-    <Compile Include="ServiceProvider.cs" />
+    <Compile Include="SPOptionsExtensions.cs" />
     <Compile Include="SignInCommand.cs" />
     <Compile Include="StatusCodeHelper.cs" />
     <Compile Include="XmlDocumentExtensions.cs" />

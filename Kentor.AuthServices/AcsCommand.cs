@@ -13,8 +13,18 @@ namespace Kentor.AuthServices
 {
     class AcsCommand : ICommand
     {
-        public CommandResult Run(HttpRequestData request)
+        public CommandResult Run(HttpRequestData request, IOptions options)
         {
+            if(request == null)
+            {
+                throw new ArgumentNullException("request");
+            }
+
+            if(options == null)
+            {
+                throw new ArgumentNullException("options");
+            }
+
             var binding = Saml2Binding.Get(request);
 
             if (binding != null)
@@ -23,19 +33,7 @@ namespace Kentor.AuthServices
                 {
                     var samlResponse = Saml2Response.Read(binding.Unbind(request));
 
-                    samlResponse.Validate(GetSigningKey(samlResponse.Issuer));
-
-                    var principal = new ClaimsPrincipal(samlResponse.GetClaims());
-                    
-                    principal = FederatedAuthentication.FederationConfiguration.IdentityConfiguration
-                        .ClaimsAuthenticationManager.Authenticate(null, principal);
-
-                    return new CommandResult()
-                    {
-                        HttpStatusCode = HttpStatusCode.SeeOther,
-                        Location = samlResponse.RequestState != null && samlResponse.RequestState.ReturnUri != null ? samlResponse.RequestState.ReturnUri : KentorAuthServicesSection.Current.ReturnUri,
-                        Principal = principal
-                    };
+                    return ProcessResponse(options, samlResponse);
                 }
                 catch (FormatException ex)
                 {
@@ -52,9 +50,24 @@ namespace Kentor.AuthServices
             throw new NoSamlResponseFoundException();
         }
 
-        private static AsymmetricAlgorithm GetSigningKey(EntityId issuer)
+        private static CommandResult ProcessResponse(IOptions options, Saml2Response samlResponse)
         {
-            return IdentityProvider.ActiveIdentityProviders[issuer].SigningKey;
+            samlResponse.Validate(options);
+
+            var principal = new ClaimsPrincipal(samlResponse.GetClaims(options.SPOptions));
+
+            principal = FederatedAuthentication.FederationConfiguration.IdentityConfiguration
+                .ClaimsAuthenticationManager.Authenticate(null, principal);
+
+            return new CommandResult()
+            {
+                HttpStatusCode = HttpStatusCode.SeeOther,
+                Location =
+                    samlResponse.RequestState != null && samlResponse.RequestState.ReturnUri != null
+                    ? samlResponse.RequestState.ReturnUri
+                    : options.SPOptions.ReturnUri,
+                Principal = principal
+            };
         }
     }
 }

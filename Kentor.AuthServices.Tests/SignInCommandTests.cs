@@ -10,29 +10,21 @@ using System.IO;
 using System.Xml.Linq;
 using Kentor.AuthServices.TestHelpers;
 using Kentor.AuthServices.Configuration;
+using System.IdentityModel.Metadata;
 
 namespace Kentor.AuthServices.Tests
 {
     [TestClass]
     public class SignInCommandTests
     {
-        [TestCleanup]
-        public void TestCleanup()
-        {
-            if (!KentorAuthServicesSection.Current.IsReadOnly())
-            {
-                KentorAuthServicesSection.Current.DiscoveryServiceUrl = null;
-                KentorAuthServicesSection.Current.AllowConfigEdit(false);
-            }
-        }
-
         [TestMethod]
         public void SignInCommand_Run_ReturnsAuthnRequestForDefaultIdp()
         {
-            var defaultDestination = IdentityProvider.ActiveIdentityProviders.First()
-                .SingleSignOnServiceUrl;
+            var defaultDestination = Options.FromConfiguration.IdentityProviders.Default.SingleSignOnServiceUrl;
 
-            var subject = new SignInCommand().Run(new HttpRequestData("GET", new Uri("http://example.com")));
+            var subject = new SignInCommand().Run(
+                new HttpRequestData("GET", new Uri("http://example.com")),
+                Options.FromConfiguration);
 
             var expected = new CommandResult()
             {
@@ -54,14 +46,13 @@ namespace Kentor.AuthServices.Tests
         [TestMethod]
         public void SignInCommand_Run_MapsReturnUrl()
         {
-            var defaultDestination = IdentityProvider.ActiveIdentityProviders.First()
-                .SingleSignOnServiceUrl;
+            var defaultDestination = Options.FromConfiguration.IdentityProviders.Default.SingleSignOnServiceUrl;
 
             var httpRequest = new HttpRequestData("GET", new Uri("http://localhost/signin?ReturnUrl=%2FReturn.aspx"));
 
-            var subject = new SignInCommand().Run(httpRequest);
+            var subject = new SignInCommand().Run(httpRequest, Options.FromConfiguration);
 
-            var idp = IdentityProvider.ActiveIdentityProviders.First();
+            var idp = Options.FromConfiguration.IdentityProviders.Default;
 
             var authnRequest = idp.CreateAuthenticateRequest(null);
 
@@ -76,13 +67,14 @@ namespace Kentor.AuthServices.Tests
         [TestMethod]
         public void SignInCommand_Run_With_Idp2_ReturnsAuthnRequestForSecondIdp()
         {
-            var secondIdp = IdentityProvider.ActiveIdentityProviders.Skip(1).First();
+            var secondIdp = Options.FromConfiguration.IdentityProviders[1];
             var secondDestination = secondIdp.SingleSignOnServiceUrl;
             var secondEntityId = secondIdp.EntityId;
 
-            var request = new HttpRequestData("GET", new Uri("http://sp.example.com?idp=" +
-            HttpUtility.UrlEncode(secondEntityId.Id)));
-            var subject = new SignInCommand().Run(request);
+            var request = new HttpRequestData("GET",
+                new Uri("http://sp.example.com?idp=" + Uri.EscapeDataString(secondEntityId.Id)));
+
+            var subject = new SignInCommand().Run(request, Options.FromConfiguration);
 
             subject.Location.Host.Should().Be(secondDestination.Host);
         }
@@ -92,36 +84,49 @@ namespace Kentor.AuthServices.Tests
         {
             var request = new HttpRequestData("GET", new Uri("http://localhost/signin?idp=no-such-idp-in-config"));
 
-            Action a = () => new SignInCommand().Run(request);
+            Action a = () => new SignInCommand().Run(request, Options.FromConfiguration);
 
             a.ShouldThrow<InvalidOperationException>().WithMessage("Unknown idp");
         }
 
         [TestMethod]
-        public void SignInCommand_Run_NullCheck()
+        public void SignInCommand_Run_NullCheckRequest()
         {
-            Action a = () => new SignInCommand().Run(null);
+            Action a = () => new SignInCommand().Run(null, Options.FromConfiguration);
 
             a.ShouldThrow<ArgumentNullException>().And.ParamName.Should().Be("request");
+        }
+
+        [TestMethod]
+        public void SignInCommand_Run_NullCheckOptions()
+        {
+            Action a = () => new SignInCommand().Run(new HttpRequestData("GET", new Uri("http://localhost")), null);
+
+            a.ShouldThrow<ArgumentNullException>().And.ParamName.Should().Be("options");
         }
 
         [TestMethod]
         public void SignInCommand_Run_ReturnsRedirectToDiscoveryService()
         {
             var dsUrl = new Uri("http://ds.example.com");
-            KentorAuthServicesSection.Current.AllowConfigEdit(true);
-            KentorAuthServicesSection.Current.DiscoveryServiceUrl = dsUrl;
+
+            var options = new Options(new SPOptions
+                {
+                    DiscoveryServiceUrl = dsUrl,
+                    DiscoveryServiceResponseUrl = new Uri("http://localhost/Saml2AuthenticationModule/SignIn"),
+                    EntityId = new EntityId("https://github.com/KentorIT/authservices")
+                });
 
             var request = new HttpRequestData("GET", new Uri("http://localhost/signin?ReturnUrl=%2FReturn%2FPath"));
 
-            var result = new SignInCommand().Run(request);
+            var result = new SignInCommand().Run(request, options);
 
             result.HttpStatusCode.Should().Be(HttpStatusCode.SeeOther);
 
             var queryString = string.Format("?entityID={0}&return={1}&returnIDParam=idp",
-                Uri.EscapeDataString(ServiceProvider.Metadata.EntityId.Id),
+                Uri.EscapeDataString(options.SPOptions.EntityId.Id),
                 Uri.EscapeDataString(
-                    KentorAuthServicesSection.Current.DiscoveryServiceResponseUrl
+                    options.SPOptions.DiscoveryServiceResponseUrl.OriginalString
                     + "?ReturnUrl=" + Uri.EscapeDataString("/Return/Path")));
 
             var expectedLocation = new Uri(dsUrl + queryString);

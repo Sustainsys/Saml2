@@ -14,31 +14,44 @@ namespace Kentor.AuthServices
 {
     class SignInCommand : ICommand
     {
-        public CommandResult Run(HttpRequestData request)
+        public CommandResult Run(HttpRequestData request, IOptions options)
         {
             if (request == null)
             {
                 throw new ArgumentNullException("request");
             }
 
-            return CreateResult(new EntityId(request.QueryString["idp"]),
-                request.QueryString["ReturnUrl"], request.Url);
+            if (options == null)
+            {
+                throw new ArgumentNullException("options");
+            }
+
+            return CreateResult(
+                new EntityId(request.QueryString["idp"]),
+                request.QueryString["ReturnUrl"],
+                request.Url,
+                options);
         }
 
-        public static CommandResult CreateResult(EntityId idpEntityId, string returnPath, Uri requestUrl)
+        public static CommandResult CreateResult(
+            EntityId idpEntityId,
+            string returnPath,
+            Uri requestUrl,
+            IOptions options)
         {
             IdentityProvider idp;
             if (idpEntityId == null || idpEntityId.Id == null)
             {
-                if (KentorAuthServicesSection.Current.DiscoveryServiceUrl != null)
+                if (options.SPOptions.DiscoveryServiceUrl != null)
                 {
-                    return RedirectToDiscoveryService(returnPath);
+                    return RedirectToDiscoveryService(returnPath, options.SPOptions);
                 }
-                idp = IdentityProvider.ActiveIdentityProviders.First();
+
+                idp = options.IdentityProviders.Default;
             }
             else
             {
-                if (!IdentityProvider.ActiveIdentityProviders.TryGetValue(idpEntityId, out idp))
+                if (!options.IdentityProviders.TryGetValue(idpEntityId, out idp))
                 {
                     throw new InvalidOperationException("Unknown idp");
                 }
@@ -55,9 +68,9 @@ namespace Kentor.AuthServices
             return idp.Bind(authnRequest);
         }
 
-        private static CommandResult RedirectToDiscoveryService(string returnPath)
+        private static CommandResult RedirectToDiscoveryService(string returnPath, ISPOptions spOptions)
         {
-            string returnUrl = KentorAuthServicesSection.Current.DiscoveryServiceResponseUrl.OriginalString;
+            string returnUrl = spOptions.DiscoveryServiceResponseUrl.OriginalString;
 
             if(!string.IsNullOrEmpty(returnPath))
             {
@@ -67,8 +80,8 @@ namespace Kentor.AuthServices
             var redirectLocation = string.Format(
                 CultureInfo.InvariantCulture,
                 "{0}?entityID={1}&return={2}&returnIDParam=idp",
-                KentorAuthServicesSection.Current.DiscoveryServiceUrl,
-                Uri.EscapeDataString(KentorAuthServicesSection.Current.EntityId),
+                spOptions.DiscoveryServiceUrl,
+                Uri.EscapeDataString(spOptions.EntityId.Id),
                 Uri.EscapeDataString(returnUrl));
 
             return new CommandResult()

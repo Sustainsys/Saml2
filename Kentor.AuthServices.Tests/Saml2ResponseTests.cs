@@ -18,33 +18,6 @@ namespace Kentor.AuthServices.Tests
     [TestClass]
     public class Saml2ResponseTests
     {
-        private bool currentConfigValueForAllowedUnsolicitedAuthnResponse = false;
-        private bool currentSaveBootstrapContext;
-
-        [TestInitialize]
-        public void TestInitialize()
-        {
-            currentConfigValueForAllowedUnsolicitedAuthnResponse =
-                KentorAuthServicesSection.Current.IdentityProviders.First().AllowUnsolicitedAuthnResponse;
-            KentorAuthServicesSection.Current.IdentityProviders.First().AllowConfigEdit(true);
-            KentorAuthServicesSection.Current.IdentityProviders.First().AllowUnsolicitedAuthnResponse = true;
-            KentorAuthServicesSection.Current.IdentityProviders.First().AllowConfigEdit(false);
-
-            currentSaveBootstrapContext = Saml2PSecurityTokenHandler.DefaultInstance.Configuration.SaveBootstrapContext;
-            Saml2PSecurityTokenHandler.DefaultInstance.Configuration.SaveBootstrapContext = true;
-        }
-
-        [TestCleanup]
-        public void TestCleanUp()
-        {
-            KentorAuthServicesSection.Current.IdentityProviders.First().AllowConfigEdit(true);
-            KentorAuthServicesSection.Current.IdentityProviders.First().AllowUnsolicitedAuthnResponse =
-                currentConfigValueForAllowedUnsolicitedAuthnResponse;
-            KentorAuthServicesSection.Current.IdentityProviders.First().AllowConfigEdit(false);
-
-            Saml2PSecurityTokenHandler.DefaultInstance.Configuration.SaveBootstrapContext = currentSaveBootstrapContext;
-        }
-
         [TestMethod]
         public void Saml2Response_Read_BasicParams()
         {
@@ -164,7 +137,7 @@ namespace Kentor.AuthServices.Tests
                 </saml2:Assertion>
             </saml2p:Response>";
 
-            Saml2Response.Read(response).Validate(null).Should().BeFalse();
+            Saml2Response.Read(response).Validate(Options.FromConfiguration).Should().BeFalse();
         }
 
         [TestMethod]
@@ -193,7 +166,7 @@ namespace Kentor.AuthServices.Tests
 
             var signedResponse = SignedXmlHelper.SignXml(response);
 
-            Saml2Response.Read(signedResponse).Validate(SignedXmlHelper.TestKey).Should().BeTrue();
+            Saml2Response.Read(signedResponse).Validate(Options.FromConfiguration).Should().BeTrue();
         }
 
         [TestMethod]
@@ -226,7 +199,7 @@ namespace Kentor.AuthServices.Tests
             var signedAssertion = SignedXmlHelper.SignXml(assertion);
             var signedResponse = string.Format(response, signedAssertion);
 
-            Saml2Response.Read(signedResponse).Validate(SignedXmlHelper.TestKey).Should().BeTrue();
+            Saml2Response.Read(signedResponse).Validate(Options.FromConfiguration).Should().BeTrue();
         }
 
         [TestMethod]
@@ -271,7 +244,7 @@ namespace Kentor.AuthServices.Tests
             var signedAssertion2 = SignedXmlHelper.SignXml(assertion2);
             var signedResponse = string.Format(response, signedAssertion1, signedAssertion2);
 
-            Saml2Response.Read(signedResponse).Validate(SignedXmlHelper.TestKey).Should().BeTrue();
+            Saml2Response.Read(signedResponse).Validate(Options.FromConfiguration).Should().BeTrue();
         }
 
         [TestMethod]
@@ -315,7 +288,7 @@ namespace Kentor.AuthServices.Tests
             var signedAssertion1 = SignedXmlHelper.SignXml(assertion1);
             var signedResponse = string.Format(response, signedAssertion1, assertion2);
 
-            Saml2Response.Read(signedResponse).Validate(SignedXmlHelper.TestKey).Should().BeFalse();
+            Saml2Response.Read(signedResponse).Validate(Options.FromConfiguration).Should().BeFalse();
         }
 
         [TestMethod]
@@ -335,7 +308,7 @@ namespace Kentor.AuthServices.Tests
 
             signedResponse = signedResponse.Replace("2013-01-01", "2013-01-02");
 
-            Saml2Response.Read(signedResponse).Validate(SignedXmlHelper.TestKey).Should().BeFalse();
+            Saml2Response.Read(signedResponse).Validate(Options.FromConfiguration).Should().BeFalse();
         }
 
         [TestMethod]
@@ -363,7 +336,7 @@ namespace Kentor.AuthServices.Tests
 
             var signedResponse = SignedXmlHelper.SignXml(response).Replace("SomeUser", "SomeOtherUser");
 
-            Saml2Response.Read(signedResponse).Validate(SignedXmlHelper.TestKey).Should().BeFalse();
+            Saml2Response.Read(signedResponse).Validate(Options.FromConfiguration).Should().BeFalse();
         }
 
         [TestMethod]
@@ -407,7 +380,7 @@ namespace Kentor.AuthServices.Tests
             var signedAssertion2 = SignedXmlHelper.SignXml(assertion2).Replace("SomeUser2", "SomeOtherUser");
             var signedResponse = string.Format(response, signedAssertion1, signedAssertion2);
 
-            Saml2Response.Read(signedResponse).Validate(SignedXmlHelper.TestKey).Should().BeFalse();
+            Saml2Response.Read(signedResponse).Validate(Options.FromConfiguration).Should().BeFalse();
         }
 
         [TestMethod]
@@ -463,7 +436,7 @@ namespace Kentor.AuthServices.Tests
 
             var signedResponse = string.Format(response, signedAssertion1, signedAssertionToInject);
 
-            Saml2Response.Read(signedResponse).Validate(SignedXmlHelper.TestKey).Should().BeFalse();
+            Saml2Response.Read(signedResponse).Validate(Options.FromConfiguration).Should().BeFalse();
         }
 
         [TestMethod]
@@ -510,7 +483,7 @@ namespace Kentor.AuthServices.Tests
             signedXml.ComputeSignature();
             xmlDoc.DocumentElement.AppendChild(xmlDoc.ImportNode(signedXml.GetXml(), true));
 
-            Saml2Response.Read(xmlDoc.OuterXml).Validate(SignedXmlHelper.TestKey).Should().BeFalse();
+            Saml2Response.Read(xmlDoc.OuterXml).Validate(Options.FromConfiguration).Should().BeFalse();
         }
 
         [TestMethod]
@@ -547,7 +520,7 @@ namespace Kentor.AuthServices.Tests
             signedXml.ComputeSignature();
             xmlDoc.DocumentElement.AppendChild(xmlDoc.ImportNode(signedXml.GetXml(), true));
 
-            Saml2Response.Read(xmlDoc.OuterXml).Validate(SignedXmlHelper.TestKey).Should().BeFalse();
+            Saml2Response.Read(xmlDoc.OuterXml).Validate(Options.FromConfiguration).Should().BeFalse();
         }
 
         [TestMethod]
@@ -567,34 +540,14 @@ namespace Kentor.AuthServices.Tests
 
             var samlResponse = Saml2Response.Read(signedResponse);
 
-            samlResponse.Validate(SignedXmlHelper.TestKey).Should().BeTrue();
-            samlResponse.Validate(SignedXmlHelper.TestKey).Should().BeTrue();
+            samlResponse.Validate(Options.FromConfiguration).Should().BeTrue();
+            samlResponse.Validate(Options.FromConfiguration).Should().BeTrue();
         }
 
         [NotReRunnable]
         [TestMethod]
         public void Saml2Response_GetClaims_CreateIdentities()
         {
-            var assertion1 = @"<saml2:Assertion xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
-                Version=""2.0"" ID=""Saml2Response_GetClaims_CreateIdentities1""
-                IssueInstant=""2013-09-25T00:00:00Z"">
-                    <saml2:Issuer>https://idp.example.com</saml2:Issuer>
-                    <saml2:Subject>
-                        <saml2:NameID>SomeUser</saml2:NameID>
-                        <saml2:SubjectConfirmation Method=""urn:oasis:names:tc:SAML:2.0:cm:bearer"" />
-                    </saml2:Subject>
-                    <saml2:Conditions NotOnOrAfter=""2100-01-01T00:00:00Z"" />
-                </saml2:Assertion>";
-            var assertion2 = @"<saml2:Assertion xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
-                Version=""2.0"" ID=""Saml2Response_GetClaims_CreateIdentities2""
-                IssueInstant=""2013-09-25T00:00:00Z"">
-                    <saml2:Issuer>https://idp.example.com</saml2:Issuer>
-                    <saml2:Subject>
-                        <saml2:NameID>SomeOtherUser</saml2:NameID>
-                        <saml2:SubjectConfirmation Method=""urn:oasis:names:tc:SAML:2.0:cm:bearer"" />
-                    </saml2:Subject>
-                    <saml2:Conditions NotOnOrAfter=""2100-01-01T00:00:00Z"" />
-                </saml2:Assertion>";
             var response =
             @"<?xml version=""1.0"" encoding=""UTF-8""?>
             <saml2p:Response xmlns:saml2p=""urn:oasis:names:tc:SAML:2.0:protocol""
@@ -604,26 +557,85 @@ namespace Kentor.AuthServices.Tests
                 <saml2p:Status>
                     <saml2p:StatusCode Value=""urn:oasis:names:tc:SAML:2.0:status:Success"" />
                 </saml2p:Status>
-               " + assertion1 + assertion2 +            
-            "</saml2p:Response>";
-
-            var handler = Saml2PSecurityTokenHandler.DefaultInstance;
-            var token1 = (Saml2SecurityToken)handler.ReadToken( XmlReader.Create(new StringReader(assertion1)));
-            var token2 = (Saml2SecurityToken)handler.ReadToken( XmlReader.Create(new StringReader(assertion2)));
+                <saml2:Assertion xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
+                Version=""2.0"" ID=""Saml2Response_GetClaims_CreateIdentities1""
+                IssueInstant=""2013-09-25T00:00:00Z"">
+                    <saml2:Issuer>https://idp.example.com</saml2:Issuer>
+                    <saml2:Subject>
+                        <saml2:NameID>SomeUser</saml2:NameID>
+                        <saml2:SubjectConfirmation Method=""urn:oasis:names:tc:SAML:2.0:cm:bearer"" />
+                    </saml2:Subject>
+                    <saml2:Conditions NotOnOrAfter=""2100-01-01T00:00:00Z"" />
+                </saml2:Assertion>
+                <saml2:Assertion xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
+                Version=""2.0"" ID=""Saml2Response_GetClaims_CreateIdentities2""
+                IssueInstant=""2013-09-25T00:00:00Z"">
+                    <saml2:Issuer>https://idp.example.com</saml2:Issuer>
+                    <saml2:Subject>
+                        <saml2:NameID>SomeOtherUser</saml2:NameID>
+                        <saml2:SubjectConfirmation Method=""urn:oasis:names:tc:SAML:2.0:cm:bearer"" />
+                    </saml2:Subject>
+                    <saml2:Conditions NotOnOrAfter=""2100-01-01T00:00:00Z"" />
+                </saml2:Assertion>
+            </saml2p:Response>";
 
             var c1 = new ClaimsIdentity("Federation");
             c1.AddClaim(new Claim(ClaimTypes.NameIdentifier, "SomeUser", null, "https://idp.example.com"));
-            c1.BootstrapContext = new BootstrapContext(token1, handler);
             var c2 = new ClaimsIdentity("Federation");
             c2.AddClaim(new Claim(ClaimTypes.NameIdentifier, "SomeOtherUser", null, "https://idp.example.com"));
-            c2.BootstrapContext = new BootstrapContext(token2, handler);
 
             var expected = new ClaimsIdentity[] { c1, c2 };
 
             var r = Saml2Response.Read(SignedXmlHelper.SignXml(response));
-            r.Validate(SignedXmlHelper.TestKey);
+            r.Validate(Options.FromConfiguration);
 
-            r.GetClaims().ShouldBeEquivalentTo(expected, opt => opt.IgnoringCyclicReferences());
+            r.GetClaims(Options.FromConfiguration.SPOptions)
+                .ShouldBeEquivalentTo(expected, opt => opt.IgnoringCyclicReferences());
+        }
+
+        [TestMethod]
+        [NotReRunnable]
+        public void Saml2Response_GetClaims_SavesBootstrapContext()
+        {
+            var assertion = 
+            @"<saml2:Assertion xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
+                Version=""2.0"" ID=""Saml2Response_GetClaims_SavesBootstrapContext_Assertion""
+                IssueInstant=""2013-09-25T00:00:00Z"">
+                <saml2:Issuer>https://idp.example.com</saml2:Issuer>
+                <saml2:Subject>
+                    <saml2:NameID>SomeUser</saml2:NameID>
+                    <saml2:SubjectConfirmation Method=""urn:oasis:names:tc:SAML:2.0:cm:bearer"" />
+                </saml2:Subject>
+                <saml2:Conditions NotOnOrAfter=""2100-01-01T00:00:00Z"" />
+            </saml2:Assertion>";
+
+            var response =
+            @"<?xml version=""1.0"" encoding=""UTF-8""?>
+            <saml2p:Response xmlns:saml2p=""urn:oasis:names:tc:SAML:2.0:protocol""
+            xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
+            ID = ""Saml2Response_GetClaims_SavesBootstrapContext"" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z"">
+                <saml2:Issuer>https://idp.example.com</saml2:Issuer>
+                <saml2p:Status>
+                    <saml2p:StatusCode Value=""urn:oasis:names:tc:SAML:2.0:status:Success"" />
+                </saml2p:Status>"
+            + assertion +
+            "</saml2p:Response>";
+
+            var spOptions = new SPOptions
+            {
+                EntityId = new EntityId("http://sp.example.com")
+            };
+
+            spOptions.Saml2PSecurityTokenHandler.Configuration.SaveBootstrapContext = true;
+
+            var expected = spOptions.Saml2PSecurityTokenHandler.ReadToken(XmlReader.Create(new StringReader(assertion)));
+
+            var r = Saml2Response.Read(SignedXmlHelper.SignXml(response));
+            r.Validate(Options.FromConfiguration);
+
+            var subject = r.GetClaims(spOptions).Single().BootstrapContext;
+
+            subject.As<BootstrapContext>().SecurityToken.ShouldBeEquivalentTo(expected);
         }
 
         [TestMethod]
@@ -649,7 +661,7 @@ namespace Kentor.AuthServices.Tests
                 </saml2:Assertion>
             </saml2p:Response>";
 
-            Action a = () => Saml2Response.Read(response).GetClaims();
+            Action a = () => Saml2Response.Read(response).GetClaims(Options.FromConfiguration.SPOptions);
 
             a.ShouldThrow<InvalidOperationException>()
                 .WithMessage("The Saml2Response must be validated first.");
@@ -683,8 +695,8 @@ namespace Kentor.AuthServices.Tests
             response = response.Replace("2013-09-25", "2013-09-26");
 
             var r = Saml2Response.Read(response);
-            r.Validate(SignedXmlHelper.TestKey);
-            Action a = () => r.GetClaims();
+            r.Validate(Options.FromConfiguration);
+            Action a = () => r.GetClaims(Options.FromConfiguration.SPOptions);
 
             a.ShouldThrow<InvalidOperationException>()
                 .WithMessage("The Saml2Response didn't pass validation");
@@ -726,9 +738,9 @@ namespace Kentor.AuthServices.Tests
             response = SignedXmlHelper.SignXml(response);
 
             var r = Saml2Response.Read(response);
-            r.Validate(SignedXmlHelper.TestKey);
+            r.Validate(Options.FromConfiguration);
 
-            Action a = () => r.GetClaims();
+            Action a = () => r.GetClaims(Options.FromConfiguration.SPOptions);
 
             a.ShouldThrow<AudienceUriValidationFailedException>();
         }
@@ -759,9 +771,9 @@ namespace Kentor.AuthServices.Tests
 
             response = SignedXmlHelper.SignXml(response);
             var r = Saml2Response.Read(response);
-            r.Validate(SignedXmlHelper.TestKey);
+            r.Validate(Options.FromConfiguration);
 
-            Action a = () => r.GetClaims();
+            Action a = () => r.GetClaims(Options.FromConfiguration.SPOptions);
 
             a.ShouldThrow<SecurityTokenExpiredException>();
         }
@@ -769,7 +781,7 @@ namespace Kentor.AuthServices.Tests
         [TestMethod]
         public void Saml2Response_Validate_TrueOnCorrectInResponseTo()
         {
-            var idp = IdentityProvider.ActiveIdentityProviders.First();
+            var idp = Options.FromConfiguration.IdentityProviders.Default;
 
             var request = idp.CreateAuthenticateRequest(null);
 
@@ -789,14 +801,12 @@ namespace Kentor.AuthServices.Tests
 
             var response = Saml2Response.Read(responseXML);
 
-            response.Validate(SignedXmlHelper.TestKey).Should().BeTrue();
+            response.Validate(Options.FromConfiguration).Should().BeTrue();
         }
 
         [TestMethod]
         public void Saml2Response_Validate_FalseOnMissingInResponseTo_IfDisallowed()
         {
-            var idp = IdentityProvider.ActiveIdentityProviders.First(i => !i.AllowUnsolicitedAuthnResponse);
-
             var responseXML =
             @"<?xml version=""1.0"" encoding=""UTF-8""?>
             <saml2p:Response xmlns:saml2p=""urn:oasis:names:tc:SAML:2.0:protocol""
@@ -812,16 +822,13 @@ namespace Kentor.AuthServices.Tests
 
             var response = Saml2Response.Read(responseXML);
 
-            response.Validate(SignedXmlHelper.TestKey).Should().BeFalse();
+            response.Validate(Options.FromConfiguration).Should().BeFalse();
         }
 
         [TestMethod]
         public void Saml2Response_Validate_TrueOnMissingInResponseTo_IfAllowed()
         {
-            KentorAuthServicesSection.Current.IdentityProviders.First().AllowConfigEdit(true);
-            KentorAuthServicesSection.Current.IdentityProviders.First().AllowUnsolicitedAuthnResponse = true;
-            KentorAuthServicesSection.Current.IdentityProviders.First().AllowConfigEdit(false);
-            var idp = IdentityProvider.ActiveIdentityProviders.First();
+            var idp = Options.FromConfiguration.IdentityProviders.Default;
 
             var request = idp.CreateAuthenticateRequest(null);
 
@@ -840,13 +847,13 @@ namespace Kentor.AuthServices.Tests
 
             var response = Saml2Response.Read(responseXML);
 
-            response.Validate(SignedXmlHelper.TestKey).Should().BeTrue();
+            response.Validate(Options.FromConfiguration).Should().BeTrue();
         }
 
         [TestMethod]
         public void Saml2Response_Validate_FalseOnIncorrectInResponseTo()
         {
-            var idp = IdentityProvider.ActiveIdentityProviders.First();
+            var idp = Options.FromConfiguration.IdentityProviders.Default;
 
             var request = idp.CreateAuthenticateRequest(null);
 
@@ -866,13 +873,13 @@ namespace Kentor.AuthServices.Tests
 
             var response = Saml2Response.Read(responseXML);
 
-            response.Validate(SignedXmlHelper.TestKey).Should().BeFalse();
+            response.Validate(Options.FromConfiguration).Should().BeFalse();
         }
 
         [TestMethod]
         public void Saml2Response_Validate_FalseOnReplayedInResponseTo()
         {
-            var idp = IdentityProvider.ActiveIdentityProviders.First();
+            var idp = Options.FromConfiguration.IdentityProviders.Default;
 
             var request = idp.CreateAuthenticateRequest(null);
 
@@ -891,10 +898,10 @@ namespace Kentor.AuthServices.Tests
             responseXML = SignedXmlHelper.SignXml(responseXML);
 
             var response = Saml2Response.Read(responseXML);
-            response.Validate(SignedXmlHelper.TestKey).Should().BeTrue();
+            response.Validate(Options.FromConfiguration).Should().BeTrue();
 
             response = Saml2Response.Read(responseXML);
-            response.Validate(SignedXmlHelper.TestKey).Should().BeFalse();
+            response.Validate(Options.FromConfiguration).Should().BeFalse();
         }
 
         [TestMethod]
@@ -902,7 +909,7 @@ namespace Kentor.AuthServices.Tests
         {
             // A valid response is received, but it is not from the idp that we
             // did send the AuthnRequest to.
-            var idp = IdentityProvider.ActiveIdentityProviders.First();
+            var idp = Options.FromConfiguration.IdentityProviders.Default;
 
             var request = idp.CreateAuthenticateRequest(null);
 
@@ -921,7 +928,7 @@ namespace Kentor.AuthServices.Tests
 
             var response = Saml2Response.Read(responseXML);
 
-            response.Validate(SignedXmlHelper.TestKey).Should().BeFalse();
+            response.Validate(Options.FromConfiguration).Should().BeFalse();
         }
 
         [TestMethod]
@@ -951,13 +958,13 @@ namespace Kentor.AuthServices.Tests
 
             response = SignedXmlHelper.SignXml(response);
             var r1 = Saml2Response.Read(response);
-            r1.Validate(SignedXmlHelper.TestKey).Should().BeTrue();
-            r1.GetClaims();
+            r1.Validate(Options.FromConfiguration).Should().BeTrue();
+            r1.GetClaims(Options.FromConfiguration.SPOptions);
 
             var r2 = Saml2Response.Read(response);
-            r2.Validate(SignedXmlHelper.TestKey).Should().BeTrue();
+            r2.Validate(Options.FromConfiguration).Should().BeTrue();
 
-            Action a = () => r2.GetClaims();
+            Action a = () => r2.GetClaims(Options.FromConfiguration.SPOptions);
 
             a.ShouldThrow<SecurityTokenReplayDetectedException>();
         }
@@ -990,9 +997,9 @@ namespace Kentor.AuthServices.Tests
 
             var subject = Saml2Response.Read(xml);
 
-            subject.Validate(SignedXmlHelper.TestKey).Should().BeTrue();
+            subject.Validate(Options.FromConfiguration).Should().BeTrue();
 
-            Action a = () => subject.GetClaims();
+            Action a = () => subject.GetClaims(Options.FromConfiguration.SPOptions);
 
             a.ShouldThrow<InvalidOperationException>()
                 .WithMessage("The Saml2Response must have status success to extract claims.");
@@ -1010,7 +1017,9 @@ namespace Kentor.AuthServices.Tests
             var response = new Saml2Response(issuer, null, null, null, identity);
 
             response.Issuer.Should().Be(issuer);
-            response.GetClaims().Single().ShouldBeEquivalentTo(identity);
+            response.GetClaims(Options.FromConfiguration.SPOptions)
+                .Single()
+                .ShouldBeEquivalentTo(identity);
         }
 
         [TestMethod]
@@ -1127,7 +1136,7 @@ namespace Kentor.AuthServices.Tests
         [TestMethod]
         public void Saml2Response_FromRequest_Remembers_ReturnUri()
         {
-            var idp = IdentityProvider.ActiveIdentityProviders.First();
+            var idp = Options.FromConfiguration.IdentityProviders.Default;
 
             var request = idp.CreateAuthenticateRequest(new Uri("http://localhost/testUrl.aspx"));
 
@@ -1147,7 +1156,7 @@ namespace Kentor.AuthServices.Tests
 
             var response = Saml2Response.Read(responseXML);
 
-            response.Validate(SignedXmlHelper.TestKey);
+            response.Validate(Options.FromConfiguration);
             response.RequestState.ReturnUri.Should().Be("http://localhost/testUrl.aspx");
         }
     }

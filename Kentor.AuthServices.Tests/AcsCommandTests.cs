@@ -11,6 +11,7 @@ using System.Web;
 using System.Xml;
 using System.Linq;
 using System.Collections.Generic;
+using Kentor.AuthServices.Configuration;
 
 namespace Kentor.AuthServices.Tests
 {
@@ -18,9 +19,31 @@ namespace Kentor.AuthServices.Tests
     public class AcsCommandTests
     {
         [TestMethod]
+        public void AcsCommand_Run_NullCheckRequest()
+        {
+            Action a = () => new AcsCommand().Run(null, new Options(null));
+
+            // Verify exception is thrown and that it is thrown directly by the Run()
+            // method and not by some method being called by Run().
+            a.ShouldThrow<ArgumentNullException>()
+                .Where(e => e.ParamName == "request")
+                .Where(e => e.TargetSite.Name == "Run");
+        }
+
+        [TestMethod]
+        public void AcsCommand_Run_NullCheckOptions()
+        {
+            Action a = () => new AcsCommand().Run(new HttpRequestData("GET", new Uri("http://localhost")), null);
+            
+            a.ShouldThrow<ArgumentNullException>().And.ParamName.Should().Be("options");
+        }
+
+        [TestMethod]
         public void AcsCommand_Run_ErrorOnNoSamlResponseFound()
         {
-            Action a = () => new AcsCommand().Run(new HttpRequestData("GET", new Uri("http://localhost")));
+            Action a = () => new AcsCommand().Run(
+                new HttpRequestData("GET", new Uri("http://localhost")), 
+                Options.FromConfiguration);
 
             a.ShouldThrow<NoSamlResponseFoundException>()
                 .WithMessage("No Saml2 Response found in the http request.");
@@ -34,7 +57,7 @@ namespace Kentor.AuthServices.Tests
                 new KeyValuePair<string, string[]>("SAMLResponse", new string[] { "#¤!2" }) 
             });
 
-            Action a = () => new AcsCommand().Run(r);
+            Action a = () => new AcsCommand().Run(r, Options.FromConfiguration);
 
             a.ShouldThrow<BadFormatSamlResponseException>()
                 .WithMessage("The SAML Response did not contain valid BASE64 encoded data.")
@@ -50,7 +73,7 @@ namespace Kentor.AuthServices.Tests
                 new KeyValuePair<string, string[]>("SAMLResponse", new string[] { encoded })
             });
 
-            Action a = () => new AcsCommand().Run(r);
+            Action a = () => new AcsCommand().Run(r, Options.FromConfiguration);
 
             a.ShouldThrow<BadFormatSamlResponseException>()
                 .WithMessage("The SAML response contains incorrect XML")
@@ -102,15 +125,15 @@ namespace Kentor.AuthServices.Tests
                 Location = new Uri("http://localhost/LoggedIn")
             };
 
-            new AcsCommand().Run(r).ShouldBeEquivalentTo(expected,
-                opt => opt.IgnoringCyclicReferences());
+            new AcsCommand().Run(r, Options.FromConfiguration)
+                .ShouldBeEquivalentTo(expected, opt => opt.IgnoringCyclicReferences());
         }
 
         [TestMethod]
         [NotReRunnable]
         public void AcsCommand_Run_WithReturnUrl_SuccessfulResult()
         {
-            var idp = IdentityProvider.ActiveIdentityProviders.First();
+            var idp = Options.FromConfiguration.IdentityProviders.Default;
             var request = idp.CreateAuthenticateRequest(new Uri("http://localhost/testUrl.aspx"));
 
             var response =
@@ -154,8 +177,8 @@ namespace Kentor.AuthServices.Tests
                 Location = new Uri("http://localhost/testUrl.aspx")
             };
 
-            new AcsCommand().Run(r).ShouldBeEquivalentTo(expected,
-                opt => opt.IgnoringCyclicReferences());
+            new AcsCommand().Run(r, Options.FromConfiguration)
+                .ShouldBeEquivalentTo(expected, opt => opt.IgnoringCyclicReferences());
         }
     }
 }

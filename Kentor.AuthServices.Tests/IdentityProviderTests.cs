@@ -18,7 +18,7 @@ namespace Kentor.AuthServices.Tests
         {
             string idpUri = "http://idp.example.com/";
             
-            var ip = new IdentityProvider(new Uri(idpUri));
+            var ip = new IdentityProvider(new Uri(idpUri), Options.FromConfiguration.SPOptions);
 
             var r = ip.CreateAuthenticateRequest(null);
 
@@ -29,7 +29,7 @@ namespace Kentor.AuthServices.Tests
         [TestMethod]
         public void IdentityProvider_CreateAuthenticateRequest_AssertionConsumerServiceUrlFromConfig()
         {
-            var idp = IdentityProvider.ActiveIdentityProviders.First();
+            var idp = Options.FromConfiguration.IdentityProviders.Default;
 
             var r = idp.CreateAuthenticateRequest(null);
 
@@ -39,17 +39,17 @@ namespace Kentor.AuthServices.Tests
         [TestMethod]
         public void IdentityProvider_CreateAuthenticateRequest_IssuerFromConfig()
         {
-            var idp = IdentityProvider.ActiveIdentityProviders.First();
+            var idp = Options.FromConfiguration.IdentityProviders.Default;
 
             var r = idp.CreateAuthenticateRequest(null);
 
-            r.Issuer.Should().Be("https://github.com/KentorIT/authservices");
+            r.Issuer.Id.Should().Be("https://github.com/KentorIT/authservices");
         }
 
         [TestMethod]
         public void IdentityProvider_Certificate_FromFile()
         {
-            var idp = IdentityProvider.ActiveIdentityProviders.First();
+            var idp = Options.FromConfiguration.IdentityProviders.Default;
 
             idp.SigningKey.ShouldBeEquivalentTo(SignedXmlHelper.TestKey);
         }
@@ -57,17 +57,17 @@ namespace Kentor.AuthServices.Tests
         [TestMethod]
         public void IdentityProvider_AllowUnsolicitedAuthnResponse_FromConfig()
         {
-            IdentityProvider.ActiveIdentityProviders[new EntityId("https://idp.example.com")]
+            Options.FromConfiguration.IdentityProviders[new EntityId("https://idp.example.com")]
                 .AllowUnsolicitedAuthnResponse.Should().BeTrue();
 
-            IdentityProvider.ActiveIdentityProviders[new EntityId("https://idp2.example.com")]
+            Options.FromConfiguration.IdentityProviders[new EntityId("https://idp2.example.com")]
                 .AllowUnsolicitedAuthnResponse.Should().BeFalse();
         }
 
         [TestMethod]
         public void IdentityProvider_AllowUnsolicitedAuthnResponse_FromConfigForFederation()
         {
-            IdentityProvider.ActiveIdentityProviders[new EntityId("http://idp.federation.example.com/metadata")]
+            Options.FromConfiguration.IdentityProviders[new EntityId("http://idp.federation.example.com/metadata")]
                 .AllowUnsolicitedAuthnResponse.Should().BeTrue();
         }
 
@@ -75,7 +75,7 @@ namespace Kentor.AuthServices.Tests
         public void IdentityProvider_ConfigFromMetadata()
         {
             var entityId = new EntityId("http://localhost:13428/idpMetadata");
-            var idpFromMetadata = IdentityProvider.ActiveIdentityProviders[entityId];
+            var idpFromMetadata = Options.FromConfiguration.IdentityProviders[entityId];
 
             idpFromMetadata.EntityId.Id.Should().Be(entityId.Id);
             idpFromMetadata.Binding.Should().Be(Saml2BindingType.HttpPost);
@@ -99,7 +99,7 @@ namespace Kentor.AuthServices.Tests
 
         private static void TestMissingConfig(IdentityProviderElement config, string missingElement)
         {
-            Action a = () => new IdentityProvider(config);
+            Action a = () => new IdentityProvider(config, Options.FromConfiguration.SPOptions);
 
             string expectedMessage = "Missing " + missingElement + " configuration on Idp " + config.EntityId + ".";
             a.ShouldThrow<ConfigurationErrorsException>(expectedMessage);
@@ -139,7 +139,7 @@ namespace Kentor.AuthServices.Tests
             config.LoadMetadata = true;
             config.EntityId = "http://localhost:13428/idpMetadataNoCertificate";
 
-            var subject = new IdentityProvider(config);
+            var subject = new IdentityProvider(config, Options.FromConfiguration.SPOptions);
 
             // Check that metadata was read and overrides configured values.
             subject.Binding.Should().Be(Saml2BindingType.HttpRedirect);
@@ -153,7 +153,7 @@ namespace Kentor.AuthServices.Tests
             config.LoadMetadata = true;
             config.EntityId = "http://localhost:13428/idpMetadataWrongEntityId";
 
-            Action a = () => new IdentityProvider(config);
+            Action a = () => new IdentityProvider(config, Options.FromConfiguration.SPOptions);
 
             a.ShouldThrow<ConfigurationErrorsException>().And.Message.Should()
                 .Be("Unexpected entity id \"http://wrong.entityid.example.com\" found when loading metadata for \"http://localhost:13428/idpMetadataWrongEntityId\".");
@@ -166,7 +166,7 @@ namespace Kentor.AuthServices.Tests
             config.LoadMetadata = true;
             config.EntityId = "http://localhost:13428/idpMetadataWithMultipleBindings";
 
-            var subject = new IdentityProvider(config);
+            var subject = new IdentityProvider(config, Options.FromConfiguration.SPOptions);
 
             subject.Binding.Should().Be(Saml2BindingType.HttpRedirect);
             subject.SingleSignOnServiceUrl.Should().Be("http://idp2Bindings.example.com/Redirect");
@@ -179,38 +179,10 @@ namespace Kentor.AuthServices.Tests
             config.LoadMetadata = true;
             config.EntityId = "http://localhost:13428/idpMetadataWithArtifactBinding";
 
-            var subject = new IdentityProvider(config);
+            var subject = new IdentityProvider(config, Options.FromConfiguration.SPOptions);
 
             subject.Binding.Should().Be(Saml2BindingType.HttpPost);
             subject.SingleSignOnServiceUrl.Should().Be("http://idpArtifact.example.com/POST");
-        }
-
-        [TestMethod]
-        public void IdentityProvider_ActiveIdentityProviders_IncludeIdpFromFederation()
-        {
-            var subject = IdentityProvider.ActiveIdentityProviders[
-                new EntityId("http://idp.federation.example.com/metadata")];
-
-            subject.EntityId.Id.Should().Be("http://idp.federation.example.com/metadata");
-            subject.Binding.Should().Be(Saml2BindingType.HttpRedirect);
-        }
-
-        [TestMethod]
-        public void IdentityProvider_ActiveIdentityProviders_ThrowsOnInvalidEntityId()
-        {
-            Action a = () => { 
-                var i = IdentityProvider.ActiveIdentityProviders[
-                new EntityId("urn:Non.Existent.EntityId")];
-            };
-
-            a.ShouldThrow<KeyNotFoundException>().And.Message.Should().Be("No Idp with entity id \"urn:Non.Existent.EntityId\" found.");
-        }
-
-        [TestMethod]
-        public void IdentityProvider_ActiveIdentityProviders_EnumerationIncludesFederationIdps()
-        {
-            IdentityProvider.ActiveIdentityProviders.Select(idp => idp.EntityId.Id)
-                .Should().Contain("http://idp.federation.example.com/metadata");
         }
     }
 }

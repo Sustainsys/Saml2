@@ -242,6 +242,10 @@
       <Project>{fa1e7723-124c-4d2d-a731-e16400b0073b}</Project>
       <Name>Kentor.AuthServices.Owin</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Kentor.AuthServices\Kentor.AuthServices.csproj">
+      <Project>{93ba675e-a159-4701-b68b-c4b81015c556}</Project>
+      <Name>Kentor.AuthServices</Name>
+    </ProjectReference>
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

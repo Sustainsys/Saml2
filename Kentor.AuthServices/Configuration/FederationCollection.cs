@@ -39,5 +39,27 @@ namespace Kentor.AuthServices.Configuration
         {
             return base.GetEnumerator().AsGeneric<FederationElement>();
         }
+
+        /// <summary>
+        /// Registers the identity providers from the configured federations in the identity provider dictionary.
+        /// </summary>
+        /// <param name="options">Current options.</param>
+        public void RegisterFederations(IOptions options)
+        {
+            if(options == null)
+            {
+                throw new ArgumentNullException("options");
+            }
+
+            foreach(var configFederation in this)
+            {
+                var federation = new Federation(configFederation, options.SPOptions);
+
+                foreach(var idp in federation.IdentityProviders)
+                {
+                    options.IdentityProviders[idp.EntityId] = idp;
+                }
+            }
+        }
     }
 }

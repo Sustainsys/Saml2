@@ -7,6 +7,7 @@ using NSubstitute;
 using FluentAssertions;
 using System.IdentityModel.Metadata;
 using System.Xml;
+using Kentor.AuthServices.Configuration;
 
 namespace Kentor.AuthServices.Tests
 {
@@ -14,9 +15,19 @@ namespace Kentor.AuthServices.Tests
     public class MetadataCommandTests
     {
         [TestMethod]
+        public void MetadataCommand_Run_NullcheckOptions()
+        {
+            Action a = () => new MetadataCommand().Run(
+                new HttpRequestData("GET", new Uri("http://localhost")), 
+                null);
+
+            a.ShouldThrow<ArgumentNullException>().And.ParamName.Should().Be("options");
+        }
+
+        [TestMethod]
         public void MetadataCommand_Run_SuccessfulResult()
         {
-            var subject = new MetadataCommand().Run(null);
+            var subject = new MetadataCommand().Run(null, Options.FromConfiguration);
 
             XDocument payloadXml = XDocument.Parse(subject.Content);
 

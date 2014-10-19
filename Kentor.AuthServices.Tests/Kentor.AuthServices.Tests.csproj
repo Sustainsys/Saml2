@@ -116,7 +116,7 @@
     <Compile Include="Saml2AuthenticationRequestTests.cs" />
     <Compile Include="IdentityProviderTests.cs" />
     <Compile Include="Saml2StatementExtensionsTests.cs" />
-    <Compile Include="ServiceProviderTests.cs" />
+    <Compile Include="SPOptionsExtensionsTests.cs" />
     <Compile Include="SignInCommandTests.cs" />
     <Compile Include="Saml2ResponseTests.cs" />
     <Compile Include="AcsCommandTests.cs" />
@@ -147,6 +147,12 @@
     <Compile Include="MetadataLoaderTests.cs" />
     <Compile Include="EntityIdEqualityComparerTests.cs" />
     <Compile Include="FederationTests.cs" />
+    <Compile Include="Saml2PSecurityTokenHandlerTests.cs" />
+    <Compile Include="SPOptionsTests.cs" />
+    <Compile Include="IdentityProviderCollectionTests.cs" />
+    <Compile Include="FederationCollectionTests.cs" />
+    <Compile Include="IdentityProviderDictionaryTests.cs" />
+    <Compile Include="OptionsTests.cs" />
     <Compile Include="XmlDocumentExtensionsTests.cs" />
     <Compile Include="XmlHelpersTests.cs" />
   </ItemGroup>

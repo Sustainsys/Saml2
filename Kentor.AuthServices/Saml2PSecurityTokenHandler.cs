@@ -1,5 +1,6 @@
 ﻿using Kentor.AuthServices.Configuration;
 using System;
+using System.IdentityModel.Metadata;
 using System.IdentityModel.Selectors;
 using System.IdentityModel.Services;
 using System.IdentityModel.Tokens;
@@ -14,8 +15,38 @@ namespace Kentor.AuthServices
     /// using Saml2-P. The assertion can be embedded in a signed response. Or the signing
     /// could be handled at transport level.
     /// </summary>
-    class Saml2PSecurityTokenHandler : Saml2SecurityTokenHandler
+    public class Saml2PSecurityTokenHandler : Saml2SecurityTokenHandler
     {
+        /// <summary>
+        /// Ctor
+        /// </summary>
+        /// <param name="spEntityId">The entity id of this service provider, which is used
+        /// to validate the audience restrictions of the incoming assertions.</param>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "sp")]
+        public Saml2PSecurityTokenHandler(EntityId spEntityId)
+        {
+            if(spEntityId == null)
+            {
+                throw new ArgumentNullException("spEntityId");
+            }
+
+            var audienceRestriction = new AudienceRestriction(AudienceUriMode.Always);
+            audienceRestriction.AllowedAudienceUris.Add(
+                new Uri(spEntityId.Id));
+
+            Configuration = new SecurityTokenHandlerConfiguration
+            {
+                IssuerNameRegistry = new ReturnRequestedIssuerNameRegistry(),
+                AudienceRestriction = audienceRestriction,
+                SaveBootstrapContext = FederatedAuthentication.FederationConfiguration.IdentityConfiguration.SaveBootstrapContext
+            };
+        }
+
+        /// <summary>
+        /// Create claims from the token.
+        /// </summary>
+        /// <param name="samlToken">The token to translate to claims.</param>
+        /// <returns>An identity with the created claims.</returns>
         public new ClaimsIdentity CreateClaims(Saml2SecurityToken samlToken)
         {
             var identity = base.CreateClaims(samlToken);
@@ -28,44 +59,24 @@ namespace Kentor.AuthServices
             return identity;
         }
 
+        /// <summary>
+        /// Detect if a token is replayed (i.e. reused). The token is added to the
+        /// list of used tokens, so this method should only be called once for each token.
+        /// </summary>
+        /// <param name="token">The token to check.</param>
         public new void DetectReplayedToken(SecurityToken token)
         {
             base.DetectReplayedToken(token);
         }
 
+        /// <summary>
+        /// Validate the conditions of the token.
+        /// </summary>
+        /// <param name="conditions">Conditions to check</param>
+        /// <param name="enforceAudienceRestriction">Should the audience restriction be enforced?</param>
         public new void ValidateConditions(Saml2Conditions conditions, bool enforceAudienceRestriction)
         {
             base.ValidateConditions(conditions, enforceAudienceRestriction);
-        }
-
-        private static readonly Saml2PSecurityTokenHandler defaultInstance;
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1810:InitializeReferenceTypeStaticFieldsInline")]
-        static Saml2PSecurityTokenHandler()
-        {
-            var audienceRestriction = new AudienceRestriction(AudienceUriMode.Always);
-            audienceRestriction.AllowedAudienceUris.Add(
-                new Uri(KentorAuthServicesSection.Current.EntityId));
-
-            defaultInstance = new Saml2PSecurityTokenHandler()
-            {
-                Configuration = new SecurityTokenHandlerConfiguration
-                {
-                    IssuerNameRegistry = new ReturnRequestedIssuerNameRegistry(),
-                    AudienceRestriction = audienceRestriction,
-                    SaveBootstrapContext = FederatedAuthentication.FederationConfiguration.IdentityConfiguration.SaveBootstrapContext
-                }
-            };
-        }
-
-        /// <summary>
-        /// Get a default of the class, with a default implementation.
-        /// </summary>
-        public static Saml2PSecurityTokenHandler DefaultInstance
-        {
-            get
-            {
-                return defaultInstance;
-            }
         }
     }
 }

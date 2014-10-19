@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Kentor.AuthServices.Configuration;
+using System;
 using System.Diagnostics.CodeAnalysis;
 using System.IdentityModel.Services;
 using System.IdentityModel.Tokens;
@@ -59,7 +60,9 @@ namespace Kentor.AuthServices
         {
             try
             {
-                return command.Run(new HttpRequestData(new HttpRequestWrapper(application.Request)));
+                return command.Run(new HttpRequestData(
+                    new HttpRequestWrapper(application.Request)),
+                    Options.FromConfiguration);
             }
             catch (AuthServicesException)
             {

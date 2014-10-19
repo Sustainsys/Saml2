@@ -12,22 +12,13 @@ using System.Web.Routing;
 using Kentor.AuthServices.TestHelpers;
 using System.Xml.Linq;
 using Kentor.AuthServices.Configuration;
+using System.IdentityModel.Metadata;
 
 namespace Kentor.AuthServices.Tests
 {
     [TestClass]
     public class AuthServicesControllerTests
     {
-        [TestCleanup]
-        public void TestCleanup()
-        {
-            if (!KentorAuthServicesSection.Current.IsReadOnly())
-            {
-                KentorAuthServicesSection.Current.DiscoveryServiceUrl = null;
-                KentorAuthServicesSection.Current.AllowConfigEdit(false);
-            }
-        }
-
         private AuthServicesController CreateInstanceWithContext()
         {
             var request = Substitute.For<HttpRequestBase>();
@@ -56,12 +47,18 @@ namespace Kentor.AuthServices.Tests
         [TestMethod]
         public void AuthServicesController_SignIn_Returns_DiscoveryService()
         {
-            KentorAuthServicesSection.Current.AllowConfigEdit(true);
-            KentorAuthServicesSection.Current.DiscoveryServiceUrl = new Uri("http://ds.example.com");
+            var subject = CreateInstanceWithContext();
 
-            var subject = CreateInstanceWithContext().SignIn();
+            subject.Options = new Options(new SPOptions
+            {
+                DiscoveryServiceUrl = new Uri("http://ds.example.com"),
+                DiscoveryServiceResponseUrl = new Uri("http://localhost"),
+                EntityId = new EntityId("https://github.com/KentorIT/authservices")
+            });
 
-            subject.Should().BeOfType<RedirectResult>().And
+            var result = subject.SignIn();
+
+            result.Should().BeOfType<RedirectResult>().And
                 .Subject.As<RedirectResult>().Url
                     .Should().StartWith("http://ds.example.com/?entityID=https%3A%2F%2Fgithub.com%2FKentorIT%2Fauthservices");
         }
