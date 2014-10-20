@@ -24,11 +24,23 @@ namespace Kentor.AuthServices
         /// <summary>
         /// Gets a command for a command name.
         /// </summary>
-        /// <param name="commandName">Name of a command. Probably a path.</param>
+        /// <param name="commandName">Name of a command. Probably a path. A
+        /// leading slash in the command name is ignored.</param>
         /// <returns>A command implementation or notFoundCommand if invalid.</returns>
         public static ICommand GetCommand(string commandName)
         {
             ICommand command;
+
+            if(commandName ==  null)
+            {
+                throw new ArgumentNullException("commandName");
+            }
+
+            if(commandName.StartsWith("/", StringComparison.OrdinalIgnoreCase))
+            {
+                commandName = commandName.Substring(1);
+            }
+
             if (commands.TryGetValue(commandName, out command))
             {
                 return command;

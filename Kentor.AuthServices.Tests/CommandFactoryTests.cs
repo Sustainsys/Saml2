@@ -8,33 +8,47 @@ namespace Kentor.AuthServices.Tests
     public class CommandFactoryTests
     {
         [TestMethod]
-        public void CommandFactory_Invalid_ReturnsNotFound()
+        public void CommandFactory_GetCommand_Invalid_ReturnsNotFound()
         {
             CommandFactory.GetCommand("Invalid").Should().BeOfType<NotFoundCommand>();
         }
 
         [TestMethod]
-        public void CommandFactory_SignIn_ReturnsSignIn()
+        public void CommandFactory_GetCommand_SignIn_ReturnsSignIn()
         {
             CommandFactory.GetCommand("SignIn").Should().BeOfType<SignInCommand>();
         }
 
         [TestMethod]
-        public void CommandFactory_IsCaseInsensitive()
+        public void CommandFactory_GetCommand_IsCaseInsensitive()
         {
           CommandFactory.GetCommand("signin").Should().BeOfType<SignInCommand>();
         }
 
         [TestMethod]
-        public void CommandFactory_Acs_ReturnsAcs()
+        public void CommandFactory_GetCommand_Acs_ReturnsAcs()
         {
             CommandFactory.GetCommand("Acs").Should().BeOfType<AcsCommand>();
         }
 
         [TestMethod]
-        public void CommandFactory_Root_ReturnsMetadata()
+        public void CommandFactory_GetCommand_Root_ReturnsMetadata()
         {
             CommandFactory.GetCommand("").Should().BeOfType<MetadataCommand>();
-        }        
+        }
+
+        [TestMethod]
+        public void CommnandFactory_GetCommand_StripsOffLeadingSlash()
+        {
+            CommandFactory.GetCommand("/Acs").Should().BeOfType<AcsCommand>();
+        }
+
+        [TestMethod]
+        public void CommandFactory_GetCommand_NullCheckCommandName()
+        {
+            Action a = () => CommandFactory.GetCommand(null);
+
+            a.ShouldThrow<ArgumentNullException>().And.ParamName.Should().Be("commandName");
+        }
     }
 }

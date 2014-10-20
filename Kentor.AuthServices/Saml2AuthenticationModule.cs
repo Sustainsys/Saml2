@@ -31,8 +31,6 @@ namespace Kentor.AuthServices
             context.BeginRequest += OnBeginRequest;
         }
 
-        const string ModulePath = "~/Saml2AuthenticationModule/";
-
         /// <summary>
         /// Begin request handler that captures all traffic to ~/Saml2AuthenticationModule/
         /// </summary>
@@ -42,13 +40,15 @@ namespace Kentor.AuthServices
         {
             var application = (HttpApplication)sender;
 
-            if(application.Request.AppRelativeCurrentExecutionFilePath
-                .StartsWith(ModulePath, StringComparison.OrdinalIgnoreCase))
-            {
-                var moduleRelativePath = application.Request.AppRelativeCurrentExecutionFilePath
-                    .Substring(ModulePath.Length);
+            // Strip the leading ~ from the AppRelative path.
+            var appRelativePath = application.Request.AppRelativeCurrentExecutionFilePath.Substring(1);
+            var modulePath = Options.FromConfiguration.SPOptions.ModulePath;
 
-                var command = CommandFactory.GetCommand(moduleRelativePath);
+            if(appRelativePath.StartsWith(modulePath, StringComparison.OrdinalIgnoreCase))
+            {
+                var commandName = appRelativePath.Substring(modulePath.Length);
+
+                var command = CommandFactory.GetCommand(commandName);
                 var commandResult = RunCommand(application, command);
 
                 commandResult.SignInSessionAuthenticationModule();

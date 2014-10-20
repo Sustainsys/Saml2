@@ -20,8 +20,8 @@ namespace Kentor.AuthServices
         /// <summary>
         /// Resolve the urls for AuthServices from an http request and options.
         /// </summary>
-        /// <param name="request"></param>
-        /// <param name="spOptions"></param>
+        /// <param name="request">Request to get application root url from.</param>
+        /// <param name="spOptions">SP Options to get module path from.</param>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2208:InstantiateArgumentExceptionsCorrectly"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "sp")]
         public AuthServicesUrls(HttpRequestData request, ISPOptions spOptions)
         {
@@ -42,8 +42,8 @@ namespace Kentor.AuthServices
         /// Creates the urls for AuthServices based on the complete base Url
         /// the application and the AuthServices base module path.
         /// </summary>
-        /// <param name="applicationUrl"></param>
-        /// <param name="modulePath"></param>
+        /// <param name="applicationUrl">The full Url to the root of the application.</param>
+        /// <param name="modulePath">Path of module, starting with / and ending without.</param>
         public AuthServicesUrls(Uri applicationUrl, string modulePath)
         {
             if(applicationUrl == null)
@@ -61,7 +61,14 @@ namespace Kentor.AuthServices
 
         void Init(Uri applicationUrl, string modulePath)
         {
-            AssertionConsumerServiceUrl = new Uri(applicationUrl, modulePath + "/" + AcsCommandName);
+            if(!modulePath.StartsWith("/", StringComparison.OrdinalIgnoreCase))
+            {
+                throw new ArgumentException("modulePath should start with /.");
+            }
+
+            var authServicesRoot = applicationUrl.AbsoluteUri.TrimEnd('/') + modulePath + "/";
+
+            AssertionConsumerServiceUrl = new Uri(authServicesRoot + AcsCommandName);
         }
 
         /// <summary>

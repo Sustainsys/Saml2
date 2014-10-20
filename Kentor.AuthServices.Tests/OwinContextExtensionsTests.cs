@@ -26,11 +26,13 @@ namespace Kentor.AuthServices.Tests
         [TestMethod]
         public async Task OwinContextExtensionsTests_ToHttpRequestData()
         {
-            IOwinContext ctx = OwinTestHelpers.CreateOwinContext();
+            var ctx = OwinTestHelpers.CreateOwinContext();
 
             ctx.Request.Body = new MemoryStream(Encoding.UTF8.GetBytes("Input1=Value1&Input2=Value2"));
             ctx.Request.Method = "POST";
             ctx.Request.ContentType = "application/x-www-form-urlencoded";
+            ctx.Request.Path = new PathString("/somePath");
+            ctx.Request.QueryString = new QueryString("param=value");
 
             var subject = await ctx.ToHttpRequestData();
 
@@ -39,6 +41,19 @@ namespace Kentor.AuthServices.Tests
             subject.Form["Input1"].Should().Be("Value1");
             subject.Form["Input2"].Should().Be("Value2");
             subject.HttpMethod.Should().Be("POST");
+            subject.ApplicationUrl.Should().Be(new Uri("http://sp.example.com/"));
+        }
+
+        [TestMethod]
+        public async Task OwinContextExtensionsTests_ToHttpRequestData_ApplicationNotInRoot()
+        {
+            var ctx = OwinTestHelpers.CreateOwinContext();
+
+            ctx.Request.PathBase = new PathString("/ApplicationPath");
+
+            var subject = await ctx.ToHttpRequestData();
+
+            subject.ApplicationUrl.Should().Be(new Uri("http://sp.example.com/ApplicationPath"));
         }
     }
 }

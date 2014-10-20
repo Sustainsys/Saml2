@@ -12,7 +12,7 @@ namespace Kentor.AuthServices.IntegrationTests
         [TestMethod]
         public void Metadata_GetMetadata_Saml2AuthenticationModule()
         {
-            var url = "http://localhost:17009/SamplePath/Saml2AuthenticationModule/";
+            var url = "http://localhost:17009/SamplePath/AuthServices/";
 
             TestMetadata(url);
         }

@@ -16,7 +16,8 @@ namespace Kentor.AuthServices.Owin
     {
         protected async override Task<AuthenticationTicket> AuthenticateCoreAsync()
         {
-            var result = CommandFactory.GetCommand("acs").Run(await Context.ToHttpRequestData(), Options);
+            var result = CommandFactory.GetCommand(AuthServicesUrls.AcsCommandName)
+                .Run(await Context.ToHttpRequestData(), Options);
 
             var properties = new AuthenticationProperties()
             {
@@ -75,13 +76,7 @@ namespace Kentor.AuthServices.Owin
                     return true;
                 }
 
-                string commandName = remainingPath.Value;
-                if (commandName.StartsWith("/", StringComparison.OrdinalIgnoreCase))
-                {
-                    commandName = commandName.Substring(1);
-                }
-
-                CommandFactory.GetCommand(commandName)
+                CommandFactory.GetCommand(remainingPath.Value)
                     .Run(await Context.ToHttpRequestData(), Options)
                     .Apply(Context);
 

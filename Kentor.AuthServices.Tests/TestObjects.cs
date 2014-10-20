@@ -9,6 +9,6 @@ namespace Kentor.AuthServices
     class TestObjects
     {
         internal static readonly AuthServicesUrls authServicesUrls =
-            new AuthServicesUrls(new Uri("http://localhost"), "AuthServices");
+            new AuthServicesUrls(new Uri("http://localhost"), "/AuthServices");
     }
 }
