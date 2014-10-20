@@ -82,11 +82,6 @@ namespace Kentor.AuthServices.Configuration
             }
         }
 
-        /// <summary>
-        /// Uri for idp to post responses to.
-        /// </summary>
-        public Uri AssertionConsumerServiceUrl { get; set; }
-
         private string modulePath = "/AuthServices";
 
         /// <summary>
