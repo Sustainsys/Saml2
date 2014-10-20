@@ -13,11 +13,6 @@ namespace Kentor.AuthServices
     public class AuthServicesUrls
     {
         /// <summary>
-        /// The name of the Assertion Consumer Service, relative to the base module path.
-        /// </summary>
-        public const string AcsCommandName = "Acs";
-
-        /// <summary>
         /// Resolve the urls for AuthServices from an http request and options.
         /// </summary>
         /// <param name="request">Request to get application root url from.</param>
@@ -68,7 +63,7 @@ namespace Kentor.AuthServices
 
             var authServicesRoot = applicationUrl.AbsoluteUri.TrimEnd('/') + modulePath + "/";
 
-            AssertionConsumerServiceUrl = new Uri(authServicesRoot + AcsCommandName);
+            AssertionConsumerServiceUrl = new Uri(authServicesRoot + CommandFactory.AcsCommandName);
         }
 
         /// <summary>

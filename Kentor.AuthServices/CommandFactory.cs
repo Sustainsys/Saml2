@@ -13,12 +13,28 @@ namespace Kentor.AuthServices
     {
         private static readonly ICommand notFoundCommand = new NotFoundCommand();
 
+        /// <summary>
+        /// The name of the Assertion Consumer Service Command.
+        /// </summary>
+        public const string AcsCommandName = "Acs";
+
+        /// <summary>
+        /// The name of the Sign In Command.
+        /// </summary>
+        public const string SignInCommandName = "SignIn";
+
+        /// <summary>
+        /// The metadata command has no name - it is triggered at base url for
+        /// AuthServices.
+        /// </summary>
+        public const string MetadataCommand = "";
+
         private static readonly IDictionary<string, ICommand> commands =
         new Dictionary<string, ICommand>(StringComparer.OrdinalIgnoreCase) 
         { 
-            { "SignIn", new SignInCommand() },
-            { AuthServicesUrls.AcsCommandName, new AcsCommand() },
-            { "", new MetadataCommand() },
+            { SignInCommandName, new SignInCommand() },
+            { AcsCommandName, new AcsCommand() },
+            { MetadataCommand, new MetadataCommand() },
         };
 
         /// <summary>
