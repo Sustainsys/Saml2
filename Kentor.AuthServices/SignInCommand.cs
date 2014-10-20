@@ -39,12 +39,14 @@ namespace Kentor.AuthServices
             HttpRequestData request,
             IOptions options)
         {
+            var urls = new AuthServicesUrls(request, options.SPOptions);
+
             IdentityProvider idp;
             if (idpEntityId == null || idpEntityId.Id == null)
             {
                 if (options.SPOptions.DiscoveryServiceUrl != null)
                 {
-                    return RedirectToDiscoveryService(returnPath, options.SPOptions);
+                    return RedirectToDiscoveryService(returnPath, options.SPOptions, urls);
                 }
 
                 idp = options.IdentityProviders.Default;
@@ -63,15 +65,17 @@ namespace Kentor.AuthServices
                 Uri.TryCreate(request.Url, returnPath, out returnUri);
             }
 
-            var urls = new AuthServicesUrls(request, options.SPOptions);
             var authnRequest = idp.CreateAuthenticateRequest(returnUri, urls);
 
             return idp.Bind(authnRequest);
         }
 
-        private static CommandResult RedirectToDiscoveryService(string returnPath, ISPOptions spOptions)
+        private static CommandResult RedirectToDiscoveryService(
+            string returnPath,
+            ISPOptions spOptions,
+            AuthServicesUrls authServicesUrls)
         {
-            string returnUrl = spOptions.DiscoveryServiceResponseUrl.OriginalString;
+            string returnUrl = authServicesUrls.SignInUrl.OriginalString;
 
             if(!string.IsNullOrEmpty(returnPath))
             {

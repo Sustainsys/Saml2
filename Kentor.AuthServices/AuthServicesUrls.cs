@@ -20,12 +20,12 @@ namespace Kentor.AuthServices
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2208:InstantiateArgumentExceptionsCorrectly"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "sp")]
         public AuthServicesUrls(HttpRequestData request, ISPOptions spOptions)
         {
-            if(request == null)
+            if (request == null)
             {
                 throw new ArgumentNullException("request");
             }
 
-            if(spOptions == null)
+            if (spOptions == null)
             {
                 throw new ArgumentNullException("spOptions");
             }
@@ -41,12 +41,12 @@ namespace Kentor.AuthServices
         /// <param name="modulePath">Path of module, starting with / and ending without.</param>
         public AuthServicesUrls(Uri applicationUrl, string modulePath)
         {
-            if(applicationUrl == null)
+            if (applicationUrl == null)
             {
                 throw new ArgumentNullException("applicationUrl");
             }
 
-            if(modulePath == null)
+            if (modulePath == null)
             {
                 throw new ArgumentNullException("modulePath");
             }
@@ -56,7 +56,7 @@ namespace Kentor.AuthServices
 
         void Init(Uri applicationUrl, string modulePath)
         {
-            if(!modulePath.StartsWith("/", StringComparison.OrdinalIgnoreCase))
+            if (!modulePath.StartsWith("/", StringComparison.OrdinalIgnoreCase))
             {
                 throw new ArgumentException("modulePath should start with /.");
             }
@@ -64,14 +64,18 @@ namespace Kentor.AuthServices
             var authServicesRoot = applicationUrl.AbsoluteUri.TrimEnd('/') + modulePath + "/";
 
             AssertionConsumerServiceUrl = new Uri(authServicesRoot + CommandFactory.AcsCommandName);
+            SignInUrl = new Uri(authServicesRoot + CommandFactory.SignInCommandName);
         }
 
         /// <summary>
-        /// The full uri of the assertion consumer service.
+        /// The full url of the assertion consumer service.
         /// </summary>
-        public Uri AssertionConsumerServiceUrl
-        {
-            get; private set;
-        }
+        public Uri AssertionConsumerServiceUrl { get; private set; }
+
+        /// <summary>
+        /// The full url of the signin command, which is also the response 
+        /// location for idp discovery.
+        /// </summary>
+        public Uri SignInUrl { get; private set; }
     }
 }

@@ -54,7 +54,7 @@ namespace Kentor.AuthServices
         // Used by tests.
         internal HttpRequestData(string httpMethod, Uri url)
         {
-            Init(httpMethod, url, "", null);
+            Init(httpMethod, url, "/", null);
         }
 
         private void Init(

@@ -116,19 +116,6 @@ namespace Kentor.AuthServices.Configuration
             }
         }
 
-        const string discoveryServiceResponseUrl = "discoveryServiceResponseUrl";
-        /// <summary>
-        /// Url where to receive discovery service responses.
-        /// </summary>
-        [ConfigurationProperty(discoveryServiceResponseUrl, IsRequired = false)]
-        public Uri DiscoveryServiceResponseUrl
-        {
-            get
-            {
-                return (Uri)base[discoveryServiceResponseUrl];
-            }
-        }
-
         private readonly Lazy<Saml2PSecurityTokenHandler> saml2PSecurityTokenHandler;
 
         /// <summary>

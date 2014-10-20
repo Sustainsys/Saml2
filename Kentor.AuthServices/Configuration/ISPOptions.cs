@@ -36,11 +36,6 @@ namespace Kentor.AuthServices.Configuration
         Uri DiscoveryServiceUrl { get; }
 
         /// <summary>
-        /// Url where to receive discovery service responses.
-        /// </summary>
-        Uri DiscoveryServiceResponseUrl { get; }
-
-        /// <summary>
         /// EntityId - The identity of the ServiceProvider to use when sending requests to Idp
         /// and presenting the SP in metadata.
         /// </summary>

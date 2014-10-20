@@ -43,7 +43,7 @@ namespace Kentor.AuthServices.Tests
         }
 
         [TestMethod]
-        public void AuthServiecsUrls_AssertionConsumerServiceUrl_HandlesApplicationNotInRoot()
+        public void AuthServiecsUrls_Ctor_HandlesApplicationNotInRoot()
         {
             var appUrl = new Uri("http://localhost:73/SomePath");
             var modulePath = "/modulePath";
@@ -51,10 +51,11 @@ namespace Kentor.AuthServices.Tests
             var subject = new AuthServicesUrls(appUrl, modulePath);
 
             subject.AssertionConsumerServiceUrl.Should().Be(new Uri("http://localhost:73/SomePath/modulePath/Acs"));
+            subject.SignInUrl.Should().Be(new Uri("http://localhost:73/SomePath/modulePath/SignIn"));
         }
 
         [TestMethod]
-        public void AuthServicesUrls_AssertionConsumerServiceUrl_HandlesApplicationInRoot()
+        public void AuthServicesUrls_Ctor_HandlesApplicationInRoot()
         {
             var appUrl = new Uri("http://localhost:42/");
             var modulePath = "/modulePath";
@@ -62,6 +63,7 @@ namespace Kentor.AuthServices.Tests
             var subject = new AuthServicesUrls(appUrl, modulePath);
 
             subject.AssertionConsumerServiceUrl.Should().Be(new Uri("http://localhost:42/modulePath/Acs"));
+            subject.SignInUrl.Should().Be(new Uri("http://localhost:42/modulePath/SignIn"));
         }
 
         [TestMethod]

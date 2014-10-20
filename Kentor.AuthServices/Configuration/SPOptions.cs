@@ -60,11 +60,6 @@ namespace Kentor.AuthServices.Configuration
         /// </summary>
         public Uri DiscoveryServiceUrl { get; set; }
 
-        /// <summary>
-        /// Url where to receive discovery service responses.
-        /// </summary>
-        public Uri DiscoveryServiceResponseUrl { get; set; }
-
         private EntityId entityId;
 
         /// <summary>

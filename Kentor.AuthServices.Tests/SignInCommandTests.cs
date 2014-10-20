@@ -113,7 +113,6 @@ namespace Kentor.AuthServices.Tests
             var options = new Options(new SPOptions
                 {
                     DiscoveryServiceUrl = dsUrl,
-                    DiscoveryServiceResponseUrl = new Uri("http://localhost/Saml2AuthenticationModule/SignIn"),
                     EntityId = new EntityId("https://github.com/KentorIT/authservices")
                 });
 
@@ -126,8 +125,8 @@ namespace Kentor.AuthServices.Tests
             var queryString = string.Format("?entityID={0}&return={1}&returnIDParam=idp",
                 Uri.EscapeDataString(options.SPOptions.EntityId.Id),
                 Uri.EscapeDataString(
-                    options.SPOptions.DiscoveryServiceResponseUrl.OriginalString
-                    + "?ReturnUrl=" + Uri.EscapeDataString("/Return/Path")));
+                    "http://localhost/AuthServices/SignIn?ReturnUrl="
+                    + Uri.EscapeDataString("/Return/Path")));
 
             var expectedLocation = new Uri(dsUrl + queryString);
 
