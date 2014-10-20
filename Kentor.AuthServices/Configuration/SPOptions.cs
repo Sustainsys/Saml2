@@ -36,7 +36,7 @@ namespace Kentor.AuthServices.Configuration
         {
             get
             {
-                // Capture in a localo variable to prevent race conditions. Reads and writes
+                // Capture in a local variable to prevent race conditions. Reads and writes
                 // of references are atomic so there is no need for a lock.
                 var value = saml2PSecurityTokenHandler;
                 if(value == null)
@@ -91,5 +91,35 @@ namespace Kentor.AuthServices.Configuration
         /// Uri for idp to post responses to.
         /// </summary>
         public Uri AssertionConsumerServiceUrl { get; set; }
+
+        private string modulePath = "/AuthServices";
+
+        /// <summary>
+        /// Application root relative path for AuthServices endpoints. The
+        /// default is "/AuthServices".
+        /// </summary>
+        public string ModulePath
+        {
+            get
+            {
+                return modulePath;
+            }
+            set
+            {
+                if(value == null)
+                {
+                    throw new ArgumentNullException("value");
+                }
+
+                value = value.TrimEnd('/');
+
+                if (!value.StartsWith("/", StringComparison.OrdinalIgnoreCase))
+                {
+                    value = "/" + value;
+                }
+
+                modulePath = value;
+            }
+        }
     }
 }

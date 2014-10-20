@@ -1,4 +1,5 @@
 ﻿using Kentor.AuthServices.Configuration;
+using Microsoft.Owin;
 using Microsoft.Owin.Security;
 using Microsoft.Owin.Security.Infrastructure;
 using System;
@@ -28,7 +29,7 @@ namespace Kentor.AuthServices.Owin
             return new MultipleIdentityAuthenticationTicket(identities, properties);
         }
 
-        protected override Task ApplyResponseChallengeAsync()
+        protected override async Task ApplyResponseChallengeAsync()
         {
             if (Response.StatusCode == 401)
             {
@@ -51,42 +52,39 @@ namespace Kentor.AuthServices.Owin
                     var result = SignInCommand.CreateResult(
                         idp,
                         challenge.Properties.RedirectUri,
-                        Context.Request.Uri,
+                        await Context.ToHttpRequestData(),
                         Options);
 
                     Response.Redirect(result.Location.OriginalString);
                 }
             }
-
-            return Task.FromResult(0);
         }
 
         public override async Task<bool> InvokeAsync()
         {
-            if (Options.SPOptions.AssertionConsumerServiceUrl == Request.Uri)
+            var authServicesPath = new PathString(Options.SPOptions.ModulePath);
+            PathString remainingPath;
+
+            if(Request.Path.StartsWithSegments(authServicesPath, out remainingPath))
             {
-                var ticket = (MultipleIdentityAuthenticationTicket)await AuthenticateAsync();
+                if(remainingPath == new PathString("/" + AuthServicesUrls.AcsCommandName))
+                {
+                    var ticket = (MultipleIdentityAuthenticationTicket)await AuthenticateAsync();
+                    Context.Authentication.SignIn(ticket.Properties, ticket.Identities.ToArray());
+                    Response.Redirect(ticket.Properties.RedirectUri);
+                    return true;
+                }
 
-                Context.Authentication.SignIn(ticket.Properties, ticket.Identities.ToArray());
+                string commandName = remainingPath.Value;
+                if (commandName.StartsWith("/", StringComparison.OrdinalIgnoreCase))
+                {
+                    commandName = commandName.Substring(1);
+                }
 
-                Response.Redirect(ticket.Properties.RedirectUri);
-
-                return true;
-            }
-            
-            if(Request.Path == Options.MetadataPath)
-            {
-                CommandFactory.GetCommand("")
+                CommandFactory.GetCommand(commandName)
                     .Run(await Context.ToHttpRequestData(), Options)
                     .Apply(Context);
-                return true;
-            }
 
-            if(Options.SPOptions.DiscoveryServiceResponseUrl != null &&
-                Request.Uri.GetLeftPart(UriPartial.Path) ==
-                Options.SPOptions.DiscoveryServiceResponseUrl.GetLeftPart(UriPartial.Path))
-            {
-                CommandFactory.GetCommand("SignIn").Run(await Context.ToHttpRequestData(), Options).Apply(Context);
                 return true;
             }
 

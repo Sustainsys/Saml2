@@ -55,6 +55,7 @@
     </Compile>
     <Compile Include="AcsCommand.cs" />
     <Compile Include="AuthServicesException.cs" />
+    <Compile Include="AuthServicesUrls.cs" />
     <Compile Include="BadFormatSamlResponseException.cs" />
     <Compile Include="CacheAwareMetadataSerializer.cs" />
     <Compile Include="ClaimsIdentityExtensions.cs" />

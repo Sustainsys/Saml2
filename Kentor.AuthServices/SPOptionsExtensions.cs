@@ -11,7 +11,7 @@ namespace Kentor.AuthServices
 {
     static class SPOptionsExtensions
     {
-        public static EntityDescriptor CreateMetadata(this ISPOptions spOptions)
+        public static EntityDescriptor CreateMetadata(this ISPOptions spOptions, AuthServicesUrls urls)
         {
             var ed = new EntityDescriptor()
             {
@@ -27,7 +27,7 @@ namespace Kentor.AuthServices
                 Index = 0,
                 IsDefault = true,
                 Binding = Saml2Binding.HttpPostUri,
-                Location = spOptions.AssertionConsumerServiceUrl
+                Location = urls.AssertionConsumerServiceUrl
             });
 
             ed.RoleDescriptors.Add(spsso);

@@ -113,21 +113,28 @@ namespace Kentor.AuthServices
         /// </summary>
         /// <param name="returnUrl">The return url where the browser should be sent after
         /// successful authentication.</param>
+        /// <param name="authServicesUrls">Urls for AuthServices, used to populate fields
+        /// in the created AuthnRequest</param>
         /// <returns></returns>
-        public Saml2AuthenticationRequest CreateAuthenticateRequest(Uri returnUrl)
+        public Saml2AuthenticationRequest CreateAuthenticateRequest(Uri returnUrl, AuthServicesUrls authServicesUrls)
         {
-            var request = new Saml2AuthenticationRequest()
+            if(authServicesUrls == null)
+            {
+                throw new ArgumentNullException("authServicesUrls");
+            }
+
+            var authnRequest = new Saml2AuthenticationRequest()
             {
                 DestinationUri = SingleSignOnServiceUrl,
-                AssertionConsumerServiceUrl = spOptions.AssertionConsumerServiceUrl,
+                AssertionConsumerServiceUrl = authServicesUrls.AssertionConsumerServiceUrl,
                 Issuer = spOptions.EntityId
             };
 
             var responseData = new StoredRequestState(EntityId, returnUrl);
 
-            PendingAuthnRequests.Add(new Saml2Id(request.Id), responseData);
+            PendingAuthnRequests.Add(new Saml2Id(authnRequest.Id), responseData);
 
-            return request;
+            return authnRequest;
         }
 
         /// <summary>

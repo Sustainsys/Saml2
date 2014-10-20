@@ -47,8 +47,9 @@ namespace Kentor.AuthServices.Configuration
         EntityId EntityId { get; }
 
         /// <summary>
-        /// Uri for idp to post responses to.
+        /// Application root relative path for AuthServices endpoints. The
+        /// default should be "/AuthServices".
         /// </summary>
-        Uri AssertionConsumerServiceUrl { get; }
+        string ModulePath { get; }
     }
 }

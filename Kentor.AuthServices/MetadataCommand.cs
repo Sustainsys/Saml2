@@ -20,9 +20,11 @@ namespace Kentor.AuthServices
                 throw new ArgumentNullException("options");
             }
 
+            var urls = new AuthServicesUrls(request, options.SPOptions);
+
             return new CommandResult()
             {
-                Content = options.SPOptions.CreateMetadata().ToXmlString(options.SPOptions.MetadataCacheDuration),
+                Content = options.SPOptions.CreateMetadata(urls).ToXmlString(options.SPOptions.MetadataCacheDuration),
                 ContentType = "application/samlmetadata+xml"
             };
         }

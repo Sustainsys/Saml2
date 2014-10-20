@@ -17,7 +17,7 @@ namespace Kentor.AuthServices
         new Dictionary<string, ICommand>(StringComparer.OrdinalIgnoreCase) 
         { 
             { "SignIn", new SignInCommand() },
-            { "Acs", new AcsCommand() },
+            { AuthServicesUrls.AcsCommandName, new AcsCommand() },
             { "", new MetadataCommand() },
         };
 

@@ -23,7 +23,11 @@ namespace Kentor.AuthServices.Owin
             {
                 formData = await context.Request.ReadFormAsync();
             }
-            return new HttpRequestData(context.Request.Method, context.Request.Uri, formData);
+            return new HttpRequestData(
+                context.Request.Method,
+                context.Request.Uri,
+                context.Request.PathBase.Value,
+                formData);
         }
     }
 }

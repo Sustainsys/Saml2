@@ -27,7 +27,6 @@ namespace Kentor.AuthServices.Owin
         {
             AuthenticationMode = AuthenticationMode.Passive;
             Description.Caption = Constants.DefaultCaption;
-            MetadataPath = new PathString(Constants.DefaultMetadataPath);
 
             if (loadConfiguration)
             {
@@ -42,11 +41,6 @@ namespace Kentor.AuthServices.Owin
         /// to be picked up by the external cookie authentication middleware that persists the identity in a cookie.
         /// </summary>
         public string SignInAsAuthenticationType { get; set; }
-
-        /// <summary>
-        /// Path for metadata.
-        /// </summary>
-        public PathString MetadataPath { get; set; }
 
         /// <summary>
         /// Options for the service provider's behaviour; i.e. everything except

@@ -22,14 +22,16 @@ namespace Kentor.AuthServices
         /// <param name="request">HttpRequestBase with source data.</param>
         public HttpRequestData(HttpRequestBase request)
         {
-            if(request == null)
+            if (request == null)
             {
                 throw new ArgumentNullException("request");
             }
 
-            Init(request.HttpMethod, request.Url,
-            request.Form.Cast<string>().Select((de, i) =>
-                new KeyValuePair<string, string[]>(de, ((string)request.Form[i]).Split(','))));
+            Init(request.HttpMethod,
+                request.Url,
+                request.ApplicationPath,
+                request.Form.Cast<string>().Select((de, i) =>
+                    new KeyValuePair<string, string[]>(de, ((string)request.Form[i]).Split(','))));
         }
 
         /// <summary>
@@ -38,26 +40,32 @@ namespace Kentor.AuthServices
         /// <param name="httpMethod">Http method of the request</param>
         /// <param name="url">Full url requested</param>
         /// <param name="formData">Form data, if present (only for POST requests)</param>
+        /// <param name="applicationPath">Path to the application root</param>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
-        public HttpRequestData(string httpMethod, Uri url, IEnumerable<KeyValuePair<string, string[]>> formData)
+        public HttpRequestData(
+            string httpMethod,
+            Uri url,
+            string applicationPath,
+            IEnumerable<KeyValuePair<string, string[]>> formData)
         {
-            Init(httpMethod, url, formData);
+            Init(httpMethod, url, applicationPath, formData);
         }
 
-        /// <summary>
-        /// Ctor
-        /// </summary>
-        /// <param name="httpMethod">Http method of the request</param>
-        /// <param name="url">Full url requested</param>
-        public HttpRequestData(string httpMethod, Uri url)
+        // Used by tests.
+        internal HttpRequestData(string httpMethod, Uri url)
         {
-            Init(httpMethod, url, null);
+            Init(httpMethod, url, "", null);
         }
 
-        private void Init(string httpMethod, Uri url, IEnumerable<KeyValuePair<string, string[]>> formData)
+        private void Init(
+            string httpMethod,
+            Uri url,
+            string applicationPath,
+            IEnumerable<KeyValuePair<string, string[]>> formData)
         {
             HttpMethod = httpMethod;
             Url = url;
+            ApplicationUrl = new Uri(url, applicationPath);
             Form = new ReadOnlyDictionary<string, string>(
                 (formData ?? Enumerable.Empty<KeyValuePair<string, string[]>>())
                 .ToDictionary(kv => kv.Key, kv => kv.Value.Single()));
@@ -83,5 +91,11 @@ namespace Kentor.AuthServices
         /// The query string parameters of the request.
         /// </summary>
         public NameValueCollection QueryString { get; private set; }
+
+        /// <summary>
+        /// The root Url of the application. This includes the virtual directory
+        /// that the application is installed in, e.g. http://hosting.example.com/myapp/
+        /// </summary>
+        public Uri ApplicationUrl { get; private set; }
     }
 }

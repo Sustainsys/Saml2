@@ -29,14 +29,14 @@ namespace Kentor.AuthServices
             return CreateResult(
                 new EntityId(request.QueryString["idp"]),
                 request.QueryString["ReturnUrl"],
-                request.Url,
+                request,
                 options);
         }
 
         public static CommandResult CreateResult(
             EntityId idpEntityId,
             string returnPath,
-            Uri requestUrl,
+            HttpRequestData request,
             IOptions options)
         {
             IdentityProvider idp;
@@ -60,10 +60,11 @@ namespace Kentor.AuthServices
             Uri returnUri = null;
             if (!string.IsNullOrEmpty(returnPath))
             {
-                Uri.TryCreate(requestUrl, returnPath, out returnUri);
+                Uri.TryCreate(request.Url, returnPath, out returnUri);
             }
 
-            var authnRequest = idp.CreateAuthenticateRequest(returnUri);
+            var urls = new AuthServicesUrls(request, options.SPOptions);
+            var authnRequest = idp.CreateAuthenticateRequest(returnUri, urls);
 
             return idp.Bind(authnRequest);
         }

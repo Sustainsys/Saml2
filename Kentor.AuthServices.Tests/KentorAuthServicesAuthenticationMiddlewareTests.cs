@@ -244,7 +244,7 @@ namespace Kentor.AuthServices.Tests
             context.Request.Body = encodedBodyData.ReadAsStreamAsync().Result;
             context.Request.ContentType = encodedBodyData.Headers.ContentType.ToString();
             context.Request.Host = new HostString("localhost");
-            context.Request.Path = new PathString("/Saml2AuthenticationModule/acs");
+            context.Request.Path = new PathString("/AuthServices/Acs");
 
             var signInAsAuthenticationType = "AuthType";
             var ids = new ClaimsIdentity[] { new ClaimsIdentity(signInAsAuthenticationType),
@@ -273,14 +273,12 @@ namespace Kentor.AuthServices.Tests
         {
             var context = OwinTestHelpers.CreateOwinContext();
             context.Request.Host = new HostString("localhost");
-            var metadataPath = "/SomeMetadataPath";
-            context.Request.Path = new PathString(metadataPath);
+            context.Request.Path = new PathString("/AuthServices");
 
-            var middleware = new KentorAuthServicesAuthenticationMiddleware(null, CreateAppBuilder(),
-                new KentorAuthServicesAuthenticationOptions(true)
-                {
-                    MetadataPath = new PathString(metadataPath)
-                });
+            var middleware = new KentorAuthServicesAuthenticationMiddleware(
+                null, 
+                CreateAppBuilder(),
+                new KentorAuthServicesAuthenticationOptions(true));
 
             await middleware.Invoke(context);
             context.Response.Body.Seek(0, SeekOrigin.Begin);
@@ -297,7 +295,7 @@ namespace Kentor.AuthServices.Tests
         {
             var context = OwinTestHelpers.CreateOwinContext();
             context.Request.Host = new HostString("localhost");
-            var signinPath = "/Saml2AuthenticationModule/SignIn";
+            var signinPath = "/AuthServices/SignIn";
             context.Request.Path = new PathString(signinPath);
             context.Request.QueryString = new QueryString("ReturnUrl=%2FHome&idp=https%3A%2F%2Fidp2.example.com");
 

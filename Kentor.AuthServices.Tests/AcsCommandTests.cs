@@ -34,7 +34,7 @@ namespace Kentor.AuthServices.Tests
         public void AcsCommand_Run_NullCheckOptions()
         {
             Action a = () => new AcsCommand().Run(new HttpRequestData("GET", new Uri("http://localhost")), null);
-            
+
             a.ShouldThrow<ArgumentNullException>().And.ParamName.Should().Be("options");
         }
 
@@ -42,7 +42,7 @@ namespace Kentor.AuthServices.Tests
         public void AcsCommand_Run_ErrorOnNoSamlResponseFound()
         {
             Action a = () => new AcsCommand().Run(
-                new HttpRequestData("GET", new Uri("http://localhost")), 
+                new HttpRequestData("GET", new Uri("http://localhost")),
                 Options.FromConfiguration);
 
             a.ShouldThrow<NoSamlResponseFoundException>()
@@ -52,10 +52,14 @@ namespace Kentor.AuthServices.Tests
         [TestMethod]
         public void AcsCommand_Run_ErrorOnNotBase64InFormResponse()
         {
-            var r = new HttpRequestData("POST", new Uri("http://localhost"), new KeyValuePair<string, string[]>[] 
-            { 
-                new KeyValuePair<string, string[]>("SAMLResponse", new string[] { "#¤!2" }) 
-            });
+            var r = new HttpRequestData(
+                "POST",
+                new Uri("http://localhost"),
+                "/ModulePath",
+                new KeyValuePair<string, string[]>[]
+                {
+                    new KeyValuePair<string, string[]>("SAMLResponse", new string[] { "#¤!2" })
+                });
 
             Action a = () => new AcsCommand().Run(r, Options.FromConfiguration);
 
@@ -68,10 +72,14 @@ namespace Kentor.AuthServices.Tests
         public void AcsCommand_Run_ErrorOnIncorrectXml()
         {
             var encoded = Convert.ToBase64String(Encoding.UTF8.GetBytes("<foo />"));
-            var r = new HttpRequestData("POST", new Uri("http://localhost"), new KeyValuePair<string, string[]>[] 
-            { 
-                new KeyValuePair<string, string[]>("SAMLResponse", new string[] { encoded })
-            });
+            var r = new HttpRequestData(
+                "POST",
+                new Uri("http://localhost"),
+                "/ModulePath",
+                new KeyValuePair<string, string[]>[]
+                {
+                    new KeyValuePair<string, string[]>("SAMLResponse", new string[] { encoded })
+                });
 
             Action a = () => new AcsCommand().Run(r, Options.FromConfiguration);
 
@@ -109,7 +117,11 @@ namespace Kentor.AuthServices.Tests
             var formValue = Convert.ToBase64String(Encoding.UTF8.GetBytes(
                 SignedXmlHelper.SignXml(response)));
 
-            var r = new HttpRequestData("POST", new Uri("http://localhost"), new KeyValuePair<string, string[]>[]
+            var r = new HttpRequestData(
+                "POST",
+                new Uri("http://localhost"),
+                "/ModulePath",
+                new KeyValuePair<string, string[]>[]
                 {
                     new KeyValuePair<string, string[]>("SAMLResponse", new string[] { formValue })
                 });
@@ -134,7 +146,9 @@ namespace Kentor.AuthServices.Tests
         public void AcsCommand_Run_WithReturnUrl_SuccessfulResult()
         {
             var idp = Options.FromConfiguration.IdentityProviders.Default;
-            var request = idp.CreateAuthenticateRequest(new Uri("http://localhost/testUrl.aspx"));
+            var request = idp.CreateAuthenticateRequest(
+                new Uri("http://localhost/testUrl.aspx"),
+                TestObjects.authServicesUrls);
 
             var response =
             @"<saml2p:Response xmlns:saml2p=""urn:oasis:names:tc:SAML:2.0:protocol""
@@ -161,7 +175,11 @@ namespace Kentor.AuthServices.Tests
             var formValue = Convert.ToBase64String(Encoding.UTF8.GetBytes(
                 SignedXmlHelper.SignXml(response)));
 
-            var r = new HttpRequestData("POST", new Uri("http://localhost"), new KeyValuePair<string, string[]>[]
+            var r = new HttpRequestData(
+                "POST",
+                new Uri("http://localhost"),
+                "/ModulePath",
+                new KeyValuePair<string, string[]>[]
                 {
                     new KeyValuePair<string, string[]>("SAMLResponse", new string[] { formValue })
                 });

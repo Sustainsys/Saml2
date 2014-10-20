@@ -153,6 +153,8 @@
     <Compile Include="FederationCollectionTests.cs" />
     <Compile Include="IdentityProviderDictionaryTests.cs" />
     <Compile Include="OptionsTests.cs" />
+    <Compile Include="TestObjects.cs" />
+    <Compile Include="AuthServicesUrlsTests.cs" />
     <Compile Include="XmlDocumentExtensionsTests.cs" />
     <Compile Include="XmlHelpersTests.cs" />
   </ItemGroup>
