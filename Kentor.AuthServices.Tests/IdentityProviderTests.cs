@@ -18,22 +18,24 @@ namespace Kentor.AuthServices.Tests
         {
             string idpUri = "http://idp.example.com/";
             
-            var ip = new IdentityProvider(new Uri(idpUri), Options.FromConfiguration.SPOptions);
+            var ip = new IdentityProvider(
+                new Uri(idpUri),
+                Options.FromConfiguration.SPOptions);
 
-            var r = ip.CreateAuthenticateRequest(null);
+            var r = ip.CreateAuthenticateRequest(null, TestObjects.authServicesUrls);
 
             r.ToXElement().Attribute("Destination").Should().NotBeNull()
                 .And.Subject.Value.Should().Be(idpUri);
         }
 
         [TestMethod]
-        public void IdentityProvider_CreateAuthenticateRequest_AssertionConsumerServiceUrlFromConfig()
+        public void IdentityProvider_CreateAuthenticateRequest_AssertionConsumerServiceUrl()
         {
             var idp = Options.FromConfiguration.IdentityProviders.Default;
 
-            var r = idp.CreateAuthenticateRequest(null);
+            var r = idp.CreateAuthenticateRequest(null, TestObjects.authServicesUrls);
 
-            r.AssertionConsumerServiceUrl.Should().Be(new Uri("http://localhost/Saml2AuthenticationModule/acs"));
+            r.AssertionConsumerServiceUrl.Should().Be(new Uri("http://localhost/AuthServices/Acs"));
         }
 
         [TestMethod]
@@ -41,9 +43,19 @@ namespace Kentor.AuthServices.Tests
         {
             var idp = Options.FromConfiguration.IdentityProviders.Default;
 
-            var r = idp.CreateAuthenticateRequest(null);
+            var r = idp.CreateAuthenticateRequest(null, TestObjects.authServicesUrls);
 
             r.Issuer.Id.Should().Be("https://github.com/KentorIT/authservices");
+        }
+
+        [TestMethod]
+        public void IdentityProvider_CreateAuthenticateRequest_NullcheckAuthServicesUrls()
+        {
+            var idp = Options.FromConfiguration.IdentityProviders.Default;
+
+            Action a = () => idp.CreateAuthenticateRequest(new Uri("http://localhost"), null);
+
+            a.ShouldThrow<ArgumentNullException>().And.ParamName.Should().Be("authServicesUrls");
         }
 
         [TestMethod]

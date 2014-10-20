@@ -71,5 +71,37 @@ namespace Kentor.AuthServices.Tests
             Action a = () => subject.EntityId = new EntityId("http://whatever.example.com");
             a.ShouldNotThrow();
         }
+
+        [TestMethod]
+        public void SPOPtions_ModulePath_Default()
+        {
+            var subject = new SPOptions();
+            subject.ModulePath.Should().Be("/AuthServices");
+        }
+
+        [TestMethod]
+        public void SPOPtions_ModulePath_NonDefault()
+        {
+            var subject = new SPOptions();
+            subject.ModulePath = "/Foo";
+            subject.ModulePath.Should().Be("/Foo");
+        }
+
+        [TestMethod]
+        public void SPOptions_ModulePath_FixesSlashes()
+        {
+            var subject = new SPOptions();
+            subject.ModulePath = "Foo/";
+            subject.ModulePath.Should().Be("/Foo");
+        }
+
+        [TestMethod]
+        public void SPOptions_ModulePath_RejectsNull()
+        {
+            var subject = new SPOptions();
+            Action a = () => subject.ModulePath = null;
+
+            a.ShouldThrow<ArgumentNullException>().And.ParamName.Should().Be("value");
+        }
     }
 }

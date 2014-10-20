@@ -52,7 +52,6 @@ namespace Kentor.AuthServices.Tests
             subject.Options = new Options(new SPOptions
             {
                 DiscoveryServiceUrl = new Uri("http://ds.example.com"),
-                DiscoveryServiceResponseUrl = new Uri("http://localhost"),
                 EntityId = new EntityId("https://github.com/KentorIT/authservices")
             });
 

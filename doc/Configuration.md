@@ -36,10 +36,9 @@ The saml2AuthenticationModule section contains the configuration of the Kentor.A
 library. It is required for the http module, the mvc controller and the Owin middleware.
 
 ```
-<kentor.authServices assertionConsumerServiceUrl="http://localhost:17009/SamplePath/Saml2AuthenticationModule/acs"
-							entityId="http://localhost:17009"
-                            returnUri="http://localhost:17009/SamplePath/"
-                            metadataCacheDuration="1:00:00">
+<kentor.authServices entityId="http://localhost:17009"
+                     returnUri="http://localhost:17009/SamplePath/"
+                     metadataCacheDuration="1:00:00">
   <identityProviders>
     <add entityId="https://stubidp.kentor.se/Metadata" 
          destinationUri="https://stubidp.kentor.se" 
@@ -63,25 +62,14 @@ library. It is required for the http module, the mvc controller and the Owin mid
 Root element of the config section.
 
 ####Attributes
-* [`assertionConsumerServiceUrl`](#assertionconsumerserviceurl-attribute)
 * [`returnUri`](#returnuri-attribute)
 * [`entityId`](#entityid-attribute)
 * [`metadataCacheDuration`](#metadatacacheduration-attribute)
 * [`discoveryServiceUrl`](#discoveryserviceurl-attribute)
-* [`discoveryServiceResponseUrl`](#discoveryservicereturnurl-attribute)
 
 ####Elements
 * [`<identityProviders>`](#identityproviders-element)
 * [`<federations>`](#federations-element)
-
-####`assertionConsumerServiceUrl` Attribute
-*Attribute of the [`<kentor.authServices>`](#kentor-authservices-section) element.*
-
-The assertionConsumerServiceUrl is the Url to which the Idp will post the 
-Saml2 ticket. It should be the base Url of your application concatenated with 
-`/Saml2AuthenticationModule/acs` for the http module and with `/AuthServices/Acs`
-for the MVC controller. The relative Url is hard coded and cannot 
-be changed.
 
 ####`entityId` Attribute
 *Attribute of the [`<kentor.authServices>`](#kentor-authservices-section) element.*
@@ -114,12 +102,6 @@ presented by the service provider. Defaults to one hour. Examples of valid forma
 Optional attribute that specifies an idp discovery service to use if no idp
 is specified when calling sign in. Without this attribute, the first idp known
 will be used if none is specified.
-
-####`discoveryServiceResponseUrl` Attribute
-*Optional Attribute of the [`<kentor.authServices>`](#kentor-authservices-section) element.*
-
-Optional attribute that specifies where a discovery service should redirect the
-client back to. This should be the SignIn URL.
 
 ###`<identityProviders>` Element
 *Optional child element of the [`<kentor.authServices>`](#kentor-authservices-section) element.*

@@ -783,7 +783,7 @@ namespace Kentor.AuthServices.Tests
         {
             var idp = Options.FromConfiguration.IdentityProviders.Default;
 
-            var request = idp.CreateAuthenticateRequest(null);
+            var request = idp.CreateAuthenticateRequest(null, TestObjects.authServicesUrls);
 
             var responseXML =
             @"<?xml version=""1.0"" encoding=""UTF-8""?>
@@ -830,7 +830,7 @@ namespace Kentor.AuthServices.Tests
         {
             var idp = Options.FromConfiguration.IdentityProviders.Default;
 
-            var request = idp.CreateAuthenticateRequest(null);
+            var request = idp.CreateAuthenticateRequest(null, TestObjects.authServicesUrls);
 
             var responseXML =
             @"<?xml version=""1.0"" encoding=""UTF-8""?>
@@ -855,7 +855,7 @@ namespace Kentor.AuthServices.Tests
         {
             var idp = Options.FromConfiguration.IdentityProviders.Default;
 
-            var request = idp.CreateAuthenticateRequest(null);
+            var request = idp.CreateAuthenticateRequest(null, TestObjects.authServicesUrls);
 
             var responseXML =
             @"<?xml version=""1.0"" encoding=""UTF-8""?>
@@ -881,7 +881,7 @@ namespace Kentor.AuthServices.Tests
         {
             var idp = Options.FromConfiguration.IdentityProviders.Default;
 
-            var request = idp.CreateAuthenticateRequest(null);
+            var request = idp.CreateAuthenticateRequest(null, TestObjects.authServicesUrls);
 
             var responseXML =
             @"<?xml version=""1.0"" encoding=""UTF-8""?>
@@ -911,7 +911,7 @@ namespace Kentor.AuthServices.Tests
             // did send the AuthnRequest to.
             var idp = Options.FromConfiguration.IdentityProviders.Default;
 
-            var request = idp.CreateAuthenticateRequest(null);
+            var request = idp.CreateAuthenticateRequest(null, TestObjects.authServicesUrls);
 
             var responseXML =
             @"<?xml version=""1.0"" encoding=""UTF-8""?>
@@ -1138,7 +1138,7 @@ namespace Kentor.AuthServices.Tests
         {
             var idp = Options.FromConfiguration.IdentityProviders.Default;
 
-            var request = idp.CreateAuthenticateRequest(new Uri("http://localhost/testUrl.aspx"));
+            var request = idp.CreateAuthenticateRequest(new Uri("http://localhost/testUrl.aspx"), TestObjects.authServicesUrls);
 
             var responseXML =
             @"<?xml version=""1.0"" encoding=""UTF-8""?>

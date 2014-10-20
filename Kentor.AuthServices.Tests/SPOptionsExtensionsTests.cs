@@ -17,7 +17,7 @@ namespace Kentor.AuthServices.Tests
         [TestMethod]
         public void SPOPtionsExtensions_CreateMetadata_RequiredFields()
         {
-            var metadata = Options.FromConfiguration.SPOptions.CreateMetadata();
+            var metadata = Options.FromConfiguration.SPOptions.CreateMetadata(TestObjects.authServicesUrls);
 
             metadata.EntityId.Id.Should().Be("https://github.com/KentorIT/authservices");
 
@@ -29,7 +29,7 @@ namespace Kentor.AuthServices.Tests
             acs.Index.Should().Be(0);
             acs.IsDefault.Should().HaveValue();
             acs.Binding.ToString().Should().Be("urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST");
-            acs.Location.ToString().Should().Be("http://localhost/Saml2AuthenticationModule/acs");
+            acs.Location.ToString().Should().Be("http://localhost/AuthServices/Acs");
         }
     }
 }

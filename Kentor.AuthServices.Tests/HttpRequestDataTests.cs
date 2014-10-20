@@ -20,24 +20,47 @@ namespace Kentor.AuthServices.Tests
         }
 
         [TestMethod]
-        public void HttpRequestData_Ctor()
+        public void HttpRequestData_Ctor_FromHttpRequest()
         {
-            var url = new Uri("http://example.com/someurl?name=DROP%20TABLE%20STUDENTS");
+            var url = new Uri("http://example.com:42/ApplicationPath/Path?name=DROP%20TABLE%20STUDENTS");
+            string appPath = "/ApplicationPath";
 
             var request = Substitute.For<HttpRequestBase>();
             request.HttpMethod.Returns("GET");
             request.Url.Returns(url);
             request.Form.Returns(new NameValueCollection { { "Key", "Value" } });
+            request.ApplicationPath.Returns(appPath);
 
             var subject = new HttpRequestData(request);
 
             var expected = new HttpRequestData(
-                "GET", url, new KeyValuePair<string, string[]>[]
+                "GET",
+                url,
+                appPath,
+                new KeyValuePair<string, string[]>[]
                 {
                     new KeyValuePair<string, string[]>("Key", new string[] { "Value" })
                 });
 
             subject.ShouldBeEquivalentTo(expected);
+        }
+
+        [TestMethod]
+        public void HttpRequestData_Ctor_FromParamsCalculatesApplicationUrl()
+        {
+            var url = new Uri("http://example.com:42/ApplicationPath/Path?name=DROP%20TABLE%20STUDENTS");
+            string appPath = "/ApplicationPath";
+
+            var subject = new HttpRequestData(
+                 "GET",
+                 url,
+                 appPath,
+                 new KeyValuePair<string, string[]>[]
+                {
+                    new KeyValuePair<string, string[]>("Key", new string[] { "Value" })
+                });
+
+            subject.ApplicationUrl.Should().Be(new Uri("http://example.com:42/ApplicationPath"));
         }
     }
 }

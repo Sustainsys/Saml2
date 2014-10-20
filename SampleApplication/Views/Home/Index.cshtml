@@ -13,13 +13,13 @@
         You are currently not signed in.
     </p>
     <p>
-        <a href="@Url.Content("~/Saml2AuthenticationModule/SignIn")">Sign in</a> - default IDP
+        <a href="@Url.Content("~/AuthServices/SignIn")">Sign in</a> - default IDP
         @foreach (var idp in Kentor.AuthServices.Configuration.KentorAuthServicesSection.Current.IdentityProviders)
         {
             var entityId = idp.EntityId;
             var destinationUri = idp.DestinationUri;
             <br />
-            <a href="@Url.Content("~/Saml2AuthenticationModule/SignIn?idp=" + HttpUtility.UrlEncode(entityId))">Sign in</a>@: - @entityId - @destinationUri
+            <a href="@Url.Content("~/AuthServices/SignIn?idp=" + HttpUtility.UrlEncode(entityId))">Sign in</a>@: - @entityId - @destinationUri
         }
     </p>
 }

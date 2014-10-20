@@ -27,7 +27,9 @@ namespace Kentor.AuthServices.Tests
         [TestMethod]
         public void MetadataCommand_Run_SuccessfulResult()
         {
-            var subject = new MetadataCommand().Run(null, Options.FromConfiguration);
+            var request = new HttpRequestData("GET", new Uri("http://localhost"));
+
+            var subject = new MetadataCommand().Run(request, Options.FromConfiguration);
 
             XDocument payloadXml = XDocument.Parse(subject.Content);
 
@@ -47,7 +49,7 @@ namespace Kentor.AuthServices.Tests
                     new XAttribute("protocolSupportEnumeration", "urn:oasis:names:tc:SAML:2.0:protocol"),
                     new XElement(Saml2Namespaces.Saml2Metadata + "AssertionConsumerService",
                         new XAttribute("Binding", Saml2Binding.HttpPostUri),
-                        new XAttribute("Location", "http://localhost/Saml2AuthenticationModule/acs"),
+                        new XAttribute("Location", "http://localhost/AuthServices/Acs"),
                         new XAttribute("index", 0),
                         new XAttribute("isDefault", true)))));
 

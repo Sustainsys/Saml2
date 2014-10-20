@@ -23,7 +23,18 @@ namespace Kentor.AuthServices.Owin
             {
                 formData = await context.Request.ReadFormAsync();
             }
-            return new HttpRequestData(context.Request.Method, context.Request.Uri, formData);
+
+            var applicationRootPath = context.Request.PathBase.Value;
+            if(string.IsNullOrEmpty(applicationRootPath))
+            {
+                applicationRootPath = "/";
+            }
+
+            return new HttpRequestData(
+                context.Request.Method,
+                context.Request.Uri,
+                applicationRootPath,
+                formData);
         }
     }
 }

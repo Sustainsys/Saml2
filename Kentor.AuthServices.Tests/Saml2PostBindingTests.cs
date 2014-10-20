@@ -15,10 +15,14 @@ namespace Kentor.AuthServices.Tests
     {
         private HttpRequestData CreateRequest(string encodedResponse)
         {
-            return new HttpRequestData("POST", new Uri("http://example.com"), new KeyValuePair<string, string[]>[] 
-            { 
-                new KeyValuePair<string, string[]>("SAMLResponse", new string[] {encodedResponse }) 
-            });
+            return new HttpRequestData(
+                "POST",
+                new Uri("http://example.com"),
+                "/ModulePath",
+                new KeyValuePair<string, string[]>[]
+                {
+                    new KeyValuePair<string, string[]>("SAMLResponse", new string[] {encodedResponse }) 
+                });
         }
 
         [TestMethod]

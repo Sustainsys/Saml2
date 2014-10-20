@@ -18,6 +18,7 @@ namespace Kentor.AuthServices.TestHelpers
             context.Request.Scheme  = "http";
             context.Request.Host = new HostString("sp.example.com");
             context.Request.Path = new PathString("/");
+            context.Request.PathBase = new PathString();
             context.Response.Body = new MemoryStream();
             return context;
         }

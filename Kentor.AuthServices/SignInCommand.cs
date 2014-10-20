@@ -29,22 +29,24 @@ namespace Kentor.AuthServices
             return CreateResult(
                 new EntityId(request.QueryString["idp"]),
                 request.QueryString["ReturnUrl"],
-                request.Url,
+                request,
                 options);
         }
 
         public static CommandResult CreateResult(
             EntityId idpEntityId,
             string returnPath,
-            Uri requestUrl,
+            HttpRequestData request,
             IOptions options)
         {
+            var urls = new AuthServicesUrls(request, options.SPOptions);
+
             IdentityProvider idp;
             if (idpEntityId == null || idpEntityId.Id == null)
             {
                 if (options.SPOptions.DiscoveryServiceUrl != null)
                 {
-                    return RedirectToDiscoveryService(returnPath, options.SPOptions);
+                    return RedirectToDiscoveryService(returnPath, options.SPOptions, urls);
                 }
 
                 idp = options.IdentityProviders.Default;
@@ -60,17 +62,20 @@ namespace Kentor.AuthServices
             Uri returnUri = null;
             if (!string.IsNullOrEmpty(returnPath))
             {
-                Uri.TryCreate(requestUrl, returnPath, out returnUri);
+                Uri.TryCreate(request.Url, returnPath, out returnUri);
             }
 
-            var authnRequest = idp.CreateAuthenticateRequest(returnUri);
+            var authnRequest = idp.CreateAuthenticateRequest(returnUri, urls);
 
             return idp.Bind(authnRequest);
         }
 
-        private static CommandResult RedirectToDiscoveryService(string returnPath, ISPOptions spOptions)
+        private static CommandResult RedirectToDiscoveryService(
+            string returnPath,
+            ISPOptions spOptions,
+            AuthServicesUrls authServicesUrls)
         {
-            string returnUrl = spOptions.DiscoveryServiceResponseUrl.OriginalString;
+            string returnUrl = authServicesUrls.SignInUrl.OriginalString;
 
             if(!string.IsNullOrEmpty(returnPath))
             {

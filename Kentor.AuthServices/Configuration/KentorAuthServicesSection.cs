@@ -14,7 +14,7 @@ namespace Kentor.AuthServices.Configuration
     /// </summary>
     public class KentorAuthServicesSection : ConfigurationSection, ISPOptions
     {
-        private static readonly KentorAuthServicesSection current = 
+        private static readonly KentorAuthServicesSection current =
             (KentorAuthServicesSection)ConfigurationManager.GetSection("kentor.authServices");
 
         /// <summary>
@@ -39,18 +39,6 @@ namespace Kentor.AuthServices.Configuration
         }
 
         /// <summary>
-        /// Url for idp to post responses to.
-        /// </summary>
-        [ConfigurationProperty("assertionConsumerServiceUrl")]
-        public Uri AssertionConsumerServiceUrl
-        {
-            get
-            {
-                return (Uri)base["assertionConsumerServiceUrl"];
-            }
-        }
-
-        /// <summary>
         /// EntityId - The identity of the ServiceProvider to use when sending requests to Idp
         /// and presenting the SP in metadata.
         /// </summary>
@@ -67,7 +55,7 @@ namespace Kentor.AuthServices.Configuration
         /// <summary>
         /// The Uri to redirect back to after successfull authentication.
         /// </summary>
-        [ConfigurationProperty("returnUri", IsRequired=true)]
+        [ConfigurationProperty("returnUri", IsRequired = true)]
         public Uri ReturnUri
         {
             get
@@ -80,7 +68,7 @@ namespace Kentor.AuthServices.Configuration
         /// Optional attribute that describes for how long in seconds anyone may cache the metadata 
         /// presented by the service provider. Defaults to 3600 seconds.
         /// </summary>
-        [ConfigurationProperty("metadataCacheDuration", IsRequired=false, DefaultValue="1:0:0")]
+        [ConfigurationProperty("metadataCacheDuration", IsRequired = false, DefaultValue = "1:0:0")]
         public TimeSpan MetadataCacheDuration
         {
             get
@@ -119,25 +107,12 @@ namespace Kentor.AuthServices.Configuration
         /// <summary>
         /// Url to discovery service to use if no idp is specified in the sign in call.
         /// </summary>
-        [ConfigurationProperty(discoveryServiceUrl, IsRequired=false)]
+        [ConfigurationProperty(discoveryServiceUrl, IsRequired = false)]
         public Uri DiscoveryServiceUrl
         {
             get
             {
                 return (Uri)base[discoveryServiceUrl];
-            }
-        }
-
-        const string discoveryServiceResponseUrl = "discoveryServiceResponseUrl";
-        /// <summary>
-        /// Url where to receive discovery service responses.
-        /// </summary>
-        [ConfigurationProperty(discoveryServiceResponseUrl, IsRequired = false)]
-        public Uri DiscoveryServiceResponseUrl
-        {
-            get
-            {
-                return (Uri)base[discoveryServiceResponseUrl];
             }
         }
 
@@ -151,6 +126,21 @@ namespace Kentor.AuthServices.Configuration
             get
             {
                 return saml2PSecurityTokenHandler.Value;
+            }
+        }
+
+        const string modulePath = "modulePath";
+        /// <summary>
+        /// Application root relative path for AuthServices endpoints. The 
+        /// default is "AuthServices".
+        /// </summary>
+        [ConfigurationProperty(modulePath, IsRequired=false, DefaultValue="/AuthServices")]
+        [RegexStringValidator("/.*")]
+        public string ModulePath
+        {
+            get
+            {
+                return (string)base[modulePath];
             }
         }
     }

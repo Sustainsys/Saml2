@@ -30,7 +30,7 @@ namespace Kentor.AuthServices.IntegrationTests
         public void SignIn_Unsolicited_HttpModule()
         {
             I.Open("http://localhost:52071/")
-                .Enter("http://localhost:17009/SamplePath/Saml2AuthenticationModule/Acs").In("#AssertionConsumerServiceUrl")
+                .Enter("http://localhost:17009/SamplePath/AuthServices/Acs").In("#AssertionConsumerServiceUrl")
                 .Click("#main form button")
                 .Assert.Text("JohnDoe").In("tbody tr td:nth-child(2)");
 
@@ -61,11 +61,11 @@ namespace Kentor.AuthServices.IntegrationTests
         public void SignIn_AuthnRequest_HttpModule_via_DiscoveryService()
         {
             I.Open("http://localhost:17009/SamplePath")
-                .Click("a[href=\"/SamplePath/Saml2AuthenticationModule/SignIn\"]")
-                .Assert.Text("http://localhost:17009/SamplePath/Saml2AuthenticationModule/SignIn").In("#return");
+                .Click("a[href=\"/SamplePath/AuthServices/SignIn\"]")
+                .Assert.Text("http://localhost:17009/SamplePath/AuthServices/SignIn").In("#return");
 
             I.Click("#main form button")
-                .Assert.Text("http://localhost:17009/SamplePath/Saml2AuthenticationModule/Acs").In("#AssertionConsumerServiceUrl");
+                .Assert.Text("http://localhost:17009/SamplePath/AuthServices/Acs").In("#AssertionConsumerServiceUrl");
 
             I.Assert.False(() => string.IsNullOrEmpty(I.Find("#InResponseTo").Element.Value));
 

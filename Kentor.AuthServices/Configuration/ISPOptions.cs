@@ -36,19 +36,15 @@ namespace Kentor.AuthServices.Configuration
         Uri DiscoveryServiceUrl { get; }
 
         /// <summary>
-        /// Url where to receive discovery service responses.
-        /// </summary>
-        Uri DiscoveryServiceResponseUrl { get; }
-
-        /// <summary>
         /// EntityId - The identity of the ServiceProvider to use when sending requests to Idp
         /// and presenting the SP in metadata.
         /// </summary>
         EntityId EntityId { get; }
 
         /// <summary>
-        /// Uri for idp to post responses to.
+        /// Application root relative path for AuthServices endpoints. The
+        /// default should be "/AuthServices".
         /// </summary>
-        Uri AssertionConsumerServiceUrl { get; }
+        string ModulePath { get; }
     }
 }
