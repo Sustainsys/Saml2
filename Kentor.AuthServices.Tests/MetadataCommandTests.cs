@@ -25,11 +25,11 @@ namespace Kentor.AuthServices.Tests
             a.ShouldThrow<ArgumentNullException>().And.ParamName.Should().Be("options");
         }
 
+        HttpRequestData request = new HttpRequestData("GET", new Uri("http://localhost"));
+
         [TestMethod]
         public void MetadataCommand_Run()
         {
-            var request = new HttpRequestData("GET", new Uri("http://localhost"));
-
             var subject = new MetadataCommand().Run(request, StubFactory.CreateOptions());
 
             XDocument payloadXml = XDocument.Parse(subject.Content);
@@ -63,6 +63,18 @@ namespace Kentor.AuthServices.Tests
 
             payloadXml.ShouldBeEquivalentTo(expectedXml, opt => opt.IgnoringCyclicReferences());
             subject.ContentType.Should().Be("application/samlmetadata+xml");
+        }
+
+        [TestMethod]
+        public void MetadataCommand_Run_ThrowsOnMissingOrganizationDisplayName()
+        {
+            var options = StubFactory.CreateOptions();
+
+            options.SPOptions.Organization.DisplayNames.Clear();
+
+            Action a = () => new MetadataCommand().Run(request, options);
+
+            a.ShouldThrow<MetadataSerializationException>().And.Message.Should().StartWith("ID3203");
         }
     }
 }
