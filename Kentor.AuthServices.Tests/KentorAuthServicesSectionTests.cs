@@ -4,7 +4,7 @@ using Kentor.AuthServices.Configuration;
 using FluentAssertions;
 using System.IdentityModel.Metadata;
 using System.Globalization;
-using NSubstitute;
+using System.Linq;
 
 namespace Kentor.AuthServices.Tests
 {
@@ -66,9 +66,22 @@ namespace Kentor.AuthServices.Tests
         }
 
         [TestMethod]
-        public void KentorAutServicesSection_Contacts_IsntNull()
+        public void KentorAutServicesSection_Contacts_LoadedFromConfig()
         {
-            KentorAuthServicesSection.Current.Contacts.Should().NotBeNull();
+            var subject = KentorAuthServicesSection.Current.Contacts;
+
+            var expected = StubFactory.CreateSPOptions().Contacts;
+
+            // The config file only supports one phone number and one e-mail for each
+            // contact, so let's remove the other ones that are added by the stub factory.
+            expected.First().TelephoneNumbers.Remove(expected.First().TelephoneNumbers.First());
+            expected.First().EmailAddresses.Remove(expected.First().EmailAddresses.First());
+
+            var secondTech = new ContactPerson(ContactType.Technical);
+            secondTech.EmailAddresses.Add("info@kentor.se");
+            expected.Add(secondTech);
+
+            subject.ShouldBeEquivalentTo(expected);
         }
     }
 }

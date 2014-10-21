@@ -38,5 +38,18 @@ namespace Kentor.AuthServices.Configuration
                 return (TimeSpan)base[cacheDuration];
             }
         }
+
+        /// <summary>
+        /// Collection of contacts.
+        /// </summary>
+        [ConfigurationProperty("", IsDefaultCollection=true)]
+        [ConfigurationCollection(typeof(ContactPersonsCollection), AddItemName="contactPerson")]
+        public ContactPersonsCollection Contacts
+        {
+            get
+            {
+                return (ContactPersonsCollection)base[""];
+            }
+        }
     }
 }

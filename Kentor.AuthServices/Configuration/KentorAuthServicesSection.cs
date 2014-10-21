@@ -6,6 +6,7 @@ using System.Globalization;
 using System.IdentityModel.Metadata;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Kentor.AuthServices.Configuration
@@ -182,6 +183,8 @@ namespace Kentor.AuthServices.Configuration
             }
         }
 
+        IEnumerable<ContactPerson> contacts;
+
         /// <summary>
         /// Contacts for the SAML2 entity.
         /// </summary>
@@ -189,7 +192,37 @@ namespace Kentor.AuthServices.Configuration
         {
             get
             {
-                return Enumerable.Empty<ContactPerson>();
+                if(contacts == null)
+                {
+                    // Won't assign directly to avoid a race condition.
+                    var temp = new List<ContactPerson>();
+
+                    foreach(var configPerson in Metadata.Contacts)
+                    {
+                        var contactPerson = new ContactPerson(configPerson.ContactType)
+                        {
+                            Company = configPerson.Company.NullIfEmpty(),
+                            GivenName = configPerson.GivenName.NullIfEmpty(),
+                            Surname = configPerson.Surname.NullIfEmpty(),
+                        };
+
+                        if(!string.IsNullOrEmpty(configPerson.PhoneNumber))
+                        {
+                            contactPerson.TelephoneNumbers.Add(configPerson.PhoneNumber);
+                        }
+
+                        if(!string.IsNullOrEmpty(configPerson.Email))
+                        {
+                            contactPerson.EmailAddresses.Add(configPerson.Email);
+                        }
+
+                        temp.Add(contactPerson);
+                    }
+
+                    contacts = temp;
+                }
+
+                return contacts;
             }
         }
     }
