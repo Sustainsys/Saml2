@@ -2,9 +2,11 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Configuration;
+using System.Globalization;
 using System.IdentityModel.Metadata;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Kentor.AuthServices.Configuration
@@ -65,15 +67,13 @@ namespace Kentor.AuthServices.Configuration
         }
 
         /// <summary>
-        /// Optional attribute that describes for how long in seconds anyone may cache the metadata 
-        /// presented by the service provider. Defaults to 3600 seconds.
+        /// For how long may the metadata be cached by a receiving party?
         /// </summary>
-        [ConfigurationProperty("metadataCacheDuration", IsRequired = false, DefaultValue = "1:0:0")]
         public TimeSpan MetadataCacheDuration
         {
             get
             {
-                return (TimeSpan)base["metadataCacheDuration"];
+                return Metadata.CacheDuration;
             }
         }
 
@@ -141,6 +141,94 @@ namespace Kentor.AuthServices.Configuration
             get
             {
                 return (string)base[modulePath];
+            }
+        }
+
+        // Reset by the tests.
+        internal Organization organization = null;
+
+        /// <summary>
+        /// Metadata describing the organization responsible for the entity.
+        /// </summary>
+        public Organization Organization
+        {
+            get
+            {
+                // If the entire organization element is missing in the config file,
+                // Metadata.Organization will still be instantiated, but the Url will be null.
+                if(organization == null && Metadata.Organization.Url != null)
+                {
+                    var culture = CultureInfo.InvariantCulture;
+                    if(!string.IsNullOrEmpty(Metadata.Organization.Language))
+                    {
+                        culture = CultureInfo.GetCultureInfo(Metadata.Organization.Language);
+                    }
+
+                    var org = new Organization();
+                    org.Names.Add(new LocalizedName(Metadata.Organization.Name, culture));
+                    org.DisplayNames.Add(new LocalizedName(Metadata.Organization.DisplayName, culture));
+                    org.Urls.Add(new LocalizedUri(Metadata.Organization.Url, culture));
+
+                    organization = org;
+                }
+
+                return organization;
+            }
+        }
+
+        const string metadata = "metadata";
+        /// <summary>
+        /// Metadata of the service provider.
+        /// </summary>
+        [ConfigurationProperty(metadata)]
+        public MetadataElement Metadata
+        {
+            get
+            {
+                return (MetadataElement)base[metadata];
+            }
+        }
+
+        IEnumerable<ContactPerson> contacts;
+
+        /// <summary>
+        /// Contacts for the SAML2 entity.
+        /// </summary>
+        public IEnumerable<ContactPerson> Contacts
+        {
+            get
+            {
+                if(contacts == null)
+                {
+                    // Won't assign directly to avoid a race condition.
+                    var temp = new List<ContactPerson>();
+
+                    foreach(var configPerson in Metadata.Contacts)
+                    {
+                        var contactPerson = new ContactPerson(configPerson.ContactType)
+                        {
+                            Company = configPerson.Company.NullIfEmpty(),
+                            GivenName = configPerson.GivenName.NullIfEmpty(),
+                            Surname = configPerson.Surname.NullIfEmpty(),
+                        };
+
+                        if(!string.IsNullOrEmpty(configPerson.PhoneNumber))
+                        {
+                            contactPerson.TelephoneNumbers.Add(configPerson.PhoneNumber);
+                        }
+
+                        if(!string.IsNullOrEmpty(configPerson.Email))
+                        {
+                            contactPerson.EmailAddresses.Add(configPerson.Email);
+                        }
+
+                        temp.Add(contactPerson);
+                    }
+
+                    contacts = temp;
+                }
+
+                return contacts;
             }
         }
     }

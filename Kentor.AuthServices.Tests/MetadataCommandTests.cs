@@ -8,6 +8,7 @@ using FluentAssertions;
 using System.IdentityModel.Metadata;
 using System.Xml;
 using Kentor.AuthServices.Configuration;
+using System.Globalization;
 
 namespace Kentor.AuthServices.Tests
 {
@@ -24,12 +25,12 @@ namespace Kentor.AuthServices.Tests
             a.ShouldThrow<ArgumentNullException>().And.ParamName.Should().Be("options");
         }
 
-        [TestMethod]
-        public void MetadataCommand_Run_SuccessfulResult()
-        {
-            var request = new HttpRequestData("GET", new Uri("http://localhost"));
+        HttpRequestData request = new HttpRequestData("GET", new Uri("http://localhost"));
 
-            var subject = new MetadataCommand().Run(request, Options.FromConfiguration);
+        [TestMethod]
+        public void MetadataCommand_Run()
+        {
+            var subject = new MetadataCommand().Run(request, StubFactory.CreateOptions());
 
             XDocument payloadXml = XDocument.Parse(subject.Content);
 
@@ -51,10 +52,40 @@ namespace Kentor.AuthServices.Tests
                         new XAttribute("Binding", Saml2Binding.HttpPostUri),
                         new XAttribute("Location", "http://localhost/AuthServices/Acs"),
                         new XAttribute("index", 0),
-                        new XAttribute("isDefault", true)))));
+                        new XAttribute("isDefault", true))),
+                new XElement(Saml2Namespaces.Saml2Metadata + "Organization",
+                    new XElement(Saml2Namespaces.Saml2Metadata + "OrganizationName",
+                        new XAttribute(XNamespace.Xml + "lang", ""), "Kentor.AuthServices"),
+                    new XElement(Saml2Namespaces.Saml2Metadata + "OrganizationDisplayName",
+                        new XAttribute(XNamespace.Xml + "lang", ""), "Kentor AuthServices"),
+                    new XElement(Saml2Namespaces.Saml2Metadata + "OrganizationURL",
+                        new XAttribute(XNamespace.Xml + "lang", ""), "http://github.com/KentorIT/authservices")),
+                new XElement(Saml2Namespaces.Saml2Metadata + "ContactPerson",
+                    new XAttribute("contactType", "support"),
+                    new XElement(Saml2Namespaces.Saml2Metadata + "Company", "Kentor"),
+                    new XElement(Saml2Namespaces.Saml2Metadata + "GivenName", "Anders"),
+                    new XElement(Saml2Namespaces.Saml2Metadata + "SurName", "Abel"),
+                    new XElement(Saml2Namespaces.Saml2Metadata + "EmailAddress", "info@kentor.se"),
+                    new XElement(Saml2Namespaces.Saml2Metadata + "EmailAddress", "anders.abel@kentor.se"),
+                    new XElement(Saml2Namespaces.Saml2Metadata + "TelephoneNumber", "+46 8 587 650 00"),
+                    new XElement(Saml2Namespaces.Saml2Metadata + "TelephoneNumber", "+46 708 96 50 63")),
+                new XElement(Saml2Namespaces.Saml2Metadata + "ContactPerson",
+                    new XAttribute("contactType", "technical"))));
 
             payloadXml.ShouldBeEquivalentTo(expectedXml, opt => opt.IgnoringCyclicReferences());
             subject.ContentType.Should().Be("application/samlmetadata+xml");
+        }
+
+        [TestMethod]
+        public void MetadataCommand_Run_ThrowsOnMissingOrganizationDisplayName()
+        {
+            var options = StubFactory.CreateOptions();
+
+            options.SPOptions.Organization.DisplayNames.Clear();
+
+            Action a = () => new MetadataCommand().Run(request, options);
+
+            a.ShouldThrow<MetadataSerializationException>().And.Message.Should().StartWith("ID3203");
         }
     }
 }

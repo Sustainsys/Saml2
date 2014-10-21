@@ -60,7 +60,11 @@
     <Compile Include="CacheAwareMetadataSerializer.cs" />
     <Compile Include="ClaimsIdentityExtensions.cs" />
     <Compile Include="CommandResult.cs" />
+    <Compile Include="Configuration\ContactPersonElement.cs" />
+    <Compile Include="Configuration\ContactPersonsCollection.cs" />
     <Compile Include="Configuration\IdentityProviderDictionary.cs" />
+    <Compile Include="Configuration\MetadataElement.cs" />
+    <Compile Include="Configuration\OrganizationElement.cs" />
     <Compile Include="Configuration\SPOptions.cs" />
     <Compile Include="Configuration\EntityIdConverter.cs" />
     <Compile Include="Configuration\FederationCollection.cs" />
@@ -109,6 +113,7 @@
     <Compile Include="SPOptionsExtensions.cs" />
     <Compile Include="SignInCommand.cs" />
     <Compile Include="StatusCodeHelper.cs" />
+    <Compile Include="StringHelpers.cs" />
     <Compile Include="XmlDocumentExtensions.cs" />
     <Compile Include="XmlFilteringReader.cs" />
     <Compile Include="XmlHelpers.cs" />

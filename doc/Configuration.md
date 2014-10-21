@@ -38,7 +38,11 @@ library. It is required for the http module, the mvc controller and the Owin mid
 ```
 <kentor.authServices entityId="http://localhost:17009"
                      returnUri="http://localhost:17009/SamplePath/"
-                     metadataCacheDuration="1:00:00">
+                     discoveryServiceUrl="http://localhost:52071/DiscoveryService" />
+  <metadata cacheDuration="0:15:00" >
+    <organization name="Kentor IT AB" displayName="Kentor" url="http://www.kentor.se" language="sv" />
+    <contactPerson type="Other" email="info@kentor.se" />
+  </metadata>
   <identityProviders>
     <add entityId="https://stubidp.kentor.se/Metadata" 
          destinationUri="https://stubidp.kentor.se" 
@@ -64,10 +68,10 @@ Root element of the config section.
 ####Attributes
 * [`returnUri`](#returnuri-attribute)
 * [`entityId`](#entityid-attribute)
-* [`metadataCacheDuration`](#metadatacacheduration-attribute)
 * [`discoveryServiceUrl`](#discoveryserviceurl-attribute)
 
 ####Elements
+* [`<metadata>`](#metadata-element)
 * [`<identityProviders>`](#identityproviders-element)
 * [`<federations>`](#federations-element)
 
@@ -87,8 +91,25 @@ The Uri that you want users to be redirected to once the authentication is
 complete. This is typically the start page of the application, or a special
 signed in start page.
 
-####`metadataCacheDuration` Attribute
+####`discoveryServiceUrl` Attribute
 *Optional Attribute of the [`<kentor.authServices>`](#kentor-authservices-section) element.*
+
+Optional attribute that specifies an idp discovery service to use if no idp
+is specified when calling sign in. Without this attribute, the first idp known
+will be used if none is specified.
+
+###`<metadata>` Element
+*Optional child element of the [`<kentor.authServices>`](#kentor-authservices-section) element.*
+
+####Attributes
+* [`cacheDuration`](#cacheduration-attribute)
+
+####Elements
+* [`organization`](#organization-element)
+* [`contactPerson`](#contactperson-element)
+
+####`cacheDuration` Attribute
+*Optional Attribute of the [`<metadata>`](#metadata-element) element.*
 
 Optional attribute that describes for how long in anyone may cache the metadata 
 presented by the service provider. Defaults to one hour. Examples of valid format strings:
@@ -96,12 +117,92 @@ presented by the service provider. Defaults to one hour. Examples of valid forma
 * 1 day, 2 hours: `1.2:00:00`.
 * 42 seconds: `0:00:42`.
 
-####`discoveryServiceUrl` Attribute
-*Optional Attribute of the [`<kentor.authServices>`](#kentor-authservices-section) element.*
+###[`organization`] Element
+*Optional child element of the [`<metadata>`](#metadata-element) element.*
 
-Optional attribute that specifies an idp discovery service to use if no idp
-is specified when calling sign in. Without this attribute, the first idp known
-will be used if none is specified.
+Provides information about the organization supplying the SAML2 entity (in plain
+English that means the organization that supplies the application that AuthServices
+is used in).
+
+####Attributes
+* [`name`](#name-attribute)
+* [`displayName`](#displayname-attribute)
+* [`url`](#url-attribute)
+* [`langauge`](#language-attribute)
+
+####`name` Attribute
+*Attribute of the [`<organization>`](#organization-element) element.*
+
+The name of the organization.
+
+####`displayName` Attribute
+*Attribute of the [`<organization>`](#organization-element) element.*
+
+The display name of the organization.
+
+####`url` Attribute
+*Attribute of the [`<organization>`](#organization-element) element.*
+
+Url to the organization's web site.
+
+####`language` Attribute
+*Optional Attribute of the [`<organization>`](#organization-element) element.*
+
+In the generated metadata, the `name`, `displayName` and `url` attributes have
+a language specification. If none is specified, the `xml:lang` attribute will
+be generated with an empty value.
+
+###`<contactPerson>` Element
+*Optional child element of the [`<metadata>`](#metadata-element) element. Can
+be repeated multiple times.*
+
+####Attributes
+* [`type`](#type-attribute)
+* [`company`](#company-attribute)
+* [`givenName`](#givenname-attribute)
+* [`surname`](#surname-attribute)
+* [`phoneNumber`](#phonenumber-attribute)
+* [`email`](#email-attribute)
+
+####`type` Attribute
+*Attribute of the [`<contactPerson>`](#contactperson-element) element.*
+
+The type attribute indicates the type of the contact and is picked from the
+[`ContactType`](http://msdn.microsoft.com/en-us/library/system.identitymodel.metadata.contacttype(v=vs.110).aspx) 
+enum. Valid values are:
+
+* Administrative
+* Billing
+* Other
+* Support
+* Technical
+
+####`company` Attribute
+*Optional attribute of the [`<contactPerson>`](#contactperson-element) element.*
+
+Name of the person's company.
+
+####`givenName` Attribute
+*Optional attribute of the [`<contactPerson>`](#contactperson-element) element.*
+
+Given name of the person.
+
+####`surname` Attribute
+*Optional attribute of the [`<contactPerson>`](#contactperson-element) element.*
+
+Surname of the person.
+
+####`phoneNumber` Attribute
+*Optional attribute of the [`<contactPerson>`](#contactperson-element) element.*
+
+Phone number of the person. The SAML standard allows multiple phone number to
+be specified. AuthServices supports that, but not through the configuration file.
+
+####`email` Attribute
+*Optional attribute of the [`<contactPerson>`](#contactperson-element) element.*
+
+Email address of the person. The SAML standard allows multiple email addresses to
+be specified. AuthServices supports that, but not through the configuration file.
 
 ###`<identityProviders>` Element
 *Optional child element of the [`<kentor.authServices>`](#kentor-authservices-section) element.*
