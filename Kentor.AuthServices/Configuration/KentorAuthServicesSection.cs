@@ -67,7 +67,7 @@ namespace Kentor.AuthServices.Configuration
         }
 
         /// <summary>
-        /// For how long (in seconds) may the metadata be cached by a receiving party.
+        /// For how long may the metadata be cached by a receiving party?
         /// </summary>
         public TimeSpan MetadataCacheDuration
         {
