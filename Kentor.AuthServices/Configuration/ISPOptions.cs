@@ -48,8 +48,13 @@ namespace Kentor.AuthServices.Configuration
         string ModulePath { get; }
 
         /// <summary>
-        /// Metadata describing the organization responsible for the entity.
+        /// Metadata describing the organization responsible for the SAML2 entity.
         /// </summary>
         Organization Organization { get; }
+
+        /// <summary>
+        /// Contacts for the SAML2 entity. Must not be null.
+        /// </summary>
+        IEnumerable<ContactPerson> Contacts { get; }
     }
 }

@@ -103,5 +103,13 @@ namespace Kentor.AuthServices.Tests
 
             a.ShouldThrow<ArgumentNullException>().And.ParamName.Should().Be("value");
         }
+
+        [TestMethod]
+        public void SPOptions_Contacts_IsntNull()
+        {
+            var subject = new SPOptions();
+
+            subject.Contacts.Should().NotBeNull();
+        }
     }
 }

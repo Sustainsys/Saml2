@@ -181,5 +181,16 @@ namespace Kentor.AuthServices.Configuration
                 return (MetadataElement)base[metadata];
             }
         }
+
+        /// <summary>
+        /// Contacts for the SAML2 entity.
+        /// </summary>
+        public IEnumerable<ContactPerson> Contacts
+        {
+            get
+            {
+                return Enumerable.Empty<ContactPerson>();
+            }
+        }
     }
 }

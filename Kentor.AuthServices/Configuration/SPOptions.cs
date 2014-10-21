@@ -116,5 +116,29 @@ namespace Kentor.AuthServices.Configuration
         /// Metadata describing the organization responsible for the entity.
         /// </summary>
         public Organization Organization { get; set; }
+
+        /// <summary>
+        /// Contacts for the SAML2 entity.
+        /// </summary>
+        IEnumerable<ContactPerson> ISPOptions.Contacts
+        {
+            get
+            {
+                return Contacts;
+            }
+        }
+
+        readonly ICollection<ContactPerson> contacts = new List<ContactPerson>();
+
+        /// <summary>
+        /// Collection of contacts for the SAML2 entity.
+        /// </summary>
+        public ICollection<ContactPerson> Contacts
+        {
+            get
+            {
+                return contacts;
+            }
+        }
     }
 }

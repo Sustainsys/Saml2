@@ -64,5 +64,11 @@ namespace Kentor.AuthServices.Tests
 
             KentorAuthServicesSection.Current.Organization.Should().BeNull();
         }
+
+        [TestMethod]
+        public void KentorAutServicesSection_Contacts_IsntNull()
+        {
+            KentorAuthServicesSection.Current.Contacts.Should().NotBeNull();
+        }
     }
 }
