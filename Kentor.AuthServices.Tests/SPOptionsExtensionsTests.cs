@@ -44,5 +44,15 @@ namespace Kentor.AuthServices.Tests
             subject.Should().NotBeNull();
             subject.Names.First().Name.Should().Be("Kentor.AuthServices");
         }
+
+        [TestMethod]
+        public void SPOptionsExtensions_CreateMetadata_IncludesContactPersons()
+        {
+            var spOptions = StubFactory.CreateSPOptions();
+
+            var subject = spOptions.CreateMetadata(StubFactory.CreateAuthServicesUrls()).Contacts;
+
+            subject.Should().Contain(spOptions.Contacts);
+        }
     }
 }

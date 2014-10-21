@@ -26,7 +26,19 @@ namespace Kentor.AuthServices
                 new Uri("http://github.com/KentorIT/authservices"),
                 CultureInfo.InvariantCulture));
 
-            return new SPOptions
+            var supportContact = new ContactPerson(ContactType.Support)
+            {
+                Company = "Kentor",
+                GivenName = "Anders",
+                Surname = "Abel",
+            };
+
+            supportContact.TelephoneNumbers.Add("+46 8 587 650 00");
+            supportContact.TelephoneNumbers.Add("+46 708 96 50 63");
+            supportContact.EmailAddresses.Add("info@kentor.se");
+            supportContact.EmailAddresses.Add("anders.abel@kentor.se");
+
+            var options = new SPOptions
             {
                 EntityId = new EntityId("https://github.com/KentorIT/authservices"),
                 MetadataCacheDuration = new TimeSpan(0, 0, 42),
@@ -34,6 +46,11 @@ namespace Kentor.AuthServices
                 DiscoveryServiceUrl = new Uri("https://ds.example.com"),
                 ReturnUri = new Uri("https://localhost/returnUri"),
             };
+
+            options.Contacts.Add(supportContact);
+            options.Contacts.Add(new ContactPerson(ContactType.Technical)); // Deliberately void of info.
+
+            return options;
         }
 
         internal static Options CreateOptions()

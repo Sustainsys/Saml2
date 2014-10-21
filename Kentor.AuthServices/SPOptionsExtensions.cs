@@ -19,6 +19,11 @@ namespace Kentor.AuthServices
                 Organization = spOptions.Organization
             };
 
+            foreach (var contact in spOptions.Contacts)
+            {
+                ed.Contacts.Add(contact);
+            }
+
             var spsso = new ServiceProviderSingleSignOnDescriptor();
 
             spsso.ProtocolsSupported.Add(new Uri("urn:oasis:names:tc:SAML:2.0:protocol"));

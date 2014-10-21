@@ -59,7 +59,18 @@ namespace Kentor.AuthServices.Tests
                     new XElement(Saml2Namespaces.Saml2Metadata + "OrganizationDisplayName",
                         new XAttribute(XNamespace.Xml + "lang", ""), "Kentor AuthServices"),
                     new XElement(Saml2Namespaces.Saml2Metadata + "OrganizationURL",
-                        new XAttribute(XNamespace.Xml + "lang" , ""), "http://github.com/KentorIT/authservices"))));
+                        new XAttribute(XNamespace.Xml + "lang", ""), "http://github.com/KentorIT/authservices")),
+                new XElement(Saml2Namespaces.Saml2Metadata + "ContactPerson",
+                    new XAttribute("contactType", "support"),
+                    new XElement(Saml2Namespaces.Saml2Metadata + "Company", "Kentor"),
+                    new XElement(Saml2Namespaces.Saml2Metadata + "GivenName", "Anders"),
+                    new XElement(Saml2Namespaces.Saml2Metadata + "SurName", "Abel"),
+                    new XElement(Saml2Namespaces.Saml2Metadata + "EmailAddress", "info@kentor.se"),
+                    new XElement(Saml2Namespaces.Saml2Metadata + "EmailAddress", "anders.abel@kentor.se"),
+                    new XElement(Saml2Namespaces.Saml2Metadata + "TelephoneNumber", "+46 8 587 650 00"),
+                    new XElement(Saml2Namespaces.Saml2Metadata + "TelephoneNumber", "+46 708 96 50 63")),
+                new XElement(Saml2Namespaces.Saml2Metadata + "ContactPerson",
+                    new XAttribute("contactType", "technical"))));
 
             payloadXml.ShouldBeEquivalentTo(expectedXml, opt => opt.IgnoringCyclicReferences());
             subject.ContentType.Should().Be("application/samlmetadata+xml");
