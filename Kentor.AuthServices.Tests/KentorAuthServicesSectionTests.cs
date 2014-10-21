@@ -40,9 +40,9 @@ namespace Kentor.AuthServices.Tests
             var subject = KentorAuthServicesSection.Current.Organization;
 
             Organization expected = new Organization();
-            expected.DisplayNames.Add(new LocalizedName("displayName", CultureInfo.InvariantCulture));
-            expected.Names.Add(new LocalizedName("name", CultureInfo.InvariantCulture));
-            expected.Urls.Add(new LocalizedUri(new Uri("http://url.example.com"), CultureInfo.InvariantCulture));
+            expected.DisplayNames.Add(new LocalizedName("displayName", CultureInfo.GetCultureInfo("sv")));
+            expected.Names.Add(new LocalizedName("name", CultureInfo.GetCultureInfo("sv")));
+            expected.Urls.Add(new LocalizedUri(new Uri("http://url.example.com"), CultureInfo.GetCultureInfo("sv")));
 
             subject.ShouldBeEquivalentTo(expected);
         }

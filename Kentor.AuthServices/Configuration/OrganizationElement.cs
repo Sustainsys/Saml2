@@ -82,5 +82,18 @@ namespace Kentor.AuthServices.Configuration
             }
         }
 
+        const string language = "language";
+
+        /// <summary>
+        /// The language that should be used for the organization strings.
+        /// </summary>
+        [ConfigurationProperty(language)]
+        public string Language
+        {
+            get
+            {
+                return (string)base[language];
+            }
+        }
     }
 }

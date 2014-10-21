@@ -158,10 +158,16 @@ namespace Kentor.AuthServices.Configuration
                 // Metadata.Organization will still be instantiated, but the Url will be null.
                 if(organization == null && Metadata.Organization.Url != null)
                 {
+                    var culture = CultureInfo.InvariantCulture;
+                    if(!string.IsNullOrEmpty(Metadata.Organization.Language))
+                    {
+                        culture = CultureInfo.GetCultureInfo(Metadata.Organization.Language);
+                    }
+
                     var org = new Organization();
-                    org.Names.Add(new LocalizedName(Metadata.Organization.Name, CultureInfo.InvariantCulture));
-                    org.DisplayNames.Add(new LocalizedName(Metadata.Organization.DisplayName, CultureInfo.InvariantCulture));
-                    org.Urls.Add(new LocalizedUri(Metadata.Organization.Url, CultureInfo.InvariantCulture));
+                    org.Names.Add(new LocalizedName(Metadata.Organization.Name, culture));
+                    org.DisplayNames.Add(new LocalizedName(Metadata.Organization.DisplayName, culture));
+                    org.Urls.Add(new LocalizedUri(Metadata.Organization.Url, culture));
 
                     organization = org;
                 }
