@@ -20,7 +20,7 @@ namespace Kentor.AuthServices.Configuration
         Uri ReturnUri { get; }
 
         /// <summary>
-        /// Optional attribute that describes for how long in seconds anyone may cache the metadata
+        /// Optional attribute that describes for how long anyone may cache the metadata
         /// presented by the service provider. Defaults to 3600 seconds.
         /// </summary>
         TimeSpan MetadataCacheDuration { get; }
