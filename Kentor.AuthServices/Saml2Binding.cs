@@ -25,6 +25,11 @@ namespace Kentor.AuthServices
         public static readonly Uri HttpRedirectUri = new Uri("urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect");
 
         /// <summary>
+        /// Uri identifier of the Discovery Response SAML extension.
+        /// </summary>
+        public static readonly Uri DiscoveryResponseUri = new Uri("urn:oasis:names:tc:SAML:profiles:SSO:idp-discovery-protocol");
+
+        /// <summary>
         /// Bind the message to a transport.
         /// </summary>
         /// <param name="payload">(xml) payload data to bind.</param>

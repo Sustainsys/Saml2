@@ -17,12 +17,10 @@ namespace Kentor.AuthServices
         /// Use a MetadataSerializer to create an XML string out of metadata.
         /// </summary>
         /// <param name="metadata">Metadata to serialize.</param>
-        /// <param name="cacheDuration">Cache duration value to include in output.</param>
-        /// <returns>string with metadata contents.</returns>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2202:Do not dispose objects multiple times")]
-        public static string ToXmlString(this MetadataBase metadata, TimeSpan cacheDuration)
+        public static string ToXmlString(this MetadataBase metadata)
         {
-            var serializer = new CacheAwareMetadataSerializer(cacheDuration);
+            var serializer = ExtendedMetadataSerializer.Instance;
 
             using (var stream = new MemoryStream())
             {

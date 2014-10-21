@@ -30,7 +30,10 @@ namespace Kentor.AuthServices.Tests
         [TestMethod]
         public void MetadataCommand_Run()
         {
-            var subject = new MetadataCommand().Run(request, StubFactory.CreateOptions());
+            var options = StubFactory.CreateOptions();
+            ((SPOptions)options.SPOptions).DiscoveryServiceUrl = new Uri("http://ds.example.com");
+
+            var subject = new MetadataCommand().Run(request, options);
 
             XDocument payloadXml = XDocument.Parse(subject.Content);
 

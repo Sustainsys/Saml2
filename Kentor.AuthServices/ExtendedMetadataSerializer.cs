@@ -9,21 +9,26 @@ using System.Xml;
 
 namespace Kentor.AuthServices
 {
-    class CacheAwareMetadataSerializer : MetadataSerializer
+    class ExtendedMetadataSerializer : MetadataSerializer
     {
-        TimeSpan cacheDuration;
-
-        public CacheAwareMetadataSerializer(TimeSpan cacheDuration)
+        private static ExtendedMetadataSerializer instance = new ExtendedMetadataSerializer();
+        public static ExtendedMetadataSerializer Instance
         {
-            this.cacheDuration = cacheDuration;
+            get
+            {
+                return instance;
+            }
         }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1062:Validate arguments of public methods", MessageId = "0", Justification="Method is only called by base class no validation needed.")]
         protected override void WriteCustomAttributes<T>(XmlWriter writer, T source)
         {
-            if (typeof(T) == typeof(EntityDescriptor))
+            var extendedEntityDescriptor = source as ExtendedEntityDescriptor;
+            if (extendedEntityDescriptor != null)
             {
-                writer.WriteAttributeString("cacheDuration", XmlConvert.ToString(cacheDuration));
+                writer.WriteAttributeString(
+                    "cacheDuration",
+                    XmlConvert.ToString(extendedEntityDescriptor.CacheDuration));
             }
         }
     }

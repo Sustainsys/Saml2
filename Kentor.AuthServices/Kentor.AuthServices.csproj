@@ -54,10 +54,12 @@
       <Link>VersionInfo.cs</Link>
     </Compile>
     <Compile Include="AcsCommand.cs" />
+    <Compile Include="EntityDescriptorExtensions.cs" />
+    <Compile Include="ExtendedEntityDescriptor.cs" />
     <Compile Include="AuthServicesException.cs" />
     <Compile Include="AuthServicesUrls.cs" />
     <Compile Include="BadFormatSamlResponseException.cs" />
-    <Compile Include="CacheAwareMetadataSerializer.cs" />
+    <Compile Include="ExtendedMetadataSerializer.cs" />
     <Compile Include="ClaimsIdentityExtensions.cs" />
     <Compile Include="CommandResult.cs" />
     <Compile Include="Configuration\ContactPersonElement.cs" />

@@ -13,20 +13,18 @@ namespace Kentor.AuthServices.StubIdp.Controllers
 {
     public class MetadataController : Controller
     {
-        public static readonly TimeSpan CacheDuration = new TimeSpan(1, 0, 0);
-
         // GET: Metadata
         public ActionResult Index()
         {
             return Content(
-                Metadata.IdpMetadata.ToXmlString(CacheDuration), 
+                Metadata.IdpMetadata.ToXmlString(),
                 "application/samlmetadata+xml");
         }
 
         public ActionResult BrowserFriendly()
         {
             return Content(
-                Metadata.IdpMetadata.ToXmlString(CacheDuration),
+                Metadata.IdpMetadata.ToXmlString(),
                 "text/xml");
         }
     }

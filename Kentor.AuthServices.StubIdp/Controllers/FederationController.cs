@@ -13,14 +13,14 @@ namespace Kentor.AuthServices.StubIdp.Controllers
         public ActionResult Index()
         {
             return Content(
-                Metadata.FederationMetadata.ToXmlString(MetadataController.CacheDuration),
+                Metadata.FederationMetadata.ToXmlString(),
                 "application/samlmetadata+xml");
         }
 
         public ActionResult BrowserFriendly()
         {
             return Content(
-                Metadata.FederationMetadata.ToXmlString(MetadataController.CacheDuration),
+                Metadata.FederationMetadata.ToXmlString(),
                 "text/xml");
         }
     }
