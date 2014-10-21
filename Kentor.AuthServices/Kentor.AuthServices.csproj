@@ -61,6 +61,8 @@
     <Compile Include="ClaimsIdentityExtensions.cs" />
     <Compile Include="CommandResult.cs" />
     <Compile Include="Configuration\IdentityProviderDictionary.cs" />
+    <Compile Include="Configuration\MetadataElement.cs" />
+    <Compile Include="Configuration\OrganizationElement.cs" />
     <Compile Include="Configuration\SPOptions.cs" />
     <Compile Include="Configuration\EntityIdConverter.cs" />
     <Compile Include="Configuration\FederationCollection.cs" />

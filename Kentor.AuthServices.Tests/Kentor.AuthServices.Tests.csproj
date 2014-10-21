@@ -155,6 +155,7 @@
     <Compile Include="OptionsTests.cs" />
     <Compile Include="StubFactory.cs" />
     <Compile Include="AuthServicesUrlsTests.cs" />
+    <Compile Include="KentorAuthServicesSectionTests.cs" />
     <Compile Include="XmlDocumentExtensionsTests.cs" />
     <Compile Include="XmlHelpersTests.cs" />
   </ItemGroup>

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Configuration;
+using System.Globalization;
 using System.IdentityModel.Metadata;
 using System.Linq;
 using System.Text;
@@ -144,6 +145,9 @@ namespace Kentor.AuthServices.Configuration
             }
         }
 
+        // Reset by the tests.
+        internal Organization organization = null;
+
         /// <summary>
         /// Metadata describing the organization responsible for the entity.
         /// </summary>
@@ -151,7 +155,32 @@ namespace Kentor.AuthServices.Configuration
         {
             get
             {
-                return null;
+                // If the entire organization element is missing in the config file,
+                // Metadata.Organization will still be instantiated, but the Url will be null.
+                if(organization == null && Metadata.Organization.Url != null)
+                {
+                    var org = new Organization();
+                    org.Names.Add(new LocalizedName(Metadata.Organization.Name, CultureInfo.InvariantCulture));
+                    org.DisplayNames.Add(new LocalizedName(Metadata.Organization.DisplayName, CultureInfo.InvariantCulture));
+                    org.Urls.Add(new LocalizedUri(Metadata.Organization.Url, CultureInfo.InvariantCulture));
+
+                    organization = org;
+                }
+
+                return organization;
+            }
+        }
+
+        const string metadata = "metadata";
+        /// <summary>
+        /// Metadata of the service provider.
+        /// </summary>
+        [ConfigurationProperty(metadata)]
+        public MetadataElement Metadata
+        {
+            get
+            {
+                return (MetadataElement)base[metadata];
             }
         }
     }
