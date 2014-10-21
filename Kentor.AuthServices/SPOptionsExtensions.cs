@@ -11,12 +11,13 @@ namespace Kentor.AuthServices
 {
     static class SPOptionsExtensions
     {
-        public static EntityDescriptor CreateMetadata(this ISPOptions spOptions, AuthServicesUrls urls)
+        public static ExtendedEntityDescriptor CreateMetadata(this ISPOptions spOptions, AuthServicesUrls urls)
         {
-            var ed = new EntityDescriptor()
+            var ed = new ExtendedEntityDescriptor
             {
                 EntityId = spOptions.EntityId,
-                Organization = spOptions.Organization
+                Organization = spOptions.Organization,
+                CacheDuration = spOptions.MetadataCacheDuration
             };
 
             foreach (var contact in spOptions.Contacts)
@@ -37,6 +38,18 @@ namespace Kentor.AuthServices
             });
 
             ed.RoleDescriptors.Add(spsso);
+
+            if(spOptions.DiscoveryServiceUrl != null
+                && !string.IsNullOrEmpty(spOptions.DiscoveryServiceUrl.OriginalString))
+            {
+                ed.Extensions.DiscoveryResponse = new IndexedProtocolEndpoint
+                {
+                    Binding = Saml2Binding.DiscoveryResponseUri,
+                    Index = 0,
+                    IsDefault = true,
+                    Location = urls.SignInUrl
+                };
+            }
 
             return ed;
         }

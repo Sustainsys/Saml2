@@ -20,6 +20,7 @@ namespace Kentor.AuthServices.Tests
         {
             var metadata = Options.FromConfiguration.SPOptions.CreateMetadata(StubFactory.CreateAuthServicesUrls());
 
+            metadata.CacheDuration.Should().Be(new TimeSpan(0, 0, 42));
             metadata.EntityId.Id.Should().Be("https://github.com/KentorIT/authservices");
 
             var spMetadata = metadata.RoleDescriptors.OfType<ServiceProviderSingleSignOnDescriptor>().Single();
@@ -53,6 +54,27 @@ namespace Kentor.AuthServices.Tests
             var subject = spOptions.CreateMetadata(StubFactory.CreateAuthServicesUrls()).Contacts;
 
             subject.Should().Contain(spOptions.Contacts);
+        }
+
+        [TestMethod]
+        public void SPOptionsExtensions_CreateMetadata_IncludeDiscoveryServiceResponse()
+        {
+            var spOptions = StubFactory.CreateSPOptions();
+            var urls = StubFactory.CreateAuthServicesUrls();
+
+            spOptions.DiscoveryServiceUrl = new Uri("http://ds.example.com");
+
+            var subject = spOptions.CreateMetadata(urls).Extensions.DiscoveryResponse;
+
+            var expected = new IndexedProtocolEndpoint
+            {
+                Binding = Saml2Binding.DiscoveryResponseUri,
+                Index = 0,
+                IsDefault = true,
+                Location = urls.SignInUrl
+            };
+
+            subject.ShouldBeEquivalentTo(expected);
         }
     }
 }

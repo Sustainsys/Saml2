@@ -45,5 +45,16 @@ namespace Kentor.AuthServices
         /// </summary>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2104:DoNotDeclareReadOnlyMutableReferenceTypes")]
         public static readonly XNamespace Saml2Metadata = XNamespace.Get(Saml2MetadataName);
+
+        /// <summary>
+        /// Namespace for idp discovery protocol extension.
+        /// </summary>
+        public const string Saml2IdpDiscoveryName = "urn:oasis:names:tc:SAML:profiles:SSO:idp-discovery-protocol";
+
+        /// <summary>
+        /// Namespace for idp discovery protocol extension.
+        /// </summary>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2104:DoNotDeclareReadOnlyMutableReferenceTypes")]
+        public static readonly XNamespace Saml2IdpDiscovery = XNamespace.Get(Saml2IdpDiscoveryName);
     }
 }
