@@ -111,5 +111,10 @@ namespace Kentor.AuthServices.Configuration
                 modulePath = value;
             }
         }
+
+        /// <summary>
+        /// Metadata describing the organization responsible for the entity.
+        /// </summary>
+        public Organization Organization { get; set; }
     }
 }

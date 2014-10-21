@@ -143,5 +143,16 @@ namespace Kentor.AuthServices.Configuration
                 return (string)base[modulePath];
             }
         }
+
+        /// <summary>
+        /// Metadata describing the organization responsible for the entity.
+        /// </summary>
+        public Organization Organization
+        {
+            get
+            {
+                return null;
+            }
+        }
     }
 }

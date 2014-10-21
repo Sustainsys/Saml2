@@ -148,7 +148,7 @@ namespace Kentor.AuthServices.Tests
             var idp = Options.FromConfiguration.IdentityProviders.Default;
             var request = idp.CreateAuthenticateRequest(
                 new Uri("http://localhost/testUrl.aspx"),
-                TestObjects.authServicesUrls);
+                StubFactory.CreateAuthServicesUrls());
 
             var response =
             @"<saml2p:Response xmlns:saml2p=""urn:oasis:names:tc:SAML:2.0:protocol""

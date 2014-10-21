@@ -15,7 +15,8 @@ namespace Kentor.AuthServices
         {
             var ed = new EntityDescriptor()
             {
-                EntityId = spOptions.EntityId
+                EntityId = spOptions.EntityId,
+                Organization = spOptions.Organization
             };
 
             var spsso = new ServiceProviderSingleSignOnDescriptor();

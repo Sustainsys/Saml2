@@ -8,6 +8,7 @@ using FluentAssertions;
 using System.Text.RegularExpressions;
 using System.IdentityModel.Metadata;
 using Kentor.AuthServices.Configuration;
+using System.Globalization;
 
 namespace Kentor.AuthServices.Tests
 {
@@ -17,7 +18,7 @@ namespace Kentor.AuthServices.Tests
         [TestMethod]
         public void SPOPtionsExtensions_CreateMetadata_RequiredFields()
         {
-            var metadata = Options.FromConfiguration.SPOptions.CreateMetadata(TestObjects.authServicesUrls);
+            var metadata = Options.FromConfiguration.SPOptions.CreateMetadata(StubFactory.CreateAuthServicesUrls());
 
             metadata.EntityId.Id.Should().Be("https://github.com/KentorIT/authservices");
 
@@ -30,6 +31,18 @@ namespace Kentor.AuthServices.Tests
             acs.IsDefault.Should().HaveValue();
             acs.Binding.ToString().Should().Be("urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST");
             acs.Location.ToString().Should().Be("http://localhost/AuthServices/Acs");
+        }
+
+        [TestMethod]
+        public void SPOptionsExtensions_CreateMetadata_IncludesOrganization()
+        {
+            var subject = StubFactory
+                .CreateSPOptions()
+                .CreateMetadata(StubFactory.CreateAuthServicesUrls())
+                .Organization;
+
+            subject.Should().NotBeNull();
+            subject.Names.First().Name.Should().Be("Kentor.AuthServices");
         }
     }
 }

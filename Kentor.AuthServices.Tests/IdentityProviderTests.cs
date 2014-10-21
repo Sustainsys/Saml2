@@ -22,7 +22,7 @@ namespace Kentor.AuthServices.Tests
                 new Uri(idpUri),
                 Options.FromConfiguration.SPOptions);
 
-            var r = ip.CreateAuthenticateRequest(null, TestObjects.authServicesUrls);
+            var r = ip.CreateAuthenticateRequest(null, StubFactory.CreateAuthServicesUrls());
 
             r.ToXElement().Attribute("Destination").Should().NotBeNull()
                 .And.Subject.Value.Should().Be(idpUri);
@@ -33,7 +33,7 @@ namespace Kentor.AuthServices.Tests
         {
             var idp = Options.FromConfiguration.IdentityProviders.Default;
 
-            var r = idp.CreateAuthenticateRequest(null, TestObjects.authServicesUrls);
+            var r = idp.CreateAuthenticateRequest(null, StubFactory.CreateAuthServicesUrls());
 
             r.AssertionConsumerServiceUrl.Should().Be(new Uri("http://localhost/AuthServices/Acs"));
         }
@@ -43,7 +43,7 @@ namespace Kentor.AuthServices.Tests
         {
             var idp = Options.FromConfiguration.IdentityProviders.Default;
 
-            var r = idp.CreateAuthenticateRequest(null, TestObjects.authServicesUrls);
+            var r = idp.CreateAuthenticateRequest(null, StubFactory.CreateAuthServicesUrls());
 
             r.Issuer.Id.Should().Be("https://github.com/KentorIT/authservices");
         }

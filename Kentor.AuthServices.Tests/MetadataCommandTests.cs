@@ -8,6 +8,7 @@ using FluentAssertions;
 using System.IdentityModel.Metadata;
 using System.Xml;
 using Kentor.AuthServices.Configuration;
+using System.Globalization;
 
 namespace Kentor.AuthServices.Tests
 {
@@ -25,11 +26,11 @@ namespace Kentor.AuthServices.Tests
         }
 
         [TestMethod]
-        public void MetadataCommand_Run_SuccessfulResult()
+        public void MetadataCommand_Run()
         {
             var request = new HttpRequestData("GET", new Uri("http://localhost"));
 
-            var subject = new MetadataCommand().Run(request, Options.FromConfiguration);
+            var subject = new MetadataCommand().Run(request, StubFactory.CreateOptions());
 
             XDocument payloadXml = XDocument.Parse(subject.Content);
 
@@ -51,7 +52,14 @@ namespace Kentor.AuthServices.Tests
                         new XAttribute("Binding", Saml2Binding.HttpPostUri),
                         new XAttribute("Location", "http://localhost/AuthServices/Acs"),
                         new XAttribute("index", 0),
-                        new XAttribute("isDefault", true)))));
+                        new XAttribute("isDefault", true))),
+                new XElement(Saml2Namespaces.Saml2Metadata + "Organization",
+                    new XElement(Saml2Namespaces.Saml2Metadata + "OrganizationName",
+                        new XAttribute(XNamespace.Xml + "lang", ""), "Kentor.AuthServices"),
+                    new XElement(Saml2Namespaces.Saml2Metadata + "OrganizationDisplayName",
+                        new XAttribute(XNamespace.Xml + "lang", ""), "Kentor AuthServices"),
+                    new XElement(Saml2Namespaces.Saml2Metadata + "OrganizationURL",
+                        new XAttribute(XNamespace.Xml + "lang" , ""), "http://github.com/KentorIT/authservices"))));
 
             payloadXml.ShouldBeEquivalentTo(expectedXml, opt => opt.IgnoringCyclicReferences());
             subject.ContentType.Should().Be("application/samlmetadata+xml");

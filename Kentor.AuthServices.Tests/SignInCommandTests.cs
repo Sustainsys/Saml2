@@ -54,7 +54,7 @@ namespace Kentor.AuthServices.Tests
 
             var idp = Options.FromConfiguration.IdentityProviders.Default;
 
-            var authnRequest = idp.CreateAuthenticateRequest(null, TestObjects.authServicesUrls);
+            var authnRequest = idp.CreateAuthenticateRequest(null, StubFactory.CreateAuthServicesUrls());
 
             var requestId = AuthnRequestHelper.GetRequestId(subject.Location);
 

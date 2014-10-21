@@ -46,5 +46,10 @@ namespace Kentor.AuthServices.Configuration
         /// default should be "/AuthServices".
         /// </summary>
         string ModulePath { get; }
+
+        /// <summary>
+        /// Metadata describing the organization responsible for the entity.
+        /// </summary>
+        Organization Organization { get; }
     }
 }
