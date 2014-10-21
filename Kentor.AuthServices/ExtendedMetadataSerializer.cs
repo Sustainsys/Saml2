@@ -29,6 +29,18 @@ namespace Kentor.AuthServices
                 writer.WriteAttributeString(
                     "cacheDuration",
                     XmlConvert.ToString(extendedEntityDescriptor.CacheDuration));
+
+                // This is really an element. But it must be placed first of the child elements
+                // and WriteCustomAttributes is called at the right place for that.
+                if (extendedEntityDescriptor.Extensions.DiscoveryResponse != null)
+                {
+                    writer.WriteStartElement("Extensions", Saml2Namespaces.Saml2MetadataName);
+                    WriteIndexedProtocolEndpoint(
+                        writer,
+                        extendedEntityDescriptor.Extensions.DiscoveryResponse,
+                        new XmlQualifiedName("DiscoveryResponse", Saml2Namespaces.Saml2IdpDiscoveryName));
+                    writer.WriteEndElement();
+                }
             }
         }
     }

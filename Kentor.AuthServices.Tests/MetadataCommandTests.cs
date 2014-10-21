@@ -49,6 +49,13 @@ namespace Kentor.AuthServices.Tests
                 // only done when outputting a string.
                 // See http://stackoverflow.com/questions/24156689/xnode-deepequals-unexpectedly-returns-false
                 new XAttribute("xmlns", Saml2Namespaces.Saml2MetadataName),
+                new XElement(Saml2Namespaces.Saml2Metadata + "Extensions",
+                    new XElement(Saml2Namespaces.Saml2IdpDiscovery + "DiscoveryResponse",
+                        new XAttribute("Binding", Saml2Binding.DiscoveryResponseUri),
+                        new XAttribute("Location", "http://localhost/AuthServices/SignIn"),
+                        new XAttribute("index", 0),
+                        new XAttribute("isDefault", true),
+                        new XAttribute("xmlns", Saml2Namespaces.Saml2IdpDiscoveryName))),
                 new XElement(Saml2Namespaces.Saml2Metadata + "SPSSODescriptor",
                     new XAttribute("protocolSupportEnumeration", "urn:oasis:names:tc:SAML:2.0:protocol"),
                     new XElement(Saml2Namespaces.Saml2Metadata + "AssertionConsumerService",
