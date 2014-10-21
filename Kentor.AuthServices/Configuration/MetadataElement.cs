@@ -24,5 +24,19 @@ namespace Kentor.AuthServices.Configuration
                 return (OrganizationElement)base[organization];
             }
         }
+
+        const string cacheDuration = "cacheDuration";
+        /// <summary>
+        /// Optional attribute that describes for how long in seconds anyone may cache the metadata 
+        /// presented by the service provider. Defaults to 3600 seconds.
+        /// </summary>
+        [ConfigurationProperty(cacheDuration, IsRequired = false, DefaultValue = "1:0:0")]
+        public TimeSpan CacheDuration
+        {
+            get
+            {
+                return (TimeSpan)base[cacheDuration];
+            }
+        }
     }
 }
