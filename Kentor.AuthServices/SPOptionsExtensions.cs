@@ -25,7 +25,7 @@ namespace Kentor.AuthServices
                 ed.Contacts.Add(contact);
             }
 
-            var spsso = new ServiceProviderSingleSignOnDescriptor();
+            var spsso = new ExtendedServiceProviderSingleSignOnDescriptor();
 
             spsso.ProtocolsSupported.Add(new Uri("urn:oasis:names:tc:SAML:2.0:protocol"));
 
@@ -36,6 +36,11 @@ namespace Kentor.AuthServices
                 Binding = Saml2Binding.HttpPostUri,
                 Location = urls.AssertionConsumerServiceUrl
             });
+
+            foreach(var attributeService in spOptions.AttributeConsumingServices)
+            {
+                spsso.AttributeConsumingServices.Add(attributeService);
+            }
 
             ed.RoleDescriptors.Add(spsso);
 

@@ -140,5 +140,29 @@ namespace Kentor.AuthServices.Configuration
                 return contacts;
             }
         }
+
+        /// <summary>
+        /// Collection of attribute consuming services for the service provider.
+        /// </summary>
+        IEnumerable<AttributeConsumingService> ISPOptions.AttributeConsumingServices
+        {
+            get
+            {
+                return AttributeConsumingServices;
+            }
+        }
+
+        readonly ICollection<AttributeConsumingService> attributeConsumingServices = new List<AttributeConsumingService>();
+
+        /// <summary>
+        /// Collection of attribute consuming services for the service provider.
+        /// </summary>
+        public ICollection<AttributeConsumingService> AttributeConsumingServices
+        {
+            get
+            {
+                return attributeConsumingServices;
+            }
+        }
     }
 }

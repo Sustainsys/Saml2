@@ -231,5 +231,13 @@ namespace Kentor.AuthServices.Configuration
                 return contacts;
             }
         }
+
+        public IEnumerable<AttributeConsumingService> AttributeConsumingServices
+        {
+            get
+            {
+                return Enumerable.Empty<AttributeConsumingService>();
+            }
+        }
     }
 }

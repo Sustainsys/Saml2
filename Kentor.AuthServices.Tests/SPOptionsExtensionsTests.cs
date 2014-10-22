@@ -76,5 +76,25 @@ namespace Kentor.AuthServices.Tests
 
             subject.ShouldBeEquivalentTo(expected);
         }
+
+        [TestMethod]
+        public void SPOptionsExtensions_CreateMetadata_IncludeAttributeConsumingService()
+        {
+            var spOptions = StubFactory.CreateSPOptions();
+            var urls = StubFactory.CreateAuthServicesUrls();
+
+            var attributeConsumingService = new AttributeConsumingService("Name");
+
+            spOptions.AttributeConsumingServices.Add(attributeConsumingService);
+            attributeConsumingService.RequestedAttributes.Add(new RequestedAttribute("AttributeName"));
+
+            var subject = spOptions
+                .CreateMetadata(urls)
+                .RoleDescriptors
+                .Cast<ExtendedServiceProviderSingleSignOnDescriptor>()
+                .First();
+
+            subject.AttributeConsumingServices.First().Should().BeSameAs(attributeConsumingService);
+        }
     }
 }
