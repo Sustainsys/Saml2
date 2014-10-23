@@ -81,7 +81,7 @@ namespace Kentor.AuthServices.Tests
 
             await middleware.Invoke(context);
 
-            context.Response.StatusCode.Should().Be(302);
+            context.Response.StatusCode.Should().Be(303);
             context.Response.Headers["Location"].Should().StartWith("https://idp.example.com/idp");
         }
 
@@ -96,15 +96,23 @@ namespace Kentor.AuthServices.Tests
                             { "idp", "http://localhost:13428/idpMetadata" }
                         }))), 
                 CreateAppBuilder(),
-                new KentorAuthServicesAuthenticationOptions());
+                new KentorAuthServicesAuthenticationOptions(true));
 
             var context = OwinTestHelpers.CreateOwinContext();
 
             await middleware.Invoke(context);
 
             context.Response.StatusCode.Should().Be(200);
+            context.Response.Body.Seek(0, SeekOrigin.Begin);
 
-            // TODO: Should do some basic validation of body contents here.
+            using(var reader = new StreamReader(context.Response.Body))
+            {
+                string bodyContent = reader.ReadToEnd();
+
+                // Checking some random stuff in body to make sure it looks like a SAML Post.
+                bodyContent.Should().Contain("<form action");
+                bodyContent.Should().Contain("<input type=\"hidden\" name=\"SAMLRequest\"");
+            }
         }
 
         [TestMethod]
@@ -156,7 +164,7 @@ namespace Kentor.AuthServices.Tests
             var context = OwinTestHelpers.CreateOwinContext();
             await middleware.Invoke(context);
 
-            context.Response.StatusCode.Should().Be(302);
+            context.Response.StatusCode.Should().Be(303);
             context.Response.Headers["Location"].Should().StartWith(secondDestination.ToString());
         }
 
@@ -176,7 +184,7 @@ namespace Kentor.AuthServices.Tests
             context.Environment["KentorAuthServices.idp"] = secondEntityId;
             await middleware.Invoke(context);
 
-            context.Response.StatusCode.Should().Be(302);
+            context.Response.StatusCode.Should().Be(303);
             context.Response.Headers["Location"].Should().StartWith(secondDestination.ToString());
         }
 
@@ -198,7 +206,7 @@ namespace Kentor.AuthServices.Tests
 
             await middleware.Invoke(context);
 
-            context.Response.StatusCode.Should().Be(302);
+            context.Response.StatusCode.Should().Be(303);
             context.Response.Headers["Location"].Should().StartWith("https://idp.example.com/idp");
         }
 
