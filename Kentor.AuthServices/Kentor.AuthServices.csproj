@@ -54,6 +54,10 @@
       <Link>VersionInfo.cs</Link>
     </Compile>
     <Compile Include="AcsCommand.cs" />
+    <Compile Include="AttributeConsumingService.cs" />
+    <Compile Include="Configuration\RequestedAttributeElement.cs" />
+    <Compile Include="Configuration\RequestedAttributesCollection.cs" />
+    <Compile Include="RequestedAttribute.cs" />
     <Compile Include="EntityDescriptorExtensions.cs" />
     <Compile Include="ExtendedEntityDescriptor.cs" />
     <Compile Include="AuthServicesException.cs" />
@@ -79,6 +83,7 @@
     <Compile Include="DateTimeExtensions.cs" />
     <Compile Include="EntityIdEqualityComparer.cs" />
     <Compile Include="Enumerator.cs" />
+    <Compile Include="ExtendedServiceProviderSingleSignOnDescriptor.cs" />
     <Compile Include="Federation.cs" />
     <Compile Include="Configuration\FederationElement.cs" />
     <Compile Include="HttpRequestData.cs" />

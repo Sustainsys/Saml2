@@ -231,5 +231,25 @@ namespace Kentor.AuthServices.Configuration
                 return contacts;
             }
         }
+
+        public IEnumerable<AttributeConsumingService> AttributeConsumingServices
+        {
+            get
+            {
+                var acs = new AttributeConsumingService("SP");
+
+                foreach(var confAttribute in Metadata.RequestedAttributes)
+                {
+                    acs.RequestedAttributes.Add(new RequestedAttribute(confAttribute.Name)
+                        {
+                            FriendlyName = confAttribute.FriendlyName,
+                            IsRequired = confAttribute.IsRequired,
+                            NameFormat = confAttribute.NameFormat
+                        });
+                }
+
+                yield return acs;
+            }
+        }
     }
 }

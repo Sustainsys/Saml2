@@ -14,6 +14,14 @@ namespace Kentor.AuthServices.Configuration
     public class SPOptions : ISPOptions
     {
         /// <summary>
+        /// Ctor
+        /// </summary>
+        public SPOptions()
+        {
+            MetadataCacheDuration = new TimeSpan(1, 0, 0);
+        }
+
+        /// <summary>
         /// Return Uri to redirect the client to, if no return uri was specified
         /// when initiating the signin sequence.
         /// </summary>
@@ -138,6 +146,30 @@ namespace Kentor.AuthServices.Configuration
             get
             {
                 return contacts;
+            }
+        }
+
+        /// <summary>
+        /// Collection of attribute consuming services for the service provider.
+        /// </summary>
+        IEnumerable<AttributeConsumingService> ISPOptions.AttributeConsumingServices
+        {
+            get
+            {
+                return AttributeConsumingServices;
+            }
+        }
+
+        readonly ICollection<AttributeConsumingService> attributeConsumingServices = new List<AttributeConsumingService>();
+
+        /// <summary>
+        /// Collection of attribute consuming services for the service provider.
+        /// </summary>
+        public ICollection<AttributeConsumingService> AttributeConsumingServices
+        {
+            get
+            {
+                return attributeConsumingServices;
             }
         }
     }

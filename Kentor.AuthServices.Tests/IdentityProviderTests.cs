@@ -14,7 +14,7 @@ namespace Kentor.AuthServices.Tests
     public class IdentityProviderTests
     {
         [TestMethod]
-        public void IdentityProvider_CreateAuthenticateRequest_Destination()
+        public void IdentityProvider_CreateAuthenticateRequest_DestinationInXml()
         {
             string idpUri = "http://idp.example.com/";
             
@@ -29,23 +29,46 @@ namespace Kentor.AuthServices.Tests
         }
 
         [TestMethod]
-        public void IdentityProvider_CreateAuthenticateRequest_AssertionConsumerServiceUrl()
+        public void IdentityProvider_CreateAuthenticateRequest_BasicInfo()
         {
-            var idp = Options.FromConfiguration.IdentityProviders.Default;
+            var options = Options.FromConfiguration;
 
-            var r = idp.CreateAuthenticateRequest(null, StubFactory.CreateAuthServicesUrls());
+            var idp = options.IdentityProviders.Default;
 
-            r.AssertionConsumerServiceUrl.Should().Be(new Uri("http://localhost/AuthServices/Acs"));
+            var urls = StubFactory.CreateAuthServicesUrls();
+            var subject = idp.CreateAuthenticateRequest(null, urls);
+
+            var expected = new Saml2AuthenticationRequest()
+            {
+                AssertionConsumerServiceUrl = urls.AssertionConsumerServiceUrl,
+                DestinationUri = idp.SingleSignOnServiceUrl,
+                Issuer = options.SPOptions.EntityId,
+                AttributeConsumingServiceIndex = 0,
+            };
+
+            subject.ShouldBeEquivalentTo(expected, opt => opt.Excluding(au => au.Id));
         }
 
         [TestMethod]
-        public void IdentityProvider_CreateAuthenticateRequest_IssuerFromConfig()
+        public void IdentityProvider_CreateAuthenticateRequest_NoAttributeIndex()
         {
-            var idp = Options.FromConfiguration.IdentityProviders.Default;
+            var options = StubFactory.CreateOptions();
+            var idp = options.IdentityProviders.Default;
+            var urls = StubFactory.CreateAuthServicesUrls();
 
-            var r = idp.CreateAuthenticateRequest(null, StubFactory.CreateAuthServicesUrls());
+            ((SPOptions)options.SPOptions).AttributeConsumingServices.Clear();
 
-            r.Issuer.Id.Should().Be("https://github.com/KentorIT/authservices");
+            var subject = idp.CreateAuthenticateRequest(null, urls);
+
+            var expected = new Saml2AuthenticationRequest()
+            {
+                AssertionConsumerServiceUrl = urls.AssertionConsumerServiceUrl,
+                DestinationUri = idp.SingleSignOnServiceUrl,
+                Issuer = options.SPOptions.EntityId,
+                AttributeConsumingServiceIndex = null
+            };
+
+            subject.ShouldBeEquivalentTo(expected, opt => opt.Excluding(au => au.Id));
         }
 
         [TestMethod]

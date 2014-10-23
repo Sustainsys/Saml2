@@ -40,6 +40,7 @@ namespace Kentor.AuthServices
 
             x.Add(base.ToXNodes());
             x.AddAttributeIfNotNullOrEmpty("AssertionConsumerServiceURL", AssertionConsumerServiceUrl);
+            x.AddAttributeIfNotNullOrEmpty("AttributeConsumingServiceIndex", AttributeConsumingServiceIndex);
 
             return x;
         }
@@ -88,5 +89,10 @@ namespace Kentor.AuthServices
         /// The assertion consumer url that the idp should send its response back to.
         /// </summary>
         public Uri AssertionConsumerServiceUrl { get; set; }
+
+        /// <summary>
+        /// Index to the SP metadata where the list of requested attributes is found.
+        /// </summary>
+        public int? AttributeConsumingServiceIndex { get; set; }
     }
 }

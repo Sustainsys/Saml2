@@ -56,5 +56,10 @@ namespace Kentor.AuthServices.Configuration
         /// Contacts for the SAML2 entity. Must not be null.
         /// </summary>
         IEnumerable<ContactPerson> Contacts { get; }
+
+        /// <summary>
+        /// Attribute consuming services for the service provider.
+        /// </summary>
+        IEnumerable<AttributeConsumingService> AttributeConsumingServices { get; }
     }
 }

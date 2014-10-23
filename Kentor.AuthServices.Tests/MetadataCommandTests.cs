@@ -28,7 +28,7 @@ namespace Kentor.AuthServices.Tests
         HttpRequestData request = new HttpRequestData("GET", new Uri("http://localhost"));
 
         [TestMethod]
-        public void MetadataCommand_Run()
+        public void MetadataCommand_Run_CompleteMetadata()
         {
             var options = StubFactory.CreateOptions();
             ((SPOptions)options.SPOptions).DiscoveryServiceUrl = new Uri("http://ds.example.com");
@@ -49,6 +49,7 @@ namespace Kentor.AuthServices.Tests
                 // only done when outputting a string.
                 // See http://stackoverflow.com/questions/24156689/xnode-deepequals-unexpectedly-returns-false
                 new XAttribute("xmlns", Saml2Namespaces.Saml2MetadataName),
+                new XAttribute(XNamespace.Xmlns + "saml2", Saml2Namespaces.Saml2),
                 new XElement(Saml2Namespaces.Saml2Metadata + "Extensions",
                     new XElement(Saml2Namespaces.Saml2IdpDiscovery + "DiscoveryResponse",
                         new XAttribute("Binding", Saml2Binding.DiscoveryResponseUri),
@@ -62,7 +63,23 @@ namespace Kentor.AuthServices.Tests
                         new XAttribute("Binding", Saml2Binding.HttpPostUri),
                         new XAttribute("Location", "http://localhost/AuthServices/Acs"),
                         new XAttribute("index", 0),
-                        new XAttribute("isDefault", true))),
+                        new XAttribute("isDefault", true)),
+                    new XElement(Saml2Namespaces.Saml2Metadata + "AttributeConsumingService",
+                        new XAttribute("index", 0),
+                        new XAttribute("isDefault", true),
+                        new XElement(Saml2Namespaces.Saml2Metadata + "ServiceName",
+                            new XAttribute(XNamespace.Xml + "lang", "en"),
+                            "attributeServiceName"),
+                        new XElement(Saml2Namespaces.Saml2Metadata + "RequestedAttribute",
+                            new XAttribute("Name", "urn:attributeName"),
+                            new XAttribute("isRequired", "true"),
+                            new XAttribute("NameFormat", "urn:oasis:names:tc:SAML:2.0:attrname-format:uri"),
+                            new XAttribute("FriendlyName", "friendlyName"),
+                            new XElement(Saml2Namespaces.Saml2 + "AttributeValue", "value1"),
+                            new XElement(Saml2Namespaces.Saml2 + "AttributeValue", "value2")),
+                        new XElement(Saml2Namespaces.Saml2Metadata + "RequestedAttribute",
+                            new XAttribute("Name", "someName"),
+                            new XAttribute("isRequired", "false")))),
                 new XElement(Saml2Namespaces.Saml2Metadata + "Organization",
                     new XElement(Saml2Namespaces.Saml2Metadata + "OrganizationName",
                         new XAttribute(XNamespace.Xml + "lang", ""), "Kentor.AuthServices"),
@@ -84,6 +101,43 @@ namespace Kentor.AuthServices.Tests
 
             payloadXml.ShouldBeEquivalentTo(expectedXml, opt => opt.IgnoringCyclicReferences());
             subject.ContentType.Should().Be("application/samlmetadata+xml");
+        }
+
+        [TestMethod]
+        public void MetadataCommand_Run_MinimalMetadata()
+        {
+            var spOptions = new SPOptions()
+            {
+                EntityId = new EntityId("http://localhost/AuthServices"),
+            };
+            var options = new Options(spOptions);
+
+            var subject = new MetadataCommand().Run(request, options);
+
+            XDocument payloadXml = XDocument.Parse(subject.Content);
+
+            // Ignore the ID attribute, it is just filled with a GUID that can't be easily tested.
+            payloadXml.Root.Attribute("ID").Remove();
+
+            var expectedXml = new XDocument(new XElement(Saml2Namespaces.Saml2Metadata + "EntityDescriptor",
+                new XAttribute("entityID", "http://localhost/AuthServices"),
+                new XAttribute("cacheDuration", "PT1H"),
+                // Have to manually add the xmlns attribute here, as it will be present in the subject
+                // data and the xml tree comparison will fail if it is not present in both. Just setting the 
+                // namespace of the elements does not inject the xmlns attribute into the node tree. It is
+                // only done when outputting a string.
+                // See http://stackoverflow.com/questions/24156689/xnode-deepequals-unexpectedly-returns-false
+                new XAttribute("xmlns", Saml2Namespaces.Saml2MetadataName),
+                new XAttribute(XNamespace.Xmlns + "saml2", Saml2Namespaces.Saml2),
+                new XElement(Saml2Namespaces.Saml2Metadata + "SPSSODescriptor",
+                    new XAttribute("protocolSupportEnumeration", "urn:oasis:names:tc:SAML:2.0:protocol"),
+                    new XElement(Saml2Namespaces.Saml2Metadata + "AssertionConsumerService",
+                        new XAttribute("Binding", Saml2Binding.HttpPostUri),
+                        new XAttribute("Location", "http://localhost/AuthServices/Acs"),
+                        new XAttribute("index", 0),
+                        new XAttribute("isDefault", true)))));
+
+            payloadXml.ShouldBeEquivalentTo(expectedXml, opt => opt.IgnoringCyclicReferences());
         }
 
         [TestMethod]

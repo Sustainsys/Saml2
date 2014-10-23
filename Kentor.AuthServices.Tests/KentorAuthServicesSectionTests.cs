@@ -5,6 +5,7 @@ using FluentAssertions;
 using System.IdentityModel.Metadata;
 using System.Globalization;
 using System.Linq;
+using System.Collections.Generic;
 
 namespace Kentor.AuthServices.Tests
 {
@@ -66,7 +67,7 @@ namespace Kentor.AuthServices.Tests
         }
 
         [TestMethod]
-        public void KentorAutServicesSection_Contacts_LoadedFromConfig()
+        public void KentorAuthServicesSection_Contacts_LoadedFromConfig()
         {
             var subject = KentorAuthServicesSection.Current.Contacts;
 
@@ -80,6 +81,30 @@ namespace Kentor.AuthServices.Tests
             var secondTech = new ContactPerson(ContactType.Technical);
             secondTech.EmailAddresses.Add("info@kentor.se");
             expected.Add(secondTech);
+
+            subject.ShouldBeEquivalentTo(expected);
+        }
+
+        [TestMethod]
+        public void KentorAuthServicesSection_Attributes_LoadedFromConfig()
+        {
+            var expected = new AttributeConsumingService("SP");
+            expected.RequestedAttributes.Add(
+                new RequestedAttribute("urn:someName")
+                {
+                    FriendlyName = "Some Name",
+                    NameFormat = RequestedAttribute.AttributeNameFormatUri,
+                    IsRequired = true
+                });
+            expected.RequestedAttributes.Add(
+                new RequestedAttribute("Minimal")
+                {
+                    FriendlyName = null,
+                    NameFormat = RequestedAttribute.AttributeNameFormatUnspecified,
+                    IsRequired = false
+                });
+
+            var subject = KentorAuthServicesSection.Current.AttributeConsumingServices.Single();
 
             subject.ShouldBeEquivalentTo(expected);
         }

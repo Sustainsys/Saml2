@@ -13,9 +13,9 @@ namespace Kentor.AuthServices.Tests
         [TestMethod]
         public void Saml2AuthenticationRequest_ToXElement_RootNode()
         {
-            var x = new Saml2AuthenticationRequest().ToXElement();
+            var subject = new Saml2AuthenticationRequest().ToXElement();
 
-            x.Should().NotBeNull().And.Subject.Name.Should().Be(
+            subject.Should().NotBeNull().And.Subject.Name.Should().Be(
                 Saml2Namespaces.Saml2P + "AuthnRequest");
         }
 
@@ -26,21 +26,33 @@ namespace Kentor.AuthServices.Tests
             // base fields are added. The details of the fields are tested
             // by Saml2RequestBaseTests.
 
-            var x = new Saml2AuthenticationRequest().ToXElement();
+            var subject = new Saml2AuthenticationRequest().ToXElement();
 
-            x.Should().NotBeNull().And.Subject.Attribute("ID").Should().NotBeNull();
+            subject.Should().NotBeNull().And.Subject.Attribute("ID").Should().NotBeNull();
+            subject.Attribute("AttributeConsumingServiceIndex").Should().BeNull();
+        }
+
+        [TestMethod]
+        public void Saml2AuthenticationRequest_ToXElement_AddsAttributeConsumingServiceIndex()
+        {
+            var subject = new Saml2AuthenticationRequest()
+            {
+                AttributeConsumingServiceIndex = 17
+            }.ToXElement();
+
+            subject.Attribute("AttributeConsumingServiceIndex").Value.Should().Be("17");
         }
 
         [TestMethod]
         public void Saml2AuthenticationRequest_AssertionConsumerServiceUrl()
         {
             string url = "http://some.example.com/Saml2AuthenticationModule/acs";
-            var x = new Saml2AuthenticationRequest()
+            var subject = new Saml2AuthenticationRequest()
             {
                 AssertionConsumerServiceUrl = new Uri(url)
             }.ToXElement();
 
-            x.Should().NotBeNull().And.Subject.Attribute("AssertionConsumerServiceURL")
+            subject.Should().NotBeNull().And.Subject.Attribute("AssertionConsumerServiceURL")
                 .Should().NotBeNull().And.Subject.Value.Should().Be(url);
         }
 
