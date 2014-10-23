@@ -236,7 +236,19 @@ namespace Kentor.AuthServices.Configuration
         {
             get
             {
-                return Enumerable.Empty<AttributeConsumingService>();
+                var acs = new AttributeConsumingService("SP");
+
+                foreach(var confAttribute in Metadata.RequestedAttributes)
+                {
+                    acs.RequestedAttributes.Add(new RequestedAttribute(confAttribute.Name)
+                        {
+                            FriendlyName = confAttribute.FriendlyName,
+                            IsRequired = confAttribute.IsRequired,
+                            NameFormat = confAttribute.NameFormat
+                        });
+                }
+
+                yield return acs;
             }
         }
     }

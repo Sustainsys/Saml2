@@ -51,5 +51,17 @@ namespace Kentor.AuthServices.Configuration
                 return (ContactPersonsCollection)base[""];
             }
         }
+
+        const string requestedAttributes = "requestedAttributes";
+
+        [ConfigurationProperty(requestedAttributes)]
+        [ConfigurationCollection(typeof(RequestedAttributesCollection))]
+        public RequestedAttributesCollection RequestedAttributes
+        {
+            get
+            {
+                return(RequestedAttributesCollection)base[requestedAttributes];
+            }
+        }
     }
 }

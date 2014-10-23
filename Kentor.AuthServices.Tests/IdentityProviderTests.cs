@@ -43,20 +43,20 @@ namespace Kentor.AuthServices.Tests
                 AssertionConsumerServiceUrl = urls.AssertionConsumerServiceUrl,
                 DestinationUri = idp.SingleSignOnServiceUrl,
                 Issuer = options.SPOptions.EntityId,
-                AttributeConsumingServiceIndex = null,
+                AttributeConsumingServiceIndex = 0,
             };
 
             subject.ShouldBeEquivalentTo(expected, opt => opt.Excluding(au => au.Id));
         }
 
         [TestMethod]
-        public void IdentityProvider_CreateAuthenticateRequest_ContainsAttributeIndex()
+        public void IdentityProvider_CreateAuthenticateRequest_NoAttributeIndex()
         {
             var options = StubFactory.CreateOptions();
             var idp = options.IdentityProviders.Default;
             var urls = StubFactory.CreateAuthServicesUrls();
 
-            ((SPOptions)options.SPOptions).AttributeConsumingServices.Add(new AttributeConsumingService("Name"));
+            ((SPOptions)options.SPOptions).AttributeConsumingServices.Clear();
 
             var subject = idp.CreateAuthenticateRequest(null, urls);
 
@@ -65,7 +65,7 @@ namespace Kentor.AuthServices.Tests
                 AssertionConsumerServiceUrl = urls.AssertionConsumerServiceUrl,
                 DestinationUri = idp.SingleSignOnServiceUrl,
                 Issuer = options.SPOptions.EntityId,
-                AttributeConsumingServiceIndex = 0
+                AttributeConsumingServiceIndex = null
             };
 
             subject.ShouldBeEquivalentTo(expected, opt => opt.Excluding(au => au.Id));

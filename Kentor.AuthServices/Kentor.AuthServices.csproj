@@ -55,6 +55,8 @@
     </Compile>
     <Compile Include="AcsCommand.cs" />
     <Compile Include="AttributeConsumingService.cs" />
+    <Compile Include="Configuration\RequestedAttributeElement.cs" />
+    <Compile Include="Configuration\RequestedAttributesCollection.cs" />
     <Compile Include="RequestedAttribute.cs" />
     <Compile Include="EntityDescriptorExtensions.cs" />
     <Compile Include="ExtendedEntityDescriptor.cs" />
