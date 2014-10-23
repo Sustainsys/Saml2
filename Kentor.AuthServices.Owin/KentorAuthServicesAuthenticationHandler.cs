@@ -56,7 +56,7 @@ namespace Kentor.AuthServices.Owin
                         await Context.ToHttpRequestData(),
                         Options);
 
-                    Response.Redirect(result.Location.OriginalString);
+                    result.Apply(Context);
                 }
             }
         }
