@@ -63,7 +63,7 @@ namespace Kentor.AuthServices
                     writer.WriteAttributeString("index", index.ToString(CultureInfo.InvariantCulture));
                     writer.WriteAttributeString("isDefault", XmlConvert.ToString(acs.IsDefault));
                     writer.WriteStartElement("ServiceName", Saml2Namespaces.Saml2MetadataName);
-                    writer.WriteAttributeString("lang", XNamespace.Xml.NamespaceName, "");
+                    writer.WriteAttributeString("lang", XNamespace.Xml.NamespaceName, "en");
                     writer.WriteString(acs.ServiceName);
                     writer.WriteEndElement();
                     foreach(var ra in acs.RequestedAttributes)
@@ -80,7 +80,7 @@ namespace Kentor.AuthServices
         {
             writer.WriteStartElement("RequestedAttribute", Saml2Namespaces.Saml2MetadataName);
             writer.WriteAttributeString("Name", requestedAttribute.Name);
-            writer.WriteAttributeString("IsRequired", XmlConvert.ToString(requestedAttribute.IsRequired));
+            writer.WriteAttributeString("isRequired", XmlConvert.ToString(requestedAttribute.IsRequired));
             if (requestedAttribute.NameFormat != null)
             {
                 writer.WriteAttributeString("NameFormat", requestedAttribute.NameFormat.OriginalString);
