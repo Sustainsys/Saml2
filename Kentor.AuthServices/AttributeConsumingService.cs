@@ -15,13 +15,13 @@ namespace Kentor.AuthServices
         /// <param name="name">Name of the attribute consuming service.</param>
         public AttributeConsumingService(string name)
         {
-            Name = name;
+            ServiceName = name;
         }
 
         /// <summary>
         /// The name of the attribute consuming service.
         /// </summary>
-        public string Name { get; set; }
+        public string ServiceName { get; set; }
 
         readonly ICollection<RequestedAttribute> requestedAttributes = new List<RequestedAttribute>();
 
@@ -35,5 +35,10 @@ namespace Kentor.AuthServices
                 return requestedAttributes;
             }
         }
+
+        /// <summary>
+        /// Is this the default AttributeConsumingService of the SP?
+        /// </summary>
+        public bool IsDefault { get; set; }
     }
 }

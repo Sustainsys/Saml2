@@ -56,5 +56,11 @@ namespace Kentor.AuthServices
         /// </summary>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2104:DoNotDeclareReadOnlyMutableReferenceTypes")]
         public static readonly XNamespace Saml2IdpDiscovery = XNamespace.Get(Saml2IdpDiscoveryName);
+
+        /// <summary>
+        /// Namespace for Xml schema instance.
+        /// </summary>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2104:DoNotDeclareReadOnlyMutableReferenceTypes")]
+        public static readonly XNamespace XmlSchemaInstance = XNamespace.Get(System.Xml.Schema.XmlSchema.InstanceNamespace);
     }
 }

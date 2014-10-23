@@ -85,6 +85,7 @@ namespace Kentor.AuthServices.Tests
 
             var attributeConsumingService = new AttributeConsumingService("Name");
 
+            spOptions.AttributeConsumingServices.Clear();
             spOptions.AttributeConsumingServices.Add(attributeConsumingService);
             attributeConsumingService.RequestedAttributes.Add(new RequestedAttribute("AttributeName"));
 
