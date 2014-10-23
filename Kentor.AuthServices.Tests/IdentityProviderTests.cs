@@ -42,7 +42,30 @@ namespace Kentor.AuthServices.Tests
             {
                 AssertionConsumerServiceUrl = urls.AssertionConsumerServiceUrl,
                 DestinationUri = idp.SingleSignOnServiceUrl,
-                Issuer = options.SPOptions.EntityId
+                Issuer = options.SPOptions.EntityId,
+                AttributeConsumingServiceIndex = null,
+            };
+
+            subject.ShouldBeEquivalentTo(expected, opt => opt.Excluding(au => au.Id));
+        }
+
+        [TestMethod]
+        public void IdentityProvider_CreateAuthenticateRequest_ContainsAttributeIndex()
+        {
+            var options = StubFactory.CreateOptions();
+            var idp = options.IdentityProviders.Default;
+            var urls = StubFactory.CreateAuthServicesUrls();
+
+            ((SPOptions)options.SPOptions).AttributeConsumingServices.Add(new AttributeConsumingService("Name"));
+
+            var subject = idp.CreateAuthenticateRequest(null, urls);
+
+            var expected = new Saml2AuthenticationRequest()
+            {
+                AssertionConsumerServiceUrl = urls.AssertionConsumerServiceUrl,
+                DestinationUri = idp.SingleSignOnServiceUrl,
+                Issuer = options.SPOptions.EntityId,
+                AttributeConsumingServiceIndex = 0
             };
 
             subject.ShouldBeEquivalentTo(expected, opt => opt.Excluding(au => au.Id));
