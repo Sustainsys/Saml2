@@ -14,6 +14,14 @@ namespace Kentor.AuthServices.Configuration
     public class SPOptions : ISPOptions
     {
         /// <summary>
+        /// Ctor
+        /// </summary>
+        public SPOptions()
+        {
+            MetadataCacheDuration = new TimeSpan(1, 0, 0);
+        }
+
+        /// <summary>
         /// Return Uri to redirect the client to, if no return uri was specified
         /// when initiating the signin sequence.
         /// </summary>

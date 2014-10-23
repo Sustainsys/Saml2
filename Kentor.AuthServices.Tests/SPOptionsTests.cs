@@ -111,5 +111,13 @@ namespace Kentor.AuthServices.Tests
 
             subject.Contacts.Should().NotBeNull();
         }
+
+        [TestMethod]
+        public void SPOptions_MetadataCacheDuration_DefaultValue()
+        {
+            var subject = new SPOptions();
+
+            subject.MetadataCacheDuration.Should().Be(new TimeSpan(1, 0, 0));
+        }
     }
 }
