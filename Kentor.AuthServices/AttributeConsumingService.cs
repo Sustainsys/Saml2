@@ -7,6 +7,9 @@ using System.Threading.Tasks;
 
 namespace Kentor.AuthServices
 {
+    /// <summary>
+    /// Metadata for an attribute consuming service.
+    /// </summary>
     public class AttributeConsumingService
     {
         /// <summary>

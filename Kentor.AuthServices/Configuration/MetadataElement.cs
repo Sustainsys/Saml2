@@ -54,6 +54,9 @@ namespace Kentor.AuthServices.Configuration
 
         const string requestedAttributes = "requestedAttributes";
 
+        /// <summary>
+        /// Requested attributes of the service provider.
+        /// </summary>
         [ConfigurationProperty(requestedAttributes)]
         [ConfigurationCollection(typeof(RequestedAttributesCollection))]
         public RequestedAttributesCollection RequestedAttributes

@@ -232,6 +232,9 @@ namespace Kentor.AuthServices.Configuration
             }
         }
 
+        /// <summary>
+        /// Attribute consuming services.
+        /// </summary>
         public IEnumerable<AttributeConsumingService> AttributeConsumingServices
         {
             get

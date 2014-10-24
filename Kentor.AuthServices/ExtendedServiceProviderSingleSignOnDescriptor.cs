@@ -16,6 +16,9 @@ namespace Kentor.AuthServices
         readonly ICollection<AttributeConsumingService> attributeConsumingServices =
             new List<AttributeConsumingService>();
 
+        /// <summary>
+        /// Attribute consuming services of the service provider.
+        /// </summary>
         public ICollection<AttributeConsumingService> AttributeConsumingServices
         {
             get
