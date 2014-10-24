@@ -69,6 +69,7 @@ namespace Kentor.AuthServices.Tests
         }
 
         [TestMethod]
+        [DeploymentItem("Kentor.AuthServices.Tests.pfx")]         // Copy test files to the test directory when running mstest.exe.
         public void AcsCommand_Run_ErrorOnIncorrectXml()
         {
             var encoded = Convert.ToBase64String(Encoding.UTF8.GetBytes("<foo />"));

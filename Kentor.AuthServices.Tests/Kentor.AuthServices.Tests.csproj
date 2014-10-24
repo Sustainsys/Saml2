@@ -158,6 +158,7 @@
     <Compile Include="KentorAuthServicesSectionTests.cs" />
     <Compile Include="XmlDocumentExtensionsTests.cs" />
     <Compile Include="XmlHelpersTests.cs" />
+    <Compile Include="_TestReferencesForMsbuild.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config">

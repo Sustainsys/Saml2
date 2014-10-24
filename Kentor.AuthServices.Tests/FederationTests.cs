@@ -20,6 +20,7 @@ namespace Kentor.AuthServices.Tests
         }
 
         [TestMethod]
+        [DeploymentItem("SambiMetadata.xml")]
         public void Federation_LoadSambiTestMetadata()
         {
             // Sambi is the Swedish health care federation. To test that AuthServices
@@ -42,6 +43,7 @@ namespace Kentor.AuthServices.Tests
         }
 
         [TestMethod]
+        [DeploymentItem("SkolfederationMetadata.xml")]
         public void Federation_LoadSkolfederationMetadata()
         {
             // Skolfederation is the Swedish national school federation. To test that
