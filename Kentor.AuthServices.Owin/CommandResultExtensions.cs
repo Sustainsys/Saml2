@@ -29,9 +29,12 @@ namespace Kentor.AuthServices.Owin
                 context.Response.Headers["Location"] = commandResult.Location.OriginalString;
             }
 
-            using(var writer = new StreamWriter(context.Response.Body, Encoding.UTF8, 1024, true))
+            if (commandResult.Content != null)
             {
-                writer.Write(commandResult.Content);
+                using (var writer = new StreamWriter(context.Response.Body, Encoding.UTF8, 1024, true))
+                {
+                    writer.Write(commandResult.Content);
+                }
             }
         }
     }
