@@ -16,30 +16,23 @@
     <copyright>Copyright Kentor and contributors 2013</copyright>
     <tags>SAML2 authentication ASP.NET SAML SSO</tags>
     <releaseNotes>
- Version 0.7.2
+ Version 0.8.0
+ * Automatic generation of service provider URLs, removing configuration.
+ * Configuration can now be supplied from code and not only in config file.
+ * Administrative metadata (organization and contactPerson) support.
+ * Serialization of SAMLAttributeContext
+ * Support for Bootstrapcontext, saving incoming assertion in the resulting identity.
+ * Fixed new principal returned by ClaimsAuthenticationManager being ignored.
+ * Attribute consumer support in metadata and AuthnRequest.
+ * Discovery service response location included in metadata if use of discovery service is enabled.
+ 
+Version 0.7.2
  * Fixed null reference exception on missing discoveryServiceResponseUrl
 
 Version 0.7.0
  * Discovery Service Support
  * Fixed invalid format of cacheDuration attribute in metadata.
  * Made AuthServices prefer Http Redirect binding and ignore unsupported bindings when loading metadata.
-
-Version 0.6.2
- * Fixed SAMLRequest querystring parameter not urlencoded
-
-Version 0.6.0
- * Fixed entityID incorrectly cased in sp metadata.
- * Update documentation with respect to the new Owin middleware.
- * Federation metadata support.
- * Idp metadata support.
-
-Version 0.5.2
- * Fixed missing dependencies in Kentor.AuthServices.Owin package.
-
-Version 0.5.0
-* Service provider metadata.
-* Support for multiple Identity Providers.
-* Kentor.AuthServices.Owin package now available for MVC projects using ASP.NET Identity.
     </releaseNotes>
   </metadata>
   <files>
