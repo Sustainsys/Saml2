@@ -20,7 +20,7 @@
  * Automatic generation of service provider URLs, removing configuration.
  * Configuration can now be supplied from code and not only in config file.
  * Administrative metadata (organization and contactPerson) support.
- * Serialization of SAMLAttributeContext
+ * Serialization of SAML Attributes
  * Support for Bootstrapcontext, saving incoming assertion in the resulting identity.
  * Fixed new principal returned by ClaimsAuthenticationManager being ignored.
  * Attribute consumer support in metadata and AuthnRequest.
