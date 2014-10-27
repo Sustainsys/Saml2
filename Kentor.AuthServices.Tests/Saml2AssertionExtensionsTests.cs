@@ -38,7 +38,7 @@ namespace Kentor.AuthServices.Tests
             subject.ToString().Should().StartWith(
                 @"<saml2:Assertion xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion");
             subject.Attribute("Version").Value.Should().Be("2.0");
-            subject.Attribute("ID").Value.Should().NotBeBlank();
+            subject.Attribute("ID").Value.Should().NotBeNullOrWhiteSpace();
             subject.Attribute("IssueInstant").Value.Should().Match(
                 i => i == before || i == after);
         }
