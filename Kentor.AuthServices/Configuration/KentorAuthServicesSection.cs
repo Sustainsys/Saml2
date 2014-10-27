@@ -55,14 +55,14 @@ namespace Kentor.AuthServices.Configuration
         }
 
         /// <summary>
-        /// The Uri to redirect back to after successfull authentication.
+        /// The Url to redirect back to after successfull authentication.
         /// </summary>
-        [ConfigurationProperty("returnUri", IsRequired = true)]
-        public Uri ReturnUri
+        [ConfigurationProperty("returnUrl", IsRequired = true)]
+        public Uri ReturnUrl
         {
             get
             {
-                return (Uri)base["returnUri"];
+                return (Uri)base["returnUrl"];
             }
         }
 

@@ -17,7 +17,7 @@ namespace Kentor.AuthServices.Configuration
         /// Return Uri to redirect the client to, if no return uri was specified
         /// when initiating the signin sequence.
         /// </summary>
-        Uri ReturnUri { get; }
+        Uri ReturnUrl { get; }
 
         /// <summary>
         /// Optional attribute that describes for how long anyone may cache the metadata

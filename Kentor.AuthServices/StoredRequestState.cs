@@ -17,11 +17,11 @@ namespace Kentor.AuthServices
         /// Creates a PendingAuthnRequestData
         /// </summary>
         /// <param name="idp">The EntityId of the IDP the request was sent to</param>
-        /// <param name="returnUri">The Uri to redirect back to after a succesful login</param>
-        public StoredRequestState(EntityId idp, Uri returnUri)
+        /// <param name="returnUrl">The Url to redirect back to after a succesful login</param>
+        public StoredRequestState(EntityId idp, Uri returnUrl)
         {
             Idp = idp;
-            ReturnUri = returnUri;
+            ReturnUrl = returnUrl;
         }
 
         /// <summary>
@@ -30,9 +30,8 @@ namespace Kentor.AuthServices
         public EntityId Idp { get; private set; }
 
         /// <summary>
-        /// The Uri to redirect back to after a succesful login
+        /// The Url to redirect back to after a succesful login
         /// </summary>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1056:UriPropertiesShouldNotBeStrings")]
-        public Uri ReturnUri { get; private set; }
+        public Uri ReturnUrl { get; private set; }
     }
 }

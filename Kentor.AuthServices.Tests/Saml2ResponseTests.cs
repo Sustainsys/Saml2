@@ -1134,7 +1134,7 @@ namespace Kentor.AuthServices.Tests
         }
 
         [TestMethod]
-        public void Saml2Response_FromRequest_Remembers_ReturnUri()
+        public void Saml2Response_FromRequest_Remembers_ReturnUrl()
         {
             var idp = Options.FromConfiguration.IdentityProviders.Default;
 
@@ -1144,7 +1144,7 @@ namespace Kentor.AuthServices.Tests
             @"<?xml version=""1.0"" encoding=""UTF-8""?>
             <saml2p:Response xmlns:saml2p=""urn:oasis:names:tc:SAML:2.0:protocol""
             xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
-            ID = ""Saml2Response_FromRequest_Remembers_ReturnUri"" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z""
+            ID = ""Saml2Response_FromRequest_Remembers_ReturnUrl"" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z""
             InResponseTo = """ + request.Id + @""">
                 <saml2:Issuer>https://idp.example.com</saml2:Issuer>
                 <saml2p:Status>
@@ -1157,7 +1157,7 @@ namespace Kentor.AuthServices.Tests
             var response = Saml2Response.Read(responseXML);
 
             response.Validate(Options.FromConfiguration);
-            response.RequestState.ReturnUri.Should().Be("http://localhost/testUrl.aspx");
+            response.RequestState.ReturnUrl.Should().Be("http://localhost/testUrl.aspx");
         }
     }
 }

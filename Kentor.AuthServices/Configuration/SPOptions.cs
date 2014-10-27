@@ -25,7 +25,7 @@ namespace Kentor.AuthServices.Configuration
         /// Return Uri to redirect the client to, if no return uri was specified
         /// when initiating the signin sequence.
         /// </summary>
-        public Uri ReturnUri { get; set; }
+        public Uri ReturnUrl { get; set; }
 
         /// <summary>
         /// Return Uri to redirect the client to, if no return uri was specified

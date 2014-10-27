@@ -19,7 +19,7 @@ namespace Kentor.AuthServices.Tests
             PendingAuthnRequests.TryRemove(id, out responseData).Should().BeTrue();
             responseData.Should().Be(requestData);
             responseData.Idp.Id.Should().Be("testidp");
-            responseData.ReturnUri.Should().Be("http://localhost/Return.aspx");
+            responseData.ReturnUrl.Should().Be("http://localhost/Return.aspx");
         }
 
         [TestMethod]

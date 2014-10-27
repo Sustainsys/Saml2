@@ -213,13 +213,13 @@ namespace Kentor.AuthServices.Tests
         [TestMethod]
         public async Task KentorAuthServicesAuthenticationMiddleware_RedirectRemembersReturnPath()
         {
-            var returnUri = "http://sp.example.com/returnuri";
+            var returnUrl = "http://sp.example.com/returnurl";
 
             var middleware = new KentorAuthServicesAuthenticationMiddleware(
                 new StubOwinMiddleware(401, new AuthenticationResponseChallenge(
                     new string[] { "KentorAuthServices" }, new AuthenticationProperties()
                     {
-                        RedirectUri = returnUri
+                        RedirectUri = returnUrl
                     })),
                     CreateAppBuilder(), new KentorAuthServicesAuthenticationOptions(true));
 
@@ -232,7 +232,7 @@ namespace Kentor.AuthServices.Tests
             StoredRequestState storedAuthnData;
             PendingAuthnRequests.TryRemove(new Saml2Id(requestId), out storedAuthnData);
 
-            storedAuthnData.ReturnUri.Should().Be(returnUri);
+            storedAuthnData.ReturnUrl.Should().Be(returnUrl);
         }
 
         [NotReRunnable]
@@ -342,7 +342,7 @@ namespace Kentor.AuthServices.Tests
             StoredRequestState storedAuthnData;
             PendingAuthnRequests.TryRemove(new Saml2Id(requestId), out storedAuthnData);
 
-            storedAuthnData.ReturnUri.Should().Be("http://localhost/Home");
+            storedAuthnData.ReturnUrl.Should().Be("http://localhost/Home");
         }
 
         [TestMethod]

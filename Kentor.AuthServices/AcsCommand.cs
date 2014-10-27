@@ -63,9 +63,9 @@ namespace Kentor.AuthServices
             {
                 HttpStatusCode = HttpStatusCode.SeeOther,
                 Location =
-                    samlResponse.RequestState != null && samlResponse.RequestState.ReturnUri != null
-                    ? samlResponse.RequestState.ReturnUri
-                    : options.SPOptions.ReturnUri,
+                    samlResponse.RequestState != null && samlResponse.RequestState.ReturnUrl != null
+                    ? samlResponse.RequestState.ReturnUrl
+                    : options.SPOptions.ReturnUrl,
                 Principal = principal
             };
         }

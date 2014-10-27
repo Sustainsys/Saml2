@@ -59,13 +59,13 @@ namespace Kentor.AuthServices
                 }
             }
 
-            Uri returnUri = null;
+            Uri returnUrl = null;
             if (!string.IsNullOrEmpty(returnPath))
             {
-                Uri.TryCreate(request.Url, returnPath, out returnUri);
+                Uri.TryCreate(request.Url, returnPath, out returnUrl);
             }
 
-            var authnRequest = idp.CreateAuthenticateRequest(returnUri, urls);
+            var authnRequest = idp.CreateAuthenticateRequest(returnUrl, urls);
 
             return idp.Bind(authnRequest);
         }

@@ -33,7 +33,7 @@ namespace Kentor.AuthServices
                 MetadataCacheDuration = new TimeSpan(0, 0, 42),
                 Organization = org,
                 DiscoveryServiceUrl = new Uri("https://ds.example.com"),
-                ReturnUri = new Uri("https://localhost/returnUri"),
+                ReturnUrl = new Uri("https://localhost/returnUrl"),
             };
 
             AddContacts(options);

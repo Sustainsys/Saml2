@@ -61,7 +61,7 @@ namespace Kentor.AuthServices.Tests
             StoredRequestState storedAuthnData;
             PendingAuthnRequests.TryRemove(new System.IdentityModel.Tokens.Saml2Id(requestId), out storedAuthnData);
 
-            storedAuthnData.ReturnUri.Should().Be("http://localhost/Return.aspx");
+            storedAuthnData.ReturnUrl.Should().Be("http://localhost/Return.aspx");
         }
 
         [TestMethod]

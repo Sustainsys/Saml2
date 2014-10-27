@@ -37,7 +37,7 @@ library. It is required for the http module, the mvc controller and the Owin mid
 
 ```
 <kentor.authServices entityId="http://localhost:17009"
-                     returnUri="http://localhost:17009/SamplePath/"
+                     returnUrl="http://localhost:17009/SamplePath/"
                      discoveryServiceUrl="http://localhost:52071/DiscoveryService" />
   <metadata cacheDuration="0:15:00" >
     <organization name="Kentor IT AB" displayName="Kentor" url="http://www.kentor.se" language="sv" />
@@ -70,7 +70,7 @@ library. It is required for the http module, the mvc controller and the Owin mid
 Root element of the config section.
 
 ####Attributes
-* [`returnUri`](#returnuri-attribute)
+* [`returnUrl`](#returnUrl-attribute)
 * [`entityId`](#entityid-attribute)
 * [`discoveryServiceUrl`](#discoveryserviceurl-attribute)
 * [`modulePath`](#modulepath-attribute)
@@ -89,10 +89,10 @@ messages. The name will end up in the `Issuer` field in outcoing authnRequests.
 The `entityId` should typically be the URL where the metadata is presented. E.g.
 `http://sp.example.com/AuthServices/`.
 
-####`returnUri` Attribute
+####`returnUrl` Attribute
 *Attribute of the [`<kentor.authServices>`](#kentor-authservices-section) element.*
 
-The Uri that you want users to be redirected to once the authentication is
+The Url that you want users to be redirected to once the authentication is
 complete. This is typically the start page of the application, or a special
 signed in start page.
 
