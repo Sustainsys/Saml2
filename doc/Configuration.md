@@ -73,6 +73,7 @@ Root element of the config section.
 * [`returnUri`](#returnuri-attribute)
 * [`entityId`](#entityid-attribute)
 * [`discoveryServiceUrl`](#discoveryserviceurl-attribute)
+* [`modulePath`](#modulepath-attribute)
 
 ####Elements
 * [`<metadata>`](#metadata-element)
@@ -101,6 +102,14 @@ signed in start page.
 Optional attribute that specifies an idp discovery service to use if no idp
 is specified when calling sign in. Without this attribute, the first idp known
 will be used if none is specified.
+
+####`modulePath` Attribute
+*Optional Attribute of the [`<kentor.authServices>`](#modulePath-attribute) element.*
+
+Optional attribute that indicates the base path of the AuthServices endpoints.
+Defaults to `/AuthServices` if not specified. This can usually be left as the
+default, but if several instances of AuthServices are loaded into the
+same process they must each get a separate base path.
 
 ###`<metadata>` Element
 *Optional child element of the [`<kentor.authServices>`](#kentor-authservices-section) element.*
