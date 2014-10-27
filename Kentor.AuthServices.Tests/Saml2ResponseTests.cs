@@ -1050,7 +1050,7 @@ namespace Kentor.AuthServices.Tests
                 ["Subject", Saml2Namespaces.Saml2Name]["NameID", Saml2Namespaces.Saml2Name]
                 .InnerText.Should().Be(nameId);
             xml.DocumentElement.GetAttribute("Destination").Should().Be(destination);
-            xml.DocumentElement.GetAttribute("ID").Should().NotBeBlank();
+            xml.DocumentElement.GetAttribute("ID").Should().NotBeNullOrWhiteSpace();
             xml.DocumentElement.GetAttribute("Version").Should().Be("2.0");
             xml.DocumentElement.GetAttribute("IssueInstant").Should().Match(
                 i => i == before || i == after);
