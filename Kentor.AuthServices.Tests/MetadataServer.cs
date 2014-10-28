@@ -101,7 +101,7 @@ namespace Kentor.AuthServices.Tests
 
             content["/idpMetadataDifferentEntityId"] = string.Format(
 @"<EntityDescriptor xmlns=""urn:oasis:names:tc:SAML:2.0:metadata""
-  entityID=""urn:some.name.for.the.idp"">
+  entityID=""some-idp"">
   <IDPSSODescriptor
     protocolSupportEnumeration=""urn:oasis:names:tc:SAML:2.0:protocol"">
     <KeyDescriptor use=""signing"">

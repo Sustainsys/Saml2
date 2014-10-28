@@ -30,7 +30,7 @@ namespace Kentor.AuthServices
             EntityId = new EntityId(config.EntityId);
             Binding = config.Binding;
             AllowUnsolicitedAuthnResponse = config.AllowUnsolicitedAuthnResponse;
-            metadataLocation = config.MetadataLocation;
+            metadataLocation = config.MetadataUrl;
             this.spOptions = spOptions;
 
             var certificate = config.SigningCertificate.LoadCertificate();

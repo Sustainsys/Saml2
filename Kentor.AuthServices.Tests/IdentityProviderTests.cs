@@ -223,8 +223,8 @@ namespace Kentor.AuthServices.Tests
         {
             var config = CreateConfig();
             config.LoadMetadata = true;
-            config.MetadataLocation = new Uri("http://localhost:13428/idpMetadataDifferentEntityId");
-            config.EntityId = "urn:some.name.for.the.idp";
+            config.MetadataUrl = new Uri("http://localhost:13428/idpMetadataDifferentEntityId");
+            config.EntityId = "some-idp";
 
             var subject = new IdentityProvider(config, Options.FromConfiguration.SPOptions);
 
