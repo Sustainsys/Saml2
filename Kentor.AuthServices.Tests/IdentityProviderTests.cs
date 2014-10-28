@@ -14,7 +14,7 @@ namespace Kentor.AuthServices.Tests
         [TestMethod]
         public void IdentityProvider_CreateAuthenticateRequest_DestinationInXml()
         {
-            const string idpUri = "http://idp.example.com/";
+            string idpUri = "http://idp.example.com/";
             
             var ip = new IdentityProvider(
                 new Uri(idpUri),
@@ -36,7 +36,7 @@ namespace Kentor.AuthServices.Tests
             var urls = StubFactory.CreateAuthServicesUrls();
             var subject = idp.CreateAuthenticateRequest(null, urls);
 
-            var expected = new Saml2AuthenticationRequest
+            var expected = new Saml2AuthenticationRequest()
             {
                 AssertionConsumerServiceUrl = urls.AssertionConsumerServiceUrl,
                 DestinationUri = idp.SingleSignOnServiceUrl,
@@ -58,7 +58,7 @@ namespace Kentor.AuthServices.Tests
 
             var subject = idp.CreateAuthenticateRequest(null, urls);
 
-            var expected = new Saml2AuthenticationRequest
+            var expected = new Saml2AuthenticationRequest()
             {
                 AssertionConsumerServiceUrl = urls.AssertionConsumerServiceUrl,
                 DestinationUri = idp.SingleSignOnServiceUrl,
@@ -223,13 +223,13 @@ namespace Kentor.AuthServices.Tests
         {
             var config = CreateConfig();
             config.LoadMetadata = true;
-            config.MetadataLocationUri = new Uri("http://localhost:13428/idpMetadataWithMultipleBindings");
-            config.EntityId = "http://localhost:13428/idpMetadataWithMultipleBindings";
+            config.MetadataLocation = new Uri("http://localhost:13428/idpMetadataDifferentEntityId");
+            config.EntityId = "urn:some.name.for.the.idp";
 
             var subject = new IdentityProvider(config, Options.FromConfiguration.SPOptions);
 
             subject.Binding.Should().Be(Saml2BindingType.HttpRedirect);
-            subject.SingleSignOnServiceUrl.Should().Be("http://idp2Bindings.example.com/Redirect");
+            subject.SingleSignOnServiceUrl.Should().Be("http://idp.example.com/SsoService");
         }
     }
 }

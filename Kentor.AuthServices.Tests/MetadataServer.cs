@@ -99,6 +99,20 @@ namespace Kentor.AuthServices.Tests
   </IDPSSODescriptor>
 </EntityDescriptor>", SignedXmlHelper.KeyInfoXml);
 
+            content["/idpMetadataDifferentEntityId"] = string.Format(
+@"<EntityDescriptor xmlns=""urn:oasis:names:tc:SAML:2.0:metadata""
+  entityID=""urn:some.name.for.the.idp"">
+  <IDPSSODescriptor
+    protocolSupportEnumeration=""urn:oasis:names:tc:SAML:2.0:protocol"">
+    <KeyDescriptor use=""signing"">
+      {0}
+    </KeyDescriptor>
+    <SingleSignOnService
+      Binding=""urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect""
+      Location=""http://idp.example.com/SsoService"" />
+  </IDPSSODescriptor>
+</EntityDescriptor>", SignedXmlHelper.KeyInfoXml);
+
             content["/idpMetadataWithArtifactBinding"] = string.Format(
 @"<EntityDescriptor xmlns=""urn:oasis:names:tc:SAML:2.0:metadata""
   entityID=""http://localhost:13428/idpMetadataWithArtifactBinding"">

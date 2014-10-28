@@ -30,6 +30,7 @@ namespace Kentor.AuthServices
             EntityId = new EntityId(config.EntityId);
             Binding = config.Binding;
             AllowUnsolicitedAuthnResponse = config.AllowUnsolicitedAuthnResponse;
+            metadataLocation = config.MetadataLocation;
             this.spOptions = spOptions;
 
             var certificate = config.SigningCertificate.LoadCertificate();
@@ -41,7 +42,7 @@ namespace Kentor.AuthServices
 
             if (config.LoadMetadata)
             {
-                LoadMetadata(config.MetadataLocationUri ?? new Uri(EntityId.Id));
+                LoadMetadata();
             }
 
             Validate();
@@ -102,6 +103,19 @@ namespace Kentor.AuthServices
         /// </summary>
         public bool AllowUnsolicitedAuthnResponse { get; private set; }
 
+        private Uri metadataLocation;
+
+        /// <summary>
+        /// Location of metadata for the Identity Provider.
+        /// </summary>
+        public Uri MetadataLocation
+        {
+            get
+            {
+                return metadataLocation ?? new Uri(EntityId.Id);
+            }
+        }
+
         /// <summary>
         /// Create an authenticate request aimed for this idp.
         /// </summary>
@@ -119,7 +133,7 @@ namespace Kentor.AuthServices
                 throw new ArgumentNullException("authServicesUrls");
             }
 
-            var authnRequest = new Saml2AuthenticationRequest
+            var authnRequest = new Saml2AuthenticationRequest()
             {
                 DestinationUri = SingleSignOnServiceUrl,
                 AssertionConsumerServiceUrl = authServicesUrls.AssertionConsumerServiceUrl,
@@ -151,9 +165,9 @@ namespace Kentor.AuthServices
         /// </summary>
         public AsymmetricAlgorithm SigningKey { get; private set; }
 
-        private void LoadMetadata(Uri metadataLocation)
+        private void LoadMetadata()
         {
-            var metadata = MetadataLoader.LoadIdp(metadataLocation);
+            var metadata = MetadataLoader.LoadIdp(MetadataLocation);
 
             LoadMetadata(metadata);
         }
@@ -188,8 +202,9 @@ namespace Kentor.AuthServices
             Binding = Saml2Binding.UriToSaml2BindingType(ssoService.Binding);
             SingleSignOnServiceUrl = ssoService.Location;
 
-            // so far use only the first signing key if there is more than one
-            var key = idpDescriptor.Keys.FirstOrDefault(k => k.Use == KeyType.Unspecified || k.Use == KeyType.Signing);
+            var key = idpDescriptor.Keys
+                .Where(k => k.Use == KeyType.Unspecified || k.Use == KeyType.Signing)
+                .SingleOrDefault();
 
             if (key != null)
             {

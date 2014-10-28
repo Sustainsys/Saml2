@@ -120,19 +120,21 @@ namespace Kentor.AuthServices.Configuration
             }
         }
 
+        const string metadataLocationUrl = "metadataLocationUrl";
+
         /// <summary>
         /// Metadata location url to be used for automatic downloading of metadata.
         /// </summary>
-        [ConfigurationProperty("metadataLocationUrl")]
-        public Uri MetadataLocationUri
+        [ConfigurationProperty(metadataLocationUrl)]
+        public Uri MetadataLocation
         {
             get
             {
-                return (Uri)base["metadataLocationUrl"];
+                return (Uri)base[metadataLocationUrl];
             }
             internal set
             {
-                base["metadataLocationUrl"] = value;
+                base[metadataLocationUrl] = value;
             }
         }
     }
