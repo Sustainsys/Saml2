@@ -31,7 +31,7 @@ Included items must then not match any entries in the exclude list to remain inc
               <Exclude>
                 <ModulePath>.*tests\.dll</ModulePath>
                 <ModulePath>.*testhelpers\.dll</ModulePath>
-                <ModulePath>.*fluentassertions\.dll</ModulePath>
+                <ModulePath>.*fluentassertions.*\.dll</ModulePath>
               </Exclude>
             </ModulePaths>
 
