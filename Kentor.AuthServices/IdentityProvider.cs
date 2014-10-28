@@ -11,6 +11,7 @@ using Kentor.AuthServices.Internal;
 using Kentor.AuthServices.Metadata;
 using Kentor.AuthServices.Saml2P;
 using Kentor.AuthServices.WebSso;
+using System.Threading.Tasks;
 
 namespace Kentor.AuthServices
 {
@@ -196,58 +197,65 @@ namespace Kentor.AuthServices
             }
         }
 
+        object metadataLoadLock = new object();
+
         private void LoadMetadata()
         {
-            var metadata = MetadataLoader.LoadIdp(MetadataLocation);
-
-            LoadMetadata(metadata);
+            lock (metadataLoadLock)
+            {
+                var metadata = MetadataLoader.LoadIdp(MetadataLocation);
+                LoadMetadata(metadata);
+            }
         }
 
         private void LoadMetadata(ExtendedEntityDescriptor metadata)
         {
-            if (EntityId != null)
+            lock (metadataLoadLock)
             {
-                if (metadata.EntityId.Id != EntityId.Id)
+                if (EntityId != null)
                 {
-                    var msg = string.Format(CultureInfo.InvariantCulture,
-                        "Unexpected entity id \"{0}\" found when loading metadata for \"{1}\".",
-                        metadata.EntityId.Id, EntityId.Id);
-                    throw new ConfigurationErrorsException(msg);
+                    if (metadata.EntityId.Id != EntityId.Id)
+                    {
+                        var msg = string.Format(CultureInfo.InvariantCulture,
+                            "Unexpected entity id \"{0}\" found when loading metadata for \"{1}\".",
+                            metadata.EntityId.Id, EntityId.Id);
+                        throw new ConfigurationErrorsException(msg);
+                    }
                 }
-            }
-            else
-            {
-                EntityId = metadata.EntityId;
-            }
+                else
+                {
+                    EntityId = metadata.EntityId;
+                }
 
-            var idpDescriptor = metadata.RoleDescriptors
-                .OfType<IdentityProviderSingleSignOnDescriptor>().Single();
+                var idpDescriptor = metadata.RoleDescriptors
+                    .OfType<IdentityProviderSingleSignOnDescriptor>().Single();
 
-            // Prefer an endpoint with a redirect binding, then check for POST which 
-            // is the other supported by AuthServices.
-            var ssoService = idpDescriptor.SingleSignOnServices
-                .FirstOrDefault(s => s.Binding == Saml2Binding.HttpRedirectUri) ??
-                idpDescriptor.SingleSignOnServices
-                .First(s => s.Binding == Saml2Binding.HttpPostUri);
+                // Prefer an endpoint with a redirect binding, then check for POST which 
+                // is the other supported by AuthServices.
+                var ssoService = idpDescriptor.SingleSignOnServices
+                    .FirstOrDefault(s => s.Binding == Saml2Binding.HttpRedirectUri) ??
+                    idpDescriptor.SingleSignOnServices
+                    .First(s => s.Binding == Saml2Binding.HttpPostUri);
 
-            binding = Saml2Binding.UriToSaml2BindingType(ssoService.Binding);
-            singleSignOnServiceUrl = ssoService.Location;
+                binding = Saml2Binding.UriToSaml2BindingType(ssoService.Binding);
+                singleSignOnServiceUrl = ssoService.Location;
 
-            var key = idpDescriptor.Keys
-                .Where(k => k.Use == KeyType.Unspecified || k.Use == KeyType.Signing)
-                .SingleOrDefault();
+                var key = idpDescriptor.Keys
+                    .Where(k => k.Use == KeyType.Unspecified || k.Use == KeyType.Signing)
+                    .SingleOrDefault();
 
-            if (key != null)
-            {
-                signingKey = ((AsymmetricSecurityKey)key.KeyInfo.CreateKey())
-                    .GetAsymmetricAlgorithm(SignedXml.XmlDsigRSASHA1Url, false);
-            }
+                if (key != null)
+                {
+                    signingKey = ((AsymmetricSecurityKey)key.KeyInfo.CreateKey())
+                        .GetAsymmetricAlgorithm(SignedXml.XmlDsigRSASHA1Url, false);
+                }
 
-            metadataValidUntil = metadata.ValidUntil;
+                MetadataValidUntil = metadata.ValidUntil;
 
-            if (metadata.CacheDuration.HasValue)
-            {
-                metadataValidUntil = DateTime.UtcNow.Add(metadata.CacheDuration.Value);
+                if (metadata.CacheDuration.HasValue)
+                {
+                    MetadataValidUntil = DateTime.UtcNow.Add(metadata.CacheDuration.Value);
+                }
             }
         }
 
@@ -261,16 +269,31 @@ namespace Kentor.AuthServices
         {
             get
             {
-                ReloadMetadataIfExpired();
                 return metadataValidUntil;
+            }
+            private set
+            {
+                metadataValidUntil = value;
+
+                if(value.HasValue)
+                {
+                    Task.Delay(MetadataRefreshScheduler.GetDelay(value.Value))
+                        .ContinueWith((_) => LoadMetadata());
+                }
             }
         }
 
         private void ReloadMetadataIfExpired()
         {
-            if (metadataValidUntil < DateTime.UtcNow)
+            if (MetadataValidUntil < DateTime.UtcNow)
             {
-                LoadMetadata();
+                lock (metadataLoadLock)
+                {
+                    if (MetadataValidUntil < DateTime.UtcNow)
+                    {
+                        LoadMetadata();
+                    }
+                }
             }
         }
     }

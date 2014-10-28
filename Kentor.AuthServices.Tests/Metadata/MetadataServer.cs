@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Owin;
 using Kentor.AuthServices.TestHelpers;
+using Kentor.AuthServices.WebSso;
 
 namespace Kentor.AuthServices.Tests.Metadata
 {

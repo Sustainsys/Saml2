@@ -7,16 +7,20 @@ using System.Configuration;
 using System.IdentityModel.Metadata;
 using Kentor.AuthServices.Saml2P;
 using Kentor.AuthServices.WebSso;
+using Kentor.AuthServices.Tests.Metadata;
 
 namespace Kentor.AuthServices.Tests
 {
     [TestClass]
     public class IdentityProviderTests
     {
+        TimeSpan refreshMinInterval = MetadataRefreshScheduler.minInternval;
+
         [TestCleanup]
         public void Cleanup()
         {
             MetadataServer.IdpVeryShortCacheDurationIncludeInvalidKey = false;
+            MetadataRefreshScheduler.minInternval = refreshMinInterval;
         }
 
         [TestMethod]
@@ -299,14 +303,6 @@ namespace Kentor.AuthServices.Tests
         }
 
         [TestMethod]
-        public void IdentityProvider_MetadataValidUntil_ReloadsMetadataIfNoLongerValid()
-        {
-            var subject = CreateSubjectForMetadataRefresh();
-            var initialValidUntil = subject.MetadataValidUntil;
-            WaitForMetadataReload(() => subject.MetadataValidUntil == initialValidUntil);
-        }
-
-        [TestMethod]
         public void IdentityProvider_Binding_ReloadsMetadataIfNoLongerValid()
         {
             MetadataServer.IdpVeryShortCacheDurationBinding = Saml2Binding.HttpRedirectUri;
@@ -339,9 +335,32 @@ namespace Kentor.AuthServices.Tests
             subject.SigningKey.Should().NotBeNull();
             MetadataServer.IdpVeryShortCacheDurationIncludeInvalidKey = true;
 
-            Action a = () => WaitForMetadataReload(() => subject.SigningKey == null);
+            Action a = () =>
+            {
+                var waitStart = DateTime.UtcNow;
+                while (subject.SigningKey != null)
+                {
+                    if (DateTime.UtcNow - waitStart > maxWait)
+                    {
+                        Assert.Fail("Timeout passed without metadata being refreshed.");
+                    }
+                }
+            };
 
             a.ShouldThrow<System.Xml.XmlException>();
+        }
+
+        [TestMethod]
+        public void IdentityProvider_ScheduledReloadOfMetadata()
+        {
+            MetadataRefreshScheduler.minInternval = new TimeSpan(0, 0, 0, 0, 1);
+
+            var subject = CreateSubjectForMetadataRefresh();
+            var initalValidUntil = subject.MetadataValidUntil;
+
+            WaitForMetadataReload(() => subject.MetadataValidUntil == initalValidUntil);
+
+            subject.MetadataValidUntil.Should().NotBe(initalValidUntil.Value);
         }
     }
 }
