@@ -4,10 +4,6 @@ using System.ComponentModel;
 using System.Configuration;
 using System.Globalization;
 using System.IdentityModel.Metadata;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Kentor.AuthServices.Configuration
 {
@@ -52,7 +48,7 @@ namespace Kentor.AuthServices.Configuration
             {
                 return (EntityId)base["entityId"];
             }
-        }
+        }        
 
         /// <summary>
         /// The Url to redirect back to after successfull authentication.

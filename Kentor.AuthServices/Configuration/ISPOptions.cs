@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IdentityModel.Metadata;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Kentor.AuthServices.Configuration
 {
@@ -39,7 +36,7 @@ namespace Kentor.AuthServices.Configuration
         /// EntityId - The identity of the ServiceProvider to use when sending requests to Idp
         /// and presenting the SP in metadata.
         /// </summary>
-        EntityId EntityId { get; }
+        EntityId EntityId { get; }        
 
         /// <summary>
         /// Application root relative path for AuthServices endpoints. The

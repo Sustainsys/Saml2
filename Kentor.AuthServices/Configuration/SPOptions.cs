@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IdentityModel.Metadata;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Kentor.AuthServices.Configuration
 {
@@ -88,7 +85,7 @@ namespace Kentor.AuthServices.Configuration
                 }
                 entityId = value;
             }
-        }
+        }        
 
         private string modulePath = "/AuthServices";
 
