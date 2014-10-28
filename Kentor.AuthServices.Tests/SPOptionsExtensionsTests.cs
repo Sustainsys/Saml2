@@ -9,6 +9,7 @@ using System.Text.RegularExpressions;
 using System.IdentityModel.Metadata;
 using Kentor.AuthServices.Configuration;
 using System.Globalization;
+using Kentor.AuthServices.Metadata;
 
 namespace Kentor.AuthServices.Tests
 {

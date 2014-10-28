@@ -4,7 +4,7 @@ using System.IdentityModel.Metadata;
 using System.Linq;
 using System.Text;
 
-namespace Kentor.AuthServices
+namespace Kentor.AuthServices.Metadata
 {
     /// <summary>
     /// Subclass to EntityDescriptor that contains support for extensions.

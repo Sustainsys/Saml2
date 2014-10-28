@@ -1,4 +1,5 @@
 ﻿using Kentor.AuthServices.Configuration;
+using Kentor.AuthServices.Metadata;
 using System;
 using System.Collections.Generic;
 using System.Globalization;

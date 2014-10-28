@@ -4,7 +4,7 @@ using System.IdentityModel.Tokens;
 using System.Linq;
 using System.Text;
 
-namespace Kentor.AuthServices
+namespace Kentor.AuthServices.Metadata
 {
     /// <summary>
     /// Specifies an attribute requested by the service provider.

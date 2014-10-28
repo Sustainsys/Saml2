@@ -6,6 +6,7 @@ using System.IdentityModel.Metadata;
 using System.Globalization;
 using System.Linq;
 using System.Collections.Generic;
+using Kentor.AuthServices.Metadata;
 
 namespace Kentor.AuthServices.Tests
 {

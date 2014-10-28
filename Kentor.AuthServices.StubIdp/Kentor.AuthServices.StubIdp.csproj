@@ -156,7 +156,7 @@
     </Compile>
     <Compile Include="Models\AssertionModel.cs" />
     <Compile Include="Models\DiscoveryServiceModel.cs" />
-    <Compile Include="Models\Metadata.cs" />
+    <Compile Include="Models\MetadataModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="UrlResolver.cs" />
   </ItemGroup>

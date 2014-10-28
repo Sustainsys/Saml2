@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 using System.Xml;
 using System.Xml.Linq;
 
-namespace Kentor.AuthServices
+namespace Kentor.AuthServices.Metadata
 {
     class ExtendedMetadataSerializer : MetadataSerializer
     {

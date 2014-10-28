@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
 
-namespace Kentor.AuthServices
+namespace Kentor.AuthServices.Metadata
 {
     class XmlFilteringReader : DelegatingXmlDictionaryReader
     {

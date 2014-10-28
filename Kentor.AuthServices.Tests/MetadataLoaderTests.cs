@@ -4,6 +4,7 @@ using System.IdentityModel.Metadata;
 using FluentAssertions;
 using System.Xml.Linq;
 using System.Linq;
+using Kentor.AuthServices.Metadata;
 
 namespace Kentor.AuthServices.Tests
 {

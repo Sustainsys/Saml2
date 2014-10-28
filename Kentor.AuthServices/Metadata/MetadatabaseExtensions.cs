@@ -6,7 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Web;
 
-namespace Kentor.AuthServices
+namespace Kentor.AuthServices.Metadata
 {
     /// <summary>
     /// Extensions for Metadatabase.

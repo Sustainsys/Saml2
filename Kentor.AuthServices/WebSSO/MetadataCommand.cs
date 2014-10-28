@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Web;
 using System.Xml.Linq;
+using Kentor.AuthServices.Metadata;
 
 namespace Kentor.AuthServices
 {

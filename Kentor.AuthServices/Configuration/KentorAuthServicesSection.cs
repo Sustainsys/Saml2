@@ -9,6 +9,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Kentor.AuthServices.Internal;
+using Kentor.AuthServices.Metadata;
 
 namespace Kentor.AuthServices.Configuration
 {

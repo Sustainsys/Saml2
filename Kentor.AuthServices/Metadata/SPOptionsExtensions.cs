@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using System.Xml.Linq;
 using Kentor.AuthServices.Configuration;
 
-namespace Kentor.AuthServices
+namespace Kentor.AuthServices.Metadata
 {
     static class SPOptionsExtensions
     {

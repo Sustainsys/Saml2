@@ -8,6 +8,7 @@ using System.Linq;
 using System.Security.Cryptography;
 using System.Security.Cryptography.Xml;
 using Kentor.AuthServices.Internal;
+using Kentor.AuthServices.Metadata;
 
 namespace Kentor.AuthServices
 {

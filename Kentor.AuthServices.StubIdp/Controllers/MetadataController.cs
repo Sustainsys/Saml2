@@ -8,6 +8,7 @@ using System.Text;
 using System.Web;
 using System.Web.Mvc;
 using System.Xml;
+using Kentor.AuthServices.Metadata;
 
 namespace Kentor.AuthServices.StubIdp.Controllers
 {
@@ -17,14 +18,14 @@ namespace Kentor.AuthServices.StubIdp.Controllers
         public ActionResult Index()
         {
             return Content(
-                Metadata.IdpMetadata.ToXmlString(),
+                MetadataModel.IdpMetadata.ToXmlString(),
                 "application/samlmetadata+xml");
         }
 
         public ActionResult BrowserFriendly()
         {
             return Content(
-                Metadata.IdpMetadata.ToXmlString(),
+                MetadataModel.IdpMetadata.ToXmlString(),
                 "text/xml");
         }
     }

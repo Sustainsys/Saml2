@@ -6,7 +6,7 @@ using System.Web;
 
 namespace Kentor.AuthServices.StubIdp.Models
 {
-    public static class Metadata
+    public static class MetadataModel
     {
         public static EntityDescriptor IdpMetadata
         {

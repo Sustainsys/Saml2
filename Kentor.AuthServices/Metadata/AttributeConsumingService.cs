@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Kentor.AuthServices
+namespace Kentor.AuthServices.Metadata
 {
     /// <summary>
     /// Metadata for an attribute consuming service.
