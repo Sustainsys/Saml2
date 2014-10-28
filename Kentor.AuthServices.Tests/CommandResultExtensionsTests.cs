@@ -8,6 +8,7 @@ using Kentor.AuthServices.Owin;
 using System.IO;
 using System.Text;
 using System.Net;
+using Kentor.AuthServices.WebSSO;
 
 namespace Kentor.AuthServices.Tests
 {

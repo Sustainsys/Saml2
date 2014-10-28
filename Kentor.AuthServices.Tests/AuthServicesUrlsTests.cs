@@ -2,6 +2,7 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Kentor.AuthServices.Configuration;
 using FluentAssertions;
+using Kentor.AuthServices.WebSSO;
 
 namespace Kentor.AuthServices.Tests
 {

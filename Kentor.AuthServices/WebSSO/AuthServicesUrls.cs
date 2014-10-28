@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Kentor.AuthServices
+namespace Kentor.AuthServices.WebSSO
 {
     /// <summary>
     /// The urls of AuthServices that are used in various messages.

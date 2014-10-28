@@ -12,6 +12,7 @@ using Kentor.AuthServices.TestHelpers;
 using Kentor.AuthServices.Configuration;
 using System.IdentityModel.Metadata;
 using Kentor.AuthServices.Internal;
+using Kentor.AuthServices.WebSSO;
 
 namespace Kentor.AuthServices.Tests
 {

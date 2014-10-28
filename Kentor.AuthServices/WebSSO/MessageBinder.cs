@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Kentor.AuthServices
+namespace Kentor.AuthServices.WebSSO
 {
     /// <summary>
     /// Extension method for binding an <see cref="ISaml2Message"/> to a Saml2Binding

@@ -4,6 +4,7 @@ using FluentAssertions;
 using System.Net;
 using NSubstitute;
 using System.Web;
+using Kentor.AuthServices.WebSSO;
 
 namespace Kentor.AuthServices.Tests
 {

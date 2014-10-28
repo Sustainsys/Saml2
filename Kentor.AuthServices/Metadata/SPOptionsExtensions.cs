@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 using Kentor.AuthServices.Configuration;
+using Kentor.AuthServices.WebSSO;
 
 namespace Kentor.AuthServices.Metadata
 {

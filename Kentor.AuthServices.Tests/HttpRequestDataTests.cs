@@ -5,6 +5,7 @@ using FluentAssertions;
 using System.Web;
 using System.Collections.Specialized;
 using System.Collections.Generic;
+using Kentor.AuthServices.WebSSO;
 
 namespace Kentor.AuthServices.Tests
 {

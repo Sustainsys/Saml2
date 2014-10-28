@@ -12,6 +12,7 @@ using Kentor.AuthServices.Configuration;
 using System.IdentityModel.Tokens;
 using System.Configuration;
 using Kentor.AuthServices.Saml2P;
+using Kentor.AuthServices.WebSSO;
 
 namespace Kentor.AuthServices.StubIdp.Controllers
 {

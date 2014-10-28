@@ -6,6 +6,7 @@ using System;
 using System.Configuration;
 using System.IdentityModel.Metadata;
 using Kentor.AuthServices.Saml2P;
+using Kentor.AuthServices.WebSSO;
 
 namespace Kentor.AuthServices.Tests
 {

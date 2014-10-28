@@ -7,6 +7,7 @@ using System.IdentityModel.Tokens;
 using System.Xml;
 using System.Text;
 using System.Collections.Generic;
+using Kentor.AuthServices.WebSSO;
 
 namespace Kentor.AuthServices.Tests
 {

@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 using System.Web;
 using System.Xml.Linq;
 
-namespace Kentor.AuthServices
+namespace Kentor.AuthServices.WebSSO
 {
     class Saml2RedirectBinding : Saml2Binding
     {

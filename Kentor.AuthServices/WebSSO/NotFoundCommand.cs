@@ -5,7 +5,7 @@ using System.Linq;
 using System.Net;
 using System.Web;
 
-namespace Kentor.AuthServices
+namespace Kentor.AuthServices.WebSSO
 {
     class NotFoundCommand : ICommand
     {
