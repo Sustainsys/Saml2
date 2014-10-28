@@ -233,5 +233,35 @@ namespace Kentor.AuthServices.Tests
             subject.Binding.Should().Be(Saml2BindingType.HttpRedirect);
             subject.SingleSignOnServiceUrl.Should().Be("http://idp.example.com/SsoService");
         }
+
+        [TestMethod]
+        public void IdentityProvider_MetadataValidUntil_NullOnConfigured()
+        {
+            string idpUri = "http://idp.example.com/";
+
+            var subject = new IdentityProvider(
+                new Uri(idpUri),
+                Options.FromConfiguration.SPOptions);
+
+            subject.MetadataValidUntil.Should().NotHaveValue();
+        }
+
+        [TestMethod]
+        public void IdentityProvider_MetadataValidUntil_Loaded()
+        {
+            var config = CreateConfig();
+            config.LoadMetadata = true;
+            config.EntityId = "http://localhost:13428/idpMetadata";
+
+            var subject = new IdentityProvider(config, Options.FromConfiguration.SPOptions);
+
+            subject.MetadataValidUntil.Should().Be(new DateTime(2100, 01, 02, 14, 42, 43, DateTimeKind.Utc));
+        }
+
+        [TestMethod]
+        public void IdentityProvider_MetadataValidUntil_CalculatedFromCacheDuration()
+        {
+            Assert.Inconclusive();
+        }
     }
 }

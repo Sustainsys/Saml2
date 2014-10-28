@@ -29,7 +29,7 @@ namespace Kentor.AuthServices.Metadata
             {
                 writer.WriteAttributeString(
                     "cacheDuration",
-                    XmlConvert.ToString(extendedEntityDescriptor.CacheDuration));
+                    XmlConvert.ToString(extendedEntityDescriptor.CacheDuration.Value));
 
                 writer.WriteAttributeString("xmlns", "saml2", null, Saml2Namespaces.Saml2Name);
 
@@ -96,6 +96,28 @@ namespace Kentor.AuthServices.Metadata
                 writer.WriteEndElement();
             }
             writer.WriteEndElement();
+        }
+
+        protected override EntityDescriptor CreateEntityDescriptorInstance()
+        {
+            return new ExtendedEntityDescriptor();
+        }
+
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1062:Validate arguments of public methods", MessageId = "0")]
+        protected override void ReadCustomAttributes<T>(XmlReader reader, T target)
+        {
+            var extendedEntityDescriptor = target as ExtendedEntityDescriptor;
+            if(extendedEntityDescriptor != null)
+            {
+                var validUntilString = reader.GetAttribute("validUntil");
+
+                if (!string.IsNullOrEmpty(validUntilString))
+                {
+                    extendedEntityDescriptor.ValidUntil = XmlConvert.ToDateTime(
+                        validUntilString,
+                        XmlDateTimeSerializationMode.Utc);
+                }
+            }
         }
     }
 }

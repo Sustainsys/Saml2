@@ -23,7 +23,7 @@ namespace Kentor.AuthServices.Tests.Metadata
         {
             content["/idpMetadata"] = string.Format(
  @"<EntityDescriptor xmlns=""urn:oasis:names:tc:SAML:2.0:metadata""
-    entityID=""http://localhost:13428/idpMetadata"">
+    entityID=""http://localhost:13428/idpMetadata"" validUntil=""2100-01-02T14:42:43Z"">
     <IDPSSODescriptor
       protocolSupportEnumeration=""urn:oasis:names:tc:SAML:2.0:protocol"">
       <KeyDescriptor>
@@ -38,7 +38,7 @@ namespace Kentor.AuthServices.Tests.Metadata
 
             content["/idpMetadataNoCertificate"] = 
 @"<EntityDescriptor xmlns=""urn:oasis:names:tc:SAML:2.0:metadata""
-    entityID=""http://localhost:13428/idpMetadataNoCertificate"">
+    entityID=""http://localhost:13428/idpMetadataNoCertificate"" cacheDuration=""PT15M"">
     <IDPSSODescriptor
       protocolSupportEnumeration=""urn:oasis:names:tc:SAML:2.0:protocol"">
       <SingleSignOnService

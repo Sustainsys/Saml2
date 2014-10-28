@@ -163,6 +163,7 @@
     <Compile Include="StubFactory.cs" />
     <Compile Include="WebSSO\AuthServicesUrlsTests.cs" />
     <Compile Include="Configuration\KentorAuthServicesSectionTests.cs" />
+    <Compile Include="ExtendedMetadataSerializerTests.cs" />
     <Compile Include="XmlDocumentExtensionsTests.cs" />
     <Compile Include="Internal\XmlHelpersTests.cs" />
   </ItemGroup>

@@ -27,6 +27,11 @@ namespace Kentor.AuthServices.Metadata
         /// <summary>
         /// Permitted cache duration for the metadata.
         /// </summary>
-        public TimeSpan CacheDuration { get; set; }
+        public TimeSpan? CacheDuration { get; set; }
+
+        /// <summary>
+        /// Valid until
+        /// </summary>
+        public DateTime? ValidUntil { get; set; }
     }
 }

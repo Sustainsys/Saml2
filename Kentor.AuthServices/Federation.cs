@@ -79,7 +79,7 @@ namespace Kentor.AuthServices
 
         private void Init(EntitiesDescriptor metadata, bool allowUnsolicitedAuthnResponse, ISPOptions spOptions)
         {
-            identityProviders = metadata.ChildEntities
+            identityProviders = metadata.ChildEntities.Cast<ExtendedEntityDescriptor>()
                 .Where(ed => ed.RoleDescriptors.OfType<IdentityProviderSingleSignOnDescriptor>().Any())
                 .Select(ed => new IdentityProvider(ed, allowUnsolicitedAuthnResponse, spOptions))
                 .ToList();

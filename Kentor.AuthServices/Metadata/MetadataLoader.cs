@@ -22,14 +22,14 @@ namespace Kentor.AuthServices.Metadata
         /// </summary>
         /// <param name="metadataUrl">Url to metadata</param>
         /// <returns>EntityDescriptor containing metadata</returns>
-        public static EntityDescriptor LoadIdp(Uri metadataUrl)
+        public static ExtendedEntityDescriptor LoadIdp(Uri metadataUrl)
         {
             if (metadataUrl == null)
             {
                 throw new ArgumentNullException("metadataUrl");
             }
 
-            return (EntityDescriptor)Load(metadataUrl);
+            return (ExtendedEntityDescriptor)Load(metadataUrl);
         }
 
         private static MetadataBase Load(Uri metadataUrl)
@@ -43,7 +43,7 @@ namespace Kentor.AuthServices.Metadata
 
         internal static MetadataBase Load(Stream metadataStream)
         {
-            var serializer = new MetadataSerializer();
+            var serializer = ExtendedMetadataSerializer.Instance;
             using (var reader = XmlDictionaryReader.CreateTextReader(metadataStream, XmlDictionaryReaderQuotas.Max))
             {
                 // Filter out the signature from the metadata, as the built in MetadataSerializer

@@ -59,7 +59,7 @@ namespace Kentor.AuthServices
         /// <param name="allowUnsolicitedAuthnResponse">Are unsolicited responses allowed from this idp?</param>
         /// <param name="spOptions">Service Provider option to use when creating AuthnRequests.</param>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "sp")]
-        public IdentityProvider(EntityDescriptor metadata, bool allowUnsolicitedAuthnResponse, ISPOptions spOptions)
+        public IdentityProvider(ExtendedEntityDescriptor metadata, bool allowUnsolicitedAuthnResponse, ISPOptions spOptions)
         {
             AllowUnsolicitedAuthnResponse = allowUnsolicitedAuthnResponse;
             this.spOptions = spOptions;
@@ -176,7 +176,7 @@ namespace Kentor.AuthServices
             LoadMetadata(metadata);
         }
 
-        private void LoadMetadata(EntityDescriptor metadata)
+        private void LoadMetadata(ExtendedEntityDescriptor metadata)
         {
             if (EntityId != null)
             {
@@ -215,6 +215,14 @@ namespace Kentor.AuthServices
                 SigningKey = ((AsymmetricSecurityKey)key.KeyInfo.CreateKey())
                     .GetAsymmetricAlgorithm(SignedXml.XmlDsigRSASHA1Url, false);
             }
+
+            MetadataValidUntil = metadata.ValidUntil;
         }
+
+        /// <summary>
+        /// Validity time of the metadata this idp was configured from. Null if
+        /// idp was not configured from metadata.
+        /// </summary>
+        public DateTime? MetadataValidUntil { get; private set; }
     }
 }
