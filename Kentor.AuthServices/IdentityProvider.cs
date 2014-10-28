@@ -123,7 +123,7 @@ namespace Kentor.AuthServices
             {
                 DestinationUri = SingleSignOnServiceUrl,
                 AssertionConsumerServiceUrl = authServicesUrls.AssertionConsumerServiceUrl,
-                Issuer = spOptions.Issuer ?? spOptions.EntityId,
+                Issuer = spOptions.EntityId,
                 // For now we only support one attribute consuming service.
                 AttributeConsumingServiceIndex = spOptions.AttributeConsumingServices.Any() ? 0 :  (int?)null
             };

@@ -36,12 +36,7 @@ namespace Kentor.AuthServices.Configuration
         /// EntityId - The identity of the ServiceProvider to use when sending requests to Idp
         /// and presenting the SP in metadata.
         /// </summary>
-        EntityId EntityId { get; }
-
-        /// <summary>
-        /// The URI of the intended token issuer. If not set the EntityId property is used.
-        /// </summary>
-        EntityId Issuer { get; }
+        EntityId EntityId { get; }        
 
         /// <summary>
         /// Application root relative path for AuthServices endpoints. The

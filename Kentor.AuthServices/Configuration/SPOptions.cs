@@ -85,12 +85,7 @@ namespace Kentor.AuthServices.Configuration
                 }
                 entityId = value;
             }
-        }
-
-        /// <summary>
-        /// The URI of the intended token issuer. If not set the EntityId property is used.
-        /// </summary>
-        public EntityId Issuer { get; set; }
+        }        
 
         private string modulePath = "/AuthServices";
 

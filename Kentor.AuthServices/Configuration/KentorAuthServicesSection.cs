@@ -48,20 +48,7 @@ namespace Kentor.AuthServices.Configuration
             {
                 return (EntityId)base["entityId"];
             }
-        }
-
-        /// <summary>
-        /// The URI of the intended token issuer. If not set the EntityId property is used.
-        /// </summary>
-        [TypeConverter(typeof(EntityIdConverter))]
-        [ConfigurationProperty("issuer", IsRequired = false)]
-        public EntityId Issuer
-        {
-            get
-            {
-                return (EntityId)base["issuer"];
-            }
-        }
+        }        
 
         /// <summary>
         /// The Uri to redirect back to after successfull authentication.
