@@ -6,12 +6,23 @@ using System.IdentityModel.Metadata;
 using System.Linq;
 using Kentor.AuthServices.Configuration;
 using Kentor.AuthServices.Metadata;
+using Kentor.AuthServices.TestHelpers;
+using Kentor.AuthServices.Tests.Metadata;
 
 namespace Kentor.AuthServices.Tests
 {
     [TestClass]
     public class FederationTests
     {
+        TimeSpan refreshMinInterval = MetadataRefreshScheduler.minInternval;
+
+        [TestCleanup]
+        public void Cleanup()
+        {
+            MetadataServer.IdpVeryShortCacheDurationIncludeInvalidKey = false;
+            MetadataRefreshScheduler.minInternval = refreshMinInterval;
+        }
+
         [TestMethod]
         public void Federation_Ctor_NullcheckConfig()
         {
@@ -34,7 +45,7 @@ namespace Kentor.AuthServices.Tests
         {
             using (var stream = new FileStream(fileName, FileMode.Open))
             {
-                var metadata = (EntitiesDescriptor)MetadataLoader.Load(stream);
+                var metadata = (ExtendedEntitiesDescriptor)MetadataLoader.Load(stream);
 
                 Action a = () => new Federation(metadata, true, Options.FromConfiguration.SPOptions);
 
@@ -61,6 +72,43 @@ namespace Kentor.AuthServices.Tests
                 Options.FromConfiguration.SPOptions);
 
             subject.IdentityProviders.First().EntityId.Id.Should().Be("http://idp.federation.example.com/metadata");
+        }
+
+        [TestMethod]
+        public void Federation_MetadataValidUntil_Loaded()
+        {
+            var subject = new Federation(
+                new Uri("http://localhost:13428/federationMetadata"),
+                false,
+                StubFactory.CreateSPOptions());
+
+            subject.MetadataValidUntil.Should().Be(new DateTime(2100, 01, 01, 14, 43, 15));
+        }
+
+        [TestMethod]
+        public void Federation_MetadataValidUntil_CalculatedFromCacheDuration()
+        {
+            var subject = new Federation(
+                new Uri("http://localhost:13428/federationMetadataVeryShortCacheDuration"),
+                false,
+                StubFactory.CreateSPOptions());
+
+            subject.MetadataValidUntil.Should().BeCloseTo(DateTime.UtcNow);
+        }
+
+        [TestMethod]
+        public void Federation_ScheduledReloadOfMetadata()
+        {
+            MetadataRefreshScheduler.minInternval = new TimeSpan(0, 0, 0, 0, 1);
+
+            var subject = new Federation(
+                new Uri("http://localhost:13428/federationMetadataVeryShortCacheDuration"),
+                false,
+                StubFactory.CreateSPOptions());
+
+            var initialValidUntil = subject.MetadataValidUntil;
+
+            SpinWaiter.While(() => subject.MetadataValidUntil == initialValidUntil);
         }
     }
 }

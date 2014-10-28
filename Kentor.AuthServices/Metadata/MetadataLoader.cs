@@ -61,14 +61,14 @@ namespace Kentor.AuthServices.Metadata
         /// </summary>
         /// <param name="metadataUrl">Url to metadata</param>
         /// <returns></returns>
-        public static EntitiesDescriptor LoadFederation(Uri metadataUrl)
+        public static ExtendedEntitiesDescriptor LoadFederation(Uri metadataUrl)
         {
             if (metadataUrl == null)
             {
                 throw new ArgumentNullException("metadataUrl");
             }
 
-            return (EntitiesDescriptor)Load(metadataUrl);
+            return (ExtendedEntitiesDescriptor)Load(metadataUrl);
         }
     }
 }

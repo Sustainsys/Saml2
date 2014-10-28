@@ -9,7 +9,7 @@ namespace Kentor.AuthServices.Metadata
     /// <summary>
     /// Subclass to EntityDescriptor that contains support for extensions.
     /// </summary>
-    public class ExtendedEntityDescriptor : EntityDescriptor
+    public class ExtendedEntityDescriptor : EntityDescriptor, ICachedMetadata
     {
         EntityDescriptorExtensions extensions = new EntityDescriptorExtensions();
 

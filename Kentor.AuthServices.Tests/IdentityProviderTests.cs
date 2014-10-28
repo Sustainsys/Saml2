@@ -282,19 +282,6 @@ namespace Kentor.AuthServices.Tests
             subject.MetadataValidUntil.Should().BeCloseTo(expectedValidUntil);
         }
 
-        TimeSpan maxWait = new TimeSpan(0, 0, 0, 0, 50);
-        private void SpinWhile(Func<bool> condition, string failMessage = "Timeout passed without metadata being refreshed")
-        {
-            var waitStart = DateTime.UtcNow;
-            while (condition())
-            {
-                if (DateTime.UtcNow - waitStart > maxWait)
-                {
-                    Assert.Fail(failMessage);
-                }
-            }
-        }
-
         IdentityProvider CreateSubjectForMetadataRefresh()
         {
             var config = CreateConfig();
@@ -311,7 +298,7 @@ namespace Kentor.AuthServices.Tests
             subject.Binding.Should().Be(Saml2BindingType.HttpRedirect);
             MetadataServer.IdpVeryShortCacheDurationBinding = Saml2Binding.HttpPostUri;
 
-            SpinWhile(() => subject.Binding == Saml2BindingType.HttpRedirect);
+            SpinWaiter.While(() => subject.Binding == Saml2BindingType.HttpRedirect);
 
             subject.Binding.Should().Be(Saml2BindingType.HttpPost);
         }
@@ -319,12 +306,12 @@ namespace Kentor.AuthServices.Tests
         [TestMethod]
         public void IdentityProvider_SingleSignOnServiceUrl_ReloadsMetadataIfNoLongerValid()
         {
-            MetadataServer.IdpVeryShortCacheDurationSsoPort = 42;
+            MetadataServer.IdpAndFederationVeryShortCacheDurationSsoPort = 42;
             var subject = CreateSubjectForMetadataRefresh();
             subject.SingleSignOnServiceUrl.Port.Should().Be(42);
-            MetadataServer.IdpVeryShortCacheDurationSsoPort = 117;
+            MetadataServer.IdpAndFederationVeryShortCacheDurationSsoPort = 117;
 
-            SpinWhile(() => subject.SingleSignOnServiceUrl.Port == 42);
+            SpinWaiter.While(() => subject.SingleSignOnServiceUrl.Port == 42);
 
             subject.SingleSignOnServiceUrl.Port.Should().Be(117);
         }
@@ -341,7 +328,7 @@ namespace Kentor.AuthServices.Tests
                 var waitStart = DateTime.UtcNow;
                 while (subject.SigningKey != null)
                 {
-                    if (DateTime.UtcNow - waitStart > maxWait)
+                    if (DateTime.UtcNow - waitStart > SpinWaiter.MaxWait)
                     {
                         Assert.Fail("Timeout passed without metadata being refreshed.");
                     }
@@ -359,9 +346,7 @@ namespace Kentor.AuthServices.Tests
             var subject = CreateSubjectForMetadataRefresh();
             var initalValidUntil = subject.MetadataValidUntil;
 
-            SpinWhile(() => subject.MetadataValidUntil == initalValidUntil);
-
-            subject.MetadataValidUntil.Should().NotBe(initalValidUntil.Value);
+            SpinWaiter.While(() => subject.MetadataValidUntil == initalValidUntil);
         }
 
         [TestMethod]
@@ -371,15 +356,15 @@ namespace Kentor.AuthServices.Tests
 
             var subject = CreateSubjectForMetadataRefresh();
 
-            MetadataServer.IdpVeryShortCacheDurationAvailable = false;
+            MetadataServer.IdpAndFederationVeryShortCacheDurationAvailable = false;
 
-            SpinWhile(() => subject.MetadataValidUntil != DateTime.MinValue,
+            SpinWaiter.While(() => subject.MetadataValidUntil != DateTime.MinValue,
                 "Timed out waiting for failed metadata load to occur.");
 
             var metadataEnabledTime = DateTime.UtcNow;
-            MetadataServer.IdpVeryShortCacheDurationAvailable = true;
+            MetadataServer.IdpAndFederationVeryShortCacheDurationAvailable = true;
 
-            SpinWhile(() => {
+            SpinWaiter.While(() => {
                 var mvu = subject.MetadataValidUntil;
                 return !mvu.HasValue || mvu == DateTime.MinValue;
             },
@@ -390,13 +375,13 @@ namespace Kentor.AuthServices.Tests
         public void IdentityProvider_ScheduledReloadOfMetadata_RetriesIfInitialLoadFails()
         {
             MetadataRefreshScheduler.minInternval = new TimeSpan(0, 0, 0, 0, 1);
-            MetadataServer.IdpVeryShortCacheDurationAvailable = false;
+            MetadataServer.IdpAndFederationVeryShortCacheDurationAvailable = false;
 
             var subject = CreateSubjectForMetadataRefresh();
 
-            MetadataServer.IdpVeryShortCacheDurationAvailable = true;
+            MetadataServer.IdpAndFederationVeryShortCacheDurationAvailable = true;
 
-            SpinWhile(() =>
+            SpinWaiter.While(() =>
             {
                 var mvu = subject.MetadataValidUntil;
                 return !mvu.HasValue || mvu == DateTime.MinValue;

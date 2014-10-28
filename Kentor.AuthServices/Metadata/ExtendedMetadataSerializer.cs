@@ -106,14 +106,14 @@ namespace Kentor.AuthServices.Metadata
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1062:Validate arguments of public methods", MessageId = "0")]
         protected override void ReadCustomAttributes<T>(XmlReader reader, T target)
         {
-            var extendedEntityDescriptor = target as ExtendedEntityDescriptor;
-            if(extendedEntityDescriptor != null)
+            var cachedMetadata = target as ICachedMetadata;
+            if(cachedMetadata!= null)
             {
                 var validUntilString = reader.GetAttribute("validUntil");
 
                 if (!string.IsNullOrEmpty(validUntilString))
                 {
-                    extendedEntityDescriptor.ValidUntil = XmlConvert.ToDateTime(
+                    cachedMetadata.ValidUntil = XmlConvert.ToDateTime(
                         validUntilString,
                         XmlDateTimeSerializationMode.Utc);
                 }
@@ -122,10 +122,15 @@ namespace Kentor.AuthServices.Metadata
 
                 if(!string.IsNullOrEmpty(cacheDurationString))
                 {
-                    extendedEntityDescriptor.CacheDuration =
+                    cachedMetadata.CacheDuration =
                         XmlConvert.ToTimeSpan(cacheDurationString);
                 }
             }
+        }
+
+        protected override EntitiesDescriptor CreateEntitiesDescriptorInstance()
+        {
+            return new ExtendedEntitiesDescriptor();
         }
     }
 }

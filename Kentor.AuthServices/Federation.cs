@@ -72,12 +72,12 @@ namespace Kentor.AuthServices
         /// <param name="spOptions">Service provider options to pass on to
         /// created IdentityProvider instances.</param>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "sp")]
-        public Federation(EntitiesDescriptor metadata, bool allowUnsolicitedAuthnResponse, ISPOptions spOptions)
+        public Federation(ExtendedEntitiesDescriptor metadata, bool allowUnsolicitedAuthnResponse, ISPOptions spOptions)
         {
             Init(metadata, allowUnsolicitedAuthnResponse, spOptions);
         }
 
-        private void Init(EntitiesDescriptor metadata, bool allowUnsolicitedAuthnResponse, ISPOptions spOptions)
+        private void Init(ExtendedEntitiesDescriptor metadata, bool allowUnsolicitedAuthnResponse, ISPOptions spOptions)
         {
             identityProviders = metadata.ChildEntities.Cast<ExtendedEntityDescriptor>()
                 .Where(ed => ed.RoleDescriptors.OfType<IdentityProviderSingleSignOnDescriptor>().Any())
@@ -85,6 +85,19 @@ namespace Kentor.AuthServices
                 .ToList();
 
             readonlyIdentityProviders = identityProviders.AsReadOnly();
+
+            MetadataValidUntil = metadata.ValidUntil;
+
+            if(metadata.CacheDuration.HasValue)
+            {
+                MetadataValidUntil = DateTime.UtcNow.Add(metadata.CacheDuration.Value);
+            }
         }
+
+        /// <summary>
+        /// For how long is the metadata that the federation has loaded valid?
+        /// Null if there is no limit.
+        /// </summary>
+        public DateTime? MetadataValidUntil { get; private set; }
     }
 }

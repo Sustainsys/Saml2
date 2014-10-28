@@ -12,6 +12,7 @@ using Kentor.AuthServices.Metadata;
 using Kentor.AuthServices.Saml2P;
 using Kentor.AuthServices.WebSso;
 using System.Threading.Tasks;
+using System.Net;
 
 namespace Kentor.AuthServices
 {
