@@ -5,6 +5,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Configuration;
 using System.IdentityModel.Metadata;
+using Kentor.AuthServices.Saml2P;
 
 namespace Kentor.AuthServices.Tests
 {

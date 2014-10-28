@@ -1,4 +1,5 @@
 ﻿using Kentor.AuthServices.Configuration;
+using Kentor.AuthServices.Saml2P;
 using System;
 using System.IdentityModel.Metadata;
 using System.IdentityModel.Services;

@@ -4,6 +4,7 @@ using FluentAssertions;
 using System.Xml.Linq;
 using System.IdentityModel.Tokens;
 using System.Xml;
+using Kentor.AuthServices.Saml2P;
 
 namespace Kentor.AuthServices.Tests
 {

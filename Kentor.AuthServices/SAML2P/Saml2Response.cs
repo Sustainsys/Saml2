@@ -13,7 +13,7 @@ using System.Security.Cryptography;
 using System.IdentityModel.Services;
 using Kentor.AuthServices.Internal;
 
-namespace Kentor.AuthServices
+namespace Kentor.AuthServices.Saml2P
 {
     /// <summary>
     /// Represents a SAML2 response according to 3.3.3. The class is immutable (to an

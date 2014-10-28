@@ -4,6 +4,7 @@ using FluentAssertions;
 using System.Text.RegularExpressions;
 using System.Xml.Linq;
 using System.IdentityModel.Metadata;
+using Kentor.AuthServices.Saml2P;
 
 namespace Kentor.AuthServices.Tests
 {

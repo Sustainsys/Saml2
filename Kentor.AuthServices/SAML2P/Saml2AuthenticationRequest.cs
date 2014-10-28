@@ -8,7 +8,7 @@ using System.Xml;
 using System.Xml.Linq;
 using Kentor.AuthServices.Internal;
 
-namespace Kentor.AuthServices
+namespace Kentor.AuthServices.Saml2P
 {
     /// <summary>
     /// An authentication request corresponding to section 3.4.1 in SAML Core specification.

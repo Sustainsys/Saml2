@@ -9,7 +9,7 @@ using System.Xml;
 using System.Xml.Linq;
 using Kentor.AuthServices.Internal;
 
-namespace Kentor.AuthServices
+namespace Kentor.AuthServices.Saml2P
 {
     /// <summary>
     /// Base class for saml requests, corresponds to section 3.2.1 in SAML Core specification.

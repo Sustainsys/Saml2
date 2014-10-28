@@ -1,6 +1,7 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using FluentAssertions;
+using Kentor.AuthServices.Saml2P;
 
 namespace Kentor.AuthServices.Tests
 {
