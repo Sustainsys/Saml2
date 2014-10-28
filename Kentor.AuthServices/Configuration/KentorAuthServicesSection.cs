@@ -4,10 +4,6 @@ using System.ComponentModel;
 using System.Configuration;
 using System.Globalization;
 using System.IdentityModel.Metadata;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Kentor.AuthServices.Configuration
 {
@@ -51,6 +47,19 @@ namespace Kentor.AuthServices.Configuration
             get
             {
                 return (EntityId)base["entityId"];
+            }
+        }
+
+        /// <summary>
+        /// The URI of the intended token issuer. If not set the EntityId property is used.
+        /// </summary>
+        [TypeConverter(typeof(EntityIdConverter))]
+        [ConfigurationProperty("issuer", IsRequired = false)]
+        public EntityId Issuer
+        {
+            get
+            {
+                return (EntityId)base["issuer"];
             }
         }
 

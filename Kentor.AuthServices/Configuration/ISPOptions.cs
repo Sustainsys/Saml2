@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IdentityModel.Metadata;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Kentor.AuthServices.Configuration
 {
@@ -40,6 +37,11 @@ namespace Kentor.AuthServices.Configuration
         /// and presenting the SP in metadata.
         /// </summary>
         EntityId EntityId { get; }
+
+        /// <summary>
+        /// The URI of the intended token issuer. If not set the EntityId property is used.
+        /// </summary>
+        EntityId Issuer { get; }
 
         /// <summary>
         /// Application root relative path for AuthServices endpoints. The

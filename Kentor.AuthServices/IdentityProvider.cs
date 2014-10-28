@@ -1,18 +1,12 @@
 ﻿using Kentor.AuthServices.Configuration;
 using System;
-using System.Collections.Generic;
-using System.Collections.Concurrent;
-using System.Linq;
-using System.Security.Cryptography.X509Certificates;
-using System.IdentityModel.Tokens;
-using System.Net;
-using System.IdentityModel.Metadata;
-using System.Xml.Linq;
-using System.Security.Cryptography;
-using System.Security.Cryptography.Xml;
 using System.Configuration;
 using System.Globalization;
-using System.Diagnostics.CodeAnalysis;
+using System.IdentityModel.Metadata;
+using System.IdentityModel.Tokens;
+using System.Linq;
+using System.Security.Cryptography;
+using System.Security.Cryptography.Xml;
 
 namespace Kentor.AuthServices
 {
@@ -47,7 +41,7 @@ namespace Kentor.AuthServices
 
             if (config.LoadMetadata)
             {
-                LoadMetadata();
+                LoadMetadata(config.MetadataLocationUri ?? new Uri(EntityId.Id));
             }
 
             Validate();
@@ -125,11 +119,11 @@ namespace Kentor.AuthServices
                 throw new ArgumentNullException("authServicesUrls");
             }
 
-            var authnRequest = new Saml2AuthenticationRequest()
+            var authnRequest = new Saml2AuthenticationRequest
             {
                 DestinationUri = SingleSignOnServiceUrl,
                 AssertionConsumerServiceUrl = authServicesUrls.AssertionConsumerServiceUrl,
-                Issuer = spOptions.EntityId,
+                Issuer = spOptions.Issuer ?? spOptions.EntityId,
                 // For now we only support one attribute consuming service.
                 AttributeConsumingServiceIndex = spOptions.AttributeConsumingServices.Any() ? 0 :  (int?)null
             };
@@ -157,10 +151,9 @@ namespace Kentor.AuthServices
         /// </summary>
         public AsymmetricAlgorithm SigningKey { get; private set; }
 
-        private void LoadMetadata()
+        private void LoadMetadata(Uri metadataLocation)
         {
-            // So far only support for metadata at well known location.
-            var metadata = MetadataLoader.LoadIdp(new Uri(EntityId.Id));
+            var metadata = MetadataLoader.LoadIdp(metadataLocation);
 
             LoadMetadata(metadata);
         }
@@ -195,9 +188,8 @@ namespace Kentor.AuthServices
             Binding = Saml2Binding.UriToSaml2BindingType(ssoService.Binding);
             SingleSignOnServiceUrl = ssoService.Location;
 
-            var key = idpDescriptor.Keys
-                .Where(k => k.Use == KeyType.Unspecified || k.Use == KeyType.Signing)
-                .SingleOrDefault();
+            // so far use only the first signing key if there is more than one
+            var key = idpDescriptor.Keys.FirstOrDefault(k => k.Use == KeyType.Unspecified || k.Use == KeyType.Signing);
 
             if (key != null)
             {

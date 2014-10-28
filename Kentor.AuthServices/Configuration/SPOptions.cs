@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IdentityModel.Metadata;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Kentor.AuthServices.Configuration
 {
@@ -89,6 +86,11 @@ namespace Kentor.AuthServices.Configuration
                 entityId = value;
             }
         }
+
+        /// <summary>
+        /// The URI of the intended token issuer. If not set the EntityId property is used.
+        /// </summary>
+        public EntityId Issuer { get; set; }
 
         private string modulePath = "/AuthServices";
 
