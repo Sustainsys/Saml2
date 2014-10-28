@@ -113,6 +113,7 @@
     <Compile Include="ClaimsAuthenticationManagerStub.cs" />
     <Compile Include="ExceptionTestHelpers.cs" />
     <Compile Include="WebSSO\MetadataCommandTests.cs" />
+    <Compile Include="ExtendedMetadataSerializerTests.cs" />
     <Compile Include="Metadata\MetadataServer.cs" />
     <Compile Include="Owin\CommandResultExtensionsTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -163,7 +164,6 @@
     <Compile Include="StubFactory.cs" />
     <Compile Include="WebSSO\AuthServicesUrlsTests.cs" />
     <Compile Include="Configuration\KentorAuthServicesSectionTests.cs" />
-    <Compile Include="ExtendedMetadataSerializerTests.cs" />
     <Compile Include="XmlDocumentExtensionsTests.cs" />
     <Compile Include="Internal\XmlHelpersTests.cs" />
   </ItemGroup>

@@ -261,7 +261,14 @@ namespace Kentor.AuthServices.Tests
         [TestMethod]
         public void IdentityProvider_MetadataValidUntil_CalculatedFromCacheDuration()
         {
-            Assert.Inconclusive();
+            var config = CreateConfig();
+            config.LoadMetadata = true;
+            config.EntityId = "http://localhost:13428/idpMetadataNoCertificate";
+
+            var subject = new IdentityProvider(config, Options.FromConfiguration.SPOptions);
+
+            var expectedValidUntil = DateTime.UtcNow.AddMinutes(15);
+            subject.MetadataValidUntil.Should().BeCloseTo(expectedValidUntil);
         }
     }
 }

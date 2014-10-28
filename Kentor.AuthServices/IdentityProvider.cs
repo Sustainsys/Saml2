@@ -217,6 +217,11 @@ namespace Kentor.AuthServices
             }
 
             MetadataValidUntil = metadata.ValidUntil;
+            
+            if(metadata.CacheDuration.HasValue)
+            {
+                MetadataValidUntil = DateTime.UtcNow.Add(metadata.CacheDuration.Value);
+            }
         }
 
         /// <summary>

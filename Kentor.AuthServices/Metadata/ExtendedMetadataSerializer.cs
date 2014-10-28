@@ -117,6 +117,14 @@ namespace Kentor.AuthServices.Metadata
                         validUntilString,
                         XmlDateTimeSerializationMode.Utc);
                 }
+
+                var cacheDurationString = reader.GetAttribute("cacheDuration");
+
+                if(!string.IsNullOrEmpty(cacheDurationString))
+                {
+                    extendedEntityDescriptor.CacheDuration =
+                        XmlConvert.ToTimeSpan(cacheDurationString);
+                }
             }
         }
     }
