@@ -1,12 +1,10 @@
-﻿using System;
-using System.Linq;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using FluentAssertions;
-using Kentor.AuthServices.TestHelpers;
+﻿using FluentAssertions;
 using Kentor.AuthServices.Configuration;
+using Kentor.AuthServices.TestHelpers;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System;
 using System.Configuration;
 using System.IdentityModel.Metadata;
-using System.Collections.Generic;
 
 namespace Kentor.AuthServices.Tests
 {
@@ -16,7 +14,7 @@ namespace Kentor.AuthServices.Tests
         [TestMethod]
         public void IdentityProvider_CreateAuthenticateRequest_DestinationInXml()
         {
-            string idpUri = "http://idp.example.com/";
+            const string idpUri = "http://idp.example.com/";
             
             var ip = new IdentityProvider(
                 new Uri(idpUri),
@@ -38,7 +36,7 @@ namespace Kentor.AuthServices.Tests
             var urls = StubFactory.CreateAuthServicesUrls();
             var subject = idp.CreateAuthenticateRequest(null, urls);
 
-            var expected = new Saml2AuthenticationRequest()
+            var expected = new Saml2AuthenticationRequest
             {
                 AssertionConsumerServiceUrl = urls.AssertionConsumerServiceUrl,
                 DestinationUri = idp.SingleSignOnServiceUrl,
@@ -60,7 +58,7 @@ namespace Kentor.AuthServices.Tests
 
             var subject = idp.CreateAuthenticateRequest(null, urls);
 
-            var expected = new Saml2AuthenticationRequest()
+            var expected = new Saml2AuthenticationRequest
             {
                 AssertionConsumerServiceUrl = urls.AssertionConsumerServiceUrl,
                 DestinationUri = idp.SingleSignOnServiceUrl,
@@ -218,6 +216,20 @@ namespace Kentor.AuthServices.Tests
 
             subject.Binding.Should().Be(Saml2BindingType.HttpPost);
             subject.SingleSignOnServiceUrl.Should().Be("http://idpArtifact.example.com/POST");
+        }
+
+        [TestMethod]
+        public void IdentityProvider_Ctor_UseMetadataLocationUrl()
+        {
+            var config = CreateConfig();
+            config.LoadMetadata = true;
+            config.MetadataLocationUri = new Uri("http://localhost:13428/idpMetadataWithMultipleBindings");
+            config.EntityId = "http://localhost:13428/idpMetadataWithMultipleBindings";
+
+            var subject = new IdentityProvider(config, Options.FromConfiguration.SPOptions);
+
+            subject.Binding.Should().Be(Saml2BindingType.HttpRedirect);
+            subject.SingleSignOnServiceUrl.Should().Be("http://idp2Bindings.example.com/Redirect");
         }
     }
 }
