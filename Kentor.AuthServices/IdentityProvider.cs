@@ -203,8 +203,17 @@ namespace Kentor.AuthServices
         {
             lock (metadataLoadLock)
             {
-                var metadata = MetadataLoader.LoadIdp(MetadataLocation);
-                LoadMetadata(metadata);
+                try
+                {
+                    var metadata = MetadataLoader.LoadIdp(MetadataLocation);
+
+                    LoadMetadata(metadata);
+                }
+                catch (Exception)
+                {
+                    MetadataValidUntil = DateTime.MinValue;
+                    throw;
+                }
             }
         }
 

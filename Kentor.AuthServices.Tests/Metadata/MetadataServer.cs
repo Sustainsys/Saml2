@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using Owin;
 using Kentor.AuthServices.TestHelpers;
 using Kentor.AuthServices.WebSso;
+using System.Threading;
 
 namespace Kentor.AuthServices.Tests.Metadata
 {
@@ -130,23 +131,27 @@ namespace Kentor.AuthServices.Tests.Metadata
   </IDPSSODescriptor>
 </EntityDescriptor>", SignedXmlHelper.KeyInfoXml);
 
-            string keyElement = string.Empty;
-            if(IdpVeryShortCacheDurationIncludeInvalidKey)
+            if (IdpVeryShortCacheDurationAvailable)
             {
-                keyElement = @"<KeyDescriptor use=""signing"">Gibberish</KeyDescriptor>";
-            }
+                string keyElement = string.Empty;
+                if (IdpVeryShortCacheDurationIncludeInvalidKey)
+                {
+                    keyElement = @"<KeyDescriptor use=""signing"">Gibberish</KeyDescriptor>";
+                }
 
-            content["/idpMetadataVeryShortCacheDuration"] = string.Format(
+                content["/idpMetadataVeryShortCacheDuration"] = string.Format(
 @"<EntityDescriptor xmlns=""urn:oasis:names:tc:SAML:2.0:metadata""
-    entityID=""http://localhost:13428/idpMetadataVeryShortCacheDuration"" cacheDuration=""PT0.001S"">
-    <IDPSSODescriptor
-      protocolSupportEnumeration=""urn:oasis:names:tc:SAML:2.0:protocol"">
-      {0}
-      <SingleSignOnService
-        Binding=""{1}""
-        Location=""http://localhost:{2}/acs""/>
-    </IDPSSODescriptor>
-  </EntityDescriptor>", keyElement, IdpVeryShortCacheDurationBinding, IdpVeryShortCacheDurationSsoPort);
+entityID=""http://localhost:13428/idpMetadataVeryShortCacheDuration"" cacheDuration=""PT0.001S"">
+<IDPSSODescriptor
+    protocolSupportEnumeration=""urn:oasis:names:tc:SAML:2.0:protocol"">
+    {0}
+    <SingleSignOnService
+    Binding=""{1}""
+    Location=""http://localhost:{2}/acs""/>
+</IDPSSODescriptor>
+</EntityDescriptor>",
+                    keyElement, IdpVeryShortCacheDurationBinding, IdpVeryShortCacheDurationSsoPort);
+            }
 
             return content;
         }
@@ -154,11 +159,13 @@ namespace Kentor.AuthServices.Tests.Metadata
         public static int IdpVeryShortCacheDurationSsoPort { get; set; }
         public static Uri IdpVeryShortCacheDurationBinding { get; set; }
         public static bool IdpVeryShortCacheDurationIncludeInvalidKey { get; set; }
+        public static bool IdpVeryShortCacheDurationAvailable { get; set; }
 
         static MetadataServer()
         {
             IdpVeryShortCacheDurationSsoPort = 80;
             IdpVeryShortCacheDurationBinding = Saml2Binding.HttpRedirectUri;
+            IdpVeryShortCacheDurationAvailable = true;
         }
 
         [AssemblyInitialize]

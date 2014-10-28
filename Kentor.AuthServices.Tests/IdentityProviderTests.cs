@@ -281,15 +281,15 @@ namespace Kentor.AuthServices.Tests
             subject.MetadataValidUntil.Should().BeCloseTo(expectedValidUntil);
         }
 
-        TimeSpan maxWait = new TimeSpan(0, 0, 0, 0, 20);
-        private void WaitForMetadataReload(Func<bool> condition)
+        TimeSpan maxWait = new TimeSpan(0, 0, 0, 0, 50);
+        private void SpinWhile(Func<bool> condition, string failMessage = "Timeout passed without metadata being refreshed")
         {
             var waitStart = DateTime.UtcNow;
             while (condition())
             {
                 if (DateTime.UtcNow - waitStart > maxWait)
                 {
-                    Assert.Fail("Timeout passed without metadata being refreshed");
+                    Assert.Fail(failMessage);
                 }
             }
         }
@@ -310,7 +310,7 @@ namespace Kentor.AuthServices.Tests
             subject.Binding.Should().Be(Saml2BindingType.HttpRedirect);
             MetadataServer.IdpVeryShortCacheDurationBinding = Saml2Binding.HttpPostUri;
 
-            WaitForMetadataReload(() => subject.Binding == Saml2BindingType.HttpRedirect);
+            SpinWhile(() => subject.Binding == Saml2BindingType.HttpRedirect);
 
             subject.Binding.Should().Be(Saml2BindingType.HttpPost);
         }
@@ -323,7 +323,7 @@ namespace Kentor.AuthServices.Tests
             subject.SingleSignOnServiceUrl.Port.Should().Be(42);
             MetadataServer.IdpVeryShortCacheDurationSsoPort = 117;
 
-            WaitForMetadataReload(() => subject.SingleSignOnServiceUrl.Port == 42);
+            SpinWhile(() => subject.SingleSignOnServiceUrl.Port == 42);
 
             subject.SingleSignOnServiceUrl.Port.Should().Be(117);
         }
@@ -358,9 +358,37 @@ namespace Kentor.AuthServices.Tests
             var subject = CreateSubjectForMetadataRefresh();
             var initalValidUntil = subject.MetadataValidUntil;
 
-            WaitForMetadataReload(() => subject.MetadataValidUntil == initalValidUntil);
+            SpinWhile(() => subject.MetadataValidUntil == initalValidUntil);
 
             subject.MetadataValidUntil.Should().NotBe(initalValidUntil.Value);
+        }
+
+        [TestMethod]
+        public void IdentityProvider_ScheduledReloadOfMetadata_RetriesIfLoadFails()
+        {
+            MetadataRefreshScheduler.minInternval = new TimeSpan(0, 0, 0, 0, 1);
+
+            var subject = CreateSubjectForMetadataRefresh();
+
+            MetadataServer.IdpVeryShortCacheDurationAvailable = false;
+
+            SpinWhile(() => subject.MetadataValidUntil != DateTime.MinValue,
+                "Timed out waiting for failed metadata load to occur.");
+
+            var metadataEnabledTime = DateTime.UtcNow;
+            MetadataServer.IdpVeryShortCacheDurationAvailable = true;
+
+            SpinWhile(() => {
+                var mvu = subject.MetadataValidUntil;
+                return !mvu.HasValue || mvu == DateTime.MinValue;
+            },
+            "Timed out waiting for successful reload of metadata.");
+        }
+
+        [TestMethod]
+        public void IdentityProvider_ScheduledReloadOfMetadata_RetriesIfInitialLoadFails()
+        {
+            Assert.Inconclusive();
         }
     }
 }
