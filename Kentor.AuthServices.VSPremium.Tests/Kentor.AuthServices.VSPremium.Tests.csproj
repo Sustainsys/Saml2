@@ -115,7 +115,7 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
-    <Compile Include="..\Kentor.AuthServices.Tests\MetadataServer.cs">
+    <Compile Include="..\Kentor.AuthServices.Tests\Metadata\MetadataServer.cs">
       <Link>MetadataServer.cs</Link>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />

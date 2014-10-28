@@ -93,7 +93,7 @@
     <Compile Include="Metadata\MetadatabaseExtensions.cs" />
     <Compile Include="WebSSO\MetadataCommand.cs" />
     <Compile Include="Metadata\MetadataLoader.cs" />
-    <Compile Include="Saml2PSecurityTokenHandler.cs" />
+    <Compile Include="Saml2P\Saml2PSecurityTokenHandler.cs" />
     <Compile Include="NoSamlResponseFoundException.cs" />
     <Compile Include="WebSSO\NotFoundCommand.cs" />
     <Compile Include="WebSSO\ICommand.cs" />
@@ -101,7 +101,7 @@
     <Compile Include="StoredRequestState.cs" />
     <Compile Include="Internal\PendingAuthnRequests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="ReturnRequestedIssuerNameRegistry.cs" />
+    <Compile Include="Internal\ReturnRequestedIssuerNameRegistry.cs" />
     <Compile Include="Saml2AssertionExtensions.cs" />
     <Compile Include="Saml2StatementExtension.cs" />
     <Compile Include="Saml2AuthenticationModule.cs" />
