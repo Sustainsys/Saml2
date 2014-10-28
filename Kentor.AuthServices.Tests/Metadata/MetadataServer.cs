@@ -16,11 +16,10 @@ namespace Kentor.AuthServices.Tests.Metadata
     {
         private static IDisposable host;
 
-        static readonly IDictionary<string, string> content =
-            new Dictionary<string, string>();
-
-        static MetadataServer()
+        static IDictionary<string, string> GetContent()
         {
+            var content = new Dictionary<string, string>();
+
             content["/idpMetadata"] = string.Format(
  @"<EntityDescriptor xmlns=""urn:oasis:names:tc:SAML:2.0:metadata""
     entityID=""http://localhost:13428/idpMetadata"" validUntil=""2100-01-02T14:42:43Z"">
@@ -130,6 +129,35 @@ namespace Kentor.AuthServices.Tests.Metadata
   </IDPSSODescriptor>
 </EntityDescriptor>", SignedXmlHelper.KeyInfoXml);
 
+            string keyElement = string.Empty;
+            if(IdpVeryShortCacheDurationIncludeInvalidKey)
+            {
+                keyElement = @"<KeyDescriptor use=""signing"">Gibberish</KeyDescriptor>";
+            }
+
+            content["/idpMetadataVeryShortCacheDuration"] = string.Format(
+@"<EntityDescriptor xmlns=""urn:oasis:names:tc:SAML:2.0:metadata""
+    entityID=""http://localhost:13428/idpMetadataVeryShortCacheDuration"" cacheDuration=""PT0.001S"">
+    <IDPSSODescriptor
+      protocolSupportEnumeration=""urn:oasis:names:tc:SAML:2.0:protocol"">
+      {0}
+      <SingleSignOnService
+        Binding=""{1}""
+        Location=""http://localhost:{2}/acs""/>
+    </IDPSSODescriptor>
+  </EntityDescriptor>", keyElement, IdpVeryShortCacheDurationBinding, IdpVeryShortCacheDurationSsoPort);
+
+            return content;
+        }
+
+        public static int IdpVeryShortCacheDurationSsoPort { get; set; }
+        public static Uri IdpVeryShortCacheDurationBinding { get; set; }
+        public static bool IdpVeryShortCacheDurationIncludeInvalidKey { get; set; }
+
+        static MetadataServer()
+        {
+            IdpVeryShortCacheDurationSsoPort = 80;
+            IdpVeryShortCacheDurationBinding = Saml2Binding.HttpRedirectUri;
         }
 
         [AssemblyInitialize]
@@ -139,6 +167,7 @@ namespace Kentor.AuthServices.Tests.Metadata
             {
                 app.Use(async (ctx, next) =>
                 {
+                    var content = GetContent();
                     string data;
                     if(content.TryGetValue(ctx.Request.Path.ToString(), out data))
                     {
