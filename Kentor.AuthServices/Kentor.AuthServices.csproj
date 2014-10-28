@@ -104,7 +104,7 @@
     <Compile Include="ReturnRequestedIssuerNameRegistry.cs" />
     <Compile Include="Saml2AssertionExtensions.cs" />
     <Compile Include="Saml2StatementExtension.cs" />
-    <Compile Include="HttpModule\Saml2AuthenticationModule.cs" />
+    <Compile Include="Saml2AuthenticationModule.cs" />
     <Compile Include="Configuration\KentorAuthServicesSection.cs" />
     <Compile Include="SAML2P\Saml2AuthenticationRequest.cs" />
     <Compile Include="WebSSO\Saml2Binding.cs" />

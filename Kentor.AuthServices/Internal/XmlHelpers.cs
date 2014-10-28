@@ -3,7 +3,7 @@ using System.Linq;
 using System.Xml;
 using System.Xml.Linq;
 
-namespace Kentor.AuthServices
+namespace Kentor.AuthServices.Internal
 {
     static class XmlHelpers
     {

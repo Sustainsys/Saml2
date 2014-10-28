@@ -4,6 +4,7 @@ using System.Configuration;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Kentor.AuthServices.Internal;
 
 namespace Kentor.AuthServices.Configuration
 {

@@ -21,6 +21,7 @@ using System.Xml;
 using System.Threading.Tasks;
 using System.IdentityModel.Tokens;
 using System.IdentityModel.Metadata;
+using Kentor.AuthServices.Internal;
 
 namespace Kentor.AuthServices.Tests
 {

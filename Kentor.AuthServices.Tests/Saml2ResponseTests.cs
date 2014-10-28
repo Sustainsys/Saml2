@@ -12,6 +12,7 @@ using System.Security.Cryptography;
 using System.Security.Cryptography.Xml;
 using System.Xml;
 using System.IO;
+using Kentor.AuthServices.Internal;
 
 namespace Kentor.AuthServices.Tests
 {

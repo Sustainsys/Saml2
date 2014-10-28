@@ -4,6 +4,7 @@ using System.IdentityModel.Tokens;
 using FluentAssertions;
 using System.Collections.Generic;
 using System.Security.Claims;
+using Kentor.AuthServices.Internal;
 
 namespace Kentor.AuthServices.Tests
 {

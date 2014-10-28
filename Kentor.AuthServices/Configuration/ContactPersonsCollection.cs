@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Configuration;
 using System.Linq;
 using System.Text;
+using Kentor.AuthServices.Internal;
 
 namespace Kentor.AuthServices.Configuration
 {

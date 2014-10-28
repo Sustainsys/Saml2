@@ -11,6 +11,7 @@ using System.Xml.Linq;
 using Kentor.AuthServices.TestHelpers;
 using Kentor.AuthServices.Configuration;
 using System.IdentityModel.Metadata;
+using Kentor.AuthServices.Internal;
 
 namespace Kentor.AuthServices.Tests
 {
