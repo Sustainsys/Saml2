@@ -45,12 +45,20 @@ namespace Kentor.AuthServices
                 signingKey = certificate.PublicKey.Key;
             }
 
-            if (config.LoadMetadata)
+            try
             {
-                LoadMetadata();
-            }
+                if (config.LoadMetadata)
+                {
+                    LoadMetadata();
+                }
 
-            Validate();
+                Validate();
+            }
+            catch (WebException)
+            {
+                // If we had a web exception, the metadata failed. It will 
+                // be automatically retried.
+            }
         }
 
         /// <summary>
@@ -209,7 +217,7 @@ namespace Kentor.AuthServices
 
                     LoadMetadata(metadata);
                 }
-                catch (Exception)
+                catch (WebException)
                 {
                     MetadataValidUntil = DateTime.MinValue;
                     throw;

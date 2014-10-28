@@ -7,6 +7,7 @@ using System.Configuration;
 using System.IdentityModel.Metadata;
 using Kentor.AuthServices.Saml2P;
 using Kentor.AuthServices.WebSso;
+using System.Net;
 using Kentor.AuthServices.Tests.Metadata;
 
 namespace Kentor.AuthServices.Tests
@@ -388,7 +389,18 @@ namespace Kentor.AuthServices.Tests
         [TestMethod]
         public void IdentityProvider_ScheduledReloadOfMetadata_RetriesIfInitialLoadFails()
         {
-            Assert.Inconclusive();
+            MetadataRefreshScheduler.minInternval = new TimeSpan(0, 0, 0, 0, 1);
+            MetadataServer.IdpVeryShortCacheDurationAvailable = false;
+
+            var subject = CreateSubjectForMetadataRefresh();
+
+            MetadataServer.IdpVeryShortCacheDurationAvailable = true;
+
+            SpinWhile(() =>
+            {
+                var mvu = subject.MetadataValidUntil;
+                return !mvu.HasValue || mvu == DateTime.MinValue;
+            });
         }
     }
 }
