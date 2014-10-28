@@ -4,6 +4,7 @@ using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml;
 
 namespace Kentor.AuthServices.Internal
 {
@@ -11,7 +12,8 @@ namespace Kentor.AuthServices.Internal
     {
         public static string ToSaml2DateTimeString(this DateTime dateTime)
         {
-            return dateTime.ToUniversalTime().ToString("s", CultureInfo.InvariantCulture) + "Z";
+            return XmlConvert.ToString(dateTime.AddTicks(-(dateTime.Ticks % TimeSpan.TicksPerSecond)),
+                XmlDateTimeSerializationMode.Utc);
         }
     }
 }
