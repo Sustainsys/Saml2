@@ -45,6 +45,7 @@ namespace Kentor.AuthServices.Configuration
         /// Registers the identity providers from the configured federations in the identity provider dictionary.
         /// </summary>
         /// <param name="options">Current options.</param>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1806:DoNotIgnoreMethodResults", MessageId = "Kentor.AuthServices.Federation", Justification="The federation will register its identity providers in the options")]
         public void RegisterFederations(IOptions options)
         {
             if(options == null)
@@ -54,12 +55,7 @@ namespace Kentor.AuthServices.Configuration
 
             foreach(var configFederation in this)
             {
-                var federation = new Federation(configFederation, options.SPOptions);
-
-                foreach(var idp in federation.IdentityProviders)
-                {
-                    options.IdentityProviders[idp.EntityId] = idp;
-                }
+                new Federation(configFederation, options);
             }
         }
     }

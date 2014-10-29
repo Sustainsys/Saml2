@@ -10,6 +10,7 @@ using Owin;
 using Kentor.AuthServices.TestHelpers;
 using Kentor.AuthServices.WebSso;
 using System.Threading;
+using System.IO;
 
 namespace Kentor.AuthServices.Tests.Metadata
 {
@@ -179,6 +180,15 @@ entityID=""http://localhost:13428/idpMetadataVeryShortCacheDuration"" cacheDurat
 </IDPSSODescriptor>
 </EntityDescriptor>",
                     keyElement, IdpVeryShortCacheDurationBinding, IdpAndFederationVeryShortCacheDurationSsoPort);
+            }
+
+            if (File.Exists("SambiMetadata.xml"))
+            {
+                content["/SambiMetadata"] = File.ReadAllText("SambiMetadata.xml");
+            }
+            if (File.Exists("SkolfederationMetadata.xml"))
+            {
+                content["/SkolfederationMetadata"] = File.ReadAllText("SkolfederationMetadata.xml");
             }
 
             return content;

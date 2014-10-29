@@ -26,7 +26,7 @@ namespace Kentor.AuthServices.Tests
         [TestMethod]
         public void Federation_Ctor_NullcheckConfig()
         {
-            Action a = () => new Federation(null, Options.FromConfiguration.SPOptions);
+            Action a = () => new Federation(null, Options.FromConfiguration);
 
             a.ShouldThrow<ArgumentNullException>().And.ParamName.Should().Be("config");
         }
@@ -38,19 +38,11 @@ namespace Kentor.AuthServices.Tests
             // handles some real world metadata, the metadadata from Sambi's test
             // environment is used.
 
-            TestLoadMetadata("Metadata\\SambiMetadata.xml");
-        }
+            var url = new Uri("http://localhost:13428/SambiMetadata");
 
-        private static void TestLoadMetadata(string fileName)
-        {
-            using (var stream = new FileStream(fileName, FileMode.Open))
-            {
-                var metadata = (ExtendedEntitiesDescriptor)MetadataLoader.Load(stream);
+            Action a = () => new Federation(url, true, StubFactory.CreateOptions());
 
-                Action a = () => new Federation(metadata, true, Options.FromConfiguration.SPOptions);
-
-                a.ShouldNotThrow();
-            }
+            a.ShouldNotThrow();
         }
 
         [TestMethod]
@@ -60,18 +52,27 @@ namespace Kentor.AuthServices.Tests
             // AuthServices handles some real world metadata, the metdata from the
             // skolfederation federation is used.
 
-            TestLoadMetadata("Metadata\\SkolfederationMetadata.xml");
+            var url = new Uri("http://localhost:13428/SkolfederationMetadata");
+
+            Action a = () => new Federation(url, true, StubFactory.CreateOptions());
+
+            a.ShouldNotThrow();
         }
 
         [TestMethod]
         public void Federation_Ctor_MetadataUrl()
         {
+            var options = StubFactory.CreateOptions();
+
             var subject = new Federation(
                 new Uri("http://localhost:13428/federationMetadata"),
                 false,
-                Options.FromConfiguration.SPOptions);
+                options);
 
-            subject.IdentityProviders.First().EntityId.Id.Should().Be("http://idp.federation.example.com/metadata");
+            IdentityProvider idp;
+            options.IdentityProviders
+                .TryGetValue(new EntityId("http://idp.federation.example.com/metadata"), out idp)
+                .Should().BeTrue();
         }
 
         [TestMethod]
@@ -80,7 +81,7 @@ namespace Kentor.AuthServices.Tests
             var subject = new Federation(
                 new Uri("http://localhost:13428/federationMetadata"),
                 false,
-                StubFactory.CreateSPOptions());
+                StubFactory.CreateOptions());
 
             subject.MetadataValidUntil.Should().Be(new DateTime(2100, 01, 01, 14, 43, 15));
         }
@@ -91,7 +92,7 @@ namespace Kentor.AuthServices.Tests
             var subject = new Federation(
                 new Uri("http://localhost:13428/federationMetadataVeryShortCacheDuration"),
                 false,
-                StubFactory.CreateSPOptions());
+                StubFactory.CreateOptions());
 
             subject.MetadataValidUntil.Should().BeCloseTo(DateTime.UtcNow);
         }
@@ -104,11 +105,17 @@ namespace Kentor.AuthServices.Tests
             var subject = new Federation(
                 new Uri("http://localhost:13428/federationMetadataVeryShortCacheDuration"),
                 false,
-                StubFactory.CreateSPOptions());
+                StubFactory.CreateOptions());
 
             var initialValidUntil = subject.MetadataValidUntil;
 
             SpinWaiter.While(() => subject.MetadataValidUntil == initialValidUntil);
+        }
+
+        [TestMethod]
+        public void Fedration_ReloadOfMetadata_AddsNewIdpAndRemovesOld()
+        {
+            Assert.Inconclusive();
         }
     }
 }

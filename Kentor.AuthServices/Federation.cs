@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.IdentityModel.Metadata;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace Kentor.AuthServices
 {
@@ -13,35 +14,21 @@ namespace Kentor.AuthServices
     /// </summary>
     public class Federation
     {
-        List<IdentityProvider> identityProviders;
-        IList<IdentityProvider> readonlyIdentityProviders;
-
-        /// <summary>
-        /// The identity providers in the federation.
-        /// </summary>
-        public IEnumerable<IdentityProvider> IdentityProviders
-        {
-            get
-            {
-                return readonlyIdentityProviders;
-            }
-        }
-
         /// <summary>
         /// Ctor
         /// </summary>
         /// <param name="config">Config to use to initialize the federation.</param>
-        /// <param name="spOptions">Service provider options to pass on to
-        /// created IdentityProvider instances.</param>
+        /// <param name="options">Options to pass on to created IdentityProvider
+        /// instances and register identity providers in.</param>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "sp")]
-        public Federation(FederationElement config, ISPOptions spOptions)
+        public Federation(FederationElement config, IOptions options)
         {
             if (config == null)
             {
                 throw new ArgumentNullException("config");
             }
 
-            Init(config.MetadataUrl, config.AllowUnsolicitedAuthnResponse, spOptions);
+            Init(config.MetadataUrl, config.AllowUnsolicitedAuthnResponse, options);
         }
 
         /// <summary>
@@ -50,54 +37,72 @@ namespace Kentor.AuthServices
         /// <param name="metadataUrl">Url to where metadata can be fetched.</param>
         /// <param name="allowUnsolicitedAuthnResponse">Should unsolicited responses 
         /// from idps in this federation be accepted?</param>
-        /// <param name="spOptions">Service provider options to pass on to
-        /// created IdentityProvider instances.</param>
+        /// <param name="options">Options to pass on to created IdentityProvider
+        /// instances and register identity providers in.</param>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "sp")]
-        public Federation(Uri metadataUrl, bool allowUnsolicitedAuthnResponse, ISPOptions spOptions)
+        public Federation(Uri metadataUrl, bool allowUnsolicitedAuthnResponse, Options options)
         {
-            Init(metadataUrl, allowUnsolicitedAuthnResponse, spOptions);
+            Init(metadataUrl, allowUnsolicitedAuthnResponse, options);
         }
 
-        private void Init(Uri metadataUrl, bool allowUnsolicitedAuthnResponse, ISPOptions spOptions)
+        private bool allowUnsolicitedAuthnResponse;
+        private IOptions options;
+        private Uri metadataUrl;
+
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1500:VariableNamesShouldNotMatchFieldNames", MessageId = "metadataUrl"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1500:VariableNamesShouldNotMatchFieldNames", MessageId = "allowUnsolicitedAuthnResponse"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1500:VariableNamesShouldNotMatchFieldNames", MessageId = "options")]
+        private void Init(Uri metadataUrl, bool allowUnsolicitedAuthnResponse, IOptions options)
         {
-            Init(MetadataLoader.LoadFederation(metadataUrl), allowUnsolicitedAuthnResponse, spOptions);
+            this.allowUnsolicitedAuthnResponse = allowUnsolicitedAuthnResponse;
+            this.options = options;
+            this.metadataUrl = metadataUrl;
+
+            LoadMetadata();
         }
 
-        /// <summary>
-        /// Ctor
-        /// </summary>
-        /// <param name="metadata">Metadata to initialize this federation from.</param>
-        /// <param name="allowUnsolicitedAuthnResponse">Should unsolicited responses 
-        /// from idps in this federation be accepted?</param>
-        /// <param name="spOptions">Service provider options to pass on to
-        /// created IdentityProvider instances.</param>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "sp")]
-        public Federation(ExtendedEntitiesDescriptor metadata, bool allowUnsolicitedAuthnResponse, ISPOptions spOptions)
+        private void LoadMetadata()
         {
-            Init(metadata, allowUnsolicitedAuthnResponse, spOptions);
-        }
+            var metadata = MetadataLoader.LoadFederation(metadataUrl);
 
-        private void Init(ExtendedEntitiesDescriptor metadata, bool allowUnsolicitedAuthnResponse, ISPOptions spOptions)
-        {
-            identityProviders = metadata.ChildEntities.Cast<ExtendedEntityDescriptor>()
+            var identityProviders = metadata.ChildEntities.Cast<ExtendedEntityDescriptor>()
                 .Where(ed => ed.RoleDescriptors.OfType<IdentityProviderSingleSignOnDescriptor>().Any())
-                .Select(ed => new IdentityProvider(ed, allowUnsolicitedAuthnResponse, spOptions))
+                .Select(ed => new IdentityProvider(ed, allowUnsolicitedAuthnResponse, options.SPOptions))
                 .ToList();
 
-            readonlyIdentityProviders = identityProviders.AsReadOnly();
+            foreach(var idp in identityProviders)
+            {
+                options.IdentityProviders[idp.EntityId] = idp;
+            }
 
             MetadataValidUntil = metadata.ValidUntil;
 
-            if(metadata.CacheDuration.HasValue)
+            if (metadata.CacheDuration.HasValue)
             {
                 MetadataValidUntil = DateTime.UtcNow.Add(metadata.CacheDuration.Value);
             }
         }
 
+        private DateTime? metadataValidUntil;
+
         /// <summary>
         /// For how long is the metadata that the federation has loaded valid?
         /// Null if there is no limit.
         /// </summary>
-        public DateTime? MetadataValidUntil { get; private set; }
+        public DateTime? MetadataValidUntil
+        {
+            get
+            {
+                return metadataValidUntil;
+            }
+            private set
+            {
+                metadataValidUntil = value;
+
+                if(value.HasValue)
+                {
+                    Task.Delay(MetadataRefreshScheduler.GetDelay(value.Value))
+                        .ContinueWith((_) => LoadMetadata());
+                }
+            }
+        }
     }
 }
