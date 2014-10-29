@@ -21,6 +21,7 @@ namespace Kentor.AuthServices.Tests
         {
             MetadataServer.IdpVeryShortCacheDurationIncludeInvalidKey = false;
             MetadataServer.FederationVeryShortCacheDurationSecondAlternativeEnabled = false;
+            MetadataServer.IdpAndFederationVeryShortCacheDurationAvailable = true;
             MetadataRefreshScheduler.minInternval = refreshMinInterval;
         }
 
@@ -143,6 +144,31 @@ namespace Kentor.AuthServices.Tests
                 .Should().BeFalse("idp2 should be removed after reload");
             options.IdentityProviders.TryGetValue(new EntityId("http://idp3.federation.example.com/metadata"), out idp)
                 .Should().BeTrue("idp3 should be loaded after reload");
+        }
+
+        [TestMethod]
+        public void Federation_ReloadOfMetadata_RetriesAfterFailedInitialLoad()
+        {
+            MetadataRefreshScheduler.minInternval = new TimeSpan(0, 0, 0, 0, 1);
+
+            MetadataServer.IdpAndFederationVeryShortCacheDurationAvailable = false;
+
+            var options = StubFactory.CreateOptions();
+
+            var subject = new Federation(
+                new Uri("http://localhost:13428/federationMetadataVeryShortCacheDuration"),
+                false,
+                options);
+
+            subject.MetadataValidUntil.Should().Be(DateTime.MinValue);
+
+            MetadataServer.IdpAndFederationVeryShortCacheDurationAvailable = true;
+
+            SpinWaiter.While(() => subject.MetadataValidUntil == DateTime.MinValue);
+
+            IdentityProvider idp;
+            options.IdentityProviders.TryGetValue(new EntityId("http://idp1.federation.example.com/metadata"), out idp)
+                .Should().BeTrue();
         }
     }
 }

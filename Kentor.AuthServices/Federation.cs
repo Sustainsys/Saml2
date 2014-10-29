@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.IdentityModel.Metadata;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -61,20 +62,28 @@ namespace Kentor.AuthServices
 
         private void LoadMetadata()
         {
-            var metadata = MetadataLoader.LoadFederation(metadataUrl);
-
-            var identityProviders = metadata.ChildEntities.Cast<ExtendedEntityDescriptor>()
-                .Where(ed => ed.RoleDescriptors.OfType<IdentityProviderSingleSignOnDescriptor>().Any())
-                .Select(ed => new IdentityProvider(ed, allowUnsolicitedAuthnResponse, options.SPOptions))
-                .ToList();
-
-            RegisterIdentityProviders(identityProviders);
-
-            MetadataValidUntil = metadata.ValidUntil;
-
-            if (metadata.CacheDuration.HasValue)
+            try
             {
-                MetadataValidUntil = DateTime.UtcNow.Add(metadata.CacheDuration.Value);
+                var metadata = MetadataLoader.LoadFederation(metadataUrl);
+
+                var identityProviders = metadata.ChildEntities.Cast<ExtendedEntityDescriptor>()
+                    .Where(ed => ed.RoleDescriptors.OfType<IdentityProviderSingleSignOnDescriptor>().Any())
+                    .Select(ed => new IdentityProvider(ed, allowUnsolicitedAuthnResponse, options.SPOptions))
+                    .ToList();
+
+                RegisterIdentityProviders(identityProviders);
+
+                MetadataValidUntil = metadata.ValidUntil;
+
+                if (metadata.CacheDuration.HasValue)
+                {
+                    MetadataValidUntil = DateTime.UtcNow.Add(metadata.CacheDuration.Value);
+                }
+            }
+            catch (WebException)
+            {
+                // If download failed, ignore the error and trigger a scheduled reload.
+                MetadataValidUntil = DateTime.MinValue;
             }
         }
 
