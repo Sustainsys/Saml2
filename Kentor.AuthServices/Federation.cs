@@ -68,9 +68,6 @@ namespace Kentor.AuthServices
         {
             lock (metadataLoadLock)
             {
-                Debug.WriteLine("{0}: Loading federation metadata from {1}...", 
-                    DateTime.UtcNow.ToString("HH:mm:ss.fff", CultureInfo.InvariantCulture),
-                    metadataUrl);
                 try
                 {
                     var metadata = MetadataLoader.LoadFederation(metadataUrl);
@@ -83,34 +80,20 @@ namespace Kentor.AuthServices
                     RegisterIdentityProviders(identityProviders);
 
                     var validUntil = metadata.ValidUntil;
-
                     if (metadata.CacheDuration.HasValue)
                     {
                         validUntil = DateTime.UtcNow.Add(metadata.CacheDuration.Value);
                     }
-
                     MetadataValidUntil = validUntil ?? DateTime.MaxValue;
 
                     LastMetadataLoadException = null;
-
-                    Debug.WriteLine("{0}: Federation metadata loaded from {1}. Valid until {2}.",
-                        DateTime.UtcNow.ToString("HH:mm:ss.fff", CultureInfo.InvariantCulture),
-                        metadataUrl,
-                        MetadataValidUntil.ToString("HH:mm:ss.fff", CultureInfo.InvariantCulture));
                 }
                 catch (WebException ex)
                 {
-                    Debug.WriteLine("{0}: Federation metadata load failed from {1}.", 
-                        DateTime.UtcNow.ToString("HH:mm:ss.fff", CultureInfo.InvariantCulture),
-                        metadataUrl);
                     var now = DateTime.UtcNow;
 
                     if (MetadataValidUntil < now)
                     {
-                        Debug.WriteLine("{0}: Metadata was valid until {1}. Removing idps.",
-                            now.ToString("HH:mm:ss.fff", CultureInfo.InvariantCulture),
-                            MetadataValidUntil.ToString("HH:mm:ss.fff", CultureInfo.InvariantCulture));
-
                         // If download failed, ignore the error and trigger a scheduled reload.
                         RemoveAllRegisteredIdentityProviders();
                         MetadataValidUntil = DateTime.MinValue;
@@ -188,12 +171,6 @@ namespace Kentor.AuthServices
         private void ScheduleMetadataReload()
         {
             var delay = MetadataRefreshScheduler.GetDelay(metadataValidUntil);
-
-            Debug.WriteLine("{0}: Scheduling reload of {1} in {2}.",
-                DateTime.UtcNow.ToString("HH:mm:ss.fff", CultureInfo.InvariantCulture),
-                metadataUrl,
-                delay.ToString());
-
             Task.Delay(delay).ContinueWith((_) => LoadMetadata());
         }
     }
