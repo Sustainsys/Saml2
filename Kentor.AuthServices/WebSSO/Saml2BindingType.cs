@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Kentor.AuthServices.WebSSO
+namespace Kentor.AuthServices.WebSso
 {
     /// <summary>
     /// Saml2 binding types.

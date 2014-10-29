@@ -4,7 +4,7 @@ using FluentAssertions;
 using System.IdentityModel.Metadata;
 using System.Collections.Generic;
 using Kentor.AuthServices.Configuration;
-using Kentor.AuthServices.WebSSO;
+using Kentor.AuthServices.WebSso;
 
 namespace Kentor.AuthServices.Tests.Configuration
 {

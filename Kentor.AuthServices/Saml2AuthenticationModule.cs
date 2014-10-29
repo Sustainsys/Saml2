@@ -1,5 +1,5 @@
 ﻿using Kentor.AuthServices.Configuration;
-using Kentor.AuthServices.WebSSO;
+using Kentor.AuthServices.WebSso;
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.IdentityModel.Services;

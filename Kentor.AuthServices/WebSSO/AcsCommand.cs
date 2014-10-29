@@ -10,7 +10,7 @@ using System.Security.Cryptography.X509Certificates;
 using System.Web;
 using System.Xml;
 
-namespace Kentor.AuthServices.WebSSO
+namespace Kentor.AuthServices.WebSso
 {
     class AcsCommand : ICommand
     {

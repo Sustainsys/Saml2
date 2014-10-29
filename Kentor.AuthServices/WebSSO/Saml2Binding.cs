@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Web;
 
-namespace Kentor.AuthServices.WebSSO
+namespace Kentor.AuthServices.WebSso
 {
     /// <summary>
     /// Abstract base for all Saml2Bindings that binds a message to a specific

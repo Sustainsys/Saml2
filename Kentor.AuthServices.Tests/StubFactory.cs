@@ -1,6 +1,6 @@
 ﻿using Kentor.AuthServices.Configuration;
 using Kentor.AuthServices.Metadata;
-using Kentor.AuthServices.WebSSO;
+using Kentor.AuthServices.WebSso;
 using System;
 using System.Collections.Generic;
 using System.Globalization;

@@ -6,7 +6,7 @@ using System.Net;
 using System.Security.Claims;
 using System.Web;
 
-namespace Kentor.AuthServices.WebSSO
+namespace Kentor.AuthServices.WebSso
 {
     /// <summary>
     /// The results of a command.

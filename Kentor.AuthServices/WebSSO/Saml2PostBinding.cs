@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Web;
 
-namespace Kentor.AuthServices.WebSSO
+namespace Kentor.AuthServices.WebSso
 {
     class Saml2PostBinding : Saml2Binding
     {

@@ -1,5 +1,5 @@
 ﻿using Kentor.AuthServices.Configuration;
-using Kentor.AuthServices.WebSSO;
+using Kentor.AuthServices.WebSso;
 using Microsoft.Owin;
 using Microsoft.Owin.Security;
 using Microsoft.Owin.Security.Infrastructure;

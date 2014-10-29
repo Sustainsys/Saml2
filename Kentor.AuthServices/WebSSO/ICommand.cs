@@ -1,7 +1,7 @@
 ﻿using Kentor.AuthServices.Configuration;
 using System.Web;
 
-namespace Kentor.AuthServices.WebSSO
+namespace Kentor.AuthServices.WebSso
 {
     /// <summary>
     /// A command - corresponds to an action in Mvc.

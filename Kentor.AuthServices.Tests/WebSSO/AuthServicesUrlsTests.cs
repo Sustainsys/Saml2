@@ -2,9 +2,9 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Kentor.AuthServices.Configuration;
 using FluentAssertions;
-using Kentor.AuthServices.WebSSO;
+using Kentor.AuthServices.WebSso;
 
-namespace Kentor.AuthServices.Tests.WebSSO
+namespace Kentor.AuthServices.Tests.WebSso
 {
     [TestClass]
     public class AuthServicesUrlsTests

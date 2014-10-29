@@ -10,7 +10,7 @@ using System.IdentityModel.Metadata;
 using Kentor.AuthServices.Configuration;
 using System.Globalization;
 using Kentor.AuthServices.Metadata;
-using Kentor.AuthServices.WebSSO;
+using Kentor.AuthServices.WebSso;
 
 namespace Kentor.AuthServices.Tests.Configuration
 {

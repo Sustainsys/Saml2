@@ -1,4 +1,4 @@
-﻿using Kentor.AuthServices.WebSSO;
+﻿using Kentor.AuthServices.WebSso;
 using Microsoft.Owin;
 using System;
 using System.Collections.Generic;

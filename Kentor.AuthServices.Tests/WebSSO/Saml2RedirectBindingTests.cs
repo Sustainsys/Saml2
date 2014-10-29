@@ -3,9 +3,9 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using FluentAssertions;
 using NSubstitute;
 using System.Web;
-using Kentor.AuthServices.WebSSO;
+using Kentor.AuthServices.WebSso;
 
-namespace Kentor.AuthServices.Tests.WebSSO
+namespace Kentor.AuthServices.Tests.WebSso
 {
     [TestClass]
     public class Saml2RedirectBindingTests

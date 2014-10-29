@@ -9,9 +9,9 @@ using System.IdentityModel.Metadata;
 using System.Xml;
 using Kentor.AuthServices.Configuration;
 using System.Globalization;
-using Kentor.AuthServices.WebSSO;
+using Kentor.AuthServices.WebSso;
 
-namespace Kentor.AuthServices.Tests.WebSSO
+namespace Kentor.AuthServices.Tests.WebSso
 {
     [TestClass]
     public class MetadataCommandTests

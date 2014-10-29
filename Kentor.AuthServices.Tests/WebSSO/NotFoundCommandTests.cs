@@ -4,9 +4,9 @@ using FluentAssertions;
 using System.Net;
 using NSubstitute;
 using System.Web;
-using Kentor.AuthServices.WebSSO;
+using Kentor.AuthServices.WebSso;
 
-namespace Kentor.AuthServices.Tests.WebSSO
+namespace Kentor.AuthServices.Tests.WebSso
 {
     [TestClass]
     public class NotFoundCommandTests

@@ -5,9 +5,9 @@ using System.Web;
 using System.Collections.Specialized;
 using FluentAssertions;
 using System.Collections.Generic;
-using Kentor.AuthServices.WebSSO;
+using Kentor.AuthServices.WebSso;
 
-namespace Kentor.AuthServices.Tests.WebSSO
+namespace Kentor.AuthServices.Tests.WebSso
 {
     [TestClass]
     public class Saml2BindingTests

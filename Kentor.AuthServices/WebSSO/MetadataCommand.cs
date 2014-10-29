@@ -10,7 +10,7 @@ using System.Web;
 using System.Xml.Linq;
 using Kentor.AuthServices.Metadata;
 
-namespace Kentor.AuthServices.WebSSO
+namespace Kentor.AuthServices.WebSso
 {
     class MetadataCommand : ICommand
     {
