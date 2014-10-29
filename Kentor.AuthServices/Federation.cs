@@ -68,16 +68,41 @@ namespace Kentor.AuthServices
                 .Select(ed => new IdentityProvider(ed, allowUnsolicitedAuthnResponse, options.SPOptions))
                 .ToList();
 
-            foreach(var idp in identityProviders)
-            {
-                options.IdentityProviders[idp.EntityId] = idp;
-            }
+            RegisterIdentityProviders(identityProviders);
 
             MetadataValidUntil = metadata.ValidUntil;
 
             if (metadata.CacheDuration.HasValue)
             {
                 MetadataValidUntil = DateTime.UtcNow.Add(metadata.CacheDuration.Value);
+            }
+        }
+
+        // Use a string and not EntityId as List<> doesn't support setting a
+        // custom equality comparer as required to handle EntityId correctly.
+        private IDictionary<string, EntityId> registeredIdentityProviders = new Dictionary<string, EntityId>();
+
+        private void RegisterIdentityProviders(List<IdentityProvider> identityProviders)
+        {
+            // Add or update the idps in the new metadata.
+            foreach (var idp in identityProviders)
+            {
+                options.IdentityProviders[idp.EntityId] = idp;
+                registeredIdentityProviders.Remove(idp.EntityId.Id);
+            }
+
+            // Remove idps from previous set of metadata that were not updated now.
+            foreach(var idp in registeredIdentityProviders.Values)
+            {
+                options.IdentityProviders.Remove(idp);
+            }
+
+            // Remember what we registered this time, to know what to remove nex time.
+            foreach(var idp in identityProviders)
+            {
+                registeredIdentityProviders = identityProviders.ToDictionary(
+                    i => i.EntityId.Id,
+                    i => i.EntityId);
             }
         }
 

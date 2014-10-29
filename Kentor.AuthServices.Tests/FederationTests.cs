@@ -20,6 +20,7 @@ namespace Kentor.AuthServices.Tests
         public void Cleanup()
         {
             MetadataServer.IdpVeryShortCacheDurationIncludeInvalidKey = false;
+            MetadataServer.FederationVeryShortCacheDurationSecondAlternativeEnabled = false;
             MetadataRefreshScheduler.minInternval = refreshMinInterval;
         }
 
@@ -113,9 +114,35 @@ namespace Kentor.AuthServices.Tests
         }
 
         [TestMethod]
-        public void Fedration_ReloadOfMetadata_AddsNewIdpAndRemovesOld()
+        public void Federation_ReloadOfMetadata_AddsNewIdpAndRemovesOld()
         {
-            Assert.Inconclusive();
+            MetadataRefreshScheduler.minInternval = new TimeSpan(0, 0, 0, 0, 1);
+
+            var options = StubFactory.CreateOptions();
+
+            var subject = new Federation(
+                new Uri("http://localhost:13428/federationMetadataVeryShortCacheDuration"),
+                false,
+                options);
+
+            IdentityProvider idp;
+            options.IdentityProviders.TryGetValue(new EntityId("http://idp1.federation.example.com/metadata"), out idp)
+                .Should().BeTrue("idp1 should be loaded initially");
+            options.IdentityProviders.TryGetValue(new EntityId("http://idp2.federation.example.com/metadata"), out idp)
+                .Should().BeTrue("idp2 should be loaded initially");
+            options.IdentityProviders.TryGetValue(new EntityId("http://idp3.federation.example.com/metadata"), out idp)
+                .Should().BeFalse("idp3 shouldn't be loaded initially");
+
+            MetadataServer.FederationVeryShortCacheDurationSecondAlternativeEnabled = true;
+            var initialValidUntil = subject.MetadataValidUntil;
+            SpinWaiter.While(() => subject.MetadataValidUntil == initialValidUntil);
+
+            options.IdentityProviders.TryGetValue(new EntityId("http://idp1.federation.example.com/metadata"), out idp)
+                .Should().BeTrue("idp1 should still be present after reload");
+            options.IdentityProviders.TryGetValue(new EntityId("http://idp2.federation.example.com/metadata"), out idp)
+                .Should().BeFalse("idp2 should be removed after reload");
+            options.IdentityProviders.TryGetValue(new EntityId("http://idp3.federation.example.com/metadata"), out idp)
+                .Should().BeTrue("idp3 should be loaded after reload");
         }
     }
 }

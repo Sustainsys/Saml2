@@ -88,7 +88,7 @@ namespace Kentor.AuthServices.Tests.Metadata
             {
                 content["/federationMetadataVeryShortCacheDuration"] = string.Format(
 @"<EntitiesDescriptor xmlns=""urn:oasis:names:tc:SAML:2.0:metadata"" cacheDuration=""PT0.001S"">
-  <EntityDescriptor entityID=""http://idp.federation.example.com/metadata"">
+  <EntityDescriptor entityID=""http://idp1.federation.example.com/metadata"">
     <IDPSSODescriptor
       protocolSupportEnumeration=""urn:oasis:names:tc:SAML:2.0:protocol"">
       <KeyDescriptor use=""signing"">
@@ -96,7 +96,18 @@ namespace Kentor.AuthServices.Tests.Metadata
       </KeyDescriptor>
       <SingleSignOnService
         Binding=""urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect""
-        Location=""http://idp.federation.example.com:{1}/ssoService"" />
+        Location=""http://idp1.federation.example.com:{1}/ssoService"" />
+    </IDPSSODescriptor>
+  </EntityDescriptor>
+  <EntityDescriptor entityID=""http://idp2.federation.example.com/metadata"">
+    <IDPSSODescriptor
+      protocolSupportEnumeration=""urn:oasis:names:tc:SAML:2.0:protocol"">
+      <KeyDescriptor use=""signing"">
+        {0}
+      </KeyDescriptor>
+      <SingleSignOnService
+        Binding=""urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect""
+        Location=""http://idp2.federation.example.com:{1}/ssoService"" />
     </IDPSSODescriptor>
   </EntityDescriptor>
   <EntityDescriptor entityID=""http://sp.federation.example.com/metadata"">
@@ -109,6 +120,45 @@ namespace Kentor.AuthServices.Tests.Metadata
   </EntityDescriptor>
 </EntitiesDescriptor>", 
                       SignedXmlHelper.KeyInfoXml, 
+                      IdpAndFederationVeryShortCacheDurationSsoPort);
+            }
+
+            if(FederationVeryShortCacheDurationSecondAlternativeEnabled)
+            {
+                content["/federationMetadataVeryShortCacheDuration"] = string.Format(
+@"<EntitiesDescriptor xmlns=""urn:oasis:names:tc:SAML:2.0:metadata"" cacheDuration=""PT0.001S"">
+  <EntityDescriptor entityID=""http://idp1.federation.example.com/metadata"">
+    <IDPSSODescriptor
+      protocolSupportEnumeration=""urn:oasis:names:tc:SAML:2.0:protocol"">
+      <KeyDescriptor use=""signing"">
+        {0}
+      </KeyDescriptor>
+      <SingleSignOnService
+        Binding=""urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect""
+        Location=""http://idp1.federation.example.com:{1}/ssoService"" />
+    </IDPSSODescriptor>
+  </EntityDescriptor>
+  <EntityDescriptor entityID=""http://idp3.federation.example.com/metadata"">
+    <IDPSSODescriptor
+      protocolSupportEnumeration=""urn:oasis:names:tc:SAML:2.0:protocol"">
+      <KeyDescriptor use=""signing"">
+        {0}
+      </KeyDescriptor>
+      <SingleSignOnService
+        Binding=""urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect""
+        Location=""http://idp3.federation.example.com:{1}/ssoService"" />
+    </IDPSSODescriptor>
+  </EntityDescriptor>
+  <EntityDescriptor entityID=""http://sp.federation.example.com/metadata"">
+    <SPSSODescriptor
+      protocolSupportEnumeration=""urn:oasis:names:tc:SAML:2.0:protocol"">
+      <AssertionConsumerService index=""0""
+        Binding=""urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST""
+        Location=""http://sp.federation.example.com/acs"" />
+    </SPSSODescriptor>
+  </EntityDescriptor>
+</EntitiesDescriptor>",
+                      SignedXmlHelper.KeyInfoXml,
                       IdpAndFederationVeryShortCacheDurationSsoPort);
             }
 
@@ -198,12 +248,14 @@ entityID=""http://localhost:13428/idpMetadataVeryShortCacheDuration"" cacheDurat
         public static Uri IdpVeryShortCacheDurationBinding { get; set; }
         public static bool IdpVeryShortCacheDurationIncludeInvalidKey { get; set; }
         public static bool IdpAndFederationVeryShortCacheDurationAvailable { get; set; }
+        public static bool FederationVeryShortCacheDurationSecondAlternativeEnabled { get; set; }
 
         static MetadataServer()
         {
             IdpAndFederationVeryShortCacheDurationSsoPort = 80;
             IdpVeryShortCacheDurationBinding = Saml2Binding.HttpRedirectUri;
             IdpAndFederationVeryShortCacheDurationAvailable = true;
+            FederationVeryShortCacheDurationSecondAlternativeEnabled = false;
         }
 
         [AssemblyInitialize]

@@ -112,5 +112,18 @@ namespace Kentor.AuthServices.Configuration
                 }
             }
         }
+
+        /// <summary>
+        /// Removes the idp with the given entity id, if present. If no such
+        /// entity is found, nothing is done.
+        /// </summary>
+        /// <param name="idp">EntityId of idp to remove.</param>
+        public void Remove(EntityId idp)
+        {
+            lock(dictionary)
+            {
+                dictionary.Remove(idp);
+            }
+        }
     }
 }
