@@ -293,7 +293,7 @@ namespace Kentor.AuthServices
             {
                 metadataValidUntil = value;
 
-                if(value.HasValue)
+                if (value.HasValue)
                 {
                     Task.Delay(MetadataRefreshScheduler.GetDelay(value.Value))
                         .ContinueWith((_) => LoadMetadata());
@@ -307,10 +307,7 @@ namespace Kentor.AuthServices
             {
                 lock (metadataLoadLock)
                 {
-                    if (MetadataValidUntil < DateTime.UtcNow)
-                    {
-                        LoadMetadata();
-                    }
+                    LoadMetadata();
                 }
             }
         }
