@@ -79,12 +79,8 @@ namespace Kentor.AuthServices
 
                     RegisterIdentityProviders(identityProviders);
 
-                    var validUntil = metadata.ValidUntil;
-                    if (metadata.CacheDuration.HasValue)
-                    {
-                        validUntil = DateTime.UtcNow.Add(metadata.CacheDuration.Value);
-                    }
-                    MetadataValidUntil = validUntil ?? DateTime.MaxValue;
+                    MetadataValidUntil = metadata.ValidUntil ??
+                        DateTime.UtcNow.Add(metadata.CacheDuration.Value);
 
                     LastMetadataLoadException = null;
                 }
