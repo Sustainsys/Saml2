@@ -54,7 +54,8 @@ library. It is required for the http module, the mvc controller and the Owin mid
       <signingCertificate storeName="AddressBook" storeLocation="CurrentUser" 
                           findValue="Kentor.AuthServices.StubIdp" x509FindType="FindBySubjectName" />
     </add>
-    <add entityId="https://idp.example.com/Metadata" 
+    <add entityId="example-idp"
+         metadataUrl="https://idp.example.com/Metadata"
          allowUnsolicitedAuthnResponse="true" 
          loadMetadata = "true" />
   </identityProviders>
@@ -279,6 +280,7 @@ A list of identity providers known to the service provider.
 * [`allowUnsolicitedAuthnResponse`](#allowunsolicitedauthnresponse-attribute)
 * [`binding`](#binding-attribute)
 * [`loadMetadata`](#loadmetadata-attribute)
+* [`metadataUrl`](#metadataurl-attribute-idp)
 
 ####Elements
 * [`<signingCertificate>`](#signingcertificate-element)
@@ -324,6 +326,15 @@ Currently supported values:
 Load metadata from the idp and use that information instead of the configuration. It is
 possible to use a specific certificate even though the metadata is loaded, in that case
 the configured certificate will take precedence over any contents in the metadata.
+
+####`metadataUrl` Attribute (Idp)
+*Optional attribute of the [`add`](#add-identityprovider-element) element*
+
+The SAML2 metadata standard strongly suggests that the Entity Id of a SAML2 entity
+is a URL where the metadata of the entity can be found. When loading metadata
+for an idp, AuthServices normally interprets the EntityId as a url to the metadata.
+If the metadat is located somewhere else it can be specified with this
+configuration parameter.
 
 ###`<signingCertificate>` Element
 *Optional child element of the [`<identityProvider>`](#identityprovider-element) element*
@@ -410,10 +421,10 @@ Contains a list of federations that the service provider knows and trusts.
 Adds a known federation.
 
 ####Attributes
-* [`metadataUrl`](#metadataUrl-attribute).
+* [`metadataUrl`](#metadataUrl-attribute-federation).
 * [`allowUnsolicitedAuthnResponse`](#allowunsolicitedauthnresponse-attribute-federation)
 
-####`metadataUrl` Attribute
+####`metadataUrl` Attribute (Federation)
 *Attribute of [`<add>`](#add-federation-element)*
 
 URL to the full metadata of the federation. AuthServices will download the metadata and

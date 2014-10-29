@@ -1,18 +1,12 @@
 ﻿using Kentor.AuthServices.Configuration;
 using System;
-using System.Collections.Generic;
-using System.Collections.Concurrent;
-using System.Linq;
-using System.Security.Cryptography.X509Certificates;
-using System.IdentityModel.Tokens;
-using System.Net;
-using System.IdentityModel.Metadata;
-using System.Xml.Linq;
-using System.Security.Cryptography;
-using System.Security.Cryptography.Xml;
 using System.Configuration;
 using System.Globalization;
-using System.Diagnostics.CodeAnalysis;
+using System.IdentityModel.Metadata;
+using System.IdentityModel.Tokens;
+using System.Linq;
+using System.Security.Cryptography;
+using System.Security.Cryptography.Xml;
 
 namespace Kentor.AuthServices
 {
@@ -36,6 +30,7 @@ namespace Kentor.AuthServices
             EntityId = new EntityId(config.EntityId);
             Binding = config.Binding;
             AllowUnsolicitedAuthnResponse = config.AllowUnsolicitedAuthnResponse;
+            metadataLocation = config.MetadataUrl;
             this.spOptions = spOptions;
 
             var certificate = config.SigningCertificate.LoadCertificate();
@@ -108,6 +103,19 @@ namespace Kentor.AuthServices
         /// </summary>
         public bool AllowUnsolicitedAuthnResponse { get; private set; }
 
+        private Uri metadataLocation;
+
+        /// <summary>
+        /// Location of metadata for the Identity Provider.
+        /// </summary>
+        public Uri MetadataLocation
+        {
+            get
+            {
+                return metadataLocation ?? new Uri(EntityId.Id);
+            }
+        }
+
         /// <summary>
         /// Create an authenticate request aimed for this idp.
         /// </summary>
@@ -159,8 +167,7 @@ namespace Kentor.AuthServices
 
         private void LoadMetadata()
         {
-            // So far only support for metadata at well known location.
-            var metadata = MetadataLoader.LoadIdp(new Uri(EntityId.Id));
+            var metadata = MetadataLoader.LoadIdp(MetadataLocation);
 
             LoadMetadata(metadata);
         }

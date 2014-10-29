@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Configuration;
-using System.Linq;
-using System.Text;
 
 namespace Kentor.AuthServices.Configuration
 {
@@ -120,6 +117,24 @@ namespace Kentor.AuthServices.Configuration
             set
             {
                 base["loadMetadata"] = value;
+            }
+        }
+
+        const string metadataUrl = "metadataUrl";
+
+        /// <summary>
+        /// Metadata location url to be used for automatic downloading of metadata.
+        /// </summary>
+        [ConfigurationProperty(metadataUrl)]
+        public Uri MetadataUrl
+        {
+            get
+            {
+                return (Uri)base[metadataUrl];
+            }
+            internal set
+            {
+                base[metadataUrl] = value;
             }
         }
     }
