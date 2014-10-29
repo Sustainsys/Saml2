@@ -109,61 +109,62 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
-    <Compile Include="AuthServicesControllerTests.cs" />
+    <Compile Include="Mvc\AuthServicesControllerTests.cs" />
     <Compile Include="ClaimsAuthenticationManagerStub.cs" />
     <Compile Include="ExceptionTestHelpers.cs" />
-    <Compile Include="MetadataCommandTests.cs" />
-    <Compile Include="MetadataServer.cs" />
+    <Compile Include="WebSSO\MetadataCommandTests.cs" />
+    <Compile Include="Metadata\MetadataServer.cs" />
+    <Compile Include="Owin\CommandResultExtensionsTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="CommandFactoryTests.cs" />
-    <Compile Include="NotFoundCommandTests.cs" />
-    <Compile Include="CommandResultTests.cs" />
-    <Compile Include="Saml2RequestBaseTests.cs" />
-    <Compile Include="Saml2AuthenticationRequestTests.cs" />
+    <Compile Include="WebSSO\CommandFactoryTests.cs" />
+    <Compile Include="WebSSO\NotFoundCommandTests.cs" />
+    <Compile Include="WebSSO\CommandResultTests.cs" />
+    <Compile Include="Saml2P\Saml2RequestBaseTests.cs" />
+    <Compile Include="Saml2P\Saml2AuthenticationRequestTests.cs" />
     <Compile Include="IdentityProviderTests.cs" />
     <Compile Include="Saml2StatementExtensionsTests.cs" />
-    <Compile Include="SPOptionsExtensionsTests.cs" />
-    <Compile Include="SignInCommandTests.cs" />
-    <Compile Include="Saml2ResponseTests.cs" />
-    <Compile Include="AcsCommandTests.cs" />
-    <Compile Include="Saml2PostBindingTests.cs" />
-    <Compile Include="Saml2BindingTests.cs" />
+    <Compile Include="Configuration\SPOptionsExtensionsTests.cs" />
+    <Compile Include="WebSSO\SignInCommandTests.cs" />
+    <Compile Include="Saml2P\Saml2ResponseTests.cs" />
+    <Compile Include="WebSSO\AcsCommandTests.cs" />
+    <Compile Include="WebSSO\Saml2PostBindingTests.cs" />
+    <Compile Include="WebSSO\Saml2BindingTests.cs" />
     <Compile Include="ClaimsIdentityExtensionsTests.cs" />
     <Compile Include="Saml2AssertionExtensionsTests.cs" />
     <Compile Include="AuthServicesExceptionTests.cs" />
     <Compile Include="BadFormatSamlResponseExceptionTests.cs" />
-    <Compile Include="EnumeratorTests.cs" />
+    <Compile Include="Internal\EnumeratorTests.cs" />
     <Compile Include="NoSamlResponseFoundExceptionTests.cs" />
-    <Compile Include="ReturnRequestedIssuerNameRegistryTests.cs" />
-    <Compile Include="Saml2RedirectBindingTests.cs" />
+    <Compile Include="Internal\ReturnRequestedIssuerNameRegistryTests.cs" />
+    <Compile Include="WebSSO\Saml2RedirectBindingTests.cs" />
     <Compile Include="AllTestsOtherCultures.cs" />
-    <Compile Include="DateTimeExtensionsTests.cs" />
+    <Compile Include="Internal\DateTimeExtensionsTests.cs" />
     <Compile Include="Saml2SubjectExtensionsTests.cs" />
     <Compile Include="Saml2ConditionsExtensionsTests.cs" />
-    <Compile Include="PendingAuthnRequestsTests.cs" />
-    <Compile Include="MessageBinderTests.cs" />
-    <Compile Include="HttpRequestDataTests.cs" />
-    <Compile Include="CommandResultExtensionsTests.cs" />
-    <Compile Include="KentorAuthServicesAuthenticationExtensionsTests.cs" />
-    <Compile Include="KentorAuthServicesAuthenticationMiddlewareTests.cs" />
-    <Compile Include="StubOwinMiddleware.cs" />
-    <Compile Include="MultipleIdentityAuthenticationTicketTests.cs" />
-    <Compile Include="OwinContextExtensionsTests.cs" />
-    <Compile Include="KentorAuthServicesAuthenticationOptionsTests.cs" />
-    <Compile Include="MetadataLoaderTests.cs" />
-    <Compile Include="EntityIdEqualityComparerTests.cs" />
+    <Compile Include="Internal\PendingAuthnRequestsTests.cs" />
+    <Compile Include="WebSSO\MessageBinderTests.cs" />
+    <Compile Include="WebSSO\HttpRequestDataTests.cs" />
+    <Compile Include="Mvc\CommandResultExtensionsTests.cs" />
+    <Compile Include="Owin\KentorAuthServicesAuthenticationExtensionsTests.cs" />
+    <Compile Include="Owin\KentorAuthServicesAuthenticationMiddlewareTests.cs" />
+    <Compile Include="Owin\StubOwinMiddleware.cs" />
+    <Compile Include="Owin\MultipleIdentityAuthenticationTicketTests.cs" />
+    <Compile Include="Owin\OwinContextExtensionsTests.cs" />
+    <Compile Include="Owin\KentorAuthServicesAuthenticationOptionsTests.cs" />
+    <Compile Include="Metadata\MetadataLoaderTests.cs" />
+    <Compile Include="Internal\EntityIdEqualityComparerTests.cs" />
     <Compile Include="FederationTests.cs" />
-    <Compile Include="Saml2PSecurityTokenHandlerTests.cs" />
-    <Compile Include="SPOptionsTests.cs" />
-    <Compile Include="IdentityProviderCollectionTests.cs" />
-    <Compile Include="FederationCollectionTests.cs" />
-    <Compile Include="IdentityProviderDictionaryTests.cs" />
-    <Compile Include="OptionsTests.cs" />
+    <Compile Include="Saml2P\Saml2PSecurityTokenHandlerTests.cs" />
+    <Compile Include="Configuration\SPOptionsTests.cs" />
+    <Compile Include="Configuration\IdentityProviderCollectionTests.cs" />
+    <Compile Include="Configuration\FederationCollectionTests.cs" />
+    <Compile Include="Configuration\IdentityProviderDictionaryTests.cs" />
+    <Compile Include="Configuration\OptionsTests.cs" />
     <Compile Include="StubFactory.cs" />
-    <Compile Include="AuthServicesUrlsTests.cs" />
-    <Compile Include="KentorAuthServicesSectionTests.cs" />
+    <Compile Include="WebSSO\AuthServicesUrlsTests.cs" />
+    <Compile Include="Configuration\KentorAuthServicesSectionTests.cs" />
     <Compile Include="XmlDocumentExtensionsTests.cs" />
-    <Compile Include="XmlHelpersTests.cs" />
+    <Compile Include="Internal\XmlHelpersTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config">
@@ -190,13 +191,14 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="SambiMetadata.xml">
+    <Content Include="Metadata\SambiMetadata.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="SkolfederationMetadata.xml">
+    <Content Include="Metadata\SkolfederationMetadata.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
+  <ItemGroup />
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">
       <ItemGroup>

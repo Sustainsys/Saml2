@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using Kentor.AuthServices.Metadata;
 
 namespace Kentor.AuthServices.StubIdp.Controllers
 {
@@ -13,14 +14,14 @@ namespace Kentor.AuthServices.StubIdp.Controllers
         public ActionResult Index()
         {
             return Content(
-                Metadata.FederationMetadata.ToXmlString(),
+                MetadataModel.FederationMetadata.ToXmlString(),
                 "application/samlmetadata+xml");
         }
 
         public ActionResult BrowserFriendly()
         {
             return Content(
-                Metadata.FederationMetadata.ToXmlString(),
+                MetadataModel.FederationMetadata.ToXmlString(),
                 "text/xml");
         }
     }

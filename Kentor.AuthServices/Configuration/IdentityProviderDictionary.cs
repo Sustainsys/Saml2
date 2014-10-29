@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Kentor.AuthServices.Internal;
+using System;
 using System.Collections.Generic;
 using System.IdentityModel.Metadata;
 using System.Linq;

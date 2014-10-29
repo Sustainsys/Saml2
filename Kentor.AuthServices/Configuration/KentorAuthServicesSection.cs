@@ -8,6 +8,9 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Kentor.AuthServices.Internal;
+using Kentor.AuthServices.Metadata;
+using Kentor.AuthServices.Saml2P;
 
 namespace Kentor.AuthServices.Configuration
 {

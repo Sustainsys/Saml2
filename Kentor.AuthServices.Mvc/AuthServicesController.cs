@@ -3,6 +3,7 @@ using System.Net;
 using System.Web.Mvc;
 using System.IdentityModel.Services;
 using Kentor.AuthServices.Configuration;
+using Kentor.AuthServices.WebSso;
 
 namespace Kentor.AuthServices.Mvc
 {

@@ -9,6 +9,7 @@ using System.Reflection;
 using System.Linq;
 using FluentAssertions;
 using Kentor.AuthServices.Configuration;
+using Kentor.AuthServices.Saml2P;
 
 namespace Kentor.AuthServices.VSPremium.Tests
 {

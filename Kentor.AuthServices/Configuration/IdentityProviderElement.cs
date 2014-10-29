@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Kentor.AuthServices.WebSso;
+using System;
 using System.Configuration;
 
 namespace Kentor.AuthServices.Configuration

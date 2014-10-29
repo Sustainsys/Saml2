@@ -5,6 +5,7 @@ using FluentAssertions;
 using System.IdentityModel.Metadata;
 using System.Linq;
 using Kentor.AuthServices.Configuration;
+using Kentor.AuthServices.Metadata;
 
 namespace Kentor.AuthServices.Tests
 {
@@ -26,7 +27,7 @@ namespace Kentor.AuthServices.Tests
             // handles some real world metadata, the metadadata from Sambi's test
             // environment is used.
 
-            TestLoadMetadata("SambiMetadata.xml");
+            TestLoadMetadata("Metadata\\SambiMetadata.xml");
         }
 
         private static void TestLoadMetadata(string fileName)
@@ -48,7 +49,7 @@ namespace Kentor.AuthServices.Tests
             // AuthServices handles some real world metadata, the metdata from the
             // skolfederation federation is used.
 
-            TestLoadMetadata("SkolfederationMetadata.xml");
+            TestLoadMetadata("Metadata\\SkolfederationMetadata.xml");
         }
 
         [TestMethod]
