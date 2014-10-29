@@ -58,6 +58,9 @@
     <Compile Include="Configuration\RequestedAttributeElement.cs" />
     <Compile Include="Configuration\RequestedAttributesCollection.cs" />
     <Compile Include="Metadata\RequestedAttribute.cs" />
+    <Compile Include="ExtendedEntitiesDescriptor.cs" />
+    <Compile Include="ICachedMetadata.cs" />
+    <Compile Include="MetadataRefreshScheduler.cs" />
     <Compile Include="Metadata\EntityDescriptorExtensions.cs" />
     <Compile Include="Metadata\ExtendedEntityDescriptor.cs" />
     <Compile Include="AuthServicesException.cs" />

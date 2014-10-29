@@ -7,17 +7,28 @@ using System.Configuration;
 using System.IdentityModel.Metadata;
 using Kentor.AuthServices.Saml2P;
 using Kentor.AuthServices.WebSso;
+using System.Net;
+using Kentor.AuthServices.Tests.Metadata;
 
 namespace Kentor.AuthServices.Tests
 {
     [TestClass]
     public class IdentityProviderTests
     {
+        TimeSpan refreshMinInterval = MetadataRefreshScheduler.minInternval;
+
+        [TestCleanup]
+        public void Cleanup()
+        {
+            MetadataServer.IdpVeryShortCacheDurationIncludeInvalidKey = false;
+            MetadataRefreshScheduler.minInternval = refreshMinInterval;
+        }
+
         [TestMethod]
         public void IdentityProvider_CreateAuthenticateRequest_DestinationInXml()
         {
             string idpUri = "http://idp.example.com/";
-            
+
             var ip = new IdentityProvider(
                 new Uri(idpUri),
                 Options.FromConfiguration.SPOptions);
@@ -152,7 +163,7 @@ namespace Kentor.AuthServices.Tests
         public void IdentityProvider_Ctor_MissingCertificateThrows()
         {
             var config = CreateConfig();
-            
+
             // Don't set to null; if the section isn't present in the config the
             // loaded configuration will contain an empty SigningCertificate element.
             config.SigningCertificate = new CertificateElement();
@@ -232,6 +243,149 @@ namespace Kentor.AuthServices.Tests
 
             subject.Binding.Should().Be(Saml2BindingType.HttpRedirect);
             subject.SingleSignOnServiceUrl.Should().Be("http://idp.example.com/SsoService");
+        }
+
+        [TestMethod]
+        public void IdentityProvider_MetadataValidUntil_NullOnConfigured()
+        {
+            string idpUri = "http://idp.example.com/";
+
+            var subject = new IdentityProvider(
+                new Uri(idpUri),
+                Options.FromConfiguration.SPOptions);
+
+            subject.MetadataValidUntil.Should().NotHaveValue();
+        }
+
+        [TestMethod]
+        public void IdentityProvider_MetadataValidUntil_Loaded()
+        {
+            var config = CreateConfig();
+            config.LoadMetadata = true;
+            config.EntityId = "http://localhost:13428/idpMetadata";
+
+            var subject = new IdentityProvider(config, Options.FromConfiguration.SPOptions);
+
+            subject.MetadataValidUntil.Should().Be(new DateTime(2100, 01, 02, 14, 42, 43, DateTimeKind.Utc));
+        }
+
+        [TestMethod]
+        public void IdentityProvider_MetadataValidUntil_CalculatedFromCacheDuration()
+        {
+            var config = CreateConfig();
+            config.LoadMetadata = true;
+            config.EntityId = "http://localhost:13428/idpMetadataNoCertificate";
+
+            var subject = new IdentityProvider(config, Options.FromConfiguration.SPOptions);
+
+            var expectedValidUntil = DateTime.UtcNow.AddMinutes(15);
+            subject.MetadataValidUntil.Should().BeCloseTo(expectedValidUntil);
+        }
+
+        IdentityProvider CreateSubjectForMetadataRefresh()
+        {
+            var config = CreateConfig();
+            config.LoadMetadata = true;
+            config.EntityId = "http://localhost:13428/idpMetadataVeryShortCacheDuration";
+            return new IdentityProvider(config, Options.FromConfiguration.SPOptions);
+        }
+
+        [TestMethod]
+        public void IdentityProvider_Binding_ReloadsMetadataIfNoLongerValid()
+        {
+            MetadataServer.IdpVeryShortCacheDurationBinding = Saml2Binding.HttpRedirectUri;
+            var subject = CreateSubjectForMetadataRefresh();
+            subject.Binding.Should().Be(Saml2BindingType.HttpRedirect);
+            MetadataServer.IdpVeryShortCacheDurationBinding = Saml2Binding.HttpPostUri;
+
+            SpinWaiter.While(() => subject.Binding == Saml2BindingType.HttpRedirect);
+
+            subject.Binding.Should().Be(Saml2BindingType.HttpPost);
+        }
+
+        [TestMethod]
+        public void IdentityProvider_SingleSignOnServiceUrl_ReloadsMetadataIfNoLongerValid()
+        {
+            MetadataServer.IdpAndFederationVeryShortCacheDurationSsoPort = 42;
+            var subject = CreateSubjectForMetadataRefresh();
+            subject.SingleSignOnServiceUrl.Port.Should().Be(42);
+            MetadataServer.IdpAndFederationVeryShortCacheDurationSsoPort = 117;
+
+            SpinWaiter.While(() => subject.SingleSignOnServiceUrl.Port == 42);
+
+            subject.SingleSignOnServiceUrl.Port.Should().Be(117);
+        }
+
+        [TestMethod]
+        public void IdentityProvider_SigningKey_ReloadsMetadataIfNoLongerValid()
+        {
+            var subject = CreateSubjectForMetadataRefresh();
+            subject.SigningKey.Should().NotBeNull();
+            MetadataServer.IdpVeryShortCacheDurationIncludeInvalidKey = true;
+
+            Action a = () =>
+            {
+                var waitStart = DateTime.UtcNow;
+                while (subject.SigningKey != null)
+                {
+                    if (DateTime.UtcNow - waitStart > SpinWaiter.MaxWait)
+                    {
+                        Assert.Fail("Timeout passed without metadata being refreshed.");
+                    }
+                }
+            };
+
+            a.ShouldThrow<System.Xml.XmlException>();
+        }
+
+        [TestMethod]
+        public void IdentityProvider_ScheduledReloadOfMetadata()
+        {
+            MetadataRefreshScheduler.minInternval = new TimeSpan(0, 0, 0, 0, 1);
+
+            var subject = CreateSubjectForMetadataRefresh();
+            var initalValidUntil = subject.MetadataValidUntil;
+
+            SpinWaiter.While(() => subject.MetadataValidUntil == initalValidUntil);
+        }
+
+        [TestMethod]
+        public void IdentityProvider_ScheduledReloadOfMetadata_RetriesIfLoadFails()
+        {
+            MetadataRefreshScheduler.minInternval = new TimeSpan(0, 0, 0, 0, 1);
+
+            var subject = CreateSubjectForMetadataRefresh();
+
+            MetadataServer.IdpAndFederationShortCacheDurationAvailable = false;
+
+            SpinWaiter.While(() => subject.MetadataValidUntil != DateTime.MinValue,
+                "Timed out waiting for failed metadata load to occur.");
+
+            var metadataEnabledTime = DateTime.UtcNow;
+            MetadataServer.IdpAndFederationShortCacheDurationAvailable = true;
+
+            SpinWaiter.While(() => {
+                var mvu = subject.MetadataValidUntil;
+                return !mvu.HasValue || mvu == DateTime.MinValue;
+            },
+            "Timed out waiting for successful reload of metadata.");
+        }
+
+        [TestMethod]
+        public void IdentityProvider_ScheduledReloadOfMetadata_RetriesIfInitialLoadFails()
+        {
+            MetadataRefreshScheduler.minInternval = new TimeSpan(0, 0, 0, 0, 1);
+            MetadataServer.IdpAndFederationShortCacheDurationAvailable = false;
+
+            var subject = CreateSubjectForMetadataRefresh();
+
+            MetadataServer.IdpAndFederationShortCacheDurationAvailable = true;
+
+            SpinWaiter.While(() =>
+            {
+                var mvu = subject.MetadataValidUntil;
+                return !mvu.HasValue || mvu == DateTime.MinValue;
+            });
         }
     }
 }

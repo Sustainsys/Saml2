@@ -9,7 +9,7 @@ namespace Kentor.AuthServices.Metadata
     /// <summary>
     /// Subclass to EntityDescriptor that contains support for extensions.
     /// </summary>
-    public class ExtendedEntityDescriptor : EntityDescriptor
+    public class ExtendedEntityDescriptor : EntityDescriptor, ICachedMetadata
     {
         EntityDescriptorExtensions extensions = new EntityDescriptorExtensions();
 
@@ -27,6 +27,11 @@ namespace Kentor.AuthServices.Metadata
         /// <summary>
         /// Permitted cache duration for the metadata.
         /// </summary>
-        public TimeSpan CacheDuration { get; set; }
+        public TimeSpan? CacheDuration { get; set; }
+
+        /// <summary>
+        /// Valid until
+        /// </summary>
+        public DateTime? ValidUntil { get; set; }
     }
 }

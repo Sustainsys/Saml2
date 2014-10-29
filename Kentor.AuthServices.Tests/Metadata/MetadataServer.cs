@@ -8,6 +8,9 @@ using System.Text;
 using System.Threading.Tasks;
 using Owin;
 using Kentor.AuthServices.TestHelpers;
+using Kentor.AuthServices.WebSso;
+using System.Threading;
+using System.IO;
 
 namespace Kentor.AuthServices.Tests.Metadata
 {
@@ -16,14 +19,13 @@ namespace Kentor.AuthServices.Tests.Metadata
     {
         private static IDisposable host;
 
-        static readonly IDictionary<string, string> content =
-            new Dictionary<string, string>();
-
-        static MetadataServer()
+        static IDictionary<string, string> GetContent()
         {
+            var content = new Dictionary<string, string>();
+
             content["/idpMetadata"] = string.Format(
  @"<EntityDescriptor xmlns=""urn:oasis:names:tc:SAML:2.0:metadata""
-    entityID=""http://localhost:13428/idpMetadata"">
+    entityID=""http://localhost:13428/idpMetadata"" validUntil=""2100-01-02T14:42:43Z"">
     <IDPSSODescriptor
       protocolSupportEnumeration=""urn:oasis:names:tc:SAML:2.0:protocol"">
       <KeyDescriptor>
@@ -38,7 +40,7 @@ namespace Kentor.AuthServices.Tests.Metadata
 
             content["/idpMetadataNoCertificate"] = 
 @"<EntityDescriptor xmlns=""urn:oasis:names:tc:SAML:2.0:metadata""
-    entityID=""http://localhost:13428/idpMetadataNoCertificate"">
+    entityID=""http://localhost:13428/idpMetadataNoCertificate"" cacheDuration=""PT15M"">
     <IDPSSODescriptor
       protocolSupportEnumeration=""urn:oasis:names:tc:SAML:2.0:protocol"">
       <SingleSignOnService
@@ -59,7 +61,7 @@ namespace Kentor.AuthServices.Tests.Metadata
   </EntityDescriptor>";
 
             content["/federationMetadata"] = string.Format(
-@"<EntitiesDescriptor xmlns=""urn:oasis:names:tc:SAML:2.0:metadata"">
+@"<EntitiesDescriptor xmlns=""urn:oasis:names:tc:SAML:2.0:metadata"" validUntil=""2100-01-01T14:43:15Z"">
   <EntityDescriptor entityID=""http://idp.federation.example.com/metadata"">
     <IDPSSODescriptor
       protocolSupportEnumeration=""urn:oasis:names:tc:SAML:2.0:protocol"">
@@ -81,6 +83,122 @@ namespace Kentor.AuthServices.Tests.Metadata
   </EntityDescriptor>
 </EntitiesDescriptor>
 ", SignedXmlHelper.KeyInfoXml);
+
+            if (IdpAndFederationShortCacheDurationAvailable)
+            {
+                content["/federationMetadataVeryShortCacheDuration"] = string.Format(
+@"<EntitiesDescriptor xmlns=""urn:oasis:names:tc:SAML:2.0:metadata"" cacheDuration=""PT0.001S"">
+  <EntityDescriptor entityID=""http://idp1.federation.example.com/metadata"">
+    <IDPSSODescriptor
+      protocolSupportEnumeration=""urn:oasis:names:tc:SAML:2.0:protocol"">
+      <KeyDescriptor use=""signing"">
+        {0}
+      </KeyDescriptor>
+      <SingleSignOnService
+        Binding=""urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect""
+        Location=""http://idp1.federation.example.com:{1}/ssoService"" />
+    </IDPSSODescriptor>
+  </EntityDescriptor>
+  <EntityDescriptor entityID=""http://idp2.federation.example.com/metadata"">
+    <IDPSSODescriptor
+      protocolSupportEnumeration=""urn:oasis:names:tc:SAML:2.0:protocol"">
+      <KeyDescriptor use=""signing"">
+        {0}
+      </KeyDescriptor>
+      <SingleSignOnService
+        Binding=""urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect""
+        Location=""http://idp2.federation.example.com:{1}/ssoService"" />
+    </IDPSSODescriptor>
+  </EntityDescriptor>
+  <EntityDescriptor entityID=""http://sp.federation.example.com/metadata"">
+    <SPSSODescriptor
+      protocolSupportEnumeration=""urn:oasis:names:tc:SAML:2.0:protocol"">
+      <AssertionConsumerService index=""0""
+        Binding=""urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST""
+        Location=""http://sp.federation.example.com/acs"" />
+    </SPSSODescriptor>
+  </EntityDescriptor>
+</EntitiesDescriptor>", 
+                      SignedXmlHelper.KeyInfoXml, 
+                      IdpAndFederationVeryShortCacheDurationSsoPort);
+            }
+
+            if(FederationVeryShortCacheDurationSecondAlternativeEnabled)
+            {
+                content["/federationMetadataVeryShortCacheDuration"] = string.Format(
+@"<EntitiesDescriptor xmlns=""urn:oasis:names:tc:SAML:2.0:metadata"" cacheDuration=""PT0.001S"">
+  <EntityDescriptor entityID=""http://idp1.federation.example.com/metadata"">
+    <IDPSSODescriptor
+      protocolSupportEnumeration=""urn:oasis:names:tc:SAML:2.0:protocol"">
+      <KeyDescriptor use=""signing"">
+        {0}
+      </KeyDescriptor>
+      <SingleSignOnService
+        Binding=""urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect""
+        Location=""http://idp1.federation.example.com:{1}/ssoService"" />
+    </IDPSSODescriptor>
+  </EntityDescriptor>
+  <EntityDescriptor entityID=""http://idp3.federation.example.com/metadata"">
+    <IDPSSODescriptor
+      protocolSupportEnumeration=""urn:oasis:names:tc:SAML:2.0:protocol"">
+      <KeyDescriptor use=""signing"">
+        {0}
+      </KeyDescriptor>
+      <SingleSignOnService
+        Binding=""urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect""
+        Location=""http://idp3.federation.example.com:{1}/ssoService"" />
+    </IDPSSODescriptor>
+  </EntityDescriptor>
+  <EntityDescriptor entityID=""http://sp.federation.example.com/metadata"">
+    <SPSSODescriptor
+      protocolSupportEnumeration=""urn:oasis:names:tc:SAML:2.0:protocol"">
+      <AssertionConsumerService index=""0""
+        Binding=""urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST""
+        Location=""http://sp.federation.example.com/acs"" />
+    </SPSSODescriptor>
+  </EntityDescriptor>
+</EntitiesDescriptor>",
+                      SignedXmlHelper.KeyInfoXml,
+                      IdpAndFederationVeryShortCacheDurationSsoPort);
+            }
+
+            if (IdpAndFederationShortCacheDurationAvailable)
+            {
+                content["/federationMetadataShortCacheDuration"] = string.Format(
+@"<EntitiesDescriptor xmlns=""urn:oasis:names:tc:SAML:2.0:metadata"" cacheDuration=""PT0.200S"">
+  <EntityDescriptor entityID=""http://idp1.federation.example.com/metadata"">
+    <IDPSSODescriptor
+      protocolSupportEnumeration=""urn:oasis:names:tc:SAML:2.0:protocol"">
+      <KeyDescriptor use=""signing"">
+        {0}
+      </KeyDescriptor>
+      <SingleSignOnService
+        Binding=""urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect""
+        Location=""http://idp1.federation.example.com/ssoService"" />
+    </IDPSSODescriptor>
+  </EntityDescriptor>
+  <EntityDescriptor entityID=""http://idp2.federation.example.com/metadata"">
+    <IDPSSODescriptor
+      protocolSupportEnumeration=""urn:oasis:names:tc:SAML:2.0:protocol"">
+      <KeyDescriptor use=""signing"">
+        {0}
+      </KeyDescriptor>
+      <SingleSignOnService
+        Binding=""urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect""
+        Location=""http://idp2.federation.example.com/ssoService"" />
+    </IDPSSODescriptor>
+  </EntityDescriptor>
+  <EntityDescriptor entityID=""http://sp.federation.example.com/metadata"">
+    <SPSSODescriptor
+      protocolSupportEnumeration=""urn:oasis:names:tc:SAML:2.0:protocol"">
+      <AssertionConsumerService index=""0""
+        Binding=""urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST""
+        Location=""http://sp.federation.example.com/acs"" />
+    </SPSSODescriptor>
+  </EntityDescriptor>
+</EntitiesDescriptor>",
+                      SignedXmlHelper.KeyInfoXml);
+            }
 
             content["/idpMetadataWithMultipleBindings"] = string.Format(
 @"<EntityDescriptor xmlns=""urn:oasis:names:tc:SAML:2.0:metadata""
@@ -130,6 +248,52 @@ namespace Kentor.AuthServices.Tests.Metadata
   </IDPSSODescriptor>
 </EntityDescriptor>", SignedXmlHelper.KeyInfoXml);
 
+            if (IdpAndFederationShortCacheDurationAvailable)
+            {
+                string keyElement = string.Empty;
+                if (IdpVeryShortCacheDurationIncludeInvalidKey)
+                {
+                    keyElement = @"<KeyDescriptor use=""signing"">Gibberish</KeyDescriptor>";
+                }
+
+                content["/idpMetadataVeryShortCacheDuration"] = string.Format(
+@"<EntityDescriptor xmlns=""urn:oasis:names:tc:SAML:2.0:metadata""
+entityID=""http://localhost:13428/idpMetadataVeryShortCacheDuration"" cacheDuration=""PT0.001S"">
+<IDPSSODescriptor
+    protocolSupportEnumeration=""urn:oasis:names:tc:SAML:2.0:protocol"">
+    {0}
+    <SingleSignOnService
+    Binding=""{1}""
+    Location=""http://localhost:{2}/acs""/>
+</IDPSSODescriptor>
+</EntityDescriptor>",
+                    keyElement, IdpVeryShortCacheDurationBinding, IdpAndFederationVeryShortCacheDurationSsoPort);
+            }
+
+            if (File.Exists("SambiMetadata.xml"))
+            {
+                content["/SambiMetadata"] = File.ReadAllText("SambiMetadata.xml");
+            }
+            if (File.Exists("SkolfederationMetadata.xml"))
+            {
+                content["/SkolfederationMetadata"] = File.ReadAllText("SkolfederationMetadata.xml");
+            }
+
+            return content;
+        }
+
+        public static int IdpAndFederationVeryShortCacheDurationSsoPort { get; set; }
+        public static Uri IdpVeryShortCacheDurationBinding { get; set; }
+        public static bool IdpVeryShortCacheDurationIncludeInvalidKey { get; set; }
+        public static bool IdpAndFederationShortCacheDurationAvailable { get; set; }
+        public static bool FederationVeryShortCacheDurationSecondAlternativeEnabled { get; set; }
+
+        static MetadataServer()
+        {
+            IdpAndFederationVeryShortCacheDurationSsoPort = 80;
+            IdpVeryShortCacheDurationBinding = Saml2Binding.HttpRedirectUri;
+            IdpAndFederationShortCacheDurationAvailable = true;
+            FederationVeryShortCacheDurationSecondAlternativeEnabled = false;
         }
 
         [AssemblyInitialize]
@@ -139,6 +303,7 @@ namespace Kentor.AuthServices.Tests.Metadata
             {
                 app.Use(async (ctx, next) =>
                 {
+                    var content = GetContent();
                     string data;
                     if(content.TryGetValue(ctx.Request.Path.ToString(), out data))
                     {
