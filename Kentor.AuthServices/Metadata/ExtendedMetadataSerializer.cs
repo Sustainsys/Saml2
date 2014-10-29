@@ -24,13 +24,17 @@ namespace Kentor.AuthServices.Metadata
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1062:Validate arguments of public methods", MessageId = "0", Justification="Method is only called by base class no validation needed.")]
         protected override void WriteCustomAttributes<T>(XmlWriter writer, T source)
         {
-            var extendedEntityDescriptor = source as ExtendedEntityDescriptor;
-            if (extendedEntityDescriptor != null)
+            var cachedMetadata = source as ICachedMetadata;
+            if(cachedMetadata != null && cachedMetadata.CacheDuration.HasValue)
             {
                 writer.WriteAttributeString(
                     "cacheDuration",
-                    XmlConvert.ToString(extendedEntityDescriptor.CacheDuration.Value));
+                    XmlConvert.ToString(cachedMetadata.CacheDuration.Value));
+            }
 
+            var extendedEntityDescriptor = source as ExtendedEntityDescriptor;
+            if (extendedEntityDescriptor != null)
+            {
                 writer.WriteAttributeString("xmlns", "saml2", null, Saml2Namespaces.Saml2Name);
 
                 // This is really an element. But it must be placed first of the child elements

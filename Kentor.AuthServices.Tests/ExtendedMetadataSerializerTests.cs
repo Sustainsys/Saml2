@@ -4,6 +4,9 @@ using System.IO;
 using System.Text;
 using FluentAssertions;
 using Kentor.AuthServices.Metadata;
+using System.IdentityModel.Metadata;
+using System.Xml.Linq;
+using Kentor.AuthServices.WebSso;
 
 namespace Kentor.AuthServices.Tests
 {
@@ -82,6 +85,45 @@ namespace Kentor.AuthServices.Tests
             subject.Should().NotBeNull();
             subject.ValidUntil.Should().NotHaveValue();
             subject.CacheDuration.Should().Be(new TimeSpan(0, 15, 0));
+        }
+
+        [TestMethod]
+        public void ExtendedMetadataSerializer_Write_EntitiesDescriptorCacheDuration()
+        {
+            var metadata = new ExtendedEntitiesDescriptor
+            {
+                Name = "Federation Name",
+                CacheDuration = new TimeSpan(0, 42, 0)
+            };
+
+            var entity = new ExtendedEntityDescriptor
+                {
+                    EntityId = new EntityId("http://some.entity.example.com")
+                };
+
+            var idpSsoDescriptor = new IdentityProviderSingleSignOnDescriptor();
+            idpSsoDescriptor.ProtocolsSupported.Add(new Uri("urn:oasis:names:tc:SAML:2.0:protocol"));
+
+            idpSsoDescriptor.SingleSignOnServices.Add(new ProtocolEndpoint
+                {
+                    Binding = Saml2Binding.HttpRedirectUri,
+                    Location = new Uri("http://some.entity.example.com/sso")
+                });
+            entity.RoleDescriptors.Add(idpSsoDescriptor);
+
+            metadata.ChildEntities.Add(entity);
+
+            var stream = new MemoryStream();
+            ExtendedMetadataSerializer.Instance.WriteMetadata(stream, metadata);
+            stream.Seek(0, SeekOrigin.Begin);
+
+            var result = XDocument.Load(stream).Root;
+
+            result.Name.Should().Be(Saml2Namespaces.Saml2Metadata + "EntitiesDescriptor");
+            result.Attribute("cacheDuration").Value.Should().Be("PT42M");
+
+            result.Element(Saml2Namespaces.Saml2Metadata + "EntityDescriptor").Attribute("cacheDuration")
+                .Should().BeNull();
         }
     }
 }

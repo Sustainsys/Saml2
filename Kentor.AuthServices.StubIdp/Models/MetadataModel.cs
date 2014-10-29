@@ -1,4 +1,5 @@
-﻿using Kentor.AuthServices.WebSso;
+﻿using Kentor.AuthServices.Metadata;
+using Kentor.AuthServices.WebSso;
 using System;
 using System.Collections.Generic;
 using System.IdentityModel.Metadata;
@@ -9,42 +10,44 @@ namespace Kentor.AuthServices.StubIdp.Models
 {
     public static class MetadataModel
     {
-        public static EntityDescriptor IdpMetadata
+        public static ExtendedEntityDescriptor CreateIdpMetadata(bool includeCacheDuration = true)
         {
-            get
+            var metadata = new ExtendedEntityDescriptor()
             {
-                var metadata = new EntityDescriptor()
-                {
-                    EntityId = new EntityId(UrlResolver.MetadataUrl.ToString())
-                };
+                EntityId = new EntityId(UrlResolver.MetadataUrl.ToString())
+            };
 
-                var idpSsoDescriptor = new IdentityProviderSingleSignOnDescriptor();
-                idpSsoDescriptor.ProtocolsSupported.Add(new Uri("urn:oasis:names:tc:SAML:2.0:protocol"));
-                metadata.RoleDescriptors.Add(idpSsoDescriptor);
-
-                idpSsoDescriptor.SingleSignOnServices.Add(new ProtocolEndpoint()
-                {
-                    Binding = Saml2Binding.HttpRedirectUri,
-                    Location = UrlResolver.SsoServiceUrl
-                });
-
-                idpSsoDescriptor.Keys.Add(CertificateHelper.SigningKey);
-
-                return metadata;
+            if (includeCacheDuration)
+            {
+                metadata.CacheDuration = new TimeSpan(0, 15, 0);
             }
+
+            var idpSsoDescriptor = new IdentityProviderSingleSignOnDescriptor();
+            idpSsoDescriptor.ProtocolsSupported.Add(new Uri("urn:oasis:names:tc:SAML:2.0:protocol"));
+            metadata.RoleDescriptors.Add(idpSsoDescriptor);
+
+            idpSsoDescriptor.SingleSignOnServices.Add(new ProtocolEndpoint()
+            {
+                Binding = Saml2Binding.HttpRedirectUri,
+                Location = UrlResolver.SsoServiceUrl
+            });
+
+            idpSsoDescriptor.Keys.Add(CertificateHelper.SigningKey);
+
+            return metadata;
         }
 
-        public static EntitiesDescriptor FederationMetadata
+        public static ExtendedEntitiesDescriptor CreateFederationMetadata()
         {
-            get
+            var metadata = new ExtendedEntitiesDescriptor
             {
-                var metadata = new EntitiesDescriptor();
-                metadata.Name = "Kentor.AuthServices.StubIdp Federation";
+                Name = "Kentor.AuthServices.StubIdp Federation",
+                CacheDuration = new TimeSpan(0, 15, 0)
+            };
 
-                metadata.ChildEntities.Add(IdpMetadata);
+            metadata.ChildEntities.Add(CreateIdpMetadata(false));
 
-                return metadata;
-            }
+            return metadata;
         }
     }
 }
