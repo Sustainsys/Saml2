@@ -9,7 +9,7 @@ namespace Kentor.AuthServices.TestHelpers
 {
     public static class SpinWaiter
     {
-        public readonly static TimeSpan MaxWait = new TimeSpan(0, 0, 0, 0, 50);
+        public readonly static TimeSpan MaxWait = new TimeSpan(0, 0, 0, 0, 500);
         public static void While(Func<bool> condition, string failMessage = "Timeout passed without condition becoming false.")
         {
             var waitStart = DateTime.UtcNow;

@@ -356,13 +356,13 @@ namespace Kentor.AuthServices.Tests
 
             var subject = CreateSubjectForMetadataRefresh();
 
-            MetadataServer.IdpAndFederationVeryShortCacheDurationAvailable = false;
+            MetadataServer.IdpAndFederationShortCacheDurationAvailable = false;
 
             SpinWaiter.While(() => subject.MetadataValidUntil != DateTime.MinValue,
                 "Timed out waiting for failed metadata load to occur.");
 
             var metadataEnabledTime = DateTime.UtcNow;
-            MetadataServer.IdpAndFederationVeryShortCacheDurationAvailable = true;
+            MetadataServer.IdpAndFederationShortCacheDurationAvailable = true;
 
             SpinWaiter.While(() => {
                 var mvu = subject.MetadataValidUntil;
@@ -375,11 +375,11 @@ namespace Kentor.AuthServices.Tests
         public void IdentityProvider_ScheduledReloadOfMetadata_RetriesIfInitialLoadFails()
         {
             MetadataRefreshScheduler.minInternval = new TimeSpan(0, 0, 0, 0, 1);
-            MetadataServer.IdpAndFederationVeryShortCacheDurationAvailable = false;
+            MetadataServer.IdpAndFederationShortCacheDurationAvailable = false;
 
             var subject = CreateSubjectForMetadataRefresh();
 
-            MetadataServer.IdpAndFederationVeryShortCacheDurationAvailable = true;
+            MetadataServer.IdpAndFederationShortCacheDurationAvailable = true;
 
             SpinWaiter.While(() =>
             {

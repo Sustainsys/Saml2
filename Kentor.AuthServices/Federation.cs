@@ -2,6 +2,8 @@
 using Kentor.AuthServices.Metadata;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Globalization;
 using System.IdentityModel.Metadata;
 using System.Linq;
 using System.Net;
@@ -60,32 +62,71 @@ namespace Kentor.AuthServices
             LoadMetadata();
         }
 
+        private object metadataLoadLock = new object();
+
         private void LoadMetadata()
         {
-            try
+            lock (metadataLoadLock)
             {
-                var metadata = MetadataLoader.LoadFederation(metadataUrl);
-
-                var identityProviders = metadata.ChildEntities.Cast<ExtendedEntityDescriptor>()
-                    .Where(ed => ed.RoleDescriptors.OfType<IdentityProviderSingleSignOnDescriptor>().Any())
-                    .Select(ed => new IdentityProvider(ed, allowUnsolicitedAuthnResponse, options.SPOptions))
-                    .ToList();
-
-                RegisterIdentityProviders(identityProviders);
-
-                MetadataValidUntil = metadata.ValidUntil;
-
-                if (metadata.CacheDuration.HasValue)
+                Debug.WriteLine("{0}: Loading federation metadata from {1}...", 
+                    DateTime.UtcNow.ToString("HH:mm:ss.fff", CultureInfo.InvariantCulture),
+                    metadataUrl);
+                try
                 {
-                    MetadataValidUntil = DateTime.UtcNow.Add(metadata.CacheDuration.Value);
+                    var metadata = MetadataLoader.LoadFederation(metadataUrl);
+
+                    var identityProviders = metadata.ChildEntities.Cast<ExtendedEntityDescriptor>()
+                        .Where(ed => ed.RoleDescriptors.OfType<IdentityProviderSingleSignOnDescriptor>().Any())
+                        .Select(ed => new IdentityProvider(ed, allowUnsolicitedAuthnResponse, options.SPOptions))
+                        .ToList();
+
+                    RegisterIdentityProviders(identityProviders);
+
+                    var validUntil = metadata.ValidUntil;
+
+                    if (metadata.CacheDuration.HasValue)
+                    {
+                        validUntil = DateTime.UtcNow.Add(metadata.CacheDuration.Value);
+                    }
+
+                    MetadataValidUntil = validUntil ?? DateTime.MaxValue;
+
+                    LastMetadataLoadException = null;
+
+                    Debug.WriteLine("{0}: Federation metadata loaded from {1}. Valid until {2}.",
+                        DateTime.UtcNow.ToString("HH:mm:ss.fff", CultureInfo.InvariantCulture),
+                        metadataUrl,
+                        MetadataValidUntil.ToString("HH:mm:ss.fff", CultureInfo.InvariantCulture));
+                }
+                catch (WebException ex)
+                {
+                    Debug.WriteLine("{0}: Federation metadata load failed from {1}.", 
+                        DateTime.UtcNow.ToString("HH:mm:ss.fff", CultureInfo.InvariantCulture),
+                        metadataUrl);
+                    var now = DateTime.UtcNow;
+
+                    if (MetadataValidUntil < now)
+                    {
+                        Debug.WriteLine("{0}: Metadata was valid until {1}. Removing idps.",
+                            now.ToString("HH:mm:ss.fff", CultureInfo.InvariantCulture),
+                            MetadataValidUntil.ToString("HH:mm:ss.fff", CultureInfo.InvariantCulture));
+
+                        // If download failed, ignore the error and trigger a scheduled reload.
+                        RemoveAllRegisteredIdentityProviders();
+                        MetadataValidUntil = DateTime.MinValue;
+                    }
+                    else
+                    {
+                        ScheduleMetadataReload();
+                    }
+
+                    LastMetadataLoadException = ex;
                 }
             }
-            catch (WebException)
-            {
-                // If download failed, ignore the error and trigger a scheduled reload.
-                MetadataValidUntil = DateTime.MinValue;
-            }
         }
+
+        // Used for testing.
+        internal WebException LastMetadataLoadException { get; private set; }
 
         // Use a string and not EntityId as List<> doesn't support setting a
         // custom equality comparer as required to handle EntityId correctly.
@@ -101,13 +142,13 @@ namespace Kentor.AuthServices
             }
 
             // Remove idps from previous set of metadata that were not updated now.
-            foreach(var idp in registeredIdentityProviders.Values)
+            foreach (var idp in registeredIdentityProviders.Values)
             {
                 options.IdentityProviders.Remove(idp);
             }
 
             // Remember what we registered this time, to know what to remove nex time.
-            foreach(var idp in identityProviders)
+            foreach (var idp in identityProviders)
             {
                 registeredIdentityProviders = identityProviders.ToDictionary(
                     i => i.EntityId.Id,
@@ -115,13 +156,23 @@ namespace Kentor.AuthServices
             }
         }
 
-        private DateTime? metadataValidUntil;
+        private void RemoveAllRegisteredIdentityProviders()
+        {
+            foreach (var idp in registeredIdentityProviders.Values)
+            {
+                options.IdentityProviders.Remove(idp);
+            }
+
+            registeredIdentityProviders.Clear();
+        }
+
+        private DateTime metadataValidUntil;
 
         /// <summary>
         /// For how long is the metadata that the federation has loaded valid?
         /// Null if there is no limit.
         /// </summary>
-        public DateTime? MetadataValidUntil
+        public DateTime MetadataValidUntil
         {
             get
             {
@@ -130,13 +181,20 @@ namespace Kentor.AuthServices
             private set
             {
                 metadataValidUntil = value;
-
-                if(value.HasValue)
-                {
-                    Task.Delay(MetadataRefreshScheduler.GetDelay(value.Value))
-                        .ContinueWith((_) => LoadMetadata());
-                }
+                ScheduleMetadataReload();
             }
+        }
+
+        private void ScheduleMetadataReload()
+        {
+            var delay = MetadataRefreshScheduler.GetDelay(metadataValidUntil);
+
+            Debug.WriteLine("{0}: Scheduling reload of {1} in {2}.",
+                DateTime.UtcNow.ToString("HH:mm:ss.fff", CultureInfo.InvariantCulture),
+                metadataUrl,
+                delay.ToString());
+
+            Task.Delay(delay).ContinueWith((_) => LoadMetadata());
         }
     }
 }

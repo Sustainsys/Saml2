@@ -8,6 +8,7 @@ using Kentor.AuthServices.Configuration;
 using Kentor.AuthServices.Metadata;
 using Kentor.AuthServices.TestHelpers;
 using Kentor.AuthServices.Tests.Metadata;
+using System.Threading;
 
 namespace Kentor.AuthServices.Tests
 {
@@ -21,7 +22,7 @@ namespace Kentor.AuthServices.Tests
         {
             MetadataServer.IdpVeryShortCacheDurationIncludeInvalidKey = false;
             MetadataServer.FederationVeryShortCacheDurationSecondAlternativeEnabled = false;
-            MetadataServer.IdpAndFederationVeryShortCacheDurationAvailable = true;
+            MetadataServer.IdpAndFederationShortCacheDurationAvailable = true;
             MetadataRefreshScheduler.minInternval = refreshMinInterval;
         }
 
@@ -151,7 +152,7 @@ namespace Kentor.AuthServices.Tests
         {
             MetadataRefreshScheduler.minInternval = new TimeSpan(0, 0, 0, 0, 1);
 
-            MetadataServer.IdpAndFederationVeryShortCacheDurationAvailable = false;
+            MetadataServer.IdpAndFederationShortCacheDurationAvailable = false;
 
             var options = StubFactory.CreateOptions();
 
@@ -162,13 +163,81 @@ namespace Kentor.AuthServices.Tests
 
             subject.MetadataValidUntil.Should().Be(DateTime.MinValue);
 
-            MetadataServer.IdpAndFederationVeryShortCacheDurationAvailable = true;
+            MetadataServer.IdpAndFederationShortCacheDurationAvailable = true;
 
             SpinWaiter.While(() => subject.MetadataValidUntil == DateTime.MinValue);
 
             IdentityProvider idp;
             options.IdentityProviders.TryGetValue(new EntityId("http://idp1.federation.example.com/metadata"), out idp)
                 .Should().BeTrue();
+        }
+
+        [TestMethod]
+        public void Federation_ReloadOfMetadata_RemovesAllIdpsIfMetadataIsNoLongerValid()
+        {
+            MetadataRefreshScheduler.minInternval = new TimeSpan(0, 0, 0, 0, 1);
+
+            var options = StubFactory.CreateOptions();
+
+            var subject = new Federation(
+                new Uri("http://localhost:13428/federationMetadataVeryShortCacheDuration"),
+                false,
+                options);
+
+            IdentityProvider idp;
+            options.IdentityProviders.TryGetValue(new EntityId("http://idp1.federation.example.com/metadata"), out idp)
+                .Should().BeTrue();
+
+            MetadataServer.IdpAndFederationShortCacheDurationAvailable = false;
+
+            SpinWaiter.While(() => subject.MetadataValidUntil != DateTime.MinValue);
+
+            options.IdentityProviders.TryGetValue(new EntityId("http://idp1.federation.example.com/metadata"), out idp)
+                .Should().BeFalse("idp should be removed if metadata is no longer valid");
+        }
+
+        [TestMethod]
+        public void Federation_ReloadOfMetadata_KeepsOldDataUntilMetadataBecomesInvalid()
+        {
+            MetadataRefreshScheduler.minInternval = new TimeSpan(0, 0, 0, 0, 5);
+
+            var options = StubFactory.CreateOptions();
+
+            var subject = new Federation(
+                new Uri("http://localhost:13428/federationMetadataShortCacheDuration"),
+                false,
+                options);
+
+            IdentityProvider idp;
+            options.IdentityProviders.TryGetValue(new EntityId("http://idp1.federation.example.com/metadata"), out idp)
+                .Should().BeTrue("idp should be loaded initially");
+
+            var initialValidUntil = subject.MetadataValidUntil;
+
+            MetadataServer.IdpAndFederationShortCacheDurationAvailable = false;
+
+            // Wait until a failed load has occured.
+            SpinWaiter.While(() => subject.LastMetadataLoadException == null,
+                "Timeout passed without a failed metadata reload.");
+
+            subject.MetadataValidUntil.Should().NotBe(DateTime.MinValue);
+
+            options.IdentityProviders.TryGetValue(new EntityId("http://idp1.federation.example.com/metadata"), out idp)
+                .Should().BeTrue("idp shouldn't be removed while metadata is still valid.");
+
+            SpinWaiter.While(() => subject.MetadataValidUntil != DateTime.MinValue,
+                "Timeout passed without metadata becoming invalid.");
+
+            options.IdentityProviders.TryGetValue(new EntityId("http://idp1.federation.example.com/metadata"), out idp)
+                .Should().BeFalse("idp should be removed if metadata is no longer valid");
+
+            MetadataServer.IdpAndFederationShortCacheDurationAvailable = true;
+
+            SpinWaiter.While(() => subject.MetadataValidUntil == DateTime.MinValue,
+                "Timeout passed without metadata being successfully 5reloaded");
+
+            options.IdentityProviders.TryGetValue(new EntityId("http://idp1.federation.example.com/metadata"), out idp)
+                .Should().BeTrue("idp should be readded when metadata is refreshed.");
         }
     }
 }
