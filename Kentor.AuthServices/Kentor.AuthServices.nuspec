@@ -16,7 +16,11 @@
     <copyright>Copyright Kentor and contributors 2013</copyright>
     <tags>SAML2 authentication ASP.NET SAML SSO</tags>
     <releaseNotes>
- Version 0.8.0
+ Version 0.9.0
+ * Automatic refresh of metadata for identity providers and federations.
+ * Configuration option for metadataUrl for identity providers.
+
+Version 0.8.0
  * Automatic generation of service provider URLs, removing configuration.
  * Configuration can now be supplied from code and not only in config file.
  * Administrative metadata (organization and contactPerson) support.
