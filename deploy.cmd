@@ -69,6 +69,8 @@ echo Handling .NET Web Application deployment.
 
 :: 1. Restore NuGet packages
 IF /I "" NEQ "" (
+  del "%DEPLOYMENT_SOURCE%\Kentor.AuthServices.sln"
+  del "%DEPLOYMENT_SOURCE%\Kentor.AuthServices.IntegrationTests.sln"
   call :ExecuteCmd nuget restore "%DEPLOYMENT_SOURCE%\"
   IF !ERRORLEVEL! NEQ 0 goto error
 )
