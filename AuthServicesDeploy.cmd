@@ -68,12 +68,10 @@ IF NOT DEFINED MSBUILD_PATH (
 echo Handling .NET Web Application deployment.
 
 :: 1. Restore NuGet packages - first make sure there's only one sln file in the directory.
-IF /I "" NEQ "" (
-  del "%DEPLOYMENT_SOURCE%\Kentor.AuthServices.sln"
-  del "%DEPLOYMENT_SOURCE%\Kentor.AuthServices.IntegrationTests.sln"
-  call :ExecuteCmd nuget restore "%DEPLOYMENT_SOURCE%\"
-  IF !ERRORLEVEL! NEQ 0 goto error
-)
+del "%DEPLOYMENT_SOURCE%\Kentor.AuthServices.sln"
+del "%DEPLOYMENT_SOURCE%\Kentor.AuthServices.IntegrationTests.sln"
+call :ExecuteCmd nuget restore "%DEPLOYMENT_SOURCE%\"
+IF !ERRORLEVEL! NEQ 0 goto error
 
 :: 2. Build to the temporary path
 IF /I "%IN_PLACE_DEPLOYMENT%" NEQ "1" (
