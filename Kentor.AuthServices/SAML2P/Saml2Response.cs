@@ -10,7 +10,6 @@ using System.Xml;
 using Kentor.AuthServices.Configuration;
 using System.IdentityModel.Metadata;
 using System.Security.Cryptography;
-using System.IdentityModel.Services;
 using Kentor.AuthServices.Internal;
 
 namespace Kentor.AuthServices.Saml2P
@@ -431,11 +430,11 @@ namespace Kentor.AuthServices.Saml2P
         {
             ThrowOnNotValid();
 
-            foreach (XmlElement assertionNode in AllAssertionElementNodes)
-            {
+            foreach (var assertionNode in AllAssertionElementNodes)
+            {                
                 using (var reader = new XmlNodeReader(assertionNode))
                 {
-                    var handler = options.Saml2PSecurityTokenHandler;
+                    var handler = options.Saml2PSecurityTokenHandler;                    
 
                     var token = (Saml2SecurityToken)handler.ReadToken(reader);
                     handler.DetectReplayedToken(token);
@@ -444,9 +443,16 @@ namespace Kentor.AuthServices.Saml2P
 
                     handler.ValidateConditions(token.Assertion.Conditions, validateAudience);
 
+                    // If the backing token is x509, validate trust
+                    var issuerToken = token.IssuerToken as X509SecurityToken;
+                    if (issuerToken != null)
+                    {
+                        handler.CertificateValidator.Validate(issuerToken.Certificate);
+                    }
+
                     yield return handler.CreateClaims(token);
                 }
             }
-        }
+        }        
     }
 }

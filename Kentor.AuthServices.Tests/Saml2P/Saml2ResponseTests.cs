@@ -1,11 +1,11 @@
-﻿using FluentAssertions;
+﻿using System.IdentityModel.Selectors;
+using FluentAssertions;
 using Kentor.AuthServices.Configuration;
 using Kentor.AuthServices.TestHelpers;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.IdentityModel.Metadata;
 using System.IdentityModel.Tokens;
-using System.IdentityModel.Services;
 using System.Linq;
 using System.Security.Claims;
 using System.Security.Cryptography;
@@ -589,6 +589,51 @@ namespace Kentor.AuthServices.Tests.Saml2P
             var expected = new ClaimsIdentity[] { c1, c2 };
 
             var r = Saml2Response.Read(SignedXmlHelper.SignXml(response));
+            r.Validate(Options.FromConfiguration);
+
+            r.GetClaims(Options.FromConfiguration.SPOptions)
+                .ShouldBeEquivalentTo(expected, opt => opt.IgnoringCyclicReferences());
+        }
+
+        [NotReRunnable]
+        [TestMethod]
+        public void Saml2Response_GetClaims_ValidateIssuerToken()
+        {
+            const string assertion = @"<saml2:Assertion xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
+                Version=""2.0"" ID=""Saml2Response_GetClaims_ValidateIssuerToken1""
+                IssueInstant=""2013-09-25T00:00:00Z"">
+                    <saml2:Issuer>https://idp.example.com</saml2:Issuer>
+                    <saml2:Subject>
+                        <saml2:NameID>SomeUser</saml2:NameID>
+                        <saml2:SubjectConfirmation Method=""urn:oasis:names:tc:SAML:2.0:cm:bearer"" />
+                    </saml2:Subject>
+                    <saml2:Conditions NotOnOrAfter=""2100-01-01T00:00:00Z"" />
+                </saml2:Assertion>";            
+
+            const string response = @"<?xml version=""1.0"" encoding=""UTF-8""?>
+            <saml2p:Response xmlns:saml2p=""urn:oasis:names:tc:SAML:2.0:protocol""
+            xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
+            ID = ""Saml2Response_GetClaims_ValidateIssuerToken"" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z"">
+                <saml2:Issuer>https://idp.example.com</saml2:Issuer>
+                <saml2p:Status>
+                    <saml2p:StatusCode Value=""urn:oasis:names:tc:SAML:2.0:status:Success"" />
+                </saml2p:Status>
+            </saml2p:Response>";
+
+            var xmlDoc = new XmlDocument { PreserveWhitespace = true };
+            xmlDoc.LoadXml(response);
+
+            xmlDoc.DocumentElement.AppendChild(xmlDoc.ImportNode(SignedXmlHelper.SignAssertionXml(assertion).DocumentElement, true));
+
+            var c1 = new ClaimsIdentity("Federation");
+            c1.AddClaim(new Claim(ClaimTypes.NameIdentifier, "SomeUser", null, "https://idp.example.com"));            
+
+            var expected = new[] { c1 };
+
+            var r = Saml2Response.Read(SignedXmlHelper.SignXml(xmlDoc.OuterXml));
+
+            Options.FromConfiguration.SPOptions.Saml2PSecurityTokenHandler.Configuration.CertificateValidator = X509CertificateValidator.None;
+
             r.Validate(Options.FromConfiguration);
 
             r.GetClaims(Options.FromConfiguration.SPOptions)

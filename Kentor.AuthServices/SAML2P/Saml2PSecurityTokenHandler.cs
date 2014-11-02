@@ -1,8 +1,6 @@
-﻿using Kentor.AuthServices.Configuration;
-using Kentor.AuthServices.Internal;
+﻿using Kentor.AuthServices.Internal;
 using System;
 using System.IdentityModel.Metadata;
-using System.IdentityModel.Selectors;
 using System.IdentityModel.Services;
 using System.IdentityModel.Tokens;
 using System.Security.Claims;
@@ -31,15 +29,25 @@ namespace Kentor.AuthServices.Saml2P
                 throw new ArgumentNullException("spEntityId");
             }
 
-            var audienceRestriction = new AudienceRestriction(AudienceUriMode.Always);
-            audienceRestriction.AllowedAudienceUris.Add(
+            FederatedAuthentication.FederationConfiguration.IdentityConfiguration.AudienceRestriction.AllowedAudienceUris.Add(
                 new Uri(spEntityId.Id));
+
+            if (FederatedAuthentication.FederationConfiguration.IdentityConfiguration.IssuerNameRegistry is ConfigurationBasedIssuerNameRegistry
+                &&
+                (FederatedAuthentication.FederationConfiguration.IdentityConfiguration.IssuerNameRegistry as
+                    ConfigurationBasedIssuerNameRegistry).ConfiguredTrustedIssuers.Count == 0)
+            {
+                FederatedAuthentication.FederationConfiguration.IdentityConfiguration.IssuerNameRegistry =
+                    new ReturnRequestedIssuerNameRegistry();
+            }
 
             Configuration = new SecurityTokenHandlerConfiguration
             {
-                IssuerNameRegistry = new ReturnRequestedIssuerNameRegistry(),
-                AudienceRestriction = audienceRestriction,
-                SaveBootstrapContext = FederatedAuthentication.FederationConfiguration.IdentityConfiguration.SaveBootstrapContext
+                IssuerNameRegistry = FederatedAuthentication.FederationConfiguration.IdentityConfiguration.IssuerNameRegistry,
+                AudienceRestriction = FederatedAuthentication.FederationConfiguration.IdentityConfiguration.AudienceRestriction,
+                SaveBootstrapContext = FederatedAuthentication.FederationConfiguration.IdentityConfiguration.SaveBootstrapContext,
+                CertificateValidator = FederatedAuthentication.FederationConfiguration.IdentityConfiguration.CertificateValidator,
+                CertificateValidationMode = FederatedAuthentication.FederationConfiguration.IdentityConfiguration.CertificateValidationMode
             };
         }
 
