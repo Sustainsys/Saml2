@@ -1,13 +1,10 @@
-﻿using System;
+﻿using Kentor.AuthServices.Internal;
+using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.IdentityModel.Metadata;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Security.Cryptography.X509Certificates;
 using System.Xml;
 using System.Xml.Linq;
-using Kentor.AuthServices.Internal;
 
 namespace Kentor.AuthServices.Saml2P
 {
@@ -21,7 +18,7 @@ namespace Kentor.AuthServices.Saml2P
         /// <summary>
         /// The id of the request.
         /// </summary>
-        public string Id
+        public virtual string Id
         {
             get
             {
@@ -51,7 +48,7 @@ namespace Kentor.AuthServices.Saml2P
         /// <summary>
         /// The instant that the request was issued (well actually, created).
         /// </summary>
-        public string IssueInstant
+        public virtual string IssueInstant
         {
             get
             {
@@ -84,6 +81,11 @@ namespace Kentor.AuthServices.Saml2P
         /// The SAML2 request name
         /// </summary>
         protected abstract string LocalName { get; }
+
+        /// <summary>
+        /// Request signing certificate
+        /// </summary>
+        public X509Certificate2 SigningCertificate { get; set; } 
 
         /// <summary>
         /// Creates XNodes for the fields of the Saml2RequestBase class. These

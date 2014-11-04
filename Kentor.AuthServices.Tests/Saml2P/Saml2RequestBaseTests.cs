@@ -17,9 +17,16 @@ namespace Kentor.AuthServices.Tests.Saml2P
             return x;
         }
 
+        public override string Id { get { return "id1ff53dcaff88485da452d9f1984862d5"; } }
+
         public override string ToXml()
         {
             return ToXElement().ToString();
+        }
+
+        public override string IssueInstant
+        {
+            get { return "2004-12-05T09:21:59Z"; }
         }
 
         protected override string LocalName
@@ -39,8 +46,8 @@ namespace Kentor.AuthServices.Tests.Saml2P
         [TestMethod]
         public void Saml2RequestBase_Id_IsUnique()
         {
-            var r1 = new ConcreteSaml2Request();
-            var r2 = new ConcreteSaml2Request();
+            var r1 = new Saml2AuthenticationRequest();
+            var r2 = new Saml2AuthenticationRequest();
 
             r1.Id.Should().NotBe(r2.Id);
         }
@@ -72,7 +79,7 @@ namespace Kentor.AuthServices.Tests.Saml2P
         [TestMethod]
         public void Saml2RequestBase_IssueInstant_IsNow()
         {
-            var issueInstant = new ConcreteSaml2Request().IssueInstant;
+            var issueInstant = new Saml2AuthenticationRequest().IssueInstant;
 
             var parsed = DateTime.Parse(issueInstant).ToUniversalTime();
 

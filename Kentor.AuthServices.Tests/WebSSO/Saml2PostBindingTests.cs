@@ -1,10 +1,8 @@
 ﻿using System;
+using Kentor.AuthServices.Saml2P;
+using Kentor.AuthServices.Tests.Saml2P;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System.Web;
 using FluentAssertions;
-using System.Collections.Specialized;
-using System.IdentityModel.Tokens;
-using System.Xml;
 using System.Text;
 using System.Collections.Generic;
 using Kentor.AuthServices.WebSso;
@@ -56,36 +54,26 @@ namespace Kentor.AuthServices.Tests.WebSso
         public void Saml2PostBinding_Bind_Nullcheck_payload()
         {
             Saml2Binding.Get(Saml2BindingType.HttpPost)
-                .Invoking(b => b.Bind(null, new Uri("http://host"), "-"))
-                .ShouldThrow<ArgumentNullException>().And.ParamName.Should().Be("payload");
+                .Invoking(b => b.Bind(null, new Uri("http://host")))
+                .ShouldThrow<ArgumentNullException>().And.ParamName.Should().Be("message");
         }
 
         [TestMethod]
         public void Saml2PostBinding_Bind_Nullcheck_destinationUri()
         {
             Saml2Binding.Get(Saml2BindingType.HttpPost)
-                .Invoking(b => b.Bind("-", null, "-"))
+                .Invoking(b => b.Bind(new Saml2AuthenticationRequest(), null))
                 .ShouldThrow<ArgumentNullException>().And.ParamName.Should().Be("destinationUri");
         }
 
         [TestMethod]
-        public void Saml2PostBinding_Bind_Nullcheck_messageName()
-        {
-            Saml2Binding.Get(Saml2BindingType.HttpPost)
-                .Invoking(b => b.Bind("-", new Uri("http://host"), null))
-                .ShouldThrow<ArgumentNullException>().And.ParamName.Should().Be("messageName");
-        }
-
-        [TestMethod]
         public void Saml2PostBinding_Bind()
-        {
-            var xmlData = "<root><content>data</content></root>";
+        {           
             var destinationUri = new Uri("http://www.example.com/acs");
-            var messageName = "SAMLMessageName";
+            var message = new ConcreteSaml2Request();
+            var subject = Saml2Binding.Get(Saml2BindingType.HttpPost).Bind(message, destinationUri);
 
-            var subject = Saml2Binding.Get(Saml2BindingType.HttpPost).Bind(xmlData, destinationUri, messageName);
-
-            var expected = new CommandResult()
+            var expected = new CommandResult
             {
                 Content = @"<?xml version=""1.0"" encoding=""UTF-8""?>
 <!DOCTYPE html PUBLIC ""-//W3C//DTD XHTML 1.1//EN""
@@ -101,8 +89,8 @@ you must press the Continue button once to proceed.
 <form action=""http://www.example.com/acs"" 
 method=""post"">
 <div>
-<input type=""hidden"" name=""SAMLMessageName"" 
-value=""PHJvb3Q+PGNvbnRlbnQ+ZGF0YTwvY29udGVudD48L3Jvb3Q+""/>
+<input type=""hidden"" name=""SAMLRequest"" 
+value=""PEZvbyB4bWxuczpzYW1sMnA9InVybjpvYXNpczpuYW1lczp0YzpTQU1MOjIuMDpwcm90b2NvbCIgeG1sbnM6c2FtbDI9InVybjpvYXNpczpuYW1lczp0YzpTQU1MOjIuMDphc3NlcnRpb24iIElEPSJpZDFmZjUzZGNhZmY4ODQ4NWRhNDUyZDlmMTk4NDg2MmQ1IiBWZXJzaW9uPSIyLjAiIElzc3VlSW5zdGFudD0iMjAwNC0xMi0wNVQwOToyMTo1OVoiIC8+""/>
 </div>
 <noscript>
 <div>
@@ -116,7 +104,7 @@ value=""PHJvb3Q+PGNvbnRlbnQ+ZGF0YTwvY29udGVudD48L3Jvb3Q+""/>
 
             subject.ShouldBeEquivalentTo(expected);
         }
-
+       
         [TestMethod]
         public void Saml2PostBinding_CanUnbind_Nullcheck()
         {

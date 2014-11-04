@@ -49,7 +49,7 @@ namespace Kentor.AuthServices.Tests.WebSso
         [TestMethod]
         public void Saml2Binding_Bind_IsNotImplemented()
         {
-            Action a = () => new ConcreteSaml2Binding().Bind(null, null, null);
+            Action a = () => new ConcreteSaml2Binding().Bind(null, null);
 
             a.ShouldThrow<NotImplementedException>();
         }

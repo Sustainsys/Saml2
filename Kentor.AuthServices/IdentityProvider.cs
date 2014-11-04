@@ -1,4 +1,5 @@
-﻿using Kentor.AuthServices.Configuration;
+﻿using System.IdentityModel.Services;
+using Kentor.AuthServices.Configuration;
 using System;
 using System.Configuration;
 using System.Globalization;
@@ -165,11 +166,12 @@ namespace Kentor.AuthServices
                 throw new ArgumentNullException("authServicesUrls");
             }
 
-            var authnRequest = new Saml2AuthenticationRequest()
+            var authnRequest = new Saml2AuthenticationRequest
             {
                 DestinationUri = SingleSignOnServiceUrl,
                 AssertionConsumerServiceUrl = authServicesUrls.AssertionConsumerServiceUrl,
                 Issuer = spOptions.EntityId,
+                SigningCertificate = FederatedAuthentication.FederationConfiguration.ServiceCertificate,
                 // For now we only support one attribute consuming service.
                 AttributeConsumingServiceIndex = spOptions.AttributeConsumingServices.Any() ? 0 : (int?)null
             };
