@@ -270,13 +270,16 @@ entityID=""http://localhost:13428/idpMetadataVeryShortCacheDuration"" cacheDurat
                     keyElement, IdpVeryShortCacheDurationBinding, IdpAndFederationVeryShortCacheDurationSsoPort);
             }
 
-            if (File.Exists("SambiMetadata.xml"))
+            var sambipath = "Metadata\\SambiMetadata.xml";
+            var skolfederationPath = "Metadata\\SkolfederationMetadata.xml";
+
+            if (File.Exists(sambipath))
             {
-                content["/SambiMetadata"] = File.ReadAllText("SambiMetadata.xml");
+                content["/SambiMetadata"] = File.ReadAllText(sambipath);
             }
-            if (File.Exists("SkolfederationMetadata.xml"))
+            if (File.Exists(skolfederationPath))
             {
-                content["/SkolfederationMetadata"] = File.ReadAllText("SkolfederationMetadata.xml");
+                content["/SkolfederationMetadata"] = File.ReadAllText(skolfederationPath);
             }
 
             return content;
