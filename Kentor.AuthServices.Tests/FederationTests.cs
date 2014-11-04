@@ -41,11 +41,18 @@ namespace Kentor.AuthServices.Tests
             // handles some real world metadata, the metadadata from Sambi's test
             // environment is used.
 
-            var url = new Uri("http://localhost:13428/SambiMetadata");
+            var options = StubFactory.CreateOptions();
 
-            Action a = () => new Federation(url, true, StubFactory.CreateOptions());
+            var url = new Uri("http://localhost:13428/SambiMetadata");
+            var idpInFederation = new EntityId("http://idp-acc.test.ek.sll.se/neas");
+
+            Action a = () => new Federation(url, true, options);
 
             a.ShouldNotThrow();
+
+            IdentityProvider idp;
+            options.IdentityProviders.TryGetValue(idpInFederation, out idp)
+                .Should().BeTrue();
         }
 
         [TestMethod]
@@ -55,11 +62,18 @@ namespace Kentor.AuthServices.Tests
             // AuthServices handles some real world metadata, the metdata from the
             // skolfederation federation is used.
 
-            var url = new Uri("http://localhost:13428/SkolfederationMetadata");
+            var options = StubFactory.CreateOptions();
 
-            Action a = () => new Federation(url, true, StubFactory.CreateOptions());
+            var url = new Uri("http://localhost:13428/SkolfederationMetadata");
+            var idpInFederation = new EntityId("http://fs.ale.se/adfs/services/trust");
+
+            Action a = () => new Federation(url, true, options);
 
             a.ShouldNotThrow();
+
+            IdentityProvider idp;
+            options.IdentityProviders.TryGetValue(idpInFederation, out idp)
+                .Should().BeTrue();
         }
 
         [TestMethod]

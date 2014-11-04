@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.IdentityModel.Metadata;
+using System.IdentityModel.Selectors;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -12,7 +13,12 @@ namespace Kentor.AuthServices.Metadata
 {
     class ExtendedMetadataSerializer : MetadataSerializer
     {
+        private ExtendedMetadataSerializer()
+            : base(new KeyInfoSerializer())
+        { }
+
         private static ExtendedMetadataSerializer instance = new ExtendedMetadataSerializer();
+
         public static ExtendedMetadataSerializer Instance
         {
             get

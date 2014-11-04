@@ -7,6 +7,9 @@ using Kentor.AuthServices.Metadata;
 using System.IdentityModel.Metadata;
 using System.Xml.Linq;
 using Kentor.AuthServices.WebSso;
+using System.Linq;
+using System.IdentityModel.Tokens;
+using System.ServiceModel.Security;
 
 namespace Kentor.AuthServices.Tests
 {
@@ -124,6 +127,110 @@ namespace Kentor.AuthServices.Tests
 
             result.Element(Saml2Namespaces.Saml2Metadata + "EntityDescriptor").Attribute("cacheDuration")
                 .Should().BeNull();
+        }
+
+        [TestMethod]
+        public void ExtendedMetadataSerializer_Read_X509DataWithMultipleInfo()
+        {
+            var data =
+@"<EntityDescriptor entityID=""login004.test.stockholm.se""
+  xmlns=""urn:oasis:names:tc:SAML:2.0:metadata"">
+  <IDPSSODescriptor WantAuthnRequestsSigned=""false"" protocolSupportEnumeration=""urn:oasis:names:tc:SAML:2.0:protocol"">
+    <KeyDescriptor use=""signing"">
+      <ns1:KeyInfo xmlns:ns1=""http://www.w3.org/2000/09/xmldsig#"" Id=""SM1fa34b49eb23d806ea829a9f5f949c1ceff1b9142d8"">
+        <ns1:X509Data>
+          <ns1:X509IssuerSerial>
+            <ns1:X509IssuerName>E=arende@servicecentrum.stockholm.se,CN=Stockholm CA idPortal Internal Use,OU=idPortal Tieto,O=Stockholms Stad,ST=Stockholm,C=SE</ns1:X509IssuerName>
+            <ns1:X509SerialNumber>12364142347751398823</ns1:X509SerialNumber>
+          </ns1:X509IssuerSerial>
+          <ns1:X509Certificate>MIIDbTCCAtagAwIBAgIJAKuWQfUOFh2nMA0GCSqGSIb3DQEBBQUAMIG0MQswCQYDVQQGEwJTRTESMBAGA1UECBMJU3RvY2tob2xtMRgwFgYDVQQKEw9TdG9ja2hvbG1zIFN0YWQxFzAVBgNVBAsTDmlkUG9ydGFsIFRpZXRvMSswKQYDVQQDEyJTdG9ja2hvbG0gQ0EgaWRQb3J0YWwgSW50ZXJuYWwgVXNlMTEwLwYJKoZIhvcNAQkBFiJhcmVuZGVAc2VydmljZWNlbnRydW0uc3RvY2tob2xtLnNlMB4XDTE0MTAwOTEzMDUyMloXDTE3MTAwOTEzMDUyMlowgb4xCzAJBgNVBAYTAlNFMRIwEAYDVQQIEwlTdG9ja2hvbG0xEjAQBgNVBAcTCVN0b2NraG9sbTEaMBgGA1UEChMRQ2l0eSBPZiBTdG9ja2hvbG0xEzARBgNVBAsTCmlkUG9ydGFsZW4xIzAhBgNVBAMTGmxvZ2luMDA0LnRlc3Quc3RvY2tob2xtLnNlMTEwLwYJKoZIhvcNAQkBFiJhcmVuZGVAc2VydmljZWNlbnRydW0uc3RvY2tob2xtLnNlMIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCyizB5uoNMlNZhlnCMeXBD/60pltM/tVg4/y0Mk+zFztHId8BoUtuGk5Z3gQRXb/SuFkE41bhLB2SiArvEgjFjaGEH+FtBOuDiansY9cersWnntvkKGhUt6bxSeG+AKrh7rA8yf4CwQvIQw9jQqGyGeVuaxe7ilGcVHwmDotQWhwIDAQABo3sweTAJBgNVHRMEAjAAMCwGCWCGSAGG+EIBDQQfFh1PcGVuU1NMIEdlbmVyYXRlZCBDZXJ0aWZpY2F0ZTAdBgNVHQ4EFgQUlCG8ZSkU6QTHp+tVBedxmn3VglIwHwYDVR0jBBgwFoAUxl8NEFIKt39mKUdrXjIr4syL9lkwDQYJKoZIhvcNAQEFBQADgYEAuCDEJuFuibTI7SomuAM3cH33rjVsBriXtZPp1Fvu9TidHzOueFv9MR+K3DRH+x0PDvGJwA5vlegTwD7qGWcYp80gItkqMhO2nYuIn/9DyPKebtSIM4dSosvmlSTD1bKdEfDM87WpitrTz+Ma6jc59Djiq//h678toVdV6Sm0TkY=</ns1:X509Certificate>
+          <ns1:X509SubjectName>E=arende@servicecentrum.stockholm.se,CN=login004.test.stockholm.se,OU=idPortalen,O=City Of Stockholm,L=Stockholm,ST=Stockholm,C=SE</ns1:X509SubjectName>
+        </ns1:X509Data>
+      </ns1:KeyInfo>
+    </KeyDescriptor>
+  </IDPSSODescriptor>
+</EntityDescriptor>";
+            var entityDescriptor = (ExtendedEntityDescriptor)ExtendedMetadataSerializer.Instance.ReadMetadata(
+                new MemoryStream(Encoding.UTF8.GetBytes(data)));
+
+            var keyInfo = entityDescriptor.RoleDescriptors.Cast<IdentityProviderSingleSignOnDescriptor>()
+               .Single().Keys.Single().KeyInfo;
+
+            keyInfo.Count.Should().Be(2);
+
+            keyInfo[0].As<X509IssuerSerialKeyIdentifierClause>().IssuerName.Should().Be("E=arende@servicecentrum.stockholm.se,CN=Stockholm CA idPortal Internal Use,OU=idPortal Tieto,O=Stockholms Stad,ST=Stockholm,C=SE");
+            keyInfo[0].As<X509IssuerSerialKeyIdentifierClause>().IssuerSerialNumber.Should().Be("12364142347751398823");
+
+            keyInfo[1].Should().BeOfType<X509RawDataKeyIdentifierClause>();
+        }
+
+        [TestMethod]
+        public void ExtendedMetadataSerializer_Read_KeyName()
+        {
+            var data =
+@"<md:EntityDescriptor xmlns:md=""urn:oasis:names:tc:SAML:2.0:metadata"" entityID=""http://idp-acc.test.ek.sll.se/neas"">
+  <md:IDPSSODescriptor WantAuthnRequestsSigned=""true"" protocolSupportEnumeration=""urn:oasis:names:tc:SAML:2.0:protocol"">
+    <md:KeyDescriptor use=""signing"">
+      <ds:KeyInfo xmlns:ds=""http://www.w3.org/2000/09/xmldsig#"">
+        <ds:X509Data>
+          <ds:X509Certificate>
+MIIDYDCCAkgCCQDdrvhAIZlF8zANBgkqhkiG9w0BAQUFADByMQswCQYDVQQGEwJTRTEXMBUGA1UE
+CAwOU3RvY2tob2xtcyBsYW4xEjAQBgNVBAcMCVN0b2NraG9sbTEVMBMGA1UECgwMMTYyMzIxMDAw
+MDE2MR8wHQYDVQQDDBZpZHAtYWNjLnRlc3QuZWsuc2xsLnNlMB4XDTE0MDIxMzExMTkyOVoXDTI0
+MDIxMTExMTkyOVowcjELMAkGA1UEBhMCU0UxFzAVBgNVBAgMDlN0b2NraG9sbXMgbGFuMRIwEAYD
+VQQHDAlTdG9ja2hvbG0xFTATBgNVBAoMDDE2MjMyMTAwMDAxNjEfMB0GA1UEAwwWaWRwLWFjYy50
+ZXN0LmVrLnNsbC5zZTCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBANGsLRYFrhS/iQaG
+w410eQ3wrEW/tA8t/PTUjSoy/jWYEL8GvfMNPggC2SSb45tAhvnItnyD0wFRGUjUJ84xrCtl9fSX
+Z7GAGfE4RaHHXoVXjztMQXMrfusSSdsu2I0QDNKeoiTRNCTAWcR45pwvqNUqIagbT15xz7vqC3tP
+Guo9lMMp4TL32gnQmtCcskE7qdYn+LJmLlb04ZzsJvNZ1bVpbTzGKmclcpHekrt/N44EjEkFnlP5
+Ki3KgIXPEGbUALIsImfN/y+XqXQV/KqbGRD8likTLf5mhBykzOvX5PT5E7AcZntzJa59xaMs8dWE
+i1cHSy7Q+T6z48a/XxcQEnMCAwEAATANBgkqhkiG9w0BAQUFAAOCAQEAFO8old2aELkxryMoWpeU
+EWECwUwQgUSGPpx4eCrGcoSw9Vf4R5EV3WQxE0VZ/IfwLEVwFoewhTCaGEwmBPjbuk7In8n+RsA1
+WFKEi1XIX2IMiRPTszMLZY39zGVkr1aijoE7UmxMRlmH45FJlhJ0R8N2nRsLM2BylF7toTlozAGC
+jfMzDBJshtuRdTAGWzWpJd+sijbGitCl8D9c5pB/G/iqdA770eNqcYUogjUyF2rEnaafx34h3T1r
+gosrSG6sO3IPeL4BncKqqZO2FokfZbaqPBv6xmoKsVTUTQRfNEks84dRiG0MjqBncR+B6CIrCv2a
+3hq3zHRCfk7EbFjuBw==
+          </ds:X509Certificate>
+        </ds:X509Data>
+        <ds:KeyName>6b66c9b9e6612b7d5d9f4078daeca7a8e0d9815e</ds:KeyName>
+      </ds:KeyInfo>
+    </md:KeyDescriptor>
+  </md:IDPSSODescriptor>
+</md:EntityDescriptor>";
+
+            var entityDescriptor = (ExtendedEntityDescriptor)ExtendedMetadataSerializer.Instance.ReadMetadata(
+                new MemoryStream(Encoding.UTF8.GetBytes(data)));
+
+            var keyInfo = entityDescriptor.RoleDescriptors.Cast<IdentityProviderSingleSignOnDescriptor>()
+               .Single().Keys.Single().KeyInfo;
+
+            keyInfo.Count.Should().Be(2);
+
+            keyInfo[0].Should().BeOfType<X509RawDataKeyIdentifierClause>();
+            keyInfo[1].As<KeyNameIdentifierClause>().KeyName.Should().Be("6b66c9b9e6612b7d5d9f4078daeca7a8e0d9815e");
+        }
+
+        [TestMethod]
+        public void ExtendedMetadataSerializer_Read_ExtraElementInKeyInfoIgnored()
+        {
+            var data =
+@"<md:EntityDescriptor xmlns:md=""urn:oasis:names:tc:SAML:2.0:metadata"" entityID=""http://idp-acc.test.ek.sll.se/neas"">
+  <md:IDPSSODescriptor WantAuthnRequestsSigned=""true"" protocolSupportEnumeration=""urn:oasis:names:tc:SAML:2.0:protocol"">
+    <md:KeyDescriptor use=""signing"">
+      <ds:KeyInfo xmlns:ds=""http://www.w3.org/2000/09/xmldsig#"">
+        <MyCustomElement xmlns=""urn:MyNamespace"" />
+      </ds:KeyInfo>
+    </md:KeyDescriptor>
+  </md:IDPSSODescriptor>
+</md:EntityDescriptor>";
+
+            var entityDescriptor = (ExtendedEntityDescriptor)ExtendedMetadataSerializer.Instance.ReadMetadata(
+                new MemoryStream(Encoding.UTF8.GetBytes(data)));
+
+            var keyInfo = entityDescriptor.RoleDescriptors.Cast<IdentityProviderSingleSignOnDescriptor>()
+               .Single().Keys.Single().KeyInfo;
+
+            keyInfo.Count.Should().Be(0);
         }
     }
 }
