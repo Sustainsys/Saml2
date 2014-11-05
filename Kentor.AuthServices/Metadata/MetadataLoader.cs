@@ -43,7 +43,7 @@ namespace Kentor.AuthServices.Metadata
 
         internal static MetadataBase Load(Stream metadataStream)
         {
-            var serializer = ExtendedMetadataSerializer.Instance;
+            var serializer = ExtendedMetadataSerializer.ReaderInstance;
             using (var reader = XmlDictionaryReader.CreateTextReader(metadataStream, XmlDictionaryReaderQuotas.Max))
             {
                 // Filter out the signature from the metadata, as the built in MetadataSerializer

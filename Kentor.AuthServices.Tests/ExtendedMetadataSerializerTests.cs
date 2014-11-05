@@ -23,7 +23,7 @@ namespace Kentor.AuthServices.Tests
 @"<EntityDescriptor xmlns=""urn:oasis:names:tc:SAML:2.0:metadata""
   entityID=""http://idp.example.com/"" validUntil=""2100-01-02T14:42:43Z"" />";
 
-            var entityDescriptor = ExtendedMetadataSerializer.Instance.ReadMetadata(
+            var entityDescriptor = ExtendedMetadataSerializer.ReaderInstance.ReadMetadata(
                 new MemoryStream(Encoding.UTF8.GetBytes(data)));
 
             var subject = entityDescriptor as ExtendedEntityDescriptor;
@@ -40,7 +40,7 @@ namespace Kentor.AuthServices.Tests
 @"<EntityDescriptor xmlns=""urn:oasis:names:tc:SAML:2.0:metadata""
   entityID=""http://idp.example.com/"" cacheDuration=""PT42M"" />";
 
-            var entityDescriptor = ExtendedMetadataSerializer.Instance.ReadMetadata(
+            var entityDescriptor = ExtendedMetadataSerializer.ReaderInstance.ReadMetadata(
                 new MemoryStream(Encoding.UTF8.GetBytes(data)));
 
             var subject = entityDescriptor as ExtendedEntityDescriptor;
@@ -60,7 +60,7 @@ namespace Kentor.AuthServices.Tests
 </EntitiesDescriptor>
 ";
 
-            var entitiesDescriptor = ExtendedMetadataSerializer.Instance.ReadMetadata(
+            var entitiesDescriptor = ExtendedMetadataSerializer.ReaderInstance.ReadMetadata(
                 new MemoryStream(Encoding.UTF8.GetBytes(data)));
 
             var subject = entitiesDescriptor as ExtendedEntitiesDescriptor;
@@ -80,7 +80,7 @@ namespace Kentor.AuthServices.Tests
 </EntitiesDescriptor>"
 ;
 
-            var entitiesDescriptor = ExtendedMetadataSerializer.Instance.ReadMetadata(
+            var entitiesDescriptor = ExtendedMetadataSerializer.ReaderInstance.ReadMetadata(
                 new MemoryStream(Encoding.UTF8.GetBytes(data)));
 
             var subject = entitiesDescriptor as ExtendedEntitiesDescriptor;
@@ -117,7 +117,7 @@ namespace Kentor.AuthServices.Tests
             metadata.ChildEntities.Add(entity);
 
             var stream = new MemoryStream();
-            ExtendedMetadataSerializer.Instance.WriteMetadata(stream, metadata);
+            ExtendedMetadataSerializer.ReaderInstance.WriteMetadata(stream, metadata);
             stream.Seek(0, SeekOrigin.Begin);
 
             var result = XDocument.Load(stream).Root;
@@ -150,7 +150,7 @@ namespace Kentor.AuthServices.Tests
     </KeyDescriptor>
   </IDPSSODescriptor>
 </EntityDescriptor>";
-            var entityDescriptor = (ExtendedEntityDescriptor)ExtendedMetadataSerializer.Instance.ReadMetadata(
+            var entityDescriptor = (ExtendedEntityDescriptor)ExtendedMetadataSerializer.ReaderInstance.ReadMetadata(
                 new MemoryStream(Encoding.UTF8.GetBytes(data)));
 
             var keyInfo = entityDescriptor.RoleDescriptors.Cast<IdentityProviderSingleSignOnDescriptor>()
@@ -198,7 +198,7 @@ gosrSG6sO3IPeL4BncKqqZO2FokfZbaqPBv6xmoKsVTUTQRfNEks84dRiG0MjqBncR+B6CIrCv2a
   </md:IDPSSODescriptor>
 </md:EntityDescriptor>";
 
-            var entityDescriptor = (ExtendedEntityDescriptor)ExtendedMetadataSerializer.Instance.ReadMetadata(
+            var entityDescriptor = (ExtendedEntityDescriptor)ExtendedMetadataSerializer.ReaderInstance.ReadMetadata(
                 new MemoryStream(Encoding.UTF8.GetBytes(data)));
 
             var keyInfo = entityDescriptor.RoleDescriptors.Cast<IdentityProviderSingleSignOnDescriptor>()
@@ -224,7 +224,7 @@ gosrSG6sO3IPeL4BncKqqZO2FokfZbaqPBv6xmoKsVTUTQRfNEks84dRiG0MjqBncR+B6CIrCv2a
   </md:IDPSSODescriptor>
 </md:EntityDescriptor>";
 
-            var entityDescriptor = (ExtendedEntityDescriptor)ExtendedMetadataSerializer.Instance.ReadMetadata(
+            var entityDescriptor = (ExtendedEntityDescriptor)ExtendedMetadataSerializer.ReaderInstance.ReadMetadata(
                 new MemoryStream(Encoding.UTF8.GetBytes(data)));
 
             var keyInfo = entityDescriptor.RoleDescriptors.Cast<IdentityProviderSingleSignOnDescriptor>()
