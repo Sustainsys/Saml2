@@ -6,10 +6,10 @@ using System.Threading.Tasks;
 
 namespace Kentor.AuthServices
 {
-    class MetadataRefreshScheduler
+    internal static class MetadataRefreshScheduler
     {
         internal static TimeSpan minInternval = new TimeSpan(0, 1, 0);
-        
+
         // Maximum delay supported by Task.Delay()
         private static readonly TimeSpan maxInterval = new TimeSpan(0, 0, 0, 0, int.MaxValue);
 
@@ -18,17 +18,23 @@ namespace Kentor.AuthServices
             var timeRemaining = validUntil - DateTime.UtcNow;
             var delay = new TimeSpan(timeRemaining.Ticks / 2);
 
-            if(delay < minInternval)
+            if (delay < minInternval)
             {
                 return minInternval;
             }
 
-            if(delay > maxInterval)
+            if (delay > maxInterval)
             {
                 return maxInterval;
             }
 
             return delay;
+        }
+
+        internal static DateTime CalculateMetadataValidUntil(this ICachedMetadata metadata)
+        {
+            return metadata.ValidUntil ??
+                   DateTime.UtcNow.Add(metadata.CacheDuration ?? new TimeSpan(1, 0, 0));
         }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using FluentAssertions;
+using NSubstitute;
 
 namespace Kentor.AuthServices.Tests
 {
@@ -37,6 +38,16 @@ namespace Kentor.AuthServices.Tests
             var maxDelay = new TimeSpan(0, 0, 0, 0, int.MaxValue);
 
             subject.Should().BeCloseTo(maxDelay);
+        }
+
+        [TestMethod]
+        public void MetadataRefreshScheduler_CalculateMetadataValidUntil_DefaultValue()
+        {
+            var metadata = Substitute.For<ICachedMetadata>();
+
+            var subject = metadata.CalculateMetadataValidUntil();
+
+            subject.Should().BeCloseTo(DateTime.UtcNow.AddHours(1));
         }
     }
 }

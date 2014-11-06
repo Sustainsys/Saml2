@@ -268,12 +268,7 @@ namespace Kentor.AuthServices
                         .GetAsymmetricAlgorithm(SignedXml.XmlDsigRSASHA1Url, false);
                 }
 
-                MetadataValidUntil = metadata.ValidUntil;
-
-                if (metadata.CacheDuration.HasValue)
-                {
-                    MetadataValidUntil = DateTime.UtcNow.Add(metadata.CacheDuration.Value);
-                }
+                MetadataValidUntil = metadata.CalculateMetadataValidUntil();
             }
         }
 
