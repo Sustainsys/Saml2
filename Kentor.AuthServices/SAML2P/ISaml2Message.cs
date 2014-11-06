@@ -18,7 +18,7 @@ namespace Kentor.AuthServices.Saml2P
         /// <summary>
         /// The destination of the message.
         /// </summary>
-        Uri DestinationUri { get; }
+        Uri DestinationUrl { get; }
 
         /// <summary>
         /// Serializes the message into wellformed Xml.

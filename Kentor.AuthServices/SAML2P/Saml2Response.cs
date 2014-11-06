@@ -72,11 +72,11 @@ namespace Kentor.AuthServices.Saml2P
 
             issuer = new EntityId(xmlDocument.DocumentElement["Issuer", Saml2Namespaces.Saml2Name].GetTrimmedTextIfNotNull());
 
-            var destinationUriString = xmlDocument.DocumentElement.Attributes["Destination"].GetValueIfNotNull();
+            var destinationUrlString = xmlDocument.DocumentElement.Attributes["Destination"].GetValueIfNotNull();
 
-            if (destinationUriString != null)
+            if (destinationUrlString != null)
             {
-                destinationUri = new Uri(destinationUriString);
+                destinationUrl = new Uri(destinationUrlString);
             }
         }
 
@@ -86,17 +86,17 @@ namespace Kentor.AuthServices.Saml2P
         /// <param name="issuer">Issuer of the response.</param>
         /// <param name="issuerCertificate">The certificate to use when signing
         /// this response in XML form.</param>
-        /// <param name="destinationUri">The destination Uri for the message</param>
+        /// <param name="destinationUrl">The destination Uri for the message</param>
         /// <param name="inResponseTo">In response to id</param>
         /// <param name="claimsIdentities">Claims identities to be included in the 
         /// response. Each identity is translated into a separate assertion.</param>
         public Saml2Response(EntityId issuer, X509Certificate2 issuerCertificate,
-            Uri destinationUri, string inResponseTo, params ClaimsIdentity[] claimsIdentities)
+            Uri destinationUrl, string inResponseTo, params ClaimsIdentity[] claimsIdentities)
         {
             this.issuer = issuer;
             this.claimsIdentities = claimsIdentities;
             this.issuerCertificate = issuerCertificate;
-            this.destinationUri = destinationUri;
+            this.destinationUrl = destinationUrl;
             if (inResponseTo != null)
             {
                 this.inResponseTo = new Saml2Id(inResponseTo);
@@ -154,9 +154,9 @@ namespace Kentor.AuthServices.Saml2P
 
             var responseElement = xml.CreateElement("saml2p", "Response", Saml2Namespaces.Saml2PName);
 
-            if (DestinationUri != null)
+            if (DestinationUrl != null)
             {
-                responseElement.SetAttributeNode("Destination", "").Value = DestinationUri.ToString();
+                responseElement.SetAttributeNode("Destination", "").Value = DestinationUrl.ToString();
             }
 
             responseElement.SetAttributeNode("ID", "").Value = id.Value;
@@ -231,16 +231,16 @@ namespace Kentor.AuthServices.Saml2P
             }
         }
 
-        readonly Uri destinationUri;
+        readonly Uri destinationUrl;
 
         /// <summary>
         /// The destination of the response message.
         /// </summary>
-        public Uri DestinationUri
+        public Uri DestinationUrl
         {
             get
             {
-                return destinationUri;
+                return destinationUrl;
             }
         }
 

@@ -32,15 +32,15 @@ namespace Kentor.AuthServices.WebSso
             return xml;
         }
 
-        public override CommandResult Bind(string payload, Uri destinationUri, string messageName)
+        public override CommandResult Bind(string payload, Uri destinationUrl, string messageName)
         {
             if (payload == null)
             {
                 throw new ArgumentNullException("payload");
             }
-            if (destinationUri == null)
+            if (destinationUrl == null)
             {
-                throw new ArgumentNullException("destinationUri");
+                throw new ArgumentNullException("destinationUrl");
             }
             if (messageName == null)
             {
@@ -53,7 +53,7 @@ namespace Kentor.AuthServices.WebSso
             var cr = new CommandResult()
             {
                 Content = String.Format(CultureInfo.InvariantCulture, PostHtmlFormatString,
-               destinationUri, messageName, encodedXml)
+               destinationUrl, messageName, encodedXml)
             };
 
             return cr;

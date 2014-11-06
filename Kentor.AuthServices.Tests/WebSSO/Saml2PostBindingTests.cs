@@ -61,11 +61,11 @@ namespace Kentor.AuthServices.Tests.WebSso
         }
 
         [TestMethod]
-        public void Saml2PostBinding_Bind_Nullcheck_destinationUri()
+        public void Saml2PostBinding_Bind_Nullcheck_destinationUrl()
         {
             Saml2Binding.Get(Saml2BindingType.HttpPost)
                 .Invoking(b => b.Bind("-", null, "-"))
-                .ShouldThrow<ArgumentNullException>().And.ParamName.Should().Be("destinationUri");
+                .ShouldThrow<ArgumentNullException>().And.ParamName.Should().Be("destinationUrl");
         }
 
         [TestMethod]
@@ -80,10 +80,10 @@ namespace Kentor.AuthServices.Tests.WebSso
         public void Saml2PostBinding_Bind()
         {
             var xmlData = "<root><content>data</content></root>";
-            var destinationUri = new Uri("http://www.example.com/acs");
+            var destinationUrl = new Uri("http://www.example.com/acs");
             var messageName = "SAMLMessageName";
 
-            var subject = Saml2Binding.Get(Saml2BindingType.HttpPost).Bind(xmlData, destinationUri, messageName);
+            var subject = Saml2Binding.Get(Saml2BindingType.HttpPost).Bind(xmlData, destinationUrl, messageName);
 
             var expected = new CommandResult()
             {
