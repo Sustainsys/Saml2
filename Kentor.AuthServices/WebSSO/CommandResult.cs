@@ -98,7 +98,11 @@ namespace Kentor.AuthServices.WebSso
             // Ignore this if we're not running inside IIS, e.g. in unit tests.
             if(Principal != null && HttpContext.Current != null)
             {
-                var sessionToken = new SessionSecurityToken(Principal);
+                var handler = FederatedAuthentication.FederationConfiguration.IdentityConfiguration.SecurityTokenHandlers[typeof(SessionSecurityToken)] as SessionSecurityTokenHandler;
+
+                var lifetime = (handler != null) ? handler.TokenLifetime : SessionSecurityTokenHandler.DefaultTokenLifetime;
+
+                var sessionToken = new SessionSecurityToken(Principal, lifetime);
 
                 FederatedAuthentication.SessionAuthenticationModule
                     .AuthenticateSessionSecurityToken(sessionToken, true);
