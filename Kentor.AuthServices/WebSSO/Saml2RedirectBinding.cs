@@ -14,20 +14,20 @@ namespace Kentor.AuthServices.WebSso
 {
     class Saml2RedirectBinding : Saml2Binding
     {
-        public override CommandResult Bind(string payload, Uri destinationUri, string messageName)
+        public override CommandResult Bind(string payload, Uri destinationUrl, string messageName)
         {
             if (payload == null)
             {
                 throw new ArgumentNullException("payload");
             }
-            if (destinationUri == null)
+            if (destinationUrl == null)
             {
-                throw new ArgumentNullException("destinationUri");
+                throw new ArgumentNullException("destinationUrl");
             }
 
             var serializedRequest = Serialize(payload);
 
-            var redirectUri = new Uri(destinationUri.ToString()
+            var redirectUri = new Uri(destinationUrl.ToString()
                 + "?SAMLRequest=" + serializedRequest);
 
             return new CommandResult()

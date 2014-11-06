@@ -52,7 +52,7 @@ namespace Kentor.AuthServices.Tests
             var expected = new Saml2AuthenticationRequest()
             {
                 AssertionConsumerServiceUrl = urls.AssertionConsumerServiceUrl,
-                DestinationUri = idp.SingleSignOnServiceUrl,
+                DestinationUrl = idp.SingleSignOnServiceUrl,
                 Issuer = options.SPOptions.EntityId,
                 AttributeConsumingServiceIndex = 0,
             };
@@ -74,7 +74,7 @@ namespace Kentor.AuthServices.Tests
             var expected = new Saml2AuthenticationRequest()
             {
                 AssertionConsumerServiceUrl = urls.AssertionConsumerServiceUrl,
-                DestinationUri = idp.SingleSignOnServiceUrl,
+                DestinationUrl = idp.SingleSignOnServiceUrl,
                 Issuer = options.SPOptions.EntityId,
                 AttributeConsumingServiceIndex = null
             };
@@ -137,7 +137,7 @@ namespace Kentor.AuthServices.Tests
             config.SigningCertificate = new CertificateElement();
             config.SigningCertificate.AllowConfigEdit(true);
             config.SigningCertificate.FileName = "Kentor.AuthServices.Tests.pfx";
-            config.DestinationUri = new Uri("http://idp.example.com/acs");
+            config.DestinationUrl = new Uri("http://idp.example.com/acs");
             config.EntityId = "http://idp.example.com";
 
             return config;
@@ -171,10 +171,10 @@ namespace Kentor.AuthServices.Tests
         }
 
         [TestMethod]
-        public void IdentityProvider_Ctor_MissingDestinationUriThrows()
+        public void IdentityProvider_Ctor_MissingDestinationUrlThrows()
         {
             var config = CreateConfig();
-            config.DestinationUri = null;
+            config.DestinationUrl = null;
             TestMissingConfig(config, "assertion consumer service url");
         }
 

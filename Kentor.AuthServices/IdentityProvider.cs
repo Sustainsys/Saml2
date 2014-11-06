@@ -22,9 +22,9 @@ namespace Kentor.AuthServices
     public class IdentityProvider
     {
         // Ctor used for testing.
-        internal IdentityProvider(Uri destinationUri, ISPOptions spOptions)
+        internal IdentityProvider(Uri destinationUrl, ISPOptions spOptions)
         {
-            singleSignOnServiceUrl = destinationUri;
+            singleSignOnServiceUrl = destinationUrl;
             this.spOptions = spOptions;
         }
 
@@ -32,7 +32,7 @@ namespace Kentor.AuthServices
 
         internal IdentityProvider(IdentityProviderElement config, ISPOptions spOptions)
         {
-            singleSignOnServiceUrl = config.DestinationUri;
+            singleSignOnServiceUrl = config.DestinationUrl;
             EntityId = new EntityId(config.EntityId);
             binding = config.Binding;
             AllowUnsolicitedAuthnResponse = config.AllowUnsolicitedAuthnResponse;
@@ -167,7 +167,7 @@ namespace Kentor.AuthServices
 
             var authnRequest = new Saml2AuthenticationRequest()
             {
-                DestinationUri = SingleSignOnServiceUrl,
+                DestinationUrl = SingleSignOnServiceUrl,
                 AssertionConsumerServiceUrl = authServicesUrls.AssertionConsumerServiceUrl,
                 Issuer = spOptions.EntityId,
                 // For now we only support one attribute consuming service.

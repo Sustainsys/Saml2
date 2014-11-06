@@ -17,9 +17,9 @@
         @foreach (var idp in Kentor.AuthServices.Configuration.KentorAuthServicesSection.Current.IdentityProviders)
         {
             var entityId = idp.EntityId;
-            var destinationUri = idp.DestinationUri;
+            var destinationUrl = idp.DestinationUrl;
             <br />
-            <a href="@Url.Content("~/AuthServices/SignIn?idp=" + HttpUtility.UrlEncode(entityId))">Sign in</a>@: - @entityId - @destinationUri
+            <a href="@Url.Content("~/AuthServices/SignIn?idp=" + HttpUtility.UrlEncode(entityId))">Sign in</a>@: - @entityId - @destinationUrl
         }
     </p>
 }
