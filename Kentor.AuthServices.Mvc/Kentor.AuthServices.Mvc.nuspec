@@ -17,7 +17,12 @@
     <copyright>Copyright Kentor and contributors 2013</copyright>
     <tags>SAML2 authentication ASP.NET SAML SSO AspNetMvc Mvc</tags>
     <releaseNotes>
- Version 0.9.0
+ Version 0.10.0
+ * Fixed issue loading metadata with multiple child elements to X509Data.
+ * Renamed destinationUri to destinationUrl for consitency.
+ * Moved UseKentorAuthServicesAuthentication() to Owin namespace.
+
+Version 0.9.0
  * Automatic refresh of metadata for identity providers and federations.
  * Configuration option for metadataUrl for identity providers.
 
@@ -30,14 +35,6 @@ Version 0.8.0
  * Fixed new principal returned by ClaimsAuthenticationManager being ignored.
  * Attribute consumer support in metadata and AuthnRequest.
  * Discovery service response location included in metadata if use of discovery service is enabled.
-
-Version 0.7.2
- * Fixed null reference exception on missing discoveryServiceResponseUrl
-
-Version 0.7.0
- * Discovery Service Support
- * Fixed invalid format of cacheDuration attribute in metadata.
- * Made AuthServices prefer Http Redirect binding and ignore unsupported bindings when loading metadata.
     </releaseNotes>
     <dependencies>
       <group>
