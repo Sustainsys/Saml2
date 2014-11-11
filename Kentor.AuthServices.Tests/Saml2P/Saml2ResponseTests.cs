@@ -710,6 +710,56 @@ namespace Kentor.AuthServices.Tests.Saml2P
 
         [NotReRunnable]
         [TestMethod]
+        public void Saml2Response_Validate_OnCorrectEncryptedSingleAssertionInResponseMessage()
+        {
+            const string response =
+            @"<saml2p:Response xmlns:saml2p=""urn:oasis:names:tc:SAML:2.0:protocol""
+            xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
+            ID = ""Saml2Response_Validate_TrueOnCorrectSignedSingleAssertionInResponseMessage"" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z"">
+                <saml2:Issuer>https://idp.example.com</saml2:Issuer>
+                <saml2p:Status>
+                    <saml2p:StatusCode Value=""urn:oasis:names:tc:SAML:2.0:status:Success"" />
+                </saml2p:Status>
+                {0}
+            </saml2p:Response>";
+
+            const string assertion =
+            @"<saml2:Assertion Version=""2.0"" ID=""Saml2Response_Validate_OnCorrectEncryptedSingleAssertionInResponseMessage_Assertion1""
+                IssueInstant=""2013-09-25T00:00:00Z"" xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion"">
+                    <saml2:Issuer>https://idp.example.com</saml2:Issuer>
+                    <saml2:Subject>
+                        <saml2:NameID>SomeUser</saml2:NameID>
+                        <saml2:SubjectConfirmation Method=""urn:oasis:names:tc:SAML:2.0:cm:bearer"" />
+                    </saml2:Subject>
+                    <saml2:Conditions NotOnOrAfter=""2100-01-01T00:00:00Z"" />
+                </saml2:Assertion>";
+
+            const string encryptedAssertionTemplate =
+            @"<saml2:EncryptedAssertion xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion"">
+                {0}
+            </saml2:EncryptedAssertion>";
+
+            var encryptedAssertion = SignedXmlHelper.EncryptXml(string.Format(encryptedAssertionTemplate, assertion), "Assertion");
+            var signedResponse = SignedXmlHelper.SignXml(string.Format(response, encryptedAssertion));
+
+            FederatedAuthentication.FederationConfiguration.ServiceCertificate = SignedXmlHelper.TestCert2;
+
+            var c1 = new ClaimsIdentity("Federation");
+            c1.AddClaim(new Claim(ClaimTypes.NameIdentifier, "SomeUser", null, "https://idp.example.com"));
+
+            var expected = new[] { c1 };
+
+
+            var result = Saml2Response.Read(signedResponse);
+            result.Validate(Options.FromConfiguration);
+
+            result.GetClaims(Options.FromConfiguration.SPOptions)
+                .ShouldBeEquivalentTo(expected, opt => opt.IgnoringCyclicReferences());
+        }
+
+
+        [NotReRunnable]
+        [TestMethod]
         public void Saml2Response_GetClaims_CreateIdentities()
         {
             var response =

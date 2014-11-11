@@ -18,6 +18,7 @@ namespace Kentor.AuthServices.Internal
 
         // Try to decrypt the EncryptedKey by the given key
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "CipherReference"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "CipherData")]
+        [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverageAttribute]
         public override byte[] DecryptEncryptedKey(EncryptedKey encryptedKey)
         {
             if (encryptedKey == null)

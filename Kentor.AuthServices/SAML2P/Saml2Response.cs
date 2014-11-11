@@ -275,7 +275,7 @@ namespace Kentor.AuthServices.Saml2P
             assertions.AddRange(XmlDocument.DocumentElement.ChildNodes.Cast<XmlNode>()
                 .Where(node => node.NodeType == XmlNodeType.Element).Cast<XmlElement>()
                 .Where(xe => xe.LocalName == "EncryptedAssertion" && xe.NamespaceURI == Saml2Namespaces.Saml2Name).Decrypt(spKey)
-                .Select(xe => (XmlElement)xe.FirstChild));
+                .Select(xe => (XmlElement)xe.GetElementsByTagName("Assertion", Saml2Namespaces.Saml2Name)[0]));
 
             return assertions;
         }
