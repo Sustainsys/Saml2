@@ -67,6 +67,12 @@ sure that they work. To run the integration tests:
 * Open Kentor.AuthServices.IntegrationTests in a separate Visual Studio Instance.
 * Run all tests in the integrationtests solution.
 
+##Continous integration / build server
+Kentor.AuthServices contains configuration for [AppVeyor CI](|https://ci.appveyor.com/).
+
+You may set up a free build of all branches in your GitHub fork by signing up to AppVeyor 
+(preferably with your GitHub account) and then creating a new project for your GitHub fork.
+
 ##Branching
 To make a clean pull request, it is important to follow some git best practices. Nancy
 has an [excellent guide](https://github.com/NancyFx/Nancy/blob/master/CONTRIBUTING.md) that outlines
