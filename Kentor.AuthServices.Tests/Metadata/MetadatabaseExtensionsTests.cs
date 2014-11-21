@@ -33,11 +33,7 @@ namespace Kentor.AuthServices.Tests.Metadata
                 Location = new Uri("http://idp.example.com/sso")
             });
 
-            idpSsoDescriptor.Keys.Add(
-                new KeyDescriptor(
-                    new SecurityKeyIdentifier(
-                        (new X509SecurityToken(SignedXmlHelper.TestCert))
-                        .CreateKeyIdentifierClause<X509RawDataKeyIdentifierClause>())));
+            idpSsoDescriptor.Keys.Add(SignedXmlHelper.TestKeyDescriptor);
 
             var subject = XDocument.Parse((metadata.ToXmlString()));
 

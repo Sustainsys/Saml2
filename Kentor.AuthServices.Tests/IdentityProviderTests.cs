@@ -9,6 +9,7 @@ using Kentor.AuthServices.Saml2P;
 using Kentor.AuthServices.WebSso;
 using System.Net;
 using Kentor.AuthServices.Tests.Metadata;
+using Kentor.AuthServices.Metadata;
 
 namespace Kentor.AuthServices.Tests
 {
@@ -364,7 +365,8 @@ namespace Kentor.AuthServices.Tests
             var metadataEnabledTime = DateTime.UtcNow;
             MetadataServer.IdpAndFederationShortCacheDurationAvailable = true;
 
-            SpinWaiter.While(() => {
+            SpinWaiter.While(() =>
+            {
                 var mvu = subject.MetadataValidUntil;
                 return !mvu.HasValue || mvu == DateTime.MinValue;
             },
@@ -386,6 +388,37 @@ namespace Kentor.AuthServices.Tests
                 var mvu = subject.MetadataValidUntil;
                 return !mvu.HasValue || mvu == DateTime.MinValue;
             });
+        }
+
+        [TestMethod]
+        public void IdentityProvider_ConstructedFromEntityDescriptor_DoesntReloadMetadataWhenDisabled()
+        {
+            var ed = new ExtendedEntityDescriptor
+            {
+                ValidUntil = DateTime.UtcNow.AddYears(-1),
+                EntityId = new EntityId("someEntityId")
+            };
+
+            var idpSsoDescriptor = new IdentityProviderSingleSignOnDescriptor();
+            idpSsoDescriptor.ProtocolsSupported.Add(new Uri("urn:oasis:names:tc:SAML:2.0:protocol"));
+            ed.RoleDescriptors.Add(idpSsoDescriptor);
+
+            idpSsoDescriptor.SingleSignOnServices.Add(new ProtocolEndpoint()
+            {
+                Binding = Saml2Binding.HttpRedirectUri,
+                Location = new Uri("http://idp.example.com/sso")
+            });
+
+            idpSsoDescriptor.Keys.Add(SignedXmlHelper.TestKeyDescriptor);
+
+            var subject = new IdentityProvider(ed, true, StubFactory.CreateSPOptions());
+
+            Action a = () => { var b = subject.Binding; };
+
+            subject.LoadMetadata.Should().BeFalse();
+
+            // Will throw invalid Uri if it tries to use EntityId as metadata url.
+            a.ShouldNotThrow();
         }
     }
 }

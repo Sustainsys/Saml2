@@ -3,6 +3,8 @@ using System.Xml;
 using Kentor.AuthServices;
 using System.Security.Cryptography.Xml;
 using System.Security.Cryptography;
+using System.IdentityModel.Metadata;
+using System.IdentityModel.Tokens;
 
 namespace Kentor.AuthServices.TestHelpers
 {
@@ -11,6 +13,11 @@ namespace Kentor.AuthServices.TestHelpers
         public static readonly X509Certificate2 TestCert = new X509Certificate2("Kentor.AuthServices.Tests.pfx");
 
         public static readonly AsymmetricAlgorithm TestKey = TestCert.PublicKey.Key;
+
+        public static readonly KeyDescriptor TestKeyDescriptor = new KeyDescriptor(
+            new SecurityKeyIdentifier(
+                (new X509SecurityToken(TestCert))
+                .CreateKeyIdentifierClause<X509RawDataKeyIdentifierClause>()));
 
         public static string SignXml(string xml)
         {
@@ -31,5 +38,6 @@ namespace Kentor.AuthServices.TestHelpers
 
             KeyInfoXml = keyInfo.GetXml().OuterXml;
         }
+
     }
 }
