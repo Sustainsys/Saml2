@@ -294,7 +294,7 @@ namespace Kentor.AuthServices
             {
                 metadataValidUntil = value;
 
-                if (value.HasValue)
+                if (value.HasValue && LoadMetadata)
                 {
                     Task.Delay(MetadataRefreshScheduler.GetDelay(value.Value))
                         .ContinueWith((_) => DoLoadMetadata());

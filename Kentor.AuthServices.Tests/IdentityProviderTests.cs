@@ -10,6 +10,7 @@ using Kentor.AuthServices.WebSso;
 using System.Net;
 using Kentor.AuthServices.Tests.Metadata;
 using Kentor.AuthServices.Metadata;
+using System.Threading;
 
 namespace Kentor.AuthServices.Tests
 {
@@ -419,6 +420,42 @@ namespace Kentor.AuthServices.Tests
 
             // Will throw invalid Uri if it tries to use EntityId as metadata url.
             a.ShouldNotThrow();
+        }
+
+        [TestMethod]
+        public void IdentityProvider_ConstructedFromEntityDescriptor_DoesntScheduleMedataRefresh()
+        {
+            MetadataRefreshScheduler.minInternval = new TimeSpan(0, 0, 0, 0, 1);
+
+            var ed = new ExtendedEntityDescriptor
+            {
+                ValidUntil = DateTime.UtcNow.AddYears(-1),
+                EntityId = new EntityId("http://localhost:13428/idpMetadata")
+            };
+
+            var idpSsoDescriptor = new IdentityProviderSingleSignOnDescriptor();
+            idpSsoDescriptor.ProtocolsSupported.Add(new Uri("urn:oasis:names:tc:SAML:2.0:protocol"));
+            ed.RoleDescriptors.Add(idpSsoDescriptor);
+
+            var pe = new ProtocolEndpoint()
+            {
+                Binding = Saml2Binding.HttpRedirectUri,
+                Location = new Uri("http://idp.example.com/sso")
+            };
+
+            idpSsoDescriptor.SingleSignOnServices.Add(pe);
+
+            idpSsoDescriptor.Keys.Add(SignedXmlHelper.TestKeyDescriptor);
+
+            var subject = new IdentityProvider(ed, true, StubFactory.CreateSPOptions());
+
+            // Ugly, but have to wait and see that nothing happened. Have tried
+            // some different timeouts but need 100 to ensure fail before bug
+            // is fixed :-(
+            Thread.Sleep(100);
+
+            // Would be changed if metadata was reloaded.
+            subject.SingleSignOnServiceUrl.Should().Be(pe.Location);
         }
     }
 }
