@@ -73,7 +73,7 @@ namespace Kentor.AuthServices
         {
             AllowUnsolicitedAuthnResponse = allowUnsolicitedAuthnResponse;
             this.spOptions = spOptions;
-            LoadMetadata(metadata);
+            UpdateFromMetadata(metadata);
             Validate();
         }
 
@@ -216,7 +216,7 @@ namespace Kentor.AuthServices
                 {
                     var metadata = MetadataLoader.LoadIdp(MetadataLocation);
 
-                    LoadMetadata(metadata);
+                    UpdateFromMetadata(metadata);
                 }
                 catch (WebException)
                 {
@@ -226,7 +226,7 @@ namespace Kentor.AuthServices
             }
         }
 
-        private void LoadMetadata(ExtendedEntityDescriptor metadata)
+        private void UpdateFromMetadata(ExtendedEntityDescriptor metadata)
         {
             lock (metadataLoadLock)
             {
