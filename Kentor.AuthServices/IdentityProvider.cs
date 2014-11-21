@@ -37,6 +37,7 @@ namespace Kentor.AuthServices
             binding = config.Binding;
             AllowUnsolicitedAuthnResponse = config.AllowUnsolicitedAuthnResponse;
             metadataLocation = config.MetadataUrl;
+            LoadMetadata = config.LoadMetadata;
             this.spOptions = spOptions;
 
             var certificate = config.SigningCertificate.LoadCertificate();
@@ -48,9 +49,9 @@ namespace Kentor.AuthServices
 
             try
             {
-                if (config.LoadMetadata)
+                if (LoadMetadata)
                 {
-                    LoadMetadata();
+                    DoLoadMetadata();
                 }
 
                 Validate();
@@ -73,7 +74,7 @@ namespace Kentor.AuthServices
         {
             AllowUnsolicitedAuthnResponse = allowUnsolicitedAuthnResponse;
             this.spOptions = spOptions;
-            LoadMetadata(metadata);
+            UpdateFromMetadata(metadata);
             Validate();
         }
 
@@ -94,6 +95,11 @@ namespace Kentor.AuthServices
                 throw new ConfigurationErrorsException("Missing assertion consumer service url configuration on Idp " + EntityId.Id + ".");
             }
         }
+
+        /// <summary>
+        /// Should this idp load metadata?
+        /// </summary>
+        public bool LoadMetadata { get; set; }
 
         private Saml2BindingType binding;
 
@@ -208,7 +214,7 @@ namespace Kentor.AuthServices
 
         object metadataLoadLock = new object();
 
-        private void LoadMetadata()
+        private void DoLoadMetadata()
         {
             lock (metadataLoadLock)
             {
@@ -216,7 +222,7 @@ namespace Kentor.AuthServices
                 {
                     var metadata = MetadataLoader.LoadIdp(MetadataLocation);
 
-                    LoadMetadata(metadata);
+                    UpdateFromMetadata(metadata);
                 }
                 catch (WebException)
                 {
@@ -226,7 +232,7 @@ namespace Kentor.AuthServices
             }
         }
 
-        private void LoadMetadata(ExtendedEntityDescriptor metadata)
+        private void UpdateFromMetadata(ExtendedEntityDescriptor metadata)
         {
             lock (metadataLoadLock)
             {
@@ -288,21 +294,21 @@ namespace Kentor.AuthServices
             {
                 metadataValidUntil = value;
 
-                if (value.HasValue)
+                if (value.HasValue && LoadMetadata)
                 {
                     Task.Delay(MetadataRefreshScheduler.GetDelay(value.Value))
-                        .ContinueWith((_) => LoadMetadata());
+                        .ContinueWith((_) => DoLoadMetadata());
                 }
             }
         }
 
         private void ReloadMetadataIfExpired()
         {
-            if (MetadataValidUntil < DateTime.UtcNow)
+            if (LoadMetadata && MetadataValidUntil < DateTime.UtcNow)
             {
                 lock (metadataLoadLock)
                 {
-                    LoadMetadata();
+                    DoLoadMetadata();
                 }
             }
         }
