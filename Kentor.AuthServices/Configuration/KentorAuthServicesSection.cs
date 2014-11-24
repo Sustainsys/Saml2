@@ -22,6 +22,23 @@ namespace Kentor.AuthServices.Configuration
         private static readonly KentorAuthServicesSection current =
             (KentorAuthServicesSection)ConfigurationManager.GetSection("kentor.authServices");
 
+        private bool allowChange = true;
+
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1500:VariableNamesShouldNotMatchFieldNames", MessageId = "allowChange")]
+        internal void AllowChange(bool allowChange)
+        {
+            this.allowChange = allowChange;
+        }
+
+        /// <summary>
+        /// Used for testing, always returns true in production.
+        /// </summary>
+        /// <returns>Returns true (unless during tests)</returns>
+        public override bool IsReadOnly()
+        {
+            return !allowChange;
+        }
+
         /// <summary>
         /// Ctor
         /// </summary>
@@ -190,6 +207,10 @@ namespace Kentor.AuthServices.Configuration
             {
                 return (MetadataElement)base[metadata];
             }
+            internal set
+            {
+                base[metadata] = value;
+            }
         }
 
         IEnumerable<ContactPerson> contacts;
@@ -242,19 +263,25 @@ namespace Kentor.AuthServices.Configuration
         {
             get
             {
-                var acs = new AttributeConsumingService("SP");
-
-                foreach(var confAttribute in Metadata.RequestedAttributes)
+                if (Metadata.RequestedAttributes.Any())
                 {
-                    acs.RequestedAttributes.Add(new RequestedAttribute(confAttribute.Name)
-                        {
-                            FriendlyName = confAttribute.FriendlyName,
-                            IsRequired = confAttribute.IsRequired,
-                            NameFormat = confAttribute.NameFormat
-                        });
-                }
+                    var acs = new AttributeConsumingService("SP")
+                    {
+                        IsDefault = true
+                    };
 
-                yield return acs;
+                    foreach (var confAttribute in Metadata.RequestedAttributes)
+                    {
+                        acs.RequestedAttributes.Add(new RequestedAttribute(confAttribute.Name)
+                            {
+                                FriendlyName = confAttribute.FriendlyName,
+                                IsRequired = confAttribute.IsRequired,
+                                NameFormat = confAttribute.NameFormat
+                            });
+                    }
+
+                    yield return acs;
+                }
             }
         }
     }
