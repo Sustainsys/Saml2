@@ -128,6 +128,10 @@ namespace Kentor.AuthServices
                 ReloadMetadataIfRequired();
                 return binding;
             }
+            set
+            {
+                binding = value;
+            }
         }
 
         private Uri singleSignOnServiceUrl;
@@ -234,6 +238,11 @@ namespace Kentor.AuthServices
                 ReloadMetadataIfRequired();
                 return signingKey;
             }
+            set
+            {
+                signingKey = value;
+            }
+
         }
 
         object metadataLoadLock = new object();

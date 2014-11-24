@@ -11,6 +11,7 @@ using System.Net;
 using Kentor.AuthServices.Tests.Metadata;
 using Kentor.AuthServices.Metadata;
 using System.Threading;
+using System.Security.Cryptography;
 
 namespace Kentor.AuthServices.Tests
 {
@@ -490,7 +491,30 @@ namespace Kentor.AuthServices.Tests
         [TestMethod]
         public void IdentityProvider_MetadataLoadedConfiguredManually()
         {
-            Assert.Inconclusive("Check that everything is possible to configure manually.");
+            var subject = new IdentityProvider(
+                new EntityId("http://idp.example.com"),
+                StubFactory.CreateSPOptions())
+                {
+                    AllowUnsolicitedAuthnResponse = true,
+                    Binding = Saml2BindingType.HttpPost,
+                    SigningKey = SignedXmlHelper.TestKey,
+                    SingleSignOnServiceUrl = new Uri("http://idp.example.com/sso")
+                };
+
+            subject.AllowUnsolicitedAuthnResponse.Should().BeTrue();
+            subject.Binding.Should().Be(Saml2BindingType.HttpPost);
+            subject.EntityId.Id.Should().Be("http://idp.example.com");
+            subject.LoadMetadata.Should().BeFalse();
+            subject.MetadataUrl.OriginalString.Should().Be("http://idp.example.com");
+            subject.MetadataValidUntil.Should().NotHaveValue();
+
+            var subjectKeyParams = subject.SigningKey.As<RSACryptoServiceProvider>().ExportParameters(false);
+            var expectedKeyParams = SignedXmlHelper.TestKey.As<RSACryptoServiceProvider>().ExportParameters(false);
+
+            subjectKeyParams.Modulus.ShouldBeEquivalentTo(expectedKeyParams.Modulus);
+            subjectKeyParams.Exponent.ShouldBeEquivalentTo(expectedKeyParams.Exponent);
+
+            subject.SingleSignOnServiceUrl.AbsoluteUri.Should().Be("http://idp.example.com/sso");
         }
 
         [TestMethod]
