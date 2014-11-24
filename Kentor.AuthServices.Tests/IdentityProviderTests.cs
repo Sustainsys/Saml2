@@ -11,6 +11,7 @@ using System.Net;
 using Kentor.AuthServices.Tests.Metadata;
 using Kentor.AuthServices.Metadata;
 using System.Threading;
+using System.Security.Cryptography;
 
 namespace Kentor.AuthServices.Tests
 {
@@ -31,11 +32,14 @@ namespace Kentor.AuthServices.Tests
         {
             string idpUri = "http://idp.example.com/";
 
-            var ip = new IdentityProvider(
-                new Uri(idpUri),
-                Options.FromConfiguration.SPOptions);
+            var subject = new IdentityProvider(
+                new EntityId(idpUri),
+                Options.FromConfiguration.SPOptions)
+                {
+                    SingleSignOnServiceUrl = new Uri(idpUri)
+                };
 
-            var r = ip.CreateAuthenticateRequest(null, StubFactory.CreateAuthServicesUrls());
+            var r = subject.CreateAuthenticateRequest(null, StubFactory.CreateAuthServicesUrls());
 
             r.ToXElement().Attribute("Destination").Should().NotBeNull()
                 .And.Subject.Value.Should().Be(idpUri);
@@ -199,12 +203,12 @@ namespace Kentor.AuthServices.Tests
         {
             var config = CreateConfig();
             config.LoadMetadata = true;
-            config.EntityId = "http://localhost:13428/idpMetadataWrongEntityId";
+            config.EntityId = "http://localhost:13428/idpMetadataOtherEntityId";
 
             Action a = () => new IdentityProvider(config, Options.FromConfiguration.SPOptions);
 
             a.ShouldThrow<ConfigurationErrorsException>().And.Message.Should()
-                .Be("Unexpected entity id \"http://wrong.entityid.example.com\" found when loading metadata for \"http://localhost:13428/idpMetadataWrongEntityId\".");
+                .Be("Unexpected entity id \"http://other.entityid.example.com\" found when loading metadata for \"http://localhost:13428/idpMetadataOtherEntityId\".");
         }
 
         [TestMethod]
@@ -253,7 +257,7 @@ namespace Kentor.AuthServices.Tests
             string idpUri = "http://idp.example.com/";
 
             var subject = new IdentityProvider(
-                new Uri(idpUri),
+                new EntityId(idpUri),
                 Options.FromConfiguration.SPOptions);
 
             subject.MetadataValidUntil.Should().NotHaveValue();
@@ -412,7 +416,7 @@ namespace Kentor.AuthServices.Tests
 
             idpSsoDescriptor.Keys.Add(SignedXmlHelper.TestKeyDescriptor);
 
-            var subject = new IdentityProvider(ed, true, StubFactory.CreateSPOptions());
+            var subject = new IdentityProvider(ed.EntityId, StubFactory.CreateSPOptions());
 
             Action a = () => { var b = subject.Binding; };
 
@@ -447,7 +451,8 @@ namespace Kentor.AuthServices.Tests
 
             idpSsoDescriptor.Keys.Add(SignedXmlHelper.TestKeyDescriptor);
 
-            var subject = new IdentityProvider(ed, true, StubFactory.CreateSPOptions());
+            var subject = new IdentityProvider(ed.EntityId, StubFactory.CreateSPOptions());
+            subject.ReadMetadata(ed);
 
             // Ugly, but have to wait and see that nothing happened. Have tried
             // some different timeouts but need 100 to ensure fail before bug
@@ -456,6 +461,72 @@ namespace Kentor.AuthServices.Tests
 
             // Would be changed if metadata was reloaded.
             subject.SingleSignOnServiceUrl.Should().Be(pe.Location);
+        }
+
+        [TestMethod]
+        public void IdentityProvider_MetadataLoadedConfiguredFromCode()
+        {
+            var subject = new IdentityProvider(
+                new EntityId("http://other.entityid.example.com"),
+                StubFactory.CreateSPOptions())
+            {
+                MetadataUrl = new Uri("http://localhost:13428/idpMetadataOtherEntityId"),
+                AllowUnsolicitedAuthnResponse = true
+            };
+
+            subject.AllowUnsolicitedAuthnResponse.Should().BeTrue();
+            subject.Binding.Should().Be(Saml2BindingType.HttpRedirect);
+            subject.EntityId.Id.Should().Be("http://other.entityid.example.com");
+            // If a metadatalocation is set, metadata loading is automatically enabled.
+            subject.LoadMetadata.Should().BeTrue();
+            subject.MetadataUrl.OriginalString.Should().Be("http://localhost:13428/idpMetadataOtherEntityId");
+            subject.MetadataValidUntil.Should().BeCloseTo(
+                DateTime.UtcNow.Add(MetadataRefreshScheduler.DefaultMetadataCacheDuration));
+            subject.SingleSignOnServiceUrl.Should().Be("http://wrong.entityid.example.com/acs");
+
+            Action a = () => subject.CreateAuthenticateRequest(null, StubFactory.CreateAuthServicesUrls());
+            a.ShouldNotThrow();
+        }
+
+        [TestMethod]
+        public void IdentityProvider_MetadataLoadedConfiguredManually()
+        {
+            var subject = new IdentityProvider(
+                new EntityId("http://idp.example.com"),
+                StubFactory.CreateSPOptions())
+                {
+                    AllowUnsolicitedAuthnResponse = true,
+                    Binding = Saml2BindingType.HttpPost,
+                    SigningKey = SignedXmlHelper.TestKey,
+                    SingleSignOnServiceUrl = new Uri("http://idp.example.com/sso")
+                };
+
+            subject.AllowUnsolicitedAuthnResponse.Should().BeTrue();
+            subject.Binding.Should().Be(Saml2BindingType.HttpPost);
+            subject.EntityId.Id.Should().Be("http://idp.example.com");
+            subject.LoadMetadata.Should().BeFalse();
+            subject.MetadataUrl.OriginalString.Should().Be("http://idp.example.com");
+            subject.MetadataValidUntil.Should().NotHaveValue();
+
+            var subjectKeyParams = subject.SigningKey.As<RSACryptoServiceProvider>().ExportParameters(false);
+            var expectedKeyParams = SignedXmlHelper.TestKey.As<RSACryptoServiceProvider>().ExportParameters(false);
+
+            subjectKeyParams.Modulus.ShouldBeEquivalentTo(expectedKeyParams.Modulus);
+            subjectKeyParams.Exponent.ShouldBeEquivalentTo(expectedKeyParams.Exponent);
+
+            subject.SingleSignOnServiceUrl.AbsoluteUri.Should().Be("http://idp.example.com/sso");
+        }
+
+        [TestMethod]
+        public void IdentityProvider_ReadMetadata_Nullcheck()
+        {
+            var subject = new IdentityProvider(
+                new EntityId("http://idp.example.com"),
+                StubFactory.CreateSPOptions());
+
+            Action a = () => subject.ReadMetadata(null);
+
+            a.ShouldThrow<ArgumentNullException>().And.ParamName.Should().Be("metadata");
         }
     }
 }

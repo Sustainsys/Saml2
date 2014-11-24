@@ -31,10 +31,12 @@ namespace Kentor.AuthServices
             return delay;
         }
 
+        public static readonly TimeSpan DefaultMetadataCacheDuration = new TimeSpan(1, 0, 0);
+
         internal static DateTime CalculateMetadataValidUntil(this ICachedMetadata metadata)
         {
             return metadata.ValidUntil ??
-                   DateTime.UtcNow.Add(metadata.CacheDuration ?? new TimeSpan(1, 0, 0));
+                   DateTime.UtcNow.Add(metadata.CacheDuration ?? DefaultMetadataCacheDuration);
         }
     }
 }
