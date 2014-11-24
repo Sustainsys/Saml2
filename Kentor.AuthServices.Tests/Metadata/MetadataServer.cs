@@ -49,9 +49,9 @@ namespace Kentor.AuthServices.Tests.Metadata
     </IDPSSODescriptor>
   </EntityDescriptor>";
 
-            content["/idpMetadataWrongEntityId"] = 
+            content["/idpMetadataOtherEntityId"] =
 @"<EntityDescriptor xmlns=""urn:oasis:names:tc:SAML:2.0:metadata""
-    entityID=""http://wrong.entityid.example.com"">
+    entityID=""http://other.entityid.example.com"">
     <IDPSSODescriptor
       protocolSupportEnumeration=""urn:oasis:names:tc:SAML:2.0:protocol"">
       <SingleSignOnService

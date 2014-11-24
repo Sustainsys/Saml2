@@ -21,7 +21,21 @@ namespace Kentor.AuthServices
     /// </summary>
     public class IdentityProvider
     {
+        /// <summary>
+        /// Ctor
+        /// </summary>
+        /// <param name="entityId">Entity id of the identityprovider.</param>
+        /// <param name="spOptions">Service provider options to use when 
+        /// creating AuthnRequests for this Idp.</param>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "sp")]
+        public IdentityProvider(EntityId entityId, ISPOptions spOptions)
+        {
+            EntityId = entityId;
+            this.spOptions = spOptions;
+        }
+
         // Ctor used for testing.
+        [Obsolete("Replace with IdentityProvider(EntityId, spOptions)")]
         internal IdentityProvider(Uri destinationUrl, ISPOptions spOptions)
         {
             singleSignOnServiceUrl = destinationUrl;
@@ -36,7 +50,7 @@ namespace Kentor.AuthServices
             EntityId = new EntityId(config.EntityId);
             binding = config.Binding;
             AllowUnsolicitedAuthnResponse = config.AllowUnsolicitedAuthnResponse;
-            metadataLocation = config.MetadataUrl;
+            metadataUrl = config.MetadataUrl;
             LoadMetadata = config.LoadMetadata;
             this.spOptions = spOptions;
 
@@ -70,6 +84,7 @@ namespace Kentor.AuthServices
         /// <param name="allowUnsolicitedAuthnResponse">Are unsolicited responses allowed from this idp?</param>
         /// <param name="spOptions">Service Provider option to use when creating AuthnRequests.</param>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "sp")]
+        [Obsolete("Replace with making UpdateFromMetadata/ReadMetadata public.")]
         public IdentityProvider(ExtendedEntityDescriptor metadata, bool allowUnsolicitedAuthnResponse, ISPOptions spOptions)
         {
             AllowUnsolicitedAuthnResponse = allowUnsolicitedAuthnResponse;
@@ -96,10 +111,34 @@ namespace Kentor.AuthServices
             }
         }
 
+        private bool loadMetadata;
+
         /// <summary>
         /// Should this idp load metadata?
         /// </summary>
-        public bool LoadMetadata { get; set; }
+        public bool LoadMetadata
+        {
+            get
+            {
+                return loadMetadata;
+            }
+            set
+            {
+                loadMetadata = value;
+                if(loadMetadata)
+                {
+                    try
+                    {
+                        DoLoadMetadata();
+                    }
+                    catch (WebException)
+                    {
+                        // Ignore if metadata load failed, an automatic
+                        // retry has been scheduled.
+                    }
+                }
+            }
+        }
 
         private Saml2BindingType binding;
 
@@ -110,7 +149,7 @@ namespace Kentor.AuthServices
         {
             get
             {
-                ReloadMetadataIfExpired();
+                ReloadMetadataIfRequired();
                 return binding;
             }
         }
@@ -126,7 +165,7 @@ namespace Kentor.AuthServices
         {
             get
             {
-                ReloadMetadataIfExpired();
+                ReloadMetadataIfRequired();
                 return singleSignOnServiceUrl;
             }
         }
@@ -139,18 +178,23 @@ namespace Kentor.AuthServices
         /// <summary>
         /// Is this idp allowed to send unsolicited responses, i.e. idp initiated sign in?
         /// </summary>
-        public bool AllowUnsolicitedAuthnResponse { get; private set; }
+        public bool AllowUnsolicitedAuthnResponse { get; set; }
 
-        private Uri metadataLocation;
+        private Uri metadataUrl;
 
         /// <summary>
         /// Location of metadata for the Identity Provider.
         /// </summary>
-        public Uri MetadataLocation
+        public Uri MetadataUrl
         {
             get
             {
-                return metadataLocation ?? new Uri(EntityId.Id);
+                return metadataUrl ?? new Uri(EntityId.Id);
+            }
+            set
+            {
+                metadataUrl = value;
+                LoadMetadata = true;
             }
         }
 
@@ -207,7 +251,7 @@ namespace Kentor.AuthServices
         {
             get
             {
-                ReloadMetadataIfExpired();
+                ReloadMetadataIfRequired();
                 return signingKey;
             }
         }
@@ -220,7 +264,7 @@ namespace Kentor.AuthServices
             {
                 try
                 {
-                    var metadata = MetadataLoader.LoadIdp(MetadataLocation);
+                    var metadata = MetadataLoader.LoadIdp(MetadataUrl);
 
                     UpdateFromMetadata(metadata);
                 }
@@ -302,7 +346,7 @@ namespace Kentor.AuthServices
             }
         }
 
-        private void ReloadMetadataIfExpired()
+        private void ReloadMetadataIfRequired()
         {
             if (LoadMetadata && MetadataValidUntil < DateTime.UtcNow)
             {

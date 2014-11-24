@@ -199,12 +199,12 @@ namespace Kentor.AuthServices.Tests
         {
             var config = CreateConfig();
             config.LoadMetadata = true;
-            config.EntityId = "http://localhost:13428/idpMetadataWrongEntityId";
+            config.EntityId = "http://localhost:13428/idpMetadataOtherEntityId";
 
             Action a = () => new IdentityProvider(config, Options.FromConfiguration.SPOptions);
 
             a.ShouldThrow<ConfigurationErrorsException>().And.Message.Should()
-                .Be("Unexpected entity id \"http://wrong.entityid.example.com\" found when loading metadata for \"http://localhost:13428/idpMetadataWrongEntityId\".");
+                .Be("Unexpected entity id \"http://other.entityid.example.com\" found when loading metadata for \"http://localhost:13428/idpMetadataOtherEntityId\".");
         }
 
         [TestMethod]
@@ -456,6 +456,37 @@ namespace Kentor.AuthServices.Tests
 
             // Would be changed if metadata was reloaded.
             subject.SingleSignOnServiceUrl.Should().Be(pe.Location);
+        }
+
+        [TestMethod]
+        public void IdentityProvider_MetadataLoadedConfiguredFromCode()
+        {
+            var subject = new IdentityProvider(
+                new EntityId("http://other.entityid.example.com"),
+                StubFactory.CreateSPOptions())
+            {
+                MetadataUrl = new Uri("http://localhost:13428/idpMetadataOtherEntityId"),
+                AllowUnsolicitedAuthnResponse = true
+            };
+
+            subject.AllowUnsolicitedAuthnResponse.Should().BeTrue();
+            subject.Binding.Should().Be(Saml2BindingType.HttpRedirect);
+            subject.EntityId.Id.Should().Be("http://other.entityid.example.com");
+            // If a metadatalocation is set, metadata loading is automatically enabled.
+            subject.LoadMetadata.Should().BeTrue();
+            subject.MetadataUrl.OriginalString.Should().Be("http://localhost:13428/idpMetadataOtherEntityId");
+            subject.MetadataValidUntil.Should().BeCloseTo(
+                DateTime.UtcNow.Add(MetadataRefreshScheduler.DefaultMetadataCacheDuration));
+            subject.SingleSignOnServiceUrl.Should().Be("http://wrong.entityid.example.com/acs");
+
+            Action a = () => subject.CreateAuthenticateRequest(null, StubFactory.CreateAuthServicesUrls());
+            a.ShouldNotThrow();
+        }
+
+        [TestMethod]
+        public void IdentityProvider_MetadataLoadedConfiguredManually()
+        {
+            Assert.Inconclusive("Check that everything is possible to configure manually.");
         }
     }
 }
