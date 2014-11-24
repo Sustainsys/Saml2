@@ -72,10 +72,21 @@ namespace Kentor.AuthServices
                 {
                     var metadata = MetadataLoader.LoadFederation(metadataUrl);
 
-                    var identityProviders = metadata.ChildEntities.Cast<ExtendedEntityDescriptor>()
-                        .Where(ed => ed.RoleDescriptors.OfType<IdentityProviderSingleSignOnDescriptor>().Any())
-                        .Select(ed => new IdentityProvider(ed, allowUnsolicitedAuthnResponse, options.SPOptions))
-                        .ToList();
+                    var identityProvidersMetadata = metadata.ChildEntities.Cast<ExtendedEntityDescriptor>()
+                        .Where(ed => ed.RoleDescriptors.OfType<IdentityProviderSingleSignOnDescriptor>().Any());
+
+                    var identityProviders = new List<IdentityProvider>();
+
+                    foreach(var idpMetadata in identityProvidersMetadata)
+                    {
+                        var idp = new IdentityProvider(idpMetadata.EntityId, options.SPOptions)
+                        {
+                            AllowUnsolicitedAuthnResponse = allowUnsolicitedAuthnResponse
+                        };
+
+                        idp.ReadMetadata(idpMetadata);
+                        identityProviders.Add(idp);
+                    }
 
                     RegisterIdentityProviders(identityProviders);
 

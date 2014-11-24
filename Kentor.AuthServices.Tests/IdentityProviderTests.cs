@@ -415,7 +415,7 @@ namespace Kentor.AuthServices.Tests
 
             idpSsoDescriptor.Keys.Add(SignedXmlHelper.TestKeyDescriptor);
 
-            var subject = new IdentityProvider(ed, true, StubFactory.CreateSPOptions());
+            var subject = new IdentityProvider(ed.EntityId, StubFactory.CreateSPOptions());
 
             Action a = () => { var b = subject.Binding; };
 
@@ -450,7 +450,8 @@ namespace Kentor.AuthServices.Tests
 
             idpSsoDescriptor.Keys.Add(SignedXmlHelper.TestKeyDescriptor);
 
-            var subject = new IdentityProvider(ed, true, StubFactory.CreateSPOptions());
+            var subject = new IdentityProvider(ed.EntityId, StubFactory.CreateSPOptions());
+            subject.ReadMetadata(ed);
 
             // Ugly, but have to wait and see that nothing happened. Have tried
             // some different timeouts but need 100 to ensure fail before bug
@@ -490,6 +491,18 @@ namespace Kentor.AuthServices.Tests
         public void IdentityProvider_MetadataLoadedConfiguredManually()
         {
             Assert.Inconclusive("Check that everything is possible to configure manually.");
+        }
+
+        [TestMethod]
+        public void IdentityProvider_ReadMetadata_Nullcheck()
+        {
+            var subject = new IdentityProvider(
+                new EntityId("http://idp.example.com"),
+                StubFactory.CreateSPOptions());
+
+            Action a = () => subject.ReadMetadata(null);
+
+            a.ShouldThrow<ArgumentNullException>().And.ParamName.Should().Be("metadata");
         }
     }
 }
