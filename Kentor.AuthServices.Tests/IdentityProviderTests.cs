@@ -31,11 +31,14 @@ namespace Kentor.AuthServices.Tests
         {
             string idpUri = "http://idp.example.com/";
 
-            var ip = new IdentityProvider(
-                new Uri(idpUri),
-                Options.FromConfiguration.SPOptions);
+            var subject = new IdentityProvider(
+                new EntityId(idpUri),
+                Options.FromConfiguration.SPOptions)
+                {
+                    SingleSignOnServiceUrl = new Uri(idpUri)
+                };
 
-            var r = ip.CreateAuthenticateRequest(null, StubFactory.CreateAuthServicesUrls());
+            var r = subject.CreateAuthenticateRequest(null, StubFactory.CreateAuthServicesUrls());
 
             r.ToXElement().Attribute("Destination").Should().NotBeNull()
                 .And.Subject.Value.Should().Be(idpUri);
@@ -253,7 +256,7 @@ namespace Kentor.AuthServices.Tests
             string idpUri = "http://idp.example.com/";
 
             var subject = new IdentityProvider(
-                new Uri(idpUri),
+                new EntityId(idpUri),
                 Options.FromConfiguration.SPOptions);
 
             subject.MetadataValidUntil.Should().NotHaveValue();

@@ -34,14 +34,6 @@ namespace Kentor.AuthServices
             this.spOptions = spOptions;
         }
 
-        // Ctor used for testing.
-        [Obsolete("Replace with IdentityProvider(EntityId, spOptions)")]
-        internal IdentityProvider(Uri destinationUrl, ISPOptions spOptions)
-        {
-            singleSignOnServiceUrl = destinationUrl;
-            this.spOptions = spOptions;
-        }
-
         readonly ISPOptions spOptions;
 
         internal IdentityProvider(IdentityProviderElement config, ISPOptions spOptions)
@@ -167,6 +159,10 @@ namespace Kentor.AuthServices
             {
                 ReloadMetadataIfRequired();
                 return singleSignOnServiceUrl;
+            }
+            set
+            {
+                singleSignOnServiceUrl = value;
             }
         }
 
