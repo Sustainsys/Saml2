@@ -19,6 +19,14 @@ namespace Kentor.AuthServices.Tests.Mvc
     [TestClass]
     public class AuthServicesControllerTests
     {
+        static IOptions defaultOptions = Options.FromConfiguration;
+
+        [TestCleanup]
+        public void Cleanup()
+        {
+            AuthServicesController.Options = defaultOptions;
+        }
+
         private AuthServicesController CreateInstanceWithContext()
         {
             var request = Substitute.For<HttpRequestBase>();
@@ -47,13 +55,13 @@ namespace Kentor.AuthServices.Tests.Mvc
         [TestMethod]
         public void AuthServicesController_SignIn_Returns_DiscoveryService()
         {
-            var subject = CreateInstanceWithContext();
-
-            subject.Options = new Options(new SPOptions
+            AuthServicesController.Options = new Options(new SPOptions
             {
                 DiscoveryServiceUrl = new Uri("http://ds.example.com"),
                 EntityId = new EntityId("https://github.com/KentorIT/authservices")
             });
+
+            var subject = CreateInstanceWithContext();
 
             var result = subject.SignIn();
 
