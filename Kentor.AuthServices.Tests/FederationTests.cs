@@ -248,7 +248,7 @@ namespace Kentor.AuthServices.Tests
             MetadataServer.IdpAndFederationShortCacheDurationAvailable = true;
 
             SpinWaiter.While(() => subject.MetadataValidUntil == DateTime.MinValue,
-                "Timeout passed without metadata being successfully 5reloaded");
+                "Timeout passed without metadata being successfully reloaded");
 
             options.IdentityProviders.TryGetValue(new EntityId("http://idp1.federation.example.com/metadata"), out idp)
                 .Should().BeTrue("idp should be readded when metadata is refreshed.");
