@@ -19,10 +19,12 @@ namespace Kentor.AuthServices.Tests
     public class IdentityProviderTests
     {
         TimeSpan refreshMinInterval = MetadataRefreshScheduler.minInternval;
+        int idpMetadataSsoPort = MetadataServer.IdpMetadataSsoPort;
 
         [TestCleanup]
         public void Cleanup()
         {
+            MetadataServer.IdpMetadataSsoPort = idpMetadataSsoPort;
             MetadataServer.IdpVeryShortCacheDurationIncludeInvalidKey = false;
             MetadataRefreshScheduler.minInternval = refreshMinInterval;
         }
@@ -320,6 +322,23 @@ namespace Kentor.AuthServices.Tests
             SpinWaiter.While(() => subject.SingleSignOnServiceUrl.Port == 42);
 
             subject.SingleSignOnServiceUrl.Port.Should().Be(117);
+        }
+
+        [TestMethod]
+        public void IdentityProvider_SingleSignOnService_DoesntReloadMetadataIfStillValid()
+        {
+            var subject = new IdentityProvider(
+                new EntityId("http://localhost:13428/idpMetadata"),
+                StubFactory.CreateSPOptions())
+                {
+                    LoadMetadata = true
+                };
+
+            subject.SingleSignOnServiceUrl.Port.Should().Be(13428);
+            MetadataServer.IdpMetadataSsoPort = 147;
+
+            // Metadata shouldn't be reloaded so port shouldn't be changed.
+            subject.SingleSignOnServiceUrl.Port.Should().Be(13428);
         }
 
         [TestMethod]

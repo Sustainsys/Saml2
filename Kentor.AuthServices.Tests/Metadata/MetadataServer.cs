@@ -33,10 +33,10 @@ namespace Kentor.AuthServices.Tests.Metadata
       </KeyDescriptor>
       <SingleSignOnService
         Binding=""urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST""
-        Location=""http://localhost:13428/acs""/>
+        Location=""http://localhost:{1}/acs""/>
     </IDPSSODescriptor>
   </EntityDescriptor>
-", SignedXmlHelper.KeyInfoXml);
+", SignedXmlHelper.KeyInfoXml, IdpMetadataSsoPort);
 
             content["/idpMetadataNoCertificate"] = 
 @"<EntityDescriptor xmlns=""urn:oasis:names:tc:SAML:2.0:metadata""
@@ -285,6 +285,7 @@ entityID=""http://localhost:13428/idpMetadataVeryShortCacheDuration"" cacheDurat
             return content;
         }
 
+        public static int IdpMetadataSsoPort { get; set; }
         public static int IdpAndFederationVeryShortCacheDurationSsoPort { get; set; }
         public static Uri IdpVeryShortCacheDurationBinding { get; set; }
         public static bool IdpVeryShortCacheDurationIncludeInvalidKey { get; set; }
@@ -293,6 +294,7 @@ entityID=""http://localhost:13428/idpMetadataVeryShortCacheDuration"" cacheDurat
 
         static MetadataServer()
         {
+            IdpMetadataSsoPort = 13428;
             IdpAndFederationVeryShortCacheDurationSsoPort = 80;
             IdpVeryShortCacheDurationBinding = Saml2Binding.HttpRedirectUri;
             IdpAndFederationShortCacheDurationAvailable = true;
