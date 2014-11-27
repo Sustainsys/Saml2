@@ -1,3 +1,9 @@
+Version 0.11.0
+ * Improved IdentityProvider configuration from code.
+ * Configuration from code support for MVC controller.
+ * Fixed: Metadata incorrectly loaded for Idps in federations.
+ * Fixed: AttributeConsumingService in metadata when not configured.
+
 Version 0.10.0
  * Fixed issue loading metadata with multiple child elements to X509Data.
  * Renamed destinationUri to destinationUrl for consistency.
@@ -6,13 +12,3 @@ Version 0.10.0
 Version 0.9.0
  * Automatic refresh of metadata for identity providers and federations.
  * Configuration option for metadataUrl for identity providers.
-
-Version 0.8.0
- * Automatic generation of service provider URLs, removing configuration.
- * Configuration can now be supplied from code and not only in config file.
- * Administrative metadata (organization and contactPerson) support.
- * Serialization of SAML Attributes
- * Support for Bootstrapcontext, saving incoming assertion in the resulting identity.
- * Fixed new principal returned by ClaimsAuthenticationManager being ignored.
- * Attribute consumer support in metadata and AuthnRequest.
- * Discovery service response location included in metadata if use of discovery service is enabled.
