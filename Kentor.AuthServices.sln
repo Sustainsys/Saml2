@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
-VisualStudioVersion = 12.0.30723.0
+VisualStudioVersion = 12.0.31101.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kentor.AuthServices", "Kentor.AuthServices\Kentor.AuthServices.csproj", "{93BA675E-A159-4701-B68B-C4B81015C556}"
 EndProject
@@ -29,8 +29,12 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "doc", "doc", "{DB9690FA-251
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "nuget", "nuget", "{8EE1C45E-A81F-4D3F-A645-4C20528E327F}"
 	ProjectSection(SolutionItems) = preProject
+		nuget\Kentor.AuthServices.Mvc.nuspec = nuget\Kentor.AuthServices.Mvc.nuspec
+		nuget\Kentor.AuthServices.nuspec = nuget\Kentor.AuthServices.nuspec
+		nuget\Kentor.AuthServices.Owin.nuspec = nuget\Kentor.AuthServices.Owin.nuspec
 		nuget\kentor.png = nuget\kentor.png
 		nuget\MakePackage.ps1 = nuget\MakePackage.ps1
+		nuget\ReleaseNotes.txt = nuget\ReleaseNotes.txt
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kentor.AuthServices.Mvc", "Kentor.AuthServices.Mvc\Kentor.AuthServices.Mvc.csproj", "{7D32F0A3-CEC8-4DC6-A096-5905EA9C3770}"
