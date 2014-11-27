@@ -59,6 +59,20 @@ echo "Version updated to $version, commiting and tagging..."
 git commit -a -m "Updated version number to $version for release."
 git tag v$version
 
+echo "Creating nuspec files..."
+
+$releaseNotes = "<releaseNotes>`n $((get-content nuget\ReleaseNotes.txt) -join "`n`")`n    </releaseNotes>"
+function Create-Nuspec($projectName)
+{
+    (gc nuget\$projectName.nuspec) | 
+		% { $_ -replace "<releaseNotes />", $releaseNotes } |
+		set-content $projectName\$projectName.nuspec
+}
+
+Create-Nuspec("Kentor.AuthServices")
+Create-Nuspec("Kentor.AuthServices.Mvc")
+Create-Nuspec("Kentor.AuthServices.Owin")
+
 echo "Building package..."
 
 nuget pack -build -outputdirectory nuget Kentor.AuthServices\Kentor.AuthServices.csproj
