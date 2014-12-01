@@ -20,7 +20,7 @@ namespace Kentor.AuthServices.Metadata
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2202:Do not dispose objects multiple times")]
         public static string ToXmlString(this MetadataBase metadata)
         {
-            var serializer = ExtendedMetadataSerializer.Instance;
+            var serializer = ExtendedMetadataSerializer.WriterInstance;
 
             using (var stream = new MemoryStream())
             {

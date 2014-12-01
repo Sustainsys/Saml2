@@ -123,7 +123,7 @@ namespace Kentor.AuthServices.Tests.Saml2P
         public void Saml2RequestBase_ToXNodes_Destination()
         {
             var uri = "http://idp.example.com/";
-            var r = new ConcreteSaml2Request() { DestinationUri = new Uri(uri) };
+            var r = new ConcreteSaml2Request() { DestinationUrl = new Uri(uri) };
 
             r.ToXElement().Attribute("Destination").Should().NotBeNull()
                 .And.Subject.Value.Should().Be(uri);

@@ -1,11 +1,12 @@
-﻿using Owin;
+﻿using Kentor.AuthServices.Owin;
+using Owin;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Kentor.AuthServices.Owin
+namespace Owin
 {
     /// <summary>
     /// Extension method to easily attach Kentor AuthServices to the Owin pipeline.

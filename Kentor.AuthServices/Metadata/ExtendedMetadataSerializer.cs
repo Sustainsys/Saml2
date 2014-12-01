@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.IdentityModel.Metadata;
+using System.IdentityModel.Selectors;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -12,20 +13,43 @@ namespace Kentor.AuthServices.Metadata
 {
     class ExtendedMetadataSerializer : MetadataSerializer
     {
-        private static ExtendedMetadataSerializer instance = new ExtendedMetadataSerializer();
-        public static ExtendedMetadataSerializer Instance
+        private ExtendedMetadataSerializer(SecurityTokenSerializer serializer)
+            : base(serializer)
+        { }
+
+        private ExtendedMetadataSerializer() { }
+
+        private static ExtendedMetadataSerializer readerInstance =
+            new ExtendedMetadataSerializer(new KeyInfoSerializer());
+
+        /// <summary>
+        /// Use this instance for reading metadata. It uses custom extensions
+        /// to increase feature support when reading metadata.
+        /// </summary>
+        public static ExtendedMetadataSerializer ReaderInstance
         {
             get
             {
-                return instance;
+                return readerInstance;
             }
         }
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1062:Validate arguments of public methods", MessageId = "0", Justification="Method is only called by base class no validation needed.")]
+        private static ExtendedMetadataSerializer writerInstance =
+            new ExtendedMetadataSerializer();
+
+        public static ExtendedMetadataSerializer WriterInstance
+        {
+            get
+            {
+                return writerInstance;
+            }
+        }
+
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1062:Validate arguments of public methods", MessageId = "0", Justification = "Method is only called by base class no validation needed.")]
         protected override void WriteCustomAttributes<T>(XmlWriter writer, T source)
         {
             var cachedMetadata = source as ICachedMetadata;
-            if(cachedMetadata != null && cachedMetadata.CacheDuration.HasValue)
+            if (cachedMetadata != null && cachedMetadata.CacheDuration.HasValue)
             {
                 writer.WriteAttributeString(
                     "cacheDuration",
@@ -58,10 +82,10 @@ namespace Kentor.AuthServices.Metadata
             // as source. But in one case it is called with the type T being SPSSODescriptor, and
             // that is the time we want to write the data.
             var extendedSPSSODescriptor = source as ExtendedServiceProviderSingleSignOnDescriptor;
-            if(extendedSPSSODescriptor != null && typeof(T) == typeof(ServiceProviderSingleSignOnDescriptor))
+            if (extendedSPSSODescriptor != null && typeof(T) == typeof(ServiceProviderSingleSignOnDescriptor))
             {
                 int index = 0;
-                foreach(var acs in extendedSPSSODescriptor.AttributeConsumingServices)
+                foreach (var acs in extendedSPSSODescriptor.AttributeConsumingServices)
                 {
                     writer.WriteStartElement("AttributeConsumingService", Saml2Namespaces.Saml2MetadataName);
                     writer.WriteAttributeString("index", index.ToString(CultureInfo.InvariantCulture));
@@ -70,7 +94,7 @@ namespace Kentor.AuthServices.Metadata
                     writer.WriteAttributeString("lang", XNamespace.Xml.NamespaceName, "en");
                     writer.WriteString(acs.ServiceName);
                     writer.WriteEndElement();
-                    foreach(var ra in acs.RequestedAttributes)
+                    foreach (var ra in acs.RequestedAttributes)
                     {
                         WriteRequestedAttribute(writer, ra);
                     }
@@ -93,7 +117,7 @@ namespace Kentor.AuthServices.Metadata
             {
                 writer.WriteAttributeString("FriendlyName", requestedAttribute.FriendlyName);
             }
-            foreach(var av in requestedAttribute.Values)
+            foreach (var av in requestedAttribute.Values)
             {
                 writer.WriteStartElement("AttributeValue", Saml2Namespaces.Saml2Name);
                 writer.WriteString(av);
@@ -111,7 +135,7 @@ namespace Kentor.AuthServices.Metadata
         protected override void ReadCustomAttributes<T>(XmlReader reader, T target)
         {
             var cachedMetadata = target as ICachedMetadata;
-            if(cachedMetadata!= null)
+            if (cachedMetadata != null)
             {
                 var validUntilString = reader.GetAttribute("validUntil");
 
@@ -124,7 +148,7 @@ namespace Kentor.AuthServices.Metadata
 
                 var cacheDurationString = reader.GetAttribute("cacheDuration");
 
-                if(!string.IsNullOrEmpty(cacheDurationString))
+                if (!string.IsNullOrEmpty(cacheDurationString))
                 {
                     cachedMetadata.CacheDuration =
                         XmlConvert.ToTimeSpan(cacheDurationString);

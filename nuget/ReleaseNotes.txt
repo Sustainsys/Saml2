@@ -1,0 +1,14 @@
+Version 0.11.0
+ * Improved IdentityProvider configuration from code.
+ * Configuration from code support for MVC controller.
+ * Fixed: Metadata incorrectly loaded for Idps in federations.
+ * Fixed: AttributeConsumingService in metadata when not configured.
+
+Version 0.10.0
+ * Fixed issue loading metadata with multiple child elements to X509Data.
+ * Renamed destinationUri to destinationUrl for consistency.
+ * Moved UseKentorAuthServicesAuthentication() to Owin namespace.
+
+Version 0.9.0
+ * Automatic refresh of metadata for identity providers and federations.
+ * Configuration option for metadataUrl for identity providers.

@@ -11,15 +11,15 @@ namespace Kentor.AuthServices.WebSso
 {
     class Saml2RedirectBinding : Saml2Binding
     {
-        public override CommandResult Bind(ISaml2Message message, Uri destinationUri)
+        public override CommandResult Bind(ISaml2Message message, Uri destinationUrl)
         {
             if (message == null)
             {
                 throw new ArgumentNullException("message");
             }
-            if (destinationUri == null)
+            if (destinationUrl == null)
             {
-                throw new ArgumentNullException("destinationUri");
+                throw new ArgumentNullException("destinationUrl");
             }
 
             var authnRequest = message as Saml2RequestBase;            
@@ -37,7 +37,7 @@ namespace Kentor.AuthServices.WebSso
                 redirectUrl += "&Signature=" + HttpUtility.UrlEncode(base64Sig);
             }
 
-            var redirectUri = new Uri(destinationUri + "?" + redirectUrl);
+            var redirectUri = new Uri(destinationUrl + "?" + redirectUrl);
 
             return new CommandResult
             {

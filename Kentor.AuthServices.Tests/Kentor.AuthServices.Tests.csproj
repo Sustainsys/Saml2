@@ -109,6 +109,7 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
+    <Compile Include="Metadata\MetadatabaseExtensionsTests.cs" />
     <Compile Include="Mvc\AuthServicesControllerTests.cs" />
     <Compile Include="ClaimsAuthenticationManagerStub.cs" />
     <Compile Include="ExceptionTestHelpers.cs" />

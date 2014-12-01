@@ -32,15 +32,15 @@ namespace Kentor.AuthServices.WebSso
             return xml;
         }
 
-        public override CommandResult Bind(ISaml2Message message, Uri destinationUri)
+        public override CommandResult Bind(ISaml2Message message, Uri destinationUrl)
         {
             if (message == null)
             {
                 throw new ArgumentNullException("message");
             }
-            if (destinationUri == null)
+            if (destinationUrl == null)
             {
-                throw new ArgumentNullException("destinationUri");
+                throw new ArgumentNullException("destinationUrl");
             }
 
             var encodedXml = Convert.ToBase64String(
@@ -49,7 +49,7 @@ namespace Kentor.AuthServices.WebSso
             var cr = new CommandResult
             {
                 Content = String.Format(CultureInfo.InvariantCulture, PostHtmlFormatString,
-               destinationUri, message.MessageName, encodedXml)
+               destinationUrl, message.MessageName, encodedXml)
             };
 
             return cr;

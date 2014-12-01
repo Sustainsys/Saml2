@@ -13,17 +13,18 @@ namespace Kentor.AuthServices.Mvc
     [AllowAnonymous]
     public class AuthServicesController : Controller
     {
-        private Options options = null;
+        private static IOptions options = null;
 
         /// <summary>
-        /// The options used by the controller. By default read from config, but can be set.
+        /// The options used by the controller. By default read from config, 
+        /// but can be set.
         /// </summary>
-        public Options Options {
+        public static IOptions Options {
             get
             {
                 if(options == null)
                 {
-                    options = Options.FromConfiguration;
+                    options = Configuration.Options.FromConfiguration;
                 }
                 return options;
             }

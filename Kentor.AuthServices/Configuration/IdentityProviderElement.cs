@@ -44,16 +44,16 @@ namespace Kentor.AuthServices.Configuration
         /// <summary>
         /// Destination url to send requests to.
         /// </summary>
-        [ConfigurationProperty("destinationUri")]
-        public Uri DestinationUri
+        [ConfigurationProperty("destinationUrl")]
+        public Uri DestinationUrl
         {
             get
             {
-                return (Uri)base["destinationUri"];
+                return (Uri)base["destinationUrl"];
             }
             internal set
             {
-                base["destinationUri"] = value;
+                base["destinationUrl"] = value;
             }
         }
 

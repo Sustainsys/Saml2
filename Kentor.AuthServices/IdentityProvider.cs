@@ -22,10 +22,16 @@ namespace Kentor.AuthServices
     /// </summary>
     public class IdentityProvider
     {
-        // Ctor used for testing.
-        internal IdentityProvider(Uri destinationUri, ISPOptions spOptions)
+        /// <summary>
+        /// Ctor
+        /// </summary>
+        /// <param name="entityId">Entity id of the identityprovider.</param>
+        /// <param name="spOptions">Service provider options to use when 
+        /// creating AuthnRequests for this Idp.</param>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "sp")]
+        public IdentityProvider(EntityId entityId, ISPOptions spOptions)
         {
-            singleSignOnServiceUrl = destinationUri;
+            EntityId = entityId;
             this.spOptions = spOptions;
         }
 
@@ -33,11 +39,12 @@ namespace Kentor.AuthServices
 
         internal IdentityProvider(IdentityProviderElement config, ISPOptions spOptions)
         {
-            singleSignOnServiceUrl = config.DestinationUri;
+            singleSignOnServiceUrl = config.DestinationUrl;
             EntityId = new EntityId(config.EntityId);
             binding = config.Binding;
             AllowUnsolicitedAuthnResponse = config.AllowUnsolicitedAuthnResponse;
-            metadataLocation = config.MetadataUrl;
+            metadataUrl = config.MetadataUrl;
+            LoadMetadata = config.LoadMetadata;
             this.spOptions = spOptions;
 
             var certificate = config.SigningCertificate.LoadCertificate();
@@ -49,9 +56,9 @@ namespace Kentor.AuthServices
 
             try
             {
-                if (config.LoadMetadata)
+                if (LoadMetadata)
                 {
-                    LoadMetadata();
+                    DoLoadMetadata();
                 }
 
                 Validate();
@@ -61,21 +68,6 @@ namespace Kentor.AuthServices
                 // If we had a web exception, the metadata failed. It will 
                 // be automatically retried.
             }
-        }
-
-        /// <summary>
-        /// Ctor.
-        /// </summary>
-        /// <param name="metadata">Metadata to use to configure the identity provider.</param>
-        /// <param name="allowUnsolicitedAuthnResponse">Are unsolicited responses allowed from this idp?</param>
-        /// <param name="spOptions">Service Provider option to use when creating AuthnRequests.</param>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "sp")]
-        public IdentityProvider(ExtendedEntityDescriptor metadata, bool allowUnsolicitedAuthnResponse, ISPOptions spOptions)
-        {
-            AllowUnsolicitedAuthnResponse = allowUnsolicitedAuthnResponse;
-            this.spOptions = spOptions;
-            LoadMetadata(metadata);
-            Validate();
         }
 
         private void Validate()
@@ -96,6 +88,35 @@ namespace Kentor.AuthServices
             }
         }
 
+        private bool loadMetadata;
+
+        /// <summary>
+        /// Should this idp load metadata?
+        /// </summary>
+        public bool LoadMetadata
+        {
+            get
+            {
+                return loadMetadata;
+            }
+            set
+            {
+                loadMetadata = value;
+                if (loadMetadata)
+                {
+                    try
+                    {
+                        DoLoadMetadata();
+                    }
+                    catch (WebException)
+                    {
+                        // Ignore if metadata load failed, an automatic
+                        // retry has been scheduled.
+                    }
+                }
+            }
+        }
+
         private Saml2BindingType binding;
 
         /// <summary>
@@ -105,8 +126,12 @@ namespace Kentor.AuthServices
         {
             get
             {
-                ReloadMetadataIfExpired();
+                ReloadMetadataIfRequired();
                 return binding;
+            }
+            set
+            {
+                binding = value;
             }
         }
 
@@ -121,8 +146,12 @@ namespace Kentor.AuthServices
         {
             get
             {
-                ReloadMetadataIfExpired();
+                ReloadMetadataIfRequired();
                 return singleSignOnServiceUrl;
+            }
+            set
+            {
+                singleSignOnServiceUrl = value;
             }
         }
 
@@ -134,18 +163,23 @@ namespace Kentor.AuthServices
         /// <summary>
         /// Is this idp allowed to send unsolicited responses, i.e. idp initiated sign in?
         /// </summary>
-        public bool AllowUnsolicitedAuthnResponse { get; private set; }
+        public bool AllowUnsolicitedAuthnResponse { get; set; }
 
-        private Uri metadataLocation;
+        private Uri metadataUrl;
 
         /// <summary>
         /// Location of metadata for the Identity Provider.
         /// </summary>
-        public Uri MetadataLocation
+        public Uri MetadataUrl
         {
             get
             {
-                return metadataLocation ?? new Uri(EntityId.Id);
+                return metadataUrl ?? new Uri(EntityId.Id);
+            }
+            set
+            {
+                metadataUrl = value;
+                LoadMetadata = true;
             }
         }
 
@@ -168,7 +202,7 @@ namespace Kentor.AuthServices
 
             var authnRequest = new Saml2AuthenticationRequest
             {
-                DestinationUri = SingleSignOnServiceUrl,
+                DestinationUrl = SingleSignOnServiceUrl,
                 AssertionConsumerServiceUrl = authServicesUrls.AssertionConsumerServiceUrl,
                 Issuer = spOptions.EntityId,
                 SigningCertificate = FederatedAuthentication.FederationConfiguration.ServiceCertificate,
@@ -203,22 +237,27 @@ namespace Kentor.AuthServices
         {
             get
             {
-                ReloadMetadataIfExpired();
+                ReloadMetadataIfRequired();
                 return signingKey;
             }
+            set
+            {
+                signingKey = value;
+            }
+
         }
 
         object metadataLoadLock = new object();
 
-        private void LoadMetadata()
+        private void DoLoadMetadata()
         {
             lock (metadataLoadLock)
             {
                 try
                 {
-                    var metadata = MetadataLoader.LoadIdp(MetadataLocation);
+                    var metadata = MetadataLoader.LoadIdp(MetadataUrl);
 
-                    LoadMetadata(metadata);
+                    ReadMetadata(metadata);
                 }
                 catch (WebException)
                 {
@@ -228,54 +267,57 @@ namespace Kentor.AuthServices
             }
         }
 
-        private void LoadMetadata(ExtendedEntityDescriptor metadata)
+        /// <summary>
+        /// Reads the supplied metadata and sets all properties of the 
+        /// IdentityProvider based on the metadata.
+        /// </summary>
+        /// <param name="metadata">Metadata to read.</param>
+        public void ReadMetadata(ExtendedEntityDescriptor metadata)
         {
+            if (metadata == null)
+            {
+                throw new ArgumentNullException("metadata");
+            }
+
             lock (metadataLoadLock)
             {
-                if (EntityId != null)
+                if (metadata.EntityId.Id != EntityId.Id)
                 {
-                    if (metadata.EntityId.Id != EntityId.Id)
-                    {
-                        var msg = string.Format(CultureInfo.InvariantCulture,
-                            "Unexpected entity id \"{0}\" found when loading metadata for \"{1}\".",
-                            metadata.EntityId.Id, EntityId.Id);
-                        throw new ConfigurationErrorsException(msg);
-                    }
-                }
-                else
-                {
-                    EntityId = metadata.EntityId;
+                    var msg = string.Format(CultureInfo.InvariantCulture,
+                        "Unexpected entity id \"{0}\" found when loading metadata for \"{1}\".",
+                        metadata.EntityId.Id, EntityId.Id);
+                    throw new ConfigurationErrorsException(msg);
                 }
 
-                var idpDescriptor = metadata.RoleDescriptors
-                    .OfType<IdentityProviderSingleSignOnDescriptor>().Single();
+                ReadMetadataIdpDescriptor(metadata);
 
-                // Prefer an endpoint with a redirect binding, then check for POST which 
-                // is the other supported by AuthServices.
-                var ssoService = idpDescriptor.SingleSignOnServices
-                    .FirstOrDefault(s => s.Binding == Saml2Binding.HttpRedirectUri) ??
-                    idpDescriptor.SingleSignOnServices
-                    .First(s => s.Binding == Saml2Binding.HttpPostUri);
+                MetadataValidUntil = metadata.CalculateMetadataValidUntil();
+            }
+        }
 
-                binding = Saml2Binding.UriToSaml2BindingType(ssoService.Binding);
-                singleSignOnServiceUrl = ssoService.Location;
+        private void ReadMetadataIdpDescriptor(ExtendedEntityDescriptor metadata)
+        {
+            var idpDescriptor = metadata.RoleDescriptors
+                .OfType<IdentityProviderSingleSignOnDescriptor>().Single();
 
-                var key = idpDescriptor.Keys
-                    .Where(k => k.Use == KeyType.Unspecified || k.Use == KeyType.Signing)
-                    .SingleOrDefault();
+            // Prefer an endpoint with a redirect binding, then check for POST which 
+            // is the other supported by AuthServices.
+            var ssoService = idpDescriptor.SingleSignOnServices
+                .FirstOrDefault(s => s.Binding == Saml2Binding.HttpRedirectUri) ??
+                idpDescriptor.SingleSignOnServices
+                .First(s => s.Binding == Saml2Binding.HttpPostUri);
 
-                if (key != null)
-                {
-                    signingKey = ((AsymmetricSecurityKey)key.KeyInfo.CreateKey())
-                        .GetAsymmetricAlgorithm(SignedXml.XmlDsigRSASHA1Url, false);
-                }
+            binding = Saml2Binding.UriToSaml2BindingType(ssoService.Binding);
+            singleSignOnServiceUrl = ssoService.Location;
 
-                MetadataValidUntil = metadata.ValidUntil;
+            var key = idpDescriptor.Keys
+                .Where(k => k.Use == KeyType.Unspecified || k.Use == KeyType.Signing)
+                .SingleOrDefault();
 
-                if (metadata.CacheDuration.HasValue)
-                {
-                    MetadataValidUntil = DateTime.UtcNow.Add(metadata.CacheDuration.Value);
-                }
+            if (key != null)
+            {
+                signingKey = ((AsymmetricSecurityKey)key.KeyInfo.CreateKey())
+                    .GetAsymmetricAlgorithm(SignedXml.XmlDsigRSASHA1Url, false);
             }
         }
 
@@ -295,21 +337,21 @@ namespace Kentor.AuthServices
             {
                 metadataValidUntil = value;
 
-                if (value.HasValue)
+                if (LoadMetadata)
                 {
                     Task.Delay(MetadataRefreshScheduler.GetDelay(value.Value))
-                        .ContinueWith((_) => LoadMetadata());
+                        .ContinueWith((_) => DoLoadMetadata());
                 }
             }
         }
 
-        private void ReloadMetadataIfExpired()
+        private void ReloadMetadataIfRequired()
         {
-            if (MetadataValidUntil < DateTime.UtcNow)
+            if (LoadMetadata && MetadataValidUntil.Value < DateTime.UtcNow)
             {
                 lock (metadataLoadLock)
                 {
-                    LoadMetadata();
+                    DoLoadMetadata();
                 }
             }
         }

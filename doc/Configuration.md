@@ -49,7 +49,7 @@ library. It is required for the http module, the mvc controller and the Owin mid
   </metadata>
   <identityProviders>
     <add entityId="https://stubidp.kentor.se/Metadata" 
-         destinationUri="https://stubidp.kentor.se" 
+         destinationUrl="https://stubidp.kentor.se" 
          allowUnsolicitedAuthnResponse="true" binding="HttpRedirect">
       <signingCertificate storeName="AddressBook" storeLocation="CurrentUser" 
                           findValue="Kentor.AuthServices.StubIdp" x509FindType="FindBySubjectName" />
@@ -276,7 +276,7 @@ A list of identity providers known to the service provider.
 
 ####Attributes
 * [`entityID`](#entityId-attribute-identityprovider)
-* [`destinationUri`](#destinationuri-attribute)
+* [`destinationUrl`](#destinationuri-attribute)
 * [`allowUnsolicitedAuthnResponse`](#allowunsolicitedauthnresponse-attribute)
 * [`binding`](#binding-attribute)
 * [`loadMetadata`](#loadmetadata-attribute)
@@ -291,7 +291,7 @@ A list of identity providers known to the service provider.
 The issuer name that the idp will be using when sending responses. When `<loadMetadata>`
 is enabled, the `entityId` is treated as a URL to for downloading the metadata.
 
-####`destinationUri` Attribute
+####`destinationUrl` Attribute
 *Optional attribute of the [`<add>`](#add-identityprovider-element) element*
 
 The uri where the identity provider listens for incoming requests. The 

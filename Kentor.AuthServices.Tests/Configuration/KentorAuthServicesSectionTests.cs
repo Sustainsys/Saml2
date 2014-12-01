@@ -89,7 +89,11 @@ namespace Kentor.AuthServices.Tests.Configuration
         [TestMethod]
         public void KentorAuthServicesSection_Attributes_LoadedFromConfig()
         {
-            var expected = new AttributeConsumingService("SP");
+            var expected = new AttributeConsumingService("SP")
+                {
+                    IsDefault = true
+                };
+
             expected.RequestedAttributes.Add(
                 new RequestedAttribute("urn:someName")
                 {
@@ -108,6 +112,16 @@ namespace Kentor.AuthServices.Tests.Configuration
             var subject = KentorAuthServicesSection.Current.AttributeConsumingServices.Single();
 
             subject.ShouldBeEquivalentTo(expected);
+        }
+
+        [TestMethod]
+        public void KentorAuthServicesSection_Attributes_EmptyIfNotConfigured()
+        {
+            var subject = new KentorAuthServicesSection();
+            subject.AllowChange(true);
+            subject.Metadata = new MetadataElement();
+
+            subject.AttributeConsumingServices.Should().BeEmpty();
         }
     }
 }

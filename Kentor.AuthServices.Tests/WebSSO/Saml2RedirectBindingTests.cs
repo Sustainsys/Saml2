@@ -23,11 +23,11 @@ namespace Kentor.AuthServices.Tests.WebSso
         }
 
         [TestMethod]
-        public void Saml2PostBinding_Bind_Nullcheck_destinationUri()
+        public void Saml2PostBinding_Bind_Nullcheck_destinationUrl()
         {
             Saml2Binding.Get(Saml2BindingType.HttpRedirect)
                 .Invoking(b => b.Bind(new Saml2AuthenticationRequest(), null))
-                .ShouldThrow<ArgumentNullException>().And.ParamName.Should().Be("destinationUri");
+                .ShouldThrow<ArgumentNullException>().And.ParamName.Should().Be("destinationUrl");
         }
 
         [TestMethod]
@@ -39,7 +39,7 @@ namespace Kentor.AuthServices.Tests.WebSso
 
         [TestMethod]
         public void Saml2RedirectBinding_Bind()
-        {            
+        {
             var message = new ConcreteSaml2Request();
             const string serializedData = "fcuxCsIwEIDhVwnZ1SQ20hxWEEQo6KQ4uB1NAoU2V3Ip%2bPhmdHL8f%2fiOVyLxmafEwDhPZunkmhMQ8siQcA4MZYDH%2bX4Ds1WwZCo00CR%2fzX%2bCzCGXkZIU%2faWTo9cx2r0fMMa2bVrrsbHGu6hdrYPxVopXyFxBJ6uvinkNfeKCqdSlVLPRZqPsUzkwGqx7S7E7fQEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA%3d%3d";
             var destinationUri = new Uri("http://www.example.com/acs");
@@ -76,7 +76,7 @@ namespace Kentor.AuthServices.Tests.WebSso
 
             subject.ShouldBeEquivalentTo(expected);
         }
-       
+
         private HttpRequestData CreateRequest(string encodedResponse)
         {
             return new HttpRequestData("GET", new Uri("http://localhost?SAMLRequest=" + encodedResponse));

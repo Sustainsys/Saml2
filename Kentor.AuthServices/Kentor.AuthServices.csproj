@@ -53,12 +53,13 @@
     <Compile Include="..\VersionInfo.cs">
       <Link>VersionInfo.cs</Link>
     </Compile>
+    <Compile Include="Metadata\KeyInfoSerializer.cs" />
     <Compile Include="WebSso\AcsCommand.cs" />
     <Compile Include="Metadata\AttributeConsumingService.cs" />
     <Compile Include="Configuration\RequestedAttributeElement.cs" />
     <Compile Include="Configuration\RequestedAttributesCollection.cs" />
     <Compile Include="Metadata\RequestedAttribute.cs" />
-    <Compile Include="ExtendedEntitiesDescriptor.cs" />
+    <Compile Include="Metadata\ExtendedEntitiesDescriptor.cs" />
     <Compile Include="ICachedMetadata.cs" />
     <Compile Include="MetadataRefreshScheduler.cs" />
     <Compile Include="Metadata\EntityDescriptorExtensions.cs" />
@@ -132,11 +133,6 @@
     <CodeAnalysisDictionary Include="..\CustomDictionary.xml">
       <link>CustomDictionary.xml</link>
     </CodeAnalysisDictionary>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Kentor.AuthServices.nuspec">
-      <SubType>Designer</SubType>
-    </None>
   </ItemGroup>
   <ItemGroup>
     <Content Include="readme.txt" />

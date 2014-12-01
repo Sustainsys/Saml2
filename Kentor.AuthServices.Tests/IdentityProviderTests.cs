@@ -9,6 +9,9 @@ using Kentor.AuthServices.Saml2P;
 using Kentor.AuthServices.WebSso;
 using System.Net;
 using Kentor.AuthServices.Tests.Metadata;
+using Kentor.AuthServices.Metadata;
+using System.Threading;
+using System.Security.Cryptography;
 
 namespace Kentor.AuthServices.Tests
 {
@@ -16,10 +19,12 @@ namespace Kentor.AuthServices.Tests
     public class IdentityProviderTests
     {
         TimeSpan refreshMinInterval = MetadataRefreshScheduler.minInternval;
+        int idpMetadataSsoPort = MetadataServer.IdpMetadataSsoPort;
 
         [TestCleanup]
         public void Cleanup()
         {
+            MetadataServer.IdpMetadataSsoPort = idpMetadataSsoPort;
             MetadataServer.IdpVeryShortCacheDurationIncludeInvalidKey = false;
             MetadataRefreshScheduler.minInternval = refreshMinInterval;
         }
@@ -29,11 +34,14 @@ namespace Kentor.AuthServices.Tests
         {
             string idpUri = "http://idp.example.com/";
 
-            var ip = new IdentityProvider(
-                new Uri(idpUri),
-                Options.FromConfiguration.SPOptions);
+            var subject = new IdentityProvider(
+                new EntityId(idpUri),
+                Options.FromConfiguration.SPOptions)
+                {
+                    SingleSignOnServiceUrl = new Uri(idpUri)
+                };
 
-            var r = ip.CreateAuthenticateRequest(null, StubFactory.CreateAuthServicesUrls());
+            var r = subject.CreateAuthenticateRequest(null, StubFactory.CreateAuthServicesUrls());
 
             r.ToXElement().Attribute("Destination").Should().NotBeNull()
                 .And.Subject.Value.Should().Be(idpUri);
@@ -52,7 +60,7 @@ namespace Kentor.AuthServices.Tests
             var expected = new Saml2AuthenticationRequest()
             {
                 AssertionConsumerServiceUrl = urls.AssertionConsumerServiceUrl,
-                DestinationUri = idp.SingleSignOnServiceUrl,
+                DestinationUrl = idp.SingleSignOnServiceUrl,
                 Issuer = options.SPOptions.EntityId,
                 AttributeConsumingServiceIndex = 0,
             };
@@ -74,7 +82,7 @@ namespace Kentor.AuthServices.Tests
             var expected = new Saml2AuthenticationRequest()
             {
                 AssertionConsumerServiceUrl = urls.AssertionConsumerServiceUrl,
-                DestinationUri = idp.SingleSignOnServiceUrl,
+                DestinationUrl = idp.SingleSignOnServiceUrl,
                 Issuer = options.SPOptions.EntityId,
                 AttributeConsumingServiceIndex = null
             };
@@ -137,7 +145,7 @@ namespace Kentor.AuthServices.Tests
             config.SigningCertificate = new CertificateElement();
             config.SigningCertificate.AllowConfigEdit(true);
             config.SigningCertificate.FileName = "Kentor.AuthServices.Tests.pfx";
-            config.DestinationUri = new Uri("http://idp.example.com/acs");
+            config.DestinationUrl = new Uri("http://idp.example.com/acs");
             config.EntityId = "http://idp.example.com";
 
             return config;
@@ -171,10 +179,10 @@ namespace Kentor.AuthServices.Tests
         }
 
         [TestMethod]
-        public void IdentityProvider_Ctor_MissingDestinationUriThrows()
+        public void IdentityProvider_Ctor_MissingDestinationUrlThrows()
         {
             var config = CreateConfig();
-            config.DestinationUri = null;
+            config.DestinationUrl = null;
             TestMissingConfig(config, "assertion consumer service url");
         }
 
@@ -197,12 +205,12 @@ namespace Kentor.AuthServices.Tests
         {
             var config = CreateConfig();
             config.LoadMetadata = true;
-            config.EntityId = "http://localhost:13428/idpMetadataWrongEntityId";
+            config.EntityId = "http://localhost:13428/idpMetadataOtherEntityId";
 
             Action a = () => new IdentityProvider(config, Options.FromConfiguration.SPOptions);
 
             a.ShouldThrow<ConfigurationErrorsException>().And.Message.Should()
-                .Be("Unexpected entity id \"http://wrong.entityid.example.com\" found when loading metadata for \"http://localhost:13428/idpMetadataWrongEntityId\".");
+                .Be("Unexpected entity id \"http://other.entityid.example.com\" found when loading metadata for \"http://localhost:13428/idpMetadataOtherEntityId\".");
         }
 
         [TestMethod]
@@ -251,7 +259,7 @@ namespace Kentor.AuthServices.Tests
             string idpUri = "http://idp.example.com/";
 
             var subject = new IdentityProvider(
-                new Uri(idpUri),
+                new EntityId(idpUri),
                 Options.FromConfiguration.SPOptions);
 
             subject.MetadataValidUntil.Should().NotHaveValue();
@@ -317,6 +325,23 @@ namespace Kentor.AuthServices.Tests
         }
 
         [TestMethod]
+        public void IdentityProvider_SingleSignOnService_DoesntReloadMetadataIfStillValid()
+        {
+            var subject = new IdentityProvider(
+                new EntityId("http://localhost:13428/idpMetadata"),
+                StubFactory.CreateSPOptions())
+                {
+                    LoadMetadata = true
+                };
+
+            subject.SingleSignOnServiceUrl.Port.Should().Be(13428);
+            MetadataServer.IdpMetadataSsoPort = 147;
+
+            // Metadata shouldn't be reloaded so port shouldn't be changed.
+            subject.SingleSignOnServiceUrl.Port.Should().Be(13428);
+        }
+
+        [TestMethod]
         public void IdentityProvider_SigningKey_ReloadsMetadataIfNoLongerValid()
         {
             var subject = CreateSubjectForMetadataRefresh();
@@ -364,7 +389,8 @@ namespace Kentor.AuthServices.Tests
             var metadataEnabledTime = DateTime.UtcNow;
             MetadataServer.IdpAndFederationShortCacheDurationAvailable = true;
 
-            SpinWaiter.While(() => {
+            SpinWaiter.While(() =>
+            {
                 var mvu = subject.MetadataValidUntil;
                 return !mvu.HasValue || mvu == DateTime.MinValue;
             },
@@ -386,6 +412,140 @@ namespace Kentor.AuthServices.Tests
                 var mvu = subject.MetadataValidUntil;
                 return !mvu.HasValue || mvu == DateTime.MinValue;
             });
+        }
+
+        [TestMethod]
+        public void IdentityProvider_ConstructedFromEntityDescriptor_DoesntReloadMetadataWhenDisabled()
+        {
+            var ed = new ExtendedEntityDescriptor
+            {
+                ValidUntil = DateTime.UtcNow.AddYears(-1),
+                EntityId = new EntityId("someEntityId")
+            };
+
+            var idpSsoDescriptor = new IdentityProviderSingleSignOnDescriptor();
+            idpSsoDescriptor.ProtocolsSupported.Add(new Uri("urn:oasis:names:tc:SAML:2.0:protocol"));
+            ed.RoleDescriptors.Add(idpSsoDescriptor);
+
+            idpSsoDescriptor.SingleSignOnServices.Add(new ProtocolEndpoint()
+            {
+                Binding = Saml2Binding.HttpRedirectUri,
+                Location = new Uri("http://idp.example.com/sso")
+            });
+
+            idpSsoDescriptor.Keys.Add(SignedXmlHelper.TestKeyDescriptor);
+
+            var subject = new IdentityProvider(ed.EntityId, StubFactory.CreateSPOptions());
+
+            Action a = () => { var b = subject.Binding; };
+
+            subject.LoadMetadata.Should().BeFalse();
+
+            // Will throw invalid Uri if it tries to use EntityId as metadata url.
+            a.ShouldNotThrow();
+        }
+
+        [TestMethod]
+        public void IdentityProvider_ConstructedFromEntityDescriptor_DoesntScheduleMedataRefresh()
+        {
+            MetadataRefreshScheduler.minInternval = new TimeSpan(0, 0, 0, 0, 1);
+
+            var ed = new ExtendedEntityDescriptor
+            {
+                ValidUntil = DateTime.UtcNow.AddYears(-1),
+                EntityId = new EntityId("http://localhost:13428/idpMetadata")
+            };
+
+            var idpSsoDescriptor = new IdentityProviderSingleSignOnDescriptor();
+            idpSsoDescriptor.ProtocolsSupported.Add(new Uri("urn:oasis:names:tc:SAML:2.0:protocol"));
+            ed.RoleDescriptors.Add(idpSsoDescriptor);
+
+            var pe = new ProtocolEndpoint()
+            {
+                Binding = Saml2Binding.HttpRedirectUri,
+                Location = new Uri("http://idp.example.com/sso")
+            };
+
+            idpSsoDescriptor.SingleSignOnServices.Add(pe);
+
+            idpSsoDescriptor.Keys.Add(SignedXmlHelper.TestKeyDescriptor);
+
+            var subject = new IdentityProvider(ed.EntityId, StubFactory.CreateSPOptions());
+            subject.ReadMetadata(ed);
+
+            // Ugly, but have to wait and see that nothing happened. Have tried
+            // some different timeouts but need 100 to ensure fail before bug
+            // is fixed :-(
+            Thread.Sleep(100);
+
+            // Would be changed if metadata was reloaded.
+            subject.SingleSignOnServiceUrl.Should().Be(pe.Location);
+        }
+
+        [TestMethod]
+        public void IdentityProvider_MetadataLoadedConfiguredFromCode()
+        {
+            var subject = new IdentityProvider(
+                new EntityId("http://other.entityid.example.com"),
+                StubFactory.CreateSPOptions())
+            {
+                MetadataUrl = new Uri("http://localhost:13428/idpMetadataOtherEntityId"),
+                AllowUnsolicitedAuthnResponse = true
+            };
+
+            subject.AllowUnsolicitedAuthnResponse.Should().BeTrue();
+            subject.Binding.Should().Be(Saml2BindingType.HttpRedirect);
+            subject.EntityId.Id.Should().Be("http://other.entityid.example.com");
+            // If a metadatalocation is set, metadata loading is automatically enabled.
+            subject.LoadMetadata.Should().BeTrue();
+            subject.MetadataUrl.OriginalString.Should().Be("http://localhost:13428/idpMetadataOtherEntityId");
+            subject.MetadataValidUntil.Should().BeCloseTo(
+                DateTime.UtcNow.Add(MetadataRefreshScheduler.DefaultMetadataCacheDuration));
+            subject.SingleSignOnServiceUrl.Should().Be("http://wrong.entityid.example.com/acs");
+
+            Action a = () => subject.CreateAuthenticateRequest(null, StubFactory.CreateAuthServicesUrls());
+            a.ShouldNotThrow();
+        }
+
+        [TestMethod]
+        public void IdentityProvider_MetadataLoadedConfiguredManually()
+        {
+            var subject = new IdentityProvider(
+                new EntityId("http://idp.example.com"),
+                StubFactory.CreateSPOptions())
+                {
+                    AllowUnsolicitedAuthnResponse = true,
+                    Binding = Saml2BindingType.HttpPost,
+                    SigningKey = SignedXmlHelper.TestKey,
+                    SingleSignOnServiceUrl = new Uri("http://idp.example.com/sso")
+                };
+
+            subject.AllowUnsolicitedAuthnResponse.Should().BeTrue();
+            subject.Binding.Should().Be(Saml2BindingType.HttpPost);
+            subject.EntityId.Id.Should().Be("http://idp.example.com");
+            subject.LoadMetadata.Should().BeFalse();
+            subject.MetadataUrl.OriginalString.Should().Be("http://idp.example.com");
+            subject.MetadataValidUntil.Should().NotHaveValue();
+
+            var subjectKeyParams = subject.SigningKey.As<RSACryptoServiceProvider>().ExportParameters(false);
+            var expectedKeyParams = SignedXmlHelper.TestKey.As<RSACryptoServiceProvider>().ExportParameters(false);
+
+            subjectKeyParams.Modulus.ShouldBeEquivalentTo(expectedKeyParams.Modulus);
+            subjectKeyParams.Exponent.ShouldBeEquivalentTo(expectedKeyParams.Exponent);
+
+            subject.SingleSignOnServiceUrl.AbsoluteUri.Should().Be("http://idp.example.com/sso");
+        }
+
+        [TestMethod]
+        public void IdentityProvider_ReadMetadata_Nullcheck()
+        {
+            var subject = new IdentityProvider(
+                new EntityId("http://idp.example.com"),
+                StubFactory.CreateSPOptions());
+
+            Action a = () => subject.ReadMetadata(null);
+
+            a.ShouldThrow<ArgumentNullException>().And.ParamName.Should().Be("metadata");
         }
     }
 }

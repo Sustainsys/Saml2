@@ -25,7 +25,7 @@ namespace Kentor.AuthServices.WebSso
                 throw new ArgumentNullException("message");
             }
 
-            return binding.Bind(message, message.DestinationUri);
+            return binding.Bind(message, message.DestinationUrl);
         }
     }
 }
