@@ -24,7 +24,7 @@
     empty, the Response is considered unsolicited (IDP initiated).
 </p>
 
-@using (Html.BeginForm(null))
+@using (Html.BeginForm("Index", "Home"))
 {
     if (!string.IsNullOrEmpty(Model.AuthnRequestXml))
     {
