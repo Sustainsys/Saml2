@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Web.UI;
+using System.Xml;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.IO;
 using System.Text;
@@ -32,6 +34,26 @@ namespace Kentor.AuthServices.Tests
             subject.ValidUntil.Should().Be(new DateTime(2100, 01, 02, 14, 42, 43, DateTimeKind.Utc));
             subject.CacheDuration.Should().NotHaveValue();
         }
+
+        [TestMethod]
+        public void ExtendedMetadataSerializer_MultipleOrganizationNames()
+        {
+            
+            const string nhsDuplicates = "Metadata\\NHSDuplicateOrganisation.xml";
+            var data = File.ReadAllText(nhsDuplicates, Encoding.UTF8).Trim();
+
+            var entityDescriptor = ExtendedMetadataSerializer.ReaderInstance.ReadMetadata(
+                new MemoryStream(Encoding.UTF8.GetBytes(data)));
+
+
+
+
+        }
+
+
+
+
+
 
         [TestMethod]
         public void ExtendedMetadataSerializer_Read_EntityDescriptorCacheDuration()

@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
+using System.IdentityModel;
 using System.IdentityModel.Metadata;
 using System.IdentityModel.Selectors;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -159,6 +162,68 @@ namespace Kentor.AuthServices.Metadata
         protected override EntitiesDescriptor CreateEntitiesDescriptorInstance()
         {
             return new ExtendedEntitiesDescriptor();
+        }
+
+        protected override Organization ReadOrganization(XmlReader reader)
+        {
+            if (reader == null)
+                throw new ArgumentException("reader was null");
+
+            var orgNames = new LocalizedEntryCollection<LocalizedName>();
+            var orgDisplayNames = new LocalizedEntryCollection<LocalizedName>();
+            var orgUrls = new LocalizedEntryCollection<LocalizedUri>();
+            var isSafeForMetadataSerializer = true;
+            while (reader.Read())
+            {
+                if (reader.NodeType == XmlNodeType.Element)
+                {
+                    // TODO: is xml:lang opt?
+                    var lang = reader.GetAttribute("xml:lang");
+
+                    if (reader.Name == "OrganizationName" || reader.Name == "OrganizationDisplayName")
+                    {
+                        LocalizedEntryCollection<LocalizedName> collection = orgNames;
+                        if (reader.Name == "OrganizationDisplayName")
+                            collection = orgDisplayNames;
+
+                        reader.Read(); // Move to value
+
+                        if (!collection.Any(x => x.Language == CultureInfo.GetCultureInfo(lang)))
+                        {
+                            collection.Add(new LocalizedName
+                            {
+                                Name = reader.Value,
+                                Language = CultureInfo.GetCultureInfo(lang)
+                            });
+                            continue;
+                        }
+                    }
+                    if (reader.Name == "OrganizationURL")
+                    {
+                        reader.Read(); // Move to value
+
+                        if (!orgUrls.Any(x => x.Language == CultureInfo.GetCultureInfo(lang)))
+                        {
+                            orgUrls.Add(new LocalizedUri()
+                            {
+                                Uri = new Uri(reader.Value),
+                                Language = CultureInfo.GetCultureInfo(lang)
+                            });
+                            continue;
+                        }
+                    }
+                    if (reader.Name != "Organization")
+                        isSafeForMetadataSerializer = false;
+                }
+                if (reader.Name == "Organization" && reader.NodeType == XmlNodeType.EndElement)
+                    break;
+            }
+            if (isSafeForMetadataSerializer)
+            {
+                return base.ReadOrganization(reader);
+            }
+
+            return new Organization(orgNames, orgDisplayNames, orgUrls);
         }
     }
 }
