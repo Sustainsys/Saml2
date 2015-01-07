@@ -46,7 +46,7 @@ not a 30-feet development monster-monitor in vertical orientation).
 * The code is formatted to (mostly) fit in 80 columns.
 
 ##Unit Tests
-The core Kentor.AuthServices library has been developed using TDD (Test Drive Development). All
+The core Kentor.AuthServices library has been developed using TDD (Test Driven Development). All
 functionality is covered by tests, and it will remain that way. Pull requests will only be
 merged if they contain tests covering the added functionality. Parts of the code that aren't
 practically possible to test because of tight integration with the web server (see e.g. 
