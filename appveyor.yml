@@ -17,6 +17,9 @@ init:
 before_build:
   - nuget restore
 
+cache:
+  - packages                     # preserve "packages" directory in the root of build folder to avoid repeated downloads for nuget restore
+
 #---------------------------------#
 #       tests configuration       #
 #---------------------------------#
