@@ -13,6 +13,10 @@ init:
 # force windows line endings to make test strings depending on line break work
   - git config --global core.autocrlf true
 
+# scripts to run before build
+before_build:
+  - nuget restore
+
 #---------------------------------#
 #       tests configuration       #
 #---------------------------------#
