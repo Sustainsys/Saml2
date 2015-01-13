@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Kentor.AuthServices.Internal;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
@@ -69,7 +70,7 @@ namespace Kentor.AuthServices.WebSso
                     writer.Write(payload);
                 }
 
-                return HttpUtility.UrlEncode(Convert.ToBase64String(compressed.GetBuffer()));
+                return QueryStringHelper.UrlEncode(Convert.ToBase64String(compressed.GetBuffer()));
             }
         }
     }

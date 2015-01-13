@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.IdentityModel.Configuration;
 using System.IdentityModel.Metadata;
 using System.Linq;
 using System.Text;
@@ -24,5 +25,10 @@ namespace Kentor.AuthServices.Configuration
         /// Information about known identity providers.
         /// </summary>
         IdentityProviderDictionary IdentityProviders { get; }
+
+        /// <summary>
+        /// Property represents the federation identity configuration. 
+        /// </summary>
+        IdentityConfiguration IdentityConfiguration { get; }
     }
 }

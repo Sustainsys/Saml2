@@ -4,6 +4,7 @@ using Microsoft.Owin.Security;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.IdentityModel.Configuration;
 using System.IdentityModel.Metadata;
 using System.Linq;
 using System.Text;
@@ -33,6 +34,11 @@ namespace Kentor.AuthServices.Owin
                 SPOptions = KentorAuthServicesSection.Current;
                 KentorAuthServicesSection.Current.IdentityProviders.RegisterIdentityProviders(this);
                 KentorAuthServicesSection.Current.Federations.RegisterFederations(this);
+
+                // Load the federation configuration section from config.
+                FederationIdentityConfiguration federationIdentity = new FederationIdentityConfiguration();
+                federationIdentity.FromConfiguration();
+                FederationIdentityConfiguration(federationIdentity);
             }
         }
 
@@ -75,5 +81,23 @@ namespace Kentor.AuthServices.Owin
                 Description.Caption = value;
             }
         }
+
+        private void FederationIdentityConfiguration(FederationIdentityConfiguration identity)
+        {
+            federationIdentityConfiguration = identity;
+        }
+
+        /// <summary>
+        /// The federation identity configuration. 
+        /// </summary>
+        public IdentityConfiguration IdentityConfiguration
+        {
+            get
+            {
+                return federationIdentityConfiguration.IdentityConfiguration;
+            }
+        }
+
+        private FederationIdentityConfiguration federationIdentityConfiguration;
     }
 }

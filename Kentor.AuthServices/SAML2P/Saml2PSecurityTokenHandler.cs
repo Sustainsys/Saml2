@@ -39,7 +39,7 @@ namespace Kentor.AuthServices.Saml2P
             {
                 IssuerNameRegistry = new ReturnRequestedIssuerNameRegistry(),
                 AudienceRestriction = audienceRestriction,
-                SaveBootstrapContext = FederatedAuthentication.FederationConfiguration.IdentityConfiguration.SaveBootstrapContext
+                SaveBootstrapContext = new FederationIdentityConfiguration().IdentityConfiguration.SaveBootstrapContext
             };
         }
 

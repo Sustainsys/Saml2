@@ -79,6 +79,7 @@
     </Compile>
     <Compile Include="AuthServicesController.cs" />
     <Compile Include="CommandResultExtensions.cs" />
+    <Compile Include="HttpRequestBaseExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

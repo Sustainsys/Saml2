@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.IdentityModel.Configuration;
 using System.IdentityModel.Metadata;
 using System.Linq;
 using System.Text;
@@ -24,9 +25,35 @@ namespace Kentor.AuthServices.Configuration
                 var options = new Options(KentorAuthServicesSection.Current);
                 KentorAuthServicesSection.Current.IdentityProviders.RegisterIdentityProviders(options);
                 KentorAuthServicesSection.Current.Federations.RegisterFederations(options);
+
+                // Load the federation configuration section from config.
+                if (!Options.suppressFederationIdentityLoading)
+                {
+                    FederationIdentityConfiguration federationIdentity = new FederationIdentityConfiguration();
+                    federationIdentity.FromConfiguration();
+                    options.FederationIdentityConfiguration(federationIdentity);
+                }
                 return options;
             }
         }
+
+        private static bool suppressFederationIdentityLoading;
+
+        /// <summary>
+        /// Used for tests to avoid exceptions due to unrecognized types in the identityConfiguration section. 
+        /// </summary>
+        public static bool SuppressFederationIdentityLoading
+        {
+            get
+            {
+                return suppressFederationIdentityLoading;
+            }
+            set
+            {
+                suppressFederationIdentityLoading = value;
+            }
+        }
+
 
         /// <summary>
         /// Creates an options object with the specified SPOptions.
@@ -51,6 +78,29 @@ namespace Kentor.AuthServices.Configuration
                 return spOptions;
             }
         }
+
+        /// <summary>
+        /// Sets the <c>FederationIdentityConfiguration</c> of the configuration options. 
+        /// </summary>
+        /// <param name="identity">The <c>FederationIdentityConfiguration</c> to be set.</param>
+        private void FederationIdentityConfiguration(FederationIdentityConfiguration identity)
+        {
+            federationIdentityConfiguration = identity;
+        }
+
+        /// <summary>
+        /// Property to get the identity configuration section of the read federation configuration section.
+        /// </summary>
+        public IdentityConfiguration IdentityConfiguration
+        {
+            get
+            {
+                return federationIdentityConfiguration.IdentityConfiguration;
+            }
+        }
+
+        private FederationIdentityConfiguration federationIdentityConfiguration;
+
 
         private readonly IdentityProviderDictionary identityProviders = new IdentityProviderDictionary();
 

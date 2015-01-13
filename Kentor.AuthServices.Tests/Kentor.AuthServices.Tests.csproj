@@ -109,11 +109,17 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
+    <Compile Include="HttpModule\CommandResultHttpTests.cs" />
+    <Compile Include="HttpModule\HttpRequestBaseExtensionsTests.cs" />
+    <Compile Include="Internal\QueryStringHelperTests.cs" />
+    <Compile Include="Internal\PathHelperTests.cs" />
     <Compile Include="Metadata\MetadatabaseExtensionsTests.cs" />
     <Compile Include="Mvc\AuthServicesControllerTests.cs" />
     <Compile Include="ClaimsAuthenticationManagerStub.cs" />
     <Compile Include="ExceptionTestHelpers.cs" />
     <Compile Include="Saml2ResponseFailedValidationExceptionTests.cs" />
+    <Compile Include="Mvc\HttpRequestBaseExtensionsTests.cs" />
+    <Compile Include="WebSSO\CommandResultTests.cs" />
     <Compile Include="WebSSO\MetadataCommandTests.cs" />
     <Compile Include="ExtendedMetadataSerializerTests.cs" />
     <Compile Include="Metadata\MetadataServer.cs" />
@@ -121,7 +127,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="WebSSO\CommandFactoryTests.cs" />
     <Compile Include="WebSSO\NotFoundCommandTests.cs" />
-    <Compile Include="WebSSO\CommandResultTests.cs" />
     <Compile Include="Saml2P\Saml2RequestBaseTests.cs" />
     <Compile Include="Saml2P\Saml2AuthenticationRequestTests.cs" />
     <Compile Include="IdentityProviderTests.cs" />
@@ -177,6 +182,10 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Kentor.AuthServices.HttpModule\Kentor.AuthServices.HttpModule.csproj">
+      <Project>{86a588e8-2e2d-4394-9545-24d8ea939cf2}</Project>
+      <Name>Kentor.AuthServices.HttpModule</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Kentor.AuthServices.Mvc\Kentor.AuthServices.Mvc.csproj">
       <Project>{7d32f0a3-cec8-4dc6-a096-5905ea9c3770}</Project>
       <Name>Kentor.AuthServices.Mvc</Name>

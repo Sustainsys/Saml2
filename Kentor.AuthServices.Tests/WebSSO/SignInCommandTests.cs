@@ -31,7 +31,7 @@ namespace Kentor.AuthServices.Tests.WebSso
             var expected = new CommandResult()
             {
                 HttpStatusCode = HttpStatusCode.SeeOther,
-                Cacheability = HttpCacheability.NoCache,
+                Cacheability = (Cacheability) HttpCacheability.NoCache,
                 Location = new Uri(defaultDestination + "?SAMLRequest=XYZ")
             };
 

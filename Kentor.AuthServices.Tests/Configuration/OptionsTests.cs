@@ -32,5 +32,11 @@ namespace Kentor.AuthServices.Tests.Configuration
 
             a.ShouldThrow<KeyNotFoundException>().And.Message.Should().Be("No Idp with entity id \"urn:Non.Existent.EntityId\" found.");
         }
+
+        [TestMethod]
+        public void Options_SuppressFederationIdentityLoading_ShouldDefaultFalse()
+        {
+            Options.SuppressFederationIdentityLoading.Should().BeFalse();
+        }
     }
 }

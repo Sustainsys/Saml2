@@ -23,7 +23,7 @@ namespace Kentor.AuthServices.StubIdp.Controllers
             var model = AssertionModel.CreateFromConfiguration();
 
             var decodedXmlData = Saml2Binding.Get(Saml2BindingType.HttpRedirect)
-                .Unbind(new HttpRequestData(Request));
+                .Unbind(Request.ToHttpRequestData());
 
             var request = Saml2AuthenticationRequest.Read(decodedXmlData);
 

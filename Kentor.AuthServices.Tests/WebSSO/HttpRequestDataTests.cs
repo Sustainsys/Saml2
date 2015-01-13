@@ -6,20 +6,13 @@ using System.Web;
 using System.Collections.Specialized;
 using System.Collections.Generic;
 using Kentor.AuthServices.WebSso;
+using Kentor.AuthServices.HttpModule;
 
 namespace Kentor.AuthServices.Tests.WebSso
 {
     [TestClass]
     public class HttpRequestDataTests
     {
-        [TestMethod]
-        public void HttpRequestData_Ctor_Nullcheck()
-        {
-            Action a = () => new HttpRequestData(null);
-
-            a.ShouldThrow<ArgumentNullException>().And.ParamName.Should().Be("request");
-        }
-
         [TestMethod]
         public void HttpRequestData_Ctor_FromHttpRequest()
         {
@@ -32,7 +25,7 @@ namespace Kentor.AuthServices.Tests.WebSso
             request.Form.Returns(new NameValueCollection { { "Key", "Value" } });
             request.ApplicationPath.Returns(appPath);
 
-            var subject = new HttpRequestData(request);
+            var subject = request.ToHttpRequestData();
 
             var expected = new HttpRequestData(
                 "GET",

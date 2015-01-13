@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Kentor.AuthServices.Internal;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -16,24 +17,6 @@ namespace Kentor.AuthServices.WebSso
     /// </summary>
     public class HttpRequestData
     {
-        /// <summary>
-        /// Create a HttpRequestData from a HttpRequestBase.
-        /// </summary>
-        /// <param name="request">HttpRequestBase with source data.</param>
-        public HttpRequestData(HttpRequestBase request)
-        {
-            if (request == null)
-            {
-                throw new ArgumentNullException("request");
-            }
-
-            Init(request.HttpMethod,
-                request.Url,
-                request.ApplicationPath,
-                request.Form.Cast<string>().Select((de, i) =>
-                    new KeyValuePair<string, string[]>(de, ((string)request.Form[i]).Split(','))));
-        }
-
         /// <summary>
         /// Ctor
         /// </summary>
@@ -69,7 +52,7 @@ namespace Kentor.AuthServices.WebSso
             Form = new ReadOnlyDictionary<string, string>(
                 (formData ?? Enumerable.Empty<KeyValuePair<string, string[]>>())
                 .ToDictionary(kv => kv.Key, kv => kv.Value.Single()));
-            QueryString = HttpUtility.ParseQueryString(url.Query);
+            QueryString = QueryStringHelper.ParseQueryString(url.Query);
         }
 
         /// <summary>

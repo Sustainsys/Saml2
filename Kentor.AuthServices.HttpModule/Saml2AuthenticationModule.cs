@@ -8,7 +8,7 @@ using System.Linq;
 using System.Net;
 using System.Web;
 
-namespace Kentor.AuthServices
+namespace Kentor.AuthServices.HttpModule
 {
     /// <summary>
     /// Http Module for SAML2 authentication. The module hijacks the 
@@ -61,8 +61,8 @@ namespace Kentor.AuthServices
         {
             try
             {
-                return command.Run(new HttpRequestData(
-                    new HttpRequestWrapper(application.Request)),
+                return command.Run(
+                    new HttpRequestWrapper(application.Request).ToHttpRequestData(),
                     Options.FromConfiguration);
             }
             catch (AuthServicesException)

@@ -25,6 +25,7 @@ pushd ..
 del Kentor.AuthServices\bin\Release\*.dll
 del Kentor.AuthServices.Mvc\bin\Release\*.dll
 del Kentor.AuthServices.Owin\bin\Release\*.dll
+del Kentor.AuthServices.HttpModule\bin\Release\*.dll
 
 function Increment-PatchNumber
 {
@@ -72,12 +73,14 @@ function Create-Nuspec($projectName)
 Create-Nuspec("Kentor.AuthServices")
 Create-Nuspec("Kentor.AuthServices.Mvc")
 Create-Nuspec("Kentor.AuthServices.Owin")
+Create-Nuspec("Kentor.AuthServices.HttpModule")
 
 echo "Building package..."
 
 nuget pack -build -outputdirectory nuget Kentor.AuthServices\Kentor.AuthServices.csproj
 nuget pack -build -outputdirectory nuget Kentor.AuthServices.Mvc\Kentor.AuthServices.Mvc.csproj
 nuget pack -build -outputdirectory nuget Kentor.AuthServices.Owin\Kentor.AuthServices.Owin.csproj
+nuget pack -build -outputdirectory nuget Kentor.AuthServices.HttpModule\Kentor.AuthServices.HttpModule.csproj
 
 $version = Increment-PatchNumber
 Set-Version($version)
