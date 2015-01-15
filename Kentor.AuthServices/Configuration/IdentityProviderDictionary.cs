@@ -63,6 +63,23 @@ namespace Kentor.AuthServices.Configuration
         }
 
         /// <summary>
+        /// Add an identity provider to the collection..
+        /// </summary>
+        /// <param name="idp">Identity provider to add.</param>
+        public void Add(IdentityProvider idp)
+        {
+            if(idp == null)
+            {
+                throw new ArgumentNullException("idp");
+            }
+
+            lock(dictionary)
+            {
+                dictionary.Add(idp.EntityId, idp);
+            }
+        }
+
+        /// <summary>
         /// The default identity provider; i.e. the first registered of the currently known.
         /// </summary>
         public IdentityProvider Default
