@@ -18,10 +18,24 @@ namespace Kentor.AuthServices
         /// </summary>
         /// <param name="idp">The EntityId of the IDP the request was sent to</param>
         /// <param name="returnUrl">The Url to redirect back to after a succesful login</param>
+        /// <param name="data">Aux data that can be stored across the authentication request.</param>
         public StoredRequestState(EntityId idp, Uri returnUrl)
+        {
+            idp = idp;
+            ReturnUrl = returnUrl;
+        }
+
+        /// <summary>
+        /// Creates a PendingAuthnRequestData
+        /// </summary>
+        /// <param name="idp">The EntityId of the IDP the request was sent to</param>
+        /// <param name="returnUrl">The Url to redirect back to after a succesful login</param>
+        /// <param name="data">Aux data that can be stored across the authentication request.</param>
+        public StoredRequestState(EntityId idp, Uri returnUrl, object data)
         {
             Idp = idp;
             ReturnUrl = returnUrl;
+            Data = data;
         }
 
         /// <summary>
@@ -33,5 +47,10 @@ namespace Kentor.AuthServices
         /// The Url to redirect back to after a succesful login
         /// </summary>
         public Uri ReturnUrl { get; private set; }
+
+        /// <summary>
+        /// Aux data that need to be preserved across the authentication call.
+        /// </summary>
+        public object Data { get; private set; }
     }
 }

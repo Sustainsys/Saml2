@@ -55,7 +55,8 @@ namespace Kentor.AuthServices.Owin
                         idp,
                         challenge.Properties.RedirectUri,
                         await Context.ToHttpRequestData(),
-                        Options);
+                        Options,
+                        challenge.Properties);
 
                     result.Apply(Context);
                 }

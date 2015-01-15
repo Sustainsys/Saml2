@@ -236,6 +236,34 @@ namespace Kentor.AuthServices.Tests.Owin
             storedAuthnData.ReturnUrl.Should().Be(returnUrl);
         }
 
+        [TestMethod]
+        public async Task KentorAuthServicesAuthenicationMiddleware_StoresAuthenticationProperties()
+        {
+            var returnUrl = "http://sp.example.com/returnurl";
+
+            var prop = new AuthenticationProperties()
+            {
+                RedirectUri = returnUrl
+            };
+            prop.Dictionary["test"] = "SomeValue";
+
+            var middleware = new KentorAuthServicesAuthenticationMiddleware(
+                new StubOwinMiddleware(401, new AuthenticationResponseChallenge(
+                    new string[] {"KentorAuthServices"}, prop)),
+                    CreateAppBuilder(), new KentorAuthServicesAuthenticationOptions(true));
+
+            var context = OwinTestHelpers.CreateOwinContext();
+
+            await middleware.Invoke(context);
+
+            var requestId = AuthnRequestHelper.GetRequestId(new Uri(context.Response.Headers["Location"]));
+
+            StoredRequestState storedAuthnData;
+            PendingAuthnRequests.TryRemove(new Saml2Id(requestId), out storedAuthnData);
+
+            ((AuthenticationProperties)storedAuthnData.Data).Dictionary["test"].Should().Be("SomeValue");
+        }
+
         [NotReRunnable]
         [TestMethod]
         public async Task KentorAuthServicesAuthenticationMiddleware_AcsWorks()
