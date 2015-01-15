@@ -44,6 +44,12 @@ namespace Kentor.AuthServices.WebSso
         public string ContentType { get; set; }
 
         /// <summary>
+        /// Data relayed from a previous request, such as the Owin Authenciation
+        /// Properties.
+        /// </summary>
+        public object RelayData { get; set; }
+
+        /// <summary>
         /// Ctor
         /// </summary>
         public CommandResult()

@@ -37,7 +37,8 @@ namespace Kentor.AuthServices.WebSso
             EntityId idpEntityId,
             string returnPath,
             HttpRequestData request,
-            IOptions options)
+            IOptions options,
+            object relayData = null)
         {
             var urls = new AuthServicesUrls(request, options.SPOptions);
 
@@ -65,7 +66,7 @@ namespace Kentor.AuthServices.WebSso
                 Uri.TryCreate(request.Url, returnPath, out returnUrl);
             }
 
-            var authnRequest = idp.CreateAuthenticateRequest(returnUrl, urls);
+            var authnRequest = idp.CreateAuthenticateRequest(returnUrl, urls, relayData);
 
             return idp.Bind(authnRequest);
         }

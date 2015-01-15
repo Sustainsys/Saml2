@@ -67,7 +67,11 @@ namespace Kentor.AuthServices.WebSso
                     samlResponse.RequestState != null && samlResponse.RequestState.ReturnUrl != null
                     ? samlResponse.RequestState.ReturnUrl
                     : options.SPOptions.ReturnUrl,
-                Principal = principal
+                Principal = principal,
+                RelayData =
+                    samlResponse.RequestState == null
+                    ? null
+                    : samlResponse.RequestState.RelayData
             };
         }
     }

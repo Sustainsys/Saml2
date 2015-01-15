@@ -189,10 +189,27 @@ namespace Kentor.AuthServices
         /// successful authentication.</param>
         /// <param name="authServicesUrls">Urls for AuthServices, used to populate fields
         /// in the created AuthnRequest</param>
-        /// <returns></returns>
+        /// <returns>AuthnRequest</returns>
         public Saml2AuthenticationRequest CreateAuthenticateRequest(
             Uri returnUrl,
             AuthServicesUrls authServicesUrls)
+        {
+            return CreateAuthenticateRequest(returnUrl, authServicesUrls, null);
+        }
+
+        /// <summary>
+        /// Create an authenticate request aimed for this idp.
+        /// </summary>
+        /// <param name="returnUrl">The return url where the browser should be sent after
+        /// successful authentication.</param>
+        /// <param name="authServicesUrls">Urls for AuthServices, used to populate fields
+        /// in the created AuthnRequest</param>
+        /// <param name="relayData">Aux data that should be preserved across the authentication</param>
+        /// <returns>AuthnRequest</returns>
+        public Saml2AuthenticationRequest CreateAuthenticateRequest(
+            Uri returnUrl,
+            AuthServicesUrls authServicesUrls,
+            object relayData)
         {
             if (authServicesUrls == null)
             {
@@ -208,7 +225,7 @@ namespace Kentor.AuthServices
                 AttributeConsumingServiceIndex = spOptions.AttributeConsumingServices.Any() ? 0 : (int?)null
             };
 
-            var responseData = new StoredRequestState(EntityId, returnUrl);
+            var responseData = new StoredRequestState(EntityId, returnUrl, relayData);
 
             PendingAuthnRequests.Add(new Saml2Id(authnRequest.Id), responseData);
 
