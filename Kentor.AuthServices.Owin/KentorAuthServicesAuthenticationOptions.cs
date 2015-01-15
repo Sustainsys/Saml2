@@ -60,5 +60,20 @@ namespace Kentor.AuthServices.Owin
                 return identityProviders;
             }
         }
+
+        /// <summary>
+        /// Passthrough property to Description.Caption.
+        /// </summary>
+        public string Caption
+        {
+            get
+            {
+                return Description.Caption;
+            }
+            set
+            {
+                Description.Caption = value;
+            }
+        }
     }
 }

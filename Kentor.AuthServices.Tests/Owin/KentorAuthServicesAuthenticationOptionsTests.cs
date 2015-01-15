@@ -60,5 +60,17 @@ namespace Kentor.AuthServices.Tests.Owin
 
             a.ShouldNotThrow();
         }
+
+        [TestMethod]
+        public void KentorAuthServicesAuthenticationOptions_Caption()
+        {
+            var subject = new KentorAuthServicesAuthenticationOptions(false)
+            {
+                Caption = "MyCaption"
+            };
+
+            subject.Caption.Should().Be("MyCaption");
+            subject.Description.Caption.Should().Be("MyCaption");
+        }
     }
 }
