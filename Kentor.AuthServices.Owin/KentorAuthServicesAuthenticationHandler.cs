@@ -20,15 +20,10 @@ namespace Kentor.AuthServices.Owin
             var result = CommandFactory.GetCommand(CommandFactory.AcsCommandName)
                 .Run(await Context.ToHttpRequestData(), Options);
 
-            var properties = new AuthenticationProperties()
-            {
-                RedirectUri = result.Location.ToString()
-            };
-
             var identities = result.Principal.Identities.Select(i =>
                 new ClaimsIdentity(i, null, Options.SignInAsAuthenticationType, i.NameClaimType, i.RoleClaimType));
 
-            return new MultipleIdentityAuthenticationTicket(identities, properties);
+            return new MultipleIdentityAuthenticationTicket(identities, (AuthenticationProperties)result.RelayData);
         }
 
         protected override async Task ApplyResponseChallengeAsync()

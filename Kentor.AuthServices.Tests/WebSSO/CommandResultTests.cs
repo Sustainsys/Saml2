@@ -23,7 +23,8 @@ namespace Kentor.AuthServices.Tests.WebSso
                 Location = (Uri)null,
                 Principal = (ClaimsPrincipal)null,
                 ContentType = (string)null,
-                Content = (string)null
+                Content = (string)null,
+                RelayData = (object)null
             };
 
             new CommandResult().ShouldBeEquivalentTo(expected);

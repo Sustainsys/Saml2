@@ -64,7 +64,7 @@ namespace Kentor.AuthServices.Tests.Owin
 
             options.SignInAsAuthenticationType.Should().BeNull();
 
-            var middleware = new KentorAuthServicesAuthenticationMiddleware(new StubOwinMiddleware(0, null),  
+            var middleware = new KentorAuthServicesAuthenticationMiddleware(new StubOwinMiddleware(0, null),
                 CreateAppBuilder(), options);
 
             options.SignInAsAuthenticationType.Should().Be(DefaultSignInAsAuthenticationType);
@@ -95,7 +95,7 @@ namespace Kentor.AuthServices.Tests.Owin
                         new Dictionary<string, string>()
                         {
                             { "idp", "http://localhost:13428/idpMetadata" }
-                        }))), 
+                        }))),
                 CreateAppBuilder(),
                 new KentorAuthServicesAuthenticationOptions(true));
 
@@ -106,7 +106,7 @@ namespace Kentor.AuthServices.Tests.Owin
             context.Response.StatusCode.Should().Be(200);
             context.Response.Body.Seek(0, SeekOrigin.Begin);
 
-            using(var reader = new StreamReader(context.Response.Body))
+            using (var reader = new StreamReader(context.Response.Body))
             {
                 string bodyContent = reader.ReadToEnd();
 
@@ -159,7 +159,7 @@ namespace Kentor.AuthServices.Tests.Owin
                         new Dictionary<string, string>()
                         {
                             { "idp", secondEntityId.Id }
-                        }))), 
+                        }))),
                         CreateAppBuilder(), new KentorAuthServicesAuthenticationOptions(true));
 
             var context = OwinTestHelpers.CreateOwinContext();
@@ -249,7 +249,7 @@ namespace Kentor.AuthServices.Tests.Owin
 
             var middleware = new KentorAuthServicesAuthenticationMiddleware(
                 new StubOwinMiddleware(401, new AuthenticationResponseChallenge(
-                    new string[] {"KentorAuthServices"}, prop)),
+                    new string[] { "KentorAuthServices" }, prop)),
                     CreateAppBuilder(), new KentorAuthServicesAuthenticationOptions(true));
 
             var context = OwinTestHelpers.CreateOwinContext();
@@ -261,7 +261,7 @@ namespace Kentor.AuthServices.Tests.Owin
             StoredRequestState storedAuthnData;
             PendingAuthnRequests.TryRemove(new Saml2Id(requestId), out storedAuthnData);
 
-            ((AuthenticationProperties)storedAuthnData.Data).Dictionary["test"].Should().Be("SomeValue");
+            ((AuthenticationProperties)storedAuthnData.RelayData).Dictionary["test"].Should().Be("SomeValue");
         }
 
         [NotReRunnable]
@@ -271,10 +271,20 @@ namespace Kentor.AuthServices.Tests.Owin
             var context = OwinTestHelpers.CreateOwinContext();
             context.Request.Method = "POST";
 
+            var state = new StoredRequestState(new EntityId("https://idp.example.com"),
+                new Uri("http://localhost/LoggedIn"),
+                new AuthenticationProperties());
+
+            ((AuthenticationProperties)state.RelayData).RedirectUri = state.ReturnUrl.OriginalString;
+            ((AuthenticationProperties)state.RelayData).Dictionary["Test"] = "TestValue";
+
+            PendingAuthnRequests.Add(new Saml2Id("KentorAuthServicesAuthenticationMiddleware_AcsWorksRequestID"), state);
+
             var response =
             @"<saml2p:Response xmlns:saml2p=""urn:oasis:names:tc:SAML:2.0:protocol""
                 xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
-                ID = ""KentorAuthServicesAuthenticationMiddleware_AcsWorks"" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z"">
+                ID = ""KentorAuthServicesAuthenticationMiddleware_AcsWorks"" Version=""2.0""
+                IssueInstant=""2013-01-01T00:00:00Z"" InResponseTo=""KentorAuthServicesAuthenticationMiddleware_AcsWorksRequestID"" >
                 <saml2:Issuer>
                     https://idp.example.com
                 </saml2:Issuer>
@@ -323,8 +333,14 @@ namespace Kentor.AuthServices.Tests.Owin
             context.Response.StatusCode.Should().Be(302);
             context.Response.Headers["Location"].Should().Be("http://localhost/LoggedIn");
 
-            context.Authentication.AuthenticationResponseGrant.Principal.Identities.ShouldBeEquivalentTo(ids,
-                opt => opt.IgnoringCyclicReferences());
+            context.Authentication.AuthenticationResponseGrant.Principal.Identities
+                .ShouldBeEquivalentTo(ids, opt => opt.IgnoringCyclicReferences());
+
+            context.Authentication.AuthenticationResponseGrant.Properties.RedirectUri
+                .Should().Be("http://localhost/LoggedIn");
+
+            context.Authentication.AuthenticationResponseGrant.Properties.Dictionary["Test"]
+                .Should().Be("TestValue");
         }
 
         [TestMethod]
@@ -335,7 +351,7 @@ namespace Kentor.AuthServices.Tests.Owin
             context.Request.Path = new PathString("/AuthServices");
 
             var middleware = new KentorAuthServicesAuthenticationMiddleware(
-                null, 
+                null,
                 CreateAppBuilder(),
                 new KentorAuthServicesAuthenticationOptions(true));
 
@@ -345,7 +361,7 @@ namespace Kentor.AuthServices.Tests.Owin
             context.Response.ContentType.Should().Contain("application/samlmetadata+xml");
 
             var xmlData = XDocument.Load(context.Response.Body);
-            
+
             xmlData.Document.Root.Name.Should().Be(Saml2Namespaces.Saml2Metadata + "EntityDescriptor");
         }
 
