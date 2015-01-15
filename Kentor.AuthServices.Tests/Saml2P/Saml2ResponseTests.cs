@@ -824,7 +824,10 @@ namespace Kentor.AuthServices.Tests.Saml2P
 
             var response = Saml2Response.Read(responseXML);
 
-            response.Validate(Options.FromConfiguration).Should().BeFalse();
+            Action a = () => response.Validate(Options.FromConfiguration);
+
+            a.ShouldThrow<Saml2ResponseFailedValidationException>().And.Message.Should()
+                .Be("Unsolicited responses are not allowed for idp \"https://idp2.example.com\".");
         }
 
         [TestMethod]
@@ -853,7 +856,7 @@ namespace Kentor.AuthServices.Tests.Saml2P
         }
 
         [TestMethod]
-        public void Saml2Response_Validate_FalseOnIncorrectInResponseTo()
+        public void Saml2Response_Validate_ThrowsOnIncorrectInResponseTo()
         {
             var idp = Options.FromConfiguration.IdentityProviders.Default;
 
@@ -875,11 +878,14 @@ namespace Kentor.AuthServices.Tests.Saml2P
 
             var response = Saml2Response.Read(responseXML);
 
-            response.Validate(Options.FromConfiguration).Should().BeFalse();
+            Action a = () => response.Validate(Options.FromConfiguration);
+
+            a.ShouldThrow<Saml2ResponseFailedValidationException>().And.Message.Should()
+                .Be("Replayed or unknown InResponseTo \"anothervalue\".");
         }
 
         [TestMethod]
-        public void Saml2Response_Validate_FalseOnReplayedInResponseTo()
+        public void Saml2Response_Validate_ThrowsOnReplayedInResponseTo()
         {
             var idp = Options.FromConfiguration.IdentityProviders.Default;
 
@@ -889,7 +895,7 @@ namespace Kentor.AuthServices.Tests.Saml2P
             @"<?xml version=""1.0"" encoding=""UTF-8""?>
             <saml2p:Response xmlns:saml2p=""urn:oasis:names:tc:SAML:2.0:protocol""
             xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
-            ID = ""Saml2Response_Validate_TrueOnCorrectInResponseTo"" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z""
+            ID = ""Saml2Response_Validate_ThrowsOnReplayedInResponseTo"" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z""
             InResponseTo = """ + request.Id + @""">
                 <saml2:Issuer>https://idp.example.com</saml2:Issuer>
                 <saml2p:Status>
@@ -899,11 +905,15 @@ namespace Kentor.AuthServices.Tests.Saml2P
 
             responseXML = SignedXmlHelper.SignXml(responseXML);
 
-            var response = Saml2Response.Read(responseXML);
-            response.Validate(Options.FromConfiguration).Should().BeTrue();
+            Action a = () =>
+            {
+                var response = Saml2Response.Read(responseXML);
+                response.Validate(Options.FromConfiguration);
+            };
 
-            response = Saml2Response.Read(responseXML);
-            response.Validate(Options.FromConfiguration).Should().BeFalse();
+            a.ShouldNotThrow();
+            a.ShouldThrow<Saml2ResponseFailedValidationException>().And.Message.Should()
+                .Be("Replayed or unknown InResponseTo \"" + request.Id + "\".");
         }
 
         [TestMethod]

@@ -279,18 +279,27 @@ namespace Kentor.AuthServices.Saml2P
         {
             if (!validated)
             {
-                valid = ValidateInResponseTo(options) && ValidateSignature(options);
+                ValidateInResponseTo(options);
+
+                valid = ValidateSignature(options);
 
                 validated = true;
             }
             return valid;
         }
 
-        private bool ValidateInResponseTo(IOptions options)
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "InResponseTo")]
+        private void ValidateInResponseTo(IOptions options)
         {
-            if (InResponseTo == null && options.IdentityProviders[Issuer].AllowUnsolicitedAuthnResponse)
+            if (InResponseTo == null)
             {
-                return true;
+                if (options.IdentityProviders[Issuer].AllowUnsolicitedAuthnResponse)
+                {
+                    return;
+                }
+                string msg = string.Format(CultureInfo.InvariantCulture,
+                    "Unsolicited responses are not allowed for idp \"{0}\".", Issuer.Id);
+                throw new Saml2ResponseFailedValidationException(msg);
             }
             else
             {
@@ -298,7 +307,10 @@ namespace Kentor.AuthServices.Saml2P
                 bool knownInResponseToId = PendingAuthnRequests.TryRemove(InResponseTo, out storedRequestState);
                 if (!knownInResponseToId)
                 {
-                    return false;
+                    string msg = string.Format(CultureInfo.InvariantCulture,
+                        "Replayed or unknown InResponseTo \"{0}\".", InResponseTo);
+
+                    throw new Saml2ResponseFailedValidationException(msg);
                 }
                 RequestState = storedRequestState;
                 if (RequestState.Idp.Id != Issuer.Id)
@@ -308,7 +320,6 @@ namespace Kentor.AuthServices.Saml2P
                         RequestState.Idp.Id, issuer.Id);
                     throw new Saml2ResponseFailedValidationException(msg);
                 }
-                return true;
             }
         }
 
