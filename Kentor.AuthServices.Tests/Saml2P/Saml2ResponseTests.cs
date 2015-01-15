@@ -907,7 +907,7 @@ namespace Kentor.AuthServices.Tests.Saml2P
         }
 
         [TestMethod]
-        public void Saml2Response_Validate_FalseOnReplyFromWrongIdp()
+        public void Saml2Response_Validate_ThrowsOnResponseFromWrongIdp()
         {
             // A valid response is received, but it is not from the idp that we
             // did send the AuthnRequest to.
@@ -918,9 +918,10 @@ namespace Kentor.AuthServices.Tests.Saml2P
             var responseXML =
             @"<?xml version=""1.0"" encoding=""UTF-8""?>
             <saml2p:Response xmlns:saml2p=""urn:oasis:names:tc:SAML:2.0:protocol""
+            xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
             ID = ""Saml2Response_Validate_TrueOnCorrectInResponseTo"" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z""
             InResponseTo = """ + request.Id + @""">
-                <saml2p:Issuer>https://idp.anotheridp.com</saml2p:Issuer>
+                <saml2:Issuer>https://idp.anotheridp.com</saml2:Issuer>
                 <saml2p:Status>
                     <saml2p:StatusCode Value=""urn:oasis:names:tc:SAML:2.0:status:Requester"" />
                 </saml2p:Status>
@@ -930,7 +931,10 @@ namespace Kentor.AuthServices.Tests.Saml2P
 
             var response = Saml2Response.Read(responseXML);
 
-            response.Validate(Options.FromConfiguration).Should().BeFalse();
+            Action a = () => response.Validate(Options.FromConfiguration);
+
+            a.ShouldThrow<Saml2ResponseFailedValidationException>().And
+                .Message.Should().Be("Expected response from idp \"https://idp.example.com\" but received response from idp \"https://idp.anotheridp.com\".");
         }
 
         [TestMethod]

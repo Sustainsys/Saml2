@@ -303,7 +303,10 @@ namespace Kentor.AuthServices.Saml2P
                 RequestState = storedRequestState;
                 if (RequestState.Idp.Id != Issuer.Id)
                 {
-                    return false;
+                    var msg = string.Format(CultureInfo.InvariantCulture,
+                        "Expected response from idp \"{0}\" but received response from idp \"{1}\".",
+                        RequestState.Idp.Id, issuer.Id);
+                    throw new Saml2ResponseFailedValidationException(msg);
                 }
                 return true;
             }
