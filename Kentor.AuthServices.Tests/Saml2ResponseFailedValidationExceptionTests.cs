@@ -27,5 +27,17 @@ namespace Kentor.AuthServices.Tests
 
             subject.Message.Should().Be(msg);
         }
+
+        [TestMethod]
+        public void Saml2ResponseFailedValidationException_InnerExceptionCtor()
+        {
+            var msg = "Message!";
+            var innerException = new InvalidOperationException("InnerMessage!");
+
+            var subject = new Saml2ResponseFailedValidationException(msg, innerException);
+
+            subject.Message.Should().Be("Message!");
+            subject.InnerException.Message.Should().Be("InnerMessage!");
+        }
     }
 }

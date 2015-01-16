@@ -645,7 +645,7 @@ namespace Kentor.AuthServices.Tests.Saml2P
         }
 
         [TestMethod]
-        public void Saml2Response_GetClaims_ThrowsOnResponseNotValid()
+        public void Saml2Response_GetRequestState_ThrowsOnResponseNotValid()
         {
             var response =
             @"<?xml version=""1.0"" encoding=""UTF-8""?>
@@ -672,7 +672,7 @@ namespace Kentor.AuthServices.Tests.Saml2P
 
             var r = Saml2Response.Read(response);
 
-            Action a = () => r.GetClaims(Options.FromConfiguration);
+            Action a = () => r.GetRequestState(Options.FromConfiguration);
 
             a.ShouldThrow<Saml2ResponseFailedValidationException>()
                 .WithMessage("Signature validation failed on SAML response or contained assertion.");

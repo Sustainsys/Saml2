@@ -51,5 +51,15 @@ namespace Kentor.AuthServices.Tests.Internal
             PendingAuthnRequests.TryRemove(id, out responseData).Should().BeTrue();
             PendingAuthnRequests.TryRemove(id, out responseData).Should().BeFalse();
         }
+
+        [TestMethod]
+        public void PendingAuthnRequest_TryRemove_NullGivesNull()
+        {
+            Saml2Id id = null;
+            StoredRequestState state;
+
+            PendingAuthnRequests.TryRemove(id, out state).Should().BeFalse();
+            state.Should().BeNull();
+        }
     }
 }
