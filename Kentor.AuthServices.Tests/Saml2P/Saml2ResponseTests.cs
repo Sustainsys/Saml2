@@ -146,6 +146,7 @@ namespace Kentor.AuthServices.Tests.Saml2P
         }
 
         [TestMethod]
+        [NotReRunnable]
         public void Saml2Response_GetClaims_CorrectSignedResponseMessage()
         {
             var response =
@@ -176,6 +177,7 @@ namespace Kentor.AuthServices.Tests.Saml2P
         }
 
         [TestMethod]
+        [Ignore]
         public void Saml2Response_GetClaims_CorrectSignedSingleAssertionInResponseMessage()
         {
             var response =
@@ -210,6 +212,7 @@ namespace Kentor.AuthServices.Tests.Saml2P
         }
 
         [TestMethod]
+        [Ignore]
         public void Saml2Response_GetClaims_CorrectSignedMultipleAssertionInResponseMessage()
         {
             var response= 

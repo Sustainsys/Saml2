@@ -15,7 +15,7 @@ namespace Kentor.AuthServices
         /// Sign an xml document with the supplied cert.
         /// </summary>
         /// <param name="xmlDocument">XmlDocument to be signed. The signature is
-        /// added as a node in the document.</param>
+        /// added as a node in the document, right after the Issuer node.</param>
         /// <param name="cert">Certificate to use when signing.</param>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1059:MembersShouldNotExposeCertainConcreteTypes", MessageId = "System.Xml.XmlNode")]
         public static void Sign(this XmlDocument xmlDocument, X509Certificate2 cert)
@@ -48,7 +48,9 @@ namespace Kentor.AuthServices
             signedXml.AddReference(reference);
             signedXml.ComputeSignature();
 
-            xmlDocument.DocumentElement.AppendChild(xmlDocument.ImportNode(signedXml.GetXml(), true));
+            xmlDocument.DocumentElement.InsertAfter(
+                xmlDocument.ImportNode(signedXml.GetXml(), true),
+                xmlDocument.DocumentElement["Issuer", Saml2Namespaces.Saml2Name]);
         }
     }
 }
