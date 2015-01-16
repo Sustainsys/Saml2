@@ -23,7 +23,10 @@ namespace Kentor.AuthServices.Owin
             var identities = result.Principal.Identities.Select(i =>
                 new ClaimsIdentity(i, null, Options.SignInAsAuthenticationType, i.NameClaimType, i.RoleClaimType));
 
-            return new MultipleIdentityAuthenticationTicket(identities, (AuthenticationProperties)result.RelayData);
+            var authProperties = (AuthenticationProperties)result.RelayData ?? new AuthenticationProperties();
+            authProperties.RedirectUri = result.Location.OriginalString;
+
+            return new MultipleIdentityAuthenticationTicket(identities, authProperties);
         }
 
         protected override async Task ApplyResponseChallengeAsync()

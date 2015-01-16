@@ -266,6 +266,66 @@ namespace Kentor.AuthServices.Tests.Owin
 
         [NotReRunnable]
         [TestMethod]
+        public async Task KentorAuthServicesAuthenticationMiddleware_UsesCommandResultLocation()
+        {
+            // For Owin middleware, the redirect uri is part of the
+            // authentication properties, but we don't want to use it as it
+            // is because it can be empty (e.g. on unsolicited responses
+            // or until #182 is fixed). The redirect uri should be taken
+            // from the commandresult location instead.
+
+            var context = OwinTestHelpers.CreateOwinContext();
+            context.Request.Method = "POST";
+
+            var response =
+                @"<saml2p:Response xmlns:saml2p=""urn:oasis:names:tc:SAML:2.0:protocol""
+                xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
+                ID = ""KentorAuthServicesAuthenticationMiddleware_UsesCommandResultLocation"" Version=""2.0""
+                IssueInstant=""2013-01-01T00:00:00Z"">
+                <saml2:Issuer>
+                    https://idp.example.com
+                </saml2:Issuer>
+                <saml2p:Status>
+                    <saml2p:StatusCode Value=""urn:oasis:names:tc:SAML:2.0:status:Success"" />
+                </saml2p:Status>
+                <saml2:Assertion
+                Version=""2.0"" ID=""KentorAuthServicesAuthenticationMiddleware_UsesCommandResultLocation_Assertion1""
+                IssueInstant=""2013-09-25T00:00:00Z"">
+                    <saml2:Issuer>https://idp.example.com</saml2:Issuer>
+                    <saml2:Subject>
+                        <saml2:NameID>SomeUser</saml2:NameID>
+                        <saml2:SubjectConfirmation Method=""urn:oasis:names:tc:SAML:2.0:cm:bearer"" />
+                    </saml2:Subject>
+                    <saml2:Conditions NotOnOrAfter=""2100-01-01T00:00:00Z"" />
+                </saml2:Assertion>
+            </saml2p:Response>";
+
+            var bodyData = new KeyValuePair<string, string>[] { 
+                new KeyValuePair<string, string>("SAMLResponse", 
+                    Convert.ToBase64String(Encoding.UTF8.GetBytes(SignedXmlHelper.SignXml(response))))
+            };
+
+            var encodedBodyData = new FormUrlEncodedContent(bodyData);
+
+            context.Request.Body = encodedBodyData.ReadAsStreamAsync().Result;
+            context.Request.ContentType = encodedBodyData.Headers.ContentType.ToString();
+            context.Request.Host = new HostString("localhost");
+            context.Request.Path = new PathString("/AuthServices/Acs");
+
+            var middleware = new KentorAuthServicesAuthenticationMiddleware(null, CreateAppBuilder(),
+                new KentorAuthServicesAuthenticationOptions(true)
+                {
+                    SignInAsAuthenticationType = "AuthType"
+                });
+
+            await middleware.Invoke(context);
+
+            context.Response.StatusCode.Should().Be(302);
+            context.Response.Headers["Location"].Should().Be("http://localhost/LoggedIn");
+        }
+
+        [NotReRunnable]
+        [TestMethod]
         public async Task KentorAuthServicesAuthenticationMiddleware_AcsWorks()
         {
             var context = OwinTestHelpers.CreateOwinContext();
