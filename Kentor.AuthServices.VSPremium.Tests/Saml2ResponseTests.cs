@@ -17,7 +17,7 @@ namespace Kentor.AuthServices.VSPremium.Tests
     public class Saml2ResponseTests
     {
         [TestMethod]
-        public void Saml2Response_Validate_FalseOnMissingReferenceInSignature()
+        public void Saml2Response_Validate_ThrowsOnMissingReferenceInSignature()
         {
             var response =
             @"<saml2p:Response xmlns:saml2p=""urn:oasis:names:tc:SAML:2.0:protocol""
@@ -155,7 +155,10 @@ namespace Kentor.AuthServices.VSPremium.Tests
 
                 var samlResponse = Saml2Response.Read(xmlDoc.OuterXml);
 
-                samlResponse.Validate(Options.FromConfiguration).Should().BeFalse();
+                Action a = () => samlResponse.Validate(Options.FromConfiguration);
+
+                a.ShouldThrow<Saml2ResponseFailedValidationException>()
+                    .WithMessage("No reference found in Xml signature, it doesn't validate the Xml data.");
             }
         }
     }
