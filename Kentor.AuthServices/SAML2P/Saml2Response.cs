@@ -244,12 +244,16 @@ namespace Kentor.AuthServices.Saml2P
             }
         }
 
+        StoredRequestState requestState;
+
         /// <summary>
         /// State stored by a corresponding request
         /// </summary>
-        public StoredRequestState RequestState { get; private set; }
-
-        bool valid = false, validated = false;
+        public StoredRequestState GetRequestState(IOptions options)
+        {
+            Validate(options);
+            return requestState;
+        }
 
         /// <summary>Gets all assertion element nodes from this response message.</summary>
         /// <value>All assertion element nodes.</value>
@@ -269,28 +273,49 @@ namespace Kentor.AuthServices.Saml2P
             }
         }
 
-        /// <summary>
-        /// Validates InResponseTo and the signature of the response. Note that the status code of the
-        /// message can still be an error code, although the message itself is valid.
-        /// </summary>
-        /// <param name="options">Options with info about trusted Idps.</param>
-        /// <returns>Is the response signed by the Idp and fulfills other formal requirements?</returns>
-        public bool Validate(IOptions options)
+        bool validated = false;
+        Saml2ResponseFailedValidationException validationException;
+
+        private void Validate(IOptions options)
         {
             if (!validated)
             {
-                valid = ValidateInResponseTo(options) && ValidateSignature(options);
-
-                validated = true;
+                try
+                {
+                    ValidateInResponseTo(options);
+                    ValidateSignature(options);
+                }
+                catch (Saml2ResponseFailedValidationException ex)
+                {
+                    validationException = ex;
+                    throw;
+                }
+                finally
+                {
+                    validated = true;
+                }
             }
-            return valid;
+            else
+            {
+                if (validationException != null)
+                {
+                    throw validationException;
+                }
+            }
         }
 
-        private bool ValidateInResponseTo(IOptions options)
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "InResponseTo")]
+        private void ValidateInResponseTo(IOptions options)
         {
-            if (InResponseTo == null && options.IdentityProviders[Issuer].AllowUnsolicitedAuthnResponse)
+            if (InResponseTo == null)
             {
-                return true;
+                if (options.IdentityProviders[Issuer].AllowUnsolicitedAuthnResponse)
+                {
+                    return;
+                }
+                string msg = string.Format(CultureInfo.InvariantCulture,
+                    "Unsolicited responses are not allowed for idp \"{0}\".", Issuer.Id);
+                throw new Saml2ResponseFailedValidationException(msg);
             }
             else
             {
@@ -298,18 +323,23 @@ namespace Kentor.AuthServices.Saml2P
                 bool knownInResponseToId = PendingAuthnRequests.TryRemove(InResponseTo, out storedRequestState);
                 if (!knownInResponseToId)
                 {
-                    return false;
+                    string msg = string.Format(CultureInfo.InvariantCulture,
+                        "Replayed or unknown InResponseTo \"{0}\".", InResponseTo);
+
+                    throw new Saml2ResponseFailedValidationException(msg);
                 }
-                RequestState = storedRequestState;
-                if (RequestState.Idp.Id != Issuer.Id)
+                requestState = storedRequestState;
+                if (requestState.Idp.Id != Issuer.Id)
                 {
-                    return false;
+                    var msg = string.Format(CultureInfo.InvariantCulture,
+                        "Expected response from idp \"{0}\" but received response from idp \"{1}\".",
+                        requestState.Idp.Id, issuer.Id);
+                    throw new Saml2ResponseFailedValidationException(msg);
                 }
-                return true;
             }
         }
 
-        private bool ValidateSignature(IOptions options)
+        private void ValidateSignature(IOptions options)
         {
             var idpKey = options.IdentityProviders[Issuer].SigningKey;
 
@@ -317,19 +347,15 @@ namespace Kentor.AuthServices.Saml2P
             var responseSignature = xmlDocument.DocumentElement["Signature", SignedXml.XmlDsigNamespaceUrl];
             if (responseSignature != null)
             {
-                return CheckSignature(XmlDocument.DocumentElement, idpKey);
+                CheckSignature(XmlDocument.DocumentElement, idpKey);
             }
             else
             {
                 // If the response message is not signed, all assersions have to be signed correctly
                 foreach (var assertionNode in AllAssertionElementNodes)
                 {
-                    if (!CheckSignature(assertionNode, idpKey))
-                    {
-                        return false;
-                    }
+                    CheckSignature(assertionNode, idpKey);
                 }
-                return true;
             }
         }
 
@@ -343,8 +369,7 @@ namespace Kentor.AuthServices.Saml2P
         /// <summary>Checks the signature.</summary>
         /// <param name="signedRootElement">The signed root element.</param>
         /// <param name="idpKey">The assymetric key of the algorithm.</param>
-        /// <returns><c>true</c> if the whole signature was successful; otherwise <c>false</c></returns>
-        private static bool CheckSignature(XmlElement signedRootElement, AsymmetricAlgorithm idpKey)
+        private static void CheckSignature(XmlElement signedRootElement, AsymmetricAlgorithm idpKey)
         {
             var xmlDocument = new XmlDocument { PreserveWhitespace = true };
             xmlDocument.LoadXml(signedRootElement.OuterXml);
@@ -352,7 +377,7 @@ namespace Kentor.AuthServices.Saml2P
             var signature = xmlDocument.DocumentElement["Signature", SignedXml.XmlDsigNamespaceUrl];
             if (signature == null)
             {
-                return false;
+                throw new Saml2ResponseFailedValidationException("The SAML Response is not signed and contains unsigned Assertions. Response cannot be trusted.");
             }
 
             var signedXml = new SignedXml(xmlDocument);
@@ -360,37 +385,35 @@ namespace Kentor.AuthServices.Saml2P
 
             var signedRootElementId = "#" + signedRootElement.GetAttribute("ID");
 
-            var reference = signedXml.SignedInfo.References.Cast<Reference>().FirstOrDefault();
-
-            if (signedXml.SignedInfo.References.Count != 1 || reference.Uri != signedRootElementId)
+            if (signedXml.SignedInfo.References.Count == 0)
             {
-                return false;
+                throw new Saml2ResponseFailedValidationException("No reference found in Xml signature, it doesn't validate the Xml data.");
+            }
+
+            if (signedXml.SignedInfo.References.Count != 1)
+            {
+                throw new Saml2ResponseFailedValidationException("Multiple references for Xml signatures are not allowed.");
+            }
+
+            var reference = signedXml.SignedInfo.References.Cast<Reference>().Single();
+
+            if (reference.Uri != signedRootElementId)
+            {
+                throw new Saml2ResponseFailedValidationException("Incorrect reference on Xml signature. The reference must be to the root element of the element containing the signature.");
             }
 
             foreach (Transform transform in reference.TransformChain)
             {
                 if (!allowedTransforms.Contains(transform.Algorithm))
                 {
-                    return false;
+                    throw new Saml2ResponseFailedValidationException(
+                        "Transform \"" + transform.Algorithm + "\" found in Xml signature is not allowed in SAML.");
                 }
             }
 
-            return signedXml.CheckSignature(idpKey);
-        }
-
-        private void ThrowOnNotValid()
-        {
-            if (!validated)
+            if (!signedXml.CheckSignature(idpKey))
             {
-                throw new InvalidOperationException("The Saml2Response must be validated first.");
-            }
-            if (!valid)
-            {
-                throw new InvalidOperationException("The Saml2Response didn't pass validation");
-            }
-            if (status != Saml2StatusCode.Success)
-            {
-                throw new InvalidOperationException("The Saml2Response must have status success to extract claims.");
+                throw new Saml2ResponseFailedValidationException("Signature validation failed on SAML response or contained assertion.");
             }
         }
 
@@ -404,7 +427,7 @@ namespace Kentor.AuthServices.Saml2P
         /// <returns>ClaimsIdentities</returns>
         // Method might throw expections so make it a method and not a property.
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1024:UsePropertiesWhereAppropriate")]
-        public IEnumerable<ClaimsIdentity> GetClaims(ISPOptions options)
+        public IEnumerable<ClaimsIdentity> GetClaims(IOptions options)
         {
             if (createClaimsException != null)
             {
@@ -427,15 +450,20 @@ namespace Kentor.AuthServices.Saml2P
             return claimsIdentities;
         }
 
-        private IEnumerable<ClaimsIdentity> CreateClaims(ISPOptions options)
+        private IEnumerable<ClaimsIdentity> CreateClaims(IOptions options)
         {
-            ThrowOnNotValid();
+            Validate(options);
+
+            if (status != Saml2StatusCode.Success)
+            {
+                throw new InvalidOperationException("The Saml2Response must have status success to extract claims.");
+            }
 
             foreach (XmlElement assertionNode in AllAssertionElementNodes)
             {
                 using (var reader = new XmlNodeReader(assertionNode))
                 {
-                    var handler = options.Saml2PSecurityTokenHandler;
+                    var handler = options.SPOptions.Saml2PSecurityTokenHandler;
 
                     var token = (Saml2SecurityToken)handler.ReadToken(reader);
                     handler.DetectReplayedToken(token);

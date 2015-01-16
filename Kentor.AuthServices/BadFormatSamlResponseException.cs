@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace Kentor.AuthServices
 {
     /// <summary>
-    /// A samle response was found, but could not be parsed due to formatting issues.
+    /// A SAML response was found, but could not be parsed due to formatting issues.
     /// </summary>
     [Serializable]
     public class BadFormatSamlResponseException: AuthServicesException
@@ -42,7 +42,6 @@ namespace Kentor.AuthServices
         /// <param name="context">Serialization context</param>
         protected BadFormatSamlResponseException(SerializationInfo info, StreamingContext context)
             : base(info, context)
-        {
-        }
+        { }
     }
 }

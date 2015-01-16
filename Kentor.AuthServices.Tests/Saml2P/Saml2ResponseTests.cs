@@ -106,19 +106,19 @@ namespace Kentor.AuthServices.Tests.Saml2P
         }
 
         [TestMethod]
-        public void Saml2Response_Validate_FalseOnMissingSignatureInResponseAndAnyAssertion()
+        public void Saml2Response_GetClaims_ThrowOnMissingSignatureInResponseAndAnyAssertion()
         {
             var response =
             @"<?xml version=""1.0"" encoding=""UTF-8""?>
             <saml2p:Response xmlns:saml2p=""urn:oasis:names:tc:SAML:2.0:protocol""
             xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
-            ID = ""Saml2Response_Validates_FalseOnMissingSignatureInResponseAndAnyAssertion"" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z"">
+            ID = ""Saml2Response_GetClaims_FalseOnMissingSignatureInResponseAndAnyAssertion"" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z"">
                 <saml2:Issuer>https://idp.example.com</saml2:Issuer>
                 <saml2p:Status>
                     <saml2p:StatusCode Value=""urn:oasis:names:tc:SAML:2.0:status:Success"" />
                 </saml2p:Status>
                 <saml2:Assertion xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
-                Version=""2.0"" ID=""Saml2Response_Validates_FalseOnMissingSignatureInResponseAndAnyAssertion_Assertion1""
+                Version=""2.0"" ID=""Saml2Response_GetClaims_FalseOnMissingSignatureInResponseAndAnyAssertion_Assertion1""
                 IssueInstant=""2013-09-25T00:00:00Z"">
                     <saml2:Issuer>https://idp.example.com</saml2:Issuer>
                     <saml2:Subject>
@@ -128,7 +128,7 @@ namespace Kentor.AuthServices.Tests.Saml2P
                     <saml2:Conditions NotOnOrAfter=""2100-01-01T00:00:00Z"" />
                 </saml2:Assertion>
                 <saml2:Assertion xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
-                Version=""2.0"" ID=""Saml2Response_Validates_FalseOnMissingSignatureInResponseAndAnyAssertion_Assertion2""
+                Version=""2.0"" ID=""Saml2Response_GetClaims_FalseOnMissingSignatureInResponseAndAnyAssertion_Assertion2""
                 IssueInstant=""2013-09-25T00:00:00Z"">
                     <saml2:Issuer>https://idp.example.com</saml2:Issuer>
                     <saml2:Subject>
@@ -139,23 +139,27 @@ namespace Kentor.AuthServices.Tests.Saml2P
                 </saml2:Assertion>
             </saml2p:Response>";
 
-            Saml2Response.Read(response).Validate(Options.FromConfiguration).Should().BeFalse();
+            Action a = () => Saml2Response.Read(response).GetClaims(Options.FromConfiguration);
+
+            a.ShouldThrow<Saml2ResponseFailedValidationException>()
+                .WithMessage("The SAML Response is not signed and contains unsigned Assertions. Response cannot be trusted.");
         }
 
         [TestMethod]
-        public void Saml2Response_Validate_TrueOnCorrectSignedResponseMessage()
+        [NotReRunnable]
+        public void Saml2Response_GetClaims_CorrectSignedResponseMessage()
         {
             var response =
             @"<?xml version=""1.0"" encoding=""UTF-8""?>
             <saml2p:Response xmlns:saml2p=""urn:oasis:names:tc:SAML:2.0:protocol""
             xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
-            ID = ""Saml2Response_Validate_TrueOnCorrectSignedResponseMessage"" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z"">
+            ID = ""Saml2Response_GetClaims_TrueOnCorrectSignedResponseMessage"" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z"">
                 <saml2:Issuer>https://idp.example.com</saml2:Issuer>
                 <saml2p:Status>
                     <saml2p:StatusCode Value=""urn:oasis:names:tc:SAML:2.0:status:Success"" />
                 </saml2p:Status>
                 <saml2:Assertion xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
-                Version=""2.0"" ID=""Saml2Response_Validate_TrueOnCorrectSignedResponseMessage_Assertion1""
+                Version=""2.0"" ID=""Saml2Response_GetClaims_TrueOnCorrectSignedResponseMessage_Assertion1""
                 IssueInstant=""2013-09-25T00:00:00Z"">
                     <saml2:Issuer>https://idp.example.com</saml2:Issuer>
                     <saml2:Subject>
@@ -168,16 +172,18 @@ namespace Kentor.AuthServices.Tests.Saml2P
 
             var signedResponse = SignedXmlHelper.SignXml(response);
 
-            Saml2Response.Read(signedResponse).Validate(Options.FromConfiguration).Should().BeTrue();
+            Action a = () => Saml2Response.Read(signedResponse).GetClaims(Options.FromConfiguration);
+            a.ShouldNotThrow();
         }
 
         [TestMethod]
-        public void Saml2Response_Validate_TrueOnCorrectSignedSingleAssertionInResponseMessage()
+        [Ignore]
+        public void Saml2Response_GetClaims_CorrectSignedSingleAssertionInResponseMessage()
         {
             var response =
             @"<saml2p:Response xmlns:saml2p=""urn:oasis:names:tc:SAML:2.0:protocol""
             xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
-            ID = ""Saml2Response_Validate_TrueOnCorrectSignedSingleAssertionInResponseMessage"" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z"">
+            ID = ""Saml2Response_GetClaims_TrueOnCorrectSignedSingleAssertionInResponseMessage"" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z"">
                 <saml2:Issuer>https://idp.example.com</saml2:Issuer>
                 <saml2p:Status>
                     <saml2p:StatusCode Value=""urn:oasis:names:tc:SAML:2.0:status:Success"" />
@@ -187,7 +193,7 @@ namespace Kentor.AuthServices.Tests.Saml2P
 
             var assertion =
             @"<saml2:Assertion xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
-                Version=""2.0"" ID=""Saml2Response_Validate_TrueOnCorrectSignedSingleAssertionInResponseMessagee_Assertion1""
+                Version=""2.0"" ID=""Saml2Response_GetClaims_TrueOnCorrectSignedSingleAssertionInResponseMessagee_Assertion1""
                 IssueInstant=""2013-09-25T00:00:00Z"">
                     <saml2:Issuer>https://idp.example.com</saml2:Issuer>
                     <saml2:Subject>
@@ -201,16 +207,18 @@ namespace Kentor.AuthServices.Tests.Saml2P
             var signedAssertion = SignedXmlHelper.SignXml(assertion);
             var signedResponse = string.Format(response, signedAssertion);
 
-            Saml2Response.Read(signedResponse).Validate(Options.FromConfiguration).Should().BeTrue();
+            Action a = () => Saml2Response.Read(signedResponse).GetClaims(Options.FromConfiguration);
+            a.ShouldNotThrow();
         }
 
         [TestMethod]
-        public void Saml2Response_Validate_TrueOnCorrectSignedMultipleAssertionInResponseMessage()
+        [Ignore]
+        public void Saml2Response_GetClaims_CorrectSignedMultipleAssertionInResponseMessage()
         {
-            var response =
+            var response= 
             @"<saml2p:Response xmlns:saml2p=""urn:oasis:names:tc:SAML:2.0:protocol""
             xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
-            ID = ""Saml2Response_Validate_TrueOnCorrectSignedMultipleAssertionInResponseMessage"" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z"">
+            ID = ""Saml2Response_GetClaims_TrueOnCorrectSignedMultipleAssertionInResponseMessage"" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z"">
                 <saml2:Issuer>https://idp.example.com</saml2:Issuer>
                 <saml2p:Status>
                     <saml2p:StatusCode Value=""urn:oasis:names:tc:SAML:2.0:status:Success"" />
@@ -220,7 +228,7 @@ namespace Kentor.AuthServices.Tests.Saml2P
             </saml2p:Response>";
 
             var assertion1 = @"<saml2:Assertion xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
-                Version=""2.0"" ID=""Saml2Response_Validate_TrueOnCorrectSignedMultipleAssertionInResponseMessage_Assertion1""
+                Version=""2.0"" ID=""Saml2Response_GetClaims_TrueOnCorrectSignedMultipleAssertionInResponseMessage_Assertion1""
                 IssueInstant=""2013-09-25T00:00:00Z"">
                     <saml2:Issuer>https://idp.example.com</saml2:Issuer>
                     <saml2:Subject>
@@ -231,7 +239,7 @@ namespace Kentor.AuthServices.Tests.Saml2P
                 </saml2:Assertion>";
 
             var assertion2 = @"<saml2:Assertion xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
-                Version=""2.0"" ID=""Saml2Response_Validate_TrueOnCorrectSignedMultipleAssertionInResponseMessage_Assertion2""
+                Version=""2.0"" ID=""Saml2Response_GetClaims_TrueOnCorrectSignedMultipleAssertionInResponseMessage_Assertion2""
                 IssueInstant=""2013-09-25T00:00:00Z"">
                     <saml2:Issuer>https://idp.example.com</saml2:Issuer>
                     <saml2:Subject>
@@ -246,16 +254,17 @@ namespace Kentor.AuthServices.Tests.Saml2P
             var signedAssertion2 = SignedXmlHelper.SignXml(assertion2);
             var signedResponse = string.Format(response, signedAssertion1, signedAssertion2);
 
-            Saml2Response.Read(signedResponse).Validate(Options.FromConfiguration).Should().BeTrue();
+            Action a = () => Saml2Response.Read(signedResponse).GetClaims(Options.FromConfiguration);
+            a.ShouldNotThrow();
         }
 
         [TestMethod]
-        public void Saml2Response_Validate_FalseOnMultipleAssertionInUnsignedResponseMessageButNotAllSigned()
+        public void Saml2Response_GetClaims_ThrowsOnMultipleAssertionInUnsignedResponseMessageButNotAllSigned()
         {
             var response =
             @"<saml2p:Response xmlns:saml2p=""urn:oasis:names:tc:SAML:2.0:protocol""
             xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
-            ID = ""Saml2Response_Validate_FalseOnMultipleAssertionInUnsignedResponseMessageButNotAllSigned"" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z"">
+            ID = ""Saml2Response_GetClaims_FalseOnMultipleAssertionInUnsignedResponseMessageButNotAllSigned"" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z"">
                 <saml2:Issuer>https://idp.example.com</saml2:Issuer>
                 <saml2p:Status>
                     <saml2p:StatusCode Value=""urn:oasis:names:tc:SAML:2.0:status:Success"" />
@@ -265,7 +274,7 @@ namespace Kentor.AuthServices.Tests.Saml2P
             </saml2p:Response>";
 
             var assertion1 = @"<saml2:Assertion xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
-                Version=""2.0"" ID=""Saml2Response_Validate_FalseOnMultipleAssertionInUnsignedResponseMessageButNotAllSigned_Assertion1""
+                Version=""2.0"" ID=""Saml2Response_GetClaims_FalseOnMultipleAssertionInUnsignedResponseMessageButNotAllSigned_Assertion1""
                 IssueInstant=""2013-09-25T00:00:00Z"">
                     <saml2:Issuer>https://idp.example.com</saml2:Issuer>
                     <saml2:Subject>
@@ -276,7 +285,7 @@ namespace Kentor.AuthServices.Tests.Saml2P
                 </saml2:Assertion>";
 
             var assertion2 = @"<saml2:Assertion xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
-                Version=""2.0"" ID=""Saml2Response_Validate_FalseOnMultipleAssertionInUnsignedResponseMessageButNotAllSigned_Assertion2""
+                Version=""2.0"" ID=""Saml2Response_GetClaims_FalseOnMultipleAssertionInUnsignedResponseMessageButNotAllSigned_Assertion2""
                 IssueInstant=""2013-09-25T00:00:00Z"">
                     <saml2:Issuer>https://idp.example.com</saml2:Issuer>
                     <saml2:Subject>
@@ -290,42 +299,25 @@ namespace Kentor.AuthServices.Tests.Saml2P
             var signedAssertion1 = SignedXmlHelper.SignXml(assertion1);
             var signedResponse = string.Format(response, signedAssertion1, assertion2);
 
-            Saml2Response.Read(signedResponse).Validate(Options.FromConfiguration).Should().BeFalse();
+            Action a = () => Saml2Response.Read(signedResponse).GetClaims(Options.FromConfiguration);
+
+            a.ShouldThrow<Saml2ResponseFailedValidationException>()
+                .WithMessage("The SAML Response is not signed and contains unsigned Assertions. Response cannot be trusted.");
         }
 
         [TestMethod]
-        public void Saml2Response_Validate_FalseOnTamperedMessage()
+        public void Saml2Response_GetClaims_ThrowsOnTamperedAssertionWithMessageSignature()
         {
             var response =
             @"<saml2p:Response xmlns:saml2p=""urn:oasis:names:tc:SAML:2.0:protocol""
             xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
-            ID = ""Saml2Response_Validate_FalseOnTamperedMessage"" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z"">
-                <saml2:Issuer>https://idp.example.com</saml2:Issuer>
-                <saml2p:Status>
-                    <saml2p:StatusCode Value=""urn:oasis:names:tc:SAML:2.0:status:Success"" />
-                </saml2p:Status>
-            </saml2p:Response>";
-
-            var signedResponse = SignedXmlHelper.SignXml(response);
-
-            signedResponse = signedResponse.Replace("2013-01-01", "2013-01-02");
-
-            Saml2Response.Read(signedResponse).Validate(Options.FromConfiguration).Should().BeFalse();
-        }
-
-        [TestMethod]
-        public void Saml2Response_Validate_FalseOnTamperedAssertionWithMessageSignature()
-        {
-            var response =
-            @"<saml2p:Response xmlns:saml2p=""urn:oasis:names:tc:SAML:2.0:protocol""
-            xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
-            ID = ""Saml2Response_Validate_FalseOnTamperedAssertionWithMessageSignature"" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z"">
+            ID = ""Saml2Response_GetClaims_FalseOnTamperedAssertionWithMessageSignature"" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z"">
                 <saml2:Issuer>https://idp.example.com</saml2:Issuer>
                 <saml2p:Status>
                     <saml2p:StatusCode Value=""urn:oasis:names:tc:SAML:2.0:status:Success"" />
                 </saml2p:Status>
                 <saml2:Assertion xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
-                Version=""2.0"" ID=""Saml2Response_Validate_FalseOnTamperedAssertionWithMessageSignature_Assertion1""
+                Version=""2.0"" ID=""Saml2Response_GetClaims_FalseOnTamperedAssertionWithMessageSignature_Assertion1""
                 IssueInstant=""2013-09-25T00:00:00Z"">
                     <saml2:Issuer>https://idp.example.com</saml2:Issuer>
                     <saml2:Subject>
@@ -338,16 +330,19 @@ namespace Kentor.AuthServices.Tests.Saml2P
 
             var signedResponse = SignedXmlHelper.SignXml(response).Replace("SomeUser", "SomeOtherUser");
 
-            Saml2Response.Read(signedResponse).Validate(Options.FromConfiguration).Should().BeFalse();
+            Action a = () => Saml2Response.Read(signedResponse).GetClaims(Options.FromConfiguration);
+
+            a.ShouldThrow<Saml2ResponseFailedValidationException>()
+                .WithMessage("Signature validation failed on SAML response or contained assertion.");
         }
 
         [TestMethod]
-        public void Saml2Response_Validate_FalseOnTamperedAssertionWithAssertionSignature()
+        public void Saml2Response_GetClaims_ThrowsOnTamperedAssertionWithAssertionSignature()
         {
             var response =
             @"<saml2p:Response xmlns:saml2p=""urn:oasis:names:tc:SAML:2.0:protocol""
             xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
-            ID = ""Saml2Response_Validate_FalseOnTamperedAssertionWithAssertionSignature"" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z"">
+            ID = ""Saml2Response_GetClaims_FalseOnTamperedAssertionWithAssertionSignature"" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z"">
                 <saml2:Issuer>https://idp.example.com</saml2:Issuer>
                 <saml2p:Status>
                     <saml2p:StatusCode Value=""urn:oasis:names:tc:SAML:2.0:status:Success"" />
@@ -357,7 +352,7 @@ namespace Kentor.AuthServices.Tests.Saml2P
             </saml2p:Response>";
 
             var assertion1 = @"<saml2:Assertion xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
-                Version=""2.0"" ID=""Saml2Response_Validate_FalseOnTamperedAssertionWithAssertionSignature_Assertion1""
+                Version=""2.0"" ID=""Saml2Response_GetClaims_FalseOnTamperedAssertionWithAssertionSignature_Assertion1""
                 IssueInstant=""2013-09-25T00:00:00Z"">
                     <saml2:Issuer>https://idp.example.com</saml2:Issuer>
                     <saml2:Subject>
@@ -368,7 +363,7 @@ namespace Kentor.AuthServices.Tests.Saml2P
                 </saml2:Assertion>";
 
             var assertion2 = @"<saml2:Assertion xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
-                Version=""2.0"" ID=""Saml2Response_Validate_FalseOnTamperedAssertionWithAssertionSignature_Assertion2""
+                Version=""2.0"" ID=""Saml2Response_GetClaims_FalseOnTamperedAssertionWithAssertionSignature_Assertion2""
                 IssueInstant=""2013-09-25T00:00:00Z"">
                     <saml2:Issuer>https://idp.example.com</saml2:Issuer>
                     <saml2:Subject>
@@ -382,16 +377,19 @@ namespace Kentor.AuthServices.Tests.Saml2P
             var signedAssertion2 = SignedXmlHelper.SignXml(assertion2).Replace("SomeUser2", "SomeOtherUser");
             var signedResponse = string.Format(response, signedAssertion1, signedAssertion2);
 
-            Saml2Response.Read(signedResponse).Validate(Options.FromConfiguration).Should().BeFalse();
+            Action a = () => Saml2Response.Read(signedResponse).GetClaims(Options.FromConfiguration);
+
+            a.ShouldThrow<Saml2ResponseFailedValidationException>()
+                .WithMessage("Signature validation failed on SAML response or contained assertion.");
         }
 
         [TestMethod]
-        public void Saml2Response_Validate_FalseOnAssertionInjectionWithAssertionSignature()
+        public void Saml2Response_GetClaims_ThrowsOnAssertionInjectionWithAssertionSignature()
         {
             var response =
             @"<saml2p:Response xmlns:saml2p=""urn:oasis:names:tc:SAML:2.0:protocol""
             xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
-            ID = ""Saml2Response_Validate_FalseOnAssertionInjectionWithAssertionSignature"" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z"">
+            ID = ""Saml2Response_GetClaims_FalseOnAssertionInjectionWithAssertionSignature"" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z"">
                 <saml2:Issuer>https://idp.example.com</saml2:Issuer>
                 <saml2p:Status>
                     <saml2p:StatusCode Value=""urn:oasis:names:tc:SAML:2.0:status:Success"" />
@@ -401,7 +399,7 @@ namespace Kentor.AuthServices.Tests.Saml2P
             </saml2p:Response>";
 
             var assertion1 = @"<saml2:Assertion xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
-                Version=""2.0"" ID=""Saml2Response_Validate_FalseOnAssertionInjectionWithAssertionSignature_Assertion1""
+                Version=""2.0"" ID=""Saml2Response_GetClaims_FalseOnAssertionInjectionWithAssertionSignature_Assertion1""
                 IssueInstant=""2013-09-25T00:00:00Z"">
                     <saml2:Issuer>https://idp.example.com</saml2:Issuer>
                     <saml2:Subject>
@@ -412,7 +410,7 @@ namespace Kentor.AuthServices.Tests.Saml2P
                 </saml2:Assertion>";
 
             var assertionToInject = @"<saml2:Assertion xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
-                Version=""2.0"" ID=""Saml2Response_Validate_FalseOnAssertionInjectionWithAssertionSignature_Assertion2""
+                Version=""2.0"" ID=""Saml2Response_GetClaims_FalseOnAssertionInjectionWithAssertionSignature_Assertion2""
                 IssueInstant=""2013-09-25T00:00:00Z"">
                     <saml2:Issuer>https://idp.example.com</saml2:Issuer>
                     <saml2:Subject>
@@ -438,23 +436,26 @@ namespace Kentor.AuthServices.Tests.Saml2P
 
             var signedResponse = string.Format(response, signedAssertion1, signedAssertionToInject);
 
-            Saml2Response.Read(signedResponse).Validate(Options.FromConfiguration).Should().BeFalse();
+            Action a = () => Saml2Response.Read(signedResponse).GetClaims(Options.FromConfiguration);
+
+            a.ShouldThrow<Saml2ResponseFailedValidationException>()
+                .WithMessage("Incorrect reference on Xml signature. The reference must be to the root element of the element containing the signature.");
         }
 
         [TestMethod]
-        public void Saml2Response_Validate_FalseOnDualReferencesInSignature()
+        public void Saml2Response_GetClaims_ThrowsOnDualReferencesInSignature()
         {
             var response =
             @"<?xml version=""1.0"" encoding=""UTF-8""?>
             <saml2p:Response xmlns:saml2p=""urn:oasis:names:tc:SAML:2.0:protocol""
             xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
-            ID = ""Saml2Response_Validate_FalseOnDualReferences"" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z"">
+            ID = ""Saml2Response_GetClaims_ThrowsOnDualReferences"" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z"">
                 <saml2:Issuer>https://idp.example.com</saml2:Issuer>
                 <saml2p:Status>
                     <saml2p:StatusCode Value=""urn:oasis:names:tc:SAML:2.0:status:Success"" />
                 </saml2p:Status>
                 <saml2:Assertion
-                Version=""2.0"" ID=""Saml2Response_Validate_FalseOnDualReferences1""
+                Version=""2.0"" ID=""Saml2Response_GetClaims_ThrowsOnDualReferences1""
                 IssueInstant=""2013-09-25T00:00:00Z"">
                     <saml2:Issuer>https://idp.example.com</saml2:Issuer>
                     <saml2:Subject>
@@ -472,12 +473,12 @@ namespace Kentor.AuthServices.Tests.Saml2P
             signedXml.SigningKey = (RSACryptoServiceProvider)SignedXmlHelper.TestCert.PrivateKey;
             signedXml.SignedInfo.CanonicalizationMethod = SignedXml.XmlDsigExcC14NTransformUrl;
 
-            var ref1 = new Reference { Uri = "#Saml2Response_Validate_FalseOnDualReferences" };
+            var ref1 = new Reference { Uri = "#Saml2Response_GetClaims_ThrowsOnDualReferences" };
             ref1.AddTransform(new XmlDsigEnvelopedSignatureTransform());
             ref1.AddTransform(new XmlDsigExcC14NTransform());
             signedXml.AddReference(ref1);
 
-            var ref2 = new Reference { Uri = "#Saml2Response_Validate_FalseOnDualReferences" };
+            var ref2 = new Reference { Uri = "#Saml2Response_GetClaims_ThrowsOnDualReferences" };
             ref2.AddTransform(new XmlDsigEnvelopedSignatureTransform());
             ref2.AddTransform(new XmlDsigExcC14NTransform());
             signedXml.AddReference(ref2);
@@ -485,11 +486,14 @@ namespace Kentor.AuthServices.Tests.Saml2P
             signedXml.ComputeSignature();
             xmlDoc.DocumentElement.AppendChild(xmlDoc.ImportNode(signedXml.GetXml(), true));
 
-            Saml2Response.Read(xmlDoc.OuterXml).Validate(Options.FromConfiguration).Should().BeFalse();
+            Action a = () => Saml2Response.Read(xmlDoc.OuterXml).GetClaims(Options.FromConfiguration);
+
+            a.ShouldThrow<Saml2ResponseFailedValidationException>()
+                .WithMessage("Multiple references for Xml signatures are not allowed.");
         }
 
         [TestMethod]
-        public void Saml2Response_Validate_FalseOnIncorrectTransformsInSignature()
+        public void Saml2Response_GetClaims_ThrowsOnIncorrectTransformsInSignature()
         {
             // SAML2 Core 5.4.4 states that signatures SHOULD NOT contain other transforms than
             // the enveloped signature or exclusive canonicalization transforms and that a verifier
@@ -500,7 +504,7 @@ namespace Kentor.AuthServices.Tests.Saml2P
             @"<?xml version=""1.0"" encoding=""UTF-8""?>
             <saml2p:Response xmlns:saml2p=""urn:oasis:names:tc:SAML:2.0:protocol""
             xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
-            ID = ""Saml2Response_Validate_FalseOnAdditionalTransformsInSignature"" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z"">
+            ID = ""Saml2Response_GetClaims_FalseOnAdditionalTransformsInSignature"" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z"">
                 <saml2:Issuer>https://idp.example.com</saml2:Issuer>
                 <saml2p:Status>
                     <saml2p:StatusCode Value=""urn:oasis:names:tc:SAML:2.0:status:Requester"" />
@@ -514,7 +518,7 @@ namespace Kentor.AuthServices.Tests.Saml2P
             signedXml.SigningKey = (RSACryptoServiceProvider)SignedXmlHelper.TestCert.PrivateKey;
             signedXml.SignedInfo.CanonicalizationMethod = SignedXml.XmlDsigExcC14NTransformUrl;
 
-            var reference = new Reference { Uri = "#Saml2Response_Validate_FalseOnAdditionalTransformsInSignature" };
+            var reference = new Reference { Uri = "#Saml2Response_GetClaims_FalseOnAdditionalTransformsInSignature" };
             reference.AddTransform(new XmlDsigEnvelopedSignatureTransform());
             reference.AddTransform(new XmlDsigC14NTransform()); // The allowed transform is XmlDsigExcC14NTransform
             signedXml.AddReference(reference);
@@ -522,19 +526,22 @@ namespace Kentor.AuthServices.Tests.Saml2P
             signedXml.ComputeSignature();
             xmlDoc.DocumentElement.AppendChild(xmlDoc.ImportNode(signedXml.GetXml(), true));
 
-            Saml2Response.Read(xmlDoc.OuterXml).Validate(Options.FromConfiguration).Should().BeFalse();
+            Action a = () => Saml2Response.Read(xmlDoc.OuterXml).GetClaims(Options.FromConfiguration);
+
+            a.ShouldThrow<Saml2ResponseFailedValidationException>()
+                .WithMessage("Transform \"http://www.w3.org/TR/2001/REC-xml-c14n-20010315\" found in XML signature is not allowed in SAML.");
         }
 
         [TestMethod]
-        public void Saml2Response_Validate_ReturnsExistingResultOnSecondValidateCall()
+        public void Saml2Response_GetClaims_ReturnsExistingResultOnSecondGetClaimsCall()
         {
             var response =
             @"<saml2p:Response xmlns:saml2p=""urn:oasis:names:tc:SAML:2.0:protocol""
             xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
-            ID = ""Saml2Response_Validate_TrueOnCorrectSignedResponseMessage"" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z"">
+            ID = ""Saml2Response_GetClaims_TrueOnCorrectSignedResponseMessage"" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z"">
                 <saml2:Issuer>https://idp.example.com</saml2:Issuer>
                 <saml2p:Status>
-                    <saml2p:StatusCode Value=""urn:oasis:names:tc:SAML:2.0:status:Requester"" />
+                    <saml2p:StatusCode Value=""urn:oasis:names:tc:SAML:2.0:status:Success"" />
                 </saml2p:Status>
             </saml2p:Response>";
 
@@ -542,8 +549,10 @@ namespace Kentor.AuthServices.Tests.Saml2P
 
             var samlResponse = Saml2Response.Read(signedResponse);
 
-            samlResponse.Validate(Options.FromConfiguration).Should().BeTrue();
-            samlResponse.Validate(Options.FromConfiguration).Should().BeTrue();
+            Action a = () => samlResponse.GetClaims(Options.FromConfiguration);
+
+            a.ShouldNotThrow();
+            a.ShouldNotThrow();
         }
 
         [NotReRunnable]
@@ -589,9 +598,8 @@ namespace Kentor.AuthServices.Tests.Saml2P
             var expected = new ClaimsIdentity[] { c1, c2 };
 
             var r = Saml2Response.Read(SignedXmlHelper.SignXml(response));
-            r.Validate(Options.FromConfiguration);
 
-            r.GetClaims(Options.FromConfiguration.SPOptions)
+            r.GetClaims(Options.FromConfiguration)
                 .ShouldBeEquivalentTo(expected, opt => opt.IgnoringCyclicReferences());
         }
 
@@ -623,55 +631,21 @@ namespace Kentor.AuthServices.Tests.Saml2P
             + assertion +
             "</saml2p:Response>";
 
-            var spOptions = new SPOptions
-            {
-                EntityId = new EntityId("http://sp.example.com")
-            };
+            var options = StubFactory.CreateOptions();
 
-            spOptions.Saml2PSecurityTokenHandler.Configuration.SaveBootstrapContext = true;
+            options.SPOptions.Saml2PSecurityTokenHandler.Configuration.SaveBootstrapContext = true;
 
-            var expected = spOptions.Saml2PSecurityTokenHandler.ReadToken(XmlReader.Create(new StringReader(assertion)));
+            var expected = options.SPOptions.Saml2PSecurityTokenHandler.ReadToken(XmlReader.Create(new StringReader(assertion)));
 
             var r = Saml2Response.Read(SignedXmlHelper.SignXml(response));
-            r.Validate(Options.FromConfiguration);
 
-            var subject = r.GetClaims(spOptions).Single().BootstrapContext;
+            var subject = r.GetClaims(options).Single().BootstrapContext;
 
             subject.As<BootstrapContext>().SecurityToken.ShouldBeEquivalentTo(expected);
         }
 
         [TestMethod]
-        public void Saml2Response_GetClaims_ThrowsOnNotValidated()
-        {
-            var response =
-            @"<?xml version=""1.0"" encoding=""UTF-8""?>
-            <saml2p:Response xmlns:saml2p=""urn:oasis:names:tc:SAML:2.0:protocol""
-            xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
-            ID = ""Saml2Response_GetClaims_ThrowsOnNotValidated"" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z"">
-                <saml2:Issuer>https://idp.example.com</saml2:Issuer>
-                <saml2p:Status>
-                    <saml2p:StatusCode Value=""urn:oasis:names:tc:SAML:2.0:status:Success"" />
-                </saml2p:Status>
-                <saml2:Assertion
-                Version=""2.0"" ID=""Saml2Response_GetClaims_ThrowsOnNotValidated_Assertion""
-                IssueInstant=""2013-09-25T00:00:00Z"">
-                    <saml2:Issuer>https://idp.example.com</saml2:Issuer>
-                    <saml2:Subject>
-                        <saml2:NameID>SomeUser</saml2:NameID>
-                        <saml2:SubjectConfirmation Method=""urn:oasis:names:tc:SAML:2.0:cm:bearer"" />
-                    </saml2:Subject>
-                </saml2:Assertion>
-            </saml2p:Response>";
-
-            Action a = () => Saml2Response.Read(response).GetClaims(Options.FromConfiguration.SPOptions);
-
-            a.ShouldThrow<InvalidOperationException>()
-                .WithMessage("The Saml2Response must be validated first.");
-
-        }
-
-        [TestMethod]
-        public void Saml2Response_GetClaims_ThrowsOnResponseNotValid()
+        public void Saml2Response_GetRequestState_ThrowsOnResponseNotValid()
         {
             var response =
             @"<?xml version=""1.0"" encoding=""UTF-8""?>
@@ -697,15 +671,15 @@ namespace Kentor.AuthServices.Tests.Saml2P
             response = response.Replace("2013-09-25", "2013-09-26");
 
             var r = Saml2Response.Read(response);
-            r.Validate(Options.FromConfiguration);
-            Action a = () => r.GetClaims(Options.FromConfiguration.SPOptions);
 
-            a.ShouldThrow<InvalidOperationException>()
-                .WithMessage("The Saml2Response didn't pass validation");
+            Action a = () => r.GetRequestState(Options.FromConfiguration);
+
+            a.ShouldThrow<Saml2ResponseFailedValidationException>()
+                .WithMessage("Signature validation failed on SAML response or contained assertion.");
 
             // Test that it throws again on subsequent calls.
-            a.ShouldThrow<InvalidOperationException>()
-                .WithMessage("The Saml2Response didn't pass validation");
+            a.ShouldThrow<Saml2ResponseFailedValidationException>()
+                .WithMessage("Signature validation failed on SAML response or contained assertion.");
         }
 
         [NotReRunnable]
@@ -740,9 +714,8 @@ namespace Kentor.AuthServices.Tests.Saml2P
             response = SignedXmlHelper.SignXml(response);
 
             var r = Saml2Response.Read(response);
-            r.Validate(Options.FromConfiguration);
 
-            Action a = () => r.GetClaims(Options.FromConfiguration.SPOptions);
+            Action a = () => r.GetClaims(Options.FromConfiguration);
 
             a.ShouldThrow<AudienceUriValidationFailedException>();
         }
@@ -773,15 +746,14 @@ namespace Kentor.AuthServices.Tests.Saml2P
 
             response = SignedXmlHelper.SignXml(response);
             var r = Saml2Response.Read(response);
-            r.Validate(Options.FromConfiguration);
 
-            Action a = () => r.GetClaims(Options.FromConfiguration.SPOptions);
+            Action a = () => r.GetClaims(Options.FromConfiguration);
 
             a.ShouldThrow<SecurityTokenExpiredException>();
         }
 
         [TestMethod]
-        public void Saml2Response_Validate_TrueOnCorrectInResponseTo()
+        public void Saml2Response_GetClaims_CorrectInResponseTo()
         {
             var idp = Options.FromConfiguration.IdentityProviders.Default;
 
@@ -791,11 +763,11 @@ namespace Kentor.AuthServices.Tests.Saml2P
             @"<?xml version=""1.0"" encoding=""UTF-8""?>
             <saml2p:Response xmlns:saml2p=""urn:oasis:names:tc:SAML:2.0:protocol""
             xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
-            ID = ""Saml2Response_Validate_TrueOnCorrectInResponseTo"" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z""
+            ID = ""Saml2Response_GetClaims_TrueOnCorrectInResponseTo"" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z""
             InResponseTo = """ + request.Id + @""">
                 <saml2:Issuer>https://idp.example.com</saml2:Issuer>
                 <saml2p:Status>
-                    <saml2p:StatusCode Value=""urn:oasis:names:tc:SAML:2.0:status:Requester"" />
+                    <saml2p:StatusCode Value=""urn:oasis:names:tc:SAML:2.0:status:Success"" />
                 </saml2p:Status>
             </saml2p:Response>";
 
@@ -803,17 +775,18 @@ namespace Kentor.AuthServices.Tests.Saml2P
 
             var response = Saml2Response.Read(responseXML);
 
-            response.Validate(Options.FromConfiguration).Should().BeTrue();
+            Action a = () => response.GetClaims(Options.FromConfiguration);
+            a.ShouldNotThrow();
         }
 
         [TestMethod]
-        public void Saml2Response_Validate_FalseOnMissingInResponseTo_IfDisallowed()
+        public void Saml2Response_GetClaims_FalseOnMissingInResponseTo_IfDisallowed()
         {
             var responseXML =
             @"<?xml version=""1.0"" encoding=""UTF-8""?>
             <saml2p:Response xmlns:saml2p=""urn:oasis:names:tc:SAML:2.0:protocol""
             xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
-            ID = ""Saml2Response_Validate_FalseOnMissingInResponseTo_IfDisallowed"" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z"">
+            ID = ""Saml2Response_GetClaims_FalseOnMissingInResponseTo_IfDisallowed"" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z"">
                 <saml2:Issuer>https://idp2.example.com</saml2:Issuer>
                 <saml2p:Status>
                     <saml2p:StatusCode Value=""urn:oasis:names:tc:SAML:2.0:status:Requester"" />
@@ -824,11 +797,14 @@ namespace Kentor.AuthServices.Tests.Saml2P
 
             var response = Saml2Response.Read(responseXML);
 
-            response.Validate(Options.FromConfiguration).Should().BeFalse();
+            Action a = () => response.GetClaims(Options.FromConfiguration);
+
+            a.ShouldThrow<Saml2ResponseFailedValidationException>()
+                .WithMessage("Unsolicited responses are not allowed for idp \"https://idp2.example.com\".");
         }
 
         [TestMethod]
-        public void Saml2Response_Validate_TrueOnMissingInResponseTo_IfAllowed()
+        public void Saml2Response_GetClaims_MissingInResponseTo_IfAllowed()
         {
             var idp = Options.FromConfiguration.IdentityProviders.Default;
 
@@ -838,10 +814,10 @@ namespace Kentor.AuthServices.Tests.Saml2P
             @"<?xml version=""1.0"" encoding=""UTF-8""?>
             <saml2p:Response xmlns:saml2p=""urn:oasis:names:tc:SAML:2.0:protocol""
             xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
-            ID = ""Saml2Response_Validate_TrueOnCorrectInResponseTo"" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z"">
+            ID = ""Saml2Response_GetClaims_TrueOnCorrectInResponseTo"" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z"">
                 <saml2:Issuer>https://idp.example.com</saml2:Issuer>
                 <saml2p:Status>
-                    <saml2p:StatusCode Value=""urn:oasis:names:tc:SAML:2.0:status:Requester"" />
+                    <saml2p:StatusCode Value=""urn:oasis:names:tc:SAML:2.0:status:Success"" />
                 </saml2p:Status>
             </saml2p:Response>";
 
@@ -849,11 +825,12 @@ namespace Kentor.AuthServices.Tests.Saml2P
 
             var response = Saml2Response.Read(responseXML);
 
-            response.Validate(Options.FromConfiguration).Should().BeTrue();
+            Action a = () => response.GetClaims(Options.FromConfiguration);
+            a.ShouldNotThrow();
         }
 
         [TestMethod]
-        public void Saml2Response_Validate_FalseOnIncorrectInResponseTo()
+        public void Saml2Response_GetClaims_ThrowsOnIncorrectInResponseTo()
         {
             var idp = Options.FromConfiguration.IdentityProviders.Default;
 
@@ -863,7 +840,7 @@ namespace Kentor.AuthServices.Tests.Saml2P
             @"<?xml version=""1.0"" encoding=""UTF-8""?>
             <saml2p:Response xmlns:saml2p=""urn:oasis:names:tc:SAML:2.0:protocol""
             xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
-            ID = ""Saml2Response_Validate_FalseOnIncorrectInResponseTo"" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z""
+            ID = ""Saml2Response_GetClaims_FalseOnIncorrectInResponseTo"" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z""
             InResponseTo = ""anothervalue"">
                 <saml2:Issuer>https://idp.example.com</saml2:Issuer>
                 <saml2p:Status>
@@ -875,11 +852,14 @@ namespace Kentor.AuthServices.Tests.Saml2P
 
             var response = Saml2Response.Read(responseXML);
 
-            response.Validate(Options.FromConfiguration).Should().BeFalse();
+            Action a = () => response.GetClaims(Options.FromConfiguration);
+
+            a.ShouldThrow<Saml2ResponseFailedValidationException>()
+                .WithMessage("Replayed or unknown InResponseTo \"anothervalue\".");
         }
 
         [TestMethod]
-        public void Saml2Response_Validate_FalseOnReplayedInResponseTo()
+        public void Saml2Response_GetClaims_ThrowsOnReplayedInResponseTo()
         {
             var idp = Options.FromConfiguration.IdentityProviders.Default;
 
@@ -889,7 +869,39 @@ namespace Kentor.AuthServices.Tests.Saml2P
             @"<?xml version=""1.0"" encoding=""UTF-8""?>
             <saml2p:Response xmlns:saml2p=""urn:oasis:names:tc:SAML:2.0:protocol""
             xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
-            ID = ""Saml2Response_Validate_TrueOnCorrectInResponseTo"" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z""
+            ID = ""Saml2Response_GetClaims_ThrowsOnReplayedInResponseTo"" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z""
+            InResponseTo = """ + request.Id + @""">
+                <saml2:Issuer>https://idp.example.com</saml2:Issuer>
+                <saml2p:Status>
+                    <saml2p:StatusCode Value=""urn:oasis:names:tc:SAML:2.0:status:Success"" />
+                </saml2p:Status>
+            </saml2p:Response>";
+
+            responseXML = SignedXmlHelper.SignXml(responseXML);
+
+            Action a = () =>
+            {
+                var response = Saml2Response.Read(responseXML);
+                response.GetClaims(Options.FromConfiguration);
+            };
+
+            a.ShouldNotThrow();
+            a.ShouldThrow<Saml2ResponseFailedValidationException>()
+                .WithMessage("Replayed or unknown InResponseTo \"" + request.Id + "\".");
+        }
+
+        [TestMethod]
+        public void Saml2Response_GetClaims_ThrowsOnTamperedMessage()
+        {
+            var idp = Options.FromConfiguration.IdentityProviders.Default;
+
+            var request = idp.CreateAuthenticateRequest(null, StubFactory.CreateAuthServicesUrls());
+
+            var responseXML =
+            @"<?xml version=""1.0"" encoding=""UTF-8""?>
+            <saml2p:Response xmlns:saml2p=""urn:oasis:names:tc:SAML:2.0:protocol""
+            xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
+            ID = ""Saml2Response_GetClaims_ThrowsOnReplayedInResponseTo"" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z""
             InResponseTo = """ + request.Id + @""">
                 <saml2:Issuer>https://idp.example.com</saml2:Issuer>
                 <saml2p:Status>
@@ -898,16 +910,30 @@ namespace Kentor.AuthServices.Tests.Saml2P
             </saml2p:Response>";
 
             responseXML = SignedXmlHelper.SignXml(responseXML);
+            responseXML = responseXML.Replace("2013-01-01", "2015-01-01"); // Break signature.
 
             var response = Saml2Response.Read(responseXML);
-            response.Validate(Options.FromConfiguration).Should().BeTrue();
 
-            response = Saml2Response.Read(responseXML);
-            response.Validate(Options.FromConfiguration).Should().BeFalse();
+            Action a = () =>
+            {
+                response.GetClaims(Options.FromConfiguration);
+            };
+
+            a.ShouldThrow<Saml2ResponseFailedValidationException>()
+                .WithMessage("Signature validation failed on SAML response or contained assertion.");
+
+            // With an incorrect signature, a signature validation should be
+            // thrown - even if we response is validate twice. In case
+            // GetClaims/Validate doesn't cache the result it will instead
+            // report a replay exception the second time because the replay
+            // detection is done before the signature validation.
+
+            a.ShouldThrow<Saml2ResponseFailedValidationException>()
+                .WithMessage("Signature validation failed on SAML response or contained assertion.");
         }
 
         [TestMethod]
-        public void Saml2Response_Validate_FalseOnReplyFromWrongIdp()
+        public void Saml2Response_GetClaims_ThrowsOnResponseFromWrongIdp()
         {
             // A valid response is received, but it is not from the idp that we
             // did send the AuthnRequest to.
@@ -918,9 +944,10 @@ namespace Kentor.AuthServices.Tests.Saml2P
             var responseXML =
             @"<?xml version=""1.0"" encoding=""UTF-8""?>
             <saml2p:Response xmlns:saml2p=""urn:oasis:names:tc:SAML:2.0:protocol""
-            ID = ""Saml2Response_Validate_TrueOnCorrectInResponseTo"" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z""
+            xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
+            ID = ""Saml2Response_GetClaims_ThrowsOnResponseFromWrongIdp"" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z""
             InResponseTo = """ + request.Id + @""">
-                <saml2p:Issuer>https://idp.anotheridp.com</saml2p:Issuer>
+                <saml2:Issuer>https://idp.anotheridp.com</saml2:Issuer>
                 <saml2p:Status>
                     <saml2p:StatusCode Value=""urn:oasis:names:tc:SAML:2.0:status:Requester"" />
                 </saml2p:Status>
@@ -930,7 +957,10 @@ namespace Kentor.AuthServices.Tests.Saml2P
 
             var response = Saml2Response.Read(responseXML);
 
-            response.Validate(Options.FromConfiguration).Should().BeFalse();
+            Action a = () => response.GetClaims(Options.FromConfiguration);
+
+            a.ShouldThrow<Saml2ResponseFailedValidationException>().And
+                .Message.Should().Be("Expected response from idp \"https://idp.example.com\" but received response from idp \"https://idp.anotheridp.com\".");
         }
 
         [TestMethod]
@@ -960,13 +990,11 @@ namespace Kentor.AuthServices.Tests.Saml2P
 
             response = SignedXmlHelper.SignXml(response);
             var r1 = Saml2Response.Read(response);
-            r1.Validate(Options.FromConfiguration).Should().BeTrue();
-            r1.GetClaims(Options.FromConfiguration.SPOptions);
+            r1.GetClaims(Options.FromConfiguration);
 
             var r2 = Saml2Response.Read(response);
-            r2.Validate(Options.FromConfiguration).Should().BeTrue();
 
-            Action a = () => r2.GetClaims(Options.FromConfiguration.SPOptions);
+            Action a = () => r2.GetClaims(Options.FromConfiguration);
 
             a.ShouldThrow<SecurityTokenReplayDetectedException>();
         }
@@ -999,9 +1027,7 @@ namespace Kentor.AuthServices.Tests.Saml2P
 
             var subject = Saml2Response.Read(xml);
 
-            subject.Validate(Options.FromConfiguration).Should().BeTrue();
-
-            Action a = () => subject.GetClaims(Options.FromConfiguration.SPOptions);
+            Action a = () => subject.GetClaims(Options.FromConfiguration);
 
             a.ShouldThrow<InvalidOperationException>()
                 .WithMessage("The Saml2Response must have status success to extract claims.");
@@ -1019,7 +1045,7 @@ namespace Kentor.AuthServices.Tests.Saml2P
             var response = new Saml2Response(issuer, null, null, null, identity);
 
             response.Issuer.Should().Be(issuer);
-            response.GetClaims(Options.FromConfiguration.SPOptions)
+            response.GetClaims(Options.FromConfiguration)
                 .Single()
                 .ShouldBeEquivalentTo(identity);
         }
@@ -1158,8 +1184,8 @@ namespace Kentor.AuthServices.Tests.Saml2P
 
             var response = Saml2Response.Read(responseXML);
 
-            response.Validate(Options.FromConfiguration);
-            response.RequestState.ReturnUrl.Should().Be("http://localhost/testUrl.aspx");
+            response.GetRequestState(Options.FromConfiguration)
+                .ReturnUrl.Should().Be("http://localhost/testUrl.aspx");
         }
     }
 }

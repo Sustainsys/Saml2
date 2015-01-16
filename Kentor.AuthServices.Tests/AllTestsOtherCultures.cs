@@ -36,7 +36,8 @@ namespace Kentor.AuthServices.Tests
                                    m => m.GetCustomAttribute<ClassCleanupAttribute>() != null).SingleOrDefault(),
                                    TestMethods = t.GetMethods().Where(
                                    m => m.GetCustomAttribute<TestMethodAttribute>() != null
-                                   && m.GetCustomAttribute<NotReRunnableAttribute>() == null).ToList()
+                                   && m.GetCustomAttribute<NotReRunnableAttribute>() == null
+                                   && m.GetCustomAttribute<IgnoreAttribute>() == null).ToList()
                                }).ToList();
 
             // These are the environments I have access to. Please feel free to add and checking whatever
