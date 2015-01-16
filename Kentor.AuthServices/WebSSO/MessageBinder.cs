@@ -1,9 +1,5 @@
 ﻿using Kentor.AuthServices.Saml2P;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Kentor.AuthServices.WebSso
 {
@@ -29,7 +25,7 @@ namespace Kentor.AuthServices.WebSso
                 throw new ArgumentNullException("message");
             }
 
-            return binding.Bind(message.ToXml(), message.DestinationUrl, message.MessageName);
+            return binding.Bind(message, message.DestinationUrl);
         }
     }
 }

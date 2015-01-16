@@ -1,10 +1,8 @@
-﻿using System;
+﻿using Kentor.AuthServices.Saml2P;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Web;
 
 namespace Kentor.AuthServices.WebSso
 {
@@ -32,13 +30,10 @@ namespace Kentor.AuthServices.WebSso
         /// <summary>
         /// Bind the message to a transport.
         /// </summary>
-        /// <param name="payload">(xml) payload data to bind.</param>
-        /// <param name="destinationUrl">The destination of the message.</param>
-        /// <param name="messageName">The name of the message to use in a query string or form input field.
-        /// Typically "SAMLRequest" or "SAMLResponse".
-        /// </param>
+        /// <param name="message"> Message data to bind.</param>
+        /// <param name="destinationUri">The destination of the message.</param>
         /// <returns>CommandResult to be returned to the client browser.</returns>
-        public virtual CommandResult Bind(string payload, Uri destinationUrl, string messageName)
+        public virtual CommandResult Bind(ISaml2Message message, Uri destinationUri)
         {
             throw new NotImplementedException();
         }

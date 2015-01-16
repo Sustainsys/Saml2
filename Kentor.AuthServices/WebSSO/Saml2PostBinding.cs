@@ -1,8 +1,8 @@
-﻿using System;
+﻿using Kentor.AuthServices.Saml2P;
+using System;
 using System.Globalization;
 using System.Linq;
 using System.Text;
-using System.Web;
 
 namespace Kentor.AuthServices.WebSso
 {
@@ -32,28 +32,24 @@ namespace Kentor.AuthServices.WebSso
             return xml;
         }
 
-        public override CommandResult Bind(string payload, Uri destinationUrl, string messageName)
+        public override CommandResult Bind(ISaml2Message message, Uri destinationUrl)
         {
-            if (payload == null)
+            if (message == null)
             {
-                throw new ArgumentNullException("payload");
+                throw new ArgumentNullException("message");
             }
             if (destinationUrl == null)
             {
                 throw new ArgumentNullException("destinationUrl");
             }
-            if (messageName == null)
-            {
-                throw new ArgumentNullException("messageName");
-            }
 
             var encodedXml = Convert.ToBase64String(
-                Encoding.UTF8.GetBytes(payload));
+                Encoding.UTF8.GetBytes(message.ToXml()));
 
-            var cr = new CommandResult()
+            var cr = new CommandResult
             {
                 Content = String.Format(CultureInfo.InvariantCulture, PostHtmlFormatString,
-               destinationUrl, messageName, encodedXml)
+               destinationUrl, message.MessageName, encodedXml)
             };
 
             return cr;
