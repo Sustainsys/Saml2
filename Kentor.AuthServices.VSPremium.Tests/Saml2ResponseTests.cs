@@ -155,7 +155,7 @@ namespace Kentor.AuthServices.VSPremium.Tests
 
                 var samlResponse = Saml2Response.Read(xmlDoc.OuterXml);
 
-                Action a = () => samlResponse.Validate(Options.FromConfiguration);
+                Action a = () => samlResponse.GetClaims(Options.FromConfiguration);
 
                 a.ShouldThrow<Saml2ResponseFailedValidationException>()
                     .WithMessage("No reference found in Xml signature, it doesn't validate the Xml data.");

@@ -53,25 +53,25 @@ namespace Kentor.AuthServices.WebSso
 
         private static CommandResult ProcessResponse(IOptions options, Saml2Response samlResponse)
         {
-            samlResponse.Validate(options);
-
             var principal = new ClaimsPrincipal(samlResponse.GetClaims(options));
 
             principal = FederatedAuthentication.FederationConfiguration.IdentityConfiguration
                 .ClaimsAuthenticationManager.Authenticate(null, principal);
 
+            var requestState = samlResponse.GetRequestState(options);
+
             return new CommandResult()
             {
                 HttpStatusCode = HttpStatusCode.SeeOther,
                 Location =
-                    samlResponse.RequestState != null && samlResponse.RequestState.ReturnUrl != null
-                    ? samlResponse.RequestState.ReturnUrl
+                    requestState != null && requestState.ReturnUrl != null
+                    ? requestState.ReturnUrl
                     : options.SPOptions.ReturnUrl,
                 Principal = principal,
                 RelayData =
-                    samlResponse.RequestState == null
+                    requestState == null
                     ? null
-                    : samlResponse.RequestState.RelayData
+                    : requestState.RelayData
             };
         }
     }

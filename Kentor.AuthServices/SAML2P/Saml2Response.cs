@@ -244,10 +244,16 @@ namespace Kentor.AuthServices.Saml2P
             }
         }
 
+        StoredRequestState requestState;
+
         /// <summary>
         /// State stored by a corresponding request
         /// </summary>
-        public StoredRequestState RequestState { get; private set; }
+        public StoredRequestState GetRequestState(IOptions options)
+        {
+            Validate(options);
+            return requestState;
+        }
 
         /// <summary>Gets all assertion element nodes from this response message.</summary>
         /// <value>All assertion element nodes.</value>
@@ -270,12 +276,7 @@ namespace Kentor.AuthServices.Saml2P
         bool validated = false;
         Saml2ResponseFailedValidationException validationException;
 
-        /// <summary>
-        /// Validates InResponseTo and the signature of the response. Note that the status code of the
-        /// message can still be an error code, although the message itself is valid.
-        /// </summary>
-        /// <param name="options">Options with info about trusted Idps.</param>
-        public void Validate(IOptions options)
+        private void Validate(IOptions options)
         {
             if (!validated)
             {
@@ -327,12 +328,12 @@ namespace Kentor.AuthServices.Saml2P
 
                     throw new Saml2ResponseFailedValidationException(msg);
                 }
-                RequestState = storedRequestState;
-                if (RequestState.Idp.Id != Issuer.Id)
+                requestState = storedRequestState;
+                if (requestState.Idp.Id != Issuer.Id)
                 {
                     var msg = string.Format(CultureInfo.InvariantCulture,
                         "Expected response from idp \"{0}\" but received response from idp \"{1}\".",
-                        RequestState.Idp.Id, issuer.Id);
+                        requestState.Idp.Id, issuer.Id);
                     throw new Saml2ResponseFailedValidationException(msg);
                 }
             }
@@ -410,7 +411,7 @@ namespace Kentor.AuthServices.Saml2P
                 }
             }
 
-            if(!signedXml.CheckSignature(idpKey))
+            if (!signedXml.CheckSignature(idpKey))
             {
                 throw new Saml2ResponseFailedValidationException("Signature validation failed on SAML response or contained assertion.");
             }
