@@ -27,30 +27,11 @@ namespace Kentor.AuthServices.Configuration
                 KentorAuthServicesSection.Current.Federations.RegisterFederations(options);
 
                 // Load the federation configuration section from config.
-                if (!Options.suppressFederationIdentityLoading)
-                {
-                    FederationIdentityConfiguration federationIdentity = new FederationIdentityConfiguration();
-                    federationIdentity.FromConfiguration();
-                    options.FederationIdentityConfiguration(federationIdentity);
-                }
+                FederationIdentityConfiguration federationIdentity = new FederationIdentityConfiguration();
+                federationIdentity.FromConfiguration();
+                options.FederationIdentityConfiguration(federationIdentity);
+                
                 return options;
-            }
-        }
-
-        private static bool suppressFederationIdentityLoading;
-
-        /// <summary>
-        /// Used for tests to avoid exceptions due to unrecognized types in the identityConfiguration section. 
-        /// </summary>
-        public static bool SuppressFederationIdentityLoading
-        {
-            get
-            {
-                return suppressFederationIdentityLoading;
-            }
-            set
-            {
-                suppressFederationIdentityLoading = value;
             }
         }
 
