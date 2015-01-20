@@ -7,6 +7,8 @@ using System.Globalization;
 using System.IdentityModel.Metadata;
 using System.Linq;
 using System.Net;
+using System.Security.Cryptography;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -30,8 +32,13 @@ namespace Kentor.AuthServices
             {
                 throw new ArgumentNullException("config");
             }
-
-            Init(config.MetadataUrl, config.AllowUnsolicitedAuthnResponse, options);
+            X509Certificate2 loadedCertificate = null;
+            if(config.SigningCertificate != null)
+            {
+               loadedCertificate = config.SigningCertificate.LoadCertificate();
+            }
+            
+            Init(config.MetadataUrl, config.AllowUnsolicitedAuthnResponse, loadedCertificate, config.MetadataValidationMethod, options);
         }
 
         /// <summary>
@@ -40,25 +47,50 @@ namespace Kentor.AuthServices
         /// <param name="metadataUrl">Url to where metadata can be fetched.</param>
         /// <param name="allowUnsolicitedAuthnResponse">Should unsolicited responses 
         /// from idps in this federation be accepted?</param>
+        /// <param name="signingCertificate">The certificate provided that is used to validate metadata from the federation.</param>
+        /// <param name="signatureValidationMethod">Specifies the way the signature on the metadata should be validated.</param>
         /// <param name="options">Options to pass on to created IdentityProvider
         /// instances and register identity providers in.</param>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "sp")]
+        public Federation(Uri metadataUrl,
+            bool allowUnsolicitedAuthnResponse,
+            X509Certificate2 signingCertificate,
+            SignatureValidationMethod signatureValidationMethod,
+            Options options)
+        {
+            Init(metadataUrl, allowUnsolicitedAuthnResponse, signingCertificate, signatureValidationMethod, options);
+        }
+
+        /// <summary>
+        /// Simplified constructor that constructs a federation instance with default signature validation behaviour and no externally provided key.
+        /// </summary>
+        /// <param name="metadataUrl">>Url to where metadata can be fetched.</param>
+        /// <param name="allowUnsolicitedAuthnResponse">Should unsolicited responses 
+        /// from idps in this federation be accepted?</param>
+        /// <param name="options">Options to pass on to created IdentityProvider
+        /// instances and register identity providers in.</param>
         public Federation(Uri metadataUrl, bool allowUnsolicitedAuthnResponse, Options options)
         {
-            Init(metadataUrl, allowUnsolicitedAuthnResponse, options);
+            Init(metadataUrl, allowUnsolicitedAuthnResponse, null, SignatureValidationMethod.Default, options);
         }
 
         private bool allowUnsolicitedAuthnResponse;
         private IOptions options;
         private Uri metadataUrl;
+        private X509Certificate2 signingCertificate;
+        private SignatureValidationMethod signatureValidation;
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1500:VariableNamesShouldNotMatchFieldNames", MessageId = "metadataUrl"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1500:VariableNamesShouldNotMatchFieldNames", MessageId = "allowUnsolicitedAuthnResponse"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1500:VariableNamesShouldNotMatchFieldNames", MessageId = "options")]
-        private void Init(Uri metadataUrl, bool allowUnsolicitedAuthnResponse, IOptions options)
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1500:VariableNamesShouldNotMatchFieldNames", MessageId = "signingCertificate"), 
+         System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1500:VariableNamesShouldNotMatchFieldNames", MessageId = "metadataUrl"), 
+         System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1500:VariableNamesShouldNotMatchFieldNames", MessageId = "allowUnsolicitedAuthnResponse"), 
+         System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1500:VariableNamesShouldNotMatchFieldNames", MessageId = "options")]
+        private void Init(Uri metadataUrl, bool allowUnsolicitedAuthnResponse, X509Certificate2 signingCertificate, SignatureValidationMethod signatureValidationMethod, IOptions options)
         {
             this.allowUnsolicitedAuthnResponse = allowUnsolicitedAuthnResponse;
             this.options = options;
             this.metadataUrl = metadataUrl;
-
+            this.signingCertificate = signingCertificate;
+            signatureValidation = signatureValidationMethod;
             LoadMetadata();
         }
 
@@ -70,8 +102,7 @@ namespace Kentor.AuthServices
             {
                 try
                 {
-                    var metadata = MetadataLoader.LoadFederation(metadataUrl);
-
+                    var metadata = MetadataLoader.LoadFederation(metadataUrl, signingCertificate, signatureValidation);
                     var identityProvidersMetadata = metadata.ChildEntities.Cast<ExtendedEntityDescriptor>()
                         .Where(ed => ed.RoleDescriptors.OfType<IdentityProviderSingleSignOnDescriptor>().Any());
 

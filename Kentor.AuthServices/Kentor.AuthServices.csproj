@@ -53,7 +53,14 @@
     <Compile Include="..\VersionInfo.cs">
       <Link>VersionInfo.cs</Link>
     </Compile>
+    <Compile Include="Configuration\SignatureValidationMethod.cs" />
+    <Compile Include="Internal\IExceptionGenerator.cs" />
+    <Compile Include="Internal\Saml2MetadataExceptionGenerator.cs" />
+    <Compile Include="Internal\Saml2ResponseExceptionGenerator.cs" />
+    <Compile Include="Internal\ValidationHelper.cs" />
+    <Compile Include="MetadataFailedValidationException.cs" />
     <Compile Include="Metadata\KeyInfoSerializer.cs" />
+    <Compile Include="Metadata\X509FromFileCertificateValidator.cs" />
     <Compile Include="Saml2ResponseFailedValidationException.cs" />
     <Compile Include="WebSso\AcsCommand.cs" />
     <Compile Include="Metadata\AttributeConsumingService.cs" />

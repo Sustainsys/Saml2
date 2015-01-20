@@ -16,7 +16,7 @@ namespace Kentor.AuthServices.Tests
         public void XmlDocumentExtensions_Sign_Nullcheck_xmlDocument()
         {
             XmlDocument xd = null;
-            Action a = () => xd.Sign(TestCert);
+            Action a = () => xd.Sign(TestCert, "Issuer", Saml2Namespaces.Saml2Name);
 
             a.ShouldThrow<ArgumentNullException>().And.ParamName.Should().Be("xmlDocument");
         }
@@ -25,7 +25,7 @@ namespace Kentor.AuthServices.Tests
         public void XmlDocumentExtensions_Sign_Nullcheck_Cert()
         {
             XmlDocument xd = new XmlDocument();
-            Action a = () => xd.Sign(null);
+            Action a = () => xd.Sign(null, "Issuer", Saml2Namespaces.Saml2Name);
 
             a.ShouldThrow<ArgumentNullException>().And.ParamName.Should().Be("cert");
         }
@@ -36,7 +36,7 @@ namespace Kentor.AuthServices.Tests
             var xmlDoc = new XmlDocument();
             xmlDoc.LoadXml("<root ID=\"rootElementId\"><content>Some Content</content></root>");
 
-            xmlDoc.Sign(TestCert);
+            xmlDoc.Sign(TestCert, "Issuer", Saml2Namespaces.Saml2Name);
 
             var signature = xmlDoc.DocumentElement["Signature", SignedXml.XmlDsigNamespaceUrl];
 

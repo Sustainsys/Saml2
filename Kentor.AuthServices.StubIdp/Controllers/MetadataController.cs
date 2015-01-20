@@ -9,6 +9,8 @@ using System.Web;
 using System.Web.Mvc;
 using System.Xml;
 using Kentor.AuthServices.Metadata;
+using Kentor.AuthServices;
+using System.IdentityModel.Tokens;
 
 namespace Kentor.AuthServices.StubIdp.Controllers
 {
@@ -17,15 +19,25 @@ namespace Kentor.AuthServices.StubIdp.Controllers
         // GET: Metadata
         public ActionResult Index()
         {
-            return Content(
-                MetadataModel.CreateIdpMetadata().ToXmlString(),
+            var descriptor = MetadataModel.CreateIdpMetadata();
+            descriptor.SigningCredentials = new X509SigningCredentials(
+                CertificateHelper.SigningCertificate,
+                SecurityAlgorithms.RsaSha1Signature,
+                SecurityAlgorithms.Sha1Digest);
+
+            return Content(descriptor.ToXmlString(),
                 "application/samlmetadata+xml");
         }
 
         public ActionResult BrowserFriendly()
         {
-            return Content(
-                MetadataModel.CreateIdpMetadata().ToXmlString(),
+            var descriptor = MetadataModel.CreateIdpMetadata();
+            descriptor.SigningCredentials = new X509SigningCredentials(
+                CertificateHelper.SigningCertificate, 
+                SecurityAlgorithms.RsaSha1Signature, 
+                SecurityAlgorithms.Sha1Digest);
+
+            return Content(descriptor.ToXmlString(),
                 "text/xml");
         }
     }

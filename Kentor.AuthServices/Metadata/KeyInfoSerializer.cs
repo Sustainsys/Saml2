@@ -120,7 +120,7 @@ namespace Kentor.AuthServices.Metadata
         [ExcludeFromCodeCoverage]
         protected override bool CanReadKeyIdentifierCore(System.Xml.XmlReader reader)
         {
-            throw new NotImplementedException();
+            return true;
         }
 
         [ExcludeFromCodeCoverage]

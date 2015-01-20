@@ -13,6 +13,7 @@ using Kentor.AuthServices.Saml2P;
 using Kentor.AuthServices.WebSso;
 using System.Threading.Tasks;
 using System.Net;
+using System.Security.Cryptography.X509Certificates;
 
 namespace Kentor.AuthServices
 {
@@ -44,6 +45,7 @@ namespace Kentor.AuthServices
             AllowUnsolicitedAuthnResponse = config.AllowUnsolicitedAuthnResponse;
             metadataUrl = config.MetadataUrl;
             LoadMetadata = config.LoadMetadata;
+            ValidationMethod = config.MetadataValidationMethod;
             this.spOptions = spOptions;
 
             var certificate = config.SigningCertificate.LoadCertificate();
@@ -51,6 +53,7 @@ namespace Kentor.AuthServices
             if (certificate != null)
             {
                 signingKey = certificate.PublicKey.Key;
+                signingCertificate = certificate;
             }
 
             try
@@ -113,6 +116,23 @@ namespace Kentor.AuthServices
                         // retry has been scheduled.
                     }
                 }
+            }
+        }
+
+        private SignatureValidationMethod validationMethod;
+
+        /// <summary>
+        /// Controls the way that metadata signatures are handled. 
+        /// </summary>
+        public SignatureValidationMethod ValidationMethod
+        {
+            get
+            {
+                return validationMethod;
+            }
+            set
+            {
+                validationMethod = value;
             }
         }
 
@@ -244,6 +264,7 @@ namespace Kentor.AuthServices
         }
 
         private AsymmetricAlgorithm signingKey;
+        private X509Certificate2 signingCertificate;
 
         /// <summary>
         /// The public key of the idp that is used to verify signatures of responses/assertions.
@@ -270,7 +291,7 @@ namespace Kentor.AuthServices
             {
                 try
                 {
-                    var metadata = MetadataLoader.LoadIdp(MetadataUrl);
+                    var metadata = MetadataLoader.LoadIdp(MetadataUrl, signingCertificate, ValidationMethod);
 
                     ReadMetadata(metadata);
                 }

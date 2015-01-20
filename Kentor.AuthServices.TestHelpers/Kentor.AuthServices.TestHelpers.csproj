@@ -59,6 +59,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SignedXmlHelper.cs" />
     <Compile Include="SpinWaiter.cs" />
+    <Compile Include="StreamHelper.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Kentor.AuthServices\Kentor.AuthServices.csproj">
@@ -67,6 +68,9 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <None Include="Kentor.AuthServices.Badcertificate.pfx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="Kentor.AuthServices.Tests.pfx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

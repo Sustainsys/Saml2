@@ -37,5 +37,36 @@ namespace Kentor.AuthServices.Configuration
                 return (bool)base[allowUnsolicitedAuthnResponse];
             }
         }
+
+        private const string demandMetadataSignature = "metadataValidationMethod";
+        /// <summary>
+        /// Determines if we should demand that all metadata should be signed to use it.
+        /// </summary>
+        [ConfigurationProperty(demandMetadataSignature)]
+        public SignatureValidationMethod MetadataValidationMethod
+        {
+            get
+            {
+                return (SignatureValidationMethod)base[demandMetadataSignature];
+            }
+        }
+
+
+        private const string signingCertificate = "signingCertificate";
+        /// <summary>
+        /// Certificate location for the certificate the federation uses to sign its metadata.
+        /// </summary>
+        [ConfigurationProperty(signingCertificate)]
+        public CertificateElement SigningCertificate
+        {
+            get
+            {
+                return (CertificateElement)base[signingCertificate];
+            }
+            internal set
+            {
+                base[signingCertificate] = value;
+            }
+        }
     }
 }

@@ -104,6 +104,19 @@ namespace Kentor.AuthServices.Configuration
             }
         }
 
+        private const string demandMetadataSignature = "metadataValidationMethod";
+        /// <summary>
+        /// Determines if we should demand that all metadata should be signed to use it.
+        /// </summary>
+        [ConfigurationProperty(demandMetadataSignature)]
+        public SignatureValidationMethod MetadataValidationMethod
+        {
+            get
+            {
+                return (SignatureValidationMethod)base[demandMetadataSignature];
+            }
+        }
+
         /// <summary>
         /// Enable automatic downloading of metadata form the well-known uri (i.e. interpret
         /// the EntityID as an uri and download metadata from it).
