@@ -24,7 +24,18 @@ namespace Kentor.AuthServices.TestHelpers
             var xmlDoc = new XmlDocument { PreserveWhitespace = true };
             xmlDoc.LoadXml(xml);
 
-            xmlDoc.Sign(TestCert);
+            xmlDoc.Sign(TestCert, "Issuer", Saml2Namespaces.Saml2Name);
+
+            return xmlDoc.OuterXml;
+        }
+
+        public static string SignXmlMetadata(string xml)
+        {
+            var xmlDoc = new XmlDocument { PreserveWhitespace = true };
+            xmlDoc.LoadXml(xml);
+            System.Diagnostics.Trace.TraceInformation("Signing certificate thumbprint: " + TestCert.Thumbprint);
+            System.Diagnostics.Trace.Flush();
+            xmlDoc.Sign(TestCert, "EntitiesDescriptor", Saml2Namespaces.Saml2MetadataName);
 
             return xmlDoc.OuterXml;
         }

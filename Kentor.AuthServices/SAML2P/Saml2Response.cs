@@ -187,7 +187,7 @@ namespace Kentor.AuthServices.Saml2P
 
             xmlDocument = xml;
 
-            xml.Sign(issuerCertificate);
+            xml.Sign(issuerCertificate, "Issuer", Saml2Namespaces.Saml2Name);
         }
 
         readonly Saml2Id id;
@@ -342,78 +342,21 @@ namespace Kentor.AuthServices.Saml2P
         private void ValidateSignature(IOptions options)
         {
             var idpKey = options.IdentityProviders[Issuer].SigningKey;
+            ValidationHelper helper = new ValidationHelper(new Saml2ResponseExceptionGenerator());
 
             // If the response message is signed, we check just this signature because the whole content has to be correct then
             var responseSignature = xmlDocument.DocumentElement["Signature", SignedXml.XmlDsigNamespaceUrl];
             if (responseSignature != null)
             {
-                CheckSignature(XmlDocument.DocumentElement, idpKey);
+                helper.CheckSignature(XmlDocument.DocumentElement, idpKey);
             }
             else
             {
                 // If the response message is not signed, all assersions have to be signed correctly
                 foreach (var assertionNode in AllAssertionElementNodes)
                 {
-                    CheckSignature(assertionNode, idpKey);
+                    helper.CheckSignature(assertionNode, idpKey);
                 }
-            }
-        }
-
-        private static readonly string[] allowedTransforms = new string[]
-        {
-            SignedXml.XmlDsigEnvelopedSignatureTransformUrl,
-            SignedXml.XmlDsigExcC14NTransformUrl,
-            SignedXml.XmlDsigExcC14NWithCommentsTransformUrl
-        };
-
-        /// <summary>Checks the signature.</summary>
-        /// <param name="signedRootElement">The signed root element.</param>
-        /// <param name="idpKey">The assymetric key of the algorithm.</param>
-        private static void CheckSignature(XmlElement signedRootElement, AsymmetricAlgorithm idpKey)
-        {
-            var xmlDocument = new XmlDocument { PreserveWhitespace = true };
-            xmlDocument.LoadXml(signedRootElement.OuterXml);
-
-            var signature = xmlDocument.DocumentElement["Signature", SignedXml.XmlDsigNamespaceUrl];
-            if (signature == null)
-            {
-                throw new Saml2ResponseFailedValidationException("The SAML Response is not signed and contains unsigned Assertions. Response cannot be trusted.");
-            }
-
-            var signedXml = new SignedXml(xmlDocument);
-            signedXml.LoadXml(signature);
-
-            var signedRootElementId = "#" + signedRootElement.GetAttribute("ID");
-
-            if (signedXml.SignedInfo.References.Count == 0)
-            {
-                throw new Saml2ResponseFailedValidationException("No reference found in Xml signature, it doesn't validate the Xml data.");
-            }
-
-            if (signedXml.SignedInfo.References.Count != 1)
-            {
-                throw new Saml2ResponseFailedValidationException("Multiple references for Xml signatures are not allowed.");
-            }
-
-            var reference = signedXml.SignedInfo.References.Cast<Reference>().Single();
-
-            if (reference.Uri != signedRootElementId)
-            {
-                throw new Saml2ResponseFailedValidationException("Incorrect reference on Xml signature. The reference must be to the root element of the element containing the signature.");
-            }
-
-            foreach (Transform transform in reference.TransformChain)
-            {
-                if (!allowedTransforms.Contains(transform.Algorithm))
-                {
-                    throw new Saml2ResponseFailedValidationException(
-                        "Transform \"" + transform.Algorithm + "\" found in Xml signature is not allowed in SAML.");
-                }
-            }
-
-            if (!signedXml.CheckSignature(idpKey))
-            {
-                throw new Saml2ResponseFailedValidationException("Signature validation failed on SAML response or contained assertion.");
             }
         }
 

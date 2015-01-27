@@ -9,6 +9,7 @@ using Kentor.AuthServices.Metadata;
 using Kentor.AuthServices.TestHelpers;
 using Kentor.AuthServices.Tests.Metadata;
 using System.Threading;
+using System.Security.Cryptography.X509Certificates;
 
 namespace Kentor.AuthServices.Tests
 {
@@ -46,7 +47,7 @@ namespace Kentor.AuthServices.Tests
             var url = new Uri("http://localhost:13428/SambiMetadata");
             var idpInFederation = new EntityId("http://idp-acc.test.ek.sll.se/neas");
 
-            Action a = () => new Federation(url, true, options);
+            Action a = () => new Federation(url, true, null, SignatureValidationMethod.Skip, options);
 
             a.ShouldNotThrow();
 
@@ -66,8 +67,8 @@ namespace Kentor.AuthServices.Tests
 
             var url = new Uri("http://localhost:13428/SkolfederationMetadata");
             var idpInFederation = new EntityId("http://fs.ale.se/adfs/services/trust");
-
-            Action a = () => new Federation(url, true, options);
+            
+            Action a = () => new Federation(url, true, null, SignatureValidationMethod.Skip, options);
 
             a.ShouldNotThrow();
 

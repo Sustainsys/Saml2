@@ -109,7 +109,11 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
+    <Compile Include="Configuration\FederationElementTests.cs" />
+    <Compile Include="Internal\Saml2MetadataExceptionGeneratorTests.cs" />
+    <Compile Include="MetadataFailedValidationExceptionTests.cs" />
     <Compile Include="Metadata\MetadatabaseExtensionsTests.cs" />
+    <Compile Include="Metadata\X509FromFilrCertificateValidatorTests.cs" />
     <Compile Include="Mvc\AuthServicesControllerTests.cs" />
     <Compile Include="ClaimsAuthenticationManagerStub.cs" />
     <Compile Include="ExceptionTestHelpers.cs" />
