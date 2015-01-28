@@ -21,6 +21,14 @@ namespace Kentor.AuthServices.Tests.HttpModule
         }
 
         [TestMethod]
+        public void CommandResultHttp_Apply_NullShouldThrow()
+        {
+            CommandResult obj = null;
+            Action a = () => obj.Apply(null);
+            a.ShouldThrow<ArgumentNullException>().And.ParamName.Should().Be("commandResult");
+        }
+
+        [TestMethod]
         public void CommandResultHttp_Apply_HttpStatusCode()
         {
             var response = Substitute.For<HttpResponseBase>();
@@ -49,7 +57,7 @@ namespace Kentor.AuthServices.Tests.HttpModule
         }
 
         [TestMethod]
-        public void CommandResult_Apply_HandleRedirect()
+        public void CommandResultHttp_Apply_HandleRedirect()
         {
             var response = Substitute.For<HttpResponseBase>();
             var redirectTarget = "http://example.com/redirect/target?X=A%20B%3d";
@@ -64,7 +72,7 @@ namespace Kentor.AuthServices.Tests.HttpModule
         }
 
         [TestMethod]
-        public void CommandResult_Apply_ThrowsOnMissingLocation()
+        public void CommandResultHttp_Apply_ThrowsOnMissingLocation()
         {
             var response = Substitute.For<HttpResponseBase>();
 
@@ -78,7 +86,7 @@ namespace Kentor.AuthServices.Tests.HttpModule
         }
 
         [TestMethod]
-        public void CommandResult_Apply_ThrowsOnLocationWithoutRedirect()
+        public void CommandResultHttp_Apply_ThrowsOnLocationWithoutRedirect()
         {
             var response = Substitute.For<HttpResponseBase>();
 
@@ -92,7 +100,7 @@ namespace Kentor.AuthServices.Tests.HttpModule
         }
 
         [TestMethod]
-        public void CommandResult_Apply_Content()
+        public void CommandResultHttp_Apply_Content()
         {
             var response = Substitute.For<HttpResponseBase>();
 

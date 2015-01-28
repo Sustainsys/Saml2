@@ -12,7 +12,7 @@ namespace Kentor.AuthServices.Configuration
     /// <summary>
     /// <c>FederationIdentityConfiguration</c> is used to load a FederationConfiguration directly from Web.Config without the need to use System.Web.
     /// </summary>
-    public class FederationIdentityConfiguration : FederationConfiguration
+    public class SystemIdentityModelFederationConfigSection : FederationConfiguration
     {
         /// <summary>
         /// Fills the <c>FederationIdentityConfiguration</c> from Web.Config/App.Config without the need to use System.Web. 

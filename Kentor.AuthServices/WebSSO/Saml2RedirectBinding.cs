@@ -1,5 +1,4 @@
-﻿using Kentor.AuthServices.Internal;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
@@ -45,7 +44,7 @@ namespace Kentor.AuthServices.WebSso
             {
                 return null;
             }
-            var payload = Convert.FromBase64String(request.QueryString["SAMLRequest"]);
+            var payload = Convert.FromBase64String(request.QueryString["SAMLRequest"].First());
             using (var compressed = new MemoryStream(payload))
             {
                 using (var decompressedStream = new DeflateStream(compressed, CompressionMode.Decompress, true))
@@ -70,7 +69,7 @@ namespace Kentor.AuthServices.WebSso
                     writer.Write(payload);
                 }
 
-                return QueryStringHelper.UrlEncode(Convert.ToBase64String(compressed.GetBuffer()));
+                return System.Net.WebUtility.UrlEncode(Convert.ToBase64String(compressed.GetBuffer()));
             }
         }
     }

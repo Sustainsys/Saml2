@@ -36,7 +36,7 @@ namespace Kentor.AuthServices.Owin
                 KentorAuthServicesSection.Current.Federations.RegisterFederations(this);
 
                 // Load the federation configuration section from config.
-                FederationIdentityConfiguration federationIdentity = new FederationIdentityConfiguration();
+                SystemIdentityModelFederationConfigSection federationIdentity = new SystemIdentityModelFederationConfigSection();
                 federationIdentity.FromConfiguration();
                 FederationIdentityConfiguration(federationIdentity);
             }
@@ -82,7 +82,7 @@ namespace Kentor.AuthServices.Owin
             }
         }
 
-        private void FederationIdentityConfiguration(FederationIdentityConfiguration identity)
+        private void FederationIdentityConfiguration(SystemIdentityModelFederationConfigSection identity)
         {
             federationIdentityConfiguration = identity;
         }
@@ -98,6 +98,6 @@ namespace Kentor.AuthServices.Owin
             }
         }
 
-        private FederationIdentityConfiguration federationIdentityConfiguration;
+        private SystemIdentityModelFederationConfigSection federationIdentityConfiguration;
     }
 }

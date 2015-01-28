@@ -27,9 +27,10 @@ namespace Kentor.AuthServices.Configuration
                 KentorAuthServicesSection.Current.Federations.RegisterFederations(options);
 
                 // Load the federation configuration section from config.
-                FederationIdentityConfiguration federationIdentity = new FederationIdentityConfiguration();
+                SystemIdentityModelFederationConfigSection federationIdentity = 
+                    new SystemIdentityModelFederationConfigSection();
                 federationIdentity.FromConfiguration();
-                options.FederationIdentityConfiguration(federationIdentity);
+                options.SystemIdentityModelFederationConfigSection(federationIdentity);
                 
                 return options;
             }
@@ -64,9 +65,9 @@ namespace Kentor.AuthServices.Configuration
         /// Sets the <c>FederationIdentityConfiguration</c> of the configuration options. 
         /// </summary>
         /// <param name="identity">The <c>FederationIdentityConfiguration</c> to be set.</param>
-        private void FederationIdentityConfiguration(FederationIdentityConfiguration identity)
+        private void SystemIdentityModelFederationConfigSection(SystemIdentityModelFederationConfigSection identity)
         {
-            federationIdentityConfiguration = identity;
+            systemIdentityModelFederationConfigSection = identity;
         }
 
         /// <summary>
@@ -76,11 +77,11 @@ namespace Kentor.AuthServices.Configuration
         {
             get
             {
-                return federationIdentityConfiguration.IdentityConfiguration;
+                return systemIdentityModelFederationConfigSection.IdentityConfiguration;
             }
         }
 
-        private FederationIdentityConfiguration federationIdentityConfiguration;
+        private SystemIdentityModelFederationConfigSection systemIdentityModelFederationConfigSection;
 
 
         private readonly IdentityProviderDictionary identityProviders = new IdentityProviderDictionary();

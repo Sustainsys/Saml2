@@ -43,28 +43,28 @@ namespace Kentor.AuthServices.Tests.Internal
         [TestMethod]
         public void PathHelper_IsRelative_ShouldDetectRelative()
         {
-            bool result = PathHelper.IsRelative("~/test/file.test");
+            bool result = PathHelper.IsWebRootRelative("~/test/file.test");
             result.Should().BeTrue();
         }
 
         [TestMethod]
         public void PathHelper_IsRelative_ShouldDetectNonRelative()
         {
-            bool result = PathHelper.IsRelative("/test/file.test");
+            bool result = PathHelper.IsWebRootRelative("/test/file.test");
             result.Should().BeFalse();
         }
 
         [TestMethod]
         public void PathHelper_IsRelative_ShouldThrowOnNull()
         {
-            Action a = () => PathHelper.IsRelative(null);
+            Action a = () => PathHelper.IsWebRootRelative(null);
             a.ShouldThrow<ArgumentNullException>().And.ParamName.Should().Be("virtualPath");
         }
 
         [TestMethod]
         public void PathHelper_IsRelative_ShouldDetectDegeneratePath()
         {
-            bool result = PathHelper.IsRelative("");
+            bool result = PathHelper.IsWebRootRelative("");
             result.Should().BeFalse();
         }
     }

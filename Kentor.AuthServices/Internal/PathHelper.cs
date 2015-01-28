@@ -10,7 +10,7 @@ namespace Kentor.AuthServices.Internal
     /// <summary>
     /// Class to help with mapping virtual paths relative to the server.
     /// </summary>
-    public static class PathHelper
+    internal static class PathHelper
     {
         /// <summary>
         /// Returns the base path of the website or application running. 
@@ -35,7 +35,7 @@ namespace Kentor.AuthServices.Internal
                 throw new ArgumentNullException("virtualPath");
             }
 
-            if (!IsRelative(virtualPath))
+            if (!IsWebRootRelative(virtualPath))
             {
                 return Path.GetFullPath(virtualPath);
             }
@@ -54,7 +54,7 @@ namespace Kentor.AuthServices.Internal
         /// </summary>
         /// <param name="virtualPath">The path that is to be tested.</param>
         /// <returns>True if the path is relative otherwise false.</returns>
-        public static bool IsRelative(String virtualPath)
+        public static bool IsWebRootRelative(String virtualPath)
         {
             if (virtualPath == null)
             {

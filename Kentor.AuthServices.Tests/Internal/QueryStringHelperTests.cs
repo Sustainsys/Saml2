@@ -4,6 +4,7 @@ using FluentAssertions;
 using Kentor.AuthServices.Internal;
 using System.Collections.Specialized;
 using System.Web;
+using System.Linq;
 
 namespace Kentor.AuthServices.Tests.Internal
 {
@@ -17,28 +18,63 @@ namespace Kentor.AuthServices.Tests.Internal
             a.ShouldThrow<ArgumentNullException>();
         }
 
+        private bool EqualityTester(IGrouping<String, String> lhs, IGrouping<String, String> rhs)
+        {
+            if (!lhs.Key.Equals(rhs.Key) || lhs.Count() != rhs.Count())
+            {
+                return false;
+            }
+
+            foreach (var val in lhs)
+            {
+                if (!rhs.Contains(val))
+                {
+                    return false;
+                }
+            }
+
+            foreach (var val in rhs)
+            {
+                if (!lhs.Contains(val))
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        [TestMethod]
+        public void QueryStringHelper_ParseQueryString_EmptyStringShouldCreateEmptyCollection()
+        {
+            var collection = QueryStringHelper.ParseQueryString("");
+            collection.Should().BeEmpty();
+        }
+
         [TestMethod]
         public void QueryStringHelper_ParseQueryString_ShouldSplit()
         {
-            NameValueCollection expected = new NameValueCollection() 
+            var expected = new [] 
             {
-                { "fname", "john" },
-                { "lname", "doe" }
-            };
+                new { key = "fname", value = "john" },
+                new { key = "lname", value = "doe" }
+            }.ToLookup(x => x.key, y => y.value);
+
             var collection = QueryStringHelper.ParseQueryString("fname=john&lname=doe");
-            collection.Should().HaveCount(2, "The number of arguments that we have.").And.Equal(expected);
+            collection.Should().HaveCount(2, "The number of arguments that we have.").And.Equal(expected, EqualityTester);
         }
 
         [TestMethod]
         public void QueryStringHelper_ParseQueryString_ShouldRemoveQuestionmark()
         {
-            NameValueCollection expected = new NameValueCollection() 
+            var expected = new [] 
             {
-                { "fname", "john" },
-                { "lname", "doe" }
-            };
+                 new { key = "fname", value = "john" },
+                new { key = "lname", value = "doe" }
+            }.ToLookup(x => x.key, y => y.value);
+
             var collection = QueryStringHelper.ParseQueryString("?fname=john&lname=doe");
-            collection.Should().HaveCount(2, "The number of arguments that we have.").And.Equal(expected);
+            collection.Should().HaveCount(2, "The number of arguments that we have.").And.Equal(expected, EqualityTester);
         }
 
         [TestMethod]
@@ -46,16 +82,6 @@ namespace Kentor.AuthServices.Tests.Internal
         {
             var collection = QueryStringHelper.ParseQueryString("");
             collection.Should().BeEmpty();
-        }
-
-        [TestMethod]
-        public void QueryStringHelper_UrlEncode_ShouldEncode()
-        {
-            String test = "http://test# space 123/text?var=val&another=two";
-            String expected = HttpUtility.UrlEncode(test);
-
-            QueryStringHelper.UrlEncode(test).Should().Equals(expected);
-
         }
     }
 }

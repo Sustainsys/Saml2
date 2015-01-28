@@ -73,7 +73,7 @@ namespace Kentor.AuthServices.WebSso
         /// <summary>
         /// The query string parameters of the request.
         /// </summary>
-        public NameValueCollection QueryString { get; private set; }
+        public ILookup<String, String> QueryString { get; private set; }
 
         /// <summary>
         /// The root Url of the application. This includes the virtual directory

@@ -13,53 +13,50 @@ namespace Kentor.AuthServices.Internal
     public static class QueryStringHelper
     {
         /// <summary>
+        /// Exists because of code coverage. If the string is empty we want to create an empty instance 
+        /// of Lookup. Because only internal calls can create an Lookup like:
+        /// Enumerable.Empty&lt;String&gt;().ToLookup(x => default(String));
+        /// 
+        /// Because this ToLookup demands a lambda/delegate that never executes we get problems with code coverage. 
+        /// 
+        /// If we switch to a lambda without anonymous types we can use the same call to ToLookup for them both at the bottom. 
+        /// </summary>
+        private struct Item
+        {
+            public String key;
+            public String value;
+        }
+
+        /// <summary>
         /// Splits a query string into its key/value pairs. 
         /// </summary>
         /// <param name="queryString">A query string, with or without the leading '?' character.</param>
         /// <returns>A collecktion with the parsed keys and values.</returns>
-        public static NameValueCollection ParseQueryString(String queryString)
+        public static ILookup<String, String> ParseQueryString(String queryString)
         {
+            IEnumerable<Item> result;
             if (queryString == null)
             {
                 throw new ArgumentNullException("queryString");
             }
 
-            NameValueCollection keyValueCollection = new NameValueCollection();
-
             if (queryString.Length == 0)
             {
-                return keyValueCollection;
+                result = Enumerable.Empty<Item>();
             }
-
-            if (queryString[0] == '?')
+            else
             {
-                queryString = queryString.Substring(1);
-            }
+                if (queryString[0] == '?')
+                {
+                    queryString = queryString.Substring(1);
+                }
 
-            var keyValuePair = queryString.Split('&')
+                result = queryString.Split('&')
                 .Select(x => x.Split('='))
-                .Select(y => new { Key = y[0], Value = Uri.UnescapeDataString(y[1]) });
-
-            foreach (var pair in keyValuePair)
-            {
-                keyValueCollection[pair.Key] = pair.Value;
+                .Select(y => new Item { key = y[0], value = Uri.UnescapeDataString(y[1]) });
             }
-            return keyValueCollection;
-        }
 
-
-        /// <summary>
-        /// Encodes an url string and acts as a replacement for HttpUtility.UrlEncode.
-        /// </summary>
-        /// <param name="url">The url to be encoded.</param>
-        /// <returns>An encoded url.</returns>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1054:UriParametersShouldNotBeStrings", MessageId = "0#", Justification="This is a drop-in replacement for a microsoft library function."), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1055:UriReturnValuesShouldNotBeStrings")]
-        public static String UrlEncode(string url)
-        {
-            // The Uri.EscapeDataString is almost an 100% valid replacement for 
-            // HttpUtility.UrlEncode. The main difference seems to be that it does not encode 
-            // + signs which EscapeDataString does, so we revert it. 
-            return Uri.EscapeDataString(url).Replace("%20", "+");
+            return result.ToLookup(x => x.key, y => y.value);
         }
     }
 }
