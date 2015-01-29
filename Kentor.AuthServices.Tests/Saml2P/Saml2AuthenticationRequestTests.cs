@@ -76,7 +76,7 @@ namespace Kentor.AuthServices.Tests.Saml2P
 
             var subject = Saml2AuthenticationRequest.Read(xmlData);
 
-            subject.Id.Should().Be("Saml2AuthenticationRequest_AssertionConsumerServiceUrl");
+            subject.Id.Should().Be(new Saml2Id("Saml2AuthenticationRequest_AssertionConsumerServiceUrl"));
             subject.AssertionConsumerServiceUrl.Should().Be(new Uri("https://sp.example.com/SAML2/Acs"));
         }
 
@@ -98,7 +98,7 @@ namespace Kentor.AuthServices.Tests.Saml2P
 
             var subject = Saml2AuthenticationRequest.Read(xmlData);
 
-            subject.Id.Should().Be("Saml2AuthenticationRequest_Read_NoACS");
+            subject.Id.Should().Be(new Saml2Id("Saml2AuthenticationRequest_Read_NoACS"));
             subject.AssertionConsumerServiceUrl.Should().Be(null);
         }
 

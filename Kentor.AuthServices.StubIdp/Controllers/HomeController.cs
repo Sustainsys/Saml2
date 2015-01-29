@@ -29,7 +29,7 @@ namespace Kentor.AuthServices.StubIdp.Controllers
 
             if (request != null)
             {
-                model.InResponseTo = request.Id;
+                model.InResponseTo = request.Id.Value;
                 model.AssertionConsumerServiceUrl = request.AssertionConsumerServiceUrl.ToString();
                 model.AuthnRequestXml = decodedXmlData;
             }
