@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Configuration;
 using System.IdentityModel.Metadata;
+using System.IdentityModel.Tokens;
 using System.Linq;
 using System.Security.Claims;
 using System.Security.Cryptography.X509Certificates;
@@ -42,10 +43,16 @@ namespace Kentor.AuthServices.StubIdp.Models
             var identity = new ClaimsIdentity(new Claim[] { 
                 new Claim(ClaimTypes.NameIdentifier, NameId )});
 
+            Saml2Id saml2Id = null;
+            if (!String.IsNullOrEmpty(InResponseTo))
+            {
+                saml2Id = new Saml2Id(InResponseTo);
+            }
+
             return new Saml2Response(
                 new EntityId(UrlResolver.MetadataUrl.ToString()),
                 CertificateHelper.SigningCertificate, new Uri(AssertionConsumerServiceUrl), 
-                InResponseTo, identity);
+                saml2Id, identity);
         }
 
         [Display(Name="Incoming AuthnRequest")]
