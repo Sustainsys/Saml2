@@ -1764,7 +1764,7 @@ namespace Kentor.AuthServices.Tests.Saml2P
             });
 
             var response = new Saml2Response(new EntityId("issuer"), SignedXmlHelper.TestCert,
-                new Uri("http://destination.example.com"), "InResponseToID", identity);
+                new Uri("http://destination.example.com"), new Saml2Id("InResponseToID"), identity);
 
             var xml = response.XmlDocument;
 

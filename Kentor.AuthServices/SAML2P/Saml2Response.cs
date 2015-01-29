@@ -94,7 +94,7 @@ namespace Kentor.AuthServices.Saml2P
         /// <param name="claimsIdentities">Claims identities to be included in the 
         /// response. Each identity is translated into a separate assertion.</param>
         public Saml2Response(EntityId issuer, X509Certificate2 issuerCertificate,
-            Uri destinationUrl, string inResponseTo, params ClaimsIdentity[] claimsIdentities)
+            Uri destinationUrl, Saml2Id inResponseTo, params ClaimsIdentity[] claimsIdentities)
         {
             this.issuer = issuer;
             this.claimsIdentities = claimsIdentities;
@@ -102,7 +102,7 @@ namespace Kentor.AuthServices.Saml2P
             this.destinationUrl = destinationUrl;
             if (inResponseTo != null)
             {
-                this.inResponseTo = new Saml2Id(inResponseTo);
+                this.inResponseTo = inResponseTo;
             }
             id = new Saml2Id("id" + Guid.NewGuid().ToString("N"));
             status = Saml2StatusCode.Success;
