@@ -1,28 +1,28 @@
 ﻿using System;
+using System.IO;
 using System.IdentityModel.Metadata;
 using System.IdentityModel.Services;
 using System.IdentityModel.Tokens;
-using System.Text;
+using System.Runtime.Serialization.Formatters.Binary;
 using System.Web;
 using System.Web.Security;
 using Kentor.AuthServices.Configuration;
+using System.Collections.Generic;
 
 namespace Kentor.AuthServices.Internal
 {
     static class PendingAuthnRequests
     {
       private const string CookieName = "AuthNRequest";
-      private const string CookieIdAttribute = "id";
-      private const string CookieIdpIdAttribute = "idpId";
       private const string Purpose = "Initiator Verification";
 
       internal static void Add(Saml2Id id, StoredRequestState idp)
       {
         var cookie = GetNewCookie();
-        cookie.Values[CookieIdAttribute] = Encrypt(id.Value);
-        cookie.Values[CookieIdpIdAttribute] = Encrypt(idp.Idp.Id);
+        cookie.Value = Encrypt(SerializeRequestState(id, idp));
 
-        HttpContext.Current.Response.Cookies.Add(cookie);
+        var cookies = HttpContext.Current.Response.Cookies; 
+        cookies.Add(cookie);
       }
 
       internal static bool TryRemove(Saml2Id id, out StoredRequestState idp)
@@ -30,28 +30,33 @@ namespace Kentor.AuthServices.Internal
         var returnValue = false;
         idp = null;
 
-        var cookie = HttpContext.Current.Request.Cookies[CookieName];
+        var cookies = HttpContext.Current.Request.Cookies;
+        var cookie = cookies[CookieName];
 
         if (cookie != null)
         {
-          var cookieId = Decrypt(cookie.Values[CookieIdAttribute]);
-          var cookieIdpId = Decrypt(cookie.Values[CookieIdpIdAttribute]);
+          var decrypted = Decrypt(cookie.Value);
 
-          if (id != null && cookieId == id.Value)
+          if (decrypted != null && decrypted.Length > 0)
           {
-            idp = new StoredRequestState(new EntityId(cookieIdpId), null); // TODO: returnUrl is left out here as it's not used. Possibly add it by also storing it into the cookie (or get it from config based in the id) or simply remove if from the stored state
-            returnValue = true;
+            Saml2Id stateId;
+            DeserializeRequestState(decrypted, out stateId, out idp);
+
+            if (id.Value == stateId.Value)
+            {
+              returnValue = true;
+            }
           }
 
           // Cleanup
           cookie = GetNewCookie();
           cookie.Expires = DateTime.Now.AddDays(-1d);
-          HttpContext.Current.Response.Cookies.Add(cookie);
+          cookies.Add(cookie);
         }
 
         return returnValue;
       }
-
+      
       private static HttpCookie GetNewCookie()
       {
         return new HttpCookie(CookieName)
@@ -62,29 +67,86 @@ namespace Kentor.AuthServices.Internal
         };
       }
 
-      private static string Encrypt(string value)
+      private static byte[] SerializeRequestState(Saml2Id id, StoredRequestState idp)
       {
-        var unprotectedBytes = Encoding.UTF8.GetBytes(value);
-        var protectedBytes = MachineKey.Protect(unprotectedBytes, Purpose);
+        // Note: all data is put in a dictionary, because 'System.IdentityModel.Metadata.EntityId' within StoredRequestState is not serializable. Preferably StoredRequestState is modified to support serializing
+        var data = new Dictionary<string, object> 
+        { 
+          {"Id", id.Value},
+          {"StoredRequestState.Id", idp.Idp.Id},
+          {"StoredRequestState.ReturnUrl", idp.ReturnUrl.ToString()},
+          {"StoredRequestState.RelayData", idp.RelayData} // TODO: use relaystate parameter to IDP for this. Size of relaydata can cause cookie size to increase above 4000 bytes limit
+        };
 
+        return Serialize(data);
+      }
+
+      private static void DeserializeRequestState(byte[] serialized, out Saml2Id id, out StoredRequestState idp)
+      {
+        id = null;
+        idp = null;
+
+        var data = Deserialize(serialized) as Dictionary<string, object>;
+
+        if (data != null)
+        {
+          id = new Saml2Id(data["Id"].ToString());
+          idp = new StoredRequestState(new EntityId(data["StoredRequestState.Id"].ToString()),
+                                       new Uri(data["StoredRequestState.ReturnUrl"].ToString()),
+                                       data["StoredRequestState.RelayData"]);
+        }
+      }
+
+      private static string Encrypt(byte[] serialized)
+      {
+        var protectedBytes = MachineKey.Protect(serialized, Purpose);
         return Convert.ToBase64String(protectedBytes);
       }
 
-      private static string Decrypt(string value)
+      private static byte[] Decrypt(string value)
       {
-        var returnValue = String.Empty;
+        byte[] returnValue = null;
 
         if (!String.IsNullOrEmpty(value))
         {
           try
           {
             var protectedBytes = Convert.FromBase64String(value);
-            var unprotectedBytes = MachineKey.Unprotect(protectedBytes, Purpose);
-            returnValue = unprotectedBytes != null ? Encoding.UTF8.GetString(unprotectedBytes) : String.Empty;
+            returnValue = MachineKey.Unprotect(protectedBytes, Purpose);
           }
           catch (Exception)
           {
-            // TODO: logging / exception. Probable causes: tempering with cookie, or machine keys are not equal on each farm member
+            const string msg = "The response could not be validated. Possible causes: cookie has been tempered with or the machine keys on each farm member are not the same.";
+            throw new InvalidOperationException(msg);
+          }
+        }
+
+        return returnValue;
+      }
+
+      private static byte[] Serialize(object obj)
+      {
+        using (var stream = new MemoryStream())
+        {
+          var formatter = new BinaryFormatter();
+          formatter.Serialize(stream, obj);
+          stream.Flush();
+
+          return stream.ToArray();
+        }
+      }
+
+      private static object Deserialize(byte[] value)
+      {
+        object returnValue = null;
+
+        if (value != null && value.Length > 0)
+        {
+          var formatter = new BinaryFormatter();
+
+          using (var stream = new MemoryStream(value))
+          {
+            returnValue = formatter.Deserialize(stream);
           }
         }
 

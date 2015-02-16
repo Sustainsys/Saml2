@@ -77,7 +77,7 @@ namespace Kentor.AuthServices
                 throw new ConfigurationErrorsException("Missing binding configuration on Idp " + EntityId.Id + ".");
             }
 
-            if (SigningKeys == null)
+            if (!SigningKeys.Any())
             {
                 throw new ConfigurationErrorsException("Missing signing certificate configuration on Idp " + EntityId.Id + ".");
             }

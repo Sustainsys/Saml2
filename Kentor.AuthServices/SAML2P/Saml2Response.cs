@@ -411,12 +411,7 @@ namespace Kentor.AuthServices.Saml2P
                 }
             }
 
-            var validSignature = false;
-
-            for (var i = 0; !validSignature && i < idpKeys.Count; i++)
-            {
-              validSignature = signedXml.CheckSignature(idpKeys[i]);
-            }
+            var validSignature = idpKeys.Any(signedXml.CheckSignature);
 
             if (!validSignature)
             {
