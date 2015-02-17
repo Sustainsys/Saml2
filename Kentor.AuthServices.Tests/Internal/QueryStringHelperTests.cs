@@ -18,63 +18,30 @@ namespace Kentor.AuthServices.Tests.Internal
             a.ShouldThrow<ArgumentNullException>();
         }
 
-        private bool EqualityTester(IGrouping<String, String> lhs, IGrouping<String, String> rhs)
-        {
-            if (!lhs.Key.Equals(rhs.Key) || lhs.Count() != rhs.Count())
-            {
-                return false;
-            }
-
-            foreach (var val in lhs)
-            {
-                if (!rhs.Contains(val))
-                {
-                    return false;
-                }
-            }
-
-            foreach (var val in rhs)
-            {
-                if (!lhs.Contains(val))
-                {
-                    return false;
-                }
-            }
-
-            return true;
-        }
-
-        [TestMethod]
-        public void QueryStringHelper_ParseQueryString_EmptyStringShouldCreateEmptyCollection()
-        {
-            var collection = QueryStringHelper.ParseQueryString("");
-            collection.Should().BeEmpty();
-        }
-
         [TestMethod]
         public void QueryStringHelper_ParseQueryString_ShouldSplit()
         {
-            var expected = new [] 
+            var expected = new[]
             {
                 new { key = "fname", value = "john" },
                 new { key = "lname", value = "doe" }
             }.ToLookup(x => x.key, y => y.value);
 
             var collection = QueryStringHelper.ParseQueryString("fname=john&lname=doe");
-            collection.Should().HaveCount(2, "The number of arguments that we have.").And.Equal(expected, EqualityTester);
+            collection.ShouldBeEquivalentTo(expected);
         }
 
         [TestMethod]
         public void QueryStringHelper_ParseQueryString_ShouldRemoveQuestionmark()
         {
-            var expected = new [] 
+            var expected = new[]
             {
                  new { key = "fname", value = "john" },
                 new { key = "lname", value = "doe" }
             }.ToLookup(x => x.key, y => y.value);
 
             var collection = QueryStringHelper.ParseQueryString("?fname=john&lname=doe");
-            collection.Should().HaveCount(2, "The number of arguments that we have.").And.Equal(expected, EqualityTester);
+            collection.ShouldBeEquivalentTo(expected);
         }
 
         [TestMethod]
@@ -82,6 +49,20 @@ namespace Kentor.AuthServices.Tests.Internal
         {
             var collection = QueryStringHelper.ParseQueryString("");
             collection.Should().BeEmpty();
+        }
+
+        [TestMethod]
+        public void QueryStringHelper_ParseQueryString_HandlesKeyWithoutValue()
+        {
+            var subject = QueryStringHelper.ParseQueryString("?fname&lname=doe");
+
+            var expected = new[]
+            {
+                new { key = "fname", value = (string)null },
+                new { key = "lname", value="doe" }
+            }.ToLookup(x => x.key, x => x.value);
+
+            subject.ShouldBeEquivalentTo(expected);
         }
     }
 }

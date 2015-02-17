@@ -10,23 +10,8 @@ namespace Kentor.AuthServices.Internal
     /// <summary>
     /// Class implements static methods to help parse a query string.
     /// </summary>
-    public static class QueryStringHelper
+    internal static class QueryStringHelper
     {
-        /// <summary>
-        /// Exists because of code coverage. If the string is empty we want to create an empty instance 
-        /// of Lookup. Because only internal calls can create an Lookup like:
-        /// Enumerable.Empty&lt;String&gt;().ToLookup(x => default(String));
-        /// 
-        /// Because this ToLookup demands a lambda/delegate that never executes we get problems with code coverage. 
-        /// 
-        /// If we switch to a lambda without anonymous types we can use the same call to ToLookup for them both at the bottom. 
-        /// </summary>
-        private struct Item
-        {
-            public String key;
-            public String value;
-        }
-
         /// <summary>
         /// Splits a query string into its key/value pairs. 
         /// </summary>
@@ -34,29 +19,20 @@ namespace Kentor.AuthServices.Internal
         /// <returns>A collecktion with the parsed keys and values.</returns>
         public static ILookup<String, String> ParseQueryString(String queryString)
         {
-            IEnumerable<Item> result;
             if (queryString == null)
             {
                 throw new ArgumentNullException("queryString");
             }
 
-            if (queryString.Length == 0)
+            if (queryString.Length != 0 && queryString[0] == '?')
             {
-                result = Enumerable.Empty<Item>();
+                queryString = queryString.Substring(1);
             }
-            else
-            {
-                if (queryString[0] == '?')
-                {
-                    queryString = queryString.Substring(1);
-                }
 
-                result = queryString.Split('&')
+            return queryString.Split('&')
+                .Where(x => !string.IsNullOrWhiteSpace(x))
                 .Select(x => x.Split('='))
-                .Select(y => new Item { key = y[0], value = Uri.UnescapeDataString(y[1]) });
-            }
-
-            return result.ToLookup(x => x.key, y => y.value);
+                .ToLookup(y => y[0], y => y.Length > 1 ? Uri.UnescapeDataString(y[1]) : null);
         }
     }
 }
