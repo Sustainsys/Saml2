@@ -7,6 +7,14 @@ using Microsoft.Owin.Security.Google;
 using Owin;
 using SampleOwinApplication.Models;
 using Kentor.AuthServices.Owin;
+using Kentor.AuthServices.Configuration;
+using System.IdentityModel.Metadata;
+using System.Globalization;
+using Kentor.AuthServices.Metadata;
+using Kentor.AuthServices;
+using Kentor.AuthServices.WebSso;
+using System.Security.Cryptography.X509Certificates;
+using System.Web.Hosting;
 
 namespace SampleOwinApplication
 {
@@ -35,10 +43,90 @@ namespace SampleOwinApplication
                         validateInterval: TimeSpan.FromMinutes(30),
                         regenerateIdentity: (manager, user) => user.GenerateUserIdentityAsync(manager))
                 }
-            });            
+            });
             app.UseExternalSignInCookie(DefaultAuthenticationTypes.ExternalCookie);
 
-            app.UseKentorAuthServicesAuthentication(new KentorAuthServicesAuthenticationOptions(true));
+            app.UseKentorAuthServicesAuthentication(CreateAuthServicesOptions());
+        }
+
+        private static KentorAuthServicesAuthenticationOptions CreateAuthServicesOptions()
+        {
+            var spOptions = CreateSPOptions();
+            var authServicesOptions = new KentorAuthServicesAuthenticationOptions(false)
+            {
+                SPOptions = spOptions
+            };
+
+            authServicesOptions.IdentityProviders.Add(
+                new IdentityProvider(
+                    new EntityId("http://stubidp.kentor.se/Metadata"), spOptions)
+                {
+                    AllowUnsolicitedAuthnResponse = true,
+                    Binding = Saml2BindingType.HttpRedirect,
+                    SingleSignOnServiceUrl = new Uri("http://stubidp.kentor.se"),
+                    SigningKey = new X509Certificate2(
+                        HostingEnvironment.MapPath("~/App_Data/Kentor.AuthServices.StubIdp.pfx"))
+                        .PublicKey.Key
+                });
+
+            // It's enough to just create the federation and associate it
+            // with the options. The federation will load the metadata and
+            // update the options with any identity providers found.
+            new Federation(new Uri("http://localhost:52071/Federation"), true, authServicesOptions);
+
+            return authServicesOptions;
+        }
+
+        private static SPOptions CreateSPOptions()
+        {
+            var swedish = CultureInfo.GetCultureInfo("sv-se");
+
+            var organization = new Organization();
+            organization.Names.Add(new LocalizedName("Kentor", swedish));
+            organization.DisplayNames.Add(new LocalizedName("Kentor IT AB", swedish));
+            organization.Urls.Add(new LocalizedUri(new Uri("http://www.kentor.se"), swedish));
+
+            var spOptions = new SPOptions
+            {
+                EntityId = new EntityId("http://localhost:57294/AuthServices"),
+                ReturnUrl = new Uri("http://localhost:57294/Account/ExternalLoginCallback"),
+                DiscoveryServiceUrl = new Uri("http://localhost:52071/DiscoveryService"),
+                Organization = organization
+            };
+
+            var techContact = new ContactPerson
+            {
+                Type = ContactType.Technical
+            };
+            techContact.EmailAddresses.Add("authservices@example.com");
+            spOptions.Contacts.Add(techContact);
+
+            var supportContact = new ContactPerson
+            {
+                Type = ContactType.Support
+            };
+            supportContact.EmailAddresses.Add("support@example.com");
+            spOptions.Contacts.Add(supportContact);
+
+            var attributeConsumingService = new AttributeConsumingService("AuthServices")
+            {
+                IsDefault = true,
+            };
+
+            attributeConsumingService.RequestedAttributes.Add(
+                new RequestedAttribute("urn:someName")
+                {
+                    FriendlyName = "Some Name",
+                    IsRequired = true,
+                    NameFormat = RequestedAttribute.AttributeNameFormatUri
+                });
+
+            attributeConsumingService.RequestedAttributes.Add(
+                new RequestedAttribute("Minimal"));
+
+            spOptions.AttributeConsumingServices.Add(attributeConsumingService);
+
+            return spOptions;
         }
     }
 }

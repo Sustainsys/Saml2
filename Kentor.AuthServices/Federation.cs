@@ -43,7 +43,7 @@ namespace Kentor.AuthServices
         /// <param name="options">Options to pass on to created IdentityProvider
         /// instances and register identity providers in.</param>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "sp")]
-        public Federation(Uri metadataUrl, bool allowUnsolicitedAuthnResponse, Options options)
+        public Federation(Uri metadataUrl, bool allowUnsolicitedAuthnResponse, IOptions options)
         {
             Init(metadataUrl, allowUnsolicitedAuthnResponse, options);
         }
