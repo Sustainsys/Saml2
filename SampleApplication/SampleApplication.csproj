@@ -135,6 +135,10 @@
     <Content Include="Views\Home\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Kentor.AuthServices.HttpModule\Kentor.AuthServices.HttpModule.csproj">
+      <Project>{86a588e8-2e2d-4394-9545-24d8ea939cf2}</Project>
+      <Name>Kentor.AuthServices.HttpModule</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Kentor.AuthServices\Kentor.AuthServices.csproj">
       <Project>{93ba675e-a159-4701-b68b-c4b81015c556}</Project>
       <Name>Kentor.AuthServices</Name>

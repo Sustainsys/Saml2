@@ -140,10 +140,8 @@
     <Fakes Include="Fakes\System.Security.fakes" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\Kentor.AuthServices.Tests\App.config">
-      <Link>App.config</Link>
-    </None>
     <Fakes Include="Fakes\System.identitymodel.services.fakes" />
+    <None Include="app.config" />
     <None Include="packages.config" />
   </ItemGroup>
   <Choose>

@@ -1,5 +1,6 @@
 ﻿using Kentor.AuthServices.Configuration;
 using Kentor.AuthServices.Metadata;
+using Kentor.AuthServices.Owin;
 using Kentor.AuthServices.WebSso;
 using System;
 using System.Collections.Generic;
@@ -10,7 +11,7 @@ using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Kentor.AuthServices
+namespace Kentor.AuthServices.Tests
 {
     class StubFactory
     {
@@ -37,6 +38,9 @@ namespace Kentor.AuthServices
                 DiscoveryServiceUrl = new Uri("https://ds.example.com"),
                 ReturnUrl = new Uri("https://localhost/returnUrl"),
             };
+
+            options.SystemIdentityModelIdentityConfiguration.ClaimsAuthenticationManager
+                = new ClaimsAuthenticationManagerStub();
 
             AddContacts(options);
             AddAttributeConsumingServices(options);
@@ -86,14 +90,29 @@ namespace Kentor.AuthServices
             options.Contacts.Add(new ContactPerson(ContactType.Technical)); // Deliberately void of info.
         }
 
-        internal static Options CreateOptions()
+        private static IOptions CreateOptions(Func<ISPOptions, IOptions> factory)
         {
-            var options = new Options(CreateSPOptions());
+            var options = factory(CreateSPOptions());
 
             KentorAuthServicesSection.Current.IdentityProviders.RegisterIdentityProviders(options);
             KentorAuthServicesSection.Current.Federations.RegisterFederations(options);
 
             return options;
+        }
+
+        internal static Options CreateOptions()
+        {
+            return (Options)CreateOptions(sp => new Options(sp));
+        }
+
+        internal static KentorAuthServicesAuthenticationOptions CreateOwinOptions()
+        {
+            return (KentorAuthServicesAuthenticationOptions)CreateOptions(
+                sp => new KentorAuthServicesAuthenticationOptions(false)
+                {
+                    SPOptions = sp,
+                    SignInAsAuthenticationType = "AuthType"
+                });
         }
     }
 }

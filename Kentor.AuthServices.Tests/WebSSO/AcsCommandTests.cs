@@ -135,10 +135,12 @@ namespace Kentor.AuthServices.Tests.WebSso
             {
                 Principal = new ClaimsPrincipal(ids),
                 HttpStatusCode = HttpStatusCode.SeeOther,
-                Location = new Uri("http://localhost/LoggedIn")
+                Location = new Uri("https://localhost/returnUrl")
             };
 
-            new AcsCommand().Run(r, Options.FromConfiguration)
+            var options = StubFactory.CreateOptions();
+
+            new AcsCommand().Run(r, options)
                 .ShouldBeEquivalentTo(expected, opt => opt.IgnoringCyclicReferences());
         }
 
@@ -196,7 +198,7 @@ namespace Kentor.AuthServices.Tests.WebSso
                 Location = new Uri("http://localhost/testUrl.aspx")
             };
 
-            new AcsCommand().Run(r, Options.FromConfiguration)
+            new AcsCommand().Run(r, StubFactory.CreateOptions())
                 .ShouldBeEquivalentTo(expected, opt => opt.IgnoringCyclicReferences());
         }
     }

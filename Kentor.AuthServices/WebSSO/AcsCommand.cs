@@ -55,7 +55,7 @@ namespace Kentor.AuthServices.WebSso
         {
             var principal = new ClaimsPrincipal(samlResponse.GetClaims(options));
 
-            principal = FederatedAuthentication.FederationConfiguration.IdentityConfiguration
+            principal = options.SPOptions.SystemIdentityModelIdentityConfiguration
                 .ClaimsAuthenticationManager.Authenticate(null, principal);
 
             var requestState = samlResponse.GetRequestState(options);

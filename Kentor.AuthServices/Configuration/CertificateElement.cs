@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Kentor.AuthServices.Internal;
+using System;
 using System.Configuration;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
@@ -107,11 +108,8 @@ namespace Kentor.AuthServices.Configuration
             if (!string.IsNullOrEmpty(FileName))
             {
                 string fileName = FileName;
-                if (HttpContext.Current != null)
-                {
-                    fileName = HttpContext.Current.Server.MapPath(fileName);
-                }
-
+                fileName = PathHelper.MapPath(fileName);
+                
                 return new X509Certificate2(fileName);
             }
             else

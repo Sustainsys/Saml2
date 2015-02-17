@@ -29,6 +29,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "doc", "doc", "{DB9690FA-251
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "nuget", "nuget", "{8EE1C45E-A81F-4D3F-A645-4C20528E327F}"
 	ProjectSection(SolutionItems) = preProject
+		nuget\Kentor.AuthServices.HttpModule.nuspec = nuget\Kentor.AuthServices.HttpModule.nuspec
 		nuget\Kentor.AuthServices.Mvc.nuspec = nuget\Kentor.AuthServices.Mvc.nuspec
 		nuget\Kentor.AuthServices.nuspec = nuget\Kentor.AuthServices.nuspec
 		nuget\Kentor.AuthServices.Owin.nuspec = nuget\Kentor.AuthServices.Owin.nuspec
@@ -50,6 +51,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kentor.AuthServices.Owin", "Kentor.AuthServices.Owin\Kentor.AuthServices.Owin.csproj", "{FA1E7723-124C-4D2D-A731-E16400B0073B}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SampleOwinApplication", "SampleOwinApplication\SampleOwinApplication.csproj", "{1C263C1A-3201-4A90-96BB-22CD3F074EC8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kentor.AuthServices.HttpModule", "Kentor.AuthServices.HttpModule\Kentor.AuthServices.HttpModule.csproj", "{86A588E8-2E2D-4394-9545-24D8EA939CF2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -94,6 +97,10 @@ Global
 		{1C263C1A-3201-4A90-96BB-22CD3F074EC8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1C263C1A-3201-4A90-96BB-22CD3F074EC8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1C263C1A-3201-4A90-96BB-22CD3F074EC8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{86A588E8-2E2D-4394-9545-24D8EA939CF2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{86A588E8-2E2D-4394-9545-24D8EA939CF2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{86A588E8-2E2D-4394-9545-24D8EA939CF2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{86A588E8-2E2D-4394-9545-24D8EA939CF2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

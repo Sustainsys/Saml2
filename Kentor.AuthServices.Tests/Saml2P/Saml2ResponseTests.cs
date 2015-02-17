@@ -599,7 +599,7 @@ namespace Kentor.AuthServices.Tests.Saml2P
 
             var r = Saml2Response.Read(SignedXmlHelper.SignXml(response));
 
-            r.GetClaims(Options.FromConfiguration)
+            r.GetClaims(StubFactory.CreateOptions())
                 .ShouldBeEquivalentTo(expected, opt => opt.IgnoringCyclicReferences());
         }
 

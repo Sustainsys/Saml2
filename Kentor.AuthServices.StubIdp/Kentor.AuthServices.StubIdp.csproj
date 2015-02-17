@@ -172,6 +172,10 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Kentor.AuthServices.HttpModule\Kentor.AuthServices.HttpModule.csproj">
+      <Project>{86a588e8-2e2d-4394-9545-24d8ea939cf2}</Project>
+      <Name>Kentor.AuthServices.HttpModule</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Kentor.AuthServices.Mvc\Kentor.AuthServices.Mvc.csproj">
       <Project>{7d32f0a3-cec8-4dc6-a096-5905ea9c3770}</Project>
       <Name>Kentor.AuthServices.Mvc</Name>

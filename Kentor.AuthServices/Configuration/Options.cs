@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.IdentityModel.Configuration;
 using System.IdentityModel.Metadata;
 using System.Linq;
 using System.Text;
@@ -24,6 +25,7 @@ namespace Kentor.AuthServices.Configuration
                 var options = new Options(KentorAuthServicesSection.Current);
                 KentorAuthServicesSection.Current.IdentityProviders.RegisterIdentityProviders(options);
                 KentorAuthServicesSection.Current.Federations.RegisterFederations(options);
+
                 return options;
             }
         }

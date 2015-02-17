@@ -27,8 +27,8 @@ namespace Kentor.AuthServices.WebSso
             }
 
             return CreateResult(
-                new EntityId(request.QueryString["idp"]),
-                request.QueryString["ReturnUrl"],
+                new EntityId(request.QueryString["idp"].FirstOrDefault()),
+                request.QueryString["ReturnUrl"].FirstOrDefault(),
                 request,
                 options);
         }

@@ -1,10 +1,14 @@
 ﻿using Kentor.AuthServices.WebSso;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
+using System.IdentityModel.Services;
+using System.IdentityModel.Tokens;
 using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
+using System.Web;
 using System.Web.Mvc;
 
 namespace Kentor.AuthServices.Mvc
@@ -48,6 +52,26 @@ namespace Kentor.AuthServices.Mvc
                     return result;
                 default:
                     throw new NotImplementedException();
+            }
+        }
+
+        /// <summary>
+        /// Establishes an application session by calling the session authentication module.
+        /// </summary>
+        [ExcludeFromCodeCoverage]
+        public static void SignInSessionAuthenticationModule(this CommandResult commandResult)
+        {
+            if (commandResult == null)
+            {
+                throw new ArgumentNullException("commandResult");
+            }
+            // Ignore this if we're not running inside IIS, e.g. in unit tests.
+            if (commandResult.Principal != null && HttpContext.Current != null)
+            {
+                var sessionToken = new SessionSecurityToken(commandResult.Principal);
+
+                FederatedAuthentication.SessionAuthenticationModule
+                    .AuthenticateSessionSecurityToken(sessionToken, true);
             }
         }
     }

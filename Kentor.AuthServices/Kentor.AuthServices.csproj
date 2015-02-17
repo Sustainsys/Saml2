@@ -42,7 +42,6 @@
     <Reference Include="System.identitymodel.services" />
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Security" />
-    <Reference Include="System.Web" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -53,6 +52,8 @@
     <Compile Include="..\VersionInfo.cs">
       <Link>VersionInfo.cs</Link>
     </Compile>
+    <Compile Include="Internal\PathHelper.cs" />
+    <Compile Include="Internal\QueryStringHelper.cs" />
     <Compile Include="Metadata\KeyInfoSerializer.cs" />
     <Compile Include="Saml2ResponseFailedValidationException.cs" />
     <Compile Include="WebSso\AcsCommand.cs" />
@@ -70,6 +71,7 @@
     <Compile Include="BadFormatSamlResponseException.cs" />
     <Compile Include="Metadata\ExtendedMetadataSerializer.cs" />
     <Compile Include="ClaimsIdentityExtensions.cs" />
+    <Compile Include="WebSso\Cacheability.cs" />
     <Compile Include="WebSso\CommandResult.cs" />
     <Compile Include="Configuration\ContactPersonElement.cs" />
     <Compile Include="Configuration\ContactPersonsCollection.cs" />
@@ -109,7 +111,6 @@
     <Compile Include="Internal\ReturnRequestedIssuerNameRegistry.cs" />
     <Compile Include="Saml2AssertionExtensions.cs" />
     <Compile Include="Saml2StatementExtension.cs" />
-    <Compile Include="Saml2AuthenticationModule.cs" />
     <Compile Include="Configuration\KentorAuthServicesSection.cs" />
     <Compile Include="Saml2P\Saml2AuthenticationRequest.cs" />
     <Compile Include="WebSso\Saml2Binding.cs" />
