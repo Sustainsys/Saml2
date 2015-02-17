@@ -2,7 +2,9 @@
 using Kentor.AuthServices.Saml2P;
 using System;
 using System.Collections.Generic;
+using System.IdentityModel.Configuration;
 using System.IdentityModel.Metadata;
+using System.IdentityModel.Services.Configuration;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -36,7 +38,6 @@ namespace Kentor.AuthServices.Configuration
         public TimeSpan MetadataCacheDuration { get; set; }
 
         volatile private Saml2PSecurityTokenHandler saml2PSecurityTokenHandler;
-        volatile bool automaticSaml2PSecurityTokenHandlerInstance;
 
         /// <summary>
         /// The security token handler used to process incoming assertions for this SP.
@@ -52,16 +53,10 @@ namespace Kentor.AuthServices.Configuration
                 if(value == null)
                 {
                     // Set the saved value, but don't trust it - still use a local var for the return.
-                    saml2PSecurityTokenHandler = value = new Saml2PSecurityTokenHandler(EntityId);
-                    automaticSaml2PSecurityTokenHandlerInstance = true;
+                    saml2PSecurityTokenHandler = value = new Saml2PSecurityTokenHandler(this);
                 }
 
                 return value;
-            }
-            set
-            {
-                saml2PSecurityTokenHandler = value;
-                automaticSaml2PSecurityTokenHandlerInstance = false;
             }
         }
 
@@ -84,7 +79,7 @@ namespace Kentor.AuthServices.Configuration
             }
             set
             {
-                if(automaticSaml2PSecurityTokenHandlerInstance)
+                if(saml2PSecurityTokenHandler != null)
                 {
                     throw new InvalidOperationException("Can't change entity id when a token handler has been instantiated.");
                 }
@@ -172,6 +167,20 @@ namespace Kentor.AuthServices.Configuration
             get
             {
                 return attributeConsumingServices;
+            }
+        }
+
+        private IdentityConfiguration systemIdentityModelIdentityConfiguration
+            = new IdentityConfiguration(false);
+
+        /// <summary>
+        /// The System.IdentityModel configuration to use.
+        /// </summary>
+        public IdentityConfiguration SystemIdentityModelIdentityConfiguration
+        {
+            get
+            {
+                return systemIdentityModelIdentityConfiguration;
             }
         }
     }

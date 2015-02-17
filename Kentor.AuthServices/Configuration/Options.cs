@@ -26,16 +26,9 @@ namespace Kentor.AuthServices.Configuration
                 KentorAuthServicesSection.Current.IdentityProviders.RegisterIdentityProviders(options);
                 KentorAuthServicesSection.Current.Federations.RegisterFederations(options);
 
-                // Load the federation configuration section from config.
-                SystemIdentityModelFederationConfigSection federationIdentity = 
-                    new SystemIdentityModelFederationConfigSection();
-                federationIdentity.FromConfiguration();
-                options.SystemIdentityModelFederationConfigSection(federationIdentity);
-                
                 return options;
             }
         }
-
 
         /// <summary>
         /// Creates an options object with the specified SPOptions.
@@ -60,29 +53,6 @@ namespace Kentor.AuthServices.Configuration
                 return spOptions;
             }
         }
-
-        /// <summary>
-        /// Sets the <c>FederationIdentityConfiguration</c> of the configuration options. 
-        /// </summary>
-        /// <param name="identity">The <c>FederationIdentityConfiguration</c> to be set.</param>
-        private void SystemIdentityModelFederationConfigSection(SystemIdentityModelFederationConfigSection identity)
-        {
-            systemIdentityModelFederationConfigSection = identity;
-        }
-
-        /// <summary>
-        /// Property to get the identity configuration section of the read federation configuration section.
-        /// </summary>
-        public IdentityConfiguration IdentityConfiguration
-        {
-            get
-            {
-                return systemIdentityModelFederationConfigSection.IdentityConfiguration;
-            }
-        }
-
-        private SystemIdentityModelFederationConfigSection systemIdentityModelFederationConfigSection;
-
 
         private readonly IdentityProviderDictionary identityProviders = new IdentityProviderDictionary();
 

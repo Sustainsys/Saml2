@@ -11,6 +11,8 @@ using System.Threading.Tasks;
 using Kentor.AuthServices.Internal;
 using Kentor.AuthServices.Metadata;
 using Kentor.AuthServices.Saml2P;
+using System.IdentityModel.Configuration;
+using System.IdentityModel.Services.Configuration;
 
 namespace Kentor.AuthServices.Configuration
 {
@@ -45,7 +47,7 @@ namespace Kentor.AuthServices.Configuration
         public KentorAuthServicesSection()
         {
             saml2PSecurityTokenHandler = new Lazy<Saml2PSecurityTokenHandler>(
-                () => new Saml2PSecurityTokenHandler(EntityId),
+                () => new Saml2PSecurityTokenHandler(this),
                 true);
         }
 
@@ -282,6 +284,20 @@ namespace Kentor.AuthServices.Configuration
 
                     yield return acs;
                 }
+            }
+        }
+
+        private IdentityConfiguration systemIdentityModelIdentityConfiguration
+            = new IdentityConfiguration(true);
+
+        /// <summary>
+        /// The System.IdentityModel configuration to use.
+        /// </summary>
+        public IdentityConfiguration SystemIdentityModelIdentityConfiguration
+        {
+            get
+            {
+                return systemIdentityModelIdentityConfiguration;
             }
         }
     }

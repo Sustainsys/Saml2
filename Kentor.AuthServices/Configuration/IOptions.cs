@@ -25,10 +25,5 @@ namespace Kentor.AuthServices.Configuration
         /// Information about known identity providers.
         /// </summary>
         IdentityProviderDictionary IdentityProviders { get; }
-
-        /// <summary>
-        /// Property represents the federation identity configuration. 
-        /// </summary>
-        IdentityConfiguration IdentityConfiguration { get; }
     }
 }

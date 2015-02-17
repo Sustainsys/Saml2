@@ -2,6 +2,7 @@
 using Kentor.AuthServices.Saml2P;
 using System;
 using System.Collections.Generic;
+using System.IdentityModel.Configuration;
 using System.IdentityModel.Metadata;
 using System.Linq;
 using System.Text;
@@ -63,5 +64,10 @@ namespace Kentor.AuthServices.Configuration
         /// Attribute consuming services for the service provider.
         /// </summary>
         IEnumerable<AttributeConsumingService> AttributeConsumingServices { get; }
+
+        /// <summary>
+        /// The System.IdentityModel configuration to use.
+        /// </summary>
+        IdentityConfiguration SystemIdentityModelIdentityConfiguration { get; }
     }
 }

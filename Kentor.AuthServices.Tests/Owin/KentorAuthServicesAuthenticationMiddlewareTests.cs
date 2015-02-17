@@ -383,10 +383,7 @@ namespace Kentor.AuthServices.Tests.Owin
                 null, "ClaimsAuthenticationManagerStub"));
 
             var middleware = new KentorAuthServicesAuthenticationMiddleware(null, CreateAppBuilder(),
-                new KentorAuthServicesAuthenticationOptions(true)
-                {
-                    SignInAsAuthenticationType = "AuthType"
-                });
+                StubFactory.CreateOwinOptions());
 
             await middleware.Invoke(context);
 

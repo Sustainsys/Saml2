@@ -4,6 +4,7 @@ using System;
 using System.IdentityModel.Metadata;
 using System.IdentityModel.Selectors;
 using System.IdentityModel.Services;
+using System.IdentityModel.Services.Configuration;
 using System.IdentityModel.Tokens;
 using System.Security.Claims;
 
@@ -21,25 +22,25 @@ namespace Kentor.AuthServices.Saml2P
         /// <summary>
         /// Ctor
         /// </summary>
-        /// <param name="spEntityId">The entity id of this service provider, which is used
-        /// to validate the audience restrictions of the incoming assertions.</param>
+        /// <param name="spOptions">Options for the service provider that
+        /// this token handler should work with.</param>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "sp")]
-        public Saml2PSecurityTokenHandler(EntityId spEntityId)
+        public Saml2PSecurityTokenHandler(ISPOptions spOptions)
         {
-            if(spEntityId == null)
+            if(spOptions== null)
             {
-                throw new ArgumentNullException("spEntityId");
+                throw new ArgumentNullException("spOptions");
             }
 
             var audienceRestriction = new AudienceRestriction(AudienceUriMode.Always);
             audienceRestriction.AllowedAudienceUris.Add(
-                new Uri(spEntityId.Id));
+                new Uri(spOptions.EntityId.Id));
 
             Configuration = new SecurityTokenHandlerConfiguration
             {
                 IssuerNameRegistry = new ReturnRequestedIssuerNameRegistry(),
                 AudienceRestriction = audienceRestriction,
-                SaveBootstrapContext = new SystemIdentityModelFederationConfigSection().IdentityConfiguration.SaveBootstrapContext
+                SaveBootstrapContext = spOptions.SystemIdentityModelIdentityConfiguration.SaveBootstrapContext
             };
         }
 

@@ -40,10 +40,11 @@ namespace Kentor.AuthServices.WebSso
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2202:Do not dispose objects multiple times", Justification="The MemoryStream is not disposed by the DeflateStream - we're using the keep-open flag.")]
         public override string Unbind(HttpRequestData request)
         {
-            if (request == null || request.QueryString["SAMLRequest"] == null)
+            if (request == null)
             {
-                return null;
+                throw new ArgumentNullException("request");
             }
+
             var payload = Convert.FromBase64String(request.QueryString["SAMLRequest"].First());
             using (var compressed = new MemoryStream(payload))
             {
