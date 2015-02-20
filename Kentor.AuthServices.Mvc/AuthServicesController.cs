@@ -5,6 +5,7 @@ using System.IdentityModel.Services;
 using Kentor.AuthServices.HttpModule;
 using Kentor.AuthServices.Configuration;
 using Kentor.AuthServices.WebSso;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Kentor.AuthServices.Mvc
 {
@@ -68,6 +69,9 @@ namespace Kentor.AuthServices.Mvc
         /// SignOut action that signs out the current user.
         /// </summary>
         /// <returns>Redirect to base url / </returns>
+        // Exclude from code coverage as it a) is very simple and b) can't be
+        // tested without shims that are only available in VSPremium.
+        [ExcludeFromCodeCoverage]
         public ActionResult SignOut()
         {
             FederatedAuthentication.SessionAuthenticationModule.SignOut();
