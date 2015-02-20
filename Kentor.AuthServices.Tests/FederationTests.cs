@@ -204,7 +204,7 @@ namespace Kentor.AuthServices.Tests
 
             MetadataServer.IdpAndFederationShortCacheDurationAvailable = false;
 
-            SpinWaiter.WhileEqual(() => subject.MetadataValidUntil, () => DateTime.MinValue, true);
+            SpinWaiter.WhileNotEqual(() => subject.MetadataValidUntil, () => DateTime.MinValue);
 
             options.IdentityProviders.TryGetValue(new EntityId("http://idp1.federation.example.com/metadata"), out idp)
                 .Should().BeFalse("idp should be removed if metadata is no longer valid");

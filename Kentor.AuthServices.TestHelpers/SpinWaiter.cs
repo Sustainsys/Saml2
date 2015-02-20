@@ -11,7 +11,7 @@ namespace Kentor.AuthServices.TestHelpers
     public static class SpinWaiter
     {
         [DebuggerDisplay("TestResult: {result}, {errorMessage}")]
-        private class TestResult
+        private struct TestResult
         {
             public readonly bool result;
             public readonly string errorMessage;
@@ -24,45 +24,52 @@ namespace Kentor.AuthServices.TestHelpers
         public readonly static TimeSpan MaxWait = new TimeSpan(0, 0, 0, 0, 500);
         public static void While(Func<bool> condition, string failMessage = "Timeout passed without condition becoming false.")
         {
-            While(() => new TestResult(condition(), failMessage));
+            While(() => new TestResult(condition(), failMessage), true);
         }
 
-        public static void WhileEqual<T>(Func<T> actual, Func<T> expected, bool invertTest = false)
+        public static void WhileEqual<T>(Func<T> v1, Func<T> v2)
+        {
+            While(v1, v2, true);
+        }
+
+        public static void WhileNotEqual<T>(Func<T> v1, Func<T> v2)
+        {
+            While(v1, v2, false);
+        }
+
+        private static void While<T>(Func<T> v1, Func<T> v2, bool spinWhileValue)
         {
             While(() =>
             {
-                var expectedValue = expected();
-                var actualValue = actual();
+                var value2 = v2();
+                var value1 = v1();
                 bool testResult;
-                if (expectedValue == null && actualValue == null)
+
+                if (value2 == null && value1 == null)
                 {
                     testResult = true;
                 }
-                else if (expectedValue != null && actualValue == null)
+                else if (value2 != null && value1 == null)
                 {
                     testResult = false;
                 }
-                else if (expectedValue == null && actualValue != null)
+                else if (value2 == null && value1 != null)
                 {
                     testResult = false;
                 }
                 else
                 {
-                    testResult = expectedValue.Equals(actualValue);
+                    testResult = value2.Equals(value1);
                 }
-                if (invertTest)
-                {
-                    testResult = !testResult;
-                }
-                return new TestResult(testResult, string.Format("Timeout passed without condition becoming false, expected {0}, last actual value was {1}", expectedValue, actualValue));
-            });
+                return new TestResult(testResult, string.Format("Timeout passed without condition becoming false, expected {0}, last actual value was {1}", value2, value1));
+            }, spinWhileValue);
         }
 
-        private static void While(Func<TestResult> testFunction)
+        private static void While(Func<TestResult> testFunction, bool spinWhileValue)
         {
             var waitStart = DateTime.UtcNow;
             var result = testFunction();
-            while (result.result)
+            while (result.result == spinWhileValue)
             {
                 if (DateTime.UtcNow - waitStart > MaxWait)
                 {
