@@ -10,7 +10,6 @@ using System.Xml;
 using Kentor.AuthServices.Configuration;
 using System.IdentityModel.Metadata;
 using System.Security.Cryptography;
-using System.IdentityModel.Services;
 using Kentor.AuthServices.Internal;
 
 namespace Kentor.AuthServices.Saml2P
@@ -341,20 +340,21 @@ namespace Kentor.AuthServices.Saml2P
 
         private void ValidateSignature(IOptions options)
         {
-            var idpKey = options.IdentityProviders[Issuer].SigningKey;
+            var idpKeys = options.IdentityProviders[Issuer].SigningKeys;
 
             // If the response message is signed, we check just this signature because the whole content has to be correct then
             var responseSignature = xmlDocument.DocumentElement["Signature", SignedXml.XmlDsigNamespaceUrl];
+
             if (responseSignature != null)
             {
-                CheckSignature(XmlDocument.DocumentElement, idpKey);
+              CheckSignature(XmlDocument.DocumentElement, idpKeys);
             }
             else
             {
                 // If the response message is not signed, all assersions have to be signed correctly
                 foreach (var assertionNode in AllAssertionElementNodes)
                 {
-                    CheckSignature(assertionNode, idpKey);
+                  CheckSignature(assertionNode, idpKeys);
                 }
             }
         }
@@ -368,8 +368,8 @@ namespace Kentor.AuthServices.Saml2P
 
         /// <summary>Checks the signature.</summary>
         /// <param name="signedRootElement">The signed root element.</param>
-        /// <param name="idpKey">The assymetric key of the algorithm.</param>
-        private static void CheckSignature(XmlElement signedRootElement, AsymmetricAlgorithm idpKey)
+        /// <param name="idpKeys">A list containing one ore more assymetric keys of a algorithm.</param>
+        private static void CheckSignature(XmlElement signedRootElement, IList<AsymmetricAlgorithm> idpKeys)
         {
             var xmlDocument = new XmlDocument { PreserveWhitespace = true };
             xmlDocument.LoadXml(signedRootElement.OuterXml);
@@ -411,9 +411,11 @@ namespace Kentor.AuthServices.Saml2P
                 }
             }
 
-            if (!signedXml.CheckSignature(idpKey))
+            var validSignature = idpKeys.Any(signedXml.CheckSignature);
+
+            if (!validSignature)
             {
-                throw new Saml2ResponseFailedValidationException("Signature validation failed on SAML response or contained assertion.");
+              throw new Saml2ResponseFailedValidationException("Signature validation failed on SAML response or contained assertion.");
             }
         }
 
