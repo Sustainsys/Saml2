@@ -119,7 +119,6 @@
       <Link>MetadataServer.cs</Link>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Saml2ResponseTests.cs" />
     <Compile Include="AuthServicesControllerTests.cs" />
   </ItemGroup>
   <ItemGroup>
