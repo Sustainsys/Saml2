@@ -306,7 +306,7 @@ namespace Kentor.AuthServices.Tests
             subject.Binding.Should().Be(Saml2BindingType.HttpRedirect);
             MetadataServer.IdpVeryShortCacheDurationBinding = Saml2Binding.HttpPostUri;
 
-            SpinWaiter.While(() => subject.Binding == Saml2BindingType.HttpRedirect);
+            SpinWaiter.WhileEqual(() => subject.Binding, () => Saml2BindingType.HttpRedirect);
 
             subject.Binding.Should().Be(Saml2BindingType.HttpPost);
         }
@@ -319,7 +319,7 @@ namespace Kentor.AuthServices.Tests
             subject.SingleSignOnServiceUrl.Port.Should().Be(42);
             MetadataServer.IdpAndFederationVeryShortCacheDurationSsoPort = 117;
 
-            SpinWaiter.While(() => subject.SingleSignOnServiceUrl.Port == 42);
+            SpinWaiter.WhileEqual(() => subject.SingleSignOnServiceUrl.Port, () => 42);
 
             subject.SingleSignOnServiceUrl.Port.Should().Be(117);
         }
@@ -369,9 +369,9 @@ namespace Kentor.AuthServices.Tests
             MetadataRefreshScheduler.minInternval = new TimeSpan(0, 0, 0, 0, 1);
 
             var subject = CreateSubjectForMetadataRefresh();
-            var initalValidUntil = subject.MetadataValidUntil;
+            var initialValidUntil = subject.MetadataValidUntil;
 
-            SpinWaiter.While(() => subject.MetadataValidUntil == initalValidUntil);
+            SpinWaiter.WhileEqual(() => subject.MetadataValidUntil, () => initialValidUntil);
         }
 
         [TestMethod]
