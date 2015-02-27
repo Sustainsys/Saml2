@@ -45,7 +45,7 @@ namespace Kentor.AuthServices.WebSso
                 throw new ArgumentNullException("request");
             }
 
-            var payload = Convert.FromBase64String(request.QueryString["SAMLRequest"].First());
+            var payload = Convert.FromBase64String(request.QueryString["SAMLRequest"]);
             using (var compressed = new MemoryStream(payload))
             {
                 using (var decompressedStream = new DeflateStream(compressed, CompressionMode.Decompress, true))

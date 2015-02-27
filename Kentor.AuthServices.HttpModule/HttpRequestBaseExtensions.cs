@@ -37,6 +37,7 @@ namespace Kentor.AuthServices.HttpModule
                 requestBase.ApplicationPath,
                 requestBase.Form.Cast<string>().Select((de, i) =>
                     new KeyValuePair<string, string[]>(de, ((string)requestBase.Form[i]).Split(','))),
+                HttpUtility.ParseQueryString(requestBase.Url.Query),
                 nameIdentifier);
         }
     }
