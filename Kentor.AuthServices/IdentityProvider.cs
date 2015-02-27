@@ -1,18 +1,19 @@
 ﻿using Kentor.AuthServices.Configuration;
+using Kentor.AuthServices.Internal;
+using Kentor.AuthServices.Metadata;
+using Kentor.AuthServices.Saml2P;
+using Kentor.AuthServices.WebSso;
 using System;
 using System.Configuration;
 using System.Globalization;
 using System.IdentityModel.Metadata;
 using System.IdentityModel.Tokens;
 using System.Linq;
-using System.Security.Cryptography;
-using System.Security.Cryptography.Xml;
-using Kentor.AuthServices.Internal;
-using Kentor.AuthServices.Metadata;
-using Kentor.AuthServices.Saml2P;
-using Kentor.AuthServices.WebSso;
-using System.Threading.Tasks;
 using System.Net;
+using System.Security.Cryptography;
+using System.Security.Cryptography.X509Certificates;
+using System.Security.Cryptography.Xml;
+using System.Threading.Tasks;
 
 namespace Kentor.AuthServices
 {
@@ -39,6 +40,7 @@ namespace Kentor.AuthServices
         internal IdentityProvider(IdentityProviderElement config, ISPOptions spOptions)
         {
             singleSignOnServiceUrl = config.DestinationUrl;
+            singleLogoutServiceUrl = config.SingleLogoutUrl;
             EntityId = new EntityId(config.EntityId);
             binding = config.Binding;
             AllowUnsolicitedAuthnResponse = config.AllowUnsolicitedAuthnResponse;
@@ -50,6 +52,7 @@ namespace Kentor.AuthServices
 
             if (certificate != null)
             {
+                signingCertificate = certificate;
                 signingKey = certificate.PublicKey.Key;
             }
 
@@ -154,6 +157,26 @@ namespace Kentor.AuthServices
             }
         }
 
+        private Uri singleLogoutServiceUrl;
+
+        /// <summary>
+        /// The Url of the single logout service. This is where the browser is redirected or
+        /// where the post data is sent to when sending a LogoutRequest to the idp.
+        /// </summary>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1726:UsePreferredTerms", MessageId = "Logout")]
+        public Uri SingleLogoutServiceUrl
+        {
+            get
+            {
+                ReloadMetadataIfRequired();
+                return singleLogoutServiceUrl;
+            }
+            set
+            {
+                singleLogoutServiceUrl = value;
+            }
+        }
+
         /// <summary>
         /// The Entity Id of the identity provider.
         /// </summary>
@@ -233,6 +256,39 @@ namespace Kentor.AuthServices
         }
 
         /// <summary>
+        /// Create a single logout request aimed for this idp.
+        /// </summary>
+        /// <param name="returnUrl">The return url where the browser should be sent after
+        /// successful logout.</param>
+        /// <param name="nameIdentifierValue">The unique name of the user to log out</param>
+        /// <param name="nameIdentifierFormat">The format of the name</param>
+        /// <param name="relayData">Aux data that should be preserved across the authentication</param>
+        /// <returns>LogoutRequest</returns>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1726:UsePreferredTerms", MessageId = "Logout", Justification = "The saml name is LogoutRequest")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1026:DefaultParametersShouldNotBeUsed")]
+        public Saml2LogoutRequest CreateLogoutRequest(
+            Uri returnUrl,
+            string nameIdentifierValue,
+            string nameIdentifierFormat,
+            object relayData = null)
+        {
+            var logoutRequest = new Saml2LogoutRequest()
+            {
+                DestinationUrl = SingleLogoutServiceUrl,
+                Issuer = spOptions.EntityId,
+                SigningCertificate = SigningCertificate,
+                NameIdentifierValue = nameIdentifierValue,
+                NameIdentifierFormat = nameIdentifierFormat,
+            };
+
+            var responseData = new StoredRequestState(EntityId, returnUrl, relayData);
+
+            PendingAuthnRequests.Add(new Saml2Id(logoutRequest.Id), responseData);
+
+            return logoutRequest;
+        }
+
+        /// <summary>
         /// Bind a Saml2AuthenticateRequest using the active binding of the idp,
         /// producing a CommandResult with the result of the binding.
         /// </summary>
@@ -241,6 +297,24 @@ namespace Kentor.AuthServices
         public CommandResult Bind(ISaml2Message request)
         {
             return Saml2Binding.Get(Binding).Bind(request);
+        }
+
+        private X509Certificate2 signingCertificate;
+
+        /// <summary>
+        /// The certificate to sign or verify signatures.
+        /// </summary>
+        public X509Certificate2 SigningCertificate
+        {
+            get
+            {
+                ReloadMetadataIfRequired();
+                return signingCertificate;
+            }
+            set
+            {
+                signingCertificate = value;
+            }
         }
 
         private AsymmetricAlgorithm signingKey;

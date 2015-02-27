@@ -1,13 +1,9 @@
 ﻿using Kentor.AuthServices.Internal;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Collections.Specialized;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Web;
+using System.Security.Claims;
 
 namespace Kentor.AuthServices.WebSso
 {
@@ -24,27 +20,31 @@ namespace Kentor.AuthServices.WebSso
         /// <param name="url">Full url requested</param>
         /// <param name="formData">Form data, if present (only for POST requests)</param>
         /// <param name="applicationPath">Path to the application root</param>
+        /// <param name="nameIdentifier">The claim that contains the nameIdentifier of the logged in user</param>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1026:DefaultParametersShouldNotBeUsed")]
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
         public HttpRequestData(
             string httpMethod,
             Uri url,
             string applicationPath,
-            IEnumerable<KeyValuePair<string, string[]>> formData)
+            IEnumerable<KeyValuePair<string, string[]>> formData,
+            Claim nameIdentifier = null)
         {
-            Init(httpMethod, url, applicationPath, formData);
+            Init(httpMethod, url, applicationPath, formData, nameIdentifier);
         }
 
         // Used by tests.
         internal HttpRequestData(string httpMethod, Uri url)
         {
-            Init(httpMethod, url, "/", null);
+            Init(httpMethod, url, "/", null, null);
         }
 
         private void Init(
             string httpMethod,
             Uri url,
             string applicationPath,
-            IEnumerable<KeyValuePair<string, string[]>> formData)
+            IEnumerable<KeyValuePair<string, string[]>> formData,
+            Claim nameIdentifier)
         {
             HttpMethod = httpMethod;
             Url = url;
@@ -53,6 +53,7 @@ namespace Kentor.AuthServices.WebSso
                 (formData ?? Enumerable.Empty<KeyValuePair<string, string[]>>())
                 .ToDictionary(kv => kv.Key, kv => kv.Value.Single()));
             QueryString = QueryStringHelper.ParseQueryString(url.Query);
+            NameIdentifier = nameIdentifier;
         }
 
         /// <summary>
@@ -80,5 +81,10 @@ namespace Kentor.AuthServices.WebSso
         /// that the application is installed in, e.g. http://hosting.example.com/myapp/
         /// </summary>
         public Uri ApplicationUrl { get; private set; }
+
+        /// <summary>
+        /// The Claim that contains the nameidentifier of the user that is currently logged in
+        /// </summary>
+        public Claim NameIdentifier { get; private set; }
     }
 }

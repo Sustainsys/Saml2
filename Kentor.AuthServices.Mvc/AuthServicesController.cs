@@ -1,11 +1,11 @@
-﻿using System;
-using System.Net;
-using System.Web.Mvc;
-using System.IdentityModel.Services;
+﻿using Kentor.AuthServices.Configuration;
 using Kentor.AuthServices.HttpModule;
-using Kentor.AuthServices.Configuration;
 using Kentor.AuthServices.WebSso;
 using System.Diagnostics.CodeAnalysis;
+using System.IdentityModel.Services;
+using System.Linq;
+using System.Security.Claims;
+using System.Web.Mvc;
 
 namespace Kentor.AuthServices.Mvc
 {
@@ -21,10 +21,11 @@ namespace Kentor.AuthServices.Mvc
         /// The options used by the controller. By default read from config, 
         /// but can be set.
         /// </summary>
-        public static IOptions Options {
+        public static IOptions Options
+        {
             get
             {
-                if(options == null)
+                if (options == null)
                 {
                     options = Configuration.Options.FromConfiguration;
                 }
@@ -76,6 +77,23 @@ namespace Kentor.AuthServices.Mvc
         {
             FederatedAuthentication.SessionAuthenticationModule.SignOut();
             return Redirect(Url.Content("~/"));
+        }
+
+        [HttpGet]
+        public ActionResult LogOff()
+        {
+            var result = CommandFactory.GetCommand(CommandFactory.SingleLogoutCommandName).Run(
+                Request.ToHttpRequestData(),
+                Options)
+                .ToActionResult();
+            return result;
+        }
+
+        [HttpPost]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "samlResponse", Justification = "TODO: verify the samlResponse")]
+        public ActionResult LogOff(string samlResponse)
+        {
+            return RedirectToAction("SignOut");
         }
 
         /// <summary>
