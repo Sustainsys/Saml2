@@ -77,6 +77,21 @@ namespace Kentor.AuthServices.Tests.Internal
         }
 
         [TestMethod]
+        public void XmlHelpers_AddAttributeIfNotNullOrEmtpy_TimeSpanSerializedCorrectly()
+        {
+            // It might be tempting in the implementation to call value.ToString()
+            // instead of passing in the value. That would make types that have
+            // special XML Serialization formats fail. This test ensures that
+            // nobody takes that shortcut without handling the special cases.
+
+            var e = new XElement("xml");
+
+            e.AddAttributeIfNotNullOrEmpty("attribute", new TimeSpan(2, 17, 32));
+
+            e.Attribute("attribute").Should().NotBeNull().And.Subject.Value.Should().Be("PT2H17M32S");
+        }
+
+        [TestMethod]
         public void XmlHelpers_GetValueIfNotNull_NullOnNull()
         {
             XmlAttribute x = null;
@@ -110,5 +125,6 @@ namespace Kentor.AuthServices.Tests.Internal
 
             e.GetTrimmedTextIfNotNull().Should().BeNull();
         }
+
     }
 }
