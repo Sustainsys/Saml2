@@ -200,7 +200,6 @@ namespace Kentor.AuthServices.Tests.Saml2P
         }
 
         [TestMethod]
-        [Ignore]
         public void Saml2Response_GetClaims_CorrectSignedSingleAssertionInResponseMessage()
         {
             var response =
@@ -214,20 +213,38 @@ namespace Kentor.AuthServices.Tests.Saml2P
                 {0}
             </saml2p:Response>";
 
-            var assertion =
-            @"<saml2:Assertion xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
-                Version=""2.0"" ID=""Saml2Response_GetClaims_TrueOnCorrectSignedSingleAssertionInResponseMessagee_Assertion1""
-                IssueInstant=""2013-09-25T00:00:00Z"">
-                    <saml2:Issuer>https://idp.example.com</saml2:Issuer>
-                    <saml2:Subject>
-                        <saml2:NameID>SomeUser</saml2:NameID>
-                        <saml2:SubjectConfirmation Method=""urn:oasis:names:tc:SAML:2.0:cm:bearer"" />
-                    </saml2:Subject>
-                    <saml2:Conditions NotOnOrAfter=""2100-01-01T00:00:00Z"" />
-                </saml2:Assertion>";
+            var assertion = new Saml2Assertion(new Saml2NameIdentifier("https://idp.example.com"));
+            assertion.Subject = new Saml2Subject(new Saml2NameIdentifier("SomeUser"));
+            assertion.Subject.SubjectConfirmations.Add(new Saml2SubjectConfirmation(new Uri("urn:oasis:names:tc:SAML:2.0:cm:bearer")));
+            assertion.Conditions = new Saml2Conditions() { NotOnOrAfter = new DateTime(2100, 1, 1) };
 
+            var signedAssertion = SignedXmlHelper.SignAssertion(assertion, false);
+            var signedResponse = string.Format(response, signedAssertion);
 
-            var signedAssertion = SignedXmlHelper.SignXml(assertion);
+            Action a = () => Saml2Response.Read(signedResponse).GetClaims(Options.FromConfiguration);
+            a.ShouldNotThrow();
+        }
+
+        [TestMethod]
+        public void Saml2Response_GetClaims_CorrectSignedSingleAssertionWithKeyInfoInResponseMessage()
+        {
+            var response =
+            @"<saml2p:Response xmlns:saml2p=""urn:oasis:names:tc:SAML:2.0:protocol""
+            xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
+            ID = ""Saml2Response_GetClaims_TrueOnCorrectSignedSingleAssertionInResponseMessage"" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z"">
+                <saml2:Issuer>https://idp.example.com</saml2:Issuer>
+                <saml2p:Status>
+                    <saml2p:StatusCode Value=""urn:oasis:names:tc:SAML:2.0:status:Success"" />
+                </saml2p:Status>
+                {0}
+            </saml2p:Response>";
+
+            var assertion = new Saml2Assertion(new Saml2NameIdentifier("https://idp.example.com"));
+            assertion.Subject = new Saml2Subject(new Saml2NameIdentifier("SomeUser"));
+            assertion.Subject.SubjectConfirmations.Add(new Saml2SubjectConfirmation(new Uri("urn:oasis:names:tc:SAML:2.0:cm:bearer")));
+            assertion.Conditions = new Saml2Conditions() { NotOnOrAfter = new DateTime(2100, 1, 1) };
+
+            var signedAssertion = SignedXmlHelper.SignAssertion(assertion, true);
             var signedResponse = string.Format(response, signedAssertion);
 
             Action a = () => Saml2Response.Read(signedResponse).GetClaims(Options.FromConfiguration);
@@ -268,7 +285,6 @@ namespace Kentor.AuthServices.Tests.Saml2P
         }
 
         [TestMethod]
-        [Ignore]
         public void Saml2Response_GetClaims_CorrectSignedMultipleAssertionInResponseMessage()
         {
             var response= 
@@ -283,31 +299,59 @@ namespace Kentor.AuthServices.Tests.Saml2P
                 {1}
             </saml2p:Response>";
 
-            var assertion1 = @"<saml2:Assertion xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
-                Version=""2.0"" ID=""Saml2Response_GetClaims_TrueOnCorrectSignedMultipleAssertionInResponseMessage_Assertion1""
-                IssueInstant=""2013-09-25T00:00:00Z"">
-                    <saml2:Issuer>https://idp.example.com</saml2:Issuer>
-                    <saml2:Subject>
-                        <saml2:NameID>SomeUser</saml2:NameID>
-                        <saml2:SubjectConfirmation Method=""urn:oasis:names:tc:SAML:2.0:cm:bearer"" />
-                    </saml2:Subject>
-                    <saml2:Conditions NotOnOrAfter=""2100-01-01T00:00:00Z"" />
-                </saml2:Assertion>";
+            var issuer = new Saml2NameIdentifier("https://idp.example.com");
+            var confirmation = new Saml2SubjectConfirmation(new Uri("urn:oasis:names:tc:SAML:2.0:cm:bearer"));
+            var conditions = new Saml2Conditions() { NotOnOrAfter = new DateTime(2100, 1, 1) };
 
-            var assertion2 = @"<saml2:Assertion xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
-                Version=""2.0"" ID=""Saml2Response_GetClaims_TrueOnCorrectSignedMultipleAssertionInResponseMessage_Assertion2""
-                IssueInstant=""2013-09-25T00:00:00Z"">
-                    <saml2:Issuer>https://idp.example.com</saml2:Issuer>
-                    <saml2:Subject>
-                        <saml2:NameID>SomeUser2</saml2:NameID>
-                        <saml2:SubjectConfirmation Method=""urn:oasis:names:tc:SAML:2.0:cm:bearer"" />
-                    </saml2:Subject>
-                    <saml2:Conditions NotOnOrAfter=""2100-01-01T00:00:00Z"" />
-                </saml2:Assertion>";
+            var assertion1 = new Saml2Assertion(issuer);
+            assertion1.Subject = new Saml2Subject(new Saml2NameIdentifier("SomeUser"));
+            assertion1.Subject.SubjectConfirmations.Add(confirmation);
+            assertion1.Conditions = conditions;
 
+            var assertion2 = new Saml2Assertion(issuer);
+            assertion2.Subject = new Saml2Subject(new Saml2NameIdentifier("SomeUser2"));
+            assertion2.Subject.SubjectConfirmations.Add(confirmation);
+            assertion2.Conditions = conditions;
 
-            var signedAssertion1 = SignedXmlHelper.SignXml(assertion1);
-            var signedAssertion2 = SignedXmlHelper.SignXml(assertion2);
+            var signedAssertion1 = SignedXmlHelper.SignAssertion(assertion1, false);
+            var signedAssertion2 = SignedXmlHelper.SignAssertion(assertion2, false);
+            var signedResponse = string.Format(response, signedAssertion1, signedAssertion2);
+
+            Action a = () => Saml2Response.Read(signedResponse).GetClaims(Options.FromConfiguration);
+            a.ShouldNotThrow();
+        }
+
+        [TestMethod]
+        public void Saml2Response_GetClaims_CorrectSignedMultipleAssertionWithKeyInfoInResponseMessage()
+        {
+            var response =
+            @"<saml2p:Response xmlns:saml2p=""urn:oasis:names:tc:SAML:2.0:protocol""
+            xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
+            ID = ""Saml2Response_GetClaims_TrueOnCorrectSignedMultipleAssertionInResponseMessage"" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z"">
+                <saml2:Issuer>https://idp.example.com</saml2:Issuer>
+                <saml2p:Status>
+                    <saml2p:StatusCode Value=""urn:oasis:names:tc:SAML:2.0:status:Success"" />
+                </saml2p:Status>
+                {0}
+                {1}
+            </saml2p:Response>";
+
+            var issuer = new Saml2NameIdentifier("https://idp.example.com");
+            var confirmation = new Saml2SubjectConfirmation(new Uri("urn:oasis:names:tc:SAML:2.0:cm:bearer"));
+            var conditions = new Saml2Conditions() { NotOnOrAfter = new DateTime(2100, 1, 1) };
+
+            var assertion1 = new Saml2Assertion(issuer);
+            assertion1.Subject = new Saml2Subject(new Saml2NameIdentifier("SomeUser"));
+            assertion1.Subject.SubjectConfirmations.Add(confirmation);
+            assertion1.Conditions = conditions;
+
+            var assertion2 = new Saml2Assertion(issuer);
+            assertion2.Subject = new Saml2Subject(new Saml2NameIdentifier("SomeUser2"));
+            assertion2.Subject.SubjectConfirmations.Add(confirmation);
+            assertion2.Conditions = conditions;
+
+            var signedAssertion1 = SignedXmlHelper.SignAssertion(assertion1, true);
+            var signedAssertion2 = SignedXmlHelper.SignAssertion(assertion2, true);
             var signedResponse = string.Format(response, signedAssertion1, signedAssertion2);
 
             Action a = () => Saml2Response.Read(signedResponse).GetClaims(Options.FromConfiguration);
