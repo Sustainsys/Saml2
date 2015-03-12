@@ -13,6 +13,7 @@ using Kentor.AuthServices.Saml2P;
 using Kentor.AuthServices.WebSso;
 using System.Threading.Tasks;
 using System.Net;
+using System.Security.Cryptography.X509Certificates;
 
 namespace Kentor.AuthServices
 {
@@ -46,7 +47,7 @@ namespace Kentor.AuthServices
             LoadMetadata = config.LoadMetadata;
             this.spOptions = spOptions;
 
-            var certificate = config.SigningCertificate.LoadCertificate();
+            certificate = config.SigningCertificate.LoadCertificate();
 
             if (certificate != null)
             {
@@ -260,6 +261,19 @@ namespace Kentor.AuthServices
                 signingKey = value;
             }
 
+        }
+
+        private X509Certificate2 certificate;
+
+        /// <summary>
+        /// The idp certificate stored locally, if any
+        /// </summary>
+        public X509Certificate2 Certificate
+        {
+            get
+            {
+                return certificate;
+            }
         }
 
         object metadataLoadLock = new object();

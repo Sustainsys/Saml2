@@ -12,6 +12,8 @@ using System.IdentityModel.Metadata;
 using System.Security.Cryptography;
 using System.IdentityModel.Services;
 using Kentor.AuthServices.Internal;
+using System.IdentityModel.Selectors;
+using System.Collections.ObjectModel;
 
 namespace Kentor.AuthServices.Saml2P
 {
@@ -479,14 +481,24 @@ namespace Kentor.AuthServices.Saml2P
                 {
                     var handler = options.SPOptions.Saml2PSecurityTokenHandler;
 
-                    var token = (Saml2SecurityToken)handler.ReadToken(reader);
-                    handler.DetectReplayedToken(token);
+                    var assertionIssuer = new EntityId(assertionNode["Issuer", Saml2Namespaces.Saml2Name].GetTrimmedTextIfNotNull());
+                    var idp = options.IdentityProviders[assertionIssuer];
 
-                    var validateAudience = token.Assertion.Conditions.AudienceRestrictions.Count > 0;
+                    using (var idpToken = new X509SecurityToken(idp.Certificate))
+                    {
+                        var tokenResolver = new KnownTokenResolver(idpToken);
 
-                    handler.ValidateConditions(token.Assertion.Conditions, validateAudience);
+                        handler.Configuration.IssuerTokenResolver = tokenResolver;
 
-                    yield return handler.CreateClaims(token);
+                        var token = (Saml2SecurityToken)handler.ReadToken(reader);
+                        handler.DetectReplayedToken(token);
+
+                        var validateAudience = token.Assertion.Conditions.AudienceRestrictions.Count > 0;
+
+                        handler.ValidateConditions(token.Assertion.Conditions, validateAudience);
+
+                        yield return handler.CreateClaims(token);
+                    }
                 }
             }
         }
