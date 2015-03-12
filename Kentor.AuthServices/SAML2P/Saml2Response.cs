@@ -481,10 +481,7 @@ namespace Kentor.AuthServices.Saml2P
                 {
                     var handler = options.SPOptions.Saml2PSecurityTokenHandler;
 
-                    var assertionIssuer = new EntityId(assertionNode["Issuer", Saml2Namespaces.Saml2Name].GetTrimmedTextIfNotNull());
-                    var idp = options.IdentityProviders[assertionIssuer];
-
-                    using (var idpToken = new X509SecurityToken(idp.Certificate))
+                    using (var idpToken = GetIdpToken(assertionNode, options))
                     {
                         var tokenResolver = new KnownTokenResolver(idpToken);
 
@@ -501,6 +498,15 @@ namespace Kentor.AuthServices.Saml2P
                     }
                 }
             }
+        }
+
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
+        private X509SecurityToken GetIdpToken(XmlElement assertionNode, IOptions options) {
+            var assertionIssuer = new EntityId(assertionNode["Issuer", Saml2Namespaces.Saml2Name].GetTrimmedTextIfNotNull());
+            var idp = options.IdentityProviders[assertionIssuer];
+            var certificate = idp.Certificate;
+            if (certificate == null) return null;
+            return new X509SecurityToken(certificate);            
         }
     }
 }
