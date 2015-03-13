@@ -1200,5 +1200,30 @@ namespace Kentor.AuthServices.Tests.Saml2P
             response.GetRequestState(Options.FromConfiguration)
                 .ReturnUrl.Should().Be("http://localhost/testUrl.aspx");
         }
+
+        [TestMethod]
+        [NotReRunnable] // once GlobalEnableSha256XmlSignatures() is run (next test) this one will fail for other cultures
+        public void Saml2Response_GetClaims_ThrowsInformativeExceptionForSha256()
+        {
+            var signedResponse = File.ReadAllText( @"C:\Users\Steven\Desktop\SAML\shib.xml" );
+
+            Action a = () => Saml2Response.Read( signedResponse ).GetClaims( Options.FromConfiguration );
+            a.ShouldThrow<Saml2ResponseFailedValidationException>()
+                .WithMessage( "SHA256 signatures require the algorithm to be registered at the process level. Call Kentor.AuthServices.Configuration.Options.GlobalEnableSha256XmlSignatures() on startup to register." );
+
+        }
+
+        [TestMethod]
+        public void Saml2Response_GetClaims_ChecksSha256WhenEnabled()
+        {
+            Kentor.AuthServices.Configuration.Options.GlobalEnableSha256XmlSignatures();
+
+            var signedResponse = File.ReadAllText( @"C:\Users\Steven\Desktop\SAML\shib.xml" );
+
+            Action a = () => Saml2Response.Read( signedResponse ).GetClaims( Options.FromConfiguration );
+            a.ShouldThrow<Saml2ResponseFailedValidationException>()
+                .WithMessage( "Signature validation failed on SAML response or contained assertion." );
+
+        }
     }
 }

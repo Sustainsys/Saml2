@@ -369,6 +369,7 @@ namespace Kentor.AuthServices.Saml2P
         /// <summary>Checks the signature.</summary>
         /// <param name="signedRootElement">The signed root element.</param>
         /// <param name="idpKey">The assymetric key of the algorithm.</param>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage( "Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "AuthServices" )]
         private static void CheckSignature(XmlElement signedRootElement, AsymmetricAlgorithm idpKey)
         {
             var xmlDocument = new XmlDocument { PreserveWhitespace = true };
@@ -410,10 +411,23 @@ namespace Kentor.AuthServices.Saml2P
                         "Transform \"" + transform.Algorithm + "\" found in Xml signature is not allowed in SAML.");
                 }
             }
-
-            if (!signedXml.CheckSignature(idpKey))
+            try
             {
-                throw new Saml2ResponseFailedValidationException("Signature validation failed on SAML response or contained assertion.");
+                if (!signedXml.CheckSignature(idpKey))
+                {
+                    throw new Saml2ResponseFailedValidationException("Signature validation failed on SAML response or contained assertion.");
+                }
+            }
+            catch (CryptographicException)
+            {
+                if (signedXml.SignatureMethod == Options.RsaSha256Namespace)
+                {
+                    throw new Saml2ResponseFailedValidationException("SHA256 signatures require the algorithm to be registered at the process level. Call Kentor.AuthServices.Configuration.Options.GlobalEnableSha256XmlSignatures() on startup to register.");
+                }
+                else
+                {
+                    throw;
+                }
             }
         }
 
