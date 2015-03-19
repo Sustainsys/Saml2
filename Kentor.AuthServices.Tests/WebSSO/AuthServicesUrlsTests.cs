@@ -38,7 +38,7 @@ namespace Kentor.AuthServices.Tests.WebSso
         [TestMethod]
         public void AuthServicesUrls_Ctor_NullCheckModulePath()
         {
-            Action a = () => new AuthServicesUrls(new Uri("http://localhost"), null);
+            Action a = () => new AuthServicesUrls(new Uri("http://localhost"), (string)null);
 
             a.ShouldThrow<ArgumentNullException>("modulePath");
         }
@@ -76,6 +76,36 @@ namespace Kentor.AuthServices.Tests.WebSso
             Action a = () => new AuthServicesUrls(appUrl, modulePath);
 
             a.ShouldThrow<ArgumentException>("modulePath should start with /.");
+        }
+
+        [TestMethod]
+        public void AuthServiecsUrls_Ctor_AcceptsFullUrls()
+        {
+            var acsUrl = new Uri( "http://localhost:73/MyApp/MyAcs" );
+            var signinUrl = new Uri( "http://localhost:73/MyApp/MySignin" );
+
+            var subject = new AuthServicesUrls( acsUrl, signinUrl );
+
+            subject.AssertionConsumerServiceUrl.ToString().Should().Be(acsUrl.ToString());
+            subject.SignInUrl.ToString().Should().Be(signinUrl.ToString());
+        }
+
+        [TestMethod]
+        public void AuthServicesUrls_Ctor_AllowsNullAcs()
+        {
+            // AssertionConsumerServiceURL is optional in the SAML spec 
+            var subject = new AuthServicesUrls(null, new Uri("http://localhost/signin"));
+
+            subject.AssertionConsumerServiceUrl.Should().Be(null);
+            subject.SignInUrl.ToString().Should().Be("http://localhost/signin");
+        }
+
+        [TestMethod]
+        public void AuthServicesUrls_Ctor_NullCheckSignin()
+        {
+            Action a = () => new AuthServicesUrls(new Uri("http://localhost/signin"), (Uri)null);
+
+            a.ShouldThrow<ArgumentNullException>("signInUrl");
         }
     }
 }
