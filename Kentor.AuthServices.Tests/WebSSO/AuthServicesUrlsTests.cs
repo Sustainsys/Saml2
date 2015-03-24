@@ -38,7 +38,7 @@ namespace Kentor.AuthServices.Tests.WebSso
         [TestMethod]
         public void AuthServicesUrls_Ctor_NullCheckModulePath()
         {
-            Action a = () => new AuthServicesUrls(new Uri("http://localhost"), (string)null);
+            Action a = () => new AuthServicesUrls(new Uri("http://localhost"), modulePath: null);
 
             a.ShouldThrow<ArgumentNullException>("modulePath");
         }
@@ -103,7 +103,7 @@ namespace Kentor.AuthServices.Tests.WebSso
         [TestMethod]
         public void AuthServicesUrls_Ctor_NullCheckSignin()
         {
-            Action a = () => new AuthServicesUrls(new Uri("http://localhost/signin"), (Uri)null);
+            Action a = () => new AuthServicesUrls(new Uri("http://localhost/signin"), signInUrl: null);
 
             a.ShouldThrow<ArgumentNullException>("signInUrl");
         }

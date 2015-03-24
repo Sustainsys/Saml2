@@ -39,7 +39,8 @@ namespace Kentor.AuthServices.WebSso
         /// </summary>
         /// <param name="applicationUrl">The full Url to the root of the application.</param>
         /// <param name="modulePath">Path of module, starting with / and ending without.</param>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage( "Microsoft.Design", "CA1057:StringUriOverloadsCallSystemUriOverloads" )]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage( "Microsoft.Design", "CA1057:StringUriOverloadsCallSystemUriOverloads"
+            , Justification = "Incorrect warning. modulePath isn't a string representation of a Uri" )]
         public AuthServicesUrls(Uri applicationUrl, string modulePath)
         {
             if (applicationUrl == null)
