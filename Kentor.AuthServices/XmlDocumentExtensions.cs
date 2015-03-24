@@ -20,6 +20,19 @@ namespace Kentor.AuthServices
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1059:MembersShouldNotExposeCertainConcreteTypes", MessageId = "System.Xml.XmlNode")]
         public static void Sign(this XmlDocument xmlDocument, X509Certificate2 cert)
         {
+            Sign(xmlDocument, cert, false);
+        }
+
+        /// <summary>
+        /// Sign an xml document with the supplied cert.
+        /// </summary>
+        /// <param name="xmlDocument">XmlDocument to be signed. The signature is
+        /// added as a node in the document, right after the Issuer node.</param>
+        /// <param name="cert">Certificate to use when signing.</param>
+        /// <param name="includeKeyInfo">Include public key in signed output.</param>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1059:MembersShouldNotExposeCertainConcreteTypes", MessageId = "System.Xml.XmlNode")]
+        public static void Sign(this XmlDocument xmlDocument, X509Certificate2 cert, bool includeKeyInfo)
+        {
             if (xmlDocument == null)
             {
                 throw new ArgumentNullException("xmlDocument");
@@ -47,6 +60,13 @@ namespace Kentor.AuthServices
 
             signedXml.AddReference(reference);
             signedXml.ComputeSignature();
+
+            if (includeKeyInfo)
+            {
+                var keyInfo = new KeyInfo();
+                keyInfo.AddClause(new KeyInfoX509Data(cert));
+                signedXml.KeyInfo = keyInfo;
+            }
 
             xmlDocument.DocumentElement.InsertAfter(
                 xmlDocument.ImportNode(signedXml.GetXml(), true),

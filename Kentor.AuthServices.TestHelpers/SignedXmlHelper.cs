@@ -19,12 +19,12 @@ namespace Kentor.AuthServices.TestHelpers
                 (new X509SecurityToken(TestCert))
                 .CreateKeyIdentifierClause<X509RawDataKeyIdentifierClause>()));
 
-        public static string SignXml(string xml)
+        public static string SignXml(string xml, bool includeKeyInfo = false, bool preserveWhitespace = true)
         {
-            var xmlDoc = new XmlDocument { PreserveWhitespace = true };
+            var xmlDoc = new XmlDocument { PreserveWhitespace = preserveWhitespace };
             xmlDoc.LoadXml(xml);
 
-            xmlDoc.Sign(TestCert);
+            xmlDoc.Sign(TestCert, includeKeyInfo);
 
             return xmlDoc.OuterXml;
         }
