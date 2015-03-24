@@ -14,12 +14,35 @@ using System.Xml;
 using System.IO;
 using Kentor.AuthServices.Internal;
 using Kentor.AuthServices.Saml2P;
+using System.Reflection;
+using System.Collections.Generic;
 
 namespace Kentor.AuthServices.Tests.Saml2P
 {
     [TestClass]
     public class Saml2ResponseTests
     {
+        [TestCleanup]
+        public void Cleanup()
+        {
+            // Clean up after tests that globally activate SHA256 support. There
+            // is no official API for removing signature algorithms, so let's
+            // do some reflection.
+
+            var internalSyncObject = typeof(CryptoConfig)
+                .GetProperty("InternalSyncObject", BindingFlags.Static | BindingFlags.NonPublic)
+                .GetValue(null);
+
+            lock(internalSyncObject)
+            {
+                var appNameHT = (IDictionary<string, Type>)typeof(CryptoConfig)
+                    .GetField("appNameHT", BindingFlags.Static | BindingFlags.NonPublic)
+                    .GetValue(null);
+
+                appNameHT.Remove("http://www.w3.org/2001/04/xmldsig-more#rsa-sha256");
+            }
+        }
+
         [TestMethod]
         public void Saml2Response_Read_BasicParams()
         {
