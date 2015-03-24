@@ -200,7 +200,7 @@ namespace Kentor.AuthServices.Tests.Saml2P
         }
 
         [TestMethod]
-        [Ignore]
+        [NotReRunnable]
         public void Saml2Response_GetClaims_CorrectSignedSingleAssertionInResponseMessage()
         {
             var response =
@@ -227,7 +227,7 @@ namespace Kentor.AuthServices.Tests.Saml2P
                 </saml2:Assertion>";
 
 
-            var signedAssertion = SignedXmlHelper.SignXml(assertion);
+            var signedAssertion = SignedXmlHelper.SignXml(assertion, preserveWhitespace: false);
             var signedResponse = string.Format(response, signedAssertion);
 
             Action a = () => Saml2Response.Read(signedResponse).GetClaims(Options.FromConfiguration);
@@ -268,7 +268,7 @@ namespace Kentor.AuthServices.Tests.Saml2P
         }
 
         [TestMethod]
-        [Ignore]
+        [NotReRunnable]
         public void Saml2Response_GetClaims_CorrectSignedMultipleAssertionInResponseMessage()
         {
             var response= 
@@ -306,8 +306,8 @@ namespace Kentor.AuthServices.Tests.Saml2P
                 </saml2:Assertion>";
 
 
-            var signedAssertion1 = SignedXmlHelper.SignXml(assertion1);
-            var signedAssertion2 = SignedXmlHelper.SignXml(assertion2);
+            var signedAssertion1 = SignedXmlHelper.SignXml(assertion1, preserveWhitespace: false);
+            var signedAssertion2 = SignedXmlHelper.SignXml(assertion2, preserveWhitespace: false);
             var signedResponse = string.Format(response, signedAssertion1, signedAssertion2);
 
             Action a = () => Saml2Response.Read(signedResponse).GetClaims(Options.FromConfiguration);
