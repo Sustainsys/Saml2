@@ -39,6 +39,8 @@ namespace Kentor.AuthServices.WebSso
         /// </summary>
         /// <param name="applicationUrl">The full Url to the root of the application.</param>
         /// <param name="modulePath">Path of module, starting with / and ending without.</param>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage( "Microsoft.Design", "CA1057:StringUriOverloadsCallSystemUriOverloads"
+            , Justification = "Incorrect warning. modulePath isn't a string representation of a Uri" )]
         public AuthServicesUrls(Uri applicationUrl, string modulePath)
         {
             if (applicationUrl == null)
@@ -52,6 +54,23 @@ namespace Kentor.AuthServices.WebSso
             }
 
             Init(applicationUrl, modulePath);
+        }
+
+        /// <summary>
+        /// Creates the urls for AuthServices based on the given full urls
+        /// for assertion consumer service and sign-in
+        /// </summary>
+        /// <param name="assertionConsumerServiceUrl">The full Url for the Assertion Consumer Service.</param>
+        /// <param name="signInUrl">The full Url for sign-in.</param>
+        public AuthServicesUrls(Uri assertionConsumerServiceUrl, Uri signInUrl)
+        {
+            if (signInUrl == null)
+            {
+                throw new ArgumentNullException("signInUrl");
+            }
+
+            AssertionConsumerServiceUrl = assertionConsumerServiceUrl;
+            SignInUrl = signInUrl;
         }
 
         void Init(Uri applicationUrl, string modulePath)
