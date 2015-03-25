@@ -345,7 +345,15 @@ namespace Kentor.AuthServices
 
             if (key != null)
             {
-                signingKey = ((AsymmetricSecurityKey)key.KeyInfo.CreateKey())
+                var keyInfo = key.KeyInfo;
+                foreach (var clause in keyInfo)
+                {
+                    var rawClause = clause as X509RawDataKeyIdentifierClause;
+                    if (rawClause == null) continue;
+                    certificate = new X509Certificate2(rawClause.GetX509RawData());
+                }
+
+                signingKey = ((AsymmetricSecurityKey)keyInfo.CreateKey())
                     .GetAsymmetricAlgorithm(SignedXml.XmlDsigRSASHA1Url, false);
             }
         }
