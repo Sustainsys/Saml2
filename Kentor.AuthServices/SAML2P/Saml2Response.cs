@@ -369,7 +369,6 @@ namespace Kentor.AuthServices.Saml2P
         /// <summary>Checks the signature.</summary>
         /// <param name="signedRootElement">The signed root element.</param>
         /// <param name="idpKey">The assymetric key of the algorithm.</param>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage( "Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "AuthServices" )]
         private static void CheckSignature(XmlElement signedRootElement, AsymmetricAlgorithm idpKey)
         {
             var xmlDocument = new XmlDocument { PreserveWhitespace = true };
