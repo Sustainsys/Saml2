@@ -12,6 +12,8 @@ using System.IdentityModel.Metadata;
 using System.Security.Cryptography;
 using System.IdentityModel.Services;
 using Kentor.AuthServices.Internal;
+using System.IdentityModel.Selectors;
+using System.Collections.ObjectModel;
 
 namespace Kentor.AuthServices.Saml2P
 {
@@ -478,16 +480,32 @@ namespace Kentor.AuthServices.Saml2P
                 {
                     var handler = options.SPOptions.Saml2PSecurityTokenHandler;
 
-                    var token = (Saml2SecurityToken)handler.ReadToken(reader);
-                    handler.DetectReplayedToken(token);
+                    using (var idpToken = GetIdpToken(assertionNode, options))
+                    {
+                        var tokenResolver = new KnownTokenResolver(idpToken);
 
-                    var validateAudience = token.Assertion.Conditions.AudienceRestrictions.Count > 0;
+                        handler.Configuration.IssuerTokenResolver = tokenResolver;
 
-                    handler.ValidateConditions(token.Assertion.Conditions, validateAudience);
+                        var token = (Saml2SecurityToken)handler.ReadToken(reader);
+                        handler.DetectReplayedToken(token);
 
-                    yield return handler.CreateClaims(token);
+                        var validateAudience = token.Assertion.Conditions.AudienceRestrictions.Count > 0;
+
+                        handler.ValidateConditions(token.Assertion.Conditions, validateAudience);
+
+                        yield return handler.CreateClaims(token);
+                    }
                 }
             }
+        }
+
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
+        private X509SecurityToken GetIdpToken(XmlElement assertionNode, IOptions options) {
+            var assertionIssuer = new EntityId(assertionNode["Issuer", Saml2Namespaces.Saml2Name].GetTrimmedTextIfNotNull());
+            var idp = options.IdentityProviders[assertionIssuer];
+            var certificate = idp.Certificate;
+            if (certificate == null) return null;
+            return new X509SecurityToken(certificate);            
         }
     }
 }
