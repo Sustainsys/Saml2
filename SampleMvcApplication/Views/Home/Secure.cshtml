@@ -8,8 +8,11 @@
 <p>This is a secure page that only works when logged in.</p>
 <p>Claims:</p>
 <ul>
-    @foreach(var claim in Model)
+    @foreach (var claim in Model)
     {
         <li>@claim.Type - @claim.Value</li>
     }
 </ul>
+<p>
+    <a href="@Url.Content("~/AuthServices/LogOff")">Click here to log off using saml logout</a>
+</p>

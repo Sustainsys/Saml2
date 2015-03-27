@@ -3,9 +3,7 @@ using System;
 using System.Configuration;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
-using System.Linq;
 using System.Security.Cryptography.X509Certificates;
-using System.Web;
 
 namespace Kentor.AuthServices.Configuration
 {
@@ -43,6 +41,22 @@ namespace Kentor.AuthServices.Configuration
             internal set
             {
                 base["fileName"] = value;
+            }
+        }
+
+        /// <summary>
+        /// Password for the certificate.
+        /// </summary>
+        [ConfigurationProperty("certificatePassword")]
+        public string CertificatePassword
+        {
+            get
+            {
+                return (string)base["certificatePassword"];
+            }
+            internal set
+            {
+                base["certificatePassword"] = value;
             }
         }
 
@@ -109,7 +123,13 @@ namespace Kentor.AuthServices.Configuration
             {
                 string fileName = FileName;
                 fileName = PathHelper.MapPath(fileName);
-                
+
+                // If a certificatePassword is provided, use it to access the certificate
+                if (!string.IsNullOrEmpty(CertificatePassword))
+                {
+                    return new X509Certificate2(fileName, CertificatePassword);
+                }
+
                 return new X509Certificate2(fileName);
             }
             else

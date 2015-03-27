@@ -24,7 +24,7 @@ namespace Kentor.AuthServices.Configuration
         {
             return isReadOnly;
         }
-                
+
         /// <summary>
         /// EntityId as presented by the idp. Used as key to configuration.
         /// </summary>
@@ -42,7 +42,7 @@ namespace Kentor.AuthServices.Configuration
         }
 
         /// <summary>
-        /// Destination url to send requests to.
+        /// Destination url to send authentication requests to.
         /// </summary>
         [ConfigurationProperty("destinationUrl")]
         public Uri DestinationUrl
@@ -54,6 +54,22 @@ namespace Kentor.AuthServices.Configuration
             internal set
             {
                 base["destinationUrl"] = value;
+            }
+        }
+
+        /// <summary>
+        /// Destination url to send logout requests to.
+        /// </summary>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1726:UsePreferredTerms", MessageId = "Logout"), ConfigurationProperty("singleLogoutUrl")]
+        public Uri SingleLogoutUrl
+        {
+            get
+            {
+                return (Uri)base["singleLogoutUrl"];
+            }
+            internal set
+            {
+                base["singleLogoutUrl"] = value;
             }
         }
 
@@ -96,7 +112,7 @@ namespace Kentor.AuthServices.Configuration
         /// Even though AllowUnsolicitedAuthnResponse is true the InResponseTo must be valid if existing.
         /// </summary>
         [ConfigurationProperty("allowUnsolicitedAuthnResponse", IsRequired = true)]
-        public bool AllowUnsolicitedAuthnResponse 
+        public bool AllowUnsolicitedAuthnResponse
         {
             get
             {

@@ -1,9 +1,5 @@
-﻿using Kentor.AuthServices.WebSso;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Kentor.AuthServices.WebSso
 {
@@ -25,6 +21,12 @@ namespace Kentor.AuthServices.WebSso
         public const string SignInCommandName = "SignIn";
 
         /// <summary>
+        /// The name of the Single Logout Command.
+        /// </summary>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1726:UsePreferredTerms", MessageId = "Logout")]
+        public const string SingleLogoutCommandName = "SingleLogout";
+
+        /// <summary>
         /// The metadata command has no name - it is triggered at base url for
         /// AuthServices.
         /// </summary>
@@ -36,6 +38,7 @@ namespace Kentor.AuthServices.WebSso
             { SignInCommandName, new SignInCommand() },
             { AcsCommandName, new AcsCommand() },
             { MetadataCommand, new MetadataCommand() },
+            { SingleLogoutCommandName, new SingleLogoutCommand() },
         };
 
         /// <summary>
@@ -48,12 +51,12 @@ namespace Kentor.AuthServices.WebSso
         {
             ICommand command;
 
-            if(commandName ==  null)
+            if (commandName == null)
             {
                 throw new ArgumentNullException("commandName");
             }
 
-            if(commandName.StartsWith("/", StringComparison.OrdinalIgnoreCase))
+            if (commandName.StartsWith("/", StringComparison.OrdinalIgnoreCase))
             {
                 commandName = commandName.Substring(1);
             }
