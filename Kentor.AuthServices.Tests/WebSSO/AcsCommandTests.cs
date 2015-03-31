@@ -86,7 +86,31 @@ namespace Kentor.AuthServices.Tests.WebSso
 
             a.ShouldThrow<BadFormatSamlResponseException>()
                 .WithMessage("The SAML response contains incorrect XML")
-                .WithInnerException<XmlException>();
+                .WithInnerException<XmlException>()
+                .Where(ex => ex.Data["Saml2Response"] as string == "<foo />");
+        }
+
+        [TestMethod]
+        public void AcsCommand_Run_ResponseIncludedInException()
+        {
+            string payload =
+                @"<saml2p:Response xmlns:saml2p=""urn:oasis:names:tc:SAML:2.0:protocol""
+                xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
+                ID = ""AcsCommand_Run_SuccessfulResult"" Version=""2.0"" />";
+            var encoded = Convert.ToBase64String(Encoding.UTF8.GetBytes(payload));
+            var r = new HttpRequestData(
+                "POST",
+                new Uri("http://localhost"),
+                "/ModulePath",
+                new KeyValuePair<string, string[]>[]
+                {
+                    new KeyValuePair<string, string[]>("SAMLResponse", new string[] { encoded })
+                });
+
+            Action a = () => new AcsCommand().Run(r, Options.FromConfiguration);
+
+            a.ShouldThrow<Exception>()
+                .Where(ex => ex.Data["Saml2Response"] as string == payload);
         }
 
         [TestMethod]
