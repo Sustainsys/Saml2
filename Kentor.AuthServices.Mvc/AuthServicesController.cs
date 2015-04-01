@@ -72,10 +72,28 @@ namespace Kentor.AuthServices.Mvc
         // Exclude from code coverage as it a) is very simple and b) can't be
         // tested without shims that are only available in VSPremium.
         [ExcludeFromCodeCoverage]
+        [HttpGet]
         public ActionResult SignOut()
         {
             FederatedAuthentication.SessionAuthenticationModule.SignOut();
-            return Redirect(Url.Content("~/"));
+            var result = CommandFactory.GetCommand(CommandFactory.SingleSignoutCommandName).Run(
+                Request.ToHttpRequestData(),
+                Options)
+                .ToActionResult();
+            return result;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="samlResponse"></param>
+        /// <returns></returns>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "samlResponse")]
+        [HttpPost]
+        public ActionResult SignOut(string samlResponse)
+        {
+            //todo: verify response
+            return Redirect("~/");
         }
 
         /// <summary>
