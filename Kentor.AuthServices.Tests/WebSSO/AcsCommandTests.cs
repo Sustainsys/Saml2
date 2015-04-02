@@ -96,7 +96,7 @@ namespace Kentor.AuthServices.Tests.WebSso
             string payload =
                 @"<saml2p:Response xmlns:saml2p=""urn:oasis:names:tc:SAML:2.0:protocol""
                 xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
-                ID = ""AcsCommand_Run_SuccessfulResult"" Version=""2.0"" />";
+                ID = ""AcsCommand_Run_ResponseIncludedInException"" Version=""2.0"" />";
             var encoded = Convert.ToBase64String(Encoding.UTF8.GetBytes(payload));
             var r = new HttpRequestData(
                 "POST",
