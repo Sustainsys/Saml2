@@ -25,7 +25,7 @@ namespace Kentor.AuthServices.HttpModule
             }
 
             Claim nameIdentifier = null;
-            var claimsIdentity = HttpContext.Current.User.Identity as ClaimsIdentity;
+            var claimsIdentity = requestBase.RequestContext.HttpContext.User.Identity as ClaimsIdentity;
             if (claimsIdentity != null)
             {
                 nameIdentifier = claimsIdentity.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier);
