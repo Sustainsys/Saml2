@@ -33,7 +33,7 @@ namespace Kentor.AuthServices.Tests.Saml2P
                 .GetProperty("InternalSyncObject", BindingFlags.Static | BindingFlags.NonPublic)
                 .GetValue(null);
 
-            lock(internalSyncObject)
+            lock (internalSyncObject)
             {
                 var appNameHT = (IDictionary<string, Type>)typeof(CryptoConfig)
                     .GetField("appNameHT", BindingFlags.Static | BindingFlags.NonPublic)
@@ -49,7 +49,7 @@ namespace Kentor.AuthServices.Tests.Saml2P
             string response =
             @"<?xml version=""1.0"" encoding=""UTF-8""?>
                 <saml2p:Response xmlns:saml2p=""urn:oasis:names:tc:SAML:2.0:protocol""
-            ID = ""Saml2Response_Read_BasicParams"" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z""
+            ID = """ + MethodBase.GetCurrentMethod().Name + @""" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z""
             InResponseTo = ""InResponseToId""
             Destination=""http://destination.example.com"">
                 <saml2p:Status>
@@ -59,7 +59,7 @@ namespace Kentor.AuthServices.Tests.Saml2P
 
             var expected = new
             {
-                Id = new Saml2Id("Saml2Response_Read_BasicParams"),
+                Id = new Saml2Id(MethodBase.GetCurrentMethod().Name),
                 IssueInstant = new DateTime(2013, 01, 01, 0, 0, 0, DateTimeKind.Utc),
                 Status = Saml2StatusCode.Requester,
                 Issuer = new EntityId(null),
@@ -116,7 +116,7 @@ namespace Kentor.AuthServices.Tests.Saml2P
             @"<?xml version=""1.0"" encoding=""UTF-8""?>
             <saml2p:Response xmlns:saml2p=""urn:oasis:names:tc:SAML:2.0:protocol""
             xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
-            ID = ""Saml2Respons_Read_Issuer"" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z"">
+            ID = """ + MethodBase.GetCurrentMethod().Name + @""" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z"">
             <saml2:Issuer>
                 https://some.issuer.example.com
             </saml2:Issuer>
@@ -135,13 +135,13 @@ namespace Kentor.AuthServices.Tests.Saml2P
             @"<?xml version=""1.0"" encoding=""UTF-8""?>
             <saml2p:Response xmlns:saml2p=""urn:oasis:names:tc:SAML:2.0:protocol""
             xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
-            ID = ""Saml2Response_GetClaims_FalseOnMissingSignatureInResponseAndAnyAssertion"" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z"">
+            ID = """ + MethodBase.GetCurrentMethod().Name + @""" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z"">
                 <saml2:Issuer>https://idp.example.com</saml2:Issuer>
                 <saml2p:Status>
                     <saml2p:StatusCode Value=""urn:oasis:names:tc:SAML:2.0:status:Success"" />
                 </saml2p:Status>
                 <saml2:Assertion xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
-                Version=""2.0"" ID=""Saml2Response_GetClaims_FalseOnMissingSignatureInResponseAndAnyAssertion_Assertion1""
+                Version=""2.0"" ID=""" + MethodBase.GetCurrentMethod().Name + @"_Assertion1""
                 IssueInstant=""2013-09-25T00:00:00Z"">
                     <saml2:Issuer>https://idp.example.com</saml2:Issuer>
                     <saml2:Subject>
@@ -151,7 +151,7 @@ namespace Kentor.AuthServices.Tests.Saml2P
                     <saml2:Conditions NotOnOrAfter=""2100-01-01T00:00:00Z"" />
                 </saml2:Assertion>
                 <saml2:Assertion xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
-                Version=""2.0"" ID=""Saml2Response_GetClaims_FalseOnMissingSignatureInResponseAndAnyAssertion_Assertion2""
+                Version=""2.0"" ID=""" + MethodBase.GetCurrentMethod().Name + @"_Assertion2""
                 IssueInstant=""2013-09-25T00:00:00Z"">
                     <saml2:Issuer>https://idp.example.com</saml2:Issuer>
                     <saml2:Subject>
@@ -176,13 +176,13 @@ namespace Kentor.AuthServices.Tests.Saml2P
             @"<?xml version=""1.0"" encoding=""UTF-8""?>
             <saml2p:Response xmlns:saml2p=""urn:oasis:names:tc:SAML:2.0:protocol""
             xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
-            ID = ""Saml2Response_GetClaims_TrueOnCorrectSignedResponseMessage"" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z"">
+            ID = """ + MethodBase.GetCurrentMethod().Name + @""" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z"">
                 <saml2:Issuer>https://idp.example.com</saml2:Issuer>
                 <saml2p:Status>
                     <saml2p:StatusCode Value=""urn:oasis:names:tc:SAML:2.0:status:Success"" />
                 </saml2p:Status>
                 <saml2:Assertion xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
-                Version=""2.0"" ID=""Saml2Response_GetClaims_TrueOnCorrectSignedResponseMessage_Assertion1""
+                Version=""2.0"" ID=""" + MethodBase.GetCurrentMethod().Name + @"_Assertion1""
                 IssueInstant=""2013-09-25T00:00:00Z"">
                     <saml2:Issuer>https://idp.example.com</saml2:Issuer>
                     <saml2:Subject>
@@ -206,7 +206,7 @@ namespace Kentor.AuthServices.Tests.Saml2P
             var response =
             @"<saml2p:Response xmlns:saml2p=""urn:oasis:names:tc:SAML:2.0:protocol""
             xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
-            ID = ""Saml2Response_GetClaims_TrueOnCorrectSignedSingleAssertionInResponseMessage"" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z"">
+            ID = """ + MethodBase.GetCurrentMethod().Name + @""" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z"">
                 <saml2:Issuer>https://idp.example.com</saml2:Issuer>
                 <saml2p:Status>
                     <saml2p:StatusCode Value=""urn:oasis:names:tc:SAML:2.0:status:Success"" />
@@ -240,7 +240,7 @@ namespace Kentor.AuthServices.Tests.Saml2P
             var response =
             @"<saml2p:Response xmlns:saml2p=""urn:oasis:names:tc:SAML:2.0:protocol""
             xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
-            ID = ""Saml2Response_GetClaims_CorrectSignedSingleAssertion_WithKeyInfo_InResponseMessage"" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z"">
+            ID = """ + MethodBase.GetCurrentMethod().Name + @""" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z"">
                 <saml2:Issuer>https://idp.example.com</saml2:Issuer>
                 <saml2p:Status>
                     <saml2p:StatusCode Value=""urn:oasis:names:tc:SAML:2.0:status:Success"" />
@@ -271,10 +271,10 @@ namespace Kentor.AuthServices.Tests.Saml2P
         [Ignore]
         public void Saml2Response_GetClaims_CorrectSignedMultipleAssertionInResponseMessage()
         {
-            var response= 
+            var response =
             @"<saml2p:Response xmlns:saml2p=""urn:oasis:names:tc:SAML:2.0:protocol""
             xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
-            ID = ""Saml2Response_GetClaims_TrueOnCorrectSignedMultipleAssertionInResponseMessage"" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z"">
+            ID = """ + MethodBase.GetCurrentMethod().Name + @""" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z"">
                 <saml2:Issuer>https://idp.example.com</saml2:Issuer>
                 <saml2p:Status>
                     <saml2p:StatusCode Value=""urn:oasis:names:tc:SAML:2.0:status:Success"" />
@@ -284,7 +284,7 @@ namespace Kentor.AuthServices.Tests.Saml2P
             </saml2p:Response>";
 
             var assertion1 = @"<saml2:Assertion xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
-                Version=""2.0"" ID=""Saml2Response_GetClaims_TrueOnCorrectSignedMultipleAssertionInResponseMessage_Assertion1""
+                Version=""2.0"" ID=""" + MethodBase.GetCurrentMethod().Name + @"_Assertion1""
                 IssueInstant=""2013-09-25T00:00:00Z"">
                     <saml2:Issuer>https://idp.example.com</saml2:Issuer>
                     <saml2:Subject>
@@ -295,7 +295,7 @@ namespace Kentor.AuthServices.Tests.Saml2P
                 </saml2:Assertion>";
 
             var assertion2 = @"<saml2:Assertion xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
-                Version=""2.0"" ID=""Saml2Response_GetClaims_TrueOnCorrectSignedMultipleAssertionInResponseMessage_Assertion2""
+                Version=""2.0"" ID=""" + MethodBase.GetCurrentMethod().Name + @"_Assertion2""
                 IssueInstant=""2013-09-25T00:00:00Z"">
                     <saml2:Issuer>https://idp.example.com</saml2:Issuer>
                     <saml2:Subject>
@@ -320,7 +320,7 @@ namespace Kentor.AuthServices.Tests.Saml2P
             var response =
             @"<saml2p:Response xmlns:saml2p=""urn:oasis:names:tc:SAML:2.0:protocol""
             xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
-            ID = ""Saml2Response_GetClaims_TrueOnCorrectSignedMultipleAssertionInResponseMessage"" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z"">
+            ID = """ + MethodBase.GetCurrentMethod().Name + @""" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z"">
                 <saml2:Issuer>https://idp.example.com</saml2:Issuer>
                 <saml2p:Status>
                     <saml2p:StatusCode Value=""urn:oasis:names:tc:SAML:2.0:status:Success"" />
@@ -365,7 +365,7 @@ namespace Kentor.AuthServices.Tests.Saml2P
             var response =
             @"<saml2p:Response xmlns:saml2p=""urn:oasis:names:tc:SAML:2.0:protocol""
             xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
-            ID = ""Saml2Response_GetClaims_FalseOnMultipleAssertionInUnsignedResponseMessageButNotAllSigned"" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z"">
+            ID = """ + MethodBase.GetCurrentMethod().Name + @""" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z"">
                 <saml2:Issuer>https://idp.example.com</saml2:Issuer>
                 <saml2p:Status>
                     <saml2p:StatusCode Value=""urn:oasis:names:tc:SAML:2.0:status:Success"" />
@@ -375,7 +375,7 @@ namespace Kentor.AuthServices.Tests.Saml2P
             </saml2p:Response>";
 
             var assertion1 = @"<saml2:Assertion xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
-                Version=""2.0"" ID=""Saml2Response_GetClaims_FalseOnMultipleAssertionInUnsignedResponseMessageButNotAllSigned_Assertion1""
+                Version=""2.0"" ID=""" + MethodBase.GetCurrentMethod().Name + @"_Assertion1""
                 IssueInstant=""2013-09-25T00:00:00Z"">
                     <saml2:Issuer>https://idp.example.com</saml2:Issuer>
                     <saml2:Subject>
@@ -386,7 +386,7 @@ namespace Kentor.AuthServices.Tests.Saml2P
                 </saml2:Assertion>";
 
             var assertion2 = @"<saml2:Assertion xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
-                Version=""2.0"" ID=""Saml2Response_GetClaims_FalseOnMultipleAssertionInUnsignedResponseMessageButNotAllSigned_Assertion2""
+                Version=""2.0"" ID=""" + MethodBase.GetCurrentMethod().Name + @"_Assertion2""
                 IssueInstant=""2013-09-25T00:00:00Z"">
                     <saml2:Issuer>https://idp.example.com</saml2:Issuer>
                     <saml2:Subject>
@@ -412,13 +412,13 @@ namespace Kentor.AuthServices.Tests.Saml2P
             var response =
             @"<saml2p:Response xmlns:saml2p=""urn:oasis:names:tc:SAML:2.0:protocol""
             xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
-            ID = ""Saml2Response_GetClaims_FalseOnTamperedAssertionWithMessageSignature"" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z"">
+            ID = """ + MethodBase.GetCurrentMethod().Name + @""" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z"">
                 <saml2:Issuer>https://idp.example.com</saml2:Issuer>
                 <saml2p:Status>
                     <saml2p:StatusCode Value=""urn:oasis:names:tc:SAML:2.0:status:Success"" />
                 </saml2p:Status>
                 <saml2:Assertion xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
-                Version=""2.0"" ID=""Saml2Response_GetClaims_FalseOnTamperedAssertionWithMessageSignature_Assertion1""
+                Version=""2.0"" ID=""" + MethodBase.GetCurrentMethod().Name + @"_Assertion1""
                 IssueInstant=""2013-09-25T00:00:00Z"">
                     <saml2:Issuer>https://idp.example.com</saml2:Issuer>
                     <saml2:Subject>
@@ -443,7 +443,7 @@ namespace Kentor.AuthServices.Tests.Saml2P
             var response =
             @"<saml2p:Response xmlns:saml2p=""urn:oasis:names:tc:SAML:2.0:protocol""
             xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
-            ID = ""Saml2Response_GetClaims_FalseOnTamperedAssertionWithAssertionSignature"" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z"">
+            ID = """ + MethodBase.GetCurrentMethod().Name + @""" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z"">
                 <saml2:Issuer>https://idp.example.com</saml2:Issuer>
                 <saml2p:Status>
                     <saml2p:StatusCode Value=""urn:oasis:names:tc:SAML:2.0:status:Success"" />
@@ -453,7 +453,7 @@ namespace Kentor.AuthServices.Tests.Saml2P
             </saml2p:Response>";
 
             var assertion1 = @"<saml2:Assertion xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
-                Version=""2.0"" ID=""Saml2Response_GetClaims_FalseOnTamperedAssertionWithAssertionSignature_Assertion1""
+                Version=""2.0"" ID=""" + MethodBase.GetCurrentMethod().Name + @"_Assertion1""
                 IssueInstant=""2013-09-25T00:00:00Z"">
                     <saml2:Issuer>https://idp.example.com</saml2:Issuer>
                     <saml2:Subject>
@@ -464,7 +464,7 @@ namespace Kentor.AuthServices.Tests.Saml2P
                 </saml2:Assertion>";
 
             var assertion2 = @"<saml2:Assertion xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
-                Version=""2.0"" ID=""Saml2Response_GetClaims_FalseOnTamperedAssertionWithAssertionSignature_Assertion2""
+                Version=""2.0"" ID=""" + MethodBase.GetCurrentMethod().Name + @"_Assertion2""
                 IssueInstant=""2013-09-25T00:00:00Z"">
                     <saml2:Issuer>https://idp.example.com</saml2:Issuer>
                     <saml2:Subject>
@@ -490,7 +490,7 @@ namespace Kentor.AuthServices.Tests.Saml2P
             var response =
             @"<saml2p:Response xmlns:saml2p=""urn:oasis:names:tc:SAML:2.0:protocol""
             xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
-            ID = ""Saml2Response_GetClaims_FalseOnAssertionInjectionWithAssertionSignature"" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z"">
+            ID = """ + MethodBase.GetCurrentMethod().Name + @""" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z"">
                 <saml2:Issuer>https://idp.example.com</saml2:Issuer>
                 <saml2p:Status>
                     <saml2p:StatusCode Value=""urn:oasis:names:tc:SAML:2.0:status:Success"" />
@@ -500,7 +500,7 @@ namespace Kentor.AuthServices.Tests.Saml2P
             </saml2p:Response>";
 
             var assertion1 = @"<saml2:Assertion xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
-                Version=""2.0"" ID=""Saml2Response_GetClaims_FalseOnAssertionInjectionWithAssertionSignature_Assertion1""
+                Version=""2.0"" ID=""" + MethodBase.GetCurrentMethod().Name + @"_Assertion1""
                 IssueInstant=""2013-09-25T00:00:00Z"">
                     <saml2:Issuer>https://idp.example.com</saml2:Issuer>
                     <saml2:Subject>
@@ -511,7 +511,7 @@ namespace Kentor.AuthServices.Tests.Saml2P
                 </saml2:Assertion>";
 
             var assertionToInject = @"<saml2:Assertion xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
-                Version=""2.0"" ID=""Saml2Response_GetClaims_FalseOnAssertionInjectionWithAssertionSignature_Assertion2""
+                Version=""2.0"" ID=""" + MethodBase.GetCurrentMethod().Name + @"_Assertion2""
                 IssueInstant=""2013-09-25T00:00:00Z"">
                     <saml2:Issuer>https://idp.example.com</saml2:Issuer>
                     <saml2:Subject>
@@ -550,13 +550,13 @@ namespace Kentor.AuthServices.Tests.Saml2P
             @"<?xml version=""1.0"" encoding=""UTF-8""?>
             <saml2p:Response xmlns:saml2p=""urn:oasis:names:tc:SAML:2.0:protocol""
             xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
-            ID = ""Saml2Response_GetClaims_ThrowsOnDualReferences"" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z"">
+            ID = """ + MethodBase.GetCurrentMethod().Name + @""" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z"">
                 <saml2:Issuer>https://idp.example.com</saml2:Issuer>
                 <saml2p:Status>
                     <saml2p:StatusCode Value=""urn:oasis:names:tc:SAML:2.0:status:Success"" />
                 </saml2p:Status>
                 <saml2:Assertion
-                Version=""2.0"" ID=""Saml2Response_GetClaims_ThrowsOnDualReferences1""
+                Version=""2.0"" ID=""" + MethodBase.GetCurrentMethod().Name + @"1""
                 IssueInstant=""2013-09-25T00:00:00Z"">
                     <saml2:Issuer>https://idp.example.com</saml2:Issuer>
                     <saml2:Subject>
@@ -574,12 +574,12 @@ namespace Kentor.AuthServices.Tests.Saml2P
             signedXml.SigningKey = (RSACryptoServiceProvider)SignedXmlHelper.TestCert.PrivateKey;
             signedXml.SignedInfo.CanonicalizationMethod = SignedXml.XmlDsigExcC14NTransformUrl;
 
-            var ref1 = new Reference { Uri = "#Saml2Response_GetClaims_ThrowsOnDualReferences" };
+            var ref1 = new Reference { Uri = "#" + MethodBase.GetCurrentMethod().Name };
             ref1.AddTransform(new XmlDsigEnvelopedSignatureTransform());
             ref1.AddTransform(new XmlDsigExcC14NTransform());
             signedXml.AddReference(ref1);
 
-            var ref2 = new Reference { Uri = "#Saml2Response_GetClaims_ThrowsOnDualReferences" };
+            var ref2 = new Reference { Uri = "#" + MethodBase.GetCurrentMethod().Name };
             ref2.AddTransform(new XmlDsigEnvelopedSignatureTransform());
             ref2.AddTransform(new XmlDsigExcC14NTransform());
             signedXml.AddReference(ref2);
@@ -605,7 +605,7 @@ namespace Kentor.AuthServices.Tests.Saml2P
             @"<?xml version=""1.0"" encoding=""UTF-8""?>
             <saml2p:Response xmlns:saml2p=""urn:oasis:names:tc:SAML:2.0:protocol""
             xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
-            ID = ""Saml2Response_GetClaims_FalseOnAdditionalTransformsInSignature"" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z"">
+            ID = """ + MethodBase.GetCurrentMethod().Name + @""" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z"">
                 <saml2:Issuer>https://idp.example.com</saml2:Issuer>
                 <saml2p:Status>
                     <saml2p:StatusCode Value=""urn:oasis:names:tc:SAML:2.0:status:Requester"" />
@@ -619,7 +619,7 @@ namespace Kentor.AuthServices.Tests.Saml2P
             signedXml.SigningKey = (RSACryptoServiceProvider)SignedXmlHelper.TestCert.PrivateKey;
             signedXml.SignedInfo.CanonicalizationMethod = SignedXml.XmlDsigExcC14NTransformUrl;
 
-            var reference = new Reference { Uri = "#Saml2Response_GetClaims_FalseOnAdditionalTransformsInSignature" };
+            var reference = new Reference { Uri = "#" + MethodBase.GetCurrentMethod().Name };
             reference.AddTransform(new XmlDsigEnvelopedSignatureTransform());
             reference.AddTransform(new XmlDsigC14NTransform()); // The allowed transform is XmlDsigExcC14NTransform
             signedXml.AddReference(reference);
@@ -652,7 +652,7 @@ namespace Kentor.AuthServices.Tests.Saml2P
             var response =
             @"<saml2p:Response xmlns:saml2p=""urn:oasis:names:tc:SAML:2.0:protocol""
             xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
-            ID = ""Saml2Response_GetClaims_TrueOnCorrectSignedResponseMessage"" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z"">
+            ID = """ + MethodBase.GetCurrentMethod().Name + @""" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z"">
                 <saml2:Issuer>https://idp.example.com</saml2:Issuer>
                 <saml2p:Status>
                     <saml2p:StatusCode Value=""urn:oasis:names:tc:SAML:2.0:status:Success"" />
@@ -677,13 +677,13 @@ namespace Kentor.AuthServices.Tests.Saml2P
             @"<?xml version=""1.0"" encoding=""UTF-8""?>
             <saml2p:Response xmlns:saml2p=""urn:oasis:names:tc:SAML:2.0:protocol""
             xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
-            ID = ""Saml2Response_GetClaims_CreateIdentities"" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z"">
+            ID = """ + MethodBase.GetCurrentMethod().Name + @""" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z"">
                 <saml2:Issuer>https://idp.example.com</saml2:Issuer>
                 <saml2p:Status>
                     <saml2p:StatusCode Value=""urn:oasis:names:tc:SAML:2.0:status:Success"" />
                 </saml2p:Status>
                 <saml2:Assertion xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
-                Version=""2.0"" ID=""Saml2Response_GetClaims_CreateIdentities1""
+                Version=""2.0"" ID=""" + MethodBase.GetCurrentMethod().Name + @"1""
                 IssueInstant=""2013-09-25T00:00:00Z"">
                     <saml2:Issuer>https://idp.example.com</saml2:Issuer>
                     <saml2:Subject>
@@ -693,7 +693,7 @@ namespace Kentor.AuthServices.Tests.Saml2P
                     <saml2:Conditions NotOnOrAfter=""2100-01-01T00:00:00Z"" />
                 </saml2:Assertion>
                 <saml2:Assertion xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
-                Version=""2.0"" ID=""Saml2Response_GetClaims_CreateIdentities2""
+                Version=""2.0"" ID=""" + MethodBase.GetCurrentMethod().Name + @"2""
                 IssueInstant=""2013-09-25T00:00:00Z"">
                     <saml2:Issuer>https://idp.example.com</saml2:Issuer>
                     <saml2:Subject>
@@ -721,9 +721,9 @@ namespace Kentor.AuthServices.Tests.Saml2P
         [NotReRunnable]
         public void Saml2Response_GetClaims_SavesBootstrapContext()
         {
-            var assertion = 
+            var assertion =
             @"<saml2:Assertion xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
-                Version=""2.0"" ID=""Saml2Response_GetClaims_SavesBootstrapContext_Assertion""
+                Version=""2.0"" ID=""" + MethodBase.GetCurrentMethod().Name + @"_Assertion""
                 IssueInstant=""2013-09-25T00:00:00Z"">
                 <saml2:Issuer>https://idp.example.com</saml2:Issuer>
                 <saml2:Subject>
@@ -737,7 +737,7 @@ namespace Kentor.AuthServices.Tests.Saml2P
             @"<?xml version=""1.0"" encoding=""UTF-8""?>
             <saml2p:Response xmlns:saml2p=""urn:oasis:names:tc:SAML:2.0:protocol""
             xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
-            ID = ""Saml2Response_GetClaims_SavesBootstrapContext"" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z"">
+            ID = """ + MethodBase.GetCurrentMethod().Name + @""" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z"">
                 <saml2:Issuer>https://idp.example.com</saml2:Issuer>
                 <saml2p:Status>
                     <saml2p:StatusCode Value=""urn:oasis:names:tc:SAML:2.0:status:Success"" />
@@ -765,13 +765,13 @@ namespace Kentor.AuthServices.Tests.Saml2P
             @"<?xml version=""1.0"" encoding=""UTF-8""?>
             <saml2p:Response xmlns:saml2p=""urn:oasis:names:tc:SAML:2.0:protocol""
             xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
-            ID = ""Saml2Response_GetClaims_ThrowsOnResponseNotValid"" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z"">
+            ID = """ + MethodBase.GetCurrentMethod().Name + @""" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z"">
                 <saml2:Issuer>https://idp.example.com</saml2:Issuer>
                 <saml2p:Status>
                     <saml2p:StatusCode Value=""urn:oasis:names:tc:SAML:2.0:status:Success"" />
                 </saml2p:Status>
                 <saml2:Assertion
-                Version=""2.0"" ID=""Saml2Response_GetClaims_ThrowsOnResponseNotValid_Assertion""
+                Version=""2.0"" ID=""" + MethodBase.GetCurrentMethod().Name + @"_Assertion""
                 IssueInstant=""2013-09-25T00:00:00Z"">
                     <saml2:Issuer>https://idp.example.com</saml2:Issuer>
                     <saml2:Subject>
@@ -804,13 +804,13 @@ namespace Kentor.AuthServices.Tests.Saml2P
             @"<?xml version=""1.0"" encoding=""UTF-8""?>
             <saml2p:Response xmlns:saml2p=""urn:oasis:names:tc:SAML:2.0:protocol""
             xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
-            ID = ""Saml2Response_GetClaims_ThrowsOnWrongAudience"" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z"">
+            ID = """ + MethodBase.GetCurrentMethod().Name + @""" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z"">
                 <saml2:Issuer>https://idp.example.com</saml2:Issuer>
                 <saml2p:Status>
                     <saml2p:StatusCode Value=""urn:oasis:names:tc:SAML:2.0:status:Success"" />
                 </saml2p:Status>
                 <saml2:Assertion
-                Version=""2.0"" ID=""Saml2Response_GetClaims_ThrowsOnWrongAudience_Assertion""
+                Version=""2.0"" ID=""" + MethodBase.GetCurrentMethod().Name + @"_Assertion""
                 IssueInstant=""2013-09-25T00:00:00Z"">
                     <saml2:Issuer>https://idp.example.com</saml2:Issuer>
                     <saml2:Subject>
@@ -841,13 +841,13 @@ namespace Kentor.AuthServices.Tests.Saml2P
             @"<?xml version=""1.0"" encoding=""UTF-8""?>
             <saml2p:Response xmlns:saml2p=""urn:oasis:names:tc:SAML:2.0:protocol""
             xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
-            ID = ""Saml2Response_GetClaims_ThrowsOnExpired"" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z"">
+            ID = """ + MethodBase.GetCurrentMethod().Name + @""" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z"">
                 <saml2:Issuer>https://idp.example.com</saml2:Issuer>
                 <saml2p:Status>
                     <saml2p:StatusCode Value=""urn:oasis:names:tc:SAML:2.0:status:Success"" />
                 </saml2p:Status>
                 <saml2:Assertion
-                Version=""2.0"" ID=""Saml2Response_GetClaims_ThrowsOnExpired_Assertion""
+                Version=""2.0"" ID=""" + MethodBase.GetCurrentMethod().Name + @"_Assertion""
                 IssueInstant=""2013-09-25T00:00:00Z"">
                     <saml2:Issuer>https://idp.example.com</saml2:Issuer>
                     <saml2:Subject>
@@ -877,7 +877,7 @@ namespace Kentor.AuthServices.Tests.Saml2P
             @"<?xml version=""1.0"" encoding=""UTF-8""?>
             <saml2p:Response xmlns:saml2p=""urn:oasis:names:tc:SAML:2.0:protocol""
             xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
-            ID = ""Saml2Response_GetClaims_TrueOnCorrectInResponseTo"" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z""
+            ID = """ + MethodBase.GetCurrentMethod().Name + @""" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z""
             InResponseTo = """ + request.Id + @""">
                 <saml2:Issuer>https://idp.example.com</saml2:Issuer>
                 <saml2p:Status>
@@ -900,7 +900,7 @@ namespace Kentor.AuthServices.Tests.Saml2P
             @"<?xml version=""1.0"" encoding=""UTF-8""?>
             <saml2p:Response xmlns:saml2p=""urn:oasis:names:tc:SAML:2.0:protocol""
             xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
-            ID = ""Saml2Response_GetClaims_FalseOnMissingInResponseTo_IfDisallowed"" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z"">
+            ID = """ + MethodBase.GetCurrentMethod().Name + @""" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z"">
                 <saml2:Issuer>https://idp2.example.com</saml2:Issuer>
                 <saml2p:Status>
                     <saml2p:StatusCode Value=""urn:oasis:names:tc:SAML:2.0:status:Requester"" />
@@ -928,7 +928,7 @@ namespace Kentor.AuthServices.Tests.Saml2P
             @"<?xml version=""1.0"" encoding=""UTF-8""?>
             <saml2p:Response xmlns:saml2p=""urn:oasis:names:tc:SAML:2.0:protocol""
             xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
-            ID = ""Saml2Response_GetClaims_TrueOnCorrectInResponseTo"" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z"">
+            ID = """ + MethodBase.GetCurrentMethod().Name + @""" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z"">
                 <saml2:Issuer>https://idp.example.com</saml2:Issuer>
                 <saml2p:Status>
                     <saml2p:StatusCode Value=""urn:oasis:names:tc:SAML:2.0:status:Success"" />
@@ -954,7 +954,7 @@ namespace Kentor.AuthServices.Tests.Saml2P
             @"<?xml version=""1.0"" encoding=""UTF-8""?>
             <saml2p:Response xmlns:saml2p=""urn:oasis:names:tc:SAML:2.0:protocol""
             xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
-            ID = ""Saml2Response_GetClaims_FalseOnIncorrectInResponseTo"" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z""
+            ID = """ + MethodBase.GetCurrentMethod().Name + @""" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z""
             InResponseTo = ""anothervalue"">
                 <saml2:Issuer>https://idp.example.com</saml2:Issuer>
                 <saml2p:Status>
@@ -983,7 +983,7 @@ namespace Kentor.AuthServices.Tests.Saml2P
             @"<?xml version=""1.0"" encoding=""UTF-8""?>
             <saml2p:Response xmlns:saml2p=""urn:oasis:names:tc:SAML:2.0:protocol""
             xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
-            ID = ""Saml2Response_GetClaims_ThrowsOnReplayedInResponseTo"" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z""
+            ID = """ + MethodBase.GetCurrentMethod().Name + @""" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z""
             InResponseTo = """ + request.Id + @""">
                 <saml2:Issuer>https://idp.example.com</saml2:Issuer>
                 <saml2p:Status>
@@ -1015,7 +1015,7 @@ namespace Kentor.AuthServices.Tests.Saml2P
             @"<?xml version=""1.0"" encoding=""UTF-8""?>
             <saml2p:Response xmlns:saml2p=""urn:oasis:names:tc:SAML:2.0:protocol""
             xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
-            ID = ""Saml2Response_GetClaims_ThrowsOnReplayedInResponseTo"" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z""
+            ID = """ + MethodBase.GetCurrentMethod().Name + @""" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z""
             InResponseTo = """ + request.Id + @""">
                 <saml2:Issuer>https://idp.example.com</saml2:Issuer>
                 <saml2p:Status>
@@ -1059,7 +1059,7 @@ namespace Kentor.AuthServices.Tests.Saml2P
             @"<?xml version=""1.0"" encoding=""UTF-8""?>
             <saml2p:Response xmlns:saml2p=""urn:oasis:names:tc:SAML:2.0:protocol""
             xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
-            ID = ""Saml2Response_GetClaims_ThrowsOnResponseFromWrongIdp"" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z""
+            ID = """ + MethodBase.GetCurrentMethod().Name + @""" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z""
             InResponseTo = """ + request.Id + @""">
                 <saml2:Issuer>https://idp.anotheridp.com</saml2:Issuer>
                 <saml2p:Status>
@@ -1085,13 +1085,13 @@ namespace Kentor.AuthServices.Tests.Saml2P
             @"<?xml version=""1.0"" encoding=""UTF-8""?>
             <saml2p:Response xmlns:saml2p=""urn:oasis:names:tc:SAML:2.0:protocol""
             xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
-            ID = ""Saml2Response_GetClaims_ThrowsOnReplayAssertionId"" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z"">
+            ID = """ + MethodBase.GetCurrentMethod().Name + @""" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z"">
                 <saml2:Issuer>https://idp.example.com</saml2:Issuer>
                 <saml2p:Status>
                     <saml2p:StatusCode Value=""urn:oasis:names:tc:SAML:2.0:status:Success"" />
                 </saml2p:Status>
                 <saml2:Assertion
-                Version=""2.0"" ID=""Saml2Response_GetClaims_ThrowsOnReplayAssertionId_Assertion""
+                Version=""2.0"" ID=""" + MethodBase.GetCurrentMethod().Name + @"_Assertion""
                 IssueInstant=""2013-09-25T00:00:00Z"">
                     <saml2:Issuer>https://idp.example.com</saml2:Issuer>
                     <saml2:Subject>
@@ -1120,13 +1120,13 @@ namespace Kentor.AuthServices.Tests.Saml2P
             @"<?xml version=""1.0"" encoding=""UTF-8""?>
             <saml2p:Response xmlns:saml2p=""urn:oasis:names:tc:SAML:2.0:protocol""
             xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
-            ID = ""Saml2Response_GetClaims_ThrowsOnStatusFailure"" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z"">
+            ID = """ + MethodBase.GetCurrentMethod().Name + @""" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z"">
                 <saml2:Issuer>https://idp.example.com</saml2:Issuer>
                 <saml2p:Status>
                     <saml2p:StatusCode Value=""urn:oasis:names:tc:SAML:2.0:status:Requester"" />
                 </saml2p:Status>
                 <saml2:Assertion
-                Version=""2.0"" ID=""Saml2Response_GetClaims_ThrowsOnStatusFailure_Assertion""
+                Version=""2.0"" ID=""" + MethodBase.GetCurrentMethod().Name + @"_Assertion""
                 IssueInstant=""2013-09-25T00:00:00Z"">
                     <saml2:Issuer>https://idp.example.com</saml2:Issuer>
                     <saml2:Subject>
@@ -1286,7 +1286,7 @@ namespace Kentor.AuthServices.Tests.Saml2P
             @"<?xml version=""1.0"" encoding=""UTF-8""?>
             <saml2p:Response xmlns:saml2p=""urn:oasis:names:tc:SAML:2.0:protocol""
             xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
-            ID = ""Saml2Response_FromRequest_Remembers_ReturnUrl"" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z""
+            ID = """ + MethodBase.GetCurrentMethod().Name + @""" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z""
             InResponseTo = """ + request.Id + @""">
                 <saml2:Issuer>https://idp.example.com</saml2:Issuer>
                 <saml2p:Status>
@@ -1318,9 +1318,9 @@ namespace Kentor.AuthServices.Tests.Saml2P
                     <Assertion ID=""Saml2Response_GetClaims_ThrowsInformativeExceptionForSha256"" IssueInstant=""2015-03-13T20:43:07.330Z"" Version=""2.0"" xmlns=""urn:oasis:names:tc:SAML:2.0:assertion""><Issuer>https://idp.example.com</Issuer><Signature xmlns=""http://www.w3.org/2000/09/xmldsig#""><SignedInfo><CanonicalizationMethod Algorithm=""http://www.w3.org/2001/10/xml-exc-c14n#"" /><SignatureMethod Algorithm=""http://www.w3.org/2001/04/xmldsig-more#rsa-sha256"" /><Reference URI=""#Saml2Response_GetClaims_ThrowsInformativeExceptionForSha256""><Transforms><Transform Algorithm=""http://www.w3.org/2000/09/xmldsig#enveloped-signature"" /><Transform Algorithm=""http://www.w3.org/2001/10/xml-exc-c14n#"" /></Transforms><DigestMethod Algorithm=""http://www.w3.org/2001/04/xmlenc#sha256"" /><DigestValue>F+E7u3vqMC07ipvP9AowsMqP7y6CsAC0GeEIxNSwDEI=</DigestValue></Reference></SignedInfo><SignatureValue>GmiXn24Ccnr64TbmDd1/nLM+891z0FtRHSpU8+75uOqbpNK/ZZGrltFf2YZ5u9b9O0HfbFFsZ0i28ocwAZOv2UfxQrCtOGf3ss7Q+t2Zmc6Q/3ES7HIa15I5BbaSdNfpOMlX6N1XXhMprRGy2YWMr5IAIhysFG1A2oHaC3yFiesfUrawN/lXUYuI22Kf4A5bmnIkKijnwX9ewnhRj6569bw+c6q+tVZSHQzI+KMU9KbKN4NsXxAmv6dM1w2qOiX9/CO9LzwEtlhA9yo3sl0uWP8z5GwK9qgOlsF2NdImAQ5f0U4Uv26doFn09W+VExFwNhcXhewQUuPBYBr+XXzdww==</SignatureValue><KeyInfo><X509Data><X509Certificate>MIIDIzCCAg+gAwIBAgIQg7mOjTf994NAVxZu4jqXpzAJBgUrDgMCHQUAMCQxIjAgBgNVBAMTGUtlbnRvci5BdXRoU2VydmljZXMuVGVzdHMwHhcNMTMwOTI1MTMzNTQ0WhcNMzkxMjMxMjM1OTU5WjAkMSIwIAYDVQQDExlLZW50b3IuQXV0aFNlcnZpY2VzLlRlc3RzMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAwVGpfvK9N//MnA5Jo1q2liyPR24406Dp25gv7LB3HK4DWgqsb7xXM6KIV/WVOyCV2g/O1ErBlB+HLhVZ4XUJvbqBbgAJqFO+TZwcCIe8u4nTEXeU660FdtkKClA17sbtMrAGdDfOPwVBHSuavdHeD7jHNI4RUDGKnEW13/0EvnHDilIetwODRxrX/+41R24sJThFbMczByS3OAL2dcIxoAynaGeM90gXsVYow1QhJUy21+cictikb7jW4mW6dvFCBrWIceom9J295DcQIHoxJy5NoZwMir/JV00qs1wDVoN20Ve1DC5ImwcG46XPF7efQ44yLh2j5Yexw+xloA81dwIDAQABo1kwVzBVBgNVHQEETjBMgBAWIahoZhXVUogbAqkS7zwfoSYwJDEiMCAGA1UEAxMZS2VudG9yLkF1dGhTZXJ2aWNlcy5UZXN0c4IQg7mOjTf994NAVxZu4jqXpzAJBgUrDgMCHQUAA4IBAQA2aGzmuKw4AYXWMhrGj5+i8vyAoifUn1QVOFsUukEA77CrqhqqaWFoeagfJp/45vlvrfrEwtF0QcWfmO9w1VvHwm7sk1G/cdYyJ71sU+llDsdPZm7LxQvWZYkK+xELcinQpSwt4ExavS+jLcHoOYHYwIZMBn3U8wZw7Kq29oGnoFQz7HLCEl/G9i3QRyvFITNlWTjoScaqMjHTzq6HCMaRsL09DLcY3KB+cedfpC0/MBlzaxZv0DctTulyaDfM9DCYOyokGN/rQ6qkAR0DDm8fVwknbJY7kURXNGoUetulTb5ow8BvD1gncOaYHSD0kbHZG+bLsUZDFatEr2KW8jbG</X509Certificate></X509Data></KeyInfo></Signature><Subject><NameID>SomeUser</NameID><SubjectConfirmation Method=""urn:oasis:names:tc:SAML:2.0:cm:bearer"" /></Subject><Conditions NotOnOrAfter=""2100-01-01T05:00:00.000Z"" /></Assertion>
                 </saml2p:Response>";
 
-            Action a = () => Saml2Response.Read( signedResponse ).GetClaims( Options.FromConfiguration );
+            Action a = () => Saml2Response.Read(signedResponse).GetClaims(Options.FromConfiguration);
             a.ShouldThrow<Saml2ResponseFailedValidationException>()
-                .WithMessage( "SHA256 signatures require the algorithm to be registered at the process level. Call Kentor.AuthServices.Configuration.Options.GlobalEnableSha256XmlSignatures() on startup to register." );
+                .WithMessage("SHA256 signatures require the algorithm to be registered at the process level. Call Kentor.AuthServices.Configuration.Options.GlobalEnableSha256XmlSignatures() on startup to register.");
 
         }
 
@@ -1333,15 +1333,15 @@ namespace Kentor.AuthServices.Tests.Saml2P
             var signedResponse =
                 @"<saml2p:Response xmlns:saml2p=""urn:oasis:names:tc:SAML:2.0:protocol""
                     xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
-                    ID = ""Saml2Response_GetClaims_ChecksSha256WhenEnabled"" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z"">
+                    ID = """ + MethodBase.GetCurrentMethod().Name + @""" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z"">
                         <saml2:Issuer>https://idp.example.com</saml2:Issuer>
                         <saml2p:Status>
                             <saml2p:StatusCode Value=""urn:oasis:names:tc:SAML:2.0:status:Success"" />
                         </saml2p:Status>
-                        <Assertion ID=""Saml2Response_GetClaims_ChecksSha256WhenEnabled"" IssueInstant=""2015-03-13T20:43:33.466Z"" Version=""2.0"" xmlns=""urn:oasis:names:tc:SAML:2.0:assertion""><Issuer>https://idp.example.com</Issuer><Signature xmlns=""http://www.w3.org/2000/09/xmldsig#""><SignedInfo><CanonicalizationMethod Algorithm=""http://www.w3.org/2001/10/xml-exc-c14n#"" /><SignatureMethod Algorithm=""http://www.w3.org/2001/04/xmldsig-more#rsa-sha256"" /><Reference URI=""#Saml2Response_GetClaims_ChecksSha256WhenEnabled""><Transforms><Transform Algorithm=""http://www.w3.org/2000/09/xmldsig#enveloped-signature"" /><Transform Algorithm=""http://www.w3.org/2001/10/xml-exc-c14n#"" /></Transforms><DigestMethod Algorithm=""http://www.w3.org/2001/04/xmlenc#sha256"" /><DigestValue>8s5HDYeicqbNwESGyrvYYXinJeJJgl4t6O27KGE0ejc=</DigestValue></Reference></SignedInfo><SignatureValue>mS2TFErenJHyvUbyIDUItOvH6AavUNGg5zL3hVueWDGjhaft2mlWSlQIFm9ajVQKrZq2Q/V4oZYGTQ8muTfrhdCL3fyu453nEWcNgQ+gm1H1e89N75XWonfL+UQDl73O95SX0dD4DjqQAC4MlSwMOkwOR7GakhjPbSzRct7lFbRx/3k+TUZNj9rfV4uzlf79ebkw9EaaSfu0tR6bAfGyrefFaNTZs2NeRICfD/GKn7HRo9zSdVPBHfEW2UUy0x/aWREG4GgUs7qObWL4uhDZ6oyy5FbsRcrUJMiXCFNXA8dr9EtZ2VafHz3d4kJFLiq63xjqpjGk/ng2gP+47F/9Rw==</SignatureValue><KeyInfo><X509Data><X509Certificate>MIIDIzCCAg+gAwIBAgIQg7mOjTf994NAVxZu4jqXpzAJBgUrDgMCHQUAMCQxIjAgBgNVBAMTGUtlbnRvci5BdXRoU2VydmljZXMuVGVzdHMwHhcNMTMwOTI1MTMzNTQ0WhcNMzkxMjMxMjM1OTU5WjAkMSIwIAYDVQQDExlLZW50b3IuQXV0aFNlcnZpY2VzLlRlc3RzMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAwVGpfvK9N//MnA5Jo1q2liyPR24406Dp25gv7LB3HK4DWgqsb7xXM6KIV/WVOyCV2g/O1ErBlB+HLhVZ4XUJvbqBbgAJqFO+TZwcCIe8u4nTEXeU660FdtkKClA17sbtMrAGdDfOPwVBHSuavdHeD7jHNI4RUDGKnEW13/0EvnHDilIetwODRxrX/+41R24sJThFbMczByS3OAL2dcIxoAynaGeM90gXsVYow1QhJUy21+cictikb7jW4mW6dvFCBrWIceom9J295DcQIHoxJy5NoZwMir/JV00qs1wDVoN20Ve1DC5ImwcG46XPF7efQ44yLh2j5Yexw+xloA81dwIDAQABo1kwVzBVBgNVHQEETjBMgBAWIahoZhXVUogbAqkS7zwfoSYwJDEiMCAGA1UEAxMZS2VudG9yLkF1dGhTZXJ2aWNlcy5UZXN0c4IQg7mOjTf994NAVxZu4jqXpzAJBgUrDgMCHQUAA4IBAQA2aGzmuKw4AYXWMhrGj5+i8vyAoifUn1QVOFsUukEA77CrqhqqaWFoeagfJp/45vlvrfrEwtF0QcWfmO9w1VvHwm7sk1G/cdYyJ71sU+llDsdPZm7LxQvWZYkK+xELcinQpSwt4ExavS+jLcHoOYHYwIZMBn3U8wZw7Kq29oGnoFQz7HLCEl/G9i3QRyvFITNlWTjoScaqMjHTzq6HCMaRsL09DLcY3KB+cedfpC0/MBlzaxZv0DctTulyaDfM9DCYOyokGN/rQ6qkAR0DDm8fVwknbJY7kURXNGoUetulTb5ow8BvD1gncOaYHSD0kbHZG+bLsUZDFatEr2KW8jbG</X509Certificate></X509Data></KeyInfo></Signature><Subject><NameID>SomeUser</NameID><SubjectConfirmation Method=""urn:oasis:names:tc:SAML:2.0:cm:bearer"" /></Subject><Conditions NotOnOrAfter=""2100-01-01T05:00:00.000Z"" /></Assertion>
+                        <Assertion ID=""" + MethodBase.GetCurrentMethod().Name + @""" IssueInstant=""2015-03-13T20:43:33.466Z"" Version=""2.0"" xmlns=""urn:oasis:names:tc:SAML:2.0:assertion""><Issuer>https://idp.example.com</Issuer><Signature xmlns=""http://www.w3.org/2000/09/xmldsig#""><SignedInfo><CanonicalizationMethod Algorithm=""http://www.w3.org/2001/10/xml-exc-c14n#"" /><SignatureMethod Algorithm=""http://www.w3.org/2001/04/xmldsig-more#rsa-sha256"" /><Reference URI=""#Saml2Response_GetClaims_ChecksSha256WhenEnabled""><Transforms><Transform Algorithm=""http://www.w3.org/2000/09/xmldsig#enveloped-signature"" /><Transform Algorithm=""http://www.w3.org/2001/10/xml-exc-c14n#"" /></Transforms><DigestMethod Algorithm=""http://www.w3.org/2001/04/xmlenc#sha256"" /><DigestValue>8s5HDYeicqbNwESGyrvYYXinJeJJgl4t6O27KGE0ejc=</DigestValue></Reference></SignedInfo><SignatureValue>mS2TFErenJHyvUbyIDUItOvH6AavUNGg5zL3hVueWDGjhaft2mlWSlQIFm9ajVQKrZq2Q/V4oZYGTQ8muTfrhdCL3fyu453nEWcNgQ+gm1H1e89N75XWonfL+UQDl73O95SX0dD4DjqQAC4MlSwMOkwOR7GakhjPbSzRct7lFbRx/3k+TUZNj9rfV4uzlf79ebkw9EaaSfu0tR6bAfGyrefFaNTZs2NeRICfD/GKn7HRo9zSdVPBHfEW2UUy0x/aWREG4GgUs7qObWL4uhDZ6oyy5FbsRcrUJMiXCFNXA8dr9EtZ2VafHz3d4kJFLiq63xjqpjGk/ng2gP+47F/9Rw==</SignatureValue><KeyInfo><X509Data><X509Certificate>MIIDIzCCAg+gAwIBAgIQg7mOjTf994NAVxZu4jqXpzAJBgUrDgMCHQUAMCQxIjAgBgNVBAMTGUtlbnRvci5BdXRoU2VydmljZXMuVGVzdHMwHhcNMTMwOTI1MTMzNTQ0WhcNMzkxMjMxMjM1OTU5WjAkMSIwIAYDVQQDExlLZW50b3IuQXV0aFNlcnZpY2VzLlRlc3RzMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAwVGpfvK9N//MnA5Jo1q2liyPR24406Dp25gv7LB3HK4DWgqsb7xXM6KIV/WVOyCV2g/O1ErBlB+HLhVZ4XUJvbqBbgAJqFO+TZwcCIe8u4nTEXeU660FdtkKClA17sbtMrAGdDfOPwVBHSuavdHeD7jHNI4RUDGKnEW13/0EvnHDilIetwODRxrX/+41R24sJThFbMczByS3OAL2dcIxoAynaGeM90gXsVYow1QhJUy21+cictikb7jW4mW6dvFCBrWIceom9J295DcQIHoxJy5NoZwMir/JV00qs1wDVoN20Ve1DC5ImwcG46XPF7efQ44yLh2j5Yexw+xloA81dwIDAQABo1kwVzBVBgNVHQEETjBMgBAWIahoZhXVUogbAqkS7zwfoSYwJDEiMCAGA1UEAxMZS2VudG9yLkF1dGhTZXJ2aWNlcy5UZXN0c4IQg7mOjTf994NAVxZu4jqXpzAJBgUrDgMCHQUAA4IBAQA2aGzmuKw4AYXWMhrGj5+i8vyAoifUn1QVOFsUukEA77CrqhqqaWFoeagfJp/45vlvrfrEwtF0QcWfmO9w1VvHwm7sk1G/cdYyJ71sU+llDsdPZm7LxQvWZYkK+xELcinQpSwt4ExavS+jLcHoOYHYwIZMBn3U8wZw7Kq29oGnoFQz7HLCEl/G9i3QRyvFITNlWTjoScaqMjHTzq6HCMaRsL09DLcY3KB+cedfpC0/MBlzaxZv0DctTulyaDfM9DCYOyokGN/rQ6qkAR0DDm8fVwknbJY7kURXNGoUetulTb5ow8BvD1gncOaYHSD0kbHZG+bLsUZDFatEr2KW8jbG</X509Certificate></X509Data></KeyInfo></Signature><Subject><NameID>SomeUser</NameID><SubjectConfirmation Method=""urn:oasis:names:tc:SAML:2.0:cm:bearer"" /></Subject><Conditions NotOnOrAfter=""2100-01-01T05:00:00.000Z"" /></Assertion>
                     </saml2p:Response>";
 
-            Action a = () => Saml2Response.Read( signedResponse ).GetClaims( Options.FromConfiguration );
+            Action a = () => Saml2Response.Read(signedResponse).GetClaims(Options.FromConfiguration);
             a.ShouldNotThrow();
         }
 
@@ -1366,9 +1366,9 @@ namespace Kentor.AuthServices.Tests.Saml2P
                     <Assertion ID=""Saml2Response_GetClaims_ThrowsInformativeExceptionForSha256"" IssueInstant=""2015-03-13T20:43:07.330Z"" Version=""2.0"" xmlns=""urn:oasis:names:tc:SAML:2.0:assertion""><Issuer>https://idp.example.com</Issuer><Signature xmlns=""http://www.w3.org/2000/09/xmldsig#""><SignedInfo><CanonicalizationMethod Algorithm=""http://www.w3.org/2001/10/xml-exc-c14n#"" /><SignatureMethod Algorithm=""http://www.w3.org/2001/04/xmldsig-more#rsa-sha256"" /><Reference URI=""#Saml2Response_GetClaims_ThrowsInformativeExceptionForSha256""><Transforms><Transform Algorithm=""http://www.w3.org/2000/09/xmldsig#enveloped-signature"" /><Transform Algorithm=""http://www.w3.org/2001/10/xml-exc-c14n#"" /></Transforms><DigestMethod Algorithm=""http://www.w3.org/2001/04/xmlenc#LLL"" /><DigestValue>F+E7u3vqMC07ipvP9AowsMqP7y6CsAC0GeEIxNSwDEI=</DigestValue></Reference></SignedInfo><SignatureValue>GmiXn24Ccnr64TbmDd1/nLM+891z0FtRHSpU8+75uOqbpNK/ZZGrltFf2YZ5u9b9O0HfbFFsZ0i28ocwAZOv2UfxQrCtOGf3ss7Q+t2Zmc6Q/3ES7HIa15I5BbaSdNfpOMlX6N1XXhMprRGy2YWMr5IAIhysFG1A2oHaC3yFiesfUrawN/lXUYuI22Kf4A5bmnIkKijnwX9ewnhRj6569bw+c6q+tVZSHQzI+KMU9KbKN4NsXxAmv6dM1w2qOiX9/CO9LzwEtlhA9yo3sl0uWP8z5GwK9qgOlsF2NdImAQ5f0U4Uv26doFn09W+VExFwNhcXhewQUuPBYBr+XXzdww==</SignatureValue><KeyInfo><X509Data><X509Certificate>MIIDIzCCAg+gAwIBAgIQg7mOjTf994NAVxZu4jqXpzAJBgUrDgMCHQUAMCQxIjAgBgNVBAMTGUtlbnRvci5BdXRoU2VydmljZXMuVGVzdHMwHhcNMTMwOTI1MTMzNTQ0WhcNMzkxMjMxMjM1OTU5WjAkMSIwIAYDVQQDExlLZW50b3IuQXV0aFNlcnZpY2VzLlRlc3RzMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAwVGpfvK9N//MnA5Jo1q2liyPR24406Dp25gv7LB3HK4DWgqsb7xXM6KIV/WVOyCV2g/O1ErBlB+HLhVZ4XUJvbqBbgAJqFO+TZwcCIe8u4nTEXeU660FdtkKClA17sbtMrAGdDfOPwVBHSuavdHeD7jHNI4RUDGKnEW13/0EvnHDilIetwODRxrX/+41R24sJThFbMczByS3OAL2dcIxoAynaGeM90gXsVYow1QhJUy21+cictikb7jW4mW6dvFCBrWIceom9J295DcQIHoxJy5NoZwMir/JV00qs1wDVoN20Ve1DC5ImwcG46XPF7efQ44yLh2j5Yexw+xloA81dwIDAQABo1kwVzBVBgNVHQEETjBMgBAWIahoZhXVUogbAqkS7zwfoSYwJDEiMCAGA1UEAxMZS2VudG9yLkF1dGhTZXJ2aWNlcy5UZXN0c4IQg7mOjTf994NAVxZu4jqXpzAJBgUrDgMCHQUAA4IBAQA2aGzmuKw4AYXWMhrGj5+i8vyAoifUn1QVOFsUukEA77CrqhqqaWFoeagfJp/45vlvrfrEwtF0QcWfmO9w1VvHwm7sk1G/cdYyJ71sU+llDsdPZm7LxQvWZYkK+xELcinQpSwt4ExavS+jLcHoOYHYwIZMBn3U8wZw7Kq29oGnoFQz7HLCEl/G9i3QRyvFITNlWTjoScaqMjHTzq6HCMaRsL09DLcY3KB+cedfpC0/MBlzaxZv0DctTulyaDfM9DCYOyokGN/rQ6qkAR0DDm8fVwknbJY7kURXNGoUetulTb5ow8BvD1gncOaYHSD0kbHZG+bLsUZDFatEr2KW8jbG</X509Certificate></X509Data></KeyInfo></Signature><Subject><NameID>SomeUser</NameID><SubjectConfirmation Method=""urn:oasis:names:tc:SAML:2.0:cm:bearer"" /></Subject><Conditions NotOnOrAfter=""2100-01-01T05:00:00.000Z"" /></Assertion>
                 </saml2p:Response>";
 
-            Action a = () => Saml2Response.Read( signedResponse ).GetClaims( Options.FromConfiguration );
+            Action a = () => Saml2Response.Read(signedResponse).GetClaims(Options.FromConfiguration);
             a.ShouldThrow<Saml2ResponseFailedValidationException>()
-                .WithMessage( "Signature validation failed on SAML response or contained assertion." );
+                .WithMessage("Signature validation failed on SAML response or contained assertion.");
         }
 
         [TestMethod]
@@ -1380,19 +1380,19 @@ namespace Kentor.AuthServices.Tests.Saml2P
             var signedResponse =
                 @"<saml2p:Response xmlns:saml2p=""urn:oasis:names:tc:SAML:2.0:protocol""
                     xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
-                    ID = ""Saml2Response_GetClaims_FailsSha256WhenChanged"" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z"">
+                    ID = """ + MethodBase.GetCurrentMethod().Name + @""" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z"">
                         <saml2:Issuer>https://idp.example.com</saml2:Issuer>
                         <saml2p:Status>
                             <saml2p:StatusCode Value=""urn:oasis:names:tc:SAML:2.0:status:Success"" />
                         </saml2p:Status>
-                        <Assertion ID=""Saml2Response_GetClaims_FailsSha256WhenChanged"" IssueInstant=""2015-03-13T20:44:00.791Z"" Version=""2.0"" xmlns=""urn:oasis:names:tc:SAML:2.0:assertion""><Issuer>https://idp.example.com</Issuer><Signature xmlns=""http://www.w3.org/2000/09/xmldsig#""><SignedInfo><CanonicalizationMethod Algorithm=""http://www.w3.org/2001/10/xml-exc-c14n#"" /><SignatureMethod Algorithm=""http://www.w3.org/2001/04/xmldsig-more#rsa-sha256"" /><Reference URI=""#Saml2Response_GetClaims_FailsSha256WhenChanged""><Transforms><Transform Algorithm=""http://www.w3.org/2000/09/xmldsig#enveloped-signature"" /><Transform Algorithm=""http://www.w3.org/2001/10/xml-exc-c14n#"" /></Transforms><DigestMethod Algorithm=""http://www.w3.org/2001/04/xmlenc#sha256"" /><DigestValue>BKRyWqweAczLA8fgRcx6zzMDiP0qT0TwqU/X4VgLiXM=</DigestValue></Reference></SignedInfo><SignatureValue>iK8s+MkLlixSSQu5Q/SHRZLhfnj4jlyPLAD6C2n9zmQu4CosZME7mxiNFiWyOE8XRGd+2LJle+NjJrkZFktVb03JaToq7w4Q8GfJ2oUUjNCweoaJ6NzsnwkFoXhyh0dfOixl/Ifa3qDX50/Hv2twF/QXfDs08GZTxZKehKsVDITyVd6nytF8VUb0+nU7UMWPn1XeHM7YNI/1mkVbCRx/ci5ZRxwjAX40xttd4JL6oBnp5oaaMgWpAa2cVb+t/9HhCRThEho1etbPHx/+E9ElL1PhKqKX6nh2GSH1TFJkwEXIPPZKqCs3YDINLBZpLfl626zbV4cGOGyWUAroVsk2uw==</SignatureValue><KeyInfo><X509Data><X509Certificate>MIIDIzCCAg+gAwIBAgIQg7mOjTf994NAVxZu4jqXpzAJBgUrDgMCHQUAMCQxIjAgBgNVBAMTGUtlbnRvci5BdXRoU2VydmljZXMuVGVzdHMwHhcNMTMwOTI1MTMzNTQ0WhcNMzkxMjMxMjM1OTU5WjAkMSIwIAYDVQQDExlLZW50b3IuQXV0aFNlcnZpY2VzLlRlc3RzMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAwVGpfvK9N//MnA5Jo1q2liyPR24406Dp25gv7LB3HK4DWgqsb7xXM6KIV/WVOyCV2g/O1ErBlB+HLhVZ4XUJvbqBbgAJqFO+TZwcCIe8u4nTEXeU660FdtkKClA17sbtMrAGdDfOPwVBHSuavdHeD7jHNI4RUDGKnEW13/0EvnHDilIetwODRxrX/+41R24sJThFbMczByS3OAL2dcIxoAynaGeM90gXsVYow1QhJUy21+cictikb7jW4mW6dvFCBrWIceom9J295DcQIHoxJy5NoZwMir/JV00qs1wDVoN20Ve1DC5ImwcG46XPF7efQ44yLh2j5Yexw+xloA81dwIDAQABo1kwVzBVBgNVHQEETjBMgBAWIahoZhXVUogbAqkS7zwfoSYwJDEiMCAGA1UEAxMZS2VudG9yLkF1dGhTZXJ2aWNlcy5UZXN0c4IQg7mOjTf994NAVxZu4jqXpzAJBgUrDgMCHQUAA4IBAQA2aGzmuKw4AYXWMhrGj5+i8vyAoifUn1QVOFsUukEA77CrqhqqaWFoeagfJp/45vlvrfrEwtF0QcWfmO9w1VvHwm7sk1G/cdYyJ71sU+llDsdPZm7LxQvWZYkK+xELcinQpSwt4ExavS+jLcHoOYHYwIZMBn3U8wZw7Kq29oGnoFQz7HLCEl/G9i3QRyvFITNlWTjoScaqMjHTzq6HCMaRsL09DLcY3KB+cedfpC0/MBlzaxZv0DctTulyaDfM9DCYOyokGN/rQ6qkAR0DDm8fVwknbJY7kURXNGoUetulTb5ow8BvD1gncOaYHSD0kbHZG+bLsUZDFatEr2KW8jbG</X509Certificate></X509Data></KeyInfo></Signature><Subject><NameID>SomeUser</NameID><SubjectConfirmation Method=""urn:oasis:names:tc:SAML:2.0:cm:bearer"" /></Subject><Conditions NotOnOrAfter=""2100-01-01T05:00:00.000Z"" /></Assertion>
+                        <Assertion ID=""" + MethodBase.GetCurrentMethod().Name + @""" IssueInstant=""2015-03-13T20:44:00.791Z"" Version=""2.0"" xmlns=""urn:oasis:names:tc:SAML:2.0:assertion""><Issuer>https://idp.example.com</Issuer><Signature xmlns=""http://www.w3.org/2000/09/xmldsig#""><SignedInfo><CanonicalizationMethod Algorithm=""http://www.w3.org/2001/10/xml-exc-c14n#"" /><SignatureMethod Algorithm=""http://www.w3.org/2001/04/xmldsig-more#rsa-sha256"" /><Reference URI=""#Saml2Response_GetClaims_FailsSha256WhenChanged""><Transforms><Transform Algorithm=""http://www.w3.org/2000/09/xmldsig#enveloped-signature"" /><Transform Algorithm=""http://www.w3.org/2001/10/xml-exc-c14n#"" /></Transforms><DigestMethod Algorithm=""http://www.w3.org/2001/04/xmlenc#sha256"" /><DigestValue>BKRyWqweAczLA8fgRcx6zzMDiP0qT0TwqU/X4VgLiXM=</DigestValue></Reference></SignedInfo><SignatureValue>iK8s+MkLlixSSQu5Q/SHRZLhfnj4jlyPLAD6C2n9zmQu4CosZME7mxiNFiWyOE8XRGd+2LJle+NjJrkZFktVb03JaToq7w4Q8GfJ2oUUjNCweoaJ6NzsnwkFoXhyh0dfOixl/Ifa3qDX50/Hv2twF/QXfDs08GZTxZKehKsVDITyVd6nytF8VUb0+nU7UMWPn1XeHM7YNI/1mkVbCRx/ci5ZRxwjAX40xttd4JL6oBnp5oaaMgWpAa2cVb+t/9HhCRThEho1etbPHx/+E9ElL1PhKqKX6nh2GSH1TFJkwEXIPPZKqCs3YDINLBZpLfl626zbV4cGOGyWUAroVsk2uw==</SignatureValue><KeyInfo><X509Data><X509Certificate>MIIDIzCCAg+gAwIBAgIQg7mOjTf994NAVxZu4jqXpzAJBgUrDgMCHQUAMCQxIjAgBgNVBAMTGUtlbnRvci5BdXRoU2VydmljZXMuVGVzdHMwHhcNMTMwOTI1MTMzNTQ0WhcNMzkxMjMxMjM1OTU5WjAkMSIwIAYDVQQDExlLZW50b3IuQXV0aFNlcnZpY2VzLlRlc3RzMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAwVGpfvK9N//MnA5Jo1q2liyPR24406Dp25gv7LB3HK4DWgqsb7xXM6KIV/WVOyCV2g/O1ErBlB+HLhVZ4XUJvbqBbgAJqFO+TZwcCIe8u4nTEXeU660FdtkKClA17sbtMrAGdDfOPwVBHSuavdHeD7jHNI4RUDGKnEW13/0EvnHDilIetwODRxrX/+41R24sJThFbMczByS3OAL2dcIxoAynaGeM90gXsVYow1QhJUy21+cictikb7jW4mW6dvFCBrWIceom9J295DcQIHoxJy5NoZwMir/JV00qs1wDVoN20Ve1DC5ImwcG46XPF7efQ44yLh2j5Yexw+xloA81dwIDAQABo1kwVzBVBgNVHQEETjBMgBAWIahoZhXVUogbAqkS7zwfoSYwJDEiMCAGA1UEAxMZS2VudG9yLkF1dGhTZXJ2aWNlcy5UZXN0c4IQg7mOjTf994NAVxZu4jqXpzAJBgUrDgMCHQUAA4IBAQA2aGzmuKw4AYXWMhrGj5+i8vyAoifUn1QVOFsUukEA77CrqhqqaWFoeagfJp/45vlvrfrEwtF0QcWfmO9w1VvHwm7sk1G/cdYyJ71sU+llDsdPZm7LxQvWZYkK+xELcinQpSwt4ExavS+jLcHoOYHYwIZMBn3U8wZw7Kq29oGnoFQz7HLCEl/G9i3QRyvFITNlWTjoScaqMjHTzq6HCMaRsL09DLcY3KB+cedfpC0/MBlzaxZv0DctTulyaDfM9DCYOyokGN/rQ6qkAR0DDm8fVwknbJY7kURXNGoUetulTb5ow8BvD1gncOaYHSD0kbHZG+bLsUZDFatEr2KW8jbG</X509Certificate></X509Data></KeyInfo></Signature><Subject><NameID>SomeUser</NameID><SubjectConfirmation Method=""urn:oasis:names:tc:SAML:2.0:cm:bearer"" /></Subject><Conditions NotOnOrAfter=""2100-01-01T05:00:00.000Z"" /></Assertion>
                     </saml2p:Response>";
 
-            signedResponse = signedResponse.Replace( "SomeUser", "AnotherUser" );
+            signedResponse = signedResponse.Replace("SomeUser", "AnotherUser");
 
-            Action a = () => Saml2Response.Read( signedResponse ).GetClaims( Options.FromConfiguration );
+            Action a = () => Saml2Response.Read(signedResponse).GetClaims(Options.FromConfiguration);
             a.ShouldThrow<Saml2ResponseFailedValidationException>()
-                .WithMessage( "Signature validation failed on SAML response or contained assertion." );
+                .WithMessage("Signature validation failed on SAML response or contained assertion.");
 
         }
     }

@@ -22,6 +22,7 @@ using System.Threading.Tasks;
 using System.IdentityModel.Tokens;
 using System.IdentityModel.Metadata;
 using Kentor.AuthServices.Internal;
+using System.Reflection;
 
 namespace Kentor.AuthServices.Tests.Owin
 {
@@ -280,7 +281,7 @@ namespace Kentor.AuthServices.Tests.Owin
             var response =
                 @"<saml2p:Response xmlns:saml2p=""urn:oasis:names:tc:SAML:2.0:protocol""
                 xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
-                ID = ""KentorAuthServicesAuthenticationMiddleware_UsesCommandResultLocation"" Version=""2.0""
+                ID = """ + MethodBase.GetCurrentMethod().Name + @""" Version=""2.0""
                 IssueInstant=""2013-01-01T00:00:00Z"">
                 <saml2:Issuer>
                     https://idp.example.com
@@ -289,7 +290,7 @@ namespace Kentor.AuthServices.Tests.Owin
                     <saml2p:StatusCode Value=""urn:oasis:names:tc:SAML:2.0:status:Success"" />
                 </saml2p:Status>
                 <saml2:Assertion
-                Version=""2.0"" ID=""KentorAuthServicesAuthenticationMiddleware_UsesCommandResultLocation_Assertion1""
+                Version=""2.0"" ID=""" + MethodBase.GetCurrentMethod().Name + @"_Assertion1""
                 IssueInstant=""2013-09-25T00:00:00Z"">
                     <saml2:Issuer>https://idp.example.com</saml2:Issuer>
                     <saml2:Subject>
@@ -338,13 +339,13 @@ namespace Kentor.AuthServices.Tests.Owin
             ((AuthenticationProperties)state.RelayData).RedirectUri = state.ReturnUrl.OriginalString;
             ((AuthenticationProperties)state.RelayData).Dictionary["Test"] = "TestValue";
 
-            PendingAuthnRequests.Add(new Saml2Id("KentorAuthServicesAuthenticationMiddleware_AcsWorksRequestID"), state);
+            PendingAuthnRequests.Add(new Saml2Id(MethodBase.GetCurrentMethod().Name + @"RequestID"), state);
 
             var response =
             @"<saml2p:Response xmlns:saml2p=""urn:oasis:names:tc:SAML:2.0:protocol""
                 xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
-                ID = ""KentorAuthServicesAuthenticationMiddleware_AcsWorks"" Version=""2.0""
-                IssueInstant=""2013-01-01T00:00:00Z"" InResponseTo=""KentorAuthServicesAuthenticationMiddleware_AcsWorksRequestID"" >
+                ID = """ + MethodBase.GetCurrentMethod().Name + @""" Version=""2.0""
+                IssueInstant=""2013-01-01T00:00:00Z"" InResponseTo=""" + MethodBase.GetCurrentMethod().Name + @"RequestID"" >
                 <saml2:Issuer>
                     https://idp.example.com
                 </saml2:Issuer>
@@ -352,7 +353,7 @@ namespace Kentor.AuthServices.Tests.Owin
                     <saml2p:StatusCode Value=""urn:oasis:names:tc:SAML:2.0:status:Success"" />
                 </saml2p:Status>
                 <saml2:Assertion
-                Version=""2.0"" ID=""KentorAuthServicesAuthenticationMiddleware_AcsWorks_Assertion1""
+                Version=""2.0"" ID=""" + MethodBase.GetCurrentMethod().Name + @"_Assertion1""
                 IssueInstant=""2013-09-25T00:00:00Z"">
                     <saml2:Issuer>https://idp.example.com</saml2:Issuer>
                     <saml2:Subject>
