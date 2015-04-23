@@ -117,6 +117,7 @@
     <Compile Include="Mvc\AuthServicesControllerTests.cs" />
     <Compile Include="ClaimsAuthenticationManagerStub.cs" />
     <Compile Include="ExceptionTestHelpers.cs" />
+    <Compile Include="Saml2P\FilteringXmlNodeReaderTests.cs" />
     <Compile Include="Saml2ResponseFailedValidationExceptionTests.cs" />
     <Compile Include="WebSSO\CommandResultTests.cs" />
     <Compile Include="WebSSO\MetadataCommandTests.cs" />

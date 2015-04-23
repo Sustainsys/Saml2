@@ -474,7 +474,7 @@ namespace Kentor.AuthServices.Saml2P
 
             foreach (XmlElement assertionNode in AllAssertionElementNodes)
             {
-                using (var reader = new XmlNodeReader(assertionNode))
+                using (var reader = new FilteringXmlNodeReader(SignedXml.XmlDsigNamespaceUrl, "Signature", assertionNode))
                 {
                     var handler = options.SPOptions.Saml2PSecurityTokenHandler;
 

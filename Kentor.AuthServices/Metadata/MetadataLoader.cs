@@ -5,6 +5,7 @@ using System.IdentityModel.Metadata;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Security.Cryptography.Xml;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
@@ -47,9 +48,9 @@ namespace Kentor.AuthServices.Metadata
             using (var reader = XmlDictionaryReader.CreateTextReader(metadataStream, XmlDictionaryReaderQuotas.Max))
             {
                 // Filter out the signature from the metadata, as the built in MetadataSerializer
-                // doesn't handle the http://www.w3.org/2000/09/xmldsig# which is allowed (and for SAMLv1
-                // even recommended).
-                using (var filter = new XmlFilteringReader("http://www.w3.org/2000/09/xmldsig#", "Signature", reader))
+                // doesn't handle the XmlDsigNamespaceUrl http://www.w3.org/2000/09/xmldsig# which
+                // is allowed (and for SAMLv1 even recommended).
+                using (var filter = new FilteringXmlDictionaryReader(SignedXml.XmlDsigNamespaceUrl, "Signature", reader))
                 {
                     return serializer.ReadMetadata(filter);
                 }

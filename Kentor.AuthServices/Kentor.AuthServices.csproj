@@ -56,6 +56,7 @@
     <Compile Include="Internal\PathHelper.cs" />
     <Compile Include="Internal\QueryStringHelper.cs" />
     <Compile Include="Metadata\KeyInfoSerializer.cs" />
+    <Compile Include="Saml2P\FilteringXmlNodeReader.cs" />
     <Compile Include="Saml2ResponseFailedValidationException.cs" />
     <Compile Include="WebSso\AcsCommand.cs" />
     <Compile Include="Metadata\AttributeConsumingService.cs" />
@@ -129,7 +130,7 @@
     <Compile Include="Internal\StatusCodeHelper.cs" />
     <Compile Include="Internal\StringHelpers.cs" />
     <Compile Include="XmlDocumentExtensions.cs" />
-    <Compile Include="Metadata\XmlFilteringReader.cs" />
+    <Compile Include="Metadata\FilteringXmlDictionaryReader.cs" />
     <Compile Include="Internal\XmlHelpers.cs" />
   </ItemGroup>
   <ItemGroup>
