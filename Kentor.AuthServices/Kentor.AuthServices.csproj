@@ -56,6 +56,7 @@
     <Compile Include="Internal\PathHelper.cs" />
     <Compile Include="Internal\QueryStringHelper.cs" />
     <Compile Include="Metadata\KeyInfoSerializer.cs" />
+    <Compile Include="Saml2P\FilteringXmlNodeReader.cs" />
     <Compile Include="Saml2ResponseFailedValidationException.cs" />
     <Compile Include="WebSso\AcsCommand.cs" />
     <Compile Include="Metadata\AttributeConsumingService.cs" />
