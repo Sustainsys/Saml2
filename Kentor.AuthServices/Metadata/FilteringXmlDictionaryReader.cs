@@ -8,11 +8,11 @@ using System.Xml;
 
 namespace Kentor.AuthServices.Metadata
 {
-    class XmlFilteringReader : DelegatingXmlDictionaryReader
+    class FilteringXmlDictionaryReader : DelegatingXmlDictionaryReader
     {
         string xmlNamespaceUri, name;
 
-        public XmlFilteringReader(string xmlNamespaceUri, string name, XmlDictionaryReader innerReader)
+        public FilteringXmlDictionaryReader(string xmlNamespaceUri, string name, XmlDictionaryReader innerReader)
         {
             this.xmlNamespaceUri = xmlNamespaceUri;
             this.name = name;
