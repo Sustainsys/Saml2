@@ -216,7 +216,7 @@ namespace Kentor.AuthServices.Tests.Saml2P
 
             var assertion =
             @"<saml2:Assertion xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
-                Version=""2.0"" ID=""Saml2Response_GetClaims_TrueOnCorrectSignedSingleAssertionInResponseMessagee_Assertion1""
+                Version=""2.0"" ID=""" + MethodBase.GetCurrentMethod().Name + @"_Assertion1""
                 IssueInstant=""2013-09-25T00:00:00Z"">
                     <saml2:Issuer>https://idp.example.com</saml2:Issuer>
                     <saml2:Subject>
@@ -251,7 +251,7 @@ namespace Kentor.AuthServices.Tests.Saml2P
 
             var assertion =
             @"<saml2:Assertion xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
-                Version=""2.0"" ID=""_{0}""
+                Version=""2.0"" ID=""" + MethodBase.GetCurrentMethod().Name + @"_assertion""
                 IssueInstant=""2013-09-25T00:00:00Z"">
                     <saml2:Issuer>https://idp.example.com</saml2:Issuer>
                     <saml2:Subject>
@@ -261,7 +261,7 @@ namespace Kentor.AuthServices.Tests.Saml2P
                     <saml2:Conditions NotOnOrAfter=""2100-01-01T00:00:00Z"" />
                 </saml2:Assertion>";
 
-            var signedAssertion = SignedXmlHelper.SignXml(string.Format(assertion, Guid.NewGuid()), true, false);
+            var signedAssertion = SignedXmlHelper.SignXml(assertion, true, false);
             var signedResponse = string.Format(response, signedAssertion);
 
             Action a = () => Saml2Response.Read(signedResponse).GetClaims(Options.FromConfiguration);
@@ -332,7 +332,7 @@ namespace Kentor.AuthServices.Tests.Saml2P
             </saml2p:Response>";
 
             var assertion1 = @"<saml2:Assertion xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
-                Version=""2.0"" ID=""_{0}""
+                Version=""2.0"" ID=""" + MethodBase.GetCurrentMethod().Name + @"_Assertion1""
                 IssueInstant=""2013-09-25T00:00:00Z"">
                     <saml2:Issuer>https://idp.example.com</saml2:Issuer>
                     <saml2:Subject>
@@ -343,7 +343,7 @@ namespace Kentor.AuthServices.Tests.Saml2P
                 </saml2:Assertion>";
 
             var assertion2 = @"<saml2:Assertion xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
-                Version=""2.0"" ID=""_{0}""
+                Version=""2.0"" ID=""" + MethodBase.GetCurrentMethod().Name + @"_Assertion2""
                 IssueInstant=""2013-09-25T00:00:00Z"">
                     <saml2:Issuer>https://idp.example.com</saml2:Issuer>
                     <saml2:Subject>
@@ -353,8 +353,8 @@ namespace Kentor.AuthServices.Tests.Saml2P
                     <saml2:Conditions NotOnOrAfter=""2100-01-01T00:00:00Z"" />
                 </saml2:Assertion>";
 
-            var signedAssertion1 = SignedXmlHelper.SignXml(string.Format(assertion1, Guid.NewGuid()), true, false);
-            var signedAssertion2 = SignedXmlHelper.SignXml(string.Format(assertion2, Guid.NewGuid()), true, false);
+            var signedAssertion1 = SignedXmlHelper.SignXml(assertion1, true, false);
+            var signedAssertion2 = SignedXmlHelper.SignXml(assertion2, true, false);
             var signedResponse = string.Format(response, signedAssertion1, signedAssertion2);
 
             Action a = () => Saml2Response.Read(signedResponse).GetClaims(Options.FromConfiguration);
@@ -1311,7 +1311,7 @@ namespace Kentor.AuthServices.Tests.Saml2P
             var signedResponse =
                 @"<saml2p:Response xmlns:saml2p=""urn:oasis:names:tc:SAML:2.0:protocol""
                     xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
-                    ID = ""Saml2Response_GetClaims_ThrowsInformativeExceptionForSha256"" 
+                    ID = """ + MethodBase.GetCurrentMethod().Name + @"""
                     Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z"">
                     <saml2:Issuer>https://idp.example.com</saml2:Issuer>
                     <saml2p:Status>
@@ -1359,7 +1359,7 @@ namespace Kentor.AuthServices.Tests.Saml2P
             var signedResponse =
                 @"<saml2p:Response xmlns:saml2p=""urn:oasis:names:tc:SAML:2.0:protocol""
                     xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
-                    ID = ""Saml2Response_GetClaims_ThrowsInformativeExceptionForSha256"" 
+                    ID = """ + MethodBase.GetCurrentMethod().Name + @"""
                     Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z"">
                     <saml2:Issuer>https://idp.example.com</saml2:Issuer>
                     <saml2p:Status>
