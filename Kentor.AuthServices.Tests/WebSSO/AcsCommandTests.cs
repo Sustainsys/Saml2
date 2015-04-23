@@ -13,6 +13,7 @@ using System.Linq;
 using System.Collections.Generic;
 using Kentor.AuthServices.Configuration;
 using Kentor.AuthServices.WebSso;
+using System.Reflection;
 
 namespace Kentor.AuthServices.Tests.WebSso
 {
@@ -96,7 +97,7 @@ namespace Kentor.AuthServices.Tests.WebSso
             string payload =
                 @"<saml2p:Response xmlns:saml2p=""urn:oasis:names:tc:SAML:2.0:protocol""
                 xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
-                ID = ""AcsCommand_Run_ResponseIncludedInException"" Version=""2.0"" />";
+                ID = """ + MethodBase.GetCurrentMethod().Name + @""" Version=""2.0"" />";
             var encoded = Convert.ToBase64String(Encoding.UTF8.GetBytes(payload));
             var r = new HttpRequestData(
                 "POST",
@@ -120,7 +121,7 @@ namespace Kentor.AuthServices.Tests.WebSso
             var response =
             @"<saml2p:Response xmlns:saml2p=""urn:oasis:names:tc:SAML:2.0:protocol""
                 xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
-                ID = ""AcsCommand_Run_SuccessfulResult"" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z"">
+                ID = """ + MethodBase.GetCurrentMethod().Name + @""" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z"">
                 <saml2:Issuer>
                     https://idp.example.com
                 </saml2:Issuer>
@@ -128,7 +129,7 @@ namespace Kentor.AuthServices.Tests.WebSso
                     <saml2p:StatusCode Value=""urn:oasis:names:tc:SAML:2.0:status:Success"" />
                 </saml2p:Status>
                 <saml2:Assertion
-                Version=""2.0"" ID=""Saml2Response_GetClaims_CreateIdentity_Assertion1""
+                Version=""2.0"" ID=""" + MethodBase.GetCurrentMethod().Name + @"_Assertion1""
                 IssueInstant=""2013-09-25T00:00:00Z"">
                     <saml2:Issuer>https://idp.example.com</saml2:Issuer>
                     <saml2:Subject>
@@ -180,7 +181,7 @@ namespace Kentor.AuthServices.Tests.WebSso
             var response =
             @"<saml2p:Response xmlns:saml2p=""urn:oasis:names:tc:SAML:2.0:protocol""
                 xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
-                ID = ""AcsCommand_Run_WithReturnUrl_SuccessfulResult"" InResponseTo = """ + request.Id + @""" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z"">
+                ID = """ + MethodBase.GetCurrentMethod().Name + @""" InResponseTo = """ + request.Id + @""" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z"">
                 <saml2:Issuer>
                     https://idp.example.com
                 </saml2:Issuer>
@@ -188,7 +189,7 @@ namespace Kentor.AuthServices.Tests.WebSso
                     <saml2p:StatusCode Value=""urn:oasis:names:tc:SAML:2.0:status:Success"" />
                 </saml2p:Status>
                 <saml2:Assertion
-                Version=""2.0"" ID=""Saml2Response_GetClaims_CreateIdentity_Assertion2""
+                Version=""2.0"" ID=""" + MethodBase.GetCurrentMethod().Name + @"_Assertion2""
                 IssueInstant=""2013-09-25T00:00:00Z"">
                     <saml2:Issuer>https://idp.example.com</saml2:Issuer>
                     <saml2:Subject>

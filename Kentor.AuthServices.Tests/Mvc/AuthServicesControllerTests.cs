@@ -13,6 +13,7 @@ using Kentor.AuthServices.TestHelpers;
 using System.Xml.Linq;
 using Kentor.AuthServices.Configuration;
 using System.IdentityModel.Metadata;
+using System.Reflection;
 
 namespace Kentor.AuthServices.Tests.Mvc
 {
@@ -80,7 +81,7 @@ namespace Kentor.AuthServices.Tests.Mvc
             var response =
             @"<saml2p:Response xmlns:saml2p=""urn:oasis:names:tc:SAML:2.0:protocol""
                 xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
-                ID = ""AuthServicesController_Acs_Should_SetIdentity"" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z"">
+                ID = """ + MethodBase.GetCurrentMethod().Name + @""" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z"">
                 <saml2:Issuer>
                     https://idp.example.com
                 </saml2:Issuer>
@@ -88,7 +89,7 @@ namespace Kentor.AuthServices.Tests.Mvc
                     <saml2p:StatusCode Value=""urn:oasis:names:tc:SAML:2.0:status:Success"" />
                 </saml2p:Status>
                 <saml2:Assertion
-                Version=""2.0"" ID=""AuthServicesController_Acs_Should_SetIdentity_Assertion1""
+                Version=""2.0"" ID=""" + MethodBase.GetCurrentMethod().Name + @"_Assertion1""
                 IssueInstant=""2013-09-25T00:00:00Z"">
                     <saml2:Issuer>https://idp.example.com</saml2:Issuer>
                     <saml2:Subject>
