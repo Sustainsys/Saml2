@@ -23,6 +23,7 @@
                 <ul class="nav navbar-nav">
                     <li>@Html.ActionLink("Home", "Index", "Home")</li>
                     <li>@Html.ActionLink("Secure", "Secure", "Home")</li>
+                    <li><a href="@Url.Content("~/api/Secure")">Secure API</a></li>
                 </ul>
                 @Html.Partial("_LoginPartial")
             </div>
