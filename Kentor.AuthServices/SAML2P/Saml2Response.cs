@@ -284,7 +284,8 @@ namespace Kentor.AuthServices.Saml2P
                 .Where(node => node.NodeType == XmlNodeType.Element).Cast<XmlElement>()
                 .Where(xe => xe.LocalName == "EncryptedAssertion" && xe.NamespaceURI == Saml2Namespaces.Saml2Name);
 
-            if (encryptedAssertions.Count() > 0) {
+            if (encryptedAssertions.Count() > 0)
+            {
                 if (serviceCertificate == null)
                 {
                     throw new Saml2ResponseFailedValidationException("Encrypted Assertions encountered but Service Certificate was not provided.");
@@ -371,35 +372,35 @@ namespace Kentor.AuthServices.Saml2P
 
         private void ValidateSignature(IOptions options)
         {
-            var idpKey = options.IdentityProviders[Issuer].SigningKey;
+            var idpKeys = options.IdentityProviders[Issuer].SigningKeys;
 
             // If the response message is signed, we check just this signature because the whole content has to be correct then
             var responseSignature = xmlDocument.DocumentElement["Signature", SignedXml.XmlDsigNamespaceUrl];
             if (responseSignature != null)
             {
-                CheckSignature(XmlDocument.DocumentElement, idpKey);
+                CheckSignature(XmlDocument.DocumentElement, idpKeys);
             }
             else
             {
                 // If the response message is not signed, all assersions have to be signed correctly
                 foreach (var assertionNode in AllAssertionElementNodes)
                 {
-                    CheckSignature(assertionNode, idpKey);
+                    CheckSignature(assertionNode, idpKeys);
                 }
             }
         }
 
         private static readonly string[] allowedTransforms = new string[]
-        {
+            {
             SignedXml.XmlDsigEnvelopedSignatureTransformUrl,
             SignedXml.XmlDsigExcC14NTransformUrl,
             SignedXml.XmlDsigExcC14NWithCommentsTransformUrl
-        };
+            };
 
         /// <summary>Checks the signature.</summary>
         /// <param name="signedRootElement">The signed root element.</param>
-        /// <param name="idpKey">The assymetric key of the algorithm.</param>
-        private static void CheckSignature(XmlElement signedRootElement, AsymmetricAlgorithm idpKey)
+        /// <param name="idpKeys">A list containing one ore more assymetric keys of a algorithm.</param>
+        private static void CheckSignature(XmlElement signedRootElement, IList<AsymmetricAlgorithm> idpKeys)
         {
             var xmlDocument = new XmlDocument { PreserveWhitespace = true };
             xmlDocument.LoadXml(signedRootElement.OuterXml);
@@ -442,7 +443,7 @@ namespace Kentor.AuthServices.Saml2P
             }
             try
             {
-                if (!signedXml.CheckSignature(idpKey))
+                if (!idpKeys.Any(signedXml.CheckSignature))
                 {
                     throw new Saml2ResponseFailedValidationException("Signature validation failed on SAML response or contained assertion.");
                 }
