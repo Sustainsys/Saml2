@@ -54,3 +54,13 @@
 
     <button>Submit</button>
 }
+
+
+<script>
+    // Focus first relevant field to use
+    if ($("#InResponseTo").val()) {
+        $("#NameId").focus().select();
+    } else {
+        $("#AssertionConsumerServiceUrl").focus().select();
+    }
+</script>
