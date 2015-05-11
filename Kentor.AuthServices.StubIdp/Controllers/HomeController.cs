@@ -49,7 +49,7 @@ namespace Kentor.AuthServices.StubIdp.Controllers
                 var commandResult = Saml2Binding.Get(Saml2BindingType.HttpPost)
                     .Bind(response);
 
-                return commandResult.ToActionResult();
+                return commandResult.ToActionResult(Response);
             }
 
             return View(model);

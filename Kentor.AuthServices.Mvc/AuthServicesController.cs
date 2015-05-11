@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Net;
+using System.Web;
 using System.Web.Mvc;
 using System.IdentityModel.Services;
 using Kentor.AuthServices.HttpModule;
@@ -45,7 +46,7 @@ namespace Kentor.AuthServices.Mvc
             return CommandFactory.GetCommand(CommandFactory.SignInCommandName).Run(
                 Request.ToHttpRequestData(),
                 Options)
-                .ToActionResult();
+                .ToActionResult(Response);
         }
 
         /// <summary>
@@ -62,7 +63,7 @@ namespace Kentor.AuthServices.Mvc
                 Options);
 
             result.SignInSessionAuthenticationModule();
-            return result.ToActionResult();
+            return result.ToActionResult(Response);
         }
 
         /// <summary>
@@ -87,7 +88,7 @@ namespace Kentor.AuthServices.Mvc
             var result = CommandFactory.GetCommand(CommandFactory.MetadataCommand).Run(
                 Request.ToHttpRequestData(),
                 Options);
-            return result.ToActionResult();
+            return result.ToActionResult(Response);
         }
     }
 }

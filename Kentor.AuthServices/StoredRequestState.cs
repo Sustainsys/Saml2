@@ -1,46 +1,50 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.IdentityModel.Metadata;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Kentor.AuthServices
 {
     /// <summary>
     /// Stored data for each PendingAuthnRequest
     /// </summary>
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1702:CompoundWordsShouldBeCasedCorrectly", MessageId = "AuthnRequest")] // AuthnRequest is already in dictionary
+    [Serializable]
     public class StoredRequestState
     {
         /// <summary>
         /// Creates a PendingAuthnRequestData
         /// </summary>
-        /// <param name="idp">The EntityId of the IDP the request was sent to</param>
+        /// <param name="id">The identifier of the request.</param>
+        /// <param name="idpEntityId">The EntityId of the IDP the request was sent to</param>
         /// <param name="returnUrl">The Url to redirect back to after a succesful login</param>
-        public StoredRequestState(EntityId idp, Uri returnUrl)
+        public StoredRequestState(string id, string idpEntityId, Uri returnUrl)
         {
-            Idp = idp;
+            Id = id; 
+            IdpEntityId = idpEntityId;
             ReturnUrl = returnUrl;
         }
 
         /// <summary>
         /// Creates a PendingAuthnRequestData
         /// </summary>
-        /// <param name="idp">The EntityId of the IDP the request was sent to</param>
+        /// <param name="id">The identifier of the request.</param>
+        /// <param name="idpEntityId">The EntityId of the IDP the request was sent to</param>
         /// <param name="returnUrl">The Url to redirect back to after a succesful login</param>
         /// <param name="relayData">Aux data that can be stored across the authentication request.</param>
-        public StoredRequestState(EntityId idp, Uri returnUrl, object relayData)
+        public StoredRequestState(string id, string idpEntityId, Uri returnUrl, object relayData)
         {
-            Idp = idp;
+            Id = id;
+            IdpEntityId = idpEntityId;
             ReturnUrl = returnUrl;
             RelayData = relayData;
         }
+        
+        /// <summary>
+        /// The ID of the authentication request.
+        /// </summary>
+        public string Id { get; private set; }
 
         /// <summary>
         /// The IDP the request was sent to
         /// </summary>
-        public EntityId Idp { get; private set; }
+        public string IdpEntityId { get; private set; }
 
         /// <summary>
         /// The Url to redirect back to after a succesful login

@@ -1,4 +1,5 @@
-﻿using Kentor.AuthServices.Configuration;
+﻿using System.IdentityModel.Tokens;
+using Kentor.AuthServices.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
@@ -60,15 +61,18 @@ namespace Kentor.AuthServices.WebSso
                 }
             }
 
+            var authnRequest = idp.CreateAuthenticateRequest(urls);
+            CommandResult result = idp.Bind(authnRequest);
+            
             Uri returnUrl = null;
             if (!string.IsNullOrEmpty(returnPath))
             {
                 Uri.TryCreate(request.Url, returnPath, out returnUrl);
             }
 
-            var authnRequest = idp.CreateAuthenticateRequest(returnUrl, urls, relayData);
-
-            return idp.Bind(authnRequest);
+            result.StoredRequestState = new StoredRequestState(authnRequest.Id, idp.EntityId.Id, returnUrl, relayData);
+ 
+            return result;
         }
 
         private static CommandResult RedirectToDiscoveryService(

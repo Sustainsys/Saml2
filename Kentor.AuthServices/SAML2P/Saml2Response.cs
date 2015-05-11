@@ -12,6 +12,7 @@ using System.IdentityModel.Metadata;
 using System.Security.Cryptography;
 using System.IdentityModel.Services;
 using Kentor.AuthServices.Internal;
+using Kentor.AuthServices.WebSso;
 
 namespace Kentor.AuthServices.Saml2P
 {
@@ -249,9 +250,9 @@ namespace Kentor.AuthServices.Saml2P
         /// <summary>
         /// State stored by a corresponding request
         /// </summary>
-        public StoredRequestState GetRequestState(IOptions options)
+        public StoredRequestState GetRequestState(StoredRequestState storedRequestState, IOptions options)
         {
-            Validate(options);
+            Validate(storedRequestState, options);
             return requestState;
         }
 
@@ -276,13 +277,13 @@ namespace Kentor.AuthServices.Saml2P
         bool validated = false;
         Saml2ResponseFailedValidationException validationException;
 
-        private void Validate(IOptions options)
+        private void Validate(StoredRequestState storedRequestState, IOptions options)
         {
             if (!validated)
             {
                 try
                 {
-                    ValidateInResponseTo(options);
+                    ValidateInResponseTo(storedRequestState, options);
                     ValidateSignature(options);
                 }
                 catch (Saml2ResponseFailedValidationException ex)
@@ -305,7 +306,7 @@ namespace Kentor.AuthServices.Saml2P
         }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "InResponseTo")]
-        private void ValidateInResponseTo(IOptions options)
+        private void ValidateInResponseTo(StoredRequestState storedRequestState, IOptions options)
         {
             if (InResponseTo == null)
             {
@@ -319,8 +320,8 @@ namespace Kentor.AuthServices.Saml2P
             }
             else
             {
-                StoredRequestState storedRequestState;
-                bool knownInResponseToId = PendingAuthnRequests.TryRemove(InResponseTo, out storedRequestState);
+                bool knownInResponseToId = (storedRequestState != null && storedRequestState.Id == InResponseTo.Value);
+                
                 if (!knownInResponseToId)
                 {
                     string msg = string.Format(CultureInfo.InvariantCulture,
@@ -328,12 +329,14 @@ namespace Kentor.AuthServices.Saml2P
 
                     throw new Saml2ResponseFailedValidationException(msg);
                 }
+
                 requestState = storedRequestState;
-                if (requestState.Idp.Id != Issuer.Id)
+
+                if (requestState.IdpEntityId != Issuer.Id)
                 {
                     var msg = string.Format(CultureInfo.InvariantCulture,
                         "Expected response from idp \"{0}\" but received response from idp \"{1}\".",
-                        requestState.Idp.Id, issuer.Id);
+                        requestState.IdpEntityId, issuer.Id);
                     throw new Saml2ResponseFailedValidationException(msg);
                 }
             }
@@ -436,11 +439,14 @@ namespace Kentor.AuthServices.Saml2P
         /// <summary>
         /// Extract claims from the assertions contained in the response.
         /// </summary>
+        /// <param name="storedRequestState">The stored request state.</param>
         /// <param name="options">Service provider settings used when processing the response into claims.</param>
-        /// <returns>ClaimsIdentities</returns>
+        /// <returns>
+        /// ClaimsIdentities
+        /// </returns>
         // Method might throw expections so make it a method and not a property.
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1024:UsePropertiesWhereAppropriate")]
-        public IEnumerable<ClaimsIdentity> GetClaims(IOptions options)
+        public IEnumerable<ClaimsIdentity> GetClaims(StoredRequestState storedRequestState, IOptions options)
         {
             if (createClaimsException != null)
             {
@@ -451,7 +457,7 @@ namespace Kentor.AuthServices.Saml2P
             {
                 try
                 {
-                    claimsIdentities = CreateClaims(options).ToList();
+                    claimsIdentities = CreateClaims(storedRequestState, options).ToList();
                 }
                 catch (Exception ex)
                 {
@@ -463,9 +469,9 @@ namespace Kentor.AuthServices.Saml2P
             return claimsIdentities;
         }
 
-        private IEnumerable<ClaimsIdentity> CreateClaims(IOptions options)
+        private IEnumerable<ClaimsIdentity> CreateClaims(StoredRequestState storedRequestState, IOptions options)
         {
-            Validate(options);
+            Validate(storedRequestState, options);
 
             if (status != Saml2StatusCode.Success)
             {
