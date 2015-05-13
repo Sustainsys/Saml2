@@ -333,13 +333,13 @@ the configured certificate will take precedence over any contents in the metadat
 The SAML2 metadata standard strongly suggests that the Entity Id of a SAML2 entity
 is a URL where the metadata of the entity can be found. When loading metadata
 for an idp, AuthServices normally interprets the EntityId as a url to the metadata.
-If the metadat is located somewhere else it can be specified with this
+If the metadata is located somewhere else it can be specified with this
 configuration parameter.
 
 ###`<signingCertificate>` Element
 *Optional child element of the [`<identityProvider>`](#identityprovider-element) element*
 
-The certificate that the identity provider uses to sign it's messages. The 
+The certificate that the identity provider uses to sign its messages. The 
 certificate can either be loaded from file if the `fileName` attribute is
 specified or from a certificate store if the other attributes are specified.
 If a `fileName` is specified that will take precedence and the other attributes
