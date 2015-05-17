@@ -87,7 +87,8 @@ Root element of the config section.
 The name that this service provider will use for itself when sending
 messages. The name will end up in the `Issuer` field in outcoing authnRequests.
 
-The `entityId` should typically be the URL where the metadata is presented. E.g.
+The SAML standard requires the `entityId` to be an absolut URI. Typically it should
+be the URL where the metadata is presented. E.g.
 `http://sp.example.com/AuthServices/`.
 
 ####`returnUrl` Attribute
