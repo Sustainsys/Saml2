@@ -11,6 +11,12 @@ namespace Kentor.AuthServices.StubIdp
         {
             get
             {
+                var namedIdpSegment = HttpContext.Current.Request.Url.Segments.Skip(1).FirstOrDefault();
+                Guid parsedGuid;
+                if (!string.IsNullOrEmpty(namedIdpSegment) && Guid.TryParse(namedIdpSegment.TrimEnd('/'), out parsedGuid))
+                {
+                    return new Uri(HttpContext.Current.Request.Url, "/" + namedIdpSegment.TrimEnd('/'));
+                }
                 return new Uri(HttpContext.Current.Request.Url, HttpContext.Current.Request.ApplicationPath);
             }
         }
@@ -27,7 +33,7 @@ namespace Kentor.AuthServices.StubIdp
         {
             get
             {
-                return new Uri(RootUrl, "Metadata");
+                return new Uri(RootUrl + "/Metadata");
             }
         }
     }

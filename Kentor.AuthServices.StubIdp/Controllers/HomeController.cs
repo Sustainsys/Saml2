@@ -19,12 +19,12 @@ namespace Kentor.AuthServices.StubIdp.Controllers
 {
     public class HomeController : Controller
     {
-        public ActionResult Index()
+        public ActionResult Index(Guid? idpId)
         {
             var model = AssertionModel.CreateFromConfiguration();
 
             var requestData = Request.ToHttpRequestData();
-            if(requestData.QueryString["SAMLRequest"].Any())
+            if (requestData.QueryString["SAMLRequest"].Any())
             {
                 var decodedXmlData = Saml2Binding.Get(Saml2BindingType.HttpRedirect)
                     .Unbind(requestData);
@@ -40,7 +40,7 @@ namespace Kentor.AuthServices.StubIdp.Controllers
         }
 
         [HttpPost]
-        public ActionResult Index(AssertionModel model)
+        public ActionResult Index(Guid? idpId, AssertionModel model)
         {
             if (ModelState.IsValid)
             {
