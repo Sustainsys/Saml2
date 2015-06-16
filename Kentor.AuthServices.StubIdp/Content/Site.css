@@ -84,4 +84,8 @@ form .input-validation-error {
 #attributes-placeholder button {
   width: 10%;
 }
+.textarea-large textarea {
+  width: 100%;
+  min-height: 300px;
+}
 /*# sourceMappingURL=Site.css.map */
