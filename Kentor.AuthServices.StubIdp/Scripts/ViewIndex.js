@@ -41,4 +41,46 @@
         e.preventDefault();
         $(e.target).closest(".attribute-row").remove();
     });
+
+    var users = {};
+    $.getJSON("Manage/CurrentConfiguration", null, function (data, textStatus, jqXHR) {
+        if (data.UserList) {
+            $.each(data.UserList, function (indexInArray, valueOfElement) {
+                users[valueOfElement.Assertion.NameId] = valueOfElement;
+            });
+
+            $("#user-dropdown-placeholder").html(ich.userListTemplate(data));
+            $("#userList").focus();
+        }
+    });
+
+    $("body").on("change", "#userList", function () {
+        var selectedUserId = $(this).val();
+        var user = users[selectedUserId];
+        $("#NameId").val(selectedUserId);
+        if (user && user.Description) {
+            $("#userDescription").text(user.Description);
+        }
+        else {
+            $("#userDescription").text('');
+        }
+
+        $(".attribute-row").remove();
+
+        attributeCount = 0;
+        if (user && user.Assertion && user.Assertion.AttributeStatements) {
+            $.each(user.Assertion.AttributeStatements, function (idx, element) {
+
+                var rowInfo = {
+                    type: element.Type,
+                    value: element.Value,
+                    rowIndex: attributeCount
+                };
+                var newRow = ich.attributeRowTemplate(rowInfo);
+                $("#attributes-placeholder").append(newRow).show();
+                attributeCount++;
+            });
+            resetUnobtrusive($("form"));
+        }
+    });
 });
