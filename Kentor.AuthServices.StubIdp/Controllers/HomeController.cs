@@ -17,11 +17,21 @@ using Kentor.AuthServices.HttpModule;
 
 namespace Kentor.AuthServices.StubIdp.Controllers
 {
-    public class HomeController : Controller
+    public class HomeController : BaseController
     {
         public ActionResult Index(Guid? idpId)
         {
             var model = AssertionModel.CreateFromConfiguration();
+
+            if (idpId.HasValue)
+            {
+                var fileData = GetCachedConfiguration(idpId.Value);
+                if (!string.IsNullOrEmpty(fileData.DefaultAssertionConsumerServiceUrl))
+                {
+                    // Override default StubIdp Acs with Acs from IdpConfiguration
+                    model.AssertionConsumerServiceUrl = fileData.DefaultAssertionConsumerServiceUrl;
+                }
+            }
 
             var requestData = Request.ToHttpRequestData();
             if (requestData.QueryString["SAMLRequest"].Any())

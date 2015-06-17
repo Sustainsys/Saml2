@@ -158,6 +158,7 @@
     <Compile Include="Controllers\CertificateController.cs" />
     <Compile Include="Controllers\DiscoveryServiceController.cs" />
     <Compile Include="Controllers\FederationController.cs" />
+    <Compile Include="Controllers\BaseController.cs" />
     <Compile Include="Controllers\ManageController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\MetadataController.cs" />
@@ -171,6 +172,7 @@
     <Compile Include="Models\MetadataModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="UrlResolver.cs" />
+    <Compile Include="Models\IdpConfigurationModel.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\web.config" />
