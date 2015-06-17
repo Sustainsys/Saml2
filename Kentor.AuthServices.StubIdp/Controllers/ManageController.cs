@@ -22,6 +22,11 @@ namespace Kentor.AuthServices.StubIdp.Controllers
 {
     public class ManageController : BaseController
     {
+        /// <summary>
+        /// Special guid for the default IDP user list
+        /// </summary>
+        private static readonly Guid defaultIdpGuid = Guid.Parse("e73d98ff-0f1c-4cc2-8808-6d1bf028a8a9");
+
         public ActionResult Index(Guid idpId)
         {
             var fileName = GetIdpFileNamePath(idpId);
@@ -36,6 +41,10 @@ namespace Kentor.AuthServices.StubIdp.Controllers
         [HttpPost]
         public ActionResult Index(Guid idpId, ManageIdpModel model)
         {
+            if (idpId == defaultIdpGuid)
+            {
+                ModelState.AddModelError("", "Can't update default model");
+            }
             if (!ModelState.IsValid)
             {
                 return View(model);
@@ -70,9 +79,9 @@ namespace Kentor.AuthServices.StubIdp.Controllers
             return RedirectToAction("Index");
         }
 
-        public ActionResult CurrentConfiguration(Guid idpId)
+        public ActionResult CurrentConfiguration(Guid? idpId)
         {
-            var fileData = GetCachedConfiguration(idpId);
+            var fileData = GetCachedConfiguration(idpId.GetValueOrDefault(defaultIdpGuid));
             if (fileData == null)
             {
                 return new HttpStatusCodeResult(System.Net.HttpStatusCode.InternalServerError, "Internal server error, no IDP configured");

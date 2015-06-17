@@ -27,6 +27,7 @@
 
 @using (Html.BeginForm("Index", "Manage"))
 {
+    @Html.ValidationSummary()
     <div>
         @Html.LabelFor(m => m.JsonData)
     </div>
