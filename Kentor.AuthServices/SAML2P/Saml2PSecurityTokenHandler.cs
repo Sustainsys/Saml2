@@ -10,6 +10,8 @@ using System.Security.Claims;
 
 namespace Kentor.AuthServices.Saml2P
 {
+    using System.Linq;
+
     /// <summary>
     /// Somewhat ugly subclassing to be able to access some methods that are protected
     /// on Saml2SecurityTokenHandler. The public interface of Saml2SecurityTokenHandler
@@ -27,14 +29,19 @@ namespace Kentor.AuthServices.Saml2P
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "sp")]
         public Saml2PSecurityTokenHandler(ISPOptions spOptions)
         {
-            if(spOptions== null)
+            if (spOptions== null)
             {
                 throw new ArgumentNullException("spOptions");
             }
 
-            var audienceRestriction = new AudienceRestriction(AudienceUriMode.Always);
-            audienceRestriction.AllowedAudienceUris.Add(
-                new Uri(spOptions.EntityId.Id));
+            var audienceRestriction = spOptions.SystemIdentityModelIdentityConfiguration.AudienceRestriction;
+
+            if (!AudienceRestrictionIsActive(audienceRestriction))
+            {
+                audienceRestriction = new AudienceRestriction(AudienceUriMode.Always);
+                audienceRestriction.AllowedAudienceUris.Add(
+                    new Uri(spOptions.EntityId.Id));
+            }
 
             Configuration = new SecurityTokenHandlerConfiguration
             {
@@ -79,6 +86,22 @@ namespace Kentor.AuthServices.Saml2P
         public new void ValidateConditions(Saml2Conditions conditions, bool enforceAudienceRestriction)
         {
             base.ValidateConditions(conditions, enforceAudienceRestriction);
+        }
+
+        /// <summary>
+        /// Check if an audience restriction from configuration should be applied or if we should revert to the default behaviour
+        /// of restricting the audience to the entity id.
+        /// </summary>
+        /// <param name="audienceRestriction"></param>
+        /// <returns></returns>
+        private static bool AudienceRestrictionIsActive(AudienceRestriction audienceRestriction)
+        {
+            if (audienceRestriction == null)
+            {
+                return false;
+            }
+
+            return audienceRestriction.AudienceMode == AudienceUriMode.Never || audienceRestriction.AllowedAudienceUris.Any();
         }
     }
 }
