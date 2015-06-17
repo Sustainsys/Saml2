@@ -81,11 +81,13 @@ namespace Kentor.AuthServices.StubIdp.Controllers
 
             var fileName = GetIdpFileNamePath(idpId);
 
+            model.JsonData = parsedJson.ToString(Newtonsoft.Json.Formatting.Indented);
+
             System.IO.File.WriteAllText(fileName, model.JsonData);
 
             cachedConfigurations.AddOrUpdate(idpId, model.JsonData, (_, __) => model.JsonData);
 
-            return View(model);
+            return RedirectToAction("Index");
         }
 
         public ActionResult CurrentConfiguration(Guid idpId)
