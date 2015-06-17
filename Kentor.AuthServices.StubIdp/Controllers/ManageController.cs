@@ -47,19 +47,6 @@ namespace Kentor.AuthServices.StubIdp.Controllers
             {
                 return View(model);
             }
-            //            var o = new
-            //            {
-            //                AssertionConsumerServiceUrl = "url",
-            //                UserList = new[] { 
-            //                    new{
-            //                        DisplayName = "John Doe",
-            //                        Description = "Our first test user",
-            //                        Assertion = new AssertionModel(),
-            //                    }
-            //}
-            //            };
-            //            Newtonsoft.Json.Schema.JSchemaGenerator generator = new Newtonsoft.Json.Schema.JSchemaGenerator();
-            //            Newtonsoft.Json.Schema.JSchema schema = generator.Generate(o.GetType());
 
             var schema = JSchema.Parse(System.IO.File.ReadAllText(Server.MapPath("~/Content/IdpConfigurationSchema.json")));
 
