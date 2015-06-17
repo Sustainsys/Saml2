@@ -8,6 +8,12 @@
         "null"
       ]
     },
+    "IdpDescription": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
     "UserList": {
       "type": [
         "array",

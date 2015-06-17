@@ -15,16 +15,17 @@ namespace Kentor.AuthServices.StubIdp.Models
         {
             JsonData = jsonData;
             ETag = ComputeEtag(jsonData);
-            DefaultAssertionConsumerServiceUrl = GetAcs(jsonData);
+            DefaultAssertionConsumerServiceUrl = GetJsonValue(jsonData, "DefaultAssertionConsumerServiceUrl");
+            IdpDescription = GetJsonValue(jsonData, "IdpDescription");
         }
 
-        private static string GetAcs(string jsonData)
+        private static string GetJsonValue(string jsonData, string key)
         {
             try
             {
                 var parsedJson = JObject.Parse(jsonData);
-                var acs = (string)parsedJson["DefaultAssertionConsumerServiceUrl"];
-                return acs;
+                var value = (string)parsedJson[key];
+                return value;
             }
             catch (Exception)
             {
@@ -47,5 +48,7 @@ namespace Kentor.AuthServices.StubIdp.Models
         public string ETag { get; private set; }
 
         public string DefaultAssertionConsumerServiceUrl { get; private set; }
+
+        public string IdpDescription { get; private set; }
     }
 }

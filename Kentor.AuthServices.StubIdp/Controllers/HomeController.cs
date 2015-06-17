@@ -21,7 +21,10 @@ namespace Kentor.AuthServices.StubIdp.Controllers
     {
         public ActionResult Index(Guid? idpId)
         {
-            var model = AssertionModel.CreateFromConfiguration();
+            var model = new HomePageModel
+            {
+                AssertionModel = AssertionModel.CreateFromConfiguration(),
+            };
 
             if (idpId.HasValue)
             {
@@ -29,8 +32,9 @@ namespace Kentor.AuthServices.StubIdp.Controllers
                 if (!string.IsNullOrEmpty(fileData.DefaultAssertionConsumerServiceUrl))
                 {
                     // Override default StubIdp Acs with Acs from IdpConfiguration
-                    model.AssertionConsumerServiceUrl = fileData.DefaultAssertionConsumerServiceUrl;
+                    model.AssertionModel.AssertionConsumerServiceUrl = fileData.DefaultAssertionConsumerServiceUrl;
                 }
+                model.CustomDescription = fileData.IdpDescription;
             }
 
             var requestData = Request.ToHttpRequestData();
@@ -41,20 +45,20 @@ namespace Kentor.AuthServices.StubIdp.Controllers
 
                 var request = Saml2AuthenticationRequest.Read(decodedXmlData);
 
-                model.InResponseTo = request.Id;
-                model.AssertionConsumerServiceUrl = request.AssertionConsumerServiceUrl.ToString();
-                model.AuthnRequestXml = decodedXmlData;
+                model.AssertionModel.InResponseTo = request.Id;
+                model.AssertionModel.AssertionConsumerServiceUrl = request.AssertionConsumerServiceUrl.ToString();
+                model.AssertionModel.AuthnRequestXml = decodedXmlData;
             }
 
             return View(model);
         }
 
         [HttpPost]
-        public ActionResult Index(Guid? idpId, AssertionModel model)
+        public ActionResult Index(Guid? idpId, HomePageModel model)
         {
             if (ModelState.IsValid)
             {
-                var response = model.ToSaml2Response();
+                var response = model.AssertionModel.ToSaml2Response();
 
                 var commandResult = Saml2Binding.Get(Saml2BindingType.HttpPost)
                     .Bind(response);
