@@ -20,15 +20,8 @@ using Newtonsoft.Json.Linq;
 
 namespace Kentor.AuthServices.StubIdp.Controllers
 {
-    public class ManageController : Controller
+    public class ManageController : BaseController
     {
-        private static ConcurrentDictionary<Guid, string> cachedConfigurations = new ConcurrentDictionary<Guid, string>();
-
-        private string GetIdpFileNamePath(Guid idpId)
-        {
-            return Server.MapPath(string.Format("~/App_Data/{0}.json", idpId));
-        }
-
         public ActionResult Index(Guid idpId)
         {
             var fileName = GetIdpFileNamePath(idpId);
@@ -72,30 +65,19 @@ namespace Kentor.AuthServices.StubIdp.Controllers
 
             System.IO.File.WriteAllText(fileName, model.JsonData);
 
-            cachedConfigurations.AddOrUpdate(idpId, model.JsonData, (_, __) => model.JsonData);
+            cachedConfigurations.AddOrUpdate(idpId, new IdpConfigurationModel(model.JsonData), (_, __) => new IdpConfigurationModel(model.JsonData));
 
             return RedirectToAction("Index");
         }
 
         public ActionResult CurrentConfiguration(Guid idpId)
         {
-            string newFileData = null;
-            var fileData = cachedConfigurations.GetOrAdd(idpId, _ =>
-            {
-                var fileName = GetIdpFileNamePath(idpId);
-                if (System.IO.File.Exists(fileName))
-                {
-                    newFileData = System.IO.File.ReadAllText(fileName);
-                    return newFileData;
-                }
-                return null;
-            });
-            fileData = fileData ?? newFileData; // get new value if nothing was returned from GetOrAdd
+            var fileData = GetCachedConfiguration(idpId);
             if (fileData == null)
             {
                 return new HttpStatusCodeResult(System.Net.HttpStatusCode.InternalServerError, "Internal server error, no IDP configured");
             }
-            return Content(fileData, "application/json");
+            return Content(fileData.JsonData, "application/json");
         }
     }
 }
