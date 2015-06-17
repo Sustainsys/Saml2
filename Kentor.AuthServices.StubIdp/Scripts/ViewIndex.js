@@ -17,10 +17,10 @@
     };
 
     // Focus first relevant field to use
-    if ($("#InResponseTo").val()) {
-        $("#NameId").focus().select();
+    if ($("#AssertionModel_InResponseTo").val()) {
+        $("#AssertionModel_NameId").focus().select();
     } else {
-        $("#AssertionConsumerServiceUrl").focus().select();
+        $("#AssertionModel_AssertionConsumerServiceUrl").focus().select();
     }
 
     var attributeCount = 0;
@@ -43,7 +43,11 @@
     });
 
     var users = {};
-    $.getJSON("Manage/CurrentConfiguration", null, function (data, textStatus, jqXHR) {
+    var urlStart = window.location.pathname + "/";
+    if (window.location.pathname[window.location.pathname.length - 1] === '/') {
+        urlStart = window.location.pathname;
+    }
+    $.getJSON(urlStart + "Manage/CurrentConfiguration", null, function (data, textStatus, jqXHR) {
         if (data.UserList) {
             $.each(data.UserList, function (indexInArray, valueOfElement) {
                 users[valueOfElement.Assertion.NameId] = valueOfElement;
@@ -57,7 +61,7 @@
     $("body").on("change", "#userList", function () {
         var selectedUserId = $(this).val();
         var user = users[selectedUserId];
-        $("#NameId").val(selectedUserId);
+        $("#AssertionModel_NameId").val(selectedUserId);
         if (user && user.Description) {
             $("#userDescription").text(user.Description);
         }
