@@ -80,5 +80,23 @@ namespace Kentor.AuthServices.Saml2P
         {
             base.ValidateConditions(conditions, enforceAudienceRestriction);
         }
+
+        /// <summary>
+        /// Process authentication statement from SAML assertion. WIF chokes if the authentication statement 
+        /// contains a DeclarationReference, so we clear this out before calling the base method
+        /// http://referencesource.microsoft.com/#System.IdentityModel/System/IdentityModel/Tokens/Saml2SecurityTokenHandler.cs,1970
+        /// </summary>
+        /// <param name="statement">Authentication statement</param>
+        /// <param name="subject">Claim subject</param>
+        /// <param name="issuer">Assertion Issuer</param>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1062:Validate arguments of public methods", MessageId = "0" )]
+        protected override void ProcessAuthenticationStatement(Saml2AuthenticationStatement statement, ClaimsIdentity subject, string issuer)
+        {
+            if (statement.AuthenticationContext != null)
+            {
+                statement.AuthenticationContext.DeclarationReference = null;
+            }
+            base.ProcessAuthenticationStatement(statement, subject, issuer);
+        }
     }
 }
