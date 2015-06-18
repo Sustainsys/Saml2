@@ -33,6 +33,10 @@ namespace Kentor.AuthServices.StubIdp
         {
             get
             {
+                var rootUrl = RootUrl;
+                if (rootUrl.ToString().EndsWith("/")) {
+                    return new Uri(RootUrl + "Metadata");
+                }
                 return new Uri(RootUrl + "/Metadata");
             }
         }
