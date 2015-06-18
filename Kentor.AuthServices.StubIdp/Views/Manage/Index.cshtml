@@ -3,7 +3,22 @@
     Manage your own IDP
 </p>
 <p>
-    Bookmark this page to be able to manage your IDP in the future.
+    We have created a unique IDP for you with entity @Html.ActionLink(Url.Action("Index", "Metadata"), "Index", "Metadata").
+    <br />
+    Bookmark @Html.ActionLink(Url.Action("Index"), "Index") to be able to manage your IDP in the future.
+    <br />
+    On your IDP you can set a custom description, a custom ACS and a custom user list. This is done by entering a JSON document below.
+    <br />
+    The configuration for your IDP must be conforming to the JSON schema <a href="@Url.Content("~/Content/IdpConfigurationSchema.json")">IdpConfigurationSchema.json</a>
+    <br />
+    First time you visit this manage page a template document will be displayed.
+</p>
+<p>
+    Your IDP will not be published. As long is you don't expose your entity id anywhere no one will find your IDP.
+    <br />
+    However there is no other security preventing anyone from reading and modifying your IDP data. Don't expose sensitive data.
+    <br />
+    By law you are not allowed to store personal information of real persons, especially not civic numbers.
 </p>
 
 @*TODO: Partial*@
@@ -20,10 +35,6 @@
     can be used when testing federations.
 </p>
 @*TODO: End Partial*@
-
-<p>
-    Upload configuration data conforming to the json schema <a href="@Url.Content("~/Content/IdpConfigurationSchema.json")">IdpConfigurationSchema.json</a>
-</p>
 
 @using (Html.BeginForm("Index", "Manage"))
 {

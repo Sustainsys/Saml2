@@ -35,6 +35,14 @@ namespace Kentor.AuthServices.StubIdp.Controllers
             {
                 model.JsonData = System.IO.File.ReadAllText(fileName);
             }
+            else
+            {
+                var defaultData = System.IO.File.ReadAllText(GetIdpFileNamePath(defaultIdpGuid));
+                var defaultJson = JObject.Parse(defaultData);
+                defaultJson["DefaultAssertionConsumerServiceUrl"] = "http://www.example.com/Metadata (optional, you may remove this line)";
+                defaultJson["IdpDescription"] = "This is my custom IDP description";
+                model.JsonData = defaultJson.ToString(Newtonsoft.Json.Formatting.Indented);
+            }
             return View(model);
         }
 

@@ -35,6 +35,7 @@ namespace Kentor.AuthServices.StubIdp.Controllers
                     model.AssertionModel.AssertionConsumerServiceUrl = fileData.DefaultAssertionConsumerServiceUrl;
                 }
                 model.CustomDescription = fileData.IdpDescription;
+                model.AssertionModel.NameId = null;
             }
 
             var requestData = Request.ToHttpRequestData();
