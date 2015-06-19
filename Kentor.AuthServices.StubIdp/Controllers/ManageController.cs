@@ -94,7 +94,7 @@ namespace Kentor.AuthServices.StubIdp.Controllers
             {
                 return new HttpStatusCodeResult(System.Net.HttpStatusCode.InternalServerError, "Internal server error, no IDP configured");
             }
-            return Content(fileData.JsonData, "application/json");
+            return TestETag(fileData.JsonData, fileData.ETag, "application/json");
         }
     }
 }
