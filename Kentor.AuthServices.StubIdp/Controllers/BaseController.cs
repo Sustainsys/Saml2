@@ -17,6 +17,7 @@ using Kentor.AuthServices.WebSso;
 using Kentor.AuthServices.HttpModule;
 using Newtonsoft.Json.Schema;
 using Newtonsoft.Json.Linq;
+using System.Net;
 
 namespace Kentor.AuthServices.StubIdp.Controllers
 {
@@ -44,6 +45,18 @@ namespace Kentor.AuthServices.StubIdp.Controllers
             });
             fileData = fileData ?? newFileData; // get new value if nothing was returned from GetOrAdd
             return fileData;
+        }
+
+        // Based on http://stackoverflow.com/a/17658754/401728
+        protected ActionResult TestETag(string content, string responseETag, string contentType)
+        {
+            var requestedETag = Request.Headers["If-None-Match"];
+            if (requestedETag == responseETag)
+                return new HttpStatusCodeResult(HttpStatusCode.NotModified);
+
+            Response.Cache.SetCacheability(HttpCacheability.ServerAndPrivate);
+            Response.Cache.SetETag(responseETag);
+            return Content(content, contentType);
         }
     }
 }
