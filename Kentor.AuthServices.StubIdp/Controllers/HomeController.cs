@@ -29,13 +29,16 @@ namespace Kentor.AuthServices.StubIdp.Controllers
             if (idpId.HasValue)
             {
                 var fileData = GetCachedConfiguration(idpId.Value);
-                if (!string.IsNullOrEmpty(fileData.DefaultAssertionConsumerServiceUrl))
+                if (fileData != null)
                 {
-                    // Override default StubIdp Acs with Acs from IdpConfiguration
-                    model.AssertionModel.AssertionConsumerServiceUrl = fileData.DefaultAssertionConsumerServiceUrl;
+                    if (!string.IsNullOrEmpty(fileData.DefaultAssertionConsumerServiceUrl))
+                    {
+                        // Override default StubIdp Acs with Acs from IdpConfiguration
+                        model.AssertionModel.AssertionConsumerServiceUrl = fileData.DefaultAssertionConsumerServiceUrl;
+                    }
+                    model.CustomDescription = fileData.IdpDescription;
+                    model.AssertionModel.NameId = null;
                 }
-                model.CustomDescription = fileData.IdpDescription;
-                model.AssertionModel.NameId = null;
             }
 
             var requestData = Request.ToHttpRequestData();
