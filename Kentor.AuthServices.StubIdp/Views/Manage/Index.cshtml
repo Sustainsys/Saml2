@@ -1,40 +1,27 @@
 ﻿@model ManageIdpModel
-<p>
+<h1>
     Manage your own IDP
-</p>
+</h1>
 <p>
-    We have created a unique IDP for you with entity @Html.ActionLink(Url.Action("Index", "Metadata"), "Index", "Metadata").
+    We have created a unique IDP for you with entityId @Html.ActionLink(Url.Action("Index", "Metadata", null, Request.Url.Scheme), "Index", "Metadata").
     <br />
-    Bookmark @Html.ActionLink(Url.Action("Index"), "Index") to be able to manage your IDP in the future.
+    Bookmark @Html.ActionLink(Url.Action("Index", null, null, Request.Url.Scheme), "Index") to be able to manage your IDP in the future.
     <br />
     On your IDP you can set a custom description, a custom ACS and a custom user list. This is done by entering a JSON document below.
     <br />
     The configuration for your IDP must be conforming to the JSON schema <a href="@Url.Content("~/Content/IdpConfigurationSchema.json")">IdpConfigurationSchema.json</a>
     <br />
-    First time you visit this manage page a template document will be displayed.
+    First time you visit this page a template document will be displayed.
 </p>
 <p>
     Your IDP will not be published. As long is you don't expose your entity id anywhere no one will find your IDP.
     <br />
-    However there is no other security preventing anyone from reading and modifying your IDP data. Don't expose sensitive data.
+    However there is no further security preventing anyone from reading and modifying your IDP data. Don't expose sensitive data.
     <br />
     By law you are not allowed to store personal information of real persons, especially not civic numbers.
 </p>
 
-@*TODO: Partial*@
-<p>
-    Metadata for the Stub Idp is available at @Html.ActionLink("/Metadata", "Index", "Metadata") or in a
-    @Html.ActionLink("browser friendly version", "BrowserFriendly", "Metadata") version (with a content type
-    that makes the browser display the entire XML). There is also
-    @Html.ActionLink("federation metadata", "Index", "Federation"), with this idp as the only federation member
-    available (@Html.ActionLink("browser friendly version", "BrowserFriendly", "Federation")).
-</p>
-
-<p>
-    The Stub idp contains a @Html.ActionLink("stub idp discovery service", "Index", "DiscoveryService") that
-    can be used when testing federations.
-</p>
-@*TODO: End Partial*@
+@Html.Partial("_MetadataLink")
 
 @using (Html.BeginForm("Index", "Manage"))
 {
