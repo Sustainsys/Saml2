@@ -7,19 +7,25 @@ namespace Kentor.AuthServices.StubIdp
 {
     public static class UrlResolver
     {
+        private static Uri GetCombinedUrl(string path)
+        {
+            var namedIdpSegment = HttpContext.Current.Request.Url.Segments.Skip(1).FirstOrDefault();
+            Guid parsedGuid;
+            if (!string.IsNullOrEmpty(namedIdpSegment) && Guid.TryParse(namedIdpSegment.TrimEnd('/'), out parsedGuid))
+            {
+                return new Uri(HttpContext.Current.Request.Url, HttpContext.Current.Request.ApplicationPath + namedIdpSegment + path);
+            }
+            return new Uri(HttpContext.Current.Request.Url, HttpContext.Current.Request.ApplicationPath + path);
+        }
+
         public static Uri RootUrl
         {
             get
             {
-                var namedIdpSegment = HttpContext.Current.Request.Url.Segments.Skip(1).FirstOrDefault();
-                Guid parsedGuid;
-                if (!string.IsNullOrEmpty(namedIdpSegment) && Guid.TryParse(namedIdpSegment.TrimEnd('/'), out parsedGuid))
-                {
-                    return new Uri(HttpContext.Current.Request.Url, "/" + namedIdpSegment.TrimEnd('/'));
-                }
-                return new Uri(HttpContext.Current.Request.Url, HttpContext.Current.Request.ApplicationPath);
+                return GetCombinedUrl("");
             }
         }
+
 
         public static Uri SsoServiceUrl
         {
@@ -33,11 +39,15 @@ namespace Kentor.AuthServices.StubIdp
         {
             get
             {
-                var rootUrl = RootUrl;
-                if (rootUrl.ToString().EndsWith("/")) {
-                    return new Uri(RootUrl + "Metadata");
-                }
-                return new Uri(RootUrl + "/Metadata");
+                return GetCombinedUrl("Metadata");
+            }
+        }
+
+        public static Uri ManageUrl
+        {
+            get
+            {
+                return GetCombinedUrl("Manage");
             }
         }
     }
