@@ -25,9 +25,21 @@ namespace Kentor.AuthServices.StubIdp.Controllers
     {
         protected static ConcurrentDictionary<Guid, IdpConfigurationModel> cachedConfigurations = new ConcurrentDictionary<Guid, IdpConfigurationModel>();
 
+        /// <summary>
+        /// Special guid for the default IDP user list
+        /// </summary>
+        protected static readonly Guid defaultIdpGuid = Guid.Parse("e73d98ff-0f1c-4cc2-8808-6d1bf028a8a9");
+
         protected string GetIdpFileNamePath(Guid idpId)
         {
-            return Server.MapPath(string.Format("~/App_Data/{0}.json", idpId));
+            if (idpId == defaultIdpGuid)
+            {
+                return Server.MapPath("~/App_Data/default.json");
+            }
+            else
+            {
+                return Server.MapPath(string.Format("~/App_Data/{0}.json", idpId));
+            }
         }
 
         protected IdpConfigurationModel GetCachedConfiguration(Guid idpId)
