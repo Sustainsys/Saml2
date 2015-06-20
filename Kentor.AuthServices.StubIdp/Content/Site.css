@@ -88,4 +88,7 @@ form .input-validation-error {
   width: 100%;
   min-height: 300px;
 }
+#userDescription {
+  white-space: pre-wrap;
+}
 /*# sourceMappingURL=Site.css.map */
