@@ -1,6 +1,7 @@
 ﻿@model HomePageModel
 @if (!string.IsNullOrEmpty(Model.CustomDescription))
 {
+    @Html.HiddenFor(m => m.CustomDescription) @*Preserve value on post-redisplay*@
     <div style="white-space:pre-wrap">@Model.CustomDescription</div>
 }
 else
