@@ -3,9 +3,9 @@
     Manage your own IDP
 </h1>
 <p>
-    We have created a unique IDP for you with entityId @Html.ActionLink(Url.Action("Index", "Metadata", null, Request.Url.Scheme), "Index", "Metadata").
+    We have created a unique IDP for you with entityId <a href="@UrlResolver.MetadataUrl">@UrlResolver.MetadataUrl</a>.
     <br />
-    Bookmark @Html.ActionLink(Url.Action("Index", null, null, Request.Url.Scheme), "Index") to be able to manage your IDP in the future.
+    Bookmark <a href="@UrlResolver.ManageUrl">@UrlResolver.ManageUrl</a> to be able to manage your IDP in the future.
     <br />
     On your IDP you can set a custom description, a custom ACS and a custom user list. This is done by entering a JSON document below.
     <br />
