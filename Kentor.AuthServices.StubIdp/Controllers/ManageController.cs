@@ -22,11 +22,6 @@ namespace Kentor.AuthServices.StubIdp.Controllers
 {
     public class ManageController : BaseController
     {
-        /// <summary>
-        /// Special guid for the default IDP user list
-        /// </summary>
-        private static readonly Guid defaultIdpGuid = Guid.Parse("e73d98ff-0f1c-4cc2-8808-6d1bf028a8a9");
-
         public ActionResult Index(Guid idpId)
         {
             var fileName = GetIdpFileNamePath(idpId);

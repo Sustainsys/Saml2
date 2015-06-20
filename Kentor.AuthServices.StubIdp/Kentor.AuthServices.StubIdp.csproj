@@ -127,7 +127,7 @@
       <DependentUpon>Site.css</DependentUpon>
     </Content>
     <Content Include="Content\IdpConfigurationSchema.json" />
-    <Content Include="App_Data\e73d98ff-0f1c-4cc2-8808-6d1bf028a8a9.json" />
+    <Content Include="App_Data\default.json" />
     <None Include="Scripts\jquery-1.10.2.intellisense.js" />
     <None Include="Scripts\jquery-2.1.1.intellisense.js" />
     <Content Include="Scripts\ICanHaz.js" />
