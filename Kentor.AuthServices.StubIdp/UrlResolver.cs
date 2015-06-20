@@ -9,7 +9,8 @@ namespace Kentor.AuthServices.StubIdp
     {
         private static Uri GetCombinedUrl(string path)
         {
-            var namedIdpSegment = HttpContext.Current.Request.Url.Segments.Skip(1).FirstOrDefault();
+            var applicationPathSegmentsCount = new Uri(HttpContext.Current.Request.Url, HttpContext.Current.Request.ApplicationPath).Segments.Length;
+            var namedIdpSegment = HttpContext.Current.Request.Url.Segments.Skip(applicationPathSegmentsCount).FirstOrDefault(); // find guid part if any
             Guid parsedGuid;
             if (!string.IsNullOrEmpty(namedIdpSegment) && Guid.TryParse(namedIdpSegment.TrimEnd('/'), out parsedGuid))
             {
