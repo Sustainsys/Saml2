@@ -1,7 +1,6 @@
 ﻿@model HomePageModel
 @if (!string.IsNullOrEmpty(Model.CustomDescription))
 {
-    @Html.HiddenFor(m => m.CustomDescription) @*Preserve value on post-redisplay*@
     <div style="white-space:pre-wrap">@Model.CustomDescription</div>
 }
 else
@@ -27,35 +26,37 @@ else
 
 @using (Html.BeginForm("Index", "Home"))
 {
+    @Html.HiddenFor(m => m.CustomDescription) @*Preserve value on post-redisplay*@
     <div id="user-dropdown-placeholder"></div>
+    @Html.ValidationSummary()
 
     if (!string.IsNullOrEmpty(Model.AssertionModel.AuthnRequestXml))
     {
-        <div>
+        <div class="hide-details">
             @Html.LabelFor(m => m.AssertionModel.AuthnRequestXml)
             <pre class="xml">@Model.AssertionModel.AuthnRequestXml</pre>
         </div>
     }
 
-    <div>
+    <div class="hide-details">
         @Html.LabelFor(m => m.AssertionModel.InResponseTo)
         @Html.EditorFor(m => m.AssertionModel.InResponseTo)
         @Html.ValidationMessageFor(m => m.AssertionModel.InResponseTo)
     </div>
 
-    <div>
+    <div class="hide-details">
         @Html.LabelFor(m => m.AssertionModel.AssertionConsumerServiceUrl)
         @Html.EditorFor(m => m.AssertionModel.AssertionConsumerServiceUrl)
         @Html.ValidationMessageFor(m => m.AssertionModel.AssertionConsumerServiceUrl)
     </div>
 
-    <div>
+    <div class="hide-details">
         @Html.LabelFor(m => m.AssertionModel.NameId)
         @Html.EditorFor(m => m.AssertionModel.NameId)
         @Html.ValidationMessageFor(m => m.AssertionModel.NameId)
     </div>
 
-    <fieldset>
+    <fieldset class="hide-details">
         <legend>AttributeStatements</legend>
         <div id="attributes-placeholder" style="display:none">
             <div class="attribute-type">Type</div>
@@ -93,5 +94,6 @@ else
     </select>
 
     <div id="userDescription"></div>
-    <hr />
+    <a class="show-details" href="#">Show details</a>
+    <hr class="hide-details" />
 </script>
