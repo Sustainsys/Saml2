@@ -42,6 +42,12 @@
         $(e.target).closest(".attribute-row").remove();
     });
 
+    $("body").on("click", ".show-details", function (e) {
+        e.preventDefault();
+        $(".show-details").hide();
+        $(".hide-details").show("fast");
+    });
+
     var users = {};
     var urlStart = window.location.pathname + "/";
     if (window.location.pathname[window.location.pathname.length - 1] === '/') {
@@ -55,6 +61,7 @@
 
             $("#user-dropdown-placeholder").html(ich.userListTemplate(data));
             $("#userList").focus();
+            $(".hide-details").hide();
         }
     });
 
