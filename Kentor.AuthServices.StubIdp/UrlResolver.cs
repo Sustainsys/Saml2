@@ -11,6 +11,10 @@ namespace Kentor.AuthServices.StubIdp
         {
             var applicationPathSegmentsCount = new Uri(HttpContext.Current.Request.Url, HttpContext.Current.Request.ApplicationPath).Segments.Length;
             var namedIdpSegment = HttpContext.Current.Request.Url.Segments.Skip(applicationPathSegmentsCount).FirstOrDefault(); // find guid part if any
+            if (!string.IsNullOrEmpty(namedIdpSegment) && !namedIdpSegment.EndsWith("/"))
+            {
+                namedIdpSegment = namedIdpSegment + "/";
+            }
             Guid parsedGuid;
             if (!string.IsNullOrEmpty(namedIdpSegment) && Guid.TryParse(namedIdpSegment.TrimEnd('/'), out parsedGuid))
             {
