@@ -61,7 +61,11 @@
 
             $("#user-dropdown-placeholder").html(ich.userListTemplate(data));
             $("#userList").focus();
-            $(".hide-details").hide();
+            if (data.HideDetails || typeof (data.HideDetails) === "undefined") { // default == true
+                $(".hide-details").hide();
+            } else {
+                $(".show-details").hide();
+            }
         }
     });
 
