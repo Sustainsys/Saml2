@@ -4,6 +4,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.IdentityModel.Selectors;
 using System.IdentityModel.Tokens;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Security.Cryptography.Xml;
 using System.ServiceModel.Security;
 using System.Text;
@@ -33,6 +34,10 @@ namespace Kentor.AuthServices.Metadata
                         result.Add(clause);
                     }
                 }
+                else if (reader.IsStartElement("KeyValue", SignedXml.XmlDsigNamespaceUrl))
+                {
+                    result.Add(ReadRSAKeyValue(reader));
+                }
                 else
                 {
                     if (reader.IsStartElement("KeyName", SignedXml.XmlDsigNamespaceUrl))
@@ -49,6 +54,18 @@ namespace Kentor.AuthServices.Metadata
             reader.ReadEndElement();
 
             return result;
+        }
+
+        [SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope")]
+        private static SecurityKeyIdentifierClause ReadRSAKeyValue(XmlReader reader)
+        {
+            string rsaXmlElement = reader.ReadInnerXml();
+
+            var rsa = new RSACryptoServiceProvider(); // Do not dispose! Used later when creating key
+            rsa.FromXmlString(rsaXmlElement);
+            RsaKeyIdentifierClause clause = new RsaKeyIdentifierClause(rsa);
+
+            return clause;
         }
 
         private static KeyNameIdentifierClause ReadKeyNameClause(XmlReader reader)
