@@ -3,6 +3,8 @@ Version 0.12.0
  * Further improved configuration from code.
  * Linking accounts with ASP.NET Identity now works.
  * Improved exception messages on SAML Response validation failures.
+ * StubIdp: Support for AttributeStatements
+ * StubIdp: Ability to upload user lists with predefined NameID and AttributeStatements
 
 Version 0.11.0
  * Improved IdentityProvider configuration from code.
