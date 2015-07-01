@@ -52,15 +52,30 @@
         @Html.ValidationMessageFor(m => m.NameId)
     </div>
 
+    <fieldset>
+        <legend>AttributeStatements</legend>
+        <div id="attributes-placeholder" style="display:none">
+            <div class="attribute-type">Type</div>
+            <div class="attribute-value">Value</div>
+        </div>
+        <button id="add-attribute">Add attribute</button>
+    </fieldset>
+    <p></p>
     <button>Submit</button>
 }
 
 
-<script>
-    // Focus first relevant field to use
-    if ($("#InResponseTo").val()) {
-        $("#NameId").focus().select();
-    } else {
-        $("#AssertionConsumerServiceUrl").focus().select();
-    }
+
+<script id="attributeRowTemplate" type="text/html">
+    @* Mustache.js template for each attribute row *@
+    @*Array model binding using Index property, see http://haacked.com/archive/2008/10/23/model-binding-to-a-list.aspx/*@
+    <div class="attribute-row">
+        <input type="hidden" name="AttributeStatements.Index" value="{{rowIndex}}" />
+        <input type="text" data-val="true" data-val-required="The Type field is required." class="attribute-type" name="AttributeStatements[{{rowIndex}}].Type" value="" />
+        <input type="text" data-val="true" data-val-required="The Value field is required." class="attribute-value" name="AttributeStatements[{{rowIndex}}].Value" value="" />
+        <span class="field-validation-valid" data-valmsg-for="AttributeStatements[{{rowIndex}}].Type" data-valmsg-replace="true"></span>
+        <span class="field-validation-valid" data-valmsg-for="AttributeStatements[{{rowIndex}}].Value" data-valmsg-replace="true"></span>
+        <button class="remove-attribute">Delete</button>
+    </div>
 </script>
+

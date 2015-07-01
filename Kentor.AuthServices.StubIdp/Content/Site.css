@@ -67,4 +67,21 @@ form .input-validation-error {
   background-color: #ffa6a6;
   border-color: #e11b22;
 }
+#attributes-placeholder div {
+  min-height: 30px;
+}
+#attributes-placeholder .attribute-type {
+  width: 50%;
+}
+#attributes-placeholder .attribute-value {
+  width: 35%;
+}
+#attributes-placeholder div.attribute-type,
+#attributes-placeholder div.attribute-value {
+  display: inline-block;
+  font-weight: bold;
+}
+#attributes-placeholder button {
+  width: 10%;
+}
 /*# sourceMappingURL=Site.css.map */

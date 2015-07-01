@@ -124,6 +124,8 @@
     </Content>
     <None Include="Scripts\jquery-1.10.2.intellisense.js" />
     <None Include="Scripts\jquery-2.1.1.intellisense.js" />
+    <Content Include="Scripts\ICanHaz.js" />
+    <Content Include="Scripts\ICanHaz.min.js" />
     <Content Include="Scripts\jquery-2.1.1.js" />
     <Content Include="Scripts\jquery-2.1.1.min.js" />
     <Content Include="Scripts\jquery-2.1.1.min.map" />
@@ -132,6 +134,8 @@
     <Content Include="Scripts\jquery.validate.min.js" />
     <Content Include="Scripts\jquery.validate.unobtrusive.js" />
     <Content Include="Scripts\jquery.validate.unobtrusive.min.js" />
+    <None Include="Scripts\_references.js" />
+    <Content Include="Scripts\ViewIndex.js" />
     <Content Include="Web.config" />
     <Content Include="Views\Shared\_Layout.cshtml" />
     <Content Include="Views\_ViewStart.cshtml" />
@@ -155,6 +159,7 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Models\AssertionModel.cs" />
+    <Compile Include="Models\AttributeStatementModel.cs" />
     <Compile Include="Models\DiscoveryServiceModel.cs" />
     <Compile Include="Models\MetadataModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
