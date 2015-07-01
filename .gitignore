@@ -113,3 +113,4 @@ nuget/*nupkg
 
 *.nuspec
 !/nuget/*.nuspec
+Kentor.AuthServices.StubIdp/App_Data/*.json
