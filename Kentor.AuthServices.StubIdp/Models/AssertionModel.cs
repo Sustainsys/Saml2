@@ -19,6 +19,7 @@ namespace Kentor.AuthServices.StubIdp.Models
         public string AssertionConsumerServiceUrl { get; set; }
 
         [Display(Name = "Subject NameId")]
+        [Required]
         public string NameId { get; set; }
 
         public ICollection<AttributeStatementModel> AttributeStatements { get; set; }

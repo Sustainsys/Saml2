@@ -17,10 +17,10 @@
     };
 
     // Focus first relevant field to use
-    if ($("#InResponseTo").val()) {
-        $("#NameId").focus().select();
+    if ($("#AssertionModel_InResponseTo").val()) {
+        $("#AssertionModel_NameId").focus().select();
     } else {
-        $("#AssertionConsumerServiceUrl").focus().select();
+        $("#AssertionModel_AssertionConsumerServiceUrl").focus().select();
     }
 
     var attributeCount = 0;
@@ -40,5 +40,62 @@
     $("body").on("click", ".remove-attribute", function (e) {
         e.preventDefault();
         $(e.target).closest(".attribute-row").remove();
+    });
+
+    $("body").on("click", ".show-details", function (e) {
+        e.preventDefault();
+        $(".show-details").hide();
+        $(".hide-details").show("fast");
+    });
+
+    var users = {};
+    var urlStart = window.location.pathname + "/";
+    if (window.location.pathname[window.location.pathname.length - 1] === '/') {
+        urlStart = window.location.pathname;
+    }
+    $.getJSON(urlStart + "Manage/CurrentConfiguration", null, function (data, textStatus, jqXHR) {
+        if (data.UserList) {
+            $.each(data.UserList, function (indexInArray, valueOfElement) {
+                users[valueOfElement.Assertion.NameId] = valueOfElement;
+            });
+
+            $("#user-dropdown-placeholder").html(ich.userListTemplate(data));
+            $("#userList").focus();
+            if (data.HideDetails || typeof (data.HideDetails) === "undefined") { // default == true
+                $(".hide-details").hide();
+            } else {
+                $(".show-details").hide();
+            }
+        }
+    });
+
+    $("body").on("change", "#userList", function () {
+        var selectedUserId = $(this).val();
+        var user = users[selectedUserId];
+        $("#AssertionModel_NameId").val(selectedUserId);
+        if (user && user.Description) {
+            $("#userDescription").text(user.Description);
+        }
+        else {
+            $("#userDescription").text('');
+        }
+
+        $(".attribute-row").remove();
+
+        attributeCount = 0;
+        if (user && user.Assertion && user.Assertion.AttributeStatements) {
+            $.each(user.Assertion.AttributeStatements, function (idx, element) {
+
+                var rowInfo = {
+                    type: element.Type,
+                    value: element.Value,
+                    rowIndex: attributeCount
+                };
+                var newRow = ich.attributeRowTemplate(rowInfo);
+                $("#attributes-placeholder").append(newRow).show();
+                attributeCount++;
+            });
+            resetUnobtrusive($("form"));
+        }
     });
 });

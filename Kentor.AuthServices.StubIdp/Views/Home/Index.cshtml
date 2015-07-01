@@ -1,58 +1,62 @@
-﻿@model AssertionModel
-<p>
-    The SAML messages sent by the Stub Idp will be signed with <em>@Html.ActionLink("this certificate", "Index", "Certificate")</em>.
-    To validate the responses you need to download it and configure your service provider to trust it.
-    <em>Caution</em>: Never trust this certificate in a production environment as it will allow anyone to sign in to
-    your application as whatever user they choose.
-</p>
+﻿@model HomePageModel
+@if (!string.IsNullOrEmpty(Model.CustomDescription))
+{
+    <div style="white-space:pre-wrap">@Model.CustomDescription</div>
+}
+else
+{
+    <p>
+        The SAML messages sent by the Stub Idp will be signed with <em>@Html.ActionLink("this certificate", "Index", "Certificate")</em>.
+        To validate the responses you need to download it and configure your service provider to trust it.
+        <em>Caution</em>: Never trust this certificate in a production environment as it will allow anyone to sign in to
+        your application as whatever user they choose.
+    </p>
 
-<p>
-    Metadata for the Stub Idp is available at @Html.ActionLink("/Metadata", "Index", "Metadata") or in a
-    @Html.ActionLink("browser friendly version", "BrowserFriendly", "Metadata") version (with a content type
-    that makes the browser display the entire XML). There is also
-    @Html.ActionLink("federation metadata", "Index", "Federation"), with this idp as the only federation member
-    available (@Html.ActionLink("browser friendly version", "BrowserFriendly", "Federation")).
-</p>
+    @Html.Partial("_MetadataLink")
 
-<p>
-    The Stub idp contains a @Html.ActionLink("stub idp discovery service", "Index", "DiscoveryService") that
-    can be used when testing federations.
-</p>
+    <p>
+        This form will allow you to send a SAML2 Response to a service provider. If the In Response To ID field is
+        empty, the Response is considered unsolicited (IDP initiated).
+    </p>
 
-<p>
-    This form will allow you to send a SAML2 Response to a service provider. If the In Response To ID field is
-    empty, the Response is considered unsolicited (IDP initiated).
-</p>
+    <p>
+        If you want to build your own user list you can @Html.ActionLink("create your own IDP", "Index", "Manage", new { idpId = Guid.NewGuid() }, null)
+    </p>
+}
 
 @using (Html.BeginForm("Index", "Home"))
 {
-    if (!string.IsNullOrEmpty(Model.AuthnRequestXml))
+    @Html.HiddenFor(m => m.CustomDescription) @*Preserve value on post-redisplay*@
+    <div id="user-dropdown-placeholder"></div>
+    @Html.ValidationSummary()
+
+    if (!string.IsNullOrEmpty(Model.AssertionModel.AuthnRequestXml))
     {
-        <div>
-            @Html.LabelFor(m => m.AuthnRequestXml)
-            <pre class="xml">@Model.AuthnRequestXml</pre>
+        <div class="hide-details">
+            @Html.LabelFor(m => m.AssertionModel.AuthnRequestXml)
+            <pre class="xml">@Model.AssertionModel.AuthnRequestXml</pre>
         </div>
     }
 
-    <div>
-        @Html.LabelFor(m => m.InResponseTo)
-        @Html.EditorFor(m => m.InResponseTo)
-        @Html.ValidationMessageFor(m => m.InResponseTo)
+    <div class="hide-details">
+        @Html.LabelFor(m => m.AssertionModel.InResponseTo)
+        @Html.EditorFor(m => m.AssertionModel.InResponseTo)
+        @Html.ValidationMessageFor(m => m.AssertionModel.InResponseTo)
     </div>
 
-    <div>
-        @Html.LabelFor(m => m.AssertionConsumerServiceUrl)
-        @Html.EditorFor(m => m.AssertionConsumerServiceUrl)
-        @Html.ValidationMessageFor(m => m.AssertionConsumerServiceUrl)
+    <div class="hide-details">
+        @Html.LabelFor(m => m.AssertionModel.AssertionConsumerServiceUrl)
+        @Html.EditorFor(m => m.AssertionModel.AssertionConsumerServiceUrl)
+        @Html.ValidationMessageFor(m => m.AssertionModel.AssertionConsumerServiceUrl)
     </div>
 
-    <div>
-        @Html.LabelFor(m => m.NameId)
-        @Html.EditorFor(m => m.NameId)
-        @Html.ValidationMessageFor(m => m.NameId)
+    <div class="hide-details">
+        @Html.LabelFor(m => m.AssertionModel.NameId)
+        @Html.EditorFor(m => m.AssertionModel.NameId)
+        @Html.ValidationMessageFor(m => m.AssertionModel.NameId)
     </div>
 
-    <fieldset>
+    <fieldset class="hide-details">
         <legend>AttributeStatements</legend>
         <div id="attributes-placeholder" style="display:none">
             <div class="attribute-type">Type</div>
@@ -70,12 +74,26 @@
     @* Mustache.js template for each attribute row *@
     @*Array model binding using Index property, see http://haacked.com/archive/2008/10/23/model-binding-to-a-list.aspx/*@
     <div class="attribute-row">
-        <input type="hidden" name="AttributeStatements.Index" value="{{rowIndex}}" />
-        <input type="text" data-val="true" data-val-required="The Type field is required." class="attribute-type" name="AttributeStatements[{{rowIndex}}].Type" value="" />
-        <input type="text" data-val="true" data-val-required="The Value field is required." class="attribute-value" name="AttributeStatements[{{rowIndex}}].Value" value="" />
-        <span class="field-validation-valid" data-valmsg-for="AttributeStatements[{{rowIndex}}].Type" data-valmsg-replace="true"></span>
-        <span class="field-validation-valid" data-valmsg-for="AttributeStatements[{{rowIndex}}].Value" data-valmsg-replace="true"></span>
+        <input type="hidden" name="AssertionModel.AttributeStatements.Index" value="{{rowIndex}}" />
+        <input type="text" data-val="true" data-val-required="The Type field is required." class="attribute-type" name="AssertionModel.AttributeStatements[{{rowIndex}}].Type" value="{{type}}" />
+        <input type="text" data-val="true" data-val-required="The Value field is required." class="attribute-value" name="AssertionModel.AttributeStatements[{{rowIndex}}].Value" value="{{value}}" />
+        <span class="field-validation-valid" data-valmsg-for="AssertionModel.AttributeStatements[{{rowIndex}}].Type" data-valmsg-replace="true"></span>
+        <span class="field-validation-valid" data-valmsg-for="AssertionModel.AttributeStatements[{{rowIndex}}].Value" data-valmsg-replace="true"></span>
         <button class="remove-attribute">Delete</button>
     </div>
 </script>
 
+<script id="userListTemplate" type="text/html">
+    @* Mustache.js template for the user list *@
+    <label for="userList">Select user</label>
+    <select id="userList">
+        <option value="">--Select user--</option>
+        {{#UserList}}
+        <option {{#Assertion}} value="{{NameId}}" {{/Assertion}}>{{DisplayName}}</option>
+        {{/UserList}}
+    </select>
+
+    <div id="userDescription"></div>
+    <a class="show-details" href="#">Show details</a>
+    <hr class="hide-details" />
+</script>

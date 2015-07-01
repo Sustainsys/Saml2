@@ -71,10 +71,10 @@ form .input-validation-error {
   min-height: 30px;
 }
 #attributes-placeholder .attribute-type {
-  width: 50%;
+  width: 60%;
 }
 #attributes-placeholder .attribute-value {
-  width: 35%;
+  width: 25%;
 }
 #attributes-placeholder div.attribute-type,
 #attributes-placeholder div.attribute-value {
@@ -83,5 +83,12 @@ form .input-validation-error {
 }
 #attributes-placeholder button {
   width: 10%;
+}
+.textarea-large textarea {
+  width: 100%;
+  min-height: 300px;
+}
+#userDescription {
+  white-space: pre-wrap;
 }
 /*# sourceMappingURL=Site.css.map */
