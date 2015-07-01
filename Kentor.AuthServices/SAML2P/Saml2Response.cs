@@ -421,7 +421,7 @@ namespace Kentor.AuthServices.Saml2P
             {
                 if (signedXml.SignatureMethod == Options.RsaSha256Namespace && CryptoConfig.CreateFromName(signedXml.SignatureMethod) == null)
                 {
-                    throw new Saml2ResponseFailedValidationException("SHA256 signatures require the algorithm to be registered at the process level. Call Kentor.AuthServices.Configuration.Options.GlobalEnableSha256XmlSignatures() on startup to register.");
+                    throw new Saml2ResponseFailedValidationException("SHA256 signatures require the algorithm to be registered at the process level. Call Kentor.AuthServices.Configuration.Options.GlobalEnableSha256XmlSignatures() on startup to register.", ex);
                 }
                 else
                 {
