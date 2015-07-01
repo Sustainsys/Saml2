@@ -2,6 +2,7 @@
 using Microsoft.Owin;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -32,11 +33,11 @@ namespace Kentor.AuthServices.Owin
 
             if (commandResult.Content != null)
             {
-                using (var writer = new StreamWriter(context.Response.Body, Encoding.UTF8, 1024, true))
-                {
-                    writer.Write(commandResult.Content);
-                }
+                var bytes = ASCIIEncoding.UTF8.GetBytes(commandResult.Content);
+                context.Response.ContentLength = bytes.Length;
+                context.Response.Write(commandResult.Content);
             }
         }
+
     }
 }
