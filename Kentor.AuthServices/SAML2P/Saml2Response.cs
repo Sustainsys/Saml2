@@ -417,7 +417,7 @@ namespace Kentor.AuthServices.Saml2P
                     throw new Saml2ResponseFailedValidationException("Signature validation failed on SAML response or contained assertion.");
                 }
             }
-            catch (CryptographicException ex)
+            catch (CryptographicException)
             {
                 if (signedXml.SignatureMethod == Options.RsaSha256Namespace && CryptoConfig.CreateFromName(signedXml.SignatureMethod) == null)
                 {
