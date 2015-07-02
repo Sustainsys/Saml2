@@ -18,5 +18,7 @@ namespace Kentor.AuthServices.StubIdp.Models
         public AssertionModel AssertionModel { get; set; }
 
         public string CustomDescription { get; set; }
+
+        public bool HideDetails { get; set; }
     }
 }
