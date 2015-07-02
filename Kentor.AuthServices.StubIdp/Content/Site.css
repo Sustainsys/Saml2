@@ -91,4 +91,7 @@ form .input-validation-error {
 #userDescription {
   white-space: pre-wrap;
 }
+.initially-hidden .hide-details {
+  display: none;
+}
 /*# sourceMappingURL=Site.css.map */
