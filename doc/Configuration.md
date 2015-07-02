@@ -24,9 +24,9 @@ does not need any http modules, please see the separate info on the [Owin middle
   <httpModules>
 	<!-- Add these modules below any existing. -->
     <add name="SessionAuthenticationModule" type="System.IdentityModel.Services.SessionAuthenticationModule, System.IdentityModel.Services, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089"/>
-    <!-- Only add the Saml2AuthenticationModule if you're ranning the bare Kentor.AuthServices
+    <!-- Only add the Saml2AuthenticationModule if you're using the Kentor.AuthServices.HttpModule
 		library. If you are using Kentor.AuthServices.Mvc you SHOULD NOT load this module.-->
-	<add name="Saml2AuthenticationModule" type="Kentor.AuthServices.Saml2AuthenticationModule, Kentor.AuthServices"/>
+	<add name="Saml2AuthenticationModule" type="Kentor.AuthServices.HttpModule.Saml2AuthenticationModule, Kentor.AuthServices.HttpModule"/>
   </httpModules>
 </system.web>
 ```
