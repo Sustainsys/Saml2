@@ -67,4 +67,28 @@ form .input-validation-error {
   background-color: #ffa6a6;
   border-color: #e11b22;
 }
+#attributes-placeholder div {
+  min-height: 30px;
+}
+#attributes-placeholder .attribute-type {
+  width: 60%;
+}
+#attributes-placeholder .attribute-value {
+  width: 25%;
+}
+#attributes-placeholder div.attribute-type,
+#attributes-placeholder div.attribute-value {
+  display: inline-block;
+  font-weight: bold;
+}
+#attributes-placeholder button {
+  width: 10%;
+}
+.textarea-large textarea {
+  width: 100%;
+  min-height: 300px;
+}
+#userDescription {
+  white-space: pre-wrap;
+}
 /*# sourceMappingURL=Site.css.map */

@@ -15,11 +15,14 @@ namespace Kentor.AuthServices.StubIdp.Models
     public class AssertionModel
     {
         [Required]
-        [Display(Name="Assertion Consumer Service Url")]
+        [Display(Name = "Assertion Consumer Service Url")]
         public string AssertionConsumerServiceUrl { get; set; }
 
         [Display(Name = "Subject NameId")]
+        [Required]
         public string NameId { get; set; }
+
+        public ICollection<AttributeStatementModel> AttributeStatements { get; set; }
 
         /// <summary>
         /// Creates a new Assertion model with values from web.config
@@ -39,16 +42,18 @@ namespace Kentor.AuthServices.StubIdp.Models
 
         public Saml2Response ToSaml2Response()
         {
-            var identity = new ClaimsIdentity(new Claim[] { 
-                new Claim(ClaimTypes.NameIdentifier, NameId )});
+            var claims =
+                new Claim[] { new Claim(ClaimTypes.NameIdentifier, NameId) }
+                .Concat((AttributeStatements ?? Enumerable.Empty<AttributeStatementModel>()).Select(att => new Claim(att.Type, att.Value)));
+            var identity = new ClaimsIdentity(claims);
 
             return new Saml2Response(
                 new EntityId(UrlResolver.MetadataUrl.ToString()),
-                CertificateHelper.SigningCertificate, new Uri(AssertionConsumerServiceUrl), 
+                CertificateHelper.SigningCertificate, new Uri(AssertionConsumerServiceUrl),
                 InResponseTo, identity);
         }
 
-        [Display(Name="Incoming AuthnRequest")]
+        [Display(Name = "Incoming AuthnRequest")]
         public string AuthnRequestXml { get; set; }
     }
 }

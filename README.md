@@ -15,9 +15,11 @@ forms sites.
 * An ASP.NET MVC Controller for better integration and error handling in ASP.NET Applications.
 * An Owin Middleware to use with the Owin Pipeline or for integration with ASP.NET Identity.
 
-There are three nuget packages available. Thecore 
+There are four nuget packages available. The core 
 [Kentor.AuthServices](https://www.nuget.org/packages/Kentor.AuthServices/) contains the core
-functionality and the Http Module. The [Kentor.AuthServices.Mvc](https://www.nuget.org/packages/Kentor.AuthServices.Mvc/)
+functionality. The [Kentor.AuthServices.HttpModule](https://www.nuget.org/packages/Kentor.AuthServices.HttpModule/)
+contains an IIS Http Module (previously this was included in the core package). 
+The [Kentor.AuthServices.Mvc](https://www.nuget.org/packages/Kentor.AuthServices.Mvc/)
 package contains the MVC controller and the [Kentor.AuthServices.Owin](https://www.nuget.org/packages/Kentor.AuthServices.Owin/)
 package contains the Owin middleware.
 

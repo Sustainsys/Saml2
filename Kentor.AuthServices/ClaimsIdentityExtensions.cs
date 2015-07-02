@@ -22,7 +22,7 @@ namespace Kentor.AuthServices
                 throw new ArgumentNullException("identity");
             }
 
-            if(issuer == null)
+            if (issuer == null)
             {
                 throw new ArgumentNullException("issuer");
             }
@@ -31,10 +31,10 @@ namespace Kentor.AuthServices
 
             assertion.Subject = new Saml2Subject(new Saml2NameIdentifier(
                 identity.Claims.Single(c => c.Type == ClaimTypes.NameIdentifier).Value));
-                
-            foreach (var claim in identity.Claims.Where(c => c.Type != ClaimTypes.NameIdentifier))            
+
+            foreach (var claim in identity.Claims.Where(c => c.Type != ClaimTypes.NameIdentifier).GroupBy(c => c.Type))
             {
-                assertion.Statements.Add(new Saml2AttributeStatement(new Saml2Attribute(claim.Type, claim.Value)));
+                assertion.Statements.Add(new Saml2AttributeStatement(new Saml2Attribute(claim.Key, claim.Select(c => c.Value))));
             };
 
             assertion.Conditions = new Saml2Conditions()
