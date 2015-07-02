@@ -18,8 +18,8 @@ namespace Kentor.AuthServices.IntegrationTests
         public void SignIn_Unsolicited_MVC()
         {
             I.Open("http://localhost:52071/")
-                .Enter("http://localhost:2181/AuthServices/Acs").In("#AssertionConsumerServiceUrl")
-                .Click("#main form button")
+                .Enter("http://localhost:2181/AuthServices/Acs").In("#AssertionModel_AssertionConsumerServiceUrl")
+                .Click("#submit")
                 .Click("a[href=\"/Home/Secure\"]")
                 .Assert.Text("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier - JohnDoe").In(".body-content ul li:first-child");
 
@@ -30,8 +30,8 @@ namespace Kentor.AuthServices.IntegrationTests
         public void SignIn_Unsolicited_HttpModule()
         {
             I.Open("http://localhost:52071/")
-                .Enter("http://localhost:17009/SamplePath/AuthServices/Acs").In("#AssertionConsumerServiceUrl")
-                .Click("#main form button")
+                .Enter("http://localhost:17009/SamplePath/AuthServices/Acs").In("#AssertionModel_AssertionConsumerServiceUrl")
+                .Click("#submit")
                 .Assert.Text("JohnDoe").In("tbody tr td:nth-child(2)");
 
             I.Click("a[href=\"/SamplePath/Home/SignOut\"");
@@ -44,12 +44,12 @@ namespace Kentor.AuthServices.IntegrationTests
                 .Click("a[href=\"/Home/Secure\"]")
                 .Assert.Text("http://localhost:2181/AuthServices/SignIn?ReturnUrl=%2FHome%2FSecure").In("#return");
 
-            I.Click("#main form button")
-                .Assert.Text("http://localhost:2181/AuthServices/Acs").In("#AssertionConsumerServiceUrl");
+            I.Click("#submit")
+                .Assert.Text("http://localhost:2181/AuthServices/Acs").In("#AssertionModel_AssertionConsumerServiceUrl");
 
-            I.Assert.False(() => string.IsNullOrEmpty(I.Find("#InResponseTo").Element.Value));
+            I.Assert.False(() => string.IsNullOrEmpty(I.Find("#AssertionModel_InResponseTo").Element.Value));
 
-            I.Click("#main form button")
+            I.Click("#submit")
                 .Assert.Url("http://localhost:2181/Home/Secure");
 
             I.Assert.Text("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier - JohnDoe").In(".body-content ul li:first-child");
@@ -64,12 +64,12 @@ namespace Kentor.AuthServices.IntegrationTests
                 .Click("a[href=\"/SamplePath/AuthServices/SignIn\"]")
                 .Assert.Text("http://localhost:17009/SamplePath/AuthServices/SignIn").In("#return");
 
-            I.Click("#main form button")
-                .Assert.Text("http://localhost:17009/SamplePath/AuthServices/Acs").In("#AssertionConsumerServiceUrl");
+            I.Click("#submit")
+                .Assert.Text("http://localhost:17009/SamplePath/AuthServices/Acs").In("#AssertionModel_AssertionConsumerServiceUrl");
 
-            I.Assert.False(() => string.IsNullOrEmpty(I.Find("#InResponseTo").Element.Value));
+            I.Assert.False(() => string.IsNullOrEmpty(I.Find("#AssertionModel_InResponseTo").Element.Value));
 
-            I.Click("#main form button")
+            I.Click("#submit")
                 .Assert.Text("JohnDoe").In("tbody tr td:nth-child(2)");
 
             I.Click("a[href=\"/SamplePath/Home/SignOut\"");
@@ -86,9 +86,9 @@ namespace Kentor.AuthServices.IntegrationTests
         public void SignIn_Unsolicited_Owin()
         {
             I.Open("http://localhost:52071/")
-                .Enter("http://localhost:57294/AuthServices/Acs").In("#AssertionConsumerServiceUrl")
-                .Enter("SomeUnusedNameId").In("#NameId")
-                .Click("#main form button")
+                .Enter("http://localhost:57294/AuthServices/Acs").In("#AssertionModel_AssertionConsumerServiceUrl")
+                .Enter("SomeUnusedNameId").In("#AssertionModel_NameId")
+                .Click("#submit")
                 .Assert.Text("You've successfully authenticated with http://localhost:52071/Metadata. Please enter a user name for this site below and click the Register button to finish logging in.")
                 .In("p.text-info");
         }
@@ -100,14 +100,14 @@ namespace Kentor.AuthServices.IntegrationTests
                 .Click("#KentorAuthServices")
                 .Assert.Text("http://localhost:52071/AuthServices/SignIn?ReturnUrl=%2FAccount%2FExternalLoginCallback");
 
-            I.Click("#main form button")
-                .Assert.Text("http://localhost:57294/AuthServices/Acs").In("#AssertionConsumerServiceUrl");
+            I.Click("#submit")
+                .Assert.Text("http://localhost:57294/AuthServices/Acs").In("#AssertionModel_AssertionConsumerServiceUrl");
 
-            I.Assert.False(() => string.IsNullOrEmpty(I.Find("#InResponseTo").Element.Value));
+            I.Assert.False(() => string.IsNullOrEmpty(I.Find("#AssertionModel_InResponseTo").Element.Value));
 
-            I.Enter("SomeUnusedNameId").In("#NameId");
+            I.Enter("SomeUnusedNameId").In("#AssertionModel_NameId");
 
-            I.Click("#main form button")
+            I.Click("#submit")
                 .Assert.Text("You've successfully authenticated with http://localhost:52071/Metadata. Please enter a user name for this site below and click the Register button to finish logging in.")
                 .In("p.text-info");
         }
