@@ -34,19 +34,22 @@ namespace Kentor.AuthServices.Metadata
                         result.Add(clause);
                     }
                 }
-                else if (reader.IsStartElement("KeyValue", SignedXml.XmlDsigNamespaceUrl))
-                {
-                    result.Add(ReadRSAKeyValue(reader));
-                }
                 else
                 {
-                    if (reader.IsStartElement("KeyName", SignedXml.XmlDsigNamespaceUrl))
+                    if (reader.IsStartElement("KeyValue", SignedXml.XmlDsigNamespaceUrl))
                     {
-                        result.Add(ReadKeyNameClause(reader));
+                        result.Add(ReadRSAKeyValue(reader));
                     }
                     else
                     {
-                        reader.Skip();
+                        if (reader.IsStartElement("KeyName", SignedXml.XmlDsigNamespaceUrl))
+                        {
+                            result.Add(ReadKeyNameClause(reader));
+                        }
+                        else
+                        {
+                            reader.Skip();
+                        }
                     }
                 }
             }
