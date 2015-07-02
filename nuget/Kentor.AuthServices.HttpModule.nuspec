@@ -23,7 +23,4 @@
       </group>
     </dependencies>
   </metadata>
-  <files>
-    <file src="readme.txt" target="" />
-  </files>
 </package>

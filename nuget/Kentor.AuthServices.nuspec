@@ -17,7 +17,4 @@
     <tags>SAML2 authentication ASP.NET SAML SSO</tags>
     <releaseNotes />
   </metadata>
-  <files>
-    <file src="readme.txt" target="" />
-  </files>
 </package>
