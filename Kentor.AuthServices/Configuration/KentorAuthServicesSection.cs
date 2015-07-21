@@ -13,6 +13,7 @@ using Kentor.AuthServices.Metadata;
 using Kentor.AuthServices.Saml2P;
 using System.IdentityModel.Configuration;
 using System.IdentityModel.Services.Configuration;
+using System.Security.Cryptography;
 
 namespace Kentor.AuthServices.Configuration
 {
@@ -300,5 +301,26 @@ namespace Kentor.AuthServices.Configuration
                 return systemIdentityModelIdentityConfiguration;
             }
         }
+
+        /// <summary>
+        /// Certificate location for the certificate the Service Provider uses to decrypt assertions.
+        /// </summary>
+        [ConfigurationProperty("serviceCertificate")]
+        public CertificateElement ServiceCertificate
+        {
+            get
+            {
+                return (CertificateElement)base["serviceCertificate"];
+            }
+            internal set
+            {
+                base["serviceCertificate"] = value;
+            }
+        }
+
+        /// <summary>
+        /// The private key of the service provider that is used to decrypt assertions.
+        /// </summary>
+        public AsymmetricAlgorithm ServicePrivateKey { get; set; }
     }
 }

@@ -259,10 +259,10 @@ namespace Kentor.AuthServices.Saml2P
         /// <value>All assertion element nodes.</value>
         private IEnumerable<XmlElement> AllAssertionElementNodes
         {
-            get { return allAssertionElementNodes ?? (allAssertionElementNodes = retrieveAssrtionElements()); }
+            get { return allAssertionElementNodes ?? (allAssertionElementNodes = retrieveAssertionElements()); }
         }
 
-        private IEnumerable<XmlElement> retrieveAssrtionElements()
+        private IEnumerable<XmlElement> retrieveAssertionElements()
         {
             var assertions = new List<XmlElement>();
 
@@ -270,11 +270,9 @@ namespace Kentor.AuthServices.Saml2P
                 .Where(node => node.NodeType == XmlNodeType.Element).Cast<XmlElement>()
                 .Where(xe => xe.LocalName == "Assertion" && xe.NamespaceURI == Saml2Namespaces.Saml2Name));
 
-            var spKey = FederatedAuthentication.FederationConfiguration.ServiceCertificate != null ? FederatedAuthentication.FederationConfiguration.ServiceCertificate.PrivateKey : null;
-
             assertions.AddRange(XmlDocument.DocumentElement.ChildNodes.Cast<XmlNode>()
                 .Where(node => node.NodeType == XmlNodeType.Element).Cast<XmlElement>()
-                .Where(xe => xe.LocalName == "EncryptedAssertion" && xe.NamespaceURI == Saml2Namespaces.Saml2Name).Decrypt(spKey)
+                .Where(xe => xe.LocalName == "EncryptedAssertion" && xe.NamespaceURI == Saml2Namespaces.Saml2Name).Decrypt(servicePrivateKey)
                 .Select(xe => (XmlElement)xe.GetElementsByTagName("Assertion", Saml2Namespaces.Saml2Name)[0]));
 
             return assertions;
@@ -282,11 +280,13 @@ namespace Kentor.AuthServices.Saml2P
 
         bool validated = false;
         Saml2ResponseFailedValidationException validationException;
+        private AsymmetricAlgorithm servicePrivateKey;
 
         private void Validate(IOptions options)
         {
             if (!validated)
             {
+                servicePrivateKey = options.SPOptions.ServicePrivateKey;
                 try
                 {
                     ValidateInResponseTo(options);

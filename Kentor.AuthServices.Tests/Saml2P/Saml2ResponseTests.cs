@@ -728,7 +728,7 @@ namespace Kentor.AuthServices.Tests.Saml2P
                 IssueInstant=""2013-09-25T00:00:00Z"" xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion"">
                     <saml2:Issuer>https://idp.example.com</saml2:Issuer>
                     <saml2:Subject>
-                        <saml2:NameID>SomeUser</saml2:NameID>
+                        <saml2:NameID>UserIDInsideEncryptedAssertion</saml2:NameID>
                         <saml2:SubjectConfirmation Method=""urn:oasis:names:tc:SAML:2.0:cm:bearer"" />
                     </saml2:Subject>
                     <saml2:Conditions NotOnOrAfter=""2100-01-01T00:00:00Z"" />
@@ -742,19 +742,10 @@ namespace Kentor.AuthServices.Tests.Saml2P
             var encryptedAssertion = SignedXmlHelper.EncryptXml(string.Format(encryptedAssertionTemplate, assertion), "Assertion");
             var signedResponse = SignedXmlHelper.SignXml(string.Format(response, encryptedAssertion));
 
-            FederatedAuthentication.FederationConfiguration.ServiceCertificate = SignedXmlHelper.TestCert2;
-
-            var c1 = new ClaimsIdentity("Federation");
-            c1.AddClaim(new Claim(ClaimTypes.NameIdentifier, "SomeUser", null, "https://idp.example.com"));
-
-            var expected = new[] { c1 };
-
-
             var result = Saml2Response.Read(signedResponse);
-            result.Validate(Options.FromConfiguration);
-
-            result.GetClaims(Options.FromConfiguration.SPOptions)
-                .ShouldBeEquivalentTo(expected, opt => opt.IgnoringCyclicReferences());
+            var claims = result.GetClaims(Options.FromConfiguration);
+            claims.Count().Should().Be(1);
+            claims.First().FindFirst(ClaimTypes.NameIdentifier).Value.Should().Be("UserIDInsideEncryptedAssertion");
         }
 
 

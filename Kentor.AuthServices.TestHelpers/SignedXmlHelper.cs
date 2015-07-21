@@ -41,7 +41,7 @@ namespace Kentor.AuthServices.TestHelpers
             var encryptedData = new EncryptedData
             {
                 Type = EncryptedXml.XmlEncElementUrl,
-                EncryptionMethod = new EncryptionMethod(EncryptedXml.XmlEncAES256Url)
+                EncryptionMethod = new System.Security.Cryptography.Xml.EncryptionMethod(EncryptedXml.XmlEncAES256Url)
             };
 
             var elementToEncrypt = (XmlElement) xmlDoc.GetElementsByTagName(elementToEncryptName, Saml2Namespaces.Saml2Name)[0];
@@ -56,7 +56,7 @@ namespace Kentor.AuthServices.TestHelpers
 
             var encryptedKey = new EncryptedKey
             {
-                EncryptionMethod = new EncryptionMethod(EncryptedXml.XmlEncRSA15Url),
+                EncryptionMethod = new System.Security.Cryptography.Xml.EncryptionMethod(EncryptedXml.XmlEncRSA15Url),
                 CipherData = new CipherData(EncryptedXml.EncryptKey(sessionKey.Key, (RSA)TestCert2.PublicKey.Key, false))
             };
 

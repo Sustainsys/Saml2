@@ -6,6 +6,7 @@ using System.IdentityModel.Configuration;
 using System.IdentityModel.Metadata;
 using System.IdentityModel.Services.Configuration;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -183,5 +184,10 @@ namespace Kentor.AuthServices.Configuration
                 return systemIdentityModelIdentityConfiguration;
             }
         }
+
+        /// <summary>
+        /// The private key of the service provider that is used to decrypt assertions.
+        /// </summary>
+        public AsymmetricAlgorithm ServicePrivateKey { get; set; }
     }
 }
