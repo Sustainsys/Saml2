@@ -27,11 +27,7 @@ namespace Kentor.AuthServices.Configuration
                 var options = new Options(KentorAuthServicesSection.Current);
                 KentorAuthServicesSection.Current.IdentityProviders.RegisterIdentityProviders(options);
                 KentorAuthServicesSection.Current.Federations.RegisterFederations(options);
-                var serviceCertificate = KentorAuthServicesSection.Current.ServiceCertificate.LoadCertificate();
-                if (serviceCertificate != null)
-                {
-                    options.SPOptions.ServicePrivateKey = KentorAuthServicesSection.Current.ServiceCertificate.LoadCertificate().PrivateKey;
-                }
+                options.SPOptions.ServiceCertificate = KentorAuthServicesSection.Current.ServiceCertificateConfiguration.LoadCertificate();
 
                 return options;
             }

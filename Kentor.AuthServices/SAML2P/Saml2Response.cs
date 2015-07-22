@@ -270,23 +270,36 @@ namespace Kentor.AuthServices.Saml2P
                 .Where(node => node.NodeType == XmlNodeType.Element).Cast<XmlElement>()
                 .Where(xe => xe.LocalName == "Assertion" && xe.NamespaceURI == Saml2Namespaces.Saml2Name));
 
-            assertions.AddRange(XmlDocument.DocumentElement.ChildNodes.Cast<XmlNode>()
+            var encryptedAssertions = XmlDocument.DocumentElement.ChildNodes.Cast<XmlNode>()
                 .Where(node => node.NodeType == XmlNodeType.Element).Cast<XmlElement>()
-                .Where(xe => xe.LocalName == "EncryptedAssertion" && xe.NamespaceURI == Saml2Namespaces.Saml2Name).Decrypt(servicePrivateKey)
-                .Select(xe => (XmlElement)xe.GetElementsByTagName("Assertion", Saml2Namespaces.Saml2Name)[0]));
+                .Where(xe => xe.LocalName == "EncryptedAssertion" && xe.NamespaceURI == Saml2Namespaces.Saml2Name);
+
+            if (encryptedAssertions.Count() > 0) {
+                if (serviceCertificate == null)
+                {
+                    throw new Saml2ResponseFailedValidationException("Encrypted Assertions encountered but Service Certificate was not provided.");
+                }
+                else if (!serviceCertificate.HasPrivateKey)
+                {
+                    throw new Saml2ResponseFailedValidationException("Encrypted Assertions encountered but Service Certificate does not contain private key.");
+                }
+
+                assertions.AddRange(encryptedAssertions.Decrypt(serviceCertificate.PrivateKey)
+                    .Select(xe => (XmlElement)xe.GetElementsByTagName("Assertion", Saml2Namespaces.Saml2Name)[0]));
+            }
 
             return assertions;
         }
 
         bool validated = false;
         Saml2ResponseFailedValidationException validationException;
-        private AsymmetricAlgorithm servicePrivateKey;
+        private X509Certificate2 serviceCertificate;
 
         private void Validate(IOptions options)
         {
             if (!validated)
             {
-                servicePrivateKey = options.SPOptions.ServicePrivateKey;
+                serviceCertificate = options.SPOptions.ServiceCertificate;
                 try
                 {
                     ValidateInResponseTo(options);
