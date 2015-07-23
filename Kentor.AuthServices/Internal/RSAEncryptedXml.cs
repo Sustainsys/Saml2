@@ -15,7 +15,6 @@ namespace Kentor.AuthServices.Internal
             privateKey = rsaKey;
         }
 
-
         // Try to decrypt the EncryptedKey by the given key
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "CipherReference"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "CipherData")]
         [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverageAttribute]
