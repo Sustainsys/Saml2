@@ -80,6 +80,7 @@ Root element of the config section.
 * [`<metadata>`](#metadata-element)
 * [`<identityProviders>`](#identityproviders-element)
 * [`<federations>`](#federations-element)
+* [`<serviceCertificate>`](#serviceCertificate-element)
 
 ####`entityId` Attribute
 *Attribute of the [`<kentor.authServices>`](#kentor-authservices-section) element.*
@@ -412,6 +413,15 @@ enumeration.
 *Optional child element of the `<kentor.authServices>`(#kentor-authservices-section) element.*
 
 Contains a list of federations that the service provider knows and trusts.
+
+###`<serviceCertificate>` Element
+*Optional child element of the `<kentor.authServices>`(#kentor-authservices-section) element.*
+
+Specifies the certificate that the service provider uses for encrypted assertions. 
+The public key of this certificate will be exposed in the metadata and the private
+key will be used during decryption. 
+
+Uses same options/attributes as [`<signingCertificate>`](#signingcertificate-element) for locating the certificate.
 
 ####Elements
 * [`<add>`](#add-federation-element).
