@@ -30,13 +30,13 @@ namespace Kentor.AuthServices.TestHelpers
             return xmlDoc.OuterXml;
         }        
 
-        public static string EncryptXml(string xml, string elementToEncryptName)
-        {
+        public static string EncryptAssertion(string assertionXml, bool useOaep = false)
+        {            
             var xmlDoc = new XmlDocument { PreserveWhitespace = true };
-            xmlDoc.LoadXml(xml);
+            var wrappedAssertion = string.Format(@"<saml2:EncryptedAssertion xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion"">{0}</saml2:EncryptedAssertion>", assertionXml);
+            xmlDoc.LoadXml(wrappedAssertion);
 
-            // Create a new TripleDES key. 
-            var sessionKey = new RijndaelManaged { KeySize = 256 };
+            var symmetricAlgorithm = new RijndaelManaged { KeySize = 256 };
 
             var encryptedData = new EncryptedData
             {
@@ -44,20 +44,21 @@ namespace Kentor.AuthServices.TestHelpers
                 EncryptionMethod = new System.Security.Cryptography.Xml.EncryptionMethod(EncryptedXml.XmlEncAES256Url)
             };
 
-            var elementToEncrypt = (XmlElement) xmlDoc.GetElementsByTagName(elementToEncryptName, Saml2Namespaces.Saml2Name)[0];
+            var elementToEncrypt = (XmlElement) xmlDoc.GetElementsByTagName("Assertion", Saml2Namespaces.Saml2Name)[0];
 
             // Encrypt the assertion and add it to the encryptedData instance.
             var encryptedXml = new EncryptedXml();
-            var encryptedElement = encryptedXml.EncryptData(elementToEncrypt, sessionKey, false);
+            var encryptedElement = encryptedXml.EncryptData(elementToEncrypt, symmetricAlgorithm, false);
             encryptedData.CipherData.CipherValue = encryptedElement;
 
             // Add an encrypted version of the key used.
             encryptedData.KeyInfo = new KeyInfo();
 
+            var algorithm = useOaep ? EncryptedXml.XmlEncRSAOAEPUrl : EncryptedXml.XmlEncRSA15Url;
             var encryptedKey = new EncryptedKey
             {
-                EncryptionMethod = new System.Security.Cryptography.Xml.EncryptionMethod(EncryptedXml.XmlEncRSA15Url),
-                CipherData = new CipherData(EncryptedXml.EncryptKey(sessionKey.Key, (RSA)TestCert2.PublicKey.Key, false))
+                EncryptionMethod = new System.Security.Cryptography.Xml.EncryptionMethod(algorithm),
+                CipherData = new CipherData(EncryptedXml.EncryptKey(symmetricAlgorithm.Key, (RSA)TestCert2.PublicKey.Key, useOaep))
             };
 
             encryptedData.KeyInfo.AddClause(new KeyInfoEncryptedKey(encryptedKey));

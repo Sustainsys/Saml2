@@ -735,7 +735,7 @@ namespace Kentor.AuthServices.Tests.Saml2P
                     <saml2:Conditions NotOnOrAfter=""2100-01-01T00:00:00Z"" />
                 </saml2:Assertion>";
 
-            var encryptedAssertion = SignedXmlHelper.EncryptXml(string.Format(encryptedAssertionTemplate, assertion), "Assertion");
+            var encryptedAssertion = SignedXmlHelper.EncryptAssertion(assertion);
             var signedResponse = SignedXmlHelper.SignXml(string.Format(response, encryptedAssertion));
 
             var result = Saml2Response.Read(signedResponse);
@@ -774,12 +774,46 @@ namespace Kentor.AuthServices.Tests.Saml2P
                 </saml2:Assertion>";
 
             var signedAssertion = SignedXmlHelper.SignXml(assertion);
-            var encryptedAssertion = SignedXmlHelper.EncryptXml(string.Format(encryptedAssertionTemplate, signedAssertion), "Assertion");
+            var encryptedAssertion = SignedXmlHelper.EncryptAssertion(signedAssertion);
             var responseWithAssertion = string.Format(response, encryptedAssertion);
 
-            var result = Saml2Response.Read(responseWithAssertion);
-            var options = Options.FromConfiguration;
-            var claims = result.GetClaims(options);
+            var claims = Saml2Response.Read(responseWithAssertion).GetClaims(Options.FromConfiguration);
+            claims.Count().Should().Be(1);
+            claims.First().FindFirst(ClaimTypes.NameIdentifier).Value.Should().Be("SomeUser");
+        }
+
+        [TestMethod]
+        [NotReRunnable]
+        public void Saml2Response_GetClaims_CorrectEncryptedSingleAssertion_OAEP()
+        {
+            var response =
+            @"<saml2p:Response xmlns:saml2p=""urn:oasis:names:tc:SAML:2.0:protocol""
+            xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
+            ID = """ + MethodBase.GetCurrentMethod().Name + @""" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z"">
+                <saml2:Issuer>https://idp.example.com</saml2:Issuer>
+                <saml2p:Status>
+                    <saml2p:StatusCode Value=""urn:oasis:names:tc:SAML:2.0:status:Success"" />
+                </saml2p:Status>
+                {0}
+            </saml2p:Response>";
+
+            var assertion =
+            @"<saml2:Assertion xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
+                Version=""2.0"" ID=""" + MethodBase.GetCurrentMethod().Name + @"_Assertion1""
+                IssueInstant=""2013-09-25T00:00:00Z"">
+                    <saml2:Issuer>https://idp.example.com</saml2:Issuer>
+                    <saml2:Subject>
+                        <saml2:NameID>SomeUser</saml2:NameID>
+                        <saml2:SubjectConfirmation Method=""urn:oasis:names:tc:SAML:2.0:cm:bearer"" />
+                    </saml2:Subject>
+                    <saml2:Conditions NotOnOrAfter=""2100-01-01T00:00:00Z"" />
+                </saml2:Assertion>";
+
+            var signedAssertion = SignedXmlHelper.SignXml(assertion);
+            var encryptedAssertion = SignedXmlHelper.EncryptAssertion(signedAssertion, useOaep: true);
+            var responseWithAssertion = string.Format(response, encryptedAssertion);
+
+            var claims = Saml2Response.Read(responseWithAssertion).GetClaims(Options.FromConfiguration);
             claims.Count().Should().Be(1);
             claims.First().FindFirst(ClaimTypes.NameIdentifier).Value.Should().Be("SomeUser");
         }
@@ -811,7 +845,7 @@ namespace Kentor.AuthServices.Tests.Saml2P
                     <saml2:Conditions NotOnOrAfter=""2100-01-01T00:00:00Z"" />
                 </saml2:Assertion>";
 
-            var encryptedAssertion = SignedXmlHelper.EncryptXml(string.Format(encryptedAssertionTemplate, assertion), "Assertion");
+            var encryptedAssertion = SignedXmlHelper.EncryptAssertion(assertion);
             var responseWithAssertion = string.Format(response, encryptedAssertion);
 
             Action a = () => Saml2Response.Read(responseWithAssertion).GetClaims(Options.FromConfiguration);
@@ -849,7 +883,7 @@ namespace Kentor.AuthServices.Tests.Saml2P
 
             var signedAssertion = SignedXmlHelper.SignXml(assertion);
             var tamperedAssertion = signedAssertion.Replace("SomeUser", "AnotherUser");
-            var encryptedAssertion = SignedXmlHelper.EncryptXml(string.Format(encryptedAssertionTemplate, tamperedAssertion), "Assertion");
+            var encryptedAssertion = SignedXmlHelper.EncryptAssertion(tamperedAssertion);
             var responseWithAssertion = string.Format(response, encryptedAssertion);
 
             Action a = () => Saml2Response.Read(responseWithAssertion).GetClaims(Options.FromConfiguration);
@@ -884,14 +918,13 @@ namespace Kentor.AuthServices.Tests.Saml2P
                     <saml2:Conditions NotOnOrAfter=""2100-01-01T00:00:00Z"" />
                 </saml2:Assertion>";
 
-            var encryptedAssertion = SignedXmlHelper.EncryptXml(string.Format(encryptedAssertionTemplate, assertion), "Assertion");
+            var encryptedAssertion = SignedXmlHelper.EncryptAssertion(assertion);
             var signedResponse = SignedXmlHelper.SignXml(string.Format(response, encryptedAssertion));
 
             var options = Options.FromConfiguration;
             options.SPOptions.ServiceCertificate = null;
-            var result = Saml2Response.Read(signedResponse);
 
-            Action a = () => result.GetClaims(options);
+            Action a = () => Saml2Response.Read(signedResponse).GetClaims(options);
             a.ShouldThrow<Saml2ResponseFailedValidationException>();
         }
 
@@ -921,15 +954,13 @@ namespace Kentor.AuthServices.Tests.Saml2P
                     <saml2:Conditions NotOnOrAfter=""2100-01-01T00:00:00Z"" />
                 </saml2:Assertion>";
 
-            var encryptedAssertion = SignedXmlHelper.EncryptXml(string.Format(encryptedAssertionTemplate, assertion), "Assertion");
+            var encryptedAssertion = SignedXmlHelper.EncryptAssertion(assertion);
             var signedResponse = SignedXmlHelper.SignXml(string.Format(response, encryptedAssertion));
 
             var options = Options.FromConfiguration;
             options.SPOptions.ServiceCertificate = new X509Certificate2(SignedXmlHelper.TestCert2.Export(X509ContentType.Cert));
 
-            var result = Saml2Response.Read(signedResponse);
-
-            Action a = () => result.GetClaims(options);
+            Action a = () => Saml2Response.Read(signedResponse).GetClaims(options);
             a.ShouldThrow<Saml2ResponseFailedValidationException>();
         }
 
@@ -1660,10 +1691,5 @@ namespace Kentor.AuthServices.Tests.Saml2P
                 .WithMessage("Signature validation failed on SAML response or contained assertion.");
 
         }
-
-        private const string encryptedAssertionTemplate =
-        @"<saml2:EncryptedAssertion xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion"">
-                {0}
-            </saml2:EncryptedAssertion>";
     }
 }
