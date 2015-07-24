@@ -89,7 +89,16 @@ namespace Kentor.AuthServices.Metadata
                 throw new ArgumentNullException("metadataUrl");
             }
 
-            return (ExtendedEntitiesDescriptor)Load(metadataUrl);
+            MetadataBase loadedMetadata = Load(metadataUrl);
+
+            if (loadedMetadata is ExtendedEntitiesDescriptor)
+                return (ExtendedEntitiesDescriptor)loadedMetadata;
+            else
+            {
+                List<EntityDescriptor> list = new List<EntityDescriptor>();
+                list.Add((ExtendedEntityDescriptor)loadedMetadata);
+                return new ExtendedEntitiesDescriptor(new System.Collections.ObjectModel.Collection<EntityDescriptor>(list));
+            }
         }
     }
 }

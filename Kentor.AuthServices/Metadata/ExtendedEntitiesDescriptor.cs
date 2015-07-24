@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IdentityModel.Metadata;
 using System.Linq;
 using System.Text;
@@ -12,6 +13,14 @@ namespace Kentor.AuthServices.Metadata
     /// </summary>
     public class ExtendedEntitiesDescriptor : EntitiesDescriptor, ICachedMetadata
     {
+
+        public ExtendedEntitiesDescriptor() : base() { }
+        public ExtendedEntitiesDescriptor(Collection<EntityDescriptor> entityList)
+            : base(entityList)
+        {
+
+        }
+
         /// <summary>
         /// Permitted cache duration for the metadata.
         /// </summary>
