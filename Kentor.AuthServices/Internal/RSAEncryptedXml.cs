@@ -21,19 +21,25 @@ namespace Kentor.AuthServices.Internal
         public override byte[] DecryptEncryptedKey(EncryptedKey encryptedKey)
         {
             if (encryptedKey == null)
+            {
                 throw new ArgumentNullException("encryptedKey");
+            }
 
             if (encryptedKey.CipherData.CipherValue == null)
+            {
                 throw new NotImplementedException("Unable to decode CipherData of type \"CipherReference\".");
+            }
 
             // use the key info
             if (privateKey == null)
+            {
                 return base.DecryptEncryptedKey(encryptedKey);
+            }
 
-            var fOaep = (encryptedKey.EncryptionMethod != null &&
+            var useOaep = (encryptedKey.EncryptionMethod != null &&
                          encryptedKey.EncryptionMethod.KeyAlgorithm == XmlEncRSAOAEPUrl);
 
-            return DecryptKey(encryptedKey.CipherData.CipherValue, privateKey, fOaep);
+            return DecryptKey(encryptedKey.CipherData.CipherValue, privateKey, useOaep);
         }
     }
 }

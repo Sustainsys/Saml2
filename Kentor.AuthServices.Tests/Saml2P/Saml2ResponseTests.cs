@@ -738,10 +738,7 @@ namespace Kentor.AuthServices.Tests.Saml2P
             var encryptedAssertion = SignedXmlHelper.EncryptAssertion(assertion);
             var signedResponse = SignedXmlHelper.SignXml(string.Format(response, encryptedAssertion));
 
-            var result = Saml2Response.Read(signedResponse);
-            var options = Options.FromConfiguration;
-            options.SPOptions.ServiceCertificate = SignedXmlHelper.TestCert2;
-            var claims = result.GetClaims(options);
+            var claims = Saml2Response.Read(signedResponse).GetClaims(Options.FromConfiguration);
             claims.Count().Should().Be(1);
             claims.First().FindFirst(ClaimTypes.NameIdentifier).Value.Should().Be("UserIDInsideEncryptedAssertion");
         }
