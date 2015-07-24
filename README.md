@@ -24,7 +24,7 @@ package contains the MVC controller and the [Kentor.AuthServices.Owin](https://w
 package contains the Owin middleware.
 
 Once installed the `web.config` of the application must be updated with configuration.
-See [configuration] (doc/Configuration.md) for details.
+See [configuration](doc/Configuration.md) for details.
 
 ##Saml2AuthenticationModule
 The Saml2AuthenticationModule is modeled after the WSFederationAuthenticationModule
@@ -50,4 +50,4 @@ Download the solution, or use the instance that's provided for free at http://st
 
 ##Protocol Classes
 The protocol handling classes are available as a public API as well, making it possible to 
-reuse some of the internals for writing an own service provider or identity provider.
+reuse some of the internals for writing your own service provider or identity provider.
