@@ -35,10 +35,24 @@ namespace Kentor.AuthServices.Metadata
 
         private static MetadataBase Load(Uri metadataUrl)
         {
-            using (var client = new WebClient())
-            using (var stream = client.OpenRead(metadataUrl.ToString()))
+            switch (metadataUrl.Scheme)
             {
-                return Load(stream);
+                case "file":
+                    // load local xml metadata file
+                    using (var stream = File.OpenRead(metadataUrl.LocalPath))
+                    {
+                        return Load(stream);
+                    }
+                case "http":
+                case "https":
+                    // load http/https using the web client
+                    using (var client = new WebClient())
+                    using (var stream = client.OpenRead(metadataUrl.ToString()))
+                    {
+                        return Load(stream);
+                    }
+                default:
+                    throw new InvalidOperationException("Metadata loading is not supported for specified URI: " + metadataUrl);
             }
         }
 
