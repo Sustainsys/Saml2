@@ -33,6 +33,12 @@ namespace Kentor.AuthServices.Metadata
             return (ExtendedEntityDescriptor)Load(metadataUrl);
         }
 
+        /// <summary>
+        /// <para>Loads metadata XML from the specified URI</para>
+        /// <para>Supports loading from a local file URI, or remote http(s) schemes using WebClient</para>
+        /// </summary>
+        /// <param name="metadataUrl"></param>
+        /// <returns></returns>
         private static MetadataBase Load(Uri metadataUrl)
         {
             switch (metadataUrl.Scheme)
