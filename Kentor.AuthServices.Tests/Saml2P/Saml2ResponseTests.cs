@@ -817,6 +817,55 @@ namespace Kentor.AuthServices.Tests.Saml2P
 
         [TestMethod]
         [NotReRunnable]
+        public void Saml2Response_GetClaims_CorrectEncryptedSingleAssertion_UsingWIF()
+        {
+            var response =
+            @"<saml2p:Response xmlns:saml2p=""urn:oasis:names:tc:SAML:2.0:protocol""
+            xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
+            ID = """ + MethodBase.GetCurrentMethod().Name + @""" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z"">
+                <saml2:Issuer>https://idp.example.com</saml2:Issuer>
+                <saml2p:Status>
+                    <saml2p:StatusCode Value=""urn:oasis:names:tc:SAML:2.0:status:Success"" />
+                </saml2p:Status>
+                {0}
+            </saml2p:Response>";
+
+            var assertion = new Saml2Assertion(new Saml2NameIdentifier("https://idp.example.com"));
+            assertion.Subject = new Saml2Subject(new Saml2NameIdentifier("WIFUser"));
+            assertion.Subject.SubjectConfirmations.Add(new Saml2SubjectConfirmation(new Uri("urn:oasis:names:tc:SAML:2.0:cm:bearer")));
+            assertion.Conditions = new Saml2Conditions { NotOnOrAfter = new DateTime(2100, 1, 1) };
+
+            var token = new Saml2SecurityToken(assertion);
+            var handler = new Saml2SecurityTokenHandler();
+
+            assertion.SigningCredentials = new X509SigningCredentials(SignedXmlHelper.TestCert,
+                signatureAlgorithm: SecurityAlgorithms.RsaSha1Signature, 
+                digestAlgorithm: SecurityAlgorithms.Sha1Digest);
+
+            assertion.EncryptingCredentials = new EncryptedKeyEncryptingCredentials(
+                SignedXmlHelper.TestCert2,
+                keyWrappingAlgorithm: SecurityAlgorithms.RsaOaepKeyWrap,
+                keySizeInBits: 256,
+                encryptionAlgorithm: SecurityAlgorithms.Aes192Encryption);
+
+            string assertionXml = String.Empty;
+            using (var sw = new StringWriter())
+            {
+                using (var xw = XmlWriter.Create(sw, new XmlWriterSettings { OmitXmlDeclaration = true }))
+                {
+                    handler.WriteToken(xw, token);
+                }
+                assertionXml = sw.ToString();
+            }
+            var responseWithAssertion = string.Format(response, assertionXml);
+
+            var claims = Saml2Response.Read(responseWithAssertion).GetClaims(Options.FromConfiguration);
+            claims.Count().Should().Be(1);
+            claims.First().FindFirst(ClaimTypes.NameIdentifier).Value.Should().Be("WIFUser");
+        }
+
+        [TestMethod]
+        [NotReRunnable]
         public void Saml2Response_GetClaims_ThrowsOnEncryptedAssertionWithoutSignature()
         {
             var response =
