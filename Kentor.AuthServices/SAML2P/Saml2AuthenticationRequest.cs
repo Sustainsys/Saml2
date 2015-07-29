@@ -64,7 +64,9 @@ namespace Kentor.AuthServices.Saml2P
         public static Saml2AuthenticationRequest Read(string xml)
         {
             if (xml == null)
+            {
                 return null;
+            }
             
             var x = new XmlDocument {PreserveWhitespace = true};
             x.LoadXml(xml);
