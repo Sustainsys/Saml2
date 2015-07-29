@@ -125,6 +125,13 @@ namespace Kentor.AuthServices.Saml2P
             Id = xml.DocumentElement.Attributes["ID"].Value;
 
             Issuer = new EntityId(xml.DocumentElement["Issuer", Saml2Namespaces.Saml2Name].GetTrimmedTextIfNotNull());
+
+            var destinationAttribute = xml.DocumentElement.Attributes["Destination"].GetValueIfNotNull();
+            if (string.IsNullOrWhiteSpace(destinationAttribute)) return;
+            
+            Uri destinationUri;
+            if (Uri.TryCreate(destinationAttribute, UriKind.RelativeOrAbsolute, out destinationUri))
+                DestinationUrl = destinationUri;
         }
 
         private void ValidateCorrectDocument(XmlDocument xml)

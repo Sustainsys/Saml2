@@ -64,11 +64,9 @@ namespace Kentor.AuthServices.Saml2P
         public static Saml2AuthenticationRequest Read(string xml)
         {
             if (xml == null)
-            {
                 return null;
-            }
-            var x = new XmlDocument();
-            x.PreserveWhitespace = true;
+            
+            var x = new XmlDocument {PreserveWhitespace = true};
             x.LoadXml(xml);
 
             return new Saml2AuthenticationRequest(x);
@@ -84,6 +82,17 @@ namespace Kentor.AuthServices.Saml2P
             {
                 AssertionConsumerServiceUrl = new Uri(AssertionConsumerServiceUriString);
             }
+
+            var nameIdPolicyElement = xml.DocumentElement["NameIDPolicy", Saml2Namespaces.Saml2PName];
+            if (nameIdPolicyElement == null) return;
+            
+            bool allowCreate;
+            bool.TryParse(nameIdPolicyElement.Attributes["AllowCreate"].GetValueIfNotNull(), out allowCreate);
+            NameIdPolicy = new Saml2NameIdPolicy
+            {
+                Format = nameIdPolicyElement.Attributes["Format"].GetValueIfNotNull(),
+                AllowCreate = allowCreate
+            };
         }
 
         /// <summary>
@@ -95,5 +104,10 @@ namespace Kentor.AuthServices.Saml2P
         /// Index to the SP metadata where the list of requested attributes is found.
         /// </summary>
         public int? AttributeConsumingServiceIndex { get; set; }
+
+        /// <summary>
+        /// NameIDPolicy
+        /// </summary>
+        public Saml2NameIdPolicy NameIdPolicy { get; set; }
     }
 }
