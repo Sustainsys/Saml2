@@ -92,11 +92,30 @@ namespace Kentor.AuthServices.Saml2P
         /// response. Each identity is translated into a separate assertion.</param>
         public Saml2Response(EntityId issuer, X509Certificate2 issuerCertificate,
             Uri destinationUrl, string inResponseTo, params ClaimsIdentity[] claimsIdentities)
+            : this(issuer, issuerCertificate, destinationUrl, inResponseTo, false, claimsIdentities)
+        {
+
+        }
+
+        /// <summary>
+        /// Create a response with the supplied data.
+        /// </summary>
+        /// <param name="issuer">Issuer of the response.</param>
+        /// <param name="issuerCertificate">The certificate to use when signing
+        /// this response in XML form.</param>
+        /// <param name="destinationUrl">The destination Uri for the message</param>
+        /// <param name="inResponseTo">In response to id</param>
+        /// <param name="includeCertificate">Embeds certificate in signature</param>
+        /// <param name="claimsIdentities">Claims identities to be included in the 
+        /// response. Each identity is translated into a separate assertion.</param>
+        public Saml2Response(EntityId issuer, X509Certificate2 issuerCertificate,
+            Uri destinationUrl, string inResponseTo, bool includeCertificate, params ClaimsIdentity[] claimsIdentities)
         {
             this.issuer = issuer;
             this.claimsIdentities = claimsIdentities;
             this.issuerCertificate = issuerCertificate;
             this.destinationUrl = destinationUrl;
+            this.includeCertificate = includeCertificate;
             if (inResponseTo != null)
             {
                 this.inResponseTo = new Saml2Id(inResponseTo);
@@ -187,7 +206,7 @@ namespace Kentor.AuthServices.Saml2P
 
             xmlDocument = xml;
 
-            xml.Sign(issuerCertificate);
+            xml.Sign(issuerCertificate, includeCertificate);
         }
 
         readonly Saml2Id id;
@@ -232,6 +251,7 @@ namespace Kentor.AuthServices.Saml2P
         }
 
         readonly Uri destinationUrl;
+        readonly bool includeCertificate;
 
         /// <summary>
         /// The destination of the response message.
