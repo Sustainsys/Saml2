@@ -125,6 +125,95 @@ namespace Kentor.AuthServices.Tests.Saml2P
             a.ShouldThrow<XmlException>().WithMessage("Wrong or unsupported SAML2 version");
         }
 
+
+        [TestMethod]
+        public void Saml2AuthenticationRequest_Read_Destination()
+        {
+            var xmlData = @"<?xml version=""1.0"" encoding=""UTF-8""?>
+<samlp:AuthnRequest
+  xmlns:samlp=""urn:oasis:names:tc:SAML:2.0:protocol""
+  xmlns:saml=""urn:oasis:names:tc:SAML:2.0:assertion""
+  ID=""Saml2AuthenticationRequest_Read_NoACS""
+  Version=""2.0""
+  Destination=""http://destination.example.com""
+  IssueInstant=""2004-12-05T09:21:59Z"">
+  <saml:Issuer>https://sp.example.com/SAML2</saml:Issuer>
+/>
+</samlp:AuthnRequest>
+";
+
+            var subject = Saml2AuthenticationRequest.Read(xmlData);
+
+            subject.DestinationUrl.Should().Be(new Uri("http://destination.example.com"));
+        }
+
+        [TestMethod]
+        public void Saml2AuthenticationRequest_Read_NameIDPolicy()
+        {
+            var xmlData = @"<?xml version=""1.0"" encoding=""UTF-8""?>
+<samlp:AuthnRequest
+  xmlns:samlp=""urn:oasis:names:tc:SAML:2.0:protocol""
+  xmlns:saml=""urn:oasis:names:tc:SAML:2.0:assertion""
+  ID=""Saml2AuthenticationRequest_Read_NoACS""
+  Version=""2.0""
+  Destination=""http://destination.example.com""
+  IssueInstant=""2004-12-05T09:21:59Z"">
+  <saml:Issuer>https://sp.example.com/SAML2</saml:Issuer>
+  <samlp:NameIDPolicy Format=""urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress"" AllowCreate=""true""></samlp:NameIDPolicy>
+</samlp:AuthnRequest>
+";
+
+            var subject = Saml2AuthenticationRequest.Read(xmlData);
+
+            subject.NameIdPolicy.Should().NotBeNull();
+            subject.NameIdPolicy.Format.Should().Be("urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress");
+            subject.NameIdPolicy.AllowCreate.Should().Be(true);
+        }
+
+        [TestMethod]
+        public void Saml2AuthenticationRequest_Read_NameIDPolicy_NullIfNotExists()
+        {
+            var xmlData = @"<?xml version=""1.0"" encoding=""UTF-8""?>
+<samlp:AuthnRequest
+  xmlns:samlp=""urn:oasis:names:tc:SAML:2.0:protocol""
+  xmlns:saml=""urn:oasis:names:tc:SAML:2.0:assertion""
+  ID=""Saml2AuthenticationRequest_Read_NoACS""
+  Version=""2.0""
+  Destination=""http://destination.example.com""
+  IssueInstant=""2004-12-05T09:21:59Z"">
+  <saml:Issuer>https://sp.example.com/SAML2</saml:Issuer>
+</samlp:AuthnRequest>
+";
+
+            var subject = Saml2AuthenticationRequest.Read(xmlData);
+
+            subject.NameIdPolicy.Should().BeNull();
+        }
+
+
+        [TestMethod]
+        public void Saml2AuthenticationRequest_Read_NameIDPolicy_AllowCreateShouldBeFalseIfUnableToParse()
+        {
+            var xmlData = @"<?xml version=""1.0"" encoding=""UTF-8""?>
+<samlp:AuthnRequest
+  xmlns:samlp=""urn:oasis:names:tc:SAML:2.0:protocol""
+  xmlns:saml=""urn:oasis:names:tc:SAML:2.0:assertion""
+  ID=""Saml2AuthenticationRequest_Read_NoACS""
+  Version=""2.0""
+  Destination=""http://destination.example.com""
+  IssueInstant=""2004-12-05T09:21:59Z"">
+  <saml:Issuer>https://sp.example.com/SAML2</saml:Issuer>
+  <samlp:NameIDPolicy Format=""urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress"" AllowCreate=""xxx""></samlp:NameIDPolicy>
+</samlp:AuthnRequest>
+";
+
+            var subject = Saml2AuthenticationRequest.Read(xmlData);
+
+            subject.NameIdPolicy.Should().NotBeNull();
+            subject.NameIdPolicy.Format.Should().Be("urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress");
+            subject.NameIdPolicy.AllowCreate.Should().Be(false);
+        }
+
         [TestMethod]
         public void Saml2AuthenticationRequest_Read_ShouldThrowOnInvalidMessageName()
         {
