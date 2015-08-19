@@ -19,9 +19,11 @@ namespace Kentor.AuthServices.IntegrationTests
         {
             I.Open("http://localhost:52071/")
                 .Enter("http://localhost:2181/AuthServices/Acs").In("#AssertionModel_AssertionConsumerServiceUrl")
-                .Click("#submit")
-                .Click("a[href=\"/Home/Secure\"]")
-                .Assert.Text("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier - JohnDoe").In(".body-content ul li:first-child");
+                .Click("#submit");
+
+            I.Click("a[href=\"/Home/Secure\"]");
+
+            I.Assert.Text("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier - JohnDoe").In(".body-content ul li:first-child");
 
             I.Click("a[href=\"/AuthServices/SignOut\"");
         }
