@@ -90,8 +90,9 @@ namespace Kentor.AuthServices
         private bool loadMetadata;
 
         /// <summary>
-        /// Should this idp load metadata?
-        /// </summary>
+        /// Should this idp load metadata? If you intend to set the
+        /// <see cref="MetadataUrl"/> that must be done before setting
+        /// LoadMetadata to true.</summary>
         public bool LoadMetadata
         {
             get
@@ -167,7 +168,8 @@ namespace Kentor.AuthServices
         private Uri metadataUrl;
 
         /// <summary>
-        /// Location of metadata for the Identity Provider.
+        /// Location of metadata for the Identity Provider. Automatically enables
+        /// <see cref="LoadMetadata"/>
         /// </summary>
         public Uri MetadataUrl
         {
