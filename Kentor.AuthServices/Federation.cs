@@ -77,7 +77,7 @@ namespace Kentor.AuthServices
 
                     var identityProviders = new List<IdentityProvider>();
 
-                    foreach(var idpMetadata in identityProvidersMetadata)
+                    foreach (var idpMetadata in identityProvidersMetadata)
                     {
                         var idp = new IdentityProvider(idpMetadata.EntityId, options.SPOptions)
                         {
@@ -90,7 +90,7 @@ namespace Kentor.AuthServices
 
                     RegisterIdentityProviders(identityProviders);
 
-                    MetadataValidUntil =  metadata.CalculateMetadataValidUntil();
+                    MetadataValidUntil = metadata.CalculateMetadataValidUntil();
 
                     LastMetadataLoadException = null;
                 }
@@ -137,10 +137,10 @@ namespace Kentor.AuthServices
             }
 
             // Remember what we registered this time, to know what to remove nex time.
-            registeredIdentityProviders = identityProviders.ToDictionary(
-                i => i.EntityId.Id,
-                i => i.EntityId);
-        }
+                registeredIdentityProviders = identityProviders.ToDictionary(
+                    i => i.EntityId.Id,
+                    i => i.EntityId);
+            }
 
         private void RemoveAllRegisteredIdentityProviders()
         {
