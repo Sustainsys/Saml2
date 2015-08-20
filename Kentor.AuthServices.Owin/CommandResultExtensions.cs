@@ -32,10 +32,7 @@ namespace Kentor.AuthServices.Owin
 
             if (commandResult.Content != null)
             {
-                using (var writer = new StreamWriter(context.Response.Body, Encoding.UTF8, 1024, true))
-                {
-                    writer.Write(commandResult.Content);
-                }
+                context.Response.Write(commandResult.Content);
             }
         }
     }
