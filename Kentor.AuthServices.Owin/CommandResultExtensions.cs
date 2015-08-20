@@ -33,8 +33,6 @@ namespace Kentor.AuthServices.Owin
 
             if (commandResult.Content != null)
             {
-                var bytes = ASCIIEncoding.UTF8.GetBytes(commandResult.Content);
-                context.Response.ContentLength = bytes.Length;
                 context.Response.Write(commandResult.Content);
             }
         }
