@@ -136,11 +136,11 @@ namespace Kentor.AuthServices
                 options.IdentityProviders.Remove(idp);
             }
 
-            // Remember what we registered this time, to know what to remove nex time.            
-            registeredIdentityProviders = identityProviders.ToDictionary(
-                i => i.EntityId.Id,
-                i => i.EntityId);
-        }
+            // Remember what we registered this time, to know what to remove nex time.
+                registeredIdentityProviders = identityProviders.ToDictionary(
+                    i => i.EntityId.Id,
+                    i => i.EntityId);
+            }
 
         private void RemoveAllRegisteredIdentityProviders()
         {

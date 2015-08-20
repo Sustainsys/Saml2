@@ -232,5 +232,34 @@ gosrSG6sO3IPeL4BncKqqZO2FokfZbaqPBv6xmoKsVTUTQRfNEks84dRiG0MjqBncR+B6CIrCv2a
 
             keyInfo.Count.Should().Be(0);
         }
+
+        [TestMethod]
+        public void ExtendedMetadataSerializer_Read_RsaKey()
+        {
+            var data =
+@"<md:EntityDescriptor xmlns:md=""urn:oasis:names:tc:SAML:2.0:metadata"" entityID=""http://idp-acc.test.ek.sll.se/neas"">
+  <md:IDPSSODescriptor WantAuthnRequestsSigned=""true"" protocolSupportEnumeration=""urn:oasis:names:tc:SAML:2.0:protocol"">
+    <md:KeyDescriptor>
+      <ds:KeyInfo xmlns:ds=""http://www.w3.org/2000/09/xmldsig#"">
+        <ds:KeyValue>
+          <ds:RSAKeyValue>
+            <ds:Modulus>AKoYq6Q7UN7vOFmPr4fSq2NORXHBMKm8p7h4JnQU+quLRxvYll9cn8OBhIXq9SnCYkbzBVBkqN4ZyMM4vlSWy66wWdwLNYFDtEo1RJ6yZBExIaRVvX/eP6yRnpS1b7m7T2Uc2yPq1DnWzVI+sIGR51s1/ROnQZswkPJHh71PThln</ds:Modulus>
+            <ds:Exponent>AQAB</ds:Exponent>
+          </ds:RSAKeyValue>
+        </ds:KeyValue>
+      </ds:KeyInfo>
+    </md:KeyDescriptor>
+  </md:IDPSSODescriptor>
+</md:EntityDescriptor>";
+
+            var entityDescriptor = (ExtendedEntityDescriptor)ExtendedMetadataSerializer.ReaderInstance.ReadMetadata(
+                new MemoryStream(Encoding.UTF8.GetBytes(data)));
+
+            var keyInfo = entityDescriptor.RoleDescriptors.Cast<IdentityProviderSingleSignOnDescriptor>()
+               .Single().Keys.Single().KeyInfo;
+
+            keyInfo.Count.Should().Be(1);
+            keyInfo[0].Should().BeOfType<RsaKeyIdentifierClause>();
+        }
     }
 }

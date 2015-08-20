@@ -19,6 +19,12 @@ namespace Kentor.AuthServices.Tests
         /// </summary>
         [TestMethod]
         [NotReRunnable]
+        // This test takes a lot of time, as it effectively reruns the entire
+        // test suite twice. There has been no localization bugs for long and
+        // we've abandoned the coding style that caused the bug that initially 
+        // prompted this test to be created. Leaving the test here though to
+        // make it possible to enable again if needed.
+        [Ignore]
         public void RunAllTestsWithOtherCultures()
         {
             var testClasses = (from t in Assembly.GetExecutingAssembly().DefinedTypes
