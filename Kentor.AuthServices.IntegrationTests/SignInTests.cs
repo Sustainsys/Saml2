@@ -87,11 +87,15 @@ namespace Kentor.AuthServices.IntegrationTests
         [TestMethod]
         public void SignIn_Unsolicited_Owin()
         {
-            I.Open("http://localhost:52071/")
-                .Enter("http://localhost:57294/AuthServices/Acs").In("#AssertionModel_AssertionConsumerServiceUrl")
-                .Enter("SomeUnusedNameId").In("#AssertionModel_NameId")
-                .Click("#submit")
-                .Assert.Text("You've successfully authenticated with http://localhost:52071/Metadata. Please enter a user name for this site below and click the Register button to finish logging in.")
+            I.Open("http://localhost:52071/");
+
+            I.Enter("http://localhost:57294/AuthServices/Acs").In("#AssertionModel_AssertionConsumerServiceUrl");
+
+            I.Enter("SomeUnusedNameId").In("#AssertionModel_NameId");
+
+            I.Click("#submit");
+
+            I.Assert.Text("You've successfully authenticated with http://localhost:52071/Metadata. Please enter a user name for this site below and click the Register button to finish logging in.")
                 .In("p.text-info");
         }
 
