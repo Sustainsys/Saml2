@@ -28,7 +28,8 @@ namespace Kentor.AuthServices.WebSso
             var serializedRequest = Serialize(payload);
 
             var redirectUri = new Uri(destinationUrl.ToString()
-                + "?SAMLRequest=" + serializedRequest);
+                + (String.IsNullOrEmpty(destinationUrl.Query) ? "?" : "&") 
+                + "SAMLRequest=" + serializedRequest);
 
             return new CommandResult()
             {
