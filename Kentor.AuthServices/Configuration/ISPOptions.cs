@@ -7,6 +7,7 @@ using System.IdentityModel.Metadata;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Security.Cryptography.X509Certificates;
 
 namespace Kentor.AuthServices.Configuration
 {
@@ -69,5 +70,10 @@ namespace Kentor.AuthServices.Configuration
         /// The System.IdentityModel configuration to use.
         /// </summary>
         IdentityConfiguration SystemIdentityModelIdentityConfiguration { get; }
+
+        /// <summary>
+        /// Certificate used to sign the requests.
+        /// </summary>
+        CertificateElement SigningCertificate { get; }
     }
 }
