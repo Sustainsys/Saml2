@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
@@ -52,7 +53,24 @@ namespace Kentor.AuthServices.Saml2P
         /// <returns>string containing the Xml data.</returns>
         public override string ToXml()
         {
-            return ToXElement().ToString();
+            if (SigningCertificate == null)
+            {
+                return ToXElement().ToString();
+            }
+            else
+            {
+                var xml = ToXElement();
+
+                var xmlDocument = new XmlDocument();
+                using (var xmlReader = xml.CreateReader())
+                {
+                    xmlDocument.Load(xmlReader);
+                }
+
+                xmlDocument.Sign(SigningCertificate);
+
+                return xmlDocument.OuterXml;
+            }
         }
 
         /// <summary>
@@ -95,5 +113,10 @@ namespace Kentor.AuthServices.Saml2P
         /// Index to the SP metadata where the list of requested attributes is found.
         /// </summary>
         public int? AttributeConsumingServiceIndex { get; set; }
+
+        /// <summary>
+        /// Certificate used for signing the request.
+        /// </summary>
+        public X509Certificate2 SigningCertificate { get; set; }
     }
 }

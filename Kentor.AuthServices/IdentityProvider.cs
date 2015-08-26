@@ -218,13 +218,16 @@ namespace Kentor.AuthServices
                 throw new ArgumentNullException("authServicesUrls");
             }
 
+            var spCertificate = spOptions.SigningCertificate != null ? spOptions.SigningCertificate.LoadCertificate() : null;
+
             var authnRequest = new Saml2AuthenticationRequest()
             {
                 DestinationUrl = SingleSignOnServiceUrl,
                 AssertionConsumerServiceUrl = authServicesUrls.AssertionConsumerServiceUrl,
                 Issuer = spOptions.EntityId,
                 // For now we only support one attribute consuming service.
-                AttributeConsumingServiceIndex = spOptions.AttributeConsumingServices.Any() ? 0 : (int?)null
+                AttributeConsumingServiceIndex = spOptions.AttributeConsumingServices.Any() ? 0 : (int?)null,
+                SigningCertificate = spCertificate
             };
 
             var responseData = new StoredRequestState(EntityId, returnUrl, relayData);

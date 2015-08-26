@@ -183,5 +183,18 @@ namespace Kentor.AuthServices.Configuration
                 return systemIdentityModelIdentityConfiguration;
             }
         }
+
+        private CertificateElement signingCertificate;
+
+        /// <summary>
+        /// Certificate location for the certificate the SP uses to sign its requests.
+        /// </summary>
+        public CertificateElement SigningCertificate
+        {
+            get
+            {
+                return signingCertificate;
+            }
+        }
     }
 }
