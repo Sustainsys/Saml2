@@ -1,0 +1,29 @@
+# Notes:
+#   - Minimal appveyor.yml file is an empty file. All sections are optional.
+#   - Indent each level of configuration with 2 spaces. Do not use tabs!
+#   - All section names are case-sensitive.
+#   - Section names should be unique on each level.
+
+#---------------------------------#
+#    environment configuration    #
+#---------------------------------#
+
+# scripts that are called at very beginning, before repo cloning
+init:
+# force windows line endings to make test strings depending on line break work
+  - git config --global core.autocrlf true
+
+# scripts to run before build
+before_build:
+  - nuget restore
+
+cache:
+  - packages                     # preserve "packages" directory in the root of build folder to avoid repeated downloads for nuget restore
+
+#---------------------------------#
+#       tests configuration       #
+#---------------------------------#
+
+test:
+  assemblies:
+      - Kentor.AuthServices.Tests.dll
