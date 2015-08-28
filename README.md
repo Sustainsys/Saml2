@@ -5,7 +5,7 @@ The Kentor Authentication services is a library that adds SAML2P support to ASP.
 web sites, allowing the web site to act as a SAML2 Service Provider (SP).
 
 Kentor.AuthServices is open sourced and contributions are welcome, please see 
-[contributing guidelines](doc/Contributing.md) for info on coding standards etc.
+[contributing guidelines](CONTRIBUTING.md) for info on coding standards etc.
 
 ##Using
 The AuthServices library can be used through three different ways:

@@ -1,13 +1,14 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2013
-VisualStudioVersion = 12.0.31101.0
+# Visual Studio 14
+VisualStudioVersion = 14.0.23107.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kentor.AuthServices", "Kentor.AuthServices\Kentor.AuthServices.csproj", "{93BA675E-A159-4701-B68B-C4B81015C556}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{E0C4834E-A7A9-476F-8F46-B2D533190872}"
 	ProjectSection(SolutionItems) = preProject
 		CodeCoverage.runsettings = CodeCoverage.runsettings
+		CONTRIBUTING.md = CONTRIBUTING.md
 		CONTRIBUTORS.txt = CONTRIBUTORS.txt
 		Kentor.AuthServices.ruleset = Kentor.AuthServices.ruleset
 		LICENSE = LICENSE
@@ -23,7 +24,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "doc", "doc", "{DB9690FA-251
 	ProjectSection(SolutionItems) = preProject
 		doc\ClaimsAuthenticationManager.md = doc\ClaimsAuthenticationManager.md
 		doc\Configuration.md = doc\Configuration.md
-		doc\Contributing.md = doc\Contributing.md
 		doc\OwinMiddleware.md = doc\OwinMiddleware.md
 	EndProjectSection
 EndProject
