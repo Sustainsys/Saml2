@@ -15,4 +15,7 @@ class.
 
 Then register it with a 
 [`<claimsAuthenticationManager>`](Configuration.md#claimsauthenticationmanager-element) 
-element in the configuration.
+element in the configuration if the configuration is loaded from the config file.
+If the configuration is done in code (typically for the OWIN middleware) the
+`ClaimsAuthenticationManager` should be registered in 
+`Options.SPOptions.SystemIdentityModelIdentityConfiguration.ClaimsAuthenticationManager`.
