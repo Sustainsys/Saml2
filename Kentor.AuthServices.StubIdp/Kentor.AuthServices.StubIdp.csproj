@@ -128,7 +128,6 @@
     </Content>
     <Content Include="Content\IdpConfigurationSchema.json" />
     <Content Include="App_Data\default.json" />
-    <None Include="Scripts\jquery-1.10.2.intellisense.js" />
     <Content Include="Scripts\ICanHaz.js" />
     <Content Include="Scripts\ICanHaz.min.js" />
     <None Include="Scripts\jquery-1.11.3.intellisense.js" />
