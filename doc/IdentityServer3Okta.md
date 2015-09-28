@@ -1,4 +1,4 @@
-Using with IdentityServer3 and Okta
+Using AuthServices with IdentityServer3 and Okta
 =============
 Kentor AuthServices can be used very effectively to extend the functionality 
 of IdentityServer3 by adding support for SAML-based identity providers, such 
