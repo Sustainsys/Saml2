@@ -16,7 +16,7 @@ forms sites.
 * An Owin Middleware to use with the Owin Pipeline or for integration with ASP.NET Identity.
 
 Note that this last usage scenario enables SAML identity providers to be integrated within
-[Thinktecture's IdentityServer3](https://github.com/IdentityServer/IdentityServer3) package.  Review [this document](docs/IdentityServer3Okta.md) to see how to configure AuthServices
+[Thinktecture's IdentityServer3](https://github.com/IdentityServer/IdentityServer3) package.  Review [this document](doc/IdentityServer3Okta.md) to see how to configure AuthServices
 with IdentityServer3 and Okta to add Okta as an identity provider to an IdentityServer3 project.
 
 There are four nuget packages available. The core 
