@@ -101,10 +101,10 @@
         }
     });
 
-    var cookiedName = 'stubIdp.username';
+    var cookieName = 'stubIdp.username';
 
     var restoreSelectedUser = function () {
-        var selectedUserId = Cookies.set(cookiedName);
+        var selectedUserId = Cookies.set(cookieName);
         if (selectedUserId && $("#userList").find("option[value=" + selectedUserId + "]").length > 0) {
             $("#userList").val(selectedUserId);
             $("#userList").change();
@@ -115,6 +115,6 @@
     $("body").on("submit", "form", function () {
         // Remember the selected user in a cookie
         var selectedUserId = $("#userList").val();
-        Cookies.set(cookiedName, selectedUserId, { expires: 365, path: '' }); // path: '' ensures that a separate cookie is created for each named sub-IDP
+        Cookies.set(cookieName, selectedUserId, { expires: 365, path: '' }); // path: '' ensures that a separate cookie is created for each named sub-IDP
     });
 });
