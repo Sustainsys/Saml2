@@ -21,6 +21,7 @@ namespace Kentor.AuthServices.StubIdp
 
             bundles.Add(new ScriptBundle("~/Scripts/js").Include(
                 "~/Scripts/jquery-{version}.js",
+                "~/Scripts/js.cookie.js",
                 "~/Scripts/jquery.validate.js",
                 "~/Scripts/jquery.validate.unobtrusive.js",
                 "~/Scripts/ICanHaz.js",
