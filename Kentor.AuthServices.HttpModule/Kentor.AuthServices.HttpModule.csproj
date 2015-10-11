@@ -34,6 +34,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
+    <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
     <Reference Include="System.IdentityModel" />
     <Reference Include="System.identitymodel.services" />
@@ -52,6 +53,7 @@
     <Compile Include="HttpRequestBaseExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Saml2AuthenticationModule.cs" />
+    <Compile Include="StoredRequestStateHttpExtension.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Kentor.AuthServices\Kentor.AuthServices.csproj">

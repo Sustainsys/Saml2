@@ -1,4 +1,8 @@
-﻿using Kentor.AuthServices.WebSso;
+﻿using System.IO;
+using System.IdentityModel.Tokens;
+using System.Runtime.Serialization.Formatters.Binary;
+using System.Web.Security;
+using Kentor.AuthServices.WebSso;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -24,13 +28,14 @@ namespace Kentor.AuthServices.HttpModule
             {
                 throw new ArgumentNullException("requestBase");
             }
-
+            
             return new HttpRequestData(
                 requestBase.HttpMethod,
                 requestBase.Url,
                 requestBase.ApplicationPath,
                 requestBase.Form.Cast<string>().Select((de, i) =>
-                    new KeyValuePair<string, string[]>(de, ((string)requestBase.Form[i]).Split(','))));
+                    new KeyValuePair<string, string[]>(de, ((string)requestBase.Form[i]).Split(','))), 
+                requestBase.GetStoredRequestState());
         }
     }
 }

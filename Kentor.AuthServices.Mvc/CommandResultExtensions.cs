@@ -1,4 +1,5 @@
-﻿using Kentor.AuthServices.WebSso;
+﻿using Kentor.AuthServices.HttpModule;
+using Kentor.AuthServices.WebSso;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
@@ -23,16 +24,25 @@ namespace Kentor.AuthServices.Mvc
         /// Converts a command result to an action result.
         /// </summary>
         /// <param name="commandResult">The source command result.</param>
-        /// <returns>Action result</returns>
-        /// <remarks>The reason to use a separate command result at all, instead
+        /// <param name="response">Http Response to write the result to.</param>
+        /// <returns>
+        /// Action result
+        /// </returns>
+        /// <exception cref="System.ArgumentNullException">commandResult</exception>
+        /// <exception cref="System.NotImplementedException"></exception>
+        /// <remarks>
+        /// The reason to use a separate command result at all, instead
         /// of simply using ActionResult is that the core library should not
-        /// be Mvc dependant.</remarks>
-        public static ActionResult ToActionResult(this CommandResult commandResult)
+        /// be Mvc dependant.
+        /// </remarks>
+        public static ActionResult ToActionResult(this CommandResult commandResult, HttpResponseBase response)
         {
             if (commandResult == null)
             {
                 throw new ArgumentNullException("commandResult");
             }
+
+            response.SetStoredRequestState(commandResult.StoredRequestState);
 
             switch (commandResult.HttpStatusCode)
             {

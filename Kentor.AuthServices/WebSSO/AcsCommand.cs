@@ -36,7 +36,7 @@ namespace Kentor.AuthServices.WebSso
                     unpackedPayload = binding.Unbind(request);
                     var samlResponse = Saml2Response.Read(unpackedPayload);
 
-                    return ProcessResponse(options, samlResponse);
+                    return ProcessResponse(request.StoredRequestState, options, samlResponse);
                 }
                 catch (FormatException ex)
                 {
@@ -63,14 +63,14 @@ namespace Kentor.AuthServices.WebSso
             throw new NoSamlResponseFoundException();
         }
 
-        private static CommandResult ProcessResponse(IOptions options, Saml2Response samlResponse)
+        private static CommandResult ProcessResponse(StoredRequestState storedRequestState, IOptions options, Saml2Response samlResponse)
         {
-            var principal = new ClaimsPrincipal(samlResponse.GetClaims(options));
+            var principal = new ClaimsPrincipal(samlResponse.GetClaims(storedRequestState, options));
 
             principal = options.SPOptions.SystemIdentityModelIdentityConfiguration
                 .ClaimsAuthenticationManager.Authenticate(null, principal);
 
-            var requestState = samlResponse.GetRequestState(options);
+            var requestState = samlResponse.GetRequestState(storedRequestState, options);
 
             return new CommandResult()
             {

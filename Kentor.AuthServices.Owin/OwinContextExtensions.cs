@@ -31,11 +31,14 @@ namespace Kentor.AuthServices.Owin
                 applicationRootPath = "/";
             }
 
+            StoredRequestState storedRequestState = null; // TODO: implement storage for the request state
+
             return new HttpRequestData(
                 context.Request.Method,
                 context.Request.Uri,
                 applicationRootPath,
-                formData);
+                formData, 
+                storedRequestState);
         }
     }
 }

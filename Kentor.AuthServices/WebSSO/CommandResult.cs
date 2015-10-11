@@ -50,6 +50,11 @@ namespace Kentor.AuthServices.WebSso
         public object RelayData { get; set; }
 
         /// <summary>
+        /// The state of the authentication request.
+        /// </summary>
+        public StoredRequestState StoredRequestState { get; set; }
+
+        /// <summary>
         /// Ctor
         /// </summary>
         public CommandResult()

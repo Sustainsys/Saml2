@@ -1,4 +1,9 @@
-﻿using Kentor.AuthServices.WebSso;
+﻿using System.IO;
+using System.IdentityModel.Metadata;
+using System.Runtime.Serialization.Formatters.Binary;
+using System.Web.Security;
+using Kentor.AuthServices.Configuration;
+using Kentor.AuthServices.WebSso;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
@@ -36,6 +41,8 @@ namespace Kentor.AuthServices.HttpModule
             }
 
             response.Cache.SetCacheability((HttpCacheability)commandResult.Cacheability);
+
+            response.SetStoredRequestState(commandResult.StoredRequestState);
 
             if (commandResult.HttpStatusCode == HttpStatusCode.SeeOther || commandResult.Location != null)
             {
