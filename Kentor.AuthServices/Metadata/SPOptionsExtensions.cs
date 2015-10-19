@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using System.Xml.Linq;
 using Kentor.AuthServices.Configuration;
 using Kentor.AuthServices.WebSso;
+using System.IdentityModel.Tokens;
 
 namespace Kentor.AuthServices.Metadata
 {
@@ -41,6 +42,20 @@ namespace Kentor.AuthServices.Metadata
             foreach(var attributeService in spOptions.AttributeConsumingServices)
             {
                 spsso.AttributeConsumingServices.Add(attributeService);
+            }
+
+            if (spOptions.ServiceCertificate != null)
+            {
+                using (var securityToken = new X509SecurityToken(spOptions.ServiceCertificate))
+                {
+                    spsso.Keys.Add(
+                        new KeyDescriptor
+                        {
+                            Use = KeyType.Encryption,
+                            KeyInfo = new SecurityKeyIdentifier(securityToken.CreateKeyIdentifierClause<X509RawDataKeyIdentifierClause>())
+                        }
+                    );
+                }
             }
 
             ed.RoleDescriptors.Add(spsso);

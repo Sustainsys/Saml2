@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.IdentityModel.Configuration;
 using System.IdentityModel.Metadata;
 using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -69,5 +70,10 @@ namespace Kentor.AuthServices.Configuration
         /// The System.IdentityModel configuration to use.
         /// </summary>
         IdentityConfiguration SystemIdentityModelIdentityConfiguration { get; }
+
+        /// <summary>
+        /// Certificate for service provider to use when decrypting assertions
+        /// </summary>
+        X509Certificate2 ServiceCertificate { get; set; }
     }
 }

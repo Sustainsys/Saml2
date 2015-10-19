@@ -11,6 +11,7 @@ using Kentor.AuthServices.Configuration;
 using System.Globalization;
 using Kentor.AuthServices.Metadata;
 using Kentor.AuthServices.WebSso;
+using Kentor.AuthServices.TestHelpers;
 
 namespace Kentor.AuthServices.Tests.Configuration
 {
@@ -20,13 +21,14 @@ namespace Kentor.AuthServices.Tests.Configuration
         [TestMethod]
         public void SPOPtionsExtensions_CreateMetadata_RequiredFields()
         {
-            var metadata = Options.FromConfiguration.SPOptions.CreateMetadata(StubFactory.CreateAuthServicesUrls());
+            var metadata = StubFactory.CreateSPOptions().CreateMetadata(StubFactory.CreateAuthServicesUrls());
 
             metadata.CacheDuration.Should().Be(new TimeSpan(0, 0, 42));
             metadata.EntityId.Id.Should().Be("https://github.com/KentorIT/authservices");
 
             var spMetadata = metadata.RoleDescriptors.OfType<ServiceProviderSingleSignOnDescriptor>().Single();
             spMetadata.Should().NotBeNull();
+            spMetadata.Keys.Count.Should().Be(0);
 
             var acs = spMetadata.AssertionConsumerServices.First().Value;
 
@@ -34,6 +36,18 @@ namespace Kentor.AuthServices.Tests.Configuration
             acs.IsDefault.Should().HaveValue();
             acs.Binding.ToString().Should().Be("urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST");
             acs.Location.ToString().Should().Be("http://localhost/AuthServices/Acs");
+        }
+
+        [TestMethod]
+        public void SPOPtionsExtensions_CreateMetadata_ServiceCertificate()
+        {
+            var options = Options.FromConfiguration;
+            options.SPOptions.ServiceCertificate = SignedXmlHelper.TestCert2;
+            var metadata = options.SPOptions.CreateMetadata(StubFactory.CreateAuthServicesUrls());
+
+            var spMetadata = metadata.RoleDescriptors.OfType<ServiceProviderSingleSignOnDescriptor>().Single();
+            spMetadata.Should().NotBeNull();
+            spMetadata.Keys.Count.Should().Be(1);
         }
 
         [TestMethod]

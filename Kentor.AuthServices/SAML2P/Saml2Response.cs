@@ -259,27 +259,47 @@ namespace Kentor.AuthServices.Saml2P
         /// <value>All assertion element nodes.</value>
         private IEnumerable<XmlElement> AllAssertionElementNodes
         {
-            get
-            {
-                if (allAssertionElementNodes == null)
+            get { return allAssertionElementNodes ?? (allAssertionElementNodes = retrieveAssertionElements()); }
+        }
+
+        private IEnumerable<XmlElement> retrieveAssertionElements()
+        {
+            var assertions = new List<XmlElement>();
+
+            assertions.AddRange(XmlDocument.DocumentElement.ChildNodes.Cast<XmlNode>()
+                .Where(node => node.NodeType == XmlNodeType.Element).Cast<XmlElement>()
+                .Where(xe => xe.LocalName == "Assertion" && xe.NamespaceURI == Saml2Namespaces.Saml2Name));
+
+            var encryptedAssertions = XmlDocument.DocumentElement.ChildNodes.Cast<XmlNode>()
+                .Where(node => node.NodeType == XmlNodeType.Element).Cast<XmlElement>()
+                .Where(xe => xe.LocalName == "EncryptedAssertion" && xe.NamespaceURI == Saml2Namespaces.Saml2Name);
+
+            if (encryptedAssertions.Count() > 0) {
+                if (serviceCertificate == null)
                 {
-                    allAssertionElementNodes =
-                        XmlDocument.DocumentElement.ChildNodes.Cast<XmlNode>()
-                        .Where(node => node.NodeType == XmlNodeType.Element).Cast<XmlElement>()
-                        .Where(xe => xe.LocalName == "Assertion" && xe.NamespaceURI == Saml2Namespaces.Saml2Name);
+                    throw new Saml2ResponseFailedValidationException("Encrypted Assertions encountered but Service Certificate was not provided.");
+                }
+                else if (!serviceCertificate.HasPrivateKey)
+                {
+                    throw new Saml2ResponseFailedValidationException("Encrypted Assertions encountered but Service Certificate does not contain private key.");
                 }
 
-                return allAssertionElementNodes;
+                assertions.AddRange(encryptedAssertions.Decrypt(serviceCertificate.PrivateKey)
+                    .Select(xe => (XmlElement)xe.GetElementsByTagName("Assertion", Saml2Namespaces.Saml2Name)[0]));
             }
+
+            return assertions;
         }
 
         bool validated = false;
         Saml2ResponseFailedValidationException validationException;
+        private X509Certificate2 serviceCertificate;
 
         private void Validate(IOptions options)
         {
             if (!validated)
             {
+                serviceCertificate = options.SPOptions.ServiceCertificate;
                 try
                 {
                     ValidateInResponseTo(options);

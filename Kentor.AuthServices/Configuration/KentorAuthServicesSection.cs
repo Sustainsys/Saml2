@@ -13,6 +13,8 @@ using Kentor.AuthServices.Metadata;
 using Kentor.AuthServices.Saml2P;
 using System.IdentityModel.Configuration;
 using System.IdentityModel.Services.Configuration;
+using System.Security.Cryptography.X509Certificates;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Kentor.AuthServices.Configuration
 {
@@ -300,5 +302,27 @@ namespace Kentor.AuthServices.Configuration
                 return systemIdentityModelIdentityConfiguration;
             }
         }
+
+        /// <summary>
+        /// Certificate location for the certificate the Service Provider uses to decrypt assertions.
+        /// </summary>
+        [ConfigurationProperty("serviceCertificate")]
+        [ExcludeFromCodeCoverage]
+        public CertificateElement ServiceCertificateConfiguration
+        {
+            get
+            {
+                return (CertificateElement)base["serviceCertificate"];
+            }
+            internal set
+            {
+                base["serviceCertificate"] = value;
+            }
+        }
+
+        /// <summary>
+        /// Certificate for service provider to use when decrypting assertions
+        /// </summary>
+        public X509Certificate2 ServiceCertificate { get; set; }
     }
 }
