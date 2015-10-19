@@ -738,7 +738,11 @@ namespace Kentor.AuthServices.Tests.Saml2P
             var encryptedAssertion = SignedXmlHelper.EncryptAssertion(assertion);
             var signedResponse = SignedXmlHelper.SignXml(string.Format(response, encryptedAssertion));
 
-            var claims = Saml2Response.Read(signedResponse).GetClaims(Options.FromConfiguration);
+            // Using options factory in this test to get code coverage on ServiceCertificate setter.
+            var options = StubFactory.CreateOptions();
+            options.SPOptions.ServiceCertificate = SignedXmlHelper.TestCert2;
+
+            var claims = Saml2Response.Read(signedResponse).GetClaims(options);
             claims.Count().Should().Be(1);
             claims.First().FindFirst(ClaimTypes.NameIdentifier).Value.Should().Be("UserIDInsideEncryptedAssertion");
         }
