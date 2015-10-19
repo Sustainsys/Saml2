@@ -70,6 +70,9 @@ namespace Kentor.AuthServices.Saml2P
 
             status = StatusCodeHelper.FromString(statusString);
 
+            statusMessage = xml.DocumentElement["Status", Saml2Namespaces.Saml2PName]
+                ["StatusMessage", Saml2Namespaces.Saml2PName].GetTrimmedTextIfNotNull();
+
             issuer = new EntityId(xmlDocument.DocumentElement["Issuer", Saml2Namespaces.Saml2Name].GetTrimmedTextIfNotNull());
 
             var destinationUrlString = xmlDocument.DocumentElement.Attributes["Destination"].GetValueIfNotNull();
@@ -217,6 +220,13 @@ namespace Kentor.AuthServices.Saml2P
         /// Status code of the message according to the SAML2 spec section 3.2.2.2
         /// </summary>
         public Saml2StatusCode Status { get { return status; } }
+
+        readonly string statusMessage;
+
+        /// <summary>
+        /// StatusMessage of the message according to the SAML2 spec section 3.2.2.1
+        /// </summary>
+        public string StatusMessage { get { return statusMessage; } }
 
         readonly EntityId issuer;
 
@@ -489,7 +499,8 @@ namespace Kentor.AuthServices.Saml2P
 
             if (status != Saml2StatusCode.Success)
             {
-                throw new InvalidOperationException("The Saml2Response must have status success to extract claims.");
+                throw new InvalidOperationException(string.Format("The Saml2Response must have status success to extract claims. Status: {0}.{1}"
+                    , status.ToString(), statusMessage != null ? " Message: " + statusMessage + "." : string.Empty));
             }
 
             foreach (XmlElement assertionNode in AllAssertionElementNodes)

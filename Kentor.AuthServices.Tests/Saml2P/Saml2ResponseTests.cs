@@ -55,6 +55,7 @@ namespace Kentor.AuthServices.Tests.Saml2P
             Destination=""http://destination.example.com"">
                 <saml2p:Status>
                     <saml2p:StatusCode Value=""urn:oasis:names:tc:SAML:2.0:status:Requester"" />
+                    <saml2p:StatusMessage>Unable to encrypt assertion</saml2p:StatusMessage>
                 </saml2p:Status>
             </saml2p:Response>";
 
@@ -63,6 +64,7 @@ namespace Kentor.AuthServices.Tests.Saml2P
                 Id = new Saml2Id(MethodBase.GetCurrentMethod().Name),
                 IssueInstant = new DateTime(2013, 01, 01, 0, 0, 0, DateTimeKind.Utc),
                 Status = Saml2StatusCode.Requester,
+                StatusMessage = "Unable to encrypt assertion",
                 Issuer = new EntityId(null),
                 DestinationUrl = new Uri("http://destination.example.com"),
                 MessageName = "SAMLResponse",
@@ -1490,7 +1492,43 @@ namespace Kentor.AuthServices.Tests.Saml2P
             Action a = () => subject.GetClaims(Options.FromConfiguration);
 
             a.ShouldThrow<InvalidOperationException>()
-                .WithMessage("The Saml2Response must have status success to extract claims.");
+                .WithMessage("The Saml2Response must have status success to extract claims. Status: Requester.");
+
+        }
+
+        [TestMethod]
+        public void Saml2Response_DisplayStatusMessageInExceptionText()
+        {
+            var response =
+            @"<?xml version=""1.0"" encoding=""UTF-8""?>
+            <saml2p:Response xmlns:saml2p=""urn:oasis:names:tc:SAML:2.0:protocol""
+            xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
+            ID = """ + MethodBase.GetCurrentMethod().Name + @""" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z"">
+                <saml2:Issuer>https://idp.example.com</saml2:Issuer>
+                <saml2p:Status>
+                    <saml2p:StatusCode Value=""urn:oasis:names:tc:SAML:2.0:status:Requester"" />
+                    <saml2p:StatusMessage>A status message</saml2p:StatusMessage>
+                </saml2p:Status>
+                <saml2:Assertion
+                Version=""2.0"" ID=""" + MethodBase.GetCurrentMethod().Name + @"_Assertion""
+                IssueInstant=""2013-09-25T00:00:00Z"">
+                    <saml2:Issuer>https://idp.example.com</saml2:Issuer>
+                    <saml2:Subject>
+                        <saml2:NameID>SomeUser</saml2:NameID>
+                        <saml2:SubjectConfirmation Method=""urn:oasis:names:tc:SAML:2.0:cm:bearer"" />
+                    </saml2:Subject>
+                    <saml2:Conditions NotOnOrAfter=""2100-01-01T00:00:00Z"" />
+                </saml2:Assertion>
+            </saml2p:Response>";
+
+            var xml = SignedXmlHelper.SignXml(response);
+
+            var subject = Saml2Response.Read(xml);
+
+            Action a = () => subject.GetClaims(Options.FromConfiguration);
+
+            a.ShouldThrow<InvalidOperationException>()
+                .WithMessage("The Saml2Response must have status success to extract claims. Status: Requester. Message: A status message.");
 
         }
 
