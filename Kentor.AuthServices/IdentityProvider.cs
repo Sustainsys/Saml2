@@ -44,30 +44,19 @@ namespace Kentor.AuthServices
             binding = config.Binding;
             AllowUnsolicitedAuthnResponse = config.AllowUnsolicitedAuthnResponse;
             metadataUrl = config.MetadataUrl;
+            
+            // If configured to load metadata, this will immediately do the load.
             LoadMetadata = config.LoadMetadata;
             this.spOptions = spOptions;
 
-            var certificate = config.SigningCertificate.LoadCertificate(); // TODO: add support for multiple configured signing certificates
+            var certificate = config.SigningCertificate.LoadCertificate();
 
             if (certificate != null)
             {
-              signingKeys.Add(certificate.PublicKey.Key);
+                signingKeys.Add(certificate.PublicKey.Key);
             }
 
-            try
-            {
-                if (LoadMetadata)
-                {
-                    DoLoadMetadata();
-                }
-
-                Validate();
-            }
-            catch (WebException)
-            {
-                // If we had a web exception, the metadata failed. It will 
-                // be automatically retried.
-            }
+            Validate();
         }
 
         private void Validate()
