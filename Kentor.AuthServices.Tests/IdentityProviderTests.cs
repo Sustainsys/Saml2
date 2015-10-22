@@ -362,7 +362,7 @@ namespace Kentor.AuthServices.Tests
             Action a = () =>
             {
                 var waitStart = DateTime.UtcNow;
-                while (!subject.SigningKeys.Any())
+                while (subject.SigningKeys.Any())
                 {
                     if (DateTime.UtcNow - waitStart > SpinWaiter.MaxWait)
                     {
