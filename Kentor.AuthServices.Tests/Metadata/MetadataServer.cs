@@ -250,11 +250,8 @@ namespace Kentor.AuthServices.Tests.Metadata
 
             if (IdpAndFederationShortCacheDurationAvailable)
             {
-                string keyElement = string.Empty;
-                if (IdpVeryShortCacheDurationIncludeInvalidKey)
-                {
-                    keyElement = @"<KeyDescriptor use=""signing"">Gibberish</KeyDescriptor>";
-                }
+                string keyElement = string.Format(@"<KeyDescriptor use=""signing"">{0}</KeyDescriptor>",
+                    IdpVeryShortCacheDurationIncludeInvalidKey ? "Gibberish" : SignedXmlHelper.KeyInfoXml);
 
                 content["/idpMetadataVeryShortCacheDuration"] = string.Format(
 @"<EntityDescriptor xmlns=""urn:oasis:names:tc:SAML:2.0:metadata""

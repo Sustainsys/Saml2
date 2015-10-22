@@ -300,6 +300,15 @@ namespace Kentor.AuthServices.Tests
         }
 
         [TestMethod]
+        public void IdentityProvier_CreateSubjectForMetadataRefresh()
+        {
+            // Had problems with the factory method causing exceptions, so this is a
+            // meta test that ensures that the test harness is working.
+
+            this.Invoking(i => i.CreateSubjectForMetadataRefresh()).ShouldNotThrow();
+        }
+
+        [TestMethod]
         public void IdentityProvider_Binding_ReloadsMetadataIfNoLongerValid()
         {
             MetadataServer.IdpVeryShortCacheDurationBinding = Saml2Binding.HttpRedirectUri;
