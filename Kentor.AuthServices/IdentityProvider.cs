@@ -44,19 +44,23 @@ namespace Kentor.AuthServices
             binding = config.Binding;
             AllowUnsolicitedAuthnResponse = config.AllowUnsolicitedAuthnResponse;
             metadataUrl = config.MetadataUrl;
-            
-            // If configured to load metadata, this will immediately do the load.
-            LoadMetadata = config.LoadMetadata;
-            this.spOptions = spOptions;
 
             var certificate = config.SigningCertificate.LoadCertificate();
-
             if (certificate != null)
             {
                 signingKeys.Add(certificate.PublicKey.Key);
             }
 
-            Validate();
+            // If configured to load metadata, this will immediately do the load.
+            LoadMetadata = config.LoadMetadata;
+            this.spOptions = spOptions;
+
+            // Validate if values are only from config. If metadata is loaded, validation
+            // is done on metadata load.
+            if (!LoadMetadata)
+            {
+                Validate();
+            }
         }
 
         private void Validate()
@@ -97,6 +101,7 @@ namespace Kentor.AuthServices
                     try
                     {
                         DoLoadMetadata();
+                        Validate();
                     }
                     catch (WebException)
                     {
@@ -312,15 +317,12 @@ namespace Kentor.AuthServices
             binding = Saml2Binding.UriToSaml2BindingType(ssoService.Binding);
             singleSignOnServiceUrl = ssoService.Location;
 
-            signingKeys.Clear();
-
             var keys = idpDescriptor.Keys.Where(k => k.Use == KeyType.Unspecified || k.Use == KeyType.Signing);
 
-            foreach (var key in keys)
+            if(keys.Any())
             {
-                signingKeys.Add(
-                    ((AsymmetricSecurityKey) key.KeyInfo.CreateKey()).GetAsymmetricAlgorithm(
-                        SignedXml.XmlDsigRSASHA1Url, false));
+                signingKeys = keys.Select(k => ((AsymmetricSecurityKey)k.KeyInfo.CreateKey())
+                .GetAsymmetricAlgorithm(SignedXml.XmlDsigRSASHA1Url, false)).ToList();
             }
         }
 

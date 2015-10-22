@@ -49,16 +49,19 @@ namespace Kentor.AuthServices.Tests.Metadata
     </IDPSSODescriptor>
   </EntityDescriptor>";
 
-            content["/idpMetadataOtherEntityId"] =
+            content["/idpMetadataOtherEntityId"] = string.Format(
 @"<EntityDescriptor xmlns=""urn:oasis:names:tc:SAML:2.0:metadata""
     entityID=""http://other.entityid.example.com"">
     <IDPSSODescriptor
       protocolSupportEnumeration=""urn:oasis:names:tc:SAML:2.0:protocol"">
+      <KeyDescriptor use=""signing"">
+        {0}
+      </KeyDescriptor>
       <SingleSignOnService
         Binding=""urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect""
         Location=""http://wrong.entityid.example.com/acs""/>
     </IDPSSODescriptor>
-  </EntityDescriptor>";
+  </EntityDescriptor>", SignedXmlHelper.KeyInfoXml);
 
             content["/federationMetadata"] = string.Format(
 @"<EntitiesDescriptor xmlns=""urn:oasis:names:tc:SAML:2.0:metadata"" validUntil=""2100-01-01T14:43:15Z"">

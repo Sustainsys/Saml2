@@ -288,7 +288,8 @@ namespace Kentor.AuthServices.Tests
             var subject = new IdentityProvider(config, Options.FromConfiguration.SPOptions);
 
             var expectedValidUntil = DateTime.UtcNow.AddMinutes(15);
-            subject.MetadataValidUntil.Should().BeCloseTo(expectedValidUntil);
+            // Comparison on the second is more than enough if we're adding 15 minutes.
+            subject.MetadataValidUntil.Should().BeCloseTo(expectedValidUntil, 1000);
         }
 
         IdentityProvider CreateSubjectForMetadataRefresh()
