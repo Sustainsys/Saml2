@@ -49,16 +49,19 @@ namespace Kentor.AuthServices.Tests.Metadata
     </IDPSSODescriptor>
   </EntityDescriptor>";
 
-            content["/idpMetadataOtherEntityId"] =
+            content["/idpMetadataOtherEntityId"] = string.Format(
 @"<EntityDescriptor xmlns=""urn:oasis:names:tc:SAML:2.0:metadata""
     entityID=""http://other.entityid.example.com"">
     <IDPSSODescriptor
       protocolSupportEnumeration=""urn:oasis:names:tc:SAML:2.0:protocol"">
+      <KeyDescriptor use=""signing"">
+        {0}
+      </KeyDescriptor>
       <SingleSignOnService
         Binding=""urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect""
         Location=""http://wrong.entityid.example.com/acs""/>
     </IDPSSODescriptor>
-  </EntityDescriptor>";
+  </EntityDescriptor>", SignedXmlHelper.KeyInfoXml);
 
             content["/federationMetadata"] = string.Format(
 @"<EntitiesDescriptor xmlns=""urn:oasis:names:tc:SAML:2.0:metadata"" validUntil=""2100-01-01T14:43:15Z"">
@@ -250,11 +253,10 @@ namespace Kentor.AuthServices.Tests.Metadata
 
             if (IdpAndFederationShortCacheDurationAvailable)
             {
-                string keyElement = string.Empty;
-                if (IdpVeryShortCacheDurationIncludeInvalidKey)
-                {
-                    keyElement = @"<KeyDescriptor use=""signing"">Gibberish</KeyDescriptor>";
-                }
+                string keyElement = IdpVeryShortCacheDurationIncludeKey ?
+                    string.Format(@"<KeyDescriptor use=""signing"">{0}</KeyDescriptor>",
+                    IdpVeryShortCacheDurationIncludeInvalidKey ? "Gibberish" : SignedXmlHelper.KeyInfoXml2)
+                    : "";
 
                 content["/idpMetadataVeryShortCacheDuration"] = string.Format(
 @"<EntityDescriptor xmlns=""urn:oasis:names:tc:SAML:2.0:metadata""
@@ -289,6 +291,7 @@ entityID=""http://localhost:13428/idpMetadataVeryShortCacheDuration"" cacheDurat
         public static int IdpAndFederationVeryShortCacheDurationSsoPort { get; set; }
         public static Uri IdpVeryShortCacheDurationBinding { get; set; }
         public static bool IdpVeryShortCacheDurationIncludeInvalidKey { get; set; }
+        public static bool IdpVeryShortCacheDurationIncludeKey { get; set; }
         public static bool IdpAndFederationShortCacheDurationAvailable { get; set; }
         public static bool FederationVeryShortCacheDurationSecondAlternativeEnabled { get; set; }
 
@@ -297,6 +300,7 @@ entityID=""http://localhost:13428/idpMetadataVeryShortCacheDuration"" cacheDurat
             IdpMetadataSsoPort = 13428;
             IdpAndFederationVeryShortCacheDurationSsoPort = 80;
             IdpVeryShortCacheDurationBinding = Saml2Binding.HttpRedirectUri;
+            IdpVeryShortCacheDurationIncludeKey = true;
             IdpAndFederationShortCacheDurationAvailable = true;
             FederationVeryShortCacheDurationSecondAlternativeEnabled = false;
         }
