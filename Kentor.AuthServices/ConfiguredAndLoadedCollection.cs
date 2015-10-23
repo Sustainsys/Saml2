@@ -20,7 +20,7 @@ namespace Kentor.AuthServices
         /// Add a configured item.
         /// </summary>
         /// <param name="item">Item to add.</param>
-        public void AddConfiguredKey(T item)
+        public void AddConfiguredItem(T item)
         {
             configuredItems.Add(item);
         }

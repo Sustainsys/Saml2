@@ -48,7 +48,7 @@ namespace Kentor.AuthServices
             var certificate = config.SigningCertificate.LoadCertificate();
             if (certificate != null)
             {
-                signingKeys.AddConfiguredKey(certificate.PublicKey.Key);
+                signingKeys.AddConfiguredItem(certificate.PublicKey.Key);
             }
 
             // If configured to load metadata, this will immediately do the load.
@@ -320,11 +320,8 @@ namespace Kentor.AuthServices
 
             var keys = idpDescriptor.Keys.Where(k => k.Use == KeyType.Unspecified || k.Use == KeyType.Signing);
 
-            if(keys.Any())
-            {
-                signingKeys.SetLoadedItems(keys.Select(k => ((AsymmetricSecurityKey)k.KeyInfo.CreateKey())
-                .GetAsymmetricAlgorithm(SignedXml.XmlDsigRSASHA1Url, false)).ToList());
-            }
+            signingKeys.SetLoadedItems(keys.Select(k => ((AsymmetricSecurityKey)k.KeyInfo.CreateKey())
+            .GetAsymmetricAlgorithm(SignedXml.XmlDsigRSASHA1Url, false)).ToList());
         }
 
         private DateTime? metadataValidUntil;

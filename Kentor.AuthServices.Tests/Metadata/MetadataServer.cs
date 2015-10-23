@@ -255,7 +255,7 @@ namespace Kentor.AuthServices.Tests.Metadata
             {
                 string keyElement = IdpVeryShortCacheDurationIncludeKey ?
                     string.Format(@"<KeyDescriptor use=""signing"">{0}</KeyDescriptor>",
-                    IdpVeryShortCacheDurationIncludeInvalidKey ? "Gibberish" : SignedXmlHelper.KeyInfoXml)
+                    IdpVeryShortCacheDurationIncludeInvalidKey ? "Gibberish" : SignedXmlHelper.KeyInfoXml2)
                     : "";
 
                 content["/idpMetadataVeryShortCacheDuration"] = string.Format(

@@ -354,7 +354,26 @@ namespace Kentor.AuthServices.Tests
         }
 
         [TestMethod]
-        public void IdentityProvider_SigningKey_ReloadsMetadataIfNoLongerValid()
+        public void IdentityProvider_SigningKeys_RemovesMetadataKeyButKeepsConfiguredKey()
+        {
+            var subject = CreateSubjectForMetadataRefresh();
+
+            // One key from config, one key from metadata.
+            subject.SigningKeys.Count().Should().Be(2);
+
+            MetadataServer.IdpVeryShortCacheDurationIncludeKey = false;
+
+            SpinWaiter.While(() => subject.SigningKeys.Count() == 2);
+
+            var subjectKeyParams = subject.SigningKeys.Single().As<RSACryptoServiceProvider>().ExportParameters(false);
+            var expectedKeyParams = SignedXmlHelper.TestKey.As<RSACryptoServiceProvider>().ExportParameters(false);
+
+            subjectKeyParams.Modulus.ShouldBeEquivalentTo(expectedKeyParams.Modulus);
+            subjectKeyParams.Exponent.ShouldBeEquivalentTo(expectedKeyParams.Exponent);
+        }
+
+        [TestMethod]
+        public void IdentityProvider_SigningKeys_ReloadsMetadataIfNoLongerValid()
         {
             var subject = CreateSubjectForMetadataRefresh();
             subject.SigningKeys.First().Should().NotBeNull();
@@ -531,7 +550,7 @@ namespace Kentor.AuthServices.Tests
                     SingleSignOnServiceUrl = new Uri("http://idp.example.com/sso")
                 };
 
-            subject.SigningKeys.AddConfiguredKey(SignedXmlHelper.TestKey);
+            subject.SigningKeys.AddConfiguredItem(SignedXmlHelper.TestKey);
 
             subject.AllowUnsolicitedAuthnResponse.Should().BeTrue();
             subject.Binding.Should().Be(Saml2BindingType.HttpPost);

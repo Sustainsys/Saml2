@@ -64,7 +64,7 @@ namespace SampleOwinApplication
                     SingleSignOnServiceUrl = new Uri("http://stubidp.kentor.se")
                 };
 
-            idp.SigningKeys.AddConfiguredKey(
+            idp.SigningKeys.AddConfiguredItem(
                 new X509Certificate2(HostingEnvironment.MapPath("~/App_Data/Kentor.AuthServices.StubIdp.pfx")).PublicKey
                                                                                                               .Key);
 
