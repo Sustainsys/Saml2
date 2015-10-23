@@ -23,7 +23,7 @@ namespace Kentor.AuthServices
         {
             if(conditions == null)
             {
-                throw new ArgumentNullException("conditions");
+                throw new ArgumentNullException(nameof(conditions));
             }
 
             return new XElement(Saml2Namespaces.Saml2 + "Conditions",

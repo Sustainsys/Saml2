@@ -210,7 +210,7 @@ namespace Kentor.AuthServices
         {
             if (authServicesUrls == null)
             {
-                throw new ArgumentNullException("authServicesUrls");
+                throw new ArgumentNullException(nameof(authServicesUrls));
             }
 
             var authnRequest = new Saml2AuthenticationRequest()
@@ -284,7 +284,7 @@ namespace Kentor.AuthServices
         {
             if (metadata == null)
             {
-                throw new ArgumentNullException("metadata");
+                throw new ArgumentNullException(nameof(metadata));
             }
 
             lock (metadataLoadLock)

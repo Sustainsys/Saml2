@@ -27,12 +27,12 @@ namespace Kentor.AuthServices.HttpModule
         {
             if (commandResult == null)
             {
-                throw new ArgumentNullException("commandResult");
+                throw new ArgumentNullException(nameof(commandResult));
             }
 
             if (response == null)
             {
-                throw new ArgumentNullException("response");
+                throw new ArgumentNullException(nameof(response));
             }
 
             response.Cache.SetCacheability((HttpCacheability)commandResult.Cacheability);
@@ -68,7 +68,7 @@ namespace Kentor.AuthServices.HttpModule
         {
             if(commandResult == null)
             {
-                throw new ArgumentNullException("commandResult");
+                throw new ArgumentNullException(nameof(commandResult));
             }
 
             // Ignore this if we're not running inside IIS, e.g. in unit tests.

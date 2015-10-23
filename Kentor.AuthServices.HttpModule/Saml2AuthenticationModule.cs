@@ -26,7 +26,7 @@ namespace Kentor.AuthServices.HttpModule
     {
       if (context == null)
       {
-        throw new ArgumentNullException("context");
+        throw new ArgumentNullException(nameof(context));
       }
       context.BeginRequest += OnBeginRequest;
 

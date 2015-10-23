@@ -19,12 +19,12 @@ namespace Kentor.AuthServices
         {
             if (identity == null)
             {
-                throw new ArgumentNullException("identity");
+                throw new ArgumentNullException(nameof(identity));
             }
 
             if (issuer == null)
             {
-                throw new ArgumentNullException("issuer");
+                throw new ArgumentNullException(nameof(issuer));
             }
 
             var assertion = new Saml2Assertion(new Saml2NameIdentifier(issuer.Id));

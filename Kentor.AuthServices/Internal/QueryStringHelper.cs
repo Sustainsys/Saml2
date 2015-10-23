@@ -21,7 +21,7 @@ namespace Kentor.AuthServices.Internal
         {
             if (queryString == null)
             {
-                throw new ArgumentNullException("queryString");
+                throw new ArgumentNullException(nameof(queryString));
             }
 
             if (queryString.Length != 0 && queryString[0] == '?')

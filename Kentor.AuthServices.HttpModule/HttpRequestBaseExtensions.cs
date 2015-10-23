@@ -22,7 +22,7 @@ namespace Kentor.AuthServices.HttpModule
         {
             if (requestBase == null)
             {
-                throw new ArgumentNullException("requestBase");
+                throw new ArgumentNullException(nameof(requestBase));
             }
 
             return new HttpRequestData(

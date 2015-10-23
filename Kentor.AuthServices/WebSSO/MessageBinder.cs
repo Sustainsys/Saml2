@@ -22,11 +22,11 @@ namespace Kentor.AuthServices.WebSso
         {
             if (binding == null)
             {
-                throw new ArgumentNullException("binding");
+                throw new ArgumentNullException(nameof(binding));
             }
             if (message == null)
             {
-                throw new ArgumentNullException("message");
+                throw new ArgumentNullException(nameof(message));
             }
 
             return binding.Bind(message.ToXml(), message.DestinationUrl, message.MessageName);

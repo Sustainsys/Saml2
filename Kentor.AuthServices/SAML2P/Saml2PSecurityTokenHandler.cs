@@ -29,7 +29,7 @@ namespace Kentor.AuthServices.Saml2P
         {
             if(spOptions== null)
             {
-                throw new ArgumentNullException("spOptions");
+                throw new ArgumentNullException(nameof(spOptions));
             }
 
             var audienceRestriction = new AudienceRestriction(AudienceUriMode.Always);

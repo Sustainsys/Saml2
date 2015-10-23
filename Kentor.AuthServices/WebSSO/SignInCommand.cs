@@ -18,12 +18,12 @@ namespace Kentor.AuthServices.WebSso
         {
             if (request == null)
             {
-                throw new ArgumentNullException("request");
+                throw new ArgumentNullException(nameof(request));
             }
 
             if (options == null)
             {
-                throw new ArgumentNullException("options");
+                throw new ArgumentNullException(nameof(options));
             }
 
             return CreateResult(

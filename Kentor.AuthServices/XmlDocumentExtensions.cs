@@ -35,12 +35,12 @@ namespace Kentor.AuthServices
         {
             if (xmlDocument == null)
             {
-                throw new ArgumentNullException("xmlDocument");
+                throw new ArgumentNullException(nameof(xmlDocument));
             }
 
             if (cert == null)
             {
-                throw new ArgumentNullException("cert");
+                throw new ArgumentNullException(nameof(cert));
             }
 
             var signedXml = new SignedXml(xmlDocument);

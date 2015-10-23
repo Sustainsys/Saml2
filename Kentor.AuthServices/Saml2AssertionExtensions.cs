@@ -21,7 +21,7 @@ namespace Kentor.AuthServices
         {
             if(assertion == null)
             {
-                throw new ArgumentNullException("assertion");
+                throw new ArgumentNullException(nameof(assertion));
             }
 
             var xml = new XElement(Saml2Namespaces.Saml2 + "Assertion",

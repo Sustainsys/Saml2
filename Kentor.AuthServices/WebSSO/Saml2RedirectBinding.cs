@@ -18,11 +18,11 @@ namespace Kentor.AuthServices.WebSso
         {
             if (payload == null)
             {
-                throw new ArgumentNullException("payload");
+                throw new ArgumentNullException(nameof(payload));
             }
             if (destinationUrl == null)
             {
-                throw new ArgumentNullException("destinationUrl");
+                throw new ArgumentNullException(nameof(destinationUrl));
             }
 
             var serializedRequest = Serialize(payload);
@@ -43,7 +43,7 @@ namespace Kentor.AuthServices.WebSso
         {
             if (request == null)
             {
-                throw new ArgumentNullException("request");
+                throw new ArgumentNullException(nameof(request));
             }
 
             var payload = Convert.FromBase64String(request.QueryString["SAMLRequest"].First());

@@ -14,12 +14,12 @@ namespace Kentor.AuthServices.Owin
         {
             if (commandResult == null)
             {
-                throw new ArgumentNullException("commandResult");
+                throw new ArgumentNullException(nameof(commandResult));
             }
 
             if (context == null)
             {
-                throw new ArgumentNullException("context");
+                throw new ArgumentNullException(nameof(context));
             }
 
             context.Response.ContentType = commandResult.ContentType;
