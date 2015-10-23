@@ -329,7 +329,7 @@ namespace Kentor.AuthServices
 
             var key = idpDescriptor.Keys
                 .Where(k => k.Use == KeyType.Unspecified || k.Use == KeyType.Signing)
-                .SingleOrDefault();
+                .FirstOrDefault();
 
             if (key != null)
             {
