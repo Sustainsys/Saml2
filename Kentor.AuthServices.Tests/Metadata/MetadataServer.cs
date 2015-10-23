@@ -253,8 +253,10 @@ namespace Kentor.AuthServices.Tests.Metadata
 
             if (IdpAndFederationShortCacheDurationAvailable)
             {
-                string keyElement = string.Format(@"<KeyDescriptor use=""signing"">{0}</KeyDescriptor>",
-                    IdpVeryShortCacheDurationIncludeInvalidKey ? "Gibberish" : SignedXmlHelper.KeyInfoXml);
+                string keyElement = IdpVeryShortCacheDurationIncludeKey ?
+                    string.Format(@"<KeyDescriptor use=""signing"">{0}</KeyDescriptor>",
+                    IdpVeryShortCacheDurationIncludeInvalidKey ? "Gibberish" : SignedXmlHelper.KeyInfoXml)
+                    : "";
 
                 content["/idpMetadataVeryShortCacheDuration"] = string.Format(
 @"<EntityDescriptor xmlns=""urn:oasis:names:tc:SAML:2.0:metadata""
@@ -289,6 +291,7 @@ entityID=""http://localhost:13428/idpMetadataVeryShortCacheDuration"" cacheDurat
         public static int IdpAndFederationVeryShortCacheDurationSsoPort { get; set; }
         public static Uri IdpVeryShortCacheDurationBinding { get; set; }
         public static bool IdpVeryShortCacheDurationIncludeInvalidKey { get; set; }
+        public static bool IdpVeryShortCacheDurationIncludeKey { get; set; }
         public static bool IdpAndFederationShortCacheDurationAvailable { get; set; }
         public static bool FederationVeryShortCacheDurationSecondAlternativeEnabled { get; set; }
 
@@ -297,6 +300,7 @@ entityID=""http://localhost:13428/idpMetadataVeryShortCacheDuration"" cacheDurat
             IdpMetadataSsoPort = 13428;
             IdpAndFederationVeryShortCacheDurationSsoPort = 80;
             IdpVeryShortCacheDurationBinding = Saml2Binding.HttpRedirectUri;
+            IdpVeryShortCacheDurationIncludeKey = true;
             IdpAndFederationShortCacheDurationAvailable = true;
             FederationVeryShortCacheDurationSecondAlternativeEnabled = false;
         }

@@ -27,6 +27,7 @@ namespace Kentor.AuthServices.Tests
         {
             MetadataServer.IdpMetadataSsoPort = idpMetadataSsoPort;
             MetadataServer.IdpVeryShortCacheDurationIncludeInvalidKey = false;
+            MetadataServer.IdpVeryShortCacheDurationIncludeKey = true;
             MetadataRefreshScheduler.minInternval = refreshMinInterval;
         }
 
@@ -106,7 +107,7 @@ namespace Kentor.AuthServices.Tests
         {
             var idp = Options.FromConfiguration.IdentityProviders.Default;
 
-            idp.SigningKeys[0].ShouldBeEquivalentTo(SignedXmlHelper.TestKey);
+            idp.SigningKeys.First().ShouldBeEquivalentTo(SignedXmlHelper.TestKey);
         }
 
         [TestMethod]
@@ -135,7 +136,7 @@ namespace Kentor.AuthServices.Tests
             idpFromMetadata.EntityId.Id.Should().Be(entityId.Id);
             idpFromMetadata.Binding.Should().Be(Saml2BindingType.HttpPost);
             idpFromMetadata.SingleSignOnServiceUrl.Should().Be(new Uri("http://localhost:13428/acs"));
-            idpFromMetadata.SigningKeys[0].ShouldBeEquivalentTo(SignedXmlHelper.TestKey);
+            idpFromMetadata.SigningKeys.First().ShouldBeEquivalentTo(SignedXmlHelper.TestKey);
         }
 
         private IdentityProviderElement CreateConfig()
@@ -198,7 +199,7 @@ namespace Kentor.AuthServices.Tests
 
             // Check that metadata was read and overrides configured values.
             subject.Binding.Should().Be(Saml2BindingType.HttpRedirect);
-            subject.SigningKeys[0].ShouldBeEquivalentTo(SignedXmlHelper.TestKey);
+            subject.SigningKeys.First().ShouldBeEquivalentTo(SignedXmlHelper.TestKey);
         }
 
         [TestMethod]
@@ -356,7 +357,7 @@ namespace Kentor.AuthServices.Tests
         public void IdentityProvider_SigningKey_ReloadsMetadataIfNoLongerValid()
         {
             var subject = CreateSubjectForMetadataRefresh();
-            subject.SigningKeys[0].Should().NotBeNull();
+            subject.SigningKeys.First().Should().NotBeNull();
             MetadataServer.IdpVeryShortCacheDurationIncludeInvalidKey = true;
 
             Action a = () =>
@@ -519,7 +520,7 @@ namespace Kentor.AuthServices.Tests
         }
 
         [TestMethod]
-        public void IdentityProvider_MetadataLoadedConfiguredManually()
+        public void IdentityProvider_NoMetadataLoadConfiguredFromCode()
         {
             var subject = new IdentityProvider(
                 new EntityId("http://idp.example.com"),
@@ -530,7 +531,7 @@ namespace Kentor.AuthServices.Tests
                     SingleSignOnServiceUrl = new Uri("http://idp.example.com/sso")
                 };
 
-            subject.SigningKeys.Add(SignedXmlHelper.TestKey);
+            subject.SigningKeys.AddConfiguredKey(SignedXmlHelper.TestKey);
 
             subject.AllowUnsolicitedAuthnResponse.Should().BeTrue();
             subject.Binding.Should().Be(Saml2BindingType.HttpPost);
@@ -539,7 +540,7 @@ namespace Kentor.AuthServices.Tests
             subject.MetadataUrl.OriginalString.Should().Be("http://idp.example.com");
             subject.MetadataValidUntil.Should().NotHaveValue();
 
-            var subjectKeyParams = subject.SigningKeys[0].As<RSACryptoServiceProvider>().ExportParameters(false);
+            var subjectKeyParams = subject.SigningKeys.First().As<RSACryptoServiceProvider>().ExportParameters(false);
             var expectedKeyParams = SignedXmlHelper.TestKey.As<RSACryptoServiceProvider>().ExportParameters(false);
 
             subjectKeyParams.Modulus.ShouldBeEquivalentTo(expectedKeyParams.Modulus);

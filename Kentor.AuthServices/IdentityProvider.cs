@@ -48,7 +48,7 @@ namespace Kentor.AuthServices
             var certificate = config.SigningCertificate.LoadCertificate();
             if (certificate != null)
             {
-                signingKeys.Add(certificate.PublicKey.Key);
+                signingKeys.AddConfiguredKey(certificate.PublicKey.Key);
             }
 
             // If configured to load metadata, this will immediately do the load.
@@ -240,12 +240,13 @@ namespace Kentor.AuthServices
             return Saml2Binding.Get(Binding).Bind(request);
         }
 
-        private List<AsymmetricAlgorithm> signingKeys = new List<AsymmetricAlgorithm>();
+        private ConfiguredAndLoadedCollection<AsymmetricAlgorithm> signingKeys = 
+            new ConfiguredAndLoadedCollection<AsymmetricAlgorithm>();
 
         /// <summary>
         /// The public key of the idp that is used to verify signatures of responses/assertions.
         /// </summary>
-        public IList<AsymmetricAlgorithm> SigningKeys
+        public ConfiguredAndLoadedCollection<AsymmetricAlgorithm> SigningKeys
         {
             get
             {
@@ -321,8 +322,8 @@ namespace Kentor.AuthServices
 
             if(keys.Any())
             {
-                signingKeys = keys.Select(k => ((AsymmetricSecurityKey)k.KeyInfo.CreateKey())
-                .GetAsymmetricAlgorithm(SignedXml.XmlDsigRSASHA1Url, false)).ToList();
+                signingKeys.SetLoadedItems(keys.Select(k => ((AsymmetricSecurityKey)k.KeyInfo.CreateKey())
+                .GetAsymmetricAlgorithm(SignedXml.XmlDsigRSASHA1Url, false)).ToList());
             }
         }
 

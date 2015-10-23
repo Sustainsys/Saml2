@@ -15,6 +15,8 @@ namespace Kentor.AuthServices.TestHelpers
 
         public static readonly AsymmetricAlgorithm TestKey = TestCert.PublicKey.Key;
 
+        public static readonly AsymmetricAlgorithm TestKey2 = TestCert2.PublicKey.Key;
+
         public static readonly KeyDescriptor TestKeyDescriptor = new KeyDescriptor(
             new SecurityKeyIdentifier(
                 (new X509SecurityToken(TestCert))

@@ -400,7 +400,7 @@ namespace Kentor.AuthServices.Saml2P
         /// <summary>Checks the signature.</summary>
         /// <param name="signedRootElement">The signed root element.</param>
         /// <param name="idpKeys">A list containing one ore more assymetric keys of a algorithm.</param>
-        private static void CheckSignature(XmlElement signedRootElement, IList<AsymmetricAlgorithm> idpKeys)
+        private static void CheckSignature(XmlElement signedRootElement, IEnumerable<AsymmetricAlgorithm> idpKeys)
         {
             var xmlDocument = new XmlDocument { PreserveWhitespace = true };
             xmlDocument.LoadXml(signedRootElement.OuterXml);
