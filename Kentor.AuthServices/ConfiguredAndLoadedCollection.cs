@@ -36,6 +36,17 @@ namespace Kentor.AuthServices
         }
 
         /// <summary>
+        /// The loaded items.
+        /// </summary>
+        public IEnumerable<T> LoadedItems
+        {
+            get
+            {
+                return loadedItems;
+            }
+        }
+
+        /// <summary>
         /// Gets an enumerator to the combined set of keys.
         /// </summary>
         /// <returns>Enumerator</returns>

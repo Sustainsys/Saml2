@@ -107,7 +107,7 @@ namespace Kentor.AuthServices.Tests
         {
             var idp = Options.FromConfiguration.IdentityProviders.Default;
 
-            idp.SigningKeys.First().ShouldBeEquivalentTo(SignedXmlHelper.TestKey);
+            idp.SigningKeys.Single().ShouldBeEquivalentTo(SignedXmlHelper.TestKey);
         }
 
         [TestMethod]
@@ -136,7 +136,7 @@ namespace Kentor.AuthServices.Tests
             idpFromMetadata.EntityId.Id.Should().Be(entityId.Id);
             idpFromMetadata.Binding.Should().Be(Saml2BindingType.HttpPost);
             idpFromMetadata.SingleSignOnServiceUrl.Should().Be(new Uri("http://localhost:13428/acs"));
-            idpFromMetadata.SigningKeys.First().ShouldBeEquivalentTo(SignedXmlHelper.TestKey);
+            idpFromMetadata.SigningKeys.Single().ShouldBeEquivalentTo(SignedXmlHelper.TestKey);
         }
 
         private IdentityProviderElement CreateConfig()
@@ -199,7 +199,7 @@ namespace Kentor.AuthServices.Tests
 
             // Check that metadata was read and overrides configured values.
             subject.Binding.Should().Be(Saml2BindingType.HttpRedirect);
-            subject.SigningKeys.First().ShouldBeEquivalentTo(SignedXmlHelper.TestKey);
+            subject.SigningKeys.Single().ShouldBeEquivalentTo(SignedXmlHelper.TestKey);
         }
 
         [TestMethod]
@@ -376,13 +376,13 @@ namespace Kentor.AuthServices.Tests
         public void IdentityProvider_SigningKeys_ReloadsMetadataIfNoLongerValid()
         {
             var subject = CreateSubjectForMetadataRefresh();
-            subject.SigningKeys.First().Should().NotBeNull();
+            subject.SigningKeys.LoadedItems.Should().NotBeEmpty();
             MetadataServer.IdpVeryShortCacheDurationIncludeInvalidKey = true;
 
             Action a = () =>
             {
                 var waitStart = DateTime.UtcNow;
-                while (subject.SigningKeys.Any())
+                while (subject.SigningKeys.LoadedItems.Any())
                 {
                     if (DateTime.UtcNow - waitStart > SpinWaiter.MaxWait)
                     {
@@ -559,7 +559,7 @@ namespace Kentor.AuthServices.Tests
             subject.MetadataUrl.OriginalString.Should().Be("http://idp.example.com");
             subject.MetadataValidUntil.Should().NotHaveValue();
 
-            var subjectKeyParams = subject.SigningKeys.First().As<RSACryptoServiceProvider>().ExportParameters(false);
+            var subjectKeyParams = subject.SigningKeys.Single().As<RSACryptoServiceProvider>().ExportParameters(false);
             var expectedKeyParams = SignedXmlHelper.TestKey.As<RSACryptoServiceProvider>().ExportParameters(false);
 
             subjectKeyParams.Modulus.ShouldBeEquivalentTo(expectedKeyParams.Modulus);
