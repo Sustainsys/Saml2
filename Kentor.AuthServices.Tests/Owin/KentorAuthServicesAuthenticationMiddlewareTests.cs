@@ -107,6 +107,11 @@ namespace Kentor.AuthServices.Tests.Owin
             context.Response.StatusCode.Should().Be(200);
             context.Response.Body.Seek(0, SeekOrigin.Begin);
 
+            // Fix to #295, where content length is incorrectly set to 0 by the
+            // next middleware. It appears as it works if the content length is
+            // simply removed. See discussion in GitHub issue #295.
+            context.Response.ContentLength.Should().NotHaveValue();
+
             using (var reader = new StreamReader(context.Response.Body))
             {
                 string bodyContent = reader.ReadToEnd();
