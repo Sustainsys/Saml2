@@ -58,12 +58,10 @@ namespace Kentor.AuthServices.Metadata
                 }
             }
 
-            ed.RoleDescriptors.Add(spsso);
-
-            if(spOptions.DiscoveryServiceUrl != null
+            if (spOptions.DiscoveryServiceUrl != null
                 && !string.IsNullOrEmpty(spOptions.DiscoveryServiceUrl.OriginalString))
             {
-                ed.Extensions.DiscoveryResponse = new IndexedProtocolEndpoint
+                spsso.Extensions.DiscoveryResponse = new IndexedProtocolEndpoint
                 {
                     Binding = Saml2Binding.DiscoveryResponseUri,
                     Index = 0,
@@ -71,6 +69,8 @@ namespace Kentor.AuthServices.Metadata
                     Location = urls.SignInUrl
                 };
             }
+
+            ed.RoleDescriptors.Add(spsso);
 
             return ed;
         }
