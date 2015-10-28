@@ -15,9 +15,10 @@ namespace Kentor.AuthServices.Tests.Internal
         {
             var id = new Saml2Id();
             var requestData = new StoredRequestState(new EntityId("testidp"), new Uri("http://localhost/Return.aspx"));
-            PendingAuthnRequests.Add(id, requestData);
+            var pendingAuthContainer = new PendingAuthInMemoryStorage();
+            pendingAuthContainer.Add(id, requestData);
             StoredRequestState responseData;
-            PendingAuthnRequests.TryRemove(id, out responseData).Should().BeTrue();
+            pendingAuthContainer.TryRemove(id, out responseData).Should().BeTrue();
             responseData.Should().Be(requestData);
             responseData.Idp.Id.Should().Be("testidp");
             responseData.ReturnUrl.Should().Be("http://localhost/Return.aspx");
@@ -28,8 +29,9 @@ namespace Kentor.AuthServices.Tests.Internal
         {
             var id = new Saml2Id();
             var requestData = new StoredRequestState(new EntityId("testidp"), new Uri("http://localhost/Return.aspx"));
-            PendingAuthnRequests.Add(id, requestData);
-            Action a = () => PendingAuthnRequests.Add(id, requestData);
+            var pendingAuthContainer = new PendingAuthInMemoryStorage();
+            pendingAuthContainer.Add(id, requestData);
+            Action a = () => pendingAuthContainer.Add(id, requestData);
             a.ShouldThrow<InvalidOperationException>();
         }
 
@@ -38,7 +40,7 @@ namespace Kentor.AuthServices.Tests.Internal
         {
             var id = new Saml2Id();
             StoredRequestState responseData;
-            PendingAuthnRequests.TryRemove(id, out responseData).Should().BeFalse();
+            new PendingAuthInMemoryStorage().TryRemove(id, out responseData).Should().BeFalse();
         }
 
         [TestMethod]
@@ -47,9 +49,10 @@ namespace Kentor.AuthServices.Tests.Internal
             var id = new Saml2Id();
             var requestData = new StoredRequestState(new EntityId("testidp"), new Uri("http://localhost/Return.aspx"));
             StoredRequestState responseData;
-            PendingAuthnRequests.Add(id, requestData);
-            PendingAuthnRequests.TryRemove(id, out responseData).Should().BeTrue();
-            PendingAuthnRequests.TryRemove(id, out responseData).Should().BeFalse();
+            var pendingAuthContainer = new PendingAuthInMemoryStorage();
+            pendingAuthContainer.Add(id, requestData);
+            pendingAuthContainer.TryRemove(id, out responseData).Should().BeTrue();
+            pendingAuthContainer.TryRemove(id, out responseData).Should().BeFalse();
         }
 
         [TestMethod]
@@ -58,7 +61,7 @@ namespace Kentor.AuthServices.Tests.Internal
             Saml2Id id = null;
             StoredRequestState state;
 
-            PendingAuthnRequests.TryRemove(id, out state).Should().BeFalse();
+            new PendingAuthInMemoryStorage().TryRemove(id, out state).Should().BeFalse();
             state.Should().BeNull();
         }
     }

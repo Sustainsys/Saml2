@@ -32,6 +32,7 @@ namespace Kentor.AuthServices.Owin
 
             if (commandResult.Content != null)
             {
+                context.Response.ContentLength = null;
                 context.Response.Write(commandResult.Content);
             }
         }

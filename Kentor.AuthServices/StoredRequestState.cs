@@ -14,6 +14,14 @@ namespace Kentor.AuthServices
     public class StoredRequestState
     {
         /// <summary>
+        /// Creates an empty StoredRequestState. Necessary to allow serialization and deserialization 
+        /// so authentication metadata can be stored in a database to allow usage in a web farm. 
+        /// </summary>
+        public StoredRequestState()
+        {
+            //Needed for serializing and deserializing the state
+        }
+        /// <summary>
         /// Creates a PendingAuthnRequestData
         /// </summary>
         /// <param name="idp">The EntityId of the IDP the request was sent to</param>
