@@ -61,7 +61,7 @@ namespace Kentor.AuthServices.Tests.WebSso
             var requestId = AuthnRequestHelper.GetRequestId(subject.Location);
 
             StoredRequestState storedAuthnData;
-            PendingAuthnRequests.TryRemove(new System.IdentityModel.Tokens.Saml2Id(requestId), out storedAuthnData);
+            idp.PendingAuthStorageContainer.TryRemove(new System.IdentityModel.Tokens.Saml2Id(requestId), out storedAuthnData);
 
             storedAuthnData.ReturnUrl.Should().Be("http://localhost/Return.aspx");
         }
