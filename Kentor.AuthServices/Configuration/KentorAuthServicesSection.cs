@@ -81,7 +81,7 @@ namespace Kentor.AuthServices.Configuration
         /// <summary>
         /// The Url to redirect back to after successfull authentication.
         /// </summary>
-        [ConfigurationProperty("returnUrl", IsRequired = true)]
+        [ConfigurationProperty("returnUrl")]
         public Uri ReturnUrl
         {
             get
