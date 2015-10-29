@@ -7,7 +7,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kentor.AuthServices", "Kent
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{E0C4834E-A7A9-476F-8F46-B2D533190872}"
 	ProjectSection(SolutionItems) = preProject
-		CodeCoverage.runsettings = CodeCoverage.runsettings
 		CONTRIBUTING.md = CONTRIBUTING.md
 		CONTRIBUTORS.txt = CONTRIBUTORS.txt
 		Kentor.AuthServices.ruleset = Kentor.AuthServices.ruleset
