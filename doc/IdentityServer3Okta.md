@@ -103,3 +103,65 @@ public class Startup
 
 ## Step 4 - Try it out!  
 Logging in with Okta through your identity server should work at this point.  Cheers!
+
+## Step 5 - Set up IdP-Initiated support 
+This is an optional but very nice and (I think) important step that will enable Okta users
+to login to your site by clicking on the "app" icon on their Okta Dashboard.  The process
+involves setting up the Kentor options to "allow unsolicited response", setting up a
+redirect page on your target site (not identity server), and specifying that in the Kentor
+settings.  Explanations follow.
+
+The first step is to configure the AuthServices/Acs endpoint to allow for unsolicited responses.
+To do this, modify the code snippet where you are adding IdentityProviders to include the 
+AllowUnsolictedAuthnResponse = true line shown below.
+
+```csharp
+			authServicesOptions.IdentityProviders.Add(new IdentityProvider(
+                new EntityId(oktaEntityId), authServicesOptions.SPOptions)
+            {
+                LoadMetadata = true,
+                MetadataUrl = new Uri(oktaMetadataUrl),
+                AllowUnsolicitedAuthnResponse = true
+            });
+```
+
+Now you need to set up your target website (not IdentityServer3) to have a page that will
+simply turn around and redirect to your identity server with an authorize request.
+
+I set up a new page in my webforms site call "IdP_InitiatedRedirect" and required an "idp" query 
+string value in case I want to use other SAML IdP's. Then in the SPOptions setup, you add the URL 
+for the "ReturnUrl" property as shown below:
+
+```chsarp
+				SPOptions = new SPOptions
+                {
+                    EntityId = new EntityId(serviceProviderEntityId),
+                    ReturnUrl = new Uri("https://yoursite.com/Idp_InitiatedRedirect.aspx?idp=okta")
+                }, 
+```
+
+The only thing left is to code the logic on your redirect page to make an authorize request
+to your identity server.  You should already have a reference to the IdentityModel.Client package,
+so then you can write some code that looks like this:
+
+```csharp
+		protected void Page_Load(object sender, EventArgs e)
+        {
+            var idp = Request.QueryString["idp"];
+            if (string.IsNullOrEmpty(idp))
+                throw new Exception("No idp included in redirect querystring!!");
+
+            var scopesForAuth = "<the scopes for your application>";
+            var state = Guid.NewGuid().ToString("N");
+            var nonce = Guid.NewGuid().ToString("N");
+            var client = new OAuth2Client(new Uri("https://<youridentityserver>" + "/connect/authorize"));
+
+            var returnUrlForOkta = client.CreateAuthorizeUrl("<youridserverclientid", "id_token token", scopesForAuth, 
+                "https://yoursite.com/yourreallogintarget"), 
+                state, nonce, acrValues: string.Format("idp:{0}", idp), responseMode: "form_post");
+
+            Response.Redirect(returnUrlForOkta, false);
+        }
+```
+Once you have all of that in place, you should be able to click the app button on the 
+Okta dashboard and successfully log in to your website through IdentityServer3!

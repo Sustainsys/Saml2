@@ -71,7 +71,7 @@
     <Compile Include="Metadata\ExtendedEntitiesDescriptor.cs" />
     <Compile Include="ICachedMetadata.cs" />
     <Compile Include="MetadataRefreshScheduler.cs" />
-    <Compile Include="Metadata\EntityDescriptorExtensions.cs" />
+    <Compile Include="Metadata\ServiceProviderSingleSignOnDescriptorExtensions.cs" />
     <Compile Include="Metadata\ExtendedEntityDescriptor.cs" />
     <Compile Include="AuthServicesException.cs" />
     <Compile Include="WebSso\AuthServicesUrls.cs" />

@@ -32,6 +32,9 @@ namespace Kentor.AuthServices.Owin
 
             if (commandResult.Content != null)
             {
+                // Remove value set by other middleware and let the host calculate
+                // a new value. See issue #295 for discussion on this.
+                context.Response.ContentLength = null;
                 context.Response.Write(commandResult.Content);
             }
         }

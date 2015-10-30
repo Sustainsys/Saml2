@@ -11,19 +11,6 @@ namespace Kentor.AuthServices.Metadata
     /// </summary>
     public class ExtendedEntityDescriptor : EntityDescriptor, ICachedMetadata
     {
-        EntityDescriptorExtensions extensions = new EntityDescriptorExtensions();
-
-        /// <summary>
-        /// Extensions to the metadata.
-        /// </summary>
-        public EntityDescriptorExtensions Extensions
-        {
-            get
-            {
-                return extensions;
-            }
-        }
-
         /// <summary>
         /// Permitted cache duration for the metadata.
         /// </summary>

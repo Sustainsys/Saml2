@@ -9,7 +9,8 @@ namespace Kentor.AuthServices.Metadata
     /// <summary>
     /// Metadata extensions
     /// </summary>
-    public class EntityDescriptorExtensions
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1726:UsePreferredTerms", MessageId = "SignOn", Justification = "Using SAML2 established terms." )]
+    public class ServiceProviderSingleSignOnDescriptorExtensions
     {
         /// <summary>
         /// Discovery Service response url.

@@ -80,7 +80,9 @@ namespace Kentor.AuthServices.Tests.Configuration
 
             spOptions.DiscoveryServiceUrl = new Uri("http://ds.example.com");
 
-            var subject = spOptions.CreateMetadata(urls).Extensions.DiscoveryResponse;
+            var subject = spOptions.CreateMetadata(urls).RoleDescriptors
+                .Single().As<ExtendedServiceProviderSingleSignOnDescriptor>()
+                .Extensions.DiscoveryResponse;
 
             var expected = new IndexedProtocolEndpoint
             {

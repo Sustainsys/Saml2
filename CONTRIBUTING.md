@@ -51,8 +51,8 @@ functionality is covered by tests, and it will remain that way. Pull requests wi
 merged if they contain tests covering the added functionality. Parts of the code that aren't
 practically possible to test because of tight integration with the web server (see e.g. 
 `CommandResult.ApplyPrincipal`) are excluded from this rule and should be marked with a
-`[ExcludeFromCodeCoverage]` attribute. The code coverage report when using the `CodeCoverage.runsettings`
-file is at 100.00% coverage and should remain so.
+`[ExcludeFromCodeCoverage]` attribute. The code coverage report is at 100.00% coverage and 
+should remain so.
 
 ##Integration Tests
 There are also some integration tests that runs through the sample applications and make

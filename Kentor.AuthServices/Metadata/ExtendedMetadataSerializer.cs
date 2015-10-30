@@ -56,19 +56,26 @@ namespace Kentor.AuthServices.Metadata
                     XmlConvert.ToString(cachedMetadata.CacheDuration.Value));
             }
 
-            var extendedEntityDescriptor = source as ExtendedEntityDescriptor;
-            if (extendedEntityDescriptor != null)
+            if(typeof(T) == typeof(EntityDescriptor))
             {
                 writer.WriteAttributeString("xmlns", "saml2", null, Saml2Namespaces.Saml2Name);
+            }
 
+            // The framework calls this callback several times when writing
+            // a SPSSODescriptor. Every time with T being a more specialized
+            // class. Only do the writing in the final, most specialized call.
+            var extendedSPSsoDescriptor = source as ExtendedServiceProviderSingleSignOnDescriptor;
+            if (extendedSPSsoDescriptor != null 
+                && typeof(T) == typeof(ServiceProviderSingleSignOnDescriptor))
+            {
                 // This is really an element. But it must be placed first of the child elements
                 // and WriteCustomAttributes is called at the right place for that.
-                if (extendedEntityDescriptor.Extensions.DiscoveryResponse != null)
+                if (extendedSPSsoDescriptor.Extensions.DiscoveryResponse != null)
                 {
                     writer.WriteStartElement("Extensions", Saml2Namespaces.Saml2MetadataName);
                     WriteIndexedProtocolEndpoint(
                         writer,
-                        extendedEntityDescriptor.Extensions.DiscoveryResponse,
+                        extendedSPSsoDescriptor.Extensions.DiscoveryResponse,
                         new XmlQualifiedName("DiscoveryResponse", Saml2Namespaces.Saml2IdpDiscoveryName));
                     writer.WriteEndElement();
                 }
