@@ -52,8 +52,13 @@ namespace Kentor.AuthServices.WebSso
 
             var cr = new CommandResult()
             {
-                Content = String.Format(CultureInfo.InvariantCulture, PostHtmlFormatString,
-               destinationUrl, messageName, encodedXml)
+                ContentType = "text/html",
+                Content = String.Format(
+                    CultureInfo.InvariantCulture,
+                    PostHtmlFormatString,
+                    destinationUrl,
+                    messageName,
+                    encodedXml)
             };
 
             return cr;
