@@ -130,31 +130,6 @@ namespace Kentor.AuthServices
             }
         }
 
-        private IPendingAuthStorageContainer pendingAuthStorageContainer;
-
-        /// <summary>
-        /// How pending authentication metadata is stored before sending Authentication Requests 
-        /// to the identity provider and retrieved again after a response is returned. Defaults
-        /// to an in-memory container. 
-        /// </summary>
-        public IPendingAuthStorageContainer PendingAuthStorageContainer
-        {
-            get
-            {
-                ReloadMetadataIfRequired();
-
-                //default to in-memory for backwards compatibility
-                if (pendingAuthStorageContainer == null)
-                    pendingAuthStorageContainer = new PendingAuthInMemoryStorage();
-
-                return pendingAuthStorageContainer;
-            }
-            set
-            {
-                pendingAuthStorageContainer = value;
-            }
-        }
-
         private Uri singleSignOnServiceUrl;
 
         /// <summary>
@@ -249,7 +224,7 @@ namespace Kentor.AuthServices
 
             var responseData = new StoredRequestState(EntityId, returnUrl, relayData);
 
-            PendingAuthStorageContainer.Add(new Saml2Id(authnRequest.Id), responseData);
+            spOptions.PendingAuthStorageContainer.Add(new Saml2Id(authnRequest.Id), responseData);
 
             return authnRequest;
         }

@@ -189,5 +189,28 @@ namespace Kentor.AuthServices.Configuration
         /// Certificate for service provider to use when decrypting assertions
         /// </summary>
         public X509Certificate2 ServiceCertificate { get; set; }
+
+        private IPendingAuthStorageContainer pendingAuthStorageContainer;
+
+        /// <summary>
+        /// How pending authentication metadata is stored before sending Authentication Requests 
+        /// to the identity provider and retrieved again after a response is returned. Defaults
+        /// to an in-memory container. 
+        /// </summary>
+        public IPendingAuthStorageContainer PendingAuthStorageContainer
+        {
+            get
+            {
+                //default to in-memory for backwards compatibility
+                if (pendingAuthStorageContainer == null)
+                    pendingAuthStorageContainer = new Kentor.AuthServices.Internal.PendingAuthnInMemoryStorage();
+
+                return pendingAuthStorageContainer;
+            }
+            set
+            {
+                pendingAuthStorageContainer = value;
+            }
+        }
     }
 }

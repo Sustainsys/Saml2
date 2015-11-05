@@ -351,7 +351,7 @@ namespace Kentor.AuthServices.Saml2P
             else
             {
                 StoredRequestState storedRequestState;
-                bool knownInResponseToId = options.IdentityProviders[Issuer].PendingAuthStorageContainer.TryRemove(InResponseTo, out storedRequestState);
+                bool knownInResponseToId = options.SPOptions.PendingAuthStorageContainer.TryRemove(InResponseTo, out storedRequestState);
                 if (!knownInResponseToId)
                 {
                     string msg = string.Format(CultureInfo.InvariantCulture,

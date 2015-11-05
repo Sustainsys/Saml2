@@ -14,16 +14,16 @@ namespace Kentor.AuthServices
         /// <summary>
         /// Add state that must be available after external authentication response comes back from IdP. 
         /// </summary>
-        /// <param name="id"></param>
-        /// <param name="idp"></param>
+        /// <param name="id">The Saml2Id used as key to store the pending authentication data.</param>
+        /// <param name="idp">The state of the pending authentication request.</param>
         void Add(System.IdentityModel.Tokens.Saml2Id id, Kentor.AuthServices.StoredRequestState idp);
 
         /// <summary>
         /// Retrieve and delete the stored authentication state that is needed to complete an external authentication. 
         /// </summary>
-        /// <param name="id"></param>
-        /// <param name="idp"></param>
-        /// <returns></returns>
+        /// <param name="id">The Saml2Id key used to retrieve the pending authentication data.</param>
+        /// <param name="idp">The state of the pending authentication request.</param>
+        /// <returns>bool indicating whether it could retrieve the pending authentication data and return it as an out param</returns>
         bool TryRemove(System.IdentityModel.Tokens.Saml2Id id, out Kentor.AuthServices.StoredRequestState idp);
     }
 }
