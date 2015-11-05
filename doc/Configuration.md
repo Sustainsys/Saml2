@@ -39,7 +39,7 @@ library. It is required for the http module, the mvc controller and the Owin mid
 <kentor.authServices entityId="http://localhost:17009"
                      returnUrl="http://localhost:17009/SamplePath/"
                      discoveryServiceUrl="http://localhost:52071/DiscoveryService"
-                     pendingAuthStorageContainer="Kentor.AuthServices.Internal.PendingAuthnInMemoryStorage" >
+                     pendingAuthStorageContainer="Kentor.AuthServices.Internal.PendingAuthnInMemoryStorage, Kentor.AuthServices" >
   <metadata cacheDuration="0:15:00" >
     <organization name="Kentor IT AB" displayName="Kentor" url="http://www.kentor.se" language="sv" />
     <contactPerson type="Other" email="info@kentor.se" />
