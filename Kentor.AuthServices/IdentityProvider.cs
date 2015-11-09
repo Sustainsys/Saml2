@@ -53,11 +53,12 @@ namespace Kentor.AuthServices
 
             // If configured to load metadata, this will immediately do the load.
             LoadMetadata = config.LoadMetadata;
+            LazyLoadMetadata = config.LazyLoadMetadata;
             this.spOptions = spOptions;
 
             // Validate if values are only from config. If metadata is loaded, validation
             // is done on metadata load.
-            if (!LoadMetadata)
+            if (!(LoadMetadata || LazyLoadMetadata))
             {
                 Validate();
             }
@@ -78,6 +79,25 @@ namespace Kentor.AuthServices
             if (SingleSignOnServiceUrl == null)
             {
                 throw new ConfigurationErrorsException("Missing assertion consumer service url configuration on Idp " + EntityId.Id + ".");
+            }
+        }
+
+        private bool lazyLoadMetadata;
+
+        /// <summary>
+        /// Do not immediately load data until Metadata properties are requested. 
+        /// Can be used when LoadMetadata is false. Might be useful when to avoid loading metadata on start and unreachable metadata url causes application to hang.
+        /// </summary>
+        public bool LazyLoadMetadata
+        {
+            get { return lazyLoadMetadata; }
+            set
+            {
+                lazyLoadMetadata = value;
+                if (MetadataValidUntil == null)
+                {
+                    MetadataValidUntil = DateTime.MinValue; 
+                }
             }
         }
 
@@ -175,7 +195,10 @@ namespace Kentor.AuthServices
             set
             {
                 metadataUrl = value;
-                LoadMetadata = true;
+                if (!LazyLoadMetadata)
+                {
+                    LoadMetadata = true;
+                }
             }
         }
 
@@ -340,7 +363,16 @@ namespace Kentor.AuthServices
             {
                 metadataValidUntil = value;
 
+                var reschedule = false;
                 if (LoadMetadata)
+                {
+                    reschedule = true;
+                }
+                if (LazyLoadMetadata && value.Value != DateTime.MinValue)
+                {
+                    reschedule = true;
+                }
+                if (reschedule)
                 {
                     Task.Delay(MetadataRefreshScheduler.GetDelay(value.Value))
                         .ContinueWith((_) => DoLoadMetadata());
@@ -350,7 +382,7 @@ namespace Kentor.AuthServices
 
         private void ReloadMetadataIfRequired()
         {
-            if (LoadMetadata && MetadataValidUntil.Value < DateTime.UtcNow)
+            if ((LazyLoadMetadata || LoadMetadata) && MetadataValidUntil.Value < DateTime.UtcNow)
             {
                 lock (metadataLoadLock)
                 {

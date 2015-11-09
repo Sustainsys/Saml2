@@ -38,6 +38,21 @@ namespace Kentor.AuthServices.Tests.Metadata
   </EntityDescriptor>
 ", SignedXmlHelper.KeyInfoXml, IdpMetadataSsoPort);
 
+            content["/idpLazyMetadata"] = string.Format(
+ @"<EntityDescriptor xmlns=""urn:oasis:names:tc:SAML:2.0:metadata""
+    entityID=""http://localhost:13428/idpLazyMetadata"" validUntil=""2100-01-02T14:42:43Z"">
+    <IDPSSODescriptor
+      protocolSupportEnumeration=""urn:oasis:names:tc:SAML:2.0:protocol"">
+      <KeyDescriptor>
+        {0}
+      </KeyDescriptor>
+      <SingleSignOnService
+        Binding=""urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST""
+        Location=""http://localhost:{1}/acs""/>
+    </IDPSSODescriptor>
+  </EntityDescriptor>
+", SignedXmlHelper.KeyInfoXml, IdpMetadataSsoPort);
+
             content["/idpMetadataNoCertificate"] = 
 @"<EntityDescriptor xmlns=""urn:oasis:names:tc:SAML:2.0:metadata""
     entityID=""http://localhost:13428/idpMetadataNoCertificate"" cacheDuration=""PT15M"">

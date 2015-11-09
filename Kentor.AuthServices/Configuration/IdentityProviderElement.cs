@@ -121,6 +121,23 @@ namespace Kentor.AuthServices.Configuration
             }
         }
 
+        /// <summary>
+        /// Enable automatic downloading of metadata form the well-known uri only when the provider is actually used. 
+        /// Use when LoadMetadata = false.
+        /// </summary>
+        [ConfigurationProperty("lazyLoadMetadata", IsRequired = false, DefaultValue = false)]
+        public bool LazyLoadMetadata
+        {
+            get
+            {
+                return (bool)base["lazyLoadMetadata"];
+            }
+            set
+            {
+                base["lazyLoadMetadata"] = value;
+            }
+        }
+
         const string metadataUrl = "metadataUrl";
 
         /// <summary>
