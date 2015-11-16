@@ -90,6 +90,23 @@ namespace Kentor.AuthServices.Configuration
             }
         }
 
+
+        /// <summary>
+        /// The Url to send back the assertions from idp.
+        /// </summary>
+        [ConfigurationProperty("assertionConsumerServiceUrl", IsRequired = false)]
+        public Uri AssertionConsumerServiceUrl
+        {
+            get
+            {
+                return (Uri)base["assertionConsumerServiceUrl"];
+            }
+            internal set
+            {
+                base["assertionConsumerServiceUrl"] = value;
+            }
+        }
+
         /// <summary>
         /// For how long may the metadata be cached by a receiving party?
         /// </summary>

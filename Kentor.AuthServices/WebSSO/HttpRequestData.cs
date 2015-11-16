@@ -8,6 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web;
+using Kentor.AuthServices.Configuration;
 
 namespace Kentor.AuthServices.WebSso
 {
@@ -48,7 +49,12 @@ namespace Kentor.AuthServices.WebSso
         {
             HttpMethod = httpMethod;
             Url = url;
-            ApplicationUrl = new Uri(url, applicationPath);
+            var acsUrl = url;
+            if (KentorAuthServicesSection.Current.AssertionConsumerServiceUrl != null)
+            {
+                acsUrl = KentorAuthServicesSection.Current.AssertionConsumerServiceUrl;
+            }
+            ApplicationUrl = new Uri(acsUrl, applicationPath);
             Form = new ReadOnlyDictionary<string, string>(
                 (formData ?? Enumerable.Empty<KeyValuePair<string, string[]>>())
                 .ToDictionary(kv => kv.Key, kv => kv.Value.Single()));

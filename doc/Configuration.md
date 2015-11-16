@@ -75,6 +75,7 @@ Root element of the config section.
 * [`entityId`](#entityid-attribute)
 * [`discoveryServiceUrl`](#discoveryserviceurl-attribute)
 * [`modulePath`](#modulepath-attribute)
+* [`assertionConsumerServiceUrl`](#assertionConsumerServiceUrl-attribute)
 
 ####Elements
 * [`<metadata>`](#metadata-element)
@@ -113,6 +114,12 @@ Optional attribute that indicates the base path of the AuthServices endpoints.
 Defaults to `/AuthServices` if not specified. This can usually be left as the
 default, but if several instances of AuthServices are loaded into the
 same process they must each get a separate base path.
+
+####`assertionConsumerServiceUrl` Attribute
+*Optional Attribute of the [`<kentor.authServices>`](#assertionConsumerServiceUrl-attribute) element.*
+
+Optional attribute that indicates the base url of the AuthServices endpoints.
+Defaults to `Url` of the current request base `System.Web.HttpRequestBase` if not specified. This can usually be left as the default, but if your internal address of the application is diffrent the external address this can correct a wrongly set `AssertionConsumerServiceURL` in the `saml2p:AuthnRequest`.
 
 ###`<metadata>` Element
 *Optional child element of the [`<kentor.authServices>`](#kentor-authservices-section) element.*

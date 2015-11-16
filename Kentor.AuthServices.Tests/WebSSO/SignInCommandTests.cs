@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Configuration;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using FluentAssertions;
 using System.Net;
@@ -11,6 +12,8 @@ using System.Xml.Linq;
 using Kentor.AuthServices.TestHelpers;
 using Kentor.AuthServices.Configuration;
 using System.IdentityModel.Metadata;
+using System.Xml;
+using System.Xml.Schema;
 using Kentor.AuthServices.Internal;
 using Kentor.AuthServices.WebSso;
 
@@ -133,6 +136,28 @@ namespace Kentor.AuthServices.Tests.WebSso
             var expectedLocation = new Uri(dsUrl + queryString);
 
             result.Location.Should().Be(expectedLocation);
+        }
+
+        [TestMethod]
+        public void SignInCommand_Run_MapsAssertionConsumerServiceURL()
+        {
+            KentorAuthServicesSection.Current.AllowChange(true);
+            KentorAuthServicesSection.Current.AssertionConsumerServiceUrl = new Uri("https://testurlForAcs.com/");
+
+            try
+            {
+                Assert.IsNotNull(KentorAuthServicesSection.Current.AssertionConsumerServiceUrl);
+                Assert.AreEqual("https://testurlforacs.com/", KentorAuthServicesSection.Current.AssertionConsumerServiceUrl.AbsoluteUri);
+                ConfigurationManager.RefreshSection("kentor.authServices");
+                var defaultDestination = Options.FromConfiguration.IdentityProviders.Default.SingleSignOnServiceUrl;
+                var httpRequest = new HttpRequestData("GET", new Uri("http://localhost/signin"));
+                Assert.AreEqual("https://testurlforacs.com/", httpRequest.ApplicationUrl.AbsoluteUri);
+            }
+            finally
+            {
+                KentorAuthServicesSection.Current.AssertionConsumerServiceUrl = null;
+                KentorAuthServicesSection.Current.AllowChange(false);
+            }
         }
     }
 }
