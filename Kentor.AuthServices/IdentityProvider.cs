@@ -35,7 +35,32 @@ namespace Kentor.AuthServices
             this.spOptions = spOptions;
         }
 
+        /// <summary>
+        /// Alternate ctor
+        /// </summary>
+        /// <param name="metadataUrl">The IdP metadata URL to fetch the XML from</param>
+        /// <param name="spOptions">Service provider options to use when 
+        /// creating AuthnRequests for this Idp.</param>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "sp")]
+        public IdentityProvider(Uri metadataUrl, ISPOptions spOptions)
+        {
+            this.spOptions = spOptions;
+            this.skipEntityIdValidationOnFirstLoad = true;
+            this.MetadataUrl = metadataUrl;
+        }
+
+        /// <summary>
+        /// Not ready to send AuthenticateRequests. Meant for IdP discovery only.
+        /// </summary>
+        /// <param name="metadataUrl">The IdP metadata URL to fetch the XML from</param>
+        public IdentityProvider(Uri metadataUrl)
+        {
+            this.skipEntityIdValidationOnFirstLoad = true;
+            this.MetadataUrl = metadataUrl;
+        }
+
         readonly ISPOptions spOptions;
+        private bool skipEntityIdValidationOnFirstLoad;
 
         internal IdentityProvider(IdentityProviderElement config, ISPOptions spOptions)
         {
@@ -289,7 +314,7 @@ namespace Kentor.AuthServices
 
             lock (metadataLoadLock)
             {
-                if (metadata.EntityId.Id != EntityId.Id)
+                if (!this.skipEntityIdValidationOnFirstLoad && metadata.EntityId.Id != EntityId.Id)
                 {
                     var msg = string.Format(CultureInfo.InvariantCulture,
                         "Unexpected entity id \"{0}\" found when loading metadata for \"{1}\".",
@@ -297,6 +322,7 @@ namespace Kentor.AuthServices
                     throw new ConfigurationErrorsException(msg);
                 }
 
+                this.skipEntityIdValidationOnFirstLoad = false;
                 ReadMetadataIdpDescriptor(metadata);
 
                 MetadataValidUntil = metadata.CalculateMetadataValidUntil();
