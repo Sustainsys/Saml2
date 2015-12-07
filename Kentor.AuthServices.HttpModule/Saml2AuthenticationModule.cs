@@ -61,21 +61,12 @@ namespace Kentor.AuthServices.HttpModule
       }
     }
 
+    
     private static CommandResult RunCommand(HttpApplication application, ICommand command, IOptions options)
     {
-      try
-      {
         return command.Run(
             new HttpRequestWrapper(application.Request).ToHttpRequestData(),
             options);
-      }
-      catch (AuthServicesException)
-      {
-        return new CommandResult
-        {
-          HttpStatusCode = HttpStatusCode.InternalServerError
-        };
-      }
     }
 
     /// <summary>
