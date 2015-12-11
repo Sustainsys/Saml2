@@ -1681,7 +1681,7 @@ namespace Kentor.AuthServices.Tests.Saml2P
             signedXml.LoadXml(signature);
 
             signature.Should().NotBeNull();
-
+            signedXml.KeyInfo.Count.Should().Be(1);
             signedXml.CheckSignature(SignedXmlHelper.TestCert, true).Should().BeTrue();
         }
 

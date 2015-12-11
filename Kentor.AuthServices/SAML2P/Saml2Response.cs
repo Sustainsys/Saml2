@@ -190,7 +190,7 @@ namespace Kentor.AuthServices.Saml2P
 
             xmlDocument = xml;
 
-            xml.Sign(issuerCertificate);
+            xml.Sign(issuerCertificate, true);
         }
 
         readonly Saml2Id id;
