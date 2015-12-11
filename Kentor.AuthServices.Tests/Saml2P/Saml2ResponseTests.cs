@@ -1615,6 +1615,9 @@ namespace Kentor.AuthServices.Tests.Saml2P
             var xml = response.XmlDocument;
 
             xml.FirstChild.OuterXml.Should().StartWith("<?xml version=\"1.0\"");
+            xml.DocumentElement.LocalName.Should().Be("Response");
+            xml.DocumentElement.NamespaceURI.Should().Be(Saml2Namespaces.Saml2PName);
+            xml.DocumentElement.Prefix.Should().Be("saml2p");
             xml.DocumentElement["Issuer", Saml2Namespaces.Saml2Name].InnerText.Should().Be(issuer.Id);
             xml.DocumentElement["Assertion", Saml2Namespaces.Saml2Name]
                 ["Subject", Saml2Namespaces.Saml2Name]["NameID", Saml2Namespaces.Saml2Name]
