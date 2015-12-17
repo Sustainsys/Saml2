@@ -75,5 +75,12 @@ namespace Kentor.AuthServices.Configuration
         /// Certificate for service provider to use when decrypting assertions
         /// </summary>
         X509Certificate2 ServiceCertificate { get; set; }
+
+        /// <summary>
+        /// How pending authentication metadata is stored before sending Authentication Requests 
+        /// to the identity provider and retrieved again after a response is returned. 
+        /// </summary>
+        IPendingAuthStorageContainer PendingAuthStorageContainer { get; set; }
+
     }
 }

@@ -123,5 +123,24 @@ namespace Kentor.AuthServices.Tests.Configuration
 
             subject.AttributeConsumingServices.Should().BeEmpty();
         }
+
+        [TestMethod]
+        public void KentorAuthServicesSection_PendingAuthStorageContainer_LoadedFromConfig()
+        {
+            var subject = KentorAuthServicesSection.Current.PendingAuthStorageContainer;
+
+            IPendingAuthStorageContainer expected = new Kentor.AuthServices.Internal.PendingAuthnInMemoryStorage();
+            
+            subject.Should().BeOfType(expected.GetType());
+        }
+
+        [TestMethod]
+        public void KentorAuthServicesSection_PendingAuthStorageContainer_DefaultsToInMemoryIfNotConfigured()
+        {
+            var subject = new KentorAuthServicesSection();
+
+            subject.PendingAuthStorageContainer.Should().BeOfType(typeof(Kentor.AuthServices.Internal.PendingAuthnInMemoryStorage));
+        }
+
     }
 }
