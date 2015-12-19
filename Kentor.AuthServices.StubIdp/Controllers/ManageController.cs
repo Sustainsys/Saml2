@@ -82,6 +82,7 @@ namespace Kentor.AuthServices.StubIdp.Controllers
             return RedirectToAction("Index");
         }
 
+        [Compress]
         public ActionResult CurrentConfiguration(Guid? idpId)
         {
             var fileData = GetCachedConfiguration(idpId.GetValueOrDefault(defaultIdpGuid));
