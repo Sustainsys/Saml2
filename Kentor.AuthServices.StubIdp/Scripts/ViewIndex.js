@@ -94,7 +94,9 @@
             $("#userList").select2({
                 data: data.UserList,
                 templateResult: formatState,
-                minimumInputLength: minimumInputLength
+                width: "500px",
+                minimumInputLength: minimumInputLength,
+                placeholder: "Select a user"
             });
 
             $("#userList").focus();
