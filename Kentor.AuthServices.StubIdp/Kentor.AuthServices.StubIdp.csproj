@@ -111,6 +111,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Content\css\select2.css" />
+    <Content Include="Content\css\select2.min.css" />
     <Content Include="Content\Kentor.png" />
     <Content Include="Content\normalize.css" />
     <Content Include="Content\Site.css">
@@ -141,6 +143,8 @@
     <Content Include="Scripts\jquery.validate.unobtrusive.min.js" />
     <None Include="Scripts\_references.js" />
     <Content Include="Scripts\js.cookie.js" />
+    <Content Include="Scripts\select2.js" />
+    <Content Include="Scripts\select2.min.js" />
     <Content Include="Scripts\ViewIndex.js" />
     <Content Include="Web.config" />
     <Content Include="Views\Shared\_Layout.cshtml" />

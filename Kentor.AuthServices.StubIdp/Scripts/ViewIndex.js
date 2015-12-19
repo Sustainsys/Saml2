@@ -56,10 +56,39 @@
     $.getJSON(urlStart + "Manage/CurrentConfiguration", null, function (data, textStatus, jqXHR) {
         if (data.UserList) {
             $.each(data.UserList, function (indexInArray, valueOfElement) {
+                valueOfElement.text = valueOfElement.DisplayName;
+                if (valueOfElement.Assertion && valueOfElement.Assertion.NameId) {
+                    valueOfElement.id = valueOfElement.Assertion.NameId;
+                }
                 users[valueOfElement.Assertion.NameId] = valueOfElement;
             });
 
-            $("#user-dropdown-placeholder").html(ich.userListTemplate(data));
+            $("#user-dropdown-placeholder").show();
+            var formatState = function (state) {
+                if (!state.id) {
+                    return state.text;
+                }
+                if (typeof (state.cachedTemplate) === "undefined") {
+                    state.cachedTemplate = ich.userListTemplate(state);
+                }
+                return state.cachedTemplate;
+            };
+
+            var minimumInputLength = 0;
+            if (data.UserList.length > 100) {
+                minimumInputLength = 2;
+            }
+            if (data.UserList.length > 1000) {
+                minimumInputLength = 3;
+            }
+
+            $("#userList").select2({
+                data: data.UserList,
+                templateResult: formatState,
+                minimumInputLength: minimumInputLength
+            });
+
+            //$("#user-dropdown-placeholder").html(ich.userListTemplate(data));
             $("#userList").focus();
             if (data.HideDetails || typeof (data.HideDetails) === "undefined") { // default == true
                 $(".hide-details").hide();
@@ -105,7 +134,7 @@
 
     var restoreSelectedUser = function () {
         var selectedUserId = Cookies.set(cookieName);
-        if (selectedUserId && $("#userList").find("option[value=" + selectedUserId + "]").length > 0) {
+        if (selectedUserId && users[selectedUserId]) {
             $("#userList").val(selectedUserId);
             $("#userList").change();
             $("#submit").focus();
