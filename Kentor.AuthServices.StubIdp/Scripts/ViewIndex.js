@@ -66,6 +66,7 @@
             });
 
             $("#user-dropdown-placeholder").show();
+            $(".show-details").show();
 
             // select2 item formatting template
             var formatState = function (state) {

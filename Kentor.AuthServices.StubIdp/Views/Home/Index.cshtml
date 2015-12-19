@@ -35,11 +35,9 @@ else
     @Html.HiddenFor(m => m.CustomDescription) @*Preserve value on post-redisplay*@
     <div id="user-dropdown-placeholder" style="display:none">
         <label for="userList">Select user</label>
-        <select id="userList">
-        </select>
+        <select id="userList"></select>
 
         <div id="userDescription"></div>
-        <a class="show-details" href="#">Show details</a>
         <hr class="hide-details" />
     </div>
     @Html.ValidationSummary()
@@ -80,6 +78,7 @@ else
     </fieldset>
     <p></p>
     <button id="submit">Log in</button>
+    <a class="show-details" href="#" style="display:none">Show details</a>
 }
 
 

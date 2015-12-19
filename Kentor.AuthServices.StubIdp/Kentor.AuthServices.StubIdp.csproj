@@ -115,19 +115,10 @@
     <Content Include="Content\css\select2.min.css" />
     <Content Include="Content\Kentor.png" />
     <Content Include="Content\normalize.css" />
-    <Content Include="Content\Site.css">
-      <DependentUpon>Site.less</DependentUpon>
-    </Content>
-    <Content Include="Content\Site.min.css">
-      <DependentUpon>Site.css</DependentUpon>
-    </Content>
     <Content Include="Global.asax" />
     <Content Include="Content\Site.less" />
     <Content Include="App_Data\Kentor.AuthServices.StubIdp.pfx" />
     <Content Include="App_Data\Kentor.AuthServices.StubIdp.cer" />
-    <Content Include="Content\Site.css.map">
-      <DependentUpon>Site.css</DependentUpon>
-    </Content>
     <Content Include="Content\IdpConfigurationSchema.json" />
     <Content Include="App_Data\default.json" />
     <Content Include="Scripts\ICanHaz.js" />
