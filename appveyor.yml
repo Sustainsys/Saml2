@@ -8,13 +8,12 @@
 #    environment configuration    #
 #---------------------------------#
 
-# scripts that are called at very beginning, before repo cloning
-init:
-# force windows line endings to make test strings depending on line break work
-  - git config --global core.autocrlf true
 # scripts to run before build
 before_build:
   - nuget restore
+
+build:
+  project: Kentor.AuthServices.sln
 
 cache:
   - packages -> **\packages.config  # preserve "packages" directory in the root of build folder to avoid repeated downloads for nuget restore
