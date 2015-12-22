@@ -15,3 +15,6 @@ init:
 # scripts to run before build
 before_build:
   - nuget restore
+
+cache:
+  - packages -> **\packages.config  # preserve "packages" directory in the root of build folder to avoid repeated downloads for nuget restore
