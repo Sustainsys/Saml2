@@ -10,7 +10,7 @@
 
 # scripts to run before build
 before_build:
-  - nuget restore
+  - nuget restore -DisableParallelProcessing
 
 build:
   project: Kentor.AuthServices.sln
