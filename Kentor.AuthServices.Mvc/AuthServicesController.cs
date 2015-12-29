@@ -76,7 +76,7 @@ namespace Kentor.AuthServices.Mvc
         public ActionResult SignOut()
         {
             FederatedAuthentication.SessionAuthenticationModule.SignOut();
-            var result = CommandFactory.GetCommand(CommandFactory.SingleSignoutCommandName).Run(
+            var result = CommandFactory.GetCommand(CommandFactory.SingleSignOutCommandName).Run(
                 Request.ToHttpRequestData(),
                 Options)
                 .ToActionResult();

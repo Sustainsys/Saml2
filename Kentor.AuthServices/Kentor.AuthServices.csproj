@@ -133,7 +133,7 @@
     <Compile Include="WebSso\SignInCommand.cs" />
     <Compile Include="Internal\StatusCodeHelper.cs" />
     <Compile Include="Internal\StringHelpers.cs" />
-    <Compile Include="WebSso\SingleLogoutCommand.cs" />
+    <Compile Include="WebSso\SingleSignOutCommand.cs" />
     <Compile Include="XmlDocumentExtensions.cs" />
     <Compile Include="Metadata\FilteringXmlDictionaryReader.cs" />
     <Compile Include="Internal\XmlHelpers.cs" />

@@ -8,7 +8,7 @@ using Kentor.AuthServices.Configuration;
 
 namespace Kentor.AuthServices.WebSso
 {
-    internal class SingleSignoutCommand : ICommand
+    internal class SingleSignOutCommand : ICommand
     {
         public CommandResult Run(HttpRequestData request, IOptions options)
         {
@@ -70,7 +70,7 @@ namespace Kentor.AuthServices.WebSso
                 nameIdentifierFormat = request.NameIdentifier.Properties[ClaimProperties.SamlNameIdentifierFormat];
             }
 
-            var signoutRequest = idp.CreateSignoutRequest(returnUrl, nameIdentifierValue, nameIdentifierFormat, relayData);
+            var signoutRequest = idp.CreateSignOutRequest(returnUrl, nameIdentifierValue, nameIdentifierFormat, relayData);
 
             return idp.Bind(signoutRequest);
         }

@@ -25,9 +25,9 @@ namespace Kentor.AuthServices.WebSso
         public const string SignInCommandName = "SignIn";
 
         /// <summary>
-        /// The name of the Single Signout Command.
+        /// The name of the Single SignOut Command.
         /// </summary>
-        public const string SingleSignoutCommandName = "SingleLogout";
+        public const string SingleSignOutCommandName = "SingleLogout";
 
         /// <summary>
         /// The metadata command has no name - it is triggered at base url for
@@ -41,7 +41,7 @@ namespace Kentor.AuthServices.WebSso
             { SignInCommandName, new SignInCommand() },
             { AcsCommandName, new AcsCommand() },
             { MetadataCommand, new MetadataCommand() },
-            { SingleSignoutCommandName, new SingleSignoutCommand() },
+            { SingleSignOutCommandName, new SingleSignOutCommand() },
         };
 
         /// <summary>
