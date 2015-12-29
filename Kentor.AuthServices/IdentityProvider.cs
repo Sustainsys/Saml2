@@ -260,7 +260,8 @@ namespace Kentor.AuthServices
         /// <param name="relayData">Aux data that should be preserved across the authentication</param>
         /// <returns>LogoutRequest</returns>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1026:DefaultParametersShouldNotBeUsed")]
-        public Saml2LogoutRequest CreateSignOutRequest(
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1726:UsePreferredTerms", MessageId = "Logout")]
+        public Saml2LogoutRequest CreateLogoutRequest(
             Uri returnUrl,
             string nameIdentifierValue,
             string nameIdentifierFormat,

@@ -8,7 +8,7 @@ using Kentor.AuthServices.Configuration;
 
 namespace Kentor.AuthServices.WebSso
 {
-    internal class SingleSignOutCommand : ICommand
+    internal class SingleLogOutCommand : ICommand
     {
         public CommandResult Run(HttpRequestData request, IOptions options)
         {
@@ -70,9 +70,9 @@ namespace Kentor.AuthServices.WebSso
                 nameIdentifierFormat = request.NameIdentifier.Properties[ClaimProperties.SamlNameIdentifierFormat];
             }
 
-            var signoutRequest = idp.CreateSignOutRequest(returnUrl, nameIdentifierValue, nameIdentifierFormat, relayData);
+            var logoutRequest = idp.CreateLogoutRequest(returnUrl, nameIdentifierValue, nameIdentifierFormat, relayData);
 
-            return idp.Bind(signoutRequest);
+            return idp.Bind(logoutRequest);
         }
 
         private static CommandResult RedirectToDiscoveryService(
@@ -80,7 +80,7 @@ namespace Kentor.AuthServices.WebSso
             ISPOptions spOptions,
             AuthServicesUrls authServicesUrls)
         {
-            string returnUrl = authServicesUrls.SignOutUrl.OriginalString;
+            string returnUrl = authServicesUrls.LogoutUrl.OriginalString;
 
             if (!string.IsNullOrEmpty(returnPath))
             {

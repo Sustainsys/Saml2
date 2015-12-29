@@ -17,14 +17,14 @@ using Kentor.AuthServices.WebSso;
 namespace Kentor.AuthServices.Tests.WebSso
 {
     [TestClass]
-    public class SingleSignOutCommandTests
+    public class SingleLogoutCommandTests
     {
         [TestMethod]
-        public void SingleSignOutCommand_Run_MapsReturnUrl()
+        public void SingleLogoutCommand_Run_MapsReturnUrl()
         {
-            var httpRequest = new HttpRequestData("GET", new Uri("http://localhost/signout?ReturnUrl=%2FReturn.aspx"));
+            var httpRequest = new HttpRequestData("GET", new Uri("http://localhost/logout?ReturnUrl=%2FReturn.aspx"));
 
-            var subject = new SingleSignOutCommand().Run(httpRequest, Options.FromConfiguration);
+            var subject = new SingleLogOutCommand().Run(httpRequest, Options.FromConfiguration);
 
             var requestId = AuthnRequestHelper.GetRequestId(subject.Location);
 
@@ -35,33 +35,33 @@ namespace Kentor.AuthServices.Tests.WebSso
         }
 
         [TestMethod]
-        public void SingleSignOutCommand_Run_With_InvalidIdp_ThrowsException()
+        public void SingleLogoutCommand_Run_With_InvalidIdp_ThrowsException()
         {
-            var request = new HttpRequestData("GET", new Uri("http://localhost/signout?idp=no-such-idp-in-config"));
+            var request = new HttpRequestData("GET", new Uri("http://localhost/logout?idp=no-such-idp-in-config"));
 
-            Action a = () => new SingleSignOutCommand().Run(request, Options.FromConfiguration);
+            Action a = () => new SingleLogOutCommand().Run(request, Options.FromConfiguration);
 
             a.ShouldThrow<InvalidOperationException>().WithMessage("Unknown idp");
         }
 
         [TestMethod]
-        public void SingleSignOutCommand_Run_NullCheckRequest()
+        public void SingleLogoutCommand_Run_NullCheckRequest()
         {
-            Action a = () => new SingleSignOutCommand().Run(null, Options.FromConfiguration);
+            Action a = () => new SingleLogOutCommand().Run(null, Options.FromConfiguration);
 
             a.ShouldThrow<ArgumentNullException>().And.ParamName.Should().Be("request");
         }
 
         [TestMethod]
-        public void SingleSignOutCommand_Run_NullCheckOptions()
+        public void SingleLogoutCommand_Run_NullCheckOptions()
         {
-            Action a = () => new SingleSignOutCommand().Run(new HttpRequestData("GET", new Uri("http://localhost")), null);
+            Action a = () => new SingleLogOutCommand().Run(new HttpRequestData("GET", new Uri("http://localhost")), null);
 
             a.ShouldThrow<ArgumentNullException>().And.ParamName.Should().Be("options");
         }
 
         [TestMethod]
-        public void SingleSignOutCommand_Run_ReturnsRedirectToDiscoveryService()
+        public void SingleLogoutCommand_Run_ReturnsRedirectToDiscoveryService()
         {
             var dsUrl = new Uri("http://ds.example.com");
 
@@ -71,9 +71,9 @@ namespace Kentor.AuthServices.Tests.WebSso
                     EntityId = new EntityId("https://github.com/KentorIT/authservices")
                 });
 
-            var request = new HttpRequestData("GET", new Uri("http://localhost/signout?ReturnUrl=%2FReturn%2FPath"));
+            var request = new HttpRequestData("GET", new Uri("http://localhost/logout?ReturnUrl=%2FReturn%2FPath"));
 
-            var result = new SingleSignOutCommand().Run(request, options);
+            var result = new SingleLogOutCommand().Run(request, options);
 
             result.HttpStatusCode.Should().Be(HttpStatusCode.SeeOther);
 
