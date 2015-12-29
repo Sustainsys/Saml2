@@ -84,6 +84,7 @@ namespace Kentor.AuthServices.WebSso
 
             AssertionConsumerServiceUrl = new Uri(authServicesRoot + CommandFactory.AcsCommandName);
             SignInUrl = new Uri(authServicesRoot + CommandFactory.SignInCommandName);
+            SignOutUrl = new Uri(authServicesRoot + CommandFactory.SingleSignOutCommandName);
         }
 
         /// <summary>
@@ -96,5 +97,11 @@ namespace Kentor.AuthServices.WebSso
         /// location for idp discovery.
         /// </summary>
         public Uri SignInUrl { get; private set; }
+
+        /// <summary>
+        /// The full url of the signout command, which is also the response 
+        /// location for idp discovery.
+        /// </summary>
+        public Uri SignOutUrl { get; private set; }
     }
 }

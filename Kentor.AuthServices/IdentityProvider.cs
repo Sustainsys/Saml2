@@ -40,7 +40,7 @@ namespace Kentor.AuthServices
         internal IdentityProvider(IdentityProviderElement config, ISPOptions spOptions)
         {
             singleSignOnServiceUrl = config.DestinationUrl;
-            singleSignOutServiceUrl = config.SingleLogoutUrl;
+            singleLogoutServiceUrl = config.SingleLogoutUrl;
             EntityId = new EntityId(config.EntityId);
             binding = config.Binding;
             AllowUnsolicitedAuthnResponse = config.AllowUnsolicitedAuthnResponse;
@@ -151,23 +151,23 @@ namespace Kentor.AuthServices
             }
         }
 
-        private Uri singleSignOutServiceUrl;
+        private Uri singleLogoutServiceUrl;
 
         /// <summary>
         /// The Url of the single logout service. This is where the browser is redirected or
         /// where the post data is sent to when sending a LogoutRequest to the idp.
         /// </summary>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1726:UsePreferredTerms", MessageId = "Logout")]
-        public Uri SingleSignOutServiceUrl
+        public Uri SingleLogoutServiceUrl
         {
             get
             {
                 ReloadMetadataIfRequired();
-                return singleSignOutServiceUrl;
+                return singleLogoutServiceUrl;
             }
             set
             {
-                singleSignOutServiceUrl = value;
+                singleLogoutServiceUrl = value;
             }
         }
 
@@ -268,7 +268,7 @@ namespace Kentor.AuthServices
         {
             var logoutRequest = new Saml2LogoutRequest()
             {
-                DestinationUrl = SingleSignOutServiceUrl,
+                DestinationUrl = SingleLogoutServiceUrl,
                 Issuer = spOptions.EntityId,
                 //SigningCertificate = SigningCertificate,
                 NameIdentifierValue = nameIdentifierValue,

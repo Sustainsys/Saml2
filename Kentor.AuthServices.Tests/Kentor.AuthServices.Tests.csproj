@@ -135,6 +135,7 @@
     <Compile Include="IdentityProviderTests.cs" />
     <Compile Include="Saml2StatementExtensionsTests.cs" />
     <Compile Include="Configuration\SPOptionsExtensionsTests.cs" />
+    <Compile Include="WebSSO\SingleSignOutCommandTests.cs" />
     <Compile Include="WebSSO\SignInCommandTests.cs" />
     <Compile Include="Saml2P\Saml2ResponseTests.cs" />
     <Compile Include="WebSSO\AcsCommandTests.cs" />

@@ -80,7 +80,7 @@ namespace Kentor.AuthServices.WebSso
             ISPOptions spOptions,
             AuthServicesUrls authServicesUrls)
         {
-            string returnUrl = authServicesUrls.SignInUrl.OriginalString;
+            string returnUrl = authServicesUrls.SignOutUrl.OriginalString;
 
             if (!string.IsNullOrEmpty(returnPath))
             {
