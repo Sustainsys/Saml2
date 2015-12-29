@@ -24,7 +24,7 @@ namespace Kentor.AuthServices
         {
             if (statement == null)
             {
-                throw new ArgumentNullException("statement");
+                throw new ArgumentNullException(nameof(statement));
             }
 
             if (statement is Saml2AttributeStatement)
@@ -52,7 +52,7 @@ namespace Kentor.AuthServices
             }
             else
             {
-                throw new ArgumentNullException("statement");
+                throw new ArgumentNullException(nameof(statement));
             }
         }
     }

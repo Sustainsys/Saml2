@@ -27,7 +27,7 @@ namespace Kentor.AuthServices.Metadata
         {
             if (metadataUrl == null)
             {
-                throw new ArgumentNullException("metadataUrl");
+                throw new ArgumentNullException(nameof(metadataUrl));
             }
 
             return (ExtendedEntityDescriptor)Load(metadataUrl);
@@ -66,7 +66,7 @@ namespace Kentor.AuthServices.Metadata
         {
             if (metadataUrl == null)
             {
-                throw new ArgumentNullException("metadataUrl");
+                throw new ArgumentNullException(nameof(metadataUrl));
             }
 
             return (ExtendedEntitiesDescriptor)Load(metadataUrl);

@@ -1,4 +1,5 @@
-﻿using Kentor.AuthServices.Configuration;
+﻿using System.Collections.Generic;
+using Kentor.AuthServices.Configuration;
 using System;
 using System.Configuration;
 using System.Globalization;
@@ -44,29 +45,22 @@ namespace Kentor.AuthServices
             binding = config.Binding;
             AllowUnsolicitedAuthnResponse = config.AllowUnsolicitedAuthnResponse;
             metadataUrl = config.MetadataUrl;
+
+            var certificate = config.SigningCertificate.LoadCertificate();
+            if (certificate != null)
+            {
+                signingKeys.AddConfiguredItem(certificate.PublicKey.Key);
+            }
+
+            // If configured to load metadata, this will immediately do the load.
             LoadMetadata = config.LoadMetadata;
             this.spOptions = spOptions;
 
-            var certificate = config.SigningCertificate.LoadCertificate();
-
-            if (certificate != null)
+            // Validate if values are only from config. If metadata is loaded, validation
+            // is done on metadata load.
+            if (!LoadMetadata)
             {
-                signingKey = certificate.PublicKey.Key;
-            }
-
-            try
-            {
-                if (LoadMetadata)
-                {
-                    DoLoadMetadata();
-                }
-
                 Validate();
-            }
-            catch (WebException)
-            {
-                // If we had a web exception, the metadata failed. It will 
-                // be automatically retried.
             }
         }
 
@@ -77,7 +71,7 @@ namespace Kentor.AuthServices
                 throw new ConfigurationErrorsException("Missing binding configuration on Idp " + EntityId.Id + ".");
             }
 
-            if (SigningKey == null)
+            if (!SigningKeys.Any())
             {
                 throw new ConfigurationErrorsException("Missing signing certificate configuration on Idp " + EntityId.Id + ".");
             }
@@ -91,8 +85,9 @@ namespace Kentor.AuthServices
         private bool loadMetadata;
 
         /// <summary>
-        /// Should this idp load metadata?
-        /// </summary>
+        /// Should this idp load metadata? If you intend to set the
+        /// <see cref="MetadataUrl"/> that must be done before setting
+        /// LoadMetadata to true.</summary>
         public bool LoadMetadata
         {
             get
@@ -107,6 +102,7 @@ namespace Kentor.AuthServices
                     try
                     {
                         DoLoadMetadata();
+                        Validate();
                     }
                     catch (WebException)
                     {
@@ -188,7 +184,8 @@ namespace Kentor.AuthServices
         private Uri metadataUrl;
 
         /// <summary>
-        /// Location of metadata for the Identity Provider.
+        /// Location of metadata for the Identity Provider. Automatically enables
+        /// <see cref="LoadMetadata"/>
         /// </summary>
         public Uri MetadataUrl
         {
@@ -234,7 +231,7 @@ namespace Kentor.AuthServices
         {
             if (authServicesUrls == null)
             {
-                throw new ArgumentNullException("authServicesUrls");
+                throw new ArgumentNullException(nameof(authServicesUrls));
             }
 
             var authnRequest = new Saml2AuthenticationRequest()
@@ -296,23 +293,19 @@ namespace Kentor.AuthServices
             return Saml2Binding.Get(Binding).Bind(request);
         }
 
-        private AsymmetricAlgorithm signingKey;
+        private ConfiguredAndLoadedCollection<AsymmetricAlgorithm> signingKeys = 
+            new ConfiguredAndLoadedCollection<AsymmetricAlgorithm>();
 
         /// <summary>
         /// The public key of the idp that is used to verify signatures of responses/assertions.
         /// </summary>
-        public AsymmetricAlgorithm SigningKey
+        public ConfiguredAndLoadedCollection<AsymmetricAlgorithm> SigningKeys
         {
             get
             {
                 ReloadMetadataIfRequired();
-                return signingKey;
+                return signingKeys;
             }
-            set
-            {
-                signingKey = value;
-            }
-
         }
 
         object metadataLoadLock = new object();
@@ -344,7 +337,7 @@ namespace Kentor.AuthServices
         {
             if (metadata == null)
             {
-                throw new ArgumentNullException("metadata");
+                throw new ArgumentNullException(nameof(metadata));
             }
 
             lock (metadataLoadLock)
@@ -378,15 +371,10 @@ namespace Kentor.AuthServices
             binding = Saml2Binding.UriToSaml2BindingType(ssoService.Binding);
             singleSignOnServiceUrl = ssoService.Location;
 
-            var key = idpDescriptor.Keys
-                .Where(k => k.Use == KeyType.Unspecified || k.Use == KeyType.Signing)
-                .SingleOrDefault();
+            var keys = idpDescriptor.Keys.Where(k => k.Use == KeyType.Unspecified || k.Use == KeyType.Signing);
 
-            if (key != null)
-            {
-                signingKey = ((AsymmetricSecurityKey)key.KeyInfo.CreateKey())
-                    .GetAsymmetricAlgorithm(SignedXml.XmlDsigRSASHA1Url, false);
-            }
+            signingKeys.SetLoadedItems(keys.Select(k => ((AsymmetricSecurityKey)k.KeyInfo.CreateKey())
+            .GetAsymmetricAlgorithm(SignedXml.XmlDsigRSASHA1Url, false)).ToList());
         }
 
         private DateTime? metadataValidUntil;

@@ -12,7 +12,7 @@ namespace Kentor.AuthServices.WebSso
         {
             if (request == null)
             {
-                throw new ArgumentNullException("request");
+                throw new ArgumentNullException(nameof(request));
             }
 
             return request.HttpMethod == "POST"
@@ -23,7 +23,7 @@ namespace Kentor.AuthServices.WebSso
         {
             if (request == null)
             {
-                throw new ArgumentNullException("request");
+                throw new ArgumentNullException(nameof(request));
             }
 
             var xml = Encoding.UTF8.GetString(
@@ -36,15 +36,15 @@ namespace Kentor.AuthServices.WebSso
         {
             if (payload == null)
             {
-                throw new ArgumentNullException("payload");
+                throw new ArgumentNullException(nameof(payload));
             }
             if (destinationUrl == null)
             {
-                throw new ArgumentNullException("destinationUrl");
+                throw new ArgumentNullException(nameof(destinationUrl));
             }
             if (messageName == null)
             {
-                throw new ArgumentNullException("messageName");
+                throw new ArgumentNullException(nameof(messageName));
             }
 
             var encodedXml = Convert.ToBase64String(
@@ -52,8 +52,13 @@ namespace Kentor.AuthServices.WebSso
 
             var cr = new CommandResult()
             {
-                Content = String.Format(CultureInfo.InvariantCulture, PostHtmlFormatString,
-               destinationUrl, messageName, encodedXml)
+                ContentType = "text/html",
+                Content = String.Format(
+                    CultureInfo.InvariantCulture,
+                    PostHtmlFormatString,
+                    destinationUrl,
+                    messageName,
+                    encodedXml)
             };
 
             return cr;

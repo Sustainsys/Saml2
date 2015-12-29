@@ -1,10 +1,14 @@
 ﻿using System;
-using System.Diagnostics.CodeAnalysis;
+using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Net;
 using System.Text;
+using System.Threading.Tasks;
+using System.Web;
+using System.Xml.Linq;
 
 namespace Kentor.AuthServices.WebSso
 {
@@ -14,17 +18,18 @@ namespace Kentor.AuthServices.WebSso
         {
             if (payload == null)
             {
-                throw new ArgumentNullException("payload");
+                throw new ArgumentNullException(nameof(payload));
             }
             if (destinationUrl == null)
             {
-                throw new ArgumentNullException("destinationUrl");
+                throw new ArgumentNullException(nameof(destinationUrl));
             }
 
             var serializedRequest = Serialize(payload);
 
-            var delimeter = destinationUrl.ToString().Contains("?") ? "&" : "?";
-            var redirectUri = new Uri(string.Format("{0}{1}{2}{3}", destinationUrl, delimeter, "SAMLRequest=", serializedRequest));
+            var redirectUri = new Uri(destinationUrl.ToString()
+                + (String.IsNullOrEmpty(destinationUrl.Query) ? "?" : "&") 
+                + "SAMLRequest=" + serializedRequest);
 
             return new CommandResult()
             {
@@ -33,12 +38,12 @@ namespace Kentor.AuthServices.WebSso
             };
         }
 
-        [SuppressMessage("Microsoft.Usage", "CA2202:Do not dispose objects multiple times", Justification="The MemoryStream is not disposed by the DeflateStream - we're using the keep-open flag.")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2202:Do not dispose objects multiple times", Justification="The MemoryStream is not disposed by the DeflateStream - we're using the keep-open flag.")]
         public override string Unbind(HttpRequestData request)
         {
             if (request == null)
             {
-                throw new ArgumentNullException("request");
+                throw new ArgumentNullException(nameof(request));
             }
 
             var payload = Convert.FromBase64String(request.QueryString["SAMLRequest"].First());
@@ -49,14 +54,14 @@ namespace Kentor.AuthServices.WebSso
                     using (var deCompressed = new MemoryStream())
                     {
                         decompressedStream.CopyTo(deCompressed);
-                        var xmlData = Encoding.UTF8.GetString(deCompressed.GetBuffer());
+                        var xmlData = System.Text.Encoding.UTF8.GetString(deCompressed.GetBuffer());
                         return xmlData;
                     }
                 }
             }
         }
 
-        [SuppressMessage("Microsoft.Usage", "CA2202:Do not dispose objects multiple times", Justification="The MemoryStream is not disposed by the DeflateStream - we're using the keep-open flag.")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2202:Do not dispose objects multiple times", Justification="The MemoryStream is not disposed by the DeflateStream - we're using the keep-open flag.")]
         private static string Serialize(string payload)
         {
             using (var compressed = new MemoryStream())
@@ -66,7 +71,7 @@ namespace Kentor.AuthServices.WebSso
                     writer.Write(payload);
                 }
 
-                return WebUtility.UrlEncode(Convert.ToBase64String(compressed.GetBuffer()));
+                return System.Net.WebUtility.UrlEncode(Convert.ToBase64String(compressed.GetBuffer()));
             }
         }
     }

@@ -70,6 +70,9 @@ namespace Kentor.AuthServices.Saml2P
 
             status = StatusCodeHelper.FromString(statusString);
 
+            statusMessage = xml.DocumentElement["Status", Saml2Namespaces.Saml2PName]
+                ["StatusMessage", Saml2Namespaces.Saml2PName].GetTrimmedTextIfNotNull();
+
             issuer = new EntityId(xmlDocument.DocumentElement["Issuer", Saml2Namespaces.Saml2Name].GetTrimmedTextIfNotNull());
 
             var destinationUrlString = xmlDocument.DocumentElement.Attributes["Destination"].GetValueIfNotNull();
@@ -187,7 +190,7 @@ namespace Kentor.AuthServices.Saml2P
 
             xmlDocument = xml;
 
-            xml.Sign(issuerCertificate);
+            xml.Sign(issuerCertificate, true);
         }
 
         readonly Saml2Id id;
@@ -217,6 +220,13 @@ namespace Kentor.AuthServices.Saml2P
         /// Status code of the message according to the SAML2 spec section 3.2.2.2
         /// </summary>
         public Saml2StatusCode Status { get { return status; } }
+
+        readonly string statusMessage;
+
+        /// <summary>
+        /// StatusMessage of the message according to the SAML2 spec section 3.2.2.1
+        /// </summary>
+        public string StatusMessage { get { return statusMessage; } }
 
         readonly EntityId issuer;
 
@@ -259,27 +269,48 @@ namespace Kentor.AuthServices.Saml2P
         /// <value>All assertion element nodes.</value>
         private IEnumerable<XmlElement> AllAssertionElementNodes
         {
-            get
+            get { return allAssertionElementNodes ?? (allAssertionElementNodes = retrieveAssertionElements()); }
+        }
+
+        private IEnumerable<XmlElement> retrieveAssertionElements()
+        {
+            var assertions = new List<XmlElement>();
+
+            assertions.AddRange(XmlDocument.DocumentElement.ChildNodes.Cast<XmlNode>()
+                .Where(node => node.NodeType == XmlNodeType.Element).Cast<XmlElement>()
+                .Where(xe => xe.LocalName == "Assertion" && xe.NamespaceURI == Saml2Namespaces.Saml2Name));
+
+            var encryptedAssertions = XmlDocument.DocumentElement.ChildNodes.Cast<XmlNode>()
+                .Where(node => node.NodeType == XmlNodeType.Element).Cast<XmlElement>()
+                .Where(xe => xe.LocalName == "EncryptedAssertion" && xe.NamespaceURI == Saml2Namespaces.Saml2Name);
+
+            if (encryptedAssertions.Count() > 0)
             {
-                if (allAssertionElementNodes == null)
+                if (serviceCertificate == null)
                 {
-                    allAssertionElementNodes =
-                        XmlDocument.DocumentElement.ChildNodes.Cast<XmlNode>()
-                        .Where(node => node.NodeType == XmlNodeType.Element).Cast<XmlElement>()
-                        .Where(xe => xe.LocalName == "Assertion" && xe.NamespaceURI == Saml2Namespaces.Saml2Name);
+                    throw new Saml2ResponseFailedValidationException("Encrypted Assertions encountered but Service Certificate was not provided.");
+                }
+                else if (!serviceCertificate.HasPrivateKey)
+                {
+                    throw new Saml2ResponseFailedValidationException("Encrypted Assertions encountered but Service Certificate does not contain private key.");
                 }
 
-                return allAssertionElementNodes;
+                assertions.AddRange(encryptedAssertions.Decrypt(serviceCertificate.PrivateKey)
+                    .Select(xe => (XmlElement)xe.GetElementsByTagName("Assertion", Saml2Namespaces.Saml2Name)[0]));
             }
+
+            return assertions;
         }
 
         bool validated = false;
         Saml2ResponseFailedValidationException validationException;
+        private X509Certificate2 serviceCertificate;
 
         private void Validate(IOptions options)
         {
             if (!validated)
             {
+                serviceCertificate = options.SPOptions.ServiceCertificate;
                 try
                 {
                     ValidateInResponseTo(options);
@@ -341,35 +372,35 @@ namespace Kentor.AuthServices.Saml2P
 
         private void ValidateSignature(IOptions options)
         {
-            var idpKey = options.IdentityProviders[Issuer].SigningKey;
+            var idpKeys = options.IdentityProviders[Issuer].SigningKeys;
 
             // If the response message is signed, we check just this signature because the whole content has to be correct then
             var responseSignature = xmlDocument.DocumentElement["Signature", SignedXml.XmlDsigNamespaceUrl];
             if (responseSignature != null)
             {
-                CheckSignature(XmlDocument.DocumentElement, idpKey);
+                CheckSignature(XmlDocument.DocumentElement, idpKeys);
             }
             else
             {
                 // If the response message is not signed, all assersions have to be signed correctly
                 foreach (var assertionNode in AllAssertionElementNodes)
                 {
-                    CheckSignature(assertionNode, idpKey);
+                    CheckSignature(assertionNode, idpKeys);
                 }
             }
         }
 
         private static readonly string[] allowedTransforms = new string[]
-        {
+            {
             SignedXml.XmlDsigEnvelopedSignatureTransformUrl,
             SignedXml.XmlDsigExcC14NTransformUrl,
             SignedXml.XmlDsigExcC14NWithCommentsTransformUrl
-        };
+            };
 
         /// <summary>Checks the signature.</summary>
         /// <param name="signedRootElement">The signed root element.</param>
-        /// <param name="idpKey">The assymetric key of the algorithm.</param>
-        private static void CheckSignature(XmlElement signedRootElement, AsymmetricAlgorithm idpKey)
+        /// <param name="idpKeys">A list containing one ore more assymetric keys of a algorithm.</param>
+        private static void CheckSignature(XmlElement signedRootElement, IEnumerable<AsymmetricAlgorithm> idpKeys)
         {
             var xmlDocument = new XmlDocument { PreserveWhitespace = true };
             xmlDocument.LoadXml(signedRootElement.OuterXml);
@@ -412,7 +443,7 @@ namespace Kentor.AuthServices.Saml2P
             }
             try
             {
-                if (!signedXml.CheckSignature(idpKey))
+                if (!idpKeys.Any(signedXml.CheckSignature))
                 {
                     throw new Saml2ResponseFailedValidationException("Signature validation failed on SAML response or contained assertion.");
                 }
@@ -442,6 +473,10 @@ namespace Kentor.AuthServices.Saml2P
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1024:UsePropertiesWhereAppropriate")]
         public IEnumerable<ClaimsIdentity> GetClaims(IOptions options)
         {
+            if (options == null)
+            {
+                throw new ArgumentNullException(nameof(options));
+            }
             if (createClaimsException != null)
             {
                 throw createClaimsException;
@@ -469,7 +504,8 @@ namespace Kentor.AuthServices.Saml2P
 
             if (status != Saml2StatusCode.Success)
             {
-                throw new InvalidOperationException("The Saml2Response must have status success to extract claims.");
+                throw new InvalidOperationException(string.Format("The Saml2Response must have status success to extract claims. Status: {0}.{1}"
+                    , status.ToString(), statusMessage != null ? " Message: " + statusMessage + "." : string.Empty));
             }
 
             foreach (XmlElement assertionNode in AllAssertionElementNodes)

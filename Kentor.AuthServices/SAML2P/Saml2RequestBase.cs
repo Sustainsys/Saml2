@@ -119,7 +119,7 @@ namespace Kentor.AuthServices.Saml2P
         {
             if (xml == null)
             {
-                throw new ArgumentNullException("xml");
+                throw new ArgumentNullException(nameof(xml));
             }
             ValidateCorrectDocument(xml);
             Id = xml.DocumentElement.Attributes["ID"].Value;

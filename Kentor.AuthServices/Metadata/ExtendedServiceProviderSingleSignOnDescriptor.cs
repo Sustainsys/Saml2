@@ -26,5 +26,11 @@ namespace Kentor.AuthServices.Metadata
                 return attributeConsumingServices;
             }
         }
+
+        /// <summary>
+        /// Extensions node in metadata.
+        /// </summary>
+        public ServiceProviderSingleSignOnDescriptorExtensions Extensions { get; }
+            = new ServiceProviderSingleSignOnDescriptorExtensions();
     }
 }

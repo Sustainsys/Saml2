@@ -28,7 +28,7 @@ namespace Kentor.AuthServices
         {
             if (config == null)
             {
-                throw new ArgumentNullException("config");
+                throw new ArgumentNullException(nameof(config));
             }
 
             Init(config.MetadataUrl, config.AllowUnsolicitedAuthnResponse, options);
@@ -137,12 +137,9 @@ namespace Kentor.AuthServices
             }
 
             // Remember what we registered this time, to know what to remove nex time.
-            foreach (var idp in identityProviders)
-            {
-                registeredIdentityProviders = identityProviders.ToDictionary(
-                    i => i.EntityId.Id,
-                    i => i.EntityId);
-            }
+            registeredIdentityProviders = identityProviders.ToDictionary(
+                i => i.EntityId.Id,
+                i => i.EntityId);
         }
 
         private void RemoveAllRegisteredIdentityProviders()

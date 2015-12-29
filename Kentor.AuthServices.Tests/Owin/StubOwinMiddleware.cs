@@ -24,6 +24,7 @@ namespace Kentor.AuthServices.Tests.Owin
         {
             context.Response.StatusCode = statusCode;
             context.Authentication.AuthenticationResponseChallenge = challenge;
+            context.Response.ContentLength = 0;
             return Task.FromResult(0);
         }
     }

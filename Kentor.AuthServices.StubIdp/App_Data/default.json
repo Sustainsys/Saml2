@@ -1,0 +1,54 @@
+{
+  "HideDetails": false,
+  "UserList": [
+    {
+      "DisplayName": "John Doe",
+      "Description": "Just a regular user",
+      "Assertion": {
+        "NameId": "JohnDoe"
+      }
+    },
+    {
+      "DisplayName": "Admin Almighty",
+      "Description": "Admin with super powers",
+      "Assertion": {
+        "NameId": "AdminAlmighty",
+        "AttributeStatements": [
+          {
+            "Type": "http://schemas.microsoft.com/ws/2008/06/identity/claims/role",
+            "Value": "Administrator"
+          },
+          {
+            "Type": "http://schemas.microsoft.com/ws/2008/06/identity/claims/role",
+            "Value": "root"
+          },
+          {
+            "Type": "SpecialPowers",
+            "Value": "All of them"
+          }
+        ]
+      }
+    },
+    {
+      "DisplayName": "Tolvan",
+      "Description": "Fake person with fake Swedish civic number. See https://sv.wikipedia.org/wiki/Tolvan_Tolvansson",
+      "Assertion": {
+        "NameId": "191212121212",
+        "AttributeStatements": [
+          {
+            "Type": "Subject_SerialNumber",
+            "Value": "191212121212"
+          },
+          {
+            "Type": "Subject_GivenName",
+            "Value": "Tolvan"
+          },
+          {
+            "Type": "Subject_Surname",
+            "Value": "Tolvansson"
+          }
+        ]
+      }
+    }
+  ]
+}

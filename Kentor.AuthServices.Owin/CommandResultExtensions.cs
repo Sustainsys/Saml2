@@ -14,12 +14,12 @@ namespace Kentor.AuthServices.Owin
         {
             if (commandResult == null)
             {
-                throw new ArgumentNullException("commandResult");
+                throw new ArgumentNullException(nameof(commandResult));
             }
 
             if (context == null)
             {
-                throw new ArgumentNullException("context");
+                throw new ArgumentNullException(nameof(context));
             }
 
             context.Response.ContentType = commandResult.ContentType;
@@ -32,10 +32,10 @@ namespace Kentor.AuthServices.Owin
 
             if (commandResult.Content != null)
             {
-                using (var writer = new StreamWriter(context.Response.Body, Encoding.UTF8, 1024, true))
-                {
-                    writer.Write(commandResult.Content);
-                }
+                // Remove value set by other middleware and let the host calculate
+                // a new value. See issue #295 for discussion on this.
+                context.Response.ContentLength = null;
+                context.Response.Write(commandResult.Content);
             }
         }
     }

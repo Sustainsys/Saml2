@@ -50,7 +50,7 @@ namespace Kentor.AuthServices.Configuration
         {
             if(options == null)
             {
-                throw new ArgumentNullException("options");
+                throw new ArgumentNullException(nameof(options));
             }
 
             foreach(var idpEntry in this)

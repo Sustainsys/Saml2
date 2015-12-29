@@ -5,7 +5,7 @@ The Kentor Authentication services is a library that adds SAML2P support to ASP.
 web sites, allowing the web site to act as a SAML2 Service Provider (SP).
 
 Kentor.AuthServices is open sourced and contributions are welcome, please see 
-[contributing guidelines](doc/Contributing.md) for info on coding standards etc.
+[contributing guidelines](CONTRIBUTING.md) for info on coding standards etc.
 
 ##Using
 The AuthServices library can be used through three different ways:
@@ -15,14 +15,20 @@ forms sites.
 * An ASP.NET MVC Controller for better integration and error handling in ASP.NET Applications.
 * An Owin Middleware to use with the Owin Pipeline or for integration with ASP.NET Identity.
 
-There are three nuget packages available. Thecore 
+Note that this last usage scenario enables SAML identity providers to be integrated within
+[Thinktecture's IdentityServer3](https://github.com/IdentityServer/IdentityServer3) package.  Review [this document](doc/IdentityServer3Okta.md) to see how to configure AuthServices
+with IdentityServer3 and Okta to add Okta as an identity provider to an IdentityServer3 project.
+
+There are four nuget packages available. The core 
 [Kentor.AuthServices](https://www.nuget.org/packages/Kentor.AuthServices/) contains the core
-functionality and the Http Module. The [Kentor.AuthServices.Mvc](https://www.nuget.org/packages/Kentor.AuthServices.Mvc/)
+functionality. The [Kentor.AuthServices.HttpModule](https://www.nuget.org/packages/Kentor.AuthServices.HttpModule/)
+contains an IIS Http Module (previously this was included in the core package). 
+The [Kentor.AuthServices.Mvc](https://www.nuget.org/packages/Kentor.AuthServices.Mvc/)
 package contains the MVC controller and the [Kentor.AuthServices.Owin](https://www.nuget.org/packages/Kentor.AuthServices.Owin/)
 package contains the Owin middleware.
 
 Once installed the `web.config` of the application must be updated with configuration.
-See [configuration] (doc/Configuration.md) for details.
+See [configuration](doc/Configuration.md) for details.
 
 ##Saml2AuthenticationModule
 The Saml2AuthenticationModule is modeled after the WSFederationAuthenticationModule
@@ -48,4 +54,4 @@ Download the solution, or use the instance that's provided for free at http://st
 
 ##Protocol Classes
 The protocol handling classes are available as a public API as well, making it possible to 
-reuse some of the internals for writing an own service provider or identity provider.
+reuse some of the internals for writing your own service provider or identity provider.

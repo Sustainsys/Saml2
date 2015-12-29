@@ -14,6 +14,7 @@ using System.Collections.Generic;
 using Kentor.AuthServices.Configuration;
 using Kentor.AuthServices.WebSso;
 using System.Reflection;
+using System.Configuration;
 
 namespace Kentor.AuthServices.Tests.WebSso
 {
@@ -225,6 +226,50 @@ namespace Kentor.AuthServices.Tests.WebSso
 
             new AcsCommand().Run(r, StubFactory.CreateOptions())
                 .ShouldBeEquivalentTo(expected, opt => opt.IgnoringCyclicReferences());
+        }
+
+        [TestMethod]
+        public void AcsCommand_Run_UnsolicitedResponse_ThrowsOnNoConfiguredReturnUrl()
+        {
+           var response =
+            @"<saml2p:Response xmlns:saml2p=""urn:oasis:names:tc:SAML:2.0:protocol""
+                xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
+                ID = """ + MethodBase.GetCurrentMethod().Name + @""" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z"">
+                <saml2:Issuer>
+                    https://idp.example.com
+                </saml2:Issuer>
+                <saml2p:Status>
+                    <saml2p:StatusCode Value=""urn:oasis:names:tc:SAML:2.0:status:Success"" />
+                </saml2p:Status>
+                <saml2:Assertion
+                Version=""2.0"" ID=""" + MethodBase.GetCurrentMethod().Name + @"_Assertion""
+                IssueInstant=""2013-09-25T00:00:00Z"">
+                    <saml2:Issuer>https://idp.example.com</saml2:Issuer>
+                    <saml2:Subject>
+                        <saml2:NameID>SomeUser</saml2:NameID>
+                        <saml2:SubjectConfirmation Method=""urn:oasis:names:tc:SAML:2.0:cm:bearer"" />
+                    </saml2:Subject>
+                    <saml2:Conditions NotOnOrAfter=""2100-01-01T00:00:00Z"" />
+                </saml2:Assertion>
+            </saml2p:Response>";
+
+            var formValue = Convert.ToBase64String(Encoding.UTF8.GetBytes(
+                SignedXmlHelper.SignXml(response)));
+
+            var r = new HttpRequestData(
+                "POST",
+                new Uri("http://localhost"),
+                "/ModulePath",
+                new KeyValuePair<string, string[]>[]
+                {
+                    new KeyValuePair<string, string[]>("SAMLResponse", new string[] { formValue })
+                });
+
+            var options = StubFactory.CreateOptions();
+            ((SPOptions)options.SPOptions).ReturnUrl = null;
+
+            new AcsCommand().Invoking(a => a.Run(r, options))
+                .ShouldThrow<ConfigurationErrorsException>().WithMessage(AcsCommand.MissingReturnUrlMessage);
         }
     }
 }

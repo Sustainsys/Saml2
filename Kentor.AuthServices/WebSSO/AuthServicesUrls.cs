@@ -22,12 +22,12 @@ namespace Kentor.AuthServices.WebSso
         {
             if (request == null)
             {
-                throw new ArgumentNullException("request");
+                throw new ArgumentNullException(nameof(request));
             }
 
             if (spOptions == null)
             {
-                throw new ArgumentNullException("spOptions");
+                throw new ArgumentNullException(nameof(spOptions));
             }
 
             Init(request.ApplicationUrl, spOptions.ModulePath);
@@ -45,12 +45,12 @@ namespace Kentor.AuthServices.WebSso
         {
             if (applicationUrl == null)
             {
-                throw new ArgumentNullException("applicationUrl");
+                throw new ArgumentNullException(nameof(applicationUrl));
             }
 
             if (modulePath == null)
             {
-                throw new ArgumentNullException("modulePath");
+                throw new ArgumentNullException(nameof(modulePath));
             }
 
             Init(applicationUrl, modulePath);
@@ -66,7 +66,7 @@ namespace Kentor.AuthServices.WebSso
         {
             if (signInUrl == null)
             {
-                throw new ArgumentNullException("signInUrl");
+                throw new ArgumentNullException(nameof(signInUrl));
             }
 
             AssertionConsumerServiceUrl = assertionConsumerServiceUrl;

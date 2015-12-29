@@ -11,7 +11,7 @@ When doing work on protocol features, it is recommended to consult the
 Github issues are used to keep track of issues and releases. For requests of functionality or
 to report bugs, please open an issue in the github repo.
 
-It is adviced to open an issue describing the plans before starting any major coding work.
+It is advised to open an issue describing the plans before starting any major coding work.
 Discussing before writing code significantly reduces the risk of getting a pull request
 denied.
 
@@ -30,7 +30,7 @@ current code in the repository will always have an *odd* PATCH number to denote 
 it is a development version.
 
 ##Coding Conventions
-The coding conventions are to keep to quite classic .NET style of coding, with the following
+The coding conventions follow the classic .NET style of coding, with the following
 styles:
 * Always use `{}` for `if` statements, even though there is only one line.
 * Code analysis is enabled and all code should compile without compiler warnings or
@@ -42,7 +42,7 @@ instead of suppressing individual warnings.
 * Member variables are not prefixed with `this.` unless required to resolve ambiguity (such
 as in a constructor having parameters with the same name as the members).
 * Any single method is so short that it fits on one screen (on a typical laptop monitor, 
-not a 30-feet development monster-monitor in vertical orientation).
+not a 30-inch development monster-monitor in vertical orientation).
 * The code is formatted to (mostly) fit in 80 columns.
 
 ##Unit Tests
@@ -51,11 +51,8 @@ functionality is covered by tests, and it will remain that way. Pull requests wi
 merged if they contain tests covering the added functionality. Parts of the code that aren't
 practically possible to test because of tight integration with the web server (see e.g. 
 `CommandResult.ApplyPrincipal`) are excluded from this rule and should be marked with a
-`[ExcludeFromCodeCoverage]` attribute. The code coverage report when using the `CodeCoverage.runsettings`
-file is at 100.00% coverage and should remain so.
-
-If you hare using Visual Studio Premium or Ultimate, please use the "VsPremium" solution,
-that contains an extra unit test project which requires VS Premium features to run.
+`[ExcludeFromCodeCoverage]` attribute. The code coverage report is at 100.00% coverage and 
+should remain so.
 
 ##Integration Tests
 There are also some integration tests that runs through the sample applications and make
@@ -65,7 +62,7 @@ sure that they work. To run the integration tests:
 * Set multiple startup projects: Kentor.AuthServices.StubIdp, SampleApplication & SampleMvcApplication.
 * Debug the solution.
 * Open Kentor.AuthServices.IntegrationTests in a separate Visual Studio Instance.
-* Run all tests in the integrationtests solution.
+* Run all tests in the IntegrationTests solution.
 
 ##Branching
 To make a clean pull request, it is important to follow some git best practices. Nancy

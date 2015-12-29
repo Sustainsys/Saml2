@@ -56,7 +56,7 @@ namespace Kentor.AuthServices.WebSso
 
             if(commandName ==  null)
             {
-                throw new ArgumentNullException("commandName");
+                throw new ArgumentNullException(nameof(commandName));
             }
 
             if(commandName.StartsWith("/", StringComparison.OrdinalIgnoreCase))

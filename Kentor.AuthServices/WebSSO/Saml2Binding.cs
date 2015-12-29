@@ -109,7 +109,7 @@ namespace Kentor.AuthServices.WebSso
         {
             if(uri == null)
             {
-                throw new ArgumentNullException("uri");
+                throw new ArgumentNullException(nameof(uri));
             }
 
             Saml2BindingType bindingType;

@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using System.Xml.Linq;
 using Kentor.AuthServices.Configuration;
 using Kentor.AuthServices.WebSso;
+using System.IdentityModel.Tokens;
 
 namespace Kentor.AuthServices.Metadata
 {
@@ -43,12 +44,24 @@ namespace Kentor.AuthServices.Metadata
                 spsso.AttributeConsumingServices.Add(attributeService);
             }
 
-            ed.RoleDescriptors.Add(spsso);
+            if (spOptions.ServiceCertificate != null)
+            {
+                using (var securityToken = new X509SecurityToken(spOptions.ServiceCertificate))
+                {
+                    spsso.Keys.Add(
+                        new KeyDescriptor
+                        {
+                            Use = KeyType.Encryption,
+                            KeyInfo = new SecurityKeyIdentifier(securityToken.CreateKeyIdentifierClause<X509RawDataKeyIdentifierClause>())
+                        }
+                    );
+                }
+            }
 
-            if(spOptions.DiscoveryServiceUrl != null
+            if (spOptions.DiscoveryServiceUrl != null
                 && !string.IsNullOrEmpty(spOptions.DiscoveryServiceUrl.OriginalString))
             {
-                ed.Extensions.DiscoveryResponse = new IndexedProtocolEndpoint
+                spsso.Extensions.DiscoveryResponse = new IndexedProtocolEndpoint
                 {
                     Binding = Saml2Binding.DiscoveryResponseUri,
                     Index = 0,
@@ -56,6 +69,8 @@ namespace Kentor.AuthServices.Metadata
                     Location = urls.SignInUrl
                 };
             }
+
+            ed.RoleDescriptors.Add(spsso);
 
             return ed;
         }

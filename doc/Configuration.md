@@ -2,7 +2,7 @@ kentor.AuthServices Configuration
 =============
 To use Kentor.AuthServices in an application it must be enabled in the 
 application's `web.config`. The sample applications contains complete
-working [`web.config`](../SampleApplication/Web.config) examples.
+working [`web.config`](../SampleApplication/Web.config) examples. For ASP.NET MVC applications see [`this working web.config`](../SampleMvcApplication/Web.config) example.
 
 ##Config Sections
 Three new config sections are required. Add these under `configuration/configSections`:
@@ -24,9 +24,9 @@ does not need any http modules, please see the separate info on the [Owin middle
   <httpModules>
 	<!-- Add these modules below any existing. -->
     <add name="SessionAuthenticationModule" type="System.IdentityModel.Services.SessionAuthenticationModule, System.IdentityModel.Services, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089"/>
-    <!-- Only add the Saml2AuthenticationModule if you're ranning the bare Kentor.AuthServices
+    <!-- Only add the Saml2AuthenticationModule if you're using the Kentor.AuthServices.HttpModule
 		library. If you are using Kentor.AuthServices.Mvc you SHOULD NOT load this module.-->
-	<add name="Saml2AuthenticationModule" type="Kentor.AuthServices.Saml2AuthenticationModule, Kentor.AuthServices"/>
+	<add name="Saml2AuthenticationModule" type="Kentor.AuthServices.HttpModule.Saml2AuthenticationModule, Kentor.AuthServices.HttpModule"/>
   </httpModules>
 </system.web>
 ```
@@ -80,6 +80,7 @@ Root element of the config section.
 * [`<metadata>`](#metadata-element)
 * [`<identityProviders>`](#identityproviders-element)
 * [`<federations>`](#federations-element)
+* [`<serviceCertificate>`](#serviceCertificate-element)
 
 ####`entityId` Attribute
 *Attribute of the [`<kentor.authServices>`](#kentor-authservices-section) element.*
@@ -412,6 +413,15 @@ enumeration.
 *Optional child element of the `<kentor.authServices>`(#kentor-authservices-section) element.*
 
 Contains a list of federations that the service provider knows and trusts.
+
+###`<serviceCertificate>` Element
+*Optional child element of the `<kentor.authServices>`(#kentor-authservices-section) element.*
+
+Specifies the certificate that the service provider uses for encrypted assertions. 
+The public key of this certificate will be exposed in the metadata and the private
+key will be used during decryption. 
+
+Uses same options/attributes as [`<signingCertificate>`](#signingcertificate-element) for locating the certificate.
 
 ####Elements
 * [`<add>`](#add-federation-element).
