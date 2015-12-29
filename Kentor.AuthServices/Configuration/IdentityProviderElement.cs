@@ -58,6 +58,22 @@ namespace Kentor.AuthServices.Configuration
         }
 
         /// <summary>
+        /// Destination url to send logout requests to.
+        /// </summary>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1726:UsePreferredTerms", MessageId = "Logout"), ConfigurationProperty("singleLogoutUrl")]
+        public Uri SingleLogoutUrl
+        {
+            get
+            {
+                return (Uri)base["singleLogoutUrl"];
+            }
+            internal set
+            {
+                base["singleLogoutUrl"] = value;
+            }
+        }
+
+        /// <summary>
         /// The binding to use when sending requests to the Idp.
         /// </summary>
         [ConfigurationProperty("binding")]

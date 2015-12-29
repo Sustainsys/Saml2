@@ -1,29 +1,25 @@
-﻿using Kentor.AuthServices.Configuration;
-using System;
-using System.Collections.Generic;
-using System.Collections.Specialized;
+﻿using System;
 using System.Globalization;
 using System.IdentityModel.Metadata;
 using System.Linq;
 using System.Net;
-using System.Text;
-using System.Threading.Tasks;
-using System.Web;
+using System.Security.Claims;
+using Kentor.AuthServices.Configuration;
 
 namespace Kentor.AuthServices.WebSso
 {
-    class SignInCommand : ICommand
+    internal class SingleLogOutCommand : ICommand
     {
         public CommandResult Run(HttpRequestData request, IOptions options)
         {
             if (request == null)
             {
-                throw new ArgumentNullException(nameof(request));
+                throw new ArgumentNullException("request");
             }
 
             if (options == null)
             {
-                throw new ArgumentNullException(nameof(options));
+                throw new ArgumentNullException("options");
             }
 
             return CreateResult(
@@ -66,9 +62,17 @@ namespace Kentor.AuthServices.WebSso
                 Uri.TryCreate(request.Url, returnPath, out returnUrl);
             }
 
-            var authnRequest = idp.CreateAuthenticateRequest(returnUrl, urls, relayData);
+            string nameIdentifierValue = string.Empty;
+            string nameIdentifierFormat = string.Empty;
+            if (request.NameIdentifier != null)
+            {
+                nameIdentifierValue = request.NameIdentifier.Value;
+                nameIdentifierFormat = request.NameIdentifier.Properties[ClaimProperties.SamlNameIdentifierFormat];
+            }
 
-            return idp.Bind(authnRequest);
+            var logoutRequest = idp.CreateLogoutRequest(returnUrl, nameIdentifierValue, nameIdentifierFormat, relayData);
+
+            return idp.Bind(logoutRequest);
         }
 
         private static CommandResult RedirectToDiscoveryService(
@@ -76,9 +80,9 @@ namespace Kentor.AuthServices.WebSso
             ISPOptions spOptions,
             AuthServicesUrls authServicesUrls)
         {
-            string returnUrl = authServicesUrls.SignInUrl.OriginalString;
+            string returnUrl = authServicesUrls.LogoutUrl.OriginalString;
 
-            if(!string.IsNullOrEmpty(returnPath))
+            if (!string.IsNullOrEmpty(returnPath))
             {
                 returnUrl += "?ReturnUrl=" + Uri.EscapeDataString(returnPath);
             }

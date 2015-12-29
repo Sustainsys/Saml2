@@ -2,8 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Security.Claims;
 using System.Web;
 
 namespace Kentor.AuthServices.HttpModule
@@ -25,12 +24,20 @@ namespace Kentor.AuthServices.HttpModule
                 throw new ArgumentNullException(nameof(requestBase));
             }
 
+            Claim nameIdentifier = null;
+            var claimsIdentity = requestBase.RequestContext.HttpContext.User.Identity as ClaimsIdentity;
+            if (claimsIdentity != null)
+            {
+                nameIdentifier = claimsIdentity.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier);
+            }
+
             return new HttpRequestData(
                 requestBase.HttpMethod,
                 requestBase.Url,
                 requestBase.ApplicationPath,
                 requestBase.Form.Cast<string>().Select((de, i) =>
-                    new KeyValuePair<string, string[]>(de, ((string)requestBase.Form[i]).Split(','))));
+                    new KeyValuePair<string, string[]>(de, ((string)requestBase.Form[i]).Split(','))), 
+                nameIdentifier);
         }
     }
 }

@@ -40,6 +40,7 @@ namespace Kentor.AuthServices
         internal IdentityProvider(IdentityProviderElement config, ISPOptions spOptions)
         {
             singleSignOnServiceUrl = config.DestinationUrl;
+            singleLogoutServiceUrl = config.SingleLogoutUrl;
             EntityId = new EntityId(config.EntityId);
             binding = config.Binding;
             AllowUnsolicitedAuthnResponse = config.AllowUnsolicitedAuthnResponse;
@@ -150,6 +151,26 @@ namespace Kentor.AuthServices
             }
         }
 
+        private Uri singleLogoutServiceUrl;
+
+        /// <summary>
+        /// The Url of the single logout service. This is where the browser is redirected or
+        /// where the post data is sent to when sending a LogoutRequest to the idp.
+        /// </summary>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1726:UsePreferredTerms", MessageId = "Logout")]
+        public Uri SingleLogoutServiceUrl
+        {
+            get
+            {
+                ReloadMetadataIfRequired();
+                return singleLogoutServiceUrl;
+            }
+            set
+            {
+                singleLogoutServiceUrl = value;
+            }
+        }
+
         /// <summary>
         /// The Entity Id of the identity provider.
         /// </summary>
@@ -227,6 +248,39 @@ namespace Kentor.AuthServices
             PendingAuthnRequests.Add(new Saml2Id(authnRequest.Id), responseData);
 
             return authnRequest;
+        }        
+        
+        /// <summary>
+        /// Create a single logout request aimed for this idp.
+        /// </summary>
+        /// <param name="returnUrl">The return url where the browser should be sent after
+        /// successful logout.</param>
+        /// <param name="nameIdentifierValue">The unique name of the user to log out</param>
+        /// <param name="nameIdentifierFormat">The format of the name</param>
+        /// <param name="relayData">Aux data that should be preserved across the authentication</param>
+        /// <returns>LogoutRequest</returns>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1026:DefaultParametersShouldNotBeUsed")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1726:UsePreferredTerms", MessageId = "Logout")]
+        public Saml2LogoutRequest CreateLogoutRequest(
+            Uri returnUrl,
+            string nameIdentifierValue,
+            string nameIdentifierFormat,
+            object relayData = null)
+        {
+            var logoutRequest = new Saml2LogoutRequest()
+            {
+                DestinationUrl = SingleLogoutServiceUrl,
+                Issuer = spOptions.EntityId,
+                //SigningCertificate = SigningCertificate,
+                NameIdentifierValue = nameIdentifierValue,
+                NameIdentifierFormat = nameIdentifierFormat,
+            };
+
+            var responseData = new StoredRequestState(EntityId, returnUrl, relayData);
+
+            PendingAuthnRequests.Add(new Saml2Id(logoutRequest.Id), responseData);
+
+            return logoutRequest;
         }
 
         /// <summary>

@@ -58,6 +58,7 @@
     <Compile Include="Internal\QueryStringHelper.cs" />
     <Compile Include="Metadata\KeyInfoSerializer.cs" />
     <Compile Include="Saml2P\FilteringXmlNodeReader.cs" />
+    <Compile Include="Saml2P\Saml2LogoutRequest.cs" />
     <Compile Include="Saml2ResponseFailedValidationException.cs" />
     <Compile Include="Internal\CryptographyExtensions.cs" />
     <Compile Include="Internal\RSAEncryptedXml.cs" />
@@ -132,6 +133,7 @@
     <Compile Include="WebSso\SignInCommand.cs" />
     <Compile Include="Internal\StatusCodeHelper.cs" />
     <Compile Include="Internal\StringHelpers.cs" />
+    <Compile Include="WebSso\SingleLogOutCommand.cs" />
     <Compile Include="XmlDocumentExtensions.cs" />
     <Compile Include="Metadata\FilteringXmlDictionaryReader.cs" />
     <Compile Include="Internal\XmlHelpers.cs" />
