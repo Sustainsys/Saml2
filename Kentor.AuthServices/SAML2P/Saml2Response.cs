@@ -72,6 +72,10 @@ namespace Kentor.AuthServices.Saml2P
 
             statusMessage = xml.DocumentElement["Status", Saml2Namespaces.Saml2PName]
                 ["StatusMessage", Saml2Namespaces.Saml2PName].GetTrimmedTextIfNotNull();
+            if (xml.DocumentElement["Status", Saml2Namespaces.Saml2PName]["StatusCode", Saml2Namespaces.Saml2PName]["StatusCode", Saml2Namespaces.Saml2PName] != null)
+            {
+                secondLevelStatus = xml.DocumentElement["Status", Saml2Namespaces.Saml2PName]["StatusCode", Saml2Namespaces.Saml2PName]["StatusCode", Saml2Namespaces.Saml2PName].Attributes["Value"].Value;
+            } 
 
             issuer = new EntityId(xmlDocument.DocumentElement["Issuer", Saml2Namespaces.Saml2Name].GetTrimmedTextIfNotNull());
 
@@ -227,6 +231,13 @@ namespace Kentor.AuthServices.Saml2P
         /// StatusMessage of the message according to the SAML2 spec section 3.2.2.1
         /// </summary>
         public string StatusMessage { get { return statusMessage; } }
+
+        readonly string secondLevelStatus;
+        /// <summary>
+        /// Optional status which MAY give additional information about the cause of the problem (according to the SAML2 spec section 3.2.2.2))))))))). 
+        /// Because it may change in future specifications let's not make enum out of it yet.
+        /// </summary>
+        public string SecondLevelStatus { get { return secondLevelStatus; } }
 
         readonly EntityId issuer;
 
@@ -504,8 +515,9 @@ namespace Kentor.AuthServices.Saml2P
 
             if (status != Saml2StatusCode.Success)
             {
-                throw new InvalidOperationException(string.Format("The Saml2Response must have status success to extract claims. Status: {0}.{1}"
-                    , status.ToString(), statusMessage != null ? " Message: " + statusMessage + "." : string.Empty));
+                throw new InvalidSamlOperationException(string.Format("The Saml2Response must have status success to extract claims. Status: {0}.{1}"
+                , status.ToString(), statusMessage != null ? " Message: " + statusMessage + "." : string.Empty),
+                status, statusMessage, secondLevelStatus);
             }
 
             foreach (XmlElement assertionNode in AllAssertionElementNodes)

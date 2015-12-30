@@ -116,6 +116,7 @@
     <Compile Include="HttpModule\HttpRequestBaseExtensionsTests.cs" />
     <Compile Include="Internal\QueryStringHelperTests.cs" />
     <Compile Include="Internal\PathHelperTests.cs" />
+    <Compile Include="InvalidSamlOperationExceptionTest.cs" />
     <Compile Include="Metadata\MetadatabaseExtensionsTests.cs" />
     <Compile Include="Mvc\AuthServicesControllerTests.cs" />
     <Compile Include="ClaimsAuthenticationManagerStub.cs" />
