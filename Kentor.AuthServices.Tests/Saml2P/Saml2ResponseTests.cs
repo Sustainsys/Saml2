@@ -17,6 +17,8 @@ using Kentor.AuthServices.Saml2P;
 using System.Reflection;
 using System.Collections.Generic;
 using System.Security.Cryptography.X509Certificates;
+using System.Threading;
+using System.Globalization;
 
 namespace Kentor.AuthServices.Tests.Saml2P
 {
@@ -70,6 +72,7 @@ namespace Kentor.AuthServices.Tests.Saml2P
                 MessageName = "SAMLResponse",
                 InResponseTo = new Saml2Id("InResponseToId"),
                 RequestState = (StoredRequestState)null,
+                SecondLevelStatus = (string)null
             };
 
             Saml2Response.Read(response).ShouldBeEquivalentTo(expected,
@@ -1567,8 +1570,38 @@ namespace Kentor.AuthServices.Tests.Saml2P
 
             Action a = () => subject.GetClaims(Options.FromConfiguration);
 
-            a.ShouldThrow<InvalidOperationException>()
-                .WithMessage("The Saml2Response must have status success to extract claims. Status: Requester.");
+            a.ShouldThrow<InvalidSamlOperationException>()
+                .WithMessage("The Saml2Response must have status success to extract claims. Status: Requester.")
+                .Where(x => x.Status == Saml2StatusCode.Requester);
+
+        }
+
+        [TestMethod]
+        public void Saml2Response_GetClaims_ThrowsOnStatusFailure2()
+        {
+            var response =
+            @"<?xml version=""1.0"" encoding=""UTF-8""?>
+            <saml2p:Response xmlns:saml2p=""urn:oasis:names:tc:SAML:2.0:protocol""
+            xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
+            ID = """ + MethodBase.GetCurrentMethod().Name + @""" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z"">
+                <saml2:Issuer>https://idp.example.com</saml2:Issuer>
+                <saml2p:Status>
+                    <saml2p:StatusMessage>A status message</saml2p:StatusMessage>
+                    <saml2p:StatusCode Value=""urn:oasis:names:tc:SAML:2.0:status:Responder"">
+                        <saml2p:StatusCode Value = ""urn:oasis:names:tc:SAML:2.0:status:RequestDenied"" />
+                    </saml2p:StatusCode >
+                </saml2p:Status >
+            </saml2p:Response>";
+
+            var xml = SignedXmlHelper.SignXml(response);
+
+            var subject = Saml2Response.Read(xml);
+
+            Action a = () => subject.GetClaims(Options.FromConfiguration);
+
+            a.ShouldThrow<InvalidSamlOperationException>()
+                .WithMessage("The Saml2Response must have status success to extract claims. Status: Responder. Message:A status message.")
+                .Where(x => x.Status == Saml2StatusCode.Responder && x.StatusMessage == "A status message" && x.SecondLevelStatus == "urn:oasis:names:tc:SAML:2.0:status:RequestDenied");
 
         }
 
@@ -1603,8 +1636,9 @@ namespace Kentor.AuthServices.Tests.Saml2P
 
             Action a = () => subject.GetClaims(Options.FromConfiguration);
 
-            a.ShouldThrow<InvalidOperationException>()
-                .WithMessage("The Saml2Response must have status success to extract claims. Status: Requester. Message: A status message.");
+            a.ShouldThrow<InvalidSamlOperationException>()
+                .WithMessage("The Saml2Response must have status success to extract claims. Status: Requester. Message: A status message.")
+                .Where(x => x.Status == Saml2StatusCode.Requester);
 
         }
 

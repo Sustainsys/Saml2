@@ -56,6 +56,7 @@
     <Compile Include="ConfiguredAndLoadedCollection.cs" />
     <Compile Include="Internal\PathHelper.cs" />
     <Compile Include="Internal\QueryStringHelper.cs" />
+    <Compile Include="InvalidSAMLOperationException.cs" />
     <Compile Include="Metadata\KeyInfoSerializer.cs" />
     <Compile Include="Saml2P\FilteringXmlNodeReader.cs" />
     <Compile Include="Saml2ResponseFailedValidationException.cs" />
