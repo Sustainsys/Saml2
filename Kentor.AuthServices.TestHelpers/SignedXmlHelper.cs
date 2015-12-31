@@ -13,6 +13,8 @@ namespace Kentor.AuthServices.TestHelpers
 
         public static readonly X509Certificate2 TestCert2 = new X509Certificate2("Kentor.AuthServices.Tests2.pfx");
 
+        public static readonly X509Certificate2 TestCert3 = new X509Certificate2("Kentor.AuthServices.Tests3.pfx");
+
         public static readonly AsymmetricAlgorithm TestKey = TestCert.PublicKey.Key;
 
         public static readonly AsymmetricAlgorithm TestKey2 = TestCert2.PublicKey.Key;
@@ -32,8 +34,12 @@ namespace Kentor.AuthServices.TestHelpers
             return xmlDoc.OuterXml;
         }        
 
-        public static string EncryptAssertion(string assertionXml, bool useOaep = false)
-        {            
+        public static string EncryptAssertion(string assertionXml, bool useOaep = false, X509Certificate2 certificate = null)
+        {
+            if (certificate == null)
+            {
+                certificate = TestCert2;
+            }
             var xmlDoc = new XmlDocument { PreserveWhitespace = true };
             var wrappedAssertion = string.Format(@"<saml2:EncryptedAssertion xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion"">{0}</saml2:EncryptedAssertion>", assertionXml);
             xmlDoc.LoadXml(wrappedAssertion);
@@ -60,7 +66,7 @@ namespace Kentor.AuthServices.TestHelpers
             var encryptedKey = new EncryptedKey
             {
                 EncryptionMethod = new System.Security.Cryptography.Xml.EncryptionMethod(algorithm),
-                CipherData = new CipherData(EncryptedXml.EncryptKey(symmetricAlgorithm.Key, (RSA)TestCert2.PublicKey.Key, useOaep))
+                CipherData = new CipherData(EncryptedXml.EncryptKey(symmetricAlgorithm.Key, (RSA)certificate.PublicKey.Key, useOaep))
             };
 
             encryptedData.KeyInfo.AddClause(new KeyInfoEncryptedKey(encryptedKey));
