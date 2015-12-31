@@ -786,7 +786,8 @@ namespace Kentor.AuthServices.Tests.Saml2P
 
             // Using options factory in this test to get code coverage on ServiceCertificate setter.
             var options = StubFactory.CreateOptions();
-            options.SPOptions.ServiceCertificate = SignedXmlHelper.TestCert2;
+            options.SPOptions.ServiceCertificates.Clear();
+            options.SPOptions.ServiceCertificates.Add(new ServiceCertificate { Certificate = SignedXmlHelper.TestCert2 });
 
             var claims = Saml2Response.Read(signedResponse).GetClaims(options);
             claims.Count().Should().Be(1);
@@ -1018,7 +1019,7 @@ namespace Kentor.AuthServices.Tests.Saml2P
             var signedResponse = SignedXmlHelper.SignXml(string.Format(response, encryptedAssertion));
 
             var options = Options.FromConfiguration;
-            options.SPOptions.ServiceCertificate = null;
+            options.SPOptions.ServiceCertificates.Clear();
 
             Action a = () => Saml2Response.Read(signedResponse).GetClaims(options);
             a.ShouldThrow<Saml2ResponseFailedValidationException>();
@@ -1054,7 +1055,8 @@ namespace Kentor.AuthServices.Tests.Saml2P
             var signedResponse = SignedXmlHelper.SignXml(string.Format(response, encryptedAssertion));
 
             var options = Options.FromConfiguration;
-            options.SPOptions.ServiceCertificate = new X509Certificate2(SignedXmlHelper.TestCert2.Export(X509ContentType.Cert));
+            options.SPOptions.ServiceCertificates.Clear();
+            options.SPOptions.ServiceCertificates.Add(new ServiceCertificate { Certificate = new X509Certificate2(SignedXmlHelper.TestCert2.Export(X509ContentType.Cert)) });
 
             Action a = () => Saml2Response.Read(signedResponse).GetClaims(options);
             a.ShouldThrow<Saml2ResponseFailedValidationException>();

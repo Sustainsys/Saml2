@@ -53,7 +53,10 @@
     <Compile Include="..\VersionInfo.cs">
       <Link>VersionInfo.cs</Link>
     </Compile>
-    <Compile Include="Configuration\ServiceCertificate.cs" />
+    <Compile Include="CertificateUse.cs" />
+    <Compile Include="Configuration\ServiceCertificateCollection.cs" />
+    <Compile Include="Configuration\ServiceCertificateElement.cs" />
+    <Compile Include="ServiceCertificate.cs" />
     <Compile Include="ConfiguredAndLoadedCollection.cs" />
     <Compile Include="Internal\PathHelper.cs" />
     <Compile Include="Internal\QueryStringHelper.cs" />

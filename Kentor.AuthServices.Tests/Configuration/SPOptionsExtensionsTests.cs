@@ -39,10 +39,43 @@ namespace Kentor.AuthServices.Tests.Configuration
         }
 
         [TestMethod]
-        public void SPOPtionsExtensions_CreateMetadata_ServiceCertificate()
+        public void SPOptionsExtensions_CreateMetadata_ServiceCertificate()
         {
             var options = Options.FromConfiguration;
-            options.SPOptions.ServiceCertificate = SignedXmlHelper.TestCert2;
+            options.SPOptions.ServiceCertificates.Clear();
+            options.SPOptions.ServiceCertificates.Add(new ServiceCertificate { Certificate = SignedXmlHelper.TestCert2 });
+            var metadata = options.SPOptions.CreateMetadata(StubFactory.CreateAuthServicesUrls());
+
+            var spMetadata = metadata.RoleDescriptors.OfType<ServiceProviderSingleSignOnDescriptor>().Single();
+            spMetadata.Should().NotBeNull();
+            spMetadata.Keys.Count.Should().Be(1);
+        }
+
+        [TestMethod]
+        public void SPOptionsExtensions_CreateMetadata_MultipleServiceCertificate()
+        {
+            var options = Options.FromConfiguration;
+            options.SPOptions.ServiceCertificates.Clear();
+            options.SPOptions.ServiceCertificates.Add(new ServiceCertificate { Certificate = SignedXmlHelper.TestCert2, Use = CertificateUse.Encryption });
+            options.SPOptions.ServiceCertificates.Add(new ServiceCertificate { Certificate = SignedXmlHelper.TestCert2, Use = CertificateUse.Signing });
+            var metadata = options.SPOptions.CreateMetadata(StubFactory.CreateAuthServicesUrls());
+
+            var spMetadata = metadata.RoleDescriptors.OfType<ServiceProviderSingleSignOnDescriptor>().Single();
+            spMetadata.Should().NotBeNull();
+            spMetadata.Keys.Count.Should().Be(2);
+        }
+
+        [TestMethod]
+        public void SPOptionsExtensions_CreateMetadata_InactiveServiceCertificateNotIncluded()
+        {
+            var options = Options.FromConfiguration;
+            options.SPOptions.ServiceCertificates.Clear();
+            options.SPOptions.ServiceCertificates.Add(new ServiceCertificate {
+                Certificate = SignedXmlHelper.TestCert2, Use = CertificateUse.Encryption, Active = false }
+            );
+            options.SPOptions.ServiceCertificates.Add(new ServiceCertificate {
+                Certificate = SignedXmlHelper.TestCert3, Use = CertificateUse.Encryption, Active = true }
+            );
             var metadata = options.SPOptions.CreateMetadata(StubFactory.CreateAuthServicesUrls());
 
             var spMetadata = metadata.RoleDescriptors.OfType<ServiceProviderSingleSignOnDescriptor>().Single();

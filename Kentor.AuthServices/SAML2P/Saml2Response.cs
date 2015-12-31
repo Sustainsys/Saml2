@@ -286,17 +286,29 @@ namespace Kentor.AuthServices.Saml2P
 
             if (encryptedAssertions.Count() > 0)
             {
-                if (serviceCertificate == null)
+                if (serviceCertificates == null || serviceCertificates.Count == 0)
                 {
                     throw new Saml2ResponseFailedValidationException("Encrypted Assertions encountered but Service Certificate was not provided.");
                 }
-                else if (!serviceCertificate.HasPrivateKey)
+                else if (serviceCertificates.Any(c => !c.HasPrivateKey))
                 {
                     throw new Saml2ResponseFailedValidationException("Encrypted Assertions encountered but Service Certificate does not contain private key.");
                 }
 
-                assertions.AddRange(encryptedAssertions.Decrypt(serviceCertificate.PrivateKey)
-                    .Select(xe => (XmlElement)xe.GetElementsByTagName("Assertion", Saml2Namespaces.Saml2Name)[0]));
+                //TODO: order them based on the KeyInfo in the assertion
+                foreach (var serviceCertificate in serviceCertificates)
+                {
+                    try
+                    {
+                        assertions.AddRange(encryptedAssertions.Decrypt(serviceCertificate.PrivateKey)
+                                .Select(xe => (XmlElement)xe.GetElementsByTagName("Assertion", Saml2Namespaces.Saml2Name)[0]));
+                        //break;
+                    }
+                    catch (CryptographicException)
+                    {
+                        //TODO: is there a better way to target the right cert without just trying them all?
+                    }
+                }
             }
 
             return assertions;
@@ -304,13 +316,18 @@ namespace Kentor.AuthServices.Saml2P
 
         bool validated = false;
         Saml2ResponseFailedValidationException validationException;
-        private X509Certificate2 serviceCertificate;
+        private List<X509Certificate2> serviceCertificates;
 
         private void Validate(IOptions options)
         {
             if (!validated)
             {
-                serviceCertificate = options.SPOptions.ServiceCertificate;
+                if (options.SPOptions.ServiceCertificates != null && options.SPOptions.ServiceCertificates.Any())
+                {
+                    serviceCertificates = options.SPOptions.ServiceCertificates
+                        .Where(c => c.Use == CertificateUse.Encryption || c.Use == CertificateUse.Both)
+                        .Select(c => c.Certificate).ToList();
+                }
                 try
                 {
                     ValidateInResponseTo(options);

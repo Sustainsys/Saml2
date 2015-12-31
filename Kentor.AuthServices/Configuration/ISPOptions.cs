@@ -2,6 +2,7 @@
 using Kentor.AuthServices.Saml2P;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IdentityModel.Configuration;
 using System.IdentityModel.Metadata;
 using System.Linq;
@@ -72,8 +73,8 @@ namespace Kentor.AuthServices.Configuration
         IdentityConfiguration SystemIdentityModelIdentityConfiguration { get; }
 
         /// <summary>
-        /// Certificate for service provider to use when decrypting assertions
+        /// Certificates used by the service provider for signing or decryption.
         /// </summary>
-        X509Certificate2 ServiceCertificate { get; set; }
+        Collection<ServiceCertificate> ServiceCertificates { get; }
     }
 }

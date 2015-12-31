@@ -8,6 +8,7 @@ using System.Linq;
 using Kentor.AuthServices.Internal;
 using Kentor.AuthServices.Metadata;
 using System.Diagnostics.CodeAnalysis;
+using System.Collections.ObjectModel;
 
 namespace Kentor.AuthServices.Configuration
 {
@@ -260,19 +261,15 @@ namespace Kentor.AuthServices.Configuration
         }
 
         /// <summary>
-        /// Certificate location for the certificate the Service Provider uses to decrypt assertions.
+        /// Certificates used by the service provider for signing and/or decryption.
         /// </summary>
-        [ConfigurationProperty("serviceCertificate")]
-        [ExcludeFromCodeCoverage]
-        public CertificateElement ServiceCertificate
+        [ConfigurationProperty("serviceCertificates")]
+        [ConfigurationCollection(typeof(ServiceCertificateCollection))]
+        public ServiceCertificateCollection ServiceCertificates
         {
             get
             {
-                return (CertificateElement)base["serviceCertificate"];
-            }
-            internal set
-            {
-                base["serviceCertificate"] = value;
+                return (ServiceCertificateCollection)base["serviceCertificates"];
             }
         }
     }

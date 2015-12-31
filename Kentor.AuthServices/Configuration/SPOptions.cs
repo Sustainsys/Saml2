@@ -1,7 +1,9 @@
 ﻿using Kentor.AuthServices.Metadata;
 using Kentor.AuthServices.Saml2P;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IdentityModel.Configuration;
 using System.IdentityModel.Metadata;
 using System.IdentityModel.Services.Configuration;
@@ -217,9 +219,28 @@ namespace Kentor.AuthServices.Configuration
             }
         }
 
+        ///// <summary>
+        ///// Certificates used by the service provider for signing or decryption.
+        ///// </summary>
+        //IEnumerable<ServiceCertificate> ISPOptions.ServiceCertificates
+        //{
+        //    get
+        //    {
+        //        return ServiceCertificates;
+        //    }
+        //}
+
+        readonly Collection<ServiceCertificate> serviceCertificates = new Collection<ServiceCertificate>();
+
         /// <summary>
-        /// Certificate for service provider to use when decrypting assertions
+        /// Certificates used by the service provider for signing or decryption.
         /// </summary>
-        public X509Certificate2 ServiceCertificate { get; set; }
+        public Collection<ServiceCertificate> ServiceCertificates
+        {
+            get
+            {
+                return serviceCertificates;
+            }
+        }
     }
 }
