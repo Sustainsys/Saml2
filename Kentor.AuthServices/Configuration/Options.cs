@@ -33,10 +33,10 @@ namespace Kentor.AuthServices.Configuration
 
         private static Options LoadOptionsFromConfiguration()
         {
-            var options = new Options(KentorAuthServicesSection.Current);
+            var spOptions = new SPOptions(KentorAuthServicesSection.Current);
+            var options = new Options(spOptions);
             KentorAuthServicesSection.Current.IdentityProviders.RegisterIdentityProviders(options);
             KentorAuthServicesSection.Current.Federations.RegisterFederations(options);
-            options.SPOptions.ServiceCertificate = KentorAuthServicesSection.Current.ServiceCertificateConfiguration.LoadCertificate();
 
             return options;
         }

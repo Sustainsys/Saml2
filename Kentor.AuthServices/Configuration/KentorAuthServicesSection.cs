@@ -5,15 +5,8 @@ using System.Configuration;
 using System.Globalization;
 using System.IdentityModel.Metadata;
 using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 using Kentor.AuthServices.Internal;
 using Kentor.AuthServices.Metadata;
-using Kentor.AuthServices.Saml2P;
-using System.IdentityModel.Configuration;
-using System.IdentityModel.Services.Configuration;
-using System.Security.Cryptography.X509Certificates;
 using System.Diagnostics.CodeAnalysis;
 
 namespace Kentor.AuthServices.Configuration
@@ -21,7 +14,7 @@ namespace Kentor.AuthServices.Configuration
     /// <summary>
     /// Config section for the module.
     /// </summary>
-    public class KentorAuthServicesSection : ConfigurationSection, ISPOptions
+    public class KentorAuthServicesSection : ConfigurationSection
     {
         private static readonly KentorAuthServicesSection current =
             (KentorAuthServicesSection)ConfigurationManager.GetSection("kentor.authServices");
@@ -41,16 +34,6 @@ namespace Kentor.AuthServices.Configuration
         public override bool IsReadOnly()
         {
             return !allowChange;
-        }
-
-        /// <summary>
-        /// Ctor
-        /// </summary>
-        public KentorAuthServicesSection()
-        {
-            saml2PSecurityTokenHandler = new Lazy<Saml2PSecurityTokenHandler>(
-                () => new Saml2PSecurityTokenHandler(this),
-                true);
         }
 
         /// <summary>
@@ -137,19 +120,6 @@ namespace Kentor.AuthServices.Configuration
             get
             {
                 return (Uri)base[discoveryServiceUrl];
-            }
-        }
-
-        private readonly Lazy<Saml2PSecurityTokenHandler> saml2PSecurityTokenHandler;
-
-        /// <summary>
-        /// The security token handler used to process incoming assertions for this SP.
-        /// </summary>
-        public Saml2PSecurityTokenHandler Saml2PSecurityTokenHandler
-        {
-            get
-            {
-                return saml2PSecurityTokenHandler.Value;
             }
         }
 
@@ -289,26 +259,12 @@ namespace Kentor.AuthServices.Configuration
             }
         }
 
-        private IdentityConfiguration systemIdentityModelIdentityConfiguration
-            = new IdentityConfiguration(true);
-
-        /// <summary>
-        /// The System.IdentityModel configuration to use.
-        /// </summary>
-        public IdentityConfiguration SystemIdentityModelIdentityConfiguration
-        {
-            get
-            {
-                return systemIdentityModelIdentityConfiguration;
-            }
-        }
-
         /// <summary>
         /// Certificate location for the certificate the Service Provider uses to decrypt assertions.
         /// </summary>
         [ConfigurationProperty("serviceCertificate")]
         [ExcludeFromCodeCoverage]
-        public CertificateElement ServiceCertificateConfiguration
+        public CertificateElement ServiceCertificate
         {
             get
             {
@@ -319,10 +275,5 @@ namespace Kentor.AuthServices.Configuration
                 base["serviceCertificate"] = value;
             }
         }
-
-        /// <summary>
-        /// Certificate for service provider to use when decrypting assertions
-        /// </summary>
-        public X509Certificate2 ServiceCertificate { get; set; }
     }
 }
