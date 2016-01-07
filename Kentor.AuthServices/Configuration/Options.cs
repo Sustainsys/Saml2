@@ -24,13 +24,21 @@ namespace Kentor.AuthServices.Configuration
         {
             get
             {
-                var options = new Options(KentorAuthServicesSection.Current);
-                KentorAuthServicesSection.Current.IdentityProviders.RegisterIdentityProviders(options);
-                KentorAuthServicesSection.Current.Federations.RegisterFederations(options);
-                options.SPOptions.ServiceCertificate = KentorAuthServicesSection.Current.ServiceCertificateConfiguration.LoadCertificate();
-
-                return options;
+                return optionsFromConfiguration.Value;
             }
+        }
+
+        private static readonly Lazy<Options> optionsFromConfiguration 
+            = new Lazy<Options>(() => LoadOptionsFromConfiguration(), false);
+
+        private static Options LoadOptionsFromConfiguration()
+        {
+            var options = new Options(KentorAuthServicesSection.Current);
+            KentorAuthServicesSection.Current.IdentityProviders.RegisterIdentityProviders(options);
+            KentorAuthServicesSection.Current.Federations.RegisterFederations(options);
+            options.SPOptions.ServiceCertificate = KentorAuthServicesSection.Current.ServiceCertificateConfiguration.LoadCertificate();
+
+            return options;
         }
 
         /// <summary>
