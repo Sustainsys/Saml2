@@ -1575,7 +1575,7 @@ namespace Kentor.AuthServices.Tests.Saml2P
             var r2 = Saml2Response.Read(response);
 
             var options2 = StubFactory.CreateOptions();
-            Action a = () => r2.GetClaims(options1);
+            Action a = () => r2.GetClaims(options2);
 
             a.ShouldNotThrow();
         }
