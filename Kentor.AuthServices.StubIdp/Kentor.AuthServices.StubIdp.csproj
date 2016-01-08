@@ -156,6 +156,7 @@
     <Compile Include="App_Start\LessTransform.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="CertificateHelper.cs" />
+    <Compile Include="CompressAttribute.cs" />
     <Compile Include="Controllers\CertificateController.cs" />
     <Compile Include="Controllers\DiscoveryServiceController.cs" />
     <Compile Include="Controllers\FederationController.cs" />
