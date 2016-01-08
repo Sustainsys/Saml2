@@ -26,7 +26,7 @@ namespace Kentor.AuthServices.Configuration
         /// <returns>element.Name</returns>
         protected override object GetElementKey(ConfigurationElement element)
         {
-            return string.Empty;
+            return Guid.NewGuid().ToString();
         }
 
         /// <summary>

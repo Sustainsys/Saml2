@@ -47,7 +47,8 @@ namespace Kentor.AuthServices.Configuration
             EntityId = configSection.EntityId;
             ModulePath = configSection.ModulePath;
             Organization = configSection.Organization;
-            ServiceCertificate = configSection.ServiceCertificate.LoadCertificate();
+
+            configSection.ServiceCertificates.RegisterServiceCertificates(this);
 
             foreach (var acs in configSection.AttributeConsumingServices)
             {
@@ -218,17 +219,6 @@ namespace Kentor.AuthServices.Configuration
                 return systemIdentityModelIdentityConfiguration;
             }
         }
-
-        ///// <summary>
-        ///// Certificates used by the service provider for signing or decryption.
-        ///// </summary>
-        //IEnumerable<ServiceCertificate> ISPOptions.ServiceCertificates
-        //{
-        //    get
-        //    {
-        //        return ServiceCertificates;
-        //    }
-        //}
 
         readonly Collection<ServiceCertificate> serviceCertificates = new Collection<ServiceCertificate>();
 
