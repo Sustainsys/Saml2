@@ -19,7 +19,7 @@ namespace Kentor.AuthServices.Tests
     [TestClass]
     public class IdentityProviderTests
     {
-        TimeSpan refreshMinInterval = MetadataRefreshScheduler.minInternval;
+        TimeSpan refreshMinInterval = MetadataRefreshScheduler.minInterval;
         int idpMetadataSsoPort = MetadataServer.IdpMetadataSsoPort;
 
         [TestCleanup]
@@ -28,7 +28,7 @@ namespace Kentor.AuthServices.Tests
             MetadataServer.IdpMetadataSsoPort = idpMetadataSsoPort;
             MetadataServer.IdpVeryShortCacheDurationIncludeInvalidKey = false;
             MetadataServer.IdpVeryShortCacheDurationIncludeKey = true;
-            MetadataRefreshScheduler.minInternval = refreshMinInterval;
+            MetadataRefreshScheduler.minInterval = refreshMinInterval;
         }
 
         [TestMethod]
@@ -397,7 +397,7 @@ namespace Kentor.AuthServices.Tests
         [TestMethod]
         public void IdentityProvider_ScheduledReloadOfMetadata()
         {
-            MetadataRefreshScheduler.minInternval = new TimeSpan(0, 0, 0, 0, 1);
+            MetadataRefreshScheduler.minInterval = new TimeSpan(0, 0, 0, 0, 1);
 
             var subject = CreateSubjectForMetadataRefresh();
             var initialValidUntil = subject.MetadataValidUntil;
@@ -408,7 +408,7 @@ namespace Kentor.AuthServices.Tests
         [TestMethod]
         public void IdentityProvider_ScheduledReloadOfMetadata_RetriesIfLoadFails()
         {
-            MetadataRefreshScheduler.minInternval = new TimeSpan(0, 0, 0, 0, 1);
+            MetadataRefreshScheduler.minInterval = new TimeSpan(0, 0, 0, 0, 1);
 
             var subject = CreateSubjectForMetadataRefresh();
 
@@ -431,7 +431,7 @@ namespace Kentor.AuthServices.Tests
         [TestMethod]
         public void IdentityProvider_ScheduledReloadOfMetadata_RetriesIfInitialLoadFails()
         {
-            MetadataRefreshScheduler.minInternval = new TimeSpan(0, 0, 0, 0, 1);
+            MetadataRefreshScheduler.minInterval = new TimeSpan(0, 0, 0, 0, 1);
             MetadataServer.IdpAndFederationShortCacheDurationAvailable = false;
 
             var subject = CreateSubjectForMetadataRefresh();
@@ -479,7 +479,7 @@ namespace Kentor.AuthServices.Tests
         [TestMethod]
         public void IdentityProvider_ConstructedFromEntityDescriptor_DoesntScheduleMedataRefresh()
         {
-            MetadataRefreshScheduler.minInternval = new TimeSpan(0, 0, 0, 0, 1);
+            MetadataRefreshScheduler.minInterval = new TimeSpan(0, 0, 0, 0, 1);
 
             var ed = new ExtendedEntityDescriptor
             {

@@ -15,7 +15,7 @@ namespace Kentor.AuthServices.Tests
     [TestClass]
     public class FederationTests
     {
-        TimeSpan refreshMinInterval = MetadataRefreshScheduler.minInternval;
+        TimeSpan refreshMinInterval = MetadataRefreshScheduler.minInterval;
 
         [TestCleanup]
         public void Cleanup()
@@ -23,7 +23,7 @@ namespace Kentor.AuthServices.Tests
             MetadataServer.IdpVeryShortCacheDurationIncludeInvalidKey = false;
             MetadataServer.FederationVeryShortCacheDurationSecondAlternativeEnabled = false;
             MetadataServer.IdpAndFederationShortCacheDurationAvailable = true;
-            MetadataRefreshScheduler.minInternval = refreshMinInterval;
+            MetadataRefreshScheduler.minInterval = refreshMinInterval;
         }
 
         [TestMethod]
@@ -117,7 +117,7 @@ namespace Kentor.AuthServices.Tests
         [TestMethod]
         public void Federation_ScheduledReloadOfMetadata()
         {
-            MetadataRefreshScheduler.minInternval = new TimeSpan(0, 0, 0, 0, 1);
+            MetadataRefreshScheduler.minInterval = new TimeSpan(0, 0, 0, 0, 1);
 
             var subject = new Federation(
                 new Uri("http://localhost:13428/federationMetadataVeryShortCacheDuration"),
@@ -132,7 +132,7 @@ namespace Kentor.AuthServices.Tests
         [TestMethod]
         public void Federation_ReloadOfMetadata_AddsNewIdpAndRemovesOld()
         {
-            MetadataRefreshScheduler.minInternval = new TimeSpan(0, 0, 0, 0, 1);
+            MetadataRefreshScheduler.minInterval = new TimeSpan(0, 0, 0, 0, 1);
 
             var options = StubFactory.CreateOptions();
 
@@ -164,7 +164,7 @@ namespace Kentor.AuthServices.Tests
         [TestMethod]
         public void Federation_ReloadOfMetadata_RetriesAfterFailedInitialLoad()
         {
-            MetadataRefreshScheduler.minInternval = new TimeSpan(0, 0, 0, 0, 1);
+            MetadataRefreshScheduler.minInterval = new TimeSpan(0, 0, 0, 0, 1);
 
             MetadataServer.IdpAndFederationShortCacheDurationAvailable = false;
 
@@ -189,7 +189,7 @@ namespace Kentor.AuthServices.Tests
         [TestMethod]
         public void Federation_ReloadOfMetadata_RemovesAllIdpsIfMetadataIsNoLongerValid()
         {
-            MetadataRefreshScheduler.minInternval = new TimeSpan(0, 0, 0, 0, 1);
+            MetadataRefreshScheduler.minInterval = new TimeSpan(0, 0, 0, 0, 1);
 
             var options = StubFactory.CreateOptions();
 
@@ -213,7 +213,7 @@ namespace Kentor.AuthServices.Tests
         [TestMethod]
         public void Federation_ReloadOfMetadata_KeepsOldDataUntilMetadataBecomesInvalid()
         {
-            MetadataRefreshScheduler.minInternval = new TimeSpan(0, 0, 0, 0, 5);
+            MetadataRefreshScheduler.minInterval = new TimeSpan(0, 0, 0, 0, 5);
 
             var options = StubFactory.CreateOptions();
 
