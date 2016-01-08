@@ -41,8 +41,7 @@ namespace Kentor.AuthServices.Tests.Configuration
         [TestMethod]
         public void SPOptionsExtensions_CreateMetadata_ServiceCertificate()
         {
-            var options = Options.FromConfiguration;
-            options.SPOptions.ServiceCertificates.Clear();
+            var options = StubFactory.CreateOptions();
             options.SPOptions.ServiceCertificates.Add(new ServiceCertificate { Certificate = SignedXmlHelper.TestCert2 });
             var metadata = options.SPOptions.CreateMetadata(StubFactory.CreateAuthServicesUrls());
 
@@ -54,8 +53,7 @@ namespace Kentor.AuthServices.Tests.Configuration
         [TestMethod]
         public void SPOptionsExtensions_CreateMetadata_MultipleServiceCertificate()
         {
-            var options = Options.FromConfiguration;
-            options.SPOptions.ServiceCertificates.Clear();
+            var options = StubFactory.CreateOptions();
             options.SPOptions.ServiceCertificates.Add(new ServiceCertificate { Certificate = SignedXmlHelper.TestCert2, Use = CertificateUse.Encryption });
             options.SPOptions.ServiceCertificates.Add(new ServiceCertificate { Certificate = SignedXmlHelper.TestCert2, Use = CertificateUse.Signing });
             var metadata = options.SPOptions.CreateMetadata(StubFactory.CreateAuthServicesUrls());
@@ -68,8 +66,7 @@ namespace Kentor.AuthServices.Tests.Configuration
         [TestMethod]
         public void SPOptionsExtensions_CreateMetadata_InactiveServiceCertificateNotIncluded()
         {
-            var options = Options.FromConfiguration;
-            options.SPOptions.ServiceCertificates.Clear();
+            var options = StubFactory.CreateOptions();
             options.SPOptions.ServiceCertificates.Add(new ServiceCertificate {
                 Certificate = SignedXmlHelper.TestCert2, Use = CertificateUse.Encryption, Active = false }
             );

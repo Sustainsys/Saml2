@@ -295,18 +295,18 @@ namespace Kentor.AuthServices.Saml2P
                     throw new Saml2ResponseFailedValidationException("Encrypted Assertions encountered but Service Certificate does not contain private key.");
                 }
 
-                //TODO: order them based on the KeyInfo in the assertion
                 foreach (var serviceCertificate in serviceCertificates)
                 {
                     try
                     {
                         assertions.AddRange(encryptedAssertions.Decrypt(serviceCertificate.PrivateKey)
                                 .Select(xe => (XmlElement)xe.GetElementsByTagName("Assertion", Saml2Namespaces.Saml2Name)[0]));
-                        //break;
+                        break;
                     }
                     catch (CryptographicException)
                     {
-                        //TODO: is there a better way to target the right cert without just trying them all?
+                        //TODO: is there a better way to target the right cert without just trying them all,
+                        // or at least try them in an intelligent sequence?
                     }
                 }
             }
