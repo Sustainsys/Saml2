@@ -8,7 +8,7 @@ namespace Kentor.AuthServices
 {
     internal static class MetadataRefreshScheduler
     {
-        internal static TimeSpan minInternval = new TimeSpan(0, 1, 0);
+        internal static TimeSpan minInterval = new TimeSpan(0, 1, 0);
 
         // Maximum delay supported by Task.Delay()
         private static readonly TimeSpan maxInterval = new TimeSpan(0, 0, 0, 0, int.MaxValue);
@@ -18,9 +18,9 @@ namespace Kentor.AuthServices
             var timeRemaining = validUntil - DateTime.UtcNow;
             var delay = new TimeSpan(timeRemaining.Ticks / 2);
 
-            if (delay < minInternval)
+            if (delay < minInterval)
             {
-                return minInternval;
+                return minInterval;
             }
 
             if (delay > maxInterval)

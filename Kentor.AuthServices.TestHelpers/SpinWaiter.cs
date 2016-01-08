@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Kentor.AuthServices.TestHelpers
@@ -76,6 +77,12 @@ namespace Kentor.AuthServices.TestHelpers
                     Assert.Fail(result.errorMessage);
                 }
                 result = testFunction();
+                
+                // Short sleep to yield the CPU, giving the background tasks
+                // a chance to run. Not a problem on multi-core CPUs, but for
+                // single (which the build server at appveyour appears to be)
+                // the tests fail when the main thread occupies the CPU.
+                Thread.Sleep(1);
             }
         }
     }
