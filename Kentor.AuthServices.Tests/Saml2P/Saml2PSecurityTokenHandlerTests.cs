@@ -6,6 +6,7 @@ using Kentor.AuthServices.Configuration;
 
 namespace Kentor.AuthServices.Tests.Saml2P
 {
+    using System.IdentityModel.Selectors;
     using System.IdentityModel.Tokens;
     using System.Linq;
 
@@ -24,6 +25,9 @@ namespace Kentor.AuthServices.Tests.Saml2P
         public void Saml2PSecurityTokenHandler_ShouldHaveDefaultAudienceRestrictionOfEntityId()
         {
             var spOptions = StubFactory.CreateSPOptions();
+            spOptions.SystemIdentityModelIdentityConfiguration.AudienceRestriction.AudienceMode
+                 = AudienceUriMode.Always;
+
             spOptions.EntityId.Id = "http://testuri/";
 
             var subject = new Saml2PSecurityTokenHandler(spOptions);

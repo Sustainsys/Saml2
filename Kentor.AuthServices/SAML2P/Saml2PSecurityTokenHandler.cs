@@ -34,19 +34,10 @@ namespace Kentor.AuthServices.Saml2P
                 throw new ArgumentNullException(nameof(spOptions));
             }
 
-            var audienceRestriction = spOptions.SystemIdentityModelIdentityConfiguration.AudienceRestriction;
-
-            if (!AudienceRestrictionIsActive(audienceRestriction))
-            {
-                audienceRestriction = new AudienceRestriction(AudienceUriMode.Always);
-                audienceRestriction.AllowedAudienceUris.Add(
-                    new Uri(spOptions.EntityId.Id));
-            }
-
             Configuration = new SecurityTokenHandlerConfiguration
             {
                 IssuerNameRegistry = new ReturnRequestedIssuerNameRegistry(),
-                AudienceRestriction = audienceRestriction,
+                AudienceRestriction = GetAudienceRestriction(spOptions),
                 SaveBootstrapContext = spOptions.SystemIdentityModelIdentityConfiguration.SaveBootstrapContext
             };
         }
@@ -108,19 +99,26 @@ namespace Kentor.AuthServices.Saml2P
         }
 
         /// <summary>
-        /// Check if an audience restriction from configuration should be applied or if we should revert to the default behaviour
-        /// of restricting the audience to the entity id.
+        /// Check if an audience restriction from configuration should be
+        /// applied or if we should revert to the default behaviour of
+        /// restricting the audience to the entity id.
         /// </summary>
-        /// <param name="audienceRestriction"></param>
-        /// <returns></returns>
-        private static bool AudienceRestrictionIsActive(AudienceRestriction audienceRestriction)
+        /// <param name="spOptions">Sp Options with configuration</param>
+        /// <returns>Configured or created audience restriction.</returns>
+        private static AudienceRestriction GetAudienceRestriction(ISPOptions spOptions)
         {
-            if (audienceRestriction == null)
+            var audienceRestriction = spOptions.SystemIdentityModelIdentityConfiguration.AudienceRestriction;
+
+            if (audienceRestriction.AudienceMode != AudienceUriMode.Never
+                && ! audienceRestriction.AllowedAudienceUris.Any())
             {
-                return false;
+                // Create a new instance instead of modifying the one from the
+                // configuration.
+                audienceRestriction = new AudienceRestriction(audienceRestriction.AudienceMode);
+                audienceRestriction.AllowedAudienceUris.Add(new Uri(spOptions.EntityId.Id));
             }
 
-            return audienceRestriction.AudienceMode == AudienceUriMode.Never || audienceRestriction.AllowedAudienceUris.Any();
+            return audienceRestriction;
         }
     }
 }

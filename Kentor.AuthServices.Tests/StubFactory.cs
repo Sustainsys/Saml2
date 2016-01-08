@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IdentityModel.Metadata;
+using System.IdentityModel.Selectors;
 using System.Linq;
 using System.Security.Claims;
 using System.Text;
@@ -41,6 +42,8 @@ namespace Kentor.AuthServices.Tests
 
             options.SystemIdentityModelIdentityConfiguration.ClaimsAuthenticationManager
                 = new ClaimsAuthenticationManagerStub();
+            options.SystemIdentityModelIdentityConfiguration.AudienceRestriction.AudienceMode
+                = AudienceUriMode.Never;
 
             AddContacts(options);
             AddAttributeConsumingServices(options);

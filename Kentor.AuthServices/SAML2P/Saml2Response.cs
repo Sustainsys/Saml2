@@ -517,7 +517,12 @@ namespace Kentor.AuthServices.Saml2P
                     var token = (Saml2SecurityToken)handler.ReadToken(reader);
                     handler.DetectReplayedToken(token);
 
-                    var validateAudience = token.Assertion.Conditions.AudienceRestrictions.Count > 0;
+                    var validateAudience = options.SPOptions
+                        .Saml2PSecurityTokenHandler
+                        .SamlSecurityTokenRequirement
+                        .ShouldEnforceAudienceRestriction(options.SPOptions
+                        .SystemIdentityModelIdentityConfiguration
+                        .AudienceRestriction.AudienceMode, token);
 
                     handler.ValidateConditions(token.Assertion.Conditions, validateAudience);
 

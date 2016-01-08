@@ -17,6 +17,7 @@ using Kentor.AuthServices.Saml2P;
 using System.Reflection;
 using System.Collections.Generic;
 using System.Security.Cryptography.X509Certificates;
+using System.IdentityModel.Selectors;
 
 namespace Kentor.AuthServices.Tests.Saml2P
 {
@@ -1219,11 +1220,54 @@ namespace Kentor.AuthServices.Tests.Saml2P
 
             response = SignedXmlHelper.SignXml(response);
 
-            var r = Saml2Response.Read(response);
+            var subject = Saml2Response.Read(response);
 
-            Action a = () => r.GetClaims(Options.FromConfiguration);
+            var options = StubFactory.CreateOptions();
+            options.SPOptions.SystemIdentityModelIdentityConfiguration.AudienceRestriction.AudienceMode
+                = AudienceUriMode.Always;
 
-            a.ShouldThrow<AudienceUriValidationFailedException>();
+            subject.Invoking(s => s.GetClaims(options))
+                .ShouldThrow<AudienceUriValidationFailedException>();
+        }
+
+        [NotReRunnable]
+        [TestMethod]
+        public void Saml2Response_GetClaims_IgnoresAudienceIfConfiguredWithNever()
+        {
+            var response =
+            @"<?xml version=""1.0"" encoding=""UTF-8""?>
+            <saml2p:Response xmlns:saml2p=""urn:oasis:names:tc:SAML:2.0:protocol""
+            xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
+            ID = """ + MethodBase.GetCurrentMethod().Name + @""" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z"">
+                <saml2:Issuer>https://idp.example.com</saml2:Issuer>
+                <saml2p:Status>
+                    <saml2p:StatusCode Value=""urn:oasis:names:tc:SAML:2.0:status:Success"" />
+                </saml2p:Status>
+                <saml2:Assertion
+                Version=""2.0"" ID=""" + MethodBase.GetCurrentMethod().Name + @"_Assertion""
+                IssueInstant=""2013-09-25T00:00:00Z"">
+                    <saml2:Issuer>https://idp.example.com</saml2:Issuer>
+                    <saml2:Subject>
+                        <saml2:NameID>SomeUser</saml2:NameID>
+                        <saml2:SubjectConfirmation Method=""urn:oasis:names:tc:SAML:2.0:cm:bearer"" />
+                    </saml2:Subject>
+                    <saml2:Conditions NotOnOrAfter=""2100-01-01T00:00:00Z"" >
+                        <saml2:AudienceRestriction>
+                            <saml2:Audience>https://example.com/wrong/audience</saml2:Audience>
+                        </saml2:AudienceRestriction>
+                    </saml2:Conditions>
+                </saml2:Assertion>
+            </saml2p:Response>";
+
+            response = SignedXmlHelper.SignXml(response);
+
+            var subject = Saml2Response.Read(response);
+
+            var options = StubFactory.CreateOptions();
+            options.SPOptions.SystemIdentityModelIdentityConfiguration
+                .AudienceRestriction.AudienceMode = AudienceUriMode.Never;
+
+            subject.Invoking(s => s.GetClaims(options)).ShouldNotThrow();
         }
 
         [TestMethod]
