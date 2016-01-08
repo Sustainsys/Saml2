@@ -267,12 +267,12 @@ namespace Kentor.AuthServices.Saml2P
 
         /// <summary>Gets all assertion element nodes from this response message.</summary>
         /// <value>All assertion element nodes.</value>
-        private IEnumerable<XmlElement> AllAssertionElementNodes
+        private IEnumerable<XmlElement> GetAllAssertionElementNodes(IOptions options)
         {
-            get { return allAssertionElementNodes ?? (allAssertionElementNodes = retrieveAssertionElements()); }
+            return allAssertionElementNodes ?? (allAssertionElementNodes = retrieveAssertionElements(options));
         }
 
-        private IEnumerable<XmlElement> retrieveAssertionElements()
+        private IEnumerable<XmlElement> retrieveAssertionElements(IOptions options)
         {
             var assertions = new List<XmlElement>();
 
@@ -286,16 +286,9 @@ namespace Kentor.AuthServices.Saml2P
 
             if (encryptedAssertions.Count() > 0)
             {
-                if (serviceCertificates == null || serviceCertificates.Count == 0)
-                {
-                    throw new Saml2ResponseFailedValidationException("Encrypted Assertions encountered but Service Certificate was not provided.");
-                }
-                else if (serviceCertificates.Any(c => !c.HasPrivateKey))
-                {
-                    throw new Saml2ResponseFailedValidationException("Encrypted Assertions encountered but Service Certificate does not contain private key.");
-                }
+                var decryptionCertificates = GetCertificatesValidForDecryption(options);
 
-                foreach (var serviceCertificate in serviceCertificates)
+                foreach (var serviceCertificate in decryptionCertificates)
                 {
                     try
                     {
@@ -314,20 +307,31 @@ namespace Kentor.AuthServices.Saml2P
             return assertions;
         }
 
+        private static List<X509Certificate2> GetCertificatesValidForDecryption(IOptions options)
+        {
+            var decryptionCertificates = options.SPOptions.ServiceCertificates
+                .Where(c => c.Use == CertificateUse.Encryption || c.Use == CertificateUse.Both)
+                .Select(c => c.Certificate).ToList();
+
+            if (decryptionCertificates == null || decryptionCertificates.Count == 0)
+            {
+                throw new Saml2ResponseFailedValidationException("Encrypted Assertions encountered but Service Certificate was not provided.");
+            }
+            else if (decryptionCertificates.Any(c => !c.HasPrivateKey))
+            {
+                throw new Saml2ResponseFailedValidationException("Encrypted Assertions encountered but Service Certificate does not contain private key.");
+            }
+
+            return decryptionCertificates;
+        }
+
         bool validated = false;
         Saml2ResponseFailedValidationException validationException;
-        private List<X509Certificate2> serviceCertificates;
 
         private void Validate(IOptions options)
         {
             if (!validated)
             {
-                if (options.SPOptions.ServiceCertificates != null && options.SPOptions.ServiceCertificates.Any())
-                {
-                    serviceCertificates = options.SPOptions.ServiceCertificates
-                        .Where(c => c.Use == CertificateUse.Encryption || c.Use == CertificateUse.Both)
-                        .Select(c => c.Certificate).ToList();
-                }
                 try
                 {
                     ValidateInResponseTo(options);
@@ -400,7 +404,7 @@ namespace Kentor.AuthServices.Saml2P
             else
             {
                 // If the response message is not signed, all assersions have to be signed correctly
-                foreach (var assertionNode in AllAssertionElementNodes)
+                foreach (var assertionNode in GetAllAssertionElementNodes(options))
                 {
                     CheckSignature(assertionNode, idpKeys);
                 }
@@ -525,7 +529,7 @@ namespace Kentor.AuthServices.Saml2P
                     , status.ToString(), statusMessage != null ? " Message: " + statusMessage + "." : string.Empty));
             }
 
-            foreach (XmlElement assertionNode in AllAssertionElementNodes)
+            foreach (XmlElement assertionNode in GetAllAssertionElementNodes(options))
             {
                 using (var reader = new FilteringXmlNodeReader(SignedXml.XmlDsigNamespaceUrl, "Signature", assertionNode))
                 {
