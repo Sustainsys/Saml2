@@ -1,4 +1,4 @@
-<img src="https://ci.appveyor.com/api/projects/status/github/KentorIT/AuthServices?branch=master&svg=true&passingText=master%20-%20OK&failingText=master%20-%20Failed!&pendingText=master%20-%20Pending..." width="200">
+[![Build status](https://ci.appveyor.com/api/projects/status/github/KentorIT/AuthServices?branch=master&svg=true&passingText=master%20-%20OK&failingText=master%20-%20Failed!&pendingText=master%20-%20Pending...)](https://ci.appveyor.com/project/AndersAbel/AuthServices)
 
 Kentor Authentication Services
 =============
