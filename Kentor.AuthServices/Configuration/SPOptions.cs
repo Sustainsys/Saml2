@@ -203,8 +203,7 @@ namespace Kentor.AuthServices.Configuration
             }
         }
 
-        private IdentityConfiguration systemIdentityModelIdentityConfiguration
-            = new IdentityConfiguration(false);
+        private IdentityConfiguration systemIdentityModelIdentityConfiguration;
 
         /// <summary>
         /// The System.IdentityModel configuration to use.
