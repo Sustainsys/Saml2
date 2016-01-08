@@ -10,6 +10,8 @@ using System.Security.Claims;
 
 namespace Kentor.AuthServices.Saml2P
 {
+    using System.Linq;
+
     /// <summary>
     /// Somewhat ugly subclassing to be able to access some methods that are protected
     /// on Saml2SecurityTokenHandler. The public interface of Saml2SecurityTokenHandler
@@ -27,19 +29,15 @@ namespace Kentor.AuthServices.Saml2P
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "sp")]
         public Saml2PSecurityTokenHandler(ISPOptions spOptions)
         {
-            if(spOptions== null)
+            if (spOptions == null)
             {
                 throw new ArgumentNullException(nameof(spOptions));
             }
 
-            var audienceRestriction = new AudienceRestriction(AudienceUriMode.Always);
-            audienceRestriction.AllowedAudienceUris.Add(
-                new Uri(spOptions.EntityId.Id));
-
             Configuration = new SecurityTokenHandlerConfiguration
             {
                 IssuerNameRegistry = new ReturnRequestedIssuerNameRegistry(),
-                AudienceRestriction = audienceRestriction,
+                AudienceRestriction = GetAudienceRestriction(spOptions),
                 SaveBootstrapContext = spOptions.SystemIdentityModelIdentityConfiguration.SaveBootstrapContext
             };
         }
@@ -89,7 +87,7 @@ namespace Kentor.AuthServices.Saml2P
         /// <param name="statement">Authentication statement</param>
         /// <param name="subject">Claim subject</param>
         /// <param name="issuer">Assertion Issuer</param>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1062:Validate arguments of public methods", MessageId = "0" )]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1062:Validate arguments of public methods", MessageId = "0")]
         protected override void ProcessAuthenticationStatement(Saml2AuthenticationStatement statement, ClaimsIdentity subject, string issuer)
         {
             if (statement.AuthenticationContext != null)
@@ -97,6 +95,30 @@ namespace Kentor.AuthServices.Saml2P
                 statement.AuthenticationContext.DeclarationReference = null;
             }
             base.ProcessAuthenticationStatement(statement, subject, issuer);
+
+        }
+
+        /// <summary>
+        /// Check if an audience restriction from configuration should be
+        /// applied or if we should revert to the default behaviour of
+        /// restricting the audience to the entity id.
+        /// </summary>
+        /// <param name="spOptions">Sp Options with configuration</param>
+        /// <returns>Configured or created audience restriction.</returns>
+        private static AudienceRestriction GetAudienceRestriction(ISPOptions spOptions)
+        {
+            var audienceRestriction = spOptions.SystemIdentityModelIdentityConfiguration.AudienceRestriction;
+
+            if (audienceRestriction.AudienceMode != AudienceUriMode.Never
+                && ! audienceRestriction.AllowedAudienceUris.Any())
+            {
+                // Create a new instance instead of modifying the one from the
+                // configuration.
+                audienceRestriction = new AudienceRestriction(audienceRestriction.AudienceMode);
+                audienceRestriction.AllowedAudienceUris.Add(new Uri(spOptions.EntityId.Id));
+            }
+
+            return audienceRestriction;
         }
     }
 }
