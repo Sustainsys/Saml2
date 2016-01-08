@@ -50,7 +50,7 @@ namespace Kentor.AuthServices.StubIdp.Controllers
 
                 var request = Saml2AuthenticationRequest.Read(decodedXmlData);
 
-                model.AssertionModel.InResponseTo = request.Id;
+                model.AssertionModel.InResponseTo = request.Id.Value;
                 model.AssertionModel.AssertionConsumerServiceUrl = request.AssertionConsumerServiceUrl.ToString();
                 model.AssertionModel.AuthnRequestXml = decodedXmlData;
             }

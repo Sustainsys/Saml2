@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using System.Xml;
 using System.Xml.Linq;
 using Kentor.AuthServices.Internal;
+using System.IdentityModel.Tokens;
 
 namespace Kentor.AuthServices.Saml2P
 {
@@ -16,12 +17,12 @@ namespace Kentor.AuthServices.Saml2P
     /// </summary>
     public abstract class Saml2RequestBase : ISaml2Message
     {
-        private string id = "id" + Guid.NewGuid().ToString("N");
+        private Saml2Id id = new Saml2Id("id" + Guid.NewGuid().ToString("N"));
 
         /// <summary>
         /// The id of the request.
         /// </summary>
-        public string Id
+        public Saml2Id Id
         {
             get
             {
@@ -122,7 +123,7 @@ namespace Kentor.AuthServices.Saml2P
                 throw new ArgumentNullException(nameof(xml));
             }
             ValidateCorrectDocument(xml);
-            Id = xml.DocumentElement.Attributes["ID"].Value;
+            Id = new Saml2Id(xml.DocumentElement.Attributes["ID"].Value);
 
             Issuer = new EntityId(xml.DocumentElement["Issuer", Saml2Namespaces.Saml2Name].GetTrimmedTextIfNotNull());
         }
