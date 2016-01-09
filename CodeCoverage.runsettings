@@ -35,14 +35,6 @@ Included items must then not match any entries in the exclude list to remain inc
               </Exclude>
             </ModulePaths>
 
-            <!-- Match fully qualified names of functions: -->
-            <!-- (Use "\." to delimit namespaces in C# or Visual Basic, "::" in C++.)  -->
-            <Functions>
-              <Exclude>
-                <Function>.*d__.*MoveNext.*</Function>
-              </Exclude>
-            </Functions>
-
             <!-- Match attributes on any code element: -->
             <Attributes>
               <Exclude>
