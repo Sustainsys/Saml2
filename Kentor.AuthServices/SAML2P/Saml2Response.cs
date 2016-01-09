@@ -288,19 +288,25 @@ namespace Kentor.AuthServices.Saml2P
             {
                 var decryptionCertificates = GetCertificatesValidForDecryption(options);
 
+                bool decrypted = false;
                 foreach (var serviceCertificate in decryptionCertificates)
                 {
                     try
                     {
                         assertions.AddRange(encryptedAssertions.Decrypt(serviceCertificate.PrivateKey)
                                 .Select(xe => (XmlElement)xe.GetElementsByTagName("Assertion", Saml2Namespaces.Saml2Name)[0]));
+                        decrypted = true;
                         break;
                     }
                     catch (CryptographicException)
                     {
-                        //TODO: is there a better way to target the right cert without just trying them all,
-                        // or at least try them in an intelligent sequence?
+                        // we cannot depend on Idp's sending KeyInfo, so this is the only 
+                        // reliable way to know we've got the wrong cert
                     }
+                }
+                if (!decrypted)
+                {
+                    throw new Saml2ResponseFailedValidationException("Encrypted Assertion(s) could not be decrypted using the configured Service Certificate(s).");
                 }
             }
 
