@@ -47,10 +47,12 @@ namespace Kentor.AuthServices.Metadata
 
             if (spOptions.ServiceCertificates != null)
             {
-                foreach (var serviceCert in spOptions.ServiceCertificates.Where(c=>c.Active))
+                //TODO: filter out the encryption = current
+                foreach (var serviceCert in spOptions.ServiceCertificates)
                 {
                     using (var securityToken = new X509SecurityToken(serviceCert.Certificate))
                     {
+                        //TODO: change the publish type based on #355 rules
                         spsso.Keys.Add(
                             new KeyDescriptor
                             {

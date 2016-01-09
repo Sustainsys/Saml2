@@ -15,7 +15,7 @@ namespace Kentor.AuthServices
         public ServiceCertificate()
         {
             Use = CertificateUse.Both;
-            Active = true;
+            Status = CertificateStatus.Current;
         }
 
         /// <summary>
@@ -29,8 +29,8 @@ namespace Kentor.AuthServices
                 throw new ArgumentNullException(nameof(serviceCertElement));
             }
             Use = serviceCertElement.Use;
-            Active = serviceCertElement.Active;
-            Certificate = serviceCertElement.Certificate.LoadCertificate();
+            Status = serviceCertElement.Status;
+            Certificate = serviceCertElement.LoadCertificate();
         }
 
         /// <summary>
@@ -39,10 +39,9 @@ namespace Kentor.AuthServices
         public X509Certificate2 Certificate { get; set; }
 
         /// <summary>
-        /// Should this certificate be used for new protocol transactions.
-        /// Inactive certificates are still valid until expired or removed from configuration.
+        /// Is this certificate for current or future use?
         /// </summary>
-        public bool Active { get; set; }
+        public CertificateStatus Status { get; set; }
 
         /// <summary>
         /// What is the intended use of this certificate.

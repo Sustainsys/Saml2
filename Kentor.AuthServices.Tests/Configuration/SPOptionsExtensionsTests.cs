@@ -64,14 +64,15 @@ namespace Kentor.AuthServices.Tests.Configuration
         }
 
         [TestMethod]
+        //TODO: fix this bogus test -- expand out to the scenarios in #355
         public void SPOptionsExtensions_CreateMetadata_InactiveServiceCertificateNotIncluded()
         {
             var options = StubFactory.CreateOptions();
             options.SPOptions.ServiceCertificates.Add(new ServiceCertificate {
-                Certificate = SignedXmlHelper.TestCert2, Use = CertificateUse.Encryption, Active = false }
+                Certificate = SignedXmlHelper.TestCert2, Use = CertificateUse.Encryption, Status = CertificateStatus.Future }
             );
             options.SPOptions.ServiceCertificates.Add(new ServiceCertificate {
-                Certificate = SignedXmlHelper.TestCert3, Use = CertificateUse.Encryption, Active = true }
+                Certificate = SignedXmlHelper.TestCert3, Use = CertificateUse.Encryption, Status = CertificateStatus.Current }
             );
             var metadata = options.SPOptions.CreateMetadata(StubFactory.CreateAuthServicesUrls());
 

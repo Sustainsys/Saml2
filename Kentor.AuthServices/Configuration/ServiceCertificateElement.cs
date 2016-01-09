@@ -5,21 +5,21 @@ namespace Kentor.AuthServices.Configuration
     /// <summary>
     /// Config element for the service certificate element.
     /// </summary>
-    public class ServiceCertificateElement : ConfigurationElement
+    public class ServiceCertificateElement : CertificateElement
     {
         /// <summary>
-        /// Should this be used for future transactions
+        /// Is this certificate for current or future use?
         /// </summary>
-        [ConfigurationProperty("active", IsRequired = false, DefaultValue = true)]
-        public bool Active
+        [ConfigurationProperty("status", IsRequired = false, DefaultValue = CertificateStatus.Current)]
+        public CertificateStatus Status
         {
             get
             {
-                return (bool)base["active"];
+                return (CertificateStatus)base["status"];
             }
             internal set
             {
-                base["active"] = value;
+                base["status"] = value;
             }
         }
 
@@ -36,22 +36,6 @@ namespace Kentor.AuthServices.Configuration
             internal set
             {
                 base["use"] = value;
-            }
-        }
-
-        /// <summary>
-        /// Certificate location
-        /// </summary>
-        [ConfigurationProperty("certificate")]
-        public CertificateElement Certificate
-        {
-            get
-            {
-                return (CertificateElement)base["certificate"];
-            }
-            internal set
-            {
-                base["certificate"] = value;
             }
         }
     }
