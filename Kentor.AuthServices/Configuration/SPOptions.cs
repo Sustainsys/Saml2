@@ -232,5 +232,71 @@ namespace Kentor.AuthServices.Configuration
                 return serviceCertificates;
             }
         }
+
+        /// <summary>
+        /// Certificates valid for use in decryption
+        /// </summary>
+        public ReadOnlyCollection<X509Certificate2> DecryptionServiceCertificates
+        {
+            get
+            {
+                var decryptionCertificates = ServiceCertificates
+                    .Where(c => c.Use == CertificateUse.Encryption || c.Use == CertificateUse.Both)
+                    .Select(c => c.Certificate);
+
+                return decryptionCertificates.ToList().AsReadOnly();
+            }
+        }
+
+        /// <summary>
+        /// Certificate for use in signing outbound requests
+        /// </summary>
+        public X509Certificate2 SigningServiceCertificate
+        {
+            get
+            {
+                var decryptionCertificates = ServiceCertificates
+                    .Where(c => c.Status == CertificateStatus.Current)
+                    .Where(c => c.Use == CertificateUse.Signing || c.Use == CertificateUse.Both)
+                    .Select(c => c.Certificate);
+
+                return decryptionCertificates.FirstOrDefault();
+            }
+        }
+
+        /// <summary>
+        /// Certificates to be published in metadata
+        /// </summary>
+        public ReadOnlyCollection<ServiceCertificate> MetadataCertificates
+        {
+            get
+            {
+                var futureEncryptionCertExists = ServiceCertificates
+                    .Any(c => c.Status == CertificateStatus.Future && c.Use == CertificateUse.Encryption);
+
+                var metaDataCertificates = ServiceCertificates
+                    // Signing & "Both" certs always get published because we want Idp's to be aware of upcoming keys
+                    .Where(c => c.Status == CertificateStatus.Future || c.Use != CertificateUse.Encryption
+                    // But current Encryption cert stops getting published immediately when a Future one is added
+                    // (of course we still decrypt with the current cert, but that's a different part of the code)
+                    || (c.Status == CertificateStatus.Current && c.Use == CertificateUse.Encryption && !futureEncryptionCertExists));
+
+                var futureBothCertExists = metaDataCertificates
+                    .Any(c => c.Status == CertificateStatus.Future && c.Use == CertificateUse.Both);
+
+                foreach(var cert in metaDataCertificates)
+                {
+                    // Just like we stop publishing Encryption cert immediately when a Future one is added,
+                    // in the case of a "Both" cert we should switch the current use to Signing so that Idp's stop sending
+                    // us certs encrypted with the old key
+                    if (cert.Use == CertificateUse.Both && cert.Status == CertificateStatus.Current && futureBothCertExists)
+                    {
+                        cert.Use = CertificateUse.Signing;
+                    }
+                }
+
+                return metaDataCertificates.ToList().AsReadOnly();
+            }
+        }
     }
 }

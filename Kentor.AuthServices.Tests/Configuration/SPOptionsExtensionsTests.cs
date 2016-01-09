@@ -48,6 +48,7 @@ namespace Kentor.AuthServices.Tests.Configuration
             var spMetadata = metadata.RoleDescriptors.OfType<ServiceProviderSingleSignOnDescriptor>().Single();
             spMetadata.Should().NotBeNull();
             spMetadata.Keys.Count.Should().Be(1);
+            spMetadata.Keys.First().Use.Should().Be(KeyType.Unspecified);
         }
 
         [TestMethod]
@@ -61,24 +62,8 @@ namespace Kentor.AuthServices.Tests.Configuration
             var spMetadata = metadata.RoleDescriptors.OfType<ServiceProviderSingleSignOnDescriptor>().Single();
             spMetadata.Should().NotBeNull();
             spMetadata.Keys.Count.Should().Be(2);
-        }
-
-        [TestMethod]
-        //TODO: fix this bogus test -- expand out to the scenarios in #355
-        public void SPOptionsExtensions_CreateMetadata_InactiveServiceCertificateNotIncluded()
-        {
-            var options = StubFactory.CreateOptions();
-            options.SPOptions.ServiceCertificates.Add(new ServiceCertificate {
-                Certificate = SignedXmlHelper.TestCert2, Use = CertificateUse.Encryption, Status = CertificateStatus.Future }
-            );
-            options.SPOptions.ServiceCertificates.Add(new ServiceCertificate {
-                Certificate = SignedXmlHelper.TestCert3, Use = CertificateUse.Encryption, Status = CertificateStatus.Current }
-            );
-            var metadata = options.SPOptions.CreateMetadata(StubFactory.CreateAuthServicesUrls());
-
-            var spMetadata = metadata.RoleDescriptors.OfType<ServiceProviderSingleSignOnDescriptor>().Single();
-            spMetadata.Should().NotBeNull();
-            spMetadata.Keys.Count.Should().Be(1);
+            spMetadata.Keys.Where(k => k.Use == KeyType.Encryption).Count().Should().Be(1);
+            spMetadata.Keys.Where(k => k.Use == KeyType.Signing).Count().Should().Be(1);
         }
 
         [TestMethod]

@@ -76,5 +76,20 @@ namespace Kentor.AuthServices.Configuration
         /// Certificates used by the service provider for signing or decryption.
         /// </summary>
         Collection<ServiceCertificate> ServiceCertificates { get; }
+
+        /// <summary>
+        /// Certificates valid for use in decryption
+        /// </summary>
+        ReadOnlyCollection<X509Certificate2> DecryptionServiceCertificates { get; }
+
+        /// <summary>
+        /// Certificate for use in signing outbound requests
+        /// </summary>
+        X509Certificate2 SigningServiceCertificate { get; }
+
+        /// <summary>
+        /// Certificates to be published in metadata
+        /// </summary>
+        ReadOnlyCollection<ServiceCertificate> MetadataCertificates { get; }
     }
 }

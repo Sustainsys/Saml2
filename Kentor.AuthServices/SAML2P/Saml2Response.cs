@@ -307,13 +307,11 @@ namespace Kentor.AuthServices.Saml2P
             return assertions;
         }
 
-        private static List<X509Certificate2> GetCertificatesValidForDecryption(IOptions options)
+        private static IEnumerable<X509Certificate2> GetCertificatesValidForDecryption(IOptions options)
         {
-            var decryptionCertificates = options.SPOptions.ServiceCertificates
-                .Where(c => c.Use == CertificateUse.Encryption || c.Use == CertificateUse.Both)
-                .Select(c => c.Certificate).ToList();
+            var decryptionCertificates = options.SPOptions.DecryptionServiceCertificates;
 
-            if (decryptionCertificates == null || decryptionCertificates.Count == 0)
+            if (decryptionCertificates.Count == 0)
             {
                 throw new Saml2ResponseFailedValidationException("Encrypted Assertions encountered but Service Certificate was not provided.");
             }

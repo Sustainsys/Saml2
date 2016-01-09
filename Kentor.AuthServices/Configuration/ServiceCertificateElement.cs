@@ -17,10 +17,6 @@ namespace Kentor.AuthServices.Configuration
             {
                 return (CertificateStatus)base["status"];
             }
-            internal set
-            {
-                base["status"] = value;
-            }
         }
 
         /// <summary>
@@ -32,10 +28,6 @@ namespace Kentor.AuthServices.Configuration
             get
             {
                 return (CertificateUse)base["use"];
-            }
-            internal set
-            {
-                base["use"] = value;
             }
         }
     }
