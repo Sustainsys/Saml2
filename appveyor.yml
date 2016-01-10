@@ -14,6 +14,13 @@ before_build:
 
 build:
   project: Kentor.AuthServices.sln
+  verbosity: Minimal
+
+test_script:
+  - .\packages\OpenCover.4.6.166\tools\OpenCover.Console.exe -register:user -target:vstest.console.exe -targetargs:".\Kentor.AuthServices.Tests\bin\Debug\Kentor.AuthServices.Tests.dll /logger:Appveyor" -returntargetcode -filter:"+[Kentor*]* -[Kentor.AuthServices.Test*]*" -excludebyattribute:*.ExcludeFromCodeCoverage* -hideskipped:All -output:.\coverage.xml
+  - "SET PATH=C:\\Python34;C:\\Python34\\Scripts;%PATH%"
+  - pip install codecov
+  - codecov -f "coverage.xml"
 
 cache:
   - packages -> **\packages.config  # preserve "packages" directory in the root of build folder to avoid repeated downloads for nuget restore
