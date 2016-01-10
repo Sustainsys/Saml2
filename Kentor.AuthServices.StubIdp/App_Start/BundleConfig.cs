@@ -16,6 +16,7 @@ namespace Kentor.AuthServices.StubIdp
                     Transforms = { new LessTransform() }
                 }
                 .Include(
+                "~/Content/css/select2.css",
                 "~/Content/normalize.css",
                 "~/Content/site.less"));
 
@@ -24,6 +25,7 @@ namespace Kentor.AuthServices.StubIdp
                 "~/Scripts/js.cookie.js",
                 "~/Scripts/jquery.validate.js",
                 "~/Scripts/jquery.validate.unobtrusive.js",
+                "~/Scripts/select2.js",
                 "~/Scripts/ICanHaz.js",
                 "~/Scripts/ViewIndex.js"));
         }

@@ -56,10 +56,50 @@
     $.getJSON(urlStart + "Manage/CurrentConfiguration", null, function (data, textStatus, jqXHR) {
         if (data.UserList) {
             $.each(data.UserList, function (indexInArray, valueOfElement) {
+                // Map StubIdp properties to the select2 standard text and id properties
+                valueOfElement.text = valueOfElement.DisplayName;
+                if (valueOfElement.Assertion && valueOfElement.Assertion.NameId) {
+                    valueOfElement.id = valueOfElement.Assertion.NameId;
+                }
+                // Store each user in a lookup object
                 users[valueOfElement.Assertion.NameId] = valueOfElement;
             });
 
-            $("#user-dropdown-placeholder").html(ich.userListTemplate(data));
+            $("#user-dropdown-placeholder").show();
+            $(".show-details").show();
+
+            // select2 item formatting template
+            var formatState = function (state) {
+                if (!state.id) {
+                    // Format internal select2 messages
+                    return state.text;
+                }
+                if (typeof (state.cachedTemplate) === "undefined") {
+                    // Format user entries, store in cache
+                    state.cachedTemplate = ich.userListTemplate(state);
+                }
+                // Return formatted user
+                return state.cachedTemplate;
+            };
+
+            // Reduce the max number of shown results by setting minimumInputLength
+            // This prevents input hang when searching many users
+            var minimumInputLength = 0;
+            if (data.UserList.length > 100) {
+                minimumInputLength = 2;
+            }
+            if (data.UserList.length > 1000) {
+                minimumInputLength = 3;
+            }
+
+            $("#userList").select2({
+                data: data.UserList,
+                templateResult: formatState,
+                width: "500px",
+                minimumInputLength: minimumInputLength,
+                placeholder: "Select a user"
+            });
+
             $("#userList").focus();
             if (data.HideDetails || typeof (data.HideDetails) === "undefined") { // default == true
                 $(".hide-details").hide();
@@ -105,7 +145,7 @@
 
     var restoreSelectedUser = function () {
         var selectedUserId = Cookies.set(cookieName);
-        if (selectedUserId && $("#userList").find("option[value=" + selectedUserId + "]").length > 0) {
+        if (selectedUserId && users[selectedUserId]) {
             $("#userList").val(selectedUserId);
             $("#userList").change();
             $("#submit").focus();

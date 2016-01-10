@@ -33,7 +33,13 @@ else
 @using (Html.BeginForm("Index", "Home", FormMethod.Post, new { @class = additionalClasses }))
 {
     @Html.HiddenFor(m => m.CustomDescription) @*Preserve value on post-redisplay*@
-    <div id="user-dropdown-placeholder"></div>
+    <div id="user-dropdown-placeholder" style="display:none">
+        <label for="userList">Select user</label>
+        <select id="userList"></select>
+
+        <div id="userDescription"></div>
+        <hr class="hide-details" />
+    </div>
     @Html.ValidationSummary()
 
     if (!string.IsNullOrEmpty(Model.AssertionModel.AuthnRequestXml))
@@ -72,6 +78,7 @@ else
     </fieldset>
     <p></p>
     <button id="submit">Log in</button>
+    <a class="show-details" href="#" style="display:none">Show details</a>
 }
 
 
@@ -89,17 +96,13 @@ else
     </div>
 </script>
 
+@* Mustache.js template for a user item display in the select2 list *@
 <script id="userListTemplate" type="text/html">
-    @* Mustache.js template for the user list *@
-    <label for="userList">Select user</label>
-    <select id="userList">
-        <option value="">--Select user--</option>
-        {{#UserList}}
-        <option {{#Assertion}} value="{{NameId}}" {{/Assertion}}>{{DisplayName}}</option>
-        {{/UserList}}
-    </select>
-
-    <div id="userDescription"></div>
-    <a class="show-details" href="#">Show details</a>
-    <hr class="hide-details" />
+    <div>
+        {{DisplayName}}
+        <br />
+        <em>
+            {{Description}}
+        </em>
+    </div>
 </script>
