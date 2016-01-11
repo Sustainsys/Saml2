@@ -80,7 +80,7 @@ Root element of the config section.
 * [`<metadata>`](#metadata-element)
 * [`<identityProviders>`](#identityproviders-element)
 * [`<federations>`](#federations-element)
-* [`<serviceCertificate>`](#serviceCertificate-element)
+* [`<serviceCertificates>`](#servicecertificates-element)
 
 ####`entityId` Attribute
 *Attribute of the [`<kentor.authServices>`](#kentor-authservices-section) element.*
@@ -414,15 +414,6 @@ enumeration.
 
 Contains a list of federations that the service provider knows and trusts.
 
-###`<serviceCertificate>` Element
-*Optional child element of the `<kentor.authServices>`(#kentor-authservices-section) element.*
-
-Specifies the certificate that the service provider uses for encrypted assertions. 
-The public key of this certificate will be exposed in the metadata and the private
-key will be used during decryption. 
-
-Uses same options/attributes as [`<signingCertificate>`](#signingcertificate-element) for locating the certificate.
-
 ####Elements
 * [`<add>`](#add-federation-element).
 
@@ -446,6 +437,69 @@ add all identity providers found to the list of known and trusted identity provi
 
 Decided whether unsolicited authn responses should be allowed from the identity providers
 in the federation.
+
+###`<serviceCertificates>` Element
+*Optional child element of the [`<kentor.authServices>`](#kentorauthservices-section) element.*
+
+Specifies the certificate(s) that the service provider uses for encrypted assertions
+(and for signed requests, once that feature is added).
+
+If neither of those features are used, this element can be ommitted.
+
+The public key(s) will be exposed in the metadata and the private
+key(s) will be used during decryption/signing. 
+
+
+####Elements
+* [`<add>`](#add-servicecertificate-element).
+
+Add a service certificate
+
+###`<add>` ServiceCertificate Element
+
+Uses same options/attributes as [`<signingCertificate>`](#signingcertificate-element) for locating the certificate.
+But also has the below options for configuring how the certificate will be used.
+
+####Attributes
+* [`use`](#use-attribute-servicecertificate)
+* [`status`](#status-attribute-servicecertificate)
+* [`metadataPublishOverride`](#metadatapublishoverride-attribute-servicecertificate)
+
+####`use` Attribute (ServiceCertificate)
+
+How should this certificate be used? 
+Options are:
+ * Signing
+ * Encryption
+ * Both (Default)
+
+####`status` Attribute (ServiceCertificate)
+
+Is this certificate for current or future use (i.e. key rollover scenario)? 
+Options are:
+ * Current (Default)
+ * Future
+
+####`metadataPublishOverride` Attribute (ServiceCertificate)
+
+Should we override how this certificate is published in the metadata? 
+Options are:
+ * None (Default) - published according to the rules in the table below.
+ * PublishUnspecified
+ * PublishEncryption
+ * PublishSigning
+ * DoNotPublish
+
+Use | Status | Published in Metatadata | Used by AuthServices
+------------ | ------------- | ------------- | ------------- | -------------
+Both | Current | Unspecified _unless Future key exists_, then Signing | Yes 
+Both | Future | Unspecified | For decryption only 
+Signing | Current | Signing | Yes 
+Signing | Future | Signing | No 
+Encryption | Current | Encryption _unless Future key exists_ then not published | Yes 
+Encryption | Future | Encryption | Yes 
+
+
 
 ##`<system.identityModel>` Section
 *Child element of `<configuration>` element.*
