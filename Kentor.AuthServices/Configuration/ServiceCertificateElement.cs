@@ -30,5 +30,17 @@ namespace Kentor.AuthServices.Configuration
                 return (CertificateUse)base["use"];
             }
         }
+
+        /// <summary>
+        /// How should we override the metadata publishing rules?
+        /// </summary>
+        [ConfigurationProperty("metadataPublishOverride", IsRequired = false, DefaultValue = MetadataPublishOverrideType.None)]
+        public MetadataPublishOverrideType MetadataPublishOverride
+        {
+            get
+            {
+                return (MetadataPublishOverrideType)base["metadataPublishOverride"];
+            }
+        }
     }
 }

@@ -53,6 +53,7 @@
     <Compile Include="..\VersionInfo.cs">
       <Link>VersionInfo.cs</Link>
     </Compile>
+    <Compile Include="MetadataPublishOverrideType.cs" />
     <Compile Include="CertificateStatus.cs" />
     <Compile Include="CertificateUse.cs" />
     <Compile Include="Configuration\ServiceCertificateCollection.cs" />

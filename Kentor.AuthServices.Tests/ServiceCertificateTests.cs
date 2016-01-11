@@ -13,6 +13,7 @@ namespace Kentor.AuthServices.Tests
             var cert = new ServiceCertificate();
             cert.Status.Should().Be(CertificateStatus.Current);
             cert.Use.Should().Be(CertificateUse.Both);
+            cert.MetadataPublishOverride.Should().Be(MetadataPublishOverrideType.None);
         }
 
         [TestMethod]

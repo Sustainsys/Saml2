@@ -271,15 +271,17 @@ namespace Kentor.AuthServices.Configuration
         {
             get
             {
-                var futureEncryptionCertExists = ServiceCertificates
+                var futureEncryptionCertExists = publishableServiceCertificates
                     .Any(c => c.Status == CertificateStatus.Future && c.Use == CertificateUse.Encryption);
 
-                var metaDataCertificates = ServiceCertificates
+                var metaDataCertificates = publishableServiceCertificates
                     // Signing & "Both" certs always get published because we want Idp's to be aware of upcoming keys
                     .Where(c => c.Status == CertificateStatus.Future || c.Use != CertificateUse.Encryption
                     // But current Encryption cert stops getting published immediately when a Future one is added
                     // (of course we still decrypt with the current cert, but that's a different part of the code)
-                    || (c.Status == CertificateStatus.Current && c.Use == CertificateUse.Encryption && !futureEncryptionCertExists));
+                    || (c.Status == CertificateStatus.Current && c.Use == CertificateUse.Encryption && !futureEncryptionCertExists)
+                    || c.MetadataPublishOverride != MetadataPublishOverrideType.None
+                );
 
                 var futureBothCertExists = metaDataCertificates
                     .Any(c => c.Status == CertificateStatus.Future && c.Use == CertificateUse.Both);
@@ -293,9 +295,31 @@ namespace Kentor.AuthServices.Configuration
                     {
                         cert.Use = CertificateUse.Signing;
                     }
+
+                    if (cert.MetadataPublishOverride == MetadataPublishOverrideType.PublishEncryption)
+                    {
+                        cert.Use = CertificateUse.Encryption;
+                    }
+                    if (cert.MetadataPublishOverride == MetadataPublishOverrideType.PublishSigning)
+                    {
+                        cert.Use = CertificateUse.Signing;
+                    }
+                    if (cert.MetadataPublishOverride == MetadataPublishOverrideType.PublishUnspecified)
+                    {
+                        cert.Use = CertificateUse.Both;
+                    }
                 }
 
                 return metaDataCertificates.ToList().AsReadOnly();
+            }
+        }
+
+        private IEnumerable<ServiceCertificate> publishableServiceCertificates
+        {
+            get
+            {
+                return ServiceCertificates
+                    .Where(c => c.MetadataPublishOverride != MetadataPublishOverrideType.DoNotPublish);
             }
         }
     }

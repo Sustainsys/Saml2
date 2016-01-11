@@ -16,6 +16,7 @@ namespace Kentor.AuthServices
         {
             Use = CertificateUse.Both;
             Status = CertificateStatus.Current;
+            MetadataPublishOverride = MetadataPublishOverrideType.None;
         }
 
         /// <summary>
@@ -30,6 +31,7 @@ namespace Kentor.AuthServices
             }
             Use = serviceCertElement.Use;
             Status = serviceCertElement.Status;
+            MetadataPublishOverride = serviceCertElement.MetadataPublishOverride;
             Certificate = serviceCertElement.LoadCertificate();
         }
 
@@ -47,5 +49,10 @@ namespace Kentor.AuthServices
         /// What is the intended use of this certificate.
         /// </summary>
         public CertificateUse Use { get; set; }
+
+        /// <summary>
+        /// How should we override the metadata publishing rules?
+        /// </summary>
+        public MetadataPublishOverrideType MetadataPublishOverride { get; set; }
     }
 }

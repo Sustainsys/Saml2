@@ -208,10 +208,17 @@ namespace Kentor.AuthServices.Tests.Configuration
         public void SPOptions_MetadataCertificates_OnlyOneEncryptionPublished()
         {
             var subject = new SPOptions();
-            subject.ServiceCertificates.Add(new ServiceCertificate {
-                Use = CertificateUse.Encryption, Certificate = SignedXmlHelper.TestCert });
-            subject.ServiceCertificates.Add(new ServiceCertificate {
-                Use = CertificateUse.Encryption, Status = CertificateStatus.Future, Certificate = SignedXmlHelper.TestCert2 });
+            subject.ServiceCertificates.Add(new ServiceCertificate
+            {
+                Use = CertificateUse.Encryption,
+                Certificate = SignedXmlHelper.TestCert
+            });
+            subject.ServiceCertificates.Add(new ServiceCertificate
+            {
+                Use = CertificateUse.Encryption,
+                Status = CertificateStatus.Future,
+                Certificate = SignedXmlHelper.TestCert2
+            });
 
             var result = subject.MetadataCertificates;
             result.Count.Should().Be(1);
@@ -284,6 +291,109 @@ namespace Kentor.AuthServices.Tests.Configuration
             var result = subject.MetadataCertificates;
             result.Count.Should().Be(2);
             result[0].Certificate.SerialNumber.Should().NotBe(result[1].Certificate.SerialNumber);
+        }
+
+        [TestMethod]
+        public void SPOptions_MetadataCertificates_OverrideDoNotPublish()
+        {
+            var subject = new SPOptions();
+            subject.ServiceCertificates.Add(new ServiceCertificate
+            {
+                MetadataPublishOverride = MetadataPublishOverrideType.DoNotPublish,
+                Certificate = SignedXmlHelper.TestCert
+            });
+
+            var result = subject.MetadataCertificates;
+            result.Count.Should().Be(0);
+        }
+
+        [TestMethod]
+        public void SPOptions_MetadataCertificates_OverridePublishSigning()
+        {
+            var subject = new SPOptions();
+            subject.ServiceCertificates.Add(new ServiceCertificate
+            {
+                MetadataPublishOverride = MetadataPublishOverrideType.PublishSigning,
+                Certificate = SignedXmlHelper.TestCert
+            });
+
+            var result = subject.MetadataCertificates;
+            result.Count.Should().Be(1);
+            result[0].Use.Should().Be(CertificateUse.Signing);
+        }
+
+        [TestMethod]
+        public void SPOptions_MetadataCertificates_OverridePublishEncryption()
+        {
+            var subject = new SPOptions();
+            subject.ServiceCertificates.Add(new ServiceCertificate
+            {
+                MetadataPublishOverride = MetadataPublishOverrideType.PublishEncryption,
+                Certificate = SignedXmlHelper.TestCert
+            });
+
+            var result = subject.MetadataCertificates;
+            result.Count.Should().Be(1);
+            result[0].Use.Should().Be(CertificateUse.Encryption);
+        }
+
+        [TestMethod]
+        public void SPOptions_MetadataCertificates_OverridePublishUnspecified()
+        {
+            var subject = new SPOptions();
+            subject.ServiceCertificates.Add(new ServiceCertificate
+            {
+                Use = CertificateUse.Encryption,
+                MetadataPublishOverride = MetadataPublishOverrideType.PublishUnspecified,
+                Certificate = SignedXmlHelper.TestCert
+            });
+
+            var result = subject.MetadataCertificates;
+            result.Count.Should().Be(1);
+            result[0].Use.Should().Be(CertificateUse.Both);
+        }
+
+        [TestMethod]
+        public void SPOptions_MetadataCertificates_BothEncryptionPublishedWithOverride()
+        {
+            var subject = new SPOptions();
+            subject.ServiceCertificates.Add(new ServiceCertificate
+            {
+                Use = CertificateUse.Encryption,
+                Certificate = SignedXmlHelper.TestCert,
+                MetadataPublishOverride = MetadataPublishOverrideType.PublishEncryption
+            });
+            subject.ServiceCertificates.Add(new ServiceCertificate
+            {
+                Use = CertificateUse.Encryption,
+                Status = CertificateStatus.Future,
+                Certificate = SignedXmlHelper.TestCert2
+            });
+
+            var result = subject.MetadataCertificates;
+            result.Count.Should().Be(2);
+        }
+
+        [TestMethod]
+        public void SPOptions_MetadataCertificates_CurrentEncryptionRemainsPublished_IfFutureOverriddentoNotPublished()
+        {
+            var subject = new SPOptions();
+            subject.ServiceCertificates.Add(new ServiceCertificate
+            {
+                Use = CertificateUse.Encryption,
+                Certificate = SignedXmlHelper.TestCert
+            });
+            subject.ServiceCertificates.Add(new ServiceCertificate
+            {
+                Use = CertificateUse.Encryption,
+                Status = CertificateStatus.Future,
+                MetadataPublishOverride = MetadataPublishOverrideType.DoNotPublish,
+                Certificate = SignedXmlHelper.TestCert2
+            });
+
+            var result = subject.MetadataCertificates;
+            result.Count.Should().Be(1);
+            result[0].Status.Should().Be(CertificateStatus.Current);
         }
     }
 }
