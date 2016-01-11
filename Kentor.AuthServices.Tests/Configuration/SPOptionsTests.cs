@@ -26,6 +26,13 @@ namespace Kentor.AuthServices.Tests.Configuration
                 .Should().Contain(new Uri(entityId));
         }
 
+        [TestMethod]
+        public void SPOptions_Constructor_ThrowsOnNullConfiguration()
+        {
+            Action a = () => new SPOptions((KentorAuthServicesSection)null); ;
+
+            a.ShouldThrow<ArgumentNullException>().And.ParamName.Should().Be("configSection");
+        }
 
         [TestMethod]
         public void SPOptions_EntityId_SettingThrowsIfTokenHandlerCreated()

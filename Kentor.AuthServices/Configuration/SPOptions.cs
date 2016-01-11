@@ -23,7 +23,39 @@ namespace Kentor.AuthServices.Configuration
         /// </summary>
         public SPOptions()
         {
+            systemIdentityModelIdentityConfiguration = new IdentityConfiguration(false);
             MetadataCacheDuration = new TimeSpan(1, 0, 0);
+        }
+
+        /// <summary>
+        /// Construct the options from the given configuration section
+        /// </summary>
+        /// <param name="configSection"></param>
+        public SPOptions(KentorAuthServicesSection configSection)
+        {
+            if (configSection == null)
+            {
+                throw new ArgumentNullException(nameof(configSection));
+            }
+            systemIdentityModelIdentityConfiguration = new IdentityConfiguration(true);
+
+            ReturnUrl = configSection.ReturnUrl;
+            MetadataCacheDuration = configSection.MetadataCacheDuration;
+            DiscoveryServiceUrl = configSection.DiscoveryServiceUrl;
+            EntityId = configSection.EntityId;
+            ModulePath = configSection.ModulePath;
+            Organization = configSection.Organization;
+            ServiceCertificate = configSection.ServiceCertificate.LoadCertificate();
+
+            foreach (var acs in configSection.AttributeConsumingServices)
+            {
+                AttributeConsumingServices.Add(acs);
+            }
+
+            foreach (var contact in configSection.Contacts)
+            {
+                Contacts.Add(contact);
+            }
         }
 
         /// <summary>
@@ -171,8 +203,7 @@ namespace Kentor.AuthServices.Configuration
             }
         }
 
-        private IdentityConfiguration systemIdentityModelIdentityConfiguration
-            = new IdentityConfiguration(false);
+        private IdentityConfiguration systemIdentityModelIdentityConfiguration;
 
         /// <summary>
         /// The System.IdentityModel configuration to use.
