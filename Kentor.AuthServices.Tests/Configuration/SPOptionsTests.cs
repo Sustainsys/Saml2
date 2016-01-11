@@ -108,10 +108,25 @@ namespace Kentor.AuthServices.Tests.Configuration
         }
 
         [TestMethod]
-        public void SPOptions_SigningCertificate_Single()
+        public void SPOptions_SigningCertificate_SingleSigning()
         {
             var subject = new SPOptions();
-            subject.ServiceCertificates.Add(new ServiceCertificate { Certificate = SignedXmlHelper.TestCert });
+            subject.ServiceCertificates.Add(new ServiceCertificate
+            {
+                Use = CertificateUse.Signing,
+                Certificate = SignedXmlHelper.TestCert
+            });
+
+            subject.SigningServiceCertificate.SerialNumber.Should().Be(SignedXmlHelper.TestCert.SerialNumber);
+        }
+
+        [TestMethod]
+        public void SPOptions_SigningCertificate_SingleUnspecified()
+        {
+            var subject = new SPOptions();
+            subject.ServiceCertificates.Add(new ServiceCertificate {
+                Use = CertificateUse.Signing,
+                Certificate = SignedXmlHelper.TestCert });
 
             subject.SigningServiceCertificate.SerialNumber.Should().Be(SignedXmlHelper.TestCert.SerialNumber);
         }
@@ -144,7 +159,7 @@ namespace Kentor.AuthServices.Tests.Configuration
         }
 
         [TestMethod]
-        public void SPOptions_DecryptionCertificate_Single()
+        public void SPOptions_DecryptionCertificate_SingleUnspecified()
         {
             var subject = new SPOptions();
             subject.ServiceCertificates.Add(new ServiceCertificate { Certificate = SignedXmlHelper.TestCert });
@@ -154,11 +169,36 @@ namespace Kentor.AuthServices.Tests.Configuration
         }
 
         [TestMethod]
-        public void SPOptions_DecryptionCertificate_UseBothWhenFuturePublished()
+        public void SPOptions_DecryptionCertificate_SingleEncryption()
+        {
+            var subject = new SPOptions();
+            subject.ServiceCertificates.Add(new ServiceCertificate
+            {
+                Use = CertificateUse.Encryption,
+                Certificate = SignedXmlHelper.TestCert
+            });
+
+            subject.DecryptionServiceCertificates.Count.Should().Be(1);
+            subject.DecryptionServiceCertificates[0].SerialNumber.Should().Be(SignedXmlHelper.TestCert.SerialNumber);
+        }
+
+        [TestMethod]
+        public void SPOptions_DecryptionCertificate_UseBothWhenFutureUnspecifiedPublished()
         {
             var subject = new SPOptions();
             subject.ServiceCertificates.Add(new ServiceCertificate { Certificate = SignedXmlHelper.TestCert2 });
             subject.ServiceCertificates.Add(new ServiceCertificate { Status = CertificateStatus.Future, Certificate = SignedXmlHelper.TestCert });
+
+            subject.DecryptionServiceCertificates.Count.Should().Be(2);
+            subject.DecryptionServiceCertificates[0].SerialNumber.Should().NotBe(subject.DecryptionServiceCertificates[1].SerialNumber);
+        }
+
+        [TestMethod]
+        public void SPOptions_DecryptionCertificate_UseBothWhenFutureEncryptionPublished()
+        {
+            var subject = new SPOptions();
+            subject.ServiceCertificates.Add(new ServiceCertificate { Certificate = SignedXmlHelper.TestCert2 });
+            subject.ServiceCertificates.Add(new ServiceCertificate { Use = CertificateUse.Encryption, Status = CertificateStatus.Future, Certificate = SignedXmlHelper.TestCert });
 
             subject.DecryptionServiceCertificates.Count.Should().Be(2);
             subject.DecryptionServiceCertificates[0].SerialNumber.Should().NotBe(subject.DecryptionServiceCertificates[1].SerialNumber);
