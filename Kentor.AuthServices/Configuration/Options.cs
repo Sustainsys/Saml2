@@ -29,7 +29,7 @@ namespace Kentor.AuthServices.Configuration
         }
 
         private static readonly Lazy<Options> optionsFromConfiguration 
-            = new Lazy<Options>(() => LoadOptionsFromConfiguration(), false);
+            = new Lazy<Options>(() => LoadOptionsFromConfiguration(), true);
 
         private static Options LoadOptionsFromConfiguration()
         {
