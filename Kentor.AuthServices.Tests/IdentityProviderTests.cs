@@ -189,6 +189,41 @@ namespace Kentor.AuthServices.Tests
         }
 
         [TestMethod]
+        public void IdentityProvider_LazyLoadMetada_MetadataReloadesAfterFirstGetter()
+        {
+            var config = CreateConfig();
+            config.DestinationUrl = null;
+            config.LoadMetadata = false;
+            config.LazyLoadMetadata = true;
+            config.EntityId = "http://localhost:13428/idpLazyMetadata";
+            config.MetadataUrl = new Uri("http://localhost:13428/idpLazyMetadata");
+
+            var subject = new IdentityProvider(config, Options.FromConfiguration.SPOptions);
+
+            var field = typeof(IdentityProvider).GetField("singleSignOnServiceUrl", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+            field.GetValue(subject).Should().BeNull();
+            subject.SingleSignOnServiceUrl.Should().Be("http://localhost:13428/acs");
+
+        }
+
+        [TestMethod]
+        public void IdentityProvider_LazydLoadMetadata_SettingMetadataUrlDoesntCauseMetataLoad()
+        {
+            var config = CreateConfig();
+            config.DestinationUrl = null;
+            config.LoadMetadata = false;
+            config.LazyLoadMetadata = true;
+            config.EntityId = "http://localhost:13428/idpLazyMetadata";
+            config.MetadataUrl = new Uri("http://localhost:13428/idpLazyMetadata");
+
+            var subject = new IdentityProvider(config, Options.FromConfiguration.SPOptions);
+
+            var field = typeof(IdentityProvider).GetField("singleSignOnServiceUrl", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+            field.GetValue(subject).Should().BeNull();
+            subject.MetadataUrl = new Uri("http://localhost:13428/otheridpLazyMetadata");
+            field.GetValue(subject).Should().BeNull();
+        }
+
         public void IdentityProvider_Ctor_HandlesConfiguredCertificateWhenReadingMetadata()
         {
             var config = CreateConfig();
@@ -293,10 +328,11 @@ namespace Kentor.AuthServices.Tests
             subject.MetadataValidUntil.Should().BeCloseTo(expectedValidUntil, 1000);
         }
 
-        IdentityProvider CreateSubjectForMetadataRefresh()
+        IdentityProvider CreateSubjectForMetadataRefresh(bool loadMetadata = true, bool lazyLoadMetadata = false)
         {
             var config = CreateConfig();
-            config.LoadMetadata = true;
+            config.LoadMetadata = loadMetadata;
+            config.LazyLoadMetadata = lazyLoadMetadata; 
             config.EntityId = "http://localhost:13428/idpMetadataVeryShortCacheDuration";
             return new IdentityProvider(config, Options.FromConfiguration.SPOptions);
         }
@@ -406,6 +442,18 @@ namespace Kentor.AuthServices.Tests
         }
 
         [TestMethod]
+        public void IdentityProvider_ScheduledReloadOfLazyMetadata()
+        {
+            MetadataRefreshScheduler.minInternval = new TimeSpan(0, 0, 0, 0, 1);
+
+            var subject = CreateSubjectForMetadataRefresh(false, true);
+            var initialValidUntil = subject.MetadataValidUntil;
+            var getDataForTheFirstTime = subject.SingleSignOnServiceUrl;
+
+            SpinWaiter.WhileEqual(() => subject.MetadataValidUntil, () => initialValidUntil);
+        }
+
+        [TestMethod]
         public void IdentityProvider_ScheduledReloadOfMetadata_RetriesIfLoadFails()
         {
             MetadataRefreshScheduler.minInterval = new TimeSpan(0, 0, 0, 0, 1);
@@ -417,9 +465,34 @@ namespace Kentor.AuthServices.Tests
             SpinWaiter.While(() => subject.MetadataValidUntil != DateTime.MinValue,
                 "Timed out waiting for failed metadata load to occur.");
 
-            var metadataEnabledTime = DateTime.UtcNow;
             MetadataServer.IdpAndFederationShortCacheDurationAvailable = true;
 
+            SpinWaiter.While(() =>
+            {
+                var mvu = subject.MetadataValidUntil;
+                return !mvu.HasValue || mvu == DateTime.MinValue;
+            },
+            "Timed out waiting for successful reload of metadata.");
+        }
+
+        [TestMethod]
+        public void IdentityProvider_ScheduledReloadOfLazyMetadata_RetriesIfLoadFails()
+        {
+            MetadataRefreshScheduler.minInternval = new TimeSpan(0, 0, 0, 0, 1);
+
+            var subject = CreateSubjectForMetadataRefresh(false, true);
+            var accessedProperty = subject.SigningKeys;
+            subject.MetadataValidUntil.Should().HaveValue();
+            subject.MetadataValidUntil.Should().BeAfter(DateTime.MinValue);
+
+            MetadataServer.IdpAndFederationShortCacheDurationAvailable = false;
+
+            SpinWaiter.While(() => subject.MetadataValidUntil != DateTime.MinValue,
+                "Timed out waiting for failed metadata load to occur.");
+
+            MetadataServer.IdpAndFederationShortCacheDurationAvailable = true;
+
+            accessedProperty = subject.SigningKeys;
             SpinWaiter.While(() =>
             {
                 var mvu = subject.MetadataValidUntil;
