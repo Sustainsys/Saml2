@@ -56,9 +56,10 @@
     <Compile Include="ConfiguredAndLoadedCollection.cs" />
     <Compile Include="Internal\PathHelper.cs" />
     <Compile Include="Internal\QueryStringHelper.cs" />
+    <Compile Include="Exceptions\UnsuccessfulSamlOperationException.cs" />
     <Compile Include="Metadata\KeyInfoSerializer.cs" />
     <Compile Include="Saml2P\FilteringXmlNodeReader.cs" />
-    <Compile Include="Saml2ResponseFailedValidationException.cs" />
+    <Compile Include="Exceptions\Saml2ResponseFailedValidationException.cs" />
     <Compile Include="Internal\CryptographyExtensions.cs" />
     <Compile Include="Internal\RSAEncryptedXml.cs" />
     <Compile Include="WebSso\AcsCommand.cs" />
@@ -71,9 +72,9 @@
     <Compile Include="MetadataRefreshScheduler.cs" />
     <Compile Include="Metadata\ServiceProviderSingleSignOnDescriptorExtensions.cs" />
     <Compile Include="Metadata\ExtendedEntityDescriptor.cs" />
-    <Compile Include="AuthServicesException.cs" />
+    <Compile Include="Exceptions\AuthServicesException.cs" />
     <Compile Include="WebSso\AuthServicesUrls.cs" />
-    <Compile Include="BadFormatSamlResponseException.cs" />
+    <Compile Include="Exceptions\BadFormatSamlResponseException.cs" />
     <Compile Include="Metadata\ExtendedMetadataSerializer.cs" />
     <Compile Include="ClaimsIdentityExtensions.cs" />
     <Compile Include="WebSso\Cacheability.cs" />
@@ -106,7 +107,7 @@
     <Compile Include="WebSso\MetadataCommand.cs" />
     <Compile Include="Metadata\MetadataLoader.cs" />
     <Compile Include="Saml2P\Saml2PSecurityTokenHandler.cs" />
-    <Compile Include="NoSamlResponseFoundException.cs" />
+    <Compile Include="Exceptions\NoSamlResponseFoundException.cs" />
     <Compile Include="WebSso\NotFoundCommand.cs" />
     <Compile Include="WebSso\ICommand.cs" />
     <Compile Include="WebSso\CommandFactory.cs" />
@@ -141,6 +142,7 @@
       <link>CustomDictionary.xml</link>
     </CodeAnalysisDictionary>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
