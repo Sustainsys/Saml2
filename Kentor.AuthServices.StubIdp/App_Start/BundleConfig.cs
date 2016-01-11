@@ -11,7 +11,7 @@ namespace Kentor.AuthServices.StubIdp
     {
         public static void RegisterBundles(BundleCollection bundles)
         {
-            bundles.Add(new Bundle("~/Content/css")
+            bundles.Add(new Bundle("~/Content/css-bundle")
                 {
                     Transforms = { new LessTransform() }
                 }
