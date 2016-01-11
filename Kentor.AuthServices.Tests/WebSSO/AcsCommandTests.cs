@@ -15,6 +15,7 @@ using Kentor.AuthServices.Configuration;
 using Kentor.AuthServices.WebSso;
 using System.Reflection;
 using System.Configuration;
+using Kentor.AuthServices.Exceptions;
 
 namespace Kentor.AuthServices.Tests.WebSso
 {

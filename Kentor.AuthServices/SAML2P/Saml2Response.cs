@@ -12,6 +12,7 @@ using System.IdentityModel.Metadata;
 using System.Security.Cryptography;
 using System.IdentityModel.Services;
 using Kentor.AuthServices.Internal;
+using Kentor.AuthServices.Exceptions;
 
 namespace Kentor.AuthServices.Saml2P
 {
@@ -515,7 +516,7 @@ namespace Kentor.AuthServices.Saml2P
 
             if (status != Saml2StatusCode.Success)
             {
-                throw new InvalidSamlOperationException(string.Format("The Saml2Response must have status success to extract claims. Status: {0}.{1}"
+                throw new UnsuccessfulSamlOperationException(string.Format("The Saml2Response must have status success to extract claims. Status: {0}.{1}"
                 , status.ToString(), statusMessage != null ? " Message: " + statusMessage + "." : string.Empty),
                 status, statusMessage, secondLevelStatus);
             }

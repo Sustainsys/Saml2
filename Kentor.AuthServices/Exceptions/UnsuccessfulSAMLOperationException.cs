@@ -6,13 +6,13 @@ using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Kentor.AuthServices
+namespace Kentor.AuthServices.Exceptions
 {
     /// <summary>
     /// Extended exception containing information about the status and status message SAML response.  
     /// </summary>
     [Serializable]
-    public class InvalidSamlOperationException: InvalidOperationException
+    public class UnsuccessfulSamlOperationException : AuthServicesException
     {
         /// <summary>
         /// Status of the SAML2Response
@@ -34,7 +34,7 @@ namespace Kentor.AuthServices
         /// <param name="statusCode">Status of the SAML2Response</param>
         /// <param name="statusMessage">Status message of SAML2Response</param>
         /// <param name="secondLevelStatus">Second level status of SAML2Response</param>
-        public InvalidSamlOperationException(string message, Saml2StatusCode statusCode, string statusMessage, string secondLevelStatus) : base(message)
+        public UnsuccessfulSamlOperationException(string message, Saml2StatusCode statusCode, string statusMessage, string secondLevelStatus) : base(message)
         {
             this.Status = statusCode;
             this.StatusMessage = statusMessage;
@@ -43,14 +43,14 @@ namespace Kentor.AuthServices
         /// <summary>
         /// 
         /// </summary>
-        public InvalidSamlOperationException() : base()
+        public UnsuccessfulSamlOperationException() : base()
         {
         }
         /// <summary>
         /// 
         /// </summary>
         /// <param name="message"></param>
-        public InvalidSamlOperationException(string message) : base(message)
+        public UnsuccessfulSamlOperationException(string message) : base(message)
         {
         }
         /// <summary>
@@ -58,7 +58,7 @@ namespace Kentor.AuthServices
         /// </summary>
         /// <param name="message"></param>
         /// <param name="innerException"></param>
-        public InvalidSamlOperationException(string message, Exception innerException) : base(message, innerException)
+        public UnsuccessfulSamlOperationException(string message, Exception innerException) : base(message, innerException)
         {
         }
         /// <summary>
@@ -66,7 +66,7 @@ namespace Kentor.AuthServices
         /// </summary>
         /// <param name="info"></param>
         /// <param name="context"></param>
-        protected InvalidSamlOperationException(SerializationInfo info, StreamingContext context): base(info, context)
+        protected UnsuccessfulSamlOperationException(SerializationInfo info, StreamingContext context): base(info, context)
         {
         }
 

@@ -5,29 +5,30 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
+using Kentor.AuthServices.Exceptions;
 
-namespace Kentor.AuthServices.Tests
+namespace Kentor.AuthServices.Tests.Exceptions
 {
     [TestClass]
-    public class InvalidSamlOperationExceptionTest
+    public class UnsuccessfulSamlOperationExceptionTest
     {
         [TestMethod]
         public void InvalidSamlOperationException_DefaultCtor()
         {
-            ExceptionTestHelpers.TestDefaultCtor<InvalidSamlOperationException>();
+            ExceptionTestHelpers.TestDefaultCtor<UnsuccessfulSamlOperationException>();
         }
 
         [TestMethod]
         public void InvalidSamlOperationException_SerializationCtor()
         {
-            ExceptionTestHelpers.TestSerializationCtor<InvalidSamlOperationException>();
+            ExceptionTestHelpers.TestSerializationCtor<UnsuccessfulSamlOperationException>();
         }
 
         [TestMethod]
         public void InvalidSamlOperationException_StringCtor()
         {
             var msg = "Message!";
-            var subject = new InvalidSamlOperationException(msg);
+            var subject = new UnsuccessfulSamlOperationException(msg);
 
             subject.Message.Should().Be(msg);
         }
@@ -36,7 +37,7 @@ namespace Kentor.AuthServices.Tests
         {
             var msg = "Message!";
             var inner = new Exception();
-            var subject = new InvalidSamlOperationException(msg, inner);
+            var subject = new UnsuccessfulSamlOperationException(msg, inner);
 
             subject.Message.Should().Be(msg);
             subject.InnerException.Should().Be(inner);

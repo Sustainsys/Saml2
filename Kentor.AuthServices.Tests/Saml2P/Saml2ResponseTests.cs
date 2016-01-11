@@ -18,6 +18,7 @@ using System.Reflection;
 using System.Collections.Generic;
 using System.Security.Cryptography.X509Certificates;
 using System.IdentityModel.Selectors;
+using Kentor.AuthServices.Exceptions;
 
 namespace Kentor.AuthServices.Tests.Saml2P
 {
@@ -1687,14 +1688,14 @@ namespace Kentor.AuthServices.Tests.Saml2P
 
             Action a = () => subject.GetClaims(Options.FromConfiguration);
 
-            a.ShouldThrow<InvalidSamlOperationException>()
+            a.ShouldThrow<UnsuccessfulSamlOperationException>()
                 .WithMessage("The Saml2Response must have status success to extract claims. Status: Requester.")
                 .Where(x => x.Status == Saml2StatusCode.Requester);
 
         }
 
         [TestMethod]
-        public void Saml2Response_GetClaims_ThrowsOnStatusFailure2()
+        public void Saml2Response_GetClaims_ThrowsOnStatusFailure_IncludingSecondLevelMessage()
         {
             var response =
             @"<?xml version=""1.0"" encoding=""UTF-8""?>
@@ -1716,7 +1717,7 @@ namespace Kentor.AuthServices.Tests.Saml2P
 
             Action a = () => subject.GetClaims(Options.FromConfiguration);
 
-            a.ShouldThrow<InvalidSamlOperationException>()
+            a.ShouldThrow<UnsuccessfulSamlOperationException>()
                 .WithMessage("The Saml2Response must have status success to extract claims. Status: Responder. Message: A status message.")
                 .Where(x => x.Status == Saml2StatusCode.Responder && x.StatusMessage == "A status message" && x.SecondLevelStatus == "urn:oasis:names:tc:SAML:2.0:status:RequestDenied");
 
@@ -1753,7 +1754,7 @@ namespace Kentor.AuthServices.Tests.Saml2P
 
             Action a = () => subject.GetClaims(Options.FromConfiguration);
 
-            a.ShouldThrow<InvalidSamlOperationException>()
+            a.ShouldThrow<UnsuccessfulSamlOperationException>()
                 .WithMessage("The Saml2Response must have status success to extract claims. Status: Requester. Message: A status message.")
                 .Where(x => x.Status == Saml2StatusCode.Requester);
 

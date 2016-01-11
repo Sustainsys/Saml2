@@ -1,8 +1,9 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using FluentAssertions;
+using Kentor.AuthServices.Exceptions;
 
-namespace Kentor.AuthServices.Tests
+namespace Kentor.AuthServices.Tests.Exceptions
 {
     [TestClass]
     public class Saml2ResponseFailedValidationExceptionTests
