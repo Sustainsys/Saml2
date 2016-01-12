@@ -14,7 +14,7 @@ namespace Kentor.AuthServices.WebSso
 {
     class Saml2RedirectBinding : Saml2Binding
     {
-        public override CommandResult Bind(string payload, Uri destinationUrl, string messageName)
+        public override CommandResult Bind(string payload, Uri destinationUrl, string messageName, string relayState)
         {
             if (payload == null)
             {
@@ -33,7 +33,9 @@ namespace Kentor.AuthServices.WebSso
 
             var redirectUri = new Uri(destinationUrl.ToString()
                 + (String.IsNullOrEmpty(destinationUrl.Query) ? "?" : "&") 
-                + messageName + "=" + serializedRequest);
+                + messageName + "=" + serializedRequest
+                + (string.IsNullOrEmpty(relayState) ? ""
+                    : ("&RelayState=" + Uri.EscapeDataString(relayState))));
 
             return new CommandResult()
             {

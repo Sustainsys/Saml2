@@ -31,5 +31,13 @@ namespace Kentor.AuthServices.Saml2P
         /// field. Typically "SAMLRequest" or "SAMLResponse".
         /// </summary>
         string MessageName { get; }
+
+        /// <summary>
+        /// RelayState attached to the message.
+        /// </summary>
+        /// <remarks>Strictly speaking, this is not part of the message,
+        /// but it is delivered together with the message so we need to keep
+        /// track of it together with a message.</remarks>
+        string RelayState { get; }
     }
 }

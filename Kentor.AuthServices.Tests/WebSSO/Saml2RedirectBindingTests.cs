@@ -4,6 +4,7 @@ using FluentAssertions;
 using NSubstitute;
 using System.Web;
 using Kentor.AuthServices.WebSso;
+using Kentor.AuthServices.Saml2P;
 
 namespace Kentor.AuthServices.Tests.WebSso
 {
@@ -64,7 +65,7 @@ namespace Kentor.AuthServices.Tests.WebSso
             var serializedData = "fZFfa8IwFMXfBb9DyXvaJtZ1BqsURRC2Mabbw95ivc5Am3TJrXPffmmLY3%2FA15Pzuyf33On8XJXBCaxTRmeEhTEJQBdmr%2FRbRp63K3pL5rPhYOpkVdYib%2FCon%2BC9AYfDQRB4WDvRvWWksVoY6ZQTWlbgBBZik9%2FfCR7GorYGTWFK8pu6DknnwKL%2FWEetlxmR8sBHbHJDWZqOKGdsRJM0kfQAjCUJ43KX8s78ctnIz%2Blp5xpYa4dSo1fjOKGM03i8jSeCMzGevHa2%2FBK5MNo1FdgN2JMqPLmHc0b6WTmiVbsGoTf5qv66Zq2t60x0wXZ2RKydiCJXh3CWVV1CWJgqanfl0%2Bin8xutxYOvZL18NKUqPlvZR5el%2BVhYkAgZQdsA6fWVsZXE63W2itrTQ2cVaKV2CjSSqL1v9P%2FAXv4C";
             var destinationUrl = new Uri("http://www.example.com/sso");
 
-            var subject = Saml2Binding.Get(Saml2BindingType.HttpRedirect).Bind(xmlData, destinationUrl, "SAMLRequest");
+            var result = Saml2Binding.Get(Saml2BindingType.HttpRedirect).Bind(xmlData, destinationUrl, "SAMLRequest");
 
             var expected = new CommandResult()
             {
@@ -72,7 +73,7 @@ namespace Kentor.AuthServices.Tests.WebSso
                 HttpStatusCode = System.Net.HttpStatusCode.SeeOther,
             };
 
-            subject.ShouldBeEquivalentTo(expected);
+            result.ShouldBeEquivalentTo(expected);
         }
 
         [TestMethod]
@@ -122,7 +123,7 @@ namespace Kentor.AuthServices.Tests.WebSso
             var serializedData = "fZFfa8IwFMXfBb9DyXvaJtZ1BqsURRC2Mabbw95ivc5Am3TJrXPffmmLY3%2FA15Pzuyf33On8XJXBCaxTRmeEhTEJQBdmr%2FRbRp63K3pL5rPhYOpkVdYib%2FCon%2BC9AYfDQRB4WDvRvWWksVoY6ZQTWlbgBBZik9%2FfCR7GorYGTWFK8pu6DknnwKL%2FWEetlxmR8sBHbHJDWZqOKGdsRJM0kfQAjCUJ43KX8s78ctnIz%2Blp5xpYa4dSo1fjOKGM03i8jSeCMzGevHa2%2FBK5MNo1FdgN2JMqPLmHc0b6WTmiVbsGoTf5qv66Zq2t60x0wXZ2RKydiCJXh3CWVV1CWJgqanfl0%2Bin8xutxYOvZL18NKUqPlvZR5el%2BVhYkAgZQdsA6fWVsZXE63W2itrTQ2cVaKV2CjSSqL1v9P%2FAXv4C";
             var destinationUrl = new Uri("http://www.example.com/acs?aQueryParam=QueryParamValue");
 
-            var subject = Saml2Binding.Get(Saml2BindingType.HttpRedirect).Bind(xmlData, destinationUrl, "SAMLRequest");
+            var result = Saml2Binding.Get(Saml2BindingType.HttpRedirect).Bind(xmlData, destinationUrl, "SAMLRequest");
 
             var expected = new CommandResult()
             {
@@ -130,8 +131,57 @@ namespace Kentor.AuthServices.Tests.WebSso
                 HttpStatusCode = System.Net.HttpStatusCode.SeeOther,
             };
 
-            subject.ShouldBeEquivalentTo(expected);
+            result.ShouldBeEquivalentTo(expected);
         }
 
+        [TestMethod]
+        public void Saml2RedirectBinding_Bind_With_RelayState()
+        {
+            var data = "Data";
+            var relayState = "SomeState that needs escaping #%=3";
+
+            var destinationUrl = new Uri("http://host");
+
+            var expected = new CommandResult()
+            {
+                Location = new Uri("http://host?SAMLRequest=c0ksSQQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA%3D%3D"
+                + "&RelayState=" + Uri.EscapeDataString(relayState)),
+                HttpStatusCode = System.Net.HttpStatusCode.SeeOther
+            };
+
+            var result = Saml2Binding.Get(Saml2BindingType.HttpRedirect).Bind(data, destinationUrl, "SAMLRequest", relayState);
+
+            result.ShouldBeEquivalentTo(expected);
+        }
+
+        class ConcreateSamlMessage : ISaml2Message
+        {
+            public Uri DestinationUrl { get; } = new Uri("http://destination?q1=v1&q2=v2");
+
+            public string MessageName { get; } = "MessageName";
+
+            public string RelayState { get; } = "relayed state";
+
+            public string ToXml() 
+            {
+                return "<xml/>";
+            }
+        }
+
+        [TestMethod]
+        public void Saml2RedirectBinding_Bind_From_Message()
+        {
+            var message = new ConcreateSamlMessage();
+
+            var expected = new CommandResult()
+            {
+                Location = new Uri("http://destination/?q1=v1&q2=v2&MessageName=s6nIzdG3AwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA%3D%3D&RelayState=relayed%20state"),
+                HttpStatusCode = System.Net.HttpStatusCode.SeeOther
+            };
+
+            var result = Saml2Binding.Get(Saml2BindingType.HttpRedirect).Bind(message);
+            
+            result.ShouldBeEquivalentTo(expected);
+        }
     }
 }

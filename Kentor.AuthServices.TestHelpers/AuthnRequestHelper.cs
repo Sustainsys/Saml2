@@ -19,7 +19,9 @@ namespace Kentor.AuthServices.TestHelpers
         /// <returns></returns>
         public static string GetRequestId(Uri uri)
         {
-            var tmp = Convert.FromBase64String(HttpUtility.UrlDecode(uri.Query.Replace("?SAMLRequest=", "")));
+            var samlRequest = HttpUtility.ParseQueryString(uri.Query)["SAMLRequest"];
+
+            var tmp = Convert.FromBase64String(samlRequest);
             using (var compressed = new MemoryStream(tmp))
             {
                 compressed.Seek(0, SeekOrigin.Begin);

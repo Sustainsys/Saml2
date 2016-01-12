@@ -39,7 +39,22 @@ namespace Kentor.AuthServices.WebSso
         /// Typically "SAMLRequest" or "SAMLResponse".
         /// </param>
         /// <returns>CommandResult to be returned to the client browser.</returns>
-        public virtual CommandResult Bind(string payload, Uri destinationUrl, string messageName)
+        public CommandResult Bind(string payload, Uri destinationUrl, string messageName)
+        {
+            return Bind(payload, destinationUrl, messageName, null);
+        }
+
+        /// <summary>
+        /// Bind the message to a transport.
+        /// </summary>
+        /// <param name="payload">(xml) payload data to bind.</param>
+        /// <param name="destinationUrl">The destination of the message.</param>
+        /// <param name="messageName">The name of the message to use in a query string or form input field.
+        /// Typically "SAMLRequest" or "SAMLResponse".
+        /// </param>
+        /// <param name="relayState">Relay state, if any</param>
+        /// <returns>CommandResult to be returned to the client browser.</returns>
+        public virtual CommandResult Bind(string payload, Uri destinationUrl, string messageName, string relayState)
         {
             throw new NotImplementedException();
         }
@@ -56,7 +71,11 @@ namespace Kentor.AuthServices.WebSso
                 throw new ArgumentNullException(nameof(message));
             }
 
-            return Bind(message.ToXml(), message.DestinationUrl, message.MessageName);
+            return Bind(
+                message.ToXml(),
+                message.DestinationUrl,
+                message.MessageName,
+                message.RelayState);
         }
 
         /// <summary>

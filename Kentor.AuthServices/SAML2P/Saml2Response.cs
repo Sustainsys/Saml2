@@ -76,7 +76,7 @@ namespace Kentor.AuthServices.Saml2P
             if (xml.DocumentElement["Status", Saml2Namespaces.Saml2PName]["StatusCode", Saml2Namespaces.Saml2PName]["StatusCode", Saml2Namespaces.Saml2PName] != null)
             {
                 secondLevelStatus = xml.DocumentElement["Status", Saml2Namespaces.Saml2PName]["StatusCode", Saml2Namespaces.Saml2PName]["StatusCode", Saml2Namespaces.Saml2PName].Attributes["Value"].Value;
-            } 
+            }
 
             issuer = new EntityId(xmlDocument.DocumentElement["Issuer", Saml2Namespaces.Saml2Name].GetTrimmedTextIfNotNull());
 
@@ -543,5 +543,10 @@ namespace Kentor.AuthServices.Saml2P
                 }
             }
         }
+
+        /// <summary>
+        /// RelayState attached to the message.
+        /// </summary>
+        public string RelayState { get; } = null;
     }
 }

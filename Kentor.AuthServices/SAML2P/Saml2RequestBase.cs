@@ -147,5 +147,10 @@ namespace Kentor.AuthServices.Saml2P
         /// </summary>
         /// <returns>string containing the Xml data.</returns>
         public abstract string ToXml();
+
+        /// <summary>
+        /// RelayState attached to the message.
+        /// </summary>
+        public string RelayState { get; protected set; }
     }
 }

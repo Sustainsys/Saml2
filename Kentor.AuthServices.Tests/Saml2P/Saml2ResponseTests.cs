@@ -72,7 +72,8 @@ namespace Kentor.AuthServices.Tests.Saml2P
                 MessageName = "SAMLResponse",
                 InResponseTo = new Saml2Id("InResponseToId"),
                 RequestState = (StoredRequestState)null,
-                SecondLevelStatus = (string)null
+                SecondLevelStatus = (string)null,
+                RelayState = (string)null
             };
 
             Saml2Response.Read(response).ShouldBeEquivalentTo(expected,

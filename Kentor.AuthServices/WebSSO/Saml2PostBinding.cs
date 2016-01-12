@@ -32,7 +32,7 @@ namespace Kentor.AuthServices.WebSso
             return xml;
         }
 
-        public override CommandResult Bind(string payload, Uri destinationUrl, string messageName)
+        public override CommandResult Bind(string payload, Uri destinationUrl, string messageName, string relayState)
         {
             if (payload == null)
             {

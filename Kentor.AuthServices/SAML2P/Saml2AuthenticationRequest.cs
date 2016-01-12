@@ -96,10 +96,5 @@ namespace Kentor.AuthServices.Saml2P
         /// Index to the SP metadata where the list of requested attributes is found.
         /// </summary>
         public int? AttributeConsumingServiceIndex { get; set; }
-
-        /// <summary>
-        /// RelayState used to identify the message exchange.
-        /// </summary>
-        public string RelayState { get; }
     }
 }
