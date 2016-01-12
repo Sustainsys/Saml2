@@ -119,6 +119,7 @@
     <Compile Include="Saml2StatementExtension.cs" />
     <Compile Include="Configuration\KentorAuthServicesSection.cs" />
     <Compile Include="Saml2P\Saml2AuthenticationRequest.cs" />
+    <Compile Include="RelayStateGenerator.cs" />
     <Compile Include="WebSso\Saml2Binding.cs" />
     <Compile Include="WebSso\Saml2BindingType.cs" />
     <Compile Include="Saml2ConditionsExtensions.cs" />
