@@ -15,6 +15,7 @@ using Kentor.AuthServices;
 using Kentor.AuthServices.WebSso;
 using System.Security.Cryptography.X509Certificates;
 using System.Web.Hosting;
+using System.IdentityModel.Selectors;
 
 namespace SampleOwinApplication
 {
@@ -126,6 +127,9 @@ namespace SampleOwinApplication
                 new RequestedAttribute("Minimal"));
 
             spOptions.AttributeConsumingServices.Add(attributeConsumingService);
+
+            spOptions.SystemIdentityModelIdentityConfiguration.AudienceRestriction.AudienceMode
+                = AudienceUriMode.Never;
 
             return spOptions;
         }
