@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using System.Xml;
 using System.Xml.Linq;
 using Kentor.AuthServices.Internal;
+using Kentor.AuthServices.WebSso;
 
 namespace Kentor.AuthServices.Saml2P
 {
@@ -20,7 +21,7 @@ namespace Kentor.AuthServices.Saml2P
         /// </summary>
         public Saml2AuthenticationRequest()
         {
-
+            RelayState = RelayStateGenerator.CreateSecureKey();
         }
 
         /// <summary>
@@ -95,5 +96,10 @@ namespace Kentor.AuthServices.Saml2P
         /// Index to the SP metadata where the list of requested attributes is found.
         /// </summary>
         public int? AttributeConsumingServiceIndex { get; set; }
+
+        /// <summary>
+        /// RelayState used to identify the message exchange.
+        /// </summary>
+        public string RelayState { get; }
     }
 }
