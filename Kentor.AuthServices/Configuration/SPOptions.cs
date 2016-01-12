@@ -1,7 +1,9 @@
 ﻿using Kentor.AuthServices.Metadata;
 using Kentor.AuthServices.Saml2P;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IdentityModel.Configuration;
 using System.IdentityModel.Metadata;
 using System.IdentityModel.Services.Configuration;
@@ -45,7 +47,8 @@ namespace Kentor.AuthServices.Configuration
             EntityId = configSection.EntityId;
             ModulePath = configSection.ModulePath;
             Organization = configSection.Organization;
-            ServiceCertificate = configSection.ServiceCertificate.LoadCertificate();
+
+            configSection.ServiceCertificates.RegisterServiceCertificates(this);
 
             foreach (var acs in configSection.AttributeConsumingServices)
             {
@@ -216,9 +219,115 @@ namespace Kentor.AuthServices.Configuration
             }
         }
 
+        readonly Collection<ServiceCertificate> serviceCertificates = new Collection<ServiceCertificate>();
+
         /// <summary>
-        /// Certificate for service provider to use when decrypting assertions
+        /// Certificates used by the service provider for signing or decryption.
         /// </summary>
-        public X509Certificate2 ServiceCertificate { get; set; }
+        public Collection<ServiceCertificate> ServiceCertificates
+        {
+            get
+            {
+                return serviceCertificates;
+            }
+        }
+
+        /// <summary>
+        /// Certificates valid for use in decryption
+        /// </summary>
+        public ReadOnlyCollection<X509Certificate2> DecryptionServiceCertificates
+        {
+            get
+            {
+                var decryptionCertificates = ServiceCertificates
+                    .Where(c => c.Use == CertificateUse.Encryption || c.Use == CertificateUse.Both)
+                    .Select(c => c.Certificate);
+
+                return decryptionCertificates.ToList().AsReadOnly();
+            }
+        }
+
+        /// <summary>
+        /// Certificate for use in signing outbound requests
+        /// </summary>
+        public X509Certificate2 SigningServiceCertificate
+        {
+            get
+            {
+                var signingCertificates = ServiceCertificates
+                    .Where(c => c.Status == CertificateStatus.Current)
+                    .Where(c => c.Use == CertificateUse.Signing || c.Use == CertificateUse.Both)
+                    .Select(c => c.Certificate);
+
+                return signingCertificates.FirstOrDefault();
+            }
+        }
+
+        /// <summary>
+        /// Certificates to be published in metadata
+        /// </summary>
+        public ReadOnlyCollection<ServiceCertificate> MetadataCertificates
+        {
+            get
+            {
+                var futureEncryptionCertExists = publishableServiceCertificates
+                    .Any(c => c.Status == CertificateStatus.Future && (c.Use == CertificateUse.Encryption || c.Use == CertificateUse.Both));
+
+                var metaDataCertificates = publishableServiceCertificates
+                    .Where(
+                        // Signing & "Both" certs always get published because we want Idp's to be aware of upcoming keys
+                        c => c.Status == CertificateStatus.Future || c.Use != CertificateUse.Encryption
+                        // But current Encryption cert stops getting published immediately when a Future one is added
+                        // (of course we still decrypt with the current cert, but that's a different part of the code)
+                        || (c.Status == CertificateStatus.Current && c.Use == CertificateUse.Encryption && !futureEncryptionCertExists)
+                        || c.MetadataPublishOverride != MetadataPublishOverrideType.None
+                    )
+                    .Select(c => new ServiceCertificate
+                    {
+                        Use = c.Use,
+                        Status = c.Status,
+                        MetadataPublishOverride = c.MetadataPublishOverride,
+                        Certificate = c.Certificate
+                    }).ToList();
+
+                var futureBothCertExists = metaDataCertificates
+                    .Any(c => c.Status == CertificateStatus.Future && c.Use == CertificateUse.Both);
+
+                foreach(var cert in metaDataCertificates)
+                {
+                    // Just like we stop publishing Encryption cert immediately when a Future one is added,
+                    // in the case of a "Both" cert we should switch the current use to Signing so that Idp's stop sending
+                    // us certs encrypted with the old key
+                    if (cert.Use == CertificateUse.Both && cert.Status == CertificateStatus.Current && futureBothCertExists)
+                    {
+                        cert.Use = CertificateUse.Signing;
+                    }
+
+                    if (cert.MetadataPublishOverride == MetadataPublishOverrideType.PublishEncryption)
+                    {
+                        cert.Use = CertificateUse.Encryption;
+                    }
+                    if (cert.MetadataPublishOverride == MetadataPublishOverrideType.PublishSigning)
+                    {
+                        cert.Use = CertificateUse.Signing;
+                    }
+                    if (cert.MetadataPublishOverride == MetadataPublishOverrideType.PublishUnspecified)
+                    {
+                        cert.Use = CertificateUse.Both;
+                    }
+                }
+
+                return metaDataCertificates.AsReadOnly();
+            }
+        }
+
+        private IEnumerable<ServiceCertificate> publishableServiceCertificates
+        {
+            get
+            {
+                return ServiceCertificates
+                    .Where(c => c.MetadataPublishOverride != MetadataPublishOverrideType.DoNotPublish);
+            }
+        }
     }
 }

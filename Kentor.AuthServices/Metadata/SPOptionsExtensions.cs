@@ -13,6 +13,7 @@ namespace Kentor.AuthServices.Metadata
 {
     static class SPOptionsExtensions
     {
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1506:AvoidExcessiveClassCoupling")]
         public static ExtendedEntityDescriptor CreateMetadata(this ISPOptions spOptions, AuthServicesUrls urls)
         {
             var ed = new ExtendedEntityDescriptor
@@ -44,17 +45,21 @@ namespace Kentor.AuthServices.Metadata
                 spsso.AttributeConsumingServices.Add(attributeService);
             }
 
-            if (spOptions.ServiceCertificate != null)
+            if (spOptions.ServiceCertificates != null)
             {
-                using (var securityToken = new X509SecurityToken(spOptions.ServiceCertificate))
+                var publishCertificates = spOptions.MetadataCertificates;
+                foreach (var serviceCert in publishCertificates)
                 {
-                    spsso.Keys.Add(
-                        new KeyDescriptor
-                        {
-                            Use = KeyType.Encryption,
-                            KeyInfo = new SecurityKeyIdentifier(securityToken.CreateKeyIdentifierClause<X509RawDataKeyIdentifierClause>())
-                        }
-                    );
+                    using (var securityToken = new X509SecurityToken(serviceCert.Certificate))
+                    {
+                        spsso.Keys.Add(
+                            new KeyDescriptor
+                            {
+                                Use = (KeyType)(byte)serviceCert.Use,
+                                KeyInfo = new SecurityKeyIdentifier(securityToken.CreateKeyIdentifierClause<X509RawDataKeyIdentifierClause>())
+                            }
+                        );
+                    }
                 }
             }
 

@@ -112,6 +112,8 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
+    <Compile Include="Configuration\ServiceCertificateCollectionTests.cs" />
+    <Compile Include="ServiceCertificateTests.cs" />
     <Compile Include="HttpModule\CommandResultHttpTests.cs" />
     <Compile Include="HttpModule\HttpRequestBaseExtensionsTests.cs" />
     <Compile Include="Internal\QueryStringHelperTests.cs" />

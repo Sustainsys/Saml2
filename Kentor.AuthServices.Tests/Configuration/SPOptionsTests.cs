@@ -1,9 +1,11 @@
 ﻿using System;
+using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Kentor.AuthServices.Configuration;
 using System.IdentityModel.Metadata;
 using FluentAssertions;
 using Kentor.AuthServices.Saml2P;
+using Kentor.AuthServices.TestHelpers;
 
 namespace Kentor.AuthServices.Tests.Configuration
 {
@@ -95,6 +97,376 @@ namespace Kentor.AuthServices.Tests.Configuration
             var subject = new SPOptions();
 
             subject.MetadataCacheDuration.Should().Be(new TimeSpan(1, 0, 0));
+        }
+
+        [TestMethod]
+        public void SPOptions_SigningCertificate_NullWhenEmpty()
+        {
+            var subject = new SPOptions();
+
+            subject.SigningServiceCertificate.Should().Be(null);
+        }
+
+        [TestMethod]
+        public void SPOptions_SigningCertificate_SingleSigning()
+        {
+            var subject = new SPOptions();
+            subject.ServiceCertificates.Add(new ServiceCertificate
+            {
+                Use = CertificateUse.Signing,
+                Certificate = SignedXmlHelper.TestCert
+            });
+
+            subject.SigningServiceCertificate.SerialNumber.Should().Be(SignedXmlHelper.TestCert.SerialNumber);
+        }
+
+        [TestMethod]
+        public void SPOptions_SigningCertificate_SingleUnspecified()
+        {
+            var subject = new SPOptions();
+            subject.ServiceCertificates.Add(new ServiceCertificate {
+                Use = CertificateUse.Signing,
+                Certificate = SignedXmlHelper.TestCert });
+
+            subject.SigningServiceCertificate.SerialNumber.Should().Be(SignedXmlHelper.TestCert.SerialNumber);
+        }
+
+        [TestMethod]
+        public void SPOptions_SigningCertificate_UseCurrentWhenFuturePublished()
+        {
+            var subject = new SPOptions();
+            subject.ServiceCertificates.Add(new ServiceCertificate { Certificate = SignedXmlHelper.TestCert2 });
+            subject.ServiceCertificates.Add(new ServiceCertificate { Status = CertificateStatus.Future, Certificate = SignedXmlHelper.TestCert });
+
+            subject.SigningServiceCertificate.SerialNumber.Should().Be(SignedXmlHelper.TestCert2.SerialNumber);
+        }
+
+        [TestMethod]
+        public void SPOptions_SigningCertificate_NullWhenOnlyDecryptionCerts()
+        {
+            var subject = new SPOptions();
+            subject.ServiceCertificates.Add(new ServiceCertificate { Use = CertificateUse.Encryption, Certificate = SignedXmlHelper.TestCert2 });
+
+            subject.SigningServiceCertificate.Should().Be(null);
+        }
+
+        [TestMethod]
+        public void SPOptions_DecryptionCertificate_EmptyWhenNoneAdded()
+        {
+            var subject = new SPOptions();
+
+            subject.DecryptionServiceCertificates.Count.Should().Be(0);
+        }
+
+        [TestMethod]
+        public void SPOptions_DecryptionCertificate_SingleUnspecified()
+        {
+            var subject = new SPOptions();
+            subject.ServiceCertificates.Add(new ServiceCertificate { Certificate = SignedXmlHelper.TestCert });
+
+            subject.DecryptionServiceCertificates.Count.Should().Be(1);
+            subject.DecryptionServiceCertificates[0].SerialNumber.Should().Be(SignedXmlHelper.TestCert.SerialNumber);
+        }
+
+        [TestMethod]
+        public void SPOptions_DecryptionCertificate_SingleEncryption()
+        {
+            var subject = new SPOptions();
+            subject.ServiceCertificates.Add(new ServiceCertificate
+            {
+                Use = CertificateUse.Encryption,
+                Certificate = SignedXmlHelper.TestCert
+            });
+
+            subject.DecryptionServiceCertificates.Count.Should().Be(1);
+            subject.DecryptionServiceCertificates[0].SerialNumber.Should().Be(SignedXmlHelper.TestCert.SerialNumber);
+        }
+
+        [TestMethod]
+        public void SPOptions_DecryptionCertificate_UseBothWhenFutureUnspecifiedPublished()
+        {
+            var subject = new SPOptions();
+            subject.ServiceCertificates.Add(new ServiceCertificate { Certificate = SignedXmlHelper.TestCert2 });
+            subject.ServiceCertificates.Add(new ServiceCertificate { Status = CertificateStatus.Future, Certificate = SignedXmlHelper.TestCert });
+
+            subject.DecryptionServiceCertificates.Count.Should().Be(2);
+            subject.DecryptionServiceCertificates[0].SerialNumber.Should().NotBe(subject.DecryptionServiceCertificates[1].SerialNumber);
+        }
+
+        [TestMethod]
+        public void SPOptions_DecryptionCertificate_UseBothWhenFutureEncryptionPublished()
+        {
+            var subject = new SPOptions();
+            subject.ServiceCertificates.Add(new ServiceCertificate { Certificate = SignedXmlHelper.TestCert2 });
+            subject.ServiceCertificates.Add(new ServiceCertificate { Use = CertificateUse.Encryption, Status = CertificateStatus.Future, Certificate = SignedXmlHelper.TestCert });
+
+            subject.DecryptionServiceCertificates.Count.Should().Be(2);
+            subject.DecryptionServiceCertificates[0].SerialNumber.Should().NotBe(subject.DecryptionServiceCertificates[1].SerialNumber);
+        }
+
+        [TestMethod]
+        public void SPOptions_DecryptionCertificate_EmptyWhenOnlySigning()
+        {
+            var subject = new SPOptions();
+            subject.ServiceCertificates.Add(new ServiceCertificate { Use = CertificateUse.Signing, Certificate = SignedXmlHelper.TestCert2 });
+
+            subject.DecryptionServiceCertificates.Count.Should().Be(0);
+        }
+
+        [TestMethod]
+        public void SPOptions_MetadataCertificates_EmptyWhenNoneAdded()
+        {
+            var subject = new SPOptions();
+
+            subject.MetadataCertificates.Count.Should().Be(0);
+        }
+
+        [TestMethod]
+        public void SPOptions_MetadataCertificates_Single()
+        {
+            var subject = new SPOptions();
+            subject.ServiceCertificates.Add(new ServiceCertificate { Certificate = SignedXmlHelper.TestCert });
+
+            var result = subject.MetadataCertificates;
+            result.Count.Should().Be(1);
+            result[0].Certificate.SerialNumber.Should().Be(SignedXmlHelper.TestCert.SerialNumber);
+        }
+
+        [TestMethod]
+        public void SPOptions_MetadataCertificates_CurrentBothBecomesSigning_WhenFutureBothPublished()
+        {
+            var subject = new SPOptions();
+            subject.ServiceCertificates.Add(new ServiceCertificate { Certificate = SignedXmlHelper.TestCert });
+            subject.ServiceCertificates.Add(new ServiceCertificate { Status = CertificateStatus.Future, Certificate = SignedXmlHelper.TestCert2 });
+
+            var result = subject.MetadataCertificates;
+            result.Count.Should().Be(2);
+            // tests that we switch the current use to Signing so that Idp's stop sending us certs encrypted with the old key
+            result.Where(c => c.Certificate.SerialNumber == SignedXmlHelper.TestCert.SerialNumber).First().Use.Should().Be(CertificateUse.Signing);
+            result.Where(c => c.Certificate.SerialNumber == SignedXmlHelper.TestCert2.SerialNumber).First().Use.Should().Be(CertificateUse.Both);
+
+            // prevent bug where the MetadataCertificates property modified the Use property of the same underlying object
+            subject.ServiceCertificates[0].Use.Should().Be(CertificateUse.Both);
+            subject.ServiceCertificates[1].Use.Should().Be(CertificateUse.Both);
+        }
+
+        [TestMethod]
+        public void SPOptions_MetadataCertificates_OnlyOneEncryptionPublished_FutureEncryption()
+        {
+            var subject = new SPOptions();
+            subject.ServiceCertificates.Add(new ServiceCertificate
+            {
+                Use = CertificateUse.Encryption,
+                Certificate = SignedXmlHelper.TestCert
+            });
+            subject.ServiceCertificates.Add(new ServiceCertificate
+            {
+                Use = CertificateUse.Encryption,
+                Status = CertificateStatus.Future,
+                Certificate = SignedXmlHelper.TestCert2
+            });
+
+            var result = subject.MetadataCertificates;
+            result.Count.Should().Be(1);
+            result[0].Status.Should().Be(CertificateStatus.Future);
+        }
+
+        [TestMethod]
+        public void SPOptions_MetadataCertificates_OnlyOneEncryptionPublished_FutureBoth()
+        {
+            var subject = new SPOptions();
+            subject.ServiceCertificates.Add(new ServiceCertificate
+            {
+                Use = CertificateUse.Encryption,
+                Certificate = SignedXmlHelper.TestCert
+            });
+            subject.ServiceCertificates.Add(new ServiceCertificate
+            {
+                Use = CertificateUse.Both,
+                Status = CertificateStatus.Future,
+                Certificate = SignedXmlHelper.TestCert2
+            });
+
+            var result = subject.MetadataCertificates;
+            result.Count.Should().Be(1);
+            result[0].Status.Should().Be(CertificateStatus.Future);
+        }
+
+        [TestMethod]
+        public void SPOptions_MetadataCertificates_BothSigningAndEncryptionPublished()
+        {
+            var subject = new SPOptions();
+            subject.ServiceCertificates.Add(new ServiceCertificate
+            {
+                Use = CertificateUse.Encryption,
+                Certificate = SignedXmlHelper.TestCert
+            });
+            subject.ServiceCertificates.Add(new ServiceCertificate
+            {
+                Use = CertificateUse.Signing,
+                Certificate = SignedXmlHelper.TestCert2
+            });
+
+            var result = subject.MetadataCertificates;
+            result.Count.Should().Be(2);
+            result[0].Use.Should().NotBe(result[1].Use);
+        }
+
+        [TestMethod]
+        public void SPOptions_MetadataCertificates_RolloverOnlyOneType()
+        {
+            var subject = new SPOptions();
+            subject.ServiceCertificates.Add(new ServiceCertificate
+            {
+                Use = CertificateUse.Encryption,
+                Certificate = SignedXmlHelper.TestCert
+            });
+            subject.ServiceCertificates.Add(new ServiceCertificate
+            {
+                Use = CertificateUse.Signing,
+                Certificate = SignedXmlHelper.TestCert2
+            });
+            subject.ServiceCertificates.Add(new ServiceCertificate
+            {
+                Status = CertificateStatus.Future,
+                Use = CertificateUse.Signing,
+                Certificate = SignedXmlHelper.TestCert3
+            });
+
+            var result = subject.MetadataCertificates;
+            result.Count.Should().Be(3);
+            result.Where(c => c.Use == CertificateUse.Signing).Count().Should().Be(2);
+            result.Where(c => c.Use == CertificateUse.Encryption).Count().Should().Be(1);
+        }
+
+        [TestMethod]
+        public void SPOptions_MetadataCertificates_BothSigningPublished()
+        {
+            var subject = new SPOptions();
+            subject.ServiceCertificates.Add(new ServiceCertificate
+            {
+                Use = CertificateUse.Signing,
+                Certificate = SignedXmlHelper.TestCert
+            });
+            subject.ServiceCertificates.Add(new ServiceCertificate
+            {
+                Use = CertificateUse.Signing,
+                Status = CertificateStatus.Future,
+                Certificate = SignedXmlHelper.TestCert2
+            });
+
+            var result = subject.MetadataCertificates;
+            result.Count.Should().Be(2);
+            result[0].Certificate.SerialNumber.Should().NotBe(result[1].Certificate.SerialNumber);
+        }
+
+        [TestMethod]
+        public void SPOptions_MetadataCertificates_OverrideDoNotPublish()
+        {
+            var subject = new SPOptions();
+            subject.ServiceCertificates.Add(new ServiceCertificate
+            {
+                MetadataPublishOverride = MetadataPublishOverrideType.DoNotPublish,
+                Certificate = SignedXmlHelper.TestCert
+            });
+
+            var result = subject.MetadataCertificates;
+            result.Count.Should().Be(0);
+        }
+
+        [TestMethod]
+        public void SPOptions_MetadataCertificates_OverridePublishSigning()
+        {
+            var subject = new SPOptions();
+            subject.ServiceCertificates.Add(new ServiceCertificate
+            {
+                MetadataPublishOverride = MetadataPublishOverrideType.PublishSigning,
+                Certificate = SignedXmlHelper.TestCert
+            });
+
+            var result = subject.MetadataCertificates;
+            result.Count.Should().Be(1);
+            result[0].Use.Should().Be(CertificateUse.Signing);
+            // prevent bug where the MetadataCertificates property modified the Use property of the same underlying object
+            subject.ServiceCertificates[0].Use.Should().Be(CertificateUse.Both);
+        }
+
+        [TestMethod]
+        public void SPOptions_MetadataCertificates_OverridePublishEncryption()
+        {
+            var subject = new SPOptions();
+            subject.ServiceCertificates.Add(new ServiceCertificate
+            {
+                MetadataPublishOverride = MetadataPublishOverrideType.PublishEncryption,
+                Certificate = SignedXmlHelper.TestCert
+            });
+
+            var result = subject.MetadataCertificates;
+            result.Count.Should().Be(1);
+            result[0].Use.Should().Be(CertificateUse.Encryption);
+            // prevent bug where the MetadataCertificates property modified the Use property of the same underlying object
+            subject.ServiceCertificates[0].Use.Should().Be(CertificateUse.Both);
+        }
+
+        [TestMethod]
+        public void SPOptions_MetadataCertificates_OverridePublishUnspecified()
+        {
+            var subject = new SPOptions();
+            subject.ServiceCertificates.Add(new ServiceCertificate
+            {
+                Use = CertificateUse.Encryption,
+                MetadataPublishOverride = MetadataPublishOverrideType.PublishUnspecified,
+                Certificate = SignedXmlHelper.TestCert
+            });
+
+            var result = subject.MetadataCertificates;
+            result.Count.Should().Be(1);
+            result[0].Use.Should().Be(CertificateUse.Both);
+            // prevent bug where the MetadataCertificates property modified the Use property of the same underlying object
+            subject.ServiceCertificates[0].Use.Should().Be(CertificateUse.Encryption);
+        }
+
+        [TestMethod]
+        public void SPOptions_MetadataCertificates_BothEncryptionPublishedWithOverride()
+        {
+            var subject = new SPOptions();
+            subject.ServiceCertificates.Add(new ServiceCertificate
+            {
+                Use = CertificateUse.Encryption,
+                Certificate = SignedXmlHelper.TestCert,
+                MetadataPublishOverride = MetadataPublishOverrideType.PublishEncryption
+            });
+            subject.ServiceCertificates.Add(new ServiceCertificate
+            {
+                Use = CertificateUse.Encryption,
+                Status = CertificateStatus.Future,
+                Certificate = SignedXmlHelper.TestCert2
+            });
+
+            var result = subject.MetadataCertificates;
+            result.Count.Should().Be(2);
+        }
+
+        [TestMethod]
+        public void SPOptions_MetadataCertificates_CurrentEncryptionRemainsPublished_IfFutureOverriddentoNotPublished()
+        {
+            var subject = new SPOptions();
+            subject.ServiceCertificates.Add(new ServiceCertificate
+            {
+                Use = CertificateUse.Encryption,
+                Certificate = SignedXmlHelper.TestCert
+            });
+            subject.ServiceCertificates.Add(new ServiceCertificate
+            {
+                Use = CertificateUse.Encryption,
+                Status = CertificateStatus.Future,
+                MetadataPublishOverride = MetadataPublishOverrideType.DoNotPublish,
+                Certificate = SignedXmlHelper.TestCert2
+            });
+
+            var result = subject.MetadataCertificates;
+            result.Count.Should().Be(1);
+            result[0].Status.Should().Be(CertificateStatus.Current);
         }
     }
 }
