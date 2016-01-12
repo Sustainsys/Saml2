@@ -1850,6 +1850,14 @@ namespace Kentor.AuthServices.Tests.Saml2P
         }
 
         [TestMethod]
+        public void Saml2Response_FromData_RelayState()
+        {
+            var subject = new Saml2Response(new EntityId("issuer"), null, null, null, "ABC123", null);
+
+            subject.RelayState.Should().Be("ABC123");
+        }
+
+        [TestMethod]
         public void Saml2Response_Xml_FromData_IsSigned()
         {
             var issuer = new EntityId("http://idp.example.com");

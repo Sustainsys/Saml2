@@ -78,13 +78,13 @@ namespace Kentor.AuthServices.Saml2P
                 secondLevelStatus = xml.DocumentElement["Status", Saml2Namespaces.Saml2PName]["StatusCode", Saml2Namespaces.Saml2PName]["StatusCode", Saml2Namespaces.Saml2PName].Attributes["Value"].Value;
             }
 
-            issuer = new EntityId(xmlDocument.DocumentElement["Issuer", Saml2Namespaces.Saml2Name].GetTrimmedTextIfNotNull());
+            Issuer = new EntityId(xmlDocument.DocumentElement["Issuer", Saml2Namespaces.Saml2Name].GetTrimmedTextIfNotNull());
 
             var destinationUrlString = xmlDocument.DocumentElement.Attributes["Destination"].GetValueIfNotNull();
 
             if (destinationUrlString != null)
             {
-                destinationUrl = new Uri(destinationUrlString);
+                DestinationUrl = new Uri(destinationUrlString);
             }
         }
 
@@ -98,13 +98,39 @@ namespace Kentor.AuthServices.Saml2P
         /// <param name="inResponseTo">In response to id</param>
         /// <param name="claimsIdentities">Claims identities to be included in the 
         /// response. Each identity is translated into a separate assertion.</param>
-        public Saml2Response(EntityId issuer, X509Certificate2 issuerCertificate,
-            Uri destinationUrl, Saml2Id inResponseTo, params ClaimsIdentity[] claimsIdentities)
+        public Saml2Response(
+            EntityId issuer,
+            X509Certificate2 issuerCertificate,
+            Uri destinationUrl,
+            Saml2Id inResponseTo,
+            params ClaimsIdentity[] claimsIdentities)
+            : this(issuer, issuerCertificate, destinationUrl, inResponseTo, null, claimsIdentities)
+        { }
+
+        /// <summary>
+        /// Create a response with the supplied data.
+        /// </summary>
+        /// <param name="issuer">Issuer of the response.</param>
+        /// <param name="issuerCertificate">The certificate to use when signing
+        /// this response in XML form.</param>
+        /// <param name="destinationUrl">The destination Uri for the message</param>
+        /// <param name="inResponseTo">In response to id</param>
+        /// <param name="relayState">RelayState associated with the message.</param>
+        /// <param name="claimsIdentities">Claims identities to be included in the 
+        /// response. Each identity is translated into a separate assertion.</param>
+        public Saml2Response(
+            EntityId issuer,
+            X509Certificate2 issuerCertificate,
+            Uri destinationUrl,
+            Saml2Id inResponseTo,
+            string relayState,
+            params ClaimsIdentity[] claimsIdentities)
         {
-            this.issuer = issuer;
+            Issuer = issuer;
             this.claimsIdentities = claimsIdentities;
             this.issuerCertificate = issuerCertificate;
-            this.destinationUrl = destinationUrl;
+            DestinationUrl = destinationUrl;
+            RelayState = relayState;
             if (inResponseTo != null)
             {
                 this.inResponseTo = inResponseTo;
@@ -178,7 +204,7 @@ namespace Kentor.AuthServices.Saml2P
             xml.AppendChild(responseElement);
 
             var issuerElement = xml.CreateElement("saml2", "Issuer", Saml2Namespaces.Saml2Name);
-            issuerElement.InnerText = issuer.Id;
+            issuerElement.InnerText = Issuer.Id;
             responseElement.AppendChild(issuerElement);
 
             var statusElement = xml.CreateElement("saml2p", "Status", Saml2Namespaces.Saml2PName);
@@ -190,7 +216,7 @@ namespace Kentor.AuthServices.Saml2P
             foreach (var ci in claimsIdentities)
             {
                 responseElement.AppendChild(xml.ReadNode(
-                    ci.ToSaml2Assertion(issuer).ToXElement().CreateReader()));
+                    ci.ToSaml2Assertion(Issuer).ToXElement().CreateReader()));
             }
 
             xmlDocument = xml;
@@ -240,31 +266,15 @@ namespace Kentor.AuthServices.Saml2P
         /// </summary>
         public string SecondLevelStatus { get { return secondLevelStatus; } }
 
-        readonly EntityId issuer;
-
         /// <summary>
         /// Issuer (= sender) of the response.
         /// </summary>
-        public EntityId Issuer
-        {
-            get
-            {
-                return issuer;
-            }
-        }
-
-        readonly Uri destinationUrl;
+        public EntityId Issuer { get; }
 
         /// <summary>
         /// The destination of the response message.
         /// </summary>
-        public Uri DestinationUrl
-        {
-            get
-            {
-                return destinationUrl;
-            }
-        }
+        public Uri DestinationUrl { get; }
 
         StoredRequestState requestState;
 
@@ -376,7 +386,7 @@ namespace Kentor.AuthServices.Saml2P
                 {
                     var msg = string.Format(CultureInfo.InvariantCulture,
                         "Expected response from idp \"{0}\" but received response from idp \"{1}\".",
-                        requestState.Idp.Id, issuer.Id);
+                        requestState.Idp.Id, Issuer.Id);
                     throw new Saml2ResponseFailedValidationException(msg);
                 }
             }
