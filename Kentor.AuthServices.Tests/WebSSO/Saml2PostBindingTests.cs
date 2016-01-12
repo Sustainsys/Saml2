@@ -99,10 +99,9 @@ namespace Kentor.AuthServices.Tests.WebSso
 you must press the Continue button once to proceed.
 </p>
 </noscript>
-<form action=""http://www.example.com/acs"" 
-method=""post"">
+<form action=""http://www.example.com/acs"" method=""post"">
 <div>
-<input type=""hidden"" name=""SAMLMessageName"" 
+<input type=""hidden"" name=""SAMLMessageName""
 value=""PHJvb3Q+PGNvbnRlbnQ+ZGF0YTwvY29udGVudD48L3Jvb3Q+""/>
 </div>
 <noscript>
@@ -116,6 +115,49 @@ value=""PHJvb3Q+PGNvbnRlbnQ+ZGF0YTwvY29udGVudD48L3Jvb3Q+""/>
             };
 
             subject.ShouldBeEquivalentTo(expected);
+        }
+
+        [TestMethod]
+        public void Saml2PostBinding_Bind_WithRelayState()
+        {
+            var xmlData = "<root><content>data</content></root>";
+            var destinationUrl = new Uri("http://www.example.com/acs");
+            var messageName = "SAMLMessageName";
+            var relayState = "ABC1234";
+
+            var result = Saml2Binding.Get(Saml2BindingType.HttpPost).Bind(xmlData, destinationUrl, messageName, relayState);
+
+            var expected = new CommandResult()
+            {
+                ContentType = "text/html",
+                Content = @"<?xml version=""1.0"" encoding=""UTF-8""?>
+<!DOCTYPE html PUBLIC ""-//W3C//DTD XHTML 1.1//EN""
+""http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd"">
+<html xmlns=""http://www.w3.org/1999/xhtml"" xml:lang=""en"">
+<body onload=""document.forms[0].submit()"">
+<noscript>
+<p>
+<strong>Note:</strong> Since your browser does not support JavaScript, 
+you must press the Continue button once to proceed.
+</p>
+</noscript>
+<form action=""http://www.example.com/acs"" method=""post"">
+<div>
+<input type=""hidden"" name=""RelayState"" value=""ABC1234""/>
+<input type=""hidden"" name=""SAMLMessageName""
+value=""PHJvb3Q+PGNvbnRlbnQ+ZGF0YTwvY29udGVudD48L3Jvb3Q+""/>
+</div>
+<noscript>
+<div>
+<input type=""submit"" value=""Continue""/>
+</div>
+</noscript>
+</form>
+</body>
+</html>"
+            };
+
+            result.ShouldBeEquivalentTo(expected);
         }
 
         [TestMethod]
