@@ -255,12 +255,12 @@ namespace Kentor.AuthServices.Configuration
         {
             get
             {
-                var decryptionCertificates = ServiceCertificates
+                var signingCertificates = ServiceCertificates
                     .Where(c => c.Status == CertificateStatus.Current)
                     .Where(c => c.Use == CertificateUse.Signing || c.Use == CertificateUse.Both)
                     .Select(c => c.Certificate);
 
-                return decryptionCertificates.FirstOrDefault();
+                return signingCertificates.FirstOrDefault();
             }
         }
 
@@ -272,16 +272,24 @@ namespace Kentor.AuthServices.Configuration
             get
             {
                 var futureEncryptionCertExists = publishableServiceCertificates
-                    .Any(c => c.Status == CertificateStatus.Future && c.Use == CertificateUse.Encryption);
+                    .Any(c => c.Status == CertificateStatus.Future && (c.Use == CertificateUse.Encryption || c.Use == CertificateUse.Both));
 
                 var metaDataCertificates = publishableServiceCertificates
-                    // Signing & "Both" certs always get published because we want Idp's to be aware of upcoming keys
-                    .Where(c => c.Status == CertificateStatus.Future || c.Use != CertificateUse.Encryption
-                    // But current Encryption cert stops getting published immediately when a Future one is added
-                    // (of course we still decrypt with the current cert, but that's a different part of the code)
-                    || (c.Status == CertificateStatus.Current && c.Use == CertificateUse.Encryption && !futureEncryptionCertExists)
-                    || c.MetadataPublishOverride != MetadataPublishOverrideType.None
-                );
+                    .Where(
+                        // Signing & "Both" certs always get published because we want Idp's to be aware of upcoming keys
+                        c => c.Status == CertificateStatus.Future || c.Use != CertificateUse.Encryption
+                        // But current Encryption cert stops getting published immediately when a Future one is added
+                        // (of course we still decrypt with the current cert, but that's a different part of the code)
+                        || (c.Status == CertificateStatus.Current && c.Use == CertificateUse.Encryption && !futureEncryptionCertExists)
+                        || c.MetadataPublishOverride != MetadataPublishOverrideType.None
+                    )
+                    .Select(c => new ServiceCertificate
+                    {
+                        Use = c.Use,
+                        Status = c.Status,
+                        MetadataPublishOverride = c.MetadataPublishOverride,
+                        Certificate = c.Certificate
+                    }).ToList();
 
                 var futureBothCertExists = metaDataCertificates
                     .Any(c => c.Status == CertificateStatus.Future && c.Use == CertificateUse.Both);
@@ -310,7 +318,7 @@ namespace Kentor.AuthServices.Configuration
                     }
                 }
 
-                return metaDataCertificates.ToList().AsReadOnly();
+                return metaDataCertificates.AsReadOnly();
             }
         }
 

@@ -233,7 +233,7 @@ namespace Kentor.AuthServices.Tests.Configuration
         }
 
         [TestMethod]
-        public void SPOptions_MetadataCertificates_BothBecomesSigningWhenFuturePublished()
+        public void SPOptions_MetadataCertificates_CurrentBothBecomesSigning_WhenFutureBothPublished()
         {
             var subject = new SPOptions();
             subject.ServiceCertificates.Add(new ServiceCertificate { Certificate = SignedXmlHelper.TestCert });
@@ -241,11 +241,17 @@ namespace Kentor.AuthServices.Tests.Configuration
 
             var result = subject.MetadataCertificates;
             result.Count.Should().Be(2);
-            result[0].Use.Should().NotBe(result[1].Use);
+            // tests that we switch the current use to Signing so that Idp's stop sending us certs encrypted with the old key
+            result.Where(c => c.Certificate.SerialNumber == SignedXmlHelper.TestCert.SerialNumber).First().Use.Should().Be(CertificateUse.Signing);
+            result.Where(c => c.Certificate.SerialNumber == SignedXmlHelper.TestCert2.SerialNumber).First().Use.Should().Be(CertificateUse.Both);
+
+            // prevent bug where the MetadataCertificates property modified the Use property of the same underlying object
+            subject.ServiceCertificates[0].Use.Should().Be(CertificateUse.Both);
+            subject.ServiceCertificates[1].Use.Should().Be(CertificateUse.Both);
         }
 
         [TestMethod]
-        public void SPOptions_MetadataCertificates_OnlyOneEncryptionPublished()
+        public void SPOptions_MetadataCertificates_OnlyOneEncryptionPublished_FutureEncryption()
         {
             var subject = new SPOptions();
             subject.ServiceCertificates.Add(new ServiceCertificate
@@ -256,6 +262,27 @@ namespace Kentor.AuthServices.Tests.Configuration
             subject.ServiceCertificates.Add(new ServiceCertificate
             {
                 Use = CertificateUse.Encryption,
+                Status = CertificateStatus.Future,
+                Certificate = SignedXmlHelper.TestCert2
+            });
+
+            var result = subject.MetadataCertificates;
+            result.Count.Should().Be(1);
+            result[0].Status.Should().Be(CertificateStatus.Future);
+        }
+
+        [TestMethod]
+        public void SPOptions_MetadataCertificates_OnlyOneEncryptionPublished_FutureBoth()
+        {
+            var subject = new SPOptions();
+            subject.ServiceCertificates.Add(new ServiceCertificate
+            {
+                Use = CertificateUse.Encryption,
+                Certificate = SignedXmlHelper.TestCert
+            });
+            subject.ServiceCertificates.Add(new ServiceCertificate
+            {
+                Use = CertificateUse.Both,
                 Status = CertificateStatus.Future,
                 Certificate = SignedXmlHelper.TestCert2
             });
@@ -360,6 +387,8 @@ namespace Kentor.AuthServices.Tests.Configuration
             var result = subject.MetadataCertificates;
             result.Count.Should().Be(1);
             result[0].Use.Should().Be(CertificateUse.Signing);
+            // prevent bug where the MetadataCertificates property modified the Use property of the same underlying object
+            subject.ServiceCertificates[0].Use.Should().Be(CertificateUse.Both);
         }
 
         [TestMethod]
@@ -375,6 +404,8 @@ namespace Kentor.AuthServices.Tests.Configuration
             var result = subject.MetadataCertificates;
             result.Count.Should().Be(1);
             result[0].Use.Should().Be(CertificateUse.Encryption);
+            // prevent bug where the MetadataCertificates property modified the Use property of the same underlying object
+            subject.ServiceCertificates[0].Use.Should().Be(CertificateUse.Both);
         }
 
         [TestMethod]
@@ -391,6 +422,8 @@ namespace Kentor.AuthServices.Tests.Configuration
             var result = subject.MetadataCertificates;
             result.Count.Should().Be(1);
             result[0].Use.Should().Be(CertificateUse.Both);
+            // prevent bug where the MetadataCertificates property modified the Use property of the same underlying object
+            subject.ServiceCertificates[0].Use.Should().Be(CertificateUse.Encryption);
         }
 
         [TestMethod]
