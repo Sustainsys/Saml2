@@ -24,12 +24,16 @@ namespace Kentor.AuthServices.WebSso
             {
                 throw new ArgumentNullException(nameof(destinationUrl));
             }
+            if (messageName == null)
+            {
+                throw new ArgumentNullException(nameof(messageName));
+            }
 
             var serializedRequest = Serialize(payload);
 
             var redirectUri = new Uri(destinationUrl.ToString()
                 + (String.IsNullOrEmpty(destinationUrl.Query) ? "?" : "&") 
-                + "SAMLRequest=" + serializedRequest);
+                + messageName + "=" + serializedRequest);
 
             return new CommandResult()
             {
