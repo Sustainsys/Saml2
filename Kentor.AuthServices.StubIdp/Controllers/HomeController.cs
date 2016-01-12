@@ -48,10 +48,13 @@ namespace Kentor.AuthServices.StubIdp.Controllers
                 var decodedXmlData = Saml2Binding.Get(Saml2BindingType.HttpRedirect)
                     .Unbind(requestData);
 
-                var request = Saml2AuthenticationRequest.Read(decodedXmlData);
+                var request = Saml2AuthenticationRequest.Read(
+                    decodedXmlData,
+                    requestData.QueryString["RelayState"].Single());
 
                 model.AssertionModel.InResponseTo = request.Id.Value;
                 model.AssertionModel.AssertionConsumerServiceUrl = request.AssertionConsumerServiceUrl.ToString();
+                model.AssertionModel.RelayState = request.RelayState;
                 model.AssertionModel.AuthnRequestXml = decodedXmlData;
             }
 

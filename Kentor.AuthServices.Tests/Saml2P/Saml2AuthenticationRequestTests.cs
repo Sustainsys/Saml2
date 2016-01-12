@@ -74,10 +74,13 @@ namespace Kentor.AuthServices.Tests.Saml2P
 </samlp:AuthnRequest>
 ";
 
-            var subject = Saml2AuthenticationRequest.Read(xmlData);
+            var relayState = "My relay state";
+
+            var subject = Saml2AuthenticationRequest.Read(xmlData, relayState);
 
             subject.Id.Should().Be(new Saml2Id("Saml2AuthenticationRequest_AssertionConsumerServiceUrl"));
             subject.AssertionConsumerServiceUrl.Should().Be(new Uri("https://sp.example.com/SAML2/Acs"));
+            subject.RelayState.Should().Be(relayState);
         }
 
         [TestMethod]
@@ -96,7 +99,7 @@ namespace Kentor.AuthServices.Tests.Saml2P
 </samlp:AuthnRequest>
 ";
 
-            var subject = Saml2AuthenticationRequest.Read(xmlData);
+            var subject = Saml2AuthenticationRequest.Read(xmlData, null);
 
             subject.Id.Should().Be(new Saml2Id("Saml2AuthenticationRequest_Read_NoACS"));
             subject.AssertionConsumerServiceUrl.Should().Be(null);
@@ -120,7 +123,7 @@ namespace Kentor.AuthServices.Tests.Saml2P
 </samlp:AuthnRequest>
 ";
 
-            Action a = () => Saml2AuthenticationRequest.Read(xmlData);
+            Action a = () => Saml2AuthenticationRequest.Read(xmlData, null);
 
             a.ShouldThrow<XmlException>().WithMessage("Wrong or unsupported SAML2 version");
         }
@@ -143,7 +146,7 @@ namespace Kentor.AuthServices.Tests.Saml2P
 </samlp:NotAuthnRequest>
 ";
 
-            Action a = () => Saml2AuthenticationRequest.Read(xmlData);
+            Action a = () => Saml2AuthenticationRequest.Read(xmlData, null);
 
             a.ShouldThrow<XmlException>().WithMessage("Expected a SAML2 authentication request document");
         }
@@ -153,7 +156,7 @@ namespace Kentor.AuthServices.Tests.Saml2P
         {
             string xmlData = null;
 
-            var subject = Saml2AuthenticationRequest.Read(xmlData);
+            var subject = Saml2AuthenticationRequest.Read(xmlData, null);
 
             subject.Should().BeNull();
         }

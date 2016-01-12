@@ -60,9 +60,10 @@ namespace Kentor.AuthServices.Saml2P
         /// Read the supplied Xml and parse it into a authenticationrequest.
         /// </summary>
         /// <param name="xml">xml data.</param>
+        /// <param name="relayState">Relay State attached to the message or null if not present.</param>
         /// <returns>Saml2Request</returns>
         /// <exception cref="XmlException">On xml errors or unexpected xml structure.</exception>
-        public static Saml2AuthenticationRequest Read(string xml)
+        public static Saml2AuthenticationRequest Read(string xml, string relayState)
         {
             if (xml == null)
             {
@@ -72,12 +73,13 @@ namespace Kentor.AuthServices.Saml2P
             x.PreserveWhitespace = true;
             x.LoadXml(xml);
 
-            return new Saml2AuthenticationRequest(x);
+            return new Saml2AuthenticationRequest(x, relayState);
         }
 
-        private Saml2AuthenticationRequest(XmlDocument xml)
+        private Saml2AuthenticationRequest(XmlDocument xml, string relayState)
         {
             ReadBaseProperties(xml);
+            RelayState = relayState;
 
             var AssertionConsumerServiceUriString = xml.DocumentElement.Attributes["AssertionConsumerServiceURL"].GetValueIfNotNull();
 

@@ -19,6 +19,10 @@ namespace Kentor.AuthServices.StubIdp.Models
         [Display(Name = "Assertion Consumer Service Url")]
         public string AssertionConsumerServiceUrl { get; set; }
 
+        [Display(Name = "Relay State")]
+        [StringLength(80)]
+        public string RelayState { get; set; }
+
         [Display(Name = "Subject NameId")]
         [Required]
         public string NameId { get; set; }
