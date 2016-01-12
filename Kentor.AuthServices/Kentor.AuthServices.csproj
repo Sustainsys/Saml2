@@ -102,7 +102,6 @@
     <Compile Include="WebSso\HttpRequestData.cs" />
     <Compile Include="IdentityProvider.cs" />
     <Compile Include="Saml2P\ISaml2Message.cs" />
-    <Compile Include="WebSso\MessageBinder.cs" />
     <Compile Include="Metadata\MetadatabaseExtensions.cs" />
     <Compile Include="WebSso\MetadataCommand.cs" />
     <Compile Include="Metadata\MetadataLoader.cs" />

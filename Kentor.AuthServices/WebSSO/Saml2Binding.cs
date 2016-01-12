@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Kentor.AuthServices.Saml2P;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
@@ -41,6 +42,21 @@ namespace Kentor.AuthServices.WebSso
         public virtual CommandResult Bind(string payload, Uri destinationUrl, string messageName)
         {
             throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// Binds a message to a binding
+        /// </summary>
+        /// <param name="message"></param>
+        /// <returns></returns>
+        public CommandResult Bind(ISaml2Message message)
+        {
+            if (message == null)
+            {
+                throw new ArgumentNullException(nameof(message));
+            }
+
+            return Bind(message.ToXml(), message.DestinationUrl, message.MessageName);
         }
 
         /// <summary>
