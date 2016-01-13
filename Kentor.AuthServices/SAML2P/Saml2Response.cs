@@ -105,7 +105,7 @@ namespace Kentor.AuthServices.Saml2P
         /// Create a response with the supplied data.
         /// </summary>
         /// <param name="issuer">Issuer of the response.</param>
-        /// <param name="issuerCertificate">The certificate to use when signing
+        /// <param name="signingCertificate">The certificate to use when signing
         /// this response in XML form.</param>
         /// <param name="destinationUrl">The destination Uri for the message</param>
         /// <param name="inResponseTo">In response to id</param>
@@ -113,11 +113,11 @@ namespace Kentor.AuthServices.Saml2P
         /// response. Each identity is translated into a separate assertion.</param>
         public Saml2Response(
             EntityId issuer,
-            X509Certificate2 issuerCertificate,
+            X509Certificate2 signingCertificate,
             Uri destinationUrl,
             Saml2Id inResponseTo,
             params ClaimsIdentity[] claimsIdentities)
-            : this(issuer, issuerCertificate, destinationUrl, inResponseTo, null, claimsIdentities)
+            : this(issuer, signingCertificate, destinationUrl, inResponseTo, null, claimsIdentities)
         { }
 
         /// <summary>
@@ -141,7 +141,7 @@ namespace Kentor.AuthServices.Saml2P
         {
             Issuer = issuer;
             this.claimsIdentities = claimsIdentities;
-            this.issuerCertificate = issuerCertificate;
+            SigningCertificate = issuerCertificate;
             DestinationUrl = destinationUrl;
             RelayState = relayState;
             InResponseTo = inResponseTo;
@@ -149,7 +149,11 @@ namespace Kentor.AuthServices.Saml2P
             status = Saml2StatusCode.Success;
         }
 
-        private readonly X509Certificate2 issuerCertificate;
+        /// <summary>
+        /// Certificate used to sign the message with during binding, according
+        /// to the signature processing rules of each binding.
+        /// </summary>
+        public X509Certificate2 SigningCertificate { get; }
 
         private XmlDocument xmlDocument;
 
@@ -230,8 +234,6 @@ namespace Kentor.AuthServices.Saml2P
             }
 
             xmlDocument = xml;
-
-            xml.Sign(issuerCertificate, true);
         }
 
         readonly Saml2Id id;

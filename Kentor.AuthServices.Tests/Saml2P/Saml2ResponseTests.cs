@@ -75,11 +75,13 @@ namespace Kentor.AuthServices.Tests.Saml2P
                 InResponseTo = new Saml2Id("InResponseToId"),
                 RequestState = (StoredRequestState)null,
                 SecondLevelStatus = (string)null,
-                RelayState = relayState
+                RelayState = relayState,
             };
 
-            Saml2Response.Read(response, relayState).ShouldBeEquivalentTo(expected,
-                opt => opt.Excluding(s => s.XmlDocument));
+            Saml2Response.Read(response, relayState).ShouldBeEquivalentTo(
+                expected, opt => opt
+                    .Excluding(s => s.XmlDocument)
+                    .Excluding(s => s.SigningCertificate));
         }
 
         [TestMethod]
@@ -1909,30 +1911,6 @@ namespace Kentor.AuthServices.Tests.Saml2P
             var subject = new Saml2Response(new EntityId("issuer"), null, null, null, "ABC123", null);
 
             subject.RelayState.Should().Be("ABC123");
-        }
-
-        [TestMethod]
-        public void Saml2Response_Xml_FromData_IsSigned()
-        {
-            var issuer = new EntityId("http://idp.example.com");
-            var nameId = "JohnDoe";
-            var identity = new ClaimsIdentity(new Claim[] 
-            {
-                new Claim(ClaimTypes.NameIdentifier, nameId) 
-            });
-
-            var response = new Saml2Response(issuer, SignedXmlHelper.TestCert,
-                null, null, claimsIdentities: identity);
-
-            var xml = response.XmlDocument;
-
-            var signedXml = new SignedXml(xml);
-            var signature = xml.DocumentElement["Signature", SignedXml.XmlDsigNamespaceUrl];
-            signedXml.LoadXml(signature);
-
-            signature.Should().NotBeNull();
-            signedXml.KeyInfo.Count.Should().Be(1);
-            signedXml.CheckSignature(SignedXmlHelper.TestCert, true).Should().BeTrue();
         }
 
         [TestMethod]

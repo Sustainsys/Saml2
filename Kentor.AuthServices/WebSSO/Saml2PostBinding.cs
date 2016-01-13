@@ -4,6 +4,7 @@ using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Web;
+using System.Xml;
 
 namespace Kentor.AuthServices.WebSso
 {
@@ -42,8 +43,20 @@ namespace Kentor.AuthServices.WebSso
                 throw new ArgumentNullException(nameof(message));
             }
 
-            var encodedXml = Convert.ToBase64String(
-                Encoding.UTF8.GetBytes(message.ToXml()));
+            var xml = message.ToXml();
+            if(message.SigningCertificate != null)
+            {
+                var xmlDoc = new XmlDocument()
+                {
+                    PreserveWhitespace = true
+                };
+
+                xmlDoc.LoadXml(xml);
+                xmlDoc.Sign(message.SigningCertificate, true);
+                xml = xmlDoc.OuterXml;
+            }
+
+            var encodedXml = Convert.ToBase64String(Encoding.UTF8.GetBytes(xml));
 
             var relayStateHtml = string.IsNullOrEmpty(message.RelayState) ? null
                 : string.Format(CultureInfo.InvariantCulture, PostHtmlRelayStateFormatString, message.RelayState);
