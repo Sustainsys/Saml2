@@ -71,7 +71,6 @@ namespace Kentor.AuthServices.Tests.Mvc
                     .Should().StartWith("http://ds.example.com/?entityID=https%3A%2F%2Fgithub.com%2FKentorIT%2Fauthservices");
         }
 
-        [NotReRunnable]
         [TestMethod]
         public void AuthServicesController_Acs_Works()
         {

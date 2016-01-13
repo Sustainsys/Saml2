@@ -275,7 +275,6 @@ namespace Kentor.AuthServices.Tests.Owin
             ((AuthenticationProperties)storedAuthnData.RelayData).Dictionary["test"].Should().Be("SomeValue");
         }
 
-        [NotReRunnable]
         [TestMethod]
         public async Task KentorAuthServicesAuthenticationMiddleware_UsesCommandResultLocation()
         {
@@ -335,7 +334,6 @@ namespace Kentor.AuthServices.Tests.Owin
             context.Response.Headers["Location"].Should().Be("http://localhost/LoggedIn");
         }
 
-        [NotReRunnable]
         [TestMethod]
         public async Task KentorAuthServicesAuthenticationMiddleware_AcsWorks()
         {

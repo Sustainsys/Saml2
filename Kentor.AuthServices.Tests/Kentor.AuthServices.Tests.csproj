@@ -152,7 +152,6 @@
     <Compile Include="Exceptions\NoSamlResponseFoundExceptionTests.cs" />
     <Compile Include="Internal\ReturnRequestedIssuerNameRegistryTests.cs" />
     <Compile Include="WebSSO\Saml2RedirectBindingTests.cs" />
-    <Compile Include="AllTestsOtherCultures.cs" />
     <Compile Include="Internal\DateTimeExtensionsTests.cs" />
     <Compile Include="Saml2SubjectExtensionsTests.cs" />
     <Compile Include="Saml2ConditionsExtensionsTests.cs" />

@@ -117,7 +117,6 @@ namespace Kentor.AuthServices.Tests.WebSso
         }
 
         [TestMethod]
-        [NotReRunnable]
         public void AcsCommand_Run_SuccessfulResult()
         {
             var response =
@@ -172,7 +171,6 @@ namespace Kentor.AuthServices.Tests.WebSso
         }
 
         [TestMethod]
-        [NotReRunnable]
         public void AcsCommand_Run_WithReturnUrl_SuccessfulResult()
         {
             var idp = Options.FromConfiguration.IdentityProviders.Default;

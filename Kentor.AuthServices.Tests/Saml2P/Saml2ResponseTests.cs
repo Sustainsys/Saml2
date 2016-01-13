@@ -178,7 +178,6 @@ namespace Kentor.AuthServices.Tests.Saml2P
         }
 
         [TestMethod]
-        [NotReRunnable]
         public void Saml2Response_GetClaims_CorrectSignedResponseMessage()
         {
             var response =
@@ -209,7 +208,6 @@ namespace Kentor.AuthServices.Tests.Saml2P
         }
 
         [TestMethod]
-        [NotReRunnable]
         public void Saml2Response_GetClaims_CorrectSignedResponseMessageSecondaryKey()
         {
             var response =
@@ -253,7 +251,6 @@ namespace Kentor.AuthServices.Tests.Saml2P
         }
 
         [TestMethod]
-        [NotReRunnable]
         public void Saml2Response_GetClaims_CorrectSignedResponseMessage_WithAuthnStatement()
         {
             var response =
@@ -290,7 +287,6 @@ namespace Kentor.AuthServices.Tests.Saml2P
         }
 
         [TestMethod]
-        [NotReRunnable]
         public void Saml2Response_GetClaims_CorrectSignedSingleAssertionInResponseMessage()
         {
             var response =
@@ -325,7 +321,6 @@ namespace Kentor.AuthServices.Tests.Saml2P
         }
 
         [TestMethod]
-        [NotReRunnable]
         public void Saml2Response_GetClaims_CorrectSignedSingleAssertion_WithKeyInfo_InResponseMessage()
         {
             var response =
@@ -359,7 +354,6 @@ namespace Kentor.AuthServices.Tests.Saml2P
         }
 
         [TestMethod]
-        [NotReRunnable]
         public void Saml2Response_GetClaims_CorrectSignedMultipleAssertionInResponseMessage()
         {
             var response =
@@ -406,7 +400,6 @@ namespace Kentor.AuthServices.Tests.Saml2P
         }
 
         [TestMethod]
-        [NotReRunnable]
         public void Saml2Response_GetClaims_CorrectSignedMultipleAssertion_WithKeyInfo_InResponseMessage()
         {
             var response =
@@ -761,7 +754,6 @@ namespace Kentor.AuthServices.Tests.Saml2P
             a.ShouldNotThrow();
         }
 
-        [NotReRunnable]
         [TestMethod]
         public void Saml2Response_GetClaims_CorrectEncryptedSingleAssertion_SignedResponse()
         {
@@ -799,7 +791,6 @@ namespace Kentor.AuthServices.Tests.Saml2P
         }
 
         [TestMethod]
-        [NotReRunnable]
         public void Saml2Response_GetClaims_CorrectEncryptedSingleAssertion_SignedAssertion()
         {
             var response =
@@ -834,7 +825,6 @@ namespace Kentor.AuthServices.Tests.Saml2P
             claims.First().FindFirst(ClaimTypes.NameIdentifier).Value.Should().Be("SomeUser");
         }
 
-        [NotReRunnable]
         [TestMethod]
         public void Saml2Response_GetClaims_CorrectEncryptedSingleAssertion_AndMultipleCertsConfigured()
         {
@@ -872,7 +862,6 @@ namespace Kentor.AuthServices.Tests.Saml2P
             claims.First().FindFirst(ClaimTypes.NameIdentifier).Value.Should().Be("UserIDInsideEncryptedAssertion");
         }
 
-        [NotReRunnable]
         [TestMethod]
         public void Saml2Response_GetClaims_ThrowsWhenEncryptedAssertion_WrongCertsConfigured()
         {
@@ -912,7 +901,6 @@ namespace Kentor.AuthServices.Tests.Saml2P
         }
 
         [TestMethod]
-        [NotReRunnable]
         public void Saml2Response_GetClaims_CorrectEncryptedSingleAssertion_OAEP()
         {
             var response =
@@ -948,7 +936,6 @@ namespace Kentor.AuthServices.Tests.Saml2P
         }
 
         [TestMethod]
-        [NotReRunnable]
         public void Saml2Response_GetClaims_CorrectEncryptedSingleAssertion_UsingWIF()
         {
             var response =
@@ -997,7 +984,6 @@ namespace Kentor.AuthServices.Tests.Saml2P
         }
 
         [TestMethod]
-        [NotReRunnable]
         public void Saml2Response_GetClaims_ThrowsOnEncryptedAssertionWithoutSignature()
         {
             var response =
@@ -1033,7 +1019,6 @@ namespace Kentor.AuthServices.Tests.Saml2P
         }
 
         [TestMethod]
-        [NotReRunnable]
         public void Saml2Response_GetClaims_ThrowsOnTamperedSignatureInEncryptedAssertion()
         {
             var response =
@@ -1070,7 +1055,6 @@ namespace Kentor.AuthServices.Tests.Saml2P
                 .WithMessage("Signature validation failed on SAML response or contained assertion.");
         }
 
-        [NotReRunnable]
         [TestMethod]
         public void Saml2Response_GetClaims_ThrowsOnEncryptedAssertionAndNoServiceCert()
         {
@@ -1105,7 +1089,6 @@ namespace Kentor.AuthServices.Tests.Saml2P
             a.ShouldThrow<Saml2ResponseFailedValidationException>();
         }
 
-        [NotReRunnable]
         [TestMethod]
         public void Saml2Response_GetClaims_ThrowsOnEncryptedAssertionAndNoPrivateKey()
         {
@@ -1142,7 +1125,6 @@ namespace Kentor.AuthServices.Tests.Saml2P
         }
 
 
-        [NotReRunnable]
         [TestMethod]
         public void Saml2Response_GetClaims_CreateIdentities()
         {
@@ -1191,7 +1173,6 @@ namespace Kentor.AuthServices.Tests.Saml2P
         }
 
         [TestMethod]
-        [NotReRunnable]
         public void Saml2Response_GetClaims_SavesBootstrapContext()
         {
             var assertion =
@@ -1269,7 +1250,6 @@ namespace Kentor.AuthServices.Tests.Saml2P
                 .WithMessage("Signature validation failed on SAML response or contained assertion.");
         }
 
-        [NotReRunnable]
         [TestMethod]
         public void Saml2Response_GetClaims_ThrowsOnWrongAudience()
         {
@@ -1310,7 +1290,6 @@ namespace Kentor.AuthServices.Tests.Saml2P
                 .ShouldThrow<AudienceUriValidationFailedException>();
         }
 
-        [NotReRunnable]
         [TestMethod]
         public void Saml2Response_GetClaims_IgnoresAudienceIfConfiguredWithNever()
         {
@@ -1595,7 +1574,6 @@ namespace Kentor.AuthServices.Tests.Saml2P
         }
 
         [TestMethod]
-        [NotReRunnable]
         public void Saml2Response_GetClaims_ThrowsOnReplayAssertionId()
         {
             var response =
@@ -1631,7 +1609,6 @@ namespace Kentor.AuthServices.Tests.Saml2P
         }
 
         [TestMethod]
-        [NotReRunnable]
         public void Saml2Response_GetClaims_ThrowsOnReplayAssertionIdSameConfig()
         {
             var response =
@@ -1668,7 +1645,6 @@ namespace Kentor.AuthServices.Tests.Saml2P
         }
 
         [TestMethod]
-        [NotReRunnable]
         public void Saml2Response_GetClaims_NotThrowsOnReplayAssertionIdDifferentConfig()
         {
             var response =
@@ -2005,7 +1981,6 @@ namespace Kentor.AuthServices.Tests.Saml2P
         }
 
         [TestMethod]
-        [NotReRunnable]
         public void Saml2Response_GetClaims_ThrowsInformativeExceptionForSha256()
         {
             var signedResponse =
@@ -2027,7 +2002,6 @@ namespace Kentor.AuthServices.Tests.Saml2P
         }
 
         [TestMethod]
-        [NotReRunnable]
         public void Saml2Response_GetClaims_ChecksSha256WhenEnabled()
         {
             Kentor.AuthServices.Configuration.Options.GlobalEnableSha256XmlSignatures();
@@ -2048,7 +2022,6 @@ namespace Kentor.AuthServices.Tests.Saml2P
         }
 
         [TestMethod]
-        [NotReRunnable]
         public void Saml2Response_GetClaims_DoesNotThrowSha256MessageForOtherProblem()
         {
             Kentor.AuthServices.Configuration.Options.GlobalEnableSha256XmlSignatures();
@@ -2074,7 +2047,6 @@ namespace Kentor.AuthServices.Tests.Saml2P
         }
 
         [TestMethod]
-        [NotReRunnable]
         public void Saml2Response_GetClaims_FailsSha256WhenChanged()
         {
             Kentor.AuthServices.Configuration.Options.GlobalEnableSha256XmlSignatures();
