@@ -8,6 +8,7 @@ using System.Xml;
 using System.Text;
 using System.Collections.Generic;
 using Kentor.AuthServices.WebSso;
+using Kentor.AuthServices.Tests.WebSSO;
 
 namespace Kentor.AuthServices.Tests.WebSso
 {
@@ -74,37 +75,24 @@ namespace Kentor.AuthServices.Tests.WebSso
         }
 
         [TestMethod]
-        public void Saml2PostBinding_Bind_Nullcheck_payload()
+        public void Saml2PostBinding_Bind_Nullcheck()
         {
             Saml2Binding.Get(Saml2BindingType.HttpPost)
-                .Invoking(b => b.Bind(null, new Uri("http://host"), "-"))
-                .ShouldThrow<ArgumentNullException>().And.ParamName.Should().Be("payload");
-        }
-
-        [TestMethod]
-        public void Saml2PostBinding_Bind_Nullcheck_destinationUrl()
-        {
-            Saml2Binding.Get(Saml2BindingType.HttpPost)
-                .Invoking(b => b.Bind("-", null, "-"))
-                .ShouldThrow<ArgumentNullException>().And.ParamName.Should().Be("destinationUrl");
-        }
-
-        [TestMethod]
-        public void Saml2PostBinding_Bind_Nullcheck_messageName()
-        {
-            Saml2Binding.Get(Saml2BindingType.HttpPost)
-                .Invoking(b => b.Bind("-", new Uri("http://host"), null))
-                .ShouldThrow<ArgumentNullException>().And.ParamName.Should().Be("messageName");
+                .Invoking(b => b.Bind(null))
+                .ShouldThrow<ArgumentNullException>().And.ParamName.Should().Be("message");
         }
 
         [TestMethod]
         public void Saml2PostBinding_Bind()
         {
-            var xmlData = "<root><content>data</content></root>";
-            var destinationUrl = new Uri("http://www.example.com/acs");
-            var messageName = "SAMLMessageName";
+            var message = new Saml2MessageImplementation
+            {
+                XmlData = "<root><content>data</content></root>",
+                DestinationUrl = new Uri("http://www.example.com/acs"),
+                MessageName = "SAMLMessageName"
+            };
 
-            var subject = Saml2Binding.Get(Saml2BindingType.HttpPost).Bind(xmlData, destinationUrl, messageName);
+            var result = Saml2Binding.Get(Saml2BindingType.HttpPost).Bind(message);
 
             var expected = new CommandResult()
             {
@@ -135,18 +123,21 @@ value=""PHJvb3Q+PGNvbnRlbnQ+ZGF0YTwvY29udGVudD48L3Jvb3Q+""/>
 </html>"
             };
 
-            subject.ShouldBeEquivalentTo(expected);
+            result.ShouldBeEquivalentTo(expected);
         }
 
         [TestMethod]
         public void Saml2PostBinding_Bind_WithRelayState()
         {
-            var xmlData = "<root><content>data</content></root>";
-            var destinationUrl = new Uri("http://www.example.com/acs");
-            var messageName = "SAMLMessageName";
-            var relayState = "ABC1234";
+            var message = new Saml2MessageImplementation
+            {
+                DestinationUrl = new Uri("http://www.example.com/acs"),
+                XmlData = "<root><content>data</content></root>",
+                MessageName = "SAMLMessageName",
+                RelayState = "ABC1234"
+            };
 
-            var result = Saml2Binding.Get(Saml2BindingType.HttpPost).Bind(xmlData, destinationUrl, messageName, relayState);
+            var result = Saml2Binding.Get(Saml2BindingType.HttpPost).Bind(message);
 
             var expected = new CommandResult()
             {

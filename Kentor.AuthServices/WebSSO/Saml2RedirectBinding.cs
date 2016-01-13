@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Kentor.AuthServices.Saml2P;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
@@ -12,30 +13,22 @@ using System.Xml.Linq;
 
 namespace Kentor.AuthServices.WebSso
 {
-    class Saml2RedirectBinding : Saml2Binding
+    sealed class Saml2RedirectBinding : Saml2Binding
     {
-        public override CommandResult Bind(string payload, Uri destinationUrl, string messageName, string relayState)
+        public override CommandResult Bind(ISaml2Message message)
         {
-            if (payload == null)
+            if (message == null)
             {
-                throw new ArgumentNullException(nameof(payload));
-            }
-            if (destinationUrl == null)
-            {
-                throw new ArgumentNullException(nameof(destinationUrl));
-            }
-            if (messageName == null)
-            {
-                throw new ArgumentNullException(nameof(messageName));
+                throw new ArgumentNullException(nameof(message));
             }
 
-            var serializedRequest = Serialize(payload);
+            var serializedRequest = Serialize(message.ToXml());
 
-            var redirectUri = new Uri(destinationUrl.ToString()
-                + (String.IsNullOrEmpty(destinationUrl.Query) ? "?" : "&") 
-                + messageName + "=" + serializedRequest
-                + (string.IsNullOrEmpty(relayState) ? ""
-                    : ("&RelayState=" + Uri.EscapeDataString(relayState))));
+            var redirectUri = new Uri(message.DestinationUrl.ToString()
+                + (String.IsNullOrEmpty(message.DestinationUrl.Query) ? "?" : "&") 
+                + message.MessageName + "=" + serializedRequest
+                + (string.IsNullOrEmpty(message.RelayState) ? ""
+                    : ("&RelayState=" + Uri.EscapeDataString(message.RelayState))));
 
             return new CommandResult()
             {

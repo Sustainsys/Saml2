@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Kentor.AuthServices.Saml2P;
+using System;
 using System.Globalization;
 using System.Linq;
 using System.Text;
@@ -34,26 +35,18 @@ namespace Kentor.AuthServices.WebSso
             return new UnbindResult(data, relayState);
         }
 
-        public override CommandResult Bind(string payload, Uri destinationUrl, string messageName, string relayState)
+        public override CommandResult Bind(ISaml2Message message)
         {
-            if (payload == null)
+            if(message == null)
             {
-                throw new ArgumentNullException(nameof(payload));
-            }
-            if (destinationUrl == null)
-            {
-                throw new ArgumentNullException(nameof(destinationUrl));
-            }
-            if (messageName == null)
-            {
-                throw new ArgumentNullException(nameof(messageName));
+                throw new ArgumentNullException(nameof(message));
             }
 
             var encodedXml = Convert.ToBase64String(
-                Encoding.UTF8.GetBytes(payload));
+                Encoding.UTF8.GetBytes(message.ToXml()));
 
-            var relayStateHtml = string.IsNullOrEmpty(relayState) ? null
-                : string.Format(CultureInfo.InvariantCulture, PostHtmlRelayStateFormatString, relayState);
+            var relayStateHtml = string.IsNullOrEmpty(message.RelayState) ? null
+                : string.Format(CultureInfo.InvariantCulture, PostHtmlRelayStateFormatString, message.RelayState);
 
             var cr = new CommandResult()
             {
@@ -61,9 +54,9 @@ namespace Kentor.AuthServices.WebSso
                 Content = String.Format(
                     CultureInfo.InvariantCulture,
                     PostHtmlFormatString,
-                    destinationUrl,
+                    message.DestinationUrl,
                     relayStateHtml,
-                    messageName,
+                    message.MessageName,
                     encodedXml)
             };
 
