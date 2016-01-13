@@ -9,6 +9,7 @@ using System.Xml;
 using System.Xml.Linq;
 using Kentor.AuthServices.Internal;
 using System.IdentityModel.Tokens;
+using System.Security.Cryptography.X509Certificates;
 
 namespace Kentor.AuthServices.Saml2P
 {
@@ -152,5 +153,11 @@ namespace Kentor.AuthServices.Saml2P
         /// RelayState attached to the message.
         /// </summary>
         public string RelayState { get; protected set; }
+
+        /// <summary>
+        /// Certificate used to sign the message with during binding, according
+        /// to the signature processing rules of each binding.
+        /// </summary>
+        public X509Certificate2 SigningCertificate { get; set; }
     }
 }

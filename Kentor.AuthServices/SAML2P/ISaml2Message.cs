@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -39,5 +40,11 @@ namespace Kentor.AuthServices.Saml2P
         /// but it is delivered together with the message so we need to keep
         /// track of it together with a message.</remarks>
         string RelayState { get; }
+
+        /// <summary>
+        /// Certificate used to sign the message with during binding, according
+        /// to the signature processing rules of each binding.
+        /// </summary>
+        X509Certificate2 SigningCertificate { get; }
     }
 }

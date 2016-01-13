@@ -6,6 +6,7 @@ using System.Collections.Specialized;
 using FluentAssertions;
 using System.Collections.Generic;
 using Kentor.AuthServices.WebSso;
+using Kentor.AuthServices.Tests.WebSSO;
 
 namespace Kentor.AuthServices.Tests.WebSso
 {
@@ -49,16 +50,18 @@ namespace Kentor.AuthServices.Tests.WebSso
         [TestMethod]
         public void Saml2Binding_Bind_IsNotImplemented()
         {
-            Action a = () => new ConcreteSaml2Binding().Bind(null, null, null);
+            var message = new Saml2MessageImplementation();
+
+            Action a = () => new ConcreteSaml2Binding().Bind(message);
 
             a.ShouldThrow<NotImplementedException>();
         }
 
         [TestMethod]
-        public void Saml2Binding_Bind_ThrowsOnNullMessage()
+        public void Saml2Binding_Bind_ThrowsNotImplementedException()
         {
             new ConcreteSaml2Binding().Invoking(b => b.Bind(null))
-                .ShouldThrow<ArgumentNullException>().And.ParamName.Should().Be("message");
+                .ShouldThrow<NotImplementedException>();
         }
 
         [TestMethod]

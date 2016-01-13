@@ -8,6 +8,8 @@ using System.Xml;
 using System.Text;
 using System.Collections.Generic;
 using Kentor.AuthServices.WebSso;
+using Kentor.AuthServices.Tests.WebSSO;
+using Kentor.AuthServices.TestHelpers;
 
 namespace Kentor.AuthServices.Tests.WebSso
 {
@@ -74,37 +76,24 @@ namespace Kentor.AuthServices.Tests.WebSso
         }
 
         [TestMethod]
-        public void Saml2PostBinding_Bind_Nullcheck_payload()
+        public void Saml2PostBinding_Bind_Nullcheck()
         {
             Saml2Binding.Get(Saml2BindingType.HttpPost)
-                .Invoking(b => b.Bind(null, new Uri("http://host"), "-"))
-                .ShouldThrow<ArgumentNullException>().And.ParamName.Should().Be("payload");
-        }
-
-        [TestMethod]
-        public void Saml2PostBinding_Bind_Nullcheck_destinationUrl()
-        {
-            Saml2Binding.Get(Saml2BindingType.HttpPost)
-                .Invoking(b => b.Bind("-", null, "-"))
-                .ShouldThrow<ArgumentNullException>().And.ParamName.Should().Be("destinationUrl");
-        }
-
-        [TestMethod]
-        public void Saml2PostBinding_Bind_Nullcheck_messageName()
-        {
-            Saml2Binding.Get(Saml2BindingType.HttpPost)
-                .Invoking(b => b.Bind("-", new Uri("http://host"), null))
-                .ShouldThrow<ArgumentNullException>().And.ParamName.Should().Be("messageName");
+                .Invoking(b => b.Bind(null))
+                .ShouldThrow<ArgumentNullException>().And.ParamName.Should().Be("message");
         }
 
         [TestMethod]
         public void Saml2PostBinding_Bind()
         {
-            var xmlData = "<root><content>data</content></root>";
-            var destinationUrl = new Uri("http://www.example.com/acs");
-            var messageName = "SAMLMessageName";
+            var message = new Saml2MessageImplementation
+            {
+                XmlData = "<root><content>data</content></root>",
+                DestinationUrl = new Uri("http://www.example.com/acs"),
+                MessageName = "SAMLMessageName"
+            };
 
-            var subject = Saml2Binding.Get(Saml2BindingType.HttpPost).Bind(xmlData, destinationUrl, messageName);
+            var result = Saml2Binding.Get(Saml2BindingType.HttpPost).Bind(message);
 
             var expected = new CommandResult()
             {
@@ -135,18 +124,21 @@ value=""PHJvb3Q+PGNvbnRlbnQ+ZGF0YTwvY29udGVudD48L3Jvb3Q+""/>
 </html>"
             };
 
-            subject.ShouldBeEquivalentTo(expected);
+            result.ShouldBeEquivalentTo(expected);
         }
 
         [TestMethod]
         public void Saml2PostBinding_Bind_WithRelayState()
         {
-            var xmlData = "<root><content>data</content></root>";
-            var destinationUrl = new Uri("http://www.example.com/acs");
-            var messageName = "SAMLMessageName";
-            var relayState = "ABC1234";
+            var message = new Saml2MessageImplementation
+            {
+                DestinationUrl = new Uri("http://www.example.com/acs"),
+                XmlData = "<root><content>data</content></root>",
+                MessageName = "SAMLMessageName",
+                RelayState = "ABC1234"
+            };
 
-            var result = Saml2Binding.Get(Saml2BindingType.HttpPost).Bind(xmlData, destinationUrl, messageName, relayState);
+            var result = Saml2Binding.Get(Saml2BindingType.HttpPost).Bind(message);
 
             var expected = new CommandResult()
             {
@@ -167,6 +159,56 @@ you must press the Continue button once to proceed.
 <input type=""hidden"" name=""RelayState"" value=""ABC1234""/>
 <input type=""hidden"" name=""SAMLMessageName""
 value=""PHJvb3Q+PGNvbnRlbnQ+ZGF0YTwvY29udGVudD48L3Jvb3Q+""/>
+</div>
+<noscript>
+<div>
+<input type=""submit"" value=""Continue""/>
+</div>
+</noscript>
+</form>
+</body>
+</html>"
+            };
+
+            result.ShouldBeEquivalentTo(expected);
+        }
+
+        [TestMethod]
+        public void Saml2PostBinding_Bind_SignsXml()
+        {
+            var message = new Saml2MessageImplementation
+            {
+                DestinationUrl = new Uri("http://www.example.com/acs"),
+                XmlData = "<root ID=\"id\"><content>data</content></root>",
+                MessageName = "SAMLMessageName",
+                RelayState = "ABC1234",
+                SigningCertificate = SignedXmlHelper.TestCert
+            };
+
+            var signedXml = SignedXmlHelper.SignXml(message.XmlData, true);
+            var expectedValue = Convert.ToBase64String(Encoding.UTF8.GetBytes(signedXml));
+
+            var result = Saml2Binding.Get(Saml2BindingType.HttpPost).Bind(message);
+
+            var expected = new CommandResult()
+            {
+                ContentType = "text/html",
+                Content = @"<?xml version=""1.0"" encoding=""UTF-8""?>
+<!DOCTYPE html PUBLIC ""-//W3C//DTD XHTML 1.1//EN""
+""http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd"">
+<html xmlns=""http://www.w3.org/1999/xhtml"" xml:lang=""en"">
+<body onload=""document.forms[0].submit()"">
+<noscript>
+<p>
+<strong>Note:</strong> Since your browser does not support JavaScript, 
+you must press the Continue button once to proceed.
+</p>
+</noscript>
+<form action=""http://www.example.com/acs"" method=""post"">
+<div>
+<input type=""hidden"" name=""RelayState"" value=""ABC1234""/>
+<input type=""hidden"" name=""SAMLMessageName""
+value=""" + expectedValue + @"""/>
 </div>
 <noscript>
 <div>

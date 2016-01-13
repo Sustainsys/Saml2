@@ -12,6 +12,17 @@ namespace Kentor.AuthServices.Tests.Configuration
     [TestClass]
     public class SPOptionsTests
     {
+        [TestCleanup]
+        public void TestCleanup()
+        {
+            if(!KentorAuthServicesSection.Current.IsReadOnly())
+            {
+                KentorAuthServicesSection.Current.AuthenticateRequestSigningBehavior = SigningBehavior.Never;
+                KentorAuthServicesSection.Current.AllowChange(false);
+            }
+        }
+
+
         const string entityId = "http://localhost/idp";
         const string otherEntityId = "http://something.else.com";
 
@@ -34,6 +45,23 @@ namespace Kentor.AuthServices.Tests.Configuration
             Action a = () => new SPOptions((KentorAuthServicesSection)null); ;
 
             a.ShouldThrow<ArgumentNullException>().And.ParamName.Should().Be("configSection");
+        }
+
+        [TestMethod]
+        public void SPOptions_Constructor_LoadsConfig()
+        {
+            var config = KentorAuthServicesSection.Current;
+            config.AllowChange(true);
+            config.AuthenticateRequestSigningBehavior = SigningBehavior.Always;
+
+            var subject = new SPOptions(KentorAuthServicesSection.Current);
+            subject.ReturnUrl.Should().Be(config.ReturnUrl);
+            subject.MetadataCacheDuration.Should().Be(config.MetadataCacheDuration);
+            subject.DiscoveryServiceUrl.Should().Be(config.DiscoveryServiceUrl);
+            subject.EntityId.Should().Be(config.EntityId);
+            subject.ModulePath.Should().Be(config.ModulePath);
+            subject.Organization.Should().Be(config.organization);
+            subject.AuthenticateRequestSigningBehavior.Should().Be(config.AuthenticateRequestSigningBehavior);
         }
 
         [TestMethod]

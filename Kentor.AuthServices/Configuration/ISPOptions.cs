@@ -91,5 +91,10 @@ namespace Kentor.AuthServices.Configuration
         /// Certificates to be published in metadata
         /// </summary>
         ReadOnlyCollection<ServiceCertificate> MetadataCertificates { get; }
+
+        /// <summary>
+        /// Signing behavior for AuthnRequests.
+        /// </summary>
+        SigningBehavior AuthenticateRequestSigningBehavior { get; }
     }
 }

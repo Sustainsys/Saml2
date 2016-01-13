@@ -33,12 +33,14 @@ does not need any http modules, please see the separate info on the [Owin middle
 
 ##kentor.authServices Section
 The saml2AuthenticationModule section contains the configuration of the Kentor.AuthServices
-library. It is required for the http module, the mvc controller and the Owin middleware.
+library. It is required for the http module and the mvc controller. Thw Owin middleware Can
+read web.config, but can also be configured from code.
 
 ```
 <kentor.authServices entityId="http://localhost:17009"
                      returnUrl="http://localhost:17009/SamplePath/"
-                     discoveryServiceUrl="http://localhost:52071/DiscoveryService" >
+                     discoveryServiceUrl="http://localhost:52071/DiscoveryService" 
+					 authenticateRequestSigningBehavior="Always">
   <metadata cacheDuration="0:15:00" >
     <organization name="Kentor IT AB" displayName="Kentor" url="http://www.kentor.se" language="sv" />
     <contactPerson type="Other" email="info@kentor.se" />
@@ -75,6 +77,7 @@ Root element of the config section.
 * [`entityId`](#entityid-attribute)
 * [`discoveryServiceUrl`](#discoveryserviceurl-attribute)
 * [`modulePath`](#modulepath-attribute)
+* [`authenticateRequestSigningBehavior`](#authenticateRequestSigningBehavior-attribute)
 
 ####Elements
 * [`<metadata>`](#metadata-element)
@@ -107,12 +110,22 @@ is specified when calling sign in. Without this attribute, the first idp known
 will be used if none is specified.
 
 ####`modulePath` Attribute
-*Optional Attribute of the [`<kentor.authServices>`](#modulePath-attribute) element.*
+*Optional Attribute of the [`<kentor.authServices>`](#kentor-authservices-section) element.*
 
 Optional attribute that indicates the base path of the AuthServices endpoints.
 Defaults to `/AuthServices` if not specified. This can usually be left as the
 default, but if several instances of AuthServices are loaded into the
 same process they must each get a separate base path.
+
+###`authenticateRequestSigningBehavior` Attribute
+*Optional Attribute of the [`<kentor.AuthServices>`](#kentor-authservices-section) element.*
+
+Optional attribute that sets the signing behavior for generated AuthnRequests.
+Two values are supported:
+
+* `Never` (default if the attribute is missing): AuthServices will never sign any
+  created AuthnRequests.
+* `Always`: AuthServices will always sign all AuthnRequests.
 
 ###`<metadata>` Element
 *Optional child element of the [`<kentor.authServices>`](#kentor-authservices-section) element.*

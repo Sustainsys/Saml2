@@ -260,16 +260,34 @@ namespace Kentor.AuthServices.Configuration
             }
         }
 
+        const string serviceCertificates = nameof(serviceCertificates);
         /// <summary>
         /// Certificates used by the service provider for signing and/or decryption.
         /// </summary>
-        [ConfigurationProperty("serviceCertificates")]
+        [ConfigurationProperty(serviceCertificates)]
         [ConfigurationCollection(typeof(ServiceCertificateCollection))]
         public ServiceCertificateCollection ServiceCertificates
         {
             get
             {
-                return (ServiceCertificateCollection)base["serviceCertificates"];
+                return (ServiceCertificateCollection)base[serviceCertificates];
+            }
+        }
+
+        const string authenticateRequestSigningBehavior = nameof(authenticateRequestSigningBehavior);
+        /// <summary>
+        /// Signing behavior for created AuthnRequests.
+        /// </summary>
+        [ConfigurationProperty(authenticateRequestSigningBehavior)]
+        public SigningBehavior AuthenticateRequestSigningBehavior
+        {
+            get
+            {
+                return (SigningBehavior)base[authenticateRequestSigningBehavior];
+            }
+            internal set
+            {
+                base[authenticateRequestSigningBehavior] = value;
             }
         }
     }

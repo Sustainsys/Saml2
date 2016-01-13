@@ -58,51 +58,13 @@ namespace Kentor.AuthServices.WebSso
         public static readonly Uri DiscoveryResponseUri = new Uri("urn:oasis:names:tc:SAML:profiles:SSO:idp-discovery-protocol");
 
         /// <summary>
-        /// Bind the message to a transport.
-        /// </summary>
-        /// <param name="payload">(xml) payload data to bind.</param>
-        /// <param name="destinationUrl">The destination of the message.</param>
-        /// <param name="messageName">The name of the message to use in a query string or form input field.
-        /// Typically "SAMLRequest" or "SAMLResponse".
-        /// </param>
-        /// <returns>CommandResult to be returned to the client browser.</returns>
-        public CommandResult Bind(string payload, Uri destinationUrl, string messageName)
-        {
-            return Bind(payload, destinationUrl, messageName, null);
-        }
-
-        /// <summary>
-        /// Bind the message to a transport.
-        /// </summary>
-        /// <param name="payload">(xml) payload data to bind.</param>
-        /// <param name="destinationUrl">The destination of the message.</param>
-        /// <param name="messageName">The name of the message to use in a query string or form input field.
-        /// Typically "SAMLRequest" or "SAMLResponse".
-        /// </param>
-        /// <param name="relayState">Relay state, if any</param>
-        /// <returns>CommandResult to be returned to the client browser.</returns>
-        public virtual CommandResult Bind(string payload, Uri destinationUrl, string messageName, string relayState)
-        {
-            throw new NotImplementedException();
-        }
-
-        /// <summary>
         /// Binds a message to a binding
         /// </summary>
         /// <param name="message"></param>
         /// <returns></returns>
-        public CommandResult Bind(ISaml2Message message)
+        public virtual CommandResult Bind(ISaml2Message message)
         {
-            if (message == null)
-            {
-                throw new ArgumentNullException(nameof(message));
-            }
-
-            return Bind(
-                message.ToXml(),
-                message.DestinationUrl,
-                message.MessageName,
-                message.RelayState);
+            throw new NotImplementedException();
         }
 
         /// <summary>
