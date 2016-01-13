@@ -54,7 +54,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AuthnRequestHelper.cs" />
     <Compile Include="OwinTestHelpers.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SignedXmlHelper.cs" />

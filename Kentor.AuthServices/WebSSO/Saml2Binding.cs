@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Kentor.AuthServices.Saml2P;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
@@ -8,6 +9,33 @@ using System.Web;
 
 namespace Kentor.AuthServices.WebSso
 {
+    /// <summary>
+    /// The result of a Saml2Binding.UnBind.
+    /// </summary>
+    public class UnbindResult
+    {
+        /// <summary>
+        /// Ctor
+        /// </summary>
+        /// <param name="data">The data payload</param>
+        /// <param name="relayState">The associated relay state.</param>
+        public UnbindResult(string data, string relayState)
+        {
+            Data = data;
+            RelayState = relayState;
+        }
+
+        /// <summary>
+        /// The data payload.
+        /// </summary>
+        public string Data { get; }
+
+        /// <summary>
+        /// The associated relay state, if any. Otherwise null.
+        /// </summary>
+        public string RelayState { get; }
+    }
+
     /// <summary>
     /// Abstract base for all Saml2Bindings that binds a message to a specific
     /// kind of transport.
@@ -38,9 +66,43 @@ namespace Kentor.AuthServices.WebSso
         /// Typically "SAMLRequest" or "SAMLResponse".
         /// </param>
         /// <returns>CommandResult to be returned to the client browser.</returns>
-        public virtual CommandResult Bind(string payload, Uri destinationUrl, string messageName)
+        public CommandResult Bind(string payload, Uri destinationUrl, string messageName)
+        {
+            return Bind(payload, destinationUrl, messageName, null);
+        }
+
+        /// <summary>
+        /// Bind the message to a transport.
+        /// </summary>
+        /// <param name="payload">(xml) payload data to bind.</param>
+        /// <param name="destinationUrl">The destination of the message.</param>
+        /// <param name="messageName">The name of the message to use in a query string or form input field.
+        /// Typically "SAMLRequest" or "SAMLResponse".
+        /// </param>
+        /// <param name="relayState">Relay state, if any</param>
+        /// <returns>CommandResult to be returned to the client browser.</returns>
+        public virtual CommandResult Bind(string payload, Uri destinationUrl, string messageName, string relayState)
         {
             throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// Binds a message to a binding
+        /// </summary>
+        /// <param name="message"></param>
+        /// <returns></returns>
+        public CommandResult Bind(ISaml2Message message)
+        {
+            if (message == null)
+            {
+                throw new ArgumentNullException(nameof(message));
+            }
+
+            return Bind(
+                message.ToXml(),
+                message.DestinationUrl,
+                message.MessageName,
+                message.RelayState);
         }
 
         /// <summary>
@@ -48,7 +110,7 @@ namespace Kentor.AuthServices.WebSso
         /// </summary>
         /// <param name="request">Current HttpRequest.</param>
         /// <returns>Extracted message.</returns>
-        public virtual string Unbind(HttpRequestData request)
+        public virtual UnbindResult Unbind(HttpRequestData request)
         {
             throw new NotImplementedException();
         }

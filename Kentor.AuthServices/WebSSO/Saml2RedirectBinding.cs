@@ -14,7 +14,7 @@ namespace Kentor.AuthServices.WebSso
 {
     class Saml2RedirectBinding : Saml2Binding
     {
-        public override CommandResult Bind(string payload, Uri destinationUrl, string messageName)
+        public override CommandResult Bind(string payload, Uri destinationUrl, string messageName, string relayState)
         {
             if (payload == null)
             {
@@ -24,12 +24,18 @@ namespace Kentor.AuthServices.WebSso
             {
                 throw new ArgumentNullException(nameof(destinationUrl));
             }
+            if (messageName == null)
+            {
+                throw new ArgumentNullException(nameof(messageName));
+            }
 
             var serializedRequest = Serialize(payload);
 
             var redirectUri = new Uri(destinationUrl.ToString()
                 + (String.IsNullOrEmpty(destinationUrl.Query) ? "?" : "&") 
-                + "SAMLRequest=" + serializedRequest);
+                + messageName + "=" + serializedRequest
+                + (string.IsNullOrEmpty(relayState) ? ""
+                    : ("&RelayState=" + Uri.EscapeDataString(relayState))));
 
             return new CommandResult()
             {
@@ -39,7 +45,7 @@ namespace Kentor.AuthServices.WebSso
         }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2202:Do not dispose objects multiple times", Justification="The MemoryStream is not disposed by the DeflateStream - we're using the keep-open flag.")]
-        public override string Unbind(HttpRequestData request)
+        public override UnbindResult Unbind(HttpRequestData request)
         {
             if (request == null)
             {
@@ -54,8 +60,10 @@ namespace Kentor.AuthServices.WebSso
                     using (var deCompressed = new MemoryStream())
                     {
                         decompressedStream.CopyTo(deCompressed);
-                        var xmlData = System.Text.Encoding.UTF8.GetString(deCompressed.GetBuffer());
-                        return xmlData;
+
+                        return new UnbindResult(
+                            Encoding.UTF8.GetString(deCompressed.GetBuffer()),
+                            request.QueryString["RelayState"].SingleOrDefault());
                     }
                 }
             }

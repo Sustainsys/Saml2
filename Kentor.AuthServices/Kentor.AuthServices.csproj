@@ -108,7 +108,6 @@
     <Compile Include="WebSso\HttpRequestData.cs" />
     <Compile Include="IdentityProvider.cs" />
     <Compile Include="Saml2P\ISaml2Message.cs" />
-    <Compile Include="WebSso\MessageBinder.cs" />
     <Compile Include="Metadata\MetadatabaseExtensions.cs" />
     <Compile Include="WebSso\MetadataCommand.cs" />
     <Compile Include="Metadata\MetadataLoader.cs" />
@@ -125,6 +124,7 @@
     <Compile Include="Saml2StatementExtension.cs" />
     <Compile Include="Configuration\KentorAuthServicesSection.cs" />
     <Compile Include="Saml2P\Saml2AuthenticationRequest.cs" />
+    <Compile Include="RelayStateGenerator.cs" />
     <Compile Include="WebSso\Saml2Binding.cs" />
     <Compile Include="WebSso\Saml2BindingType.cs" />
     <Compile Include="Saml2ConditionsExtensions.cs" />

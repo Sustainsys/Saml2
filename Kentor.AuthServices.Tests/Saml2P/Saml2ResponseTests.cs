@@ -61,6 +61,8 @@ namespace Kentor.AuthServices.Tests.Saml2P
                 </saml2p:Status>
             </saml2p:Response>";
 
+            string relayState = "s8923kjlf";
+
             var expected = new
             {
                 Id = new Saml2Id(MethodBase.GetCurrentMethod().Name),
@@ -72,10 +74,11 @@ namespace Kentor.AuthServices.Tests.Saml2P
                 MessageName = "SAMLResponse",
                 InResponseTo = new Saml2Id("InResponseToId"),
                 RequestState = (StoredRequestState)null,
-                SecondLevelStatus = (string)null
+                SecondLevelStatus = (string)null,
+                RelayState = relayState
             };
 
-            Saml2Response.Read(response).ShouldBeEquivalentTo(expected,
+            Saml2Response.Read(response, relayState).ShouldBeEquivalentTo(expected,
                 opt => opt.Excluding(s => s.XmlDocument));
         }
 
@@ -1400,7 +1403,7 @@ namespace Kentor.AuthServices.Tests.Saml2P
 
             responseXML = SignedXmlHelper.SignXml(responseXML);
 
-            var response = Saml2Response.Read(responseXML);
+            var response = Saml2Response.Read(responseXML, request.RelayState);
 
             Action a = () => response.GetClaims(Options.FromConfiguration);
             a.ShouldNotThrow();
@@ -1477,16 +1480,17 @@ namespace Kentor.AuthServices.Tests.Saml2P
 
             responseXML = SignedXmlHelper.SignXml(responseXML);
 
-            var response = Saml2Response.Read(responseXML);
+            var response = Saml2Response.Read(responseXML, request.RelayState);
 
             Action a = () => response.GetClaims(Options.FromConfiguration);
 
             a.ShouldThrow<Saml2ResponseFailedValidationException>()
-                .WithMessage("Replayed or unknown InResponseTo \"anothervalue\".");
+                .WithMessage("InResponseTo Id \"anothervalue\" in received response does not match Id \""
+                + request.Id + "\" of the sent request.");
         }
 
         [TestMethod]
-        public void Saml2Response_GetClaims_ThrowsOnReplayedInResponseTo()
+        public void Saml2Response_GetClaims_ThrowsOnReplayedRelayState()
         {
             var idp = Options.FromConfiguration.IdentityProviders.Default;
 
@@ -1508,13 +1512,13 @@ namespace Kentor.AuthServices.Tests.Saml2P
 
             Action a = () =>
             {
-                var response = Saml2Response.Read(responseXML);
+                var response = Saml2Response.Read(responseXML, request.RelayState);
                 response.GetClaims(Options.FromConfiguration);
             };
 
             a.ShouldNotThrow();
             a.ShouldThrow<Saml2ResponseFailedValidationException>()
-                .WithMessage("Replayed or unknown InResponseTo \"" + request.Id + "\".");
+                .WithMessage("Replayed or unknown RelayState \"" + request.RelayState + "\".");
         }
 
         [TestMethod]
@@ -1539,7 +1543,7 @@ namespace Kentor.AuthServices.Tests.Saml2P
             responseXML = SignedXmlHelper.SignXml(responseXML);
             responseXML = responseXML.Replace("2013-01-01", "2015-01-01"); // Break signature.
 
-            var response = Saml2Response.Read(responseXML);
+            var response = Saml2Response.Read(responseXML, request.RelayState);
 
             Action a = () =>
             {
@@ -1582,7 +1586,7 @@ namespace Kentor.AuthServices.Tests.Saml2P
 
             responseXML = SignedXmlHelper.SignXml(responseXML);
 
-            var response = Saml2Response.Read(responseXML);
+            var response = Saml2Response.Read(responseXML, request.RelayState);
 
             Action a = () => response.GetClaims(Options.FromConfiguration);
 
@@ -1924,6 +1928,14 @@ namespace Kentor.AuthServices.Tests.Saml2P
         }
 
         [TestMethod]
+        public void Saml2Response_FromData_RelayState()
+        {
+            var subject = new Saml2Response(new EntityId("issuer"), null, null, null, "ABC123", null);
+
+            subject.RelayState.Should().Be("ABC123");
+        }
+
+        [TestMethod]
         public void Saml2Response_Xml_FromData_IsSigned()
         {
             var issuer = new EntityId("http://idp.example.com");
@@ -1986,7 +1998,7 @@ namespace Kentor.AuthServices.Tests.Saml2P
 
             responseXML = SignedXmlHelper.SignXml(responseXML);
 
-            var response = Saml2Response.Read(responseXML);
+            var response = Saml2Response.Read(responseXML, request.RelayState);
 
             response.GetRequestState(Options.FromConfiguration)
                 .ReturnUrl.Should().Be("http://localhost/testUrl.aspx");

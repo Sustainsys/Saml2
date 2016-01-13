@@ -217,6 +217,13 @@ namespace Kentor.AuthServices.Tests.Owin
             context.Response.Headers["Location"].Should().StartWith("https://idp.example.com/idp");
         }
 
+        private string ExtractRelayState(OwinContext context)
+        {
+            return HttpUtility.ParseQueryString(
+                new Uri(context.Response.Headers["Location"])
+                .Query)["RelayState"];
+        }
+
         [TestMethod]
         public async Task KentorAuthServicesAuthenticationMiddleware_RedirectRemembersReturnPath()
         {
@@ -234,10 +241,8 @@ namespace Kentor.AuthServices.Tests.Owin
 
             await middleware.Invoke(context);
 
-            var requestId = AuthnRequestHelper.GetRequestId(new Uri(context.Response.Headers["Location"]));
-
             StoredRequestState storedAuthnData;
-            PendingAuthnRequests.TryRemove(new Saml2Id(requestId), out storedAuthnData);
+            PendingAuthnRequests.TryRemove(ExtractRelayState(context), out storedAuthnData);
 
             storedAuthnData.ReturnUrl.Should().Be(returnUrl);
         }
@@ -262,10 +267,10 @@ namespace Kentor.AuthServices.Tests.Owin
 
             await middleware.Invoke(context);
 
-            var requestId = AuthnRequestHelper.GetRequestId(new Uri(context.Response.Headers["Location"]));
+            var relayState = ExtractRelayState(context);
 
             StoredRequestState storedAuthnData;
-            PendingAuthnRequests.TryRemove(new Saml2Id(requestId), out storedAuthnData);
+            PendingAuthnRequests.TryRemove(relayState, out storedAuthnData);
 
             ((AuthenticationProperties)storedAuthnData.RelayData).Dictionary["test"].Should().Be("SomeValue");
         }
@@ -339,12 +344,15 @@ namespace Kentor.AuthServices.Tests.Owin
 
             var state = new StoredRequestState(new EntityId("https://idp.example.com"),
                 new Uri("http://localhost/LoggedIn"),
+                new Saml2Id(MethodBase.GetCurrentMethod().Name + "RequestID"),
                 new AuthenticationProperties());
 
             ((AuthenticationProperties)state.RelayData).RedirectUri = state.ReturnUrl.OriginalString;
             ((AuthenticationProperties)state.RelayData).Dictionary["Test"] = "TestValue";
 
-            PendingAuthnRequests.Add(new Saml2Id(MethodBase.GetCurrentMethod().Name + @"RequestID"), state);
+            var relayState = RelayStateGenerator.CreateSecureKey();
+
+            PendingAuthnRequests.Add(relayState, state);
 
             var response =
             @"<saml2p:Response xmlns:saml2p=""urn:oasis:names:tc:SAML:2.0:protocol""
@@ -371,7 +379,8 @@ namespace Kentor.AuthServices.Tests.Owin
 
             var bodyData = new KeyValuePair<string, string>[] { 
                 new KeyValuePair<string, string>("SAMLResponse", 
-                    Convert.ToBase64String(Encoding.UTF8.GetBytes(SignedXmlHelper.SignXml(response))))
+                    Convert.ToBase64String(Encoding.UTF8.GetBytes(SignedXmlHelper.SignXml(response)))),
+                new KeyValuePair<string, string>("RelayState",relayState)
             };
 
             var encodedBodyData = new FormUrlEncodedContent(bodyData);
@@ -445,10 +454,10 @@ namespace Kentor.AuthServices.Tests.Owin
             context.Response.StatusCode.Should().Be(303);
             context.Response.Headers["Location"].Should().StartWith("https://idp2.example.com/idp?SAMLRequest");
 
-            var requestId = AuthnRequestHelper.GetRequestId(new Uri(context.Response.Headers["Location"]));
+            var relayState = ExtractRelayState(context);
 
             StoredRequestState storedAuthnData;
-            PendingAuthnRequests.TryRemove(new Saml2Id(requestId), out storedAuthnData);
+            PendingAuthnRequests.TryRemove(relayState, out storedAuthnData);
 
             storedAuthnData.ReturnUrl.Should().Be("http://localhost/Home");
         }

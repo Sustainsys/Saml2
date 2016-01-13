@@ -202,8 +202,9 @@ namespace Kentor.AuthServices.Tests.WebSso
                 </saml2:Assertion>
             </saml2p:Response>";
 
-            var formValue = Convert.ToBase64String(Encoding.UTF8.GetBytes(
-                SignedXmlHelper.SignXml(response)));
+            var responseFormValue = Convert.ToBase64String
+                (Encoding.UTF8.GetBytes(SignedXmlHelper.SignXml(response)));
+            var relayStateFormValue = request.RelayState;
 
             var r = new HttpRequestData(
                 "POST",
@@ -211,7 +212,8 @@ namespace Kentor.AuthServices.Tests.WebSso
                 "/ModulePath",
                 new KeyValuePair<string, string[]>[]
                 {
-                    new KeyValuePair<string, string[]>("SAMLResponse", new string[] { formValue })
+                    new KeyValuePair<string, string[]>("SAMLResponse", new string[] { responseFormValue }),
+                    new KeyValuePair<string, string[]>("RelayState", new string[] { relayStateFormValue })
                 });
 
             var ids = new ClaimsIdentity[] { new ClaimsIdentity("Federation"), new ClaimsIdentity("ClaimsAuthenticationManager") };

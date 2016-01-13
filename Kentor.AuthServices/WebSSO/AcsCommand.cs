@@ -32,18 +32,18 @@ namespace Kentor.AuthServices.WebSso
 
             if (binding != null)
             {
-                string unpackedPayload = null;
+                UnbindResult unbindResult = null;
                 try
                 {
-                    unpackedPayload = binding.Unbind(request);
-                    var samlResponse = Saml2Response.Read(unpackedPayload);
+                    unbindResult = binding.Unbind(request);
+                    var samlResponse = Saml2Response.Read(unbindResult.Data, unbindResult.RelayState);
 
                     return ProcessResponse(options, samlResponse);
                 }
                 catch (FormatException ex)
                 {
                     throw new BadFormatSamlResponseException(
-                            "The SAML Response did not contain valid BASE64 encoded data.", ex);
+                        "The SAML Response did not contain valid BASE64 encoded data.", ex);
                 }
                 catch (XmlException ex)
                 {
@@ -51,13 +51,13 @@ namespace Kentor.AuthServices.WebSso
                         "The SAML response contains incorrect XML", ex);
                     
                     // Add the payload to the exception
-                    newEx.Data["Saml2Response"] = unpackedPayload;
+                    newEx.Data["Saml2Response"] = unbindResult.Data;
                     throw newEx;
                 }
                 catch (Exception ex)
                 {
                     // Add the payload to the existing exception
-                    ex.Data["Saml2Response"] = unpackedPayload;
+                    ex.Data["Saml2Response"] = unbindResult.Data;
                     throw;
                 }
             }

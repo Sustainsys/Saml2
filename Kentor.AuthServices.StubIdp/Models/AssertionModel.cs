@@ -19,6 +19,10 @@ namespace Kentor.AuthServices.StubIdp.Models
         [Display(Name = "Assertion Consumer Service Url")]
         public string AssertionConsumerServiceUrl { get; set; }
 
+        [Display(Name = "Relay State")]
+        [StringLength(80)]
+        public string RelayState { get; set; }
+
         [Display(Name = "Subject NameId")]
         [Required]
         public string NameId { get; set; }
@@ -57,7 +61,7 @@ namespace Kentor.AuthServices.StubIdp.Models
             return new Saml2Response(
                 new EntityId(UrlResolver.MetadataUrl.ToString()),
                 CertificateHelper.SigningCertificate, new Uri(AssertionConsumerServiceUrl),
-                saml2Id, identity);
+                saml2Id, RelayState, identity);
         }
 
         [Display(Name = "Incoming AuthnRequest")]

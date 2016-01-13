@@ -45,14 +45,17 @@ namespace Kentor.AuthServices.StubIdp.Controllers
             var requestData = Request.ToHttpRequestData();
             if (requestData.QueryString["SAMLRequest"].Any())
             {
-                var decodedXmlData = Saml2Binding.Get(Saml2BindingType.HttpRedirect)
+                var extractedMessage = Saml2Binding.Get(Saml2BindingType.HttpRedirect)
                     .Unbind(requestData);
 
-                var request = Saml2AuthenticationRequest.Read(decodedXmlData);
+                var request = Saml2AuthenticationRequest.Read(
+                    extractedMessage.Data,
+                    extractedMessage.RelayState);
 
                 model.AssertionModel.InResponseTo = request.Id.Value;
                 model.AssertionModel.AssertionConsumerServiceUrl = request.AssertionConsumerServiceUrl.ToString();
-                model.AssertionModel.AuthnRequestXml = decodedXmlData;
+                model.AssertionModel.RelayState = extractedMessage.RelayState;
+                model.AssertionModel.AuthnRequestXml = extractedMessage.Data;
             }
 
             return View(model);

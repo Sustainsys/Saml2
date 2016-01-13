@@ -61,6 +61,12 @@ else
         @Html.EditorFor(m => m.AssertionModel.AssertionConsumerServiceUrl)
         @Html.ValidationMessageFor(m => m.AssertionModel.AssertionConsumerServiceUrl)
     </div>
+    
+    <div class="hide-details">
+        @Html.LabelFor(m => m.AssertionModel.RelayState)
+        @Html.EditorFor(m => m.AssertionModel.RelayState)
+        @Html.ValidationMessageFor(m => m.AssertionModel.RelayState)
+    </div>
 
     <div class="hide-details">
         @Html.LabelFor(m => m.AssertionModel.NameId)

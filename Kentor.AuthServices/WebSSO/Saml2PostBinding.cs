@@ -19,20 +19,22 @@ namespace Kentor.AuthServices.WebSso
                 && request.Form.Keys.Contains("SAMLResponse");
         }
 
-        public override string Unbind(HttpRequestData request)
+        public override UnbindResult Unbind(HttpRequestData request)
         {
             if (request == null)
             {
                 throw new ArgumentNullException(nameof(request));
             }
 
-            var xml = Encoding.UTF8.GetString(
-                Convert.FromBase64String(request.Form["SAMLResponse"]));
+            var data = Encoding.UTF8.GetString(Convert.FromBase64String(request.Form["SAMLResponse"]));
 
-            return xml;
+            string relayState = null;
+            request.Form.TryGetValue("RelayState", out relayState);
+
+            return new UnbindResult(data, relayState);
         }
 
-        public override CommandResult Bind(string payload, Uri destinationUrl, string messageName)
+        public override CommandResult Bind(string payload, Uri destinationUrl, string messageName, string relayState)
         {
             if (payload == null)
             {
@@ -50,6 +52,9 @@ namespace Kentor.AuthServices.WebSso
             var encodedXml = Convert.ToBase64String(
                 Encoding.UTF8.GetBytes(payload));
 
+            var relayStateHtml = string.IsNullOrEmpty(relayState) ? null
+                : string.Format(CultureInfo.InvariantCulture, PostHtmlRelayStateFormatString, relayState);
+
             var cr = new CommandResult()
             {
                 ContentType = "text/html",
@@ -57,12 +62,16 @@ namespace Kentor.AuthServices.WebSso
                     CultureInfo.InvariantCulture,
                     PostHtmlFormatString,
                     destinationUrl,
+                    relayStateHtml,
                     messageName,
                     encodedXml)
             };
 
             return cr;
         }
+
+        private const string PostHtmlRelayStateFormatString = @"
+<input type=""hidden"" name=""RelayState"" value=""{0}""/>";
 
         private const string PostHtmlFormatString = @"<?xml version=""1.0"" encoding=""UTF-8""?>
 <!DOCTYPE html PUBLIC ""-//W3C//DTD XHTML 1.1//EN""
@@ -75,11 +84,10 @@ namespace Kentor.AuthServices.WebSso
 you must press the Continue button once to proceed.
 </p>
 </noscript>
-<form action=""{0}"" 
-method=""post"">
-<div>
-<input type=""hidden"" name=""{1}"" 
-value=""{2}""/>
+<form action=""{0}"" method=""post"">
+<div>{1}
+<input type=""hidden"" name=""{2}""
+value=""{3}""/>
 </div>
 <noscript>
 <div>

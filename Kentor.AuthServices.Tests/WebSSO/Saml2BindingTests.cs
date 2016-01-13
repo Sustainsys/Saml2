@@ -55,6 +55,13 @@ namespace Kentor.AuthServices.Tests.WebSso
         }
 
         [TestMethod]
+        public void Saml2Binding_Bind_ThrowsOnNullMessage()
+        {
+            new ConcreteSaml2Binding().Invoking(b => b.Bind(null))
+                .ShouldThrow<ArgumentNullException>().And.ParamName.Should().Be("message");
+        }
+
+        [TestMethod]
         public void Saml2Binding_Unbind_IsNotImplemented()
         {
             Action a = () => new ConcreteSaml2Binding().Unbind(null);

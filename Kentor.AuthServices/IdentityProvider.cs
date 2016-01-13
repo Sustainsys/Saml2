@@ -222,9 +222,9 @@ namespace Kentor.AuthServices
                 AttributeConsumingServiceIndex = spOptions.AttributeConsumingServices.Any() ? 0 : (int?)null
             };
 
-            var responseData = new StoredRequestState(EntityId, returnUrl, relayData);
+            var responseData = new StoredRequestState(EntityId, returnUrl, authnRequest.Id, relayData);
 
-            PendingAuthnRequests.Add(authnRequest.Id, responseData);
+            PendingAuthnRequests.Add(authnRequest.RelayState, responseData);
 
             return authnRequest;
         }

@@ -67,7 +67,11 @@ namespace Kentor.AuthServices.Tests
                 AttributeConsumingServiceIndex = 0,
             };
 
-            subject.ShouldBeEquivalentTo(expected, opt => opt.Excluding(au => au.Id));
+            subject.ShouldBeEquivalentTo(expected, opt => opt
+            .Excluding(au => au.Id)
+            .Excluding(au => au.RelayState));
+
+            subject.RelayState.Should().HaveLength(56);
         }
 
         [TestMethod]
@@ -89,7 +93,9 @@ namespace Kentor.AuthServices.Tests
                 AttributeConsumingServiceIndex = null
             };
 
-            subject.ShouldBeEquivalentTo(expected, opt => opt.Excluding(au => au.Id));
+            subject.ShouldBeEquivalentTo(expected, opt => opt
+                .Excluding(au => au.Id)
+                .Excluding(au => au.RelayState));
         }
 
         [TestMethod]
