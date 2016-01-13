@@ -158,6 +158,6 @@ namespace Kentor.AuthServices.Saml2P
         /// Certificate used to sign the message with during binding, according
         /// to the signature processing rules of each binding.
         /// </summary>
-        public X509Certificate2 SigningCertificate { get; protected set; }
+        public X509Certificate2 SigningCertificate { get; set; }
     }
 }

@@ -203,6 +203,8 @@ namespace Kentor.AuthServices
         /// in the created AuthnRequest</param>
         /// <param name="relayData">Aux data that should be preserved across the authentication</param>
         /// <returns>AuthnRequest</returns>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "ServiceCertificates")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "AuthenticateRequests")]
         public Saml2AuthenticationRequest CreateAuthenticateRequest(
             Uri returnUrl,
             AuthServicesUrls authServicesUrls,
@@ -219,8 +221,22 @@ namespace Kentor.AuthServices
                 AssertionConsumerServiceUrl = authServicesUrls.AssertionConsumerServiceUrl,
                 Issuer = spOptions.EntityId,
                 // For now we only support one attribute consuming service.
-                AttributeConsumingServiceIndex = spOptions.AttributeConsumingServices.Any() ? 0 : (int?)null
+                AttributeConsumingServiceIndex = spOptions.AttributeConsumingServices.Any() ? 0 : (int?)null,
             };
+
+            if(spOptions.AuthenticateRequestSigningBehavior == SigningBehavior.Always)
+            {
+                if(spOptions.SigningServiceCertificate == null)
+                {
+                    throw new ConfigurationErrorsException(
+                        string.Format(
+                            CultureInfo.InvariantCulture,
+                            "Idp \"{0}\" is configured for signed AuthenticateRequests, but ServiceCertificates configuration contains no certificate with usage \"Signing\" or \"Both\".",
+                            EntityId.Id));
+                }
+
+                authnRequest.SigningCertificate = spOptions.SigningServiceCertificate;
+            }
 
             var responseData = new StoredRequestState(EntityId, returnUrl, authnRequest.Id, relayData);
 

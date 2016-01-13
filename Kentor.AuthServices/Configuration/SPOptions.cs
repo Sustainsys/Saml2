@@ -47,6 +47,7 @@ namespace Kentor.AuthServices.Configuration
             EntityId = configSection.EntityId;
             ModulePath = configSection.ModulePath;
             Organization = configSection.Organization;
+            AuthenticateRequestSigningBehavior = configSection.AuthenticateRequestSigningBehavior;
 
             configSection.ServiceCertificates.RegisterServiceCertificates(this);
 
@@ -329,5 +330,10 @@ namespace Kentor.AuthServices.Configuration
                     .Where(c => c.MetadataPublishOverride != MetadataPublishOverrideType.DoNotPublish);
             }
         }
+
+        /// <summary>
+        /// Signing behaviour for AuthnRequests.
+        /// </summary>
+        public SigningBehavior AuthenticateRequestSigningBehavior { get; set; }
     }
 }

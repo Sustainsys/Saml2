@@ -109,6 +109,40 @@ namespace Kentor.AuthServices.Tests
         }
 
         [TestMethod]
+        public void IdentityProvider_CreateAuthenticateRequest_IncludesSigningCertificate()
+        {
+            var options = StubFactory.CreateOptions();
+            var spOptions = (SPOptions)options.SPOptions;
+            spOptions.AuthenticateRequestSigningBehavior = SigningBehavior.Always;
+            spOptions.ServiceCertificates.Add(new ServiceCertificate
+            {
+                Certificate = SignedXmlHelper.TestCert
+            });
+
+            var idp = options.IdentityProviders.Default;
+            var urls = StubFactory.CreateAuthServicesUrls();
+
+            var subject = idp.CreateAuthenticateRequest(null, urls);
+
+            subject.SigningCertificate.Thumbprint.Should().Be(SignedXmlHelper.TestCert.Thumbprint);
+        }
+
+        [TestMethod]
+        public void IdentityProvider_CreateAuthenticateRequest_ThrowsOnMissingSigningCertificate()
+        {
+            var options = StubFactory.CreateOptions();
+            var spOptions = (SPOptions)options.SPOptions;
+            spOptions.AuthenticateRequestSigningBehavior = SigningBehavior.Always;
+
+            var idp = options.IdentityProviders.Default;
+            var urls = StubFactory.CreateAuthServicesUrls();
+
+            idp.Invoking(i => i.CreateAuthenticateRequest(null, urls))
+                .ShouldThrow<ConfigurationErrorsException>()
+                .And.Message.Should().Be($"Idp \"https://idp.example.com\" is configured for signed AuthenticateRequests, but ServiceCertificates configuration contains no certificate with usage \"Signing\" or \"Both\".");
+        }
+
+        [TestMethod]
         public void IdentityProvider_Certificate_FromFile()
         {
             var idp = Options.FromConfiguration.IdentityProviders.Default;
