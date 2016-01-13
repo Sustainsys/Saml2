@@ -13,6 +13,7 @@ using System.Security.Cryptography;
 using System.IdentityModel.Services;
 using Kentor.AuthServices.Internal;
 using Kentor.AuthServices.Exceptions;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Kentor.AuthServices.Saml2P
 {
@@ -153,6 +154,7 @@ namespace Kentor.AuthServices.Saml2P
         /// Certificate used to sign the message with during binding, according
         /// to the signature processing rules of each binding.
         /// </summary>
+        [ExcludeFromCodeCoverage]
         public X509Certificate2 SigningCertificate { get; }
 
         private XmlDocument xmlDocument;

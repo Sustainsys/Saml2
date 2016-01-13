@@ -6,6 +6,9 @@ using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Net;
+using System.Security.Cryptography;
+using System.Security.Cryptography.X509Certificates;
+using System.Security.Cryptography.Xml;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web;
@@ -24,17 +27,41 @@ namespace Kentor.AuthServices.WebSso
 
             var serializedRequest = Serialize(message.ToXml());
 
-            var redirectUri = new Uri(message.DestinationUrl.ToString()
-                + (String.IsNullOrEmpty(message.DestinationUrl.Query) ? "?" : "&") 
-                + message.MessageName + "=" + serializedRequest
+            var queryString = message.MessageName + "=" + serializedRequest
                 + (string.IsNullOrEmpty(message.RelayState) ? ""
-                    : ("&RelayState=" + Uri.EscapeDataString(message.RelayState))));
+                    : ("&RelayState=" + Uri.EscapeDataString(message.RelayState)));
+
+            if(message.SigningCertificate != null)
+            {
+                queryString = AddSignature(queryString, message.SigningCertificate);
+            }
+
+            var redirectUri = new Uri(message.DestinationUrl.ToString()
+                + (String.IsNullOrEmpty(message.DestinationUrl.Query) ? "?" : "&")
+                + queryString);
 
             return new CommandResult()
             {
                 HttpStatusCode = HttpStatusCode.SeeOther,
                 Location = redirectUri
             };
+        }
+
+        private static string AddSignature(string queryString, X509Certificate2 key)
+        {
+            queryString += "&SigAlg=" + Uri.EscapeDataString(SignedXml.XmlDsigRSASHA1Url);
+
+            var signatureDescription = 
+                (SignatureDescription)CryptoConfig.CreateFromName(SignedXml.XmlDsigRSASHA1Url);
+
+            var hashAlg = signatureDescription.CreateDigest();
+            hashAlg.ComputeHash(Encoding.UTF8.GetBytes(queryString));
+            var asymmetricSignatureFormatter = signatureDescription.CreateFormatter(key.PrivateKey);
+            var signatureValue = asymmetricSignatureFormatter.CreateSignature(hashAlg);
+
+            queryString += "&Signature=" + Convert.ToBase64String(signatureValue);
+
+            return queryString;
         }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2202:Do not dispose objects multiple times", Justification="The MemoryStream is not disposed by the DeflateStream - we're using the keep-open flag.")]
