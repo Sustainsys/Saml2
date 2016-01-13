@@ -13,6 +13,7 @@ using Kentor.AuthServices.Configuration;
 using System.IdentityModel.Metadata;
 using Kentor.AuthServices.Internal;
 using Kentor.AuthServices.WebSso;
+using System.IdentityModel.Tokens;
 
 namespace Kentor.AuthServices.Tests.WebSso
 {
@@ -55,13 +56,10 @@ namespace Kentor.AuthServices.Tests.WebSso
             var subject = new SignInCommand().Run(httpRequest, Options.FromConfiguration);
 
             var idp = Options.FromConfiguration.IdentityProviders.Default;
-
-            var authnRequest = idp.CreateAuthenticateRequest(null, StubFactory.CreateAuthServicesUrls());
-
-            var requestId = AuthnRequestHelper.GetRequestId(subject.Location);
+            var relayState = HttpUtility.ParseQueryString(subject.Location.Query)["RelayState"];
 
             StoredRequestState storedAuthnData;
-            PendingAuthnRequests.TryRemove(new System.IdentityModel.Tokens.Saml2Id(requestId), out storedAuthnData);
+            PendingAuthnRequests.TryRemove(relayState, out storedAuthnData);
 
             storedAuthnData.ReturnUrl.Should().Be("http://localhost/Return.aspx");
         }

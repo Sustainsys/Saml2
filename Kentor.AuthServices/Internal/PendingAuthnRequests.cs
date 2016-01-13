@@ -9,9 +9,9 @@ namespace Kentor.AuthServices.Internal
 {
     static class PendingAuthnRequests
     {
-        private static readonly Dictionary<Saml2Id, StoredRequestState> pendingAuthnRequest = new Dictionary<Saml2Id, StoredRequestState>();
+        private static readonly Dictionary<string, StoredRequestState> pendingAuthnRequest = new Dictionary<string, StoredRequestState>();
 
-        internal static void Add(Saml2Id id, StoredRequestState idp)
+        internal static void Add(string id, StoredRequestState idp)
         {
             lock (pendingAuthnRequest)
             {
@@ -23,16 +23,16 @@ namespace Kentor.AuthServices.Internal
             }
         }
 
-        internal static bool TryRemove(Saml2Id id, out StoredRequestState idp)
+        internal static bool TryRemove(string id, out StoredRequestState state)
         {
             lock (pendingAuthnRequest)
             {
                 if (id != null && pendingAuthnRequest.ContainsKey(id))
                 {
-                    idp = pendingAuthnRequest[id];
+                    state = pendingAuthnRequest[id];
                     return pendingAuthnRequest.Remove(id);
                 }
-                idp = null;
+                state = null;
                 return false;
             }
         }

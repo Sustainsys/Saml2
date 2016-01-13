@@ -13,49 +13,58 @@ namespace Kentor.AuthServices.Tests.Internal
         [TestMethod]
         public void PendingAuthnRequests_AddRemove()
         {
-            var id = new Saml2Id();
-            var requestData = new StoredRequestState(new EntityId("testidp"), new Uri("http://localhost/Return.aspx"));
-            PendingAuthnRequests.Add(id, requestData);
+            var relayState = RelayStateGenerator.CreateSecureKey();
+            var saml2Id = new Saml2Id();
+            var requestData = new StoredRequestState(new EntityId("testidp"), new Uri("http://localhost/Return.aspx"), saml2Id);
+            PendingAuthnRequests.Add(relayState, requestData);
             StoredRequestState responseData;
-            PendingAuthnRequests.TryRemove(id, out responseData).Should().BeTrue();
+            PendingAuthnRequests.TryRemove(relayState, out responseData).Should().BeTrue();
             responseData.Should().Be(requestData);
             responseData.Idp.Id.Should().Be("testidp");
             responseData.ReturnUrl.Should().Be("http://localhost/Return.aspx");
+            responseData.MessageId.Should().Be(saml2Id);
         }
 
         [TestMethod]
         public void PendingAuthnRequests_Add_ThrowsOnExisting()
         {
-            var id = new Saml2Id();
-            var requestData = new StoredRequestState(new EntityId("testidp"), new Uri("http://localhost/Return.aspx"));
-            PendingAuthnRequests.Add(id, requestData);
-            Action a = () => PendingAuthnRequests.Add(id, requestData);
+            var relayState = RelayStateGenerator.CreateSecureKey();
+            var requestData = new StoredRequestState(
+                new EntityId("testidp"),
+                new Uri("http://localhost/Return.aspx"),
+                new Saml2Id());
+            PendingAuthnRequests.Add(relayState, requestData);
+            Action a = () => PendingAuthnRequests.Add(relayState, requestData);
             a.ShouldThrow<InvalidOperationException>();
         }
 
         [TestMethod]
         public void PendingAuthnRequests_Remove_FalseOnIdNeverIssued()
         {
-            var id = new Saml2Id();
+            var relayState = RelayStateGenerator.CreateSecureKey();
             StoredRequestState responseData;
-            PendingAuthnRequests.TryRemove(id, out responseData).Should().BeFalse();
+            PendingAuthnRequests.TryRemove(relayState, out responseData).Should().BeFalse();
         }
 
         [TestMethod]
         public void PendingAuthnRequests_Remove_FalseOnRemovedTwice()
         {
-            var id = new Saml2Id();
-            var requestData = new StoredRequestState(new EntityId("testidp"), new Uri("http://localhost/Return.aspx"));
+            var relayState = RelayStateGenerator.CreateSecureKey();
+            var requestData = new StoredRequestState(
+                new EntityId("testidp"),
+                new Uri("http://localhost/Return.aspx"),
+                new Saml2Id());
+
             StoredRequestState responseData;
-            PendingAuthnRequests.Add(id, requestData);
-            PendingAuthnRequests.TryRemove(id, out responseData).Should().BeTrue();
-            PendingAuthnRequests.TryRemove(id, out responseData).Should().BeFalse();
+            PendingAuthnRequests.Add(relayState, requestData);
+            PendingAuthnRequests.TryRemove(relayState, out responseData).Should().BeTrue();
+            PendingAuthnRequests.TryRemove(relayState, out responseData).Should().BeFalse();
         }
 
         [TestMethod]
         public void PendingAuthnRequest_TryRemove_NullGivesNull()
         {
-            Saml2Id id = null;
+            string id = null;
             StoredRequestState state;
 
             PendingAuthnRequests.TryRemove(id, out state).Should().BeFalse();
