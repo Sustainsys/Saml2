@@ -26,10 +26,12 @@ namespace Kentor.AuthServices.WebSso
                 throw new ArgumentNullException(nameof(request));
             }
 
-            return new UnbindResult(
-                Encoding.UTF8.GetString(
-                    Convert.FromBase64String(request.Form["SAMLResponse"])),
-                null);
+            var data = Encoding.UTF8.GetString(Convert.FromBase64String(request.Form["SAMLResponse"]));
+
+            string relayState = null;
+            request.Form.TryGetValue("RelayState", out relayState);
+
+            return new UnbindResult(data, relayState);
         }
 
         public override CommandResult Bind(string payload, Uri destinationUrl, string messageName, string relayState)

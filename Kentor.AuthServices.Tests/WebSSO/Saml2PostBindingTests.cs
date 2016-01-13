@@ -14,16 +14,23 @@ namespace Kentor.AuthServices.Tests.WebSso
     [TestClass]
     public class Saml2PostBindingTests
     {
-        private HttpRequestData CreateRequest(string encodedResponse)
+        private HttpRequestData CreateRequest(string encodedResponse, string relayState = null)
         {
+            var formData = new List<KeyValuePair<string, string[]>>()
+            {
+                new KeyValuePair<string, string[]>("SAMLResponse", new string[] {encodedResponse })
+            };
+
+            if(!string.IsNullOrEmpty(relayState))
+            {
+                formData.Add(new KeyValuePair<string, string[]>("RelayState", new string[] { relayState }));
+            };
+
             return new HttpRequestData(
                 "POST",
                 new Uri("http://example.com"),
                 "/ModulePath",
-                new KeyValuePair<string, string[]>[]
-                {
-                    new KeyValuePair<string, string[]>("SAMLResponse", new string[] {encodedResponse }) 
-                });
+                formData);
         }
 
         [TestMethod]
@@ -50,6 +57,20 @@ namespace Kentor.AuthServices.Tests.WebSso
             var r = CreateRequest(Convert.ToBase64String(Encoding.UTF8.GetBytes(response)));
 
             Saml2Binding.Get(Saml2BindingType.HttpPost).Unbind(r).Data.Should().Be(response);
+        }
+
+        [TestMethod]
+        public void Saml2PostBinding_Unbind_ReadsRelayState()
+        {
+            string response = "responsestring";
+            string relayState = "someState";
+
+            var r = CreateRequest(
+                Convert.ToBase64String(Encoding.UTF8.GetBytes(response)),
+                relayState);
+
+            Saml2Binding.Get(Saml2BindingType.HttpPost)
+                .Unbind(r).RelayState.Should().Be(relayState);
         }
 
         [TestMethod]

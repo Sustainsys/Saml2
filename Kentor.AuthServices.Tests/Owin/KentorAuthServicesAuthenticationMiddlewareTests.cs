@@ -372,6 +372,7 @@ namespace Kentor.AuthServices.Tests.Owin
             var bodyData = new KeyValuePair<string, string>[] { 
                 new KeyValuePair<string, string>("SAMLResponse", 
                     Convert.ToBase64String(Encoding.UTF8.GetBytes(SignedXmlHelper.SignXml(response))))
+                new KeyValuePair<string, string>("RelayState",relayState)
             };
 
             var encodedBodyData = new FormUrlEncodedContent(bodyData);

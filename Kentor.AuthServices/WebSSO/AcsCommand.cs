@@ -43,7 +43,7 @@ namespace Kentor.AuthServices.WebSso
                 catch (FormatException ex)
                 {
                     throw new BadFormatSamlResponseException(
-                            "The SAML Response did not contain valid BASE64 encoded data.", ex);
+                        "The SAML Response did not contain valid BASE64 encoded data.", ex);
                 }
                 catch (XmlException ex)
                 {

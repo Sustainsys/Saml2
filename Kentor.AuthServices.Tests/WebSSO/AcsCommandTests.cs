@@ -204,6 +204,7 @@ namespace Kentor.AuthServices.Tests.WebSso
 
             var formValue = Convert.ToBase64String(Encoding.UTF8.GetBytes(
                 SignedXmlHelper.SignXml(response)));
+            var relayStateFormValue = request.RelayState;
 
             var r = new HttpRequestData(
                 "POST",
