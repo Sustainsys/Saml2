@@ -77,7 +77,7 @@ Root element of the config section.
 * [`entityId`](#entityid-attribute)
 * [`discoveryServiceUrl`](#discoveryserviceurl-attribute)
 * [`modulePath`](#modulepath-attribute)
-* [`authenticateRequestSigningBehavior`](#authenticateRequestSigningBehavior-attribute)
+* [`authenticateRequestSigningBehavior`](#authenticaterequestsigningbehavior-attribute)
 
 ####Elements
 * [`<metadata>`](#metadata-element)
