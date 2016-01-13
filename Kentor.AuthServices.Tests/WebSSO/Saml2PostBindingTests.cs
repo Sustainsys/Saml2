@@ -49,7 +49,7 @@ namespace Kentor.AuthServices.Tests.WebSso
 
             var r = CreateRequest(Convert.ToBase64String(Encoding.UTF8.GetBytes(response)));
 
-            Saml2Binding.Get(Saml2BindingType.HttpPost).Unbind(r).Should().Be(response);
+            Saml2Binding.Get(Saml2BindingType.HttpPost).Unbind(r).Data.Should().Be(response);
         }
 
         [TestMethod]

@@ -45,7 +45,7 @@ namespace Kentor.AuthServices.WebSso
         }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2202:Do not dispose objects multiple times", Justification="The MemoryStream is not disposed by the DeflateStream - we're using the keep-open flag.")]
-        public override string Unbind(HttpRequestData request)
+        public override UnbindResult Unbind(HttpRequestData request)
         {
             if (request == null)
             {
@@ -60,8 +60,10 @@ namespace Kentor.AuthServices.WebSso
                     using (var deCompressed = new MemoryStream())
                     {
                         decompressedStream.CopyTo(deCompressed);
-                        var xmlData = System.Text.Encoding.UTF8.GetString(deCompressed.GetBuffer());
-                        return xmlData;
+
+                        return new UnbindResult(
+                            Encoding.UTF8.GetString(deCompressed.GetBuffer()),
+                            request.QueryString["RelayState"].SingleOrDefault());
                     }
                 }
             }

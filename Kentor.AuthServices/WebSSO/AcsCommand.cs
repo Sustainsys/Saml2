@@ -35,7 +35,7 @@ namespace Kentor.AuthServices.WebSso
                 string unpackedPayload = null;
                 try
                 {
-                    unpackedPayload = binding.Unbind(request);
+                    unpackedPayload = binding.Unbind(request).Data;
                     var samlResponse = Saml2Response.Read(unpackedPayload);
 
                     return ProcessResponse(options, samlResponse);

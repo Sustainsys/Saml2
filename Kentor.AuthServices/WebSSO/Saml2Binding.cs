@@ -10,6 +10,33 @@ using System.Web;
 namespace Kentor.AuthServices.WebSso
 {
     /// <summary>
+    /// The result of a Saml2Binding.UnBind.
+    /// </summary>
+    public class UnbindResult
+    {
+        /// <summary>
+        /// Ctor
+        /// </summary>
+        /// <param name="data">The data payload</param>
+        /// <param name="relayState">The associated relay state.</param>
+        public UnbindResult(string data, string relayState)
+        {
+            Data = data;
+            RelayState = relayState;
+        }
+
+        /// <summary>
+        /// The data payload.
+        /// </summary>
+        public string Data { get; }
+
+        /// <summary>
+        /// The associated relay state, if any. Otherwise null.
+        /// </summary>
+        public string RelayState { get; }
+    }
+
+    /// <summary>
     /// Abstract base for all Saml2Bindings that binds a message to a specific
     /// kind of transport.
     /// </summary>
@@ -83,7 +110,7 @@ namespace Kentor.AuthServices.WebSso
         /// </summary>
         /// <param name="request">Current HttpRequest.</param>
         /// <returns>Extracted message.</returns>
-        public virtual string Unbind(HttpRequestData request)
+        public virtual UnbindResult Unbind(HttpRequestData request)
         {
             throw new NotImplementedException();
         }

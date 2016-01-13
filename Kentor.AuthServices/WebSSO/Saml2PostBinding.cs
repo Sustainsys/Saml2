@@ -19,17 +19,17 @@ namespace Kentor.AuthServices.WebSso
                 && request.Form.Keys.Contains("SAMLResponse");
         }
 
-        public override string Unbind(HttpRequestData request)
+        public override UnbindResult Unbind(HttpRequestData request)
         {
             if (request == null)
             {
                 throw new ArgumentNullException(nameof(request));
             }
 
-            var xml = Encoding.UTF8.GetString(
-                Convert.FromBase64String(request.Form["SAMLResponse"]));
-
-            return xml;
+            return new UnbindResult(
+                Encoding.UTF8.GetString(
+                    Convert.FromBase64String(request.Form["SAMLResponse"])),
+                null);
         }
 
         public override CommandResult Bind(string payload, Uri destinationUrl, string messageName, string relayState)
