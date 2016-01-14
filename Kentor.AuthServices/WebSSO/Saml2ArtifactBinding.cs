@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using System.Linq;
 
 namespace Kentor.AuthServices.WebSso
@@ -23,7 +24,21 @@ namespace Kentor.AuthServices.WebSso
                 throw new ArgumentNullException(nameof(request));
             }
 
-            var relayState = request.QueryString["RelayState"].SingleOrDefault();
+            string relayState;
+
+            switch(request.HttpMethod)
+            {
+                case "GET":
+                    relayState = request.QueryString["RelayState"].SingleOrDefault();
+                    break;
+                case "POST":
+                    relayState = request.Form["RelayState"];
+                    break;
+                default:
+                    throw new InvalidOperationException(string.Format(CultureInfo.InvariantCulture,
+                        "Artifact binding can only use GET or POST http method, but found {0}",
+                        request.HttpMethod));
+            }
 
             return new UnbindResult(null, relayState);
         }
