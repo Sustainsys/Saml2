@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IdentityModel.Metadata;
 using System.Linq;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
@@ -46,5 +47,10 @@ namespace Kentor.AuthServices.Saml2P
         /// to the signature processing rules of each binding.
         /// </summary>
         X509Certificate2 SigningCertificate { get; }
+
+        /// <summary>
+        /// Issuer of the message.
+        /// </summary>
+        EntityId Issuer { get; }
     }
 }

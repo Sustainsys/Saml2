@@ -13,7 +13,7 @@ namespace Kentor.AuthServices.Tests.Internal
         [TestMethod]
         public void PendingAuthnRequests_AddRemove()
         {
-            var relayState = RelayStateGenerator.CreateSecureKey();
+            var relayState = SecureKeyGenerator.CreateRelayState();
             var saml2Id = new Saml2Id();
             var requestData = new StoredRequestState(new EntityId("testidp"), new Uri("http://localhost/Return.aspx"), saml2Id);
             PendingAuthnRequests.Add(relayState, requestData);
@@ -28,7 +28,7 @@ namespace Kentor.AuthServices.Tests.Internal
         [TestMethod]
         public void PendingAuthnRequests_Add_ThrowsOnExisting()
         {
-            var relayState = RelayStateGenerator.CreateSecureKey();
+            var relayState = SecureKeyGenerator.CreateRelayState();
             var requestData = new StoredRequestState(
                 new EntityId("testidp"),
                 new Uri("http://localhost/Return.aspx"),
@@ -41,7 +41,7 @@ namespace Kentor.AuthServices.Tests.Internal
         [TestMethod]
         public void PendingAuthnRequests_Remove_FalseOnIdNeverIssued()
         {
-            var relayState = RelayStateGenerator.CreateSecureKey();
+            var relayState = SecureKeyGenerator.CreateRelayState();
             StoredRequestState responseData;
             PendingAuthnRequests.TryRemove(relayState, out responseData).Should().BeFalse();
         }
@@ -49,7 +49,7 @@ namespace Kentor.AuthServices.Tests.Internal
         [TestMethod]
         public void PendingAuthnRequests_Remove_FalseOnRemovedTwice()
         {
-            var relayState = RelayStateGenerator.CreateSecureKey();
+            var relayState = SecureKeyGenerator.CreateRelayState();
             var requestData = new StoredRequestState(
                 new EntityId("testidp"),
                 new Uri("http://localhost/Return.aspx"),

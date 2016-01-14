@@ -21,7 +21,7 @@ namespace Kentor.AuthServices.Saml2P
         /// </summary>
         public Saml2AuthenticationRequest()
         {
-            RelayState = RelayStateGenerator.CreateSecureKey();
+            RelayState = SecureKeyGenerator.CreateRelayState();
         }
 
         /// <summary>

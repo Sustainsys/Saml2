@@ -348,7 +348,7 @@ namespace Kentor.AuthServices.Tests.Owin
             ((AuthenticationProperties)state.RelayData).RedirectUri = state.ReturnUrl.OriginalString;
             ((AuthenticationProperties)state.RelayData).Dictionary["Test"] = "TestValue";
 
-            var relayState = RelayStateGenerator.CreateSecureKey();
+            var relayState = SecureKeyGenerator.CreateRelayState();
 
             PendingAuthnRequests.Add(relayState, state);
 
