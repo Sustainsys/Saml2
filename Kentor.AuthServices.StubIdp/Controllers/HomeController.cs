@@ -68,10 +68,8 @@ namespace Kentor.AuthServices.StubIdp.Controllers
             {
                 var response = model.AssertionModel.ToSaml2Response();
 
-                var commandResult = Saml2Binding.Get(Saml2BindingType.HttpPost)
-                    .Bind(response);
-
-                return commandResult.ToActionResult();
+                return Saml2Binding.Get(model.AssertionModel.ResponseBinding)
+                    .Bind(response).ToActionResult();
             }
 
             return View(model);
