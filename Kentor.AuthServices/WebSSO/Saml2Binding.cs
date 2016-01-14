@@ -92,7 +92,8 @@ namespace Kentor.AuthServices.WebSso
             new Dictionary<Saml2BindingType, Saml2Binding>()
             {
                 { Saml2BindingType.HttpRedirect, new Saml2RedirectBinding() },
-                { Saml2BindingType.HttpPost, new Saml2PostBinding() }
+                { Saml2BindingType.HttpPost, new Saml2PostBinding() },
+                { Saml2BindingType.Artifact, new Saml2ArtifactBinding() }
             };
 
         /// <summary>

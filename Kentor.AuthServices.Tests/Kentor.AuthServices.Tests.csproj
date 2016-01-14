@@ -125,6 +125,7 @@
     <Compile Include="ExceptionTestHelpers.cs" />
     <Compile Include="Saml2P\FilteringXmlNodeReaderTests.cs" />
     <Compile Include="Exceptions\Saml2ResponseFailedValidationExceptionTests.cs" />
+    <Compile Include="WebSSO\Saml2ArtifactBindingTests.cs" />
     <Compile Include="WebSSO\Saml2MessageImplementation.cs" />
     <Compile Include="WebSSO\CommandResultTests.cs" />
     <Compile Include="WebSSO\MetadataCommandTests.cs" />
