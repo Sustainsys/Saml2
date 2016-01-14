@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 
 namespace Kentor.AuthServices.WebSso
 {
@@ -13,6 +14,18 @@ namespace Kentor.AuthServices.WebSso
 
             return (request.HttpMethod == "GET" && request.QueryString.Contains("SAMLart"))
                 || (request.HttpMethod == "POST" && request.Form.ContainsKey("SAMLart"));
+        }
+
+        public override UnbindResult Unbind(HttpRequestData request)
+        {
+            if(request == null)
+            {
+                throw new ArgumentNullException(nameof(request));
+            }
+
+            var relayState = request.QueryString["RelayState"].SingleOrDefault();
+
+            return new UnbindResult(null, relayState);
         }
     }
 }
