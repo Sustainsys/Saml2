@@ -11,7 +11,8 @@ namespace Kentor.AuthServices.WebSso
                 throw new ArgumentNullException(nameof(request));
             }
 
-            return false;
+            return (request.HttpMethod == "GET" && request.QueryString.Contains("SAMLart"))
+                || (request.HttpMethod == "POST" && request.Form.ContainsKey("SAMLart"));
         }
     }
 }
