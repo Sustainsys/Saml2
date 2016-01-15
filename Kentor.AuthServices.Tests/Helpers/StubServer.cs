@@ -12,10 +12,10 @@ using Kentor.AuthServices.WebSso;
 using System.Threading;
 using System.IO;
 
-namespace Kentor.AuthServices.Tests.Metadata
+namespace Kentor.AuthServices.Tests.Helpers
 {
     [TestClass]
-    public class MetadataServer
+    public class StubServer
     {
         private static IDisposable host;
 
@@ -295,7 +295,7 @@ entityID=""http://localhost:13428/idpMetadataVeryShortCacheDuration"" cacheDurat
         public static bool IdpAndFederationShortCacheDurationAvailable { get; set; }
         public static bool FederationVeryShortCacheDurationSecondAlternativeEnabled { get; set; }
 
-        static MetadataServer()
+        static StubServer()
         {
             IdpMetadataSsoPort = 13428;
             IdpAndFederationVeryShortCacheDurationSsoPort = 80;

@@ -133,7 +133,7 @@
     <Compile Include="WebSSO\CommandResultTests.cs" />
     <Compile Include="WebSSO\MetadataCommandTests.cs" />
     <Compile Include="ExtendedMetadataSerializerTests.cs" />
-    <Compile Include="Metadata\MetadataServer.cs" />
+    <Compile Include="Helpers\StubServer.cs" />
     <Compile Include="Owin\CommandResultExtensionsTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="WebSSO\CommandFactoryTests.cs" />

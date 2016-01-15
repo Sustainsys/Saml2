@@ -20,9 +20,9 @@ namespace Kentor.AuthServices.Tests
         [TestCleanup]
         public void Cleanup()
         {
-            MetadataServer.IdpVeryShortCacheDurationIncludeInvalidKey = false;
-            MetadataServer.FederationVeryShortCacheDurationSecondAlternativeEnabled = false;
-            MetadataServer.IdpAndFederationShortCacheDurationAvailable = true;
+            StubServer.IdpVeryShortCacheDurationIncludeInvalidKey = false;
+            StubServer.FederationVeryShortCacheDurationSecondAlternativeEnabled = false;
+            StubServer.IdpAndFederationShortCacheDurationAvailable = true;
             MetadataRefreshScheduler.minInterval = refreshMinInterval;
         }
 
@@ -149,7 +149,7 @@ namespace Kentor.AuthServices.Tests
             options.IdentityProviders.TryGetValue(new EntityId("http://idp3.federation.example.com/metadata"), out idp)
                 .Should().BeFalse("idp3 shouldn't be loaded initially");
 
-            MetadataServer.FederationVeryShortCacheDurationSecondAlternativeEnabled = true;
+            StubServer.FederationVeryShortCacheDurationSecondAlternativeEnabled = true;
             var initialValidUntil = subject.MetadataValidUntil;
             SpinWaiter.WhileEqual(() => subject.MetadataValidUntil, () => initialValidUntil);
 
@@ -166,7 +166,7 @@ namespace Kentor.AuthServices.Tests
         {
             MetadataRefreshScheduler.minInterval = new TimeSpan(0, 0, 0, 0, 1);
 
-            MetadataServer.IdpAndFederationShortCacheDurationAvailable = false;
+            StubServer.IdpAndFederationShortCacheDurationAvailable = false;
 
             var options = StubFactory.CreateOptions();
 
@@ -177,7 +177,7 @@ namespace Kentor.AuthServices.Tests
 
             subject.MetadataValidUntil.Should().Be(DateTime.MinValue);
 
-            MetadataServer.IdpAndFederationShortCacheDurationAvailable = true;
+            StubServer.IdpAndFederationShortCacheDurationAvailable = true;
 
             SpinWaiter.WhileEqual(() => subject.MetadataValidUntil, () => DateTime.MinValue);
 
@@ -202,7 +202,7 @@ namespace Kentor.AuthServices.Tests
             options.IdentityProviders.TryGetValue(new EntityId("http://idp1.federation.example.com/metadata"), out idp)
                 .Should().BeTrue();
 
-            MetadataServer.IdpAndFederationShortCacheDurationAvailable = false;
+            StubServer.IdpAndFederationShortCacheDurationAvailable = false;
 
             SpinWaiter.WhileNotEqual(() => subject.MetadataValidUntil, () => DateTime.MinValue);
 
@@ -228,7 +228,7 @@ namespace Kentor.AuthServices.Tests
 
             var initialValidUntil = subject.MetadataValidUntil;
 
-            MetadataServer.IdpAndFederationShortCacheDurationAvailable = false;
+            StubServer.IdpAndFederationShortCacheDurationAvailable = false;
 
             // Wait until a failed load has occured.
             SpinWaiter.While(() => subject.LastMetadataLoadException == null,
@@ -245,7 +245,7 @@ namespace Kentor.AuthServices.Tests
             options.IdentityProviders.TryGetValue(new EntityId("http://idp1.federation.example.com/metadata"), out idp)
                 .Should().BeFalse("idp should be removed if metadata is no longer valid");
 
-            MetadataServer.IdpAndFederationShortCacheDurationAvailable = true;
+            StubServer.IdpAndFederationShortCacheDurationAvailable = true;
 
             SpinWaiter.While(() => subject.MetadataValidUntil == DateTime.MinValue,
                 "Timeout passed without metadata being successfully reloaded");
