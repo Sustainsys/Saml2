@@ -7,7 +7,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Kentor.AuthServices.TestHelpers
+namespace Kentor.AuthServices.Tests.Helpers
 {
     public class OwinTestHelpers
     {

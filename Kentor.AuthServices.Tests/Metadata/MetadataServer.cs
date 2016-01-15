@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Owin;
-using Kentor.AuthServices.TestHelpers;
+using Kentor.AuthServices.Tests.Helpers;
 using Kentor.AuthServices.WebSso;
 using System.Threading;
 using System.IO;

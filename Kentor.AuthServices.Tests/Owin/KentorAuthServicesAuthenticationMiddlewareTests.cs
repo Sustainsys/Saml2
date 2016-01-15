@@ -9,7 +9,7 @@ using Microsoft.Owin.Security;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
-using Kentor.AuthServices.TestHelpers;
+using Kentor.AuthServices.Tests.Helpers;
 using System.IO;
 using System.Text;
 using System.Security.Claims;

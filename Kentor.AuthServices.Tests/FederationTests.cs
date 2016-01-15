@@ -6,7 +6,7 @@ using System.IdentityModel.Metadata;
 using System.Linq;
 using Kentor.AuthServices.Configuration;
 using Kentor.AuthServices.Metadata;
-using Kentor.AuthServices.TestHelpers;
+using Kentor.AuthServices.Tests.Helpers;
 using Kentor.AuthServices.Tests.Metadata;
 using System.Threading;
 

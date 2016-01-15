@@ -11,7 +11,7 @@ using Kentor.AuthServices.Configuration;
 using System.Globalization;
 using Kentor.AuthServices.Metadata;
 using Kentor.AuthServices.WebSso;
-using Kentor.AuthServices.TestHelpers;
+using Kentor.AuthServices.Tests.Helpers;
 
 namespace Kentor.AuthServices.Tests.Configuration
 {

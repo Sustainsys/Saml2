@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Kentor.AuthServices.TestHelpers
+namespace Kentor.AuthServices.Tests.Helpers
 {
     public static class SpinWaiter
     {

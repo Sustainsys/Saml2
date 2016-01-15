@@ -9,7 +9,7 @@ using System.Text;
 using System.Collections.Generic;
 using Kentor.AuthServices.WebSso;
 using Kentor.AuthServices.Tests.WebSSO;
-using Kentor.AuthServices.TestHelpers;
+using Kentor.AuthServices.Tests.Helpers;
 
 namespace Kentor.AuthServices.Tests.WebSso
 {

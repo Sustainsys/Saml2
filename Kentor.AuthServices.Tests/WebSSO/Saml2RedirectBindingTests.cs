@@ -6,7 +6,7 @@ using System.Web;
 using Kentor.AuthServices.WebSso;
 using Kentor.AuthServices.Saml2P;
 using Kentor.AuthServices.Tests.WebSSO;
-using Kentor.AuthServices.TestHelpers;
+using Kentor.AuthServices.Tests.Helpers;
 using System.Security.Cryptography;
 using System.Text;
 

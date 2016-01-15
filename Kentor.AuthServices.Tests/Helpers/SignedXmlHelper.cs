@@ -5,7 +5,7 @@ using System.Security.Cryptography;
 using System.IdentityModel.Metadata;
 using System.IdentityModel.Tokens;
 
-namespace Kentor.AuthServices.TestHelpers
+namespace Kentor.AuthServices.Tests.Helpers
 {
     public class SignedXmlHelper
     {

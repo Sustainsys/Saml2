@@ -1,6 +1,6 @@
 ﻿using FluentAssertions;
 using Kentor.AuthServices.Configuration;
-using Kentor.AuthServices.TestHelpers;
+using Kentor.AuthServices.Tests.Helpers;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.IdentityModel.Metadata;
