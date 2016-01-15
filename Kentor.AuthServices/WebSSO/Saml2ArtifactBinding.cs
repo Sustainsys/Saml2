@@ -8,6 +8,8 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IdentityModel.Metadata;
 using Kentor.AuthServices.Configuration;
+using Kentor.AuthServices.Internal;
+using System.Net;
 
 namespace Kentor.AuthServices.WebSso
 {
@@ -32,14 +34,17 @@ namespace Kentor.AuthServices.WebSso
             }
 
             string relayState;
+            string artifact;
 
             switch(request.HttpMethod)
             {
                 case "GET":
                     relayState = request.QueryString["RelayState"].SingleOrDefault();
+                    artifact = request.QueryString["SAMLart"].SingleOrDefault();
                     break;
                 case "POST":
                     relayState = request.Form["RelayState"];
+                    artifact = null;
                     break;
                 default:
                     throw new InvalidOperationException(string.Format(CultureInfo.InvariantCulture,
@@ -47,7 +52,34 @@ namespace Kentor.AuthServices.WebSso
                         request.HttpMethod));
             }
 
-            return new UnbindResult(null, relayState);
+            var data = ResolveArtifact(artifact, relayState, options);
+
+            return new UnbindResult(data, relayState);
+        }
+
+        private static string ResolveArtifact(
+            string artifact,
+            string relayState,
+            IOptions options)
+        {
+            var storedRequestState = PendingAuthnRequests.Get(relayState);
+            var binaryArtifact = Convert.FromBase64String(artifact);
+            var idp = options.IdentityProviders[storedRequestState.Idp];
+            var arsIndex = (binaryArtifact[2] << 8) | binaryArtifact[3];
+            var arsUri = idp.ArtifactResolutionServiceUrls[arsIndex];
+
+            var artifactResolveMessage = Saml2SoapBinding.CreateSoapBody(
+                new Saml2ArtifactResolve()
+                {
+                    Artifact = artifact,
+                    Issuer = options.SPOptions.EntityId
+                }.ToXml());
+
+            using (var client = new WebClient())
+            {
+                var response = client.UploadString(arsUri, artifactResolveMessage);
+                return response;
+            }
         }
 
         private static SHA1 sha1 = SHA1.Create();

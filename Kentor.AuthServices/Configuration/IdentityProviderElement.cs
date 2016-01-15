@@ -138,5 +138,19 @@ namespace Kentor.AuthServices.Configuration
                 base[metadataUrl] = value;
             }
         }
+
+        const string artifactResolutionServices = nameof(artifactResolutionServices);
+        /// <summary>
+        /// Artifact Resolution endpoints for the identity provider.
+        /// </summary>
+        [ConfigurationProperty(artifactResolutionServices)]
+        [ConfigurationCollection(typeof(ArtifactResolutionServiceCollection))]
+        public ArtifactResolutionServiceCollection ArtifactResolutionServices
+        {
+            get
+            {
+                return (ArtifactResolutionServiceCollection)base[artifactResolutionServices];
+            }
+        }
     }
 }

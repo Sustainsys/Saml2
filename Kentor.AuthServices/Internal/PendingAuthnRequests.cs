@@ -23,5 +23,10 @@ namespace Kentor.AuthServices.Internal
             state = null;
             return pendingAuthnRequest.TryRemove(id, out state);
         }
+
+        internal static StoredRequestState Get(string id)
+        {
+            return pendingAuthnRequest[id];
+        }
     }
 }

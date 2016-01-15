@@ -14,6 +14,7 @@ using Kentor.AuthServices.Saml2P;
 using Kentor.AuthServices.WebSso;
 using System.Threading.Tasks;
 using System.Net;
+using System.Collections.Concurrent;
 
 namespace Kentor.AuthServices
 {
@@ -149,6 +150,12 @@ namespace Kentor.AuthServices
                 singleSignOnServiceUrl = value;
             }
         }
+
+        /// <summary>
+        /// Artifact resolution endpoints on the idp.
+        /// </summary>
+        public IDictionary<int, Uri> ArtifactResolutionServiceUrls { get; } =
+            new ConcurrentDictionary<int, Uri>();
 
         /// <summary>
         /// The Entity Id of the identity provider.

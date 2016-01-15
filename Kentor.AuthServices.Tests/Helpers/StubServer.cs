@@ -12,6 +12,7 @@ using Kentor.AuthServices.WebSso;
 using System.Threading;
 using System.IO;
 using System.Xml.Linq;
+using Kentor.AuthServices.Internal;
 
 namespace Kentor.AuthServices.Tests.Helpers
 {
@@ -39,7 +40,7 @@ namespace Kentor.AuthServices.Tests.Helpers
   </EntityDescriptor>
 ", SignedXmlHelper.KeyInfoXml, IdpMetadataSsoPort);
 
-            content["/idpMetadataNoCertificate"] = 
+            content["/idpMetadataNoCertificate"] =
 @"<EntityDescriptor xmlns=""urn:oasis:names:tc:SAML:2.0:metadata""
     entityID=""http://localhost:13428/idpMetadataNoCertificate"" cacheDuration=""PT15M"">
     <IDPSSODescriptor
@@ -122,12 +123,12 @@ namespace Kentor.AuthServices.Tests.Helpers
         Location=""http://sp.federation.example.com/acs"" />
     </SPSSODescriptor>
   </EntityDescriptor>
-</EntitiesDescriptor>", 
-                      SignedXmlHelper.KeyInfoXml, 
+</EntitiesDescriptor>",
+                      SignedXmlHelper.KeyInfoXml,
                       IdpAndFederationVeryShortCacheDurationSsoPort);
             }
 
-            if(FederationVeryShortCacheDurationSecondAlternativeEnabled)
+            if (FederationVeryShortCacheDurationSecondAlternativeEnabled)
             {
                 content["/federationMetadataVeryShortCacheDuration"] = string.Format(
 @"<EntitiesDescriptor xmlns=""urn:oasis:names:tc:SAML:2.0:metadata"" cacheDuration=""PT0.001S"">
@@ -315,18 +316,20 @@ entityID=""http://localhost:13428/idpMetadataVeryShortCacheDuration"" cacheDurat
                 {
                     var content = GetContent();
                     string data;
-                    if(ctx.Request.Path.ToString() == "/ARS")
+                    if (ctx.Request.Path.ToString() == "/ARS")
                     {
                         ArtifactResolutionService(ctx);
                     }
-
-                    if(content.TryGetValue(ctx.Request.Path.ToString(), out data))
-                    {
-                        await ctx.Response.WriteAsync(data);
-                    }
                     else
                     {
-                        await next.Invoke();
+                        if (content.TryGetValue(ctx.Request.Path.ToString(), out data))
+                        {
+                            await ctx.Response.WriteAsync(data);
+                        }
+                        else
+                        {
+                            await next.Invoke();
+                        }
                     }
                 });
             });
@@ -334,8 +337,44 @@ entityID=""http://localhost:13428/idpMetadataVeryShortCacheDuration"" cacheDurat
 
         private static void ArtifactResolutionService(IOwinContext ctx)
         {
-            throw new NotImplementedException();
+            LastArtifactResolutionSoapActionHeader = ctx.Request.Headers["SOAPAction"];
+
+            using (var reader = new StreamReader(ctx.Request.Body))
+            {
+                var body = reader.ReadToEnd();
+
+                var parsedRequest = XElement.Parse(body);
+
+                var requestId = parsedRequest
+                    .Element(Saml2Namespaces.SoapEnvelope + "Body")
+                    .Element(Saml2Namespaces.Saml2P + "ArtifactResolve")
+                    .Attribute("ID").Value;
+
+                var response = string.Format(
+    @"<SOAP-ENV:Envelope
+    xmlns:SOAP-ENV=""http://schemas.xmlsoap.org/soap/envelope/"">
+    <SOAP-ENV:Body>
+        <samlp:ArtifactResponse
+            xmlns:samlp = ""urn:oasis:names:tc:SAML:2.0:protocol""
+            xmlns = ""urn:oasis:names:tc:SAML:2.0:assertion""
+            ID = ""_FQvGknDfws2Z"" Version = ""2.0""
+            InResponseTo = ""{0}""
+            IssueInstant = ""{1}"">
+            <Issuer>https://idp.example.com</Issuer>
+            <samlp:Status>
+                <samlp:StatusCode Value = ""urn:oasis:names:tc:SAML:2.0:status:Success"" />
+            </samlp:Status>
+            <message>   <child-node /> </message>
+        </ samlp:ArtifactResponse>
+    </SOAP-ENV:Body>
+</SOAP-ENV:Envelope>",
+                requestId, DateTime.UtcNow.ToSaml2DateTimeString());
+
+                ctx.Response.Write(response);
+            }
         }
+
+        public static string LastArtifactResolutionSoapActionHeader { get; set; }
 
         [AssemblyCleanup]
         public static void Stop()

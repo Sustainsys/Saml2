@@ -13,6 +13,7 @@ using Kentor.AuthServices.Saml2P;
 using System.IdentityModel.Tokens;
 using Kentor.AuthServices.Internal;
 using System.Reflection;
+using Kentor.AuthServices.Tests.Helpers;
 
 namespace Kentor.AuthServices.Tests.WebSSO
 {
@@ -40,12 +41,14 @@ namespace Kentor.AuthServices.Tests.WebSSO
         [TestMethod]
         public void Saml2ArtifactBinding_Unbind_FromGet()
         {
-            var issuer = new EntityId("http://idp.example.com");
-            var artifact = Saml2ArtifactBinding.CreateArtifact(issuer, 0x1234);
+            var issuer = new EntityId("https://idp.example.com");
+            var artifact = Uri.EscapeDataString(
+                Convert.ToBase64String(
+                    Saml2ArtifactBinding.CreateArtifact(issuer, 0x1234)));
 
             var relayState = MethodBase.GetCurrentMethod().Name;
 
-            PrepareArtifactState(relayState);
+            PrepareArtifactState(relayState, issuer);
 
             var r = new HttpRequestData(
                 "GET",
@@ -53,15 +56,19 @@ namespace Kentor.AuthServices.Tests.WebSSO
 
             var result = Saml2Binding.Get(Saml2BindingType.Artifact).Unbind(r, StubFactory.CreateOptions());
 
-            var expected = new UnbindResult("<message />", relayState);
+            StubServer.LastArtifactResolutionSoapActionHeader = null;
+
+            var expected = new UnbindResult("<message>   <child-node /> </message>", relayState);
 
             result.ShouldBeEquivalentTo(expected);
+            StubServer.LastArtifactResolutionSoapActionHeader.Should().Be(
+                "http://www.oasis-open.org/committees/security");
         }
 
-        private void PrepareArtifactState(string RelayState)
+        private void PrepareArtifactState(string RelayState, EntityId idp)
         {
             var storedState = new StoredRequestState(
-                new EntityId("http://idp.example.com"),
+                idp,
                 new Uri("http://return.org"),
                 new Saml2Id(),
                 null);
