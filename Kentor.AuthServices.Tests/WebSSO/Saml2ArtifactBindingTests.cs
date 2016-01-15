@@ -9,6 +9,7 @@ using System.IdentityModel.Metadata;
 using System.Security.Cryptography;
 using System.Text;
 using System.Linq;
+using Kentor.AuthServices.Saml2P;
 
 namespace Kentor.AuthServices.Tests.WebSSO
 {
@@ -125,6 +126,12 @@ namespace Kentor.AuthServices.Tests.WebSSO
 
             // Can't test a random value, but check it's not 0 all over.
             artifact.Skip(24).Count(c => c == 0).Should().BeLessThan(10);
+
+            ISaml2Message storedMessage;
+            Saml2ArtifactBinding.PendingMessages.TryRemove(artifact, out storedMessage)
+                .Should().BeTrue();
+
+            storedMessage.Should().BeSameAs(message);
         }
 
         [TestMethod]

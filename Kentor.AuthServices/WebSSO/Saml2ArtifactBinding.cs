@@ -4,6 +4,8 @@ using System.Linq;
 using Kentor.AuthServices.Saml2P;
 using System.Security.Cryptography;
 using System.Text;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
 
 namespace Kentor.AuthServices.WebSso
 {
@@ -63,6 +65,8 @@ namespace Kentor.AuthServices.WebSso
 
             Array.Copy(SecureKeyGenerator.CreateArtifactMessageHandle(), 0, artifact, 24, 20);
 
+            ((IDictionary<byte[], ISaml2Message>)PendingMessages).Add(artifact, message);
+
             return new CommandResult
             {
                 HttpStatusCode = System.Net.HttpStatusCode.SeeOther,
@@ -71,6 +75,25 @@ namespace Kentor.AuthServices.WebSso
                 + "SAMLart=" + Uri.EscapeDataString(Convert.ToBase64String(artifact))
                 + "&RelayState=" + Uri.EscapeDataString(message.RelayState))
             };
+        }
+
+        public static ConcurrentDictionary<byte[], ISaml2Message> PendingMessages { get; } =
+            new ConcurrentDictionary<byte[], ISaml2Message>(new ByteArrayEqualityComparer());
+
+        private class ByteArrayEqualityComparer : IEqualityComparer<byte[]>
+        {
+            public bool Equals(byte[] x, byte[] y)
+            {
+                return x.SequenceEqual(y);
+            }
+
+            [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1062:Validate arguments of public methods", MessageId = "0")]
+            public int GetHashCode(byte[] obj)
+            {
+                return Enumerable.Range(0, obj.Length / 4)
+                    .Select(i => BitConverter.ToInt32(obj, i * 4))
+                    .Aggregate((a, b) => a ^ b);
+            }
         }
     }
 }

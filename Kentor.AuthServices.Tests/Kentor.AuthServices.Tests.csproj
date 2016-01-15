@@ -157,7 +157,6 @@
     <Compile Include="Internal\DateTimeExtensionsTests.cs" />
     <Compile Include="Saml2SubjectExtensionsTests.cs" />
     <Compile Include="Saml2ConditionsExtensionsTests.cs" />
-    <Compile Include="Internal\PendingAuthnRequestsTests.cs" />
     <Compile Include="WebSSO\HttpRequestDataTests.cs" />
     <Compile Include="Mvc\CommandResultExtensionsTests.cs" />
     <Compile Include="Owin\KentorAuthServicesAuthenticationExtensionsTests.cs" />
