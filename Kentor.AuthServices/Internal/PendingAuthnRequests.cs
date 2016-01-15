@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens;
 using System.Linq;
@@ -9,32 +10,18 @@ namespace Kentor.AuthServices.Internal
 {
     static class PendingAuthnRequests
     {
-        private static readonly Dictionary<string, StoredRequestState> pendingAuthnRequest = new Dictionary<string, StoredRequestState>();
+        private static readonly ConcurrentDictionary<string, StoredRequestState> pendingAuthnRequest
+            = new ConcurrentDictionary<string, StoredRequestState>();
 
-        internal static void Add(string id, StoredRequestState idp)
+        internal static void Add(string id, StoredRequestState state)
         {
-            lock (pendingAuthnRequest)
-            {
-                if (pendingAuthnRequest.ContainsKey(id))
-                {
-                    throw new InvalidOperationException("AuthnRequest id can't be reused.");
-                }
-                pendingAuthnRequest.Add(id, idp);
-            }
+            ((IDictionary<string, StoredRequestState>)pendingAuthnRequest).Add(id, state);
         }
 
         internal static bool TryRemove(string id, out StoredRequestState state)
         {
-            lock (pendingAuthnRequest)
-            {
-                if (id != null && pendingAuthnRequest.ContainsKey(id))
-                {
-                    state = pendingAuthnRequest[id];
-                    return pendingAuthnRequest.Remove(id);
-                }
-                state = null;
-                return false;
-            }
+            state = null;
+            return pendingAuthnRequest.TryRemove(id, out state);
         }
     }
 }
