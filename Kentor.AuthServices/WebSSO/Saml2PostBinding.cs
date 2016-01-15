@@ -1,4 +1,5 @@
-﻿using Kentor.AuthServices.Saml2P;
+﻿using Kentor.AuthServices.Configuration;
+using Kentor.AuthServices.Saml2P;
 using System;
 using System.Globalization;
 using System.Linq;
@@ -21,7 +22,7 @@ namespace Kentor.AuthServices.WebSso
                 && request.Form.Keys.Contains("SAMLResponse");
         }
 
-        public override UnbindResult Unbind(HttpRequestData request)
+        public override UnbindResult Unbind(HttpRequestData request, IOptions options)
         {
             if (request == null)
             {

@@ -1,4 +1,5 @@
-﻿using Kentor.AuthServices.Saml2P;
+﻿using Kentor.AuthServices.Configuration;
+using Kentor.AuthServices.Saml2P;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -71,8 +72,9 @@ namespace Kentor.AuthServices.WebSso
         /// Extracts a message out of the current HttpRequest.
         /// </summary>
         /// <param name="request">Current HttpRequest.</param>
+        /// <param name="options">Options.</param>
         /// <returns>Extracted message.</returns>
-        public virtual UnbindResult Unbind(HttpRequestData request)
+        public virtual UnbindResult Unbind(HttpRequestData request, IOptions options)
         {
             throw new NotImplementedException();
         }

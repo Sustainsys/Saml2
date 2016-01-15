@@ -27,7 +27,7 @@ namespace Kentor.AuthServices.Tests.WebSso
         public void Saml2RedirectBinding_Unbind_NullcheckRequest()
         {
             Saml2Binding.Get(Saml2BindingType.HttpRedirect)
-                .Invoking(b => b.Unbind(null))
+                .Invoking(b => b.Unbind(null, null))
                 .ShouldThrow<ArgumentNullException>().And.ParamName.Should().Be("request");
         }
 
@@ -75,7 +75,7 @@ namespace Kentor.AuthServices.Tests.WebSso
         {
             var request = new HttpRequestData("GET", new Uri("http://localhost?SAMLRequest=" + ExampleSerializedData));
 
-            var result = Saml2Binding.Get(Saml2BindingType.HttpRedirect).Unbind(request);
+            var result = Saml2Binding.Get(Saml2BindingType.HttpRedirect).Unbind(request, null);
 
             var expected = new
             {
@@ -95,7 +95,7 @@ namespace Kentor.AuthServices.Tests.WebSso
             var request = new HttpRequestData("GET", new Uri("http://localhost?SAMLRequest=" 
                 + ExampleSerializedData + "&RelayState=" + relayState));
 
-            var result = Saml2Binding.Get(Saml2BindingType.HttpRedirect).Unbind(request);
+            var result = Saml2Binding.Get(Saml2BindingType.HttpRedirect).Unbind(request, null);
 
             var expected = new
             {

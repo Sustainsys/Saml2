@@ -39,7 +39,7 @@ namespace Kentor.AuthServices.Tests.WebSso
         public void Saml2PostBinding_Unbind_Nullcheck()
         {
             Saml2Binding.Get(Saml2BindingType.HttpPost)
-                .Invoking(b => b.Unbind(null))
+                .Invoking(b => b.Unbind(null, null))
                 .ShouldThrow<ArgumentNullException>().And.ParamName.Should().Be("request");
         }
 
@@ -47,7 +47,7 @@ namespace Kentor.AuthServices.Tests.WebSso
         public void Saml2PostBinding_Unbind_ThrowsOnNotBase64Encoded()
         {
             Saml2Binding.Get(Saml2BindingType.HttpPost)
-                .Invoking(b => b.Unbind(CreateRequest("foo")))
+                .Invoking(b => b.Unbind(CreateRequest("foo"), null))
                 .ShouldThrow<FormatException>();
         }
 
@@ -58,7 +58,7 @@ namespace Kentor.AuthServices.Tests.WebSso
 
             var r = CreateRequest(Convert.ToBase64String(Encoding.UTF8.GetBytes(response)));
 
-            Saml2Binding.Get(Saml2BindingType.HttpPost).Unbind(r).Data.Should().Be(response);
+            Saml2Binding.Get(Saml2BindingType.HttpPost).Unbind(r, null).Data.Should().Be(response);
         }
 
         [TestMethod]
@@ -72,7 +72,7 @@ namespace Kentor.AuthServices.Tests.WebSso
                 relayState);
 
             Saml2Binding.Get(Saml2BindingType.HttpPost)
-                .Unbind(r).RelayState.Should().Be(relayState);
+                .Unbind(r, null).RelayState.Should().Be(relayState);
         }
 
         [TestMethod]

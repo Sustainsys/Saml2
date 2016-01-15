@@ -6,6 +6,8 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.IdentityModel.Metadata;
+using Kentor.AuthServices.Configuration;
 
 namespace Kentor.AuthServices.WebSso
 {
@@ -22,7 +24,7 @@ namespace Kentor.AuthServices.WebSso
                 || (request.HttpMethod == "POST" && request.Form.ContainsKey("SAMLart"));
         }
 
-        public override UnbindResult Unbind(HttpRequestData request)
+        public override UnbindResult Unbind(HttpRequestData request, IOptions options)
         {
             if(request == null)
             {
@@ -48,7 +50,29 @@ namespace Kentor.AuthServices.WebSso
             return new UnbindResult(null, relayState);
         }
 
-        private SHA1 sha1 = SHA1.Create();
+        private static SHA1 sha1 = SHA1.Create();
+
+        /// <summary>
+        /// Create a SAML artifact value.
+        /// </summary>
+        /// <param name="issuer">Entity id of the artifact issuer.</param>
+        /// <param name="endpointIndex">Index of the artifact resolution endpoint
+        /// that the requester should use to resolve the artifact.</param>
+        public static byte[] CreateArtifact(EntityId issuer, int endpointIndex)
+        {
+            var artifact = new byte[44];
+            artifact[1] = 4; // Header is 0004
+
+            artifact[2] = (byte)(endpointIndex >> 8);
+            artifact[3] = (byte)endpointIndex;
+
+            Array.Copy(sha1.ComputeHash(Encoding.UTF8.GetBytes(issuer.Id)),
+                0, artifact, 4, 20);
+
+            Array.Copy(SecureKeyGenerator.CreateArtifactMessageHandle(), 0, artifact, 24, 20);
+
+            return artifact;
+        }
 
         public override CommandResult Bind(ISaml2Message message)
         {
@@ -57,13 +81,7 @@ namespace Kentor.AuthServices.WebSso
                 throw new ArgumentNullException(nameof(message));
             }
 
-            var artifact = new byte[44];
-            artifact[1] = 4; // Header is 0004
-
-            Array.Copy(sha1.ComputeHash(Encoding.UTF8.GetBytes(message.Issuer.Id)),
-                0, artifact, 4, 20);
-
-            Array.Copy(SecureKeyGenerator.CreateArtifactMessageHandle(), 0, artifact, 24, 20);
+            var artifact = CreateArtifact(message.Issuer, 0);
 
             ((IDictionary<byte[], ISaml2Message>)PendingMessages).Add(artifact, message);
 

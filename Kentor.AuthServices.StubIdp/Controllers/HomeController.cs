@@ -46,7 +46,7 @@ namespace Kentor.AuthServices.StubIdp.Controllers
             if (requestData.QueryString["SAMLRequest"].Any())
             {
                 var extractedMessage = Saml2Binding.Get(Saml2BindingType.HttpRedirect)
-                    .Unbind(requestData);
+                    .Unbind(requestData, null);
 
                 var request = Saml2AuthenticationRequest.Read(
                     extractedMessage.Data,

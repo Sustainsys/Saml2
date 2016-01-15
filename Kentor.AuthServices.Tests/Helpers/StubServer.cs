@@ -11,6 +11,7 @@ using Kentor.AuthServices.Tests.Helpers;
 using Kentor.AuthServices.WebSso;
 using System.Threading;
 using System.IO;
+using System.Xml.Linq;
 
 namespace Kentor.AuthServices.Tests.Helpers
 {
@@ -314,6 +315,11 @@ entityID=""http://localhost:13428/idpMetadataVeryShortCacheDuration"" cacheDurat
                 {
                     var content = GetContent();
                     string data;
+                    if(ctx.Request.Path.ToString() == "/ARS")
+                    {
+                        ArtifactResolutionService(ctx);
+                    }
+
                     if(content.TryGetValue(ctx.Request.Path.ToString(), out data))
                     {
                         await ctx.Response.WriteAsync(data);
@@ -324,6 +330,11 @@ entityID=""http://localhost:13428/idpMetadataVeryShortCacheDuration"" cacheDurat
                     }
                 });
             });
+        }
+
+        private static void ArtifactResolutionService(IOwinContext ctx)
+        {
+            throw new NotImplementedException();
         }
 
         [AssemblyCleanup]

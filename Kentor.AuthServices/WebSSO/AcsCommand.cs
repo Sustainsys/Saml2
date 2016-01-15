@@ -35,7 +35,7 @@ namespace Kentor.AuthServices.WebSso
                 UnbindResult unbindResult = null;
                 try
                 {
-                    unbindResult = binding.Unbind(request);
+                    unbindResult = binding.Unbind(request, options);
                     var samlResponse = Saml2Response.Read(unbindResult.Data, unbindResult.RelayState);
 
                     return ProcessResponse(options, samlResponse);

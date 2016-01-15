@@ -130,7 +130,7 @@ namespace Kentor.AuthServices.Tests.WebSso
         [TestMethod]
         public void Saml2Binding_Unbind_IsNotImplemented()
         {
-            Action a = () => new ConcreteSaml2Binding().Unbind(null);
+            Action a = () => new ConcreteSaml2Binding().Unbind(null, null);
 
             a.ShouldThrow<NotImplementedException>();
         }

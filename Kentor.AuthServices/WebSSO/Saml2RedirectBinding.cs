@@ -1,4 +1,5 @@
-﻿using Kentor.AuthServices.Saml2P;
+﻿using Kentor.AuthServices.Configuration;
+using Kentor.AuthServices.Saml2P;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -65,7 +66,7 @@ namespace Kentor.AuthServices.WebSso
         }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2202:Do not dispose objects multiple times", Justification="The MemoryStream is not disposed by the DeflateStream - we're using the keep-open flag.")]
-        public override UnbindResult Unbind(HttpRequestData request)
+        public override UnbindResult Unbind(HttpRequestData request, IOptions options)
         {
             if (request == null)
             {

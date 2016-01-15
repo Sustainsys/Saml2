@@ -21,7 +21,11 @@ namespace Kentor.AuthServices
         /// <param name="returnUrl">The Url to redirect back to after a succesful login</param>
         /// <param name="messageId">ID of the SAML message, used to match InResponseTo</param>
         /// <param name="relayData">Aux data that can be stored across the authentication request.</param>
-        public StoredRequestState(EntityId idp, Uri returnUrl, Saml2Id messageId, object relayData)
+        public StoredRequestState(
+            EntityId idp,
+            Uri returnUrl,
+            Saml2Id messageId,
+            object relayData)
         {
             Idp = idp;
             ReturnUrl = returnUrl;

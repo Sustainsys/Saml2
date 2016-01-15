@@ -10,6 +10,9 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Linq;
 using Kentor.AuthServices.Saml2P;
+using System.IdentityModel.Tokens;
+using Kentor.AuthServices.Internal;
+using System.Reflection;
 
 namespace Kentor.AuthServices.Tests.WebSSO
 {
@@ -29,7 +32,7 @@ namespace Kentor.AuthServices.Tests.WebSSO
         public void Saml2ArtifactBinding_Unbind_Nullcheck()
         {
             Saml2Binding.Get(Saml2BindingType.Artifact)
-                .Invoking(b => b.Unbind(null))
+                .Invoking(b => b.Unbind(null, null))
                 .ShouldThrow<ArgumentNullException>()
                 .And.ParamName.Should().Be("request");
         }
@@ -37,15 +40,33 @@ namespace Kentor.AuthServices.Tests.WebSSO
         [TestMethod]
         public void Saml2ArtifactBinding_Unbind_FromGet()
         {
+            var issuer = new EntityId("http://idp.example.com");
+            var artifact = Saml2ArtifactBinding.CreateArtifact(issuer, 0x1234);
+
+            var relayState = MethodBase.GetCurrentMethod().Name;
+
+            PrepareArtifactState(relayState);
+
             var r = new HttpRequestData(
                 "GET",
-                new Uri("http://example.com/path/acs?SAMLart=Foo&RelayState=Bar"));
+                new Uri($"http://example.com/path/acs?SAMLart={artifact}&RelayState={relayState}"));
 
-            var result = Saml2Binding.Get(Saml2BindingType.Artifact).Unbind(r);
+            var result = Saml2Binding.Get(Saml2BindingType.Artifact).Unbind(r, StubFactory.CreateOptions());
 
-            var expected = new UnbindResult(null, "Bar");
+            var expected = new UnbindResult("<message />", relayState);
 
             result.ShouldBeEquivalentTo(expected);
+        }
+
+        private void PrepareArtifactState(string RelayState)
+        {
+            var storedState = new StoredRequestState(
+                new EntityId("http://idp.example.com"),
+                new Uri("http://return.org"),
+                new Saml2Id(),
+                null);
+
+            PendingAuthnRequests.Add(RelayState, storedState);
         }
 
         [TestMethod]
@@ -61,7 +82,7 @@ namespace Kentor.AuthServices.Tests.WebSSO
                     new KeyValuePair<string, string[]>("RelayState", new[] {"MyState"})
                 });
 
-            var result = Saml2Binding.Get(Saml2BindingType.Artifact).Unbind(r);
+            var result = Saml2Binding.Get(Saml2BindingType.Artifact).Unbind(r, StubFactory.CreateOptions());
 
             var expected = new UnbindResult(null, "MyState");
 
@@ -74,7 +95,7 @@ namespace Kentor.AuthServices.Tests.WebSSO
             var r = new HttpRequestData("PUT", new Uri("http://host"));
 
             Saml2Binding.Get(Saml2BindingType.Artifact)
-                .Invoking(b => b.Unbind(r))
+                .Invoking(b => b.Unbind(r, null))
                 .ShouldThrow<InvalidOperationException>()
                 .WithMessage("Artifact binding can only use GET or POST http method, but found PUT");
         }
@@ -108,25 +129,6 @@ namespace Kentor.AuthServices.Tests.WebSSO
             var artifact = Convert.FromBase64String(
                 Uri.UnescapeDataString(query["SAMLart"]));
 
-            // Header
-            artifact[0].Should().Be(0);
-            artifact[1].Should().Be(4);
-
-            //Endpoint index
-            artifact[2].Should().Be(0);
-            artifact[3].Should().Be(0);
-
-            artifact.Length.Should().Be(44);
-
-            var sourceID = new byte[20];
-            Array.Copy(artifact, 4, sourceID, 0, 20);
-
-            sourceID.ShouldBeEquivalentTo(
-                SHA1.Create().ComputeHash(Encoding.UTF8.GetBytes(message.Issuer.Id)));
-
-            // Can't test a random value, but check it's not 0 all over.
-            artifact.Skip(24).Count(c => c == 0).Should().BeLessThan(10);
-
             ISaml2Message storedMessage;
             Saml2ArtifactBinding.PendingMessages.TryRemove(artifact, out storedMessage)
                 .Should().BeTrue();
@@ -157,6 +159,33 @@ namespace Kentor.AuthServices.Tests.WebSSO
             Saml2Binding.Get(Saml2BindingType.Artifact)
                 .Invoking(b => b.Bind(null))
                 .ShouldThrow<ArgumentNullException>("message");
+        }
+
+        [TestMethod]
+        public void Saml2ArtifactBinding_Bind_CreateArtifact()
+        {
+            var issuer = new EntityId("http://idp.example.com");
+            var index = 0x1234;
+            var artifact = Saml2ArtifactBinding.CreateArtifact(issuer, index);
+
+            // Header
+            artifact[0].Should().Be(0);
+            artifact[1].Should().Be(4);
+
+            //Endpoint index
+            artifact[2].Should().Be(0x12);
+            artifact[3].Should().Be(0x34);
+
+            artifact.Length.Should().Be(44);
+
+            var sourceID = new byte[20];
+            Array.Copy(artifact, 4, sourceID, 0, 20);
+
+            sourceID.ShouldBeEquivalentTo(
+                SHA1.Create().ComputeHash(Encoding.UTF8.GetBytes(issuer.Id)));
+
+            // Can't test a random value, but check it's not 0 all over.
+            artifact.Skip(24).Count(c => c == 0).Should().BeLessThan(10);
         }
     }
 }
