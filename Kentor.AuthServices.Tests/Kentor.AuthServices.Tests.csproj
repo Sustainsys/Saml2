@@ -116,6 +116,7 @@
     <Compile Include="Helpers\OwinTestHelpers.cs" />
     <Compile Include="Helpers\SignedXmlHelper.cs" />
     <Compile Include="Helpers\SpinWaiter.cs" />
+    <Compile Include="Saml2P\Saml2ArtifactResolveTests.cs" />
     <Compile Include="ServiceCertificateTests.cs" />
     <Compile Include="HttpModule\CommandResultHttpTests.cs" />
     <Compile Include="HttpModule\HttpRequestBaseExtensionsTests.cs" />

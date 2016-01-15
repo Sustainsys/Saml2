@@ -59,6 +59,7 @@
     <Compile Include="CertificateUse.cs" />
     <Compile Include="Configuration\ServiceCertificateCollection.cs" />
     <Compile Include="Configuration\ServiceCertificateElement.cs" />
+    <Compile Include="Saml2P\Saml2ArtifactResolve.cs" />
     <Compile Include="ServiceCertificate.cs" />
     <Compile Include="ConfiguredAndLoadedCollection.cs" />
     <Compile Include="Internal\PathHelper.cs" />
