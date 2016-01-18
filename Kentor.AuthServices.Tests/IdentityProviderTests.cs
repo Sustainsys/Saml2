@@ -171,12 +171,22 @@ namespace Kentor.AuthServices.Tests
         public void IdentityProvider_ConfigFromMetadata()
         {
             var entityId = new EntityId("http://localhost:13428/idpMetadata");
-            var idpFromMetadata = Options.FromConfiguration.IdentityProviders[entityId];
+            var subject = new IdentityProvider(entityId, StubFactory.CreateSPOptions());
 
-            idpFromMetadata.EntityId.Id.Should().Be(entityId.Id);
-            idpFromMetadata.Binding.Should().Be(Saml2BindingType.HttpPost);
-            idpFromMetadata.SingleSignOnServiceUrl.Should().Be(new Uri("http://localhost:13428/acs"));
-            idpFromMetadata.SigningKeys.Single().ShouldBeEquivalentTo(SignedXmlHelper.TestKey);
+            // Add one that will be removed by loading.
+            subject.ArtifactResolutionServiceUrls.Add(234, new Uri("http://example.com"));
+
+            subject.LoadMetadata = true;
+
+            subject.EntityId.Id.Should().Be(entityId.Id);
+            subject.Binding.Should().Be(Saml2BindingType.HttpPost);
+            subject.SingleSignOnServiceUrl.Should().Be(new Uri("http://localhost:13428/acs"));
+            subject.SigningKeys.Single().ShouldBeEquivalentTo(SignedXmlHelper.TestKey);
+            subject.ArtifactResolutionServiceUrls.Count.Should().Be(2);
+            subject.ArtifactResolutionServiceUrls[0x1234].OriginalString
+                .Should().Be("http://localhost:13428/ars");
+            subject.ArtifactResolutionServiceUrls[117].OriginalString
+                .Should().Be("http://localhost:13428/ars2");
         }
 
         private IdentityProviderElement CreateConfig()
@@ -366,14 +376,28 @@ namespace Kentor.AuthServices.Tests
         [TestMethod]
         public void IdentityProvider_SingleSignOnServiceUrl_ReloadsMetadataIfNoLongerValid()
         {
-            StubServer.IdpAndFederationVeryShortCacheDurationSsoPort = 42;
+            StubServer.IdpAndFederationVeryShortCacheDurationPort = 42;
             var subject = CreateSubjectForMetadataRefresh();
             subject.SingleSignOnServiceUrl.Port.Should().Be(42);
-            StubServer.IdpAndFederationVeryShortCacheDurationSsoPort = 117;
+            StubServer.IdpAndFederationVeryShortCacheDurationPort = 117;
 
             SpinWaiter.WhileEqual(() => subject.SingleSignOnServiceUrl.Port, () => 42);
 
             subject.SingleSignOnServiceUrl.Port.Should().Be(117);
+        }
+
+
+        [TestMethod]
+        public void IdentityProvider_ArtifactResolutionServiceUrl_ReloadsMetadataIfNoLongerValid()
+        {
+            StubServer.IdpAndFederationVeryShortCacheDurationPort = 42;
+            var subject = CreateSubjectForMetadataRefresh();
+            subject.ArtifactResolutionServiceUrls[0].Port.Should().Be(42);
+            StubServer.IdpAndFederationVeryShortCacheDurationPort = 117;
+
+            SpinWaiter.WhileEqual(() => subject.ArtifactResolutionServiceUrls[0].Port, () => 42);
+
+            subject.ArtifactResolutionServiceUrls[0].Port.Should().Be(117);
         }
 
         [TestMethod]

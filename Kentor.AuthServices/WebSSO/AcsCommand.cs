@@ -51,13 +51,19 @@ namespace Kentor.AuthServices.WebSso
                         "The SAML response contains incorrect XML", ex);
 
                     // Add the payload to the exception
-                    newEx.Data["Saml2Response"] = unbindResult.Data.OuterXml;
+                    if (unbindResult != null)
+                    {
+                        newEx.Data["Saml2Response"] = unbindResult.Data.OuterXml;
+                    }
                     throw newEx;
                 }
                 catch (Exception ex)
                 {
-                    // Add the payload to the existing exception
-                    ex.Data["Saml2Response"] = unbindResult.Data.OuterXml;
+                    if (unbindResult != null)
+                    {
+                        // Add the payload to the existing exception
+                        ex.Data["Saml2Response"] = unbindResult.Data.OuterXml;
+                    }
                     throw;
                 }
             }

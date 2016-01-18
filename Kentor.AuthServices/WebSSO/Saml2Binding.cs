@@ -62,6 +62,11 @@ namespace Kentor.AuthServices.WebSso
         public static readonly Uri DiscoveryResponseUri = new Uri("urn:oasis:names:tc:SAML:profiles:SSO:idp-discovery-protocol");
 
         /// <summary>
+        /// Uri identifier of the SOAP binding.
+        /// </summary>
+        public static readonly Uri SoapUri = new Uri("urn:oasis:names:tc:SAML:2.0:bindings:SOAP");
+
+        /// <summary>
         /// Binds a message to a binding
         /// </summary>
         /// <param name="message"></param>

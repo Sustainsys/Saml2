@@ -117,6 +117,44 @@ namespace Kentor.AuthServices.Tests.WebSso
         }
 
         [TestMethod]
+        public void AcsCommand_Run_HandlesXmlExceptionWhenUnbindResultIsStillNull()
+        {
+            var encoded = Convert.ToBase64String(Encoding.UTF8.GetBytes("Not Xml"));
+
+            var r = new HttpRequestData(
+                "POST",
+                new Uri("http://localhost"),
+                "/ModulePath",
+                new KeyValuePair<string, string[]>[]
+                {
+                    new KeyValuePair<string, string[]>("SAMLResponse", new string[] { encoded })
+                });
+
+            Action a = () => new AcsCommand().Run(r, Options.FromConfiguration);
+
+            a.ShouldThrow<BadFormatSamlResponseException>();
+        }
+
+        [TestMethod]
+        public void AcsCommand_Run_HandlesExceptionWhenUnbindResultIsStillNull()
+        {
+            var r = new HttpRequestData(
+                "POST",
+                new Uri("http://localhost"),
+                "/ModulePath",
+                new KeyValuePair<string, string[]>[]
+                {
+                    new KeyValuePair<string, string[]>("SAMLart", new string[] { "BadArtifact" })
+                });
+
+            Action a = () => new AcsCommand().Run(r, Options.FromConfiguration);
+
+            // The real exception was masked by a NullRef in the exception
+            // handler in AcsCommand.Run
+            a.ShouldThrow<KeyNotFoundException>();
+        }
+
+        [TestMethod]
         public void AcsCommand_Run_SuccessfulResult()
         {
             var response =

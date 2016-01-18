@@ -36,6 +36,12 @@ namespace Kentor.AuthServices.Tests.Helpers
       <SingleSignOnService
         Binding=""urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST""
         Location=""http://localhost:{1}/acs""/>
+      <ArtifactResolutionService index=""4660""
+        Binding=""urn:oasis:names:tc:SAML:2.0:bindings:SOAP""
+        Location=""http://localhost:{1}/ars""/>
+      <ArtifactResolutionService index=""117""
+        Binding=""urn:oasis:names:tc:SAML:2.0:bindings:SOAP""
+        Location=""http://localhost:{1}/ars2""/>
     </IDPSSODescriptor>
   </EntityDescriptor>
 ", SignedXmlHelper.KeyInfoXml, IdpMetadataSsoPort);
@@ -125,7 +131,7 @@ namespace Kentor.AuthServices.Tests.Helpers
   </EntityDescriptor>
 </EntitiesDescriptor>",
                       SignedXmlHelper.KeyInfoXml,
-                      IdpAndFederationVeryShortCacheDurationSsoPort);
+                      IdpAndFederationVeryShortCacheDurationPort);
             }
 
             if (FederationVeryShortCacheDurationSecondAlternativeEnabled)
@@ -164,7 +170,7 @@ namespace Kentor.AuthServices.Tests.Helpers
   </EntityDescriptor>
 </EntitiesDescriptor>",
                       SignedXmlHelper.KeyInfoXml,
-                      IdpAndFederationVeryShortCacheDurationSsoPort);
+                      IdpAndFederationVeryShortCacheDurationPort);
             }
 
             if (IdpAndFederationShortCacheDurationAvailable)
@@ -267,11 +273,15 @@ entityID=""http://localhost:13428/idpMetadataVeryShortCacheDuration"" cacheDurat
     protocolSupportEnumeration=""urn:oasis:names:tc:SAML:2.0:protocol"">
     {0}
     <SingleSignOnService
-    Binding=""{1}""
-    Location=""http://localhost:{2}/acs""/>
+      Binding=""{1}""
+      Location=""http://localhost:{2}/acs""/>
+    <ArtifactResolutionService
+      index=""0""
+      Location=""http://localhost:{2}/ars""
+      Binding=""urn:oasis:names:tc:SAML:2.0:bindings:SOAP"" />
 </IDPSSODescriptor>
 </EntityDescriptor>",
-                    keyElement, IdpVeryShortCacheDurationBinding, IdpAndFederationVeryShortCacheDurationSsoPort);
+                    keyElement, IdpVeryShortCacheDurationBinding, IdpAndFederationVeryShortCacheDurationPort);
             }
 
             var sambipath = "Metadata\\SambiMetadata.xml";
@@ -289,23 +299,13 @@ entityID=""http://localhost:13428/idpMetadataVeryShortCacheDuration"" cacheDurat
             return content;
         }
 
-        public static int IdpMetadataSsoPort { get; set; }
-        public static int IdpAndFederationVeryShortCacheDurationSsoPort { get; set; }
-        public static Uri IdpVeryShortCacheDurationBinding { get; set; }
+        public static int IdpMetadataSsoPort { get; set; } = 13428;
+        public static int IdpAndFederationVeryShortCacheDurationPort { get; set; } = 80;
+        public static Uri IdpVeryShortCacheDurationBinding { get; set; } = Saml2Binding.HttpRedirectUri;
         public static bool IdpVeryShortCacheDurationIncludeInvalidKey { get; set; }
-        public static bool IdpVeryShortCacheDurationIncludeKey { get; set; }
-        public static bool IdpAndFederationShortCacheDurationAvailable { get; set; }
-        public static bool FederationVeryShortCacheDurationSecondAlternativeEnabled { get; set; }
-
-        static StubServer()
-        {
-            IdpMetadataSsoPort = 13428;
-            IdpAndFederationVeryShortCacheDurationSsoPort = 80;
-            IdpVeryShortCacheDurationBinding = Saml2Binding.HttpRedirectUri;
-            IdpVeryShortCacheDurationIncludeKey = true;
-            IdpAndFederationShortCacheDurationAvailable = true;
-            FederationVeryShortCacheDurationSecondAlternativeEnabled = false;
-        }
+        public static bool IdpVeryShortCacheDurationIncludeKey { get; set; } = true;
+        public static bool IdpAndFederationShortCacheDurationAvailable { get; set; } = true;
+        public static bool FederationVeryShortCacheDurationSecondAlternativeEnabled { get; set; } = false;
 
         [AssemblyInitialize]
         public static void Start(TestContext testContext)
@@ -316,7 +316,7 @@ entityID=""http://localhost:13428/idpMetadataVeryShortCacheDuration"" cacheDurat
                 {
                     var content = GetContent();
                     string data;
-                    if (ctx.Request.Path.ToString() == "/ARS")
+                    if (ctx.Request.Path.ToString() == "/ars")
                     {
                         ArtifactResolutionService(ctx);
                     }
