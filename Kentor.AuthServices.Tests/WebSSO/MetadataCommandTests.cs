@@ -65,6 +65,11 @@ namespace Kentor.AuthServices.Tests.WebSso
                         new XAttribute("Location", "http://localhost/AuthServices/Acs"),
                         new XAttribute("index", 0),
                         new XAttribute("isDefault", true)),
+                    new XElement(Saml2Namespaces.Saml2Metadata + "AssertionConsumerService",
+                        new XAttribute("Binding", Saml2Binding.HttpArtifactUri),
+                        new XAttribute("Location", "http://localhost/AuthServices/Acs"),
+                        new XAttribute("index", 1),
+                        new XAttribute("isDefault", false)),
                     new XElement(Saml2Namespaces.Saml2Metadata + "AttributeConsumingService",
                         new XAttribute("index", 0),
                         new XAttribute("isDefault", true),
@@ -100,7 +105,7 @@ namespace Kentor.AuthServices.Tests.WebSso
                 new XElement(Saml2Namespaces.Saml2Metadata + "ContactPerson",
                     new XAttribute("contactType", "technical"))));
 
-            payloadXml.ShouldBeEquivalentTo(expectedXml, opt => opt.IgnoringCyclicReferences());
+            payloadXml.Should().BeEquivalentTo(expectedXml);
             subject.ContentType.Should().Be("application/samlmetadata+xml");
         }
 

@@ -40,6 +40,14 @@ namespace Kentor.AuthServices.Metadata
                 Location = urls.AssertionConsumerServiceUrl
             });
 
+            spsso.AssertionConsumerServices.Add(1, new IndexedProtocolEndpoint()
+            {
+                Index = 1,
+                IsDefault = false,
+                Binding = Saml2Binding.HttpArtifactUri,
+                Location = urls.AssertionConsumerServiceUrl
+            });
+
             foreach(var attributeService in spOptions.AttributeConsumingServices)
             {
                 spsso.AttributeConsumingServices.Add(attributeService);

@@ -57,6 +57,11 @@ namespace Kentor.AuthServices.WebSso
         public static readonly Uri HttpRedirectUri = new Uri("urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect");
 
         /// <summary>
+        /// Uri identifier of the HTTP-Artifact binding.
+        /// </summary>
+        public static readonly Uri HttpArtifactUri = new Uri("urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Artifact");
+
+        /// <summary>
         /// Uri identifier of the Discovery Response SAML extension.
         /// </summary>
         public static readonly Uri DiscoveryResponseUri = new Uri("urn:oasis:names:tc:SAML:profiles:SSO:idp-discovery-protocol");
