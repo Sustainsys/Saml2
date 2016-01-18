@@ -66,7 +66,12 @@ namespace Kentor.AuthServices
         /// <summary>
         /// Namespace for Soap envelope.
         /// </summary>
+        public const string SoapEnvelopeName = "http://schemas.xmlsoap.org/soap/envelope/";
+
+        /// <summary>
+        /// Namespace for Soap envelope.
+        /// </summary>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2104:DoNotDeclareReadOnlyMutableReferenceTypes")]
-        public static readonly XNamespace SoapEnvelope = XNamespace.Get("http://schemas.xmlsoap.org/soap/envelope/");
+        public static readonly XNamespace SoapEnvelope = XNamespace.Get(SoapEnvelopeName);
     }
 }

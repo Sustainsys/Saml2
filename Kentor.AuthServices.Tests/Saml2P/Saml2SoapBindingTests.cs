@@ -25,5 +25,30 @@ namespace Kentor.AuthServices.Tests.Saml2P
 
             actual.ShouldBeEquivalentTo(expected, opt => opt.IgnoringCyclicReferences());
         }
+
+        [TestMethod]
+        public void Saml2SoapBinding_ExtractBody()
+        {
+            string payload =
+            "    <payload>\n"
+            + "      <color>\n"
+            + "        red\n"
+            + "      </color>\n"
+            + "      <color>\n"
+            + "        green\n"
+            + "      </color>\n"
+            + "    </payload>\n";
+
+            string soapMessage =
+            "<SOAP-ENV:Envelope\n"
+            + "xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\">\n"
+            + "  <SOAP-ENV:Body>\n"
+            + payload
+            + "  </SOAP-ENV:Body>\n"
+            + "</SOAP-ENV:Envelope>";
+
+            Saml2SoapBinding.ExtractBody(soapMessage)
+                .OuterXml.Should().Be(payload.Trim());
+        }
     }
 }
