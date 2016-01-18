@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
@@ -48,6 +49,26 @@ namespace Kentor.AuthServices.Saml2P
 
             return xmlDoc.DocumentElement["Body", Saml2Namespaces.SoapEnvelopeName]
                 .ChildNodes.OfType<XmlElement>().Single();
+        }
+
+        /// <summary>
+        /// Send a SOAP request to the specified endpoint and return the result.
+        /// </summary>
+        /// <param name="payload">Message payload</param>
+        /// <param name="destination">Destination endpoint</param>
+        /// <returns>Response.</returns>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1059:MembersShouldNotExposeCertainConcreteTypes", MessageId = "System.Xml.XmlNode")]
+        public static XmlElement SendSoapRequest(string payload, Uri destination)
+        {
+            var message = CreateSoapBody(payload);
+
+            using (var client = new WebClient())
+            {
+                client.Headers.Add("SOAPAction", "http://www.oasis-open.org/committees/security");
+                var response = client.UploadString(destination, message);
+
+                return ExtractBody(response);
+            }
         }
     }
 }

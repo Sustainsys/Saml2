@@ -355,9 +355,9 @@ entityID=""http://localhost:13428/idpMetadataVeryShortCacheDuration"" cacheDurat
     xmlns:SOAP-ENV=""http://schemas.xmlsoap.org/soap/envelope/"">
     <SOAP-ENV:Body>
         <samlp:ArtifactResponse
-            xmlns:samlp = ""urn:oasis:names:tc:SAML:2.0:protocol""
-            xmlns = ""urn:oasis:names:tc:SAML:2.0:assertion""
-            ID = ""_FQvGknDfws2Z"" Version = ""2.0""
+            xmlns:samlp=""urn:oasis:names:tc:SAML:2.0:protocol""
+            xmlns=""urn:oasis:names:tc:SAML:2.0:assertion""
+            ID=""_FQvGknDfws2Z"" Version=""2.0""
             InResponseTo = ""{0}""
             IssueInstant = ""{1}"">
             <Issuer>https://idp.example.com</Issuer>
@@ -365,7 +365,7 @@ entityID=""http://localhost:13428/idpMetadataVeryShortCacheDuration"" cacheDurat
                 <samlp:StatusCode Value = ""urn:oasis:names:tc:SAML:2.0:status:Success"" />
             </samlp:Status>
             <message>   <child-node /> </message>
-        </ samlp:ArtifactResponse>
+        </samlp:ArtifactResponse>
     </SOAP-ENV:Body>
 </SOAP-ENV:Envelope>",
                 requestId, DateTime.UtcNow.ToSaml2DateTimeString());

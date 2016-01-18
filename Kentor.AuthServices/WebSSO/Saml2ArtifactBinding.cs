@@ -9,7 +9,6 @@ using System.Collections.Generic;
 using System.IdentityModel.Metadata;
 using Kentor.AuthServices.Configuration;
 using Kentor.AuthServices.Internal;
-using System.Net;
 using System.Xml;
 
 namespace Kentor.AuthServices.WebSso
@@ -69,19 +68,15 @@ namespace Kentor.AuthServices.WebSso
             var arsIndex = (binaryArtifact[2] << 8) | binaryArtifact[3];
             var arsUri = idp.ArtifactResolutionServiceUrls[arsIndex];
 
-            var artifactResolveMessage = Saml2SoapBinding.CreateSoapBody(
-                new Saml2ArtifactResolve()
-                {
-                    Artifact = artifact,
-                    Issuer = options.SPOptions.EntityId
-                }.ToXml());
-
-            using (var client = new WebClient())
+            var payload = new Saml2ArtifactResolve()
             {
-                var response = client.UploadString(arsUri, artifactResolveMessage);
+                Artifact = artifact,
+                Issuer = options.SPOptions.EntityId
+            }.ToXml();
 
-                return new Saml2ArtifactResponse(Saml2SoapBinding.ExtractBody(response)).Message;
-            }
+            var response = Saml2SoapBinding.SendSoapRequest(payload, arsUri);
+
+            return new Saml2ArtifactResponse(response).Message;
         }
 
         private static SHA1 sha1 = SHA1.Create();
