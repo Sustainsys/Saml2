@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -21,11 +22,12 @@ namespace Kentor.AuthServices.Saml2P
         /// <summary>
         /// The SAML2 request name
         /// </summary>
+        [ExcludeFromCodeCoverage]
         protected override string LocalName
         {
             get
             {
-                return null;
+                return "ArtifactResolve";
             }
         }
 
