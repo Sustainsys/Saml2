@@ -1,13 +1,21 @@
-Version 0.14.0
+Version 0.15.0
+RELEASE CONTAINS BREAKING CHANGES
+* Audience URI Validation now uses WIF config. If no audience URI is specified it is now required to set AudienceMode=Never.
+* Service Certificate configuration reworked to support key rollover.
+* The Saml2Response.XmlDocument property has been changed to XmlElement. Should only concern anyone using the core lib directly.
+
+NEW FEATURES
+* RelayState support, including in Stub Idp.
+* Artifact Resolution binding support.
+* Signed AuthnRequests
+* Service certificate rollover support.
+* HttpModule no longer hides exceptions.
+* StubIdp includes KeyInfo in signatures.
+* Secondary level status codes included in exceptions.
+
+ Version 0.14.0
 * Support for encrypted assertions.
 * Documentation for integration with Okta
 * Bug Fix: Redirect binding with query string
 * Include SAML status in exceptions
 * Multiple keys for idps, supporting key rollover.
-
- Version 0.13.0
-* Http module is now in package Kentor.AuthServices.HttpModule.
-* Improved stub idp with attribute support.
-* Sha256 support
-* Signed assertion handling fixed.
-* and more... see github milestone for details.
