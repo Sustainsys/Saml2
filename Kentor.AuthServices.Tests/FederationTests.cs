@@ -77,6 +77,23 @@ namespace Kentor.AuthServices.Tests
         }
 
         [TestMethod]
+        public void Federation_LoadInCommonMetadata()
+        {
+            var options = StubFactory.CreateOptions();
+
+            var url = new Uri("http://localhost:13428/InCommonMetadata");
+            var idpInFederation = new EntityId("https://shibboleth.umassmed.edu/idp/shibboleth");
+
+            Action a = () => new Federation(url, true, options);
+
+            a.ShouldNotThrow();
+
+            IdentityProvider idp;
+            options.IdentityProviders.TryGetValue(idpInFederation, out idp)
+                .Should().BeTrue();
+        }
+
+        [TestMethod]
         public void Federation_Ctor_MetadataUrl()
         {
             var options = StubFactory.CreateOptions();

@@ -346,10 +346,13 @@ namespace Kentor.AuthServices
             var ssoService = idpDescriptor.SingleSignOnServices
                 .FirstOrDefault(s => s.Binding == Saml2Binding.HttpRedirectUri) ??
                 idpDescriptor.SingleSignOnServices
-                .First(s => s.Binding == Saml2Binding.HttpPostUri);
+                .FirstOrDefault(s => s.Binding == Saml2Binding.HttpPostUri);
 
-            binding = Saml2Binding.UriToSaml2BindingType(ssoService.Binding);
-            singleSignOnServiceUrl = ssoService.Location;
+            if (ssoService != null)
+            {
+                binding = Saml2Binding.UriToSaml2BindingType(ssoService.Binding);
+                singleSignOnServiceUrl = ssoService.Location;
+            }
 
             foreach(var ars in idpDescriptor.ArtifactResolutionServices)
             {

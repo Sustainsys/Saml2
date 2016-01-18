@@ -285,18 +285,6 @@ entityID=""http://localhost:13428/idpMetadataVeryShortCacheDuration"" cacheDurat
                     keyElement, IdpVeryShortCacheDurationBinding, IdpAndFederationVeryShortCacheDurationPort);
             }
 
-            var sambipath = "Metadata\\SambiMetadata.xml";
-            var skolfederationPath = "Metadata\\SkolfederationMetadata.xml";
-
-            if (File.Exists(sambipath))
-            {
-                content["/SambiMetadata"] = File.ReadAllText(sambipath);
-            }
-            if (File.Exists(skolfederationPath))
-            {
-                content["/SkolfederationMetadata"] = File.ReadAllText(skolfederationPath);
-            }
-
             return content;
         }
 
@@ -315,23 +303,47 @@ entityID=""http://localhost:13428/idpMetadataVeryShortCacheDuration"" cacheDurat
             {
                 app.Use(async (ctx, next) =>
                 {
-                    var content = GetContent();
                     string data;
-                    if (ctx.Request.Path.ToString() == "/ars")
+                    var sambipath = "Metadata\\SambiMetadata.xml";
+                    var skolfederationPath = "Metadata\\SkolfederationMetadata.xml";
+                    var incommonPath = "Metadata\\InCommon-metadata.xml";
+
+                    switch (ctx.Request.Path.ToString())
                     {
-                        ArtifactResolutionService(ctx);
+                        case "/ars":
+                            ArtifactResolutionService(ctx);
+                            return;
+                        case "/SambiMetadata":
+                            if (File.Exists(sambipath))
+                            {
+                                await ctx.Response.WriteAsync(File.ReadAllText(sambipath));
+                                return;
+                            }
+                            break;
+                        case "/SkolfederationMetadata":
+                            if (File.Exists(skolfederationPath))
+                            {
+                                await ctx.Response.WriteAsync(File.ReadAllText(skolfederationPath));
+                                return;
+                            }
+                            break;
+                        case "/InCommonMetadata":
+                            if (File.Exists(incommonPath))
+                            {
+                                await ctx.Response.WriteAsync(File.ReadAllText(incommonPath));
+                                return;
+                            }
+                            break;
+                        default:
+                            var content = GetContent();
+                            if (content.TryGetValue(ctx.Request.Path.ToString(), out data))
+                            {
+                                await ctx.Response.WriteAsync(data);
+                                return;
+                            }
+                            break;
                     }
-                    else
-                    {
-                        if (content.TryGetValue(ctx.Request.Path.ToString(), out data))
-                        {
-                            await ctx.Response.WriteAsync(data);
-                        }
-                        else
-                        {
-                            await next.Invoke();
-                        }
-                    }
+                    await next.Invoke();
                 });
             });
         }
