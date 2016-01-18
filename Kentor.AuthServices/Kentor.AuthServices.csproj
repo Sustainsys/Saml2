@@ -53,12 +53,17 @@
     <Compile Include="..\VersionInfo.cs">
       <Link>VersionInfo.cs</Link>
     </Compile>
+    <Compile Include="Configuration\ArtifactResolutionServiceCollection.cs" />
+    <Compile Include="Configuration\ArtifactResolutionServiceElement.cs" />
     <Compile Include="Configuration\SigningBehavior.cs" />
     <Compile Include="MetadataPublishOverrideType.cs" />
     <Compile Include="CertificateStatus.cs" />
     <Compile Include="CertificateUse.cs" />
     <Compile Include="Configuration\ServiceCertificateCollection.cs" />
     <Compile Include="Configuration\ServiceCertificateElement.cs" />
+    <Compile Include="Saml2P\Saml2ArtifactResolve.cs" />
+    <Compile Include="Saml2P\Saml2ArtifactResponse.cs" />
+    <Compile Include="Saml2P\Saml2SoapBinding.cs" />
     <Compile Include="ServiceCertificate.cs" />
     <Compile Include="ConfiguredAndLoadedCollection.cs" />
     <Compile Include="Internal\PathHelper.cs" />
@@ -100,7 +105,7 @@
     <Compile Include="Configuration\IOptions.cs" />
     <Compile Include="Configuration\ISPOptions.cs" />
     <Compile Include="Configuration\Options.cs" />
-    <Compile Include="Internal\DateTimeExtensions.cs" />
+    <Compile Include="DateTimeExtensions.cs" />
     <Compile Include="Internal\EntityIdEqualityComparer.cs" />
     <Compile Include="Internal\Enumerator.cs" />
     <Compile Include="Metadata\ExtendedServiceProviderSingleSignOnDescriptor.cs" />
@@ -126,6 +131,7 @@
     <Compile Include="Configuration\KentorAuthServicesSection.cs" />
     <Compile Include="Saml2P\Saml2AuthenticationRequest.cs" />
     <Compile Include="RelayStateGenerator.cs" />
+    <Compile Include="WebSso\Saml2ArtifactBinding.cs" />
     <Compile Include="WebSso\Saml2Binding.cs" />
     <Compile Include="WebSso\Saml2BindingType.cs" />
     <Compile Include="Saml2ConditionsExtensions.cs" />

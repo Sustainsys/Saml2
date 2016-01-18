@@ -14,6 +14,7 @@ using Kentor.AuthServices.Saml2P;
 using Kentor.AuthServices.WebSso;
 using System.Threading.Tasks;
 using System.Net;
+using System.Collections.Concurrent;
 
 namespace Kentor.AuthServices
 {
@@ -149,6 +150,22 @@ namespace Kentor.AuthServices
                 singleSignOnServiceUrl = value;
             }
         }
+
+        private IDictionary<int, Uri> artifactResolutionServiceUrls
+            = new ConcurrentDictionary<int, Uri>();
+
+        /// <summary>
+        /// Artifact resolution endpoints on the idp.
+        /// </summary>
+        public IDictionary<int, Uri> ArtifactResolutionServiceUrls
+        {
+            get
+            {
+                ReloadMetadataIfRequired();
+                return artifactResolutionServiceUrls;
+            }
+        }
+
 
         /// <summary>
         /// The Entity Id of the identity provider.
@@ -333,6 +350,17 @@ namespace Kentor.AuthServices
 
             binding = Saml2Binding.UriToSaml2BindingType(ssoService.Binding);
             singleSignOnServiceUrl = ssoService.Location;
+
+            foreach(var ars in idpDescriptor.ArtifactResolutionServices)
+            {
+                artifactResolutionServiceUrls[ars.Value.Index] = ars.Value.Location;
+            }
+
+            foreach (var ars in artifactResolutionServiceUrls.Keys
+                .Where(k => !idpDescriptor.ArtifactResolutionServices.Keys.Contains(k)))
+            {
+                artifactResolutionServiceUrls.Remove(ars);
+            }
 
             var keys = idpDescriptor.Keys.Where(k => k.Use == KeyType.Unspecified || k.Use == KeyType.Signing);
 

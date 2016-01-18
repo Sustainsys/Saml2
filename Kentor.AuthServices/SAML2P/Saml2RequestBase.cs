@@ -117,27 +117,27 @@ namespace Kentor.AuthServices.Saml2P
         /// </summary>
         /// <param name="xml">The xml document to parse</param>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1059:MembersShouldNotExposeCertainConcreteTypes", MessageId = "System.Xml.XmlNode")]
-        protected void ReadBaseProperties(XmlDocument xml)
+        protected void ReadBaseProperties(XmlElement xml)
         {
             if (xml == null)
             {
                 throw new ArgumentNullException(nameof(xml));
             }
             ValidateCorrectDocument(xml);
-            Id = new Saml2Id(xml.DocumentElement.Attributes["ID"].Value);
+            Id = new Saml2Id(xml.Attributes["ID"].Value);
 
-            Issuer = new EntityId(xml.DocumentElement["Issuer", Saml2Namespaces.Saml2Name].GetTrimmedTextIfNotNull());
+            Issuer = new EntityId(xml["Issuer", Saml2Namespaces.Saml2Name].GetTrimmedTextIfNotNull());
         }
 
-        private void ValidateCorrectDocument(XmlDocument xml)
+        private void ValidateCorrectDocument(XmlElement xml)
         {
-            if (xml.DocumentElement.LocalName != LocalName
-               || xml.DocumentElement.NamespaceURI != Saml2Namespaces.Saml2P)
+            if (xml.LocalName != LocalName
+               || xml.NamespaceURI != Saml2Namespaces.Saml2P)
             {
                 throw new XmlException("Expected a SAML2 authentication request document");
             }
 
-            if (xml.DocumentElement.Attributes["Version"].Value != "2.0")
+            if (xml.Attributes["Version"].Value != "2.0")
             {
                 throw new XmlException("Wrong or unsupported SAML2 version");
             }

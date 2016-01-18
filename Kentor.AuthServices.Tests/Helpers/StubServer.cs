@@ -7,15 +7,18 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Owin;
-using Kentor.AuthServices.TestHelpers;
+using Kentor.AuthServices.Tests.Helpers;
 using Kentor.AuthServices.WebSso;
 using System.Threading;
 using System.IO;
+using System.Xml.Linq;
+using Kentor.AuthServices.Internal;
+using System.Security.Cryptography.Xml;
 
-namespace Kentor.AuthServices.Tests.Metadata
+namespace Kentor.AuthServices.Tests.Helpers
 {
     [TestClass]
-    public class MetadataServer
+    public class StubServer
     {
         private static IDisposable host;
 
@@ -34,11 +37,17 @@ namespace Kentor.AuthServices.Tests.Metadata
       <SingleSignOnService
         Binding=""urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST""
         Location=""http://localhost:{1}/acs""/>
+      <ArtifactResolutionService index=""4660""
+        Binding=""urn:oasis:names:tc:SAML:2.0:bindings:SOAP""
+        Location=""http://localhost:{1}/ars""/>
+      <ArtifactResolutionService index=""117""
+        Binding=""urn:oasis:names:tc:SAML:2.0:bindings:SOAP""
+        Location=""http://localhost:{1}/ars2""/>
     </IDPSSODescriptor>
   </EntityDescriptor>
 ", SignedXmlHelper.KeyInfoXml, IdpMetadataSsoPort);
 
-            content["/idpMetadataNoCertificate"] = 
+            content["/idpMetadataNoCertificate"] =
 @"<EntityDescriptor xmlns=""urn:oasis:names:tc:SAML:2.0:metadata""
     entityID=""http://localhost:13428/idpMetadataNoCertificate"" cacheDuration=""PT15M"">
     <IDPSSODescriptor
@@ -121,12 +130,12 @@ namespace Kentor.AuthServices.Tests.Metadata
         Location=""http://sp.federation.example.com/acs"" />
     </SPSSODescriptor>
   </EntityDescriptor>
-</EntitiesDescriptor>", 
-                      SignedXmlHelper.KeyInfoXml, 
-                      IdpAndFederationVeryShortCacheDurationSsoPort);
+</EntitiesDescriptor>",
+                      SignedXmlHelper.KeyInfoXml,
+                      IdpAndFederationVeryShortCacheDurationPort);
             }
 
-            if(FederationVeryShortCacheDurationSecondAlternativeEnabled)
+            if (FederationVeryShortCacheDurationSecondAlternativeEnabled)
             {
                 content["/federationMetadataVeryShortCacheDuration"] = string.Format(
 @"<EntitiesDescriptor xmlns=""urn:oasis:names:tc:SAML:2.0:metadata"" cacheDuration=""PT0.001S"">
@@ -162,7 +171,7 @@ namespace Kentor.AuthServices.Tests.Metadata
   </EntityDescriptor>
 </EntitiesDescriptor>",
                       SignedXmlHelper.KeyInfoXml,
-                      IdpAndFederationVeryShortCacheDurationSsoPort);
+                      IdpAndFederationVeryShortCacheDurationPort);
             }
 
             if (IdpAndFederationShortCacheDurationAvailable)
@@ -265,11 +274,15 @@ entityID=""http://localhost:13428/idpMetadataVeryShortCacheDuration"" cacheDurat
     protocolSupportEnumeration=""urn:oasis:names:tc:SAML:2.0:protocol"">
     {0}
     <SingleSignOnService
-    Binding=""{1}""
-    Location=""http://localhost:{2}/acs""/>
+      Binding=""{1}""
+      Location=""http://localhost:{2}/acs""/>
+    <ArtifactResolutionService
+      index=""0""
+      Location=""http://localhost:{2}/ars""
+      Binding=""urn:oasis:names:tc:SAML:2.0:bindings:SOAP"" />
 </IDPSSODescriptor>
 </EntityDescriptor>",
-                    keyElement, IdpVeryShortCacheDurationBinding, IdpAndFederationVeryShortCacheDurationSsoPort);
+                    keyElement, IdpVeryShortCacheDurationBinding, IdpAndFederationVeryShortCacheDurationPort);
             }
 
             var sambipath = "Metadata\\SambiMetadata.xml";
@@ -287,23 +300,13 @@ entityID=""http://localhost:13428/idpMetadataVeryShortCacheDuration"" cacheDurat
             return content;
         }
 
-        public static int IdpMetadataSsoPort { get; set; }
-        public static int IdpAndFederationVeryShortCacheDurationSsoPort { get; set; }
-        public static Uri IdpVeryShortCacheDurationBinding { get; set; }
+        public static int IdpMetadataSsoPort { get; set; } = 13428;
+        public static int IdpAndFederationVeryShortCacheDurationPort { get; set; } = 80;
+        public static Uri IdpVeryShortCacheDurationBinding { get; set; } = Saml2Binding.HttpRedirectUri;
         public static bool IdpVeryShortCacheDurationIncludeInvalidKey { get; set; }
-        public static bool IdpVeryShortCacheDurationIncludeKey { get; set; }
-        public static bool IdpAndFederationShortCacheDurationAvailable { get; set; }
-        public static bool FederationVeryShortCacheDurationSecondAlternativeEnabled { get; set; }
-
-        static MetadataServer()
-        {
-            IdpMetadataSsoPort = 13428;
-            IdpAndFederationVeryShortCacheDurationSsoPort = 80;
-            IdpVeryShortCacheDurationBinding = Saml2Binding.HttpRedirectUri;
-            IdpVeryShortCacheDurationIncludeKey = true;
-            IdpAndFederationShortCacheDurationAvailable = true;
-            FederationVeryShortCacheDurationSecondAlternativeEnabled = false;
-        }
+        public static bool IdpVeryShortCacheDurationIncludeKey { get; set; } = true;
+        public static bool IdpAndFederationShortCacheDurationAvailable { get; set; } = true;
+        public static bool FederationVeryShortCacheDurationSecondAlternativeEnabled { get; set; } = false;
 
         [AssemblyInitialize]
         public static void Start(TestContext testContext)
@@ -314,17 +317,73 @@ entityID=""http://localhost:13428/idpMetadataVeryShortCacheDuration"" cacheDurat
                 {
                     var content = GetContent();
                     string data;
-                    if(content.TryGetValue(ctx.Request.Path.ToString(), out data))
+                    if (ctx.Request.Path.ToString() == "/ars")
                     {
-                        await ctx.Response.WriteAsync(data);
+                        ArtifactResolutionService(ctx);
                     }
                     else
                     {
-                        await next.Invoke();
+                        if (content.TryGetValue(ctx.Request.Path.ToString(), out data))
+                        {
+                            await ctx.Response.WriteAsync(data);
+                        }
+                        else
+                        {
+                            await next.Invoke();
+                        }
                     }
                 });
             });
         }
+
+        private static void ArtifactResolutionService(IOwinContext ctx)
+        {
+            LastArtifactResolutionSoapActionHeader = ctx.Request.Headers["SOAPAction"];
+
+            using (var reader = new StreamReader(ctx.Request.Body))
+            {
+                var body = reader.ReadToEnd();
+
+                var parsedRequest = XElement.Parse(body);
+
+                var requestId = parsedRequest
+                    .Element(Saml2Namespaces.SoapEnvelope + "Body")
+                    .Element(Saml2Namespaces.Saml2P + "ArtifactResolve")
+                    .Attribute("ID").Value;
+
+                LastArtifactResolutionWasSigned = parsedRequest
+                    .Element(Saml2Namespaces.SoapEnvelope + "Body")
+                    .Element(Saml2Namespaces.Saml2P + "ArtifactResolve")
+                    .Element(XNamespace.Get(SignedXml.XmlDsigNamespaceUrl)+ "Signature")
+                    != null;
+
+                var response = string.Format(
+    @"<SOAP-ENV:Envelope
+    xmlns:SOAP-ENV=""http://schemas.xmlsoap.org/soap/envelope/"">
+    <SOAP-ENV:Body>
+        <samlp:ArtifactResponse
+            xmlns:samlp=""urn:oasis:names:tc:SAML:2.0:protocol""
+            xmlns=""urn:oasis:names:tc:SAML:2.0:assertion""
+            ID=""_FQvGknDfws2Z"" Version=""2.0""
+            InResponseTo = ""{0}""
+            IssueInstant = ""{1}"">
+            <Issuer>https://idp.example.com</Issuer>
+            <samlp:Status>
+                <samlp:StatusCode Value = ""urn:oasis:names:tc:SAML:2.0:status:Success"" />
+            </samlp:Status>
+            <message>   <child-node /> </message>
+        </samlp:ArtifactResponse>
+    </SOAP-ENV:Body>
+</SOAP-ENV:Envelope>",
+                requestId, DateTime.UtcNow.ToSaml2DateTimeString());
+
+                ctx.Response.Write(response);
+            }
+        }
+
+        public static string LastArtifactResolutionSoapActionHeader { get; set; }
+
+        public static bool LastArtifactResolutionWasSigned { get; set; }
 
         [AssemblyCleanup]
         public static void Stop()

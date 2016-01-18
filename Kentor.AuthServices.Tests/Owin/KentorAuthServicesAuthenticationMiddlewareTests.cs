@@ -9,7 +9,7 @@ using Microsoft.Owin.Security;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
-using Kentor.AuthServices.TestHelpers;
+using Kentor.AuthServices.Tests.Helpers;
 using System.IO;
 using System.Text;
 using System.Security.Claims;
@@ -348,7 +348,7 @@ namespace Kentor.AuthServices.Tests.Owin
             ((AuthenticationProperties)state.RelayData).RedirectUri = state.ReturnUrl.OriginalString;
             ((AuthenticationProperties)state.RelayData).Dictionary["Test"] = "TestValue";
 
-            var relayState = RelayStateGenerator.CreateSecureKey();
+            var relayState = SecureKeyGenerator.CreateRelayState();
 
             PendingAuthnRequests.Add(relayState, state);
 

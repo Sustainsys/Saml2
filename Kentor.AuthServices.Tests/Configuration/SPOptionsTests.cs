@@ -5,7 +5,7 @@ using Kentor.AuthServices.Configuration;
 using System.IdentityModel.Metadata;
 using FluentAssertions;
 using Kentor.AuthServices.Saml2P;
-using Kentor.AuthServices.TestHelpers;
+using Kentor.AuthServices.Tests.Helpers;
 
 namespace Kentor.AuthServices.Tests.Configuration
 {

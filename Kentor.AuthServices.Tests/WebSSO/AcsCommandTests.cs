@@ -1,5 +1,5 @@
 ﻿using FluentAssertions;
-using Kentor.AuthServices.TestHelpers;
+using Kentor.AuthServices.Tests.Helpers;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NSubstitute;
 using System;
@@ -16,6 +16,7 @@ using Kentor.AuthServices.WebSso;
 using System.Reflection;
 using System.Configuration;
 using Kentor.AuthServices.Exceptions;
+using System.IdentityModel.Metadata;
 
 namespace Kentor.AuthServices.Tests.WebSso
 {
@@ -97,9 +98,9 @@ namespace Kentor.AuthServices.Tests.WebSso
         public void AcsCommand_Run_ResponseIncludedInException()
         {
             string payload =
-                @"<saml2p:Response xmlns:saml2p=""urn:oasis:names:tc:SAML:2.0:protocol""
-                xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
-                ID = """ + MethodBase.GetCurrentMethod().Name + @""" Version=""2.0"" />";
+                "<saml2p:Response xmlns:saml2p=\"urn:oasis:names:tc:SAML:2.0:protocol\" "
+                + "xmlns:saml2=\"urn:oasis:names:tc:SAML:2.0:assertion\" ID=\""
+                + MethodBase.GetCurrentMethod().Name + "\" Version=\"2.0\" />";
             var encoded = Convert.ToBase64String(Encoding.UTF8.GetBytes(payload));
             var r = new HttpRequestData(
                 "POST",
@@ -113,7 +114,53 @@ namespace Kentor.AuthServices.Tests.WebSso
             Action a = () => new AcsCommand().Run(r, Options.FromConfiguration);
 
             a.ShouldThrow<Exception>()
-                .Where(ex => ex.Data["Saml2Response"] as string == payload);
+                .And.Data["Saml2Response"].Should().Be(payload);
+        }
+
+        [TestMethod]
+        public void AcsCommand_Run_HandlesXmlExceptionWhenUnbindResultIsStillNull()
+        {
+            var encoded = Convert.ToBase64String(Encoding.UTF8.GetBytes("Not Xml"));
+
+            var r = new HttpRequestData(
+                "POST",
+                new Uri("http://localhost"),
+                "/ModulePath",
+                new KeyValuePair<string, string[]>[]
+                {
+                    new KeyValuePair<string, string[]>("SAMLResponse", new string[] { encoded })
+                });
+
+            Action a = () => new AcsCommand().Run(r, Options.FromConfiguration);
+
+            a.ShouldThrow<BadFormatSamlResponseException>();
+        }
+
+        [TestMethod]
+        public void AcsCommand_Run_HandlesExceptionWhenUnbindResultIsStillNull()
+        {
+            var issuer = new EntityId("http://bad.idp.example.com");
+            var artifact = Saml2ArtifactBinding.CreateArtifact(issuer, 0);
+
+            // Just spoil it to force an exception.
+            artifact[3] = 5;
+
+            var artifactString = Convert.ToBase64String(artifact);
+
+            var r = new HttpRequestData(
+                "POST",
+                new Uri("http://localhost"),
+                "/ModulePath",
+                new KeyValuePair<string, string[]>[]
+                {
+                    new KeyValuePair<string, string[]>("SAMLart", new string[] { artifactString })
+                });
+
+            Action a = () => new AcsCommand().Run(r, Options.FromConfiguration);
+
+            // The real exception was masked by a NullRef in the exception
+            // handler in AcsCommand.Run
+            a.ShouldThrow<InvalidOperationException>();
         }
 
         [TestMethod]

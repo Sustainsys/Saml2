@@ -1,4 +1,5 @@
 ﻿using Kentor.AuthServices.Saml2P;
+using Kentor.AuthServices.WebSso;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -66,5 +67,7 @@ namespace Kentor.AuthServices.StubIdp.Models
 
         [Display(Name = "Incoming AuthnRequest")]
         public string AuthnRequestXml { get; set; }
+
+        public Saml2BindingType ResponseBinding { get; set; } = Saml2BindingType.HttpPost;
     }
 }

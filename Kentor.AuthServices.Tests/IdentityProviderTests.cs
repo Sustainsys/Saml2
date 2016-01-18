@@ -1,7 +1,7 @@
 ﻿using System.Linq;
 using FluentAssertions;
 using Kentor.AuthServices.Configuration;
-using Kentor.AuthServices.TestHelpers;
+using Kentor.AuthServices.Tests.Helpers;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Configuration;
@@ -20,14 +20,14 @@ namespace Kentor.AuthServices.Tests
     public class IdentityProviderTests
     {
         TimeSpan refreshMinInterval = MetadataRefreshScheduler.minInterval;
-        int idpMetadataSsoPort = MetadataServer.IdpMetadataSsoPort;
+        int idpMetadataSsoPort = StubServer.IdpMetadataSsoPort;
 
         [TestCleanup]
         public void Cleanup()
         {
-            MetadataServer.IdpMetadataSsoPort = idpMetadataSsoPort;
-            MetadataServer.IdpVeryShortCacheDurationIncludeInvalidKey = false;
-            MetadataServer.IdpVeryShortCacheDurationIncludeKey = true;
+            StubServer.IdpMetadataSsoPort = idpMetadataSsoPort;
+            StubServer.IdpVeryShortCacheDurationIncludeInvalidKey = false;
+            StubServer.IdpVeryShortCacheDurationIncludeKey = true;
             MetadataRefreshScheduler.minInterval = refreshMinInterval;
         }
 
@@ -171,12 +171,22 @@ namespace Kentor.AuthServices.Tests
         public void IdentityProvider_ConfigFromMetadata()
         {
             var entityId = new EntityId("http://localhost:13428/idpMetadata");
-            var idpFromMetadata = Options.FromConfiguration.IdentityProviders[entityId];
+            var subject = new IdentityProvider(entityId, StubFactory.CreateSPOptions());
 
-            idpFromMetadata.EntityId.Id.Should().Be(entityId.Id);
-            idpFromMetadata.Binding.Should().Be(Saml2BindingType.HttpPost);
-            idpFromMetadata.SingleSignOnServiceUrl.Should().Be(new Uri("http://localhost:13428/acs"));
-            idpFromMetadata.SigningKeys.Single().ShouldBeEquivalentTo(SignedXmlHelper.TestKey);
+            // Add one that will be removed by loading.
+            subject.ArtifactResolutionServiceUrls.Add(234, new Uri("http://example.com"));
+
+            subject.LoadMetadata = true;
+
+            subject.EntityId.Id.Should().Be(entityId.Id);
+            subject.Binding.Should().Be(Saml2BindingType.HttpPost);
+            subject.SingleSignOnServiceUrl.Should().Be(new Uri("http://localhost:13428/acs"));
+            subject.SigningKeys.Single().ShouldBeEquivalentTo(SignedXmlHelper.TestKey);
+            subject.ArtifactResolutionServiceUrls.Count.Should().Be(2);
+            subject.ArtifactResolutionServiceUrls[0x1234].OriginalString
+                .Should().Be("http://localhost:13428/ars");
+            subject.ArtifactResolutionServiceUrls[117].OriginalString
+                .Should().Be("http://localhost:13428/ars2");
         }
 
         private IdentityProviderElement CreateConfig()
@@ -353,10 +363,10 @@ namespace Kentor.AuthServices.Tests
         [TestMethod]
         public void IdentityProvider_Binding_ReloadsMetadataIfNoLongerValid()
         {
-            MetadataServer.IdpVeryShortCacheDurationBinding = Saml2Binding.HttpRedirectUri;
+            StubServer.IdpVeryShortCacheDurationBinding = Saml2Binding.HttpRedirectUri;
             var subject = CreateSubjectForMetadataRefresh();
             subject.Binding.Should().Be(Saml2BindingType.HttpRedirect);
-            MetadataServer.IdpVeryShortCacheDurationBinding = Saml2Binding.HttpPostUri;
+            StubServer.IdpVeryShortCacheDurationBinding = Saml2Binding.HttpPostUri;
 
             SpinWaiter.WhileEqual(() => subject.Binding, () => Saml2BindingType.HttpRedirect);
 
@@ -366,14 +376,28 @@ namespace Kentor.AuthServices.Tests
         [TestMethod]
         public void IdentityProvider_SingleSignOnServiceUrl_ReloadsMetadataIfNoLongerValid()
         {
-            MetadataServer.IdpAndFederationVeryShortCacheDurationSsoPort = 42;
+            StubServer.IdpAndFederationVeryShortCacheDurationPort = 42;
             var subject = CreateSubjectForMetadataRefresh();
             subject.SingleSignOnServiceUrl.Port.Should().Be(42);
-            MetadataServer.IdpAndFederationVeryShortCacheDurationSsoPort = 117;
+            StubServer.IdpAndFederationVeryShortCacheDurationPort = 117;
 
             SpinWaiter.WhileEqual(() => subject.SingleSignOnServiceUrl.Port, () => 42);
 
             subject.SingleSignOnServiceUrl.Port.Should().Be(117);
+        }
+
+
+        [TestMethod]
+        public void IdentityProvider_ArtifactResolutionServiceUrl_ReloadsMetadataIfNoLongerValid()
+        {
+            StubServer.IdpAndFederationVeryShortCacheDurationPort = 42;
+            var subject = CreateSubjectForMetadataRefresh();
+            subject.ArtifactResolutionServiceUrls[0].Port.Should().Be(42);
+            StubServer.IdpAndFederationVeryShortCacheDurationPort = 117;
+
+            SpinWaiter.WhileEqual(() => subject.ArtifactResolutionServiceUrls[0].Port, () => 42);
+
+            subject.ArtifactResolutionServiceUrls[0].Port.Should().Be(117);
         }
 
         [TestMethod]
@@ -387,7 +411,7 @@ namespace Kentor.AuthServices.Tests
                 };
 
             subject.SingleSignOnServiceUrl.Port.Should().Be(13428);
-            MetadataServer.IdpMetadataSsoPort = 147;
+            StubServer.IdpMetadataSsoPort = 147;
 
             // Metadata shouldn't be reloaded so port shouldn't be changed.
             subject.SingleSignOnServiceUrl.Port.Should().Be(13428);
@@ -401,7 +425,7 @@ namespace Kentor.AuthServices.Tests
             // One key from config, one key from metadata.
             subject.SigningKeys.Count().Should().Be(2);
 
-            MetadataServer.IdpVeryShortCacheDurationIncludeKey = false;
+            StubServer.IdpVeryShortCacheDurationIncludeKey = false;
 
             SpinWaiter.While(() => subject.SigningKeys.Count() == 2);
 
@@ -417,7 +441,7 @@ namespace Kentor.AuthServices.Tests
         {
             var subject = CreateSubjectForMetadataRefresh();
             subject.SigningKeys.LoadedItems.Should().NotBeEmpty();
-            MetadataServer.IdpVeryShortCacheDurationIncludeInvalidKey = true;
+            StubServer.IdpVeryShortCacheDurationIncludeInvalidKey = true;
 
             Action a = () =>
             {
@@ -452,13 +476,13 @@ namespace Kentor.AuthServices.Tests
 
             var subject = CreateSubjectForMetadataRefresh();
 
-            MetadataServer.IdpAndFederationShortCacheDurationAvailable = false;
+            StubServer.IdpAndFederationShortCacheDurationAvailable = false;
 
             SpinWaiter.While(() => subject.MetadataValidUntil != DateTime.MinValue,
                 "Timed out waiting for failed metadata load to occur.");
 
             var metadataEnabledTime = DateTime.UtcNow;
-            MetadataServer.IdpAndFederationShortCacheDurationAvailable = true;
+            StubServer.IdpAndFederationShortCacheDurationAvailable = true;
 
             SpinWaiter.While(() =>
             {
@@ -472,11 +496,11 @@ namespace Kentor.AuthServices.Tests
         public void IdentityProvider_ScheduledReloadOfMetadata_RetriesIfInitialLoadFails()
         {
             MetadataRefreshScheduler.minInterval = new TimeSpan(0, 0, 0, 0, 1);
-            MetadataServer.IdpAndFederationShortCacheDurationAvailable = false;
+            StubServer.IdpAndFederationShortCacheDurationAvailable = false;
 
             var subject = CreateSubjectForMetadataRefresh();
 
-            MetadataServer.IdpAndFederationShortCacheDurationAvailable = true;
+            StubServer.IdpAndFederationShortCacheDurationAvailable = true;
 
             SpinWaiter.While(() =>
             {

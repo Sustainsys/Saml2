@@ -8,7 +8,7 @@ using NSubstitute;
 using System.IO.Compression;
 using System.IO;
 using System.Xml.Linq;
-using Kentor.AuthServices.TestHelpers;
+using Kentor.AuthServices.Tests.Helpers;
 using Kentor.AuthServices.Configuration;
 using System.IdentityModel.Metadata;
 using Kentor.AuthServices.Internal;

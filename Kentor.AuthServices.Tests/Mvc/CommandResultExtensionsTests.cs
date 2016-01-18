@@ -3,7 +3,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Kentor.AuthServices.Mvc;
 using FluentAssertions;
 using System.Web.Mvc;
-using Kentor.AuthServices.TestHelpers;
+using Kentor.AuthServices.Tests.Helpers;
 using Kentor.AuthServices.Owin;
 using System.IO;
 using System.Text;

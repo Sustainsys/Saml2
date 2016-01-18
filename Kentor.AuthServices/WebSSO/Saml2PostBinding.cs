@@ -1,4 +1,5 @@
-﻿using Kentor.AuthServices.Saml2P;
+﻿using Kentor.AuthServices.Configuration;
+using Kentor.AuthServices.Saml2P;
 using System;
 using System.Globalization;
 using System.Linq;
@@ -21,19 +22,24 @@ namespace Kentor.AuthServices.WebSso
                 && request.Form.Keys.Contains("SAMLResponse");
         }
 
-        public override UnbindResult Unbind(HttpRequestData request)
+        public override UnbindResult Unbind(HttpRequestData request, IOptions options)
         {
             if (request == null)
             {
                 throw new ArgumentNullException(nameof(request));
             }
 
-            var data = Encoding.UTF8.GetString(Convert.FromBase64String(request.Form["SAMLResponse"]));
+            var xmlDoc = new XmlDocument()
+            {
+                PreserveWhitespace = true
+            };
+
+            xmlDoc.LoadXml(Encoding.UTF8.GetString(Convert.FromBase64String(request.Form["SAMLResponse"])));
 
             string relayState = null;
             request.Form.TryGetValue("RelayState", out relayState);
 
-            return new UnbindResult(data, relayState);
+            return new UnbindResult(xmlDoc.DocumentElement, relayState);
         }
 
         public override CommandResult Bind(ISaml2Message message)

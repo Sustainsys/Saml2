@@ -56,6 +56,11 @@ namespace Kentor.AuthServices.Configuration
             foreach(var idpEntry in this)
             {
                 var idp = new IdentityProvider(idpEntry, options.SPOptions);
+                
+                foreach(var ars in idpEntry.ArtifactResolutionServices)
+                {
+                    idp.ArtifactResolutionServiceUrls[ars.Index] = ars.Location;
+                }
 
                 options.IdentityProviders[idp.EntityId] = idp;
             }

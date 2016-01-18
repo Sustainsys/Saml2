@@ -9,7 +9,7 @@ using System.Text;
 using System.Collections.Specialized;
 using System.Security.Claims;
 using System.Web.Routing;
-using Kentor.AuthServices.TestHelpers;
+using Kentor.AuthServices.Tests.Helpers;
 using System.Xml.Linq;
 using Kentor.AuthServices.Configuration;
 using System.IdentityModel.Metadata;

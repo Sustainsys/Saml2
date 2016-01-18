@@ -16,7 +16,7 @@ namespace Kentor.AuthServices.Tests
             for(int i = 0; !containedDash || !containedUnderscore; i++)
             {
                 i.Should().BeLessThan(1000, because: "if replacement works, we should have found the replacement characters sooner");
-                var result = RelayStateGenerator.CreateSecureKey();
+                var result = SecureKeyGenerator.CreateRelayState();
 
                 // Can't really test a random algo any better than expecting a
                 // specific length of the result and the right chars.

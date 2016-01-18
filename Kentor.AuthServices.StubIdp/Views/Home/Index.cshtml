@@ -61,7 +61,23 @@ else
         @Html.EditorFor(m => m.AssertionModel.AssertionConsumerServiceUrl)
         @Html.ValidationMessageFor(m => m.AssertionModel.AssertionConsumerServiceUrl)
     </div>
-    
+
+    <div class="hide-details">
+        <label>Send response via</label>
+        <div class="radio-button-group">
+            <input type="radio" name="AssertionModel.ResponseBinding" id="binding_post" 
+                   checked="@(Model.AssertionModel.ResponseBinding == Kentor.AuthServices.WebSso.Saml2BindingType.HttpPost)"
+                   value="HttpPost"/>
+            <label for="binding_post">Http POST Binding</label>
+            <br />
+            <input type="radio" name="AssertionModel.ResponseBinding" id="binding_artifact"
+                   checked="@(Model.AssertionModel.ResponseBinding == Kentor.AuthServices.WebSso.Saml2BindingType.Artifact)"
+                   value="Artifact"/>
+            <label for="binding_artifact">Artifact Binding over Http Redirect</label>
+        </div>
+    </div>
+
+
     <div class="hide-details">
         @Html.LabelFor(m => m.AssertionModel.RelayState)
         @Html.EditorFor(m => m.AssertionModel.RelayState)

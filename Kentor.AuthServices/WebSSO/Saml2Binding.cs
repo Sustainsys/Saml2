@@ -1,4 +1,5 @@
-﻿using Kentor.AuthServices.Saml2P;
+﻿using Kentor.AuthServices.Configuration;
+using Kentor.AuthServices.Saml2P;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -6,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web;
+using System.Xml;
 
 namespace Kentor.AuthServices.WebSso
 {
@@ -19,7 +21,8 @@ namespace Kentor.AuthServices.WebSso
         /// </summary>
         /// <param name="data">The data payload</param>
         /// <param name="relayState">The associated relay state.</param>
-        public UnbindResult(string data, string relayState)
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1059:MembersShouldNotExposeCertainConcreteTypes", MessageId = "System.Xml.XmlNode")]
+        public UnbindResult(XmlElement data, string relayState)
         {
             Data = data;
             RelayState = relayState;
@@ -28,7 +31,8 @@ namespace Kentor.AuthServices.WebSso
         /// <summary>
         /// The data payload.
         /// </summary>
-        public string Data { get; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1059:MembersShouldNotExposeCertainConcreteTypes", MessageId = "System.Xml.XmlNode")]
+        public XmlElement Data { get; }
 
         /// <summary>
         /// The associated relay state, if any. Otherwise null.
@@ -58,10 +62,15 @@ namespace Kentor.AuthServices.WebSso
         public static readonly Uri DiscoveryResponseUri = new Uri("urn:oasis:names:tc:SAML:profiles:SSO:idp-discovery-protocol");
 
         /// <summary>
-        /// Binds a message to a binding
+        /// Uri identifier of the SOAP binding.
         /// </summary>
-        /// <param name="message"></param>
-        /// <returns></returns>
+        public static readonly Uri SoapUri = new Uri("urn:oasis:names:tc:SAML:2.0:bindings:SOAP");
+
+        /// <summary>
+        /// Binds a message to a http response.
+        /// </summary>
+        /// <param name="message">Message to bind.</param>
+        /// <returns>CommandResult.</returns>
         public virtual CommandResult Bind(ISaml2Message message)
         {
             throw new NotImplementedException();
@@ -71,8 +80,9 @@ namespace Kentor.AuthServices.WebSso
         /// Extracts a message out of the current HttpRequest.
         /// </summary>
         /// <param name="request">Current HttpRequest.</param>
+        /// <param name="options">Options.</param>
         /// <returns>Extracted message.</returns>
-        public virtual UnbindResult Unbind(HttpRequestData request)
+        public virtual UnbindResult Unbind(HttpRequestData request, IOptions options)
         {
             throw new NotImplementedException();
         }
@@ -92,7 +102,8 @@ namespace Kentor.AuthServices.WebSso
             new Dictionary<Saml2BindingType, Saml2Binding>()
             {
                 { Saml2BindingType.HttpRedirect, new Saml2RedirectBinding() },
-                { Saml2BindingType.HttpPost, new Saml2PostBinding() }
+                { Saml2BindingType.HttpPost, new Saml2PostBinding() },
+                { Saml2BindingType.Artifact, new Saml2ArtifactBinding() }
             };
 
         /// <summary>

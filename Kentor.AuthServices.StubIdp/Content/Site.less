@@ -66,6 +66,17 @@ form {
         width: @label-width;
     }
 
+    .radio-button-group{
+        label{
+            float: none;
+            font-weight: normal;
+        }
+        input{
+            width: auto;
+        }
+        float:left;
+    }
+
     input {
         width: @input-width;
     }
@@ -89,6 +100,13 @@ form {
     .input-validation-error {
         background-color: #ffa6a6;
         border-color: @error-color;
+    }
+
+    #userDescription {
+        margin-top: 10px;
+        white-space: pre-wrap;
+        margin-left: @label-width;
+        font-style: italic;
     }
 }
 
@@ -132,10 +150,6 @@ form {
     &:hover, &:active, &:focus {
         background: #53e065;
     }
-}
-
-#userDescription {
-    white-space: pre-wrap;
 }
 
 .initially-hidden .hide-details {

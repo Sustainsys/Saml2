@@ -9,7 +9,7 @@ using System.Text;
 using System.Collections.Generic;
 using Kentor.AuthServices.WebSso;
 using Kentor.AuthServices.Tests.WebSSO;
-using Kentor.AuthServices.TestHelpers;
+using Kentor.AuthServices.Tests.Helpers;
 
 namespace Kentor.AuthServices.Tests.WebSso
 {
@@ -39,7 +39,7 @@ namespace Kentor.AuthServices.Tests.WebSso
         public void Saml2PostBinding_Unbind_Nullcheck()
         {
             Saml2Binding.Get(Saml2BindingType.HttpPost)
-                .Invoking(b => b.Unbind(null))
+                .Invoking(b => b.Unbind(null, null))
                 .ShouldThrow<ArgumentNullException>().And.ParamName.Should().Be("request");
         }
 
@@ -47,24 +47,24 @@ namespace Kentor.AuthServices.Tests.WebSso
         public void Saml2PostBinding_Unbind_ThrowsOnNotBase64Encoded()
         {
             Saml2Binding.Get(Saml2BindingType.HttpPost)
-                .Invoking(b => b.Unbind(CreateRequest("foo")))
+                .Invoking(b => b.Unbind(CreateRequest("foo"), null))
                 .ShouldThrow<FormatException>();
         }
 
         [TestMethod]
         public void Saml2PostBinding_Unbind_ReadsSaml2Response()
         {
-            string response = "responsestring";
+            string response = "<responsestring />";
 
             var r = CreateRequest(Convert.ToBase64String(Encoding.UTF8.GetBytes(response)));
 
-            Saml2Binding.Get(Saml2BindingType.HttpPost).Unbind(r).Data.Should().Be(response);
+            Saml2Binding.Get(Saml2BindingType.HttpPost).Unbind(r, null).Data.OuterXml.Should().Be(response);
         }
 
         [TestMethod]
         public void Saml2PostBinding_Unbind_ReadsRelayState()
         {
-            string response = "responsestring";
+            string response = "<responsestring/>";
             string relayState = "someState";
 
             var r = CreateRequest(
@@ -72,7 +72,7 @@ namespace Kentor.AuthServices.Tests.WebSso
                 relayState);
 
             Saml2Binding.Get(Saml2BindingType.HttpPost)
-                .Unbind(r).RelayState.Should().Be(relayState);
+                .Unbind(r, null).RelayState.Should().Be(relayState);
         }
 
         [TestMethod]
