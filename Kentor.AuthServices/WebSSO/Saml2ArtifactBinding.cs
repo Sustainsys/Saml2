@@ -91,6 +91,18 @@ namespace Kentor.AuthServices.WebSso
                 Issuer = options.SPOptions.EntityId
             }.ToXml();
 
+            if (options.SPOptions.SigningServiceCertificate != null)
+            {
+                var xmlDoc = new XmlDocument()
+                {
+                    PreserveWhitespace = true
+                };
+
+                xmlDoc.LoadXml(payload);
+                xmlDoc.Sign(options.SPOptions.SigningServiceCertificate, true);
+                payload = xmlDoc.OuterXml;
+            }
+
             var response = Saml2SoapBinding.SendSoapRequest(payload, arsUri);
 
             return new Saml2ArtifactResponse(response).Message;

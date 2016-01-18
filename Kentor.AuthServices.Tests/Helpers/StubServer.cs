@@ -13,6 +13,7 @@ using System.Threading;
 using System.IO;
 using System.Xml.Linq;
 using Kentor.AuthServices.Internal;
+using System.Security.Cryptography.Xml;
 
 namespace Kentor.AuthServices.Tests.Helpers
 {
@@ -350,6 +351,12 @@ entityID=""http://localhost:13428/idpMetadataVeryShortCacheDuration"" cacheDurat
                     .Element(Saml2Namespaces.Saml2P + "ArtifactResolve")
                     .Attribute("ID").Value;
 
+                LastArtifactResolutionWasSigned = parsedRequest
+                    .Element(Saml2Namespaces.SoapEnvelope + "Body")
+                    .Element(Saml2Namespaces.Saml2P + "ArtifactResolve")
+                    .Element(XNamespace.Get(SignedXml.XmlDsigNamespaceUrl)+ "Signature")
+                    != null;
+
                 var response = string.Format(
     @"<SOAP-ENV:Envelope
     xmlns:SOAP-ENV=""http://schemas.xmlsoap.org/soap/envelope/"">
@@ -375,6 +382,8 @@ entityID=""http://localhost:13428/idpMetadataVeryShortCacheDuration"" cacheDurat
         }
 
         public static string LastArtifactResolutionSoapActionHeader { get; set; }
+
+        public static bool LastArtifactResolutionWasSigned { get; set; }
 
         [AssemblyCleanup]
         public static void Stop()

@@ -67,6 +67,30 @@ namespace Kentor.AuthServices.Tests.WebSSO
             result.ShouldBeEquivalentTo(expected);
             StubServer.LastArtifactResolutionSoapActionHeader.Should().Be(
                 "http://www.oasis-open.org/committees/security");
+            StubServer.LastArtifactResolutionWasSigned.Should().BeFalse();
+        }
+
+        [TestMethod]
+        public void Saml2ArtifactBinding_Unbind_FromGet_SignsArtifactResolve()
+        {
+            var issuer = new EntityId("https://idp.example.com");
+            var artifact = Uri.EscapeDataString(
+                Convert.ToBase64String(
+                    Saml2ArtifactBinding.CreateArtifact(issuer, 0x1234)));
+
+            var r = new HttpRequestData(
+                "GET",
+                new Uri($"http://example.com/path/acs?SAMLart={artifact}"));
+
+            var options = StubFactory.CreateOptions();
+            options.SPOptions.ServiceCertificates.Add(new ServiceCertificate
+            {
+                Certificate = SignedXmlHelper.TestCert
+            });
+
+            var result = Saml2Binding.Get(Saml2BindingType.Artifact).Unbind(r, options);
+
+            StubServer.LastArtifactResolutionWasSigned.Should().BeTrue();
         }
 
         [TestMethod]
