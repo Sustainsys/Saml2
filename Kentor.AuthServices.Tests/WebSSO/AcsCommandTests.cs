@@ -97,9 +97,9 @@ namespace Kentor.AuthServices.Tests.WebSso
         public void AcsCommand_Run_ResponseIncludedInException()
         {
             string payload =
-                @"<saml2p:Response xmlns:saml2p=""urn:oasis:names:tc:SAML:2.0:protocol""
-                xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
-                ID = """ + MethodBase.GetCurrentMethod().Name + @""" Version=""2.0"" />";
+                "<saml2p:Response xmlns:saml2p=\"urn:oasis:names:tc:SAML:2.0:protocol\" "
+                + "xmlns:saml2=\"urn:oasis:names:tc:SAML:2.0:assertion\" ID=\""
+                + MethodBase.GetCurrentMethod().Name + "\" Version=\"2.0\" />";
             var encoded = Convert.ToBase64String(Encoding.UTF8.GetBytes(payload));
             var r = new HttpRequestData(
                 "POST",
@@ -113,7 +113,7 @@ namespace Kentor.AuthServices.Tests.WebSso
             Action a = () => new AcsCommand().Run(r, Options.FromConfiguration);
 
             a.ShouldThrow<Exception>()
-                .Where(ex => ex.Data["Saml2Response"] as string == payload);
+                .And.Data["Saml2Response"].Should().Be(payload);
         }
 
         [TestMethod]

@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web;
+using System.Xml;
 
 namespace Kentor.AuthServices.WebSso
 {
@@ -20,7 +21,8 @@ namespace Kentor.AuthServices.WebSso
         /// </summary>
         /// <param name="data">The data payload</param>
         /// <param name="relayState">The associated relay state.</param>
-        public UnbindResult(string data, string relayState)
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1059:MembersShouldNotExposeCertainConcreteTypes", MessageId = "System.Xml.XmlNode")]
+        public UnbindResult(XmlElement data, string relayState)
         {
             Data = data;
             RelayState = relayState;
@@ -29,7 +31,8 @@ namespace Kentor.AuthServices.WebSso
         /// <summary>
         /// The data payload.
         /// </summary>
-        public string Data { get; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1059:MembersShouldNotExposeCertainConcreteTypes", MessageId = "System.Xml.XmlNode")]
+        public XmlElement Data { get; }
 
         /// <summary>
         /// The associated relay state, if any. Otherwise null.

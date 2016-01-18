@@ -14,6 +14,7 @@ using System.IdentityModel.Tokens;
 using Kentor.AuthServices.Internal;
 using System.Reflection;
 using Kentor.AuthServices.Tests.Helpers;
+using System.Xml;
 
 namespace Kentor.AuthServices.Tests.WebSSO
 {
@@ -58,7 +59,10 @@ namespace Kentor.AuthServices.Tests.WebSSO
 
             StubServer.LastArtifactResolutionSoapActionHeader = null;
 
-            var expected = new UnbindResult("<message>   <child-node /> </message>", relayState);
+            var xmlDocument = new XmlDocument() { PreserveWhitespace = true };
+            xmlDocument.LoadXml("<message>   <child-node /> </message>");
+            
+            var expected = new UnbindResult(xmlDocument.DocumentElement, relayState);
 
             result.ShouldBeEquivalentTo(expected);
             StubServer.LastArtifactResolutionSoapActionHeader.Should().Be(

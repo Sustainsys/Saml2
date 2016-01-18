@@ -10,6 +10,7 @@ using System.IdentityModel.Metadata;
 using Kentor.AuthServices.Configuration;
 using Kentor.AuthServices.Internal;
 using System.Net;
+using System.Xml;
 
 namespace Kentor.AuthServices.WebSso
 {
@@ -57,7 +58,7 @@ namespace Kentor.AuthServices.WebSso
             return new UnbindResult(data, relayState);
         }
 
-        private static string ResolveArtifact(
+        private static XmlElement ResolveArtifact(
             string artifact,
             string relayState,
             IOptions options)
@@ -78,7 +79,8 @@ namespace Kentor.AuthServices.WebSso
             using (var client = new WebClient())
             {
                 var response = client.UploadString(arsUri, artifactResolveMessage);
-                return response;
+
+                return new Saml2ArtifactResponse(Saml2SoapBinding.ExtractBody(response)).Message;
             }
         }
 

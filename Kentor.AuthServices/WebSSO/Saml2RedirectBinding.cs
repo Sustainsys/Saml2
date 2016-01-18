@@ -13,6 +13,7 @@ using System.Security.Cryptography.Xml;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web;
+using System.Xml;
 using System.Xml.Linq;
 
 namespace Kentor.AuthServices.WebSso
@@ -82,8 +83,15 @@ namespace Kentor.AuthServices.WebSso
                     {
                         decompressedStream.CopyTo(deCompressed);
 
+                        var xml = new XmlDocument()
+                        {
+                            PreserveWhitespace = true
+                        };
+
+                        xml.LoadXml(Encoding.UTF8.GetString(deCompressed.GetBuffer()));
+
                         return new UnbindResult(
-                            Encoding.UTF8.GetString(deCompressed.GetBuffer()),
+                            xml.DocumentElement,
                             request.QueryString["RelayState"].SingleOrDefault());
                     }
                 }

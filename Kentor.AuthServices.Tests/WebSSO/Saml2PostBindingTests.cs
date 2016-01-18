@@ -54,17 +54,17 @@ namespace Kentor.AuthServices.Tests.WebSso
         [TestMethod]
         public void Saml2PostBinding_Unbind_ReadsSaml2Response()
         {
-            string response = "responsestring";
+            string response = "<responsestring />";
 
             var r = CreateRequest(Convert.ToBase64String(Encoding.UTF8.GetBytes(response)));
 
-            Saml2Binding.Get(Saml2BindingType.HttpPost).Unbind(r, null).Data.Should().Be(response);
+            Saml2Binding.Get(Saml2BindingType.HttpPost).Unbind(r, null).Data.OuterXml.Should().Be(response);
         }
 
         [TestMethod]
         public void Saml2PostBinding_Unbind_ReadsRelayState()
         {
-            string response = "responsestring";
+            string response = "<responsestring/>";
             string relayState = "someState";
 
             var r = CreateRequest(

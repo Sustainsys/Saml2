@@ -10,9 +10,9 @@ namespace Kentor.AuthServices.Tests.Saml2P
     public class Saml2ArtifactResponseTests
     {
         [TestMethod]
-        public void Saml2ArtifactResponse_Load_Nullcheck()
+        public void Saml2ArtifactResponse_Ctor_Nullcheck()
         {
-            Action a = () => Saml2ArtifactResponse.Load(null);
+            Action a = () => new Saml2ArtifactResponse(null);
 
             a.ShouldThrow<ArgumentNullException>()
                 .And.ParamName.Should().Be("xml");
@@ -49,7 +49,7 @@ namespace Kentor.AuthServices.Tests.Saml2P
 
             var xmlElement = xmlDocument.DocumentElement;
 
-            var subject = Saml2ArtifactResponse.Load(xmlElement);
+            var subject = new Saml2ArtifactResponse(xmlElement);
 
             subject.Message.LocalName.Should().Be("LogoutRequest");
         }
@@ -82,7 +82,7 @@ namespace Kentor.AuthServices.Tests.Saml2P
 
             var xmlElement = xmlDocument.DocumentElement;
 
-            var subject = Saml2ArtifactResponse.Load(xmlElement);
+            var subject = new Saml2ArtifactResponse(xmlElement);
 
             subject.Message.LocalName.Should().Be("LogoutRequest");
         }

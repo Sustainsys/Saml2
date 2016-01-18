@@ -80,7 +80,7 @@ namespace Kentor.AuthServices.Tests.Saml2P
 
             Saml2Response.Read(response, relayState).ShouldBeEquivalentTo(
                 expected, opt => opt
-                    .Excluding(s => s.XmlDocument)
+                    .Excluding(s => s.XmlElement)
                     .Excluding(s => s.SigningCertificate));
         }
 
@@ -1834,6 +1834,15 @@ namespace Kentor.AuthServices.Tests.Saml2P
         }
 
         [TestMethod]
+        public void Saml2Response_Ctor_Nullcheck()
+        {
+            Action a = () => new Saml2Response(null, "foo");
+
+            a.ShouldThrow<ArgumentNullException>()
+                .And.ParamName.Should().Be("xml");
+        }
+
+        [TestMethod]
         public void Saml2Response_Xml_FromData_ContainsBasicData()
         {
             var issuer = new EntityId("http://idp.example.com");
@@ -1853,20 +1862,19 @@ namespace Kentor.AuthServices.Tests.Saml2P
                 new Uri(destination), null, identity);
             string after = DateTime.UtcNow.ToSaml2DateTimeString();
 
-            var xml = response.XmlDocument;
+            var xml = response.XmlElement;
 
-            xml.FirstChild.OuterXml.Should().StartWith("<?xml version=\"1.0\"");
-            xml.DocumentElement.LocalName.Should().Be("Response");
-            xml.DocumentElement.NamespaceURI.Should().Be(Saml2Namespaces.Saml2PName);
-            xml.DocumentElement.Prefix.Should().Be("saml2p");
-            xml.DocumentElement["Issuer", Saml2Namespaces.Saml2Name].InnerText.Should().Be(issuer.Id);
-            xml.DocumentElement["Assertion", Saml2Namespaces.Saml2Name]
+            xml.LocalName.Should().Be("Response");
+            xml.NamespaceURI.Should().Be(Saml2Namespaces.Saml2PName);
+            xml.Prefix.Should().Be("saml2p");
+            xml["Issuer", Saml2Namespaces.Saml2Name].InnerText.Should().Be(issuer.Id);
+            xml["Assertion", Saml2Namespaces.Saml2Name]
                 ["Subject", Saml2Namespaces.Saml2Name]["NameID", Saml2Namespaces.Saml2Name]
                 .InnerText.Should().Be(nameId);
-            xml.DocumentElement.GetAttribute("Destination").Should().Be(destination);
-            xml.DocumentElement.GetAttribute("ID").Should().NotBeNullOrWhiteSpace();
-            xml.DocumentElement.GetAttribute("Version").Should().Be("2.0");
-            xml.DocumentElement.GetAttribute("IssueInstant").Should().Match(
+            xml.GetAttribute("Destination").Should().Be(destination);
+            xml.GetAttribute("ID").Should().NotBeNullOrWhiteSpace();
+            xml.GetAttribute("Version").Should().Be("2.0");
+            xml.GetAttribute("IssueInstant").Should().Match(
                 i => i == before || i == after);
         }
 
@@ -1881,9 +1889,9 @@ namespace Kentor.AuthServices.Tests.Saml2P
             var response = new Saml2Response(new EntityId("issuer"), SignedXmlHelper.TestCert,
                 new Uri("http://destination.example.com"), null, identity);
 
-            var xml = response.XmlDocument;
+            var xml = response.XmlElement;
 
-            var subject = xml.DocumentElement["Status", Saml2Namespaces.Saml2PName];
+            var subject = xml["Status", Saml2Namespaces.Saml2PName];
 
             subject["StatusCode", Saml2Namespaces.Saml2PName].GetAttribute("Value")
                 .Should().Be("urn:oasis:names:tc:SAML:2.0:status:Success");
@@ -1900,9 +1908,9 @@ namespace Kentor.AuthServices.Tests.Saml2P
             var response = new Saml2Response(new EntityId("issuer"), SignedXmlHelper.TestCert,
                 new Uri("http://destination.example.com"), new Saml2Id("InResponseToID"), identity);
 
-            var xml = response.XmlDocument;
+            var xml = response.XmlElement;
 
-            xml.DocumentElement.GetAttribute("InResponseTo").Should().Be("InResponseToID");
+            xml.GetAttribute("InResponseTo").Should().Be("InResponseToID");
         }
 
         [TestMethod]
@@ -1916,7 +1924,7 @@ namespace Kentor.AuthServices.Tests.Saml2P
         [TestMethod]
         public void Saml2Response_ToXml()
         {
-            string response = @"<?xml version=""1.0"" encoding=""UTF-8""?><saml2p:Response xmlns:saml2p=""urn:oasis:names:tc:SAML:2.0:protocol"" ID=""Saml2Response_ToXml"" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z""><saml2p:Status><saml2p:StatusCode Value=""urn:oasis:names:tc:SAML:2.0:status:Requester"" /></saml2p:Status></saml2p:Response>";
+            string response = @"<saml2p:Response xmlns:saml2p=""urn:oasis:names:tc:SAML:2.0:protocol"" ID=""Saml2Response_ToXml"" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z""><saml2p:Status><saml2p:StatusCode Value=""urn:oasis:names:tc:SAML:2.0:status:Requester"" /></saml2p:Status></saml2p:Response>";
 
             var subject = Saml2Response.Read(response).ToXml();
 

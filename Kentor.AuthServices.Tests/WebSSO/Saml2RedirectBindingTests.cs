@@ -9,6 +9,7 @@ using Kentor.AuthServices.Tests.WebSSO;
 using Kentor.AuthServices.Tests.Helpers;
 using System.Security.Cryptography;
 using System.Text;
+using System.Xml;
 
 namespace Kentor.AuthServices.Tests.WebSso
 {
@@ -77,13 +78,15 @@ namespace Kentor.AuthServices.Tests.WebSso
 
             var result = Saml2Binding.Get(Saml2BindingType.HttpRedirect).Unbind(request, null);
 
-            var expected = new
+            var xmlDocument = new XmlDocument()
             {
-                Data = ExampleXmlData,
-                RelayState = (string)null
+                PreserveWhitespace = true
             };
 
-            result.ShouldBeEquivalentTo(expected);
+            xmlDocument.LoadXml(ExampleXmlData);
+
+            result.RelayState.Should().Be(null);
+            result.Data.OuterXml.Should().Be(xmlDocument.DocumentElement.OuterXml);
         }
 
 
@@ -97,13 +100,7 @@ namespace Kentor.AuthServices.Tests.WebSso
 
             var result = Saml2Binding.Get(Saml2BindingType.HttpRedirect).Unbind(request, null);
 
-            var expected = new
-            {
-                Data = ExampleXmlData,
-                RelayState = relayState
-            };
-
-            result.ShouldBeEquivalentTo(expected);
+            result.RelayState.Should().Be(relayState);
         }
 
         [TestMethod]

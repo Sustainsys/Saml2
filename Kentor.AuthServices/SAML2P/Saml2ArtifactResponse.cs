@@ -13,27 +13,20 @@ namespace Kentor.AuthServices.Saml2P
     public class Saml2ArtifactResponse
     {
         /// <summary>
-        /// Read an artifact response from a string.
+        /// Ctor
         /// </summary>
         /// <param name="xml">Parsed XML with message.</param>
-        /// <returns>Saml2ArtifactResponse object</returns>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1059:MembersShouldNotExposeCertainConcreteTypes", MessageId = "System.Xml.XmlNode")]
-        public static Saml2ArtifactResponse Load(XmlElement xml)
+        public Saml2ArtifactResponse(XmlElement xml)
         {
             if (xml == null)
             {
                 throw new ArgumentNullException(nameof(xml));
             }
 
-            return new Saml2ArtifactResponse(
-                xml.ChildNodes.OfType<XmlElement>()
+            Message = xml.ChildNodes.OfType<XmlElement>()
                 .SkipWhile(x => x.LocalName != "Status")
-                .Skip(1).Single());
-        }
-
-        private Saml2ArtifactResponse(XmlElement message)
-        {
-            Message = message;
+                .Skip(1).Single();
         }
 
         /// <summary>

@@ -73,15 +73,21 @@ namespace Kentor.AuthServices.Saml2P
             x.PreserveWhitespace = true;
             x.LoadXml(xml);
 
-            return new Saml2AuthenticationRequest(x, relayState);
+            return new Saml2AuthenticationRequest(x.DocumentElement, relayState);
         }
 
-        private Saml2AuthenticationRequest(XmlDocument xml, string relayState)
+        /// <summary>
+        /// Ctor
+        /// </summary>
+        /// <param name="xml">Xml data</param>
+        /// <param name="relayState">RelayState associateed with the message.</param>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1059:MembersShouldNotExposeCertainConcreteTypes", MessageId = "System.Xml.XmlNode")]
+        public Saml2AuthenticationRequest(XmlElement xml, string relayState)
         {
             ReadBaseProperties(xml);
             RelayState = relayState;
 
-            var AssertionConsumerServiceUriString = xml.DocumentElement.Attributes["AssertionConsumerServiceURL"].GetValueIfNotNull();
+            var AssertionConsumerServiceUriString = xml.Attributes["AssertionConsumerServiceURL"].GetValueIfNotNull();
 
             if (AssertionConsumerServiceUriString != null)
             {

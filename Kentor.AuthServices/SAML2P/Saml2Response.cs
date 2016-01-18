@@ -50,51 +50,62 @@ namespace Kentor.AuthServices.Saml2P
             x.PreserveWhitespace = true;
             x.LoadXml(xml);
 
-            if (x.DocumentElement.LocalName != "Response"
-                || x.DocumentElement.NamespaceURI != Saml2Namespaces.Saml2P)
+            return new Saml2Response(x.DocumentElement, relayState);
+        }
+
+        /// <summary>
+        /// Ctor
+        /// </summary>
+        /// <param name="xml">Root xml element.</param>
+        /// <param name="relayState"></param>
+        [SuppressMessage("Microsoft.Design", "CA1059:MembersShouldNotExposeCertainConcreteTypes", MessageId = "System.Xml.XmlNode")]
+        public Saml2Response(XmlElement xml, string relayState)
+        {
+            if(xml == null)
+            {
+                throw new ArgumentNullException(nameof(xml));
+            }
+
+            if (xml.LocalName != "Response"
+                || xml.NamespaceURI != Saml2Namespaces.Saml2P)
             {
                 throw new XmlException("Expected a SAML2 assertion document");
             }
 
-            if (x.DocumentElement.Attributes["Version"].Value != "2.0")
+            if (xml.Attributes["Version"].Value != "2.0")
             {
                 throw new XmlException("Wrong or unsupported SAML2 version");
             }
 
-            return new Saml2Response(x, relayState);
-        }
-
-        private Saml2Response(XmlDocument xml, string relayState)
-        {
-            xmlDocument = xml;
+            xmlElement = xml;
             RelayState = relayState;
 
-            id = new Saml2Id(xml.DocumentElement.Attributes["ID"].Value);
+            id = new Saml2Id(xml.Attributes["ID"].Value);
 
-            var parsedInResponseTo = xml.DocumentElement.Attributes["InResponseTo"].GetValueIfNotNull();
+            var parsedInResponseTo = xml.Attributes["InResponseTo"].GetValueIfNotNull();
             if (parsedInResponseTo != null)
             {
                 InResponseTo = new Saml2Id(parsedInResponseTo);
             }
 
-            issueInstant = DateTime.Parse(xml.DocumentElement.Attributes["IssueInstant"].Value,
+            issueInstant = DateTime.Parse(xml.Attributes["IssueInstant"].Value,
                 CultureInfo.InvariantCulture, DateTimeStyles.AdjustToUniversal);
 
-            var statusString = xml.DocumentElement["Status", Saml2Namespaces.Saml2PName]
+            var statusString = xml["Status", Saml2Namespaces.Saml2PName]
                 ["StatusCode", Saml2Namespaces.Saml2PName].Attributes["Value"].Value;
 
             status = StatusCodeHelper.FromString(statusString);
 
-            statusMessage = xml.DocumentElement["Status", Saml2Namespaces.Saml2PName]
+            statusMessage = xml["Status", Saml2Namespaces.Saml2PName]
                 ["StatusMessage", Saml2Namespaces.Saml2PName].GetTrimmedTextIfNotNull();
-            if (xml.DocumentElement["Status", Saml2Namespaces.Saml2PName]["StatusCode", Saml2Namespaces.Saml2PName]["StatusCode", Saml2Namespaces.Saml2PName] != null)
+            if (xml["Status", Saml2Namespaces.Saml2PName]["StatusCode", Saml2Namespaces.Saml2PName]["StatusCode", Saml2Namespaces.Saml2PName] != null)
             {
-                secondLevelStatus = xml.DocumentElement["Status", Saml2Namespaces.Saml2PName]["StatusCode", Saml2Namespaces.Saml2PName]["StatusCode", Saml2Namespaces.Saml2PName].Attributes["Value"].Value;
+                secondLevelStatus = xml["Status", Saml2Namespaces.Saml2PName]["StatusCode", Saml2Namespaces.Saml2PName]["StatusCode", Saml2Namespaces.Saml2PName].Attributes["Value"].Value;
             }
 
-            Issuer = new EntityId(xmlDocument.DocumentElement["Issuer", Saml2Namespaces.Saml2Name].GetTrimmedTextIfNotNull());
+            Issuer = new EntityId(xmlElement["Issuer", Saml2Namespaces.Saml2Name].GetTrimmedTextIfNotNull());
 
-            var destinationUrlString = xmlDocument.DocumentElement.Attributes["Destination"].GetValueIfNotNull();
+            var destinationUrlString = xmlElement.Attributes["Destination"].GetValueIfNotNull();
 
             if (destinationUrlString != null)
             {
@@ -157,23 +168,23 @@ namespace Kentor.AuthServices.Saml2P
         [ExcludeFromCodeCoverage]
         public X509Certificate2 SigningCertificate { get; }
 
-        private XmlDocument xmlDocument;
+        private XmlElement xmlElement;
 
         /// <summary>
-        /// The response as an xml docuemnt. Either the original xml, or xml that is
+        /// The response as an xml element. Either the original xml, or xml that is
         /// generated from supplied data.
         /// </summary>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1059:MembersShouldNotExposeCertainConcreteTypes", MessageId = "System.Xml.XmlNode")]
-        public XmlDocument XmlDocument
+        public XmlElement XmlElement
         {
             get
             {
-                if (xmlDocument == null)
+                if (xmlElement == null)
                 {
-                    CreateXmlDocument();
+                    CreateXmlElement();
                 }
 
-                return xmlDocument;
+                return xmlElement;
             }
         }
 
@@ -194,13 +205,12 @@ namespace Kentor.AuthServices.Saml2P
         /// <returns>string containing xml.</returns>
         public string ToXml()
         {
-            return XmlDocument.OuterXml;
+            return XmlElement.OuterXml;
         }
 
-        private void CreateXmlDocument()
+        private void CreateXmlElement()
         {
             var xml = new XmlDocument();
-            xml.AppendChild(xml.CreateXmlDeclaration("1.0", null, null));
 
             var responseElement = xml.CreateElement("saml2p", "Response", Saml2Namespaces.Saml2PName);
 
@@ -235,7 +245,7 @@ namespace Kentor.AuthServices.Saml2P
                     ci.ToSaml2Assertion(Issuer).ToXElement().CreateReader()));
             }
 
-            xmlDocument = xml;
+            xmlElement = xml.DocumentElement;
         }
 
         readonly Saml2Id id;
@@ -310,11 +320,11 @@ namespace Kentor.AuthServices.Saml2P
         {
             var assertions = new List<XmlElement>();
 
-            assertions.AddRange(XmlDocument.DocumentElement.ChildNodes.Cast<XmlNode>()
+            assertions.AddRange(XmlElement.ChildNodes.Cast<XmlNode>()
                 .Where(node => node.NodeType == XmlNodeType.Element).Cast<XmlElement>()
                 .Where(xe => xe.LocalName == "Assertion" && xe.NamespaceURI == Saml2Namespaces.Saml2Name));
 
-            var encryptedAssertions = XmlDocument.DocumentElement.ChildNodes.Cast<XmlNode>()
+            var encryptedAssertions = XmlElement.ChildNodes.Cast<XmlNode>()
                 .Where(node => node.NodeType == XmlNodeType.Element).Cast<XmlElement>()
                 .Where(xe => xe.LocalName == "EncryptedAssertion" && xe.NamespaceURI == Saml2Namespaces.Saml2Name);
 
@@ -444,10 +454,10 @@ namespace Kentor.AuthServices.Saml2P
             var idpKeys = options.IdentityProviders[Issuer].SigningKeys;
 
             // If the response message is signed, we check just this signature because the whole content has to be correct then
-            var responseSignature = xmlDocument.DocumentElement["Signature", SignedXml.XmlDsigNamespaceUrl];
+            var responseSignature = xmlElement["Signature", SignedXml.XmlDsigNamespaceUrl];
             if (responseSignature != null)
             {
-                CheckSignature(XmlDocument.DocumentElement, idpKeys);
+                CheckSignature(XmlElement, idpKeys);
             }
             else
             {

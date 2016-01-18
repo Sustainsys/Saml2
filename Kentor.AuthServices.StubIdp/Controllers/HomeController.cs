@@ -14,6 +14,7 @@ using System.Configuration;
 using Kentor.AuthServices.Saml2P;
 using Kentor.AuthServices.WebSso;
 using Kentor.AuthServices.HttpModule;
+using System.Xml;
 
 namespace Kentor.AuthServices.StubIdp.Controllers
 {
@@ -48,14 +49,14 @@ namespace Kentor.AuthServices.StubIdp.Controllers
                 var extractedMessage = Saml2Binding.Get(Saml2BindingType.HttpRedirect)
                     .Unbind(requestData, null);
 
-                var request = Saml2AuthenticationRequest.Read(
+                var request = new Saml2AuthenticationRequest(
                     extractedMessage.Data,
                     extractedMessage.RelayState);
 
                 model.AssertionModel.InResponseTo = request.Id.Value;
                 model.AssertionModel.AssertionConsumerServiceUrl = request.AssertionConsumerServiceUrl.ToString();
                 model.AssertionModel.RelayState = extractedMessage.RelayState;
-                model.AssertionModel.AuthnRequestXml = extractedMessage.Data;
+                model.AssertionModel.AuthnRequestXml = extractedMessage.Data.OuterXml;
             }
 
             return View(model);
