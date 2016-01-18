@@ -19,6 +19,7 @@
     <IISExpressAnonymousAuthentication />
     <IISExpressWindowsAuthentication />
     <IISExpressUseClassicPipelineMode />
+    <UseGlobalApplicationHostFile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -152,6 +153,7 @@
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="CertificateHelper.cs" />
     <Compile Include="CompressAttribute.cs" />
+    <Compile Include="Controllers\ArtifactResolveController.cs" />
     <Compile Include="Controllers\CertificateController.cs" />
     <Compile Include="Controllers\DiscoveryServiceController.cs" />
     <Compile Include="Controllers\FederationController.cs" />
@@ -200,6 +202,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Views\ArtifactResolve\" />
     <Folder Include="Views\Certificate\" />
     <Folder Include="Views\Federation\" />
     <Folder Include="Views\Metadata\" />

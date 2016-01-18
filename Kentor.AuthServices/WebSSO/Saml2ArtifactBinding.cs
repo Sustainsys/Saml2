@@ -13,8 +13,18 @@ using System.Xml;
 
 namespace Kentor.AuthServices.WebSso
 {
-    internal class Saml2ArtifactBinding : Saml2Binding
+    /// <summary>
+    /// Saml2 Artifact binding.
+    /// </summary>
+    public class Saml2ArtifactBinding : Saml2Binding
     {
+        internal Saml2ArtifactBinding() { }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="request"></param>
+        /// <returns></returns>
         protected internal override bool CanUnbind(HttpRequestData request)
         {
             if(request == null)
@@ -26,6 +36,14 @@ namespace Kentor.AuthServices.WebSso
                 || (request.HttpMethod == "POST" && request.Form.ContainsKey("SAMLart"));
         }
 
+        /// <summary>
+        /// Checks if the binding can extract a message out of the current
+        /// http request.
+        /// </summary>
+        /// <param name="request">HttpRequest to check for message.</param>
+        /// <param name="options">Options used to look up details of issuing
+        /// idp when needed (artifact binding).</param>
+        /// <returns>True if the binding supports the current request.</returns>
         public override UnbindResult Unbind(HttpRequestData request, IOptions options)
         {
             if(request == null)
@@ -89,6 +107,11 @@ namespace Kentor.AuthServices.WebSso
         /// that the requester should use to resolve the artifact.</param>
         public static byte[] CreateArtifact(EntityId issuer, int endpointIndex)
         {
+            if(issuer == null)
+            {
+                throw new ArgumentNullException(nameof(issuer));
+            }
+
             var artifact = new byte[44];
             artifact[1] = 4; // Header is 0004
 
@@ -103,6 +126,11 @@ namespace Kentor.AuthServices.WebSso
             return artifact;
         }
 
+        /// <summary>
+        /// Binds a message to a http response.
+        /// </summary>
+        /// <param name="message">Message to bind.</param>
+        /// <returns>CommandResult.</returns>
         public override CommandResult Bind(ISaml2Message message)
         {
             if(message == null)
@@ -124,6 +152,9 @@ namespace Kentor.AuthServices.WebSso
             };
         }
 
+        /// <summary>
+        /// Pending messages where the artifact has been sent.
+        /// </summary>
         public static ConcurrentDictionary<byte[], ISaml2Message> PendingMessages { get; } =
             new ConcurrentDictionary<byte[], ISaml2Message>(new ByteArrayEqualityComparer());
 

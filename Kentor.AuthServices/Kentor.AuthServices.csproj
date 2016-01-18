@@ -105,7 +105,7 @@
     <Compile Include="Configuration\IOptions.cs" />
     <Compile Include="Configuration\ISPOptions.cs" />
     <Compile Include="Configuration\Options.cs" />
-    <Compile Include="Internal\DateTimeExtensions.cs" />
+    <Compile Include="DateTimeExtensions.cs" />
     <Compile Include="Internal\EntityIdEqualityComparer.cs" />
     <Compile Include="Internal\Enumerator.cs" />
     <Compile Include="Metadata\ExtendedServiceProviderSingleSignOnDescriptor.cs" />

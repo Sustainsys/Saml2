@@ -32,6 +32,14 @@ namespace Kentor.AuthServices.StubIdp.Models
                 Location = UrlResolver.SsoServiceUrl
             });
 
+            idpSsoDescriptor.ArtifactResolutionServices.Add(0, new IndexedProtocolEndpoint()
+            {
+                Index = 0,
+                IsDefault = true,
+                Binding = Saml2Binding.SoapUri,
+                Location = UrlResolver.ArtifactServiceUrl
+            });
+
             idpSsoDescriptor.Keys.Add(CertificateHelper.SigningKey);
 
             return metadata;

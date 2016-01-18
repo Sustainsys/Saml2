@@ -135,7 +135,7 @@ namespace Kentor.AuthServices.Tests.WebSSO
                 MessageName = "ShouldBeIgnored",
                 RelayState = "ABC& needs escape",
                 XmlData = "<XML />",
-                Issuer = new EntityId("http://idp.example.com")
+                Issuer = new EntityId("http://idp.example.com"),
             };
 
             var result = Saml2Binding.Get(Saml2BindingType.Artifact).Bind(message);
@@ -213,5 +213,15 @@ namespace Kentor.AuthServices.Tests.WebSSO
             // Can't test a random value, but check it's not 0 all over.
             artifact.Skip(24).Count(c => c == 0).Should().BeLessThan(10);
         }
+
+        [TestMethod]
+        public void Saml2ArtifactBinding_Bind_CreateArtifact_NullcheckIssuer()
+        {
+            Action a = () => Saml2ArtifactBinding.CreateArtifact(null, 17);
+
+            a.ShouldThrow<ArgumentNullException>()
+                .And.ParamName.Should().Be("issuer");
+        }
+
     }
 }

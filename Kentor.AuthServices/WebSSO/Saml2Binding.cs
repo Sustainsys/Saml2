@@ -67,10 +67,10 @@ namespace Kentor.AuthServices.WebSso
         public static readonly Uri SoapUri = new Uri("urn:oasis:names:tc:SAML:2.0:bindings:SOAP");
 
         /// <summary>
-        /// Binds a message to a binding
+        /// Binds a message to a http response.
         /// </summary>
-        /// <param name="message"></param>
-        /// <returns></returns>
+        /// <param name="message">Message to bind.</param>
+        /// <returns>CommandResult.</returns>
         public virtual CommandResult Bind(ISaml2Message message)
         {
             throw new NotImplementedException();
