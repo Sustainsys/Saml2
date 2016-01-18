@@ -44,7 +44,7 @@ namespace Kentor.AuthServices.WebSso
                     break;
                 case "POST":
                     relayState = request.Form["RelayState"];
-                    artifact = null;
+                    artifact = request.Form["SAMLart"];
                     break;
                 default:
                     throw new InvalidOperationException(string.Format(CultureInfo.InvariantCulture,

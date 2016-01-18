@@ -61,7 +61,7 @@ namespace Kentor.AuthServices.Tests.WebSSO
 
             var xmlDocument = new XmlDocument() { PreserveWhitespace = true };
             xmlDocument.LoadXml("<message>   <child-node /> </message>");
-            
+
             var expected = new UnbindResult(xmlDocument.DocumentElement, relayState);
 
             result.ShouldBeEquivalentTo(expected);
@@ -83,21 +83,36 @@ namespace Kentor.AuthServices.Tests.WebSSO
         [TestMethod]
         public void Saml2ArtifactBinding_Unbind_FromPost()
         {
+            var issuer = new EntityId("https://idp.example.com");
+            var artifact = Convert.ToBase64String(
+                    Saml2ArtifactBinding.CreateArtifact(issuer, 0x1234));
+
+            var relayState = MethodBase.GetCurrentMethod().Name;
+
+            PrepareArtifactState(relayState, issuer);
+
             var r = new HttpRequestData(
                 "POST",
                 new Uri("http://example.com"),
                 "/ModulePath",
                 new KeyValuePair<string, string[]>[]
                 {
-                    new KeyValuePair<string, string[]>("SAMLart", new[] { "artifact" }),
-                    new KeyValuePair<string, string[]>("RelayState", new[] {"MyState"})
+                    new KeyValuePair<string, string[]>("SAMLart", new[] { artifact }),
+                    new KeyValuePair<string, string[]>("RelayState", new[] { relayState })
                 });
+
+            StubServer.LastArtifactResolutionSoapActionHeader = null;
 
             var result = Saml2Binding.Get(Saml2BindingType.Artifact).Unbind(r, StubFactory.CreateOptions());
 
-            var expected = new UnbindResult(null, "MyState");
+            var xmlDocument = new XmlDocument() { PreserveWhitespace = true };
+            xmlDocument.LoadXml("<message>   <child-node /> </message>");
+
+            var expected = new UnbindResult(xmlDocument.DocumentElement, relayState);
 
             result.ShouldBeEquivalentTo(expected);
+            StubServer.LastArtifactResolutionSoapActionHeader.Should().Be(
+                "http://www.oasis-open.org/committees/security");
         }
 
         [TestMethod]
