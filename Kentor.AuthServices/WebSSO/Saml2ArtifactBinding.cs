@@ -61,7 +61,7 @@ namespace Kentor.AuthServices.WebSso
                     artifact = request.QueryString["SAMLart"].SingleOrDefault();
                     break;
                 case "POST":
-                    relayState = request.Form["RelayState"];
+                    request.Form.TryGetValue("RelayState", out relayState);
                     artifact = request.Form["SAMLart"];
                     break;
                 default:
@@ -80,9 +80,8 @@ namespace Kentor.AuthServices.WebSso
             string relayState,
             IOptions options)
         {
-            var storedRequestState = PendingAuthnRequests.Get(relayState);
             var binaryArtifact = Convert.FromBase64String(artifact);
-            var idp = options.IdentityProviders[storedRequestState.Idp];
+            var idp = GetIdp(binaryArtifact, relayState, options);
             var arsIndex = (binaryArtifact[2] << 8) | binaryArtifact[3];
             var arsUri = idp.ArtifactResolutionServiceUrls[arsIndex];
 
@@ -95,6 +94,25 @@ namespace Kentor.AuthServices.WebSso
             var response = Saml2SoapBinding.SendSoapRequest(payload, arsUri);
 
             return new Saml2ArtifactResponse(response).Message;
+        }
+
+        private static IdentityProvider GetIdp(byte[] binaryArtifact, string relayState, IOptions options)
+        {
+            if (relayState != null)
+            {
+                var storedRequestState = PendingAuthnRequests.Get(relayState);
+                return options.IdentityProviders[storedRequestState.Idp];
+            }
+
+            // It is RECOMMENDED in the spec that the first part of the artifact
+            // is the SHA1 of the entity id, so let's try that as a fallback.
+            var sourceId = new byte[20];
+            Array.Copy(binaryArtifact, 4, sourceId, 0, 20);
+
+            return options.IdentityProviders.KnownIdentityProviders
+                .Single(idp => sha1.ComputeHash(
+                    Encoding.UTF8.GetBytes(idp.EntityId.Id))
+                    .SequenceEqual(sourceId));
         }
 
         private static SHA1 sha1 = SHA1.Create();
@@ -127,7 +145,7 @@ namespace Kentor.AuthServices.WebSso
         }
 
         /// <summary>
-        /// Binds a message to a http response.
+        /// Binds a message to a http response with HTTP Redirect.
         /// </summary>
         /// <param name="message">Message to bind.</param>
         /// <returns>CommandResult.</returns>
@@ -142,13 +160,16 @@ namespace Kentor.AuthServices.WebSso
 
             ((IDictionary<byte[], ISaml2Message>)PendingMessages).Add(artifact, message);
 
+            var relayParam = string.IsNullOrEmpty(message.RelayState) ? "" 
+                : "&RelayState=" + Uri.EscapeDataString(message.RelayState);
+
             return new CommandResult
             {
                 HttpStatusCode = System.Net.HttpStatusCode.SeeOther,
                 Location = new Uri(message.DestinationUrl.OriginalString
                 + (string.IsNullOrEmpty(message.DestinationUrl.Query) ? "?" : "&")
                 + "SAMLart=" + Uri.EscapeDataString(Convert.ToBase64String(artifact))
-                + "&RelayState=" + Uri.EscapeDataString(message.RelayState))
+                + relayParam)
             };
         }
 

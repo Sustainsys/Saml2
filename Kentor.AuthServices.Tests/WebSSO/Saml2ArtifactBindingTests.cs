@@ -69,6 +69,32 @@ namespace Kentor.AuthServices.Tests.WebSSO
                 "http://www.oasis-open.org/committees/security");
         }
 
+        [TestMethod]
+        public void Saml2ArtifactBinding_Unbind_FromGetWithoutRelayState()
+        {
+            var issuer = new EntityId("https://idp.example.com");
+            var artifact = Uri.EscapeDataString(
+                Convert.ToBase64String(
+                    Saml2ArtifactBinding.CreateArtifact(issuer, 0x1234)));
+
+            var r = new HttpRequestData(
+                "GET",
+                new Uri($"http://example.com/path/acs?SAMLart={artifact}"));
+
+            StubServer.LastArtifactResolutionSoapActionHeader = null;
+
+            var result = Saml2Binding.Get(Saml2BindingType.Artifact).Unbind(r, StubFactory.CreateOptions());
+
+            var xmlDocument = new XmlDocument() { PreserveWhitespace = true };
+            xmlDocument.LoadXml("<message>   <child-node /> </message>");
+
+            var expected = new UnbindResult(xmlDocument.DocumentElement, null);
+
+            result.ShouldBeEquivalentTo(expected);
+            StubServer.LastArtifactResolutionSoapActionHeader.Should().Be(
+                "http://www.oasis-open.org/committees/security");
+        }
+
         private void PrepareArtifactState(string RelayState, EntityId idp)
         {
             var storedState = new StoredRequestState(
@@ -109,6 +135,36 @@ namespace Kentor.AuthServices.Tests.WebSSO
             xmlDocument.LoadXml("<message>   <child-node /> </message>");
 
             var expected = new UnbindResult(xmlDocument.DocumentElement, relayState);
+
+            result.ShouldBeEquivalentTo(expected);
+            StubServer.LastArtifactResolutionSoapActionHeader.Should().Be(
+                "http://www.oasis-open.org/committees/security");
+        }
+
+        [TestMethod]
+        public void Saml2ArtifactBinding_Unbind_FromPostWithoutRelayState()
+        {
+            var issuer = new EntityId("https://idp.example.com");
+            var artifact = Convert.ToBase64String(
+                    Saml2ArtifactBinding.CreateArtifact(issuer, 0x1234));
+
+            var r = new HttpRequestData(
+                "POST",
+                new Uri("http://example.com"),
+                "/ModulePath",
+                new KeyValuePair<string, string[]>[]
+                {
+                    new KeyValuePair<string, string[]>("SAMLart", new[] { artifact }),
+                });
+
+            StubServer.LastArtifactResolutionSoapActionHeader = null;
+
+            var result = Saml2Binding.Get(Saml2BindingType.Artifact).Unbind(r, StubFactory.CreateOptions());
+
+            var xmlDocument = new XmlDocument() { PreserveWhitespace = true };
+            xmlDocument.LoadXml("<message>   <child-node /> </message>");
+
+            var expected = new UnbindResult(xmlDocument.DocumentElement, null);
 
             result.ShouldBeEquivalentTo(expected);
             StubServer.LastArtifactResolutionSoapActionHeader.Should().Be(
@@ -177,6 +233,22 @@ namespace Kentor.AuthServices.Tests.WebSSO
             var result = Saml2Binding.Get(Saml2BindingType.Artifact).Bind(message);
 
             result.Location.Query.Trim('?').Contains("?").Should().BeFalse();
+        }
+
+        [TestMethod]
+        public void Saml2ArtifactBinding_Bind_WithoutRelayState()
+        {
+            var message = new Saml2MessageImplementation
+            {
+                DestinationUrl = new Uri("http://example.com/destination?q=a"),
+                MessageName = "ShouldBeIgnored",
+                XmlData = "<XML />",
+                Issuer = new EntityId("http://idp.example.com")
+            };
+
+            Action a = () => Saml2Binding.Get(Saml2BindingType.Artifact).Bind(message);
+
+            a.ShouldNotThrow();
         }
 
         [TestMethod]

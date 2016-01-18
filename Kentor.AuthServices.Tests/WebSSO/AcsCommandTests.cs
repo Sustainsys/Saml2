@@ -16,6 +16,7 @@ using Kentor.AuthServices.WebSso;
 using System.Reflection;
 using System.Configuration;
 using Kentor.AuthServices.Exceptions;
+using System.IdentityModel.Metadata;
 
 namespace Kentor.AuthServices.Tests.WebSso
 {
@@ -138,20 +139,28 @@ namespace Kentor.AuthServices.Tests.WebSso
         [TestMethod]
         public void AcsCommand_Run_HandlesExceptionWhenUnbindResultIsStillNull()
         {
+            var issuer = new EntityId("http://bad.idp.example.com");
+            var artifact = Saml2ArtifactBinding.CreateArtifact(issuer, 0);
+
+            // Just spoil it to force an exception.
+            artifact[3] = 5;
+
+            var artifactString = Convert.ToBase64String(artifact);
+
             var r = new HttpRequestData(
                 "POST",
                 new Uri("http://localhost"),
                 "/ModulePath",
                 new KeyValuePair<string, string[]>[]
                 {
-                    new KeyValuePair<string, string[]>("SAMLart", new string[] { "BadArtifact" })
+                    new KeyValuePair<string, string[]>("SAMLart", new string[] { artifactString })
                 });
 
             Action a = () => new AcsCommand().Run(r, Options.FromConfiguration);
 
             // The real exception was masked by a NullRef in the exception
             // handler in AcsCommand.Run
-            a.ShouldThrow<KeyNotFoundException>();
+            a.ShouldThrow<InvalidOperationException>();
         }
 
         [TestMethod]
