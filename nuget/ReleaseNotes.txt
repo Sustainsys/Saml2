@@ -1,10 +1,13 @@
-Version 0.15.0
-RELEASE CONTAINS BREAKING CHANGES
+Version 0.15.1
+* Bug Fix: Signature not properly URI escaped with HTTP Redirect binding.
+
+ Version 0.15.0
+ RELEASE CONTAINS BREAKING CHANGES
 * Audience URI Validation now uses WIF config. If no audience URI is specified it is now required to set AudienceMode=Never.
 * Service Certificate configuration reworked to support key rollover.
 * The Saml2Response.XmlDocument property has been changed to XmlElement. Should only concern anyone using the core lib directly.
 
-NEW FEATURES
+ NEW FEATURES
 * RelayState support, including in Stub Idp.
 * Artifact Resolution binding support.
 * Signed AuthnRequests
