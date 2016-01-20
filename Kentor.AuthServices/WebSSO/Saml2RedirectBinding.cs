@@ -61,7 +61,7 @@ namespace Kentor.AuthServices.WebSso
             var asymmetricSignatureFormatter = signatureDescription.CreateFormatter(key.PrivateKey);
             var signatureValue = asymmetricSignatureFormatter.CreateSignature(hashAlg);
 
-            queryString += "&Signature=" + Convert.ToBase64String(signatureValue);
+            queryString += "&Signature=" + Uri.EscapeDataString(Convert.ToBase64String(signatureValue));
 
             return queryString;
         }

@@ -162,15 +162,12 @@ namespace Kentor.AuthServices.Tests.WebSso
 
             var result = Saml2Binding.Get(Saml2BindingType.HttpRedirect).Bind(message);
 
+            var queryParams = HttpUtility.ParseQueryString(result.Location.Query);
             var query = result.Location.Query.TrimStart('?');
 
-            var split = query.Split(new[] { "&Signature=" }, StringSplitOptions.None);
-            var signedData = split[0];
-            var signature = split[1];
+            var signedData = query.Split(new[] { "&Signature=" }, StringSplitOptions.None)[0];
 
-            split = signedData.Split(new[] { "SigAlg=" }, StringSplitOptions.None);
-            var sigalg = Uri.UnescapeDataString(split[1]);
-
+            var sigalg = queryParams["SigAlg"];
             var signatureDescription = (SignatureDescription)CryptoConfig.CreateFromName(sigalg);
 
             var hashAlg = signatureDescription.CreateDigest();
@@ -179,8 +176,8 @@ namespace Kentor.AuthServices.Tests.WebSso
                 SignedXmlHelper.TestCert.PublicKey.Key);
 
             asymmetricSignatureDeformatter.VerifySignature(
-                hashAlg, Convert.FromBase64String(signature))
-                .Should().BeTrue();
+                hashAlg, Convert.FromBase64String(queryParams["Signature"]))
+                .Should().BeTrue("signature should be valid");
         }
     }
 }
