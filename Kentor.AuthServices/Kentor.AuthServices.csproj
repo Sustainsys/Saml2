@@ -56,13 +56,16 @@
     <Compile Include="Configuration\ArtifactResolutionServiceCollection.cs" />
     <Compile Include="Configuration\ArtifactResolutionServiceElement.cs" />
     <Compile Include="Configuration\SigningBehavior.cs" />
+    <Compile Include="Internal\NameIdFormatExtension.cs" />
     <Compile Include="MetadataPublishOverrideType.cs" />
     <Compile Include="CertificateStatus.cs" />
     <Compile Include="CertificateUse.cs" />
     <Compile Include="Configuration\ServiceCertificateCollection.cs" />
     <Compile Include="Configuration\ServiceCertificateElement.cs" />
+    <Compile Include="Saml2P\NameIdFormat.cs" />
     <Compile Include="Saml2P\Saml2ArtifactResolve.cs" />
     <Compile Include="Saml2P\Saml2ArtifactResponse.cs" />
+    <Compile Include="Saml2P\Saml2NameIDPolicy.cs" />
     <Compile Include="Saml2P\Saml2SoapBinding.cs" />
     <Compile Include="ServiceCertificate.cs" />
     <Compile Include="ConfiguredAndLoadedCollection.cs" />

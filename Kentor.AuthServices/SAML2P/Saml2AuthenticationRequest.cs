@@ -44,6 +44,12 @@ namespace Kentor.AuthServices.Saml2P
             x.AddAttributeIfNotNullOrEmpty("AssertionConsumerServiceURL", AssertionConsumerServiceUrl);
             x.AddAttributeIfNotNullOrEmpty("AttributeConsumingServiceIndex", AttributeConsumingServiceIndex);
 
+            if (NameIDPolicy != null)
+            {
+                var nameIdFormat = NameIDPolicy.NameIdFormat.GetString();
+                x.Add(new XElement(Saml2Namespaces.Saml2P + "NameIDPolicy", new XAttribute("AllowCreate", NameIDPolicy.AllowCreate ? "1" : "0"), new XAttribute("Format", nameIdFormat)));
+            }
+
             return x;
         }
 
@@ -104,5 +110,7 @@ namespace Kentor.AuthServices.Saml2P
         /// Index to the SP metadata where the list of requested attributes is found.
         /// </summary>
         public int? AttributeConsumingServiceIndex { get; set; }
+
+        public NameIDPolicy NameIDPolicy { get; set; }
     }
 }
