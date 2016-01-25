@@ -162,7 +162,7 @@ namespace Kentor.AuthServices.Configuration
         /// <summary>
         /// NameId Policy.
         /// </summary>
-        public NameIDPolicy NameIDPolicy { get; set; }
+        public Saml2NameIdPolicy NameIdPolicy { get; set; }
 
         /// <summary>
         /// Contacts for the SAML2 entity.
