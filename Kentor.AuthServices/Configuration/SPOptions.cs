@@ -160,6 +160,11 @@ namespace Kentor.AuthServices.Configuration
         public Organization Organization { get; set; }
 
         /// <summary>
+        /// NameId Policy.
+        /// </summary>
+        public NameIDPolicy NameIDPolicy { get; set; }
+
+        /// <summary>
         /// Contacts for the SAML2 entity.
         /// </summary>
         IEnumerable<ContactPerson> ISPOptions.Contacts
