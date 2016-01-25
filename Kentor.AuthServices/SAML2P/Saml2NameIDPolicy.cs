@@ -3,7 +3,7 @@
     /// <summary>
     /// The NameId policy.
     /// </summary>
-    public class NameIDPolicy
+    public class Saml2NameIdPolicy
     {
         /// <summary>
         /// True to set the AllowCreate attribute to 1, false to set it to 0.

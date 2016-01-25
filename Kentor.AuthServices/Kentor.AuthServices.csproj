@@ -65,7 +65,7 @@
     <Compile Include="Saml2P\NameIdFormat.cs" />
     <Compile Include="Saml2P\Saml2ArtifactResolve.cs" />
     <Compile Include="Saml2P\Saml2ArtifactResponse.cs" />
-    <Compile Include="Saml2P\Saml2NameIDPolicy.cs" />
+    <Compile Include="Saml2P\Saml2NameIdPolicy.cs" />
     <Compile Include="Saml2P\Saml2SoapBinding.cs" />
     <Compile Include="ServiceCertificate.cs" />
     <Compile Include="ConfiguredAndLoadedCollection.cs" />
