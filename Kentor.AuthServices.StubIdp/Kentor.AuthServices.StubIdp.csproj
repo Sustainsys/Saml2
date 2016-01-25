@@ -122,6 +122,7 @@
     <Content Include="App_Data\Kentor.AuthServices.StubIdp.cer" />
     <Content Include="Content\IdpConfigurationSchema.json" />
     <Content Include="App_Data\default.json" />
+    <Content Include="robots.txt" />
     <Content Include="Scripts\ICanHaz.js" />
     <Content Include="Scripts\ICanHaz.min.js" />
     <None Include="Scripts\jquery-1.11.3.intellisense.js" />
