@@ -173,6 +173,20 @@ namespace Kentor.AuthServices.Tests.Saml2P
         }
 
         [TestMethod]
+        public void Saml2AuthenticationRequest_ToXElement_AddsElementSaml2NameIdPolicy()
+        {
+            var subject = new Saml2AuthenticationRequest()
+            {
+                AssertionConsumerServiceUrl = new Uri("http://destination.example.com"),
+                NameIdPolicy = new Saml2NameIdPolicy() { AllowCreate = true, Format = NameIdFormat.EmailAddress}
+            }.ToXElement();
+
+            XNamespace ns = "urn:oasis:names:tc:SAML:2.0:protocol";
+            subject.Attribute("AttributeConsumingServiceIndex").Should().BeNull();
+            subject.Should().NotBeNull().And.Subject.Element(ns + "NameIDPolicy").Should().NotBeNull();
+        }
+
+        [TestMethod]
         public void Saml2AuthenticationRequest_Read_ShouldReturnNullOnNullXml()
         {
             string xmlData = null;
