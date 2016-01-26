@@ -35,7 +35,7 @@ namespace Kentor.AuthServices.Tests.Metadata
 
             idpSsoDescriptor.Keys.Add(SignedXmlHelper.TestKeyDescriptor);
 
-            var subject = XDocument.Parse((metadata.ToXmlString()));
+            var subject = XDocument.Parse((metadata.ToXmlString(null)));
 
             var ds = XNamespace.Get(SignedXml.XmlDsigNamespaceUrl);
 
