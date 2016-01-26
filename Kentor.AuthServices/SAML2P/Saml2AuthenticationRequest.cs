@@ -44,6 +44,13 @@ namespace Kentor.AuthServices.Saml2P
             x.AddAttributeIfNotNullOrEmpty("AssertionConsumerServiceURL", AssertionConsumerServiceUrl);
             x.AddAttributeIfNotNullOrEmpty("AttributeConsumingServiceIndex", AttributeConsumingServiceIndex);
 
+            if (NameIdPolicy != null && (NameIdPolicy.AllowCreate || NameIdPolicy.Format != NameIdFormat.Transient))
+            {
+                var nameIdFormat = NameIdPolicy.Format.GetString();
+                var allowCreate = NameIdPolicy.AllowCreate ? "1" : "0";
+                x.Add(new XElement(Saml2Namespaces.Saml2P + "NameIDPolicy", new XAttribute("AllowCreate", allowCreate), new XAttribute("Format", nameIdFormat)));
+            }
+
             return x;
         }
 
@@ -93,6 +100,28 @@ namespace Kentor.AuthServices.Saml2P
             {
                 AssertionConsumerServiceUrl = new Uri(AssertionConsumerServiceUriString);
             }
+
+            var node = xml["NameIDPolicy", Saml2Namespaces.Saml2PName];
+            if (node != null)
+            {
+                NameIdPolicy = new Saml2NameIdPolicy();
+                var fullFormat = node.Attributes["Format"].GetValueIfNotNull();
+                var format = fullFormat?.Split(':').LastOrDefault();
+                if (format != null)
+                {
+                    NameIdFormat namedIdFormat;
+                    if (Enum.TryParse(format, true, out namedIdFormat))
+                    {
+                        NameIdPolicy.Format = namedIdFormat;
+                    }
+                }
+
+                var allowCreateStr = node.Attributes["AllowCreate"].GetValueIfNotNull();
+                if (allowCreateStr != null)
+                {
+                    NameIdPolicy.AllowCreate = allowCreateStr == "1";
+                }
+            }
         }
 
         /// <summary>
@@ -104,5 +133,10 @@ namespace Kentor.AuthServices.Saml2P
         /// Index to the SP metadata where the list of requested attributes is found.
         /// </summary>
         public int? AttributeConsumingServiceIndex { get; set; }
+
+        /// <summary>
+        /// NameId policy.
+        /// </summary>
+        public Saml2NameIdPolicy NameIdPolicy { get; set; }
     }
 }
