@@ -164,11 +164,11 @@ namespace Kentor.AuthServices.Tests.Saml2P
                      AssertionConsumerServiceURL=""https://sp.example.com/SAML2/Acs""
                      >
     <saml2:Issuer>https://sp.example.com/SAML2</saml2:Issuer>
-    <saml2p:NameIDPolicy AllowCreate = ""1"" Format = ""urn:oasis:names:tc:SAML:2.0:nameid-format:persistent"" />
+    <saml2p:NameIDPolicy AllowCreate = ""0"" Format = ""urn:oasis:names:tc:SAML:2.0:nameid-format:persistent"" />
    </saml2p:AuthnRequest>";
 
             var subject = Saml2AuthenticationRequest.Read(xmlData, null);
-            subject.NameIdPolicy.AllowCreate.Should().Be(true);
+            subject.NameIdPolicy.AllowCreate.Should().Be(false);
             subject.NameIdPolicy.Format.Should().Be(NameIdFormat.Persistent);
         }
 
@@ -178,7 +178,7 @@ namespace Kentor.AuthServices.Tests.Saml2P
             var subject = new Saml2AuthenticationRequest()
             {
                 AssertionConsumerServiceUrl = new Uri("http://destination.example.com"),
-                NameIdPolicy = new Saml2NameIdPolicy() { AllowCreate = true, Format = NameIdFormat.EmailAddress}
+                NameIdPolicy = new Saml2NameIdPolicy { AllowCreate = false, Format = NameIdFormat.EmailAddress}
             }.ToXElement();
 
             XNamespace ns = "urn:oasis:names:tc:SAML:2.0:protocol";
