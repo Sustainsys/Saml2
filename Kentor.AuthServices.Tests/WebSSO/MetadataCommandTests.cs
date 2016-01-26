@@ -49,8 +49,8 @@ namespace Kentor.AuthServices.Tests.WebSso
                 // namespace of the elements does not inject the xmlns attribute into the node tree. It is
                 // only done when outputting a string.
                 // See http://stackoverflow.com/questions/24156689/xnode-deepequals-unexpectedly-returns-false
-                new XAttribute("xmlns", Saml2Namespaces.Saml2MetadataName),
                 new XAttribute(XNamespace.Xmlns + "saml2", Saml2Namespaces.Saml2),
+                new XAttribute("xmlns", Saml2Namespaces.Saml2MetadataName),
                 new XElement(Saml2Namespaces.Saml2Metadata + "SPSSODescriptor",
                     new XAttribute("protocolSupportEnumeration", "urn:oasis:names:tc:SAML:2.0:protocol"),
                     new XElement(Saml2Namespaces.Saml2Metadata + "Extensions",
@@ -133,8 +133,8 @@ namespace Kentor.AuthServices.Tests.WebSso
                 // namespace of the elements does not inject the xmlns attribute into the node tree. It is
                 // only done when outputting a string.
                 // See http://stackoverflow.com/questions/24156689/xnode-deepequals-unexpectedly-returns-false
-                new XAttribute("xmlns", Saml2Namespaces.Saml2MetadataName),
                 new XAttribute(XNamespace.Xmlns + "saml2", Saml2Namespaces.Saml2),
+                new XAttribute("xmlns", Saml2Namespaces.Saml2MetadataName),
                 new XElement(Saml2Namespaces.Saml2Metadata + "SPSSODescriptor",
                     new XAttribute("protocolSupportEnumeration", "urn:oasis:names:tc:SAML:2.0:protocol"),
                     new XElement(Saml2Namespaces.Saml2Metadata + "AssertionConsumerService",

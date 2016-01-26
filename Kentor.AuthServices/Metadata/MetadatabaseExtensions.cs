@@ -5,6 +5,7 @@ using System.IdentityModel.Metadata;
 using System.IO;
 using System.Linq;
 using System.Web;
+using System.Xml;
 
 namespace Kentor.AuthServices.Metadata
 {
@@ -22,17 +23,13 @@ namespace Kentor.AuthServices.Metadata
         {
             var serializer = ExtendedMetadataSerializer.WriterInstance;
 
-            using (var stream = new MemoryStream())
+            var xmlDoc = new XmlDocument();
+            using (var xmlWriter = xmlDoc.CreateNavigator().AppendChild())
             {
-                serializer.WriteMetadata(stream, metadata);
-
-                using (var reader = new StreamReader(stream))
-                {
-                    stream.Seek(0, SeekOrigin.Begin);
-
-                    return reader.ReadToEnd();
-                }
+                serializer.WriteMetadata(xmlWriter, metadata);
             }
+
+            return xmlDoc.OuterXml;
         }
     }
 }
