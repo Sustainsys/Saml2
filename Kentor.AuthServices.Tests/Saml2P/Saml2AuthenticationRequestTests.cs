@@ -152,6 +152,27 @@ namespace Kentor.AuthServices.Tests.Saml2P
         }
 
         [TestMethod]
+        public void Saml2AuthenticationRequest_Read_NameIdPolicy()
+        {
+            var xmlData = @"<?xml version=""1.0"" encoding=""UTF-8""?>
+<saml2p:AuthnRequest xmlns:saml2p=""urn:oasis:names:tc:SAML:2.0:protocol""
+                     xmlns:saml2 =""urn:oasis:names:tc:SAML:2.0:assertion""
+                     ID=""ide3c2f1c88255463ab4eb1b158fa6f616""
+                     Version=""2.0""
+                     IssueInstant=""2016-01-25T13:01:09Z""
+                     Destination=""http://destination.example.com""
+                     AssertionConsumerServiceURL=""https://sp.example.com/SAML2/Acs""
+                     >
+    <saml2:Issuer>https://sp.example.com/SAML2</saml2:Issuer>
+    <saml2p:NameIDPolicy AllowCreate = ""1"" Format = ""urn:oasis:names:tc:SAML:2.0:nameid-format:persistent"" />
+   </saml2p:AuthnRequest>";
+
+            var subject = Saml2AuthenticationRequest.Read(xmlData, null);
+            subject.NameIdPolicy.AllowCreate.Should().Be(true);
+            subject.NameIdPolicy.Format.Should().Be(NameIdFormat.Persistent);
+        }
+
+        [TestMethod]
         public void Saml2AuthenticationRequest_Read_ShouldReturnNullOnNullXml()
         {
             string xmlData = null;

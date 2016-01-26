@@ -150,10 +150,6 @@ namespace Kentor.AuthServices.Configuration
             {
                 return (NameIdPolicyElement) base["nameIdPolicy"];
             }
-            internal set
-            {
-                base["nameIdPolicy"] = value;
-            }
         }
 
         /// <summary>
