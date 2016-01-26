@@ -16,7 +16,6 @@ namespace Kentor.AuthServices.Saml2P
         /// Ctor
         /// </summary>
         /// <param name="xml">Parsed XML with message.</param>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1059:MembersShouldNotExposeCertainConcreteTypes", MessageId = "System.Xml.XmlNode")]
         public Saml2ArtifactResponse(XmlElement xml)
         {
             if (xml == null)
@@ -32,7 +31,6 @@ namespace Kentor.AuthServices.Saml2P
         /// <summary>
         /// Contained message.
         /// </summary>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1059:MembersShouldNotExposeCertainConcreteTypes", MessageId = "System.Xml.XmlNode")]
         public XmlElement Message { get; }
     }
 }

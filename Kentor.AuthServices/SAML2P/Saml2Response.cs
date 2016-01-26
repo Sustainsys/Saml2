@@ -58,7 +58,6 @@ namespace Kentor.AuthServices.Saml2P
         /// </summary>
         /// <param name="xml">Root xml element.</param>
         /// <param name="relayState"></param>
-        [SuppressMessage("Microsoft.Design", "CA1059:MembersShouldNotExposeCertainConcreteTypes", MessageId = "System.Xml.XmlNode")]
         public Saml2Response(XmlElement xml, string relayState)
         {
             if(xml == null)
@@ -174,7 +173,6 @@ namespace Kentor.AuthServices.Saml2P
         /// The response as an xml element. Either the original xml, or xml that is
         /// generated from supplied data.
         /// </summary>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1059:MembersShouldNotExposeCertainConcreteTypes", MessageId = "System.Xml.XmlNode")]
         public XmlElement XmlElement
         {
             get

@@ -116,7 +116,6 @@ namespace Kentor.AuthServices.Saml2P
         /// Also validates basic properties of the request
         /// </summary>
         /// <param name="xml">The xml document to parse</param>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1059:MembersShouldNotExposeCertainConcreteTypes", MessageId = "System.Xml.XmlNode")]
         protected void ReadBaseProperties(XmlElement xml)
         {
             if (xml == null)
