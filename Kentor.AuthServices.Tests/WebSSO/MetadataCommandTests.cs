@@ -118,12 +118,12 @@ namespace Kentor.AuthServices.Tests.WebSso
             };
             var options = new Options(spOptions);
 
-            var subject = new MetadataCommand().Run(request, options);
+            var result = new MetadataCommand().Run(request, options);
 
-            XDocument payloadXml = XDocument.Parse(subject.Content);
+            XDocument subject = XDocument.Parse(result.Content);
 
             // Ignore the ID attribute, it is just filled with a GUID that can't be easily tested.
-            payloadXml.Root.Attribute("ID").Remove();
+            subject.Root.Attribute("ID").Remove();
 
             var expectedXml = new XDocument(new XElement(Saml2Namespaces.Saml2Metadata + "EntityDescriptor",
                 new XAttribute("entityID", "http://localhost/AuthServices"),
@@ -141,9 +141,14 @@ namespace Kentor.AuthServices.Tests.WebSso
                         new XAttribute("Binding", Saml2Binding.HttpPostUri),
                         new XAttribute("Location", "http://localhost/AuthServices/Acs"),
                         new XAttribute("index", 0),
-                        new XAttribute("isDefault", true)))));
+                        new XAttribute("isDefault", true)),
+                    new XElement(Saml2Namespaces.Saml2Metadata + "AssertionConsumerService",
+                        new XAttribute("Binding", Saml2Binding.HttpArtifactUri),
+                        new XAttribute("Location", "http://localhost/AuthServices/Acs"),
+                        new XAttribute("index", 1),
+                        new XAttribute("isDefault", false)))));
 
-            payloadXml.ShouldBeEquivalentTo(expectedXml, opt => opt.IgnoringCyclicReferences());
+            subject.Should().BeEquivalentTo(expectedXml);
         }
 
         [TestMethod]
