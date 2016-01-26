@@ -44,10 +44,11 @@ namespace Kentor.AuthServices.Saml2P
             x.AddAttributeIfNotNullOrEmpty("AssertionConsumerServiceURL", AssertionConsumerServiceUrl);
             x.AddAttributeIfNotNullOrEmpty("AttributeConsumingServiceIndex", AttributeConsumingServiceIndex);
 
-            if (NameIdPolicy != null)
+            if (NameIdPolicy != null && (NameIdPolicy.AllowCreate || NameIdPolicy.Format != NameIdFormat.Transient))
             {
-                var nameIdFormat = NameIdPolicy.NameIdFormat.GetString();
-                x.Add(new XElement(Saml2Namespaces.Saml2P + "NameIDPolicy", new XAttribute("AllowCreate", NameIdPolicy.AllowCreate ? "1" : "0"), new XAttribute("Format", nameIdFormat)));
+                var nameIdFormat = NameIdPolicy.Format.GetString();
+                var allowCreate = NameIdPolicy.AllowCreate ? "1" : "0";
+                x.Add(new XElement(Saml2Namespaces.Saml2P + "NameIDPolicy", new XAttribute("AllowCreate", allowCreate), new XAttribute("Format", nameIdFormat)));
             }
 
             return x;
