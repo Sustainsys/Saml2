@@ -44,13 +44,14 @@ namespace Kentor.AuthServices.Tests.WebSso
 
             var payloadXml = XmlDocumentHelpers.FromString(subject.Content);
 
+            // Validate signature, location of it  and then drop it. It contains
+            // a reference to the ID which makes it unsuitable for string matching.
+            payloadXml.DocumentElement.IsSignedBy(SignedXmlHelper.TestCert).Should().BeTrue();
+            payloadXml.DocumentElement.FirstChild.LocalName.Should().Be("Signature");
+            payloadXml.DocumentElement.RemoveChild("Signature", SignedXml.XmlDsigNamespaceUrl);
+
             // Ignore the ID attribute, it is just filled with a GUID that can't be easily tested.
             payloadXml.DocumentElement.Attributes.Remove("ID");
-
-            // Validate signature and then drop it. It it contains a reference
-            // to the ID which makes it unsuitable for string matching.
-            payloadXml.DocumentElement.IsSignedBy(SignedXmlHelper.TestCert).Should().BeTrue();
-            payloadXml.DocumentElement.RemoveChild("Signature", SignedXml.XmlDsigNamespaceUrl);
 
             var expectedXml =
             "<EntityDescriptor entityID=\"https://github.com/KentorIT/authservices\" cacheDuration=\"PT42S\" xmlns:saml2=\"urn:oasis:names:tc:SAML:2.0:assertion\" xmlns=\"urn:oasis:names:tc:SAML:2.0:metadata\">"

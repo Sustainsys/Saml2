@@ -3,6 +3,8 @@ using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 using System.Security.Cryptography.Xml;
 using System.Xml;
+using System.Linq;
+using Kentor.AuthServices.Exceptions;
 
 namespace Kentor.AuthServices
 {
@@ -95,12 +97,28 @@ namespace Kentor.AuthServices
         /// added as a node in the document, right after the Issuer node.</param>
         /// <param name="cert">Certificate to use when signing.</param>
         /// <param name="includeKeyInfo">Include public key in signed output.</param>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1059:MembersShouldNotExposeCertainConcreteTypes", MessageId = "System.Xml.XmlNode")]
         public static void Sign(this XmlDocument xmlDocument, X509Certificate2 cert, bool includeKeyInfo)
         {
-            if (xmlDocument == null)
+            if(xmlDocument == null)
             {
                 throw new ArgumentNullException(nameof(xmlDocument));
+            }
+
+            xmlDocument.DocumentElement.Sign(cert, includeKeyInfo);
+        }
+
+        /// <summary>
+        /// Sign an xml element with the supplied cert.
+        /// </summary>
+        /// <param name="xmlElement">xmlElement to be signed. The signature is
+        /// added as a node in the document, right after the Issuer node.</param>
+        /// <param name="cert">Certificate to use when signing.</param>
+        /// <param name="includeKeyInfo">Include public key in signed output.</param>
+        public static void Sign(this XmlElement xmlElement, X509Certificate2 cert, bool includeKeyInfo)
+        {
+            if (xmlElement == null)
+            {
+                throw new ArgumentNullException(nameof(xmlElement));
             }
 
             if (cert == null)
@@ -108,7 +126,7 @@ namespace Kentor.AuthServices
                 throw new ArgumentNullException(nameof(cert));
             }
 
-            var signedXml = new SignedXml(xmlDocument);
+            var signedXml = new SignedXml(xmlElement.OwnerDocument);
 
             // The transform XmlDsigExcC14NTransform and canonicalization method XmlDsigExcC14NTransformUrl is important for partially signed XML files
             // see: http://msdn.microsoft.com/en-us/library/system.security.cryptography.xml.signedxml.xmldsigexcc14ntransformurl(v=vs.110).aspx
@@ -119,7 +137,7 @@ namespace Kentor.AuthServices
             signedXml.SigningKey = (RSACryptoServiceProvider)cert.PrivateKey;
             signedXml.SignedInfo.CanonicalizationMethod = SignedXml.XmlDsigExcC14NTransformUrl;
 
-            var reference = new Reference { Uri = "#" + xmlDocument.DocumentElement.GetAttribute("ID") };
+            var reference = new Reference { Uri = "#" + xmlElement.GetAttribute("ID") };
             reference.AddTransform(new XmlDsigEnvelopedSignatureTransform());
             reference.AddTransform(new XmlDsigExcC14NTransform());
 
@@ -133,9 +151,9 @@ namespace Kentor.AuthServices
                 signedXml.KeyInfo = keyInfo;
             }
 
-            xmlDocument.DocumentElement.InsertAfter(
-                xmlDocument.ImportNode(signedXml.GetXml(), true),
-                xmlDocument.DocumentElement["Issuer", Saml2Namespaces.Saml2Name]);
+            xmlElement.InsertAfter(
+                xmlElement.OwnerDocument.ImportNode(signedXml.GetXml(), true),
+                xmlElement["Issuer", Saml2Namespaces.Saml2Name]);
         }
 
         /// <summary>
@@ -147,7 +165,41 @@ namespace Kentor.AuthServices
         /// <returns>Is the signature correct?</returns>
         public static bool IsSignedBy(this XmlElement xmlElement, X509Certificate2 certificate)
         {
-            return true;
+            if (xmlElement == null)
+            {
+                throw new ArgumentNullException(nameof(xmlElement));
+            }
+
+            if (certificate == null)
+            {
+                throw new ArgumentNullException(nameof(certificate));
+            }
+
+            var signedXml = new SignedXml(xmlElement.OwnerDocument);
+
+            var signatureElement = xmlElement["Signature", SignedXml.XmlDsigNamespaceUrl];
+
+            if (signatureElement == null)
+            {
+                return false;
+            }
+
+            signedXml.LoadXml(signatureElement);
+            ValidateSignedInfo(signedXml, xmlElement);
+            return signedXml.CheckSignature(certificate, true);
+        }
+
+        private static void ValidateSignedInfo(SignedXml signedXml, XmlElement xmlElement)
+        {
+            var reference = signedXml.SignedInfo.References.Cast<Reference>().Single();
+            var id = reference.Uri.Substring(1);
+
+            var idElement = signedXml.GetIdElement(xmlElement.OwnerDocument, id);
+            
+            if(idElement != xmlElement)
+            {
+                throw new InvalidSignatureException("Incorrect reference on Xml signature. The reference must be to the root element of the element containing the signature.");
+            }
         }
     }
 }

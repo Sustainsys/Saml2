@@ -4,6 +4,8 @@ using System.Xml;
 using System.Security.Cryptography.X509Certificates;
 using System.Security.Cryptography.Xml;
 using FluentAssertions;
+using Kentor.AuthServices.Tests.Helpers;
+using Kentor.AuthServices.Exceptions;
 
 namespace Kentor.AuthServices.Tests
 {
@@ -22,12 +24,21 @@ namespace Kentor.AuthServices.Tests
         }
 
         [TestMethod]
+        public void XmlDocumentHelpers_Sign_Nullcheck_xmlElement()
+        {
+            ((XmlElement)null).Invoking(
+                x => x.Sign(SignedXmlHelper.TestCert, true))
+                .ShouldThrow<ArgumentNullException>()
+                .And.ParamName.Should().Be("xmlElement");
+        }
+
+        [TestMethod]
         public void XmlDocumentHelpers_Sign_Nullcheck_Cert()
         {
-            XmlDocument xd = new XmlDocument();
-            Action a = () => xd.Sign(null);
-
-            a.ShouldThrow<ArgumentNullException>().And.ParamName.Should().Be("cert");
+            xmlDocument.DocumentElement.Invoking(
+                x => x.Sign(null, false))
+                .ShouldThrow<ArgumentNullException>()
+                .And.ParamName.Should().Be("cert");
         }
 
         [TestMethod]
@@ -101,6 +112,86 @@ namespace Kentor.AuthServices.Tests
                 e => e.RemoveChild("name", null))
                 .ShouldThrow<ArgumentNullException>()
                 .And.ParamName.Should().Be("ns");
+        }
+
+        [TestMethod]
+        public void XmlDocumentHelpers_IsSignedBy_NullcheckXmlElement()
+        {
+            ((XmlElement)null).Invoking(
+                x => x.IsSignedBy(SignedXmlHelper.TestCert))
+                .ShouldThrow<ArgumentNullException>("xmlElement");
+        }
+
+        [TestMethod]
+        public void XmlDocumentHelpers_IsSignedBy_NullcheckCertificate()
+        {
+            xmlDocument.DocumentElement.Invoking(
+                x => x.IsSignedBy(null))
+                .ShouldThrow<ArgumentNullException>("certificate");
+        }
+
+        [TestMethod]
+        public void XmlDocumentHelpers_IsSignedBy()
+        {
+            var xml = "<xml ID=\"someID\"><content>text</content></xml>";
+            var xmlDoc = XmlDocumentHelpers.FromString(xml);
+            xmlDoc.Sign(SignedXmlHelper.TestCert);
+
+            xmlDoc.DocumentElement.IsSignedBy(SignedXmlHelper.TestCert).Should().BeTrue();
+        }
+
+        [TestMethod]
+        public void XmlDocumentHelpers_IsSignedBy_FalseOnWrongCert()
+        {
+            var xml = "<xml ID=\"someID\"><content>text</content></xml>";
+            var xmlDoc = XmlDocumentHelpers.FromString(xml);
+            xmlDoc.Sign(SignedXmlHelper.TestCert);
+
+            xmlDoc.DocumentElement.IsSignedBy(SignedXmlHelper.TestCert2).Should().BeFalse();
+        }
+
+        [TestMethod]
+        public void XmlDocumentHelpers_IsSignedBy_FalseOnTamperedData()
+        {
+            var xml = "<xml ID=\"someID\"><content>text</content></xml>";
+            var xmlDoc = XmlDocumentHelpers.FromString(xml);
+            xmlDoc.Sign(SignedXmlHelper.TestCert);
+
+            xmlDoc.DocumentElement["content"].InnerText = "changedText";
+
+            xmlDoc.DocumentElement.IsSignedBy(SignedXmlHelper.TestCert).Should().BeFalse();
+        }
+
+        [TestMethod]
+        public void XmlDocumentHelpers_IsSignedBy_TrowsOnSignatureWrapping()
+        {
+            var xml = "<xml ID=\"someID\"><content ID=\"content1\">text</content>"
+                + "<injected>other text</injected></xml>";
+            var xmlDoc = XmlDocumentHelpers.FromString(xml);
+
+            xmlDoc.DocumentElement["content"].Sign(SignedXmlHelper.TestCert, false);
+
+            // An XML wrapping attack is created by taking a legitimate signature
+            // and putting it in another element. If the reference of the signature
+            // is not properly checked, the element containing the signature
+            // is incorrectly trusted.
+            var signatureNode = xmlDoc.DocumentElement["content"]["Signature", SignedXml.XmlDsigNamespaceUrl];
+            xmlDoc.DocumentElement["content"].RemoveChild(signatureNode);
+            xmlDoc.DocumentElement["injected"].AppendChild(signatureNode);
+
+            xmlDoc.DocumentElement["injected"].Invoking(
+                x => x.IsSignedBy(SignedXmlHelper.TestCert))
+                .ShouldThrow<InvalidSignatureException>()
+                .And.Message.Should().Be("Incorrect reference on Xml signature. The reference must be to the root element of the element containing the signature.");
+        }
+
+        [TestMethod]
+        public void XmlDocumentHelpers_IsSignedBy_FalseOnMissingSignature()
+        {
+            var xml = "<xml ID=\"someID\"><content>text</content></xml>";
+            var xmlDoc = XmlDocumentHelpers.FromString(xml);
+
+            xmlDoc.DocumentElement.IsSignedBy(SignedXmlHelper.TestCert).Should().BeFalse();
         }
     }
 }

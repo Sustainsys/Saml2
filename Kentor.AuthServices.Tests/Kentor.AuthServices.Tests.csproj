@@ -113,6 +113,7 @@
   </Choose>
   <ItemGroup>
     <Compile Include="Configuration\ServiceCertificateCollectionTests.cs" />
+    <Compile Include="Exceptions\InvalidSignatureExceptionTests.cs" />
     <Compile Include="Helpers\OwinTestHelpers.cs" />
     <Compile Include="Helpers\SignedXmlHelper.cs" />
     <Compile Include="Helpers\SpinWaiter.cs" />

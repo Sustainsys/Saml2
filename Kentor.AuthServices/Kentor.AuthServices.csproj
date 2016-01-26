@@ -56,6 +56,7 @@
     <Compile Include="Configuration\ArtifactResolutionServiceCollection.cs" />
     <Compile Include="Configuration\ArtifactResolutionServiceElement.cs" />
     <Compile Include="Configuration\SigningBehavior.cs" />
+    <Compile Include="Exceptions\SignatureValidationException.cs" />
     <Compile Include="MetadataPublishOverrideType.cs" />
     <Compile Include="CertificateStatus.cs" />
     <Compile Include="CertificateUse.cs" />
