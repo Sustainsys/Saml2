@@ -13,6 +13,6 @@
         /// <summary>
         /// The NameId format.
         /// </summary>
-        public NameIdFormat NameIdFormat { get; set; } = NameIdFormat.Transient;
+        public NameIdFormat Format { get; set; } = NameIdFormat.Transient;
     }
 }

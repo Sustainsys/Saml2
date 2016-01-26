@@ -7,6 +7,7 @@ using System.IdentityModel.Metadata;
 using System.Linq;
 using Kentor.AuthServices.Internal;
 using Kentor.AuthServices.Metadata;
+using Kentor.AuthServices.Saml2P;
 using System.Diagnostics.CodeAnalysis;
 using System.Collections.ObjectModel;
 
@@ -136,6 +137,33 @@ namespace Kentor.AuthServices.Configuration
             get
             {
                 return (string)base[modulePath];
+            }
+        }
+
+        /// <summary>
+        /// NamedId policy element.
+        /// </summary>
+        [ConfigurationProperty("nameIdPolicy")]
+        public NameIdPolicyElement NameIdPolicyElement
+        {
+            get
+            {
+                return (NameIdPolicyElement) base["nameIdPolicy"];
+            }
+            internal set
+            {
+                base["nameIdPolicy"] = value;
+            }
+        }
+
+        /// <summary>
+        /// NamedId policy.
+        /// </summary>
+        public Saml2NameIdPolicy NameIdPolicy
+        {
+            get
+            {
+                return new Saml2NameIdPolicy { AllowCreate = NameIdPolicyElement.AllowCreate, Format = NameIdPolicyElement.Format };
             }
         }
 

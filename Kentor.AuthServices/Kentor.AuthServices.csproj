@@ -55,6 +55,7 @@
     </Compile>
     <Compile Include="Configuration\ArtifactResolutionServiceCollection.cs" />
     <Compile Include="Configuration\ArtifactResolutionServiceElement.cs" />
+    <Compile Include="Configuration\NameIdPolicyElement.cs" />
     <Compile Include="Configuration\SigningBehavior.cs" />
     <Compile Include="Internal\NameIdFormatExtension.cs" />
     <Compile Include="MetadataPublishOverrideType.cs" />
