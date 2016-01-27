@@ -56,6 +56,7 @@
     <Compile Include="Configuration\ArtifactResolutionServiceCollection.cs" />
     <Compile Include="Configuration\ArtifactResolutionServiceElement.cs" />
     <Compile Include="Configuration\SigningBehavior.cs" />
+    <Compile Include="Exceptions\SignatureValidationException.cs" />
     <Compile Include="MetadataPublishOverrideType.cs" />
     <Compile Include="CertificateStatus.cs" />
     <Compile Include="CertificateUse.cs" />
@@ -146,7 +147,7 @@
     <Compile Include="WebSso\SignInCommand.cs" />
     <Compile Include="Internal\StatusCodeHelper.cs" />
     <Compile Include="Internal\StringHelpers.cs" />
-    <Compile Include="XmlDocumentExtensions.cs" />
+    <Compile Include="XmlDocumentHelpers.cs" />
     <Compile Include="Metadata\FilteringXmlDictionaryReader.cs" />
     <Compile Include="Internal\XmlHelpers.cs" />
   </ItemGroup>

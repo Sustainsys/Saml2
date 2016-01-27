@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<RuleSet Name="Kentor.AuthServices" Description=" " ToolsVersion="11.0">
+<RuleSet Name="Kentor.AuthServices" Description=" " ToolsVersion="14.0">
   <Rules AnalyzerId="Microsoft.Analyzers.ManagedCodeAnalysis" RuleNamespace="Microsoft.Rules.Managed">
     <Rule Id="CA1000" Action="Error" />
     <Rule Id="CA1001" Action="Error" />
@@ -55,7 +55,6 @@
     <Rule Id="CA1056" Action="Error" />
     <Rule Id="CA1057" Action="Error" />
     <Rule Id="CA1058" Action="Error" />
-    <Rule Id="CA1059" Action="Error" />
     <Rule Id="CA1060" Action="Error" />
     <Rule Id="CA1061" Action="Error" />
     <Rule Id="CA1062" Action="Error" />

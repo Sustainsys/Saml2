@@ -21,7 +21,6 @@ namespace Kentor.AuthServices.WebSso
         /// </summary>
         /// <param name="data">The data payload</param>
         /// <param name="relayState">The associated relay state.</param>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1059:MembersShouldNotExposeCertainConcreteTypes", MessageId = "System.Xml.XmlNode")]
         public UnbindResult(XmlElement data, string relayState)
         {
             Data = data;
@@ -31,7 +30,6 @@ namespace Kentor.AuthServices.WebSso
         /// <summary>
         /// The data payload.
         /// </summary>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1059:MembersShouldNotExposeCertainConcreteTypes", MessageId = "System.Xml.XmlNode")]
         public XmlElement Data { get; }
 
         /// <summary>

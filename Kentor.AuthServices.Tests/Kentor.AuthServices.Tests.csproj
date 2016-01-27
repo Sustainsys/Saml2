@@ -113,6 +113,7 @@
   </Choose>
   <ItemGroup>
     <Compile Include="Configuration\ServiceCertificateCollectionTests.cs" />
+    <Compile Include="Exceptions\InvalidSignatureExceptionTests.cs" />
     <Compile Include="Helpers\OwinTestHelpers.cs" />
     <Compile Include="Helpers\SignedXmlHelper.cs" />
     <Compile Include="Helpers\SpinWaiter.cs" />
@@ -184,7 +185,7 @@
     <Compile Include="WebSSO\AuthServicesUrlsTests.cs" />
     <Compile Include="Configuration\KentorAuthServicesSectionTests.cs" />
     <Compile Include="MetadataRefreshSchedulerTests.cs" />
-    <Compile Include="XmlDocumentExtensionsTests.cs" />
+    <Compile Include="XmlDocumentHelpersTests.cs" />
     <Compile Include="Internal\XmlHelpersTests.cs" />
   </ItemGroup>
   <ItemGroup>

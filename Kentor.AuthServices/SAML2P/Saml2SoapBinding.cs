@@ -38,7 +38,6 @@ namespace Kentor.AuthServices.Saml2P
         /// </summary>
         /// <param name="xml">xml data</param>
         /// <returns>Parsed data.</returns>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1059:MembersShouldNotExposeCertainConcreteTypes", MessageId = "System.Xml.XmlNode")]
         public static XmlElement ExtractBody(string xml)
         {
             var xmlDoc = new XmlDocument()
@@ -57,7 +56,6 @@ namespace Kentor.AuthServices.Saml2P
         /// <param name="payload">Message payload</param>
         /// <param name="destination">Destination endpoint</param>
         /// <returns>Response.</returns>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1059:MembersShouldNotExposeCertainConcreteTypes", MessageId = "System.Xml.XmlNode")]
         public static XmlElement SendSoapRequest(string payload, Uri destination)
         {
             var message = CreateSoapBody(payload);

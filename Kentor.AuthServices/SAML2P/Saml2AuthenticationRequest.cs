@@ -81,7 +81,6 @@ namespace Kentor.AuthServices.Saml2P
         /// </summary>
         /// <param name="xml">Xml data</param>
         /// <param name="relayState">RelayState associateed with the message.</param>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1059:MembersShouldNotExposeCertainConcreteTypes", MessageId = "System.Xml.XmlNode")]
         public Saml2AuthenticationRequest(XmlElement xml, string relayState)
         {
             ReadBaseProperties(xml);
