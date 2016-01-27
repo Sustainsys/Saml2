@@ -44,11 +44,24 @@ namespace Kentor.AuthServices.Saml2P
             x.AddAttributeIfNotNullOrEmpty("AssertionConsumerServiceURL", AssertionConsumerServiceUrl);
             x.AddAttributeIfNotNullOrEmpty("AttributeConsumingServiceIndex", AttributeConsumingServiceIndex);
 
-            if (NameIdPolicy != null && (NameIdPolicy.AllowCreate || NameIdPolicy.Format != NameIdFormat.Transient))
+            if (NameIdPolicy != null && 
+                (NameIdPolicy.AllowCreate.HasValue || NameIdPolicy.Format != NameIdFormat.NotConfigured))
             {
-                var nameIdFormat = NameIdPolicy.Format.GetString();
-                var allowCreate = NameIdPolicy.AllowCreate ? "1" : "0";
-                x.Add(new XElement(Saml2Namespaces.Saml2P + "NameIDPolicy", new XAttribute("AllowCreate", allowCreate), new XAttribute("Format", nameIdFormat)));
+                var nameIdPolicyElement = new XElement(Saml2Namespaces.Saml2P + "NameIDPolicy");
+
+                if(NameIdPolicy.Format != NameIdFormat.NotConfigured)
+                {
+                    nameIdPolicyElement.Add(new XAttribute("Format",
+                        NameIdPolicy.Format.GetString()));
+                }
+
+                if(NameIdPolicy.AllowCreate.HasValue)
+                {
+                    nameIdPolicyElement.Add(new XAttribute("AllowCreate",
+                        NameIdPolicy.AllowCreate));
+                }
+
+                x.Add(nameIdPolicyElement);
             }
 
             return x;
@@ -118,7 +131,7 @@ namespace Kentor.AuthServices.Saml2P
                 var allowCreateStr = node.Attributes["AllowCreate"].GetValueIfNotNull();
                 if (allowCreateStr != null)
                 {
-                    NameIdPolicy.AllowCreate = allowCreateStr == "1";
+                    NameIdPolicy.AllowCreate = bool.Parse(allowCreateStr);
                 }
             }
         }

@@ -5,6 +5,7 @@ using System.Xml.Linq;
 using System.IdentityModel.Tokens;
 using System.Xml;
 using Kentor.AuthServices.Saml2P;
+using System.Linq;
 
 namespace Kentor.AuthServices.Tests.Saml2P
 {
@@ -164,7 +165,7 @@ namespace Kentor.AuthServices.Tests.Saml2P
                      AssertionConsumerServiceURL=""https://sp.example.com/SAML2/Acs""
                      >
     <saml2:Issuer>https://sp.example.com/SAML2</saml2:Issuer>
-    <saml2p:NameIDPolicy AllowCreate = ""0"" Format = ""urn:oasis:names:tc:SAML:2.0:nameid-format:persistent"" />
+    <saml2p:NameIDPolicy AllowCreate = ""false"" Format = ""urn:oasis:names:tc:SAML:2.0:nameid-format:persistent"" />
    </saml2p:AuthnRequest>";
 
             var subject = Saml2AuthenticationRequest.Read(xmlData, null);
@@ -185,26 +186,52 @@ namespace Kentor.AuthServices.Tests.Saml2P
                      AssertionConsumerServiceURL=""https://sp.example.com/SAML2/Acs""
                      >
     <saml2:Issuer>https://sp.example.com/SAML2</saml2:Issuer>
-    <saml2p:NameIDPolicy AllowCreate = ""0""/>
+    <saml2p:NameIDPolicy AllowCreate = ""false""/>
    </saml2p:AuthnRequest>";
 
             var subject = Saml2AuthenticationRequest.Read(xmlData, null);
             subject.NameIdPolicy.AllowCreate.Should().Be(false);
-            subject.NameIdPolicy.Format.Should().Be(NameIdFormat.Transient);
+            subject.NameIdPolicy.Format.Should().Be(NameIdFormat.NotConfigured);
         }
 
         [TestMethod]
-        public void Saml2AuthenticationRequest_ToXElement_AddsElementSaml2NameIdPolicy()
+        public void Saml2AuthenticationRequest_ToXElement_AddsElementSaml2NameIdPolicy_ForAllowCreate()
         {
             var subject = new Saml2AuthenticationRequest()
             {
                 AssertionConsumerServiceUrl = new Uri("http://destination.example.com"),
-                NameIdPolicy = new Saml2NameIdPolicy { AllowCreate = false, Format = NameIdFormat.EmailAddress}
+                NameIdPolicy = new Saml2NameIdPolicy { AllowCreate = false,}
             }.ToXElement();
 
-            XNamespace ns = "urn:oasis:names:tc:SAML:2.0:protocol";
+            var expected = new XElement(Saml2Namespaces.Saml2P + "root",
+                new XAttribute(XNamespace.Xmlns + "saml2p", Saml2Namespaces.Saml2P),
+                new XElement(Saml2Namespaces.Saml2P + "NameIDPolicy",
+                    new XAttribute("AllowCreate", false)))
+                    .Elements().Single();
+
             subject.Attribute("AttributeConsumingServiceIndex").Should().BeNull();
-            subject.Should().NotBeNull().And.Subject.Element(ns + "NameIDPolicy").Should().NotBeNull();
+            subject.Element(Saml2Namespaces.Saml2P + "NameIDPolicy")
+                .Should().BeEquivalentTo(expected);
+        }
+
+        [TestMethod]
+        public void Saml2AuthenticationRequest_ToXElement_AddsElementSaml2NameIdPolicy_ForNameIdFormat()
+        {
+            var subject = new Saml2AuthenticationRequest()
+            {
+                AssertionConsumerServiceUrl = new Uri("http://destination.example.com"),
+                NameIdPolicy = new Saml2NameIdPolicy { Format = NameIdFormat.EmailAddress }
+            }.ToXElement();
+
+            var expected = new XElement(Saml2Namespaces.Saml2P + "root",
+                new XAttribute(XNamespace.Xmlns + "saml2p", Saml2Namespaces.Saml2P),
+                new XElement(Saml2Namespaces.Saml2P + "NameIDPolicy",
+                    new XAttribute("Format", "urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress")))
+                    .Elements().Single();
+
+            subject.Attribute("AttributeConsumingServiceIndex").Should().BeNull();
+            subject.Element(Saml2Namespaces.Saml2P + "NameIDPolicy")
+                .Should().BeEquivalentTo(expected);
         }
 
         [TestMethod]

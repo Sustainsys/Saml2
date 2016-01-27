@@ -6,13 +6,13 @@
     public class Saml2NameIdPolicy
     {
         /// <summary>
-        /// True to set the AllowCreate attribute to 1, false to set it to 0.
+        /// Value of AllowCreate attribute. Set to null to omit.
         /// </summary>
-        public bool AllowCreate { get; set; } = false;
+        public bool? AllowCreate { get; set; }
 
         /// <summary>
         /// The NameId format.
         /// </summary>
-        public NameIdFormat Format { get; set; } = NameIdFormat.Transient;
+        public NameIdFormat Format { get; set; }
     }
 }

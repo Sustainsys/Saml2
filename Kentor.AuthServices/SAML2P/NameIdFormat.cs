@@ -6,43 +6,49 @@
     public enum NameIdFormat
     {
         /// <summary>
+        /// No NameId format has been configured. No format will be included
+        /// in AuthnRequests and metadata.
+        /// </summary>
+        NotConfigured = 0,
+
+        /// <summary>
         /// 8.3.1 Unspecified
         /// </summary>
-        Unspecified,
+        Unspecified = 1,
 
         /// <summary>
         /// 8.3.2 Email Address
         /// </summary>
-        EmailAddress,
+        EmailAddress = 2,
 
         /// <summary>
         /// 8.3.3 X.509 Subject Name
         /// </summary>
-        X509SubjectName,
+        X509SubjectName = 3,
 
         /// <summary>
         /// 8.3.4 Windows Domain Qualified Name
         /// </summary>
-        WindowsDomainQualifiedName,
+        WindowsDomainQualifiedName = 4,
 
         /// <summary>
         /// 8.3.5 Kerberos Principal Name
         /// </summary>
-        KerberosPrincipalName,
+        KerberosPrincipalName = 5,
 
         /// <summary>
         /// 8.3.6 Entity Identifier
         /// </summary>
-        EntityIdentifier,
+        EntityIdentifier = 6,
 
         /// <summary>
         /// 8.3.7 Persistent Identifier
         /// </summary>
-        Persistent,
+        Persistent = 7,
 
         /// <summary>
         /// 8.3.8 Transient Identifier
         /// </summary>
-        Transient
+        Transient = 8
     }
 }

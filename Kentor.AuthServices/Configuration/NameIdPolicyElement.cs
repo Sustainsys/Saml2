@@ -11,19 +11,19 @@ namespace Kentor.AuthServices.Configuration
         /// <summary>
         /// Allow create.
         /// </summary>
-        [ConfigurationProperty("allowCreate", IsRequired = false, DefaultValue = "false")]
-        public bool AllowCreate
+        [ConfigurationProperty("allowCreate", IsRequired = false)]
+        public bool? AllowCreate
         {
             get
             {
-                return (bool)base["allowCreate"];
+                return (bool?)base["allowCreate"];
             }
         }
 
         /// <summary>
         /// The NameId format.
         /// </summary>
-        [ConfigurationProperty("format", IsRequired = false, DefaultValue = NameIdFormat.Transient)]
+        [ConfigurationProperty("format", IsRequired = false)]
         public NameIdFormat Format
         {
             get
