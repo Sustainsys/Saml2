@@ -235,6 +235,20 @@ namespace Kentor.AuthServices.Tests.Saml2P
         }
 
         [TestMethod]
+        public void Saml2AuthenticationRequest_ToXElement_NameFormatTransientForbidsAllowCreate()
+        {
+            var subject = new Saml2AuthenticationRequest()
+            {
+                AssertionConsumerServiceUrl = new Uri("http://destination.example.com"),
+                NameIdPolicy = new Saml2NameIdPolicy { AllowCreate = true, Format = NameIdFormat.Transient }
+            };
+
+            subject.Invoking(s => s.ToXElement())
+                .ShouldThrow<InvalidOperationException>()
+                .And.Message.Should().Be("When NameIdPolicy/Format is set to Transient, it is not permitted to specify AllowCreate. Change Format or leave AllowCreate as null.");
+        }
+
+        [TestMethod]
         public void Saml2AuthenticationRequest_Read_ShouldReturnNullOnNullXml()
         {
             string xmlData = null;

@@ -44,27 +44,39 @@ namespace Kentor.AuthServices.Saml2P
             x.AddAttributeIfNotNullOrEmpty("AssertionConsumerServiceURL", AssertionConsumerServiceUrl);
             x.AddAttributeIfNotNullOrEmpty("AttributeConsumingServiceIndex", AttributeConsumingServiceIndex);
 
-            if (NameIdPolicy != null && 
+            AddNameIdPolicy(x);
+
+            return x;
+        }
+
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "NameIdPolicy")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "AllowCreate")]
+        private void AddNameIdPolicy(XElement xElement)
+        {
+            if (NameIdPolicy != null &&
                 (NameIdPolicy.AllowCreate.HasValue || NameIdPolicy.Format != NameIdFormat.NotConfigured))
             {
+                if(NameIdPolicy.AllowCreate.HasValue && NameIdPolicy.Format == NameIdFormat.Transient)
+                {
+                    throw new InvalidOperationException("When NameIdPolicy/Format is set to Transient, it is not permitted to specify AllowCreate. Change Format or leave AllowCreate as null.");
+                }
+
                 var nameIdPolicyElement = new XElement(Saml2Namespaces.Saml2P + "NameIDPolicy");
 
-                if(NameIdPolicy.Format != NameIdFormat.NotConfigured)
+                if (NameIdPolicy.Format != NameIdFormat.NotConfigured)
                 {
                     nameIdPolicyElement.Add(new XAttribute("Format",
                         NameIdPolicy.Format.GetString()));
                 }
 
-                if(NameIdPolicy.AllowCreate.HasValue)
+                if (NameIdPolicy.AllowCreate.HasValue)
                 {
                     nameIdPolicyElement.Add(new XAttribute("AllowCreate",
                         NameIdPolicy.AllowCreate));
                 }
 
-                x.Add(nameIdPolicyElement);
+                xElement.Add(nameIdPolicyElement);
             }
-
-            return x;
         }
 
         /// <summary>
