@@ -25,7 +25,7 @@ namespace Kentor.AuthServices.Configuration
             }
         }
 
-        const string cacheDuration = "cacheDuration";
+        const string cacheDuration = nameof(cacheDuration);
         /// <summary>
         /// Optional attribute that describes for how long anyone may cache the metadata
         /// presented by the service provider. Defaults to 1 hour.
@@ -36,6 +36,19 @@ namespace Kentor.AuthServices.Configuration
             get
             {
                 return (TimeSpan)base[cacheDuration];
+            }
+        }
+
+        const string validDuration = nameof(validDuration);
+        /// <summary>
+        /// How long after generation should the metadata be valid?
+        /// </summary>
+        [ConfigurationProperty(validDuration, IsRequired = false, DefaultValue = "7.0:0:0")]
+        public TimeSpan ValidUntil
+        {
+            get
+            {
+                return (TimeSpan)base[validDuration];
             }
         }
 

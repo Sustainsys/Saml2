@@ -56,7 +56,8 @@ namespace Kentor.AuthServices.Tests.Configuration
 
             ISPOptions subject = new SPOptions(KentorAuthServicesSection.Current);
             subject.ReturnUrl.Should().Be(config.ReturnUrl);
-            subject.MetadataCacheDuration.Should().Be(config.MetadataCacheDuration);
+            subject.MetadataCacheDuration.Should().Be(config.Metadata.CacheDuration);
+            subject.MetadataValidDuration.Should().Be(config.Metadata.ValidUntil);
             subject.DiscoveryServiceUrl.Should().Be(config.DiscoveryServiceUrl);
             subject.EntityId.Should().Be(config.EntityId);
             subject.ModulePath.Should().Be(config.ModulePath);
@@ -124,11 +125,12 @@ namespace Kentor.AuthServices.Tests.Configuration
         }
 
         [TestMethod]
-        public void SPOptions_MetadataCacheDuration_DefaultValue()
+        public void SPOptions_MetadataDuration_DefaultValues()
         {
             var subject = new SPOptions();
 
             subject.MetadataCacheDuration.Should().Be(new TimeSpan(1, 0, 0));
+            subject.MetadataValidDuration.Should().Be(new TimeSpan(7, 0, 0, 0));
         }
 
         [TestMethod]
