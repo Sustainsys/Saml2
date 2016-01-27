@@ -5,6 +5,7 @@ using Kentor.AuthServices.Configuration;
 using System.IdentityModel.Metadata;
 using FluentAssertions;
 using Kentor.AuthServices.Tests.Helpers;
+using Kentor.AuthServices.Saml2P;
 
 namespace Kentor.AuthServices.Tests.Configuration
 {
@@ -53,16 +54,18 @@ namespace Kentor.AuthServices.Tests.Configuration
             config.AllowChange(true);
             config.AuthenticateRequestSigningBehavior = SigningBehavior.Always;
 
-            var subject = new SPOptions(KentorAuthServicesSection.Current);
+            ISPOptions subject = new SPOptions(KentorAuthServicesSection.Current);
             subject.ReturnUrl.Should().Be(config.ReturnUrl);
             subject.MetadataCacheDuration.Should().Be(config.MetadataCacheDuration);
             subject.DiscoveryServiceUrl.Should().Be(config.DiscoveryServiceUrl);
             subject.EntityId.Should().Be(config.EntityId);
             subject.ModulePath.Should().Be(config.ModulePath);
-            subject.NameIdPolicy.AllowCreate.Should().Be(config.NameIdPolicy.AllowCreate);
-            subject.NameIdPolicy.Format.Should().Be(config.NameIdPolicy.Format);
+            subject.NameIdPolicy.AllowCreate.Should().Be(config.NameIdPolicyElement.AllowCreate);
+            subject.NameIdPolicy.Format.Should().Be(config.NameIdPolicyElement.Format);
             subject.Organization.Should().Be(config.organization);
             subject.AuthenticateRequestSigningBehavior.Should().Be(config.AuthenticateRequestSigningBehavior);
+            subject.RequestedAuthnContext.ClassRef.OriginalString.Should().Be("urn:oasis:names:tc:SAML:2.0:ac:classes:PasswordProtectedTransport");
+            subject.RequestedAuthnContext.Comparison.Should().Be(AuthnContextComparisonType.Minimum);
         }
 
         [TestMethod]

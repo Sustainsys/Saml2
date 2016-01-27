@@ -65,7 +65,10 @@ namespace Kentor.AuthServices.Tests
                 DestinationUrl = idp.SingleSignOnServiceUrl,
                 Issuer = options.SPOptions.EntityId,
                 AttributeConsumingServiceIndex = 0,
-                NameIdPolicy = new Saml2NameIdPolicy {  AllowCreate = true, Format = NameIdFormat.EntityIdentifier}
+                NameIdPolicy = new Saml2NameIdPolicy(true, NameIdFormat.EntityIdentifier),
+                RequestedAuthnContext = new Saml2RequestedAuthnContext(
+                    new Uri("urn:oasis:names:tc:SAML:2.0:ac:classes:PasswordProtectedTransport"),
+                    AuthnContextComparisonType.Minimum)
             };
 
             subject.ShouldBeEquivalentTo(expected, opt => opt

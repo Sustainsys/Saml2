@@ -21,7 +21,7 @@ namespace Kentor.AuthServices.Configuration
         private static readonly KentorAuthServicesSection current =
             (KentorAuthServicesSection)ConfigurationManager.GetSection("kentor.authServices");
 
-        private bool allowChange = true;
+        private bool allowChange = false;
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1500:VariableNamesShouldNotMatchFieldNames", MessageId = "allowChange")]
         internal void AllowChange(bool allowChange)
@@ -140,26 +140,29 @@ namespace Kentor.AuthServices.Configuration
             }
         }
 
+        const string nameIdPolicy = nameof(nameIdPolicy);
         /// <summary>
         /// NamedId policy element.
         /// </summary>
-        [ConfigurationProperty("nameIdPolicy")]
+        [ConfigurationProperty(nameIdPolicy)]
         public NameIdPolicyElement NameIdPolicyElement
         {
             get
             {
-                return (NameIdPolicyElement) base["nameIdPolicy"];
+                return (NameIdPolicyElement) base[nameIdPolicy];
             }
         }
 
+        const string requestedAuthnContext = nameof(requestedAuthnContext);
         /// <summary>
-        /// NamedId policy.
+        /// RequestedAuthnContext config.
         /// </summary>
-        public Saml2NameIdPolicy NameIdPolicy
+        [ConfigurationProperty(requestedAuthnContext)]
+        public RequestedAuthnContextElement RequestedAuthnContext
         {
             get
             {
-                return new Saml2NameIdPolicy { AllowCreate = NameIdPolicyElement.AllowCreate, Format = NameIdPolicyElement.Format };
+                return (RequestedAuthnContextElement)base[requestedAuthnContext];
             }
         }
 

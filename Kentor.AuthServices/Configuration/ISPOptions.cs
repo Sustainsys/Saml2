@@ -63,6 +63,11 @@ namespace Kentor.AuthServices.Configuration
         Saml2NameIdPolicy NameIdPolicy { get; }
 
         /// <summary>
+        /// RequestedAuthnContext
+        /// </summary>
+        Saml2RequestedAuthnContext RequestedAuthnContext { get;  }
+
+        /// <summary>
         /// Contacts for the SAML2 entity. Must not be null.
         /// </summary>
         IEnumerable<ContactPerson> Contacts { get; }
