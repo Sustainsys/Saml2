@@ -392,7 +392,6 @@ namespace Kentor.AuthServices.Tests.Saml2P
                     <saml2:Conditions NotOnOrAfter=""2100-01-01T00:00:00Z"" />
                 </saml2:Assertion>";
 
-
             var signedAssertion1 = SignedXmlHelper.SignXml(assertion1);
             var signedAssertion2 = SignedXmlHelper.SignXml(assertion2);
             var signedResponse = string.Format(response, signedAssertion1, signedAssertion2);
@@ -494,37 +493,6 @@ namespace Kentor.AuthServices.Tests.Saml2P
         }
 
         [TestMethod]
-        public void Saml2Response_GetClaims_ThrowsOnTamperedAssertionWithMessageSignature()
-        {
-            var response =
-            @"<saml2p:Response xmlns:saml2p=""urn:oasis:names:tc:SAML:2.0:protocol""
-            xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
-            ID = """ + MethodBase.GetCurrentMethod().Name + @""" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z"">
-                <saml2:Issuer>https://idp.example.com</saml2:Issuer>
-                <saml2p:Status>
-                    <saml2p:StatusCode Value=""urn:oasis:names:tc:SAML:2.0:status:Success"" />
-                </saml2p:Status>
-                <saml2:Assertion xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
-                Version=""2.0"" ID=""" + MethodBase.GetCurrentMethod().Name + @"_Assertion1""
-                IssueInstant=""2013-09-25T00:00:00Z"">
-                    <saml2:Issuer>https://idp.example.com</saml2:Issuer>
-                    <saml2:Subject>
-                        <saml2:NameID>SomeUser</saml2:NameID>
-                        <saml2:SubjectConfirmation Method=""urn:oasis:names:tc:SAML:2.0:cm:bearer"" />
-                    </saml2:Subject>
-                    <saml2:Conditions NotOnOrAfter=""2100-01-01T00:00:00Z"" />
-                </saml2:Assertion>
-            </saml2p:Response>";
-
-            var signedResponse = SignedXmlHelper.SignXml(response).Replace("SomeUser", "SomeOtherUser");
-
-            Action a = () => Saml2Response.Read(signedResponse).GetClaims(Options.FromConfiguration);
-
-            a.ShouldThrow<Saml2ResponseFailedValidationException>()
-                .WithMessage("Signature validation failed on SAML response or contained assertion.");
-        }
-
-        [TestMethod]
         public void Saml2Response_GetClaims_ThrowsOnTamperedAssertionWithAssertionSignature()
         {
             var response =
@@ -567,8 +535,8 @@ namespace Kentor.AuthServices.Tests.Saml2P
 
             Action a = () => Saml2Response.Read(signedResponse).GetClaims(Options.FromConfiguration);
 
-            a.ShouldThrow<Saml2ResponseFailedValidationException>()
-                .WithMessage("Signature validation failed on SAML response or contained assertion.");
+            a.ShouldThrow<InvalidSignatureException>()
+                .WithMessage("Signature didn't verify. Have the contents been tampered with?");
         }
 
         [TestMethod]
@@ -626,111 +594,8 @@ namespace Kentor.AuthServices.Tests.Saml2P
 
             Action a = () => Saml2Response.Read(signedResponse).GetClaims(Options.FromConfiguration);
 
-            a.ShouldThrow<Saml2ResponseFailedValidationException>()
+            a.ShouldThrow<InvalidSignatureException>()
                 .WithMessage("Incorrect reference on Xml signature. The reference must be to the root element of the element containing the signature.");
-        }
-
-        [TestMethod]
-        public void Saml2Response_GetClaims_ThrowsOnDualReferencesInSignature()
-        {
-            var response =
-            @"<?xml version=""1.0"" encoding=""UTF-8""?>
-            <saml2p:Response xmlns:saml2p=""urn:oasis:names:tc:SAML:2.0:protocol""
-            xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
-            ID = """ + MethodBase.GetCurrentMethod().Name + @""" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z"">
-                <saml2:Issuer>https://idp.example.com</saml2:Issuer>
-                <saml2p:Status>
-                    <saml2p:StatusCode Value=""urn:oasis:names:tc:SAML:2.0:status:Success"" />
-                </saml2p:Status>
-                <saml2:Assertion
-                Version=""2.0"" ID=""" + MethodBase.GetCurrentMethod().Name + @"1""
-                IssueInstant=""2013-09-25T00:00:00Z"">
-                    <saml2:Issuer>https://idp.example.com</saml2:Issuer>
-                    <saml2:Subject>
-                        <saml2:NameID>SomeUser</saml2:NameID>
-                        <saml2:SubjectConfirmation Method=""urn:oasis:names:tc:SAML:2.0:cm:bearer"" />
-                    </saml2:Subject>
-                    <saml2:Conditions NotOnOrAfter=""2100-01-01T00:00:00Z"" />
-                </saml2:Assertion>
-            </saml2p:Response>";
-
-            var xmlDoc = new XmlDocument();
-            xmlDoc.LoadXml(response);
-
-            var signedXml = new SignedXml(xmlDoc);
-            signedXml.SigningKey = (RSACryptoServiceProvider)SignedXmlHelper.TestCert.PrivateKey;
-            signedXml.SignedInfo.CanonicalizationMethod = SignedXml.XmlDsigExcC14NTransformUrl;
-
-            var ref1 = new Reference { Uri = "#" + MethodBase.GetCurrentMethod().Name };
-            ref1.AddTransform(new XmlDsigEnvelopedSignatureTransform());
-            ref1.AddTransform(new XmlDsigExcC14NTransform());
-            signedXml.AddReference(ref1);
-
-            var ref2 = new Reference { Uri = "#" + MethodBase.GetCurrentMethod().Name };
-            ref2.AddTransform(new XmlDsigEnvelopedSignatureTransform());
-            ref2.AddTransform(new XmlDsigExcC14NTransform());
-            signedXml.AddReference(ref2);
-
-            signedXml.ComputeSignature();
-            xmlDoc.DocumentElement.AppendChild(xmlDoc.ImportNode(signedXml.GetXml(), true));
-
-            Action a = () => Saml2Response.Read(xmlDoc.OuterXml).GetClaims(Options.FromConfiguration);
-
-            a.ShouldThrow<Saml2ResponseFailedValidationException>()
-                .WithMessage("Multiple references for Xml signatures are not allowed.");
-        }
-
-        [TestMethod]
-        public void Saml2Response_GetClaims_ThrowsOnIncorrectTransformsInSignature()
-        {
-            // SAML2 Core 5.4.4 states that signatures SHOULD NOT contain other transforms than
-            // the enveloped signature or exclusive canonicalization transforms and that a verifier
-            // of a signature MAY reject signatures with other transforms. We'll reject them to
-            // mitigate the risk of transforms opening up for assertion injections.
-
-            var response =
-            @"<?xml version=""1.0"" encoding=""UTF-8""?>
-            <saml2p:Response xmlns:saml2p=""urn:oasis:names:tc:SAML:2.0:protocol""
-            xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
-            ID = """ + MethodBase.GetCurrentMethod().Name + @""" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z"">
-                <saml2:Issuer>https://idp.example.com</saml2:Issuer>
-                <saml2p:Status>
-                    <saml2p:StatusCode Value=""urn:oasis:names:tc:SAML:2.0:status:Requester"" />
-                </saml2p:Status>
-            </saml2p:Response>";
-
-            var xmlDoc = new XmlDocument();
-            xmlDoc.LoadXml(response);
-
-            var signedXml = new SignedXml(xmlDoc);
-            signedXml.SigningKey = (RSACryptoServiceProvider)SignedXmlHelper.TestCert.PrivateKey;
-            signedXml.SignedInfo.CanonicalizationMethod = SignedXml.XmlDsigExcC14NTransformUrl;
-
-            var reference = new Reference { Uri = "#" + MethodBase.GetCurrentMethod().Name };
-            reference.AddTransform(new XmlDsigEnvelopedSignatureTransform());
-            reference.AddTransform(new XmlDsigC14NTransform()); // The allowed transform is XmlDsigExcC14NTransform
-            signedXml.AddReference(reference);
-
-            signedXml.ComputeSignature();
-            xmlDoc.DocumentElement.AppendChild(xmlDoc.ImportNode(signedXml.GetXml(), true));
-
-            Action a = () => Saml2Response.Read(xmlDoc.OuterXml).GetClaims(Options.FromConfiguration);
-
-            a.ShouldThrow<Saml2ResponseFailedValidationException>()
-                .WithMessage("Transform \"http://www.w3.org/TR/2001/REC-xml-c14n-20010315\" found in XML signature is not allowed in SAML.");
-        }
-
-        [TestMethod]
-        public void Saml2Response_Validate_ThrowsOnMissingReferenceInSignature()
-        {
-            var signedWithoutReference = @"<saml2p:Response xmlns:saml2p=""urn:oasis:names:tc:SAML:2.0:protocol"" xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion"" ID=""Saml2Response_Validate_FalseOnMissingReference"" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z""><saml2:Issuer>https://idp.example.com</saml2:Issuer><saml2p:Status><saml2p:StatusCode Value=""urn:oasis:names:tc:SAML:2.0:status:Requester"" /></saml2p:Status><Signature xmlns=""http://www.w3.org/2000/09/xmldsig#""><SignedInfo><CanonicalizationMethod Algorithm=""http://www.w3.org/TR/2001/REC-xml-c14n-20010315"" /><SignatureMethod Algorithm=""http://www.w3.org/2000/09/xmldsig#rsa-sha1"" /></SignedInfo><SignatureValue>tYFIoYmrzmp3H7TXm9IS8DW3buBZIb6sI2ycrn+AOnVcdYnPTJpk3ntHlqQKXNEyXgXZNdqEuFpgI1I0P0TlhM+C3rBJnflkApkxZkak5RwnJzDWTHpsSDjYcm+/XgBy3JVZJuMWb2YPaV8GB6cjBMDrENUEaoKRg+FpzPUZO1EOMcqbocXp5cHie1CkPnD1OtT/cuzMBUMpBGZMxjZwdFpOO7R3CUXh/McxKfoGUQGC3DVpt5T8uGkpj4KqZVPS/qTCRhbPRDjg73BdWbdkFpFWge8G/FgkYxr9LBE1TsrxptppO9xoA5jXwJVZaWndSMvo6TuOjUgqY2w5RTkqhA==</SignatureValue></Signature></saml2p:Response>";
-
-            var samlResponse = Saml2Response.Read(signedWithoutReference);
-
-            Action a = () => samlResponse.GetClaims(Options.FromConfiguration);
-
-            a.ShouldThrow<Saml2ResponseFailedValidationException>()
-                .WithMessage("No reference found in Xml signature, it doesn't validate the Xml data.");
         }
 
         [TestMethod]
@@ -1053,8 +918,8 @@ namespace Kentor.AuthServices.Tests.Saml2P
 
             Action a = () => Saml2Response.Read(responseWithAssertion).GetClaims(Options.FromConfiguration);
 
-            a.ShouldThrow<Saml2ResponseFailedValidationException>()
-                .WithMessage("Signature validation failed on SAML response or contained assertion.");
+            a.ShouldThrow<InvalidSignatureException>()
+                .WithMessage("Signature didn't verify. Have the contents been tampered with?");
         }
 
         [TestMethod]
@@ -1244,12 +1109,12 @@ namespace Kentor.AuthServices.Tests.Saml2P
 
             Action a = () => r.GetRequestState(Options.FromConfiguration);
 
-            a.ShouldThrow<Saml2ResponseFailedValidationException>()
-                .WithMessage("Signature validation failed on SAML response or contained assertion.");
+            a.ShouldThrow<InvalidSignatureException>()
+                .WithMessage("Signature didn't verify. Have the contents been tampered with?");
 
             // Test that it throws again on subsequent calls.
-            a.ShouldThrow<Saml2ResponseFailedValidationException>()
-                .WithMessage("Signature validation failed on SAML response or contained assertion.");
+            a.ShouldThrow<InvalidSignatureException>()
+                .WithMessage("Signature didn't verify. Have the contents been tampered with?");
         }
 
         [TestMethod]
@@ -1531,8 +1396,8 @@ namespace Kentor.AuthServices.Tests.Saml2P
                 response.GetClaims(Options.FromConfiguration);
             };
 
-            a.ShouldThrow<Saml2ResponseFailedValidationException>()
-                .WithMessage("Signature validation failed on SAML response or contained assertion.");
+            a.ShouldThrow<InvalidSignatureException>()
+                .WithMessage("Signature didn't verify. Have the contents been tampered with?");
 
             // With an incorrect signature, a signature validation should be
             // thrown - even if we response is validate twice. In case
@@ -1540,8 +1405,8 @@ namespace Kentor.AuthServices.Tests.Saml2P
             // report a replay exception the second time because the replay
             // detection is done before the signature validation.
 
-            a.ShouldThrow<Saml2ResponseFailedValidationException>()
-                .WithMessage("Signature validation failed on SAML response or contained assertion.");
+            a.ShouldThrow<InvalidSignatureException>()
+                .WithMessage("Signature didn't verify. Have the contents been tampered with?");
         }
 
         [TestMethod]
@@ -1967,35 +1832,14 @@ namespace Kentor.AuthServices.Tests.Saml2P
         }
 
         [TestMethod]
-        public void Saml2Response_GetClaims_ThrowsInformativeExceptionForSha256()
-        {
-            var signedResponse =
-                @"<saml2p:Response xmlns:saml2p=""urn:oasis:names:tc:SAML:2.0:protocol""
-                    xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
-                    ID = """ + MethodBase.GetCurrentMethod().Name + @"""
-                    Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z"">
-                    <saml2:Issuer>https://idp.example.com</saml2:Issuer>
-                    <saml2p:Status>
-                        <saml2p:StatusCode Value=""urn:oasis:names:tc:SAML:2.0:status:Success"" />
-                    </saml2p:Status>
-                    <Assertion ID=""Saml2Response_GetClaims_ThrowsInformativeExceptionForSha256"" IssueInstant=""2015-03-13T20:43:07.330Z"" Version=""2.0"" xmlns=""urn:oasis:names:tc:SAML:2.0:assertion""><Issuer>https://idp.example.com</Issuer><Signature xmlns=""http://www.w3.org/2000/09/xmldsig#""><SignedInfo><CanonicalizationMethod Algorithm=""http://www.w3.org/2001/10/xml-exc-c14n#"" /><SignatureMethod Algorithm=""http://www.w3.org/2001/04/xmldsig-more#rsa-sha256"" /><Reference URI=""#Saml2Response_GetClaims_ThrowsInformativeExceptionForSha256""><Transforms><Transform Algorithm=""http://www.w3.org/2000/09/xmldsig#enveloped-signature"" /><Transform Algorithm=""http://www.w3.org/2001/10/xml-exc-c14n#"" /></Transforms><DigestMethod Algorithm=""http://www.w3.org/2001/04/xmlenc#sha256"" /><DigestValue>F+E7u3vqMC07ipvP9AowsMqP7y6CsAC0GeEIxNSwDEI=</DigestValue></Reference></SignedInfo><SignatureValue>GmiXn24Ccnr64TbmDd1/nLM+891z0FtRHSpU8+75uOqbpNK/ZZGrltFf2YZ5u9b9O0HfbFFsZ0i28ocwAZOv2UfxQrCtOGf3ss7Q+t2Zmc6Q/3ES7HIa15I5BbaSdNfpOMlX6N1XXhMprRGy2YWMr5IAIhysFG1A2oHaC3yFiesfUrawN/lXUYuI22Kf4A5bmnIkKijnwX9ewnhRj6569bw+c6q+tVZSHQzI+KMU9KbKN4NsXxAmv6dM1w2qOiX9/CO9LzwEtlhA9yo3sl0uWP8z5GwK9qgOlsF2NdImAQ5f0U4Uv26doFn09W+VExFwNhcXhewQUuPBYBr+XXzdww==</SignatureValue><KeyInfo><X509Data><X509Certificate>MIIDIzCCAg+gAwIBAgIQg7mOjTf994NAVxZu4jqXpzAJBgUrDgMCHQUAMCQxIjAgBgNVBAMTGUtlbnRvci5BdXRoU2VydmljZXMuVGVzdHMwHhcNMTMwOTI1MTMzNTQ0WhcNMzkxMjMxMjM1OTU5WjAkMSIwIAYDVQQDExlLZW50b3IuQXV0aFNlcnZpY2VzLlRlc3RzMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAwVGpfvK9N//MnA5Jo1q2liyPR24406Dp25gv7LB3HK4DWgqsb7xXM6KIV/WVOyCV2g/O1ErBlB+HLhVZ4XUJvbqBbgAJqFO+TZwcCIe8u4nTEXeU660FdtkKClA17sbtMrAGdDfOPwVBHSuavdHeD7jHNI4RUDGKnEW13/0EvnHDilIetwODRxrX/+41R24sJThFbMczByS3OAL2dcIxoAynaGeM90gXsVYow1QhJUy21+cictikb7jW4mW6dvFCBrWIceom9J295DcQIHoxJy5NoZwMir/JV00qs1wDVoN20Ve1DC5ImwcG46XPF7efQ44yLh2j5Yexw+xloA81dwIDAQABo1kwVzBVBgNVHQEETjBMgBAWIahoZhXVUogbAqkS7zwfoSYwJDEiMCAGA1UEAxMZS2VudG9yLkF1dGhTZXJ2aWNlcy5UZXN0c4IQg7mOjTf994NAVxZu4jqXpzAJBgUrDgMCHQUAA4IBAQA2aGzmuKw4AYXWMhrGj5+i8vyAoifUn1QVOFsUukEA77CrqhqqaWFoeagfJp/45vlvrfrEwtF0QcWfmO9w1VvHwm7sk1G/cdYyJ71sU+llDsdPZm7LxQvWZYkK+xELcinQpSwt4ExavS+jLcHoOYHYwIZMBn3U8wZw7Kq29oGnoFQz7HLCEl/G9i3QRyvFITNlWTjoScaqMjHTzq6HCMaRsL09DLcY3KB+cedfpC0/MBlzaxZv0DctTulyaDfM9DCYOyokGN/rQ6qkAR0DDm8fVwknbJY7kURXNGoUetulTb5ow8BvD1gncOaYHSD0kbHZG+bLsUZDFatEr2KW8jbG</X509Certificate></X509Data></KeyInfo></Signature><Subject><NameID>SomeUser</NameID><SubjectConfirmation Method=""urn:oasis:names:tc:SAML:2.0:cm:bearer"" /></Subject><Conditions NotOnOrAfter=""2100-01-01T05:00:00.000Z"" /></Assertion>
-                </saml2p:Response>";
-
-            Action a = () => Saml2Response.Read(signedResponse).GetClaims(Options.FromConfiguration);
-            a.ShouldThrow<Saml2ResponseFailedValidationException>()
-                .WithMessage("SHA256 signatures require the algorithm to be registered at the process level. Call Kentor.AuthServices.Configuration.Options.GlobalEnableSha256XmlSignatures() on startup to register.");
-
-        }
-
-        [TestMethod]
         public void Saml2Response_GetClaims_ChecksSha256WhenEnabled()
         {
-            Kentor.AuthServices.Configuration.Options.GlobalEnableSha256XmlSignatures();
+            Options.GlobalEnableSha256XmlSignatures();
 
             var signedResponse =
                 @"<saml2p:Response xmlns:saml2p=""urn:oasis:names:tc:SAML:2.0:protocol""
                     xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
-                    ID = """ + MethodBase.GetCurrentMethod().Name + @""" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z"">
+                    ID = """ + MethodBase.GetCurrentMethod().Name + @"_Response"" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z"">
                         <saml2:Issuer>https://idp.example.com</saml2:Issuer>
                         <saml2p:Status>
                             <saml2p:StatusCode Value=""urn:oasis:names:tc:SAML:2.0:status:Success"" />
@@ -2030,30 +1874,6 @@ namespace Kentor.AuthServices.Tests.Saml2P
             Action a = () => Saml2Response.Read(signedResponse).GetClaims(Options.FromConfiguration);
             a.ShouldThrow<CryptographicException>()
                 .WithMessage("SignatureDescription could not be created for the signature algorithm supplied.");
-        }
-
-        [TestMethod]
-        public void Saml2Response_GetClaims_FailsSha256WhenChanged()
-        {
-            Kentor.AuthServices.Configuration.Options.GlobalEnableSha256XmlSignatures();
-
-            var signedResponse =
-                @"<saml2p:Response xmlns:saml2p=""urn:oasis:names:tc:SAML:2.0:protocol""
-                    xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
-                    ID = """ + MethodBase.GetCurrentMethod().Name + @""" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z"">
-                        <saml2:Issuer>https://idp.example.com</saml2:Issuer>
-                        <saml2p:Status>
-                            <saml2p:StatusCode Value=""urn:oasis:names:tc:SAML:2.0:status:Success"" />
-                        </saml2p:Status>
-                        <Assertion ID=""" + MethodBase.GetCurrentMethod().Name + @""" IssueInstant=""2015-03-13T20:44:00.791Z"" Version=""2.0"" xmlns=""urn:oasis:names:tc:SAML:2.0:assertion""><Issuer>https://idp.example.com</Issuer><Signature xmlns=""http://www.w3.org/2000/09/xmldsig#""><SignedInfo><CanonicalizationMethod Algorithm=""http://www.w3.org/2001/10/xml-exc-c14n#"" /><SignatureMethod Algorithm=""http://www.w3.org/2001/04/xmldsig-more#rsa-sha256"" /><Reference URI=""#Saml2Response_GetClaims_FailsSha256WhenChanged""><Transforms><Transform Algorithm=""http://www.w3.org/2000/09/xmldsig#enveloped-signature"" /><Transform Algorithm=""http://www.w3.org/2001/10/xml-exc-c14n#"" /></Transforms><DigestMethod Algorithm=""http://www.w3.org/2001/04/xmlenc#sha256"" /><DigestValue>BKRyWqweAczLA8fgRcx6zzMDiP0qT0TwqU/X4VgLiXM=</DigestValue></Reference></SignedInfo><SignatureValue>iK8s+MkLlixSSQu5Q/SHRZLhfnj4jlyPLAD6C2n9zmQu4CosZME7mxiNFiWyOE8XRGd+2LJle+NjJrkZFktVb03JaToq7w4Q8GfJ2oUUjNCweoaJ6NzsnwkFoXhyh0dfOixl/Ifa3qDX50/Hv2twF/QXfDs08GZTxZKehKsVDITyVd6nytF8VUb0+nU7UMWPn1XeHM7YNI/1mkVbCRx/ci5ZRxwjAX40xttd4JL6oBnp5oaaMgWpAa2cVb+t/9HhCRThEho1etbPHx/+E9ElL1PhKqKX6nh2GSH1TFJkwEXIPPZKqCs3YDINLBZpLfl626zbV4cGOGyWUAroVsk2uw==</SignatureValue><KeyInfo><X509Data><X509Certificate>MIIDIzCCAg+gAwIBAgIQg7mOjTf994NAVxZu4jqXpzAJBgUrDgMCHQUAMCQxIjAgBgNVBAMTGUtlbnRvci5BdXRoU2VydmljZXMuVGVzdHMwHhcNMTMwOTI1MTMzNTQ0WhcNMzkxMjMxMjM1OTU5WjAkMSIwIAYDVQQDExlLZW50b3IuQXV0aFNlcnZpY2VzLlRlc3RzMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAwVGpfvK9N//MnA5Jo1q2liyPR24406Dp25gv7LB3HK4DWgqsb7xXM6KIV/WVOyCV2g/O1ErBlB+HLhVZ4XUJvbqBbgAJqFO+TZwcCIe8u4nTEXeU660FdtkKClA17sbtMrAGdDfOPwVBHSuavdHeD7jHNI4RUDGKnEW13/0EvnHDilIetwODRxrX/+41R24sJThFbMczByS3OAL2dcIxoAynaGeM90gXsVYow1QhJUy21+cictikb7jW4mW6dvFCBrWIceom9J295DcQIHoxJy5NoZwMir/JV00qs1wDVoN20Ve1DC5ImwcG46XPF7efQ44yLh2j5Yexw+xloA81dwIDAQABo1kwVzBVBgNVHQEETjBMgBAWIahoZhXVUogbAqkS7zwfoSYwJDEiMCAGA1UEAxMZS2VudG9yLkF1dGhTZXJ2aWNlcy5UZXN0c4IQg7mOjTf994NAVxZu4jqXpzAJBgUrDgMCHQUAA4IBAQA2aGzmuKw4AYXWMhrGj5+i8vyAoifUn1QVOFsUukEA77CrqhqqaWFoeagfJp/45vlvrfrEwtF0QcWfmO9w1VvHwm7sk1G/cdYyJ71sU+llDsdPZm7LxQvWZYkK+xELcinQpSwt4ExavS+jLcHoOYHYwIZMBn3U8wZw7Kq29oGnoFQz7HLCEl/G9i3QRyvFITNlWTjoScaqMjHTzq6HCMaRsL09DLcY3KB+cedfpC0/MBlzaxZv0DctTulyaDfM9DCYOyokGN/rQ6qkAR0DDm8fVwknbJY7kURXNGoUetulTb5ow8BvD1gncOaYHSD0kbHZG+bLsUZDFatEr2KW8jbG</X509Certificate></X509Data></KeyInfo></Signature><Subject><NameID>SomeUser</NameID><SubjectConfirmation Method=""urn:oasis:names:tc:SAML:2.0:cm:bearer"" /></Subject><Conditions NotOnOrAfter=""2100-01-01T05:00:00.000Z"" /></Assertion>
-                    </saml2p:Response>";
-
-            signedResponse = signedResponse.Replace("SomeUser", "AnotherUser");
-
-            Action a = () => Saml2Response.Read(signedResponse).GetClaims(Options.FromConfiguration);
-            a.ShouldThrow<Saml2ResponseFailedValidationException>()
-                .WithMessage("Signature validation failed on SAML response or contained assertion.");
-
         }
     }
 }
