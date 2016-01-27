@@ -49,6 +49,7 @@ namespace Kentor.AuthServices.Configuration
             Organization = configSection.Organization;
             AuthenticateRequestSigningBehavior = configSection.AuthenticateRequestSigningBehavior;
             NameIdPolicy = configSection.NameIdPolicy;
+            RequestedAuthnContext = new RequestedAuthnContext(configSection.RequestedAuthnContext);
 
             configSection.ServiceCertificates.RegisterServiceCertificates(this);
 
@@ -164,6 +165,11 @@ namespace Kentor.AuthServices.Configuration
         /// NameId Policy.
         /// </summary>
         public Saml2NameIdPolicy NameIdPolicy { get; set; }
+
+        /// <summary>
+        /// RequestedAuthnContext
+        /// </summary>
+        public RequestedAuthnContext RequestedAuthnContext { get; set; }
 
         /// <summary>
         /// Contacts for the SAML2 entity.

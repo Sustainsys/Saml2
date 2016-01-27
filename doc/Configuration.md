@@ -82,6 +82,7 @@ Root element of the config section.
 
 ####Elements
 * [`<nameIdPolicy>`](#nameidpolicy-element)
+* [`<requestedAuthnContext>`](#requestedauthncontext-element)
 * [`<metadata>`](#metadata-element)
 * [`<identityProviders>`](#identityproviders-element)
 * [`<federations>`](#federations-element)
@@ -168,6 +169,61 @@ If no value is specified, no format is specified in the generated AuthnRequests.
 
 If `Transient` is specified, it is not permitted to specify `allowCreate` 
 (see 3.4.1.1 in the SAML2 Core spec).
+
+###`<requestedAuthnContext>` element
+*Optional child element of the [`<kentor.authServices>`](#kentor-authservices-section) element.*
+
+####Attributes
+* [`classRef`](#classref-attribute)
+* [`comparison`](#comparison-attribute)
+
+####`classRef` attribute
+*Optional attribute of the [`requestedAuthnContext`](#requestedauthncontext-element) element.*
+
+Class reference for authentication context. Either specify a full URI to identify
+an authentication context class, or a single word if using one of the predefined
+classes in the SAML2 Authentication context specification:
+
+* `InternetProtocol`
+* `InternetProtocolPassword`
+* `Kerberos`
+* `MobileOneFactorUnregistered`
+* `MobileTwoFactorUnregistered`
+* `MobileOneFactorContract`
+* `MobileTwoFactorContract`
+* `Password`
+* `PasswordProtectedTransport`
+* `PreviousSession`
+* `X509`
+* `PGP`
+* `SPKI`
+* `XMLDSig`
+* `Smartcard`
+* `SmartcardPKI`
+* `SoftwarePKI`
+* `Telephony`
+* `NomadTelephony`
+* `PersonalTelephony`
+* `AuthenticatedTelephony`
+* `SecureRemotePassword`
+* `TLSClient`
+* `TimeSyncToken`
+* `unspecified`
+
+####`comparison` Attribute
+*Optional attribute of the [`requestedAuthnContext`](#requestedauthncontext-element) element.*
+
+Comparison method for authentication context as signalled in AuthnRequests.
+
+Valid values are:
+* `Exact` (default)
+* `Minimum`
+* `Maximum`
+* `Better`
+
+`Minimum` is an inclusive comparison, meaning the specified classRef or anything
+better is accepted. `Better` is exclusive, meaning that the specified classRef
+is not accepted.
 
 ###`<metadata>` Element
 *Optional child element of the [`<kentor.authServices>`](#kentor-authservices-section) element.*

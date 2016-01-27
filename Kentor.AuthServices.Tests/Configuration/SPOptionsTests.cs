@@ -53,7 +53,7 @@ namespace Kentor.AuthServices.Tests.Configuration
             config.AllowChange(true);
             config.AuthenticateRequestSigningBehavior = SigningBehavior.Always;
 
-            var subject = new SPOptions(KentorAuthServicesSection.Current);
+            ISPOptions subject = new SPOptions(KentorAuthServicesSection.Current);
             subject.ReturnUrl.Should().Be(config.ReturnUrl);
             subject.MetadataCacheDuration.Should().Be(config.MetadataCacheDuration);
             subject.DiscoveryServiceUrl.Should().Be(config.DiscoveryServiceUrl);
@@ -63,6 +63,8 @@ namespace Kentor.AuthServices.Tests.Configuration
             subject.NameIdPolicy.Format.Should().Be(config.NameIdPolicy.Format);
             subject.Organization.Should().Be(config.organization);
             subject.AuthenticateRequestSigningBehavior.Should().Be(config.AuthenticateRequestSigningBehavior);
+            subject.RequestedAuthnContext.ClassRef.OriginalString.Should().Be("urn:oasis:names:tc:SAML:2.0:ac:classes:PasswordProtectedTransport");
+            subject.RequestedAuthnContext.Comparison.Should().Be(AuthnContextComparisonType.Minimum);
         }
 
         [TestMethod]
