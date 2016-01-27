@@ -65,7 +65,7 @@ namespace Kentor.AuthServices.Configuration
         /// <summary>
         /// RequestedAuthnContext
         /// </summary>
-        RequestedAuthnContext RequestedAuthnContext { get;  }
+        Saml2RequestedAuthnContext RequestedAuthnContext { get;  }
 
         /// <summary>
         /// Contacts for the SAML2 entity. Must not be null.

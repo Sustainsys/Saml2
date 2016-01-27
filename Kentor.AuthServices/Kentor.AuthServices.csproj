@@ -55,9 +55,9 @@
     </Compile>
     <Compile Include="Configuration\ArtifactResolutionServiceCollection.cs" />
     <Compile Include="Configuration\ArtifactResolutionServiceElement.cs" />
-    <Compile Include="Configuration\AuthnContextComparisonType.cs" />
+    <Compile Include="Saml2P\AuthnContextComparisonType.cs" />
     <Compile Include="Configuration\NameIdPolicyElement.cs" />
-    <Compile Include="Configuration\RequestedAuthnContext.cs" />
+    <Compile Include="Saml2P\Saml2RequestedAuthnContext.cs" />
     <Compile Include="Configuration\RequestedAuthnContextElement.cs" />
     <Compile Include="Configuration\SigningBehavior.cs" />
     <Compile Include="Exceptions\SignatureValidationException.cs" />

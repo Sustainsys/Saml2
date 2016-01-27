@@ -229,9 +229,43 @@ namespace Kentor.AuthServices.Tests.Saml2P
                     new XAttribute("Format", "urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress")))
                     .Elements().Single();
 
-            subject.Attribute("AttributeConsumingServiceIndex").Should().BeNull();
             subject.Element(Saml2Namespaces.Saml2P + "NameIDPolicy")
                 .Should().BeEquivalentTo(expected);
+        }
+
+        [TestMethod]
+        public void Saml2AuthenticationRequest_ToXElement_AddsRequestedAuthnContext()
+        {
+            var classRef = "http://www.kentor.se";
+            var subject = new Saml2AuthenticationRequest()
+            {
+                AssertionConsumerServiceUrl = new Uri("http://destination.example.com"),
+                RequestedAuthnContext = new Saml2RequestedAuthnContext(new Uri(classRef), AuthnContextComparisonType.Maximum)
+            }.ToXElement();
+
+            var expected = new XElement(Saml2Namespaces.Saml2P + "root",
+                new XAttribute(XNamespace.Xmlns + "saml2p", Saml2Namespaces.Saml2P),
+                new XAttribute(XNamespace.Xmlns + "saml2", Saml2Namespaces.Saml2),
+                new XElement(Saml2Namespaces.Saml2P + "RequestedAuthnContext",
+                    new XAttribute("Comparison", "Maximum"),
+                    new XElement(Saml2Namespaces.Saml2 + "AuthnContextClassRef", classRef)))
+                    .Elements().Single();
+
+            var actual = subject.Element(Saml2Namespaces.Saml2P + "RequestedAuthnContext");
+
+            actual.Should().BeEquivalentTo(expected);
+        }
+
+        [TestMethod]
+        public void Saml2AuthenticateRequest_ToXElement_OmitsRequestedAuthnContext_OnNullClassRef()
+        {
+            var subject = new Saml2AuthenticationRequest()
+            {
+                AssertionConsumerServiceUrl = new Uri("http://destination.example.com"),
+                RequestedAuthnContext = new Saml2RequestedAuthnContext(null, AuthnContextComparisonType.Exact)
+            }.ToXElement();
+
+            subject.Element(Saml2Namespaces.Saml2P + "RequestedAuthnContext").Should().BeNull();
         }
 
         [TestMethod]

@@ -112,7 +112,7 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
-    <Compile Include="Configuration\RequestedAuthnContextTests.cs" />
+    <Compile Include="Configuration\Saml2RequestedAuthnContextTests.cs" />
     <Compile Include="Configuration\ServiceCertificateCollectionTests.cs" />
     <Compile Include="Configuration\TetClassAttribute.cs" />
     <Compile Include="Exceptions\InvalidSignatureExceptionTests.cs" />

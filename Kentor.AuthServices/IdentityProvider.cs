@@ -239,7 +239,8 @@ namespace Kentor.AuthServices
                 Issuer = spOptions.EntityId,
                 // For now we only support one attribute consuming service.
                 AttributeConsumingServiceIndex = spOptions.AttributeConsumingServices.Any() ? 0 : (int?)null,
-                NameIdPolicy = spOptions.NameIdPolicy
+                NameIdPolicy = spOptions.NameIdPolicy,
+                RequestedAuthnContext = spOptions.RequestedAuthnContext
             };
 
             if(spOptions.AuthenticateRequestSigningBehavior == SigningBehavior.Always)

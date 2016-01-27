@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
 using System.Xml.Linq;
+using Kentor.AuthServices.Configuration;
 using Kentor.AuthServices.Internal;
 using Kentor.AuthServices.WebSso;
 
@@ -45,6 +46,17 @@ namespace Kentor.AuthServices.Saml2P
             x.AddAttributeIfNotNullOrEmpty("AttributeConsumingServiceIndex", AttributeConsumingServiceIndex);
 
             AddNameIdPolicy(x);
+
+            if (RequestedAuthnContext != null && RequestedAuthnContext.ClassRef != null)
+            {
+                x.Add(new XElement(Saml2Namespaces.Saml2P + "RequestedAuthnContext",
+                    new XAttribute("Comparison", RequestedAuthnContext.Comparison),
+
+                    // Add the classref as original string to avoid URL normalization
+                    // and make sure the emitted value is exactly the configured.
+                    new XElement(Saml2Namespaces.Saml2 + "AuthnContextClassRef",
+                        RequestedAuthnContext.ClassRef.OriginalString)));
+            }
 
             return x;
         }
@@ -162,5 +174,10 @@ namespace Kentor.AuthServices.Saml2P
         /// NameId policy.
         /// </summary>
         public Saml2NameIdPolicy NameIdPolicy { get; set; }
+
+        /// <summary>
+        /// RequestedAuthnContext.
+        /// </summary>
+        public Saml2RequestedAuthnContext RequestedAuthnContext { get; set; }
     }
 }

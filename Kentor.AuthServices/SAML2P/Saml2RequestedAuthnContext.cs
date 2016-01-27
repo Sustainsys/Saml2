@@ -1,27 +1,31 @@
-﻿using System;
+﻿using Kentor.AuthServices.Configuration;
+using System;
 
-namespace Kentor.AuthServices.Configuration
+namespace Kentor.AuthServices.Saml2P
 {
     /// <summary>
     /// Configuration of RequestedAuthnContext
     /// </summary>
-    public class RequestedAuthnContext
+    public class Saml2RequestedAuthnContext
     {
         /// <summary>
         /// Ctor
         /// </summary>
         /// <param name="requestedAuthnContextElement">Config element to load.</param>
-        public RequestedAuthnContext(RequestedAuthnContextElement requestedAuthnContextElement)
+        public Saml2RequestedAuthnContext(RequestedAuthnContextElement requestedAuthnContextElement)
         {
             if(requestedAuthnContextElement == null)
             {
                 throw new ArgumentNullException(nameof(requestedAuthnContextElement));
             }
             
-            ClassRef = new Uri(
-                !requestedAuthnContextElement.AuthnContextClassRef.Contains(":")
-                ? "urn:oasis:names:tc:SAML:2.0:ac:classes:" + requestedAuthnContextElement.AuthnContextClassRef
-                : requestedAuthnContextElement.AuthnContextClassRef);
+            if(!string.IsNullOrEmpty(requestedAuthnContextElement.AuthnContextClassRef))
+            {
+                ClassRef = new Uri(
+                    !requestedAuthnContextElement.AuthnContextClassRef.Contains(":")
+                    ? "urn:oasis:names:tc:SAML:2.0:ac:classes:" + requestedAuthnContextElement.AuthnContextClassRef
+                    : requestedAuthnContextElement.AuthnContextClassRef);
+            }
 
             Comparison = requestedAuthnContextElement.Comparison;
         }
@@ -31,7 +35,7 @@ namespace Kentor.AuthServices.Configuration
         /// </summary>
         /// <param name="classRef">AuthnContextClassRef</param>
         /// <param name="comparison">Comparison</param>
-        public RequestedAuthnContext(Uri classRef, AuthnContextComparisonType comparison)
+        public Saml2RequestedAuthnContext(Uri classRef, AuthnContextComparisonType comparison)
         {
             ClassRef = classRef;
             Comparison = comparison;
