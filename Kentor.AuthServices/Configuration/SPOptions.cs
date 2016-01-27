@@ -48,6 +48,7 @@ namespace Kentor.AuthServices.Configuration
             ModulePath = configSection.ModulePath;
             Organization = configSection.Organization;
             AuthenticateRequestSigningBehavior = configSection.AuthenticateRequestSigningBehavior;
+            NameIdPolicy = configSection.NameIdPolicy;
 
             configSection.ServiceCertificates.RegisterServiceCertificates(this);
 
@@ -158,6 +159,11 @@ namespace Kentor.AuthServices.Configuration
         /// Metadata describing the organization responsible for the entity.
         /// </summary>
         public Organization Organization { get; set; }
+
+        /// <summary>
+        /// NameId Policy.
+        /// </summary>
+        public Saml2NameIdPolicy NameIdPolicy { get; set; }
 
         /// <summary>
         /// Contacts for the SAML2 entity.

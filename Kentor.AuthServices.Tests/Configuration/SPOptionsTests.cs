@@ -4,7 +4,6 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Kentor.AuthServices.Configuration;
 using System.IdentityModel.Metadata;
 using FluentAssertions;
-using Kentor.AuthServices.Saml2P;
 using Kentor.AuthServices.Tests.Helpers;
 
 namespace Kentor.AuthServices.Tests.Configuration
@@ -42,7 +41,7 @@ namespace Kentor.AuthServices.Tests.Configuration
         [TestMethod]
         public void SPOptions_Constructor_ThrowsOnNullConfiguration()
         {
-            Action a = () => new SPOptions((KentorAuthServicesSection)null); ;
+            Action a = () => new SPOptions((KentorAuthServicesSection)null);
 
             a.ShouldThrow<ArgumentNullException>().And.ParamName.Should().Be("configSection");
         }
@@ -60,6 +59,8 @@ namespace Kentor.AuthServices.Tests.Configuration
             subject.DiscoveryServiceUrl.Should().Be(config.DiscoveryServiceUrl);
             subject.EntityId.Should().Be(config.EntityId);
             subject.ModulePath.Should().Be(config.ModulePath);
+            subject.NameIdPolicy.AllowCreate.Should().Be(config.NameIdPolicy.AllowCreate);
+            subject.NameIdPolicy.Format.Should().Be(config.NameIdPolicy.Format);
             subject.Organization.Should().Be(config.organization);
             subject.AuthenticateRequestSigningBehavior.Should().Be(config.AuthenticateRequestSigningBehavior);
         }

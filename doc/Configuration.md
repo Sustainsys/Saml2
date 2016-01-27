@@ -41,6 +41,7 @@ read web.config, but can also be configured from code.
                      returnUrl="http://localhost:17009/SamplePath/"
                      discoveryServiceUrl="http://localhost:52071/DiscoveryService" 
 					 authenticateRequestSigningBehavior="Always">
+  <nameIdPolicy allowCreate="true" format="Persistent"/>
   <metadata cacheDuration="0:15:00" >
     <organization name="Kentor IT AB" displayName="Kentor" url="http://www.kentor.se" language="sv" />
     <contactPerson type="Other" email="info@kentor.se" />
@@ -80,6 +81,7 @@ Root element of the config section.
 * [`authenticateRequestSigningBehavior`](#authenticaterequestsigningbehavior-attribute)
 
 ####Elements
+* [`<nameIdPolicy>`](#nameidpolicy-element)
 * [`<metadata>`](#metadata-element)
 * [`<identityProviders>`](#identityproviders-element)
 * [`<federations>`](#federations-element)
@@ -127,6 +129,46 @@ Two values are supported:
   created AuthnRequests.
 * `Always`: AuthServices will always sign all AuthnRequests.
 
+###`<nameIdPolicy>` Element
+*Optional child element of the [`<kentor.authServices>`](#kentor-authservices-section) element.*
+
+Controls the generation of NameIDPolicy element in AuthnRequests. The element Is
+only created if either `allowCreate` nor `format` are set to a non-default value.
+
+####Attributes
+* [`allowCreate`](#allowcreate-attribute)
+* [`format`](#format-attribute)
+
+####`allowCreate` Attribute
+*Optional attribute of the [`nameIdPolicy`](#nameidpolicy-element) element.*
+
+Default value is empty, which means that the attribute is not included in
+generated AuthnRequests.
+
+Supported values are `true` or `false`.
+
+####`format` Attribute
+*Optional attribute of the [`nameIdPolicy`](#nameidpolicy-element) element.*
+
+Sets the requested format of NameIDPolicy for generated authnRequests.
+
+Supported values (see section 8.3 in the SAML2 Core specification for
+explanations of the values).
+
+* `Unspecified`
+* `EmailAddress`
+* `X509SubjectName`
+* `WindowsDomainQualifiedName`
+* `KerberosPrincipalName`
+* `EntityIdentifier`
+* `Persistent`
+* `Transient`
+
+If no value is specified, no format is specified in the generated AuthnRequests.
+
+If `Transient` is specified, it is not permitted to specify `allowCreate` 
+(see 3.4.1.1 in the SAML2 Core spec).
+
 ###`<metadata>` Element
 *Optional child element of the [`<kentor.authServices>`](#kentor-authservices-section) element.*
 
@@ -139,7 +181,7 @@ Two values are supported:
 * [`<requestedAttributes>`](#requestedattributes-element)
 
 ####`cacheDuration` Attribute
-*Optional Attribute of the [`<metadata>`](#metadata-element) element.*
+*Optional attribute of the [`<metadata>`](#metadata-element) element.*
 
 Optional attribute that describes for how long in anyone may cache the metadata 
 presented by the service provider. Defaults to one hour. Examples of valid format strings:

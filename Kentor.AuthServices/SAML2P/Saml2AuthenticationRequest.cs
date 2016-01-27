@@ -44,7 +44,39 @@ namespace Kentor.AuthServices.Saml2P
             x.AddAttributeIfNotNullOrEmpty("AssertionConsumerServiceURL", AssertionConsumerServiceUrl);
             x.AddAttributeIfNotNullOrEmpty("AttributeConsumingServiceIndex", AttributeConsumingServiceIndex);
 
+            AddNameIdPolicy(x);
+
             return x;
+        }
+
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "NameIdPolicy")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "AllowCreate")]
+        private void AddNameIdPolicy(XElement xElement)
+        {
+            if (NameIdPolicy != null &&
+                (NameIdPolicy.AllowCreate.HasValue || NameIdPolicy.Format != NameIdFormat.NotConfigured))
+            {
+                if(NameIdPolicy.AllowCreate.HasValue && NameIdPolicy.Format == NameIdFormat.Transient)
+                {
+                    throw new InvalidOperationException("When NameIdPolicy/Format is set to Transient, it is not permitted to specify AllowCreate. Change Format or leave AllowCreate as null.");
+                }
+
+                var nameIdPolicyElement = new XElement(Saml2Namespaces.Saml2P + "NameIDPolicy");
+
+                if (NameIdPolicy.Format != NameIdFormat.NotConfigured)
+                {
+                    nameIdPolicyElement.Add(new XAttribute("Format",
+                        NameIdPolicy.Format.GetString()));
+                }
+
+                if (NameIdPolicy.AllowCreate.HasValue)
+                {
+                    nameIdPolicyElement.Add(new XAttribute("AllowCreate",
+                        NameIdPolicy.AllowCreate));
+                }
+
+                xElement.Add(nameIdPolicyElement);
+            }
         }
 
         /// <summary>
@@ -92,6 +124,28 @@ namespace Kentor.AuthServices.Saml2P
             {
                 AssertionConsumerServiceUrl = new Uri(AssertionConsumerServiceUriString);
             }
+
+            var node = xml["NameIDPolicy", Saml2Namespaces.Saml2PName];
+            if (node != null)
+            {
+                NameIdPolicy = new Saml2NameIdPolicy();
+                var fullFormat = node.Attributes["Format"].GetValueIfNotNull();
+                var format = fullFormat?.Split(':').LastOrDefault();
+                if (format != null)
+                {
+                    NameIdFormat namedIdFormat;
+                    if (Enum.TryParse(format, true, out namedIdFormat))
+                    {
+                        NameIdPolicy.Format = namedIdFormat;
+                    }
+                }
+
+                var allowCreateStr = node.Attributes["AllowCreate"].GetValueIfNotNull();
+                if (allowCreateStr != null)
+                {
+                    NameIdPolicy.AllowCreate = bool.Parse(allowCreateStr);
+                }
+            }
         }
 
         /// <summary>
@@ -103,5 +157,10 @@ namespace Kentor.AuthServices.Saml2P
         /// Index to the SP metadata where the list of requested attributes is found.
         /// </summary>
         public int? AttributeConsumingServiceIndex { get; set; }
+
+        /// <summary>
+        /// NameId policy.
+        /// </summary>
+        public Saml2NameIdPolicy NameIdPolicy { get; set; }
     }
 }
