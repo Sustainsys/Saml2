@@ -1,10 +1,12 @@
 ﻿using System;
 using Kentor.AuthServices.Saml2P;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Kentor.AuthServices.Internal
 {
     internal static class NameIdFormatExtension
     {
+        [ExcludeFromCodeCoverage]
         public static string GetString(this NameIdFormat nameIdFormat)
         {
             switch (nameIdFormat)
