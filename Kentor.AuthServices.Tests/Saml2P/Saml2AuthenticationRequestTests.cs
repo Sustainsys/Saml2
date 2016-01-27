@@ -200,7 +200,7 @@ namespace Kentor.AuthServices.Tests.Saml2P
             var subject = new Saml2AuthenticationRequest()
             {
                 AssertionConsumerServiceUrl = new Uri("http://destination.example.com"),
-                NameIdPolicy = new Saml2NameIdPolicy { AllowCreate = false,}
+                NameIdPolicy = new Saml2NameIdPolicy(false, NameIdFormat.NotConfigured)
             }.ToXElement();
 
             var expected = new XElement(Saml2Namespaces.Saml2P + "root",
@@ -220,7 +220,7 @@ namespace Kentor.AuthServices.Tests.Saml2P
             var subject = new Saml2AuthenticationRequest()
             {
                 AssertionConsumerServiceUrl = new Uri("http://destination.example.com"),
-                NameIdPolicy = new Saml2NameIdPolicy { Format = NameIdFormat.EmailAddress }
+                NameIdPolicy = new Saml2NameIdPolicy(null, NameIdFormat.EmailAddress)
             }.ToXElement();
 
             var expected = new XElement(Saml2Namespaces.Saml2P + "root",
@@ -240,7 +240,7 @@ namespace Kentor.AuthServices.Tests.Saml2P
             var subject = new Saml2AuthenticationRequest()
             {
                 AssertionConsumerServiceUrl = new Uri("http://destination.example.com"),
-                NameIdPolicy = new Saml2NameIdPolicy { AllowCreate = true, Format = NameIdFormat.Transient }
+                NameIdPolicy = new Saml2NameIdPolicy(true, NameIdFormat.Transient)
             };
 
             subject.Invoking(s => s.ToXElement())

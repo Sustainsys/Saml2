@@ -113,6 +113,7 @@ namespace Kentor.AuthServices.Saml2P
         /// </summary>
         /// <param name="xml">Xml data</param>
         /// <param name="relayState">RelayState associateed with the message.</param>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1806:DoNotIgnoreMethodResults", MessageId = "System.Enum.TryParse<Kentor.AuthServices.Saml2P.NameIdFormat>(System.String,System.Boolean,Kentor.AuthServices.Saml2P.NameIdFormat@)")]
         public Saml2AuthenticationRequest(XmlElement xml, string relayState)
         {
             ReadBaseProperties(xml);
@@ -128,23 +129,22 @@ namespace Kentor.AuthServices.Saml2P
             var node = xml["NameIDPolicy", Saml2Namespaces.Saml2PName];
             if (node != null)
             {
-                NameIdPolicy = new Saml2NameIdPolicy();
                 var fullFormat = node.Attributes["Format"].GetValueIfNotNull();
                 var format = fullFormat?.Split(':').LastOrDefault();
+                NameIdFormat nameIdFormat = NameIdFormat.NotConfigured;
                 if (format != null)
                 {
-                    NameIdFormat namedIdFormat;
-                    if (Enum.TryParse(format, true, out namedIdFormat))
-                    {
-                        NameIdPolicy.Format = namedIdFormat;
-                    }
+                    Enum.TryParse(format, true, out nameIdFormat);
                 }
 
+                bool? allowCreate = null;
                 var allowCreateStr = node.Attributes["AllowCreate"].GetValueIfNotNull();
                 if (allowCreateStr != null)
                 {
-                    NameIdPolicy.AllowCreate = bool.Parse(allowCreateStr);
+                    allowCreate = bool.Parse(allowCreateStr);
                 }
+
+                NameIdPolicy =  new Saml2NameIdPolicy(allowCreate, nameIdFormat);
             }
         }
 

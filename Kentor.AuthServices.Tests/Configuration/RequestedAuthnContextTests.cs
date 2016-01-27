@@ -28,5 +28,15 @@ namespace Kentor.AuthServices.Tests.Configuration
             var subject = new RequestedAuthnContext(config);
             subject.ClassRef.Should().Be(classRef);
         }
+
+        [TestMethod]
+        public void ReqestedAuthnContext_Ctor()
+        {
+            var classRef = "http://id.sambi.se/loa2";
+            var subject = new RequestedAuthnContext(new Uri(classRef), AuthnContextComparisonType.Maximum);
+
+            subject.ClassRef.OriginalString.Should().Be(classRef);
+            subject.Comparison.Should().Be(AuthnContextComparisonType.Maximum);
+        }
     }
 }

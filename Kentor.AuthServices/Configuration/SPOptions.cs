@@ -48,7 +48,8 @@ namespace Kentor.AuthServices.Configuration
             ModulePath = configSection.ModulePath;
             Organization = configSection.Organization;
             AuthenticateRequestSigningBehavior = configSection.AuthenticateRequestSigningBehavior;
-            NameIdPolicy = configSection.NameIdPolicy;
+            NameIdPolicy = new Saml2NameIdPolicy(
+                configSection.NameIdPolicyElement.AllowCreate, configSection.NameIdPolicyElement.Format);
             RequestedAuthnContext = new RequestedAuthnContext(configSection.RequestedAuthnContext);
 
             configSection.ServiceCertificates.RegisterServiceCertificates(this);

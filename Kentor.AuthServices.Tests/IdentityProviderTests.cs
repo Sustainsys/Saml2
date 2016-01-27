@@ -65,7 +65,7 @@ namespace Kentor.AuthServices.Tests
                 DestinationUrl = idp.SingleSignOnServiceUrl,
                 Issuer = options.SPOptions.EntityId,
                 AttributeConsumingServiceIndex = 0,
-                NameIdPolicy = new Saml2NameIdPolicy {  AllowCreate = true, Format = NameIdFormat.EntityIdentifier}
+                NameIdPolicy = new Saml2NameIdPolicy(true, NameIdFormat.EntityIdentifier)
             };
 
             subject.ShouldBeEquivalentTo(expected, opt => opt

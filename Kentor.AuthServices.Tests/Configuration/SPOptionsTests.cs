@@ -59,8 +59,8 @@ namespace Kentor.AuthServices.Tests.Configuration
             subject.DiscoveryServiceUrl.Should().Be(config.DiscoveryServiceUrl);
             subject.EntityId.Should().Be(config.EntityId);
             subject.ModulePath.Should().Be(config.ModulePath);
-            subject.NameIdPolicy.AllowCreate.Should().Be(config.NameIdPolicy.AllowCreate);
-            subject.NameIdPolicy.Format.Should().Be(config.NameIdPolicy.Format);
+            subject.NameIdPolicy.AllowCreate.Should().Be(config.NameIdPolicyElement.AllowCreate);
+            subject.NameIdPolicy.Format.Should().Be(config.NameIdPolicyElement.Format);
             subject.Organization.Should().Be(config.organization);
             subject.AuthenticateRequestSigningBehavior.Should().Be(config.AuthenticateRequestSigningBehavior);
             subject.RequestedAuthnContext.ClassRef.OriginalString.Should().Be("urn:oasis:names:tc:SAML:2.0:ac:classes:PasswordProtectedTransport");

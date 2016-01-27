@@ -140,31 +140,20 @@ namespace Kentor.AuthServices.Configuration
             }
         }
 
+        const string nameIdPolicy = nameof(nameIdPolicy);
         /// <summary>
         /// NamedId policy element.
         /// </summary>
-        [ConfigurationProperty("nameIdPolicy")]
+        [ConfigurationProperty(nameIdPolicy)]
         public NameIdPolicyElement NameIdPolicyElement
         {
             get
             {
-                return (NameIdPolicyElement) base["nameIdPolicy"];
-            }
-        }
-
-        /// <summary>
-        /// NamedId policy.
-        /// </summary>
-        public Saml2NameIdPolicy NameIdPolicy
-        {
-            get
-            {
-                return new Saml2NameIdPolicy { AllowCreate = NameIdPolicyElement.AllowCreate, Format = NameIdPolicyElement.Format };
+                return (NameIdPolicyElement) base[nameIdPolicy];
             }
         }
 
         const string requestedAuthnContext = nameof(requestedAuthnContext);
-        
         /// <summary>
         /// RequestedAuthnContext config.
         /// </summary>
