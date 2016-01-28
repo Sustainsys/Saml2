@@ -45,6 +45,7 @@ namespace Kentor.AuthServices
             binding = config.Binding;
             AllowUnsolicitedAuthnResponse = config.AllowUnsolicitedAuthnResponse;
             metadataUrl = config.MetadataUrl;
+            WantAuthnRequestsSigned = config.WantAuthnRequestsSigned;
 
             var certificate = config.SigningCertificate.LoadCertificate();
             if (certificate != null)
@@ -243,7 +244,9 @@ namespace Kentor.AuthServices
                 RequestedAuthnContext = spOptions.RequestedAuthnContext
             };
 
-            if(spOptions.AuthenticateRequestSigningBehavior == SigningBehavior.Always)
+            if(spOptions.AuthenticateRequestSigningBehavior == SigningBehavior.Always
+                || (spOptions.AuthenticateRequestSigningBehavior == SigningBehavior.IfIdpWantAuthnRequestsSigned
+                && WantAuthnRequestsSigned))
             {
                 if(spOptions.SigningServiceCertificate == null)
                 {
@@ -343,6 +346,8 @@ namespace Kentor.AuthServices
             var idpDescriptor = metadata.RoleDescriptors
                 .OfType<IdentityProviderSingleSignOnDescriptor>().Single();
 
+            WantAuthnRequestsSigned = idpDescriptor.WantAuthenticationRequestsSigned;
+
             // Prefer an endpoint with a redirect binding, then check for POST which 
             // is the other supported by AuthServices.
             var ssoService = idpDescriptor.SingleSignOnServices
@@ -396,6 +401,11 @@ namespace Kentor.AuthServices
                 }
             }
         }
+
+        /// <summary>
+        /// Does this Idp want the AuthnRequests signed?
+        /// </summary>
+        public bool WantAuthnRequestsSigned { get; set; }
 
         private void ReloadMetadataIfRequired()
         {

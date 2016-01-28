@@ -53,7 +53,9 @@ read web.config, but can also be configured from code.
   <identityProviders>
     <add entityId="https://stubidp.kentor.se/Metadata" 
          destinationUrl="https://stubidp.kentor.se" 
-         allowUnsolicitedAuthnResponse="true" binding="HttpRedirect">
+         allowUnsolicitedAuthnResponse="true"
+		 binding="HttpRedirect"
+		 wantAuthnRequestsSigned="true">
       <signingCertificate storeName="AddressBook" storeLocation="CurrentUser" 
                           findValue="Kentor.AuthServices.StubIdp" x509FindType="FindBySubjectName" />
     </add>
@@ -423,6 +425,7 @@ A list of identity providers known to the service provider.
 * [`destinationUrl`](#destinationuri-attribute)
 * [`allowUnsolicitedAuthnResponse`](#allowunsolicitedauthnresponse-attribute)
 * [`binding`](#binding-attribute)
+* [`wantAuthnRequestsSigned`](#wantauthnrequestssigned-attribute)
 * [`loadMetadata`](#loadmetadata-attribute)
 * [`metadataUrl`](#metadataurl-attribute-idp)
 
@@ -463,6 +466,12 @@ Currently supported values:
 
 * `HttpRedirect`
 * `HttpPost`
+
+####`wantAuthnRequestsSigned` attribute
+*Optional attribute of the [`<add>`](#add-identityprovider-element) element*
+
+Specifies whether the Identity provider wants the AuthnRequests signed.
+Defaults to `false`.
 
 ####`loadMetadata` Attribute
 *Optional attribute of the [`<add>`](#add-identityprovider-element) element*

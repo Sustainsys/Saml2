@@ -113,7 +113,7 @@ namespace Kentor.AuthServices.Tests
         }
 
         [TestMethod]
-        public void IdentityProvider_CreateAuthenticateRequest_IncludesSigningCertificate()
+        public void IdentityProvider_CreateAuthenticateRequest_IncludesSigningCertificate_ForConfigAlways()
         {
             var options = StubFactory.CreateOptions();
             var spOptions = (SPOptions)options.SPOptions;
@@ -129,6 +129,42 @@ namespace Kentor.AuthServices.Tests
             var subject = idp.CreateAuthenticateRequest(null, urls);
 
             subject.SigningCertificate.Thumbprint.Should().Be(SignedXmlHelper.TestCert.Thumbprint);
+        }
+
+        [TestMethod]
+        public void IdentityProvider_CreateAuthenticateRequest_IncludesSigningCertificate_IfIdpWants()
+        {
+            var options = Options.FromConfiguration;
+            var spOptions = (SPOptions)options.SPOptions;
+
+            var subject = options.IdentityProviders[new EntityId("https://idp2.example.com")];
+            var urls = StubFactory.CreateAuthServicesUrls();
+
+            var actual = subject.CreateAuthenticateRequest(null, urls).SigningCertificate;
+
+            (actual?.Thumbprint).Should().Be(SignedXmlHelper.TestCert2.Thumbprint);
+        }
+
+        [TestMethod]
+        public void IdentityProvider_CreateAuthenticateRequest_SigningBehaviorNever_OverridesIdpWantsRequestsSigned()
+        {
+            var options = StubFactory.CreateOptions();
+            var spOptions = (SPOptions)options.SPOptions;
+            spOptions.AuthenticateRequestSigningBehavior = SigningBehavior.Never;
+            spOptions.ServiceCertificates.Add(new ServiceCertificate
+            {
+                Certificate = SignedXmlHelper.TestCert
+            });
+
+            var subject = new IdentityProvider(new EntityId("http://idp.example.com"), spOptions)
+            {
+                WantAuthnRequestsSigned = true
+            };
+            var urls = StubFactory.CreateAuthServicesUrls();
+
+            var actual = subject.CreateAuthenticateRequest(null, urls).SigningCertificate;
+
+            actual.Should().BeNull();
         }
 
         [TestMethod]
@@ -584,9 +620,15 @@ namespace Kentor.AuthServices.Tests
         [TestMethod]
         public void IdentityProvider_MetadataLoadedConfiguredFromCode()
         {
+            var spOptions = StubFactory.CreateSPOptions();
+
+            spOptions.ServiceCertificates.Add(new ServiceCertificate()
+            {
+                Certificate = SignedXmlHelper.TestCert
+            });
+
             var subject = new IdentityProvider(
-                new EntityId("http://other.entityid.example.com"),
-                StubFactory.CreateSPOptions())
+                new EntityId("http://other.entityid.example.com"), spOptions)
             {
                 MetadataUrl = new Uri("http://localhost:13428/idpMetadataOtherEntityId"),
                 AllowUnsolicitedAuthnResponse = true
@@ -599,8 +641,9 @@ namespace Kentor.AuthServices.Tests
             subject.LoadMetadata.Should().BeTrue();
             subject.MetadataUrl.OriginalString.Should().Be("http://localhost:13428/idpMetadataOtherEntityId");
             subject.MetadataValidUntil.Should().BeCloseTo(
-                DateTime.UtcNow.Add(MetadataRefreshScheduler.DefaultMetadataCacheDuration));
+                DateTime.UtcNow.Add(MetadataRefreshScheduler.DefaultMetadataCacheDuration), precision: 100);
             subject.SingleSignOnServiceUrl.Should().Be("http://wrong.entityid.example.com/acs");
+            subject.WantAuthnRequestsSigned.Should().Be(true, "WantAuthnRequestsSigned should have been loaded from metadata");
 
             Action a = () => subject.CreateAuthenticateRequest(null, StubFactory.CreateAuthServicesUrls());
             a.ShouldNotThrow();
