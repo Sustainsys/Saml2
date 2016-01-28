@@ -1870,7 +1870,7 @@ namespace Kentor.AuthServices.Tests.Saml2P
                 <saml2:Assertion xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
                 Version=""2.0"" ID=""" + MethodBase.GetCurrentMethod().Name + @"_Assertion1""
                 IssueInstant=""2013-09-25T00:00:00Z"">
-                    <saml2:Issuer>http://localhost:13428/idpMetadata</saml2:Issuer>
+                    <saml2:Issuer>https://idp.example.com</saml2:Issuer>
                     <saml2:Subject>
                         <saml2:NameID>SomeUser</saml2:NameID>
                         <saml2:SubjectConfirmation Method=""urn:oasis:names:tc:SAML:2.0:cm:bearer"" />
@@ -1883,7 +1883,8 @@ namespace Kentor.AuthServices.Tests.Saml2P
 
             Saml2Response.Read(responseXml).Invoking(
                 r => r.GetClaims(options))
-                .ShouldThrow<InvalidFilterCriteriaException>();
+                .ShouldThrow<InvalidSignatureException>()
+                .And.Message.Should().Be("The signature was valid, but the verification of the certificate failed. Is it expired or revoked? Are you sure you really want to enable ValidateCertificates (it's normally not needed)?");
         }
     }
 }

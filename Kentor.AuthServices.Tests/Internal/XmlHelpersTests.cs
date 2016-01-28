@@ -125,6 +125,5 @@ namespace Kentor.AuthServices.Tests.Internal
 
             e.GetTrimmedTextIfNotNull().Should().BeNull();
         }
-
     }
 }
