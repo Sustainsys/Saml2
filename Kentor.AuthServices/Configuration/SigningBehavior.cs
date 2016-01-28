@@ -6,9 +6,10 @@
     public enum SigningBehavior
     {
         /// <summary>
-        /// Never sign AuthnRequests. This is the default behavior.
+        /// Sign authnrequests if the idp is configured for it. This is the 
+        /// default behavior.
         /// </summary>
-        Never = 0,
+        IfIdpWantAuthnRequestsSigned = 0,
 
         /// <summary>
         /// Always sign AuthnRequests. AuthnRequestsSigned is set to true
@@ -16,7 +17,9 @@
         /// </summary>
         Always = 1,
 
-        // Possible future enhancement.
-        // IfIdpWantAuthnRequestsSigned = 3,
+        /// <summary>
+        /// Never sign AuthnRequests.
+        /// </summary>
+        Never = 3,
     }
 }
