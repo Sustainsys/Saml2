@@ -35,6 +35,7 @@ namespace Kentor.AuthServices.Tests.WebSso
         {
             var options = StubFactory.CreateOptions();
             ((SPOptions)options.SPOptions).DiscoveryServiceUrl = new Uri("http://ds.example.com");
+            ((SPOptions)options.SPOptions).AuthenticateRequestSigningBehavior = SigningBehavior.Always;
             options.SPOptions.ServiceCertificates.Add(new ServiceCertificate()
             {
                 Certificate = SignedXmlHelper.TestCert
@@ -60,7 +61,7 @@ namespace Kentor.AuthServices.Tests.WebSso
 
             var expectedXml =
             "<EntityDescriptor entityID=\"https://github.com/KentorIT/authservices\" cacheDuration=\"PT42S\" xmlns:saml2=\"urn:oasis:names:tc:SAML:2.0:assertion\" xmlns=\"urn:oasis:names:tc:SAML:2.0:metadata\">"
-            + "<SPSSODescriptor WantAssertionsSigned=\"true\" protocolSupportEnumeration=\"urn:oasis:names:tc:SAML:2.0:protocol\">"
+            + "<SPSSODescriptor AuthnRequestsSigned=\"true\" WantAssertionsSigned=\"true\" protocolSupportEnumeration=\"urn:oasis:names:tc:SAML:2.0:protocol\">"
             + "<Extensions>"
             + "<DiscoveryResponse Binding=\"urn:oasis:names:tc:SAML:profiles:SSO:idp-discovery-protocol\" Location=\"http://localhost/AuthServices/SignIn\" index=\"0\" isDefault=\"true\" xmlns=\"urn:oasis:names:tc:SAML:profiles:SSO:idp-discovery-protocol\" />"
             + "</Extensions>"

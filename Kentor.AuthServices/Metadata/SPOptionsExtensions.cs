@@ -35,7 +35,8 @@ namespace Kentor.AuthServices.Metadata
 
             var spsso = new ExtendedServiceProviderSingleSignOnDescriptor()
             {
-                WantAssertionsSigned = spOptions.WantAssertionsSigned
+                WantAssertionsSigned = spOptions.WantAssertionsSigned,
+                AuthenticationRequestsSigned = spOptions.AuthenticateRequestSigningBehavior == SigningBehavior.Always
             };
 
             spsso.ProtocolsSupported.Add(new Uri("urn:oasis:names:tc:SAML:2.0:protocol"));
