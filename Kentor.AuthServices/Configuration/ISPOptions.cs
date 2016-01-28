@@ -117,6 +117,11 @@ namespace Kentor.AuthServices.Configuration
         /// <summary>
         /// Metadata flag that we want assertions to be signed.
         /// </summary>
-        bool WantAssertionsSigned { get; set; }
+        bool WantAssertionsSigned { get; }
+
+        /// <summary>
+        /// Validate certificates as part of signature validation.
+        /// </summary>
+        bool ValidateCertificates { get; }
     }
 }

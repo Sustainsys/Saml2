@@ -16,6 +16,7 @@ using Kentor.AuthServices.WebSso;
 using System.Security.Cryptography.X509Certificates;
 using System.Web.Hosting;
 using System.IdentityModel.Selectors;
+using System.IdentityModel.Tokens;
 
 namespace SampleOwinApplication
 {
@@ -65,9 +66,8 @@ namespace SampleOwinApplication
                     SingleSignOnServiceUrl = new Uri("http://stubidp.kentor.se")
                 };
 
-            idp.SigningKeys.AddConfiguredItem(
-                new X509Certificate2(HostingEnvironment.MapPath("~/App_Data/Kentor.AuthServices.StubIdp.pfx")).PublicKey
-                                                                                                              .Key);
+            idp.SigningKeys.AddConfiguredItem(new X509RawDataKeyIdentifierClause(
+                new X509Certificate2(HostingEnvironment.MapPath("~/App_Data/Kentor.AuthServices.StubIdp.pfx"))));
 
             authServicesOptions.IdentityProviders.Add(idp);
 

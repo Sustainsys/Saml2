@@ -15,9 +15,11 @@ namespace Kentor.AuthServices.Tests.Helpers
 
         public static readonly X509Certificate2 TestCert3 = new X509Certificate2("Kentor.AuthServices.Tests3.pfx");
 
-        public static readonly AsymmetricAlgorithm TestKey = TestCert.PublicKey.Key;
+        public static readonly RsaKeyIdentifierClause TestKey =
+            new RsaKeyIdentifierClause((RSA)TestCert.PublicKey.Key);
 
-        public static readonly AsymmetricAlgorithm TestKey2 = TestCert2.PublicKey.Key;
+        public static readonly RsaKeyIdentifierClause TestKey2 =
+            new RsaKeyIdentifierClause((RSA)TestCert2.PublicKey.Key);
 
         public static readonly KeyDescriptor TestKeyDescriptor = new KeyDescriptor(
             new SecurityKeyIdentifier(

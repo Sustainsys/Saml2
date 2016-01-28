@@ -8,6 +8,7 @@ using Kentor.AuthServices.Exceptions;
 using System.Collections.Generic;
 using Kentor.AuthServices.Configuration;
 using System.Reflection;
+using System.IdentityModel.Tokens;
 
 namespace Kentor.AuthServices
 {
@@ -161,12 +162,13 @@ namespace Kentor.AuthServices
 
         /// <summary>
         /// Checks if an xml element is signed by the given certificate, through
-        /// a contained enveloped signature.
+        /// a contained enveloped signature. Helper for tests. Production
+        /// code always should handle multiple possible signing keys.
         /// </summary>
         /// <param name="xmlElement">Xml Element that should be signed</param>
         /// <param name="certificate">Certificate that should validate</param>
         /// <returns>Is the signature correct?</returns>
-        public static bool IsSignedBy(this XmlElement xmlElement, X509Certificate2 certificate)
+        internal static bool IsSignedBy(this XmlElement xmlElement, X509Certificate2 certificate)
         {
             if (certificate == null)
             {
@@ -174,7 +176,7 @@ namespace Kentor.AuthServices
             }
 
             return xmlElement.IsSignedByAny(
-                Enumerable.Repeat(certificate.PublicKey.Key, 1));
+                Enumerable.Repeat(new X509RawDataKeyIdentifierClause(certificate), 1));
         }
 
         /// <summary>
@@ -188,7 +190,7 @@ namespace Kentor.AuthServices
         /// been tampered with or is not valid according to the SAML spec.</exception>
         public static bool IsSignedByAny(
             this XmlElement xmlElement, 
-            IEnumerable<AsymmetricAlgorithm> signingKeys)
+            IEnumerable<SecurityKeyIdentifierClause> signingKeys)
         {
             if (xmlElement == null)
             {
@@ -212,7 +214,7 @@ namespace Kentor.AuthServices
         }
 
         private static void VerifySignature(
-            IEnumerable<AsymmetricAlgorithm> signingKeys,
+            IEnumerable<SecurityKeyIdentifierClause> signingKeys,
             SignedXml signedXml,
             XmlElement signatureElement)
         {
@@ -220,7 +222,10 @@ namespace Kentor.AuthServices
 
             try
             {
-                if (!signingKeys.Any(signedXml.CheckSignature))
+                if (!signingKeys
+                    .Select(c => ((AsymmetricSecurityKey)c.CreateKey())
+                    .GetAsymmetricAlgorithm(SignedXml.XmlDsigRSASHA1Url, false))
+                    .Any(signedXml.CheckSignature))
                 {
                     var containedKey = signedXml.Signature.KeyInfo.OfType<KeyInfoX509Data>()
                         .SingleOrDefault()?.Certificates.OfType<X509Certificate2>()
