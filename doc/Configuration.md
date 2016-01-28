@@ -42,7 +42,7 @@ read web.config, but can also be configured from code.
                      discoveryServiceUrl="http://localhost:52071/DiscoveryService" 
 					 authenticateRequestSigningBehavior="Always">
   <nameIdPolicy allowCreate="true" format="Persistent"/>
-  <metadata cacheDuration="0:0:42" validDuration="7.12:00:00">
+  <metadata cacheDuration="0:0:42" validDuration="7.12:00:00" wantAssertionsSigned="true">
     <organization name="Kentor IT AB" displayName="Kentor" url="http://www.kentor.se" language="sv" />
     <contactPerson type="Other" email="info@kentor.se" />
     <requestedAttributes>
@@ -228,9 +228,14 @@ is not accepted.
 ###`<metadata>` Element
 *Optional child element of the [`<kentor.authServices>`](#kentor-authservices-section) element.*
 
+The metadata part of the configuration can be used to tweak the generated
+metadata. These configuration options only affects how the metadata is
+generated, no other behavior of the code is changed.
+
 ####Attributes
 * [`cacheDuration`](#cacheduration-attribute)
 * [`validDuration`](#validduration-attribute)
+* [`wantAssertionsSigned`](#wantassertionssigned-attribute)
 
 ####Elements
 * [`<organization>`](#organization-element)
@@ -261,6 +266,15 @@ validDuration to the current time. Examples of valid format strings:
 
 * 1 day, 2 hours: `1.2:00:00`.
 * 42 seconds: `0:00:42`.
+
+####`wantAssertionsSigned` Attribute
+*Optional attribute of the [`<metadata>`](#metadata-element) element.*
+
+Optional attribute to signal to IDPs that we want the Assertions themselves 
+signed and not only the SAML response. AuthServices supports both, so for
+normal usage this shouldn't matter. If set to `false` the entire 
+`wantAssertionsSigned` attribute is dropped from the metadata as the default
+values is false.
 
 ###`<organization>` Element
 *Optional child element of the [`<metadata>`](#metadata-element) element.*
