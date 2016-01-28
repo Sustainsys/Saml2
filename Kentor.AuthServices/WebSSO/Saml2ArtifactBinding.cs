@@ -105,7 +105,7 @@ namespace Kentor.AuthServices.WebSso
 
             var response = Saml2SoapBinding.SendSoapRequest(payload, arsUri);
 
-            return new Saml2ArtifactResponse(response).Message;
+            return new Saml2ArtifactResponse(response).GetMessage();
         }
 
         private static IdentityProvider GetIdp(byte[] binaryArtifact, string relayState, IOptions options)

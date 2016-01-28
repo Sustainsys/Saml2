@@ -1,5 +1,8 @@
-﻿using System;
+﻿using Kentor.AuthServices.Exceptions;
+using Kentor.AuthServices.Internal;
+using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -23,14 +26,41 @@ namespace Kentor.AuthServices.Saml2P
                 throw new ArgumentNullException(nameof(xml));
             }
 
-            Message = xml.ChildNodes.OfType<XmlElement>()
-                .SkipWhile(x => x.LocalName != "Status")
-                .Skip(1).Single();
+            Status = StatusCodeHelper.FromString(
+                xml["Status", Saml2Namespaces.Saml2PName]
+                ["StatusCode", Saml2Namespaces.Saml2PName]
+                .GetAttribute("Value"));
+
+            if (Status == Saml2StatusCode.Success)
+            {
+                message = xml.ChildNodes.OfType<XmlElement>()
+                    .SkipWhile(x => x.LocalName != "Status")
+                    .Skip(1).Single();
+            }
         }
+
+        XmlElement message;
 
         /// <summary>
         /// Contained message.
         /// </summary>
-        public XmlElement Message { get; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1024:UsePropertiesWhereAppropriate")]
+        public XmlElement GetMessage()
+        {
+            if(Status != Saml2StatusCode.Success)
+            {
+                throw new UnsuccessfulSamlOperationException(string.Format(
+                    CultureInfo.InvariantCulture,
+                    "Artifact resolution returned status {0}, can't extract message.",
+                    Status));
+            }
+
+            return message;
+        }
+
+        /// <summary>
+        /// Status code of the Artifact response.
+        /// </summary>
+        public Saml2StatusCode Status { get; }
     }
 }
