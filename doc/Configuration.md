@@ -42,7 +42,7 @@ read web.config, but can also be configured from code.
                      discoveryServiceUrl="http://localhost:52071/DiscoveryService" 
 					 authenticateRequestSigningBehavior="Always">
   <nameIdPolicy allowCreate="true" format="Persistent"/>
-  <metadata cacheDuration="0:15:00" >
+  <metadata cacheDuration="0:0:42" validDuration="7.12:00:00">
     <organization name="Kentor IT AB" displayName="Kentor" url="http://www.kentor.se" language="sv" />
     <contactPerson type="Other" email="info@kentor.se" />
     <requestedAttributes>
@@ -230,6 +230,7 @@ is not accepted.
 
 ####Attributes
 * [`cacheDuration`](#cacheduration-attribute)
+* [`validDuration`](#validduration-attribute)
 
 ####Elements
 * [`<organization>`](#organization-element)
@@ -239,8 +240,24 @@ is not accepted.
 ####`cacheDuration` Attribute
 *Optional attribute of the [`<metadata>`](#metadata-element) element.*
 
-Optional attribute that describes for how long in anyone may cache the metadata 
-presented by the service provider. Defaults to one hour. Examples of valid format strings:
+Optional attribute that describes for how long in anyone should cache the 
+metadata presented by the service provider before trying to fetch a new copy.
+Defaults to one hour. Examples of valid format strings:
+
+* 1 day, 2 hours: `1.2:00:00`.
+* 42 seconds: `0:00:42`.
+
+####`validDuration` Attribute
+*Optional attribute of the [`<metadata>`](#metadata-element) element.*
+
+Optional attribute that sets the maximum time that anyone may cache the generated
+metadata. if cacheDuration is specified, the remote party should try to reload
+metadata after that time. If that refresh fails, validDuration determines for
+how long the old metadata may be used before it must be discarded.
+
+In the metadata, the time is exposed as an absolute validUntil date and time.
+That absolute time is calculated on metadata generation by adding the configured
+validDuration to the current time. Examples of valid format strings:
 
 * 1 day, 2 hours: `1.2:00:00`.
 * 42 seconds: `0:00:42`.
