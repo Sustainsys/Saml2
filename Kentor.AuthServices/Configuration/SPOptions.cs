@@ -42,7 +42,8 @@ namespace Kentor.AuthServices.Configuration
             systemIdentityModelIdentityConfiguration = new IdentityConfiguration(true);
 
             ReturnUrl = configSection.ReturnUrl;
-            MetadataCacheDuration = configSection.MetadataCacheDuration;
+            MetadataCacheDuration = configSection.Metadata.CacheDuration;
+            MetadataValidDuration = configSection.Metadata.ValidUntil;
             DiscoveryServiceUrl = configSection.DiscoveryServiceUrl;
             EntityId = configSection.EntityId;
             ModulePath = configSection.ModulePath;
@@ -72,10 +73,17 @@ namespace Kentor.AuthServices.Configuration
         public Uri ReturnUrl { get; set; }
 
         /// <summary>
-        /// Return Uri to redirect the client to, if no return uri was specified
-        /// when initiating the signin sequence.
+        /// Recommendation of cache refresh interval to those who reads our
+        /// metadata.
         /// </summary>
         public TimeSpan MetadataCacheDuration { get; set; }
+
+        /// <summary>
+        /// Maximum validity duration after fetch for those who reads our
+        /// metadata. Exposed as an absolute validUntil time in the metadata.
+        /// If set to null, no validUntil is exposed in metadata.
+        /// </summary>
+        public TimeSpan? MetadataValidDuration { get; set; }
 
         volatile private Saml2PSecurityTokenHandler saml2PSecurityTokenHandler;
 

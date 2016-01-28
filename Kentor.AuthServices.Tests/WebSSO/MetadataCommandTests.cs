@@ -53,6 +53,11 @@ namespace Kentor.AuthServices.Tests.WebSso
             // Ignore the ID attribute, it is just filled with a GUID that can't be easily tested.
             payloadXml.DocumentElement.Attributes.Remove("ID");
 
+            // Test and then drop validUntil, can't be text compared.
+            DateTime.Parse(payloadXml.DocumentElement.Attributes["validUntil"].Value)
+                .Should().BeCloseTo(DateTime.UtcNow.AddDays(24).ToLocalTime(), 2000);
+            payloadXml.DocumentElement.Attributes.Remove("validUntil");
+
             var expectedXml =
             "<EntityDescriptor entityID=\"https://github.com/KentorIT/authservices\" cacheDuration=\"PT42S\" xmlns:saml2=\"urn:oasis:names:tc:SAML:2.0:assertion\" xmlns=\"urn:oasis:names:tc:SAML:2.0:metadata\">"
             + "<SPSSODescriptor protocolSupportEnumeration=\"urn:oasis:names:tc:SAML:2.0:protocol\">"

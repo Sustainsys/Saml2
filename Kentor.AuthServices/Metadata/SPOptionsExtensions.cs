@@ -20,8 +20,13 @@ namespace Kentor.AuthServices.Metadata
             {
                 EntityId = spOptions.EntityId,
                 Organization = spOptions.Organization,
-                CacheDuration = spOptions.MetadataCacheDuration
+                CacheDuration = spOptions.MetadataCacheDuration,
             };
+
+            if(spOptions.MetadataValidDuration.HasValue)
+            {
+                ed.ValidUntil = DateTime.UtcNow.Add(spOptions.MetadataValidDuration.Value);
+            }
 
             foreach (var contact in spOptions.Contacts)
             {

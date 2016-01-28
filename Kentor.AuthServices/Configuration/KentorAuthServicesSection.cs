@@ -76,17 +76,6 @@ namespace Kentor.AuthServices.Configuration
         }
 
         /// <summary>
-        /// For how long may the metadata be cached by a receiving party?
-        /// </summary>
-        public TimeSpan MetadataCacheDuration
-        {
-            get
-            {
-                return Metadata.CacheDuration;
-            }
-        }
-
-        /// <summary>
         /// Set of identity providers known to the service provider.
         /// </summary>
         [ConfigurationProperty("identityProviders")]

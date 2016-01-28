@@ -25,10 +25,17 @@ namespace Kentor.AuthServices.Configuration
         Uri ReturnUrl { get; }
 
         /// <summary>
-        /// Optional attribute that describes for how long anyone may cache the metadata
-        /// presented by the service provider. Defaults to 3600 seconds.
+        /// Recommendation of cache refresh interval to those who reads our
+        /// metadata.
         /// </summary>
         TimeSpan MetadataCacheDuration { get; }
+
+        /// <summary>
+        /// Maximum validity duration after fetch for those who reads our
+        /// metadata. Exposed as an absolute validUntil time in the metadata.
+        /// If set to null, no validUntil is exposed in metadata.
+        /// </summary>
+        TimeSpan? MetadataValidDuration { get; }
 
         /// <summary>
         /// The security token handler used to process incoming assertions for this SP.
