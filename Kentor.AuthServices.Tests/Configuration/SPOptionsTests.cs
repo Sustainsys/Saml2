@@ -130,7 +130,7 @@ namespace Kentor.AuthServices.Tests.Configuration
             var subject = new SPOptions();
 
             subject.MetadataCacheDuration.Should().Be(new TimeSpan(1, 0, 0));
-            subject.MetadataValidDuration.Should().Be(new TimeSpan(7, 0, 0, 0));
+            subject.MetadataValidDuration.Should().NotHaveValue();
         }
 
         [TestMethod]

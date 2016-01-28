@@ -33,8 +33,9 @@ namespace Kentor.AuthServices.Configuration
         /// <summary>
         /// Maximum validity duration after fetch for those who reads our
         /// metadata. Exposed as an absolute validUntil time in the metadata.
+        /// If set to null, no validUntil is exposed in metadata.
         /// </summary>
-        TimeSpan MetadataValidDuration { get; }
+        TimeSpan? MetadataValidDuration { get; }
 
         /// <summary>
         /// The security token handler used to process incoming assertions for this SP.

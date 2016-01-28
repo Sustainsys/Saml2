@@ -43,12 +43,12 @@ namespace Kentor.AuthServices.Configuration
         /// <summary>
         /// How long after generation should the metadata be valid?
         /// </summary>
-        [ConfigurationProperty(validDuration, IsRequired = false, DefaultValue = "7.0:0:0")]
-        public TimeSpan ValidUntil
+        [ConfigurationProperty(validDuration, IsRequired = false)]
+        public TimeSpan? ValidUntil
         {
             get
             {
-                return (TimeSpan)base[validDuration];
+                return (TimeSpan?)base[validDuration];
             }
         }
 

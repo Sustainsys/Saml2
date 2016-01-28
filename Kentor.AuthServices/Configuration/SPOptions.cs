@@ -27,7 +27,6 @@ namespace Kentor.AuthServices.Configuration
         {
             systemIdentityModelIdentityConfiguration = new IdentityConfiguration(false);
             MetadataCacheDuration = new TimeSpan(1, 0, 0);
-            MetadataValidDuration = new TimeSpan(7, 0, 0, 0);
         }
 
         /// <summary>
@@ -82,8 +81,9 @@ namespace Kentor.AuthServices.Configuration
         /// <summary>
         /// Maximum validity duration after fetch for those who reads our
         /// metadata. Exposed as an absolute validUntil time in the metadata.
+        /// If set to null, no validUntil is exposed in metadata.
         /// </summary>
-        public TimeSpan MetadataValidDuration { get; set; }
+        public TimeSpan? MetadataValidDuration { get; set; }
 
         volatile private Saml2PSecurityTokenHandler saml2PSecurityTokenHandler;
 
