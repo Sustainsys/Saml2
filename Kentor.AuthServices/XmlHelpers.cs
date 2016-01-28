@@ -10,6 +10,7 @@ using Kentor.AuthServices.Configuration;
 using System.Reflection;
 using System.IdentityModel.Tokens;
 using System.Globalization;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Kentor.AuthServices
 {
@@ -216,7 +217,6 @@ namespace Kentor.AuthServices
             return true;
         }
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "ValidateCertificates")]
         private static void VerifySignature(
             IEnumerable<SecurityKeyIdentifierClause> signingKeys,
             SignedXml signedXml,
@@ -234,21 +234,7 @@ namespace Kentor.AuthServices
 
                     if(signedXml.CheckSignature(key))
                     {
-                        if(validateCertificate)
-                        {
-                            var rawCert = keyIdentifier as X509RawDataKeyIdentifierClause;
-                            if(rawCert == null)
-                            {
-                                throw new InvalidOperationException(string.Format(CultureInfo.InvariantCulture,
-                                    "Certificate validation enabled, but the signing key identifier is of type {0} which cannot be validated as a certificate.",
-                                    keyIdentifier.GetType().Name));
-                            }
-
-                            if(!new X509Certificate2(rawCert.GetX509RawData()).Verify())
-                            {
-                                throw new InvalidSignatureException("The signature was valid, but the verification of the certificate failed. Is it expired or revoked? Are you sure you really want to enable ValidateCertificates (it's normally not needed)?");
-                            }
-                        }
+                        ValidateCertificate(validateCertificate, keyIdentifier);
                         return;
                     }
                 }
@@ -272,6 +258,32 @@ namespace Kentor.AuthServices
                 else
                 {
                     throw;
+                }
+            }
+        }
+
+        // Splitting up in several methods to set ExcludeFromCodeCoverage on
+        // as small part of the code as possible. To actually have a test
+        // case that passes with a valid cert would require a signature
+        // that is created by a long lived official cert or the tests would
+        // mysteriously start to fail when the cert expired.
+        [SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "ValidateCertificates")]
+        [ExcludeFromCodeCoverage]
+        private static void ValidateCertificate(bool validateCertificate, SecurityKeyIdentifierClause keyIdentifier)
+        {
+            if (validateCertificate)
+            {
+                var rawCert = keyIdentifier as X509RawDataKeyIdentifierClause;
+                if (rawCert == null)
+                {
+                    throw new InvalidOperationException(string.Format(CultureInfo.InvariantCulture,
+                        "Certificate validation enabled, but the signing key identifier is of type {0} which cannot be validated as a certificate.",
+                        keyIdentifier.GetType().Name));
+                }
+
+                if (!new X509Certificate2(rawCert.GetX509RawData()).Verify())
+                {
+                    throw new InvalidSignatureException("The signature was valid, but the verification of the certificate failed. Is it expired or revoked? Are you sure you really want to enable ValidateCertificates (it's normally not needed)?");
                 }
             }
         }
