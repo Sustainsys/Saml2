@@ -60,7 +60,7 @@ namespace Kentor.AuthServices.Tests.WebSso
 
             var expectedXml =
             "<EntityDescriptor entityID=\"https://github.com/KentorIT/authservices\" cacheDuration=\"PT42S\" xmlns:saml2=\"urn:oasis:names:tc:SAML:2.0:assertion\" xmlns=\"urn:oasis:names:tc:SAML:2.0:metadata\">"
-            + "<SPSSODescriptor protocolSupportEnumeration=\"urn:oasis:names:tc:SAML:2.0:protocol\">"
+            + "<SPSSODescriptor WantAssertionsSigned=\"true\" protocolSupportEnumeration=\"urn:oasis:names:tc:SAML:2.0:protocol\">"
             + "<Extensions>"
             + "<DiscoveryResponse Binding=\"urn:oasis:names:tc:SAML:profiles:SSO:idp-discovery-protocol\" Location=\"http://localhost/AuthServices/SignIn\" index=\"0\" isDefault=\"true\" xmlns=\"urn:oasis:names:tc:SAML:profiles:SSO:idp-discovery-protocol\" />"
             + "</Extensions>"

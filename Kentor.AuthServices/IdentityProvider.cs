@@ -257,9 +257,9 @@ namespace Kentor.AuthServices
                 authnRequest.SigningCertificate = spOptions.SigningServiceCertificate;
             }
 
-            var responseData = new StoredRequestState(EntityId, returnUrl, authnRequest.Id, relayData);
+            var requestState = new StoredRequestState(EntityId, returnUrl, authnRequest.Id, relayData);
 
-            PendingAuthnRequests.Add(authnRequest.RelayState, responseData);
+            PendingAuthnRequests.Add(authnRequest.RelayState, requestState);
 
             return authnRequest;
         }

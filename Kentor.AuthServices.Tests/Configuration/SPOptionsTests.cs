@@ -19,6 +19,7 @@ namespace Kentor.AuthServices.Tests.Configuration
             {
                 KentorAuthServicesSection.Current.AuthenticateRequestSigningBehavior = SigningBehavior.Never;
                 KentorAuthServicesSection.Current.AllowChange(false);
+                KentorAuthServicesSection.Current.Metadata.AllowChange = false;
             }
         }
 
@@ -42,7 +43,7 @@ namespace Kentor.AuthServices.Tests.Configuration
         [TestMethod]
         public void SPOptions_Constructor_ThrowsOnNullConfiguration()
         {
-            Action a = () => new SPOptions((KentorAuthServicesSection)null);
+            Action a = () => new SPOptions(null);
 
             a.ShouldThrow<ArgumentNullException>().And.ParamName.Should().Be("configSection");
         }
@@ -53,11 +54,14 @@ namespace Kentor.AuthServices.Tests.Configuration
             var config = KentorAuthServicesSection.Current;
             config.AllowChange(true);
             config.AuthenticateRequestSigningBehavior = SigningBehavior.Always;
+            config.Metadata.AllowChange = true;
+            config.Metadata.WantAssertionsSigned = true;
 
             ISPOptions subject = new SPOptions(KentorAuthServicesSection.Current);
             subject.ReturnUrl.Should().Be(config.ReturnUrl);
             subject.MetadataCacheDuration.Should().Be(config.Metadata.CacheDuration);
             subject.MetadataValidDuration.Should().Be(config.Metadata.ValidUntil);
+            subject.WantAssertionsSigned.Should().Be(true);
             subject.DiscoveryServiceUrl.Should().Be(config.DiscoveryServiceUrl);
             subject.EntityId.Should().Be(config.EntityId);
             subject.ModulePath.Should().Be(config.ModulePath);

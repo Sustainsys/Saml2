@@ -113,5 +113,10 @@ namespace Kentor.AuthServices.Configuration
         /// Signing behavior for AuthnRequests.
         /// </summary>
         SigningBehavior AuthenticateRequestSigningBehavior { get; }
+
+        /// <summary>
+        /// Metadata flag that we want assertions to be signed.
+        /// </summary>
+        bool WantAssertionsSigned { get; set; }
     }
 }
