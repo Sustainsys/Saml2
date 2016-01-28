@@ -33,7 +33,10 @@ namespace Kentor.AuthServices.Metadata
                 ed.Contacts.Add(contact);
             }
 
-            var spsso = new ExtendedServiceProviderSingleSignOnDescriptor();
+            var spsso = new ExtendedServiceProviderSingleSignOnDescriptor()
+            {
+                WantAssertionsSigned = spOptions.WantAssertionsSigned
+            };
 
             spsso.ProtocolsSupported.Add(new Uri("urn:oasis:names:tc:SAML:2.0:protocol"));
 

@@ -36,6 +36,7 @@ namespace Kentor.AuthServices.Tests
                 EntityId = new EntityId("https://github.com/KentorIT/authservices"),
                 MetadataCacheDuration = new TimeSpan(0, 0, 42),
                 MetadataValidDuration = TimeSpan.FromDays(24),
+                WantAssertionsSigned = true,
                 Organization = org,
                 DiscoveryServiceUrl = new Uri("https://ds.example.com"),
                 ReturnUrl = new Uri("https://localhost/returnUrl"),

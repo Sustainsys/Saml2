@@ -44,6 +44,7 @@ namespace Kentor.AuthServices.Configuration
             ReturnUrl = configSection.ReturnUrl;
             MetadataCacheDuration = configSection.Metadata.CacheDuration;
             MetadataValidDuration = configSection.Metadata.ValidUntil;
+            WantAssertionsSigned = configSection.Metadata.WantAssertionsSigned;
             DiscoveryServiceUrl = configSection.DiscoveryServiceUrl;
             EntityId = configSection.EntityId;
             ModulePath = configSection.ModulePath;
@@ -356,5 +357,10 @@ namespace Kentor.AuthServices.Configuration
         /// Signing behaviour for AuthnRequests.
         /// </summary>
         public SigningBehavior AuthenticateRequestSigningBehavior { get; set; }
+
+        /// <summary>
+        /// Metadata flag that we want assertions to be signed.
+        /// </summary>
+        public bool WantAssertionsSigned { get; set; }
     }
 }
