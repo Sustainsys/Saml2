@@ -42,7 +42,7 @@ namespace Kentor.AuthServices.Tests.WebSso
 
             var subject = new MetadataCommand().Run(request, options);
 
-            var payloadXml = XmlDocumentHelpers.FromString(subject.Content);
+            var payloadXml = XmlHelpers.FromString(subject.Content);
 
             // Validate signature, location of it  and then drop it. It contains
             // a reference to the ID which makes it unsuitable for string matching.

@@ -12,9 +12,9 @@ using System.Reflection;
 namespace Kentor.AuthServices
 {
     /// <summary>
-    /// Extension methods for XmlDocument
+    /// Extension methods and helpers for XmlDocument/XmlElement etc.
     /// </summary>
-    public static class XmlDocumentHelpers
+    public static class XmlHelpers
     {
         /// <summary>
         /// Sign an xml document with the supplied cert.
