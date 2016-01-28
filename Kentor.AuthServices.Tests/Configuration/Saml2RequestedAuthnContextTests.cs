@@ -22,7 +22,7 @@ namespace Kentor.AuthServices.Tests.Configuration
         public void Saml2RequestedAuthnContext_Ctor_HandlesFullUri()
         {
             var config = new RequestedAuthnContextElement();
-            config.AllowChange(true);
+            config.AllowChange = true;
             var classRef = "http://id.sambi.se/loa2";
             config.AuthnContextClassRef = classRef;
 

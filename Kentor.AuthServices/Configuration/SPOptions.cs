@@ -45,6 +45,7 @@ namespace Kentor.AuthServices.Configuration
             MetadataCacheDuration = configSection.Metadata.CacheDuration;
             MetadataValidDuration = configSection.Metadata.ValidUntil;
             WantAssertionsSigned = configSection.Metadata.WantAssertionsSigned;
+            ValidateCertificates = configSection.ValidateCertificates;
             DiscoveryServiceUrl = configSection.DiscoveryServiceUrl;
             EntityId = configSection.EntityId;
             ModulePath = configSection.ModulePath;
@@ -364,7 +365,10 @@ namespace Kentor.AuthServices.Configuration
         public bool WantAssertionsSigned { get; set; }
 
         /// <summary>
-        /// Validate certificates as part of signature validation.
+        /// Validate certificates when validating signatures? Normally not a
+        /// good idea as SAML2 deployments typically exchange certificates
+        /// directly and isntead of relying on the public certificate
+        /// infrastructure.
         /// </summary>
         public bool ValidateCertificates { get; set; }
 

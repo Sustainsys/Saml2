@@ -120,7 +120,10 @@ namespace Kentor.AuthServices.Configuration
         bool WantAssertionsSigned { get; }
 
         /// <summary>
-        /// Validate certificates as part of signature validation.
+        /// Validate certificates when validating signatures? Normally not a
+        /// good idea as SAML2 deployments typically exchange certificates
+        /// directly and isntead of relying on the public certificate
+        /// infrastructure.
         /// </summary>
         bool ValidateCertificates { get; }
     }

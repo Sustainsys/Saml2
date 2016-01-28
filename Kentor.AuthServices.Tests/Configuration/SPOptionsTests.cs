@@ -18,7 +18,9 @@ namespace Kentor.AuthServices.Tests.Configuration
             if(!KentorAuthServicesSection.Current.IsReadOnly())
             {
                 KentorAuthServicesSection.Current.AuthenticateRequestSigningBehavior = SigningBehavior.Never;
-                KentorAuthServicesSection.Current.AllowChange(false);
+                KentorAuthServicesSection.Current.ValidateCertificates = false;
+                KentorAuthServicesSection.Current.AllowChange = false;
+                KentorAuthServicesSection.Current.Metadata.WantAssertionsSigned = false;
                 KentorAuthServicesSection.Current.Metadata.AllowChange = false;
             }
         }
@@ -52,16 +54,18 @@ namespace Kentor.AuthServices.Tests.Configuration
         public void SPOptions_Constructor_LoadsConfig()
         {
             var config = KentorAuthServicesSection.Current;
-            config.AllowChange(true);
+            config.AllowChange = true;
             config.AuthenticateRequestSigningBehavior = SigningBehavior.Always;
             config.Metadata.AllowChange = true;
             config.Metadata.WantAssertionsSigned = true;
+            config.ValidateCertificates = true;
 
             ISPOptions subject = new SPOptions(KentorAuthServicesSection.Current);
             subject.ReturnUrl.Should().Be(config.ReturnUrl);
             subject.MetadataCacheDuration.Should().Be(config.Metadata.CacheDuration);
             subject.MetadataValidDuration.Should().Be(config.Metadata.ValidUntil);
             subject.WantAssertionsSigned.Should().Be(true);
+            subject.ValidateCertificates.Should().Be(true);
             subject.DiscoveryServiceUrl.Should().Be(config.DiscoveryServiceUrl);
             subject.EntityId.Should().Be(config.EntityId);
             subject.ModulePath.Should().Be(config.ModulePath);

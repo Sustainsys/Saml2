@@ -118,7 +118,7 @@ namespace Kentor.AuthServices.Tests.Configuration
         public void KentorAuthServicesSection_Attributes_EmptyIfNotConfigured()
         {
             var subject = new KentorAuthServicesSection();
-            subject.AllowChange(true);
+            subject.AllowChange = true;
             subject.Metadata = new MetadataElement();
 
             subject.AttributeConsumingServices.Should().BeEmpty();

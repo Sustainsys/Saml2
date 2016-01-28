@@ -13,13 +13,7 @@ namespace Kentor.AuthServices.Configuration
     /// </summary>
     public class RequestedAuthnContextElement : ConfigurationElement
     {
-        private bool allowChange = false;
-
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1500:VariableNamesShouldNotMatchFieldNames", MessageId = "allowChange")]
-        internal void AllowChange(bool allowChange)
-        {
-            this.allowChange = allowChange;
-        }
+        internal bool AllowChange { get; set; }
 
         /// <summary>
         /// Used for testing, always returns true in production.
@@ -27,7 +21,7 @@ namespace Kentor.AuthServices.Configuration
         /// <returns>Returns true (unless during tests)</returns>
         public override bool IsReadOnly()
         {
-            return !allowChange;
+            return !AllowChange;
         }
 
         const string classRef = nameof(classRef);

@@ -21,13 +21,7 @@ namespace Kentor.AuthServices.Configuration
         private static readonly KentorAuthServicesSection current =
             (KentorAuthServicesSection)ConfigurationManager.GetSection("kentor.authServices");
 
-        private bool allowChange = false;
-
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1500:VariableNamesShouldNotMatchFieldNames", MessageId = "allowChange")]
-        internal void AllowChange(bool allowChange)
-        {
-            this.allowChange = allowChange;
-        }
+        internal bool AllowChange { get; set; }
 
         /// <summary>
         /// Used for testing, always returns true in production.
@@ -35,7 +29,7 @@ namespace Kentor.AuthServices.Configuration
         /// <returns>Returns true (unless during tests)</returns>
         public override bool IsReadOnly()
         {
-            return !allowChange;
+            return !AllowChange;
         }
 
         /// <summary>
@@ -304,6 +298,26 @@ namespace Kentor.AuthServices.Configuration
             internal set
             {
                 base[authenticateRequestSigningBehavior] = value;
+            }
+        }
+
+        const string validateCertificates = nameof(validateCertificates);
+        /// <summary>
+        /// Validate certificates when validating signatures? Normally not a
+        /// good idea as SAML2 deployments typically exchange certificates
+        /// directly and isntead of relying on the public certificate
+        /// infrastructure.
+        /// </summary>
+        [ConfigurationProperty(validateCertificates, IsRequired = false)]
+        public bool ValidateCertificates
+        {
+            get
+            {
+                return (bool)base[validateCertificates];
+            }
+            internal set
+            {
+                base[validateCertificates] = value;
             }
         }
     }
