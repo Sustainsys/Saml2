@@ -664,7 +664,7 @@ namespace Kentor.AuthServices.Tests
                     SingleSignOnServiceUrl = new Uri("http://idp.example.com/sso")
                 };
 
-            subject.SigningKeys.AddConfiguredItem(SignedXmlHelper.TestKey);
+            subject.SigningKeys.AddConfiguredKey(SignedXmlHelper.TestKey);
 
             subject.AllowUnsolicitedAuthnResponse.Should().BeTrue();
             subject.Binding.Should().Be(Saml2BindingType.HttpPost);

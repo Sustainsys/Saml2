@@ -243,8 +243,8 @@ namespace Kentor.AuthServices.Tests.Saml2P
                 AllowUnsolicitedAuthnResponse = true
             };
 
-            idp.SigningKeys.AddConfiguredItem(SignedXmlHelper.TestKey2);
-            idp.SigningKeys.AddConfiguredItem(SignedXmlHelper.TestKey);
+            idp.SigningKeys.AddConfiguredKey(SignedXmlHelper.TestKey2);
+            idp.SigningKeys.AddConfiguredKey(SignedXmlHelper.TestKey);
 
             options.IdentityProviders.Add(idp);
 

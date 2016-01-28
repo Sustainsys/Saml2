@@ -50,7 +50,7 @@ namespace Kentor.AuthServices
             var certificate = config.SigningCertificate.LoadCertificate();
             if (certificate != null)
             {
-                signingKeys.AddConfiguredItem(
+                signingKeys.AddConfiguredKey(
                     new X509RawDataKeyIdentifierClause(certificate));
             }
 
@@ -279,13 +279,13 @@ namespace Kentor.AuthServices
             return Saml2Binding.Get(Binding).Bind(request);
         }
 
-        private ConfiguredAndLoadedCollection<SecurityKeyIdentifierClause> signingKeys = 
-            new ConfiguredAndLoadedCollection<SecurityKeyIdentifierClause>();
+        private ConfiguredAndLoadedSigningKeysCollection signingKeys = 
+            new ConfiguredAndLoadedSigningKeysCollection();
 
         /// <summary>
         /// The public key of the idp that is used to verify signatures of responses/assertions.
         /// </summary>
-        public ConfiguredAndLoadedCollection<SecurityKeyIdentifierClause> SigningKeys
+        public ConfiguredAndLoadedSigningKeysCollection SigningKeys
         {
             get
             {
