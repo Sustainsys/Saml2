@@ -27,3 +27,9 @@ to enable passing a property to the `AuthenticationProperties` dictionary.
 
 Another, more simple way to pass a value is to put it directly in the Owin
 environment dictionary under the key "KentorAuthServices.idp".
+
+Here's an example of how to set the Owin environment value through ASP.NET MVC
+
+    var context = HttpContext.GetOwinContext();
+    context.Environment.Add("KentorAuthServices.idp", new EntityId(YOUR_IDP_ENTITY_ID));
+
