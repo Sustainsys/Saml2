@@ -346,6 +346,8 @@ namespace Kentor.AuthServices
             var idpDescriptor = metadata.RoleDescriptors
                 .OfType<IdentityProviderSingleSignOnDescriptor>().Single();
 
+            WantAuthnRequestsSigned = idpDescriptor.WantAuthenticationRequestsSigned;
+
             // Prefer an endpoint with a redirect binding, then check for POST which 
             // is the other supported by AuthServices.
             var ssoService = idpDescriptor.SingleSignOnServices

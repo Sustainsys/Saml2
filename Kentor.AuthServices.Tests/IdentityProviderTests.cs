@@ -620,9 +620,15 @@ namespace Kentor.AuthServices.Tests
         [TestMethod]
         public void IdentityProvider_MetadataLoadedConfiguredFromCode()
         {
+            var spOptions = StubFactory.CreateSPOptions();
+
+            spOptions.ServiceCertificates.Add(new ServiceCertificate()
+            {
+                Certificate = SignedXmlHelper.TestCert
+            });
+
             var subject = new IdentityProvider(
-                new EntityId("http://other.entityid.example.com"),
-                StubFactory.CreateSPOptions())
+                new EntityId("http://other.entityid.example.com"), spOptions)
             {
                 MetadataUrl = new Uri("http://localhost:13428/idpMetadataOtherEntityId"),
                 AllowUnsolicitedAuthnResponse = true
@@ -635,8 +641,9 @@ namespace Kentor.AuthServices.Tests
             subject.LoadMetadata.Should().BeTrue();
             subject.MetadataUrl.OriginalString.Should().Be("http://localhost:13428/idpMetadataOtherEntityId");
             subject.MetadataValidUntil.Should().BeCloseTo(
-                DateTime.UtcNow.Add(MetadataRefreshScheduler.DefaultMetadataCacheDuration));
+                DateTime.UtcNow.Add(MetadataRefreshScheduler.DefaultMetadataCacheDuration), precision: 100);
             subject.SingleSignOnServiceUrl.Should().Be("http://wrong.entityid.example.com/acs");
+            subject.WantAuthnRequestsSigned.Should().Be(true, "WantAuthnRequestsSigned should have been loaded from metadata");
 
             Action a = () => subject.CreateAuthenticateRequest(null, StubFactory.CreateAuthServicesUrls());
             a.ShouldNotThrow();

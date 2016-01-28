@@ -62,7 +62,8 @@ namespace Kentor.AuthServices.Tests.Helpers
 @"<EntityDescriptor xmlns=""urn:oasis:names:tc:SAML:2.0:metadata""
     entityID=""http://other.entityid.example.com"">
     <IDPSSODescriptor
-      protocolSupportEnumeration=""urn:oasis:names:tc:SAML:2.0:protocol"">
+      protocolSupportEnumeration=""urn:oasis:names:tc:SAML:2.0:protocol""
+      WantAuthnRequestsSigned=""true"">
       <KeyDescriptor use=""signing"">
         {0}
       </KeyDescriptor>
