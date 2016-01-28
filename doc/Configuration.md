@@ -262,7 +262,7 @@ validDuration to the current time. Examples of valid format strings:
 * 1 day, 2 hours: `1.2:00:00`.
 * 42 seconds: `0:00:42`.
 
-###[`organization`] Element
+###`<organization>` Element
 *Optional child element of the [`<metadata>`](#metadata-element) element.*
 
 Provides information about the organization supplying the SAML2 entity (in plain
