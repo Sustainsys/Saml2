@@ -10,6 +10,7 @@ using System.Security.Cryptography;
 using System.Reflection;
 using Kentor.AuthServices.Configuration;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Kentor.AuthServices.Tests
 {
@@ -364,6 +365,21 @@ $@"<xml>
             xmlDoc.DocumentElement.Invoking(x => x.IsSignedBy(SignedXmlHelper.TestCert))
                 .ShouldThrow<CryptographicException>()
                 .WithMessage("SignatureDescription could not be created for the signature algorithm supplied.");
+        }
+
+        [TestMethod]
+        public void XmlHelpers_IsSignedByAny_ThrowsOnCertValidationWithRsaKey()
+        {
+            var xml = "<xml ID=\"MyXml\" />";
+
+            var xmlDoc = XmlHelpers.FromString(xml);
+            xmlDoc.Sign(SignedXmlHelper.TestCert, false);
+
+            var signingKeys = Enumerable.Repeat(SignedXmlHelper.TestKey, 1);
+
+            xmlDoc.DocumentElement.Invoking(x => x.IsSignedByAny(signingKeys, true))
+                .ShouldThrow<InvalidOperationException>()
+                .And.Message.Should().Be("Certificate validation enabled, but the signing key identifier is of type RsaKeyIdentifierClause which cannot be validated as a certificate.");
         }
     }
 }

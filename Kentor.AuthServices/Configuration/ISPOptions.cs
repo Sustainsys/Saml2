@@ -117,6 +117,14 @@ namespace Kentor.AuthServices.Configuration
         /// <summary>
         /// Metadata flag that we want assertions to be signed.
         /// </summary>
-        bool WantAssertionsSigned { get; set; }
+        bool WantAssertionsSigned { get; }
+
+        /// <summary>
+        /// Validate certificates when validating signatures? Normally not a
+        /// good idea as SAML2 deployments typically exchange certificates
+        /// directly and isntead of relying on the public certificate
+        /// infrastructure.
+        /// </summary>
+        bool ValidateCertificates { get; }
     }
 }

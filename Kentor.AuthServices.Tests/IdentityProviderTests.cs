@@ -13,6 +13,9 @@ using Kentor.AuthServices.Tests.Metadata;
 using Kentor.AuthServices.Metadata;
 using System.Threading;
 using System.Security.Cryptography;
+using System.IdentityModel.Tokens;
+using System.Security.Cryptography.Xml;
+using System.Security.Cryptography.X509Certificates;
 
 namespace Kentor.AuthServices.Tests
 {
@@ -185,9 +188,10 @@ namespace Kentor.AuthServices.Tests
         [TestMethod]
         public void IdentityProvider_Certificate_FromFile()
         {
-            var idp = Options.FromConfiguration.IdentityProviders.Default;
+            var subject = Options.FromConfiguration.IdentityProviders.Default;
 
-            idp.SigningKeys.Single().ShouldBeEquivalentTo(SignedXmlHelper.TestKey);
+            var key = ((X509RawDataKeyIdentifierClause)subject.SigningKeys.Single())
+                .Matches(SignedXmlHelper.TestCert).Should().BeTrue();
         }
 
         [TestMethod]
@@ -221,7 +225,7 @@ namespace Kentor.AuthServices.Tests
             subject.EntityId.Id.Should().Be(entityId.Id);
             subject.Binding.Should().Be(Saml2BindingType.HttpPost);
             subject.SingleSignOnServiceUrl.Should().Be(new Uri("http://localhost:13428/acs"));
-            subject.SigningKeys.Single().ShouldBeEquivalentTo(SignedXmlHelper.TestKey);
+            subject.SigningKeys.Single().ShouldBeEquivalentTo(new X509RawDataKeyIdentifierClause(SignedXmlHelper.TestCert));
             subject.ArtifactResolutionServiceUrls.Count.Should().Be(2);
             subject.ArtifactResolutionServiceUrls[0x1234].OriginalString
                 .Should().Be("http://localhost:13428/ars");
@@ -289,7 +293,8 @@ namespace Kentor.AuthServices.Tests
 
             // Check that metadata was read and overrides configured values.
             subject.Binding.Should().Be(Saml2BindingType.HttpRedirect);
-            subject.SigningKeys.Single().ShouldBeEquivalentTo(SignedXmlHelper.TestKey);
+            subject.SigningKeys.Single().ShouldBeEquivalentTo(
+                new X509RawDataKeyIdentifierClause(SignedXmlHelper.TestCert));
         }
 
         [TestMethod]
@@ -469,11 +474,9 @@ namespace Kentor.AuthServices.Tests
 
             SpinWaiter.While(() => subject.SigningKeys.Count() == 2);
 
-            var subjectKeyParams = subject.SigningKeys.Single().As<RSACryptoServiceProvider>().ExportParameters(false);
-            var expectedKeyParams = SignedXmlHelper.TestKey.As<RSACryptoServiceProvider>().ExportParameters(false);
-
-            subjectKeyParams.Modulus.ShouldBeEquivalentTo(expectedKeyParams.Modulus);
-            subjectKeyParams.Exponent.ShouldBeEquivalentTo(expectedKeyParams.Exponent);
+            new X509Certificate2(
+                subject.SigningKeys.Single().As<X509RawDataKeyIdentifierClause>()
+                .GetX509RawData()).Thumbprint.Should().Be(SignedXmlHelper.TestCert.Thumbprint);
         }
 
         [TestMethod]
@@ -661,7 +664,7 @@ namespace Kentor.AuthServices.Tests
                     SingleSignOnServiceUrl = new Uri("http://idp.example.com/sso")
                 };
 
-            subject.SigningKeys.AddConfiguredItem(SignedXmlHelper.TestKey);
+            subject.SigningKeys.AddConfiguredKey(SignedXmlHelper.TestKey);
 
             subject.AllowUnsolicitedAuthnResponse.Should().BeTrue();
             subject.Binding.Should().Be(Saml2BindingType.HttpPost);
@@ -670,9 +673,13 @@ namespace Kentor.AuthServices.Tests
             subject.MetadataUrl.OriginalString.Should().Be("http://idp.example.com");
             subject.MetadataValidUntil.Should().NotHaveValue();
 
-            var subjectKeyParams = subject.SigningKeys.Single().As<RSACryptoServiceProvider>().ExportParameters(false);
-            var expectedKeyParams = SignedXmlHelper.TestKey.As<RSACryptoServiceProvider>().ExportParameters(false);
+            var subjectKeyParams = subject.SigningKeys.Single().CreateKey()
+                .As<RsaSecurityKey>().GetAsymmetricAlgorithm(SecurityAlgorithms.RsaSha1Signature, false).As<RSA>()
+                .ExportParameters(false);
 
+            var expectedKeyParams = SignedXmlHelper.TestCert.PublicKey.Key.As<RSA>()
+                .ExportParameters(false);
+                
             subjectKeyParams.Modulus.ShouldBeEquivalentTo(expectedKeyParams.Modulus);
             subjectKeyParams.Exponent.ShouldBeEquivalentTo(expectedKeyParams.Exponent);
 

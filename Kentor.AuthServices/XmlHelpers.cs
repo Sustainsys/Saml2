@@ -8,6 +8,8 @@ using Kentor.AuthServices.Exceptions;
 using System.Collections.Generic;
 using Kentor.AuthServices.Configuration;
 using System.Reflection;
+using System.IdentityModel.Tokens;
+using System.Globalization;
 
 namespace Kentor.AuthServices
 {
@@ -161,12 +163,13 @@ namespace Kentor.AuthServices
 
         /// <summary>
         /// Checks if an xml element is signed by the given certificate, through
-        /// a contained enveloped signature.
+        /// a contained enveloped signature. Helper for tests. Production
+        /// code always should handle multiple possible signing keys.
         /// </summary>
         /// <param name="xmlElement">Xml Element that should be signed</param>
         /// <param name="certificate">Certificate that should validate</param>
         /// <returns>Is the signature correct?</returns>
-        public static bool IsSignedBy(this XmlElement xmlElement, X509Certificate2 certificate)
+        internal static bool IsSignedBy(this XmlElement xmlElement, X509Certificate2 certificate)
         {
             if (certificate == null)
             {
@@ -174,7 +177,7 @@ namespace Kentor.AuthServices
             }
 
             return xmlElement.IsSignedByAny(
-                Enumerable.Repeat(certificate.PublicKey.Key, 1));
+                Enumerable.Repeat(new X509RawDataKeyIdentifierClause(certificate), 1), false);
         }
 
         /// <summary>
@@ -183,12 +186,14 @@ namespace Kentor.AuthServices
         /// </summary>
         /// <param name="xmlElement">Xml Element that should be signed</param>
         /// <param name="signingKeys">Signing keys to test, one should validate.</param>
+        /// <param name="validateCertificate">Should the certificate be validated too?</param>
         /// <returns>True on correct signature, false on missing signature</returns>
         /// <exception cref="InvalidSignatureException">If the data has
         /// been tampered with or is not valid according to the SAML spec.</exception>
         public static bool IsSignedByAny(
             this XmlElement xmlElement, 
-            IEnumerable<AsymmetricAlgorithm> signingKeys)
+            IEnumerable<SecurityKeyIdentifierClause> signingKeys,
+            bool validateCertificate)
         {
             if (xmlElement == null)
             {
@@ -206,33 +211,57 @@ namespace Kentor.AuthServices
 
             signedXml.LoadXml(signatureElement);
             ValidateSignedInfo(signedXml, xmlElement);
-            VerifySignature(signingKeys, signedXml, signatureElement);
+            VerifySignature(signingKeys, signedXml, signatureElement, validateCertificate);
 
             return true;
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "ValidateCertificates")]
         private static void VerifySignature(
-            IEnumerable<AsymmetricAlgorithm> signingKeys,
+            IEnumerable<SecurityKeyIdentifierClause> signingKeys,
             SignedXml signedXml,
-            XmlElement signatureElement)
+            XmlElement signatureElement,
+            bool validateCertificate)
         {
             FixSignatureIndex(signedXml, signatureElement);
 
             try
             {
-                if (!signingKeys.Any(signedXml.CheckSignature))
+                foreach(var keyIdentifier in signingKeys)
                 {
-                    var containedKey = signedXml.Signature.KeyInfo.OfType<KeyInfoX509Data>()
-                        .SingleOrDefault()?.Certificates.OfType<X509Certificate2>()
-                        .SingleOrDefault();
+                    var key = ((AsymmetricSecurityKey)keyIdentifier.CreateKey())
+                    .GetAsymmetricAlgorithm(SignedXml.XmlDsigRSASHA1Url, false);
 
-                    if (containedKey != null && signedXml.CheckSignature(containedKey, true))
+                    if(signedXml.CheckSignature(key))
                     {
-                        throw new InvalidSignatureException("The signature verified correctly with the key contained in the signature, but that key is not trusted.");
-                    }
+                        if(validateCertificate)
+                        {
+                            var rawCert = keyIdentifier as X509RawDataKeyIdentifierClause;
+                            if(rawCert == null)
+                            {
+                                throw new InvalidOperationException(string.Format(CultureInfo.InvariantCulture,
+                                    "Certificate validation enabled, but the signing key identifier is of type {0} which cannot be validated as a certificate.",
+                                    keyIdentifier.GetType().Name));
+                            }
 
-                    throw new InvalidSignatureException("Signature didn't verify. Have the contents been tampered with?");
+                            if(!new X509Certificate2(rawCert.GetX509RawData()).Verify())
+                            {
+                                throw new InvalidSignatureException("The signature was valid, but the verification of the certificate failed. Is it expired or revoked? Are you sure you really want to enable ValidateCertificates (it's normally not needed)?");
+                            }
+                        }
+                        return;
+                    }
                 }
+                var containedKey = signedXml.Signature.KeyInfo.OfType<KeyInfoX509Data>()
+                    .SingleOrDefault()?.Certificates.OfType<X509Certificate2>()
+                    .SingleOrDefault();
+
+                if (containedKey != null && signedXml.CheckSignature(containedKey, true))
+                {
+                    throw new InvalidSignatureException("The signature verified correctly with the key contained in the signature, but that key is not trusted.");
+                }
+
+                throw new InvalidSignatureException("Signature didn't verify. Have the contents been tampered with?");
             }
             catch (CryptographicException)
             {

@@ -81,6 +81,7 @@ Root element of the config section.
 * [`discoveryServiceUrl`](#discoveryserviceurl-attribute)
 * [`modulePath`](#modulepath-attribute)
 * [`authenticateRequestSigningBehavior`](#authenticaterequestsigningbehavior-attribute)
+* [`validateCertificates`](#validatecertificates-attribute)
 
 ####Elements
 * [`<nameIdPolicy>`](#nameidpolicy-element)
@@ -131,6 +132,17 @@ Two values are supported:
 * `Never` (default if the attribute is missing): AuthServices will never sign any
   created AuthnRequests.
 * `Always`: AuthServices will always sign all AuthnRequests.
+* `IfIdpWantAuthnRequestsSigned`: AuthServices will sign AuthnRequests if the
+  idp is configured for it (through config or listed in idp metadta).
+
+####`validateCertificates` Attribute
+*Optional Attribute of the [`<kentor.authServices>`](#kentor-authservices-section) element.*
+
+Normally certificates for the IDPs signing use is communicated through metadata
+and in case of a breach, the metadata is updated with new data. If you want
+extra security, you can enable certificate validation. Please note that the 
+SAML metadata specification explicitly places no requirements on certificate
+validation, so don't be surprised if an Idp certificate doesn't pass validation.
 
 ###`<nameIdPolicy>` Element
 *Optional child element of the [`<kentor.authServices>`](#kentor-authservices-section) element.*

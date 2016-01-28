@@ -73,7 +73,7 @@
     <Compile Include="Saml2P\Saml2NameIdPolicy.cs" />
     <Compile Include="Saml2P\Saml2SoapBinding.cs" />
     <Compile Include="ServiceCertificate.cs" />
-    <Compile Include="ConfiguredAndLoadedCollection.cs" />
+    <Compile Include="Configuration\ConfiguredAndLoadedSigningKeysCollection.cs" />
     <Compile Include="Internal\PathHelper.cs" />
     <Compile Include="Internal\QueryStringHelper.cs" />
     <Compile Include="Exceptions\UnsuccessfulSamlOperationException.cs" />
