@@ -1,4 +1,15 @@
-Version 0.15.1
+Version 0.16.0
+BREAKING CHANGE: In code based config, the entire idp certificate is now used 
+and not only the key.
+
+* Metadata improvements
+* Optionally validate certificates
+* Expose validUntil in metadata
+* RequestedAuthnContext support
+* NameIDPolicy support
+* Sign generated metadata
+ 
+ Version 0.15.1
 * Bug Fix: Signature not properly URI escaped with HTTP Redirect binding.
 
  Version 0.15.0
@@ -8,17 +19,10 @@ Version 0.15.1
 * The Saml2Response.XmlDocument property has been changed to XmlElement. Should only concern anyone using the core lib directly.
 
  NEW FEATURES
-* RelayState support, including in Stub Idp.
-* Artifact Resolution binding support.
+* RelayState support, including in Stub Idp
+* Artifact Resolution binding support
 * Signed AuthnRequests
-* Service certificate rollover support.
-* HttpModule no longer hides exceptions.
-* StubIdp includes KeyInfo in signatures.
-* Secondary level status codes included in exceptions.
-
- Version 0.14.0
-* Support for encrypted assertions.
-* Documentation for integration with Okta
-* Bug Fix: Redirect binding with query string
-* Include SAML status in exceptions
-* Multiple keys for idps, supporting key rollover.
+* Service certificate rollover support
+* HttpModule no longer hides exceptions
+* StubIdp includes KeyInfo in signatures
+* Secondary level status codes included in exceptions
