@@ -65,6 +65,8 @@
                 users[valueOfElement.Assertion.NameId] = valueOfElement;
             });
 
+            data.UserList.unshift({ id: '', text: '' }); // insert empty placeholder at top
+
             $("#user-dropdown-placeholder").show();
             $(".show-details").show();
 
