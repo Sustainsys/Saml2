@@ -4,11 +4,21 @@
 // Validate hidden fields too
 $.validator.setDefaults({ ignore: [] });
 
+var showDetails = function (show) {
+    if (show) {
+        $(".show-details").hide();
+        $(".hide-details").show();
+    } else {
+        $(".hide-details").hide();
+        $(".show-details").show();
+    }
+};
+
 var setupErrorEvents = function () {
     var settings = $.data($('form')[0], 'validator').settings;
     var oldErrorPlacementFunction = settings.errorPlacement;
     settings.errorPlacement = function (error, inputElement) {
-        $(".hide-details").show();
+        showDetails(true);
         oldErrorPlacementFunction(error, inputElement);
     };
 };
@@ -119,15 +129,12 @@ $(function () {
             });
 
             $("#userList").focus();
-            if (data.HideDetails || typeof (data.HideDetails) === "undefined") { // default == true
-                $(".hide-details").hide();
-            } else {
-                $(".show-details").hide();
-            }
+            var hideDetails = (data.HideDetails || typeof (data.HideDetails) === "undefined"); // default == true
+            showDetails(!hideDetails)
 
             // if there are validation errors displayed from server side, show the details anyway to make the errors visible
             if ($("input.input-validation-error").length > 0) {
-                $(".hide-details").show();
+                showDetails(true);
             }
 
             restoreSelectedUser();
