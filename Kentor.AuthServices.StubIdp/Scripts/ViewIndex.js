@@ -109,6 +109,11 @@
                 $(".show-details").hide();
             }
 
+            // if there are validation errors, show the details anyway to make the error visible
+            if ($("input.input-validation-error").length > 0) {
+                $(".hide-details").show();
+            }
+
             restoreSelectedUser();
         }
     });
