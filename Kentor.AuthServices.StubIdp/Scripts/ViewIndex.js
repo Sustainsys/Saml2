@@ -1,5 +1,21 @@
-﻿$(function () {
+﻿(function () {
+"use strict";
+
+// Validate hidden fields too
+$.validator.setDefaults({ ignore: [] });
+
+var setupErrorEvents = function () {
+    var settings = $.data($('form')[0], 'validator').settings;
+    var oldErrorPlacementFunction = settings.errorPlacement;
+    settings.errorPlacement = function (error, inputElement) {
+        $(".hide-details").show();
+        oldErrorPlacementFunction(error, inputElement);
+    };
+};
+
+$(function () {
     "use strict";
+    setupErrorEvents();
 
     var resetUnobtrusive = function (form) {
         if (form && form.length) {
@@ -165,3 +181,4 @@
         Cookies.set(cookieName, selectedUserId, { expires: 365, path: '' }); // path: '' ensures that a separate cookie is created for each named sub-IDP
     });
 });
+})(); //IFFE
