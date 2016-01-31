@@ -33,12 +33,32 @@ namespace Kentor.AuthServices.Metadata
             return (ExtendedEntityDescriptor)Load(metadataUrl);
         }
 
+        /// <summary>
+        /// <para>Loads metadata XML from the specified URI</para>
+        /// <para>Supports loading from a local file URI, or remote http(s) schemes using WebClient</para>
+        /// </summary>
+        /// <param name="metadataUrl"></param>
+        /// <returns></returns>
         private static MetadataBase Load(Uri metadataUrl)
         {
-            using (var client = new WebClient())
-            using (var stream = client.OpenRead(metadataUrl.ToString()))
+            switch (metadataUrl.Scheme)
             {
-                return Load(stream);
+                case "file":
+                    // load local xml metadata file
+                    using (var stream = File.OpenRead(metadataUrl.LocalPath))
+                    {
+                        return Load(stream);
+                    }
+                case "http":
+                case "https":
+                    // load http/https using the web client
+                    using (var client = new WebClient())
+                    using (var stream = client.OpenRead(metadataUrl.ToString()))
+                    {
+                        return Load(stream);
+                    }
+                default:
+                    throw new InvalidOperationException("Metadata loading is not supported for specified URI: " + metadataUrl);
             }
         }
 
@@ -69,7 +89,16 @@ namespace Kentor.AuthServices.Metadata
                 throw new ArgumentNullException(nameof(metadataUrl));
             }
 
-            return (ExtendedEntitiesDescriptor)Load(metadataUrl);
+            MetadataBase loadedMetadata = Load(metadataUrl);
+
+            if (loadedMetadata is ExtendedEntitiesDescriptor)
+                return (ExtendedEntitiesDescriptor)loadedMetadata;
+            else
+            {
+                List<EntityDescriptor> list = new List<EntityDescriptor>();
+                list.Add((ExtendedEntityDescriptor)loadedMetadata);
+                return new ExtendedEntitiesDescriptor(new System.Collections.ObjectModel.Collection<EntityDescriptor>(list));
+            }
         }
     }
 }
