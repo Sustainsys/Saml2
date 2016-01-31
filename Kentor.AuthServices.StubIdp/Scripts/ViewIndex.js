@@ -125,7 +125,7 @@ $(function () {
                 $(".show-details").hide();
             }
 
-            // if there are validation errors, show the details anyway to make the error visible
+            // if there are validation errors displayed from server side, show the details anyway to make the errors visible
             if ($("input.input-validation-error").length > 0) {
                 $(".hide-details").show();
             }
