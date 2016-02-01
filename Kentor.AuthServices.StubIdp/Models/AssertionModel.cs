@@ -1,9 +1,11 @@
 ﻿using Kentor.AuthServices.Saml2P;
+using Kentor.AuthServices.WebSso;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Configuration;
 using System.IdentityModel.Metadata;
+using System.IdentityModel.Tokens;
 using System.Linq;
 using System.Security.Claims;
 using System.Security.Cryptography.X509Certificates;
@@ -17,6 +19,10 @@ namespace Kentor.AuthServices.StubIdp.Models
         [Required]
         [Display(Name = "Assertion Consumer Service Url")]
         public string AssertionConsumerServiceUrl { get; set; }
+
+        [Display(Name = "Relay State")]
+        [StringLength(80)]
+        public string RelayState { get; set; }
 
         [Display(Name = "Subject NameId")]
         [Required]
@@ -47,13 +53,21 @@ namespace Kentor.AuthServices.StubIdp.Models
                 .Concat((AttributeStatements ?? Enumerable.Empty<AttributeStatementModel>()).Select(att => new Claim(att.Type, att.Value)));
             var identity = new ClaimsIdentity(claims);
 
+            Saml2Id saml2Id = null;
+            if (!String.IsNullOrEmpty(InResponseTo))
+            {
+                saml2Id = new Saml2Id(InResponseTo);
+            }
+
             return new Saml2Response(
                 new EntityId(UrlResolver.MetadataUrl.ToString()),
                 CertificateHelper.SigningCertificate, new Uri(AssertionConsumerServiceUrl),
-                InResponseTo, identity);
+                saml2Id, RelayState, identity);
         }
 
         [Display(Name = "Incoming AuthnRequest")]
         public string AuthnRequestXml { get; set; }
+
+        public Saml2BindingType ResponseBinding { get; set; } = Saml2BindingType.HttpPost;
     }
 }

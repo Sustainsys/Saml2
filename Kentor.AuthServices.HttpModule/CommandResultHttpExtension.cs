@@ -63,10 +63,11 @@ namespace Kentor.AuthServices.HttpModule
         /// <summary>
         /// Establishes an application session by calling the session authentication module.
         /// </summary>
+        [SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", Justification = "Several words in the GitHub link")]
         [ExcludeFromCodeCoverage]
         public static void SignInSessionAuthenticationModule(this CommandResult commandResult)
         {
-            if(commandResult == null)
+            if (commandResult == null)
             {
                 throw new ArgumentNullException(nameof(commandResult));
             }
@@ -75,6 +76,13 @@ namespace Kentor.AuthServices.HttpModule
             if (commandResult.Principal != null && HttpContext.Current != null)
             {
                 var sessionToken = new SessionSecurityToken(commandResult.Principal);
+
+                if (FederatedAuthentication.SessionAuthenticationModule == null)
+                {
+                    throw new InvalidOperationException(
+                        "FederatedAuthentication.SessionAuthenticationModule is null, make sure you have loaded the SessionAuthenticationModule in web.config. " +
+                        "See https://github.com/KentorIT/authservices/blob/master/doc/Configuration.md#loading-modules");
+                }
 
                 FederatedAuthentication.SessionAuthenticationModule
                     .AuthenticateSessionSecurityToken(sessionToken, true);

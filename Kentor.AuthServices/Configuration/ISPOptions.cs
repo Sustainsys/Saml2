@@ -2,6 +2,7 @@
 using Kentor.AuthServices.Saml2P;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IdentityModel.Configuration;
 using System.IdentityModel.Metadata;
 using System.Linq;
@@ -24,10 +25,17 @@ namespace Kentor.AuthServices.Configuration
         Uri ReturnUrl { get; }
 
         /// <summary>
-        /// Optional attribute that describes for how long anyone may cache the metadata
-        /// presented by the service provider. Defaults to 3600 seconds.
+        /// Recommendation of cache refresh interval to those who reads our
+        /// metadata.
         /// </summary>
         TimeSpan MetadataCacheDuration { get; }
+
+        /// <summary>
+        /// Maximum validity duration after fetch for those who reads our
+        /// metadata. Exposed as an absolute validUntil time in the metadata.
+        /// If set to null, no validUntil is exposed in metadata.
+        /// </summary>
+        TimeSpan? MetadataValidDuration { get; }
 
         /// <summary>
         /// The security token handler used to process incoming assertions for this SP.
@@ -57,6 +65,16 @@ namespace Kentor.AuthServices.Configuration
         Organization Organization { get; }
 
         /// <summary>
+        /// NameId Policy.
+        /// </summary>
+        Saml2NameIdPolicy NameIdPolicy { get; }
+
+        /// <summary>
+        /// RequestedAuthnContext
+        /// </summary>
+        Saml2RequestedAuthnContext RequestedAuthnContext { get;  }
+
+        /// <summary>
         /// Contacts for the SAML2 entity. Must not be null.
         /// </summary>
         IEnumerable<ContactPerson> Contacts { get; }
@@ -72,8 +90,41 @@ namespace Kentor.AuthServices.Configuration
         IdentityConfiguration SystemIdentityModelIdentityConfiguration { get; }
 
         /// <summary>
-        /// Certificate for service provider to use when decrypting assertions
+        /// Certificates used by the service provider for signing or decryption.
         /// </summary>
-        X509Certificate2 ServiceCertificate { get; set; }
+        Collection<ServiceCertificate> ServiceCertificates { get; }
+
+        /// <summary>
+        /// Certificates valid for use in decryption
+        /// </summary>
+        ReadOnlyCollection<X509Certificate2> DecryptionServiceCertificates { get; }
+
+        /// <summary>
+        /// Certificate for use in signing outbound requests
+        /// </summary>
+        X509Certificate2 SigningServiceCertificate { get; }
+
+        /// <summary>
+        /// Certificates to be published in metadata
+        /// </summary>
+        ReadOnlyCollection<ServiceCertificate> MetadataCertificates { get; }
+
+        /// <summary>
+        /// Signing behavior for AuthnRequests.
+        /// </summary>
+        SigningBehavior AuthenticateRequestSigningBehavior { get; }
+
+        /// <summary>
+        /// Metadata flag that we want assertions to be signed.
+        /// </summary>
+        bool WantAssertionsSigned { get; }
+
+        /// <summary>
+        /// Validate certificates when validating signatures? Normally not a
+        /// good idea as SAML2 deployments typically exchange certificates
+        /// directly and isntead of relying on the public certificate
+        /// infrastructure.
+        /// </summary>
+        bool ValidateCertificates { get; }
     }
 }

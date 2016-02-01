@@ -20,6 +20,7 @@ namespace Kentor.AuthServices.StubIdp.Models
             if (includeCacheDuration)
             {
                 metadata.CacheDuration = new TimeSpan(0, 15, 0);
+                metadata.ValidUntil = DateTime.UtcNow.AddDays(1);
             }
 
             var idpSsoDescriptor = new IdentityProviderSingleSignOnDescriptor();
@@ -32,6 +33,14 @@ namespace Kentor.AuthServices.StubIdp.Models
                 Location = UrlResolver.SsoServiceUrl
             });
 
+            idpSsoDescriptor.ArtifactResolutionServices.Add(0, new IndexedProtocolEndpoint()
+            {
+                Index = 0,
+                IsDefault = true,
+                Binding = Saml2Binding.SoapUri,
+                Location = UrlResolver.ArtifactServiceUrl
+            });
+
             idpSsoDescriptor.Keys.Add(CertificateHelper.SigningKey);
 
             return metadata;
@@ -42,7 +51,8 @@ namespace Kentor.AuthServices.StubIdp.Models
             var metadata = new ExtendedEntitiesDescriptor
             {
                 Name = "Kentor.AuthServices.StubIdp Federation",
-                CacheDuration = new TimeSpan(0, 15, 0)
+                CacheDuration = new TimeSpan(0, 15, 0),
+                ValidUntil = DateTime.UtcNow.AddDays(1)
             };
 
             metadata.ChildEntities.Add(CreateIdpMetadata(false));

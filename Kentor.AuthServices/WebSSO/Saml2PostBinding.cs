@@ -1,8 +1,11 @@
-﻿using System;
+﻿using Kentor.AuthServices.Configuration;
+using Kentor.AuthServices.Saml2P;
+using System;
 using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Web;
+using System.Xml;
 
 namespace Kentor.AuthServices.WebSso
 {
@@ -19,36 +22,50 @@ namespace Kentor.AuthServices.WebSso
                 && request.Form.Keys.Contains("SAMLResponse");
         }
 
-        public override string Unbind(HttpRequestData request)
+        public override UnbindResult Unbind(HttpRequestData request, IOptions options)
         {
             if (request == null)
             {
                 throw new ArgumentNullException(nameof(request));
             }
 
-            var xml = Encoding.UTF8.GetString(
-                Convert.FromBase64String(request.Form["SAMLResponse"]));
+            var xmlDoc = new XmlDocument()
+            {
+                PreserveWhitespace = true
+            };
 
-            return xml;
+            xmlDoc.LoadXml(Encoding.UTF8.GetString(Convert.FromBase64String(request.Form["SAMLResponse"])));
+
+            string relayState = null;
+            request.Form.TryGetValue("RelayState", out relayState);
+
+            return new UnbindResult(xmlDoc.DocumentElement, relayState);
         }
 
-        public override CommandResult Bind(string payload, Uri destinationUrl, string messageName)
+        public override CommandResult Bind(ISaml2Message message)
         {
-            if (payload == null)
+            if(message == null)
             {
-                throw new ArgumentNullException(nameof(payload));
-            }
-            if (destinationUrl == null)
-            {
-                throw new ArgumentNullException(nameof(destinationUrl));
-            }
-            if (messageName == null)
-            {
-                throw new ArgumentNullException(nameof(messageName));
+                throw new ArgumentNullException(nameof(message));
             }
 
-            var encodedXml = Convert.ToBase64String(
-                Encoding.UTF8.GetBytes(payload));
+            var xml = message.ToXml();
+            if(message.SigningCertificate != null)
+            {
+                var xmlDoc = new XmlDocument()
+                {
+                    PreserveWhitespace = true
+                };
+
+                xmlDoc.LoadXml(xml);
+                xmlDoc.Sign(message.SigningCertificate, true);
+                xml = xmlDoc.OuterXml;
+            }
+
+            var encodedXml = Convert.ToBase64String(Encoding.UTF8.GetBytes(xml));
+
+            var relayStateHtml = string.IsNullOrEmpty(message.RelayState) ? null
+                : string.Format(CultureInfo.InvariantCulture, PostHtmlRelayStateFormatString, message.RelayState);
 
             var cr = new CommandResult()
             {
@@ -56,13 +73,17 @@ namespace Kentor.AuthServices.WebSso
                 Content = String.Format(
                     CultureInfo.InvariantCulture,
                     PostHtmlFormatString,
-                    destinationUrl,
-                    messageName,
+                    message.DestinationUrl,
+                    relayStateHtml,
+                    message.MessageName,
                     encodedXml)
             };
 
             return cr;
         }
+
+        private const string PostHtmlRelayStateFormatString = @"
+<input type=""hidden"" name=""RelayState"" value=""{0}""/>";
 
         private const string PostHtmlFormatString = @"<?xml version=""1.0"" encoding=""UTF-8""?>
 <!DOCTYPE html PUBLIC ""-//W3C//DTD XHTML 1.1//EN""
@@ -75,11 +96,10 @@ namespace Kentor.AuthServices.WebSso
 you must press the Continue button once to proceed.
 </p>
 </noscript>
-<form action=""{0}"" 
-method=""post"">
-<div>
-<input type=""hidden"" name=""{1}"" 
-value=""{2}""/>
+<form action=""{0}"" method=""post"">
+<div>{1}
+<input type=""hidden"" name=""{2}""
+value=""{3}""/>
 </div>
 <noscript>
 <div>

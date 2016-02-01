@@ -49,11 +49,20 @@ namespace Kentor.AuthServices.Metadata
         protected override void WriteCustomAttributes<T>(XmlWriter writer, T source)
         {
             var cachedMetadata = source as ICachedMetadata;
-            if (cachedMetadata != null && cachedMetadata.CacheDuration.HasValue)
+            if (cachedMetadata != null)
             {
-                writer.WriteAttributeString(
-                    "cacheDuration",
-                    XmlConvert.ToString(cachedMetadata.CacheDuration.Value));
+                if (cachedMetadata.CacheDuration.HasValue)
+                {
+                    writer.WriteAttributeString(
+                        "cacheDuration",
+                        XmlConvert.ToString(cachedMetadata.CacheDuration.Value));
+                }
+                if (cachedMetadata.ValidUntil.HasValue)
+                {
+                    writer.WriteAttributeString(
+                        "validUntil",
+                        cachedMetadata.ValidUntil.Value.ToSaml2DateTimeString());
+                }
             }
 
             if(typeof(T) == typeof(EntityDescriptor))

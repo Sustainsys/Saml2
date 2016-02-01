@@ -19,6 +19,7 @@ namespace Kentor.AuthServices.IntegrationTests
         {
             I.Open("http://localhost:52071/")
                 .Enter("http://localhost:2181/AuthServices/Acs").In("#AssertionModel_AssertionConsumerServiceUrl")
+                .Click("#binding_artifact")
                 .Click("#submit");
 
             I.Click("a[href=\"/Home/Secure\"]");

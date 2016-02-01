@@ -8,6 +8,8 @@ using System.Threading.Tasks;
 using System.Xml;
 using System.Xml.Linq;
 using Kentor.AuthServices.Internal;
+using System.IdentityModel.Tokens;
+using System.Security.Cryptography.X509Certificates;
 
 namespace Kentor.AuthServices.Saml2P
 {
@@ -16,12 +18,12 @@ namespace Kentor.AuthServices.Saml2P
     /// </summary>
     public abstract class Saml2RequestBase : ISaml2Message
     {
-        private string id = "id" + Guid.NewGuid().ToString("N");
+        private Saml2Id id = new Saml2Id("id" + Guid.NewGuid().ToString("N"));
 
         /// <summary>
         /// The id of the request.
         /// </summary>
-        public string Id
+        public Saml2Id Id
         {
             get
             {
@@ -114,28 +116,27 @@ namespace Kentor.AuthServices.Saml2P
         /// Also validates basic properties of the request
         /// </summary>
         /// <param name="xml">The xml document to parse</param>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1059:MembersShouldNotExposeCertainConcreteTypes", MessageId = "System.Xml.XmlNode")]
-        protected void ReadBaseProperties(XmlDocument xml)
+        protected void ReadBaseProperties(XmlElement xml)
         {
             if (xml == null)
             {
                 throw new ArgumentNullException(nameof(xml));
             }
             ValidateCorrectDocument(xml);
-            Id = xml.DocumentElement.Attributes["ID"].Value;
+            Id = new Saml2Id(xml.Attributes["ID"].Value);
 
-            Issuer = new EntityId(xml.DocumentElement["Issuer", Saml2Namespaces.Saml2Name].GetTrimmedTextIfNotNull());
+            Issuer = new EntityId(xml["Issuer", Saml2Namespaces.Saml2Name].GetTrimmedTextIfNotNull());
         }
 
-        private void ValidateCorrectDocument(XmlDocument xml)
+        private void ValidateCorrectDocument(XmlElement xml)
         {
-            if (xml.DocumentElement.LocalName != LocalName
-               || xml.DocumentElement.NamespaceURI != Saml2Namespaces.Saml2P)
+            if (xml.LocalName != LocalName
+               || xml.NamespaceURI != Saml2Namespaces.Saml2P)
             {
                 throw new XmlException("Expected a SAML2 authentication request document");
             }
 
-            if (xml.DocumentElement.Attributes["Version"].Value != "2.0")
+            if (xml.Attributes["Version"].Value != "2.0")
             {
                 throw new XmlException("Wrong or unsupported SAML2 version");
             }
@@ -146,5 +147,16 @@ namespace Kentor.AuthServices.Saml2P
         /// </summary>
         /// <returns>string containing the Xml data.</returns>
         public abstract string ToXml();
+
+        /// <summary>
+        /// RelayState attached to the message.
+        /// </summary>
+        public string RelayState { get; protected set; }
+
+        /// <summary>
+        /// Certificate used to sign the message with during binding, according
+        /// to the signature processing rules of each binding.
+        /// </summary>
+        public X509Certificate2 SigningCertificate { get; set; }
     }
 }

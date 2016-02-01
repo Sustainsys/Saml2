@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IdentityModel.Metadata;
 using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -31,5 +33,24 @@ namespace Kentor.AuthServices.Saml2P
         /// field. Typically "SAMLRequest" or "SAMLResponse".
         /// </summary>
         string MessageName { get; }
+
+        /// <summary>
+        /// RelayState attached to the message.
+        /// </summary>
+        /// <remarks>Strictly speaking, this is not part of the message,
+        /// but it is delivered together with the message so we need to keep
+        /// track of it together with a message.</remarks>
+        string RelayState { get; }
+
+        /// <summary>
+        /// Certificate used to sign the message with during binding, according
+        /// to the signature processing rules of each binding.
+        /// </summary>
+        X509Certificate2 SigningCertificate { get; }
+
+        /// <summary>
+        /// Issuer of the message.
+        /// </summary>
+        EntityId Issuer { get; }
     }
 }

@@ -66,8 +66,23 @@ form {
         width: @label-width;
     }
 
+    .radio-button-group{
+        label{
+            float: none;
+            font-weight: normal;
+        }
+        input{
+            width: auto;
+        }
+        float:left;
+    }
+
     input {
         width: @input-width;
+    }
+
+    .validation-summary-errors {
+        color: @error-color;
     }
 
     .field-validation-error {
@@ -80,11 +95,22 @@ form {
 
     div {
         min-height: 50px;
+
+        &.validation-summary-valid {
+            min-height: initial;
+        }
     }
 
     .input-validation-error {
         background-color: #ffa6a6;
         border-color: @error-color;
+    }
+
+    #userDescription {
+        margin-top: 10px;
+        white-space: pre-wrap;
+        margin-left: @label-width;
+        font-style: italic;
     }
 }
 
@@ -116,8 +142,18 @@ form {
     min-height: 300px;
 }
 
-#userDescription {
-    white-space: pre-wrap;
+#submit {
+    border: 0 none;
+    border-radius: 5px;
+    padding: 12px 55px;
+    cursor: pointer;
+    color: #FFFFFF;
+    background: #3AB54A;
+    transition: all 80ms ease-in-out;
+
+    &:hover, &:active, &:focus {
+        background: #53e065;
+    }
 }
 
 .initially-hidden .hide-details {

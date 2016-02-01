@@ -90,6 +90,21 @@ namespace Kentor.AuthServices.Configuration
             }
         }
 
+        /// <summary>
+        /// Gets all currently known identity providers. Note that the returned
+        /// enumeration is a copy to avoid race conditions.
+        /// </summary>
+        public IEnumerable<IdentityProvider> KnownIdentityProviders
+        {
+            get
+            {
+                lock(dictionary)
+                {
+                    return dictionary.Values.ToList();
+                }
+            }
+        }
+
         // Used by tests.
         internal IdentityProvider this[int i]
         {

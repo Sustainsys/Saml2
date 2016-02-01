@@ -24,7 +24,7 @@ namespace Kentor.AuthServices.Configuration
         {
             return isReadOnly;
         }
-                
+
         /// <summary>
         /// EntityId as presented by the idp. Used as key to configuration.
         /// </summary>
@@ -96,7 +96,7 @@ namespace Kentor.AuthServices.Configuration
         /// Even though AllowUnsolicitedAuthnResponse is true the InResponseTo must be valid if existing.
         /// </summary>
         [ConfigurationProperty("allowUnsolicitedAuthnResponse", IsRequired = true)]
-        public bool AllowUnsolicitedAuthnResponse 
+        public bool AllowUnsolicitedAuthnResponse
         {
             get
             {
@@ -136,6 +136,33 @@ namespace Kentor.AuthServices.Configuration
             internal set
             {
                 base[metadataUrl] = value;
+            }
+        }
+
+        const string artifactResolutionServices = nameof(artifactResolutionServices);
+        /// <summary>
+        /// Artifact Resolution endpoints for the identity provider.
+        /// </summary>
+        [ConfigurationProperty(artifactResolutionServices)]
+        [ConfigurationCollection(typeof(ArtifactResolutionServiceCollection))]
+        public ArtifactResolutionServiceCollection ArtifactResolutionServices
+        {
+            get
+            {
+                return (ArtifactResolutionServiceCollection)base[artifactResolutionServices];
+            }
+        }
+
+        const string wantAuthnRequestsSigned = nameof(wantAuthnRequestsSigned);
+        /// <summary>
+        /// Does this Idp want the AuthnRequests to be signed?
+        /// </summary>
+        [ConfigurationProperty(wantAuthnRequestsSigned, IsRequired = false, DefaultValue = false)]
+        public bool WantAuthnRequestsSigned
+        {
+            get
+            {
+                return (bool)base[wantAuthnRequestsSigned];
             }
         }
     }

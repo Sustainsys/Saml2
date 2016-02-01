@@ -12,6 +12,8 @@ using System.IdentityModel.Metadata;
 using System.Security.Cryptography;
 using System.IdentityModel.Services;
 using Kentor.AuthServices.Internal;
+using Kentor.AuthServices.Exceptions;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Kentor.AuthServices.Saml2P
 {
@@ -32,56 +34,102 @@ namespace Kentor.AuthServices.Saml2P
         /// <exception cref="XmlException">On xml errors or unexpected xml structure.</exception>
         public static Saml2Response Read(string xml)
         {
+            return Read(xml, null);
+        }
+
+        /// <summary>
+        /// Read the supplied Xml and parse it into a response.
+        /// </summary>
+        /// <param name="xml">xml data.</param>
+        /// <param name="relayState">Relay state associated with message.</param>
+        /// <returns>Saml2Response</returns>
+        /// <exception cref="XmlException">On xml errors or unexpected xml structure.</exception>
+        public static Saml2Response Read(string xml, string relayState)
+        {
             var x = new XmlDocument();
             x.PreserveWhitespace = true;
             x.LoadXml(xml);
 
-            if (x.DocumentElement.LocalName != "Response"
-                || x.DocumentElement.NamespaceURI != Saml2Namespaces.Saml2P)
+            return new Saml2Response(x.DocumentElement, relayState);
+        }
+
+        /// <summary>
+        /// Ctor
+        /// </summary>
+        /// <param name="xml">Root xml element.</param>
+        /// <param name="relayState"></param>
+        public Saml2Response(XmlElement xml, string relayState)
+        {
+            if(xml == null)
+            {
+                throw new ArgumentNullException(nameof(xml));
+            }
+
+            if (xml.LocalName != "Response"
+                || xml.NamespaceURI != Saml2Namespaces.Saml2P)
             {
                 throw new XmlException("Expected a SAML2 assertion document");
             }
 
-            if (x.DocumentElement.Attributes["Version"].Value != "2.0")
+            if (xml.Attributes["Version"].Value != "2.0")
             {
                 throw new XmlException("Wrong or unsupported SAML2 version");
             }
 
-            return new Saml2Response(x);
-        }
+            xmlElement = xml;
+            RelayState = relayState;
 
-        private Saml2Response(XmlDocument xml)
-        {
-            xmlDocument = xml;
+            id = new Saml2Id(xml.Attributes["ID"].Value);
 
-            id = new Saml2Id(xml.DocumentElement.Attributes["ID"].Value);
-
-            var parsedInResponseTo = xml.DocumentElement.Attributes["InResponseTo"].GetValueIfNotNull();
+            var parsedInResponseTo = xml.Attributes["InResponseTo"].GetValueIfNotNull();
             if (parsedInResponseTo != null)
             {
-                inResponseTo = new Saml2Id(parsedInResponseTo);
+                InResponseTo = new Saml2Id(parsedInResponseTo);
             }
 
-            issueInstant = DateTime.Parse(xml.DocumentElement.Attributes["IssueInstant"].Value,
+            issueInstant = DateTime.Parse(xml.Attributes["IssueInstant"].Value,
                 CultureInfo.InvariantCulture, DateTimeStyles.AdjustToUniversal);
 
-            var statusString = xml.DocumentElement["Status", Saml2Namespaces.Saml2PName]
+            var statusString = xml["Status", Saml2Namespaces.Saml2PName]
                 ["StatusCode", Saml2Namespaces.Saml2PName].Attributes["Value"].Value;
 
             status = StatusCodeHelper.FromString(statusString);
 
-            statusMessage = xml.DocumentElement["Status", Saml2Namespaces.Saml2PName]
+            statusMessage = xml["Status", Saml2Namespaces.Saml2PName]
                 ["StatusMessage", Saml2Namespaces.Saml2PName].GetTrimmedTextIfNotNull();
+            if (xml["Status", Saml2Namespaces.Saml2PName]["StatusCode", Saml2Namespaces.Saml2PName]["StatusCode", Saml2Namespaces.Saml2PName] != null)
+            {
+                secondLevelStatus = xml["Status", Saml2Namespaces.Saml2PName]["StatusCode", Saml2Namespaces.Saml2PName]["StatusCode", Saml2Namespaces.Saml2PName].Attributes["Value"].Value;
+            }
 
-            issuer = new EntityId(xmlDocument.DocumentElement["Issuer", Saml2Namespaces.Saml2Name].GetTrimmedTextIfNotNull());
+            Issuer = new EntityId(xmlElement["Issuer", Saml2Namespaces.Saml2Name].GetTrimmedTextIfNotNull());
 
-            var destinationUrlString = xmlDocument.DocumentElement.Attributes["Destination"].GetValueIfNotNull();
+            var destinationUrlString = xmlElement.Attributes["Destination"].GetValueIfNotNull();
 
             if (destinationUrlString != null)
             {
-                destinationUrl = new Uri(destinationUrlString);
+                DestinationUrl = new Uri(destinationUrlString);
             }
         }
+
+        /// <summary>
+        /// Create a response with the supplied data.
+        /// </summary>
+        /// <param name="issuer">Issuer of the response.</param>
+        /// <param name="signingCertificate">The certificate to use when signing
+        /// this response in XML form.</param>
+        /// <param name="destinationUrl">The destination Uri for the message</param>
+        /// <param name="inResponseTo">In response to id</param>
+        /// <param name="claimsIdentities">Claims identities to be included in the 
+        /// response. Each identity is translated into a separate assertion.</param>
+        public Saml2Response(
+            EntityId issuer,
+            X509Certificate2 signingCertificate,
+            Uri destinationUrl,
+            Saml2Id inResponseTo,
+            params ClaimsIdentity[] claimsIdentities)
+            : this(issuer, signingCertificate, destinationUrl, inResponseTo, null, claimsIdentities)
+        { }
 
         /// <summary>
         /// Create a response with the supplied data.
@@ -91,42 +139,50 @@ namespace Kentor.AuthServices.Saml2P
         /// this response in XML form.</param>
         /// <param name="destinationUrl">The destination Uri for the message</param>
         /// <param name="inResponseTo">In response to id</param>
+        /// <param name="relayState">RelayState associated with the message.</param>
         /// <param name="claimsIdentities">Claims identities to be included in the 
         /// response. Each identity is translated into a separate assertion.</param>
-        public Saml2Response(EntityId issuer, X509Certificate2 issuerCertificate,
-            Uri destinationUrl, string inResponseTo, params ClaimsIdentity[] claimsIdentities)
+        public Saml2Response(
+            EntityId issuer,
+            X509Certificate2 issuerCertificate,
+            Uri destinationUrl,
+            Saml2Id inResponseTo,
+            string relayState,
+            params ClaimsIdentity[] claimsIdentities)
         {
-            this.issuer = issuer;
+            Issuer = issuer;
             this.claimsIdentities = claimsIdentities;
-            this.issuerCertificate = issuerCertificate;
-            this.destinationUrl = destinationUrl;
-            if (inResponseTo != null)
-            {
-                this.inResponseTo = new Saml2Id(inResponseTo);
-            }
+            SigningCertificate = issuerCertificate;
+            DestinationUrl = destinationUrl;
+            RelayState = relayState;
+            InResponseTo = inResponseTo;
             id = new Saml2Id("id" + Guid.NewGuid().ToString("N"));
             status = Saml2StatusCode.Success;
         }
 
-        private readonly X509Certificate2 issuerCertificate;
+        /// <summary>
+        /// Certificate used to sign the message with during binding, according
+        /// to the signature processing rules of each binding.
+        /// </summary>
+        [ExcludeFromCodeCoverage]
+        public X509Certificate2 SigningCertificate { get; }
 
-        private XmlDocument xmlDocument;
+        private XmlElement xmlElement;
 
         /// <summary>
-        /// The response as an xml docuemnt. Either the original xml, or xml that is
+        /// The response as an xml element. Either the original xml, or xml that is
         /// generated from supplied data.
         /// </summary>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1059:MembersShouldNotExposeCertainConcreteTypes", MessageId = "System.Xml.XmlNode")]
-        public XmlDocument XmlDocument
+        public XmlElement XmlElement
         {
             get
             {
-                if (xmlDocument == null)
+                if (xmlElement == null)
                 {
-                    CreateXmlDocument();
+                    CreateXmlElement();
                 }
 
-                return xmlDocument;
+                return xmlElement;
             }
         }
 
@@ -147,13 +203,12 @@ namespace Kentor.AuthServices.Saml2P
         /// <returns>string containing xml.</returns>
         public string ToXml()
         {
-            return XmlDocument.OuterXml;
+            return XmlElement.OuterXml;
         }
 
-        private void CreateXmlDocument()
+        private void CreateXmlElement()
         {
             var xml = new XmlDocument();
-            xml.AppendChild(xml.CreateXmlDeclaration("1.0", null, null));
 
             var responseElement = xml.CreateElement("saml2p", "Response", Saml2Namespaces.Saml2PName);
 
@@ -173,7 +228,7 @@ namespace Kentor.AuthServices.Saml2P
             xml.AppendChild(responseElement);
 
             var issuerElement = xml.CreateElement("saml2", "Issuer", Saml2Namespaces.Saml2Name);
-            issuerElement.InnerText = issuer.Id;
+            issuerElement.InnerText = Issuer.Id;
             responseElement.AppendChild(issuerElement);
 
             var statusElement = xml.CreateElement("saml2p", "Status", Saml2Namespaces.Saml2PName);
@@ -185,12 +240,10 @@ namespace Kentor.AuthServices.Saml2P
             foreach (var ci in claimsIdentities)
             {
                 responseElement.AppendChild(xml.ReadNode(
-                    ci.ToSaml2Assertion(issuer).ToXElement().CreateReader()));
+                    ci.ToSaml2Assertion(Issuer).ToXElement().CreateReader()));
             }
 
-            xmlDocument = xml;
-
-            xml.Sign(issuerCertificate);
+            xmlElement = xml.DocumentElement;
         }
 
         readonly Saml2Id id;
@@ -200,12 +253,10 @@ namespace Kentor.AuthServices.Saml2P
         /// </summary>
         public Saml2Id Id { get { return id; } }
 
-        readonly Saml2Id inResponseTo;
-
         /// <summary>
         /// InResponseTo id.
         /// </summary>
-        public Saml2Id InResponseTo { get { return inResponseTo; } }
+        public Saml2Id InResponseTo { get; }
 
         readonly DateTime issueInstant;
 
@@ -228,31 +279,22 @@ namespace Kentor.AuthServices.Saml2P
         /// </summary>
         public string StatusMessage { get { return statusMessage; } }
 
-        readonly EntityId issuer;
+        readonly string secondLevelStatus;
+        /// <summary>
+        /// Optional status which MAY give additional information about the cause of the problem (according to the SAML2 spec section 3.2.2.2))))))))). 
+        /// Because it may change in future specifications let's not make enum out of it yet.
+        /// </summary>
+        public string SecondLevelStatus { get { return secondLevelStatus; } }
 
         /// <summary>
         /// Issuer (= sender) of the response.
         /// </summary>
-        public EntityId Issuer
-        {
-            get
-            {
-                return issuer;
-            }
-        }
-
-        readonly Uri destinationUrl;
+        public EntityId Issuer { get; }
 
         /// <summary>
         /// The destination of the response message.
         /// </summary>
-        public Uri DestinationUrl
-        {
-            get
-            {
-                return destinationUrl;
-            }
-        }
+        public Uri DestinationUrl { get; }
 
         StoredRequestState requestState;
 
@@ -267,63 +309,86 @@ namespace Kentor.AuthServices.Saml2P
 
         /// <summary>Gets all assertion element nodes from this response message.</summary>
         /// <value>All assertion element nodes.</value>
-        private IEnumerable<XmlElement> AllAssertionElementNodes
+        private IEnumerable<XmlElement> GetAllAssertionElementNodes(IOptions options)
         {
-            get { return allAssertionElementNodes ?? (allAssertionElementNodes = retrieveAssertionElements()); }
+            return allAssertionElementNodes ?? (allAssertionElementNodes = retrieveAssertionElements(options));
         }
 
-        private IEnumerable<XmlElement> retrieveAssertionElements()
+        private IEnumerable<XmlElement> retrieveAssertionElements(IOptions options)
         {
             var assertions = new List<XmlElement>();
 
-            assertions.AddRange(XmlDocument.DocumentElement.ChildNodes.Cast<XmlNode>()
+            assertions.AddRange(XmlElement.ChildNodes.Cast<XmlNode>()
                 .Where(node => node.NodeType == XmlNodeType.Element).Cast<XmlElement>()
                 .Where(xe => xe.LocalName == "Assertion" && xe.NamespaceURI == Saml2Namespaces.Saml2Name));
 
-            var encryptedAssertions = XmlDocument.DocumentElement.ChildNodes.Cast<XmlNode>()
+            var encryptedAssertions = XmlElement.ChildNodes.Cast<XmlNode>()
                 .Where(node => node.NodeType == XmlNodeType.Element).Cast<XmlElement>()
                 .Where(xe => xe.LocalName == "EncryptedAssertion" && xe.NamespaceURI == Saml2Namespaces.Saml2Name);
 
             if (encryptedAssertions.Count() > 0)
             {
-                if (serviceCertificate == null)
-                {
-                    throw new Saml2ResponseFailedValidationException("Encrypted Assertions encountered but Service Certificate was not provided.");
-                }
-                else if (!serviceCertificate.HasPrivateKey)
-                {
-                    throw new Saml2ResponseFailedValidationException("Encrypted Assertions encountered but Service Certificate does not contain private key.");
-                }
+                var decryptionCertificates = GetCertificatesValidForDecryption(options);
 
-                assertions.AddRange(encryptedAssertions.Decrypt(serviceCertificate.PrivateKey)
-                    .Select(xe => (XmlElement)xe.GetElementsByTagName("Assertion", Saml2Namespaces.Saml2Name)[0]));
+                bool decrypted = false;
+                foreach (var serviceCertificate in decryptionCertificates)
+                {
+                    try
+                    {
+                        assertions.AddRange(encryptedAssertions.Decrypt(serviceCertificate.PrivateKey)
+                                .Select(xe => (XmlElement)xe.GetElementsByTagName("Assertion", Saml2Namespaces.Saml2Name)[0]));
+                        decrypted = true;
+                        break;
+                    }
+                    catch (CryptographicException)
+                    {
+                        // we cannot depend on Idp's sending KeyInfo, so this is the only 
+                        // reliable way to know we've got the wrong cert
+                    }
+                }
+                if (!decrypted)
+                {
+                    throw new Saml2ResponseFailedValidationException("Encrypted Assertion(s) could not be decrypted using the configured Service Certificate(s).");
+                }
             }
 
             return assertions;
         }
 
+        private static IEnumerable<X509Certificate2> GetCertificatesValidForDecryption(IOptions options)
+        {
+            var decryptionCertificates = options.SPOptions.DecryptionServiceCertificates;
+
+            if (decryptionCertificates.Count == 0)
+            {
+                throw new Saml2ResponseFailedValidationException("Encrypted Assertions encountered but Service Certificate was not provided.");
+            }
+            else if (decryptionCertificates.Any(c => !c.HasPrivateKey))
+            {
+                throw new Saml2ResponseFailedValidationException("Encrypted Assertions encountered but Service Certificate does not contain private key.");
+            }
+
+            return decryptionCertificates;
+        }
+
         bool validated = false;
-        Saml2ResponseFailedValidationException validationException;
-        private X509Certificate2 serviceCertificate;
+        AuthServicesException validationException;
 
         private void Validate(IOptions options)
         {
             if (!validated)
             {
-                serviceCertificate = options.SPOptions.ServiceCertificate;
                 try
                 {
                     ValidateInResponseTo(options);
                     ValidateSignature(options);
+                    validated = true;
                 }
-                catch (Saml2ResponseFailedValidationException ex)
+                catch (AuthServicesException ex)
                 {
                     validationException = ex;
-                    throw;
-                }
-                finally
-                {
                     validated = true;
+                    throw;
                 }
             }
             else
@@ -335,6 +400,7 @@ namespace Kentor.AuthServices.Saml2P
             }
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "RelayState")]
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "InResponseTo")]
         private void ValidateInResponseTo(IOptions options)
         {
@@ -351,20 +417,29 @@ namespace Kentor.AuthServices.Saml2P
             else
             {
                 StoredRequestState storedRequestState;
-                bool knownInResponseToId = PendingAuthnRequests.TryRemove(InResponseTo, out storedRequestState);
-                if (!knownInResponseToId)
+                bool knownRelayStateKey = PendingAuthnRequests.TryRemove(RelayState, out storedRequestState);
+                if (!knownRelayStateKey)
                 {
                     string msg = string.Format(CultureInfo.InvariantCulture,
-                        "Replayed or unknown InResponseTo \"{0}\".", InResponseTo);
+                        "Replayed or unknown RelayState \"{0}\".", RelayState);
 
                     throw new Saml2ResponseFailedValidationException(msg);
                 }
                 requestState = storedRequestState;
+                if(!requestState.MessageId.Equals(InResponseTo))
+                {
+                    string msg = string.Format(CultureInfo.InvariantCulture,
+                        "InResponseTo Id \"{0}\" in received response does not match Id \"{1}\" of the sent request.",
+                        InResponseTo, storedRequestState.MessageId);
+
+                    throw new Saml2ResponseFailedValidationException(msg);
+                }
+
                 if (requestState.Idp.Id != Issuer.Id)
                 {
                     var msg = string.Format(CultureInfo.InvariantCulture,
                         "Expected response from idp \"{0}\" but received response from idp \"{1}\".",
-                        requestState.Idp.Id, issuer.Id);
+                        requestState.Idp.Id, Issuer.Id);
                     throw new Saml2ResponseFailedValidationException(msg);
                 }
             }
@@ -374,90 +449,11 @@ namespace Kentor.AuthServices.Saml2P
         {
             var idpKeys = options.IdentityProviders[Issuer].SigningKeys;
 
-            // If the response message is signed, we check just this signature because the whole content has to be correct then
-            var responseSignature = xmlDocument.DocumentElement["Signature", SignedXml.XmlDsigNamespaceUrl];
-            if (responseSignature != null)
-            {
-                CheckSignature(XmlDocument.DocumentElement, idpKeys);
-            }
-            else
-            {
-                // If the response message is not signed, all assersions have to be signed correctly
-                foreach (var assertionNode in AllAssertionElementNodes)
-                {
-                    CheckSignature(assertionNode, idpKeys);
-                }
-            }
-        }
-
-        private static readonly string[] allowedTransforms = new string[]
-            {
-            SignedXml.XmlDsigEnvelopedSignatureTransformUrl,
-            SignedXml.XmlDsigExcC14NTransformUrl,
-            SignedXml.XmlDsigExcC14NWithCommentsTransformUrl
-            };
-
-        /// <summary>Checks the signature.</summary>
-        /// <param name="signedRootElement">The signed root element.</param>
-        /// <param name="idpKeys">A list containing one ore more assymetric keys of a algorithm.</param>
-        private static void CheckSignature(XmlElement signedRootElement, IEnumerable<AsymmetricAlgorithm> idpKeys)
-        {
-            var xmlDocument = new XmlDocument { PreserveWhitespace = true };
-            xmlDocument.LoadXml(signedRootElement.OuterXml);
-
-            var signature = xmlDocument.DocumentElement["Signature", SignedXml.XmlDsigNamespaceUrl];
-            if (signature == null)
+            if(!xmlElement.IsSignedByAny(idpKeys, options.SPOptions.ValidateCertificates)
+                && GetAllAssertionElementNodes(options)
+                .Any(a => !a.IsSignedByAny(idpKeys, options.SPOptions.ValidateCertificates)))
             {
                 throw new Saml2ResponseFailedValidationException("The SAML Response is not signed and contains unsigned Assertions. Response cannot be trusted.");
-            }
-
-            var signedXml = new SignedXml(xmlDocument);
-            signedXml.LoadXml(signature);
-
-            var signedRootElementId = "#" + signedRootElement.GetAttribute("ID");
-
-            if (signedXml.SignedInfo.References.Count == 0)
-            {
-                throw new Saml2ResponseFailedValidationException("No reference found in Xml signature, it doesn't validate the Xml data.");
-            }
-
-            if (signedXml.SignedInfo.References.Count != 1)
-            {
-                throw new Saml2ResponseFailedValidationException("Multiple references for Xml signatures are not allowed.");
-            }
-
-            var reference = signedXml.SignedInfo.References.Cast<Reference>().Single();
-
-            if (reference.Uri != signedRootElementId)
-            {
-                throw new Saml2ResponseFailedValidationException("Incorrect reference on Xml signature. The reference must be to the root element of the element containing the signature.");
-            }
-
-            foreach (Transform transform in reference.TransformChain)
-            {
-                if (!allowedTransforms.Contains(transform.Algorithm))
-                {
-                    throw new Saml2ResponseFailedValidationException(
-                        "Transform \"" + transform.Algorithm + "\" found in Xml signature is not allowed in SAML.");
-                }
-            }
-            try
-            {
-                if (!idpKeys.Any(signedXml.CheckSignature))
-                {
-                    throw new Saml2ResponseFailedValidationException("Signature validation failed on SAML response or contained assertion.");
-                }
-            }
-            catch (CryptographicException)
-            {
-                if (signedXml.SignatureMethod == Options.RsaSha256Namespace && CryptoConfig.CreateFromName(signedXml.SignatureMethod) == null)
-                {
-                    throw new Saml2ResponseFailedValidationException("SHA256 signatures require the algorithm to be registered at the process level. Call Kentor.AuthServices.Configuration.Options.GlobalEnableSha256XmlSignatures() on startup to register.");
-                }
-                else
-                {
-                    throw;
-                }
             }
         }
 
@@ -473,6 +469,10 @@ namespace Kentor.AuthServices.Saml2P
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1024:UsePropertiesWhereAppropriate")]
         public IEnumerable<ClaimsIdentity> GetClaims(IOptions options)
         {
+            if (options == null)
+            {
+                throw new ArgumentNullException(nameof(options));
+            }
             if (createClaimsException != null)
             {
                 throw createClaimsException;
@@ -500,11 +500,12 @@ namespace Kentor.AuthServices.Saml2P
 
             if (status != Saml2StatusCode.Success)
             {
-                throw new InvalidOperationException(string.Format("The Saml2Response must have status success to extract claims. Status: {0}.{1}"
-                    , status.ToString(), statusMessage != null ? " Message: " + statusMessage + "." : string.Empty));
+                throw new UnsuccessfulSamlOperationException(string.Format("The Saml2Response must have status success to extract claims. Status: {0}.{1}"
+                , status.ToString(), statusMessage != null ? " Message: " + statusMessage + "." : string.Empty),
+                status, statusMessage, secondLevelStatus);
             }
 
-            foreach (XmlElement assertionNode in AllAssertionElementNodes)
+            foreach (XmlElement assertionNode in GetAllAssertionElementNodes(options))
             {
                 using (var reader = new FilteringXmlNodeReader(SignedXml.XmlDsigNamespaceUrl, "Signature", assertionNode))
                 {
@@ -513,7 +514,12 @@ namespace Kentor.AuthServices.Saml2P
                     var token = (Saml2SecurityToken)handler.ReadToken(reader);
                     handler.DetectReplayedToken(token);
 
-                    var validateAudience = token.Assertion.Conditions.AudienceRestrictions.Count > 0;
+                    var validateAudience = options.SPOptions
+                        .Saml2PSecurityTokenHandler
+                        .SamlSecurityTokenRequirement
+                        .ShouldEnforceAudienceRestriction(options.SPOptions
+                        .SystemIdentityModelIdentityConfiguration
+                        .AudienceRestriction.AudienceMode, token);
 
                     handler.ValidateConditions(token.Assertion.Conditions, validateAudience);
 
@@ -521,5 +527,10 @@ namespace Kentor.AuthServices.Saml2P
                 }
             }
         }
+
+        /// <summary>
+        /// RelayState attached to the message.
+        /// </summary>
+        public string RelayState { get; } = null;
     }
 }

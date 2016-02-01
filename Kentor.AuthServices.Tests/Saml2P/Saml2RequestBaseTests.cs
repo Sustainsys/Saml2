@@ -48,7 +48,7 @@ namespace Kentor.AuthServices.Tests.Saml2P
         [TestMethod]
         public void Saml2RequestBase_Id_IsValidXsId()
         {
-            var id = new ConcreteSaml2Request().Id;
+            var id = new ConcreteSaml2Request().Id.Value;
 
             Regex.IsMatch(id, "[^:0-9][^:]*").Should().BeTrue();
         }
@@ -86,7 +86,7 @@ namespace Kentor.AuthServices.Tests.Saml2P
             var r = new ConcreteSaml2Request();
 
             r.ToXElement().Attribute("ID").Should().NotBeNull()
-                .And.Subject.Value.Should().Be(r.Id);
+                .And.Subject.Value.Should().Be(r.Id.Value);
         }
 
         [TestMethod]

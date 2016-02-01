@@ -6,6 +6,7 @@ using System.Collections.Specialized;
 using FluentAssertions;
 using System.Collections.Generic;
 using Kentor.AuthServices.WebSso;
+using Kentor.AuthServices.Tests.WebSSO;
 
 namespace Kentor.AuthServices.Tests.WebSso
 {
@@ -28,19 +29,82 @@ namespace Kentor.AuthServices.Tests.WebSso
         }
 
         [TestMethod]
+        public void Saml2Binding_Get_ReturnsSaml2Artifact_ForArtifactInUrl()
+        {
+            var r = new HttpRequestData(
+                "GET",
+                new Uri("http://example.com/ModulePath/Acs?SAMLart=ABCD"));
+
+            Saml2Binding.Get(r).Should().BeOfType<Saml2ArtifactBinding>();
+        }
+
+        [TestMethod]
+        public void Saml2Binding_Get_ReturnsSamlArtifact_ForArtifactInPost()
+        {
+            var r = new HttpRequestData(
+                "POST",
+                new Uri("http://example.com/ModulePath"),
+                "/ModulePath",
+                new KeyValuePair<string, string[]>[]
+                {
+                    new KeyValuePair<string, string[]>("SAMLart", new string[] { "Some Data" })
+                });
+
+            Saml2Binding.Get(r).Should().BeOfType<Saml2ArtifactBinding>();
+        }
+
+        [TestMethod]
         public void Saml2Binding_Get_NullOnPlainGet()
         {
             var r = new HttpRequestData("GET", new Uri("http://example.com"));
-            
-            Saml2PostBinding.Get(r).Should().BeNull();
+
+            Saml2Binding.Get(r).Should().BeNull();
+        }
+
+        [TestMethod]
+        public void Saml2Binding_Get_NullOnGetWithSamlResponseBody()
+        {
+            var r = new HttpRequestData(
+                "GET",
+                new Uri("http://example.com"),
+                "/ModulePath",
+                new KeyValuePair<string, string[]>[]
+                {
+                    new KeyValuePair<string, string[]>("SAMLResponse", new string[] { "Some Data" })
+                });
+
+            Saml2Binding.Get(r).Should().BeNull();
+        }
+
+        [TestMethod]
+        public void Saml2Binding_Get_NullOnGetWithSamlartBody()
+        {
+            var r = new HttpRequestData(
+                "GET",
+                new Uri("http://example.com"),
+                "/ModulePath",
+                new KeyValuePair<string, string[]>[]
+                {
+                    new KeyValuePair<string, string[]>("SAMLart", new string[] { "Some Data" })
+                });
+
+            Saml2Binding.Get(r).Should().BeNull();
+        }
+
+        [TestMethod]
+        public void Saml2Binding_Get_NullOnPostWithSamlartQuery()
+        {
+            var r = new HttpRequestData("POST", new Uri("http://example.com?Samlart=foo"));
+
+            Saml2Binding.Get(r).Should().BeNull();
         }
 
         [TestMethod]
         public void Saml2Binding_Get_NullOnPlainPost()
         {
-            var r = new HttpRequestData("GET", new Uri("http://example.com"));
+            var r = new HttpRequestData("POST", new Uri("http://example.com"));
 
-            Saml2PostBinding.Get(r).Should().BeNull();
+            Saml2Binding.Get(r).Should().BeNull();
         }
 
         class ConcreteSaml2Binding : Saml2Binding
@@ -49,15 +113,24 @@ namespace Kentor.AuthServices.Tests.WebSso
         [TestMethod]
         public void Saml2Binding_Bind_IsNotImplemented()
         {
-            Action a = () => new ConcreteSaml2Binding().Bind(null, null, null);
+            var message = new Saml2MessageImplementation();
+
+            Action a = () => new ConcreteSaml2Binding().Bind(message);
 
             a.ShouldThrow<NotImplementedException>();
         }
 
         [TestMethod]
+        public void Saml2Binding_Bind_ThrowsNotImplementedException()
+        {
+            new ConcreteSaml2Binding().Invoking(b => b.Bind(null))
+                .ShouldThrow<NotImplementedException>();
+        }
+
+        [TestMethod]
         public void Saml2Binding_Unbind_IsNotImplemented()
         {
-            Action a = () => new ConcreteSaml2Binding().Unbind(null);
+            Action a = () => new ConcreteSaml2Binding().Unbind(null, null);
 
             a.ShouldThrow<NotImplementedException>();
         }

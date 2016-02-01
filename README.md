@@ -1,3 +1,6 @@
+[![Build status](https://ci.appveyor.com/api/projects/status/github/KentorIT/AuthServices?branch=master&svg=true&passingText=master%20-%20OK&failingText=master%20-%20Failed!&pendingText=master%20-%20Pending...)](https://ci.appveyor.com/project/AndersAbel/AuthServices)
+[![Coverage Status](https://coveralls.io/repos/KentorIT/authservices/badge.svg?branch=master&service=github)](https://coveralls.io/github/KentorIT/authservices?branch=master)
+
 Kentor Authentication Services
 =============
 

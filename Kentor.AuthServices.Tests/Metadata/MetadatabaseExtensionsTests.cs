@@ -4,7 +4,7 @@ using Kentor.AuthServices.Metadata;
 using System.IdentityModel.Metadata;
 using System.IdentityModel.Tokens;
 using System.Xml.Linq;
-using Kentor.AuthServices.TestHelpers;
+using Kentor.AuthServices.Tests.Helpers;
 using System.Security.Cryptography.Xml;
 using Kentor.AuthServices.WebSso;
 using FluentAssertions;
@@ -35,7 +35,7 @@ namespace Kentor.AuthServices.Tests.Metadata
 
             idpSsoDescriptor.Keys.Add(SignedXmlHelper.TestKeyDescriptor);
 
-            var subject = XDocument.Parse((metadata.ToXmlString()));
+            var subject = XDocument.Parse((metadata.ToXmlString(null)));
 
             var ds = XNamespace.Get(SignedXml.XmlDsigNamespaceUrl);
 

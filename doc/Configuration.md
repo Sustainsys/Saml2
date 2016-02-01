@@ -33,13 +33,16 @@ does not need any http modules, please see the separate info on the [Owin middle
 
 ##kentor.authServices Section
 The saml2AuthenticationModule section contains the configuration of the Kentor.AuthServices
-library. It is required for the http module, the mvc controller and the Owin middleware.
+library. It is required for the http module and the mvc controller. Thw Owin middleware Can
+read web.config, but can also be configured from code.
 
 ```
 <kentor.authServices entityId="http://localhost:17009"
                      returnUrl="http://localhost:17009/SamplePath/"
-                     discoveryServiceUrl="http://localhost:52071/DiscoveryService" >
-  <metadata cacheDuration="0:15:00" >
+                     discoveryServiceUrl="http://localhost:52071/DiscoveryService" 
+					 authenticateRequestSigningBehavior="Always">
+  <nameIdPolicy allowCreate="true" format="Persistent"/>
+  <metadata cacheDuration="0:0:42" validDuration="7.12:00:00" wantAssertionsSigned="true">
     <organization name="Kentor IT AB" displayName="Kentor" url="http://www.kentor.se" language="sv" />
     <contactPerson type="Other" email="info@kentor.se" />
     <requestedAttributes>
@@ -50,7 +53,9 @@ library. It is required for the http module, the mvc controller and the Owin mid
   <identityProviders>
     <add entityId="https://stubidp.kentor.se/Metadata" 
          destinationUrl="https://stubidp.kentor.se" 
-         allowUnsolicitedAuthnResponse="true" binding="HttpRedirect">
+         allowUnsolicitedAuthnResponse="true"
+		 binding="HttpRedirect"
+		 wantAuthnRequestsSigned="true">
       <signingCertificate storeName="AddressBook" storeLocation="CurrentUser" 
                           findValue="Kentor.AuthServices.StubIdp" x509FindType="FindBySubjectName" />
     </add>
@@ -75,13 +80,17 @@ Root element of the config section.
 * [`entityId`](#entityid-attribute)
 * [`discoveryServiceUrl`](#discoveryserviceurl-attribute)
 * [`modulePath`](#modulepath-attribute)
+* [`authenticateRequestSigningBehavior`](#authenticaterequestsigningbehavior-attribute)
+* [`validateCertificates`](#validatecertificates-attribute)
 * [`assertionConsumerServiceUrl`](#assertionConsumerServiceUrl-attribute)
 
 ####Elements
+* [`<nameIdPolicy>`](#nameidpolicy-element)
+* [`<requestedAuthnContext>`](#requestedauthncontext-element)
 * [`<metadata>`](#metadata-element)
 * [`<identityProviders>`](#identityproviders-element)
 * [`<federations>`](#federations-element)
-* [`<serviceCertificate>`](#serviceCertificate-element)
+* [`<serviceCertificates>`](#servicecertificates-element)
 
 ####`entityId` Attribute
 *Attribute of the [`<kentor.authServices>`](#kentor-authservices-section) element.*
@@ -108,12 +117,128 @@ is specified when calling sign in. Without this attribute, the first idp known
 will be used if none is specified.
 
 ####`modulePath` Attribute
-*Optional Attribute of the [`<kentor.authServices>`](#modulePath-attribute) element.*
+*Optional Attribute of the [`<kentor.authServices>`](#kentor-authservices-section) element.*
 
 Optional attribute that indicates the base path of the AuthServices endpoints.
 Defaults to `/AuthServices` if not specified. This can usually be left as the
 default, but if several instances of AuthServices are loaded into the
 same process they must each get a separate base path.
+
+###`authenticateRequestSigningBehavior` Attribute
+*Optional Attribute of the [`<kentor.AuthServices>`](#kentor-authservices-section) element.*
+
+Optional attribute that sets the signing behavior for generated AuthnRequests.
+Two values are supported:
+
+* `Never` (default if the attribute is missing): AuthServices will never sign any
+  created AuthnRequests.
+* `Always`: AuthServices will always sign all AuthnRequests.
+* `IfIdpWantAuthnRequestsSigned`: AuthServices will sign AuthnRequests if the
+  idp is configured for it (through config or listed in idp metadta).
+
+####`validateCertificates` Attribute
+*Optional Attribute of the [`<kentor.authServices>`](#kentor-authservices-section) element.*
+
+Normally certificates for the IDPs signing use is communicated through metadata
+and in case of a breach, the metadata is updated with new data. If you want
+extra security, you can enable certificate validation. Please note that the 
+SAML metadata specification explicitly places no requirements on certificate
+validation, so don't be surprised if an Idp certificate doesn't pass validation.
+
+###`<nameIdPolicy>` Element
+*Optional child element of the [`<kentor.authServices>`](#kentor-authservices-section) element.*
+
+Controls the generation of NameIDPolicy element in AuthnRequests. The element Is
+only created if either `allowCreate` nor `format` are set to a non-default value.
+
+####Attributes
+* [`allowCreate`](#allowcreate-attribute)
+* [`format`](#format-attribute)
+
+####`allowCreate` Attribute
+*Optional attribute of the [`nameIdPolicy`](#nameidpolicy-element) element.*
+
+Default value is empty, which means that the attribute is not included in
+generated AuthnRequests.
+
+Supported values are `true` or `false`.
+
+####`format` Attribute
+*Optional attribute of the [`nameIdPolicy`](#nameidpolicy-element) element.*
+
+Sets the requested format of NameIDPolicy for generated authnRequests.
+
+Supported values (see section 8.3 in the SAML2 Core specification for
+explanations of the values).
+
+* `Unspecified`
+* `EmailAddress`
+* `X509SubjectName`
+* `WindowsDomainQualifiedName`
+* `KerberosPrincipalName`
+* `EntityIdentifier`
+* `Persistent`
+* `Transient`
+
+If no value is specified, no format is specified in the generated AuthnRequests.
+
+If `Transient` is specified, it is not permitted to specify `allowCreate` 
+(see 3.4.1.1 in the SAML2 Core spec).
+
+###`<requestedAuthnContext>` element
+*Optional child element of the [`<kentor.authServices>`](#kentor-authservices-section) element.*
+
+####Attributes
+* [`classRef`](#classref-attribute)
+* [`comparison`](#comparison-attribute)
+
+####`classRef` attribute
+*Optional attribute of the [`requestedAuthnContext`](#requestedauthncontext-element) element.*
+
+Class reference for authentication context. Either specify a full URI to identify
+an authentication context class, or a single word if using one of the predefined
+classes in the SAML2 Authentication context specification:
+
+* `InternetProtocol`
+* `InternetProtocolPassword`
+* `Kerberos`
+* `MobileOneFactorUnregistered`
+* `MobileTwoFactorUnregistered`
+* `MobileOneFactorContract`
+* `MobileTwoFactorContract`
+* `Password`
+* `PasswordProtectedTransport`
+* `PreviousSession`
+* `X509`
+* `PGP`
+* `SPKI`
+* `XMLDSig`
+* `Smartcard`
+* `SmartcardPKI`
+* `SoftwarePKI`
+* `Telephony`
+* `NomadTelephony`
+* `PersonalTelephony`
+* `AuthenticatedTelephony`
+* `SecureRemotePassword`
+* `TLSClient`
+* `TimeSyncToken`
+* `unspecified`
+
+####`comparison` Attribute
+*Optional attribute of the [`requestedAuthnContext`](#requestedauthncontext-element) element.*
+
+Comparison method for authentication context as signalled in AuthnRequests.
+
+Valid values are:
+* `Exact` (default)
+* `Minimum`
+* `Maximum`
+* `Better`
+
+`Minimum` is an inclusive comparison, meaning the specified classRef or anything
+better is accepted. `Better` is exclusive, meaning that the specified classRef
+is not accepted.
 
 ####`assertionConsumerServiceUrl` Attribute
 *Optional Attribute of the [`<kentor.authServices>`](#assertionConsumerServiceUrl-attribute) element.*
@@ -124,8 +249,14 @@ Defaults to `Url` of the current request base `System.Web.HttpRequestBase` if no
 ###`<metadata>` Element
 *Optional child element of the [`<kentor.authServices>`](#kentor-authservices-section) element.*
 
+The metadata part of the configuration can be used to tweak the generated
+metadata. These configuration options only affects how the metadata is
+generated, no other behavior of the code is changed.
+
 ####Attributes
 * [`cacheDuration`](#cacheduration-attribute)
+* [`validDuration`](#validduration-attribute)
+* [`wantAssertionsSigned`](#wantassertionssigned-attribute)
 
 ####Elements
 * [`<organization>`](#organization-element)
@@ -133,15 +264,40 @@ Defaults to `Url` of the current request base `System.Web.HttpRequestBase` if no
 * [`<requestedAttributes>`](#requestedattributes-element)
 
 ####`cacheDuration` Attribute
-*Optional Attribute of the [`<metadata>`](#metadata-element) element.*
+*Optional attribute of the [`<metadata>`](#metadata-element) element.*
 
-Optional attribute that describes for how long in anyone may cache the metadata 
-presented by the service provider. Defaults to one hour. Examples of valid format strings:
+Optional attribute that describes for how long in anyone should cache the 
+metadata presented by the service provider before trying to fetch a new copy.
+Defaults to one hour. Examples of valid format strings:
 
 * 1 day, 2 hours: `1.2:00:00`.
 * 42 seconds: `0:00:42`.
 
-###[`organization`] Element
+####`validDuration` Attribute
+*Optional attribute of the [`<metadata>`](#metadata-element) element.*
+
+Optional attribute that sets the maximum time that anyone may cache the generated
+metadata. if cacheDuration is specified, the remote party should try to reload
+metadata after that time. If that refresh fails, validDuration determines for
+how long the old metadata may be used before it must be discarded.
+
+In the metadata, the time is exposed as an absolute validUntil date and time.
+That absolute time is calculated on metadata generation by adding the configured
+validDuration to the current time. Examples of valid format strings:
+
+* 1 day, 2 hours: `1.2:00:00`.
+* 42 seconds: `0:00:42`.
+
+####`wantAssertionsSigned` Attribute
+*Optional attribute of the [`<metadata>`](#metadata-element) element.*
+
+Optional attribute to signal to IDPs that we want the Assertions themselves 
+signed and not only the SAML response. AuthServices supports both, so for
+normal usage this shouldn't matter. If set to `false` the entire 
+`wantAssertionsSigned` attribute is dropped from the metadata as the default
+values is false.
+
+###`<organization>` Element
 *Optional child element of the [`<metadata>`](#metadata-element) element.*
 
 Provides information about the organization supplying the SAML2 entity (in plain
@@ -288,6 +444,7 @@ A list of identity providers known to the service provider.
 * [`destinationUrl`](#destinationuri-attribute)
 * [`allowUnsolicitedAuthnResponse`](#allowunsolicitedauthnresponse-attribute)
 * [`binding`](#binding-attribute)
+* [`wantAuthnRequestsSigned`](#wantauthnrequestssigned-attribute)
 * [`loadMetadata`](#loadmetadata-attribute)
 * [`metadataUrl`](#metadataurl-attribute-idp)
 
@@ -328,6 +485,12 @@ Currently supported values:
 
 * `HttpRedirect`
 * `HttpPost`
+
+####`wantAuthnRequestsSigned` attribute
+*Optional attribute of the [`<add>`](#add-identityprovider-element) element*
+
+Specifies whether the Identity provider wants the AuthnRequests signed.
+Defaults to `false`.
 
 ####`loadMetadata` Attribute
 *Optional attribute of the [`<add>`](#add-identityprovider-element) element*
@@ -421,15 +584,6 @@ enumeration.
 
 Contains a list of federations that the service provider knows and trusts.
 
-###`<serviceCertificate>` Element
-*Optional child element of the `<kentor.authServices>`(#kentor-authservices-section) element.*
-
-Specifies the certificate that the service provider uses for encrypted assertions. 
-The public key of this certificate will be exposed in the metadata and the private
-key will be used during decryption. 
-
-Uses same options/attributes as [`<signingCertificate>`](#signingcertificate-element) for locating the certificate.
-
 ####Elements
 * [`<add>`](#add-federation-element).
 
@@ -453,6 +607,69 @@ add all identity providers found to the list of known and trusted identity provi
 
 Decided whether unsolicited authn responses should be allowed from the identity providers
 in the federation.
+
+###`<serviceCertificates>` Element
+*Optional child element of the [`<kentor.authServices>`](#kentorauthservices-section) element.*
+
+Specifies the certificate(s) that the service provider uses for encrypted assertions
+(and for signed requests, once that feature is added).
+
+If neither of those features are used, this element can be ommitted.
+
+The public key(s) will be exposed in the metadata and the private
+key(s) will be used during decryption/signing. 
+
+
+####Elements
+* [`<add>`](#add-servicecertificate-element).
+
+Add a service certificate
+
+###`<add>` ServiceCertificate Element
+
+Uses same options/attributes as [`<signingCertificate>`](#signingcertificate-element) for locating the certificate.
+But also has the below options for configuring how the certificate will be used.
+
+####Attributes
+* [`use`](#use-attribute-servicecertificate)
+* [`status`](#status-attribute-servicecertificate)
+* [`metadataPublishOverride`](#metadatapublishoverride-attribute-servicecertificate)
+
+####`use` Attribute (ServiceCertificate)
+
+How should this certificate be used? 
+Options are:
+ * Signing
+ * Encryption
+ * Both (Default)
+
+####`status` Attribute (ServiceCertificate)
+
+Is this certificate for current or future use (i.e. key rollover scenario)? 
+Options are:
+ * Current (Default)
+ * Future
+
+####`metadataPublishOverride` Attribute (ServiceCertificate)
+
+Should we override how this certificate is published in the metadata? 
+Options are:
+ * None (Default) - published according to the rules in the table below.
+ * PublishUnspecified
+ * PublishEncryption
+ * PublishSigning
+ * DoNotPublish
+
+Use | Status | Published in Metatadata | Used by AuthServices
+------------ | ------------- | ------------- | ------------- | -------------
+Both | Current | Unspecified _unless Future key exists_, then Signing | Yes 
+Both | Future | Unspecified | For decryption only 
+Signing | Current | Signing | Yes 
+Signing | Future | Signing | No 
+Encryption | Current | Encryption _unless Future key exists_ then not published | Yes 
+Encryption | Future | Encryption | Yes 
+
+
 
 ##`<system.identityModel>` Section
 *Child element of `<configuration>` element.*

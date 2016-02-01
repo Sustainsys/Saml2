@@ -1,4 +1,5 @@
 ﻿using Kentor.AuthServices.Configuration;
+using Kentor.AuthServices.Exceptions;
 using Kentor.AuthServices.Saml2P;
 using System;
 using System.Configuration;
@@ -31,32 +32,38 @@ namespace Kentor.AuthServices.WebSso
 
             if (binding != null)
             {
-                string unpackedPayload = null;
+                UnbindResult unbindResult = null;
                 try
                 {
-                    unpackedPayload = binding.Unbind(request);
-                    var samlResponse = Saml2Response.Read(unpackedPayload);
+                    unbindResult = binding.Unbind(request, options);
+                    var samlResponse = new Saml2Response(unbindResult.Data, unbindResult.RelayState);
 
                     return ProcessResponse(options, samlResponse);
                 }
                 catch (FormatException ex)
                 {
                     throw new BadFormatSamlResponseException(
-                            "The SAML Response did not contain valid BASE64 encoded data.", ex);
+                        "The SAML Response did not contain valid BASE64 encoded data.", ex);
                 }
                 catch (XmlException ex)
                 {
                     var newEx = new BadFormatSamlResponseException(
                         "The SAML response contains incorrect XML", ex);
-                    
+
                     // Add the payload to the exception
-                    newEx.Data["Saml2Response"] = unpackedPayload;
+                    if (unbindResult != null)
+                    {
+                        newEx.Data["Saml2Response"] = unbindResult.Data.OuterXml;
+                    }
                     throw newEx;
                 }
                 catch (Exception ex)
                 {
-                    // Add the payload to the existing exception
-                    ex.Data["Saml2Response"] = unpackedPayload;
+                    if (unbindResult != null)
+                    {
+                        // Add the payload to the existing exception
+                        ex.Data["Saml2Response"] = unbindResult.Data.OuterXml;
+                    }
                     throw;
                 }
             }

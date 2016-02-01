@@ -1,13 +1,43 @@
-﻿using System;
+﻿using Kentor.AuthServices.Configuration;
+using Kentor.AuthServices.Saml2P;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web;
+using System.Xml;
 
 namespace Kentor.AuthServices.WebSso
 {
+    /// <summary>
+    /// The result of a Saml2Binding.UnBind.
+    /// </summary>
+    public class UnbindResult
+    {
+        /// <summary>
+        /// Ctor
+        /// </summary>
+        /// <param name="data">The data payload</param>
+        /// <param name="relayState">The associated relay state.</param>
+        public UnbindResult(XmlElement data, string relayState)
+        {
+            Data = data;
+            RelayState = relayState;
+        }
+
+        /// <summary>
+        /// The data payload.
+        /// </summary>
+        public XmlElement Data { get; }
+
+        /// <summary>
+        /// The associated relay state, if any. Otherwise null.
+        /// </summary>
+        public string RelayState { get; }
+    }
+
     /// <summary>
     /// Abstract base for all Saml2Bindings that binds a message to a specific
     /// kind of transport.
@@ -25,20 +55,26 @@ namespace Kentor.AuthServices.WebSso
         public static readonly Uri HttpRedirectUri = new Uri("urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect");
 
         /// <summary>
+        /// Uri identifier of the HTTP-Artifact binding.
+        /// </summary>
+        public static readonly Uri HttpArtifactUri = new Uri("urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Artifact");
+
+        /// <summary>
         /// Uri identifier of the Discovery Response SAML extension.
         /// </summary>
         public static readonly Uri DiscoveryResponseUri = new Uri("urn:oasis:names:tc:SAML:profiles:SSO:idp-discovery-protocol");
 
         /// <summary>
-        /// Bind the message to a transport.
+        /// Uri identifier of the SOAP binding.
         /// </summary>
-        /// <param name="payload">(xml) payload data to bind.</param>
-        /// <param name="destinationUrl">The destination of the message.</param>
-        /// <param name="messageName">The name of the message to use in a query string or form input field.
-        /// Typically "SAMLRequest" or "SAMLResponse".
-        /// </param>
-        /// <returns>CommandResult to be returned to the client browser.</returns>
-        public virtual CommandResult Bind(string payload, Uri destinationUrl, string messageName)
+        public static readonly Uri SoapUri = new Uri("urn:oasis:names:tc:SAML:2.0:bindings:SOAP");
+
+        /// <summary>
+        /// Binds a message to a http response.
+        /// </summary>
+        /// <param name="message">Message to bind.</param>
+        /// <returns>CommandResult.</returns>
+        public virtual CommandResult Bind(ISaml2Message message)
         {
             throw new NotImplementedException();
         }
@@ -47,8 +83,9 @@ namespace Kentor.AuthServices.WebSso
         /// Extracts a message out of the current HttpRequest.
         /// </summary>
         /// <param name="request">Current HttpRequest.</param>
+        /// <param name="options">Options.</param>
         /// <returns>Extracted message.</returns>
-        public virtual string Unbind(HttpRequestData request)
+        public virtual UnbindResult Unbind(HttpRequestData request, IOptions options)
         {
             throw new NotImplementedException();
         }
@@ -68,7 +105,8 @@ namespace Kentor.AuthServices.WebSso
             new Dictionary<Saml2BindingType, Saml2Binding>()
             {
                 { Saml2BindingType.HttpRedirect, new Saml2RedirectBinding() },
-                { Saml2BindingType.HttpPost, new Saml2PostBinding() }
+                { Saml2BindingType.HttpPost, new Saml2PostBinding() },
+                { Saml2BindingType.Artifact, new Saml2ArtifactBinding() }
             };
 
         /// <summary>

@@ -9,7 +9,7 @@ using System.Text;
 using System.Collections.Specialized;
 using System.Security.Claims;
 using System.Web.Routing;
-using Kentor.AuthServices.TestHelpers;
+using Kentor.AuthServices.Tests.Helpers;
 using System.Xml.Linq;
 using Kentor.AuthServices.Configuration;
 using System.IdentityModel.Metadata;
@@ -71,7 +71,6 @@ namespace Kentor.AuthServices.Tests.Mvc
                     .Should().StartWith("http://ds.example.com/?entityID=https%3A%2F%2Fgithub.com%2FKentorIT%2Fauthservices");
         }
 
-        [NotReRunnable]
         [TestMethod]
         public void AuthServicesController_Acs_Works()
         {

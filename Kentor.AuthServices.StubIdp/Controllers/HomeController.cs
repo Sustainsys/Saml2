@@ -14,6 +14,7 @@ using System.Configuration;
 using Kentor.AuthServices.Saml2P;
 using Kentor.AuthServices.WebSso;
 using Kentor.AuthServices.HttpModule;
+using System.Xml;
 
 namespace Kentor.AuthServices.StubIdp.Controllers
 {
@@ -45,14 +46,17 @@ namespace Kentor.AuthServices.StubIdp.Controllers
             var requestData = Request.ToHttpRequestData();
             if (requestData.QueryString["SAMLRequest"].Any())
             {
-                var decodedXmlData = Saml2Binding.Get(Saml2BindingType.HttpRedirect)
-                    .Unbind(requestData);
+                var extractedMessage = Saml2Binding.Get(Saml2BindingType.HttpRedirect)
+                    .Unbind(requestData, null);
 
-                var request = Saml2AuthenticationRequest.Read(decodedXmlData);
+                var request = new Saml2AuthenticationRequest(
+                    extractedMessage.Data,
+                    extractedMessage.RelayState);
 
-                model.AssertionModel.InResponseTo = request.Id;
+                model.AssertionModel.InResponseTo = request.Id.Value;
                 model.AssertionModel.AssertionConsumerServiceUrl = request.AssertionConsumerServiceUrl.ToString();
-                model.AssertionModel.AuthnRequestXml = decodedXmlData;
+                model.AssertionModel.RelayState = extractedMessage.RelayState;
+                model.AssertionModel.AuthnRequestXml = extractedMessage.Data.OuterXml;
             }
 
             return View(model);
@@ -65,10 +69,8 @@ namespace Kentor.AuthServices.StubIdp.Controllers
             {
                 var response = model.AssertionModel.ToSaml2Response();
 
-                var commandResult = Saml2Binding.Get(Saml2BindingType.HttpPost)
-                    .Bind(response);
-
-                return commandResult.ToActionResult();
+                return Saml2Binding.Get(model.AssertionModel.ResponseBinding)
+                    .Bind(response).ToActionResult();
             }
 
             return View(model);

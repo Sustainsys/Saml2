@@ -14,6 +14,7 @@ using Kentor.AuthServices.Saml2P;
 using Kentor.AuthServices.WebSso;
 using System.Threading.Tasks;
 using System.Net;
+using System.Collections.Concurrent;
 
 namespace Kentor.AuthServices
 {
@@ -44,11 +45,13 @@ namespace Kentor.AuthServices
             binding = config.Binding;
             AllowUnsolicitedAuthnResponse = config.AllowUnsolicitedAuthnResponse;
             metadataUrl = config.MetadataUrl;
+            WantAuthnRequestsSigned = config.WantAuthnRequestsSigned;
 
             var certificate = config.SigningCertificate.LoadCertificate();
             if (certificate != null)
             {
-                signingKeys.AddConfiguredItem(certificate.PublicKey.Key);
+                signingKeys.AddConfiguredKey(
+                    new X509RawDataKeyIdentifierClause(certificate));
             }
 
             // If configured to load metadata, this will immediately do the load.
@@ -150,6 +153,22 @@ namespace Kentor.AuthServices
             }
         }
 
+        private IDictionary<int, Uri> artifactResolutionServiceUrls
+            = new ConcurrentDictionary<int, Uri>();
+
+        /// <summary>
+        /// Artifact resolution endpoints on the idp.
+        /// </summary>
+        public IDictionary<int, Uri> ArtifactResolutionServiceUrls
+        {
+            get
+            {
+                ReloadMetadataIfRequired();
+                return artifactResolutionServiceUrls;
+            }
+        }
+
+
         /// <summary>
         /// The Entity Id of the identity provider.
         /// </summary>
@@ -203,6 +222,8 @@ namespace Kentor.AuthServices
         /// in the created AuthnRequest</param>
         /// <param name="relayData">Aux data that should be preserved across the authentication</param>
         /// <returns>AuthnRequest</returns>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "ServiceCertificates")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "AuthenticateRequests")]
         public Saml2AuthenticationRequest CreateAuthenticateRequest(
             Uri returnUrl,
             AuthServicesUrls authServicesUrls,
@@ -219,12 +240,30 @@ namespace Kentor.AuthServices
                 AssertionConsumerServiceUrl = authServicesUrls.AssertionConsumerServiceUrl,
                 Issuer = spOptions.EntityId,
                 // For now we only support one attribute consuming service.
-                AttributeConsumingServiceIndex = spOptions.AttributeConsumingServices.Any() ? 0 : (int?)null
+                AttributeConsumingServiceIndex = spOptions.AttributeConsumingServices.Any() ? 0 : (int?)null,
+                NameIdPolicy = spOptions.NameIdPolicy,
+                RequestedAuthnContext = spOptions.RequestedAuthnContext
             };
 
-            var responseData = new StoredRequestState(EntityId, returnUrl, relayData);
+            if(spOptions.AuthenticateRequestSigningBehavior == SigningBehavior.Always
+                || (spOptions.AuthenticateRequestSigningBehavior == SigningBehavior.IfIdpWantAuthnRequestsSigned
+                && WantAuthnRequestsSigned))
+            {
+                if(spOptions.SigningServiceCertificate == null)
+                {
+                    throw new ConfigurationErrorsException(
+                        string.Format(
+                            CultureInfo.InvariantCulture,
+                            "Idp \"{0}\" is configured for signed AuthenticateRequests, but ServiceCertificates configuration contains no certificate with usage \"Signing\" or \"Both\".",
+                            EntityId.Id));
+                }
 
-            PendingAuthnRequests.Add(new Saml2Id(authnRequest.Id), responseData);
+                authnRequest.SigningCertificate = spOptions.SigningServiceCertificate;
+            }
+
+            var requestState = new StoredRequestState(EntityId, returnUrl, authnRequest.Id, relayData);
+
+            PendingAuthnRequests.Add(authnRequest.RelayState, requestState);
 
             return authnRequest;
         }
@@ -240,13 +279,13 @@ namespace Kentor.AuthServices
             return Saml2Binding.Get(Binding).Bind(request);
         }
 
-        private ConfiguredAndLoadedCollection<AsymmetricAlgorithm> signingKeys = 
-            new ConfiguredAndLoadedCollection<AsymmetricAlgorithm>();
+        private ConfiguredAndLoadedSigningKeysCollection signingKeys = 
+            new ConfiguredAndLoadedSigningKeysCollection();
 
         /// <summary>
         /// The public key of the idp that is used to verify signatures of responses/assertions.
         /// </summary>
-        public ConfiguredAndLoadedCollection<AsymmetricAlgorithm> SigningKeys
+        public ConfiguredAndLoadedSigningKeysCollection SigningKeys
         {
             get
             {
@@ -308,20 +347,35 @@ namespace Kentor.AuthServices
             var idpDescriptor = metadata.RoleDescriptors
                 .OfType<IdentityProviderSingleSignOnDescriptor>().Single();
 
+            WantAuthnRequestsSigned = idpDescriptor.WantAuthenticationRequestsSigned;
+
             // Prefer an endpoint with a redirect binding, then check for POST which 
             // is the other supported by AuthServices.
             var ssoService = idpDescriptor.SingleSignOnServices
                 .FirstOrDefault(s => s.Binding == Saml2Binding.HttpRedirectUri) ??
                 idpDescriptor.SingleSignOnServices
-                .First(s => s.Binding == Saml2Binding.HttpPostUri);
+                .FirstOrDefault(s => s.Binding == Saml2Binding.HttpPostUri);
 
-            binding = Saml2Binding.UriToSaml2BindingType(ssoService.Binding);
-            singleSignOnServiceUrl = ssoService.Location;
+            if (ssoService != null)
+            {
+                binding = Saml2Binding.UriToSaml2BindingType(ssoService.Binding);
+                singleSignOnServiceUrl = ssoService.Location;
+            }
+
+            foreach(var ars in idpDescriptor.ArtifactResolutionServices)
+            {
+                artifactResolutionServiceUrls[ars.Value.Index] = ars.Value.Location;
+            }
+
+            foreach (var ars in artifactResolutionServiceUrls.Keys
+                .Where(k => !idpDescriptor.ArtifactResolutionServices.Keys.Contains(k)))
+            {
+                artifactResolutionServiceUrls.Remove(ars);
+            }
 
             var keys = idpDescriptor.Keys.Where(k => k.Use == KeyType.Unspecified || k.Use == KeyType.Signing);
 
-            signingKeys.SetLoadedItems(keys.Select(k => ((AsymmetricSecurityKey)k.KeyInfo.CreateKey())
-            .GetAsymmetricAlgorithm(SignedXml.XmlDsigRSASHA1Url, false)).ToList());
+            signingKeys.SetLoadedItems(keys.Select(k => k.KeyInfo.First(c => c.CanCreateKey)).ToList());
         }
 
         private DateTime? metadataValidUntil;
@@ -347,6 +401,11 @@ namespace Kentor.AuthServices
                 }
             }
         }
+
+        /// <summary>
+        /// Does this Idp want the AuthnRequests signed?
+        /// </summary>
+        public bool WantAuthnRequestsSigned { get; set; }
 
         private void ReloadMetadataIfRequired()
         {

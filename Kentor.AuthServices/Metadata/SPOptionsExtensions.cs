@@ -13,21 +13,31 @@ namespace Kentor.AuthServices.Metadata
 {
     static class SPOptionsExtensions
     {
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1506:AvoidExcessiveClassCoupling")]
         public static ExtendedEntityDescriptor CreateMetadata(this ISPOptions spOptions, AuthServicesUrls urls)
         {
             var ed = new ExtendedEntityDescriptor
             {
                 EntityId = spOptions.EntityId,
                 Organization = spOptions.Organization,
-                CacheDuration = spOptions.MetadataCacheDuration
+                CacheDuration = spOptions.MetadataCacheDuration,
             };
+
+            if(spOptions.MetadataValidDuration.HasValue)
+            {
+                ed.ValidUntil = DateTime.UtcNow.Add(spOptions.MetadataValidDuration.Value);
+            }
 
             foreach (var contact in spOptions.Contacts)
             {
                 ed.Contacts.Add(contact);
             }
 
-            var spsso = new ExtendedServiceProviderSingleSignOnDescriptor();
+            var spsso = new ExtendedServiceProviderSingleSignOnDescriptor()
+            {
+                WantAssertionsSigned = spOptions.WantAssertionsSigned,
+                AuthenticationRequestsSigned = spOptions.AuthenticateRequestSigningBehavior == SigningBehavior.Always
+            };
 
             spsso.ProtocolsSupported.Add(new Uri("urn:oasis:names:tc:SAML:2.0:protocol"));
 
@@ -39,22 +49,34 @@ namespace Kentor.AuthServices.Metadata
                 Location = urls.AssertionConsumerServiceUrl
             });
 
+            spsso.AssertionConsumerServices.Add(1, new IndexedProtocolEndpoint()
+            {
+                Index = 1,
+                IsDefault = false,
+                Binding = Saml2Binding.HttpArtifactUri,
+                Location = urls.AssertionConsumerServiceUrl
+            });
+
             foreach(var attributeService in spOptions.AttributeConsumingServices)
             {
                 spsso.AttributeConsumingServices.Add(attributeService);
             }
 
-            if (spOptions.ServiceCertificate != null)
+            if (spOptions.ServiceCertificates != null)
             {
-                using (var securityToken = new X509SecurityToken(spOptions.ServiceCertificate))
+                var publishCertificates = spOptions.MetadataCertificates;
+                foreach (var serviceCert in publishCertificates)
                 {
-                    spsso.Keys.Add(
-                        new KeyDescriptor
-                        {
-                            Use = KeyType.Encryption,
-                            KeyInfo = new SecurityKeyIdentifier(securityToken.CreateKeyIdentifierClause<X509RawDataKeyIdentifierClause>())
-                        }
-                    );
+                    using (var securityToken = new X509SecurityToken(serviceCert.Certificate))
+                    {
+                        spsso.Keys.Add(
+                            new KeyDescriptor
+                            {
+                                Use = (KeyType)(byte)serviceCert.Use,
+                                KeyInfo = new SecurityKeyIdentifier(securityToken.CreateKeyIdentifierClause<X509RawDataKeyIdentifierClause>())
+                            }
+                        );
+                    }
                 }
             }
 
