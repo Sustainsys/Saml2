@@ -139,7 +139,7 @@ namespace Kentor.AuthServices.Tests.WebSso
         [TestMethod]
         public void SignInCommand_Run_MapsAssertionConsumerServiceURL()
         {
-            KentorAuthServicesSection.Current.AllowChange(true);
+            KentorAuthServicesSection.Current.AllowChange =true;
             KentorAuthServicesSection.Current.AssertionConsumerServiceUrl = new Uri("https://testurlForAcs.com/");
 
             try
@@ -154,7 +154,7 @@ namespace Kentor.AuthServices.Tests.WebSso
             finally
             {
                 KentorAuthServicesSection.Current.AssertionConsumerServiceUrl = null;
-                KentorAuthServicesSection.Current.AllowChange(false);
+                KentorAuthServicesSection.Current.AllowChange =false;
             }
         }
     }
