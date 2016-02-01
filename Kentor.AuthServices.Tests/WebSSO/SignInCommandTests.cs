@@ -144,12 +144,12 @@ namespace Kentor.AuthServices.Tests.WebSso
 
             try
             {
-                Assert.IsNotNull(KentorAuthServicesSection.Current.AssertionConsumerServiceUrl);
-                Assert.AreEqual("https://testurlforacs.com/", KentorAuthServicesSection.Current.AssertionConsumerServiceUrl.AbsoluteUri);
+                KentorAuthServicesSection.Current.AssertionConsumerServiceUrl.Should().NotBeNull();
+                KentorAuthServicesSection.Current.AssertionConsumerServiceUrl.AbsoluteUri.Should().Be("https://testurlforacs.com/");
                 ConfigurationManager.RefreshSection("kentor.authServices");
                 var defaultDestination = Options.FromConfiguration.IdentityProviders.Default.SingleSignOnServiceUrl;
                 var httpRequest = new HttpRequestData("GET", new Uri("http://localhost/signin"));
-                Assert.AreEqual("https://testurlforacs.com/", httpRequest.ApplicationUrl.AbsoluteUri);
+                httpRequest.ApplicationUrl.AbsoluteUri.Should().Be("https://testurlforacs.com/");
             }
             finally
             {
