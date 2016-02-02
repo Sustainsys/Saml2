@@ -82,7 +82,7 @@ Root element of the config section.
 * [`modulePath`](#modulepath-attribute)
 * [`authenticateRequestSigningBehavior`](#authenticaterequestsigningbehavior-attribute)
 * [`validateCertificates`](#validatecertificates-attribute)
-* [`assertionConsumerServiceUrl`](#assertionConsumerServiceUrl-attribute)
+* [`publicOrigin`](#publicOrigin-attribute)
 
 ####Elements
 * [`<nameIdPolicy>`](#nameidpolicy-element)
@@ -124,7 +124,7 @@ Defaults to `/AuthServices` if not specified. This can usually be left as the
 default, but if several instances of AuthServices are loaded into the
 same process they must each get a separate base path.
 
-###`authenticateRequestSigningBehavior` Attribute
+####`authenticateRequestSigningBehavior` Attribute
 *Optional Attribute of the [`<kentor.AuthServices>`](#kentor-authservices-section) element.*
 
 Optional attribute that sets the signing behavior for generated AuthnRequests.
@@ -144,6 +144,13 @@ and in case of a breach, the metadata is updated with new data. If you want
 extra security, you can enable certificate validation. Please note that the 
 SAML metadata specification explicitly places no requirements on certificate
 validation, so don't be surprised if an Idp certificate doesn't pass validation.
+
+####`publicOrigin` Attribute
+*Optional Attribute of the [`<kentor.authServices>`](#kentor-authservices-section) element.*
+
+Optional attribute that indicates the base url of the AuthServices endpoints.
+Defaults to `Url` of the current request base `System.Web.HttpRequestBase` if not specified. This can usually be left as the default, but if your internal address of the application is diffrent the external address this can correct a wrongly set `AssertionConsumerServiceURL` in the `saml2p:AuthnRequest`.
+This might not be accurate in reverse proxy or load-balancing situations. 
 
 ###`<nameIdPolicy>` Element
 *Optional child element of the [`<kentor.authServices>`](#kentor-authservices-section) element.*
@@ -239,12 +246,6 @@ Valid values are:
 `Minimum` is an inclusive comparison, meaning the specified classRef or anything
 better is accepted. `Better` is exclusive, meaning that the specified classRef
 is not accepted.
-
-####`assertionConsumerServiceUrl` Attribute
-*Optional Attribute of the [`<kentor.authServices>`](#assertionConsumerServiceUrl-attribute) element.*
-
-Optional attribute that indicates the base url of the AuthServices endpoints.
-Defaults to `Url` of the current request base `System.Web.HttpRequestBase` if not specified. This can usually be left as the default, but if your internal address of the application is diffrent the external address this can correct a wrongly set `AssertionConsumerServiceURL` in the `saml2p:AuthnRequest`.
 
 ###`<metadata>` Element
 *Optional child element of the [`<kentor.authServices>`](#kentor-authservices-section) element.*

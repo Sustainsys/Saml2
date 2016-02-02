@@ -49,6 +49,7 @@ namespace Kentor.AuthServices.Configuration
             DiscoveryServiceUrl = configSection.DiscoveryServiceUrl;
             EntityId = configSection.EntityId;
             ModulePath = configSection.ModulePath;
+            PublicOrigin = configSection.PublicOrigin;
             Organization = configSection.Organization;
             AuthenticateRequestSigningBehavior = configSection.AuthenticateRequestSigningBehavior;
             NameIdPolicy = new Saml2NameIdPolicy(
@@ -166,6 +167,13 @@ namespace Kentor.AuthServices.Configuration
                 modulePath = value;
             }
         }
+
+        /// <summary>
+        /// By default, service provider uses the host, protocol, and port from the HTTP request when creating links.
+        /// This might not be accurate in reverse proxy or load-balancing situations. 
+        /// You can override the origin used for link generation using this property.
+        /// </summary>
+        public Uri PublicOrigin { get; set; }
 
         /// <summary>
         /// Metadata describing the organization responsible for the entity.

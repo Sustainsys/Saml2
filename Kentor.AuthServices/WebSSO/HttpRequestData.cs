@@ -50,9 +50,9 @@ namespace Kentor.AuthServices.WebSso
             HttpMethod = httpMethod;
             Url = url;
             var acsUrl = url;
-            if (KentorAuthServicesSection.Current.AssertionConsumerServiceUrl != null)
+            if (KentorAuthServicesSection.Current.PublicOrigin != null)
             {
-                acsUrl = KentorAuthServicesSection.Current.AssertionConsumerServiceUrl;
+                acsUrl = KentorAuthServicesSection.Current.PublicOrigin;
             }
             ApplicationUrl = new Uri(acsUrl, applicationPath);
             Form = new ReadOnlyDictionary<string, string>(

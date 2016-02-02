@@ -137,25 +137,17 @@ namespace Kentor.AuthServices.Tests.WebSso
         }
 
         [TestMethod]
-        public void SignInCommand_Run_MapsAssertionConsumerServiceURL()
+        public void SignInCommand_Run_PublicOrigin()
         {
-            KentorAuthServicesSection.Current.AllowChange =true;
-            KentorAuthServicesSection.Current.AssertionConsumerServiceUrl = new Uri("https://testurlForAcs.com/");
+            var options = StubFactory.CreateOptionsPublicOrigin(new Uri("https://my.public.origin:8443"));
+            var idp = options.IdentityProviders.Default;
 
-            try
-            {
-                KentorAuthServicesSection.Current.AssertionConsumerServiceUrl.Should().NotBeNull();
-                KentorAuthServicesSection.Current.AssertionConsumerServiceUrl.AbsoluteUri.Should().Be("https://testurlforacs.com/");
-                ConfigurationManager.RefreshSection("kentor.authServices");
-                var defaultDestination = Options.FromConfiguration.IdentityProviders.Default.SingleSignOnServiceUrl;
-                var httpRequest = new HttpRequestData("GET", new Uri("http://localhost/signin"));
-                httpRequest.ApplicationUrl.AbsoluteUri.Should().Be("https://testurlforacs.com/");
-            }
-            finally
-            {
-                KentorAuthServicesSection.Current.AssertionConsumerServiceUrl = null;
-                KentorAuthServicesSection.Current.AllowChange =false;
-            }
+            var request = new HttpRequestData("GET",
+                new Uri("http://sp.example.com?idp=" + Uri.EscapeDataString(idp.EntityId.Id)));
+
+            var subject = new SignInCommand().Run(request, Options.FromConfiguration);
+
+            subject.Location.Host.Should().Be(new Uri("https://idp.example.com").Host);
         }
     }
 }

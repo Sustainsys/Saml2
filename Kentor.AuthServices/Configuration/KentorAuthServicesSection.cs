@@ -72,17 +72,16 @@ namespace Kentor.AuthServices.Configuration
 
         /// <summary>
         /// The Url to send back the assertions from idp.
+        /// By default, service provider uses the host, protocol, and port from the HTTP request when creating links.
+        /// This might not be accurate in reverse proxy or load-balancing situations. 
+        /// You can override the origin used for link generation using this property.
         /// </summary>
-        [ConfigurationProperty("assertionConsumerServiceUrl", IsRequired = false)]
-        public Uri AssertionConsumerServiceUrl
+        [ConfigurationProperty("publicOrigin", IsRequired = false)]
+        public Uri PublicOrigin
         {
             get
             {
-                return (Uri)base["assertionConsumerServiceUrl"];
-            }
-            internal set
-            {
-                base["assertionConsumerServiceUrl"] = value;
+                return (Uri)base["publicOrigin"];
             }
         }
 

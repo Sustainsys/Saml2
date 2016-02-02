@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web;
+using Kentor.AuthServices.Configuration;
 
 namespace Kentor.AuthServices.HttpModule
 {
@@ -17,8 +18,9 @@ namespace Kentor.AuthServices.HttpModule
         /// Extension method to convert a HttpRequestBase to a HttpRequestData.
         /// </summary>
         /// <param name="requestBase">The request object used to populate the <c>HttpRequestData</c>.</param>
+        /// <param name="options">The options object to get the publicOrigin.</param>
         /// <returns>The <c>HttpRequestData</c> object that has been populated by the request.</returns>
-        public static HttpRequestData ToHttpRequestData(this HttpRequestBase requestBase)
+        public static HttpRequestData ToHttpRequestData(this HttpRequestBase requestBase, IOptions options)
         {
             if (requestBase == null)
             {
@@ -27,7 +29,7 @@ namespace Kentor.AuthServices.HttpModule
 
             return new HttpRequestData(
                 requestBase.HttpMethod,
-                requestBase.Url,
+                options?.SPOptions?.PublicOrigin?? requestBase.Url,
                 requestBase.ApplicationPath,
                 requestBase.Form.Cast<string>().Select((de, i) =>
                     new KeyValuePair<string, string[]>(de, ((string)requestBase.Form[i]).Split(','))));

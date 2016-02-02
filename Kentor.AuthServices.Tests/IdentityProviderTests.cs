@@ -80,6 +80,31 @@ namespace Kentor.AuthServices.Tests
 
             subject.RelayState.Should().HaveLength(56);
         }
+        [TestMethod]
+        public void IdentityProvider_CreateAuthenticateRequest_PublicOrigin()
+        {
+            var origin = new Uri("https://my.public.origin:8443/");
+            var options = StubFactory.CreateOptionsPublicOrigin(origin);
+
+            var idp = options.IdentityProviders.Default;
+
+            var urls = StubFactory.CreateAuthServicesUrlsPublicOrigin(origin);
+            var subject = idp.CreateAuthenticateRequest(null, urls);
+
+            var expected = new Saml2AuthenticationRequest()
+            {
+                AssertionConsumerServiceUrl = urls.AssertionConsumerServiceUrl,
+                DestinationUrl = idp.SingleSignOnServiceUrl,
+                Issuer = options.SPOptions.EntityId,
+                AttributeConsumingServiceIndex = 0
+            };
+
+            subject.ShouldBeEquivalentTo(expected, opt => opt
+            .Excluding(au => au.Id)
+            .Excluding(au => au.RelayState));
+
+            subject.RelayState.Should().HaveLength(56);
+        }
 
         [TestMethod]
         public void IdentityProvider_CreateAuthenticateRequest_NoAttributeIndex()

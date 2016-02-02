@@ -18,7 +18,7 @@ namespace Kentor.AuthServices.Owin
         protected async override Task<AuthenticationTicket> AuthenticateCoreAsync()
         {
             var result = CommandFactory.GetCommand(CommandFactory.AcsCommandName)
-                .Run(await Context.ToHttpRequestData(), Options);
+                .Run(await Context.ToHttpRequestData(Options), Options);
 
             var identities = result.Principal.Identities.Select(i =>
                 new ClaimsIdentity(i, null, Options.SignInAsAuthenticationType, i.NameClaimType, i.RoleClaimType));
@@ -52,7 +52,7 @@ namespace Kentor.AuthServices.Owin
                     var result = SignInCommand.CreateResult(
                         idp,
                         challenge.Properties.RedirectUri,
-                        await Context.ToHttpRequestData(),
+                        await Context.ToHttpRequestData(Options),
                         Options,
                         challenge.Properties);
 
@@ -77,7 +77,7 @@ namespace Kentor.AuthServices.Owin
                 }
 
                 CommandFactory.GetCommand(remainingPath.Value)
-                    .Run(await Context.ToHttpRequestData(), Options)
+                    .Run(await Context.ToHttpRequestData(Options), Options)
                     .Apply(Context);
 
                 return true;

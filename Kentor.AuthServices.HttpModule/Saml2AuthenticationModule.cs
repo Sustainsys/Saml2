@@ -55,7 +55,7 @@ namespace Kentor.AuthServices.HttpModule
 
         var command = CommandFactory.GetCommand(commandName);
         var commandResult = command.Run(
-            new HttpRequestWrapper(application.Request).ToHttpRequestData(),
+            new HttpRequestWrapper(application.Request).ToHttpRequestData(options),
             options);
 
         commandResult.SignInSessionAuthenticationModule();

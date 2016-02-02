@@ -60,6 +60,12 @@ namespace Kentor.AuthServices.Configuration
         string ModulePath { get; }
 
         /// <summary>
+        /// By default, service provider uses the host, protocol, and port from the HTTP request when creating links.
+        /// This might not be accurate in reverse proxy or load-balancing situations. 
+        /// You can override the origin used for link generation using this property.
+        /// </summary>
+        Uri PublicOrigin { get; }
+        /// <summary>
         /// Metadata describing the organization responsible for the SAML2 entity.
         /// </summary>
         Organization Organization { get; }

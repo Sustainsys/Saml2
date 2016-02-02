@@ -7,12 +7,13 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Kentor.AuthServices.Configuration;
 
 namespace Kentor.AuthServices.Owin
 {
     static class OwinContextExtensions
     {
-        public async static Task<HttpRequestData> ToHttpRequestData(this IOwinContext context)
+        public async static Task<HttpRequestData> ToHttpRequestData(this IOwinContext context, IOptions options)
         {
             if(context == null)
             {
@@ -30,10 +31,9 @@ namespace Kentor.AuthServices.Owin
             {
                 applicationRootPath = "/";
             }
-
             return new HttpRequestData(
                 context.Request.Method,
-                context.Request.Uri,
+                options?.SPOptions?.PublicOrigin?? context.Request.Uri,
                 applicationRootPath,
                 formData);
         }
