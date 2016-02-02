@@ -49,12 +49,7 @@ namespace Kentor.AuthServices.WebSso
         {
             HttpMethod = httpMethod;
             Url = url;
-            var acsUrl = url;
-            if (KentorAuthServicesSection.Current.PublicOrigin != null)
-            {
-                acsUrl = KentorAuthServicesSection.Current.PublicOrigin;
-            }
-            ApplicationUrl = new Uri(acsUrl, applicationPath);
+            ApplicationUrl = new Uri(url, applicationPath);
             Form = new ReadOnlyDictionary<string, string>(
                 (formData ?? Enumerable.Empty<KeyValuePair<string, string[]>>())
                 .ToDictionary(kv => kv.Key, kv => kv.Value.Single()));
