@@ -29,7 +29,7 @@ namespace Kentor.AuthServices.HttpModule
 
             return new HttpRequestData(
                 requestBase.HttpMethod,
-                options?.SPOptions?.PublicOrigin?? requestBase.Url,
+                options?.SPOptions.PublicOrigin?? requestBase.Url,
                 requestBase.ApplicationPath,
                 requestBase.Form.Cast<string>().Select((de, i) =>
                     new KeyValuePair<string, string[]>(de, ((string)requestBase.Form[i]).Split(','))));

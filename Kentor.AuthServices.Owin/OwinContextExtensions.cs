@@ -33,7 +33,7 @@ namespace Kentor.AuthServices.Owin
             }
             return new HttpRequestData(
                 context.Request.Method,
-                options?.SPOptions?.PublicOrigin?? context.Request.Uri,
+                options?.SPOptions.PublicOrigin?? context.Request.Uri,
                 applicationRootPath,
                 formData);
         }
