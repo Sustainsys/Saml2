@@ -18,7 +18,7 @@ namespace Kentor.AuthServices.Tests.Owin
         {
             IOwinContext ctx = null;
 
-            var result = await ctx.ToHttpRequestData(null);
+            var result = await ctx.ToHttpRequestData();
 
             result.Should().BeNull();
         }
@@ -34,7 +34,7 @@ namespace Kentor.AuthServices.Tests.Owin
             ctx.Request.Path = new PathString("/somePath");
             ctx.Request.QueryString = new QueryString("param=value");
 
-            var subject = await ctx.ToHttpRequestData(null);
+            var subject = await ctx.ToHttpRequestData();
 
             subject.Url.Should().Be(ctx.Request.Uri);
             subject.Form.Count.Should().Be(2);
@@ -51,19 +51,9 @@ namespace Kentor.AuthServices.Tests.Owin
 
             ctx.Request.PathBase = new PathString("/ApplicationPath");
 
-            var subject = await ctx.ToHttpRequestData(null);
+            var subject = await ctx.ToHttpRequestData();
 
             subject.ApplicationUrl.Should().Be(new Uri("http://sp.example.com/ApplicationPath"));
-        }
-
-
-        [TestMethod]
-        public async Task OwinContextExtensionsTests_ToHttpRequestData_PublicOrigin()
-        {
-            var ctx = OwinTestHelpers.CreateOwinContext();
-            var options = StubFactory.CreateOptionsPublicOrigin(new Uri("https://my.public.origin.com:8443/"));
-            var subject = await ctx.ToHttpRequestData(options);
-            subject.ApplicationUrl.Should().Be(new Uri("https://my.public.origin.com:8443/"));
         }
     }
 }

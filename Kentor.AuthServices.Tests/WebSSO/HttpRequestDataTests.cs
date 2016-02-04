@@ -25,7 +25,7 @@ namespace Kentor.AuthServices.Tests.WebSso
             request.Form.Returns(new NameValueCollection { { "Key", "Value" } });
             request.ApplicationPath.Returns(appPath);
 
-            var subject = request.ToHttpRequestData(null);
+            var subject = request.ToHttpRequestData();
 
             var expected = new HttpRequestData(
                 "GET",
@@ -55,34 +55,6 @@ namespace Kentor.AuthServices.Tests.WebSso
                 });
 
             subject.ApplicationUrl.Should().Be(new Uri("http://example.com:42/ApplicationPath"));
-        }
-
-        [TestMethod]
-        public void HttpRequestData_Ctor_FromHttpRequest_PublicOrigin()
-        {
-            var url = new Uri("http://example.com:42/ApplicationPath/Path?name=DROP%20TABLE%20STUDENTS");
-            string appPath = "/ApplicationPath";
-
-            var request = Substitute.For<HttpRequestBase>();
-            request.HttpMethod.Returns("GET");
-            request.Url.Returns(url);
-            request.Form.Returns(new NameValueCollection { { "Key", "Value" } });
-            request.ApplicationPath.Returns(appPath);
-
-            var options = StubFactory.CreateOptionsPublicOrigin(new Uri("https://my.public.origin:8443"));
-
-            var subject = request.ToHttpRequestData(options);
-
-            var expected = new HttpRequestData(
-                "GET",
-                options.SPOptions.PublicOrigin,
-                appPath,
-                new KeyValuePair<string, string[]>[]
-                {
-                    new KeyValuePair<string, string[]>("Key", new string[] { "Value" })
-                });
-
-            subject.ShouldBeEquivalentTo(expected);
         }
     }
 }

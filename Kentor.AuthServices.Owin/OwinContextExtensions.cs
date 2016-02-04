@@ -13,7 +13,7 @@ namespace Kentor.AuthServices.Owin
 {
     static class OwinContextExtensions
     {
-        public async static Task<HttpRequestData> ToHttpRequestData(this IOwinContext context, IOptions options)
+        public async static Task<HttpRequestData> ToHttpRequestData(this IOwinContext context)
         {
             if(context == null)
             {
@@ -33,7 +33,7 @@ namespace Kentor.AuthServices.Owin
             }
             return new HttpRequestData(
                 context.Request.Method,
-                options?.SPOptions.PublicOrigin?? context.Request.Uri,
+                context.Request.Uri,
                 applicationRootPath,
                 formData);
         }

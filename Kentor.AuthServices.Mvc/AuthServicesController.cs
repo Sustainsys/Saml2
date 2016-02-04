@@ -43,7 +43,7 @@ namespace Kentor.AuthServices.Mvc
         public ActionResult SignIn()
         {
             return CommandFactory.GetCommand(CommandFactory.SignInCommandName).Run(
-                Request.ToHttpRequestData(Options),
+                Request.ToHttpRequestData(),
                 Options)
                 .ToActionResult();
         }
@@ -58,7 +58,7 @@ namespace Kentor.AuthServices.Mvc
         public ActionResult Acs()
         {
             var result = CommandFactory.GetCommand(CommandFactory.AcsCommandName).Run(
-                Request.ToHttpRequestData(Options),
+                Request.ToHttpRequestData(),
                 Options);
 
             result.SignInSessionAuthenticationModule();
@@ -85,7 +85,7 @@ namespace Kentor.AuthServices.Mvc
         public ActionResult Index()
         {
             var result = CommandFactory.GetCommand(CommandFactory.MetadataCommand).Run(
-                Request.ToHttpRequestData(Options),
+                Request.ToHttpRequestData(),
                 Options);
             return result.ToActionResult();
         }

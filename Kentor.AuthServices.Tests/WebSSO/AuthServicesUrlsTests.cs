@@ -1,8 +1,16 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Collections.Specialized;
+using System.Threading.Tasks;
+using System.Web;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Kentor.AuthServices.Configuration;
 using FluentAssertions;
+using Kentor.AuthServices.HttpModule;
+using Kentor.AuthServices.Tests.Helpers;
 using Kentor.AuthServices.WebSso;
+using NSubstitute;
+using Kentor.AuthServices.Owin;
 
 namespace Kentor.AuthServices.Tests.WebSso
 {
@@ -106,6 +114,35 @@ namespace Kentor.AuthServices.Tests.WebSso
             Action a = () => new AuthServicesUrls(new Uri("http://localhost/signin"), signInUrl: null);
 
             a.ShouldThrow<ArgumentNullException>("signInUrl");
+        }
+
+                [TestMethod]
+        public void AuthServicesUrls_Ctor_FromHttpRequest_PublicOrigin()
+        {
+            var url = new Uri("http://example.com:42/ApplicationPath/Path?name=DROP%20TABLE%20STUDENTS");
+            string appPath = "/ApplicationPath";
+            var request = Substitute.For<HttpRequestBase>();
+            request.HttpMethod.Returns("GET");
+            request.Url.Returns(url);
+            request.Form.Returns(new NameValueCollection { { "Key", "Value" } });
+            request.ApplicationPath.Returns(appPath);
+            var options = StubFactory.CreateOptionsPublicOrigin(new Uri("https://my.public.origin:8443"));
+            var subject = request.ToHttpRequestData();
+            var urls = new AuthServicesUrls(subject, options.SPOptions);
+            urls.AssertionConsumerServiceUrl.ShouldBeEquivalentTo("https://my.public.origin:8443/AuthServices/Acs");
+            urls.SignInUrl.ShouldBeEquivalentTo("https://my.public.origin:8443/AuthServices/SignIn");
+
+        }
+
+        [TestMethod]
+        public async Task AuthServicesUrls_Ctor_FromOwinHttpRequestData_PublicOrigin()
+        {
+            var ctx = OwinTestHelpers.CreateOwinContext();
+            var options = StubFactory.CreateOptionsPublicOrigin(new Uri("https://my.public.origin:8443/"));
+            var subject = await ctx.ToHttpRequestData();
+            var urls = new AuthServicesUrls(subject, options.SPOptions);
+            urls.AssertionConsumerServiceUrl.ShouldBeEquivalentTo("https://my.public.origin:8443/AuthServices/Acs");
+            urls.SignInUrl.ShouldBeEquivalentTo("https://my.public.origin:8443/AuthServices/SignIn");
         }
     }
 }

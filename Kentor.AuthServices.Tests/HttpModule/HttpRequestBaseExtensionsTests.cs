@@ -14,7 +14,7 @@ namespace Kentor.AuthServices.Tests.HttpModule
         public void HttpRequestBaseExtensions_ToHttpRequestData_ShouldThrowOnNull()
         {
             HttpRequestBase request = null;
-            Action a = () => request.ToHttpRequestData(null);
+            Action a = () => request.ToHttpRequestData();
 
             a.ShouldThrow<ArgumentNullException>().And.ParamName.Should().Be("requestBase");
         }
