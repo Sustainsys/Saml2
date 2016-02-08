@@ -43,10 +43,10 @@ namespace Kentor.AuthServices.Tests
 
             var options = StubFactory.CreateOptions();
 
-            var url = new Uri("http://localhost:13428/SambiMetadata");
+            var path = "~/Metadata/SambiMetadata.xml";
             var idpInFederation = new EntityId("http://idp-acc.test.ek.sll.se/neas");
 
-            Action a = () => new Federation(url, true, options);
+            Action a = () => new Federation(path, true, options);
 
             a.ShouldNotThrow();
 
@@ -64,10 +64,10 @@ namespace Kentor.AuthServices.Tests
 
             var options = StubFactory.CreateOptions();
 
-            var url = new Uri("http://localhost:13428/SkolfederationMetadata");
+            var path = "~/Metadata/SkolfederationMetadata.xml";
             var idpInFederation = new EntityId("http://fs.ale.se/adfs/services/trust");
 
-            Action a = () => new Federation(url, true, options);
+            Action a = () => new Federation(path, true, options);
 
             a.ShouldNotThrow();
 
@@ -81,10 +81,10 @@ namespace Kentor.AuthServices.Tests
         {
             var options = StubFactory.CreateOptions();
 
-            var url = new Uri("http://localhost:13428/InCommonMetadata");
+            var path = "~/Metadata/InCommonMetadata.xml";
             var idpInFederation = new EntityId("https://shibboleth.umassmed.edu/idp/shibboleth");
 
-            Action a = () => new Federation(url, true, options);
+            Action a = () => new Federation(path, true, options);
 
             a.ShouldNotThrow();
 
@@ -94,12 +94,12 @@ namespace Kentor.AuthServices.Tests
         }
 
         [TestMethod]
-        public void Federation_Ctor_MetadataUrl()
+        public void Federation_Ctor_MetadataLocation()
         {
             var options = StubFactory.CreateOptions();
 
             var subject = new Federation(
-                new Uri("http://localhost:13428/federationMetadata"),
+                "http://localhost:13428/federationMetadata",
                 false,
                 options);
 
@@ -113,7 +113,7 @@ namespace Kentor.AuthServices.Tests
         public void Federation_MetadataValidUntil_Loaded()
         {
             var subject = new Federation(
-                new Uri("http://localhost:13428/federationMetadata"),
+                "http://localhost:13428/federationMetadata",
                 false,
                 StubFactory.CreateOptions());
 
@@ -124,7 +124,7 @@ namespace Kentor.AuthServices.Tests
         public void Federation_MetadataValidUntil_CalculatedFromCacheDuration()
         {
             var subject = new Federation(
-                new Uri("http://localhost:13428/federationMetadataVeryShortCacheDuration"),
+                "http://localhost:13428/federationMetadataVeryShortCacheDuration",
                 false,
                 StubFactory.CreateOptions());
 
@@ -137,7 +137,7 @@ namespace Kentor.AuthServices.Tests
             MetadataRefreshScheduler.minInterval = new TimeSpan(0, 0, 0, 0, 1);
 
             var subject = new Federation(
-                new Uri("http://localhost:13428/federationMetadataVeryShortCacheDuration"),
+                "http://localhost:13428/federationMetadataVeryShortCacheDuration",
                 false,
                 StubFactory.CreateOptions());
 
@@ -154,7 +154,7 @@ namespace Kentor.AuthServices.Tests
             var options = StubFactory.CreateOptions();
 
             var subject = new Federation(
-                new Uri("http://localhost:13428/federationMetadataVeryShortCacheDuration"),
+                "http://localhost:13428/federationMetadataVeryShortCacheDuration",
                 false,
                 options);
 
@@ -188,7 +188,7 @@ namespace Kentor.AuthServices.Tests
             var options = StubFactory.CreateOptions();
 
             var subject = new Federation(
-                new Uri("http://localhost:13428/federationMetadataVeryShortCacheDuration"),
+                "http://localhost:13428/federationMetadataVeryShortCacheDuration",
                 false,
                 options);
 
@@ -211,7 +211,7 @@ namespace Kentor.AuthServices.Tests
             var options = StubFactory.CreateOptions();
 
             var subject = new Federation(
-                new Uri("http://localhost:13428/federationMetadataVeryShortCacheDuration"),
+                "http://localhost:13428/federationMetadataVeryShortCacheDuration",
                 false,
                 options);
 
@@ -235,7 +235,7 @@ namespace Kentor.AuthServices.Tests
             var options = StubFactory.CreateOptions();
 
             var subject = new Federation(
-                new Uri("http://localhost:13428/federationMetadataShortCacheDuration"),
+                "http://localhost:13428/federationMetadataShortCacheDuration",
                 false,
                 options);
 
