@@ -60,12 +60,12 @@ read web.config, but can also be configured from code.
                           findValue="Kentor.AuthServices.StubIdp" x509FindType="FindBySubjectName" />
     </add>
     <add entityId="example-idp"
-         metadataUrl="https://idp.example.com/Metadata"
+         metadataLocation="https://idp.example.com/Metadata"
          allowUnsolicitedAuthnResponse="true" 
          loadMetadata = "true" />
   </identityProviders>
   <federations>
-    <add metadataUrl="https://federation.example.com/metadata.xml" allowUnsolicitedAuthnResponse = "false" />
+    <add metadataLocation="https://federation.example.com/metadata.xml" allowUnsolicitedAuthnResponse = "false" />
   </federations>
 </kentor.authServices>
 ```
@@ -439,7 +439,7 @@ A list of identity providers known to the service provider.
 * [`binding`](#binding-attribute)
 * [`wantAuthnRequestsSigned`](#wantauthnrequestssigned-attribute)
 * [`loadMetadata`](#loadmetadata-attribute)
-* [`metadataUrl`](#metadataurl-attribute-idp)
+* [`metadataLocation`](#metadataLocation-attribute-idp)
 
 ####Elements
 * [`<signingCertificate>`](#signingcertificate-element)
@@ -492,14 +492,15 @@ Load metadata from the idp and use that information instead of the configuration
 possible to use a specific certificate even though the metadata is loaded, in that case
 the configured certificate will take precedence over any contents in the metadata.
 
-####`metadataUrl` Attribute (Idp)
+####`metadataLocation` Attribute (Idp)
 *Optional attribute of the [`add`](#add-identityprovider-element) element*
 
 The SAML2 metadata standard strongly suggests that the Entity Id of a SAML2 entity
 is a URL where the metadata of the entity can be found. When loading metadata
 for an idp, AuthServices normally interprets the EntityId as a url to the metadata.
 If the metadata is located somewhere else it can be specified with this
-configuration parameter.
+configuration parameter. The location can be a URL, an absolute path to a local
+file or an app relative path (e.g. ~/App_Data/IdpMetadata.xml)
 
 ###`<signingCertificate>` Element
 *Optional child element of the [`<identityProvider>`](#identityprovider-element) element*
@@ -586,14 +587,17 @@ Contains a list of federations that the service provider knows and trusts.
 Adds a known federation.
 
 ####Attributes
-* [`metadataUrl`](#metadataUrl-attribute-federation).
+* [`metadataLocation`](#metadataLocation-attribute-federation).
 * [`allowUnsolicitedAuthnResponse`](#allowunsolicitedauthnresponse-attribute-federation)
 
-####`metadataUrl` Attribute (Federation)
+####`metadataLocation` Attribute (Federation)
 *Attribute of [`<add>`](#add-federation-element)*
 
-URL to the full metadata of the federation. AuthServices will download the metadata and
-add all identity providers found to the list of known and trusted identity providers.
+URL to the full metadata of the federation. AuthServices will download the
+metadata and add all identity providers found to the list of known and trusted
+identity providers. The location can be a URL, an absolute path to a local
+file or an app relative path (e.g. ~/App_Data/IdpMetadata.xml)
+
 
 ####`allowUnsolicitedAuthnResponse` Attribute (Federation)
 *Attribute of [`<add>`](#add-federation-element)*

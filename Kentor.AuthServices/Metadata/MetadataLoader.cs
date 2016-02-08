@@ -22,16 +22,17 @@ namespace Kentor.AuthServices.Metadata
         /// <summary>
         /// Load and parse metadata.
         /// </summary>
-        /// <param name="metadataUrl">Url to metadata</param>
+        /// <param name="metadataLocation">Path to metadata. A Url, absolute
+        /// path or an app relative path (e.g. ~/App_Data/metadata.xml)</param>
         /// <returns>EntityDescriptor containing metadata</returns>
-        public static ExtendedEntityDescriptor LoadIdp(Uri metadataUrl)
+        public static ExtendedEntityDescriptor LoadIdp(string metadataLocation)
         {
-            if (metadataUrl == null)
+            if (metadataLocation == null)
             {
-                throw new ArgumentNullException(nameof(metadataUrl));
+                throw new ArgumentNullException(nameof(metadataLocation));
             }
 
-            return (ExtendedEntityDescriptor)Load(metadataUrl.OriginalString);
+            return (ExtendedEntityDescriptor)Load(metadataLocation);
         }
 
         private static MetadataBase Load(string metadataLocation)

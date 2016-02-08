@@ -15,7 +15,7 @@ namespace Kentor.AuthServices.Tests.Metadata
         public void MetadataLoader_LoadIdp()
         {
             var entityId = "http://localhost:13428/idpMetadata";
-            var subject = MetadataLoader.LoadIdp(new Uri(entityId));
+            var subject = MetadataLoader.LoadIdp(entityId);
 
             subject.EntityId.Id.Should().Be(entityId);
         }
@@ -25,7 +25,7 @@ namespace Kentor.AuthServices.Tests.Metadata
         {
             Action a = () => MetadataLoader.LoadIdp(null);
 
-            a.ShouldThrow<ArgumentNullException>().And.ParamName.Should().Be("metadataUrl");
+            a.ShouldThrow<ArgumentNullException>().And.ParamName.Should().Be("metadataLocation");
         }
 
         [TestMethod]
