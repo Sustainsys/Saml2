@@ -127,5 +127,24 @@ namespace Kentor.AuthServices.Tests.Mvc
 
             xmlData.Root.Name.Should().Be(Saml2Namespaces.Saml2Metadata + "EntityDescriptor");
         }
+
+        [TestMethod]
+        public void AuthServicesController_SignIn_Returns_Public_Origin()
+        {
+            AuthServicesController.Options = new Options(new SPOptions
+            {
+                DiscoveryServiceUrl = new Uri("http://ds.example.com"),
+                PublicOrigin = new Uri("https://my.public.origin:8443"),
+                EntityId = new EntityId("https://github.com/KentorIT/authservices")
+            });
+
+            var subject = CreateInstanceWithContext();
+
+            var result = subject.SignIn();
+
+            result.Should().BeOfType<RedirectResult>().And
+                .Subject.As<RedirectResult>().Url
+                    .Should().StartWith("http://ds.example.com/?entityID=https%3A%2F%2Fgithub.com%2FKentorIT%2Fauthservices&return=https%3A%2F%2Fmy.public.origin%3A8443%2F");
+        }
     }
 }

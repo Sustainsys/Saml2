@@ -70,6 +70,21 @@ namespace Kentor.AuthServices.Configuration
         }
 
         /// <summary>
+        /// By default, the service provider uses the host, protocol, and port
+        /// from the HTTP request when creating links. This might not be
+        /// accurate in reverse proxy or load-balancing situations. You can
+        /// override the origin used for link generation using this property.
+        /// </summary>
+        [ConfigurationProperty("publicOrigin", IsRequired = false)]
+        public Uri PublicOrigin
+        {
+            get
+            {
+                return (Uri)base["publicOrigin"];
+            }
+        }
+
+        /// <summary>
         /// Set of identity providers known to the service provider.
         /// </summary>
         [ConfigurationProperty("identityProviders")]

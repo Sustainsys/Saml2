@@ -21,6 +21,11 @@ namespace Kentor.AuthServices.Tests
             return new AuthServicesUrls(new Uri("http://localhost"), "/AuthServices");
         }
 
+        internal static AuthServicesUrls CreateAuthServicesUrlsPublicOrigin(Uri publicOrigin)
+        {
+            return new AuthServicesUrls(publicOrigin, "/AuthServices");
+        }
+
         internal static SPOptions CreateSPOptions()
         {
             var org = new Organization();
@@ -39,7 +44,41 @@ namespace Kentor.AuthServices.Tests
                 WantAssertionsSigned = true,
                 Organization = org,
                 DiscoveryServiceUrl = new Uri("https://ds.example.com"),
+                ReturnUrl = new Uri("https://localhost/returnUrl")
+            };
+
+            options.SystemIdentityModelIdentityConfiguration.ClaimsAuthenticationManager
+                = new ClaimsAuthenticationManagerStub();
+            options.SystemIdentityModelIdentityConfiguration.AudienceRestriction.AudienceMode
+                = AudienceUriMode.Never;
+
+            AddContacts(options);
+            AddAttributeConsumingServices(options);
+
+            return options;
+        }
+
+
+        internal static SPOptions CreateSPOptions(Uri publicOrigin)
+        {
+            var org = new Organization();
+
+            org.Names.Add(new LocalizedName("Kentor.AuthServices", CultureInfo.InvariantCulture));
+            org.DisplayNames.Add(new LocalizedName("Kentor AuthServices", CultureInfo.InvariantCulture));
+            org.Urls.Add(new LocalizedUri(
+                new Uri("http://github.com/KentorIT/authservices"),
+                CultureInfo.InvariantCulture));
+
+            var options = new SPOptions
+            {
+                EntityId = new EntityId("https://github.com/KentorIT/authservices"),
+                MetadataCacheDuration = new TimeSpan(0, 0, 42),
+                MetadataValidDuration = TimeSpan.FromDays(24),
+                WantAssertionsSigned = true,
+                Organization = org,
+                DiscoveryServiceUrl = new Uri("https://ds.example.com"),
                 ReturnUrl = new Uri("https://localhost/returnUrl"),
+                PublicOrigin = publicOrigin
             };
 
             options.SystemIdentityModelIdentityConfiguration.ClaimsAuthenticationManager
@@ -108,6 +147,20 @@ namespace Kentor.AuthServices.Tests
         internal static Options CreateOptions()
         {
             return (Options)CreateOptions(sp => new Options(sp));
+        }
+
+        private static IOptions CreateOptionsPublicOrigin(Func<ISPOptions, IOptions> factory, Uri publicOrigin)
+        {
+            var options = factory(CreateSPOptions(publicOrigin));
+
+            KentorAuthServicesSection.Current.IdentityProviders.RegisterIdentityProviders(options);
+            KentorAuthServicesSection.Current.Federations.RegisterFederations(options);
+
+            return options;
+        }
+        internal static Options CreateOptionsPublicOrigin(Uri publicOrigin)
+        {
+            return (Options)CreateOptionsPublicOrigin(sp => new Options(sp), publicOrigin);
         }
 
         internal static KentorAuthServicesAuthenticationOptions CreateOwinOptions()

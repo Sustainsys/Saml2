@@ -30,7 +30,7 @@ namespace Kentor.AuthServices.WebSso
                 throw new ArgumentNullException(nameof(spOptions));
             }
 
-            Init(request.ApplicationUrl, spOptions.ModulePath);
+            Init(request.ApplicationUrl, spOptions);
         }
 
         /// <summary>
@@ -73,17 +73,24 @@ namespace Kentor.AuthServices.WebSso
             SignInUrl = signInUrl;
         }
 
-        void Init(Uri applicationUrl, string modulePath)
+        void Init(Uri publicOrigin, string modulePath)
         {
             if (!modulePath.StartsWith("/", StringComparison.OrdinalIgnoreCase))
             {
                 throw new ArgumentException("modulePath should start with /.");
             }
 
-            var authServicesRoot = applicationUrl.AbsoluteUri.TrimEnd('/') + modulePath + "/";
+            var authServicesRoot = publicOrigin.AbsoluteUri.TrimEnd('/') + modulePath + "/";
 
             AssertionConsumerServiceUrl = new Uri(authServicesRoot + CommandFactory.AcsCommandName);
             SignInUrl = new Uri(authServicesRoot + CommandFactory.SignInCommandName);
+        }
+
+
+        void Init(Uri applicationUrl, ISPOptions spOptions)
+        {
+            var publicOrigin = spOptions.PublicOrigin ?? applicationUrl;
+            Init(publicOrigin, spOptions.ModulePath);
         }
 
         /// <summary>

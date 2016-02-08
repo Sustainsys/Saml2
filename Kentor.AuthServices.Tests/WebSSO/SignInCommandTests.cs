@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Configuration;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using FluentAssertions;
 using System.Net;
@@ -11,6 +12,8 @@ using System.Xml.Linq;
 using Kentor.AuthServices.Tests.Helpers;
 using Kentor.AuthServices.Configuration;
 using System.IdentityModel.Metadata;
+using System.Xml;
+using System.Xml.Schema;
 using Kentor.AuthServices.Internal;
 using Kentor.AuthServices.WebSso;
 using System.IdentityModel.Tokens;
@@ -131,6 +134,20 @@ namespace Kentor.AuthServices.Tests.WebSso
             var expectedLocation = new Uri(dsUrl + queryString);
 
             result.Location.Should().Be(expectedLocation);
+        }
+
+        [TestMethod]
+        public void SignInCommand_Run_PublicOrigin()
+        {
+            var options = StubFactory.CreateOptionsPublicOrigin(new Uri("https://my.public.origin:8443"));
+            var idp = options.IdentityProviders.Default;
+
+            var request = new HttpRequestData("GET",
+                new Uri("http://sp.example.com?idp=" + Uri.EscapeDataString(idp.EntityId.Id)));
+
+            var subject = new SignInCommand().Run(request, Options.FromConfiguration);
+
+            subject.Location.Host.Should().Be(new Uri("https://idp.example.com").Host);
         }
     }
 }

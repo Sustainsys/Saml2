@@ -30,7 +30,6 @@ namespace Kentor.AuthServices.Owin
             {
                 applicationRootPath = "/";
             }
-
             return new HttpRequestData(
                 context.Request.Method,
                 context.Request.Uri,
