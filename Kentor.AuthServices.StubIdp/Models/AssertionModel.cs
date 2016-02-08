@@ -39,7 +39,8 @@ namespace Kentor.AuthServices.StubIdp.Models
             return new AssertionModel
             {
                 AssertionConsumerServiceUrl = ConfigurationManager.AppSettings["defaultAcsUrl"],
-                NameId = ConfigurationManager.AppSettings["defaultNameId"]
+                NameId = ConfigurationManager.AppSettings["defaultNameId"],
+                SessionIndex = Guid.NewGuid().ToString("N")
             };
         }
 
@@ -69,5 +70,8 @@ namespace Kentor.AuthServices.StubIdp.Models
         public string AuthnRequestXml { get; set; }
 
         public Saml2BindingType ResponseBinding { get; set; } = Saml2BindingType.HttpPost;
+
+        [Display(Name = "Session Index")]
+        public string SessionIndex { get; set; }
     }
 }
