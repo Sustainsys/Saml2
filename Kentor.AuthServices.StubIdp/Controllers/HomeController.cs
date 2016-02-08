@@ -20,28 +20,6 @@ namespace Kentor.AuthServices.StubIdp.Controllers
 {
     public class HomeController : BaseController
     {
-
-        private static IOptions options = null;
-        /// <summary>
-        /// The options used by the controller. By default read from config, 
-        /// but can be set.
-        /// </summary>
-        public static IOptions Options
-        {
-            get
-            {
-                if (options == null)
-                {
-                    options = Configuration.Options.FromConfiguration;
-                }
-                return options;
-            }
-            set
-            {
-                options = value;
-            }
-        }
-
         public ActionResult Index(Guid? idpId)
         {
             var model = new HomePageModel
