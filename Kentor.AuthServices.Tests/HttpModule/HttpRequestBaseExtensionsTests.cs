@@ -3,7 +3,6 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Web;
 using Kentor.AuthServices.HttpModule;
 using FluentAssertions;
-using Kentor.AuthServices.Configuration;
 
 namespace Kentor.AuthServices.Tests.HttpModule
 {
