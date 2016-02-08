@@ -116,7 +116,7 @@ namespace Kentor.AuthServices.Tests.WebSso
             a.ShouldThrow<ArgumentNullException>("signInUrl");
         }
 
-                [TestMethod]
+        [TestMethod]
         public void AuthServicesUrls_Ctor_FromHttpRequest_PublicOrigin()
         {
             var url = new Uri("http://example.com:42/ApplicationPath/Path?name=DROP%20TABLE%20STUDENTS");
@@ -131,7 +131,6 @@ namespace Kentor.AuthServices.Tests.WebSso
             var urls = new AuthServicesUrls(subject, options.SPOptions);
             urls.AssertionConsumerServiceUrl.ShouldBeEquivalentTo("https://my.public.origin:8443/AuthServices/Acs");
             urls.SignInUrl.ShouldBeEquivalentTo("https://my.public.origin:8443/AuthServices/SignIn");
-
         }
 
         [TestMethod]
