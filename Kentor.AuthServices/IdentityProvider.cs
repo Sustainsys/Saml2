@@ -44,7 +44,8 @@ namespace Kentor.AuthServices
             EntityId = new EntityId(config.EntityId);
             binding = config.Binding;
             AllowUnsolicitedAuthnResponse = config.AllowUnsolicitedAuthnResponse;
-            metadataUrl = config.MetadataUrl;
+            metadataLocation = string.IsNullOrEmpty(config.MetadataLocation) 
+                ?  null : config.MetadataLocation;
             WantAuthnRequestsSigned = config.WantAuthnRequestsSigned;
 
             var certificate = config.SigningCertificate.LoadCertificate();
@@ -88,7 +89,7 @@ namespace Kentor.AuthServices
 
         /// <summary>
         /// Should this idp load metadata? If you intend to set the
-        /// <see cref="MetadataUrl"/> that must be done before setting
+        /// <see cref="MetadataLocation"/> that must be done before setting
         /// LoadMetadata to true.</summary>
         public bool LoadMetadata
         {
@@ -179,21 +180,24 @@ namespace Kentor.AuthServices
         /// </summary>
         public bool AllowUnsolicitedAuthnResponse { get; set; }
 
-        private Uri metadataUrl;
+        private string metadataLocation;
 
         /// <summary>
         /// Location of metadata for the Identity Provider. Automatically enables
-        /// <see cref="LoadMetadata"/>
+        /// <see cref="LoadMetadata"/>. The location can be a URL, an absolute
+        /// path to a local file or an app relative  path 
+        /// (e.g. ~/App_Data/IdpMetadata.xml). By default the entity id is
+        /// interpreted as the metadata location (which is a convention).
         /// </summary>
-        public Uri MetadataUrl
+        public string  MetadataLocation
         {
             get
             {
-                return metadataUrl ?? new Uri(EntityId.Id);
+                return metadataLocation ?? EntityId.Id;
             }
             set
             {
-                metadataUrl = value;
+                metadataLocation = value;
                 LoadMetadata = true;
             }
         }
@@ -302,7 +306,7 @@ namespace Kentor.AuthServices
             {
                 try
                 {
-                    var metadata = MetadataLoader.LoadIdp(MetadataUrl);
+                    var metadata = MetadataLoader.LoadIdp(MetadataLocation);
 
                     ReadMetadata(metadata);
                 }

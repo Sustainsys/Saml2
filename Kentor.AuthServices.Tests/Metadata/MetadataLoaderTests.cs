@@ -15,7 +15,7 @@ namespace Kentor.AuthServices.Tests.Metadata
         public void MetadataLoader_LoadIdp()
         {
             var entityId = "http://localhost:13428/idpMetadata";
-            var subject = MetadataLoader.LoadIdp(new Uri(entityId));
+            var subject = MetadataLoader.LoadIdp(entityId);
 
             subject.EntityId.Id.Should().Be(entityId);
         }
@@ -25,7 +25,7 @@ namespace Kentor.AuthServices.Tests.Metadata
         {
             Action a = () => MetadataLoader.LoadIdp(null);
 
-            a.ShouldThrow<ArgumentNullException>().And.ParamName.Should().Be("metadataUrl");
+            a.ShouldThrow<ArgumentNullException>().And.ParamName.Should().Be("metadataLocation");
         }
 
         [TestMethod]
@@ -33,17 +33,27 @@ namespace Kentor.AuthServices.Tests.Metadata
         {
             Action a = () => MetadataLoader.LoadFederation(null);
 
-            a.ShouldThrow<ArgumentNullException>().And.ParamName.Should().Be("metadataUrl");
+            a.ShouldThrow<ArgumentNullException>().And.ParamName.Should().Be("metadataLocation");
         }
 
         [TestMethod]
         public void MetadataLoader_LoadFederation()
         {
-            var metadataUrl = new Uri("http://localhost:13428/federationMetadata");
+            var metadataLocation = "http://localhost:13428/federationMetadata";
 
-            var subject = MetadataLoader.LoadFederation(metadataUrl);
+            var subject = MetadataLoader.LoadFederation(metadataLocation);
 
             subject.ChildEntities.First().EntityId.Id.Should().Be("http://idp.federation.example.com/metadata");
+        }
+
+        [TestMethod]
+        public void MetadataLoader_LoadFederation_FromFile()
+        {
+            var metadataLocation = "~/Metadata/SambiMetadata.xml";
+
+            var result = MetadataLoader.LoadFederation(metadataLocation);
+
+            result.ChildEntities.First().EntityId.Id.Should().Be("https://idp.maggie.bif.ost.se:9445/idp/saml");
         }
     }
 }

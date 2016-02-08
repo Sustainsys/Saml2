@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Kentor.AuthServices.Internal;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IdentityModel.Metadata;
@@ -21,22 +22,28 @@ namespace Kentor.AuthServices.Metadata
         /// <summary>
         /// Load and parse metadata.
         /// </summary>
-        /// <param name="metadataUrl">Url to metadata</param>
+        /// <param name="metadataLocation">Path to metadata. A Url, absolute
+        /// path or an app relative path (e.g. ~/App_Data/metadata.xml)</param>
         /// <returns>EntityDescriptor containing metadata</returns>
-        public static ExtendedEntityDescriptor LoadIdp(Uri metadataUrl)
+        public static ExtendedEntityDescriptor LoadIdp(string metadataLocation)
         {
-            if (metadataUrl == null)
+            if (metadataLocation == null)
             {
-                throw new ArgumentNullException(nameof(metadataUrl));
+                throw new ArgumentNullException(nameof(metadataLocation));
             }
 
-            return (ExtendedEntityDescriptor)Load(metadataUrl);
+            return (ExtendedEntityDescriptor)Load(metadataLocation);
         }
 
-        private static MetadataBase Load(Uri metadataUrl)
+        private static MetadataBase Load(string metadataLocation)
         {
+            if(PathHelper.IsWebRootRelative(metadataLocation))
+            {
+                metadataLocation = PathHelper.MapPath(metadataLocation);
+            }
+
             using (var client = new WebClient())
-            using (var stream = client.OpenRead(metadataUrl.ToString()))
+            using (var stream = client.OpenRead(metadataLocation))
             {
                 return Load(stream);
             }
@@ -60,16 +67,16 @@ namespace Kentor.AuthServices.Metadata
         /// <summary>
         /// Load and parse metadata for a federation.
         /// </summary>
-        /// <param name="metadataUrl">Url to metadata</param>
+        /// <param name="metadataLocation">Url to metadata</param>
         /// <returns></returns>
-        public static ExtendedEntitiesDescriptor LoadFederation(Uri metadataUrl)
+        public static ExtendedEntitiesDescriptor LoadFederation(string metadataLocation)
         {
-            if (metadataUrl == null)
+            if (metadataLocation == null)
             {
-                throw new ArgumentNullException(nameof(metadataUrl));
+                throw new ArgumentNullException(nameof(metadataLocation));
             }
 
-            return (ExtendedEntitiesDescriptor)Load(metadataUrl);
+            return (ExtendedEntitiesDescriptor)Load(metadataLocation);
         }
     }
 }

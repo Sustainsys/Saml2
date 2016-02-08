@@ -341,7 +341,7 @@ namespace Kentor.AuthServices.Tests
         {
             var config = CreateConfig();
             config.LoadMetadata = true;
-            config.MetadataUrl = new Uri("http://localhost:13428/idpMetadataDifferentEntityId");
+            config.MetadataLocation = "http://localhost:13428/idpMetadataDifferentEntityId";
             config.EntityId = "some-idp";
 
             var subject = new IdentityProvider(config, Options.FromConfiguration.SPOptions);
@@ -633,7 +633,7 @@ namespace Kentor.AuthServices.Tests
             var subject = new IdentityProvider(
                 new EntityId("http://other.entityid.example.com"), spOptions)
             {
-                MetadataUrl = new Uri("http://localhost:13428/idpMetadataOtherEntityId"),
+                MetadataLocation = "http://localhost:13428/idpMetadataOtherEntityId",
                 AllowUnsolicitedAuthnResponse = true
             };
 
@@ -642,7 +642,7 @@ namespace Kentor.AuthServices.Tests
             subject.EntityId.Id.Should().Be("http://other.entityid.example.com");
             // If a metadatalocation is set, metadata loading is automatically enabled.
             subject.LoadMetadata.Should().BeTrue();
-            subject.MetadataUrl.OriginalString.Should().Be("http://localhost:13428/idpMetadataOtherEntityId");
+            subject.MetadataLocation.Should().Be("http://localhost:13428/idpMetadataOtherEntityId");
             subject.MetadataValidUntil.Should().BeCloseTo(
                 DateTime.UtcNow.Add(MetadataRefreshScheduler.DefaultMetadataCacheDuration), precision: 100);
             subject.SingleSignOnServiceUrl.Should().Be("http://wrong.entityid.example.com/acs");
@@ -670,7 +670,7 @@ namespace Kentor.AuthServices.Tests
             subject.Binding.Should().Be(Saml2BindingType.HttpPost);
             subject.EntityId.Id.Should().Be("http://idp.example.com");
             subject.LoadMetadata.Should().BeFalse();
-            subject.MetadataUrl.OriginalString.Should().Be("http://idp.example.com");
+            subject.MetadataLocation.Should().Be("http://idp.example.com");
             subject.MetadataValidUntil.Should().NotHaveValue();
 
             var subjectKeyParams = subject.SigningKeys.Single().CreateKey()

@@ -12,16 +12,17 @@ namespace Kentor.AuthServices.Configuration
     /// </summary>
     public class FederationElement : ConfigurationElement
     {
-        private const string metadataUrl = "metadataUrl";
+        private const string metadataLocation = nameof(metadataLocation);
         /// <summary>
-        /// Url to download metdata for the federation from.
+        /// Location (url, local path or app relative path such as ~/App_Data)
+        /// where metadata is located.
         /// </summary>
-        [ConfigurationProperty(metadataUrl, IsRequired = true)]
-        public Uri MetadataUrl
+        [ConfigurationProperty(metadataLocation, IsRequired = true)]
+        public string MetadataLocation
         {
             get
             {
-                return (Uri)base[metadataUrl];
+                return (string)base[metadataLocation];
             }
         }
 

@@ -76,7 +76,7 @@ namespace SampleOwinApplication
             // It's enough to just create the federation and associate it
             // with the options. The federation will load the metadata and
             // update the options with any identity providers found.
-            new Federation(new Uri("http://localhost:52071/Federation"), true, authServicesOptions);
+            new Federation("http://localhost:52071/Federation", true, authServicesOptions);
 
             return authServicesOptions;
         }

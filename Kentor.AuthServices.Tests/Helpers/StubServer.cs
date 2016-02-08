@@ -3,16 +3,10 @@ using Microsoft.Owin.Hosting;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Owin;
-using Kentor.AuthServices.Tests.Helpers;
 using Kentor.AuthServices.WebSso;
-using System.Threading;
 using System.IO;
 using System.Xml.Linq;
-using Kentor.AuthServices.Internal;
 using System.Security.Cryptography.Xml;
 
 namespace Kentor.AuthServices.Tests.Helpers
@@ -305,36 +299,12 @@ entityID=""http://localhost:13428/idpMetadataVeryShortCacheDuration"" cacheDurat
                 app.Use(async (ctx, next) =>
                 {
                     string data;
-                    var sambipath = "Metadata\\SambiMetadata.xml";
-                    var skolfederationPath = "Metadata\\SkolfederationMetadata.xml";
-                    var incommonPath = "Metadata\\InCommon-metadata.xml";
 
                     switch (ctx.Request.Path.ToString())
                     {
                         case "/ars":
                             ArtifactResolutionService(ctx);
                             return;
-                        case "/SambiMetadata":
-                            if (File.Exists(sambipath))
-                            {
-                                await ctx.Response.WriteAsync(File.ReadAllText(sambipath));
-                                return;
-                            }
-                            break;
-                        case "/SkolfederationMetadata":
-                            if (File.Exists(skolfederationPath))
-                            {
-                                await ctx.Response.WriteAsync(File.ReadAllText(skolfederationPath));
-                                return;
-                            }
-                            break;
-                        case "/InCommonMetadata":
-                            if (File.Exists(incommonPath))
-                            {
-                                await ctx.Response.WriteAsync(File.ReadAllText(incommonPath));
-                                return;
-                            }
-                            break;
                         default:
                             var content = GetContent();
                             if (content.TryGetValue(ctx.Request.Path.ToString(), out data))
