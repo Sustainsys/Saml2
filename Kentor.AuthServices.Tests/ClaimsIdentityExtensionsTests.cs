@@ -46,17 +46,43 @@ namespace Kentor.AuthServices.Tests
         }
 
         [TestMethod]
+        public void ClaimsIdentityExtensions_ToSaml2Assertion_Sets_SessionIndex()
+        {
+            var subject = new ClaimsIdentity(new Claim[] {
+                new Claim(ClaimTypes.NameIdentifier, "NameId"),
+                new Claim(AuthServicesClaimTypes.SessionIndex, "SessionID"),
+                new Claim(ClaimTypes.Email, "me@example.com")
+            });
+
+            var issuer = new EntityId("http://idp.example.com");
+            var actual = subject.ToSaml2Assertion(issuer);
+
+            actual.Statements.OfType<Saml2AuthenticationStatement>()
+                .Single().SessionIndex.Should().Be("SessionID");
+
+            var attributes = actual.Statements.OfType<Saml2AttributeStatement>()
+                .Single().Attributes;
+
+            attributes.Should().HaveCount(1);
+
+            attributes.Single().ShouldBeEquivalentTo(
+                new Saml2Attribute(ClaimTypes.Email, "me@example.com"));
+        }
+
+        [TestMethod]
         public void ClaimsIdentityExtensions_ToSaml2Assertion_Includes_Attributes()
         {
             var ci = new ClaimsIdentity(new Claim[] { 
                 new Claim(ClaimTypes.NameIdentifier, "JohnDoe"),
-                new Claim(ClaimTypes.Role, "Test")
+                new Claim(ClaimTypes.Role, "Test"),
+                new Claim(ClaimTypes.Email, "me@example.com"),
             });
 
-            var a = ci.ToSaml2Assertion(new EntityId("http://idp.example.com"));
+            var actual = ci.ToSaml2Assertion(new EntityId("http://idp.example.com"));
 
-            a.Statements.SingleOrDefault().Should().BeOfType<Saml2AttributeStatement>();
-            (a.Statements.SingleOrDefault() as Saml2AttributeStatement).Attributes[0].Values[0].Should().Be("Test");
+            actual.Statements.OfType<Saml2AttributeStatement>().Should().HaveCount(1);
+            actual.Statements.OfType<Saml2AttributeStatement>().Single().Attributes[0].Values[0].Should().Be("Test");
+            actual.Statements.OfType<Saml2AttributeStatement>().Single().Attributes[1].Values[0].Should().Be("me@example.com");
         }
 
         [TestMethod]
@@ -68,11 +94,15 @@ namespace Kentor.AuthServices.Tests
                 new Claim(ClaimTypes.Role, "Test2"),
             });
 
-            var a = ci.ToSaml2Assertion(new EntityId("http://idp.example.com"));
+            var assertion = ci.ToSaml2Assertion(new EntityId("http://idp.example.com"));
 
-            a.Statements.SingleOrDefault().Should().BeOfType<Saml2AttributeStatement>();
-            (a.Statements.SingleOrDefault() as Saml2AttributeStatement).Attributes[0].Values[0].Should().Be("Test1");
-            (a.Statements.SingleOrDefault() as Saml2AttributeStatement).Attributes[0].Values[1].Should().Be("Test2");
+            assertion.Statements.OfType<Saml2AttributeStatement>().Should().HaveCount(1);
+            var actual = assertion.Statements.OfType<Saml2AttributeStatement>().Single();
+
+            var expected = new Saml2AttributeStatement(
+                new Saml2Attribute(ClaimTypes.Role, new[] { "Test1", "Test2" }));
+
+            actual.ShouldBeEquivalentTo(expected);
         }
 
         [TestMethod]

@@ -27,7 +27,8 @@ namespace Kentor.AuthServices.Tests
 
             Action a = () => assertion.ToXElement();
 
-            a.ShouldThrow<ArgumentNullException>().And.ParamName.Should().Be("statement");
+            a.ShouldThrow<NotImplementedException>()
+                .And.Message.Should().Be("Statement of type StubSaml2Statement is not supported.");
         }
 
         private class StubSaml2Statement : Saml2Statement

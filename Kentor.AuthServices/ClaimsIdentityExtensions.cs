@@ -32,10 +32,26 @@ namespace Kentor.AuthServices
             assertion.Subject = new Saml2Subject(new Saml2NameIdentifier(
                 identity.Claims.Single(c => c.Type == ClaimTypes.NameIdentifier).Value));
 
-            foreach (var claim in identity.Claims.Where(c => c.Type != ClaimTypes.NameIdentifier).GroupBy(c => c.Type))
+            assertion.Statements.Add(
+                new Saml2AuthenticationStatement(
+                    new Saml2AuthenticationContext(
+                        new Uri("urn:oasis:names:tc:SAML:2.0:ac:classes:unspecified")))
+                {
+                    SessionIndex = identity.Claims.SingleOrDefault(
+                        c => c.Type == AuthServicesClaimTypes.SessionIndex)?.Value
+                });
+
+            var attributeClaims = identity.Claims.Where(
+                c => c.Type != ClaimTypes.NameIdentifier
+                && c.Type != AuthServicesClaimTypes.SessionIndex).GroupBy(c => c.Type);
+
+            if (attributeClaims.Any())
             {
-                assertion.Statements.Add(new Saml2AttributeStatement(new Saml2Attribute(claim.Key, claim.Select(c => c.Value))));
-            };
+                assertion.Statements.Add(
+                    new Saml2AttributeStatement(
+                        attributeClaims.Select(
+                            ac => new Saml2Attribute(ac.Key, ac.Select(c => c.Value)))));
+            }
 
             assertion.Conditions = new Saml2Conditions()
             {

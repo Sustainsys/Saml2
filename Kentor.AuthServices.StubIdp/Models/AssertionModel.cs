@@ -47,10 +47,19 @@ namespace Kentor.AuthServices.StubIdp.Models
         [Display(Name = "In Response To ID")]
         public string InResponseTo { get; set; }
 
+        private static IEnumerable<string> YieldIfNotNullOrEmpty(string src)
+        {
+            if(!string.IsNullOrEmpty(src))
+            {
+                yield return src;
+            }
+        }
+
         public Saml2Response ToSaml2Response()
         {
             var claims =
                 new Claim[] { new Claim(ClaimTypes.NameIdentifier, NameId) }
+                .Concat(YieldIfNotNullOrEmpty(SessionIndex).Select(s => new Claim(AuthServicesClaimTypes.SessionIndex, SessionIndex)))
                 .Concat((AttributeStatements ?? Enumerable.Empty<AttributeStatementModel>()).Select(att => new Claim(att.Type, att.Value)));
             var identity = new ClaimsIdentity(claims);
 
