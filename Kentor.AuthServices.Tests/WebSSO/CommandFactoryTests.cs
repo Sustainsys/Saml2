@@ -45,6 +45,12 @@ namespace Kentor.AuthServices.Tests.WebSso
         }
 
         [TestMethod]
+        public void CommandFactory_GetCommand_SignOut_ReturnsSignOut()
+        {
+            CommandFactory.GetCommand("SignOut").Should().BeOfType<SignOutCommand>();
+        }
+
+        [TestMethod]
         public void CommandFactory_GetCommand_NullCheckCommandName()
         {
             Action a = () => CommandFactory.GetCommand(null);
