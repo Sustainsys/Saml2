@@ -57,6 +57,20 @@ namespace Kentor.AuthServices.Configuration
             }
         }
 
+        const string logoutUrl = nameof(logoutUrl);
+        /// <summary>
+        /// Single logout url endpoint of Idp.
+        /// </summary>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1726:UsePreferredTerms", MessageId = "Logout")]
+        [ConfigurationProperty(logoutUrl)]
+        public Uri LogoutUrl
+        {
+            get
+            {
+                return (Uri)base[logoutUrl];
+            }
+        }
+
         /// <summary>
         /// The binding to use when sending requests to the Idp.
         /// </summary>

@@ -11,10 +11,15 @@ using System.Security.Claims;
 
 namespace Kentor.AuthServices.WebSso
 {
-    class SignOutCommand : ICommand
+    class LogoutCommand : ICommand
     {
         public CommandResult Run(HttpRequestData request, IOptions options)
         {
+            if(options == null)
+            {
+                throw new ArgumentNullException(nameof(options));
+            }
+
             var idpEntityId = new EntityId(
                 ClaimsPrincipal.Current.FindFirst(ClaimTypes.NameIdentifier).Issuer);
 

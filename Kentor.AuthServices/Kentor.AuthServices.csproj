@@ -155,7 +155,7 @@
     <Compile Include="WebSso\SignInCommand.cs" />
     <Compile Include="Internal\StatusCodeHelper.cs" />
     <Compile Include="Internal\StringHelpers.cs" />
-    <Compile Include="WebSso\SignOutCommand.cs" />
+    <Compile Include="WebSso\LogoutCommand.cs" />
     <Compile Include="XmlHelpers.cs" />
     <Compile Include="Metadata\FilteringXmlDictionaryReader.cs" />
     <Compile Include="Internal\XmlHelpers.cs" />

@@ -41,6 +41,7 @@ namespace Kentor.AuthServices
         internal IdentityProvider(IdentityProviderElement config, ISPOptions spOptions)
         {
             singleSignOnServiceUrl = config.DestinationUrl;
+            SingleLogoutServiceUrl = config.LogoutUrl;
             EntityId = new EntityId(config.EntityId);
             binding = config.Binding;
             AllowUnsolicitedAuthnResponse = config.AllowUnsolicitedAuthnResponse;
@@ -53,6 +54,11 @@ namespace Kentor.AuthServices
             {
                 signingKeys.AddConfiguredKey(
                     new X509RawDataKeyIdentifierClause(certificate));
+            }
+
+            foreach (var ars in config.ArtifactResolutionServices)
+            {
+                ArtifactResolutionServiceUrls[ars.Index] = ars.Location;
             }
 
             // If configured to load metadata, this will immediately do the load.
@@ -169,7 +175,14 @@ namespace Kentor.AuthServices
             }
         }
 
-
+        /// <summary>
+        /// The Url of the single sign out service. This is where the browser
+        /// is redirected or where the post data is sent to when sending a
+        /// LogoutRequest to the idp.
+        /// </summary>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1726:UsePreferredTerms", MessageId = "Logout")]
+        public Uri SingleLogoutServiceUrl { get; set; }
+        
         /// <summary>
         /// The Entity Id of the identity provider.
         /// </summary>
