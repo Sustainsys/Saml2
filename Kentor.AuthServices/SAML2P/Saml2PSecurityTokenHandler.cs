@@ -87,6 +87,7 @@ namespace Kentor.AuthServices.Saml2P
         /// <param name="statement">Authentication statement</param>
         /// <param name="subject">Claim subject</param>
         /// <param name="issuer">Assertion Issuer</param>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1062:Validate arguments of public methods", MessageId = "1")]
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1062:Validate arguments of public methods", MessageId = "0")]
         protected override void ProcessAuthenticationStatement(Saml2AuthenticationStatement statement, ClaimsIdentity subject, string issuer)
         {
@@ -96,6 +97,11 @@ namespace Kentor.AuthServices.Saml2P
             }
             base.ProcessAuthenticationStatement(statement, subject, issuer);
 
+            if(statement.SessionIndex != null)
+            {
+                subject.AddClaim(
+                    new Claim(AuthServicesClaimTypes.SessionIndex, statement.SessionIndex, null, issuer));
+            }
         }
 
         /// <summary>

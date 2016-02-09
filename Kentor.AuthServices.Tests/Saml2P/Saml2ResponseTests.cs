@@ -284,8 +284,11 @@ namespace Kentor.AuthServices.Tests.Saml2P
 
             var signedResponse = SignedXmlHelper.SignXml(response);
 
-            Action a = () => Saml2Response.Read(signedResponse).GetClaims(Options.FromConfiguration);
-            a.ShouldNotThrow();
+            var result = Saml2Response.Read(signedResponse).GetClaims(Options.FromConfiguration);
+
+            var sessionIndexClaim = result.Single().Claims.SingleOrDefault(c => c.Type == AuthServicesClaimTypes.SessionIndex);
+            sessionIndexClaim.Should().NotBeNull();
+            sessionIndexClaim.Value.Should().Be(MethodBase.GetCurrentMethod().Name);
         }
 
         [TestMethod]
