@@ -189,6 +189,7 @@
     <Compile Include="Configuration\KentorAuthServicesSectionTests.cs" />
     <Compile Include="MetadataRefreshSchedulerTests.cs" />
     <Compile Include="Internal\XmlHelpersTests.cs" />
+    <Compile Include="WebSSO\SignOutCommandTests.cs" />
     <Compile Include="XmlHelpersTests.cs" />
   </ItemGroup>
   <ItemGroup>
