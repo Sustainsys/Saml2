@@ -156,9 +156,9 @@
     <Compile Include="Internal\StatusCodeHelper.cs" />
     <Compile Include="Internal\StringHelpers.cs" />
     <Compile Include="WebSso\LogoutCommand.cs" />
+    <Compile Include="Saml2P\Saml2LogoutRequest.cs" />
     <Compile Include="XmlHelpers.cs" />
     <Compile Include="Metadata\FilteringXmlDictionaryReader.cs" />
-    <Compile Include="Internal\XmlHelpers.cs" />
   </ItemGroup>
   <ItemGroup>
     <CodeAnalysisDictionary Include="..\CustomDictionary.xml">

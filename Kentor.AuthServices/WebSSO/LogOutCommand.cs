@@ -1,12 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Kentor.AuthServices.Configuration;
-using System.Net;
 using System.IdentityModel.Metadata;
-using System.Threading;
 using System.Security.Claims;
 
 namespace Kentor.AuthServices.WebSso
@@ -15,6 +9,11 @@ namespace Kentor.AuthServices.WebSso
     {
         public CommandResult Run(HttpRequestData request, IOptions options)
         {
+            if(request == null)
+            {
+                throw new ArgumentNullException(nameof(request));
+            }
+
             if(options == null)
             {
                 throw new ArgumentNullException(nameof(options));
@@ -25,11 +24,12 @@ namespace Kentor.AuthServices.WebSso
 
             var idp = options.IdentityProviders[idpEntityId];
 
-            return new CommandResult()
-            {
-                HttpStatusCode = HttpStatusCode.SeeOther,
-                Location = idp.SingleLogoutServiceUrl
-            };
+            var logoutRequest = idp.CreateLogoutRequest();
+
+            var commandResult = Saml2Binding.Get(Saml2BindingType.HttpRedirect)
+                .Bind(logoutRequest);
+
+            return commandResult;
         }
     }
 }

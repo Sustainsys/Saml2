@@ -11,6 +11,7 @@ using System.Reflection;
 using System.IdentityModel.Tokens;
 using System.Globalization;
 using System.Diagnostics.CodeAnalysis;
+using System.Xml.Linq;
 
 namespace Kentor.AuthServices
 {
@@ -369,5 +370,34 @@ namespace Kentor.AuthServices
                 }
             }
         }
+
+        internal static XElement AddAttributeIfNotNullOrEmpty(this XElement xElement, XName attribute, object value)
+        {
+            if (value != null && !string.IsNullOrEmpty(value.ToString()))
+            {
+                xElement.Add(new XAttribute(attribute, value));
+            }
+            return xElement;
+        }
+
+        internal static string GetValueIfNotNull(this XmlAttribute xmlAttribute)
+        {
+            if (xmlAttribute == null)
+            {
+                return null;
+            }
+            return xmlAttribute.Value;
+        }
+
+        internal static string GetTrimmedTextIfNotNull(this XmlElement xmlElement)
+        {
+            if (xmlElement == null)
+            {
+                return null;
+            }
+
+            return xmlElement.InnerText.Trim();
+        }
+
     }
 }

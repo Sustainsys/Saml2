@@ -39,7 +39,7 @@ namespace Kentor.AuthServices.WebSso
             }
 
             var redirectUri = new Uri(message.DestinationUrl.ToString()
-                + (String.IsNullOrEmpty(message.DestinationUrl.Query) ? "?" : "&")
+                + (string.IsNullOrEmpty(message.DestinationUrl.Query) ? "?" : "&")
                 + queryString);
 
             return new CommandResult()

@@ -60,8 +60,10 @@ namespace Kentor.AuthServices.Tests.WebSSO
 
             var request = new HttpRequestData("GET", new Uri("http://sp.example.com/AuthServices/Logout"));
 
+            var options = StubFactory.CreateOptions();
+           
             var actual = CommandFactory.GetCommand(CommandFactory.LogoutCommandName)
-                .Run(request, StubFactory.CreateOptions());
+                .Run(request, options);
 
             actual.HttpStatusCode.Should().Be(HttpStatusCode.SeeOther);
             actual.Location.GetLeftPart(UriPartial.Path).Should().Be("https://idp.example.com/logout");

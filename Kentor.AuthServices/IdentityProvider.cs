@@ -15,6 +15,7 @@ using Kentor.AuthServices.WebSso;
 using System.Threading.Tasks;
 using System.Net;
 using System.Collections.Concurrent;
+using System.Security.Claims;
 
 namespace Kentor.AuthServices
 {
@@ -433,6 +434,24 @@ namespace Kentor.AuthServices
                     DoLoadMetadata();
                 }
             }
+        }
+
+        /// <summary>
+        /// Create a logout request to the idp, for the current identity.
+        /// </summary>
+        /// <returns></returns>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1726:UsePreferredTerms", MessageId = "Logout")]
+        public Saml2LogoutRequest CreateLogoutRequest()
+        {
+            return new Saml2LogoutRequest()
+            {
+                DestinationUrl = SingleLogoutServiceUrl,
+                Issuer = spOptions.EntityId,
+                NameId = new Saml2NameIdentifier(
+                    ClaimsPrincipal.Current.FindFirst(ClaimTypes.NameIdentifier).Value),
+                SessionIndex = 
+                    ClaimsPrincipal.Current.FindFirst(AuthServicesClaimTypes.SessionIndex).Value
+            };
         }
     }
 }

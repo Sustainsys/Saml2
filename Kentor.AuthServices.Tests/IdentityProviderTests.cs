@@ -16,6 +16,8 @@ using System.Security.Cryptography;
 using System.IdentityModel.Tokens;
 using System.Security.Cryptography.Xml;
 using System.Security.Cryptography.X509Certificates;
+using System.Security.Claims;
+using System.Security.Principal;
 
 namespace Kentor.AuthServices.Tests
 {
@@ -25,6 +27,14 @@ namespace Kentor.AuthServices.Tests
         TimeSpan refreshMinInterval = MetadataRefreshScheduler.minInterval;
         int idpMetadataSsoPort = StubServer.IdpMetadataSsoPort;
 
+        private IPrincipal currentPrincipal;
+
+        [TestInitialize]
+        public void Initialize()
+        {
+            currentPrincipal = Thread.CurrentPrincipal;
+        }
+
         [TestCleanup]
         public void Cleanup()
         {
@@ -32,6 +42,7 @@ namespace Kentor.AuthServices.Tests
             StubServer.IdpVeryShortCacheDurationIncludeInvalidKey = false;
             StubServer.IdpVeryShortCacheDurationIncludeKey = true;
             MetadataRefreshScheduler.minInterval = refreshMinInterval;
+            Thread.CurrentPrincipal = currentPrincipal;
         }
 
         [TestMethod]
@@ -720,6 +731,34 @@ namespace Kentor.AuthServices.Tests
             Action a = () => subject.ReadMetadata(null);
 
             a.ShouldThrow<ArgumentNullException>().And.ParamName.Should().Be("metadata");
+        }
+
+        [TestMethod]
+        public void IdentityProvider_CreateLogoutRequest()
+        {
+            var options = StubFactory.CreateOptions();
+            var subject = options.IdentityProviders[0];
+
+            Thread.CurrentPrincipal = new ClaimsPrincipal(new ClaimsIdentity(
+                new Claim[]
+                {
+                    new Claim(ClaimTypes.NameIdentifier, "NameId", null, subject.EntityId.Id),
+                    new Claim(AuthServicesClaimTypes.SessionIndex, "SessionId", null, subject.EntityId.Id)
+                }, "Federation"));
+
+            // Grab a datetime both before and after creation to handle case
+            // when the second part is changed during excecution of the test.
+            // We're assuming that the creation does not take more than a
+            // second, so two values will do.
+            var beforeTime = DateTime.UtcNow.ToSaml2DateTimeString();
+            var actual = subject.CreateLogoutRequest();
+            var aftertime = DateTime.UtcNow.ToSaml2DateTimeString();
+
+            actual.Issuer.Id.Should().Be(options.SPOptions.EntityId.Id);
+            actual.Id.Value.Should().NotBeEmpty();
+            actual.IssueInstant.Should().Match(i => i == beforeTime || i == aftertime);
+            actual.NameId.Value.Should().Be("NameId");
+            actual.SessionIndex.Should().Be("SessionId");
         }
     }
 }

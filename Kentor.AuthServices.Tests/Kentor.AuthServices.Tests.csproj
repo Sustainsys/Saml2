@@ -122,6 +122,7 @@
     <Compile Include="Helpers\SpinWaiter.cs" />
     <Compile Include="Saml2P\Saml2ArtifactResolveTests.cs" />
     <Compile Include="Saml2P\Saml2ArtifactResponseTests.cs" />
+    <Compile Include="Saml2P\Saml2LogoutRequestTests.cs" />
     <Compile Include="Saml2P\Saml2SoapBindingTests.cs" />
     <Compile Include="ServiceCertificateTests.cs" />
     <Compile Include="HttpModule\CommandResultHttpTests.cs" />
