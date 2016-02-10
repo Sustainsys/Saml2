@@ -266,6 +266,8 @@ namespace Kentor.AuthServices.Tests
                 .Should().Be("http://localhost:13428/ars");
             subject.ArtifactResolutionServiceUrls[117].OriginalString
                 .Should().Be("http://localhost:13428/ars2");
+            subject.SingleLogoutServiceUrl.OriginalString.Should().Be("http://localhost:13428/logout");
+            subject.SingleLogoutServiceBinding.Should().Be(Saml2BindingType.HttpRedirect);
         }
 
         private IdentityProviderElement CreateConfig()
@@ -383,6 +385,16 @@ namespace Kentor.AuthServices.Tests
 
             subject.Binding.Should().Be(Saml2BindingType.HttpRedirect);
             subject.SingleSignOnServiceUrl.Should().Be("http://idp.example.com/SsoService");
+        }
+
+        [TestMethod]
+        public void IdentityProvider_Ctor_LogoutBindingDefaultsToBinding()
+        {
+            var config = CreateConfig();
+            var subject = new IdentityProvider(config, StubFactory.CreateSPOptions());
+
+            subject.Binding.Should().Be(Saml2BindingType.HttpPost);
+            subject.SingleLogoutServiceBinding.Should().Be(Saml2BindingType.HttpPost);
         }
 
         [TestMethod]

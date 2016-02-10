@@ -183,7 +183,27 @@ namespace Kentor.AuthServices
         /// </summary>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1726:UsePreferredTerms", MessageId = "Logout")]
         public Uri SingleLogoutServiceUrl { get; set; }
-        
+
+        private Saml2BindingType singleLogoutServiceBinding;
+        /// <summary>
+        /// Binding for the Single logout service. If not set, returns the
+        /// same as the main binding (used for AuthnRequests)
+        /// </summary>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1726:UsePreferredTerms", MessageId = "Logout")]
+        public Saml2BindingType SingleLogoutServiceBinding
+        {
+            get
+            {
+                return singleLogoutServiceBinding == 0
+                    ? Binding
+                    : singleLogoutServiceBinding;
+            }
+            set
+            {
+                singleLogoutServiceBinding = value;
+            }
+        }
+
         /// <summary>
         /// The Entity Id of the identity provider.
         /// </summary>
@@ -378,6 +398,16 @@ namespace Kentor.AuthServices
             {
                 binding = Saml2Binding.UriToSaml2BindingType(ssoService.Binding);
                 singleSignOnServiceUrl = ssoService.Location;
+            }
+
+            var sloService = idpDescriptor.SingleLogoutServices
+                .Where(slo => slo.Binding == Saml2Binding.HttpRedirectUri
+                    || slo.Binding == Saml2Binding.HttpPostUri)
+                .FirstOrDefault();
+            if(sloService != null)
+            {
+                SingleLogoutServiceUrl = sloService.Location;
+                SingleLogoutServiceBinding = Saml2Binding.UriToSaml2BindingType(sloService.Binding);
             }
 
             foreach(var ars in idpDescriptor.ArtifactResolutionServices)

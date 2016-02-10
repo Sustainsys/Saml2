@@ -40,7 +40,7 @@ namespace Kentor.AuthServices.StubIdp.Models
             {
                 AssertionConsumerServiceUrl = ConfigurationManager.AppSettings["defaultAcsUrl"],
                 NameId = ConfigurationManager.AppSettings["defaultNameId"],
-                SessionIndex = Guid.NewGuid().ToString("N")
+                SessionIndex = "42"
             };
         }
 

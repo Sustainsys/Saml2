@@ -37,6 +37,9 @@ namespace Kentor.AuthServices.Tests.Helpers
       <ArtifactResolutionService index=""117""
         Binding=""urn:oasis:names:tc:SAML:2.0:bindings:SOAP""
         Location=""http://localhost:{1}/ars2""/>
+      <SingleLogoutService
+        Binding=""urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect""
+        Location=""http://localhost:{1}/logout""/>
     </IDPSSODescriptor>
   </EntityDescriptor>
 ", SignedXmlHelper.KeyInfoXml, IdpMetadataSsoPort);
