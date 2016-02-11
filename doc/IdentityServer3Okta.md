@@ -223,7 +223,9 @@ https://id.local/identity/okta-oan/Acs.
 This will be the same way you got the entity id and metadata URL from Step 2 above, but may involve you requesting it
 from an Okta administrator of the instance you are trying to set up.
 The values look something like this:
+
 entity id: http://www.okta.com/exk4yxtgy7ZzSDp8e0h7
+
 metadata URL: https://dev-490944.oktapreview.com/app/exk4yxtgy7ZzSDp8e0h7/sso/saml/metadata
 
 Note that even though the entity id does NOT refer to the okta instance you are setting up, the app id inside it (exk...) 
