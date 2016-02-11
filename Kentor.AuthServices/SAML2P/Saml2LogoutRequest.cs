@@ -5,6 +5,7 @@ using System.IdentityModel.Tokens;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml;
 using System.Xml.Linq;
 
 namespace Kentor.AuthServices.Saml2P
@@ -15,6 +16,44 @@ namespace Kentor.AuthServices.Saml2P
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1726:UsePreferredTerms", MessageId = "Logout")]
     public class Saml2LogoutRequest : Saml2RequestBase
     {
+        /// <summary>
+        /// Ctor
+        /// </summary>
+        public Saml2LogoutRequest() { }
+
+        /// <summary>
+        /// Ctor
+        /// </summary>
+        /// <param name="id">Id of message.</param>
+        public Saml2LogoutRequest(Saml2Id id)
+        {
+            Id = id;
+        }
+
+        /// <summary>
+        /// Ctor
+        /// </summary>
+        /// <param name="xml">Xml data to initialize the Saml2LogoutRequest from.</param>
+        public Saml2LogoutRequest(XmlElement xml)
+        {
+            ReadBaseProperties(xml);
+
+            NameId = new Saml2NameIdentifier(
+                xml["NameID", Saml2Namespaces.Saml2Name].InnerText);
+
+            var format = xml["NameID", Saml2Namespaces.Saml2Name].GetAttribute("Format");
+            if(!string.IsNullOrEmpty(format))
+            {
+                NameId.Format = new Uri(format);
+            }
+
+            var sessionIndexElement = xml["SessionIndex", Saml2Namespaces.Saml2PName];
+            if(sessionIndexElement != null)
+            {
+                SessionIndex = sessionIndexElement.InnerText;
+            }
+        }
+
         /// <summary>
         /// The SAML2 request name
         /// </summary>

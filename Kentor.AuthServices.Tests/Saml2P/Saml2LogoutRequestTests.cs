@@ -47,5 +47,55 @@ xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
 
             actual.Should().BeEquivalentTo(expected);
         }
+
+        [TestMethod]
+        public void Saml2LogoutRequest_FromXml()
+        {
+            var xmlData =
+            @"<saml2p:LogoutRequest xmlns:saml2p=""urn:oasis:names:tc:SAML:2.0:protocol""
+xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
+ ID=""d2b7c388cec36fa7c39c28fd298644a8"" Version=""2.0"" IssueInstant=""2004-01-21T19:00:49Z""
+ Destination=""http://idp.example.com/logout"">
+ <saml2:Issuer>http://sp.example.com/</saml2:Issuer>
+ <saml2:NameID Format=""urn:oasis:names:tc:SAML:2.0:nameid-format:persistent"">005a06e0-ad82-110d-a556-004005b13a2b</saml2:NameID>
+ <saml2p:SessionIndex>SessionId</saml2p:SessionIndex>
+</saml2p:LogoutRequest>";
+
+            var xmlDoc = XmlHelpers.FromString(xmlData);
+
+            var subject = new Saml2LogoutRequest(xmlDoc.DocumentElement);
+
+            var expected = new Saml2LogoutRequest(new Saml2Id("d2b7c388cec36fa7c39c28fd298644a8"))
+            {
+                DestinationUrl = new Uri("http://idp.example.com/logout"),
+                Issuer = new EntityId("http://sp.example.com/"),
+                NameId = new Saml2NameIdentifier("005a06e0-ad82-110d-a556-004005b13a2b", new Uri(NameIdFormat.Persistent.GetString())),
+                SessionIndex = "SessionId",
+            };
+
+            subject.ShouldBeEquivalentTo(expected);
+        }
+
+        [TestMethod]
+        public void Saml2LogoutRequest_FromXml_OnlyRequiredData()
+        {
+            var xmlData =
+            @"<saml2p:LogoutRequest xmlns:saml2p=""urn:oasis:names:tc:SAML:2.0:protocol""
+xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
+ ID=""d2b7c388cec36fa7c39c28fd298644a8"" Version=""2.0"" IssueInstant=""2004-01-21T19:00:49Z"">
+ <saml2:NameID>005a06e0-ad82-110d-a556-004005b13a2b</saml2:NameID>
+</saml2p:LogoutRequest>";
+
+            var xmlDoc = XmlHelpers.FromString(xmlData);
+
+            var subject = new Saml2LogoutRequest(xmlDoc.DocumentElement);
+
+            var expected = new Saml2LogoutRequest(new Saml2Id("d2b7c388cec36fa7c39c28fd298644a8"))
+            {
+                NameId = new Saml2NameIdentifier("005a06e0-ad82-110d-a556-004005b13a2b"),
+            };
+
+            subject.ShouldBeEquivalentTo(expected);
+        }
     }
 }

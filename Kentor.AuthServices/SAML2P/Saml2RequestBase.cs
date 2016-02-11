@@ -125,7 +125,17 @@ namespace Kentor.AuthServices.Saml2P
             ValidateCorrectDocument(xml);
             Id = new Saml2Id(xml.Attributes["ID"].Value);
 
-            Issuer = new EntityId(xml["Issuer", Saml2Namespaces.Saml2Name].GetTrimmedTextIfNotNull());
+            var destination = xml.Attributes["Destination"];
+            if(destination != null)
+            {
+                DestinationUrl = new Uri(destination.Value);
+            }
+
+            var issuerNode = xml["Issuer", Saml2Namespaces.Saml2Name];
+            if(issuerNode != null)
+            {
+                Issuer = new EntityId(issuerNode.InnerXml);
+            }
         }
 
         private void ValidateCorrectDocument(XmlElement xml)
