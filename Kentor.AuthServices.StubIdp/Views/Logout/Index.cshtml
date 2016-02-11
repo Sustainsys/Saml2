@@ -1,0 +1,20 @@
+﻿@model LogoutModel
+
+@using (Html.BeginForm("Index", "Logout", FormMethod.Post))
+{
+    @Html.ValidationSummary()
+
+    if(!string.IsNullOrEmpty(Model.LogoutRequestXml))
+    {
+        @Html.LabelFor(m => m.LogoutRequestXml)
+        <pre class="xml">@Model.LogoutRequestXml</pre>
+    }
+
+    <div>
+        @Html.LabelFor(m => m.SingleLogoutResponseUrl)
+        @Html.EditorFor(m => m.SingleLogoutResponseUrl)
+        @Html.ValidationMessageFor(m => m.SingleLogoutResponseUrl)
+    </div>
+
+    <button id="submit">Log out</button>
+}
