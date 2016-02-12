@@ -62,7 +62,8 @@ namespace Kentor.AuthServices.WebSso
         /// </summary>
         /// <param name="assertionConsumerServiceUrl">The full Url for the Assertion Consumer Service.</param>
         /// <param name="signInUrl">The full Url for sign-in.</param>
-        public AuthServicesUrls(Uri assertionConsumerServiceUrl, Uri signInUrl)
+        /// <param name="applicationUrl">The full Url for the application root.</param>
+        public AuthServicesUrls(Uri assertionConsumerServiceUrl, Uri signInUrl, Uri applicationUrl)
         {
             if (signInUrl == null)
             {
@@ -71,6 +72,7 @@ namespace Kentor.AuthServices.WebSso
 
             AssertionConsumerServiceUrl = assertionConsumerServiceUrl;
             SignInUrl = signInUrl;
+            ApplicationUrl = applicationUrl;
         }
 
         void Init(Uri publicOrigin, string modulePath)
@@ -84,6 +86,7 @@ namespace Kentor.AuthServices.WebSso
 
             AssertionConsumerServiceUrl = new Uri(authServicesRoot + CommandFactory.AcsCommandName);
             SignInUrl = new Uri(authServicesRoot + CommandFactory.SignInCommandName);
+            ApplicationUrl = publicOrigin;
         }
 
 
@@ -103,5 +106,11 @@ namespace Kentor.AuthServices.WebSso
         /// location for idp discovery.
         /// </summary>
         public Uri SignInUrl { get; private set; }
+        
+        /// <summary>
+        /// The full url of the application root. Used as default redirect
+        /// location after logout.
+        /// </summary>
+        public Uri ApplicationUrl { get; internal set; }
     }
 }

@@ -51,5 +51,24 @@ namespace Kentor.AuthServices.Saml2P
                     .StartElement("StatusCode", Saml2Namespaces.Saml2PUri)
                     .AddAttribute("Value", StatusCodeHelper.FromCode(Status));
         }
+
+        /// <summary>
+        /// Load values into 
+        /// </summary>
+        /// <param name="xml"></param>
+        /// <returns></returns>
+        public static Saml2LogoutResponse FromXml(XmlElement xml)
+        {
+            if(xml == null)
+            {
+                throw new ArgumentNullException(nameof(xml));
+            }
+
+            var status = StatusCodeHelper.FromString(
+                xml["Status", Saml2Namespaces.Saml2PName]
+                ["StatusCode", Saml2Namespaces.Saml2PName]
+                .GetAttribute("Value"));
+            return new Saml2LogoutResponse(status);
+        }
     }
 }

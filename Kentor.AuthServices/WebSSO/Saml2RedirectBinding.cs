@@ -74,7 +74,9 @@ namespace Kentor.AuthServices.WebSso
                 throw new ArgumentNullException(nameof(request));
             }
 
-            var payload = Convert.FromBase64String(request.QueryString["SAMLRequest"].First());
+            var payload = Convert.FromBase64String(
+                request.QueryString["SAMLRequest"].FirstOrDefault()
+                ?? request.QueryString["SAMLResponse"].First());
             using (var compressed = new MemoryStream(payload))
             {
                 using (var decompressedStream = new DeflateStream(compressed, CompressionMode.Decompress, true))
@@ -110,6 +112,17 @@ namespace Kentor.AuthServices.WebSso
 
                 return System.Net.WebUtility.UrlEncode(Convert.ToBase64String(compressed.GetBuffer()));
             }
+        }
+
+        protected internal override bool CanUnbind(HttpRequestData request)
+        {
+            if(request == null)
+            {
+                throw new ArgumentNullException(nameof(request));
+            }
+
+            return (request.QueryString["SAMLRequest"].Any()
+                || request.QueryString["SAMLResponse"].Any());
         }
     }
 }

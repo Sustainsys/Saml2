@@ -100,7 +100,7 @@ namespace Kentor.AuthServices.Configuration
         /// <summary>
         /// Certificates used by the service provider for signing or decryption.
         /// </summary>
-        Collection<ServiceCertificate> ServiceCertificates { get; }
+        ICollection<ServiceCertificate> ServiceCertificates { get; }
 
         /// <summary>
         /// Certificates valid for use in decryption

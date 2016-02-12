@@ -85,5 +85,14 @@ namespace Kentor.AuthServices.Tests.Saml2P
 
             subject.ToXml().Should().Be(expected);
         }
+
+        [TestMethod]
+        public void Saml2LogoutResponse_FromXml_Nullcheck()
+        {
+            Action a = () => Saml2LogoutResponse.FromXml(null);
+
+            a.ShouldThrow<ArgumentNullException>()
+                .And.ParamName.Should().Be("xml");
+        }
     }
 }

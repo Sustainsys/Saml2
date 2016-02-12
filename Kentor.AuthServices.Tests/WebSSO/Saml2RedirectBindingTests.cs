@@ -179,5 +179,14 @@ namespace Kentor.AuthServices.Tests.WebSso
                 hashAlg, Convert.FromBase64String(queryParams["Signature"]))
                 .Should().BeTrue("signature should be valid");
         }
+
+        [TestMethod]
+        public void Saml2RedirectBinding_CanUnbind_Nullcheck()
+        {
+            Saml2Binding.Get(Saml2BindingType.HttpRedirect)
+                .Invoking(b => b.CanUnbind(null))
+                .ShouldThrow<ArgumentNullException>()
+                .And.ParamName.Should().Be("request");
+        }
     }
 }
