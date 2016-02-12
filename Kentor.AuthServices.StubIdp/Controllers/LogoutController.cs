@@ -15,15 +15,22 @@ namespace Kentor.AuthServices.StubIdp.Controllers
     {
         public ActionResult Index()
         {
-            var unbindResult = Saml2Binding.Get(Saml2BindingType.HttpRedirect)
-                .Unbind(Request.ToHttpRequestData(), null);
+            var requestData = Request.ToHttpRequestData();
 
-            var request = new Saml2LogoutRequest(unbindResult.Data);
+            var binding = Saml2Binding.Get(requestData);
 
-            var model = new LogoutModel
+            var model = new LogoutModel();
+
+            if(binding != null)
             {
-                LogoutRequestXml = unbindResult.Data.OuterXml
-            };
+                var unbindResult = binding.Unbind(requestData, null);
+                model.LogoutRequestXml = unbindResult.Data.OuterXml;
+                model.InResponseTo = unbindResult.Data.GetAttribute("ID");
+            }
+            else
+            {
+                model.SessionIndex = AssertionModel.DefaultSessionIndex;
+            }
 
             return View(model);
         }
@@ -31,9 +38,18 @@ namespace Kentor.AuthServices.StubIdp.Controllers
         [HttpPost]
         public ActionResult Index(LogoutModel model)
         {
-            var response = model.ToLogoutResponse();
+            ISaml2Message message;
 
-            return Saml2Binding.Get(Saml2BindingType.HttpRedirect).Bind(response)
+            if(model.SessionIndex != null)
+            {
+                message = model.ToLogoutRequest();
+            }
+            else
+            {
+                message = model.ToLogoutResponse();
+            }
+
+            return Saml2Binding.Get(Saml2BindingType.HttpRedirect).Bind(message)
                 .ToActionResult();
         }
     }

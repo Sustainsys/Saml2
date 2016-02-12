@@ -30,6 +30,8 @@ namespace Kentor.AuthServices.StubIdp.Models
 
         public ICollection<AttributeStatementModel> AttributeStatements { get; set; }
 
+        public const string DefaultSessionIndex = "42";
+
         /// <summary>
         /// Creates a new Assertion model with values from web.config
         /// </summary>
@@ -40,7 +42,7 @@ namespace Kentor.AuthServices.StubIdp.Models
             {
                 AssertionConsumerServiceUrl = ConfigurationManager.AppSettings["defaultAcsUrl"],
                 NameId = ConfigurationManager.AppSettings["defaultNameId"],
-                SessionIndex = "42"
+                SessionIndex = DefaultSessionIndex
             };
         }
 
