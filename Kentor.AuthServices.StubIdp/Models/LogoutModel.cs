@@ -21,7 +21,8 @@ namespace Kentor.AuthServices.StubIdp.Models
         {
             return new Saml2LogoutResponse(Saml2StatusCode.Success)
             {
-                DestinationUrl = SingleLogoutResponseUrl
+                DestinationUrl = SingleLogoutResponseUrl,
+                SigningCertificate = CertificateHelper.SigningCertificate
             };
         }
     }

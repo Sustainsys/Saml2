@@ -749,6 +749,11 @@ namespace Kentor.AuthServices.Tests
         public void IdentityProvider_CreateLogoutRequest()
         {
             var options = StubFactory.CreateOptions();
+            options.SPOptions.ServiceCertificates.Add(new ServiceCertificate()
+            {
+                Certificate = SignedXmlHelper.TestCert
+            });
+
             var subject = options.IdentityProviders[0];
 
             Thread.CurrentPrincipal = new ClaimsPrincipal(new ClaimsIdentity(
@@ -771,6 +776,25 @@ namespace Kentor.AuthServices.Tests
             actual.IssueInstant.Should().Match(i => i == beforeTime || i == aftertime);
             actual.NameId.Value.Should().Be("NameId");
             actual.SessionIndex.Should().Be("SessionId");
+            actual.SigningCertificate.Thumbprint.Should().Be(SignedXmlHelper.TestCert.Thumbprint);
+        }
+
+        [TestMethod]
+        public void IdentityProvider_CreateLogoutRequest_FailsIfNoSigningCertificateConfigured()
+        {
+            var options = StubFactory.CreateOptions();
+            var subject = options.IdentityProviders[0];
+
+            Thread.CurrentPrincipal = new ClaimsPrincipal(new ClaimsIdentity(
+                new Claim[]
+                {
+                    new Claim(ClaimTypes.NameIdentifier, "NameId", null, subject.EntityId.Id),
+                    new Claim(AuthServicesClaimTypes.SessionIndex, "SessionId", null, subject.EntityId.Id)
+                }, "Federation"));
+
+            subject.Invoking(s => s.CreateLogoutRequest())
+                .ShouldThrow<InvalidOperationException>()
+                .And.Message.Should().Be($"Tried to issue single logout request to https://idp.example.com, but no signing certificate for the SP is configured and single logout requires signing. Add a certificate to the ISPOptions.ServiceCertificates collection, or to <serviceCertificates> element if you're using web.config.");
         }
     }
 }

@@ -456,7 +456,7 @@ namespace Kentor.AuthServices
         public bool WantAuthnRequestsSigned { get; set; }
 
         private void ReloadMetadataIfRequired()
-        {
+        { 
             if (LoadMetadata && MetadataValidUntil.Value < DateTime.UtcNow)
             {
                 lock (metadataLoadLock)
@@ -470,17 +470,28 @@ namespace Kentor.AuthServices
         /// Create a logout request to the idp, for the current identity.
         /// </summary>
         /// <returns></returns>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "serviceCertificates")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "ServiceCertificates")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "ISPOptions")]
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1726:UsePreferredTerms", MessageId = "Logout")]
         public Saml2LogoutRequest CreateLogoutRequest()
         {
+            if(spOptions.SigningServiceCertificate == null)
+            {
+                throw new InvalidOperationException(string.Format(CultureInfo.InvariantCulture,
+                    "Tried to issue single logout request to {0}, but no signing certificate for the SP is configured and single logout requires signing. Add a certificate to the ISPOptions.ServiceCertificates collection, or to <serviceCertificates> element if you're using web.config.",
+                    EntityId.Id));
+            }
+
             return new Saml2LogoutRequest()
             {
                 DestinationUrl = SingleLogoutServiceUrl,
                 Issuer = spOptions.EntityId,
                 NameId = new Saml2NameIdentifier(
                     ClaimsPrincipal.Current.FindFirst(ClaimTypes.NameIdentifier).Value),
-                SessionIndex = 
-                    ClaimsPrincipal.Current.FindFirst(AuthServicesClaimTypes.SessionIndex).Value
+                SessionIndex =
+                    ClaimsPrincipal.Current.FindFirst(AuthServicesClaimTypes.SessionIndex).Value,
+                SigningCertificate = spOptions.SigningServiceCertificate
             };
         }
     }
