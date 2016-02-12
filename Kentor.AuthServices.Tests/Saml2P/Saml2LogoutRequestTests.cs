@@ -63,7 +63,7 @@ xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
 
             var xmlDoc = XmlHelpers.FromString(xmlData);
 
-            var subject = new Saml2LogoutRequest(xmlDoc.DocumentElement);
+            var subject = Saml2LogoutRequest.FromXml(xmlDoc.DocumentElement);
 
             var expected = new Saml2LogoutRequest(new Saml2Id("d2b7c388cec36fa7c39c28fd298644a8"))
             {
@@ -88,7 +88,7 @@ xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
 
             var xmlDoc = XmlHelpers.FromString(xmlData);
 
-            var subject = new Saml2LogoutRequest(xmlDoc.DocumentElement);
+            var subject = Saml2LogoutRequest.FromXml(xmlDoc.DocumentElement);
 
             var expected = new Saml2LogoutRequest(new Saml2Id("d2b7c388cec36fa7c39c28fd298644a8"))
             {
@@ -96,6 +96,15 @@ xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
             };
 
             subject.ShouldBeEquivalentTo(expected);
+        }
+
+        [TestMethod]
+        public void Saml2LogoutRequest_FromXml_Nullcheck()
+        {
+            Action a = () => Saml2LogoutRequest.FromXml(null);
+
+            a.ShouldThrow<ArgumentNullException>()
+                .And.ParamName.Should().Be("xml");
         }
     }
 }

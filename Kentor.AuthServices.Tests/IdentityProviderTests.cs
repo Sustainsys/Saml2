@@ -267,6 +267,20 @@ namespace Kentor.AuthServices.Tests
             subject.ArtifactResolutionServiceUrls[117].OriginalString
                 .Should().Be("http://localhost:13428/ars2");
             subject.SingleLogoutServiceUrl.OriginalString.Should().Be("http://localhost:13428/logout");
+            subject.SingleLogoutServiceResponseUrl.OriginalString.Should().Be("http://localhost:13428/logoutResponse");
+            subject.SingleLogoutServiceBinding.Should().Be(Saml2BindingType.HttpRedirect);
+        }
+
+        [TestMethod]
+        public void IdentityProvider_ConfigFromMetadata_LogoutResponse_DefaultsToSingleLogoutServiceUrl()
+        {
+            var entityId = new EntityId("http://localhost:13428/idpMetadataNoCertificate");
+            var subject = new IdentityProvider(entityId, StubFactory.CreateSPOptions());
+            subject.SigningKeys.AddConfiguredKey(SignedXmlHelper.TestCert);
+
+            subject.LoadMetadata = true;
+
+            subject.SingleLogoutServiceResponseUrl.OriginalString.Should().Be("http://localhost:13428/logout");
             subject.SingleLogoutServiceBinding.Should().Be(Saml2BindingType.HttpRedirect);
         }
 

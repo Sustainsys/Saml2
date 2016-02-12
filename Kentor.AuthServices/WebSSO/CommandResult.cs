@@ -50,6 +50,12 @@ namespace Kentor.AuthServices.WebSso
         public object RelayData { get; set; }
 
         /// <summary>
+        /// Indicates that the local session should be terminated. Used by
+        /// logout functionality.
+        /// </summary>
+        public bool TerminateLocalSession { get; set; }
+
+        /// <summary>
         /// Ctor
         /// </summary>
         public CommandResult()

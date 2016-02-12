@@ -63,7 +63,7 @@ namespace Kentor.AuthServices.HttpModule
             new HttpRequestWrapper(application.Request).ToHttpRequestData(),
             options);
 
-        commandResult.SignInSessionAuthenticationModule();
+        commandResult.SignInOrOutSessionAuthenticationModule();
         commandResult.Apply(new HttpResponseWrapper(application.Response));
       }
     }

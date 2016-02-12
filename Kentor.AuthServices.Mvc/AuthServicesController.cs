@@ -61,7 +61,7 @@ namespace Kentor.AuthServices.Mvc
                 Request.ToHttpRequestData(),
                 Options);
 
-            result.SignInSessionAuthenticationModule();
+            result.SignInOrOutSessionAuthenticationModule();
             return result.ToActionResult();
         }
 

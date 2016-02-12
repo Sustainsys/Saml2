@@ -39,7 +39,8 @@ namespace Kentor.AuthServices.Tests.Helpers
         Location=""http://localhost:{1}/ars2""/>
       <SingleLogoutService
         Binding=""urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect""
-        Location=""http://localhost:{1}/logout""/>
+        Location=""http://localhost:{1}/logout""
+        ResponseLocation=""http://localhost:{1}/logoutResponse""/>
     </IDPSSODescriptor>
   </EntityDescriptor>
 ", SignedXmlHelper.KeyInfoXml, IdpMetadataSsoPort);
@@ -52,6 +53,9 @@ namespace Kentor.AuthServices.Tests.Helpers
       <SingleSignOnService
         Binding=""urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect""
         Location=""http://localhost:13428/acs""/>
+      <SingleLogoutService
+        Binding=""urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect""
+        Location=""http://localhost:13428/logout""/>
     </IDPSSODescriptor>
   </EntityDescriptor>";
 

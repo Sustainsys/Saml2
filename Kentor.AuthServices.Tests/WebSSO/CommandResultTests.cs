@@ -24,7 +24,8 @@ namespace Kentor.AuthServices.Tests.WebSso
                 Principal = (ClaimsPrincipal)null,
                 ContentType = (string)null,
                 Content = (string)null,
-                RelayData = (object)null
+                RelayData = (object)null,
+                TerminateLocalSession = false
             };
 
             new CommandResult().ShouldBeEquivalentTo(expected);

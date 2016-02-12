@@ -31,27 +31,38 @@ namespace Kentor.AuthServices.Saml2P
         }
 
         /// <summary>
-        /// Ctor
+        /// Create Saml2LogoutRequest from data in Xml.
         /// </summary>
         /// <param name="xml">Xml data to initialize the Saml2LogoutRequest from.</param>
-        public Saml2LogoutRequest(XmlElement xml)
+        public static Saml2LogoutRequest FromXml(XmlElement xml)
         {
-            ReadBaseProperties(xml);
+            if(xml == null)
+            {
+                throw new ArgumentNullException(nameof(xml));
+            }
 
-            NameId = new Saml2NameIdentifier(
-                xml["NameID", Saml2Namespaces.Saml2Name].InnerText);
+            var request = new Saml2LogoutRequest()
+            {
+                NameId = new Saml2NameIdentifier(
+                    xml["NameID", Saml2Namespaces.Saml2Name].InnerText),
+               
+            };
+
+            request.ReadBaseProperties(xml);
 
             var format = xml["NameID", Saml2Namespaces.Saml2Name].GetAttribute("Format");
             if(!string.IsNullOrEmpty(format))
             {
-                NameId.Format = new Uri(format);
+                request.NameId.Format = new Uri(format);
             }
 
             var sessionIndexElement = xml["SessionIndex", Saml2Namespaces.Saml2PName];
             if(sessionIndexElement != null)
             {
-                SessionIndex = sessionIndexElement.InnerText;
+                request.SessionIndex = sessionIndexElement.InnerText;
             }
+
+            return request;
         }
 
         /// <summary>
