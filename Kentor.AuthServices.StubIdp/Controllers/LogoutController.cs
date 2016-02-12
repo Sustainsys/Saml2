@@ -34,7 +34,15 @@ namespace Kentor.AuthServices.StubIdp.Controllers
                             return View("RespondToLogout", model);
                         }
                     case "LogoutResponse":
-                            return View("ReceivedLogoutResponse", model: unbindResult.Data.PrettyPrint());
+                        {
+                            var model = new ResponseModel
+                            {
+                                Status = unbindResult.Data["Status", Saml2Namespaces.Saml2PName]
+                                ["StatusCode", Saml2Namespaces.Saml2PName].GetAttribute("Value"),
+                                ResponseXml = unbindResult.Data.PrettyPrint()
+                            };
+                            return View("ReceivedLogoutResponse", model);
+                        }
                     default:
                         throw new InvalidOperationException();
                 }

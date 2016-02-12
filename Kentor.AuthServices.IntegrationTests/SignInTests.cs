@@ -30,14 +30,18 @@ namespace Kentor.AuthServices.IntegrationTests
         }
 
         [TestMethod]
-        public void SignIn_Unsolicited_HttpModule()
+        public void SignInAndOut_IdpInitiated_HttpModule()
         {
             I.Open("http://localhost:52071/")
                 .Enter("http://localhost:17009/SamplePath/AuthServices/Acs").In("#AssertionModel_AssertionConsumerServiceUrl")
                 .Click("#submit")
                 .Assert.Text("JohnDoe").In("tbody tr td:nth-child(2)");
 
-            I.Click("a[href=\"/SamplePath/Home/SignOut\"");
+            I.Open("http://localhost:52071/Logout")
+                .Enter("JohnDoe").In("#NameId")
+                .Enter("http://localhost:17009/SamplePath/AuthServices/Logout").In("#DestinationUrl")
+                .Click("#submit")
+                .Assert.Text("urn:oasis:names:tc:SAML:2.0:status:Success").In("#status");
         }
 
         [TestMethod]
@@ -61,7 +65,7 @@ namespace Kentor.AuthServices.IntegrationTests
         }
 
         [TestMethod]
-        public void SignIn_AuthnRequest_HttpModule_via_DiscoveryService()
+        public void SignInAndOut_SPInitiated_via_DiscoveryService()
         {
             I.Open("http://localhost:17009/SamplePath")
                 .Click("a[href=\"/SamplePath/AuthServices/SignIn\"]")
@@ -75,7 +79,12 @@ namespace Kentor.AuthServices.IntegrationTests
             I.Click("#submit")
                 .Assert.Text("JohnDoe").In("tbody tr td:nth-child(2)");
 
-            I.Click("a[href=\"/SamplePath/Home/SignOut\"");
+            I.Click("a[href=\"/SamplePath/AuthServices/Logout\"");
+
+            I.Enter("http://localhost:17009/SamplePath/AuthServices/Logout").In("#DestinationUrl")
+                .Click("#submit");
+
+            I.Assert.Text("not signed in").In("#status");
         }
 
         [TestMethod]

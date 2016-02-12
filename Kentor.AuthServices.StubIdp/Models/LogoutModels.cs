@@ -60,4 +60,13 @@ namespace Kentor.AuthServices.StubIdp.Models
             };
         }
     }
+
+    public class ResponseModel
+    {
+        [DisplayName("Response Status")]
+        public string Status { get; set; }
+
+        [DisplayName("Response XML")]
+        public string ResponseXml { get; set; }
+    }
 }

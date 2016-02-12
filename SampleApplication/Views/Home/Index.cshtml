@@ -10,7 +10,7 @@
 @if (!User.Identity.IsAuthenticated)
 {
     <p>
-        You are currently not signed in.
+        You are currently <span id="status">not signed in</span>.
     </p>
     <p>
         <a href="@Url.Content("~/AuthServices/SignIn")">Sign in</a> - default IDP
