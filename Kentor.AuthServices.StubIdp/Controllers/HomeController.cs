@@ -56,7 +56,7 @@ namespace Kentor.AuthServices.StubIdp.Controllers
                 model.AssertionModel.InResponseTo = request.Id.Value;
                 model.AssertionModel.AssertionConsumerServiceUrl = request.AssertionConsumerServiceUrl.ToString();
                 model.AssertionModel.RelayState = extractedMessage.RelayState;
-                model.AssertionModel.AuthnRequestXml = extractedMessage.Data.OuterXml;
+                model.AssertionModel.AuthnRequestXml = extractedMessage.Data.PrettyPrint();
             }
 
             return View(model);

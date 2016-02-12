@@ -19,38 +19,50 @@ namespace Kentor.AuthServices.StubIdp.Controllers
 
             var binding = Saml2Binding.Get(requestData);
 
-            var model = new LogoutModel();
-
             if(binding != null)
             {
                 var unbindResult = binding.Unbind(requestData, null);
-                model.LogoutRequestXml = unbindResult.Data.OuterXml;
-                model.InResponseTo = unbindResult.Data.GetAttribute("ID");
+                switch(unbindResult.Data.LocalName)
+                {
+                    case "LogoutRequest":
+                        {
+                            var model = new RespondToLogoutRequestModel()
+                            {
+                                LogoutRequestXml = unbindResult.Data.PrettyPrint(),
+                                InResponseTo = unbindResult.Data.GetAttribute("ID")
+                            };
+                            return View("RespondToLogout", model);
+                        }
+                    case "LogoutResponse":
+                            return View("ReceivedLogoutResponse", model: unbindResult.Data.PrettyPrint());
+                    default:
+                        throw new InvalidOperationException();
+                }
             }
-            else
             {
-                model.SessionIndex = AssertionModel.DefaultSessionIndex;
-            }
+                var model = new InitiateLogoutModel()
+                {
+                    SessionIndex = AssertionModel.DefaultSessionIndex
+                };
 
-            return View(model);
+                return View("InitiateLogout", model);
+            }
         }
 
         [HttpPost]
-        public ActionResult Index(LogoutModel model)
+        public ActionResult InitiateLogout(InitiateLogoutModel model)
         {
-            ISaml2Message message;
-
-            if(model.SessionIndex != null)
-            {
-                message = model.ToLogoutRequest();
-            }
-            else
-            {
-                message = model.ToLogoutResponse();
-            }
-
-            return Saml2Binding.Get(Saml2BindingType.HttpRedirect).Bind(message)
+            return Saml2Binding.Get(Saml2BindingType.HttpRedirect)
+                .Bind(model.ToLogoutRequest())
                 .ToActionResult();
         }
+
+        [HttpPost]
+        public ActionResult RespondToLogoutRequest(RespondToLogoutRequestModel model)
+        {
+            return Saml2Binding.Get(Saml2BindingType.HttpRedirect)
+                .Bind(model.ToLogoutResponse())
+                .ToActionResult();
+        }   
     }
 }

@@ -50,7 +50,7 @@ else
     </div>
     @Html.ValidationSummary()
 
-    if (!string.IsNullOrEmpty(Model.AssertionModel.AuthnRequestXml))
+    if (Model.AssertionModel.AuthnRequestXml != null)
     {
         <div class="hide-details">
             @Html.LabelFor(m => m.AssertionModel.AuthnRequestXml)

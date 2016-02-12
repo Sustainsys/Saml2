@@ -12,6 +12,7 @@ using System.IdentityModel.Tokens;
 using System.Globalization;
 using System.Diagnostics.CodeAnalysis;
 using System.Xml.Linq;
+using System.IO;
 
 namespace Kentor.AuthServices
 {
@@ -455,6 +456,30 @@ namespace Kentor.AuthServices
         {
             parent.InnerText = content;
             return parent;
+        }
+
+        /// <summary>
+        /// Pretty an xml element.
+        /// </summary>
+        /// <param name="xml">Xml to pretty print.</param>
+        /// <returns>Nicely indented and readable data.</returns>
+        [SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope", Justification = "I don't care, the StringWriter contains no references to unmanaged resources")]
+        public static string PrettyPrint(this XmlElement xml)
+        {
+            if(xml == null)
+            {
+                throw new ArgumentNullException(nameof(xml));
+            }
+
+            // Based on http://stackoverflow.com/a/1123731/280222
+            var strWriter = new StringWriter(CultureInfo.InvariantCulture);
+            using (var xmlWriter = new XmlTextWriter(strWriter))
+            {
+                xmlWriter.Formatting = Formatting.Indented;
+                xml.ParentNode.WriteContentTo(xmlWriter);
+                xmlWriter.Flush();
+                return strWriter.ToString();
+            }
         }
     }
 }
