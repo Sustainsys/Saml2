@@ -58,6 +58,7 @@
     <Compile Include="Configuration\ArtifactResolutionServiceElement.cs" />
     <Compile Include="Saml2P\AuthnContextComparisonType.cs" />
     <Compile Include="Configuration\NameIdPolicyElement.cs" />
+    <Compile Include="Saml2P\Saml2LogoutResponse.cs" />
     <Compile Include="Saml2P\Saml2RequestedAuthnContext.cs" />
     <Compile Include="Configuration\RequestedAuthnContextElement.cs" />
     <Compile Include="Configuration\SigningBehavior.cs" />
@@ -73,6 +74,7 @@
     <Compile Include="Saml2P\Saml2ArtifactResponse.cs" />
     <Compile Include="Saml2P\Saml2NameIdPolicy.cs" />
     <Compile Include="Saml2P\Saml2SoapBinding.cs" />
+    <Compile Include="Saml2P\Saml2StatusResponseType.cs" />
     <Compile Include="ServiceCertificate.cs" />
     <Compile Include="Configuration\ConfiguredAndLoadedSigningKeysCollection.cs" />
     <Compile Include="Internal\PathHelper.cs" />

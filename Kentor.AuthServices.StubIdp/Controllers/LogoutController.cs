@@ -1,4 +1,5 @@
 ﻿using Kentor.AuthServices.HttpModule;
+using Kentor.AuthServices.Mvc;
 using Kentor.AuthServices.Saml2P;
 using Kentor.AuthServices.StubIdp.Models;
 using Kentor.AuthServices.WebSso;
@@ -17,14 +18,23 @@ namespace Kentor.AuthServices.StubIdp.Controllers
             var unbindResult = Saml2Binding.Get(Saml2BindingType.HttpRedirect)
                 .Unbind(Request.ToHttpRequestData(), null);
 
-            //var request = new Saml2LogoutRequest(unbindResult.Data);
+            var request = new Saml2LogoutRequest(unbindResult.Data);
 
             var model = new LogoutModel
             {
-
+                LogoutRequestXml = unbindResult.Data.OuterXml
             };
 
             return View(model);
+        }
+
+        [HttpPost]
+        public ActionResult Index(LogoutModel model)
+        {
+            var response = model.ToLogoutResponse();
+
+            return Saml2Binding.Get(Saml2BindingType.HttpRedirect).Bind(response)
+                .ToActionResult();
         }
     }
 }

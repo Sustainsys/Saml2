@@ -399,5 +399,62 @@ namespace Kentor.AuthServices
             return xmlElement.InnerText.Trim();
         }
 
+        internal static XmlElement StartElement(this XmlNode parent, string name, Uri namespaceUri)
+        {
+            var xmlElement = parent.GetOwnerDoc().CreateElement(name, namespaceUri.OriginalString);
+            parent.AppendChild(xmlElement);
+            return xmlElement;
+        }
+
+        private static XmlDocument GetOwnerDoc(this XmlNode node)
+        {
+            var doc = node as XmlDocument;
+            if(doc != null)
+            {
+                return doc;
+            }
+
+            return node.OwnerDocument;
+        }
+
+        internal static XmlElement AddAttribute(this XmlElement parent, string name, string value)
+        {
+            parent.SetAttribute(name, value);
+
+            return parent;
+        }
+
+        internal static XmlElement AddAttributeIfNotNull(this XmlElement parent, string name, object value)
+        {
+            if(value != null)
+            {
+                parent.SetAttribute(name, value.ToString());
+            }
+            return parent;
+        }
+
+        internal static XmlElement If(this XmlElement parent, bool condition, Action<XmlElement> action)
+        {
+            if (condition)
+            {
+                action(parent);
+            }
+
+            return parent;
+        }
+
+        internal static XmlElement AddElement(this XmlElement parent, string name, Uri namespaceUri, string content)
+        {
+            parent.StartElement(name, namespaceUri)
+                .SetInnerText(content);
+
+            return parent;
+        }
+
+        internal static XmlElement SetInnerText(this XmlElement parent, string content)
+        {
+            parent.InnerText = content;
+            return parent;
+        }
     }
 }
