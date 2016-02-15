@@ -11,7 +11,7 @@
 @if (!User.Identity.IsAuthenticated)
 {
     <p>
-        You are currently not signed in.
+        You are currently <span id="status">not signed in</span>.
     </p>
     <p>
         <a href="@Url.Content("~/AuthServices/SignIn")">Sign in</a> - default IDP
@@ -27,7 +27,7 @@
 else
 {
     <p>
-        You are signed in. <a href="@Url.Action("../AuthServices/SignOut")">Sign out</a>.
+        You are signed in. <a href="@Url.Action("../AuthServices/Logout")">Log out</a>.
     </p>
     <table>
         <thead>

@@ -15,7 +15,7 @@ namespace Kentor.AuthServices.IntegrationTests
         }
 
         [TestMethod]
-        public void SignIn_Unsolicited_MVC()
+        public void SignInAndOut_IdpInitiated_MVC()
         {
             I.Open("http://localhost:52071/")
                 .Enter("http://localhost:2181/AuthServices/Acs").In("#AssertionModel_AssertionConsumerServiceUrl")
@@ -26,7 +26,14 @@ namespace Kentor.AuthServices.IntegrationTests
 
             I.Assert.Text("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier - JohnDoe").In(".body-content ul li:first-child");
 
-            I.Click("a[href=\"/AuthServices/SignOut\"");
+            I.Open("http://localhost:52071/Logout")
+                .Enter("JohnDoe").In("#NameId")
+                .Enter("http://localhost:2181/AuthServices/Logout").In("#DestinationUrl")
+                .Click("#submit")
+                .Assert.Text("urn:oasis:names:tc:SAML:2.0:status:Success").In("#status");
+
+            I.Open("http://localhost:2181/")
+                .Assert.Text("not signed in").In("#status");
         }
 
         [TestMethod]
@@ -42,10 +49,13 @@ namespace Kentor.AuthServices.IntegrationTests
                 .Enter("http://localhost:17009/SamplePath/AuthServices/Logout").In("#DestinationUrl")
                 .Click("#submit")
                 .Assert.Text("urn:oasis:names:tc:SAML:2.0:status:Success").In("#status");
+
+            I.Open("http://localhost:17009/SamplePath")
+                .Assert.Text("not signed in").In("#status");
         }
 
         [TestMethod]
-        public void SignIn_AuthnRequest_MVC_via_DiscoveryService()
+        public void SignInAndOut_SPInitiated_MVC_via_DiscoveryService()
         {
             I.Open("http://localhost:2181")
                 .Click("a[href=\"/Home/Secure\"]")
@@ -61,11 +71,16 @@ namespace Kentor.AuthServices.IntegrationTests
 
             I.Assert.Text("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier - JohnDoe").In(".body-content ul li:first-child");
 
-            I.Click("a[href=\"/AuthServices/SignOut\"");
+            I.Click("a[href=\"/AuthServices/Logout\"");
+
+            I.Enter("http://localhost:2181/AuthServices/Logout").In("#DestinationUrl")
+                .Click("#submit");
+
+            I.Assert.Text("not signed in").In("#status");
         }
 
         [TestMethod]
-        public void SignInAndOut_SPInitiated_via_DiscoveryService()
+        public void SignInAndOut_SPInitiated_HttpModule_via_DiscoveryService()
         {
             I.Open("http://localhost:17009/SamplePath")
                 .Click("a[href=\"/SamplePath/AuthServices/SignIn\"]")
