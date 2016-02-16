@@ -16,7 +16,7 @@ namespace Kentor.AuthServices.Tests.Owin
             var subject = new KentorAuthServicesAuthenticationOptions(true);
 
             subject.Description.Caption.Should().Be(Constants.DefaultCaption);
-            subject.AuthenticationMode.Should().Be(AuthenticationMode.Passive);
+            subject.AuthenticationMode.Should().Be(AuthenticationMode.Active);
         }
 
         [TestMethod]

@@ -23,12 +23,29 @@ using System.IdentityModel.Tokens;
 using System.IdentityModel.Metadata;
 using Kentor.AuthServices.Internal;
 using System.Reflection;
+using System.Threading;
+using Kentor.AuthServices.Saml2P;
+using Kentor.AuthServices.WebSso;
 
 namespace Kentor.AuthServices.Tests.Owin
 {
     [TestClass]
     public class KentorAuthServicesAuthenticationMiddlewareTests
     {
+        ClaimsPrincipal originalPrincipal;
+
+        [TestInitialize]
+        public void Initialize()
+        {
+            originalPrincipal = ClaimsPrincipal.Current;
+        }
+
+        [TestCleanup]
+        public void Cleanup()
+        {
+            Thread.CurrentPrincipal = originalPrincipal;
+        }
+
         [TestMethod]
         public void KentorAuthServicesAuthenticationMiddleware_CtorNullChecksOptions()
         {
@@ -72,12 +89,46 @@ namespace Kentor.AuthServices.Tests.Owin
         }
 
         [TestMethod]
-        public async Task KentorAuthServicesAuthenticationMiddleware_RedirectsOnAuthChallenge()
+        public async Task KentorAuthServicesAuthenticationMiddleware_RedirectsOnSpecificAuthChallenge_WhenPassive()
         {
             var middleware = new KentorAuthServicesAuthenticationMiddleware(
                 new StubOwinMiddleware(401, new AuthenticationResponseChallenge(
                     new string[] { "KentorAuthServices" }, null)), CreateAppBuilder(),
-                new KentorAuthServicesAuthenticationOptions(true));
+                new KentorAuthServicesAuthenticationOptions(true)
+                { AuthenticationMode = AuthenticationMode.Passive });
+
+            var context = OwinTestHelpers.CreateOwinContext();
+
+            await middleware.Invoke(context);
+
+            context.Response.StatusCode.Should().Be(303);
+            context.Response.Headers["Location"].Should().StartWith("https://idp.example.com/idp");
+        }
+
+        [TestMethod]
+        public async Task KentorAuthServicesAuthenticationMiddleware_DoesntRedirectOntsOnUnSpecificAuthChallenge_WhenPassive()
+        {
+            var middleware = new KentorAuthServicesAuthenticationMiddleware(
+                new StubOwinMiddleware(401, new AuthenticationResponseChallenge(
+                    new string[0], null)), CreateAppBuilder(),
+                new KentorAuthServicesAuthenticationOptions(true)
+                { AuthenticationMode = AuthenticationMode.Passive });
+
+            var context = OwinTestHelpers.CreateOwinContext();
+
+            await middleware.Invoke(context);
+
+            context.Response.StatusCode.Should().Be(401);
+        }
+
+        [TestMethod]
+        public async Task KentorAuthServicesAuthenticationMiddleware_RedirectsOnAuthChallenge_WhenActive()
+        {
+            var middleware = new KentorAuthServicesAuthenticationMiddleware(
+                new StubOwinMiddleware(401, new AuthenticationResponseChallenge(
+                    new string[0], null)), CreateAppBuilder(),
+                new KentorAuthServicesAuthenticationOptions(true)
+                { AuthenticationMode = AuthenticationMode.Active });
 
             var context = OwinTestHelpers.CreateOwinContext();
 
@@ -123,11 +174,118 @@ namespace Kentor.AuthServices.Tests.Owin
         }
 
         [TestMethod]
+        public async Task KentorAuthServicesAuthenticationMiddleware_CreatesRedirectOnAuthRevoke()
+        {
+            var subject = new KentorAuthServicesAuthenticationMiddleware(
+                new StubOwinMiddleware(200, null, new AuthenticationResponseRevoke(new string[0])),
+                CreateAppBuilder(),
+                new KentorAuthServicesAuthenticationOptions(true));
+
+            var context = OwinTestHelpers.CreateOwinContext();
+
+            Thread.CurrentPrincipal = new ClaimsPrincipal(
+                new ClaimsIdentity(new Claim[]
+                {
+                    new Claim(ClaimTypes.NameIdentifier, "NameId", null, "https://idp.example.com"),
+                    new Claim(AuthServicesClaimTypes.SessionIndex, "SessionId", null, "https://idp.example.com")
+                }, "Federation"));
+
+            await subject.Invoke(context);
+
+            context.Response.StatusCode.Should().Be(303);
+            context.Response.Headers["Location"].Should().StartWith("https://idp.example.com/logout?SAMLRequest");
+        }
+
+        [TestMethod]
+        public async Task KentorAuthServicesAuthenticationMiddleware_DoesntRedirectOnUnspecifiedAuthRevoke_WhenPassive()
+        {
+            var subject = new KentorAuthServicesAuthenticationMiddleware(
+                new StubOwinMiddleware(200, null, new AuthenticationResponseRevoke(new string[0])),
+                CreateAppBuilder(),
+                new KentorAuthServicesAuthenticationOptions(true)
+                {
+                    AuthenticationMode = AuthenticationMode.Passive
+                });
+
+            var context = OwinTestHelpers.CreateOwinContext();
+
+            Thread.CurrentPrincipal = new ClaimsPrincipal(
+                new ClaimsIdentity(new Claim[]
+                {
+                    new Claim(ClaimTypes.NameIdentifier, "NameId", null, "https://idp.example.com"),
+                    new Claim(AuthServicesClaimTypes.SessionIndex, "SessionId", null, "https://idp.example.com")
+                }, "Federation"));
+
+            await subject.Invoke(context);
+
+            context.Response.StatusCode.Should().Be(200);
+        }
+
+        [TestMethod]
+        public async Task KentorAuthServicesAuthenticationMiddleware_CreatesRedirectOnSpecifiedAuthRevoke_WhenPassive()
+        {
+            var subject = new KentorAuthServicesAuthenticationMiddleware(
+                new StubOwinMiddleware(200, null, new AuthenticationResponseRevoke(
+                    new string[] { "KentorAuthServices" })),
+                CreateAppBuilder(),
+                new KentorAuthServicesAuthenticationOptions(true)
+                {
+                    AuthenticationMode = AuthenticationMode.Passive
+                });
+
+            var context = OwinTestHelpers.CreateOwinContext();
+
+            Thread.CurrentPrincipal = new ClaimsPrincipal(
+                new ClaimsIdentity(new Claim[]
+                {
+                    new Claim(ClaimTypes.NameIdentifier, "NameId", null, "https://idp.example.com"),
+                    new Claim(AuthServicesClaimTypes.SessionIndex, "SessionId", null, "https://idp.example.com")
+                }, "Federation"));
+
+            await subject.Invoke(context);
+
+            context.Response.StatusCode.Should().Be(303);
+            context.Response.Headers["Location"].Should().StartWith("https://idp.example.com/logout?SAMLRequest");
+        }
+
+        [TestMethod]
+        public async Task KentorAuthServicesAuthenticationMiddleware_HandlesLogoutResponse()
+        {
+            var subject = new KentorAuthServicesAuthenticationMiddleware(
+                null,
+                CreateAppBuilder(),
+                new KentorAuthServicesAuthenticationOptions(true));
+
+            var context = OwinTestHelpers.CreateOwinContext();
+
+            var response = new Saml2LogoutResponse(Saml2StatusCode.Success)
+            {
+                DestinationUrl = new Uri("https://sp.example.com/AuthServices/Logout")
+            };
+            var requestUri = Saml2Binding.Get(Saml2BindingType.HttpRedirect).Bind(response).Location;
+            context.Request.Path = new PathString(requestUri.AbsolutePath);
+            context.Request.QueryString = new QueryString(requestUri.Query.TrimStart('?'));
+            
+            Thread.CurrentPrincipal = new ClaimsPrincipal(
+                new ClaimsIdentity(new Claim[]
+                {
+                    new Claim(ClaimTypes.NameIdentifier, "NameId", null, "https://idp.example.com"),
+                    new Claim(AuthServicesClaimTypes.SessionIndex, "SessionId", null, "https://idp.example.com")
+                }, "Federation"));
+
+            await subject.Invoke(context);
+
+            context.Response.StatusCode.Should().Be(303);
+            context.Response.Headers["Location"].Should().StartWith("http://sp.example.com");
+        }
+
+        [TestMethod]
         public async Task KentorAuthServicesAuthenticationMiddleware_NoRedirectOnNon401()
         {
             var middleware = new KentorAuthServicesAuthenticationMiddleware(
                 new StubOwinMiddleware(200, new AuthenticationResponseChallenge(
-                    new string[] { "KentorAuthServices" }, null)), CreateAppBuilder(),
+                    new string[] { "KentorAuthServices" }, null)),
+                CreateAppBuilder(),
                 new KentorAuthServicesAuthenticationOptions(true));
 
             var context = OwinTestHelpers.CreateOwinContext();
@@ -139,11 +297,13 @@ namespace Kentor.AuthServices.Tests.Owin
         }
 
         [TestMethod]
-        public async Task KentorAuthServicesAuthenticationMiddleware_NoRedirectWithoutChallenge()
+        public async Task KentorAuthServicesAuthenticationMiddleware_NoRedirectWithChallengeOfDifferentType()
         {
             var middleware = new KentorAuthServicesAuthenticationMiddleware(
-                new StubOwinMiddleware(401, null), CreateAppBuilder(),
-                new KentorAuthServicesAuthenticationOptions(true));
+                new StubOwinMiddleware(401, new AuthenticationResponseChallenge(
+                        new string[] { "SomeThingElse" }, null)),
+                    CreateAppBuilder(),
+                    new KentorAuthServicesAuthenticationOptions(true));
 
             var context = OwinTestHelpers.CreateOwinContext();
 
@@ -153,7 +313,7 @@ namespace Kentor.AuthServices.Tests.Owin
         }
 
         [TestMethod]
-        public async Task KentorAuthServicesAuthenticationMiddleware_RedirectoToSecondIdp_AuthenticationProperties()
+        public async Task KentorAuthServicesAuthenticationMiddleware_RedirectToSecondIdp_AuthenticationProperties()
         {
             var secondIdp = Options.FromConfiguration.IdentityProviders[1];
             var secondDestination = secondIdp.SingleSignOnServiceUrl;

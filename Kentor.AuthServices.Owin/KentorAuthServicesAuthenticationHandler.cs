@@ -17,6 +17,14 @@ namespace Kentor.AuthServices.Owin
     {
         protected async override Task<AuthenticationTicket> AuthenticateCoreAsync()
         {
+            var acsPath = new PathString(Options.SPOptions.ModulePath)
+                .Add(new PathString("/" + CommandFactory.AcsCommandName));
+
+            if (Request.Path != acsPath)
+            {
+                return null;
+            }
+
             var result = CommandFactory.GetCommand(CommandFactory.AcsCommandName)
                 .Run(await Context.ToHttpRequestData(), Options);
 
@@ -33,7 +41,7 @@ namespace Kentor.AuthServices.Owin
         {
             if (Response.StatusCode == 401)
             {
-                var challenge = Helper.LookupChallenge(Options.AuthenticationType, AuthenticationMode.Passive);
+                var challenge = Helper.LookupChallenge(Options.AuthenticationType, Options.AuthenticationMode);
 
                 if (challenge != null)
                 {
@@ -58,6 +66,18 @@ namespace Kentor.AuthServices.Owin
 
                     result.Apply(Context);
                 }
+            }
+        }
+
+        protected async override Task ApplyResponseGrantAsync()
+        {
+            var revoke = Helper.LookupSignOut(Options.AuthenticationType, Options.AuthenticationMode);
+
+            if (revoke != null)
+            {
+                CommandFactory.GetCommand(CommandFactory.LogoutCommandName)
+                    .Run(await Context.ToHttpRequestData(), Options)
+                    .Apply(Context);
             }
         }
 

@@ -21,6 +21,7 @@ namespace Kentor.AuthServices.Tests.Helpers
             context.Request.Path = new PathString("/");
             context.Request.PathBase = new PathString();
             context.Response.Body = new MemoryStream();
+            context.Request.Method = "GET";
             return context;
         }
 

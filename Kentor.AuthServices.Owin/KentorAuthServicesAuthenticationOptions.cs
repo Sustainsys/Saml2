@@ -26,7 +26,7 @@ namespace Kentor.AuthServices.Owin
         public KentorAuthServicesAuthenticationOptions(bool loadConfiguration)
             : base(Constants.DefaultAuthenticationType)
         {
-            AuthenticationMode = AuthenticationMode.Passive;
+            AuthenticationMode = AuthenticationMode.Active;
             Description.Caption = Constants.DefaultCaption;
 
             if (loadConfiguration)
