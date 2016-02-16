@@ -37,6 +37,11 @@ namespace Kentor.AuthServices.Owin
                 context.Response.ContentLength = null;
                 context.Response.Write(commandResult.Content);
             }
+
+            if(commandResult.TerminateLocalSession)
+            {
+                context.Authentication.SignOut();
+            }
         }
     }
 }

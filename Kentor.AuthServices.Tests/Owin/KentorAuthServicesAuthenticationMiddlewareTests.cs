@@ -178,8 +178,10 @@ namespace Kentor.AuthServices.Tests.Owin
         [TestMethod]
         public async Task KentorAuthServicesAuthenticationMiddleware_CreatesRedirectOnAuthRevoke()
         {
+            var revoke = new AuthenticationResponseRevoke(new string[0]);
+
             var subject = new KentorAuthServicesAuthenticationMiddleware(
-                new StubOwinMiddleware(200, revoke: new AuthenticationResponseRevoke(new string[0])),
+                new StubOwinMiddleware(200, revoke: revoke),
                 CreateAppBuilder(),
                 new KentorAuthServicesAuthenticationOptions(true));
 
@@ -196,6 +198,7 @@ namespace Kentor.AuthServices.Tests.Owin
 
             context.Response.StatusCode.Should().Be(303);
             context.Response.Headers["Location"].Should().StartWith("https://idp.example.com/logout?SAMLRequest");
+            context.Authentication.AuthenticationResponseRevoke.AuthenticationTypes.Should().BeEmpty();
         }
 
         [TestMethod]
@@ -279,6 +282,38 @@ namespace Kentor.AuthServices.Tests.Owin
 
             context.Response.StatusCode.Should().Be(303);
             context.Response.Headers["Location"].Should().StartWith("http://sp.example.com");
+        }
+
+        [TestMethod]
+        public async Task KentorAuthServicesAuthenticationMiddleware_LogoutsOnLogoutRequest()
+        {
+            var options = new KentorAuthServicesAuthenticationOptions(true);
+            var subject = new KentorAuthServicesAuthenticationMiddleware(null, CreateAppBuilder(), options);
+
+            var context = OwinTestHelpers.CreateOwinContext();
+
+            var request = new Saml2LogoutRequest()
+            {
+                SessionIndex = "SessionId",
+                DestinationUrl = new Uri("http://sp.example.com/AuthServices/Logout"),
+                NameId = new Saml2NameIdentifier("NameId"),
+                Issuer = new EntityId("https://idp.example.com")
+            };
+
+            var url = Saml2Binding.Get(Saml2BindingType.HttpRedirect)
+                .Bind(request).Location;
+
+            context.Request.Path = new PathString(url.AbsolutePath);
+            context.Request.QueryString = new QueryString(url.Query.TrimStart('?'));
+
+            await subject.Invoke(context);
+
+            context.Response.StatusCode.Should().Be(303);
+            context.Response.Headers["Location"].Should().StartWith("https://idp.example.com/logout?SAMLResponse");
+
+            context.Authentication.AuthenticationResponseRevoke.Should().NotBeNull();
+            context.Authentication.AuthenticationResponseRevoke.AuthenticationTypes
+                .Should().BeEmpty();
         }
 
         [TestMethod]

@@ -110,18 +110,33 @@ namespace Kentor.AuthServices.IntegrationTests
         }
 
         [TestMethod]
-        public void SignIn_Unsolicited_Owin()
+        public void SignInAndOut_IdpInitiated_Owin()
         {
             I.Open("http://localhost:52071/");
 
             I.Enter("http://localhost:57294/AuthServices/Acs").In("#AssertionModel_AssertionConsumerServiceUrl");
 
-            I.Enter("SomeUnusedNameId").In("#AssertionModel_NameId");
+            I.Enter("IntegrationTestNameId").In("#AssertionModel_NameId");
 
-            I.Click("#submit");
+            I.Click("#submit")
+                .Wait(1);
 
-            I.Assert.Text("You've successfully authenticated with http://localhost:52071/Metadata. Please enter a user name for this site below and click the Register button to finish logging in.")
-                .In("p.text-info");
+            if (I.Find("#status").Element.Text == "You've successfully authenticated with http://localhost:52071/Metadata. Please enter a user name for this site below and click the Register button to finish logging in.")
+            {
+                I.Enter("IntegrationTestUser@example.com").In("#Email")
+                    .Click("#submit");
+            }
+
+            I.Assert.Text("signed in").In("#status");
+
+            I.Open("http://localhost:52071/Logout")
+                .Enter("IntegrationTestNameId").In("#NameId")
+                .Enter("http://localhost:57294/AuthServices/Logout").In("#DestinationUrl")
+                .Click("#submit")
+                .Assert.Text("urn:oasis:names:tc:SAML:2.0:status:Success").In("#status");
+
+            I.Open("http://localhost:57294")
+                .Assert.Text("not signed in").In("#status");
         }
 
         [TestMethod]

@@ -99,7 +99,7 @@ namespace Kentor.AuthServices.Tests.WebSSO
             var request = new HttpRequestData("GET", new Uri("http://sp.example.com/AuthServices/Logout"));
 
             var options = StubFactory.CreateOptions();
-            options.SPOptions.ServiceCertificates.Add(Signed XmlHelper.TestCert);
+            options.SPOptions.ServiceCertificates.Add(SignedXmlHelper.TestCert);
 
             var actual = CommandFactory.GetCommand(CommandFactory.LogoutCommandName)
                 .Run(request, options);
