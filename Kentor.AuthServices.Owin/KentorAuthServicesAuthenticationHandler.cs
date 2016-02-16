@@ -79,6 +79,8 @@ namespace Kentor.AuthServices.Owin
                     .Run(await Context.ToHttpRequestData(), Options)
                     .Apply(Context);
             }
+
+            await AugmentAuthenticationGrantWithLogoutClaims(Context);
         }
 
         public override async Task<bool> InvokeAsync()
@@ -104,6 +106,33 @@ namespace Kentor.AuthServices.Owin
             }
 
             return false;
+        }
+
+        private async Task AugmentAuthenticationGrantWithLogoutClaims(IOwinContext context)
+        {
+            var grant = context.Authentication.AuthenticationResponseGrant;
+            var externalIdentity = await context.Authentication.AuthenticateAsync(Options.SignInAsAuthenticationType);
+
+            if (grant == null || externalIdentity == null)
+            {
+                return;
+            }
+
+            var sessionIdClaim = externalIdentity.Identity.FindFirst(AuthServicesClaimTypes.SessionIndex);
+
+            grant.Identity.AddClaim(new Claim(
+                sessionIdClaim.Type,
+                sessionIdClaim.Value,
+                sessionIdClaim.ValueType,
+                sessionIdClaim.Issuer));
+
+            var externalNameIdClaim = externalIdentity.Identity.FindFirst(ClaimTypes.NameIdentifier);
+
+            grant.Identity.AddClaim(new Claim(
+                AuthServicesClaimTypes.LogoutNameIdentifier,
+                externalNameIdClaim.Value,
+                externalNameIdClaim.ValueType,
+                externalNameIdClaim.Issuer));
         }
     }
 }

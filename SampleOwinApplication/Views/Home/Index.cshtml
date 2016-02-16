@@ -10,13 +10,13 @@
 @if (!User.Identity.IsAuthenticated)
 {
     <p>
-        You are currently not signed in.
+        You are currently <span id="status">not signed in</span>.
     </p>
 }
 else
 {
     <p>
-        You are signed in.
+        You are <span id="status">signed in</span>.
     </p>
     <table>
         <thead>

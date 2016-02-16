@@ -26,9 +26,11 @@ using System.Reflection;
 using System.Threading;
 using Kentor.AuthServices.Saml2P;
 using Kentor.AuthServices.WebSso;
-
+using System.Security.Principal;
 namespace Kentor.AuthServices.Tests.Owin
 {
+    using AuthenticateDelegate = Func<string[], Action<IIdentity, IDictionary<string, string>, IDictionary<string, object>, object>, object, Task>;
+
     [TestClass]
     public class KentorAuthServicesAuthenticationMiddlewareTests
     {
@@ -65,7 +67,7 @@ namespace Kentor.AuthServices.Tests.Owin
             a.ShouldThrow<ArgumentNullException>("app");
         }
 
-        const string DefaultSignInAsAuthenticationType = "MyDefaultSignAsAuthTypeForTesting";
+        const string DefaultSignInAsAuthenticationType = "MyDefaultSignInAsAuthTypeForTesting";
 
         private static IAppBuilder CreateAppBuilder()
         {
@@ -106,7 +108,7 @@ namespace Kentor.AuthServices.Tests.Owin
         }
 
         [TestMethod]
-        public async Task KentorAuthServicesAuthenticationMiddleware_DoesntRedirectOntsOnUnSpecificAuthChallenge_WhenPassive()
+        public async Task KentorAuthServicesAuthenticationMiddleware_DoesntRedirectOnUnSpecificAuthChallenge_WhenPassive()
         {
             var middleware = new KentorAuthServicesAuthenticationMiddleware(
                 new StubOwinMiddleware(401, new AuthenticationResponseChallenge(
@@ -177,7 +179,7 @@ namespace Kentor.AuthServices.Tests.Owin
         public async Task KentorAuthServicesAuthenticationMiddleware_CreatesRedirectOnAuthRevoke()
         {
             var subject = new KentorAuthServicesAuthenticationMiddleware(
-                new StubOwinMiddleware(200, null, new AuthenticationResponseRevoke(new string[0])),
+                new StubOwinMiddleware(200, revoke: new AuthenticationResponseRevoke(new string[0])),
                 CreateAppBuilder(),
                 new KentorAuthServicesAuthenticationOptions(true));
 
@@ -200,7 +202,7 @@ namespace Kentor.AuthServices.Tests.Owin
         public async Task KentorAuthServicesAuthenticationMiddleware_DoesntRedirectOnUnspecifiedAuthRevoke_WhenPassive()
         {
             var subject = new KentorAuthServicesAuthenticationMiddleware(
-                new StubOwinMiddleware(200, null, new AuthenticationResponseRevoke(new string[0])),
+                new StubOwinMiddleware(200, revoke: new AuthenticationResponseRevoke(new string[0])),
                 CreateAppBuilder(),
                 new KentorAuthServicesAuthenticationOptions(true)
                 {
@@ -225,7 +227,7 @@ namespace Kentor.AuthServices.Tests.Owin
         public async Task KentorAuthServicesAuthenticationMiddleware_CreatesRedirectOnSpecifiedAuthRevoke_WhenPassive()
         {
             var subject = new KentorAuthServicesAuthenticationMiddleware(
-                new StubOwinMiddleware(200, null, new AuthenticationResponseRevoke(
+                new StubOwinMiddleware(200, revoke: new AuthenticationResponseRevoke(
                     new string[] { "KentorAuthServices" })),
                 CreateAppBuilder(),
                 new KentorAuthServicesAuthenticationOptions(true)
@@ -639,6 +641,56 @@ namespace Kentor.AuthServices.Tests.Owin
             Func<Task> f = async () => await middleware.Invoke(context);
 
             f.ShouldNotThrow();
+        }
+
+        [TestMethod]
+        public async Task KentorAuthServicesAuthenticationMiddleware_AugmentsGeneratedClaimsWithLogoutInfo()
+        {
+            var context = OwinTestHelpers.CreateOwinContext();
+
+            string[] specifiedAuthTypes = null;
+
+            context.Set<AuthenticateDelegate>("security.Authenticate",
+                (authTypes, callback, state) =>
+                {
+                    specifiedAuthTypes = authTypes;
+                    callback(new ClaimsIdentity(new Claim[]
+                        {
+                            new Claim(ClaimTypes.NameIdentifier, "Saml2NameId", null, "http://idp.example.com"),
+                            new Claim(AuthServicesClaimTypes.SessionIndex, "SessionId", null, "http://idp.example.com"),
+                            new Claim(ClaimTypes.Role, "SomeRole", null, "http://idp.example.com")
+                        }, "Federation"),
+                        new Dictionary<string, string>(),
+                        new Dictionary<string, object>(),
+                        state);                       
+                    return Task.FromResult(0);
+                });
+
+            var options = new KentorAuthServicesAuthenticationOptions(true);
+
+            var subject = new KentorAuthServicesAuthenticationMiddleware(
+                new StubOwinMiddleware(303, grant: new AuthenticationResponseGrant(
+                    new ClaimsIdentity(new Claim[]
+                    {
+                        new Claim(ClaimTypes.NameIdentifier, "ApplicationNameId")
+                    }, "ApplicationIdentity"), new AuthenticationProperties())),
+                CreateAppBuilder(),
+                options);
+
+            await subject.Invoke(context);
+
+            specifiedAuthTypes.Should().HaveCount(1)
+                .And.Subject.Single().Should().Be(DefaultSignInAsAuthenticationType);
+
+            var expected = new ClaimsIdentity(new Claim[]
+            {
+                new Claim(ClaimTypes.NameIdentifier, "ApplicationNameId"),
+                new Claim(AuthServicesClaimTypes.SessionIndex, "SessionId", null, "http://idp.example.com"),
+                new Claim(AuthServicesClaimTypes.LogoutNameIdentifier, "Saml2NameId", null, "http://idp.example.com")
+            }, "ApplicationIdentity");
+
+            context.Authentication.AuthenticationResponseGrant.Identity
+                .ShouldBeEquivalentTo(expected, opt => opt.IgnoringCyclicReferences());
         }
     }
 }

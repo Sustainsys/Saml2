@@ -86,6 +86,36 @@ namespace Kentor.AuthServices.Tests.WebSSO
         }
 
         [TestMethod]
+        public void LogoutCommand_Run_ReturnsLogoutRequest_PrefersAuthServicesLogoutNameId()
+        {
+            Thread.CurrentPrincipal = new ClaimsPrincipal(
+                new ClaimsIdentity(new Claim[]
+                {
+                    new Claim(ClaimTypes.NameIdentifier, "ApplicationNameId"),
+                    new Claim(AuthServicesClaimTypes.LogoutNameIdentifier, "Saml2NameId", null, "https://idp.example.com"),
+                    new Claim(AuthServicesClaimTypes.SessionIndex, "SessionId", null, "https://idp.example.com")
+                }, "Federation"));
+
+            var request = new HttpRequestData("GET", new Uri("http://sp.example.com/AuthServices/Logout"));
+
+            var options = StubFactory.CreateOptions();
+            options.SPOptions.ServiceCertificates.Add(Signed XmlHelper.TestCert);
+
+            var actual = CommandFactory.GetCommand(CommandFactory.LogoutCommandName)
+                .Run(request, options);
+
+            var expected = new CommandResult
+            {
+                HttpStatusCode = HttpStatusCode.SeeOther,
+                TerminateLocalSession = true
+                // Deliberately not comparing Location.
+            };
+
+            actual.ShouldBeEquivalentTo(expected, opt => opt.Excluding(cr => cr.Location));
+            actual.Location.GetLeftPart(UriPartial.Path).Should().Be("https://idp.example.com/logout");
+        }
+
+        [TestMethod]
         public void LogoutCommand_Run_HandlesLogoutResponse()
         {
             var response = new Saml2LogoutResponse(Saml2StatusCode.Success)

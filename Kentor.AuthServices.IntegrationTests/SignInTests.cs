@@ -125,22 +125,36 @@ namespace Kentor.AuthServices.IntegrationTests
         }
 
         [TestMethod]
-        public void SignIn_AuthnRequest_Owin_via_DiscoveryService()
+        public void SignIn_SPInitiated_Owin_via_DiscoveryService()
         {
             I.Open("http://localhost:57294/Account/Login")
                 .Click("#KentorAuthServices")
-                .Assert.Text("http://localhost:52071/AuthServices/SignIn?ReturnUrl=%2FAccount%2FExternalLoginCallback");
+                .Assert.Text("http://localhost:57294/AuthServices/SignIn?ReturnUrl=%2FAccount%2FExternalLoginCallback").In("#return");
 
             I.Click("#submit")
                 .Assert.Text("http://localhost:57294/AuthServices/Acs").In("#AssertionModel_AssertionConsumerServiceUrl");
 
             I.Assert.False(() => string.IsNullOrEmpty(I.Find("#AssertionModel_InResponseTo").Element.Value));
 
-            I.Enter("SomeUnusedNameId").In("#AssertionModel_NameId");
+            I.Enter("IntegrationTestNameId").In("#AssertionModel_NameId");
 
             I.Click("#submit")
-                .Assert.Text("You've successfully authenticated with http://localhost:52071/Metadata. Please enter a user name for this site below and click the Register button to finish logging in.")
-                .In("p.text-info");
+                .Wait(1);
+
+            if(I.Find("#status").Element.Text == "You've successfully authenticated with http://localhost:52071/Metadata. Please enter a user name for this site below and click the Register button to finish logging in.")
+            {
+                I.Enter("IntegrationTestUser@example.com").In("#Email")
+                    .Click("#submit");
+            }
+            
+            I.Assert.Text("signed in").In("#status");
+
+            I.Click("#logout").Wait(1);
+
+            I.Enter("http://localhost:57294/AuthServices/Logout").In("#DestinationUrl")
+                .Click("#submit");
+
+            I.Assert.Text("not signed in").In("#status");
         }
     }
 }

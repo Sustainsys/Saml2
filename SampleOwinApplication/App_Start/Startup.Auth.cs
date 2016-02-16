@@ -69,7 +69,7 @@ namespace SampleOwinApplication
             idp.SigningKeys.AddConfiguredKey(
                 new X509Certificate2(
                     HostingEnvironment.MapPath(
-                        "~/App_Data/Kentor.AuthServices.StubIdp.pfx")));
+                        "~/App_Data/Kentor.AuthServices.StubIdp.cer")));
 
             authServicesOptions.IdentityProviders.Add(idp);
 
@@ -132,6 +132,9 @@ namespace SampleOwinApplication
 
             spOptions.SystemIdentityModelIdentityConfiguration.AudienceRestriction.AudienceMode
                 = AudienceUriMode.Never;
+
+            spOptions.ServiceCertificates.Add(new X509Certificate2(
+                AppDomain.CurrentDomain.SetupInformation.ApplicationBase + "/App_Data/Kentor.AuthServices.Tests.pfx"));
 
             return spOptions;
         }

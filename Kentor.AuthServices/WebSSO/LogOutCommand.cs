@@ -40,7 +40,8 @@ namespace Kentor.AuthServices.WebSso
             }
             
             var idpEntityId = new EntityId(
-                ClaimsPrincipal.Current.FindFirst(ClaimTypes.NameIdentifier).Issuer);
+                ClaimsPrincipal.Current.FindFirst(AuthServicesClaimTypes.LogoutNameIdentifier)?.Issuer
+                ?? ClaimsPrincipal.Current.FindFirst(ClaimTypes.NameIdentifier).Issuer);
 
             var idp = options.IdentityProviders[idpEntityId];
 

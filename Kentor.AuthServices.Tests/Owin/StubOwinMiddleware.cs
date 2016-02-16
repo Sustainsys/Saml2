@@ -13,13 +13,19 @@ namespace Kentor.AuthServices.Tests.Owin
         private int statusCode;
         private AuthenticationResponseChallenge challenge;
         private AuthenticationResponseRevoke revoke;
+        private AuthenticationResponseGrant grant;
 
-        public StubOwinMiddleware(int statusCode, AuthenticationResponseChallenge challenge, AuthenticationResponseRevoke revoke = null)
+        public StubOwinMiddleware(
+            int statusCode,
+            AuthenticationResponseChallenge challenge = null,
+            AuthenticationResponseRevoke revoke = null,
+            AuthenticationResponseGrant grant = null)
              : base(null)
         {
             this.statusCode = statusCode;
             this.challenge = challenge;
             this.revoke = revoke;
+            this.grant = grant;
         }
 
         public override Task Invoke(IOwinContext context)
@@ -27,6 +33,7 @@ namespace Kentor.AuthServices.Tests.Owin
             context.Response.StatusCode = statusCode;
             context.Authentication.AuthenticationResponseChallenge = challenge;
             context.Authentication.AuthenticationResponseRevoke = revoke;
+            context.Authentication.AuthenticationResponseGrant = grant;
             context.Response.ContentLength = 0;
             return Task.FromResult(0);
         }
