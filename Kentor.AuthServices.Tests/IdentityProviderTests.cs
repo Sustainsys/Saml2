@@ -794,6 +794,30 @@ namespace Kentor.AuthServices.Tests
         }
 
         [TestMethod]
+        public void IdentityProvider_CreateLogoutRequest_PrefersAuthServicesLogoutNameId()
+        {
+            var options = StubFactory.CreateOptions();
+            options.SPOptions.ServiceCertificates.Add(new ServiceCertificate()
+            {
+                Certificate = SignedXmlHelper.TestCert
+            });
+
+            var subject = options.IdentityProviders[0];
+
+            Thread.CurrentPrincipal = new ClaimsPrincipal(new ClaimsIdentity(
+                new Claim[]
+                {
+                    new Claim(ClaimTypes.NameIdentifier, "ApplicationNameId"),
+                    new Claim(AuthServicesClaimTypes.LogoutNameIdentifier, "Saml2NameId", null, subject.EntityId.Id),
+                    new Claim(AuthServicesClaimTypes.SessionIndex, "SessionId", null, subject.EntityId.Id)
+                }, "Federation"));
+
+            var actual = subject.CreateLogoutRequest();
+
+            actual.NameId.Value.Should().Be("Saml2NameId");
+        }
+
+        [TestMethod]
         public void IdentityProvider_CreateLogoutRequest_FailsIfNoSigningCertificateConfigured()
         {
             var options = StubFactory.CreateOptions();
