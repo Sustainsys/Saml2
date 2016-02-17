@@ -26,10 +26,13 @@ namespace Kentor.AuthServices.StubIdp.Controllers
                 {
                     case "LogoutRequest":
                         {
+                            var logoutRequest = Saml2LogoutRequest.FromXml(unbindResult.Data);
+
                             var model = new RespondToLogoutRequestModel()
                             {
                                 LogoutRequestXml = unbindResult.Data.PrettyPrint(),
-                                InResponseTo = unbindResult.Data.GetAttribute("ID")
+                                InResponseTo = logoutRequest.Id.Value,
+                                DestinationUrl = new Uri(new Uri(logoutRequest.Issuer.Id + "/"), "Logout"),
                             };
                             return View("RespondToLogout", model);
                         }
