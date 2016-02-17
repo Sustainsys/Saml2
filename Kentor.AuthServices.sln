@@ -24,6 +24,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "doc", "doc", "{DB9690FA-251
 	ProjectSection(SolutionItems) = preProject
 		doc\ClaimsAuthenticationManager.md = doc\ClaimsAuthenticationManager.md
 		doc\Configuration.md = doc\Configuration.md
+		doc\IdentityServer3Okta.md = doc\IdentityServer3Okta.md
+		doc\OktaAppOptions.png = doc\OktaAppOptions.png
 		doc\OwinMiddleware.md = doc\OwinMiddleware.md
 	EndProjectSection
 EndProject
