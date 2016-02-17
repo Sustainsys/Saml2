@@ -13,19 +13,7 @@ identity server.
 
 ## Step 1 - Add the NuGet package to your identity server
 The package you need is ```Kentor.AuthServices.Owin```.  Install that to the
-project where you have IdentityServer3 established.  After you do this, you also
-need to add a new (empty) section to the web.config file. 
-
-First, register the section at the top of the web.config file:
-```xml
-<configSections>
-  <section name="System.identityModel" type="System.IdentityModel.Configuration.SystemIdentityModelSection, System.IdentityModel, Version=4.0.0.0, Culture=neutral, PublicKeyToken=B77A5C561934E089" />
-</configSections>
-```
-Then add the required empty section:
-```xml
-<System.identityModel/>
-```
+project where you have IdentityServer3 established.
 
 We'll add the necessary configuration to establish the Okta identity provider in 
 identity server later, after we've set up the application within Okta.
