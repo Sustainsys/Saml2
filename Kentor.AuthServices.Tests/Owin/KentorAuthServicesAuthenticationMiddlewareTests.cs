@@ -445,7 +445,7 @@ namespace Kentor.AuthServices.Tests.Owin
         }
 
         [TestMethod]
-        public async Task KentorAuthServicesAuthenicationMiddleware_StoresAuthenticationProperties()
+        public async Task KentorAuthServicesAuthenticationMiddleware_StoresAuthenticationProperties()
         {
             var returnUrl = "http://sp.example.com/returnurl";
 
@@ -727,5 +727,100 @@ namespace Kentor.AuthServices.Tests.Owin
             context.Authentication.AuthenticationResponseGrant.Identity
                 .ShouldBeEquivalentTo(expected, opt => opt.IgnoringCyclicReferences());
         }
+
+        [TestMethod]
+        public async Task KentorAuthServicesAuthenticationMiddleware_DoesntAugmentsGeneratedClaimsWhenSessionIndexIsMissing()
+        {
+            var context = OwinTestHelpers.CreateOwinContext();
+
+            string[] specifiedAuthTypes = null;
+
+            context.Set<AuthenticateDelegate>("security.Authenticate",
+                (authTypes, callback, state) =>
+                {
+                    specifiedAuthTypes = authTypes;
+                    callback(new ClaimsIdentity(new Claim[]
+                        {
+                            new Claim(ClaimTypes.NameIdentifier, "Saml2NameId", null, "http://idp.example.com"),
+                            new Claim(ClaimTypes.Role, "SomeRole", null, "http://idp.example.com")
+                        }, "Federation"),
+                        new Dictionary<string, string>(),
+                        new Dictionary<string, object>(),
+                        state);
+                    return Task.FromResult(0);
+                });
+
+            var options = new KentorAuthServicesAuthenticationOptions(true);
+
+            var subject = new KentorAuthServicesAuthenticationMiddleware(
+                new StubOwinMiddleware(303, grant: new AuthenticationResponseGrant(
+                    new ClaimsIdentity(new Claim[]
+                    {
+                        new Claim(ClaimTypes.NameIdentifier, "ApplicationNameId")
+                    }, "ApplicationIdentity"), new AuthenticationProperties())),
+                CreateAppBuilder(),
+                options);
+
+            await subject.Invoke(context);
+
+            specifiedAuthTypes.Should().HaveCount(1)
+                .And.Subject.Single().Should().Be(DefaultSignInAsAuthenticationType);
+
+            var expected = new ClaimsIdentity(new Claim[]
+            {
+                new Claim(ClaimTypes.NameIdentifier, "ApplicationNameId"),
+            }, "ApplicationIdentity");
+
+            context.Authentication.AuthenticationResponseGrant.Identity
+                .ShouldBeEquivalentTo(expected, opt => opt.IgnoringCyclicReferences());
+        }
+
+        [TestMethod]
+        public async Task KentorAuthServicesAuthenticationMiddleware_DoesntAugmentsGeneratedClaimsWhenNameIdIsMissing()
+        {
+            var context = OwinTestHelpers.CreateOwinContext();
+
+            string[] specifiedAuthTypes = null;
+
+            context.Set<AuthenticateDelegate>("security.Authenticate",
+                (authTypes, callback, state) =>
+                {
+                    specifiedAuthTypes = authTypes;
+                    callback(new ClaimsIdentity(new Claim[]
+                        {
+                            new Claim(AuthServicesClaimTypes.SessionIndex, "SessionId", null, "http://idp.example.com"),
+                            new Claim(ClaimTypes.Role, "SomeRole", null, "http://idp.example.com")
+                        }, "Federation"),
+                        new Dictionary<string, string>(),
+                        new Dictionary<string, object>(),
+                        state);
+                    return Task.FromResult(0);
+                });
+
+            var options = new KentorAuthServicesAuthenticationOptions(true);
+
+            var subject = new KentorAuthServicesAuthenticationMiddleware(
+                new StubOwinMiddleware(303, grant: new AuthenticationResponseGrant(
+                    new ClaimsIdentity(new Claim[]
+                    {
+                        new Claim(ClaimTypes.NameIdentifier, "ApplicationNameId")
+                    }, "ApplicationIdentity"), new AuthenticationProperties())),
+                CreateAppBuilder(),
+                options);
+
+            await subject.Invoke(context);
+
+            specifiedAuthTypes.Should().HaveCount(1)
+                .And.Subject.Single().Should().Be(DefaultSignInAsAuthenticationType);
+
+            var expected = new ClaimsIdentity(new Claim[]
+            {
+                new Claim(ClaimTypes.NameIdentifier, "ApplicationNameId"),
+            }, "ApplicationIdentity");
+
+            context.Authentication.AuthenticationResponseGrant.Identity
+                .ShouldBeEquivalentTo(expected, opt => opt.IgnoringCyclicReferences());
+        }
+
     }
 }
