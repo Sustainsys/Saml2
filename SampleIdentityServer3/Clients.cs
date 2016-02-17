@@ -1,0 +1,31 @@
+﻿using IdentityServer3.Core.Models;
+using System.Collections.Generic;
+
+namespace SampleIdentityServer3
+{
+    static class Clients
+    {
+        public static IList<Client> Get()
+        {
+            return new List<Client>
+            {
+                new Client
+                {
+                    Enabled = true,
+                    ClientName = "Server Side client",
+                    ClientId = "serverside",
+                    Flow = Flows.Implicit,
+
+                    RedirectUris = new List<string>
+                    {
+                        "http://localhost:4589/ServerSide.cshtml"
+                    },
+
+                    AllowAccessToAllScopes = true,
+
+                    LogoutUri = "http://localhost:4589/ServerSide-Logout"
+                }
+            };
+        }
+    }
+}

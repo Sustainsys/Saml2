@@ -13,6 +13,11 @@ using System.IdentityModel.Metadata;
 using Kentor.AuthServices;
 using System.IdentityModel.Selectors;
 using System.Security.Cryptography.X509Certificates;
+using Microsoft.Owin.Security.Cookies;
+using Microsoft.Owin.Security.OpenIdConnect;
+using System.Threading.Tasks;
+using Serilog;
+using Microsoft.Owin.Security;
 
 [assembly: OwinStartupAttribute(typeof(SampleIdentityServer3.Startup))]
 
@@ -22,22 +27,88 @@ namespace SampleIdentityServer3
     {
         public void Configuration(IAppBuilder app)
         {
+            Log.Logger = new LoggerConfiguration()
+                .MinimumLevel.Debug()
+                .WriteTo.Trace()
+                .CreateLogger();
+
             app.Map("/IdSrv3", idSrv3App =>
             {
                 var options = new IdentityServerOptions
                 {
+                    SiteName = "Embedded IdentityServer",
+
                     Factory = new IdentityServerServiceFactory()
-                        .UseInMemoryScopes(Scopes.Get())
-                        .UseInMemoryClients(new List<Client>())
-                        .UseInMemoryUsers(new List<InMemoryUser>()),
+                        .UseInMemoryScopes(StandardScopes.All)
+                        .UseInMemoryClients(Clients.Get())
+                        .UseInMemoryUsers(Users.Get()),
 
                     RequireSsl = false,
 
+                    SigningCertificate = 
+                        new X509Certificate2(AppDomain.CurrentDomain.BaseDirectory + "\\App_Data\\Kentor.AuthServices.Tests.pfx")
                 };
 
                 options.AuthenticationOptions.IdentityProviders = ConfigureSaml2;
 
                 idSrv3App.UseIdentityServer(options);
+            });
+
+            app.Use(async (ctx, next) =>
+            {
+                await next.Invoke();
+            });
+
+            app.UseCookieAuthentication(new CookieAuthenticationOptions
+            {
+                AuthenticationType = "Cookies"
+            });
+
+            app.Use(async (ctx, next) =>
+            {
+                await next.Invoke();
+            });
+
+            app.UseOpenIdConnectAuthentication(new OpenIdConnectAuthenticationOptions
+            {
+                Authority = "http://localhost:4589/IdSrv3",
+                ClientId = "serverside",
+                RedirectUri = "http://localhost:4589/ServerSide.cshtml",
+                ResponseType = "id_token",
+
+                SignInAsAuthenticationType = "Cookies"
+            });
+
+            app.Use(async (ctx, next) =>
+            {
+                await next.Invoke();
+            });
+
+            app.Map("/ServerSide-Login", loginApp =>
+            {
+                loginApp.Use((ctx, next) =>
+                {
+                    ctx.Authentication.Challenge(
+                        new AuthenticationProperties
+                        {
+                            RedirectUri = "http://localhost:4589/ServerSide.cshtml"
+                        },
+                        OpenIdConnectAuthenticationDefaults.AuthenticationType);
+                    ctx.Response.StatusCode = 401;
+
+                    return Task.FromResult(0);
+                });
+            });
+
+            app.Map("/ServerSide-Logout", logoutApp =>
+            {
+                logoutApp.Use((ctx, next) =>
+                {
+                    ctx.Authentication.SignOut();
+                    ctx.Response.Redirect("/ServerSide.cshtml");
+
+                    return Task.FromResult(0);
+                });
             });
         }
 
