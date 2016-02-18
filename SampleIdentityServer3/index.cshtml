@@ -56,7 +56,7 @@
     </p>
     <h1>Client Side Login</h1>
 
-    <button class="btn btn-default request" data-scope='openid' data-type='id_token'>Login Only</button>
+    <button class="btn btn-default request" data-scope='openid' data-type='id_token'>Login</button>
     <button class="btn btn-info logout">Logout</button>
 
     <div class="row">
@@ -87,15 +87,6 @@
                 <div class="panel-heading">Access Token</div>
                 <div class="panel-body">
                     <pre id="access-token"></pre>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-sm-4">
-            <div class="panel panel-default">
-                <div class="panel-heading">Ajax Result</div>
-                <div class="panel-body">
-                    <pre id="ajax-result"></pre>
                 </div>
             </div>
         </div>
@@ -171,7 +162,6 @@
         }
 
         function logout() {
-            alert("Logout!");
             mgr.redirectForLogout();
         }
 
