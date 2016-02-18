@@ -52,7 +52,7 @@
         {
             <button onclick="location='/ServerSide-Login';">Login</button>
         }
-        <button onclick="location.reload();">Refresh status</button>
+        <button onclick="location = '/';">Refresh status</button>
     </p>
     <h1>Client Side Login</h1>
 
@@ -113,7 +113,10 @@
             response_type: "id_token token",
             scope: "openid profile email read write",
 
-            // Ignore silent_redirect settings for now.
+            // silent renew will get a new access_token via an iframe 
+            // just prior to the old access_token expiring (60 seconds prior)
+            silent_redirect_uri: window.location.protocol + "//" + window.location.host + "/silent_renew.html",
+            silent_renew: true,
 
             store: window.sessionStorage
         };
@@ -168,6 +171,7 @@
         }
 
         function logout() {
+            alert("Logout!");
             mgr.redirectForLogout();
         }
 
@@ -212,7 +216,6 @@
             });
         });
 
-        document.querySelector(".call").addEventListener("click", callApi, false);
         document.querySelector(".logout").addEventListener("click", logout, false);
 
         function checkSessionState() {

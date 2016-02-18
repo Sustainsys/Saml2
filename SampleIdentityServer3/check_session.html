@@ -1,0 +1,61 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title>RP Check Session IFrame</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+</head>
+<body>
+    <iframe id="op"></iframe>
+    <script>
+        if (window.location.hash) {
+            var hash = window.location.hash.substr(1);
+            var params = hash.split('&').reduce(function (curr, item) {
+                var parts = item.split('=');
+                curr[parts[0].trim()] = parts[1].trim();
+                return curr;
+            }, {});
+
+            console.log('check_session_frame', params);
+
+            if (!params.session_state) {
+                console.error("No session_state passed to RP session frame");
+            }
+            else if (!params.check_session_iframe) {
+                console.error("No check_session_iframe passed to RP session frame");
+            }
+            else if (!params.client_id) {
+                console.error("No client_id passed to RP session frame");
+            }
+            else {
+                var idx = params.check_session_iframe.indexOf("/", params.check_session_iframe.indexOf("//") + 2);
+                var op_origin = params.check_session_iframe.substr(0, idx);
+
+                var frame = document.getElementById("op");
+                frame.onload = function () {
+                    var op = frame.contentWindow;
+                    var timer = window.setInterval(function () {
+                        op.postMessage(params.client_id + " " + params.session_state, op_origin);
+                    }, 2000);
+
+                    window.addEventListener("message", function (e) {
+                        if (e.origin === op_origin) {
+                            console.log("session state", e.data);
+                            if (e.data === "changed" || e.data === "error") {
+                                window.clearInterval(timer);
+                            }
+
+                            if (e.data === "changed") {
+                                // do prompt=none w/id_token_hint to OP
+                                // check result for same sub
+                                // if same, update local id_token_hint
+                                window.parent.postMessage("changed", window.location.protocol + "//" + window.location.host);
+                            }
+                        }
+                    });
+                };
+                frame.src = params.check_session_iframe;
+            }
+        }
+    </script>
+</body>
+</html>
