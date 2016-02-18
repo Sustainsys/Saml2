@@ -115,6 +115,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="index.cshtml" />
+    <Content Include="oidc-token-manager.js" />
     <Content Include="packages.config" />
     <Content Include="App_Data\Kentor.AuthServices.Tests.pfx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

@@ -24,6 +24,20 @@ namespace SampleIdentityServer3
                     AllowAccessToAllScopes = true,
 
                     LogoutUri = "http://localhost:4589/ServerSide-Logout"
+                },
+                new Client
+                {
+                    Enabled = true,
+                    ClientName = "Client Side Client",
+                    ClientId = "clientside",
+                    Flow = Flows.Implicit,
+
+                    RedirectUris = new List<string>
+                    {
+                        "http://localhost:4589/"
+                    },
+
+                    AllowAccessToAllScopes = true,
                 }
             };
         }
