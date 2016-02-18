@@ -12,6 +12,11 @@
         @Html.ValidationMessageFor(m => m.InResponseTo)
     </div>
     <div>
+        @Html.LabelFor(m => m.RelayState)
+        @Html.EditorFor(m => m.RelayState)
+        @Html.ValidationMessageFor(m => m.RelayState)
+    </div>
+    <div>
         @Html.LabelFor(m => m.DestinationUrl)
         @Html.EditorFor(m => m.DestinationUrl)
         @Html.ValidationMessageFor(m => m.DestinationUrl)

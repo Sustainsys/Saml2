@@ -33,7 +33,7 @@ namespace Kentor.AuthServices.StubIdp.Models
                 SigningCertificate = CertificateHelper.SigningCertificate,
                 Issuer = new EntityId(UrlResolver.MetadataUrl.ToString()),
                 NameId = new Saml2NameIdentifier(NameId),
-                SessionIndex = SessionIndex
+                SessionIndex = SessionIndex,
             };
         }
     }
@@ -50,13 +50,17 @@ namespace Kentor.AuthServices.StubIdp.Models
         [DisplayName("SP Single Logout Url")]
         public Uri DestinationUrl { get; set; }
 
+        [DisplayName("Relay State")]
+        public string RelayState { get; set; }
+
         public Saml2LogoutResponse ToLogoutResponse()
         {
             return new Saml2LogoutResponse(Saml2StatusCode.Success)
             {
                 DestinationUrl = DestinationUrl,
                 SigningCertificate = CertificateHelper.SigningCertificate,
-                InResponseTo = new Saml2Id(InResponseTo)
+                InResponseTo = new Saml2Id(InResponseTo),
+                RelayState = RelayState
             };
         }
     }

@@ -146,7 +146,7 @@ namespace Kentor.AuthServices.WebSso
             return new CommandResult()
             {
                 HttpStatusCode = HttpStatusCode.SeeOther,
-                Location = new AuthServicesUrls(request, options.SPOptions).ApplicationUrl
+                Location = new Uri(request.CookieData)
             };
         }
     }

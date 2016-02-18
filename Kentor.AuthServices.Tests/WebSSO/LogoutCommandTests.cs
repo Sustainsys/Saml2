@@ -160,18 +160,19 @@ namespace Kentor.AuthServices.Tests.WebSSO
         [TestMethod]
         public void LogoutCommand_Run_HandlesLogoutResponse()
         {
+            var relayState = "MyRelayState";
             var response = new Saml2LogoutResponse(Saml2StatusCode.Success)
             {
                 DestinationUrl = new Uri("http://sp.example.com/path/AuthServices/logout"),
                 Issuer = new EntityId("http://idp.example.com"),
                 InResponseTo = new Saml2Id(),
-                SigningCertificate = SignedXmlHelper.TestCert
+                SigningCertificate = SignedXmlHelper.TestCert,
+                RelayState = relayState
             };
 
             var bindResult = Saml2Binding.Get(Saml2BindingType.HttpRedirect)
                 .Bind(response);
 
-            var relayState = "MyRelayState";
             var cookies = new KeyValuePair<string, string>[] 
             {
                 new KeyValuePair<string, string>(
@@ -185,7 +186,7 @@ namespace Kentor.AuthServices.Tests.WebSSO
                 null,
                 cookies,
                 StubDataProtector.Unprotect);
-
+            
             var options = StubFactory.CreateOptions();
             ((SPOptions)options.SPOptions).PublicOrigin = new Uri("https://sp.example.com/path/");
 
@@ -194,7 +195,7 @@ namespace Kentor.AuthServices.Tests.WebSSO
 
             var expected = new CommandResult
             {
-                Location = new Uri("https://sp.example.com/path/"),
+                Location = new Uri("http://loggedout.example.com"),
                 HttpStatusCode = HttpStatusCode.SeeOther
             };
 
