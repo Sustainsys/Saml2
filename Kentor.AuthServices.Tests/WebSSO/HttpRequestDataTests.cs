@@ -1,46 +1,17 @@
-﻿using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using NSubstitute;
-using FluentAssertions;
-using System.Web;
-using System.Collections.Specialized;
-using System.Collections.Generic;
+﻿using FluentAssertions;
 using Kentor.AuthServices.WebSso;
-using Kentor.AuthServices.HttpModule;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
-namespace Kentor.AuthServices.Tests.WebSso
+namespace Kentor.AuthServices.Tests.WebSSO
 {
     [TestClass]
     public class HttpRequestDataTests
     {
-        [TestMethod]
-        public void HttpRequestData_Ctor_FromHttpRequest()
-        {
-            var url = new Uri("http://example.com:42/ApplicationPath/Path?name=DROP%20TABLE%20STUDENTS");
-            string appPath = "/ApplicationPath";
-
-            var request = Substitute.For<HttpRequestBase>();
-            request.HttpMethod.Returns("GET");
-            request.Url.Returns(url);
-            request.Form.Returns(new NameValueCollection { { "Key", "Value" } });
-            request.ApplicationPath.Returns(appPath);
-
-            var subject = request.ToHttpRequestData();
-
-            var expected = new HttpRequestData(
-                "GET",
-                url,
-                appPath,
-                new KeyValuePair<string, string[]>[]
-                {
-                    new KeyValuePair<string, string[]>("Key", new string[] { "Value" })
-                },
-                null,
-                null);
-
-            subject.ShouldBeEquivalentTo(expected);
-        }
-
         [TestMethod]
         public void HttpRequestData_Ctor_FromParamsCalculatesApplicationUrl()
         {
@@ -67,6 +38,26 @@ namespace Kentor.AuthServices.Tests.WebSso
 
             a.ShouldThrow<ArgumentNullException>()
                 .And.ParamName.Should().Be("value");
+        }
+
+        [TestMethod]
+        public void HttpRequestData_Ctor_RelayStateButNoCookie()
+        {
+            var url = new Uri("http://example.com:42/ApplicationPath/Path?RelayState=Foo");
+            string appPath = "/ApplicationPath";
+
+            Action a = () => new HttpRequestData(
+                 "GET",
+                 url,
+                 appPath,
+                 new KeyValuePair<string, string[]>[]
+                 {
+                    new KeyValuePair<string, string[]>("Key", new string[] { "Value" })
+                 },
+                 Enumerable.Empty<KeyValuePair<string, string>>(),
+                 null);
+
+            a.ShouldNotThrow();
         }
     }
 }

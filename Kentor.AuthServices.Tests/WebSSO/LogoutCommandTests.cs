@@ -3,6 +3,7 @@ using Kentor.AuthServices.Configuration;
 using Kentor.AuthServices.Exceptions;
 using Kentor.AuthServices.Saml2P;
 using Kentor.AuthServices.Tests.Helpers;
+using Kentor.AuthServices.Tests.Owin;
 using Kentor.AuthServices.WebSso;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
@@ -170,8 +171,20 @@ namespace Kentor.AuthServices.Tests.WebSSO
             var bindResult = Saml2Binding.Get(Saml2BindingType.HttpRedirect)
                 .Bind(response);
 
-            var request = new HttpRequestData("GET", bindResult.Location,
-                "http://sp-internal.example.com/path/AuthServices", null, null, null);
+            var relayState = "MyRelayState";
+            var cookies = new KeyValuePair<string, string>[] 
+            {
+                new KeyValuePair<string, string>(
+                    "Kentor." + relayState,
+                    StubDataProtector.Protect("http://loggedout.example.com", false))
+            };
+
+            var request = new HttpRequestData("GET",
+                bindResult.Location,
+                "http://sp-internal.example.com/path/AuthServices",
+                null,
+                cookies,
+                StubDataProtector.Unprotect);
 
             var options = StubFactory.CreateOptions();
             ((SPOptions)options.SPOptions).PublicOrigin = new Uri("https://sp.example.com/path/");

@@ -73,7 +73,7 @@ namespace SampleIdentityServer3
             {
                 Authority = "http://localhost:4589/IdSrv3",
                 ClientId = "serverside",
-                RedirectUri = "http://localhost:4589/ServerSide.cshtml",
+                RedirectUri = "http://localhost:4589/",
                 ResponseType = "id_token",
 
                 SignInAsAuthenticationType = "Cookies"
@@ -91,7 +91,7 @@ namespace SampleIdentityServer3
                     ctx.Authentication.Challenge(
                         new AuthenticationProperties
                         {
-                            RedirectUri = "http://localhost:4589/ServerSide.cshtml"
+                            RedirectUri = "http://localhost:4589/"
                         },
                         OpenIdConnectAuthenticationDefaults.AuthenticationType);
                     ctx.Response.StatusCode = 401;
@@ -105,7 +105,7 @@ namespace SampleIdentityServer3
                 logoutApp.Use((ctx, next) =>
                 {
                     ctx.Authentication.SignOut();
-                    ctx.Response.Redirect("/ServerSide.cshtml");
+                    ctx.Response.Redirect("/");
 
                     return Task.FromResult(0);
                 });

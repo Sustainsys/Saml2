@@ -82,6 +82,11 @@ namespace Kentor.AuthServices.WebSso
                 throw new ArgumentException("modulePath should start with /.");
             }
 
+            if(!publicOrigin.AbsoluteUri.EndsWith("/", StringComparison.Ordinal))
+            {
+                publicOrigin = new Uri(publicOrigin.AbsoluteUri + "/");
+            }
+
             var authServicesRoot = publicOrigin.AbsoluteUri.TrimEnd('/') + modulePath + "/";
 
             AssertionConsumerServiceUrl = new Uri(authServicesRoot + CommandFactory.AcsCommandName);

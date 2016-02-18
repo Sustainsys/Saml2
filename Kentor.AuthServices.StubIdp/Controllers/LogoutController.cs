@@ -15,7 +15,7 @@ namespace Kentor.AuthServices.StubIdp.Controllers
     {
         public ActionResult Index()
         {
-            var requestData = Request.ToHttpRequestData();
+            var requestData = Request.ToHttpRequestData(true);
 
             var binding = Saml2Binding.Get(requestData);
 

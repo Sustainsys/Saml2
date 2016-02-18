@@ -141,6 +141,7 @@
     <Compile Include="ExceptionTestHelpers.cs" />
     <Compile Include="Saml2P\FilteringXmlNodeReaderTests.cs" />
     <Compile Include="Exceptions\Saml2ResponseFailedValidationExceptionTests.cs" />
+    <Compile Include="WebSSO\HttpRequestDataTests.cs" />
     <Compile Include="WebSSO\Saml2ArtifactBindingTests.cs" />
     <Compile Include="WebSSO\Saml2MessageImplementation.cs" />
     <Compile Include="WebSSO\CommandResultTests.cs" />
@@ -173,7 +174,6 @@
     <Compile Include="Internal\DateTimeExtensionsTests.cs" />
     <Compile Include="Saml2SubjectExtensionsTests.cs" />
     <Compile Include="Saml2ConditionsExtensionsTests.cs" />
-    <Compile Include="WebSSO\HttpRequestDataTests.cs" />
     <Compile Include="Mvc\CommandResultExtensionsTests.cs" />
     <Compile Include="Owin\KentorAuthServicesAuthenticationExtensionsTests.cs" />
     <Compile Include="Owin\KentorAuthServicesAuthenticationMiddlewareTests.cs" />

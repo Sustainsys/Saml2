@@ -67,10 +67,10 @@ namespace Kentor.AuthServices.WebSso
             if (relayState != null)
             {
                 var cookieName = "Kentor." + relayState;
-                var cookieData = cookies.SingleOrDefault(c => c.Key == cookieName).Value;
-
-                if (cookieData != null)
+                if (cookies.Any(c => c.Key == cookieName))
                 {
+                    var cookieData = cookies.SingleOrDefault(c => c.Key == cookieName).Value;
+
                     var unescapedBase64Data = cookieData
                         .Replace('_', '/')
                         .Replace('-', '+')

@@ -87,6 +87,22 @@ namespace Kentor.AuthServices.Tests.WebSso
         }
 
         [TestMethod]
+        public void AuthServicesUrls_Ctor_EnsuresApplicationUrlEndsWithSlash()
+        {
+            var request = new HttpRequestData(
+                "GET",
+                new Uri("http://localhost:1234/Foo/Bar"),
+                "/Foo",
+                null,
+                null,
+                null);
+
+            var options = StubFactory.CreateOptions();
+            var subject = new AuthServicesUrls(request, options.SPOptions);
+            subject.ApplicationUrl.OriginalString.Should().EndWith("/");
+        }
+
+        [TestMethod]
         public void AuthServiecsUrls_Ctor_AcceptsFullUrls()
         {
             var acsUrl = new Uri("http://localhost:73/MyApp/MyAcs");

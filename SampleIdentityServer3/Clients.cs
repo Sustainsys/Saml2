@@ -18,7 +18,7 @@ namespace SampleIdentityServer3
 
                     RedirectUris = new List<string>
                     {
-                        "http://localhost:4589/ServerSide.cshtml"
+                        "http://localhost:4589/"
                     },
 
                     AllowAccessToAllScopes = true,
