@@ -57,7 +57,7 @@ namespace Kentor.AuthServices.Owin
                         Context.Environment.TryGetValue("KentorAuthServices.idp", out objIdp);
                         idp = objIdp as EntityId;
                     }
-                    var result = SignInCommand.CreateResult(
+                    var result = SignInCommand.Run(
                         idp,
                         challenge.Properties.RedirectUri,
                         await Context.ToHttpRequestData(),
