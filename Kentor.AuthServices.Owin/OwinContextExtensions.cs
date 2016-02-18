@@ -1,5 +1,6 @@
 ﻿using Kentor.AuthServices.WebSso;
 using Microsoft.Owin;
+using Microsoft.Owin.Security.DataProtection;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -12,7 +13,9 @@ namespace Kentor.AuthServices.Owin
 {
     static class OwinContextExtensions
     {
-        public async static Task<HttpRequestData> ToHttpRequestData(this IOwinContext context)
+        public async static Task<HttpRequestData> ToHttpRequestData(
+            this IOwinContext context,
+            Func<byte[], byte[]> cookieDecryptor)
         {
             if(context == null)
             {
@@ -30,11 +33,14 @@ namespace Kentor.AuthServices.Owin
             {
                 applicationRootPath = "/";
             }
+
             return new HttpRequestData(
                 context.Request.Method,
                 context.Request.Uri,
                 applicationRootPath,
-                formData);
+                formData,
+                context.Request.Cookies,
+                cookieDecryptor);
         }
     }
 }

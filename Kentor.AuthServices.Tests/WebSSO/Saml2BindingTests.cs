@@ -23,7 +23,9 @@ namespace Kentor.AuthServices.Tests.WebSso
                 new KeyValuePair<string, string[]>[]
                 {
                     new KeyValuePair<string, string[]>("SAMLResponse", new string[] { "Some Data" })
-                });
+                },
+                null,
+                null);
 
             Saml2Binding.Get(r).Should().BeOfType<Saml2PostBinding>();
         }
@@ -48,7 +50,9 @@ namespace Kentor.AuthServices.Tests.WebSso
                 new KeyValuePair<string, string[]>[]
                 {
                     new KeyValuePair<string, string[]>("SAMLart", new string[] { "Some Data" })
-                });
+                },
+                null,
+                null);
 
             Saml2Binding.Get(r).Should().BeOfType<Saml2ArtifactBinding>();
         }
@@ -71,7 +75,9 @@ namespace Kentor.AuthServices.Tests.WebSso
                 new KeyValuePair<string, string[]>[]
                 {
                     new KeyValuePair<string, string[]>("SAMLResponse", new string[] { "Some Data" })
-                });
+                },
+                null,
+                null);
 
             Saml2Binding.Get(r).Should().BeNull();
         }
@@ -86,7 +92,9 @@ namespace Kentor.AuthServices.Tests.WebSso
                 new KeyValuePair<string, string[]>[]
                 {
                     new KeyValuePair<string, string[]>("SAMLart", new string[] { "Some Data" })
-                });
+                },
+                null,
+                null);
 
             Saml2Binding.Get(r).Should().BeNull();
         }

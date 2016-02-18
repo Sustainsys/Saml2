@@ -34,7 +34,9 @@ namespace Kentor.AuthServices.Tests.WebSso
                 new KeyValuePair<string, string[]>[]
                 {
                     new KeyValuePair<string, string[]>("Key", new string[] { "Value" })
-                });
+                },
+                null,
+                null);
 
             subject.ShouldBeEquivalentTo(expected);
         }
@@ -52,9 +54,19 @@ namespace Kentor.AuthServices.Tests.WebSso
                  new KeyValuePair<string, string[]>[]
                 {
                     new KeyValuePair<string, string[]>("Key", new string[] { "Value" })
-                });
+                },
+                null,
+                null);
 
             subject.ApplicationUrl.Should().Be(new Uri("http://example.com:42/ApplicationPath"));
+        }
+
+        public void HttpRequestData_EscapeBase64CookieValue_Nullcheck()
+        {
+            Action a = () => HttpRequestData.EscapeBase64CookieValue(null);
+
+            a.ShouldThrow<ArgumentNullException>()
+                .And.ParamName.Should().Be("value");
         }
     }
 }

@@ -32,7 +32,9 @@ namespace Kentor.AuthServices.Tests.WebSso
                 "POST",
                 new Uri("http://example.com"),
                 "/ModulePath",
-                formData);
+                formData,
+                null,
+                null);
         }
 
         [TestMethod]

@@ -143,7 +143,7 @@ namespace Kentor.AuthServices.Tests.WebSso
         {
             var ctx = OwinTestHelpers.CreateOwinContext();
             var options = StubFactory.CreateOptionsPublicOrigin(new Uri("https://my.public.origin:8443/"));
-            var subject = await ctx.ToHttpRequestData();
+            var subject = await ctx.ToHttpRequestData(null);
             var urls = new AuthServicesUrls(subject, options.SPOptions);
             urls.AssertionConsumerServiceUrl.ShouldBeEquivalentTo("https://my.public.origin:8443/AuthServices/Acs");
             urls.SignInUrl.ShouldBeEquivalentTo("https://my.public.origin:8443/AuthServices/SignIn");

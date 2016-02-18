@@ -149,7 +149,9 @@ namespace Kentor.AuthServices.Tests.WebSSO
                 {
                     new KeyValuePair<string, string[]>("SAMLart", new[] { artifact }),
                     new KeyValuePair<string, string[]>("RelayState", new[] { relayState })
-                });
+                },
+                null,
+                null);
 
             StubServer.LastArtifactResolutionSoapActionHeader = null;
 
@@ -179,7 +181,9 @@ namespace Kentor.AuthServices.Tests.WebSSO
                 new KeyValuePair<string, string[]>[]
                 {
                     new KeyValuePair<string, string[]>("SAMLart", new[] { artifact }),
-                });
+                },
+                null,
+                null);
 
             StubServer.LastArtifactResolutionSoapActionHeader = null;
 

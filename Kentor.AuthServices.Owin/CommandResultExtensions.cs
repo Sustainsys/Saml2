@@ -1,5 +1,6 @@
 ﻿using Kentor.AuthServices.WebSso;
 using Microsoft.Owin;
+using Microsoft.Owin.Security.DataProtection;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -10,7 +11,9 @@ namespace Kentor.AuthServices.Owin
 {
     static class CommandResultExtensions
     {
-        public static void Apply(this CommandResult commandResult, IOwinContext context)
+        public static void Apply(this CommandResult commandResult,
+            IOwinContext context,
+            IDataProtector dataProtector)
         {
             if (commandResult == null)
             {
@@ -41,6 +44,23 @@ namespace Kentor.AuthServices.Owin
             if(commandResult.TerminateLocalSession)
             {
                 context.Authentication.SignOut();
+            }
+
+            if(!string.IsNullOrEmpty(commandResult.SetCookieData))
+            {
+                var protectedData = HttpRequestData.EscapeBase64CookieValue(
+                    Convert.ToBase64String(
+                        dataProtector.Protect(
+                            Encoding.UTF8.GetBytes(
+                                commandResult.SetCookieData))));
+
+                context.Response.Cookies.Append(
+                    commandResult.SetCookieName,
+                    protectedData,
+                    new CookieOptions()
+                    {
+                        HttpOnly = true,
+                    });
             }
         }
     }

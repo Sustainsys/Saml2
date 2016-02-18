@@ -26,7 +26,7 @@ namespace Kentor.AuthServices.Owin
             }
 
             var result = CommandFactory.GetCommand(CommandFactory.AcsCommandName)
-                .Run(await Context.ToHttpRequestData(), Options);
+                .Run(await Context.ToHttpRequestData(Options.DataProtector.Unprotect), Options);
 
             var identities = result.Principal.Identities.Select(i =>
                 new ClaimsIdentity(i, null, Options.SignInAsAuthenticationType, i.NameClaimType, i.RoleClaimType));
@@ -60,11 +60,11 @@ namespace Kentor.AuthServices.Owin
                     var result = SignInCommand.Run(
                         idp,
                         challenge.Properties.RedirectUri,
-                        await Context.ToHttpRequestData(),
+                        await Context.ToHttpRequestData(Options.DataProtector.Unprotect),
                         Options,
                         challenge.Properties);
 
-                    result.Apply(Context);
+                    result.Apply(Context, Options.DataProtector);
                 }
             }
         }
@@ -75,9 +75,29 @@ namespace Kentor.AuthServices.Owin
 
             if (revoke != null)
             {
-                CommandFactory.GetCommand(CommandFactory.LogoutCommandName)
-                    .Run(await Context.ToHttpRequestData(), Options)
-                    .Apply(Context);
+                var request = await Context.ToHttpRequestData(Options.DataProtector.Unprotect);
+                var urls = new AuthServicesUrls(request, Options.SPOptions);
+
+                string redirectUrl;
+                if(Context.Response.StatusCode / 100 == 3)
+                {
+                    var locationUrl = Context.Response.Headers["Location"];
+
+                    redirectUrl = new Uri(
+                        new Uri(urls.ApplicationUrl.ToString().TrimEnd('/') + Context.Request.Path),
+                        locationUrl
+                        ).ToString();
+                }
+                else
+                {
+                    redirectUrl = new Uri(
+                        urls.ApplicationUrl,
+                        Context.Request.Path.ToUriComponent().TrimStart('/'))
+                        .ToString();
+                }
+
+                LogoutCommand.Run(request, redirectUrl, Options)
+                    .Apply(Context, Options.DataProtector);
             }
 
             await AugmentAuthenticationGrantWithLogoutClaims(Context);
@@ -99,8 +119,8 @@ namespace Kentor.AuthServices.Owin
                 }
 
                 CommandFactory.GetCommand(remainingPath.Value)
-                    .Run(await Context.ToHttpRequestData(), Options)
-                    .Apply(Context);
+                    .Run(await Context.ToHttpRequestData(Options.DataProtector.Unprotect), Options)
+                    .Apply(Context, Options.DataProtector);
 
                 return true;
             }

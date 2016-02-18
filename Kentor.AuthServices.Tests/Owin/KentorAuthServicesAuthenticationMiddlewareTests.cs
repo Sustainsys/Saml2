@@ -72,7 +72,10 @@ namespace Kentor.AuthServices.Tests.Owin
         private static IAppBuilder CreateAppBuilder()
         {
             var app = Substitute.For<IAppBuilder>();
-            app.Properties.Returns(new Dictionary<string, object>());
+            app.Properties.Returns(new Dictionary<string, object>()
+            {
+                { "host.AppName", "ABCD1234" }
+            });
             app.SetDefaultSignInAsAuthenticationType(DefaultSignInAsAuthenticationType);
             return app;
         }
@@ -180,12 +183,19 @@ namespace Kentor.AuthServices.Tests.Owin
         {
             var revoke = new AuthenticationResponseRevoke(new string[0]);
 
+            var options = new KentorAuthServicesAuthenticationOptions(true);
+            ((SPOptions)options.SPOptions).PublicOrigin = new Uri("https://sp.example.com/ExternalPath/");
+
             var subject = new KentorAuthServicesAuthenticationMiddleware(
                 new StubOwinMiddleware(200, revoke: revoke),
                 CreateAppBuilder(),
-                new KentorAuthServicesAuthenticationOptions(true));
+                options);
 
             var context = OwinTestHelpers.CreateOwinContext();
+            context.Request.Scheme = "http";
+            context.Request.Host = new HostString("sp-internal.example.com");
+            context.Request.PathBase = new PathString("/InternalPath");
+            context.Request.Path = new PathString("/LoggedOut");
 
             Thread.CurrentPrincipal = new ClaimsPrincipal(
                 new ClaimsIdentity(new Claim[]
@@ -198,7 +208,80 @@ namespace Kentor.AuthServices.Tests.Owin
 
             context.Response.StatusCode.Should().Be(303);
             context.Response.Headers["Location"].Should().StartWith("https://idp.example.com/logout?SAMLRequest");
-            context.Authentication.AuthenticationResponseRevoke.AuthenticationTypes.Should().BeEmpty();
+
+            var cookieValue = context.Response.Headers["Set-Cookie"].Split(';', '=')[1]
+                .Replace('_', '/').Replace('-', '+').Replace('.', '=');
+
+            var returnUrl = Encoding.UTF8.GetString(options.DataProtector.Unprotect(
+                Convert.FromBase64String(cookieValue)));
+
+            returnUrl.Should().Be("https://sp.example.com/ExternalPath/LoggedOut");
+        }
+
+        [TestMethod]
+        public async Task KentorAuthServicesAuthenticationMiddleware_CreatesRedirectOnAuthRevoke_PreservesRedirect_RelativePath()
+        {
+            await KentorAuthServicesAuthenticationMiddleware_CreatesRedirectOnAuthRevoke_PreservesRedirect(
+                "LoggedOut", "https://sp.example.com/ExternalPath/Account/LoggedOut");
+        }
+
+        [TestMethod]
+        public async Task KentorAuthServicesAuthenticationMiddleware_CreatesRedirectOnAuthRevoke_PreservesRedirect_RelativePath_SimplePath()
+        {
+            await KentorAuthServicesAuthenticationMiddleware_CreatesRedirectOnAuthRevoke_PreservesRedirect(
+                "LoggedOut", "https://sp.example.com/ExternalPath/LoggedOut", "/LogOut");
+        }
+
+        [TestMethod]
+        public async Task KentorAuthServicesAuthenticationMiddleware_CreatesRedirectOnAuthRevoke_PreservesRedirect_AppRelative()
+        {
+            await KentorAuthServicesAuthenticationMiddleware_CreatesRedirectOnAuthRevoke_PreservesRedirect(
+                "/LoggedOut", "https://sp.example.com/LoggedOut");
+        }
+
+        [TestMethod]
+        public async Task KentorAuthServicesAuthenticationMiddleware_CreatesRedirectOnAuthRevoke_PreservesRedirect_Absolute()
+        {
+            await KentorAuthServicesAuthenticationMiddleware_CreatesRedirectOnAuthRevoke_PreservesRedirect(
+                "http://loggedout.example.com/SomePath", "http://loggedout.example.com/SomePath");
+        }
+
+        private async Task KentorAuthServicesAuthenticationMiddleware_CreatesRedirectOnAuthRevoke_PreservesRedirect(
+            string location, string expectedUrl, string path = "/Account/LogOut")
+        {
+            var revoke = new AuthenticationResponseRevoke(new string[0]);
+
+            var options = new KentorAuthServicesAuthenticationOptions(true);
+            ((SPOptions)options.SPOptions).PublicOrigin = new Uri("https://sp.example.com/ExternalPath/");
+
+            var subject = new KentorAuthServicesAuthenticationMiddleware(
+                new StubOwinMiddleware(303, revoke: revoke),
+                CreateAppBuilder(),
+                options);
+
+            var context = OwinTestHelpers.CreateOwinContext();
+            context.Request.Scheme = "http";
+            context.Request.Host = new HostString("sp-internal.example.com");
+            context.Request.PathBase = new PathString("/AppPath");
+            context.Request.Path = new PathString(path);
+            context.Response.Headers["Location"] = location;
+
+            Thread.CurrentPrincipal = new ClaimsPrincipal(
+                new ClaimsIdentity(new Claim[]
+                {
+                    new Claim(ClaimTypes.NameIdentifier, "NameId", null, "https://idp.example.com"),
+                    new Claim(AuthServicesClaimTypes.SessionIndex, "SessionId", null, "https://idp.example.com")
+                }, "Federation"));
+
+            await subject.Invoke(context);
+
+            var cookieValue = context.Response.Headers["Set-Cookie"].Split(';', '=')[1]
+                .Replace('_', '/').Replace('-', '+').Replace('.', '=');
+
+            var returnUrl = Encoding.UTF8.GetString(options.DataProtector.Unprotect(
+                Convert.FromBase64String(cookieValue)));
+
+            returnUrl.Should().Be(expectedUrl);
         }
 
         [TestMethod]

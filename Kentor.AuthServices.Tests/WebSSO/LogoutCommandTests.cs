@@ -171,7 +171,7 @@ namespace Kentor.AuthServices.Tests.WebSSO
                 .Bind(response);
 
             var request = new HttpRequestData("GET", bindResult.Location,
-                "http://sp-internal.example.com/path/AuthServices", null);
+                "http://sp-internal.example.com/path/AuthServices", null, null, null);
 
             var options = StubFactory.CreateOptions();
             ((SPOptions)options.SPOptions).PublicOrigin = new Uri("https://sp.example.com/path/");
@@ -285,7 +285,7 @@ namespace Kentor.AuthServices.Tests.WebSSO
                 .Bind(response);
 
             var request = new HttpRequestData("GET", bindResult.Location,
-                "http://sp-internal.example.com/path/AuthServices", null);
+                "http://sp-internal.example.com/path/AuthServices", null, null, null);
 
             var options = StubFactory.CreateOptions();
             ((SPOptions)options.SPOptions).PublicOrigin = new Uri("https://sp.example.com/path/");

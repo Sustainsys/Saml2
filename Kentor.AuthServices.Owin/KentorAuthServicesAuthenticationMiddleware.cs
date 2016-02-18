@@ -7,6 +7,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Owin.Security;
+using Microsoft.Owin.Security.DataProtection;
+using Microsoft.Owin.Security.DataHandler;
 
 namespace Kentor.AuthServices.Owin
 {
@@ -36,6 +38,9 @@ namespace Kentor.AuthServices.Owin
             {
                 options.SignInAsAuthenticationType = app.GetDefaultSignInAsAuthenticationType();
             }
+
+            options.DataProtector = app.CreateDataProtector(
+                typeof(KentorAuthServicesAuthenticationMiddleware).FullName);
         }
 
         /// <summary>
