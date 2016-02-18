@@ -19,7 +19,10 @@ namespace Kentor.AuthServices.Saml2P
         /// <summary>
         /// Ctor
         /// </summary>
-        public Saml2LogoutRequest() { }
+        public Saml2LogoutRequest()
+        {
+            RelayState = SecureKeyGenerator.CreateRelayState();
+        }
 
         /// <summary>
         /// Ctor
@@ -45,7 +48,7 @@ namespace Kentor.AuthServices.Saml2P
             {
                 NameId = new Saml2NameIdentifier(
                     xml["NameID", Saml2Namespaces.Saml2Name].InnerText),
-               
+                RelayState = null
             };
 
             request.ReadBaseProperties(xml);

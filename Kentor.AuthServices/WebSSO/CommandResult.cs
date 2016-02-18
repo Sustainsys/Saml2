@@ -56,6 +56,17 @@ namespace Kentor.AuthServices.WebSso
         public bool TerminateLocalSession { get; set; }
 
         /// <summary>
+        /// Name of cookie to set.
+        /// </summary>
+        public string SetCookieName { get; set; }
+
+        /// <summary>
+        /// Unencrypted data to set in cookie. Data should be encrypted when
+        /// applied to the response.
+        /// </summary>
+        public string SetCookieData { get; set; }
+
+        /// <summary>
         /// Ctor
         /// </summary>
         public CommandResult()

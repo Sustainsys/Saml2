@@ -48,6 +48,15 @@ namespace Kentor.AuthServices.Tests.WebSSO
         }
 
         [TestMethod]
+        public void LogoutCommand_Run2_NullcheckRequest()
+        {
+            Action a = () => LogoutCommand.Run(null, null, StubFactory.CreateOptions());
+
+            a.ShouldThrow<ArgumentNullException>()
+                .And.ParamName.Should().Be("request");
+        }
+
+        [TestMethod]
         public void LogoutCommand_Run_NullcheckOptions()
         {
             CommandFactory.GetCommand(CommandFactory.LogoutCommandName)
@@ -66,10 +75,11 @@ namespace Kentor.AuthServices.Tests.WebSSO
                     new Claim(AuthServicesClaimTypes.SessionIndex, "SessionId", null, "https://idp.example.com")
                 }, "Federation"));
 
-            var request = new HttpRequestData("GET", new Uri("http://sp.example.com/AuthServices/Logout"));
+            var request = new HttpRequestData("GET", new Uri("http://sp-internal.example.com/AuthServices/Logout"));
 
             var options = StubFactory.CreateOptions();
             options.SPOptions.ServiceCertificates.Add(SignedXmlHelper.TestCert);
+            ((SPOptions)(options.SPOptions)).PublicOrigin = new Uri("https://sp.example.com/");
 
             var actual = CommandFactory.GetCommand(CommandFactory.LogoutCommandName)
                 .Run(request, options);
@@ -77,12 +87,40 @@ namespace Kentor.AuthServices.Tests.WebSSO
             var expected = new CommandResult
             {
                 HttpStatusCode = HttpStatusCode.SeeOther,
-                TerminateLocalSession = true
+                TerminateLocalSession = true,
                 // Deliberately not comparing Location.
+                // Deliberately not comparing SetCookieName.
+                SetCookieData = "https://sp.example.com/"
             };
 
-            actual.ShouldBeEquivalentTo(expected, opt => opt.Excluding(cr => cr.Location));
+            actual.ShouldBeEquivalentTo(expected, opt => opt
+                .Excluding(cr => cr.Location)
+                .Excluding(cr => cr.SetCookieName));
+
+            var relayState = HttpUtility.ParseQueryString(actual.Location.Query)["RelayState"];
+            actual.SetCookieName.Should().Be("Kentor." + relayState);
             actual.Location.GetLeftPart(UriPartial.Path).Should().Be("https://idp.example.com/logout");
+        }
+
+        [TestMethod]
+        public void LogoutCommand_Run_PreservesReturnUrl()
+        {
+            Thread.CurrentPrincipal = new ClaimsPrincipal(
+                new ClaimsIdentity(new Claim[]
+                {
+                    new Claim(ClaimTypes.NameIdentifier, "NameId", null, "https://idp.example.com"),
+                    new Claim(AuthServicesClaimTypes.SessionIndex, "SessionId", null, "https://idp.example.com")
+                }, "Federation"));
+
+            var request = new HttpRequestData("GET", new Uri("http://sp.example.com/AuthServices/Logout?ReturnUrl=%2FLoggedOut"));
+
+            var options = StubFactory.CreateOptions();
+            options.SPOptions.ServiceCertificates.Add(SignedXmlHelper.TestCert);
+
+            var actual = CommandFactory.GetCommand(CommandFactory.LogoutCommandName)
+                .Run(request, options);
+
+            actual.SetCookieData.Should().Be("http://sp.example.com/LoggedOut");
         }
 
         [TestMethod]
@@ -107,11 +145,14 @@ namespace Kentor.AuthServices.Tests.WebSSO
             var expected = new CommandResult
             {
                 HttpStatusCode = HttpStatusCode.SeeOther,
-                TerminateLocalSession = true
+                TerminateLocalSession = true,
                 // Deliberately not comparing Location.
+                SetCookieData = "http://sp.example.com/"
             };
 
-            actual.ShouldBeEquivalentTo(expected, opt => opt.Excluding(cr => cr.Location));
+            actual.ShouldBeEquivalentTo(expected, opt => opt
+                .Excluding(cr => cr.Location)
+                .Excluding(cr => cr.SetCookieName));
             actual.Location.GetLeftPart(UriPartial.Path).Should().Be("https://idp.example.com/logout");
         }
 

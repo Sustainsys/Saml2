@@ -508,7 +508,7 @@ namespace Kentor.AuthServices
                     ?? ClaimsPrincipal.Current.FindFirst(ClaimTypes.NameIdentifier).Value),
                 SessionIndex =
                     ClaimsPrincipal.Current.FindFirst(AuthServicesClaimTypes.SessionIndex).Value,
-                SigningCertificate = spOptions.SigningServiceCertificate
+                SigningCertificate = spOptions.SigningServiceCertificate,
             };
         }
     }

@@ -5,10 +5,10 @@ using FluentAssertions;
 namespace Kentor.AuthServices.Tests
 {
     [TestClass]
-    public class RelayStateGeneratorTests
+    public class SecureKeyGeneratorTests
     {
         [TestMethod]
-        public void RelayStateGenerator_GetSecureKey()
+        public void ecureKeyGenerator_CreateRelayState()
         {
             // Loop until we've seen the replacement work.
             var containedDash = false;

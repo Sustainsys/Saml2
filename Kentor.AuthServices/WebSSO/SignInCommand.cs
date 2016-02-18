@@ -28,7 +28,7 @@ namespace Kentor.AuthServices.WebSso
         /// </summary>
         /// <param name="request">Request data.</param>
         /// <param name="options">Options</param>
-        /// <returns></returns>
+        /// <returns>CommandResult</returns>
         public CommandResult Run(HttpRequestData request, IOptions options)
         {
             if (request == null)
