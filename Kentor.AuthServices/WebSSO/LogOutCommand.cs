@@ -126,6 +126,7 @@ namespace Kentor.AuthServices.WebSso
                 SigningCertificate = options.SPOptions.SigningServiceCertificate,
                 InResponseTo = request.Id,
                 Issuer = options.SPOptions.EntityId,
+                RelayState = unbindResult.RelayState
             };
 
             var result = Saml2Binding.Get(idp.SingleLogoutServiceBinding).Bind(response);

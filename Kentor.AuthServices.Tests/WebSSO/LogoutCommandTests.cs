@@ -212,7 +212,7 @@ namespace Kentor.AuthServices.Tests.WebSSO
                 Issuer = new EntityId("https://idp.example.com"),
                 SigningCertificate = SignedXmlHelper.TestCert,
                 NameId = new Saml2NameIdentifier("NameId"),
-                SessionIndex = "SessionID"
+                SessionIndex = "SessionID",
             };
 
             var bindResult = Saml2Binding.Get(Saml2BindingType.HttpRedirect)
@@ -238,8 +238,10 @@ namespace Kentor.AuthServices.Tests.WebSSO
 
             actual.ShouldBeEquivalentTo(expected, opt => opt.Excluding(cr => cr.Location));
 
-            var actualMessage = Saml2Binding.Get(Saml2BindingType.HttpRedirect)
-                .Unbind(new HttpRequestData("GET", actual.Location), options).Data;
+            var actualUnbindResult = Saml2Binding.Get(Saml2BindingType.HttpRedirect)
+                .Unbind(new HttpRequestData("GET", actual.Location), options);
+
+            var actualMessage = actualUnbindResult.Data;
 
             var expectedMessage = XmlHelpers.FromString(
                 $@"<samlp:LogoutResponse xmlns:samlp=""urn:oasis:names:tc:SAML:2.0:protocol""
@@ -258,6 +260,8 @@ namespace Kentor.AuthServices.Tests.WebSSO
             expectedMessage.SetAttribute("InResponseTo", request.Id.Value);
 
             actualMessage.Should().BeEquivalentTo(expectedMessage);
+
+            actualUnbindResult.RelayState.Should().Be(request.RelayState);
         }
 
         [TestMethod]
