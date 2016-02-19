@@ -282,6 +282,10 @@ entityID=""http://localhost:13428/idpMetadataVeryShortCacheDuration"" cacheDurat
       index=""0""
       Location=""http://localhost:{2}/ars""
       Binding=""urn:oasis:names:tc:SAML:2.0:bindings:SOAP"" />
+      <SingleLogoutService
+        Binding=""{1}""
+        Location=""http://localhost:{2}/logout""
+        ResponseLocation=""http://localhost:{2}/logoutResponse""/>
 </IDPSSODescriptor>
 </EntityDescriptor>",
                     keyElement, IdpVeryShortCacheDurationBinding, IdpAndFederationVeryShortCacheDurationPort);

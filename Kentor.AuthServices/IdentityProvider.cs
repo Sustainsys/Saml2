@@ -176,14 +176,26 @@ namespace Kentor.AuthServices
             }
         }
 
+
+        Uri singleLogoutServiceUrl;
         /// <summary>
         /// The Url of the single sign out service. This is where the browser
         /// is redirected or where the post data is sent to when sending a
         /// LogoutRequest to the idp.
         /// </summary>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1726:UsePreferredTerms", MessageId = "Logout")]
-        public Uri SingleLogoutServiceUrl { get; set; }
-
+        public Uri SingleLogoutServiceUrl
+        {
+            get
+            {
+                ReloadMetadataIfRequired();
+                return singleLogoutServiceUrl;
+            }
+            set
+            {
+                singleLogoutServiceUrl = value;
+            }
+        }
 
         Uri singleLogoutServiceResponseUrl;
         /// <summary>
@@ -195,6 +207,7 @@ namespace Kentor.AuthServices
         {
             get
             {
+                ReloadMetadataIfRequired();
                 return singleLogoutServiceResponseUrl ?? SingleLogoutServiceUrl;
             }
         }
@@ -209,6 +222,7 @@ namespace Kentor.AuthServices
         {
             get
             {
+                ReloadMetadataIfRequired();
                 return singleLogoutServiceBinding == 0
                     ? Binding
                     : singleLogoutServiceBinding;

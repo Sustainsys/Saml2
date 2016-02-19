@@ -480,6 +480,19 @@ namespace Kentor.AuthServices.Tests
         }
 
         [TestMethod]
+        public void IdentityProvider_SingleLogoutServiceBinding_ReloadsMetadataIfNoLongerValid()
+        {
+            StubServer.IdpVeryShortCacheDurationBinding = Saml2Binding.HttpRedirectUri;
+            var subject = CreateSubjectForMetadataRefresh();
+            subject.SingleLogoutServiceBinding.Should().Be(Saml2BindingType.HttpRedirect);
+            StubServer.IdpVeryShortCacheDurationBinding = Saml2Binding.HttpPostUri;
+
+            SpinWaiter.WhileEqual(() => subject.SingleLogoutServiceBinding, () => Saml2BindingType.HttpRedirect);
+
+            subject.SingleLogoutServiceBinding.Should().Be(Saml2BindingType.HttpPost);
+        }
+
+        [TestMethod]
         public void IdentityProvider_SingleSignOnServiceUrl_ReloadsMetadataIfNoLongerValid()
         {
             StubServer.IdpAndFederationVeryShortCacheDurationPort = 42;
@@ -492,6 +505,31 @@ namespace Kentor.AuthServices.Tests
             subject.SingleSignOnServiceUrl.Port.Should().Be(117);
         }
 
+        [TestMethod]
+        public void IdentityProvider_SingleLogoutServiceUrl_ReloadsMetadataIfNoLongerValid()
+        {
+            StubServer.IdpAndFederationVeryShortCacheDurationPort = 42;
+            var subject = CreateSubjectForMetadataRefresh();
+            subject.SingleLogoutServiceUrl.Port.Should().Be(42);
+            StubServer.IdpAndFederationVeryShortCacheDurationPort = 117;
+
+            SpinWaiter.WhileEqual(() => subject.SingleLogoutServiceUrl.Port, () => 42);
+
+            subject.SingleLogoutServiceUrl.Port.Should().Be(117);
+        }
+
+        [TestMethod]
+        public void IdentityProvider_SingleLogoutServiceResponseUrl_ReloadsMetadataIfNoLongerValid()
+        {
+            StubServer.IdpAndFederationVeryShortCacheDurationPort = 42;
+            var subject = CreateSubjectForMetadataRefresh();
+            subject.SingleLogoutServiceResponseUrl.Port.Should().Be(42);
+            StubServer.IdpAndFederationVeryShortCacheDurationPort = 117;
+
+            SpinWaiter.WhileEqual(() => subject.SingleLogoutServiceResponseUrl.Port, () => 42);
+
+            subject.SingleLogoutServiceResponseUrl.Port.Should().Be(117);
+        }
 
         [TestMethod]
         public void IdentityProvider_ArtifactResolutionServiceUrl_ReloadsMetadataIfNoLongerValid()
