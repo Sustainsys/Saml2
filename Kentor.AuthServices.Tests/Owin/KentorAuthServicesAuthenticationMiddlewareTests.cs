@@ -29,6 +29,7 @@ using Kentor.AuthServices.WebSso;
 using System.Security.Principal;
 namespace Kentor.AuthServices.Tests.Owin
 {
+    using Microsoft.Owin.Security.DataProtection;
     using AuthenticateDelegate = Func<string[], Action<IIdentity, IDictionary<string, string>, IDictionary<string, object>, object>, object, Task>;
 
     [TestClass]
@@ -339,18 +340,28 @@ namespace Kentor.AuthServices.Tests.Owin
         [TestMethod]
         public async Task KentorAuthServicesAuthenticationMiddleware_HandlesLogoutResponse()
         {
+            var app = CreateAppBuilder();
+            var options = new KentorAuthServicesAuthenticationOptions(true);
             var subject = new KentorAuthServicesAuthenticationMiddleware(
                 null,
-                CreateAppBuilder(),
-                new KentorAuthServicesAuthenticationOptions(true));
+                app,
+                options);
 
             var context = OwinTestHelpers.CreateOwinContext();
 
+            var relayState = "MyRelayState";
             var response = new Saml2LogoutResponse(Saml2StatusCode.Success)
             {
-                DestinationUrl = new Uri("https://sp.example.com/AuthServices/Logout")
+                DestinationUrl = new Uri("https://sp.example.com/AuthServices/Logout"),
+                RelayState = relayState
             };
             var requestUri = Saml2Binding.Get(Saml2BindingType.HttpRedirect).Bind(response).Location;
+
+            var cookieData = HttpRequestData.EscapeBase64CookieValue(
+                Convert.ToBase64String(
+                    options.DataProtector.Protect(
+                        Encoding.UTF8.GetBytes("http://loggedout.example.com/"))));
+            context.Request.Headers["Cookie"] = $"Kentor.{relayState}={cookieData}";
             context.Request.Path = new PathString(requestUri.AbsolutePath);
             context.Request.QueryString = new QueryString(requestUri.Query.TrimStart('?'));
             
@@ -364,7 +375,7 @@ namespace Kentor.AuthServices.Tests.Owin
             await subject.Invoke(context);
 
             context.Response.StatusCode.Should().Be(303);
-            context.Response.Headers["Location"].Should().StartWith("http://sp.example.com");
+            context.Response.Headers["Location"].Should().Be("http://loggedout.example.com/");
         }
 
         [TestMethod]
@@ -456,7 +467,7 @@ namespace Kentor.AuthServices.Tests.Owin
         }
 
         [TestMethod]
-        public async Task KentorAuthServicesAuthenticationMiddleware_RedirectoToSecondIdp_OwinEnvironment()
+        public async Task KentorAuthServicesAuthenticationMiddleware_RedirectToSecondIdp_OwinEnvironment()
         {
             var secondIdp = Options.FromConfiguration.IdentityProviders[1];
             var secondDestination = secondIdp.SingleSignOnServiceUrl;
