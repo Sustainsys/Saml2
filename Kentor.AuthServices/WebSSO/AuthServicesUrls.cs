@@ -92,8 +92,8 @@ namespace Kentor.AuthServices.WebSso
             AssertionConsumerServiceUrl = new Uri(authServicesRoot + CommandFactory.AcsCommandName);
             SignInUrl = new Uri(authServicesRoot + CommandFactory.SignInCommandName);
             ApplicationUrl = publicOrigin;
+            LogoutUrl = new Uri(authServicesRoot + CommandFactory.LogoutCommandName);
         }
-
 
         void Init(Uri applicationUrl, ISPOptions spOptions)
         {
@@ -117,5 +117,11 @@ namespace Kentor.AuthServices.WebSso
         /// location after logout.
         /// </summary>
         public Uri ApplicationUrl { get; internal set; }
+
+        /// <summary>
+        /// The full url of the logout command.
+        /// </summary>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1726:UsePreferredTerms", MessageId = "Logout")]
+        public Uri LogoutUrl { get; internal set; }
     }
 }
