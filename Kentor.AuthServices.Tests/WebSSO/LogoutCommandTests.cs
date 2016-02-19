@@ -148,7 +148,7 @@ namespace Kentor.AuthServices.Tests.WebSSO
                 HttpStatusCode = HttpStatusCode.SeeOther,
                 TerminateLocalSession = true,
                 // Deliberately not comparing Location.
-                SetCookieData = "http://sp.example.com/"
+                SetCookieData = "http://sp.example.com/",
             };
 
             actual.ShouldBeEquivalentTo(expected, opt => opt
@@ -196,7 +196,8 @@ namespace Kentor.AuthServices.Tests.WebSSO
             var expected = new CommandResult
             {
                 Location = new Uri("http://loggedout.example.com"),
-                HttpStatusCode = HttpStatusCode.SeeOther
+                HttpStatusCode = HttpStatusCode.SeeOther,
+                ClearCookieName = "Kentor." + relayState
             };
 
             actual.ShouldBeEquivalentTo(expected);

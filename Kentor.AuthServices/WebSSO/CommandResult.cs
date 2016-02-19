@@ -67,6 +67,11 @@ namespace Kentor.AuthServices.WebSso
         public string SetCookieData { get; set; }
 
         /// <summary>
+        /// Name of cookie to be cleared.
+        /// </summary>
+        public string ClearCookieName { get; set; }
+
+        /// <summary>
         /// Ctor
         /// </summary>
         public CommandResult()

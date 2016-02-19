@@ -74,7 +74,7 @@ namespace Kentor.AuthServices.WebSso
                     case "LogoutRequest":
                         return HandleRequest(unbindResult, options);
                     case "LogoutResponse":
-                        return HandleResponse(unbindResult, request, options);
+                        return HandleResponse(unbindResult, request);
                     default:
                         throw new NotImplementedException();
                 }
@@ -133,7 +133,7 @@ namespace Kentor.AuthServices.WebSso
             return result;
         }
 
-        private static CommandResult HandleResponse(UnbindResult unbindResult, HttpRequestData request, IOptions options)
+        private static CommandResult HandleResponse(UnbindResult unbindResult, HttpRequestData request)
         {
             var status = Saml2LogoutResponse.FromXml(unbindResult.Data).Status;
             if(status != Saml2StatusCode.Success)
@@ -146,7 +146,8 @@ namespace Kentor.AuthServices.WebSso
             return new CommandResult()
             {
                 HttpStatusCode = HttpStatusCode.SeeOther,
-                Location = new Uri(request.CookieData)
+                Location = new Uri(request.CookieData),
+                ClearCookieName = "Kentor." + request.QueryString["RelayState"].Single()
             };
         }
     }
