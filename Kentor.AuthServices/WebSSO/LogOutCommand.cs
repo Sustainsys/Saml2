@@ -80,31 +80,56 @@ namespace Kentor.AuthServices.WebSso
                 }
             }
 
-            var idpEntityId = new EntityId(
-                ClaimsPrincipal.Current.FindFirst(AuthServicesClaimTypes.LogoutNameIdentifier)?.Issuer
-                ?? ClaimsPrincipal.Current.FindFirst(ClaimTypes.NameIdentifier).Issuer);
+            return InitiateLogout(request, returnPath, options);
+        }
 
-            var idp = options.IdentityProviders[idpEntityId];
+        private static CommandResult InitiateLogout(HttpRequestData request, string returnPath, IOptions options)
+        {
+            var idpEntityId = ClaimsPrincipal.Current.FindFirst(AuthServicesClaimTypes.LogoutNameIdentifier)?.Issuer
+                ?? ClaimsPrincipal.Current.FindFirst(ClaimTypes.NameIdentifier)?.Issuer;
 
-            var logoutRequest = idp.CreateLogoutRequest();
-
-            var commandResult = Saml2Binding.Get(Saml2BindingType.HttpRedirect)
-                .Bind(logoutRequest);
-            commandResult.TerminateLocalSession = true;
-
-            var urls = new AuthServicesUrls(request, options.SPOptions);
-
-            if(!string.IsNullOrEmpty(returnPath))
+            CommandResult commandResult;
+            IdentityProvider idp;
+            if(idpEntityId != null 
+                && options.IdentityProviders.TryGetValue(new EntityId(idpEntityId), out idp)
+                && ClaimsPrincipal.Current.FindFirst(AuthServicesClaimTypes.SessionIndex) != null
+                && idp.SingleLogoutServiceUrl != null
+                && options.SPOptions.SigningServiceCertificate != null)
             {
-                commandResult.SetCookieData = new Uri(urls.ApplicationUrl, returnPath).ToString();
+                var logoutRequest = idp.CreateLogoutRequest();
+
+                commandResult = Saml2Binding.Get(Saml2BindingType.HttpRedirect)
+                    .Bind(logoutRequest);
+
+                commandResult.SetCookieData = GetReturnUrl(request, returnPath, options).ToString();
+                commandResult.SetCookieName = "Kentor." + logoutRequest.RelayState;
             }
             else
             {
-                commandResult.SetCookieData = urls.ApplicationUrl.ToString();
+                commandResult = new CommandResult
+                {
+                    HttpStatusCode = HttpStatusCode.SeeOther,
+                    Location = GetReturnUrl(request, returnPath, options)
+                };
             }
-            commandResult.SetCookieName = "Kentor." + logoutRequest.RelayState;
+
+            commandResult.TerminateLocalSession = true;
 
             return commandResult;
+        }
+
+        private static Uri GetReturnUrl(HttpRequestData request, string returnPath, IOptions options)
+        {
+            var urls = new AuthServicesUrls(request, options.SPOptions);
+
+            if (!string.IsNullOrEmpty(returnPath))
+            {
+                return new Uri(urls.ApplicationUrl, returnPath);
+            }
+            else
+            {
+                return urls.ApplicationUrl;
+            }
         }
 
         private static CommandResult HandleRequest(UnbindResult unbindResult, IOptions options)

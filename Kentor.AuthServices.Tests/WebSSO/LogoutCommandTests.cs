@@ -314,5 +314,86 @@ namespace Kentor.AuthServices.Tests.WebSSO
                 .ShouldThrow<UnsuccessfulSamlOperationException>()
                 .And.Message.Should().Be("Idp returned status \"Requester\", indicating that the single logout failed. The local session has been successfully terminated.");
         }
+
+        [TestMethod]
+        public void LogoutCommand_Run_LocalLogoutIfUnknownNameIdIssuer()
+        {
+            Thread.CurrentPrincipal = new ClaimsPrincipal(
+                new ClaimsIdentity(
+                    new Claim[]
+                    {
+                        new Claim(ClaimTypes.NameIdentifier, "Someone", null, "NotEvenAUri")
+                    }));
+
+            LogoutCommand_Run_LocalLogout();
+        }
+
+        private void LogoutCommand_Run_LocalLogout()
+        {
+            var subject = CommandFactory.GetCommand(CommandFactory.LogoutCommandName);
+
+            var options = StubFactory.CreateOptions();
+            options.SPOptions.SigningServiceCertificate.Should().BeNull("this helper is used for test of behaviour when no certificate is configured");
+            
+            var actual = subject.Run(
+                new HttpRequestData("GET", new Uri("http://localhost/Logout?ReturnUrl=LoggedOut")),
+                options);
+
+            var expected = new CommandResult()
+            {
+                HttpStatusCode = HttpStatusCode.SeeOther,
+                Location = new Uri("http://localhost/LoggedOut"),
+                TerminateLocalSession = true
+            };
+
+            actual.ShouldBeEquivalentTo(expected);
+        }
+
+        [TestMethod]
+        public void LogoutCommand_Run_LocalLogoutIfNoNameId()
+        {
+            ClaimsPrincipal.Current.FindFirst(ClaimTypes.NameIdentifier)
+                .Should().BeNull("this is a test for the case where there is no NameIdentifier");
+
+            LogoutCommand_Run_LocalLogout();
+        }
+
+        [TestMethod]
+        public void LogoutCommand_Run_LocalLogoutIfNoSessionId()
+        {
+            Thread.CurrentPrincipal = new ClaimsPrincipal(
+                new ClaimsIdentity(new Claim[]
+                {
+                    new Claim(ClaimTypes.NameIdentifier, "NameId", null, "https://idp.example.com")
+                }));
+
+            LogoutCommand_Run_LocalLogout();
+        }
+
+        [TestMethod]
+        public void LogoutCommand_Run_LocalLogoutIfIdpHasNoLogoutEndpoint()
+        {
+            Thread.CurrentPrincipal = new ClaimsPrincipal(
+                new ClaimsIdentity(new Claim[]
+                {
+                    new Claim(ClaimTypes.NameIdentifier, "NameId", null, "https://idp2.example.com"),
+                    new Claim(AuthServicesClaimTypes.SessionIndex, "SessionId", null, "https://idp2.example.com")
+                }));
+
+            LogoutCommand_Run_LocalLogout();
+        }
+
+        [TestMethod]
+        public void LogoutCommand_Run_LocalLogoutIfThereIsNoSigninCertificateForTheSP()
+        {
+            Thread.CurrentPrincipal = new ClaimsPrincipal(
+                new ClaimsIdentity(new Claim[]
+                {
+                    new Claim(ClaimTypes.NameIdentifier, "NameId", null, "https://idp.example.com"),
+                    new Claim(AuthServicesClaimTypes.SessionIndex, "SessionId", null, "https://idp.example.com")
+                }));
+
+            LogoutCommand_Run_LocalLogout();
+        }
     }
 }
