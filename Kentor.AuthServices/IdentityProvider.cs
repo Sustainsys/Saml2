@@ -41,7 +41,7 @@ namespace Kentor.AuthServices
 
         internal IdentityProvider(IdentityProviderElement config, ISPOptions spOptions)
         {
-            singleSignOnServiceUrl = config.DestinationUrl;
+            singleSignOnServiceUrl = config.SignOnUrl;
             SingleLogoutServiceUrl = config.LogoutUrl;
             EntityId = new EntityId(config.EntityId);
             binding = config.Binding;

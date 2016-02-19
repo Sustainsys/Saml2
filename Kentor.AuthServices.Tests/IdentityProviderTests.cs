@@ -292,7 +292,7 @@ namespace Kentor.AuthServices.Tests
             config.SigningCertificate = new CertificateElement();
             config.SigningCertificate.AllowConfigEdit(true);
             config.SigningCertificate.FileName = "Kentor.AuthServices.Tests.pfx";
-            config.DestinationUrl = new Uri("http://idp.example.com/acs");
+            config.SignOnUrl = new Uri("http://idp.example.com/acs");
             config.EntityId = "http://idp.example.com";
 
             return config;
@@ -329,7 +329,7 @@ namespace Kentor.AuthServices.Tests
         public void IdentityProvider_Ctor_MissingDestinationUrlThrows()
         {
             var config = CreateConfig();
-            config.DestinationUrl = null;
+            config.SignOnUrl = null;
             TestMissingConfig(config, "assertion consumer service url");
         }
 

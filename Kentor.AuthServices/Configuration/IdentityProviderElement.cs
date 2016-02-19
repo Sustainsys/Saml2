@@ -41,19 +41,21 @@ namespace Kentor.AuthServices.Configuration
             }
         }
 
+        const string signOnUrl = nameof(signOnUrl);
         /// <summary>
-        /// Destination url to send requests to.
+        /// Destination url to send sign in requests to.
         /// </summary>
-        [ConfigurationProperty("destinationUrl")]
-        public Uri DestinationUrl
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1726:UsePreferredTerms", MessageId = "SignOn")]
+        [ConfigurationProperty(signOnUrl)]
+        public Uri SignOnUrl
         {
             get
             {
-                return (Uri)base["destinationUrl"];
+                return (Uri)base[signOnUrl];
             }
             internal set
             {
-                base["destinationUrl"] = value;
+                base[signOnUrl] = value;
             }
         }
 
