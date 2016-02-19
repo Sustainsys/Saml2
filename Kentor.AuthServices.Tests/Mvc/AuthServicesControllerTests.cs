@@ -39,12 +39,16 @@ namespace Kentor.AuthServices.Tests.Mvc
 
         private AuthServicesController CreateInstanceWithContext()
         {
+            var controllerContext = Substitute.For<ControllerContext>();
+
+            controllerContext.HttpContext = Substitute.For<HttpContextBase>();
+
             var request = Substitute.For<HttpRequestBase>();
             request.Url.Returns(new Uri("http://example.com"));
             request.Form.Returns(new NameValueCollection());
-            var controllerContext = Substitute.For<ControllerContext>();
-            controllerContext.HttpContext = Substitute.For<HttpContextBase>();
             controllerContext.HttpContext.Request.Returns(request);
+
+            var response = Substitute.For<HttpResponseBase>();
 
             return new AuthServicesController()
             {
@@ -168,11 +172,14 @@ namespace Kentor.AuthServices.Tests.Mvc
                     new Claim(AuthServicesClaimTypes.SessionIndex, "SessionId", null, "https://idp.example.com")
                 }, "Federation"));
 
-            var result = subject.Logout();
+            var actual = subject.Logout().As<RedirectResult>();
 
-            result.Should().BeOfType<RedirectResult>().And
-                .Subject.As<RedirectResult>().Url
-                .Should().StartWith("https://idp.example.com/logout?SAMLRequest=");
+            actual.Url.Should().StartWith("https://idp.example.com/logout?SAMLRequest=");
+
+            var relayState = HttpUtility.ParseQueryString(new Uri(actual.Url).Query)["RelayState"];
+
+            subject.Response.Received().SetCookie(
+                Arg.Is<HttpCookie>(c => c.Name == "Kentor." + relayState));
         }
     }
 }

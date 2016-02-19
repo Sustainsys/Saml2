@@ -94,12 +94,13 @@ namespace Kentor.AuthServices.IntegrationTests
             I.Click("#submit")
                 .Assert.Text("JohnDoe").In("tbody tr td:nth-child(2)");
 
-            I.Click("a[href=\"/SamplePath/AuthServices/Logout\"");
+            I.Click("#logout");
 
             I.Enter("http://localhost:17009/SamplePath/AuthServices/Logout").In("#DestinationUrl")
                 .Click("#submit");
 
             I.Assert.Text("not signed in").In("#status");
+            I.Assert.Url("http://localhost:17009/SamplePath/?Status=LoggedOut");
         }
 
         [TestMethod]
@@ -151,10 +152,9 @@ namespace Kentor.AuthServices.IntegrationTests
 
             I.Assert.False(() => string.IsNullOrEmpty(I.Find("#AssertionModel_InResponseTo").Element.Value));
 
-            I.Enter("IntegrationTestNameId").In("#AssertionModel_NameId");
-
-            I.Click("#submit")
-                .Wait(1);
+            I.Enter("IntegrationTestNameId").In("#AssertionModel_NameId")
+                .Click("#submit")
+                .Wait(2);
 
             if(I.Find("#status").Element.Text == "You've successfully authenticated with http://localhost:52071/Metadata. Please enter a user name for this site below and click the Register button to finish logging in.")
             {

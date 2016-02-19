@@ -9,6 +9,7 @@ using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web;
+using System.Web.Security;
 
 namespace Kentor.AuthServices.HttpModule
 {
@@ -37,6 +38,8 @@ namespace Kentor.AuthServices.HttpModule
 
             response.Cache.SetCacheability((HttpCacheability)commandResult.Cacheability);
 
+            ApplyCookies(commandResult, response);
+
             if (commandResult.HttpStatusCode == HttpStatusCode.SeeOther || commandResult.Location != null)
             {
                 if (commandResult.Location == null)
@@ -57,6 +60,48 @@ namespace Kentor.AuthServices.HttpModule
                 response.Write(commandResult.Content);
 
                 response.End();
+            }
+        }
+
+        /// <summary>
+        /// Apply cookies of the CommandResult to the response.
+        /// </summary>
+        /// <param name="commandResult">Commandresult</param>
+        /// <param name="response">Response</param>
+        public static void ApplyCookies(this CommandResult commandResult, HttpResponseBase response)
+        {
+            if(commandResult == null)
+            {
+                throw new ArgumentNullException(nameof(commandResult));
+            }
+
+            if(response == null)
+            {
+                throw new ArgumentNullException(nameof(response));
+            }
+
+            if (!string.IsNullOrEmpty(commandResult.SetCookieName))
+            {
+                var protectedData = HttpRequestData.EscapeBase64CookieValue(
+                    Convert.ToBase64String(
+                        MachineKey.Protect(
+                            Encoding.UTF8.GetBytes(commandResult.SetCookieData),
+                            "Kentor.AuthServices")));
+
+                response.SetCookie(new HttpCookie(
+                    commandResult.SetCookieName,
+                    protectedData)
+                {
+                    HttpOnly = true
+                });
+            }
+
+            if (!string.IsNullOrEmpty(commandResult.ClearCookieName))
+            {
+                response.SetCookie(new HttpCookie(commandResult.ClearCookieName)
+                {
+                    Expires = new DateTime(1970, 01, 01)
+                });
             }
         }
 
