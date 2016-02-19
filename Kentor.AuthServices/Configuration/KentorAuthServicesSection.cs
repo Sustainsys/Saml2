@@ -324,5 +324,29 @@ namespace Kentor.AuthServices.Configuration
         /// Certificate for service provider to use when decrypting assertions
         /// </summary>
         public X509Certificate2 ServiceCertificate { get; set; }
+
+
+
+        /// <summary>
+        /// Certificate location for the certificate the Service Provider uses to sign authentication requests.
+        /// </summary>
+        [ConfigurationProperty("signingCertificate")]
+        [ExcludeFromCodeCoverage]
+        public CertificateElement SigningCertificateConfiguration
+        {
+            get
+            {
+                return (CertificateElement)base["signingCertificate"];
+            }
+            internal set
+            {
+                base["signingCertificate"] = value;
+            }
+        }
+
+        /// <summary>
+        /// Certificate for service provider to use when decrypting assertions
+        /// </summary>
+        public X509Certificate2 SigningCertificate { get; set; }
     }
 }

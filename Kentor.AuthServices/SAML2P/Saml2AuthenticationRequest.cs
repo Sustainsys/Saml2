@@ -8,6 +8,9 @@ using System.Xml;
 using System.Xml.Linq;
 using Kentor.AuthServices.Internal;
 
+using System.Security.Cryptography;
+using System.Security.Cryptography.X509Certificates;
+
 namespace Kentor.AuthServices.Saml2P
 {
     /// <summary>
@@ -22,6 +25,7 @@ namespace Kentor.AuthServices.Saml2P
         {
 
         }
+        public X509Certificate2 SigningCertificate { get; set; }
 
         /// <summary>
         /// The SAML2 request name
@@ -43,6 +47,14 @@ namespace Kentor.AuthServices.Saml2P
             x.AddAttributeIfNotNullOrEmpty("AssertionConsumerServiceURL", AssertionConsumerServiceUrl);
             x.AddAttributeIfNotNullOrEmpty("AttributeConsumingServiceIndex", AttributeConsumingServiceIndex);
 
+            if (SigningCertificate != null)
+            {
+                // TODO: we need a parameter for whether or not to include the cert
+                var doc = x.ToXmlDocument();
+                doc.Sign(SigningCertificate, false);
+                x = doc.ToXDocument();
+            }
+
             return x;
         }
 
@@ -52,7 +64,9 @@ namespace Kentor.AuthServices.Saml2P
         /// <returns>string containing the Xml data.</returns>
         public override string ToXml()
         {
-            return ToXElement().ToString();
+            var element = ToXElement();
+            var str = element.ToString(SaveOptions.DisableFormatting);
+            return str;
         }
 
         /// <summary>

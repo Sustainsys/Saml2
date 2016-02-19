@@ -4,33 +4,35 @@ using System.IdentityModel.Tokens;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-
+using System.Runtime.Caching;
 namespace Kentor.AuthServices.Internal
 {
     static class PendingAuthnRequests
     {
-        private static readonly Dictionary<Saml2Id, StoredRequestState> pendingAuthnRequest = new Dictionary<Saml2Id, StoredRequestState>();
+        private static MemoryCache pendingRequestCache = MemoryCache.Default;
+        //private static readonly Dictionary<Saml2Id, StoredRequestState> pendingAuthnRequest = new Dictionary<Saml2Id, StoredRequestState>();
 
         internal static void Add(Saml2Id id, StoredRequestState idp)
         {
-            lock (pendingAuthnRequest)
+            lock (pendingRequestCache)
             {
-                if (pendingAuthnRequest.ContainsKey(id))
+                if (pendingRequestCache.Contains(id.Value))
                 {
                     throw new InvalidOperationException("AuthnRequest id can't be reused.");
                 }
-                pendingAuthnRequest.Add(id, idp);
+                pendingRequestCache.Add(id.Value, idp, new CacheItemPolicy { });
             }
         }
 
         internal static bool TryRemove(Saml2Id id, out StoredRequestState idp)
         {
-            lock (pendingAuthnRequest)
+            lock (pendingRequestCache)
             {
-                if (id != null && pendingAuthnRequest.ContainsKey(id))
+                if (id != null && pendingRequestCache.Contains(id.Value))
                 {
-                    idp = pendingAuthnRequest[id];
-                    return pendingAuthnRequest.Remove(id);
+                    idp = pendingRequestCache[id.Value] as StoredRequestState;
+                    pendingRequestCache.Remove(id.Value);
+                    return true;
                 }
                 idp = null;
                 return false;

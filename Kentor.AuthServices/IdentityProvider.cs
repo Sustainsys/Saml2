@@ -13,6 +13,7 @@ using Kentor.AuthServices.Saml2P;
 using Kentor.AuthServices.WebSso;
 using System.Threading.Tasks;
 using System.Net;
+using System.Security.Cryptography.X509Certificates;
 
 namespace Kentor.AuthServices
 {
@@ -25,7 +26,7 @@ namespace Kentor.AuthServices
         /// Ctor
         /// </summary>
         /// <param name="entityId">Entity id of the identityprovider.</param>
-        /// <param name="spOptions">Service provider options to use when 
+        /// <param name="spOptions">Service provider options to use when
         /// creating AuthnRequests for this Idp.</param>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "sp")]
         public IdentityProvider(EntityId entityId, ISPOptions spOptions)
@@ -46,11 +47,11 @@ namespace Kentor.AuthServices
             LoadMetadata = config.LoadMetadata;
             this.spOptions = spOptions;
 
-            var certificate = config.SigningCertificate.LoadCertificate();
+            signingCertificate = config.SigningCertificate.LoadCertificate();
 
-            if (certificate != null)
+            if (signingCertificate != null)
             {
-                signingKey = certificate.PublicKey.Key;
+                signingKey = signingCertificate.PublicKey.Key;
             }
 
             try
@@ -64,7 +65,7 @@ namespace Kentor.AuthServices
             }
             catch (WebException)
             {
-                // If we had a web exception, the metadata failed. It will 
+                // If we had a web exception, the metadata failed. It will
                 // be automatically retried.
             }
         }
@@ -224,7 +225,8 @@ namespace Kentor.AuthServices
                 AssertionConsumerServiceUrl = authServicesUrls.AssertionConsumerServiceUrl,
                 Issuer = spOptions.EntityId,
                 // For now we only support one attribute consuming service.
-                AttributeConsumingServiceIndex = spOptions.AttributeConsumingServices.Any() ? 0 : (int?)null
+                AttributeConsumingServiceIndex = spOptions.AttributeConsumingServices.Any() ? 0 : (int?)null,
+                SigningCertificate = SigningCertificate
             };
 
             var responseData = new StoredRequestState(EntityId, returnUrl, relayData);
@@ -243,6 +245,14 @@ namespace Kentor.AuthServices
         public CommandResult Bind(ISaml2Message request)
         {
             return Saml2Binding.Get(Binding).Bind(request);
+        }
+
+        private X509Certificate2 signingCertificate;
+
+        public X509Certificate2 SigningCertificate
+        {
+            get { return signingCertificate; }
+            set { signingCertificate = value; }
         }
 
         private AsymmetricAlgorithm signingKey;
@@ -285,7 +295,7 @@ namespace Kentor.AuthServices
         }
 
         /// <summary>
-        /// Reads the supplied metadata and sets all properties of the 
+        /// Reads the supplied metadata and sets all properties of the
         /// IdentityProvider based on the metadata.
         /// </summary>
         /// <param name="metadata">Metadata to read.</param>
@@ -317,7 +327,7 @@ namespace Kentor.AuthServices
             var idpDescriptor = metadata.RoleDescriptors
                 .OfType<IdentityProviderSingleSignOnDescriptor>().Single();
 
-            // Prefer an endpoint with a redirect binding, then check for POST which 
+            // Prefer an endpoint with a redirect binding, then check for POST which
             // is the other supported by AuthServices.
             var ssoService = idpDescriptor.SingleSignOnServices
                 .FirstOrDefault(s => s.Binding == Saml2Binding.HttpRedirectUri) ??

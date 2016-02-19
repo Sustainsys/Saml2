@@ -47,6 +47,19 @@ namespace Kentor.AuthServices.Configuration
         }
 
         /// <summary>
+        /// File password of cert stored in file.
+        /// </summary>
+        [ConfigurationProperty("password")]
+        public string Password
+        {
+            get { return (string)this["password"]; }
+            internal set
+            {
+                base["password"] = value;
+            }
+        }
+
+        /// <summary>
         /// Store name to search.
         /// </summary>
         [ConfigurationProperty("storeName")]
@@ -102,15 +115,28 @@ namespace Kentor.AuthServices.Configuration
         /// Load the certificate pointed to by this configuration.
         /// </summary>
         /// <returns>Certificate</returns>
-        [ExcludeFromCodeCoverage]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes"), ExcludeFromCodeCoverage]
         public X509Certificate2 LoadCertificate()
         {
             if (!string.IsNullOrEmpty(FileName))
             {
                 string fileName = FileName;
                 fileName = PathHelper.MapPath(fileName);
-                
-                return new X509Certificate2(fileName);
+
+                return new X509Certificate2(fileName, Password, X509KeyStorageFlags.PersistKeySet);
+                /*
+                X509Certificate2 cert = null;
+                try
+                {
+                    cert = new X509Certificate2(fileName, Password);
+                }
+                catch
+                {
+                    return new X509Certificate2(fileName);
+                }
+
+                return cert;
+                */
             }
             else
             {

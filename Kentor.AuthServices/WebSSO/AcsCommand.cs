@@ -1,4 +1,4 @@
-﻿using Kentor.AuthServices.Configuration;
+using Kentor.AuthServices.Configuration;
 using Kentor.AuthServices.Saml2P;
 using System;
 using System.IdentityModel.Metadata;
@@ -9,7 +9,8 @@ using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 using System.Web;
 using System.Xml;
-
+using System.Linq;
+​
 namespace Kentor.AuthServices.WebSso
 {
     class AcsCommand : ICommand
@@ -20,14 +21,14 @@ namespace Kentor.AuthServices.WebSso
             {
                 throw new ArgumentNullException("request");
             }
-
+​
             if(options == null)
             {
                 throw new ArgumentNullException("options");
             }
-
+​
             var binding = Saml2Binding.Get(request);
-
+​
             if (binding != null)
             {
                 string unpackedPayload = null;
@@ -36,7 +37,17 @@ namespace Kentor.AuthServices.WebSso
                     unpackedPayload = binding.Unbind(request);
                     var samlResponse = Saml2Response.Read(unpackedPayload);
 
-                    return ProcessResponse(options, samlResponse);
+                    var relayStates = request.Form.First(x => string.Compare(x.Key, "RelayState", StringComparison.OrdinalIgnoreCase) == 0);
+                    string returnURL = string.Empty;
+                    returnURL = relayStates.Value;
+/*                    foreach(var state in relayStates)
+                    {
+                        returnURL = state;
+                        break;
+                    }
+                    */
+​
+                    return ProcessResponse(options, samlResponse, returnURL);
                 }
                 catch (FormatException ex)
                 {
@@ -47,7 +58,7 @@ namespace Kentor.AuthServices.WebSso
                 {
                     var newEx = new BadFormatSamlResponseException(
                         "The SAML response contains incorrect XML", ex);
-                    
+
                     // Add the payload to the exception
                     newEx.Data["Saml2Response"] = unpackedPayload;
                     throw newEx;
@@ -59,26 +70,28 @@ namespace Kentor.AuthServices.WebSso
                     throw;
                 }
             }
-
+​
             throw new NoSamlResponseFoundException();
         }
-
-        private static CommandResult ProcessResponse(IOptions options, Saml2Response samlResponse)
+​
+        private static CommandResult ProcessResponse(IOptions options, Saml2Response samlResponse, string returnURL)
         {
             var principal = new ClaimsPrincipal(samlResponse.GetClaims(options));
-
+​
             principal = options.SPOptions.SystemIdentityModelIdentityConfiguration
                 .ClaimsAuthenticationManager.Authenticate(null, principal);
-
+​
             var requestState = samlResponse.GetRequestState(options);
-
+            UriBuilder builder = new UriBuilder(requestState != null && requestState.ReturnUrl != null ? requestState.ReturnUrl : options.SPOptions.ReturnUrl);
+            if (!string.IsNullOrEmpty(returnURL) && builder.Path.ToString().IndexOf(returnURL, StringComparison.OrdinalIgnoreCase) < 0)
+            {
+                builder = new UriBuilder(returnURL);
+            }
+​
             return new CommandResult()
             {
                 HttpStatusCode = HttpStatusCode.SeeOther,
-                Location =
-                    requestState != null && requestState.ReturnUrl != null
-                    ? requestState.ReturnUrl
-                    : options.SPOptions.ReturnUrl,
+                Location = builder.Uri,
                 Principal = principal,
                 RelayData =
                     requestState == null
