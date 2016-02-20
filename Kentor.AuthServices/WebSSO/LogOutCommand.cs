@@ -69,6 +69,7 @@ namespace Kentor.AuthServices.WebSso
             if (binding != null)
             {
                 var unbindResult = binding.Unbind(request, options);
+                VerifyMessageIsSigned(unbindResult, options);
                 switch (unbindResult.Data.LocalName)
                 {
                     case "LogoutRequest":
@@ -81,6 +82,23 @@ namespace Kentor.AuthServices.WebSso
             }
 
             return InitiateLogout(request, returnPath, options);
+        }
+
+        private static void VerifyMessageIsSigned(UnbindResult unbindResult, IOptions options)
+        {
+            if (unbindResult.TrustLevel < TrustLevel.SignatureSha160)
+            {
+                var issuer = unbindResult.Data["Issuer", Saml2Namespaces.Saml2Name].InnerText;
+                var idp = options.IdentityProviders[new EntityId(issuer)];
+
+                if (!unbindResult.Data.IsSignedByAny(idp.SigningKeys, options.SPOptions.ValidateCertificates))
+                {
+                    throw new UnsuccessfulSamlOperationException(string.Format(CultureInfo.InvariantCulture,
+                        "Received a {0} from {1} that cannot be processed because it is not signed.",
+                        unbindResult.Data.LocalName,
+                        unbindResult.Data["Issuer", Saml2Namespaces.Saml2Name].InnerText));
+                }
+            }
         }
 
         private static CommandResult InitiateLogout(HttpRequestData request, string returnPath, IOptions options)
@@ -132,6 +150,7 @@ namespace Kentor.AuthServices.WebSso
             }
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "LogoutRequest")]
         private static CommandResult HandleRequest(UnbindResult unbindResult, IOptions options)
         {
             var request = Saml2LogoutRequest.FromXml(unbindResult.Data);
@@ -141,7 +160,7 @@ namespace Kentor.AuthServices.WebSso
             if(options.SPOptions.SigningServiceCertificate == null)
             {
                 throw new ConfigurationErrorsException(string.Format(CultureInfo.InvariantCulture,
-                    "Received a Single Logout request from \"{0}\" but cannot reply because single logout responses must be signed and there is no signing certificate configured. Looks like the idp is configured for Single Logout despite AuthServices not exposing that functionality in the metadata.",
+                    "Received a LogoutRequest from \"{0}\" but cannot reply because single logout responses must be signed and there is no signing certificate configured. Looks like the idp is configured for Single Logout despite AuthServices not exposing that functionality in the metadata.",
                     request.Issuer.Id));
             }
 

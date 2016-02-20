@@ -44,7 +44,7 @@ namespace Kentor.AuthServices.WebSso
         /// Trust level indicating how much the message contents can be
         /// trusted.
         /// </summary>
-        public object TrustLevel { get; }
+        public TrustLevel TrustLevel { get; }
     }
 
     /// <summary>

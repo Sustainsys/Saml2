@@ -353,7 +353,9 @@ namespace Kentor.AuthServices.Tests.Owin
             var response = new Saml2LogoutResponse(Saml2StatusCode.Success)
             {
                 DestinationUrl = new Uri("https://sp.example.com/AuthServices/Logout"),
-                RelayState = relayState
+                RelayState = relayState,
+                SigningCertificate = SignedXmlHelper.TestCert,
+                Issuer = new EntityId("https://idp.example.com")
             };
             var requestUri = Saml2Binding.Get(Saml2BindingType.HttpRedirect).Bind(response).Location;
 
@@ -391,7 +393,8 @@ namespace Kentor.AuthServices.Tests.Owin
                 SessionIndex = "SessionId",
                 DestinationUrl = new Uri("http://sp.example.com/AuthServices/Logout"),
                 NameId = new Saml2NameIdentifier("NameId"),
-                Issuer = new EntityId("https://idp.example.com")
+                Issuer = new EntityId("https://idp.example.com"),
+                SigningCertificate = SignedXmlHelper.TestCert
             };
 
             var url = Saml2Binding.Get(Saml2BindingType.HttpRedirect)

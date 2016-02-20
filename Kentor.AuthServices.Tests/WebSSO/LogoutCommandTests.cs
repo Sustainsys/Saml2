@@ -40,7 +40,7 @@ namespace Kentor.AuthServices.Tests.WebSSO
         }
 
         [TestMethod]
-        public void LogoutCommand_Run_NullcheckRequest()
+        public void LogoutCommand_InstanceRun_NullcheckRequest()
         {
             CommandFactory.GetCommand(CommandFactory.LogoutCommandName)
                 .Invoking(c => c.Run(null, StubFactory.CreateOptions()))
@@ -49,7 +49,7 @@ namespace Kentor.AuthServices.Tests.WebSSO
         }
 
         [TestMethod]
-        public void LogoutCommand_Run2_NullcheckRequest()
+        public void LogoutCommand_StaticRun_NullcheckRequest()
         {
             Action a = () => LogoutCommand.Run(null, null, StubFactory.CreateOptions());
 
@@ -204,7 +204,7 @@ namespace Kentor.AuthServices.Tests.WebSSO
         }
 
         [TestMethod]
-        public void LogoutCommand_Run_HandlesLogoutRequest()
+        public void LogoutCommand_Run_HandlesLogoutRequest_ReceivedThroughRedirectBinding()
         {
             var request = new Saml2LogoutRequest()
             {
@@ -273,6 +273,83 @@ namespace Kentor.AuthServices.Tests.WebSSO
         }
 
         [TestMethod]
+        public void LogoutCommand_Run_DetectsSignatureInLogoutRequestReceivedThroughPostBinding()
+        {
+            var request = new Saml2LogoutRequest()
+            {
+                DestinationUrl = new Uri("http://sp.example.com/path/AuthServices/logout"),
+                Issuer = new EntityId("https://idp.example.com"),
+                SigningCertificate = SignedXmlHelper.TestCert,
+                NameId = new Saml2NameIdentifier("NameId"),
+                SessionIndex = "SessionID",
+            };
+
+            var xml = XmlHelpers.FromString(request.ToXml());
+            xml.Sign(SignedXmlHelper.TestCert);
+
+            var requestData = Convert.ToBase64String(Encoding.UTF8.GetBytes(xml.OuterXml));
+            
+            var httpRequest = new HttpRequestData(
+                "POST",
+                new Uri("http://something"),
+                "/path",
+                new KeyValuePair<string, string[]>[]
+                {
+                    new KeyValuePair<string, string[]>("SAMLRequest", new[] { requestData })
+                },
+                null,
+                null);
+
+            var options = StubFactory.CreateOptions();
+            options.SPOptions.ServiceCertificates.Add(SignedXmlHelper.TestCert);
+
+            var actual = CommandFactory.GetCommand(CommandFactory.LogoutCommandName)
+                .Run(httpRequest, options);
+
+            HttpUtility.ParseQueryString(actual.Location.Query)
+                .Keys.Should().Contain("SAMLResponse", "if the request was properly detected a response should be generated");
+        }
+
+
+        [TestMethod]
+        public void LogoutCommand_Run_ThrowsOnSignatureInLogoutRequestReceivedThroughPostBindingIfCertificateIsntValid_WhenCertificateValidationIsConfigured()
+        {
+            var request = new Saml2LogoutRequest()
+            {
+                DestinationUrl = new Uri("http://sp.example.com/path/AuthServices/logout"),
+                Issuer = new EntityId("https://idp.example.com"),
+                SigningCertificate = SignedXmlHelper.TestCert,
+                NameId = new Saml2NameIdentifier("NameId"),
+                SessionIndex = "SessionID",
+            };
+
+            var xml = XmlHelpers.FromString(request.ToXml());
+            xml.Sign(SignedXmlHelper.TestCert);
+
+            var requestData = Convert.ToBase64String(Encoding.UTF8.GetBytes(xml.OuterXml));
+
+            var httpRequest = new HttpRequestData(
+                "POST",
+                new Uri("http://something"),
+                "/path",
+                new KeyValuePair<string, string[]>[]
+                {
+                    new KeyValuePair<string, string[]>("SAMLRequest", new[] { requestData })
+                },
+                null,
+                null);
+
+            var options = StubFactory.CreateOptions();
+            options.SPOptions.ServiceCertificates.Add(SignedXmlHelper.TestCert);
+            ((SPOptions)options.SPOptions).ValidateCertificates = true;
+
+            var actual = CommandFactory.GetCommand(CommandFactory.LogoutCommandName)
+                .Invoking(c => c.Run(httpRequest, options))
+                .ShouldThrow<InvalidSignatureException>()
+                .WithMessage("The signature was valid, but the verification of the certificate failed. Is it expired or revoked? Are you sure you really want to enable ValidateCertificates (it's normally not needed)?");
+        }
+
+        [TestMethod]
         public void LogoutCommand_Run_IncomingRequest_ThrowsOnNoConfiguredSigningCert()
         {
             var request = new Saml2LogoutRequest()
@@ -294,8 +371,34 @@ namespace Kentor.AuthServices.Tests.WebSSO
             CommandFactory.GetCommand(CommandFactory.LogoutCommandName)
                 .Invoking(c => c.Run(httpRequest, options))
                 .ShouldThrow<ConfigurationErrorsException>()
-                .WithMessage("Received a Single Logout request from \"https://idp.example.com\" but cannot reply because single logout responses must be signed and there is no signing certificate configured. Looks like the idp is configured for Single Logout despite AuthServices not exposing that functionality in the metadata.");
+                .WithMessage("Received a LogoutRequest from \"https://idp.example.com\" but cannot reply because single logout responses must be signed and there is no signing certificate configured. Looks like the idp is configured for Single Logout despite AuthServices not exposing that functionality in the metadata.");
         }
+
+        [TestMethod]
+        public void LogoutCommand_Run_IncomingRequest_ThroughRedirectBinding_ThrowsOnMissingSignature()
+        {
+            var request = new Saml2LogoutRequest()
+            {
+                DestinationUrl = new Uri("http://sp.example.com/path/AuthServices/logout"),
+                Issuer = new EntityId("https://idp.example.com"),
+                NameId = new Saml2NameIdentifier("NameId"),
+                SessionIndex = "SessionID"
+            };
+
+            var bindResult = Saml2Binding.Get(Saml2BindingType.HttpRedirect)
+                .Bind(request);
+
+            var httpRequest = new HttpRequestData("GET", bindResult.Location);
+
+            var options = StubFactory.CreateOptions();
+            options.SPOptions.ServiceCertificates.Add(SignedXmlHelper.TestCert);
+
+            CommandFactory.GetCommand(CommandFactory.LogoutCommandName)
+                .Invoking(c => c.Run(httpRequest, options))
+                .ShouldThrow<UnsuccessfulSamlOperationException>()
+                .WithMessage("Received a LogoutRequest from https://idp.example.com that cannot be processed because it is not signed.");
+        }
+
 
         [TestMethod]
         public void LogoutCommand_Run_ThrowsOnLogoutResponseStatusNonSuccess()
