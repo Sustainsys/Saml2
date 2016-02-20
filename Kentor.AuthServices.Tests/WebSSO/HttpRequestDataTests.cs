@@ -32,6 +32,7 @@ namespace Kentor.AuthServices.Tests.WebSSO
             subject.ApplicationUrl.Should().Be(new Uri("http://example.com:42/ApplicationPath"));
         }
 
+        [TestMethod]
         public void HttpRequestData_EscapeBase64CookieValue_Nullcheck()
         {
             Action a = () => HttpRequestData.EscapeBase64CookieValue(null);

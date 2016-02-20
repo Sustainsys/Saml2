@@ -506,5 +506,26 @@ namespace Kentor.AuthServices.Tests.WebSSO
 
             LogoutCommand_Run_LocalLogout();
         }
+
+        [TestMethod]
+        public void LogoutCommand_Run_ThrowsOnUnknownMessageRecevied()
+        {
+            var msg = new Saml2MessageImplementation
+            {
+                MessageName = "SAMLRequest",
+                SigningCertificate = SignedXmlHelper.TestCert,
+                DestinationUrl = new Uri("http://localhost"),
+                XmlData = $"<Unknown><Issuer xmlns=\"{Saml2Namespaces.Saml2Name}\">https://idp.example.com</Issuer></Unknown>"                
+            };
+
+            var url = Saml2Binding.Get(Saml2BindingType.HttpRedirect)
+                .Bind(msg).Location;
+
+            var request = new HttpRequestData("GET", url);
+
+            CommandFactory.GetCommand(CommandFactory.LogoutCommandName)
+                .Invoking(c => c.Run(request, StubFactory.CreateOptions()))
+                .ShouldThrow<NotImplementedException>();
+        }
     }
 }

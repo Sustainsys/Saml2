@@ -105,10 +105,7 @@ namespace Kentor.AuthServices.WebSso
         /// </summary>
         /// <param name="request">HttpRequest to check for message.</param>
         /// <returns>True if the binding supports the current request.</returns>
-        protected internal virtual bool CanUnbind(HttpRequestData request)
-        {
-            return false;
-        }
+        protected internal abstract bool CanUnbind(HttpRequestData request);
 
         private static readonly IDictionary<Saml2BindingType, Saml2Binding> bindings =
             new Dictionary<Saml2BindingType, Saml2Binding>()

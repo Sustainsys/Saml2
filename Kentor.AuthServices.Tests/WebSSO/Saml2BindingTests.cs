@@ -116,7 +116,12 @@ namespace Kentor.AuthServices.Tests.WebSso
         }
 
         class ConcreteSaml2Binding : Saml2Binding
-        { }
+        {
+            protected internal override bool CanUnbind(HttpRequestData request)
+            {
+                throw new NotImplementedException();
+            }
+        }
 
         [TestMethod]
         public void Saml2Binding_Bind_IsNotImplemented()
