@@ -21,10 +21,13 @@ namespace Kentor.AuthServices.WebSso
         /// </summary>
         /// <param name="data">The data payload</param>
         /// <param name="relayState">The associated relay state.</param>
-        public UnbindResult(XmlElement data, string relayState)
+        /// <param name="trustLevel">Level of trust that can be put in data.
+        /// Does not care about any signature included in the data.</param>
+        public UnbindResult(XmlElement data, string relayState, TrustLevel trustLevel)
         {
             Data = data;
             RelayState = relayState;
+            TrustLevel = trustLevel;
         }
 
         /// <summary>
@@ -36,6 +39,12 @@ namespace Kentor.AuthServices.WebSso
         /// The associated relay state, if any. Otherwise null.
         /// </summary>
         public string RelayState { get; }
+
+        /// <summary>
+        /// Trust level indicating how much the message contents can be
+        /// trusted.
+        /// </summary>
+        public object TrustLevel { get; }
     }
 
     /// <summary>

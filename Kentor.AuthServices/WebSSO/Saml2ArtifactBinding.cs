@@ -72,7 +72,7 @@ namespace Kentor.AuthServices.WebSso
 
             var data = ResolveArtifact(artifact, relayState, options);
 
-            return new UnbindResult(data, relayState);
+            return new UnbindResult(data, relayState, TrustLevel.None);
         }
 
         private static XmlElement ResolveArtifact(

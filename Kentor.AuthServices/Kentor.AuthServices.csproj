@@ -63,7 +63,7 @@
     <Compile Include="Saml2P\Saml2RequestedAuthnContext.cs" />
     <Compile Include="Configuration\RequestedAuthnContextElement.cs" />
     <Compile Include="Configuration\SigningBehavior.cs" />
-    <Compile Include="Exceptions\SignatureValidationException.cs" />
+    <Compile Include="Exceptions\InvalidSignatureException.cs" />
     <Compile Include="Internal\NameIdFormatExtension.cs" />
     <Compile Include="MetadataPublishOverrideType.cs" />
     <Compile Include="CertificateStatus.cs" />
@@ -86,6 +86,7 @@
     <Compile Include="Exceptions\Saml2ResponseFailedValidationException.cs" />
     <Compile Include="Internal\CryptographyExtensions.cs" />
     <Compile Include="Internal\RSAEncryptedXml.cs" />
+    <Compile Include="TrustLevel.cs" />
     <Compile Include="WebSso\AcsCommand.cs" />
     <Compile Include="Metadata\AttributeConsumingService.cs" />
     <Compile Include="Configuration\RequestedAttributeElement.cs" />

@@ -39,7 +39,7 @@ namespace Kentor.AuthServices.WebSso
             string relayState = null;
             request.Form.TryGetValue("RelayState", out relayState);
 
-            return new UnbindResult(xmlDoc.DocumentElement, relayState);
+            return new UnbindResult(xmlDoc.DocumentElement, relayState, TrustLevel.None);
         }
 
         public override CommandResult Bind(ISaml2Message message)

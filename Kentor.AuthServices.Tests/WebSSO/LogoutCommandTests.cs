@@ -164,7 +164,7 @@ namespace Kentor.AuthServices.Tests.WebSSO
             var response = new Saml2LogoutResponse(Saml2StatusCode.Success)
             {
                 DestinationUrl = new Uri("http://sp.example.com/path/AuthServices/logout"),
-                Issuer = new EntityId("http://idp.example.com"),
+                Issuer = new EntityId("https://idp.example.com"),
                 InResponseTo = new Saml2Id(),
                 SigningCertificate = SignedXmlHelper.TestCert,
                 RelayState = relayState
@@ -222,6 +222,13 @@ namespace Kentor.AuthServices.Tests.WebSSO
 
             var options = StubFactory.CreateOptions();
             options.SPOptions.ServiceCertificates.Add(SignedXmlHelper.TestCert);
+            
+            // We're using unbind to verify the created message and UnBind
+            // expects the issuer to be a known Idp for signature validation.
+            // Add a dummy with the right issuer name and key.
+            var dummyIdp = new IdentityProvider(options.SPOptions.EntityId, options.SPOptions);
+            dummyIdp.SigningKeys.AddConfiguredKey(SignedXmlHelper.TestCert);
+            options.IdentityProviders.Add(dummyIdp);
 
             var actual = CommandFactory.GetCommand(CommandFactory.LogoutCommandName)
                 .Run(httpRequest, options);
@@ -262,6 +269,7 @@ namespace Kentor.AuthServices.Tests.WebSSO
             actualMessage.Should().BeEquivalentTo(expectedMessage);
 
             actualUnbindResult.RelayState.Should().Be(request.RelayState);
+            actualUnbindResult.TrustLevel.Should().Be(TrustLevel.SignatureSha160);
         }
 
         [TestMethod]
@@ -295,7 +303,7 @@ namespace Kentor.AuthServices.Tests.WebSSO
             var response = new Saml2LogoutResponse(Saml2StatusCode.Requester)
             {
                 DestinationUrl = new Uri("http://sp.example.com/path/AuthServices/logout"),
-                Issuer = new EntityId("http://idp.example.com"),
+                Issuer = new EntityId("https://idp.example.com"),
                 InResponseTo = new Saml2Id(),
                 SigningCertificate = SignedXmlHelper.TestCert
             };
