@@ -27,12 +27,13 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="FluentAssertions, Version=3.2.1.0, Culture=neutral, PublicKeyToken=33f2691a05b67b6a, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\FluentAssertions.3.2.1\lib\net45\FluentAssertions.dll</HintPath>
+    <Reference Include="FluentAssertions, Version=4.2.2.0, Culture=neutral, PublicKeyToken=33f2691a05b67b6a, processorArchitecture=MSIL">
+      <HintPath>..\packages\FluentAssertions.4.2.2\lib\net45\FluentAssertions.dll</HintPath>
+      <Private>True</Private>
     </Reference>
-    <Reference Include="FluentAssertions.Core">
-      <HintPath>..\packages\FluentAssertions.3.2.1\lib\net45\FluentAssertions.Core.dll</HintPath>
+    <Reference Include="FluentAssertions.Core, Version=4.2.2.0, Culture=neutral, PublicKeyToken=33f2691a05b67b6a, processorArchitecture=MSIL">
+      <HintPath>..\packages\FluentAssertions.4.2.2\lib\net45\FluentAssertions.Core.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.Owin, Version=3.0.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.Owin.3.0.1\lib\net45\Microsoft.Owin.dll</HintPath>
@@ -114,14 +115,19 @@
   <ItemGroup>
     <Compile Include="Configuration\ConfiguredAndLoadedSigningKeysCollectionTests.cs" />
     <Compile Include="Configuration\Saml2RequestedAuthnContextTests.cs" />
+    <Compile Include="Configuration\ServiceCertificateCollectionExtensionsTests.cs" />
     <Compile Include="Configuration\ServiceCertificateCollectionTests.cs" />
     <Compile Include="Configuration\TetClassAttribute.cs" />
     <Compile Include="Exceptions\InvalidSignatureExceptionTests.cs" />
+    <Compile Include="Helpers\FluentAssertionsXmlNode.cs" />
     <Compile Include="Helpers\OwinTestHelpers.cs" />
     <Compile Include="Helpers\SignedXmlHelper.cs" />
     <Compile Include="Helpers\SpinWaiter.cs" />
+    <Compile Include="Owin\StubDataProtector.cs" />
     <Compile Include="Saml2P\Saml2ArtifactResolveTests.cs" />
     <Compile Include="Saml2P\Saml2ArtifactResponseTests.cs" />
+    <Compile Include="Saml2P\Saml2LogoutRequestTests.cs" />
+    <Compile Include="Saml2P\Saml2LogoutResponseTests.cs" />
     <Compile Include="Saml2P\Saml2SoapBindingTests.cs" />
     <Compile Include="ServiceCertificateTests.cs" />
     <Compile Include="HttpModule\CommandResultHttpTests.cs" />
@@ -135,6 +141,7 @@
     <Compile Include="ExceptionTestHelpers.cs" />
     <Compile Include="Saml2P\FilteringXmlNodeReaderTests.cs" />
     <Compile Include="Exceptions\Saml2ResponseFailedValidationExceptionTests.cs" />
+    <Compile Include="WebSSO\HttpRequestDataTests.cs" />
     <Compile Include="WebSSO\Saml2ArtifactBindingTests.cs" />
     <Compile Include="WebSSO\Saml2MessageImplementation.cs" />
     <Compile Include="WebSSO\CommandResultTests.cs" />
@@ -167,7 +174,6 @@
     <Compile Include="Internal\DateTimeExtensionsTests.cs" />
     <Compile Include="Saml2SubjectExtensionsTests.cs" />
     <Compile Include="Saml2ConditionsExtensionsTests.cs" />
-    <Compile Include="WebSSO\HttpRequestDataTests.cs" />
     <Compile Include="Mvc\CommandResultExtensionsTests.cs" />
     <Compile Include="Owin\KentorAuthServicesAuthenticationExtensionsTests.cs" />
     <Compile Include="Owin\KentorAuthServicesAuthenticationMiddlewareTests.cs" />
@@ -189,6 +195,7 @@
     <Compile Include="Configuration\KentorAuthServicesSectionTests.cs" />
     <Compile Include="MetadataRefreshSchedulerTests.cs" />
     <Compile Include="Internal\XmlHelpersTests.cs" />
+    <Compile Include="WebSSO\LogoutCommandTests.cs" />
     <Compile Include="XmlHelpersTests.cs" />
   </ItemGroup>
   <ItemGroup>

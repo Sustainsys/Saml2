@@ -19,7 +19,6 @@ namespace Kentor.AuthServices
         /// </summary>
         /// <param name="statement">Statement to create xml for.</param>
         /// <returns>XElement</returns>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1800:DoNotCastUnnecessarily")]
         public static XElement ToXElement(this Saml2Statement statement)
         {
             if (statement == null)
@@ -27,33 +26,58 @@ namespace Kentor.AuthServices
                 throw new ArgumentNullException(nameof(statement));
             }
 
-            if (statement is Saml2AttributeStatement)
+            var attributeStatement = statement as Saml2AttributeStatement;
+            if (attributeStatement != null)
             {
-                var attributeStatement = statement as Saml2AttributeStatement;
-                var element = new XElement(Saml2Namespaces.Saml2 + "AttributeStatement");
+                return ToXElement(attributeStatement);
+            }
 
-                foreach (var attribute in attributeStatement.Attributes)
+            var authnStatement = statement as Saml2AuthenticationStatement;
+            if(authnStatement != null)
+            {
+                return ToXElement(authnStatement);
+            }
+
+            throw new NotImplementedException("Statement of type " + statement.GetType().Name + " is not supported.");
+        }
+
+        private static XElement ToXElement(Saml2AuthenticationStatement authnStatement)
+        {
+            var result = new XElement(Saml2Namespaces.Saml2 + "AuthnStatement",
+                new XAttribute("AuthnInstant", authnStatement.AuthenticationInstant.ToSaml2DateTimeString()),
+                new XElement(Saml2Namespaces.Saml2 + "AuthnContext",
+                    new XElement(Saml2Namespaces.Saml2 + "AuthnContextClassRef",
+                        authnStatement.AuthenticationContext.ClassReference.OriginalString)));
+
+            if(authnStatement.SessionIndex != null)
+            {
+                result.Add(new XAttribute("SessionIndex", authnStatement.SessionIndex));
+            }
+
+            return result;
+        }
+
+        private static XElement ToXElement(Saml2AttributeStatement attributeStatement)
+        {
+            var element = new XElement(Saml2Namespaces.Saml2 + "AttributeStatement");
+
+            foreach (var attribute in attributeStatement.Attributes)
+            {
+                var attributeElement = new XElement(Saml2Namespaces.Saml2 + "Attribute", new XAttribute("Name", attribute.Name));
+
+                attributeElement.AddAttributeIfNotNullOrEmpty("FriendlyName", attribute.FriendlyName);
+                attributeElement.AddAttributeIfNotNullOrEmpty("NameFormat", attribute.NameFormat);
+                attributeElement.AddAttributeIfNotNullOrEmpty("OriginalIssuer", attribute.OriginalIssuer);
+
+                foreach (var value in attribute.Values)
                 {
-                    var attributeElement = new XElement(Saml2Namespaces.Saml2 + "Attribute", new XAttribute("Name", attribute.Name));
-
-                    attributeElement.AddAttributeIfNotNullOrEmpty("FriendlyName", attribute.FriendlyName);
-                    attributeElement.AddAttributeIfNotNullOrEmpty("NameFormat", attribute.NameFormat);
-                    attributeElement.AddAttributeIfNotNullOrEmpty("OriginalIssuer", attribute.OriginalIssuer);
-
-                    foreach(var value in attribute.Values)
-                    {
-                        attributeElement.Add(new XElement(Saml2Namespaces.Saml2 + "AttributeValue", value));
-                    }
-
-                    element.Add(attributeElement);
+                    attributeElement.Add(new XElement(Saml2Namespaces.Saml2 + "AttributeValue", value));
                 }
 
-                return element;
+                element.Add(attributeElement);
             }
-            else
-            {
-                throw new ArgumentNullException(nameof(statement));
-            }
+
+            return element;
         }
     }
 }

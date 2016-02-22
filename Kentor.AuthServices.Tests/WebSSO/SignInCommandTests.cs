@@ -149,5 +149,14 @@ namespace Kentor.AuthServices.Tests.WebSso
 
             subject.Location.Host.Should().Be(new Uri("https://idp.example.com").Host);
         }
+
+        [TestMethod]
+        public void SignInCommand_Run_NullcheckOptions()
+        {
+            Action a = () => SignInCommand.Run(null, null, null, null, null);
+
+            a.ShouldThrow<ArgumentNullException>()
+                .And.ParamName.Should().Be("options");
+        }
     }
 }

@@ -80,6 +80,14 @@ namespace Kentor.AuthServices.Metadata
                 }
             }
 
+            if(spOptions.SigningServiceCertificate != null)
+            {
+                spsso.SingleLogoutServices.Add(new ProtocolEndpoint(
+                    Saml2Binding.HttpRedirectUri, urls.LogoutUrl));
+                spsso.SingleLogoutServices.Add(new ProtocolEndpoint(
+                    Saml2Binding.HttpPostUri, urls.LogoutUrl));
+            }
+
             if (spOptions.DiscoveryServiceUrl != null
                 && !string.IsNullOrEmpty(spOptions.DiscoveryServiceUrl.OriginalString))
             {

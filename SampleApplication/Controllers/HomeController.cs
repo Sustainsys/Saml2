@@ -13,11 +13,5 @@ namespace SampleApplication.Controllers
         {
             return View();
         }
-
-        public ActionResult SignOut()
-        {
-            FederatedAuthentication.SessionAuthenticationModule.SignOut();
-            return RedirectToAction("Index");
-        }
     }
 }

@@ -14,6 +14,7 @@ using System.Xml.Linq;
 using Kentor.AuthServices.Configuration;
 using System.IdentityModel.Metadata;
 using System.Reflection;
+using System.Threading;
 
 namespace Kentor.AuthServices.Tests.Mvc
 {
@@ -21,21 +22,33 @@ namespace Kentor.AuthServices.Tests.Mvc
     public class AuthServicesControllerTests
     {
         static IOptions defaultOptions = Options.FromConfiguration;
+        ClaimsPrincipal originalPrincipal;
+
+        [TestInitialize]
+        public void Initialize()
+        {
+            originalPrincipal = ClaimsPrincipal.Current;
+        }
 
         [TestCleanup]
         public void Cleanup()
         {
             AuthServicesController.Options = defaultOptions;
+            Thread.CurrentPrincipal = originalPrincipal;
         }
 
         private AuthServicesController CreateInstanceWithContext()
         {
+            var controllerContext = Substitute.For<ControllerContext>();
+
+            controllerContext.HttpContext = Substitute.For<HttpContextBase>();
+
             var request = Substitute.For<HttpRequestBase>();
             request.Url.Returns(new Uri("http://example.com"));
             request.Form.Returns(new NameValueCollection());
-            var controllerContext = Substitute.For<ControllerContext>();
-            controllerContext.HttpContext = Substitute.For<HttpContextBase>();
             controllerContext.HttpContext.Request.Returns(request);
+
+            var response = Substitute.For<HttpResponseBase>();
 
             return new AuthServicesController()
             {
@@ -145,6 +158,28 @@ namespace Kentor.AuthServices.Tests.Mvc
             result.Should().BeOfType<RedirectResult>().And
                 .Subject.As<RedirectResult>().Url
                     .Should().StartWith("http://ds.example.com/?entityID=https%3A%2F%2Fgithub.com%2FKentorIT%2Fauthservices&return=https%3A%2F%2Fmy.public.origin%3A8443%2F");
+        }
+
+        [TestMethod]
+        public void AuthServicesController_Logout_Returns_LogoutRequest()
+        {
+            var subject = CreateInstanceWithContext();
+
+            Thread.CurrentPrincipal = new ClaimsPrincipal(
+                new ClaimsIdentity(new Claim[]
+                {
+                    new Claim(ClaimTypes.NameIdentifier, "NameId", null, "https://idp.example.com"),
+                    new Claim(AuthServicesClaimTypes.SessionIndex, "SessionId", null, "https://idp.example.com")
+                }, "Federation"));
+
+            var actual = subject.Logout().As<RedirectResult>();
+
+            actual.Url.Should().StartWith("https://idp.example.com/logout?SAMLRequest=");
+
+            var relayState = HttpUtility.ParseQueryString(new Uri(actual.Url).Query)["RelayState"];
+
+            subject.Response.Received().SetCookie(
+                Arg.Is<HttpCookie>(c => c.Name == "Kentor." + relayState));
         }
     }
 }

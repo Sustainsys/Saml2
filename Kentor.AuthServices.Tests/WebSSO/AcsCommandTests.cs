@@ -64,7 +64,9 @@ namespace Kentor.AuthServices.Tests.WebSso
                 new KeyValuePair<string, string[]>[]
                 {
                     new KeyValuePair<string, string[]>("SAMLResponse", new string[] { "#¤!2" })
-                });
+                },
+                Enumerable.Empty<KeyValuePair<string, string>>(),
+                null);
 
             Action a = () => new AcsCommand().Run(r, Options.FromConfiguration);
 
@@ -84,7 +86,9 @@ namespace Kentor.AuthServices.Tests.WebSso
                 new KeyValuePair<string, string[]>[]
                 {
                     new KeyValuePair<string, string[]>("SAMLResponse", new string[] { encoded })
-                });
+                },
+                Enumerable.Empty<KeyValuePair<string, string>>(),
+                null);
 
             Action a = () => new AcsCommand().Run(r, Options.FromConfiguration);
 
@@ -109,7 +113,9 @@ namespace Kentor.AuthServices.Tests.WebSso
                 new KeyValuePair<string, string[]>[]
                 {
                     new KeyValuePair<string, string[]>("SAMLResponse", new string[] { encoded })
-                });
+                },
+                Enumerable.Empty<KeyValuePair<string, string>>(),
+                null);
 
             Action a = () => new AcsCommand().Run(r, Options.FromConfiguration);
 
@@ -129,7 +135,9 @@ namespace Kentor.AuthServices.Tests.WebSso
                 new KeyValuePair<string, string[]>[]
                 {
                     new KeyValuePair<string, string[]>("SAMLResponse", new string[] { encoded })
-                });
+                },
+                Enumerable.Empty<KeyValuePair<string, string>>(),
+                null);
 
             Action a = () => new AcsCommand().Run(r, Options.FromConfiguration);
 
@@ -154,7 +162,9 @@ namespace Kentor.AuthServices.Tests.WebSso
                 new KeyValuePair<string, string[]>[]
                 {
                     new KeyValuePair<string, string[]>("SAMLart", new string[] { artifactString })
-                });
+                },
+                Enumerable.Empty<KeyValuePair<string, string>>(),
+                null);
 
             Action a = () => new AcsCommand().Run(r, Options.FromConfiguration);
 
@@ -198,7 +208,9 @@ namespace Kentor.AuthServices.Tests.WebSso
                 new KeyValuePair<string, string[]>[]
                 {
                     new KeyValuePair<string, string[]>("SAMLResponse", new string[] { formValue })
-                });
+                },
+                Enumerable.Empty<KeyValuePair<string, string>>(),
+                null);
 
             var ids = new ClaimsIdentity[] { new ClaimsIdentity("Federation"), new ClaimsIdentity("ClaimsAuthenticationManager") };
             ids[0].AddClaim(new Claim(ClaimTypes.NameIdentifier, "SomeUser", null, "https://idp.example.com"));
@@ -259,7 +271,9 @@ namespace Kentor.AuthServices.Tests.WebSso
                 {
                     new KeyValuePair<string, string[]>("SAMLResponse", new string[] { responseFormValue }),
                     new KeyValuePair<string, string[]>("RelayState", new string[] { relayStateFormValue })
-                });
+                },
+                Enumerable.Empty<KeyValuePair<string, string>>(),
+                null);
 
             var ids = new ClaimsIdentity[] { new ClaimsIdentity("Federation"), new ClaimsIdentity("ClaimsAuthenticationManager") };
             ids[0].AddClaim(new Claim(ClaimTypes.NameIdentifier, "SomeUser", null, "https://idp.example.com"));
@@ -311,7 +325,9 @@ namespace Kentor.AuthServices.Tests.WebSso
                 new KeyValuePair<string, string[]>[]
                 {
                     new KeyValuePair<string, string[]>("SAMLResponse", new string[] { formValue })
-                });
+                },
+                Enumerable.Empty<KeyValuePair<string, string>>(),
+                null);
 
             var options = StubFactory.CreateOptions();
             ((SPOptions)options.SPOptions).ReturnUrl = null;

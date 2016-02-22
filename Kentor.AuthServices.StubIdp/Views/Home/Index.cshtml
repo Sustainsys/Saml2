@@ -6,17 +6,25 @@
 else
 {
     <p>
-        The SAML messages sent by the Stub Idp will be signed with <em>@Html.ActionLink("this certificate", "Index", "Certificate")</em>.
-        To validate the responses you need to download it and configure your service provider to trust it.
-        <em>Caution</em>: Never trust this certificate in a production environment as it will allow anyone to sign in to
-        your application as whatever user they choose.
+        The SAML messages sent by the Stub Idp will be signed with
+        <em>@Html.ActionLink("this certificate", "Index", "Certificate")</em>.
+        To validate the responses you need to download it and configure your
+        service provider to trust it. <em>Caution</em>: Never trust this
+        certificate in a production environment as it will allow anyone to sign
+        in to your application as whatever user they choose.
     </p>
 
     @Html.Partial("_MetadataLink")
 
     <p>
-        This form will allow you to send a SAML2 Response to a service provider. If the In Response To ID field is
-        empty, the Response is considered unsolicited (IDP initiated).
+        This form will allow you to send a SAML2 Response to a service provider.
+        If the In Response To ID field is empty, the Response is considered
+        unsolicited (IDP initiated).
+    </p>
+    
+    <p>
+        The stub idp also features 
+        @Html.ActionLink("single logout support", "Index", "Logout").
     </p>
 
     <p>
@@ -42,7 +50,7 @@ else
     </div>
     @Html.ValidationSummary()
 
-    if (!string.IsNullOrEmpty(Model.AssertionModel.AuthnRequestXml))
+    if (Model.AssertionModel.AuthnRequestXml != null)
     {
         <div class="hide-details">
             @Html.LabelFor(m => m.AssertionModel.AuthnRequestXml)
@@ -88,6 +96,12 @@ else
         @Html.LabelFor(m => m.AssertionModel.NameId)
         @Html.EditorFor(m => m.AssertionModel.NameId)
         @Html.ValidationMessageFor(m => m.AssertionModel.NameId)
+    </div>
+
+    <div class="hide-details">
+        @Html.LabelFor(m => m.AssertionModel.SessionIndex)
+        @Html.EditorFor(m => m.AssertionModel.SessionIndex)
+        @Html.ValidationMessageFor(m => m.AssertionModel.SessionIndex)
     </div>
 
     <fieldset class="hide-details">

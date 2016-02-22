@@ -1,0 +1,25 @@
+﻿@model RespondToLogoutRequestModel
+
+@using (Html.BeginForm("RespondToLogoutRequest", "Logout"))
+{
+    <div>
+        @Html.LabelFor(m => m.LogoutRequestXml)
+        <pre class="xml">@Model.LogoutRequestXml</pre>
+    </div>
+    <div>
+        @Html.LabelFor(m => m.InResponseTo)
+        @Html.EditorFor(m => m.InResponseTo)
+        @Html.ValidationMessageFor(m => m.InResponseTo)
+    </div>
+    <div>
+        @Html.LabelFor(m => m.RelayState)
+        @Html.EditorFor(m => m.RelayState)
+        @Html.ValidationMessageFor(m => m.RelayState)
+    </div>
+    <div>
+        @Html.LabelFor(m => m.DestinationUrl)
+        @Html.EditorFor(m => m.DestinationUrl)
+        @Html.ValidationMessageFor(m => m.DestinationUrl)
+    </div>
+    <button id="submit">Logout</button>
+}

@@ -59,7 +59,7 @@ namespace Kentor.AuthServices.Tests
         public void Federation_LoadSkolfederationMetadata()
         {
             // Skolfederation is the Swedish national school federation. To test that
-            // AuthServices handles some real world metadata, the metdata from the
+            // AuthServices handles some real world metadata, the metadata from the
             // skolfederation federation is used.
 
             var options = StubFactory.CreateOptions();
@@ -79,6 +79,10 @@ namespace Kentor.AuthServices.Tests
         [TestMethod]
         public void Federation_LoadInCommonMetadata()
         {
+            // InCommon is the large US university federation. To test that
+            // AuthServices handles some real world metadata, the metadata from
+            // the InCommon federation is used.
+
             var options = StubFactory.CreateOptions();
 
             var path = "~/Metadata/InCommonMetadata.xml";

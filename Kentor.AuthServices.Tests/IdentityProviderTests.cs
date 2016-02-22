@@ -16,6 +16,8 @@ using System.Security.Cryptography;
 using System.IdentityModel.Tokens;
 using System.Security.Cryptography.Xml;
 using System.Security.Cryptography.X509Certificates;
+using System.Security.Claims;
+using System.Security.Principal;
 
 namespace Kentor.AuthServices.Tests
 {
@@ -25,6 +27,14 @@ namespace Kentor.AuthServices.Tests
         TimeSpan refreshMinInterval = MetadataRefreshScheduler.minInterval;
         int idpMetadataSsoPort = StubServer.IdpMetadataSsoPort;
 
+        private IPrincipal currentPrincipal;
+
+        [TestInitialize]
+        public void Initialize()
+        {
+            currentPrincipal = Thread.CurrentPrincipal;
+        }
+
         [TestCleanup]
         public void Cleanup()
         {
@@ -32,6 +42,7 @@ namespace Kentor.AuthServices.Tests
             StubServer.IdpVeryShortCacheDurationIncludeInvalidKey = false;
             StubServer.IdpVeryShortCacheDurationIncludeKey = true;
             MetadataRefreshScheduler.minInterval = refreshMinInterval;
+            Thread.CurrentPrincipal = currentPrincipal;
         }
 
         [TestMethod]
@@ -255,6 +266,22 @@ namespace Kentor.AuthServices.Tests
                 .Should().Be("http://localhost:13428/ars");
             subject.ArtifactResolutionServiceUrls[117].OriginalString
                 .Should().Be("http://localhost:13428/ars2");
+            subject.SingleLogoutServiceUrl.OriginalString.Should().Be("http://localhost:13428/logout");
+            subject.SingleLogoutServiceResponseUrl.OriginalString.Should().Be("http://localhost:13428/logoutResponse");
+            subject.SingleLogoutServiceBinding.Should().Be(Saml2BindingType.HttpRedirect);
+        }
+
+        [TestMethod]
+        public void IdentityProvider_ConfigFromMetadata_LogoutResponse_DefaultsToSingleLogoutServiceUrl()
+        {
+            var entityId = new EntityId("http://localhost:13428/idpMetadataNoCertificate");
+            var subject = new IdentityProvider(entityId, StubFactory.CreateSPOptions());
+            subject.SigningKeys.AddConfiguredKey(SignedXmlHelper.TestCert);
+
+            subject.LoadMetadata = true;
+
+            subject.SingleLogoutServiceResponseUrl.OriginalString.Should().Be("http://localhost:13428/logout");
+            subject.SingleLogoutServiceBinding.Should().Be(Saml2BindingType.HttpRedirect);
         }
 
         private IdentityProviderElement CreateConfig()
@@ -265,7 +292,7 @@ namespace Kentor.AuthServices.Tests
             config.SigningCertificate = new CertificateElement();
             config.SigningCertificate.AllowConfigEdit(true);
             config.SigningCertificate.FileName = "Kentor.AuthServices.Tests.pfx";
-            config.DestinationUrl = new Uri("http://idp.example.com/acs");
+            config.SignOnUrl = new Uri("http://idp.example.com/acs");
             config.EntityId = "http://idp.example.com";
 
             return config;
@@ -302,7 +329,7 @@ namespace Kentor.AuthServices.Tests
         public void IdentityProvider_Ctor_MissingDestinationUrlThrows()
         {
             var config = CreateConfig();
-            config.DestinationUrl = null;
+            config.SignOnUrl = null;
             TestMissingConfig(config, "assertion consumer service url");
         }
 
@@ -375,6 +402,16 @@ namespace Kentor.AuthServices.Tests
         }
 
         [TestMethod]
+        public void IdentityProvider_Ctor_LogoutBindingDefaultsToBinding()
+        {
+            var config = CreateConfig();
+            var subject = new IdentityProvider(config, StubFactory.CreateSPOptions());
+
+            subject.Binding.Should().Be(Saml2BindingType.HttpPost);
+            subject.SingleLogoutServiceBinding.Should().Be(Saml2BindingType.HttpPost);
+        }
+
+        [TestMethod]
         public void IdentityProvider_MetadataValidUntil_NullOnConfigured()
         {
             string idpUri = "http://idp.example.com/";
@@ -443,6 +480,19 @@ namespace Kentor.AuthServices.Tests
         }
 
         [TestMethod]
+        public void IdentityProvider_SingleLogoutServiceBinding_ReloadsMetadataIfNoLongerValid()
+        {
+            StubServer.IdpVeryShortCacheDurationBinding = Saml2Binding.HttpRedirectUri;
+            var subject = CreateSubjectForMetadataRefresh();
+            subject.SingleLogoutServiceBinding.Should().Be(Saml2BindingType.HttpRedirect);
+            StubServer.IdpVeryShortCacheDurationBinding = Saml2Binding.HttpPostUri;
+
+            SpinWaiter.WhileEqual(() => subject.SingleLogoutServiceBinding, () => Saml2BindingType.HttpRedirect);
+
+            subject.SingleLogoutServiceBinding.Should().Be(Saml2BindingType.HttpPost);
+        }
+
+        [TestMethod]
         public void IdentityProvider_SingleSignOnServiceUrl_ReloadsMetadataIfNoLongerValid()
         {
             StubServer.IdpAndFederationVeryShortCacheDurationPort = 42;
@@ -455,6 +505,31 @@ namespace Kentor.AuthServices.Tests
             subject.SingleSignOnServiceUrl.Port.Should().Be(117);
         }
 
+        [TestMethod]
+        public void IdentityProvider_SingleLogoutServiceUrl_ReloadsMetadataIfNoLongerValid()
+        {
+            StubServer.IdpAndFederationVeryShortCacheDurationPort = 42;
+            var subject = CreateSubjectForMetadataRefresh();
+            subject.SingleLogoutServiceUrl.Port.Should().Be(42);
+            StubServer.IdpAndFederationVeryShortCacheDurationPort = 117;
+
+            SpinWaiter.WhileEqual(() => subject.SingleLogoutServiceUrl.Port, () => 42);
+
+            subject.SingleLogoutServiceUrl.Port.Should().Be(117);
+        }
+
+        [TestMethod]
+        public void IdentityProvider_SingleLogoutServiceResponseUrl_ReloadsMetadataIfNoLongerValid()
+        {
+            StubServer.IdpAndFederationVeryShortCacheDurationPort = 42;
+            var subject = CreateSubjectForMetadataRefresh();
+            subject.SingleLogoutServiceResponseUrl.Port.Should().Be(42);
+            StubServer.IdpAndFederationVeryShortCacheDurationPort = 117;
+
+            SpinWaiter.WhileEqual(() => subject.SingleLogoutServiceResponseUrl.Port, () => 42);
+
+            subject.SingleLogoutServiceResponseUrl.Port.Should().Be(117);
+        }
 
         [TestMethod]
         public void IdentityProvider_ArtifactResolutionServiceUrl_ReloadsMetadataIfNoLongerValid()
@@ -720,6 +795,82 @@ namespace Kentor.AuthServices.Tests
             Action a = () => subject.ReadMetadata(null);
 
             a.ShouldThrow<ArgumentNullException>().And.ParamName.Should().Be("metadata");
+        }
+
+        [TestMethod]
+        public void IdentityProvider_CreateLogoutRequest()
+        {
+            var options = StubFactory.CreateOptions();
+            options.SPOptions.ServiceCertificates.Add(new ServiceCertificate()
+            {
+                Certificate = SignedXmlHelper.TestCert
+            });
+
+            var subject = options.IdentityProviders[0];
+
+            Thread.CurrentPrincipal = new ClaimsPrincipal(new ClaimsIdentity(
+                new Claim[]
+                {
+                    new Claim(ClaimTypes.NameIdentifier, "NameId", null, subject.EntityId.Id),
+                    new Claim(AuthServicesClaimTypes.SessionIndex, "SessionId", null, subject.EntityId.Id)
+                }, "Federation"));
+
+            // Grab a datetime both before and after creation to handle case
+            // when the second part is changed during excecution of the test.
+            // We're assuming that the creation does not take more than a
+            // second, so two values will do.
+            var beforeTime = DateTime.UtcNow.ToSaml2DateTimeString();
+            var actual = subject.CreateLogoutRequest();
+            var aftertime = DateTime.UtcNow.ToSaml2DateTimeString();
+
+            actual.Issuer.Id.Should().Be(options.SPOptions.EntityId.Id);
+            actual.Id.Value.Should().NotBeEmpty();
+            actual.IssueInstant.Should().Match(i => i == beforeTime || i == aftertime);
+            actual.NameId.Value.Should().Be("NameId");
+            actual.SessionIndex.Should().Be("SessionId");
+            actual.SigningCertificate.Thumbprint.Should().Be(SignedXmlHelper.TestCert.Thumbprint);
+        }
+
+        [TestMethod]
+        public void IdentityProvider_CreateLogoutRequest_PrefersAuthServicesLogoutNameId()
+        {
+            var options = StubFactory.CreateOptions();
+            options.SPOptions.ServiceCertificates.Add(new ServiceCertificate()
+            {
+                Certificate = SignedXmlHelper.TestCert
+            });
+
+            var subject = options.IdentityProviders[0];
+
+            Thread.CurrentPrincipal = new ClaimsPrincipal(new ClaimsIdentity(
+                new Claim[]
+                {
+                    new Claim(ClaimTypes.NameIdentifier, "ApplicationNameId"),
+                    new Claim(AuthServicesClaimTypes.LogoutNameIdentifier, "Saml2NameId", null, subject.EntityId.Id),
+                    new Claim(AuthServicesClaimTypes.SessionIndex, "SessionId", null, subject.EntityId.Id)
+                }, "Federation"));
+
+            var actual = subject.CreateLogoutRequest();
+
+            actual.NameId.Value.Should().Be("Saml2NameId");
+        }
+
+        [TestMethod]
+        public void IdentityProvider_CreateLogoutRequest_FailsIfNoSigningCertificateConfigured()
+        {
+            var options = StubFactory.CreateOptions();
+            var subject = options.IdentityProviders[0];
+
+            Thread.CurrentPrincipal = new ClaimsPrincipal(new ClaimsIdentity(
+                new Claim[]
+                {
+                    new Claim(ClaimTypes.NameIdentifier, "NameId", null, subject.EntityId.Id),
+                    new Claim(AuthServicesClaimTypes.SessionIndex, "SessionId", null, subject.EntityId.Id)
+                }, "Federation"));
+
+            subject.Invoking(s => s.CreateLogoutRequest())
+                .ShouldThrow<InvalidOperationException>()
+                .And.Message.Should().Be($"Tried to issue single logout request to https://idp.example.com, but no signing certificate for the SP is configured and single logout requires signing. Add a certificate to the ISPOptions.ServiceCertificates collection, or to <serviceCertificates> element if you're using web.config.");
         }
     }
 }

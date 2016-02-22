@@ -10,14 +10,14 @@
 @if (!User.Identity.IsAuthenticated)
 {
     <p>
-        You are currently not signed in.
+        You are currently <span id="status">not signed in</span>.
     </p>
     <p>
         <a href="@Url.Content("~/AuthServices/SignIn")">Sign in</a> - default IDP
         @foreach (var idp in Kentor.AuthServices.Configuration.KentorAuthServicesSection.Current.IdentityProviders)
         {
             var entityId = idp.EntityId;
-            var destinationUrl = idp.DestinationUrl;
+            var destinationUrl = idp.SignOnUrl;
             <br />
             <a href="@Url.Content("~/AuthServices/SignIn?idp=" + HttpUtility.UrlEncode(entityId))">Sign in</a>@: - @entityId - @destinationUrl
         }
@@ -26,7 +26,7 @@
 else
 {
     <p>
-        You are signed in. <a href="@Url.Action("SignOut")">Sign out</a>.
+        You are signed in. <a id="logout" href="@Url.Content("~/AuthServices/Logout?ReturnUrl=.%3FStatus%3DLoggedOut")">Logout</a>.
     </p>
     <table>
         <thead>

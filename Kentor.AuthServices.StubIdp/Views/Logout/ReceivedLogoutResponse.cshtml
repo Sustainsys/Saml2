@@ -1,0 +1,13 @@
+﻿@model ResponseModel
+<div>
+    <label>Received Response</label>
+    <pre class="xml">@Model.ResponseXml</pre>
+</div>
+<div>
+    @Html.LabelFor(m => m.Status)
+    <span id="status">@Html.DisplayFor(m => m.Status)</span>
+</div>
+
+<p>
+    @Html.ActionLink("Logout again", "Index")
+</p>

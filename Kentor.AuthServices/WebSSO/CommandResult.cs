@@ -50,6 +50,28 @@ namespace Kentor.AuthServices.WebSso
         public object RelayData { get; set; }
 
         /// <summary>
+        /// Indicates that the local session should be terminated. Used by
+        /// logout functionality.
+        /// </summary>
+        public bool TerminateLocalSession { get; set; }
+
+        /// <summary>
+        /// Name of cookie to set.
+        /// </summary>
+        public string SetCookieName { get; set; }
+
+        /// <summary>
+        /// Unencrypted data to set in cookie. Data should be encrypted when
+        /// applied to the response.
+        /// </summary>
+        public string SetCookieData { get; set; }
+
+        /// <summary>
+        /// Name of cookie to be cleared.
+        /// </summary>
+        public string ClearCookieName { get; set; }
+
+        /// <summary>
         /// Ctor
         /// </summary>
         public CommandResult()

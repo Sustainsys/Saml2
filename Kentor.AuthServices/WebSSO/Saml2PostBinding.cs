@@ -19,7 +19,8 @@ namespace Kentor.AuthServices.WebSso
             }
 
             return request.HttpMethod == "POST"
-                && request.Form.Keys.Contains("SAMLResponse");
+                && (request.Form.Keys.Contains("SAMLResponse")
+                    || request.Form.Keys.Contains("SAMLRequest"));
         }
 
         public override UnbindResult Unbind(HttpRequestData request, IOptions options)
@@ -34,12 +35,18 @@ namespace Kentor.AuthServices.WebSso
                 PreserveWhitespace = true
             };
 
-            xmlDoc.LoadXml(Encoding.UTF8.GetString(Convert.FromBase64String(request.Form["SAMLResponse"])));
+            string encodedMessage;
+            if (!request.Form.TryGetValue("SAMLResponse", out encodedMessage))
+            {
+                encodedMessage = request.Form["SAMLRequest"];
+            }
+
+            xmlDoc.LoadXml(Encoding.UTF8.GetString(Convert.FromBase64String(encodedMessage)));
 
             string relayState = null;
             request.Form.TryGetValue("RelayState", out relayState);
 
-            return new UnbindResult(xmlDoc.DocumentElement, relayState);
+            return new UnbindResult(xmlDoc.DocumentElement, relayState, TrustLevel.None);
         }
 
         public override CommandResult Bind(ISaml2Message message)

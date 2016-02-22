@@ -43,28 +43,28 @@ header {
     }
 }
 
-form {
 
-    @input-width: 500px;
-    @label-width: 200px;
+@input-width: 500px;
+@label-width: 200px;
+
+pre.xml {
+    font-size: 12px;
+    width: @input-width;
+    margin-left: @label-width;
+    background-color: @light-grey;
+    overflow-x: scroll;
+    overflow-y: visible;
+}
+
+label {
+    font-weight: bold;
+    float: left;
+    width: @label-width;
+}
+
+form {
     @error-color: @red;
     margin-top: 30px;
-
-    pre.xml {
-        font-size: 12px;
-        width: @input-width;
-        margin-left: @label-width;
-        background-color: @light-grey;
-        overflow-x: scroll;
-        overflow-y: visible;
-    }
-
-
-    label {
-        font-weight: bold;
-        float: left;
-        width: @label-width;
-    }
 
     .radio-button-group{
         label{

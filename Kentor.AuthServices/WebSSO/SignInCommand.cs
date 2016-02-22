@@ -12,8 +12,23 @@ using System.Web;
 
 namespace Kentor.AuthServices.WebSso
 {
-    class SignInCommand : ICommand
+    /// <summary>
+    /// The sign in command. Use 
+    /// CommandFactory.Get(CommandFactory.SignInCommandName) to get an instance.
+    /// </summary>
+    public class SignInCommand : ICommand
     {
+        /// <summary>
+        /// Ctor, don't want anyone to create instances.
+        /// </summary>
+        internal SignInCommand() { }
+
+        /// <summary>
+        /// Run the command, initiating the sign in sequence.
+        /// </summary>
+        /// <param name="request">Request data.</param>
+        /// <param name="options">Options</param>
+        /// <returns>CommandResult</returns>
         public CommandResult Run(HttpRequestData request, IOptions options)
         {
             if (request == null)
@@ -26,20 +41,39 @@ namespace Kentor.AuthServices.WebSso
                 throw new ArgumentNullException(nameof(options));
             }
 
-            return CreateResult(
+            return Run(
                 new EntityId(request.QueryString["idp"].FirstOrDefault()),
                 request.QueryString["ReturnUrl"].FirstOrDefault(),
                 request,
-                options);
+                options,
+                null);
         }
 
-        public static CommandResult CreateResult(
+        /// <summary>
+        /// Initiate the sign in sequence.
+        /// </summary>
+        /// <param name="idpEntityId">Entity id of idp to sign in to, or
+        /// null to use default (discovery service if configured)</param>
+        /// <param name="returnPath">Path to redirect to when the sign in
+        /// is complete.</param>
+        /// <param name="request">The incoming http request.</param>
+        /// <param name="options">Options.</param>
+        /// <param name="relayData">Data to store and make available when the
+        /// ACS command has processed the response.</param>
+        /// <returns>Command Result</returns>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2234:PassSystemUriObjectsInsteadOfStrings")]
+        public static CommandResult Run(
             EntityId idpEntityId,
             string returnPath,
             HttpRequestData request,
             IOptions options,
-            object relayData = null)
+            object relayData)
         {
+            if(options == null)
+            {
+                throw new ArgumentNullException(nameof(options));
+            }
+
             var urls = new AuthServicesUrls(request, options.SPOptions);
 
             IdentityProvider idp;

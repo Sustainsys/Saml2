@@ -9,6 +9,8 @@ using System.IO;
 using System.Text;
 using System.Net;
 using Kentor.AuthServices.WebSso;
+using Microsoft.Owin.Security.DataProtection;
+using System.Linq;
 
 namespace Kentor.AuthServices.Tests.Owin
 {
@@ -18,7 +20,7 @@ namespace Kentor.AuthServices.Tests.Owin
         [TestMethod]
         public void CommandResultExtensions_Apply_NullCheck_CommandResult()
         {
-            Action a = () => ((CommandResult)null).Apply(OwinTestHelpers.CreateOwinContext());
+            Action a = () => ((CommandResult)null).Apply(OwinTestHelpers.CreateOwinContext(), null);
 
             a.ShouldThrow<ArgumentNullException>().And.ParamName.Should().Be("commandResult");
         }
@@ -26,7 +28,7 @@ namespace Kentor.AuthServices.Tests.Owin
         [TestMethod]
         public void CommandResultExtensions_Apply_NullCheck_OwinContext()
         {
-            Action a = () => new CommandResult().Apply(context:null);
+            Action a = () => new CommandResult().Apply(context:null, dataProtector:null);
 
             a.ShouldThrow<ArgumentNullException>().And.ParamName.Should().Be("context");
         }
@@ -42,7 +44,7 @@ namespace Kentor.AuthServices.Tests.Owin
 
             var context = OwinTestHelpers.CreateOwinContext();
 
-            cr.Apply(context);
+            cr.Apply(context, null);
 
             context.Response.StatusCode.Should().Be(200);
             context.Response.ContentType.Should().Be("application/whatever+text");
@@ -53,6 +55,29 @@ namespace Kentor.AuthServices.Tests.Owin
                 var bodyText = reader.ReadToEnd();
                 bodyText.Should().Be("Some Content!");
             }
+        }
+
+        [TestMethod]
+        public void CommandResultExtensions_Apply_Cookie()
+        {
+            var cr = new CommandResult()
+            {
+                SetCookieData = "???>>>SomeData",
+                SetCookieName = "CookieName"
+            };
+
+            var context = OwinTestHelpers.CreateOwinContext();
+
+            var dataProtector = new StubDataProtector();
+            cr.Apply(context, dataProtector);
+
+            var setCookieHeader = context.Response.Headers["Set-Cookie"];
+
+            var protectedData = StubDataProtector.Protect(cr.SetCookieData);
+
+            var expected = $"CookieName={protectedData}; path=/; HttpOnly";
+
+            setCookieHeader.Should().Be(expected);
         }
 
         [TestMethod]
@@ -67,7 +92,7 @@ namespace Kentor.AuthServices.Tests.Owin
 
             var context = OwinTestHelpers.CreateOwinContext();
 
-            cr.Apply(context);
+            cr.Apply(context, null);
 
             context.Response.StatusCode.Should().Be(303);
             context.Response.Headers["Location"].Should().Be(redirectUrl);

@@ -15,7 +15,7 @@ namespace Kentor.AuthServices.IntegrationTests
         }
 
         [TestMethod]
-        public void SignIn_Unsolicited_MVC()
+        public void SignInAndOut_IdpInitiated_MVC()
         {
             I.Open("http://localhost:52071/")
                 .Enter("http://localhost:2181/AuthServices/Acs").In("#AssertionModel_AssertionConsumerServiceUrl")
@@ -26,22 +26,36 @@ namespace Kentor.AuthServices.IntegrationTests
 
             I.Assert.Text("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier - JohnDoe").In(".body-content ul li:first-child");
 
-            I.Click("a[href=\"/AuthServices/SignOut\"");
+            I.Open("http://localhost:52071/Logout")
+                .Enter("JohnDoe").In("#NameId")
+                .Enter("http://localhost:2181/AuthServices/Logout").In("#DestinationUrl")
+                .Click("#submit")
+                .Assert.Text("urn:oasis:names:tc:SAML:2.0:status:Success").In("#status");
+
+            I.Open("http://localhost:2181/")
+                .Assert.Text("not signed in").In("#status");
         }
 
         [TestMethod]
-        public void SignIn_Unsolicited_HttpModule()
+        public void SignInAndOut_IdpInitiated_HttpModule()
         {
             I.Open("http://localhost:52071/")
                 .Enter("http://localhost:17009/SamplePath/AuthServices/Acs").In("#AssertionModel_AssertionConsumerServiceUrl")
                 .Click("#submit")
                 .Assert.Text("JohnDoe").In("tbody tr td:nth-child(2)");
 
-            I.Click("a[href=\"/SamplePath/Home/SignOut\"");
+            I.Open("http://localhost:52071/Logout")
+                .Enter("JohnDoe").In("#NameId")
+                .Enter("http://localhost:17009/SamplePath/AuthServices/Logout").In("#DestinationUrl")
+                .Click("#submit")
+                .Assert.Text("urn:oasis:names:tc:SAML:2.0:status:Success").In("#status");
+
+            I.Open("http://localhost:17009/SamplePath")
+                .Assert.Text("not signed in").In("#status");
         }
 
         [TestMethod]
-        public void SignIn_AuthnRequest_MVC_via_DiscoveryService()
+        public void SignInAndOut_SPInitiated_MVC_via_DiscoveryService()
         {
             I.Open("http://localhost:2181")
                 .Click("a[href=\"/Home/Secure\"]")
@@ -57,11 +71,16 @@ namespace Kentor.AuthServices.IntegrationTests
 
             I.Assert.Text("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier - JohnDoe").In(".body-content ul li:first-child");
 
-            I.Click("a[href=\"/AuthServices/SignOut\"");
+            I.Click("a[href=\"/AuthServices/Logout\"");
+
+            I.Enter("http://localhost:2181/AuthServices/Logout").In("#DestinationUrl")
+                .Click("#submit");
+
+            I.Assert.Text("not signed in").In("#status");
         }
 
         [TestMethod]
-        public void SignIn_AuthnRequest_HttpModule_via_DiscoveryService()
+        public void SignInAndOut_SPInitiated_HttpModule_via_DiscoveryService()
         {
             I.Open("http://localhost:17009/SamplePath")
                 .Click("a[href=\"/SamplePath/AuthServices/SignIn\"]")
@@ -75,7 +94,13 @@ namespace Kentor.AuthServices.IntegrationTests
             I.Click("#submit")
                 .Assert.Text("JohnDoe").In("tbody tr td:nth-child(2)");
 
-            I.Click("a[href=\"/SamplePath/Home/SignOut\"");
+            I.Click("#logout");
+
+            I.Enter("http://localhost:17009/SamplePath/AuthServices/Logout").In("#DestinationUrl")
+                .Click("#submit");
+
+            I.Assert.Text("not signed in").In("#status");
+            I.Assert.Url("http://localhost:17009/SamplePath/?Status=LoggedOut");
         }
 
         [TestMethod]
@@ -86,37 +111,65 @@ namespace Kentor.AuthServices.IntegrationTests
         }
 
         [TestMethod]
-        public void SignIn_Unsolicited_Owin()
+        public void SignInAndOut_IdpInitiated_Owin()
         {
             I.Open("http://localhost:52071/");
 
             I.Enter("http://localhost:57294/AuthServices/Acs").In("#AssertionModel_AssertionConsumerServiceUrl");
 
-            I.Enter("SomeUnusedNameId").In("#AssertionModel_NameId");
+            I.Enter("IntegrationTestNameId").In("#AssertionModel_NameId");
 
-            I.Click("#submit");
+            I.Click("#submit")
+                .Wait(1);
 
-            I.Assert.Text("You've successfully authenticated with http://localhost:52071/Metadata. Please enter a user name for this site below and click the Register button to finish logging in.")
-                .In("p.text-info");
+            if (I.Find("#status").Element.Text == "You've successfully authenticated with http://localhost:52071/Metadata. Please enter a user name for this site below and click the Register button to finish logging in.")
+            {
+                I.Enter("IntegrationTestUser@example.com").In("#Email")
+                    .Click("#submit");
+            }
+
+            I.Assert.Text("signed in").In("#status");
+
+            I.Open("http://localhost:52071/Logout")
+                .Enter("IntegrationTestNameId").In("#NameId")
+                .Enter("http://localhost:57294/AuthServices/Logout").In("#DestinationUrl")
+                .Click("#submit")
+                .Assert.Text("urn:oasis:names:tc:SAML:2.0:status:Success").In("#status");
+
+            I.Open("http://localhost:57294")
+                .Assert.Text("not signed in").In("#status");
         }
 
         [TestMethod]
-        public void SignIn_AuthnRequest_Owin_via_DiscoveryService()
+        public void SignIn_SPInitiated_Owin_via_DiscoveryService()
         {
             I.Open("http://localhost:57294/Account/Login")
                 .Click("#KentorAuthServices")
-                .Assert.Text("http://localhost:52071/AuthServices/SignIn?ReturnUrl=%2FAccount%2FExternalLoginCallback");
+                .Assert.Text("http://localhost:57294/AuthServices/SignIn?ReturnUrl=%2FAccount%2FExternalLoginCallback").In("#return");
 
             I.Click("#submit")
                 .Assert.Text("http://localhost:57294/AuthServices/Acs").In("#AssertionModel_AssertionConsumerServiceUrl");
 
             I.Assert.False(() => string.IsNullOrEmpty(I.Find("#AssertionModel_InResponseTo").Element.Value));
 
-            I.Enter("SomeUnusedNameId").In("#AssertionModel_NameId");
+            I.Enter("IntegrationTestNameId").In("#AssertionModel_NameId")
+                .Click("#submit")
+                .Wait(2);
 
-            I.Click("#submit")
-                .Assert.Text("You've successfully authenticated with http://localhost:52071/Metadata. Please enter a user name for this site below and click the Register button to finish logging in.")
-                .In("p.text-info");
+            if(I.Find("#status").Element.Text == "You've successfully authenticated with http://localhost:52071/Metadata. Please enter a user name for this site below and click the Register button to finish logging in.")
+            {
+                I.Enter("IntegrationTestUser@example.com").In("#Email")
+                    .Click("#submit");
+            }
+            
+            I.Assert.Text("signed in").In("#status");
+
+            I.Click("#logout").Wait(1);
+
+            I.Enter("http://localhost:57294/AuthServices/Logout").In("#DestinationUrl")
+                .Click("#submit");
+
+            I.Assert.Text("not signed in").In("#status");
         }
     }
 }

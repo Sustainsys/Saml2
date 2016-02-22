@@ -288,8 +288,8 @@ namespace Kentor.AuthServices.Tests.Configuration
             result.Where(c => c.Certificate.SerialNumber == SignedXmlHelper.TestCert2.SerialNumber).First().Use.Should().Be(CertificateUse.Both);
 
             // prevent bug where the MetadataCertificates property modified the Use property of the same underlying object
-            subject.ServiceCertificates[0].Use.Should().Be(CertificateUse.Both);
-            subject.ServiceCertificates[1].Use.Should().Be(CertificateUse.Both);
+            subject.ServiceCertificates.First().Use.Should().Be(CertificateUse.Both);
+            subject.ServiceCertificates.Skip(1).Single().Use.Should().Be(CertificateUse.Both);
         }
 
         [TestMethod]
@@ -430,7 +430,7 @@ namespace Kentor.AuthServices.Tests.Configuration
             result.Count.Should().Be(1);
             result[0].Use.Should().Be(CertificateUse.Signing);
             // prevent bug where the MetadataCertificates property modified the Use property of the same underlying object
-            subject.ServiceCertificates[0].Use.Should().Be(CertificateUse.Both);
+            subject.ServiceCertificates.Single().Use.Should().Be(CertificateUse.Both);
         }
 
         [TestMethod]
@@ -447,7 +447,7 @@ namespace Kentor.AuthServices.Tests.Configuration
             result.Count.Should().Be(1);
             result[0].Use.Should().Be(CertificateUse.Encryption);
             // prevent bug where the MetadataCertificates property modified the Use property of the same underlying object
-            subject.ServiceCertificates[0].Use.Should().Be(CertificateUse.Both);
+            subject.ServiceCertificates.Single().Use.Should().Be(CertificateUse.Both);
         }
 
         [TestMethod]
@@ -465,7 +465,7 @@ namespace Kentor.AuthServices.Tests.Configuration
             result.Count.Should().Be(1);
             result[0].Use.Should().Be(CertificateUse.Both);
             // prevent bug where the MetadataCertificates property modified the Use property of the same underlying object
-            subject.ServiceCertificates[0].Use.Should().Be(CertificateUse.Encryption);
+            subject.ServiceCertificates.Single().Use.Should().Be(CertificateUse.Encryption);
         }
 
         [TestMethod]

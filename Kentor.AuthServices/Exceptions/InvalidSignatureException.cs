@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace Kentor.AuthServices.Exceptions
 {
     /// <summary>
-    /// Exception thrown when an XML signature is not valid according to the
+    /// Exception thrown when an signature is not valid according to the
     /// SAML standard.
     /// </summary>
     [Serializable]

@@ -41,6 +41,18 @@ namespace Kentor.AuthServices.StubIdp.Models
                 Location = UrlResolver.ArtifactServiceUrl
             });
 
+            idpSsoDescriptor.SingleLogoutServices.Add(new ProtocolEndpoint()
+            {
+                Binding = Saml2Binding.HttpRedirectUri,
+                Location = UrlResolver.LogoutServiceUrl
+            });
+
+            idpSsoDescriptor.SingleLogoutServices.Add(new ProtocolEndpoint()
+            {
+                Binding = Saml2Binding.HttpPostUri,
+                Location = UrlResolver.LogoutServiceUrl
+            });
+
             idpSsoDescriptor.Keys.Add(CertificateHelper.SigningKey);
 
             return metadata;

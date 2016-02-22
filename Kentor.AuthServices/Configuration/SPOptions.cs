@@ -252,12 +252,12 @@ namespace Kentor.AuthServices.Configuration
             }
         }
 
-        readonly Collection<ServiceCertificate> serviceCertificates = new Collection<ServiceCertificate>();
+        readonly ICollection<ServiceCertificate> serviceCertificates = new List<ServiceCertificate>();
 
         /// <summary>
         /// Certificates used by the service provider for signing or decryption.
         /// </summary>
-        public Collection<ServiceCertificate> ServiceCertificates
+        public ICollection<ServiceCertificate> ServiceCertificates
         {
             get
             {

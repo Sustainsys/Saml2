@@ -1,0 +1,27 @@
+﻿@model InitiateLogoutModel
+
+@using (Html.BeginForm("InitiateLogout", "Logout", FormMethod.Post))
+{
+    @Html.ValidationSummary()
+    <div>
+        @Html.LabelFor(m => m.NameId)
+        @Html.EditorFor(m => m.NameId)
+        @Html.ValidationMessageFor(m => m.NameId)
+    </div>
+    <div>
+        @Html.LabelFor(m => m.SessionIndex)
+        @Html.EditorFor(m => m.SessionIndex)
+        @Html.ValidationMessageFor(m => m.SessionIndex)
+    </div>
+    <div>
+        @Html.LabelFor(m => m.DestinationUrl)
+        @Html.EditorFor(m => m.DestinationUrl)
+        @Html.ValidationMessageFor(m => m.DestinationUrl)
+    </div>
+    <button id="submit">Log out</button>
+
+    if(Model.AutoPost)
+    {
+        <script>document.getElementById("submit").click();</script>
+    }
+}

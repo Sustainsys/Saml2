@@ -11,6 +11,8 @@ using System.Reflection;
 using System.IdentityModel.Tokens;
 using System.Globalization;
 using System.Diagnostics.CodeAnalysis;
+using System.Xml.Linq;
+using System.IO;
 
 namespace Kentor.AuthServices
 {
@@ -367,6 +369,116 @@ namespace Kentor.AuthServices
                     throw new InvalidSignatureException(
                         "Transform \"" + transform.Algorithm + "\" found in Xml signature SHOULD NOT be used with SAML2.");
                 }
+            }
+        }
+
+        internal static XElement AddAttributeIfNotNullOrEmpty(this XElement xElement, XName attribute, object value)
+        {
+            if (value != null && !string.IsNullOrEmpty(value.ToString()))
+            {
+                xElement.Add(new XAttribute(attribute, value));
+            }
+            return xElement;
+        }
+
+        internal static string GetValueIfNotNull(this XmlAttribute xmlAttribute)
+        {
+            if (xmlAttribute == null)
+            {
+                return null;
+            }
+            return xmlAttribute.Value;
+        }
+
+        internal static string GetTrimmedTextIfNotNull(this XmlElement xmlElement)
+        {
+            if (xmlElement == null)
+            {
+                return null;
+            }
+
+            return xmlElement.InnerText.Trim();
+        }
+
+        internal static XmlElement StartElement(this XmlNode parent, string name, Uri namespaceUri)
+        {
+            var xmlElement = parent.GetOwnerDoc().CreateElement(name, namespaceUri.OriginalString);
+            parent.AppendChild(xmlElement);
+            return xmlElement;
+        }
+
+        private static XmlDocument GetOwnerDoc(this XmlNode node)
+        {
+            var doc = node as XmlDocument;
+            if(doc != null)
+            {
+                return doc;
+            }
+
+            return node.OwnerDocument;
+        }
+
+        internal static XmlElement AddAttribute(this XmlElement parent, string name, string value)
+        {
+            parent.SetAttribute(name, value);
+
+            return parent;
+        }
+
+        internal static XmlElement AddAttributeIfNotNull(this XmlElement parent, string name, object value)
+        {
+            if(value != null)
+            {
+                parent.SetAttribute(name, value.ToString());
+            }
+            return parent;
+        }
+
+        internal static XmlElement If(this XmlElement parent, bool condition, Action<XmlElement> action)
+        {
+            if (condition)
+            {
+                action(parent);
+            }
+
+            return parent;
+        }
+
+        internal static XmlElement AddElement(this XmlElement parent, string name, Uri namespaceUri, string content)
+        {
+            parent.StartElement(name, namespaceUri)
+                .SetInnerText(content);
+
+            return parent;
+        }
+
+        internal static XmlElement SetInnerText(this XmlElement parent, string content)
+        {
+            parent.InnerText = content;
+            return parent;
+        }
+
+        /// <summary>
+        /// Pretty an xml element.
+        /// </summary>
+        /// <param name="xml">Xml to pretty print.</param>
+        /// <returns>Nicely indented and readable data.</returns>
+        [SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope", Justification = "I don't care, the StringWriter contains no references to unmanaged resources")]
+        public static string PrettyPrint(this XmlElement xml)
+        {
+            if(xml == null)
+            {
+                throw new ArgumentNullException(nameof(xml));
+            }
+
+            // Based on http://stackoverflow.com/a/1123731/280222
+            var strWriter = new StringWriter(CultureInfo.InvariantCulture);
+            using (var xmlWriter = new XmlTextWriter(strWriter))
+            {
+                xmlWriter.Formatting = Formatting.Indented;
+                xml.ParentNode.WriteContentTo(xmlWriter);
+                xmlWriter.Flush();
+                return strWriter.ToString();
             }
         }
     }

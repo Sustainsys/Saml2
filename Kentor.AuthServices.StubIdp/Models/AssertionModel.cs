@@ -11,6 +11,7 @@ using System.Security.Claims;
 using System.Security.Cryptography.X509Certificates;
 using System.Web;
 using System.Web.Hosting;
+using System.Xml;
 
 namespace Kentor.AuthServices.StubIdp.Models
 {
@@ -30,6 +31,8 @@ namespace Kentor.AuthServices.StubIdp.Models
 
         public ICollection<AttributeStatementModel> AttributeStatements { get; set; }
 
+        public const string DefaultSessionIndex = "42";
+
         /// <summary>
         /// Creates a new Assertion model with values from web.config
         /// </summary>
@@ -39,17 +42,27 @@ namespace Kentor.AuthServices.StubIdp.Models
             return new AssertionModel
             {
                 AssertionConsumerServiceUrl = ConfigurationManager.AppSettings["defaultAcsUrl"],
-                NameId = ConfigurationManager.AppSettings["defaultNameId"]
+                NameId = ConfigurationManager.AppSettings["defaultNameId"],
+                SessionIndex = DefaultSessionIndex
             };
         }
 
         [Display(Name = "In Response To ID")]
         public string InResponseTo { get; set; }
 
+        private static IEnumerable<string> YieldIfNotNullOrEmpty(string src)
+        {
+            if(!string.IsNullOrEmpty(src))
+            {
+                yield return src;
+            }
+        }
+
         public Saml2Response ToSaml2Response()
         {
             var claims =
                 new Claim[] { new Claim(ClaimTypes.NameIdentifier, NameId) }
+                .Concat(YieldIfNotNullOrEmpty(SessionIndex).Select(s => new Claim(AuthServicesClaimTypes.SessionIndex, SessionIndex)))
                 .Concat((AttributeStatements ?? Enumerable.Empty<AttributeStatementModel>()).Select(att => new Claim(att.Type, att.Value)));
             var identity = new ClaimsIdentity(claims);
 
@@ -69,5 +82,8 @@ namespace Kentor.AuthServices.StubIdp.Models
         public string AuthnRequestXml { get; set; }
 
         public Saml2BindingType ResponseBinding { get; set; } = Saml2BindingType.HttpPost;
+
+        [Display(Name = "Session Index")]
+        public string SessionIndex { get; set; }
     }
 }

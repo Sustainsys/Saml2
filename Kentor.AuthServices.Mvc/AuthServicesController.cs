@@ -61,21 +61,8 @@ namespace Kentor.AuthServices.Mvc
                 Request.ToHttpRequestData(),
                 Options);
 
-            result.SignInSessionAuthenticationModule();
+            result.SignInOrOutSessionAuthenticationModule();
             return result.ToActionResult();
-        }
-
-        /// <summary>
-        /// SignOut action that signs out the current user.
-        /// </summary>
-        /// <returns>Redirect to base url / </returns>
-        // Exclude from code coverage as it a) is very simple and b) can't be
-        // tested without shims that are only available in VSPremium.
-        [ExcludeFromCodeCoverage]
-        public ActionResult SignOut()
-        {
-            FederatedAuthentication.SessionAuthenticationModule.SignOut();
-            return Redirect(Url.Content("~/"));
         }
 
         /// <summary>
@@ -87,6 +74,21 @@ namespace Kentor.AuthServices.Mvc
             var result = CommandFactory.GetCommand(CommandFactory.MetadataCommand).Run(
                 Request.ToHttpRequestData(),
                 Options);
+            return result.ToActionResult();
+        }
+
+        /// <summary>
+        /// Logout locally and if Idp supports it, perform a federated logout
+        /// </summary>
+        /// <returns>ActionResult</returns>
+        [SuppressMessage("Microsoft.Naming", "CA1726:UsePreferredTerms", MessageId = "Logout")]
+        public ActionResult Logout()
+        {
+            var result = CommandFactory.GetCommand(CommandFactory.LogoutCommandName)
+                .Run(Request.ToHttpRequestData(), Options);
+
+            result.SignInOrOutSessionAuthenticationModule();
+            result.ApplyCookies(Response);
             return result.ToActionResult();
         }
     }

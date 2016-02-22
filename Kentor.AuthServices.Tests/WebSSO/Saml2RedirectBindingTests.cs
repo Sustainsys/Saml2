@@ -10,6 +10,8 @@ using Kentor.AuthServices.Tests.Helpers;
 using System.Security.Cryptography;
 using System.Text;
 using System.Xml;
+using System.IdentityModel.Metadata;
+using Kentor.AuthServices.Exceptions;
 
 namespace Kentor.AuthServices.Tests.WebSso
 {
@@ -72,21 +74,17 @@ namespace Kentor.AuthServices.Tests.WebSso
         }
 
         [TestMethod]
-        public void Saml2RedirectBinding_Unbind_WithoutRelayState()
+        public void Saml2RedirectBinding_Unbind_WithoutRelayStateAndSignature()
         {
             var request = new HttpRequestData("GET", new Uri("http://localhost?SAMLRequest=" + ExampleSerializedData));
 
             var result = Saml2Binding.Get(Saml2BindingType.HttpRedirect).Unbind(request, null);
 
-            var xmlDocument = new XmlDocument()
-            {
-                PreserveWhitespace = true
-            };
-
-            xmlDocument.LoadXml(ExampleXmlData);
+            var expectedXml = XmlHelpers.FromString(ExampleXmlData).DocumentElement;
 
             result.RelayState.Should().Be(null);
-            result.Data.OuterXml.Should().Be(xmlDocument.DocumentElement.OuterXml);
+            result.Data.Should().BeEquivalentTo(expectedXml);
+            result.TrustLevel.Should().Be(TrustLevel.None);
         }
 
 
@@ -151,19 +149,10 @@ namespace Kentor.AuthServices.Tests.WebSso
         [TestMethod]
         public void Saml2RedirectBinding_Bind_AddsSignature()
         {
-            var message = new Saml2MessageImplementation
-            {
-                XmlData = "Data",
-                RelayState = "SomeState that needs escaping #%=3",
-                DestinationUrl = new Uri("http://host"),
-                MessageName = "SAMLRequest",
-                SigningCertificate = SignedXmlHelper.TestCert
-            };
+            var actual = CreateAndBindMessageWithSignature();
 
-            var result = Saml2Binding.Get(Saml2BindingType.HttpRedirect).Bind(message);
-
-            var queryParams = HttpUtility.ParseQueryString(result.Location.Query);
-            var query = result.Location.Query.TrimStart('?');
+            var queryParams = HttpUtility.ParseQueryString(actual.Location.Query);
+            var query = actual.Location.Query.TrimStart('?');
 
             var signedData = query.Split(new[] { "&Signature=" }, StringSplitOptions.None)[0];
 
@@ -178,6 +167,150 @@ namespace Kentor.AuthServices.Tests.WebSso
             asymmetricSignatureDeformatter.VerifySignature(
                 hashAlg, Convert.FromBase64String(queryParams["Signature"]))
                 .Should().BeTrue("signature should be valid");
+        }
+
+        private static CommandResult CreateAndBindMessageWithSignature(
+            string issuer = "https://idp.example.com",
+            string messageName = "SAMLRequest",
+            bool includeRelayState = true
+            )
+        {
+            var message = new Saml2MessageImplementation
+            {
+                XmlData = "<Data/>",
+                RelayState = includeRelayState ? "SomeState that needs escaping #%=3" : null,
+                DestinationUrl = new Uri("http://host"),
+                MessageName = messageName,
+                SigningCertificate = SignedXmlHelper.TestCert
+            };
+
+            if(!string.IsNullOrEmpty(issuer))
+            {
+                message.XmlData = $"<Data><Issuer xmlns=\"{Saml2Namespaces.Saml2Name}\">{issuer}</Issuer></Data>";
+            }
+
+            var result = Saml2Binding.Get(Saml2BindingType.HttpRedirect).Bind(message);
+            return result;
+        }
+
+        [TestMethod]
+        public void Saml2RedirectBinding_CanUnbind_Nullcheck()
+        {
+            Saml2Binding.Get(Saml2BindingType.HttpRedirect)
+                .Invoking(b => b.CanUnbind(null))
+                .ShouldThrow<ArgumentNullException>()
+                .And.ParamName.Should().Be("request");
+        }
+
+        [TestMethod]
+        public void Saml2RedirectBinding_Unbind_HandlesValidSignature_SAMLResponse()
+        {
+            var url = CreateAndBindMessageWithSignature(messageName: "SAMLResponse").Location;
+
+            var request = new HttpRequestData("GET", url);
+
+            var actual = Saml2Binding.Get(request)
+                .Unbind(request, StubFactory.CreateOptions());
+
+            actual.TrustLevel.Should().Be(TrustLevel.Signature);
+        }
+
+        [TestMethod]
+        public void Saml2RedirectBinding_Unbind_HandlesValidSignature_SAMLRequest()
+        {
+            var url = CreateAndBindMessageWithSignature(messageName: "SAMLRequest").Location;
+
+            var request = new HttpRequestData("GET", url);
+
+            var actual = Saml2Binding.Get(request)
+                .Unbind(request, StubFactory.CreateOptions());
+
+            actual.TrustLevel.Should().Be(TrustLevel.Signature);
+        }
+        
+        [TestMethod]
+        public void Saml2RedirectBinding_Unbind_HandlesValidSignature_WithoutRelayState()
+        {
+            var url = CreateAndBindMessageWithSignature(includeRelayState: false).Location;
+
+            var request = new HttpRequestData("GET", url);
+
+            var actual = Saml2Binding.Get(request)
+                .Unbind(request, StubFactory.CreateOptions());
+
+            actual.TrustLevel.Should().Be(TrustLevel.Signature);
+        }
+
+        [TestMethod]
+        public void Saml2RedirectBinding_Unbind_TrustLevelNoneWithMissingSignature()
+        {
+            var url = CreateAndBindMessageWithSignature(null).Location;
+
+            var request = new HttpRequestData("GET", url);
+
+            var actual = Saml2Binding.Get(request)
+                .Unbind(request, StubFactory.CreateOptions());
+
+            actual.TrustLevel.Should().Be(TrustLevel.None);
+        }
+
+        [TestMethod]
+        public void Saml2RedirectBinding_Unbind_ThrowsOnSignatureWithUnknownIssuer()
+        {
+            var url = CreateAndBindMessageWithSignature("http://unknown.idp.example.com").Location;
+
+            var request = new HttpRequestData("GET", url);
+
+            var actual = Saml2Binding.Get(request)
+                .Invoking(b => b.Unbind(request, StubFactory.CreateOptions()))
+                .ShouldThrow<InvalidSignatureException>()
+                .WithMessage("Cannot verify signature of message from unknown sender http://unknown.idp.example.com.");
+        }
+
+        [TestMethod]
+        public void Saml2RedirectBinding_Unbind_ThrowsOnSignatureWithTamperedData_SAMLRequest()
+        {
+            var url = CreateAndBindMessageWithSignature(messageName: "SAMLRequest").Location.ToString();
+
+            url = url.Replace("RelayState=", "RelayState=X");
+
+            var request = new HttpRequestData("GET", new Uri(url));
+
+            Saml2Binding.Get(request)
+                .Invoking(b => b.Unbind(request, StubFactory.CreateOptions()))
+                .ShouldThrow<InvalidSignatureException>()
+                .WithMessage("Message from https://idp.example.com failed signature verification");
+        }
+
+        [TestMethod]
+        public void Saml2RedirectBinding_Unbind_ThrowsOnSignatureWithTamperedData_SAMLResponse()
+        {
+            var url = CreateAndBindMessageWithSignature(messageName: "SAMLResponse").Location.ToString();
+
+            url = url.Replace("RelayState=", "RelayState=X");
+
+            var request = new HttpRequestData("GET", new Uri(url));
+
+            Saml2Binding.Get(request)
+                .Invoking(b => b.Unbind(request, StubFactory.CreateOptions()))
+                .ShouldThrow<InvalidSignatureException>()
+                .WithMessage("Message from https://idp.example.com failed signature verification");
+        }
+
+        [TestMethod]
+        public void Saml2Redirectbinding_Unbind_TrustLevelNoneWithMissingOptions()
+        {
+            // The stub idp uses the binding, but doesn't provide an options
+            // instance - enable it to do so by ignoring certificates.
+
+            var url = CreateAndBindMessageWithSignature(messageName: "SAMLResponse").Location.ToString();
+
+            var request = new HttpRequestData("GET", new Uri(url));
+
+            var actual = Saml2Binding.Get(request)
+                .Unbind(request, null);
+
+            actual.TrustLevel.Should().Be(TrustLevel.None);
         }
     }
 }

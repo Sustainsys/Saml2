@@ -15,6 +15,7 @@ using Kentor.AuthServices.WebSso;
 using System.Threading.Tasks;
 using System.Net;
 using System.Collections.Concurrent;
+using System.Security.Claims;
 
 namespace Kentor.AuthServices
 {
@@ -40,12 +41,13 @@ namespace Kentor.AuthServices
 
         internal IdentityProvider(IdentityProviderElement config, ISPOptions spOptions)
         {
-            singleSignOnServiceUrl = config.DestinationUrl;
+            singleSignOnServiceUrl = config.SignOnUrl;
+            SingleLogoutServiceUrl = config.LogoutUrl;
             EntityId = new EntityId(config.EntityId);
             binding = config.Binding;
             AllowUnsolicitedAuthnResponse = config.AllowUnsolicitedAuthnResponse;
-            metadataLocation = string.IsNullOrEmpty(config.MetadataLocation) 
-                ?  null : config.MetadataLocation;
+            metadataLocation = string.IsNullOrEmpty(config.MetadataLocation)
+                ? null : config.MetadataLocation;
             WantAuthnRequestsSigned = config.WantAuthnRequestsSigned;
 
             var certificate = config.SigningCertificate.LoadCertificate();
@@ -53,6 +55,11 @@ namespace Kentor.AuthServices
             {
                 signingKeys.AddConfiguredKey(
                     new X509RawDataKeyIdentifierClause(certificate));
+            }
+
+            foreach (var ars in config.ArtifactResolutionServices)
+            {
+                ArtifactResolutionServiceUrls[ars.Index] = ars.Location;
             }
 
             // If configured to load metadata, this will immediately do the load.
@@ -170,6 +177,62 @@ namespace Kentor.AuthServices
         }
 
 
+        Uri singleLogoutServiceUrl;
+        /// <summary>
+        /// The Url of the single sign out service. This is where the browser
+        /// is redirected or where the post data is sent to when sending a
+        /// LogoutRequest to the idp.
+        /// </summary>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1726:UsePreferredTerms", MessageId = "Logout")]
+        public Uri SingleLogoutServiceUrl
+        {
+            get
+            {
+                ReloadMetadataIfRequired();
+                return singleLogoutServiceUrl;
+            }
+            set
+            {
+                singleLogoutServiceUrl = value;
+            }
+        }
+
+        Uri singleLogoutServiceResponseUrl;
+        /// <summary>
+        /// The Url to send single logout responses to. Defaults to 
+        /// SingleLogoutServiceUrl.
+        /// </summary>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1726:UsePreferredTerms", MessageId = "Logout")]
+        public Uri SingleLogoutServiceResponseUrl
+        {
+            get
+            {
+                ReloadMetadataIfRequired();
+                return singleLogoutServiceResponseUrl ?? SingleLogoutServiceUrl;
+            }
+        }
+
+        private Saml2BindingType singleLogoutServiceBinding;
+        /// <summary>
+        /// Binding for the Single logout service. If not set, returns the
+        /// same as the main binding (used for AuthnRequests)
+        /// </summary>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1726:UsePreferredTerms", MessageId = "Logout")]
+        public Saml2BindingType SingleLogoutServiceBinding
+        {
+            get
+            {
+                ReloadMetadataIfRequired();
+                return singleLogoutServiceBinding == 0
+                    ? Binding
+                    : singleLogoutServiceBinding;
+            }
+            set
+            {
+                singleLogoutServiceBinding = value;
+            }
+        }
+
         /// <summary>
         /// The Entity Id of the identity provider.
         /// </summary>
@@ -189,7 +252,7 @@ namespace Kentor.AuthServices
         /// (e.g. ~/App_Data/IdpMetadata.xml). By default the entity id is
         /// interpreted as the metadata location (which is a convention).
         /// </summary>
-        public string  MetadataLocation
+        public string MetadataLocation
         {
             get
             {
@@ -249,11 +312,11 @@ namespace Kentor.AuthServices
                 RequestedAuthnContext = spOptions.RequestedAuthnContext
             };
 
-            if(spOptions.AuthenticateRequestSigningBehavior == SigningBehavior.Always
+            if (spOptions.AuthenticateRequestSigningBehavior == SigningBehavior.Always
                 || (spOptions.AuthenticateRequestSigningBehavior == SigningBehavior.IfIdpWantAuthnRequestsSigned
                 && WantAuthnRequestsSigned))
             {
-                if(spOptions.SigningServiceCertificate == null)
+                if (spOptions.SigningServiceCertificate == null)
                 {
                     throw new ConfigurationErrorsException(
                         string.Format(
@@ -283,7 +346,7 @@ namespace Kentor.AuthServices
             return Saml2Binding.Get(Binding).Bind(request);
         }
 
-        private ConfiguredAndLoadedSigningKeysCollection signingKeys = 
+        private ConfiguredAndLoadedSigningKeysCollection signingKeys =
             new ConfiguredAndLoadedSigningKeysCollection();
 
         /// <summary>
@@ -366,7 +429,18 @@ namespace Kentor.AuthServices
                 singleSignOnServiceUrl = ssoService.Location;
             }
 
-            foreach(var ars in idpDescriptor.ArtifactResolutionServices)
+            var sloService = idpDescriptor.SingleLogoutServices
+                .Where(slo => slo.Binding == Saml2Binding.HttpRedirectUri
+                    || slo.Binding == Saml2Binding.HttpPostUri)
+                .FirstOrDefault();
+            if (sloService != null)
+            {
+                SingleLogoutServiceUrl = sloService.Location;
+                SingleLogoutServiceBinding = Saml2Binding.UriToSaml2BindingType(sloService.Binding);
+                singleLogoutServiceResponseUrl = sloService.ResponseLocation;
+            }
+
+            foreach (var ars in idpDescriptor.ArtifactResolutionServices)
             {
                 artifactResolutionServiceUrls[ars.Value.Index] = ars.Value.Location;
             }
@@ -420,6 +494,36 @@ namespace Kentor.AuthServices
                     DoLoadMetadata();
                 }
             }
+        }
+
+        /// <summary>
+        /// Create a logout request to the idp, for the current identity.
+        /// </summary>
+        /// <returns></returns>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "serviceCertificates")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "ServiceCertificates")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "ISPOptions")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1726:UsePreferredTerms", MessageId = "Logout")]
+        public Saml2LogoutRequest CreateLogoutRequest()
+        {
+            if (spOptions.SigningServiceCertificate == null)
+            {
+                throw new InvalidOperationException(string.Format(CultureInfo.InvariantCulture,
+                    "Tried to issue single logout request to {0}, but no signing certificate for the SP is configured and single logout requires signing. Add a certificate to the ISPOptions.ServiceCertificates collection, or to <serviceCertificates> element if you're using web.config.",
+                    EntityId.Id));
+            }
+
+            return new Saml2LogoutRequest()
+            {
+                DestinationUrl = SingleLogoutServiceUrl,
+                Issuer = spOptions.EntityId,
+                NameId = new Saml2NameIdentifier(
+                    ClaimsPrincipal.Current.FindFirst(AuthServicesClaimTypes.LogoutNameIdentifier)?.Value
+                    ?? ClaimsPrincipal.Current.FindFirst(ClaimTypes.NameIdentifier).Value),
+                SessionIndex =
+                    ClaimsPrincipal.Current.FindFirst(AuthServicesClaimTypes.SessionIndex).Value,
+                SigningCertificate = spOptions.SigningServiceCertificate,
+            };
         }
     }
 }

@@ -21,10 +21,13 @@ namespace Kentor.AuthServices.WebSso
         /// </summary>
         /// <param name="data">The data payload</param>
         /// <param name="relayState">The associated relay state.</param>
-        public UnbindResult(XmlElement data, string relayState)
+        /// <param name="trustLevel">Level of trust that can be put in data.
+        /// Does not care about any signature included in the data.</param>
+        public UnbindResult(XmlElement data, string relayState, TrustLevel trustLevel)
         {
             Data = data;
             RelayState = relayState;
+            TrustLevel = trustLevel;
         }
 
         /// <summary>
@@ -36,6 +39,12 @@ namespace Kentor.AuthServices.WebSso
         /// The associated relay state, if any. Otherwise null.
         /// </summary>
         public string RelayState { get; }
+
+        /// <summary>
+        /// Trust level indicating how much the message contents can be
+        /// trusted.
+        /// </summary>
+        public TrustLevel TrustLevel { get; }
     }
 
     /// <summary>
@@ -83,7 +92,9 @@ namespace Kentor.AuthServices.WebSso
         /// Extracts a message out of the current HttpRequest.
         /// </summary>
         /// <param name="request">Current HttpRequest.</param>
-        /// <param name="options">Options.</param>
+        /// <param name="options">Options, used to look up certificate information
+        /// in bindings that validate signatures. If set to null, the returned 
+        /// result will have TrustLevel.None.</param>
         /// <returns>Extracted message.</returns>
         public virtual UnbindResult Unbind(HttpRequestData request, IOptions options)
         {
@@ -96,10 +107,7 @@ namespace Kentor.AuthServices.WebSso
         /// </summary>
         /// <param name="request">HttpRequest to check for message.</param>
         /// <returns>True if the binding supports the current request.</returns>
-        protected internal virtual bool CanUnbind(HttpRequestData request)
-        {
-            return false;
-        }
+        protected internal abstract bool CanUnbind(HttpRequestData request);
 
         private static readonly IDictionary<Saml2BindingType, Saml2Binding> bindings =
             new Dictionary<Saml2BindingType, Saml2Binding>()

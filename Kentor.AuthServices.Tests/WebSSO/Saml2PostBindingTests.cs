@@ -23,7 +23,7 @@ namespace Kentor.AuthServices.Tests.WebSso
                 new KeyValuePair<string, string[]>("SAMLResponse", new string[] {encodedResponse })
             };
 
-            if(!string.IsNullOrEmpty(relayState))
+            if (!string.IsNullOrEmpty(relayState))
             {
                 formData.Add(new KeyValuePair<string, string[]>("RelayState", new string[] { relayState }));
             };
@@ -32,7 +32,9 @@ namespace Kentor.AuthServices.Tests.WebSso
                 "POST",
                 new Uri("http://example.com"),
                 "/ModulePath",
-                formData);
+                formData,
+                null,
+                null);
         }
 
         [TestMethod]
@@ -229,6 +231,49 @@ value=""" + expectedValue + @"""/>
             Saml2Binding.Get(Saml2BindingType.HttpPost)
                 .Invoking(b => b.CanUnbind(null))
                 .ShouldThrow<ArgumentNullException>().And.ParamName.Should().Be("request");
+        }
+
+        [TestMethod]
+        public void Saml2PostBinding_CanUnbind_DetectsRequests()
+        {
+            var requestData = Convert.ToBase64String(Encoding.UTF8.GetBytes("<data/>"));
+
+            var request = new HttpRequestData(
+                "POST",
+                new Uri("http://something"),
+                "/path",
+                new KeyValuePair<string, string[]>[]
+                {
+                    new KeyValuePair<string, string[]>("SAMLRequest", new[] { requestData })
+                },
+                null,
+                null);
+
+            Saml2Binding.Get(Saml2BindingType.HttpPost)
+                .CanUnbind(request).Should().BeTrue();
+        }
+
+        [TestMethod]
+        public void Saml2PostBinding_Unbind_Request()
+        {
+            var requestData = Convert.ToBase64String(Encoding.UTF8.GetBytes("<data/>"));
+
+            var request = new HttpRequestData(
+                "POST",
+                new Uri("http://something"),
+                "/path",
+                new KeyValuePair<string, string[]>[]
+                {
+                    new KeyValuePair<string, string[]>("SAMLRequest", new[] { requestData })
+                },
+                null,
+                null);
+
+            var actual = Saml2Binding.Get(request).Unbind(request, StubFactory.CreateOptions());
+
+            actual.Data.Should().BeEquivalentTo(XmlHelpers.FromString("<data/>").DocumentElement);
+            actual.RelayState.Should().BeNull();
+            actual.TrustLevel.Should().Be(TrustLevel.None);
         }
     }
 }

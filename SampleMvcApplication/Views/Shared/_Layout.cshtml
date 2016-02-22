@@ -25,7 +25,7 @@
                     <li>@Html.ActionLink("Secure", "Secure", "Home")</li>
                     @if(System.Web.HttpContext.Current.User.Identity.IsAuthenticated)
                     {
-                        <li>@Html.ActionLink("SignOut", "SignOut", "AuthServices")</li>
+                        <li>@Html.ActionLink("Logout", "Logout", "AuthServices")</li>
                     }
                 </ul>
             </div>

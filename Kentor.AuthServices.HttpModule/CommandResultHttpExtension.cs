@@ -9,6 +9,7 @@ using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web;
+using System.Web.Security;
 
 namespace Kentor.AuthServices.HttpModule
 {
@@ -37,6 +38,8 @@ namespace Kentor.AuthServices.HttpModule
 
             response.Cache.SetCacheability((HttpCacheability)commandResult.Cacheability);
 
+            ApplyCookies(commandResult, response);
+
             if (commandResult.HttpStatusCode == HttpStatusCode.SeeOther || commandResult.Location != null)
             {
                 if (commandResult.Location == null)
@@ -61,11 +64,53 @@ namespace Kentor.AuthServices.HttpModule
         }
 
         /// <summary>
+        /// Apply cookies of the CommandResult to the response.
+        /// </summary>
+        /// <param name="commandResult">Commandresult</param>
+        /// <param name="response">Response</param>
+        public static void ApplyCookies(this CommandResult commandResult, HttpResponseBase response)
+        {
+            if(commandResult == null)
+            {
+                throw new ArgumentNullException(nameof(commandResult));
+            }
+
+            if(response == null)
+            {
+                throw new ArgumentNullException(nameof(response));
+            }
+
+            if (!string.IsNullOrEmpty(commandResult.SetCookieName))
+            {
+                var protectedData = HttpRequestData.EscapeBase64CookieValue(
+                    Convert.ToBase64String(
+                        MachineKey.Protect(
+                            Encoding.UTF8.GetBytes(commandResult.SetCookieData),
+                            "Kentor.AuthServices")));
+
+                response.SetCookie(new HttpCookie(
+                    commandResult.SetCookieName,
+                    protectedData)
+                {
+                    HttpOnly = true
+                });
+            }
+
+            if (!string.IsNullOrEmpty(commandResult.ClearCookieName))
+            {
+                response.SetCookie(new HttpCookie(commandResult.ClearCookieName)
+                {
+                    Expires = new DateTime(1970, 01, 01)
+                });
+            }
+        }
+
+        /// <summary>
         /// Establishes an application session by calling the session authentication module.
         /// </summary>
         [SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", Justification = "Several words in the GitHub link")]
         [ExcludeFromCodeCoverage]
-        public static void SignInSessionAuthenticationModule(this CommandResult commandResult)
+        public static void SignInOrOutSessionAuthenticationModule(this CommandResult commandResult)
         {
             if (commandResult == null)
             {
@@ -86,6 +131,17 @@ namespace Kentor.AuthServices.HttpModule
 
                 FederatedAuthentication.SessionAuthenticationModule
                     .AuthenticateSessionSecurityToken(sessionToken, true);
+            }
+            if(commandResult.TerminateLocalSession && HttpContext.Current != null)
+            {
+                if(FederatedAuthentication.SessionAuthenticationModule == null)
+                {
+                    throw new InvalidOperationException(
+                        "FederatedAuthentication.SessionAuthenticationModule is null, make sure you have loaded the SessionAuthenticationModule in web.config. " +
+                        "See https://github.com/KentorIT/authservices/blob/master/doc/Configuration.md#loading-modules");
+                }
+
+                FederatedAuthentication.SessionAuthenticationModule.DeleteSessionTokenCookie();
             }
         }
     }

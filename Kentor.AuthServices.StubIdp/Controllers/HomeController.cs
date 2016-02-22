@@ -43,7 +43,7 @@ namespace Kentor.AuthServices.StubIdp.Controllers
                 }
             }
 
-            var requestData = Request.ToHttpRequestData();
+            var requestData = Request.ToHttpRequestData(false);
             if (requestData.QueryString["SAMLRequest"].Any())
             {
                 var extractedMessage = Saml2Binding.Get(Saml2BindingType.HttpRedirect)
@@ -56,7 +56,7 @@ namespace Kentor.AuthServices.StubIdp.Controllers
                 model.AssertionModel.InResponseTo = request.Id.Value;
                 model.AssertionModel.AssertionConsumerServiceUrl = request.AssertionConsumerServiceUrl.ToString();
                 model.AssertionModel.RelayState = extractedMessage.RelayState;
-                model.AssertionModel.AuthnRequestXml = extractedMessage.Data.OuterXml;
+                model.AssertionModel.AuthnRequestXml = extractedMessage.Data.PrettyPrint();
             }
 
             return View(model);

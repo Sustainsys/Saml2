@@ -62,7 +62,7 @@ namespace Kentor.AuthServices.Tests.WebSSO
             var xmlDocument = new XmlDocument() { PreserveWhitespace = true };
             xmlDocument.LoadXml("<message>   <child-node /> </message>");
 
-            var expected = new UnbindResult(xmlDocument.DocumentElement, relayState);
+            var expected = new UnbindResult(xmlDocument.DocumentElement, relayState, TrustLevel.None);
 
             result.ShouldBeEquivalentTo(expected);
             StubServer.LastArtifactResolutionSoapActionHeader.Should().Be(
@@ -112,7 +112,7 @@ namespace Kentor.AuthServices.Tests.WebSSO
             var xmlDocument = new XmlDocument() { PreserveWhitespace = true };
             xmlDocument.LoadXml("<message>   <child-node /> </message>");
 
-            var expected = new UnbindResult(xmlDocument.DocumentElement, null);
+            var expected = new UnbindResult(xmlDocument.DocumentElement, null, TrustLevel.None);
 
             result.ShouldBeEquivalentTo(expected);
             StubServer.LastArtifactResolutionSoapActionHeader.Should().Be(
@@ -149,7 +149,9 @@ namespace Kentor.AuthServices.Tests.WebSSO
                 {
                     new KeyValuePair<string, string[]>("SAMLart", new[] { artifact }),
                     new KeyValuePair<string, string[]>("RelayState", new[] { relayState })
-                });
+                },
+                null,
+                null);
 
             StubServer.LastArtifactResolutionSoapActionHeader = null;
 
@@ -158,7 +160,7 @@ namespace Kentor.AuthServices.Tests.WebSSO
             var xmlDocument = new XmlDocument() { PreserveWhitespace = true };
             xmlDocument.LoadXml("<message>   <child-node /> </message>");
 
-            var expected = new UnbindResult(xmlDocument.DocumentElement, relayState);
+            var expected = new UnbindResult(xmlDocument.DocumentElement, relayState, TrustLevel.None);
 
             result.ShouldBeEquivalentTo(expected);
             StubServer.LastArtifactResolutionSoapActionHeader.Should().Be(
@@ -179,7 +181,9 @@ namespace Kentor.AuthServices.Tests.WebSSO
                 new KeyValuePair<string, string[]>[]
                 {
                     new KeyValuePair<string, string[]>("SAMLart", new[] { artifact }),
-                });
+                },
+                null,
+                null);
 
             StubServer.LastArtifactResolutionSoapActionHeader = null;
 
@@ -188,7 +192,7 @@ namespace Kentor.AuthServices.Tests.WebSSO
             var xmlDocument = new XmlDocument() { PreserveWhitespace = true };
             xmlDocument.LoadXml("<message>   <child-node /> </message>");
 
-            var expected = new UnbindResult(xmlDocument.DocumentElement, null);
+            var expected = new UnbindResult(xmlDocument.DocumentElement, null, TrustLevel.None);
 
             result.ShouldBeEquivalentTo(expected);
             StubServer.LastArtifactResolutionSoapActionHeader.Should().Be(

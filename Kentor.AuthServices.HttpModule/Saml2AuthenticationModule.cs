@@ -28,18 +28,23 @@ namespace Kentor.AuthServices.HttpModule
       {
         throw new ArgumentNullException(nameof(context));
       }
-      context.BeginRequest += OnBeginRequest;
+
+      // Run our code post authentication to allow any session authentication
+      // to be done first (required by logout) but still execute as close
+      // as possible to the normal authentication step.
+      context.PostAuthenticateRequest += OnPostAuthenticateRequest;
 
       // Cache configuration during the lifecycle of this module including metadata, certificates etc. 
       options = Options.FromConfiguration;
     }
 
     /// <summary>
-    /// Begin request handler that captures all traffic to ~/Saml2AuthenticationModule/
+    /// Begin request handler that captures all traffic to configured module
+    /// path.
     /// </summary>
     /// <param name="sender">The http application.</param>
     /// <param name="e">Ignored</param>
-    protected virtual void OnBeginRequest(object sender, EventArgs e)
+    protected void OnPostAuthenticateRequest(object sender, EventArgs e)
     {
       var application = (HttpApplication)sender;
 
@@ -58,7 +63,7 @@ namespace Kentor.AuthServices.HttpModule
             new HttpRequestWrapper(application.Request).ToHttpRequestData(),
             options);
 
-        commandResult.SignInSessionAuthenticationModule();
+        commandResult.SignInOrOutSessionAuthenticationModule();
         commandResult.Apply(new HttpResponseWrapper(application.Response));
       }
     }

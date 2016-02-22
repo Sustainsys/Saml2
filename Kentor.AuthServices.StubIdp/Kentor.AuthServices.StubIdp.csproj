@@ -159,6 +159,7 @@
     <Compile Include="Controllers\DiscoveryServiceController.cs" />
     <Compile Include="Controllers\FederationController.cs" />
     <Compile Include="Controllers\BaseController.cs" />
+    <Compile Include="Controllers\LogoutController.cs" />
     <Compile Include="Controllers\ManageController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\MetadataController.cs" />
@@ -166,6 +167,7 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Models\HomePageModel.cs" />
+    <Compile Include="Models\LogoutModels.cs" />
     <Compile Include="Models\ManageIdpModel.cs" />
     <Compile Include="Models\AssertionModel.cs" />
     <Compile Include="Models\AttributeStatementModel.cs" />
@@ -181,6 +183,9 @@
     <Content Include="Views\DiscoveryService\Index.cshtml" />
     <Content Include="Views\Manage\Index.cshtml" />
     <Content Include="Views\Shared\_MetadataLink.cshtml" />
+    <Content Include="Views\Logout\InitiateLogout.cshtml" />
+    <Content Include="Views\Logout\RespondToLogout.cshtml" />
+    <Content Include="Views\Logout\ReceivedLogoutResponse.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

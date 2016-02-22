@@ -4,6 +4,7 @@ using System.Xml.Linq;
 using FluentAssertions;
 using System.Xml;
 using Kentor.AuthServices.Internal;
+using Kentor.AuthServices.Tests.Helpers;
 
 namespace Kentor.AuthServices.Tests.Internal
 {
@@ -124,6 +125,32 @@ namespace Kentor.AuthServices.Tests.Internal
             XmlElement e = null;
 
             e.GetTrimmedTextIfNotNull().Should().BeNull();
+        }
+
+        [TestMethod]
+        public void XmlHelpers_PrettyPrint_Nullcheck()
+        {
+            Action a = () => ((XmlElement)null).PrettyPrint();
+
+            a.ShouldThrow<ArgumentNullException>()
+                .And.ParamName.Should().Be("xml");
+        }
+
+        [TestMethod]
+        public void XmlHelpers_PrettyPrint()
+        {
+            var xmlDoc = new XmlDocument();
+            xmlDoc.LoadXml("<a><b>c</b></a>");
+
+            var result = xmlDoc.DocumentElement.PrettyPrint();
+
+            var parsed = XmlHelpers.FromString(result);
+
+            var expected = "<a>\r\n  <b>c</b>\r\n</a>";
+
+            parsed.OuterXml.Should().Be(expected);
+            // Don't change semantics.
+            parsed.DocumentElement.Should().BeEquivalentTo(xmlDoc.DocumentElement);
         }
     }
 }

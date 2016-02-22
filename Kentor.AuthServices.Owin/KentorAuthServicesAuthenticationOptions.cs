@@ -1,6 +1,7 @@
 ﻿using Kentor.AuthServices.Configuration;
 using Microsoft.Owin;
 using Microsoft.Owin.Security;
+using Microsoft.Owin.Security.DataProtection;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -26,7 +27,7 @@ namespace Kentor.AuthServices.Owin
         public KentorAuthServicesAuthenticationOptions(bool loadConfiguration)
             : base(Constants.DefaultAuthenticationType)
         {
-            AuthenticationMode = AuthenticationMode.Passive;
+            AuthenticationMode = AuthenticationMode.Active;
             Description.Caption = Constants.DefaultCaption;
 
             if (loadConfiguration)
@@ -76,5 +77,10 @@ namespace Kentor.AuthServices.Owin
                 Description.Caption = value;
             }
         }
+
+        /// <summary>
+        /// Gets or sets the type used to secure data handled by the middleware.
+        /// </summary>
+        internal IDataProtector DataProtector { get; set; }
     }
 }
