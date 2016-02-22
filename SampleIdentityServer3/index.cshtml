@@ -3,6 +3,13 @@
 <head>
     <title>IdentityServer3 Sample Application</title>
 	<meta charset="utf-8" />
+    <style>
+        #idp-initiated-logout-frame
+        {
+            width: 80%;
+            height: 500px;
+        }
+    </style>
 </head>
 <body>
     <h1>IdentityServer3 Sample Application</h1>
@@ -237,5 +244,29 @@
     </script>
 
     <iframe id="rp" style="display:none"></iframe>
+
+    <h1>Idp-initiated logout</h1>
+    <p>
+        Issue a front channel idp-initiated logout by loading the stub idp
+        in an iframe that auto-posts the logout.
+    </p>
+
+    <button id="idp-initiated-logout">Idp-initiated Logout</button>
+    <br />
+
+    <iframe id="idp-initiated-logout-frame" style="display:none"></iframe>
+
+    <script>
+        function idpLogout()
+        {
+            var iframe = document.getElementById("idp-initiated-logout-frame");
+            iframe.style = "";
+
+            iframe.src = "http://localhost:52071/Logout?NameId=JohnDoe&DestinationUrl=http://localhost:4589/IdSrv3/AuthServices/Logout&AutoPost=true";
+        }
+
+        document.getElementById("idp-initiated-logout").addEventListener("click", idpLogout);
+
+    </script>
 </body>
 </html>

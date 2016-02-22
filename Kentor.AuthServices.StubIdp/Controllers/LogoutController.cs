@@ -52,11 +52,12 @@ namespace Kentor.AuthServices.StubIdp.Controllers
                 }
             }
             {
-                var model = new InitiateLogoutModel()
-                {
-                    SessionIndex = AssertionModel.DefaultSessionIndex
-                };
+                var model = new InitiateLogoutModel();
 
+                if (Request.QueryString.AllKeys.Any())
+                {
+                    TryUpdateModel(model);
+                }
                 return View("InitiateLogout", model);
             }
         }

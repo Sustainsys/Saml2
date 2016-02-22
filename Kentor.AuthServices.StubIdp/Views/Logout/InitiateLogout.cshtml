@@ -19,4 +19,9 @@
         @Html.ValidationMessageFor(m => m.DestinationUrl)
     </div>
     <button id="submit">Log out</button>
+
+    if(Model.AutoPost)
+    {
+        <script>document.getElementById("submit").click();</script>
+    }
 }

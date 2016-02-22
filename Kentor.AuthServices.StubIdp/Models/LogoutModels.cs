@@ -13,6 +13,11 @@ namespace Kentor.AuthServices.StubIdp.Models
 {
     public class InitiateLogoutModel
     {
+        public InitiateLogoutModel()
+        {
+            SessionIndex = AssertionModel.DefaultSessionIndex;
+        }
+
         [Required]
         [DisplayName("SP Single Logout Url")]
         public Uri DestinationUrl { get; set; }
@@ -24,6 +29,8 @@ namespace Kentor.AuthServices.StubIdp.Models
         [Required]
         [DisplayName("Subject NameID")]
         public string NameId { get; set; }
+
+        public bool AutoPost { get; set; }
 
         public Saml2LogoutRequest ToLogoutRequest()
         {
