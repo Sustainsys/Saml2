@@ -269,7 +269,7 @@ namespace Kentor.AuthServices.Tests.WebSSO
             actualMessage.Should().BeEquivalentTo(expectedMessage);
 
             actualUnbindResult.RelayState.Should().Be(request.RelayState);
-            actualUnbindResult.TrustLevel.Should().Be(TrustLevel.SignatureSha160);
+            actualUnbindResult.TrustLevel.Should().Be(TrustLevel.Signature);
         }
 
         [TestMethod]

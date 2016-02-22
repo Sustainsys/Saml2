@@ -20,29 +20,25 @@ namespace Kentor.AuthServices
         /// The data was retreived through a request that was initiated from
         /// our end, but there was no transport protection.
         /// </summary>
-        HttpGet = 1,
+        HttpGet = 100,
 
         /// <summary>
         /// The data was retrevied through TLS protected request that was 
         /// initaited from our end, to a host that had a valid TLS certificate.
         /// </summary>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Tls")]
-        TlsTransport = 2,
+        TlsTransport = 200,
 
         /// <summary>
         /// The data was signed and have been verified by a signing key. The 
         /// data integrity algorithm is 160 bit Sha-1.
         /// </summary>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Sha")]
-        SignatureSha160 = 3,
-
-        // Deliberately made room for more values as more hash algorithms
-        // are introduced.
+        Signature = 300,
 
         /// <summary>
         /// Data is from a local configuration source. E.g. metadata or a
         /// certificate loaded from disk.
         /// </summary>
-        LocalConfiguration = 100
+        LocalConfiguration = 1000
     }
 }

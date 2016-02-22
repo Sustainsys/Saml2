@@ -137,7 +137,7 @@ namespace Kentor.AuthServices.WebSso
 
             CheckSignature(request, idp);
 
-            return TrustLevel.SignatureSha160;
+            return TrustLevel.Signature;
         }
 
         private static void CheckSignature(HttpRequestData request, IdentityProvider idp)

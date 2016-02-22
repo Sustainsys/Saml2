@@ -212,7 +212,7 @@ namespace Kentor.AuthServices.Tests.WebSso
             var actual = Saml2Binding.Get(request)
                 .Unbind(request, StubFactory.CreateOptions());
 
-            actual.TrustLevel.Should().Be(TrustLevel.SignatureSha160);
+            actual.TrustLevel.Should().Be(TrustLevel.Signature);
         }
 
         [TestMethod]
@@ -225,7 +225,7 @@ namespace Kentor.AuthServices.Tests.WebSso
             var actual = Saml2Binding.Get(request)
                 .Unbind(request, StubFactory.CreateOptions());
 
-            actual.TrustLevel.Should().Be(TrustLevel.SignatureSha160);
+            actual.TrustLevel.Should().Be(TrustLevel.Signature);
         }
         
         [TestMethod]
@@ -238,7 +238,7 @@ namespace Kentor.AuthServices.Tests.WebSso
             var actual = Saml2Binding.Get(request)
                 .Unbind(request, StubFactory.CreateOptions());
 
-            actual.TrustLevel.Should().Be(TrustLevel.SignatureSha160);
+            actual.TrustLevel.Should().Be(TrustLevel.Signature);
         }
 
         [TestMethod]

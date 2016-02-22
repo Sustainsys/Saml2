@@ -86,7 +86,7 @@ namespace Kentor.AuthServices.WebSso
 
         private static void VerifyMessageIsSigned(UnbindResult unbindResult, IOptions options)
         {
-            if (unbindResult.TrustLevel < TrustLevel.SignatureSha160)
+            if (unbindResult.TrustLevel < TrustLevel.Signature)
             {
                 var issuer = unbindResult.Data["Issuer", Saml2Namespaces.Saml2Name]?.InnerText;
 
