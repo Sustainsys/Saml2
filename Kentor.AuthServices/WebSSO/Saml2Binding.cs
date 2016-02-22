@@ -92,7 +92,9 @@ namespace Kentor.AuthServices.WebSso
         /// Extracts a message out of the current HttpRequest.
         /// </summary>
         /// <param name="request">Current HttpRequest.</param>
-        /// <param name="options">Options.</param>
+        /// <param name="options">Options, used to look up certificate information
+        /// in bindings that validate signatures. If set to null, the returned 
+        /// result will have TrustLevel.None.</param>
         /// <returns>Extracted message.</returns>
         public virtual UnbindResult Unbind(HttpRequestData request, IOptions options)
         {

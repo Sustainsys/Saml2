@@ -109,6 +109,11 @@ namespace Kentor.AuthServices.WebSso
             HttpRequestData request,
             IOptions options)
         {
+            if(options ==  null)
+            {
+                return TrustLevel.None;
+            }
+
             if(!request.QueryString["SigAlg"].Any())
             {
                 return TrustLevel.None;

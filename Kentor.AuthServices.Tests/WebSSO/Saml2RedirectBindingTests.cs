@@ -296,5 +296,21 @@ namespace Kentor.AuthServices.Tests.WebSso
                 .ShouldThrow<InvalidSignatureException>()
                 .WithMessage("Message from https://idp.example.com failed signature verification");
         }
+
+        [TestMethod]
+        public void Saml2Redirectbinding_Unbind_TrustLevelNoneWithMissingOptions()
+        {
+            // The stub idp uses the binding, but doesn't provide an options
+            // instance - enable it to do so by ignoring certificates.
+
+            var url = CreateAndBindMessageWithSignature(messageName: "SAMLResponse").Location.ToString();
+
+            var request = new HttpRequestData("GET", new Uri(url));
+
+            var actual = Saml2Binding.Get(request)
+                .Unbind(request, null);
+
+            actual.TrustLevel.Should().Be(TrustLevel.None);
+        }
     }
 }

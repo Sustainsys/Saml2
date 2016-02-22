@@ -527,5 +527,27 @@ namespace Kentor.AuthServices.Tests.WebSSO
                 .Invoking(c => c.Run(request, StubFactory.CreateOptions()))
                 .ShouldThrow<NotImplementedException>();
         }
+
+        [TestMethod]
+        public void LogoutCommand_Run_ThrowsOnMissingIssuerInReceivedMessage()
+        {
+            var msg = new Saml2MessageImplementation
+            {
+                MessageName = "SAMLRequest",
+                SigningCertificate = SignedXmlHelper.TestCert,
+                DestinationUrl = new Uri("http://localhost"),
+                XmlData = "<Xml />"
+            };
+
+            var url = Saml2Binding.Get(Saml2BindingType.HttpRedirect)
+                .Bind(msg).Location;
+
+            var request = new HttpRequestData("GET", url);
+
+            CommandFactory.GetCommand(CommandFactory.LogoutCommandName)
+                .Invoking(c => c.Run(request, StubFactory.CreateOptions()))
+                .ShouldThrow<InvalidSignatureException>()
+                .WithMessage("There is no Issuer element in the message, so there is no way to know what certificate to use to validate the signature.");
+        }
     }
 }

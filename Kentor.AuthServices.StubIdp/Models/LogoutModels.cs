@@ -60,6 +60,7 @@ namespace Kentor.AuthServices.StubIdp.Models
                 DestinationUrl = DestinationUrl,
                 SigningCertificate = CertificateHelper.SigningCertificate,
                 InResponseTo = new Saml2Id(InResponseTo),
+                Issuer = new EntityId(UrlResolver.MetadataUrl.ToString()),
                 RelayState = RelayState
             };
         }

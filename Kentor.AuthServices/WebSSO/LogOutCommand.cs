@@ -88,7 +88,12 @@ namespace Kentor.AuthServices.WebSso
         {
             if (unbindResult.TrustLevel < TrustLevel.SignatureSha160)
             {
-                var issuer = unbindResult.Data["Issuer", Saml2Namespaces.Saml2Name].InnerText;
+                var issuer = unbindResult.Data["Issuer", Saml2Namespaces.Saml2Name]?.InnerText;
+
+                if(issuer == null)
+                {
+                    throw new InvalidSignatureException("There is no Issuer element in the message, so there is no way to know what certificate to use to validate the signature.");
+                }
                 var idp = options.IdentityProviders[new EntityId(issuer)];
 
                 if (!unbindResult.Data.IsSignedByAny(idp.SigningKeys, options.SPOptions.ValidateCertificates))
