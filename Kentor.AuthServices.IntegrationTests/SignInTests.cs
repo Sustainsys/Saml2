@@ -71,10 +71,12 @@ namespace Kentor.AuthServices.IntegrationTests
 
             I.Assert.Text("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier - JohnDoe").In(".body-content ul li:first-child");
 
-            I.Click("a[href=\"/AuthServices/Logout\"");
+            I.Click("a[href=\"/AuthServices/Logout\"")
+                .Wait(2);
 
             I.Enter("http://localhost:2181/AuthServices/Logout").In("#DestinationUrl")
-                .Click("#submit");
+                .Click("#submit")
+                .Wait(2);
 
             I.Assert.Text("not signed in").In("#status");
         }
@@ -141,7 +143,7 @@ namespace Kentor.AuthServices.IntegrationTests
         }
 
         [TestMethod]
-        public void SignIn_SPInitiated_Owin_via_DiscoveryService()
+        public void SignInAndOut_SPInitiated_Owin_via_DiscoveryService()
         {
             I.Open("http://localhost:57294/Account/Login")
                 .Click("#KentorAuthServices")
