@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using Microsoft.Owin.Security;
 using Microsoft.Owin.Security.DataProtection;
 using Microsoft.Owin.Security.DataHandler;
+using System.Configuration;
 
 namespace Kentor.AuthServices.Owin
 {
@@ -24,7 +25,9 @@ namespace Kentor.AuthServices.Owin
         /// <param name="next">The next middleware in the pipeline.</param>
         /// <param name="app">The app that this middleware will be registered with.</param>
         /// <param name="options">Settings for the middleware.</param>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1062:Validate arguments of public methods", MessageId = "2", Justification="options is validated by base ctor. Test case for null options giving ArgumentNullException works.")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1062:Validate arguments of public methods", MessageId = "2", Justification = "options is validated by base ctor. Test case for null options giving ArgumentNullException works.")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "SPOptions")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "EntityId")]
         public KentorAuthServicesAuthenticationMiddleware(OwinMiddleware next, IAppBuilder app,
             KentorAuthServicesAuthenticationOptions options)
             :base (next, options)
@@ -34,7 +37,17 @@ namespace Kentor.AuthServices.Owin
                 throw new ArgumentNullException(nameof(app));
             }
 
-            if(string.IsNullOrEmpty(options.SignInAsAuthenticationType))
+            if (options.SPOptions == null)
+            {
+                throw new ConfigurationErrorsException("The options.SPOptions property cannot be null. There is an implementation class Kentor.AuthServices.Configuration.SPOptions that you can instantiate. The EntityId property of that class is mandatory. It must be set to the EntityId used to represent this system.");
+            }
+
+            if (options.SPOptions.EntityId == null)
+            {
+                throw new ConfigurationErrorsException("The SPOptions.EntityId property cannot be null. It must be set to the EntityId used to represent this system.");
+            }
+
+            if (string.IsNullOrEmpty(options.SignInAsAuthenticationType))
             {
                 options.SignInAsAuthenticationType = app.GetDefaultSignInAsAuthenticationType();
             }

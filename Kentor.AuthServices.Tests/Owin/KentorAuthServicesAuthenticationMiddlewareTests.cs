@@ -30,6 +30,7 @@ using System.Security.Principal;
 namespace Kentor.AuthServices.Tests.Owin
 {
     using Microsoft.Owin.Security.DataProtection;
+    using System.Configuration;
     using AuthenticateDelegate = Func<string[], Action<IIdentity, IDictionary<string, string>, IDictionary<string, object>, object>, object, Task>;
 
     [TestClass]
@@ -919,5 +920,36 @@ namespace Kentor.AuthServices.Tests.Owin
                 .ShouldBeEquivalentTo(expected, opt => opt.IgnoringCyclicReferences());
         }
 
+        [TestMethod]
+        public void KentorAuthServicesAuthenticationMiddleware_Ctor_NullCheckOptionsSpOptions()
+        {
+            var options = new KentorAuthServicesAuthenticationOptions(false);
+
+            Action a = () => new KentorAuthServicesAuthenticationMiddleware(
+                new StubOwinMiddleware(404),
+                CreateAppBuilder(),
+                options);
+
+            a.ShouldThrow<ConfigurationErrorsException>()
+                .WithMessage("The options.SPOptions property cannot be null. There is an implementation class Kentor.AuthServices.Configuration.SPOptions that you can instantiate. The EntityId property of that class is mandatory. It must be set to the EntityId used to represent this system.");
+        }
+
+        [TestMethod]
+        public void KentorAuthServicesAuthenticationMiddleware_Ctor_NullCheckOptionsSpOptionsEntityId()
+        {
+            var options = new KentorAuthServicesAuthenticationOptions(false)
+            {
+                SPOptions = new SPOptions()
+            };
+
+            Action a = () => new KentorAuthServicesAuthenticationMiddleware(
+                new StubOwinMiddleware(404),
+                CreateAppBuilder(),
+                options);
+
+            a.ShouldThrow<ConfigurationErrorsException>()
+                .WithMessage("The SPOptions.EntityId property cannot be null. It must be set to the EntityId used to represent this system.");
+
+        }
     }
 }
