@@ -52,7 +52,7 @@ read web.config, but can also be configured from code.
   </metadata>
   <identityProviders>
     <add entityId="https://stubidp.kentor.se/Metadata" 
-         destinationUrl="https://stubidp.kentor.se" 
+         signOnUrl="https://stubidp.kentor.se" 
          allowUnsolicitedAuthnResponse="true"
 		 binding="HttpRedirect"
 		 wantAuthnRequestsSigned="true">
@@ -445,7 +445,7 @@ A list of identity providers known to the service provider.
 
 ####Attributes
 * [`entityID`](#entityId-attribute-identityprovider)
-* [`destinationUrl`](#destinationuri-attribute)
+* [`signOnUrlUrl`](#signonurl-attribute)
 * [`allowUnsolicitedAuthnResponse`](#allowunsolicitedauthnresponse-attribute)
 * [`binding`](#binding-attribute)
 * [`wantAuthnRequestsSigned`](#wantauthnrequestssigned-attribute)
@@ -461,13 +461,13 @@ A list of identity providers known to the service provider.
 The issuer name that the idp will be using when sending responses. When `<loadMetadata>`
 is enabled, the `entityId` is treated as a URL to for downloading the metadata.
 
-####`destinationUrl` Attribute
+####`signOnUrl` Attribute
 *Optional attribute of the [`<add>`](#add-identityprovider-element) element*
 
-The uri where the identity provider listens for incoming requests. The 
-uri has to be written in a way that the client understands, since it is
-the client web browser that will be redirected to the uri. Specifically
-this means that using a host name only uri or a host name that only resolves
+The url where the identity provider listens for incoming sign on requests. The 
+url has to be written in a way that the client understands, since it is
+the client web browser that will be redirected to the url. Specifically
+this means that using a host name only url or a host name that only resolves
 on the network of the server won't work.
 
 ####`allowUnsolicitedAuthnResponse` Attribute
