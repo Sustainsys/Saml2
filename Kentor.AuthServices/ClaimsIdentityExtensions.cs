@@ -14,8 +14,25 @@ namespace Kentor.AuthServices
         /// <summary>
         /// Creates a Saml2Assertion from a ClaimsIdentity.
         /// </summary>
+        /// <param name="identity">Claims to include in Assertion.</param>
+        /// <param name="issuer">Issuer to include in assertion.</param>
         /// <returns>Saml2Assertion</returns>
         public static Saml2Assertion ToSaml2Assertion(this ClaimsIdentity identity, EntityId issuer)
+        {
+            return ToSaml2Assertion(identity, issuer, null);
+        }
+
+        /// <summary>
+        /// Creates a Saml2Assertion from a ClaimsIdentity.
+        /// </summary>
+        /// <param name="identity">Claims to include in Assertion.</param>
+        /// <param name="issuer">Issuer to include in assertion.</param>
+        /// <param name="audience">Audience to set as audience restriction.</param>
+        /// <returns>Saml2Assertion</returns>
+        public static Saml2Assertion ToSaml2Assertion(
+            this ClaimsIdentity identity,
+            EntityId issuer,
+            Uri audience)
         {
             if (identity == null)
             {
@@ -27,10 +44,11 @@ namespace Kentor.AuthServices
                 throw new ArgumentNullException(nameof(issuer));
             }
 
-            var assertion = new Saml2Assertion(new Saml2NameIdentifier(issuer.Id));
-
-            assertion.Subject = new Saml2Subject(new Saml2NameIdentifier(
-                identity.Claims.Single(c => c.Type == ClaimTypes.NameIdentifier).Value));
+            var assertion = new Saml2Assertion(new Saml2NameIdentifier(issuer.Id))
+            {
+                Subject = new Saml2Subject(new Saml2NameIdentifier(
+                    identity.Claims.Single(c => c.Type == ClaimTypes.NameIdentifier).Value)),
+            };
 
             assertion.Statements.Add(
                 new Saml2AuthenticationStatement(
@@ -57,6 +75,12 @@ namespace Kentor.AuthServices
             {
                 NotOnOrAfter = DateTime.UtcNow.AddMinutes(2)
             };
+
+            if(audience != null)
+            {
+                assertion.Conditions.AudienceRestrictions.Add(
+                    new Saml2AudienceRestriction(audience));
+            }
 
             return assertion;
         }
