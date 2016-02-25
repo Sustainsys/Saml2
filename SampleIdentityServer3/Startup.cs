@@ -128,9 +128,6 @@ namespace SampleIdentityServer3
 
             UseIdSrv3LogoutOnFederatedLogout(app, options);
 
-            options.SPOptions.SystemIdentityModelIdentityConfiguration.AudienceRestriction.AudienceMode 
-                = AudienceUriMode.Never;
-
             options.SPOptions.ServiceCertificates.Add(new X509Certificate2(
                 AppDomain.CurrentDomain.SetupInformation.ApplicationBase + "/App_Data/Kentor.AuthServices.Tests.pfx"));
 

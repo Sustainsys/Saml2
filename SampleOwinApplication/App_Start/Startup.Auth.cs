@@ -130,9 +130,6 @@ namespace SampleOwinApplication
 
             spOptions.AttributeConsumingServices.Add(attributeConsumingService);
 
-            spOptions.SystemIdentityModelIdentityConfiguration.AudienceRestriction.AudienceMode
-                = AudienceUriMode.Never;
-
             spOptions.ServiceCertificates.Add(new X509Certificate2(
                 AppDomain.CurrentDomain.SetupInformation.ApplicationBase + "/App_Data/Kentor.AuthServices.Tests.pfx"));
 
