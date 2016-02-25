@@ -155,6 +155,9 @@ validation, so don't be surprised if an Idp certificate doesn't pass validation.
 *Optional Attribute of the [`<kentor.authServices>`](#kentor-authservices-section) element.*
 
 Optional attribute that indicates the base url of the AuthServices endpoints.
+It should be the root path of the application. E.g. The SignIn url is built
+up as PublicOrigin + / + modulePath + /SignIn.
+
 Defaults to `Url` of the current http request if not specified. This can usually 
 be left as the default, but if your internal address of the application is 
 different than the external address the generated URLs (such as  `AssertionConsumerServiceURL` 
@@ -453,7 +456,8 @@ A list of identity providers known to the service provider.
 
 ####Attributes
 * [`entityID`](#entityId-attribute-identityprovider)
-* [`signOnUrlUrl`](#signonurl-attribute)
+* [`signOnUrl`](#signonurl-attribute)
+* [`logoutUrl`](#logouturl-attribute)
 * [`allowUnsolicitedAuthnResponse`](#allowunsolicitedauthnresponse-attribute)
 * [`binding`](#binding-attribute)
 * [`wantAuthnRequestsSigned`](#wantauthnrequestssigned-attribute)
@@ -477,6 +481,13 @@ url has to be written in a way that the client understands, since it is
 the client web browser that will be redirected to the url. Specifically
 this means that using a host name only url or a host name that only resolves
 on the network of the server won't work.
+
+####`logoutUrl` Attribute
+*Optional attribute of the [`<add>`](#add-identityprovider-element) element*
+
+The url where the identity provider listens for incoming logout requests and
+responses. To enable single logout behaviour there must also be a service
+certificate configured in AuthServices as all logout messages must be signed.
 
 ####`allowUnsolicitedAuthnResponse` Attribute
 *Attribute of the [`<add>`](#add-identityprovider-element) element*
