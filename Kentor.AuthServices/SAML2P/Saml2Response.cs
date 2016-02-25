@@ -135,7 +135,7 @@ namespace Kentor.AuthServices.Saml2P
         /// Create a response with the supplied data.
         /// </summary>
         /// <param name="issuer">Issuer of the response.</param>
-        /// <param name="issuerCertificate">The certificate to use when signing
+        /// <param name="signingCertificate">The certificate to use when signing
         /// this response in XML form.</param>
         /// <param name="destinationUrl">The destination Uri for the message</param>
         /// <param name="inResponseTo">In response to id</param>
@@ -144,10 +144,33 @@ namespace Kentor.AuthServices.Saml2P
         /// response. Each identity is translated into a separate assertion.</param>
         public Saml2Response(
             EntityId issuer,
+            X509Certificate2 signingCertificate,
+            Uri destinationUrl,
+            Saml2Id inResponseTo,
+            string relayState,
+            params ClaimsIdentity[] claimsIdentities)
+            : this(issuer, signingCertificate, destinationUrl, inResponseTo, relayState, null, claimsIdentities)
+        { }
+
+        /// <summary>
+        /// Create a response with the supplied data.
+        /// </summary>
+        /// <param name="issuer">Issuer of the response.</param>
+        /// <param name="issuerCertificate">The certificate to use when signing
+        /// this response in XML form.</param>
+        /// <param name="destinationUrl">The destination Uri for the message</param>
+        /// <param name="inResponseTo">In response to id</param>
+        /// <param name="relayState">RelayState associated with the message.</param>
+        /// <param name="claimsIdentities">Claims identities to be included in the 
+        /// <param name="audience">Audience of the response, set as AudienceRestriction</param>
+        /// response. Each identity is translated into a separate assertion.</param>
+        public Saml2Response(
+            EntityId issuer,
             X509Certificate2 issuerCertificate,
             Uri destinationUrl,
             Saml2Id inResponseTo,
             string relayState,
+            Uri audience,
             params ClaimsIdentity[] claimsIdentities)
         {
             Issuer = issuer;
@@ -158,6 +181,7 @@ namespace Kentor.AuthServices.Saml2P
             InResponseTo = inResponseTo;
             id = new Saml2Id("id" + Guid.NewGuid().ToString("N"));
             status = Saml2StatusCode.Success;
+            this.audience = audience;
         }
 
         /// <summary>
@@ -240,7 +264,7 @@ namespace Kentor.AuthServices.Saml2P
             foreach (var ci in claimsIdentities)
             {
                 responseElement.AppendChild(xml.ReadNode(
-                    ci.ToSaml2Assertion(Issuer).ToXElement().CreateReader()));
+                    ci.ToSaml2Assertion(Issuer, audience).ToXElement().CreateReader()));
             }
 
             xmlElement = xml.DocumentElement;
@@ -456,6 +480,8 @@ namespace Kentor.AuthServices.Saml2P
                 throw new Saml2ResponseFailedValidationException("The SAML Response is not signed and contains unsigned Assertions. Response cannot be trusted.");
             }
         }
+
+        private Uri audience;
 
         private IEnumerable<ClaimsIdentity> claimsIdentities;
         private Exception createClaimsException;

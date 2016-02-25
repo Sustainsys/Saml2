@@ -1,8 +1,14 @@
 kentor.AuthServices Configuration
 =============
-To use Kentor.AuthServices in an application it must be enabled in the 
-application's `web.config`. The sample applications contains complete
-working [`web.config`](../SampleApplication/Web.config) examples. For ASP.NET MVC applications see [`this working web.config`](../SampleMvcApplication/Web.config) example.
+To use Kentor.AuthServices in an application and configure it in web.config
+(which is the default for the httpmodule and mvc libraries) it must be enabled 
+in the application's `web.config`. The sample applications contains complete
+working [`web.config`](../SampleApplication/Web.config) examples. For 
+ASP.NET MVC applications see [`this working web.config`](../SampleMvcApplication/Web.config)
+example. Applications using the owin library usually make their configuration
+in code and in that case no web.config changes are needed. If an owin library
+is set up to use web.config (by passing `true` to the `KentorAuthServicesAuthenticationOptions` 
+constructor) the information here applies.
 
 ##Config Sections
 Three new config sections are required. Add these under `configuration/configSections`:

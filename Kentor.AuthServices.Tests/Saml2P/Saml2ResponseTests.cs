@@ -1782,9 +1782,37 @@ namespace Kentor.AuthServices.Tests.Saml2P
         }
 
         [TestMethod]
+        public void Saml2Response_Xml_FromData_ContainsAudienceRestriction()
+        {
+            var identity = new ClaimsIdentity(new Claim[]
+            {
+                new Claim(ClaimTypes.NameIdentifier, "JohnDoe")
+            });
+
+            var audience = "http://sp.example.com";
+
+            var subject = new Saml2Response(
+                new EntityId("issuer"),
+                SignedXmlHelper.TestCert,
+                new Uri("http://destination.example.com"),
+                new Saml2Id("InResponseToID"),
+                null,
+                new Uri(audience),
+                identity);
+
+            var actual = subject.XmlElement;
+
+            actual["Assertion", Saml2Namespaces.Saml2Name].Should().NotBeNull("Assertion element should be present")
+                .And.Subject["Conditions", Saml2Namespaces.Saml2Name].Should().NotBeNull("Conditions element should be present")
+                .And.Subject["AudienceRestriction", Saml2Namespaces.Saml2Name].Should().NotBeNull("AudienceRestriction element should be present")
+                .And.Subject["Audience", Saml2Namespaces.Saml2Name].Should().NotBeNull("Audience element should be present")
+                .And.Subject.InnerText.Should().Be(audience);
+        }
+
+        [TestMethod]
         public void Saml2Response_FromData_RelayState()
         {
-            var subject = new Saml2Response(new EntityId("issuer"), null, null, null, "ABC123", null);
+            var subject = new Saml2Response(new EntityId("issuer"), null, null, null, "ABC123");
 
             subject.RelayState.Should().Be("ABC123");
         }

@@ -117,5 +117,24 @@ namespace Kentor.AuthServices.Tests
             // Default validity time is hearby defined to two minutes.
             a.Conditions.NotOnOrAfter.Value.Should().BeCloseTo(DateTime.UtcNow.AddMinutes(2));
         }
+
+        [TestMethod]
+        public void ClaimsIdentityExtensions_ToSaml2Assertion_Includes_AudienceRestriction()
+        {
+            var ci = new ClaimsIdentity(new Claim[] {
+                new Claim(ClaimTypes.NameIdentifier, "JohnDoe")
+            });
+
+            var audience = "http://sp.example.com/";
+
+            var a = ci.ToSaml2Assertion(
+                new EntityId("http://idp.example.com/"),
+                new Uri(audience));
+
+            a.Conditions.AudienceRestrictions.Should().HaveCount(1, "there should be one set of audience restrictions")
+                .And.Subject.Single().Audiences.Should().HaveCount(1, "there should be one allowed audience")
+                .And.Subject.Single().AbsoluteUri.Should()
+                .Be("http://sp.example.com/");
+        }
     }
 }

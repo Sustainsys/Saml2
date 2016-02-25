@@ -19,6 +19,7 @@ namespace Kentor.AuthServices.IntegrationTests
         {
             I.Open("http://localhost:52071/")
                 .Enter("http://localhost:2181/AuthServices/Acs").In("#AssertionModel_AssertionConsumerServiceUrl")
+                .Enter("http://localhost:2181/AuthServices").In("#AssertionModel_Audience")
                 .Click("#binding_artifact")
                 .Click("#submit");
 
@@ -41,6 +42,7 @@ namespace Kentor.AuthServices.IntegrationTests
         {
             I.Open("http://localhost:52071/")
                 .Enter("http://localhost:17009/SamplePath/AuthServices/Acs").In("#AssertionModel_AssertionConsumerServiceUrl")
+                .Enter("http://localhost:17009/SamplePath/AuthServices").In("#AssertionModel_Audience")
                 .Click("#submit")
                 .Assert.Text("JohnDoe").In("tbody tr td:nth-child(2)");
 
@@ -115,11 +117,10 @@ namespace Kentor.AuthServices.IntegrationTests
         [TestMethod]
         public void SignInAndOut_IdpInitiated_Owin()
         {
-            I.Open("http://localhost:52071/");
-
-            I.Enter("http://localhost:57294/AuthServices/Acs").In("#AssertionModel_AssertionConsumerServiceUrl");
-
-            I.Enter("IntegrationTestNameId").In("#AssertionModel_NameId");
+            I.Open("http://localhost:52071/")
+                .Enter("http://localhost:57294/AuthServices/Acs").In("#AssertionModel_AssertionConsumerServiceUrl")
+                .Enter("IntegrationTestNameId").In("#AssertionModel_NameId")
+                .Enter("http://localhost:57294/AuthServices").In("#AssertionModel_Audience");
 
             I.Click("#submit")
                 .Wait(1);

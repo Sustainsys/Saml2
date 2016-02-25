@@ -26,9 +26,19 @@ namespace Kentor.AuthServices
                 throw new ArgumentNullException(nameof(conditions));
             }
 
-            return new XElement(Saml2Namespaces.Saml2 + "Conditions",
-                    new XAttribute("NotOnOrAfter", 
-                        conditions.NotOnOrAfter.Value.ToSaml2DateTimeString()));
+            var xml = new XElement(Saml2Namespaces.Saml2 + "Conditions");
+
+            xml.AddAttributeIfNotNullOrEmpty("NotOnOrAfter",
+                    conditions.NotOnOrAfter?.ToSaml2DateTimeString());
+
+            foreach(var ar in conditions.AudienceRestrictions)
+            {
+                xml.Add(new XElement(Saml2Namespaces.Saml2 + "AudienceRestriction",
+                    ar.Audiences.Select(a =>
+                    new XElement(Saml2Namespaces.Saml2 + "Audience", a.OriginalString))));
+            }
+
+            return xml;
         }
     }
 }
