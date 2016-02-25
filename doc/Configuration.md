@@ -82,7 +82,7 @@ Root element of the config section.
 * [`modulePath`](#modulepath-attribute)
 * [`authenticateRequestSigningBehavior`](#authenticaterequestsigningbehavior-attribute)
 * [`validateCertificates`](#validatecertificates-attribute)
-* [`publicOrigin`](#publicOrigin-attribute)
+* [`publicOrigin`](#publicorigin-attribute)
 
 ####Elements
 * [`<nameIdPolicy>`](#nameidpolicy-element)
@@ -149,11 +149,13 @@ validation, so don't be surprised if an Idp certificate doesn't pass validation.
 *Optional Attribute of the [`<kentor.authServices>`](#kentor-authservices-section) element.*
 
 Optional attribute that indicates the base url of the AuthServices endpoints.
-Defaults to `Url` of the current request base `System.Web.HttpRequestBase` if
-not specified. This can usually be left as the default, but if your internal
-address of the application is diffrent the external address this can correct a
-wrongly set `AssertionConsumerServiceURL` in the `saml2p:AuthnRequest`.
-This might not be accurate in reverse proxy or load-balancing situations. 
+Defaults to `Url` of the current http request if not specified. This can usually 
+be left as the default, but if your internal address of the application is 
+different than the external address the generated URLs (such as  `AssertionConsumerServiceURL` 
+in the `saml2p:AuthnRequest`) will be incorrect. The use case for this is typically 
+with load balancers or reverse proxies. It can also be used if the application
+can be accessed by several external URLs to make sure that the registered in
+metadata is used in communication with the Idp.
 
 ###`<nameIdPolicy>` Element
 *Optional child element of the [`<kentor.authServices>`](#kentor-authservices-section) element.*
