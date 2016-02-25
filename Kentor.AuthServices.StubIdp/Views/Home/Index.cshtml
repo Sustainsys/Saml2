@@ -71,6 +71,12 @@ else
     </div>
 
     <div class="hide-details">
+        @Html.LabelFor(m => m.AssertionModel.Audience)
+        @Html.EditorFor(m => m.AssertionModel.Audience)
+        @Html.ValidationMessageFor(m => m.AssertionModel.Audience)
+    </div>
+
+    <div class="hide-details">
         <label>Send response via</label>
         <div class="radio-button-group">
             <input type="radio" name="AssertionModel.ResponseBinding" id="binding_post" 

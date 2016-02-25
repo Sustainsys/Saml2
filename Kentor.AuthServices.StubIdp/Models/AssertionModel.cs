@@ -29,6 +29,9 @@ namespace Kentor.AuthServices.StubIdp.Models
         [Required]
         public string NameId { get; set; }
 
+        [Display(Name = "Audience")]
+        public string Audience { get; set; }
+
         public ICollection<AttributeStatementModel> AttributeStatements { get; set; }
 
         public const string DefaultSessionIndex = "42";
@@ -71,11 +74,15 @@ namespace Kentor.AuthServices.StubIdp.Models
             {
                 saml2Id = new Saml2Id(InResponseTo);
             }
+            
+            var audienceUrl = string.IsNullOrEmpty(Audience)
+                ? null
+                : new Uri(Audience);
 
             return new Saml2Response(
                 new EntityId(UrlResolver.MetadataUrl.ToString()),
                 CertificateHelper.SigningCertificate, new Uri(AssertionConsumerServiceUrl),
-                saml2Id, RelayState, identity);
+                saml2Id, RelayState, audienceUrl, identity);
         }
 
         [Display(Name = "Incoming AuthnRequest")]
