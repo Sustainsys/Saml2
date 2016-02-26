@@ -37,6 +37,11 @@ namespace Kentor.AuthServices.StubIdp.Controllers
                         // Override default StubIdp Acs with Acs from IdpConfiguration
                         model.AssertionModel.AssertionConsumerServiceUrl = fileData.DefaultAssertionConsumerServiceUrl;
                     }
+                    if(!string.IsNullOrEmpty(fileData.DefaultAssertionConsumerServiceUrl))
+                    {
+                        model.AssertionModel.Audience = fileData.DefaultAudience;
+                    }
+
                     model.CustomDescription = fileData.IdpDescription;
                     model.AssertionModel.NameId = null;
                     model.HideDetails = fileData.HideDetails;

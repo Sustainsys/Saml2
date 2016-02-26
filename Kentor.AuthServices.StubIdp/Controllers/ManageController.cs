@@ -34,7 +34,8 @@ namespace Kentor.AuthServices.StubIdp.Controllers
             {
                 var defaultData = System.IO.File.ReadAllText(GetIdpFileNamePath(defaultIdpGuid));
                 var defaultJson = JObject.Parse(defaultData);
-                defaultJson["DefaultAssertionConsumerServiceUrl"] = "http://www.example.com/Metadata (optional, you may remove this line)";
+                defaultJson["DefaultAssertionConsumerServiceUrl"] = "http://www.example.com/AuthServices/Acs (optional, you may remove this line)";
+                defaultJson["DefaultAudience"] = "http://www.example.com/AuthServices (optional, but usually a good idea to set to Entity ID of SP)";
                 defaultJson["IdpDescription"] = "This is my custom IDP description";
                 model.JsonData = defaultJson.ToString(Newtonsoft.Json.Formatting.Indented);
             }
@@ -69,6 +70,7 @@ namespace Kentor.AuthServices.StubIdp.Controllers
             if (!parsedJson.IsValid(schema, out errorMessages))
             {
                 ModelState.AddModelError("JsonData", "Json does not match schema. " + string.Join(" ", errorMessages));
+                return View(model);
             }
 
             var fileName = GetIdpFileNamePath(idpId);

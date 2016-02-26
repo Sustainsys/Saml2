@@ -16,6 +16,7 @@ namespace Kentor.AuthServices.StubIdp.Models
             JsonData = jsonData;
             ETag = ComputeEtag(jsonData);
             DefaultAssertionConsumerServiceUrl = GetJsonValue(jsonData, "DefaultAssertionConsumerServiceUrl");
+            DefaultAudience = GetJsonValue(JsonData, "DefaultAudience");
             IdpDescription = GetJsonValue(jsonData, "IdpDescription");
             HideDetails = (GetJsonValue(jsonData, "HideDetails") ?? "true").ToLower() == "true";
         }
@@ -44,14 +45,15 @@ namespace Kentor.AuthServices.StubIdp.Models
             }
             return sb.ToString();
         }
-        public string JsonData { get; private set; }
+        public string JsonData { get; }
+        public string ETag { get; }
 
-        public string ETag { get; private set; }
+        public string DefaultAssertionConsumerServiceUrl { get; }
 
-        public string DefaultAssertionConsumerServiceUrl { get; private set; }
+        public string DefaultAudience { get; }
 
-        public string IdpDescription { get; private set; }
+        public string IdpDescription { get;}
 
-        public bool HideDetails { get; private set; }
+        public bool HideDetails { get; }
     }
 }
