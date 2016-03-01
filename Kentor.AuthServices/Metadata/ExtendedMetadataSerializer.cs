@@ -179,56 +179,14 @@ namespace Kentor.AuthServices.Metadata
 
         protected override ServiceProviderSingleSignOnDescriptor ReadServiceProviderSingleSignOnDescriptor(XmlReader reader)
         {
-            if (reader == null)
-            {
-                throw new ArgumentNullException("reader");
-            }
-
             reader.Skip();
-
             return CreateServiceProviderSingleSignOnDescriptorInstance();
         }
 
         protected override Organization ReadOrganization(XmlReader reader)
         {
-            if (reader == null)
-            {
-                throw new ArgumentNullException("reader");
-            }
-
-            Organization organizationInstance = CreateOrganizationInstance();
-            ReadCustomAttributes(reader, organizationInstance);
-            int num = reader.IsEmptyElement ? 1 : 0;
-            reader.ReadStartElement();
-            if (num == 0)
-            {
-                while (reader.IsStartElement())
-                {
-                    if (reader.IsStartElement("OrganizationName", "urn:oasis:names:tc:SAML:2.0:metadata"))
-                    {
-                        organizationInstance.Names.Add(ReadLocalizedName(reader));
-                    }
-                    else if (reader.IsStartElement("OrganizationDisplayName", "urn:oasis:names:tc:SAML:2.0:metadata"))
-                    {
-                        organizationInstance.DisplayNames.Add(ReadLocalizedName(reader));
-                    }
-                    else if (reader.IsStartElement("OrganizationURL", "urn:oasis:names:tc:SAML:2.0:metadata"))
-                    {
-                        // ensures that no two organization url's with the same language are added
-                        var localizedUri = ReadLocalizedUri(reader);
-                        if (!organizationInstance.Urls.Contains(localizedUri.Language))
-                        {
-                            organizationInstance.Urls.Add(localizedUri);
-                        }
-                    }
-                    else if (!ReadCustomElement(reader, organizationInstance))
-                    {
-                        reader.Skip();
-                    }
-                }
-                reader.ReadEndElement();
-            }
-            return organizationInstance;
+            reader.Skip();
+            return CreateOrganizationInstance();
         }
     }
 }

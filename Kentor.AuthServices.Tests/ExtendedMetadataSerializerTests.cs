@@ -301,33 +301,9 @@ gosrSG6sO3IPeL4BncKqqZO2FokfZbaqPBv6xmoKsVTUTQRfNEks84dRiG0MjqBncR+B6CIrCv2a
 
             var organizationInfo = entityDescriptor.Organization;
 
-            organizationInfo.Names[0].Name.Should().Be("Test Org");
-            organizationInfo.DisplayNames[0].Name.Should().Be("Test Org Name");
-            organizationInfo.Urls.Count.Should().Be(2);
-        }
-
-        [TestMethod]
-        public void ExtendedMetadataSerializer_Read_Organization_IgnoreDuplicateLanguages()
-        {
-            var data =
-@"<md:EntityDescriptor xmlns:md=""urn:oasis:names:tc:SAML:2.0:metadata"" entityID=""http://idp-acc.test.ek.sll.se/neas"">
-    <md:Organization>
-      <md:OrganizationName xml:lang=""en"">Test Org</md:OrganizationName>
-      <md:OrganizationDisplayName xml:lang=""en"">Test Org Name</md:OrganizationDisplayName>
-      <md:OrganizationURL xml:lang=""en"">https://idp.maggie.bif.ost.se:9445/idp/saml</md:OrganizationURL>
-      <md:OrganizationURL xml:lang=""da"">https://idp.maggie.bif.ost.se:9445/idp/saml</md:OrganizationURL>
-      <md:OrganizationURL xml:lang=""en"">https://idp.maggie.bif.ost.se:9445/idp/saml</md:OrganizationURL>
-    </md:Organization>
-  </md:EntityDescriptor>";
-
-            var entityDescriptor = (ExtendedEntityDescriptor)ExtendedMetadataSerializer.ReaderInstance.ReadMetadata(
-                new MemoryStream(Encoding.UTF8.GetBytes(data)));
-
-            var organizationInfo = entityDescriptor.Organization;
-
-            organizationInfo.Urls.Count.Should().Be(2);
-            organizationInfo.Urls[0].Language.Should().Be(new CultureInfo("en"));
-            organizationInfo.Urls[1].Language.Should().Be(new CultureInfo("da"));
+            organizationInfo.Names.Count.Should().Be(0);
+            organizationInfo.DisplayNames.Count.Should().Be(0);
+            organizationInfo.Urls.Count.Should().Be(0);
         }
     }
 }
