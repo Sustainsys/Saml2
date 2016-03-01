@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.IO;
 using System.Text;
@@ -260,6 +261,49 @@ gosrSG6sO3IPeL4BncKqqZO2FokfZbaqPBv6xmoKsVTUTQRfNEks84dRiG0MjqBncR+B6CIrCv2a
 
             keyInfo.Count.Should().Be(1);
             keyInfo[0].Should().BeOfType<RsaKeyIdentifierClause>();
+        }
+
+        [TestMethod]
+        public void ExtendedMetadataSerializer_Read_ServiceProviderSingleSignOnDescriptor()
+        {
+            var data =
+@"<md:EntityDescriptor xmlns:md=""urn:oasis:names:tc:SAML:2.0:metadata"" entityID=""http://idp-acc.test.ek.sll.se/neas"">
+    <md:SPSSODescriptor AuthnRequestsSigned=""false"" WantAssertionsSigned=""true"" protocolSupportEnumeration=""urn:oasis:names:tc:SAML:2.0:protocol"">
+      <md:SingleLogoutService Binding=""urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST"" Location=""https://maggie.bif.ost.se:9443/sp/saml/slo/HTTP-POST""/>
+      <md:AssertionConsumerService Binding=""urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST"" Location=""https://maggie.bif.ost.se:9443/sp/saml/sso/HTTP-POST"" index=""1"" isDefault=""true""/>
+      <md:AssertionConsumerService Binding=""urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST"" Location=""https://maggie.bif.ost.se:9443/sp/saml/sso/POST"" index=""1"" isDefault=""true""/>
+	</md:SPSSODescriptor>
+ </md:EntityDescriptor>";
+
+            var entityDescriptor = (ExtendedEntityDescriptor)ExtendedMetadataSerializer.ReaderInstance.ReadMetadata(
+                new MemoryStream(Encoding.UTF8.GetBytes(data)));
+
+            var spssoInfo = entityDescriptor.RoleDescriptors.Cast<ServiceProviderSingleSignOnDescriptor>().Single();
+
+            spssoInfo.AssertionConsumerServices.Count.Should().Be(0);
+        }
+
+        [TestMethod]
+        public void ExtendedMetadataSerializer_Read_Organization()
+        {
+            var data =
+@"<md:EntityDescriptor xmlns:md=""urn:oasis:names:tc:SAML:2.0:metadata"" entityID=""http://idp-acc.test.ek.sll.se/neas"">
+    <md:Organization>
+      <md:OrganizationName xml:lang=""en"">Test Org</md:OrganizationName>
+      <md:OrganizationDisplayName xml:lang=""en"">Test Org Name</md:OrganizationDisplayName>
+      <md:OrganizationURL xml:lang=""en"">https://idp.maggie.bif.ost.se:9445/idp/saml</md:OrganizationURL>
+      <md:OrganizationURL xml:lang=""da"">https://idp.maggie.bif.ost.se:9445/idp/saml</md:OrganizationURL>
+    </md:Organization>
+  </md:EntityDescriptor>";
+
+            var entityDescriptor = (ExtendedEntityDescriptor)ExtendedMetadataSerializer.ReaderInstance.ReadMetadata(
+                new MemoryStream(Encoding.UTF8.GetBytes(data)));
+
+            var organizationInfo = entityDescriptor.Organization;
+
+            organizationInfo.Names.Count.Should().Be(0);
+            organizationInfo.DisplayNames.Count.Should().Be(0);
+            organizationInfo.Urls.Count.Should().Be(0);
         }
     }
 }

@@ -176,5 +176,19 @@ namespace Kentor.AuthServices.Metadata
         {
             return new ExtendedEntitiesDescriptor();
         }
+
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1062:Validate arguments of public methods", MessageId = "0")]
+        protected override ServiceProviderSingleSignOnDescriptor ReadServiceProviderSingleSignOnDescriptor(XmlReader reader)
+        {
+            reader.Skip();
+            return CreateServiceProviderSingleSignOnDescriptorInstance();
+        }
+
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1062:Validate arguments of public methods", MessageId = "0")]
+        protected override Organization ReadOrganization(XmlReader reader)
+        {
+            reader.Skip();
+            return CreateOrganizationInstance();
+        }
     }
 }
