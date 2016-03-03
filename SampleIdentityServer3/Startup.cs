@@ -74,8 +74,9 @@ namespace SampleIdentityServer3
             {
                 Authority = "http://localhost:4589/IdSrv3",
                 ClientId = "serverside",
+                ClientSecret = "somesecret",
                 RedirectUri = "http://localhost:4589/",
-                ResponseType = "id_token",
+                ResponseType = "code id_token",
 
                 SignInAsAuthenticationType = "Cookies"
             });

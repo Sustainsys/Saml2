@@ -14,7 +14,11 @@ namespace SampleIdentityServer3
                     Enabled = true,
                     ClientName = "Server Side client",
                     ClientId = "serverside",
-                    Flow = Flows.Implicit,
+                    Flow = Flows.Hybrid,
+                    ClientSecrets = new List<Secret>()
+                    {
+                        new Secret("somesecret")
+                    },
 
                     RedirectUris = new List<string>
                     {
