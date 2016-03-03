@@ -155,9 +155,11 @@ namespace SampleIdentityServer3
             {
                 await next.Invoke();
 
+                var httpContext = context.Get<HttpContextBase>(typeof(HttpContextBase).FullName);
+
                 if (context.Authentication.AuthenticationResponseRevoke != null
                     && context.Response.StatusCode % 100 == 3
-                    && !HttpContext.Current.Response.HeadersWritten)
+                    && (httpContext == null || !httpContext.Response.HeadersWritten))
                 {
                     var finalLocation = context.Response.Headers["Location"];
 
