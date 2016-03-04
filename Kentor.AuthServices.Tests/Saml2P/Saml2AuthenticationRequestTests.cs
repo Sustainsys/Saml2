@@ -234,26 +234,27 @@ namespace Kentor.AuthServices.Tests.Saml2P
         }
 
         [TestMethod]
-        public void Saml2AuthenticationRequest_ToXElement_AddsRequestedAuthnContext()
+        public void Saml2AuthenticationRequest_ToXElement_AddsRequestedAuthnContext_ComparisonTypeMaximum()
         {
-            var classRef = "http://www.kentor.se";
-            var subject = new Saml2AuthenticationRequest()
-            {
-                AssertionConsumerServiceUrl = new Uri("http://destination.example.com"),
-                RequestedAuthnContext = new Saml2RequestedAuthnContext(new Uri(classRef), AuthnContextComparisonType.Maximum)
-            }.ToXElement();
+            Saml2AuthenticationRequest_ToXElement_AddsRequestedAuthnContextUtil(AuthnContextComparisonType.Maximum, "maximum");
+        }
 
-            var expected = new XElement(Saml2Namespaces.Saml2P + "root",
-                new XAttribute(XNamespace.Xmlns + "saml2p", Saml2Namespaces.Saml2P),
-                new XAttribute(XNamespace.Xmlns + "saml2", Saml2Namespaces.Saml2),
-                new XElement(Saml2Namespaces.Saml2P + "RequestedAuthnContext",
-                    new XAttribute("Comparison", "Maximum"),
-                    new XElement(Saml2Namespaces.Saml2 + "AuthnContextClassRef", classRef)))
-                    .Elements().Single();
+        [TestMethod]
+        public void Saml2AuthenticationRequest_ToXElement_AddsRequestedAuthnContext_ComparisonTypeExact()
+        {
+            Saml2AuthenticationRequest_ToXElement_AddsRequestedAuthnContextUtil(AuthnContextComparisonType.Exact, "exact");
+        }
 
-            var actual = subject.Element(Saml2Namespaces.Saml2P + "RequestedAuthnContext");
+        [TestMethod]
+        public void Saml2AuthenticationRequest_ToXElement_AddsRequestedAuthnContext_ComparisonTypeMinimum()
+        {
+            Saml2AuthenticationRequest_ToXElement_AddsRequestedAuthnContextUtil(AuthnContextComparisonType.Minimum, "minimum");
+        }
 
-            actual.Should().BeEquivalentTo(expected);
+        [TestMethod]
+        public void Saml2AuthenticationRequest_ToXElement_AddsRequestedAuthnContext_ComparisonTypeBetter()
+        {
+            Saml2AuthenticationRequest_ToXElement_AddsRequestedAuthnContextUtil(AuthnContextComparisonType.Better, "better");
         }
 
         [TestMethod]
@@ -290,6 +291,28 @@ namespace Kentor.AuthServices.Tests.Saml2P
             var subject = Saml2AuthenticationRequest.Read(xmlData, null);
 
             subject.Should().BeNull();
+        }
+
+        private void Saml2AuthenticationRequest_ToXElement_AddsRequestedAuthnContextUtil(AuthnContextComparisonType comparisonType, string expectedComparisonType)
+        {
+            var classRef = "http://www.kentor.se";
+            var subject = new Saml2AuthenticationRequest()
+            {
+                AssertionConsumerServiceUrl = new Uri("http://destination.example.com"),
+                RequestedAuthnContext = new Saml2RequestedAuthnContext(new Uri(classRef), comparisonType)
+            }.ToXElement();
+
+            var expected = new XElement(Saml2Namespaces.Saml2P + "root",
+                new XAttribute(XNamespace.Xmlns + "saml2p", Saml2Namespaces.Saml2P),
+                new XAttribute(XNamespace.Xmlns + "saml2", Saml2Namespaces.Saml2),
+                new XElement(Saml2Namespaces.Saml2P + "RequestedAuthnContext",
+                    new XAttribute("Comparison", expectedComparisonType),
+                    new XElement(Saml2Namespaces.Saml2 + "AuthnContextClassRef", classRef)))
+                    .Elements().Single();
+
+            var actual = subject.Element(Saml2Namespaces.Saml2P + "RequestedAuthnContext");
+
+            actual.Should().BeEquivalentTo(expected);
         }
     }
 }
