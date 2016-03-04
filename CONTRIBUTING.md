@@ -55,11 +55,12 @@ practically possible to test because of tight integration with the web server (s
 should remain so.
 
 ##Integration Tests
-There are also some integration tests that runs through the sample applications and make
+There are also some integration tests that run through the sample applications and make
 sure that they work. To run the integration tests:
 * Make sure that you have Google Chrome installed.
 * Open the main solution.
-* Set multiple startup projects: Kentor.AuthServices.StubIdp, SampleApplication & SampleMvcApplication.
+* Set multiple startup projects: Kentor.AuthServices.StubIdp, SampleApplication, SampleMvcApplication 
+and SampleOwinApplication.
 * Debug the solution.
 * Open Kentor.AuthServices.IntegrationTests in a separate Visual Studio Instance.
 * Run all tests in the IntegrationTests solution.
