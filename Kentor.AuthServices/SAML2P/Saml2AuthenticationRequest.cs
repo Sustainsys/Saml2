@@ -37,6 +37,7 @@ namespace Kentor.AuthServices.Saml2P
         /// Serializes the request to a Xml message.
         /// </summary>
         /// <returns>XElement</returns>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", "CA1308:NormalizeStringsToUppercase", Justification = "Lowercase demanded by specification.")]
         public XElement ToXElement()
         {
             var x = new XElement(Saml2Namespaces.Saml2P + LocalName);
@@ -50,7 +51,7 @@ namespace Kentor.AuthServices.Saml2P
             if (RequestedAuthnContext != null && RequestedAuthnContext.ClassRef != null)
             {
                 x.Add(new XElement(Saml2Namespaces.Saml2P + "RequestedAuthnContext",
-                    new XAttribute("Comparison", RequestedAuthnContext.Comparison),
+                    new XAttribute("Comparison", RequestedAuthnContext.Comparison.ToString().ToLowerInvariant()),
 
                     // Add the classref as original string to avoid URL normalization
                     // and make sure the emitted value is exactly the configured.
