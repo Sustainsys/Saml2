@@ -1,0 +1,63 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title>IdentityServer3 Post Logout Redirect Sample</title>
+	<meta charset="utf-8" />
+    
+</head>
+<body>
+    <h1>IdentityServer3 Post Logout Redirect Sample</h1>
+    <p>
+        This is a sample setup of IdentityServer3 with Kentor.AuthServices. The
+        IdentityServer3 is running in the same application at <a href="/IdSrv3">
+            /IdSrv3
+        </a>.
+
+        <br />
+        This demo shows how to setup the plugin to enable post logout redirects
+    </p>
+
+    <h1>Status</h1>
+    <p>
+        @if (User.Identity.IsAuthenticated)
+        {
+            <span id="status">You are currently logged in.</span>
+
+            <h2>Claims</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Type</th>
+                        <th>Value</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var c in System.Security.Claims.ClaimsPrincipal.Current.Claims)
+                    {
+                        <tr>
+                            <td>@c.Type</td>
+                            <td>@c.Value</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+        else
+        {
+            <span id="status">You are currently not logged in.</span>
+        }
+    </p>
+    <p>
+        @if (User.Identity.IsAuthenticated)
+        {
+            <button onclick="location='/logout';">Logout</button>
+        }
+        else
+        {
+            <button onclick="location='/login';">Login</button>
+        }
+        <button onclick="location = '/';">Refresh status</button>
+    </p>
+    
+</body>
+</html>
