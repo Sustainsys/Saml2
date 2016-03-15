@@ -136,11 +136,12 @@ same process they must each get a separate base path.
 Optional attribute that sets the signing behavior for generated AuthnRequests.
 Two values are supported:
 
-* `Never` (default if the attribute is missing): AuthServices will never sign any
+* `Never`: AuthServices will never sign any
   created AuthnRequests.
 * `Always`: AuthServices will always sign all AuthnRequests.
-* `IfIdpWantAuthnRequestsSigned`: AuthServices will sign AuthnRequests if the
-  idp is configured for it (through config or listed in idp metadta).
+* `IfIdpWantAuthnRequestsSigned` (default if the attribute is missing):
+  AuthServices will sign AuthnRequests if the idp is configured for it (through
+  config or listed in idp metadata).
 
 ####`validateCertificates` Attribute
 *Optional Attribute of the [`<kentor.authServices>`](#kentor-authservices-section) element.*

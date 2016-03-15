@@ -217,7 +217,7 @@ namespace Kentor.AuthServices.Tests
 
             idp.Invoking(i => i.CreateAuthenticateRequest(null, urls))
                 .ShouldThrow<ConfigurationErrorsException>()
-                .And.Message.Should().Be($"Idp \"https://idp.example.com\" is configured for signed AuthenticateRequests, but ServiceCertificates configuration contains no certificate with usage \"Signing\" or \"Both\".");
+                .WithMessage($"Idp \"https://idp.example.com\" is configured for signed AuthenticateRequests*");
         }
 
         [TestMethod]

@@ -289,6 +289,7 @@ namespace Kentor.AuthServices
         /// in the created AuthnRequest</param>
         /// <param name="relayData">Aux data that should be preserved across the authentication</param>
         /// <returns>AuthnRequest</returns>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "AuthenticateRequestSigningBehavior")]
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "ServiceCertificates")]
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "AuthenticateRequests")]
         public Saml2AuthenticationRequest CreateAuthenticateRequest(
@@ -321,7 +322,7 @@ namespace Kentor.AuthServices
                     throw new ConfigurationErrorsException(
                         string.Format(
                             CultureInfo.InvariantCulture,
-                            "Idp \"{0}\" is configured for signed AuthenticateRequests, but ServiceCertificates configuration contains no certificate with usage \"Signing\" or \"Both\".",
+                            "Idp \"{0}\" is configured for signed AuthenticateRequests, but ServiceCertificates configuration contains no certificate with usage \"Signing\" or \"Both\". To resolve this issue you can a) add a service certificate with usage \"Signing\" or \"Both\" (default if not specified is \"Both\") or b) Set the AuthenticateRequestSigningBehavior configuration property to \"Never\".",
                             EntityId.Id));
                 }
 
