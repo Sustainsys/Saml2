@@ -38,7 +38,9 @@ namespace Kentor.AuthServices.Tests.WebSso
             options.SPOptions.AuthenticateRequestSigningBehavior = SigningBehavior.Always;
             options.SPOptions.ServiceCertificates.Add(new ServiceCertificate()
             {
-                Certificate = SignedXmlHelper.TestCert
+                Certificate = SignedXmlHelper.TestCertSignOnly,
+                Use = CertificateUse.Signing,
+                MetadataPublishOverride = MetadataPublishOverrideType.PublishUnspecified
             });
 
             var subject = new MetadataCommand().Run(request, options);
@@ -47,7 +49,7 @@ namespace Kentor.AuthServices.Tests.WebSso
 
             // Validate signature, location of it  and then drop it. It contains
             // a reference to the ID which makes it unsuitable for string matching.
-            payloadXml.DocumentElement.IsSignedBy(SignedXmlHelper.TestCert).Should().BeTrue();
+            payloadXml.DocumentElement.IsSignedBy(SignedXmlHelper.TestCertSignOnly).Should().BeTrue();
             payloadXml.DocumentElement.FirstChild.LocalName.Should().Be("Signature");
             payloadXml.DocumentElement.FirstChild["KeyInfo"].Should().NotBeNull();
             payloadXml.DocumentElement.RemoveChild("Signature", SignedXml.XmlDsigNamespaceUrl);

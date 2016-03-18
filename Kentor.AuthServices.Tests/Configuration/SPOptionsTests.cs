@@ -366,13 +366,13 @@ namespace Kentor.AuthServices.Tests.Configuration
             subject.ServiceCertificates.Add(new ServiceCertificate
             {
                 Use = CertificateUse.Signing,
-                Certificate = SignedXmlHelper.TestCert2
+                Certificate = SignedXmlHelper.TestCertSignOnly
             });
             subject.ServiceCertificates.Add(new ServiceCertificate
             {
                 Status = CertificateStatus.Future,
                 Use = CertificateUse.Signing,
-                Certificate = SignedXmlHelper.TestCert3
+                Certificate = SignedXmlHelper.TestCert2
             });
 
             var result = subject.MetadataCertificates;
