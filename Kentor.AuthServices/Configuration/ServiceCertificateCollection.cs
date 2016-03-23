@@ -38,14 +38,14 @@ namespace Kentor.AuthServices.Configuration
 
             if (!item.Certificate.HasPrivateKey)
             {
-                throw new ArgumentException(@"Provided certificate is not valid for encryption/decryption because it does not contain a private key.");
+                throw new ArgumentException(@"Provided certificate is not valid because it does not contain a private key.");
             }
 
             if (item.Use == CertificateUse.Encryption || item.Use == CertificateUse.Both)
             {
                 if (!CertificateWorksForDecryption(item.Certificate))
                 {
-                    throw new ArgumentException(@"Provided certificate is not valid for encryption/decryption. It can only be used for other purposes such as signing.");
+                    throw new ArgumentException(@"Provided certificate is not valid for encryption/decryption. If you only want to use it for signing, set the Use property to Signing (CertificateUse.Signing).");
                 }
             }
             base.InsertItem(index, item);

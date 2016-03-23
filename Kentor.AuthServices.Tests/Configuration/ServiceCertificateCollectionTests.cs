@@ -40,7 +40,7 @@ namespace Kentor.AuthServices.Tests.Configuration
             Action a = () => subject.Add(new ServiceCertificate { Use = CertificateUse.Encryption, Certificate = certWithNoPrivate });
 
             a.ShouldThrow<ArgumentException>()
-                .WithMessage(@"Provided certificate is not valid for encryption/decryption because it does not contain a private key.");
+                .WithMessage(@"Provided certificate is not valid because it does not contain a private key.");
         }
 
         [TestMethod]
@@ -53,7 +53,7 @@ namespace Kentor.AuthServices.Tests.Configuration
             Action a = () => subject.Add(new ServiceCertificate { Use = CertificateUse.Signing, Certificate = certWithNoPrivate });
 
             a.ShouldThrow<ArgumentException>()
-                .WithMessage(@"Provided certificate is not valid for encryption/decryption because it does not contain a private key.");
+                .WithMessage(@"Provided certificate is not valid because it does not contain a private key.");
         }
 
         [TestMethod]
@@ -66,7 +66,7 @@ namespace Kentor.AuthServices.Tests.Configuration
             Action a = () => subject.Add(certWithNoPrivate);
 
             a.ShouldThrow<ArgumentException>()
-                .WithMessage(@"Provided certificate is not valid for encryption/decryption because it does not contain a private key.");
+                .WithMessage(@"Provided certificate is not valid because it does not contain a private key.");
         }
 
         [TestMethod]
@@ -76,7 +76,7 @@ namespace Kentor.AuthServices.Tests.Configuration
             Action a = () => subject.Add(new ServiceCertificate { Use = CertificateUse.Encryption, Certificate = SignedXmlHelper.TestCertSignOnly });
 
             a.ShouldThrow<ArgumentException>()
-                .WithMessage(@"Provided certificate is not valid for encryption/decryption. It can only be used for other purposes such as signing.");
+                .WithMessage(@"Provided certificate is not valid for encryption/decryption. If you only want to use it for signing, set the Use property to Signing (CertificateUse.Signing).");
         }
 
         [TestMethod]
@@ -88,5 +88,13 @@ namespace Kentor.AuthServices.Tests.Configuration
             subject.Count.Should().Be(1);
         }
 
+        [TestMethod]
+        public void ServiceCertificateCollection_Add_SigningCert_Works()
+        {
+            var subject = new ServiceCertificateCollection();
+            subject.Add(new ServiceCertificate { Use = CertificateUse.Signing, Certificate = SignedXmlHelper.TestCertSignOnly });
+
+            subject.Count.Should().Be(1);
+        }
     }
 }
