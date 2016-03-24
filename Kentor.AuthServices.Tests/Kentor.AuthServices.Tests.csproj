@@ -113,6 +113,7 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
+    <Compile Include="ClaimsExtensionsTests.cs" />
     <Compile Include="Configuration\ConfiguredAndLoadedSigningKeysCollectionTests.cs" />
     <Compile Include="Configuration\Saml2RequestedAuthnContextTests.cs" />
     <Compile Include="Configuration\ServiceCertificateCollectionExtensionsTests.cs" />
@@ -124,6 +125,7 @@
     <Compile Include="Helpers\SignedXmlHelper.cs" />
     <Compile Include="Helpers\SpinWaiter.cs" />
     <Compile Include="Owin\StubDataProtector.cs" />
+    <Compile Include="Saml2NameIdExtensionsTests.cs" />
     <Compile Include="Saml2P\Saml2ArtifactResolveTests.cs" />
     <Compile Include="Saml2P\Saml2ArtifactResponseTests.cs" />
     <Compile Include="Saml2P\Saml2LogoutRequestTests.cs" />

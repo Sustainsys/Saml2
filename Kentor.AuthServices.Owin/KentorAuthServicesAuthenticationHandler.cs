@@ -146,11 +146,18 @@ namespace Kentor.AuthServices.Owin
                 sessionIdClaim.ValueType,
                 sessionIdClaim.Issuer));
 
-            grant.Identity.AddClaim(new Claim(
+            var logoutNameIdClaim = new Claim(
                 AuthServicesClaimTypes.LogoutNameIdentifier,
                 externalNameIdClaim.Value,
                 externalNameIdClaim.ValueType,
-                externalNameIdClaim.Issuer));
+                externalNameIdClaim.Issuer);
+
+            foreach(var kv in externalNameIdClaim.Properties)
+            {
+                logoutNameIdClaim.Properties.Add(kv);
+            }
+
+            grant.Identity.AddClaim(logoutNameIdClaim);
         }
     }
 }

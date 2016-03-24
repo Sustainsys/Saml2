@@ -79,7 +79,7 @@ namespace Kentor.AuthServices.Saml2P
                 if (NameIdPolicy.Format != NameIdFormat.NotConfigured)
                 {
                     nameIdPolicyElement.Add(new XAttribute("Format",
-                        NameIdPolicy.Format.GetString()));
+                        NameIdPolicy.Format.GetUri()));
                 }
 
                 if (NameIdPolicy.AllowCreate.HasValue)

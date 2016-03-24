@@ -136,5 +136,14 @@ namespace Kentor.AuthServices.Tests
                 .And.Subject.Single().AbsoluteUri.Should()
                 .Be("http://sp.example.com/");
         }
+
+        [TestMethod]
+        public void ClaimsIdentitExtensions_ToSaml2NameIdentifier_Nullcheck()
+        {
+            Action a = () => ((ClaimsIdentity)null).ToSaml2NameIdentifier();
+
+            a.ShouldThrow<ArgumentNullException>()
+                .And.ParamName.Should().Be("identity");
+        }
     }
 }

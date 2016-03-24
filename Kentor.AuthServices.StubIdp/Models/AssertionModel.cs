@@ -8,10 +8,6 @@ using System.IdentityModel.Metadata;
 using System.IdentityModel.Tokens;
 using System.Linq;
 using System.Security.Claims;
-using System.Security.Cryptography.X509Certificates;
-using System.Web;
-using System.Web.Hosting;
-using System.Xml;
 
 namespace Kentor.AuthServices.StubIdp.Models
 {
@@ -63,14 +59,19 @@ namespace Kentor.AuthServices.StubIdp.Models
 
         public Saml2Response ToSaml2Response()
         {
+            var nameIdClaim = new Claim(ClaimTypes.NameIdentifier, NameId);
+            nameIdClaim.Properties[ClaimProperties.SamlNameIdentifierFormat] = 
+                NameIdFormat.Unspecified.GetUri().AbsoluteUri;
             var claims =
-                new Claim[] { new Claim(ClaimTypes.NameIdentifier, NameId) }
-                .Concat(YieldIfNotNullOrEmpty(SessionIndex).Select(s => new Claim(AuthServicesClaimTypes.SessionIndex, SessionIndex)))
-                .Concat((AttributeStatements ?? Enumerable.Empty<AttributeStatementModel>()).Select(att => new Claim(att.Type, att.Value)));
+                new Claim[] { nameIdClaim }
+                .Concat(YieldIfNotNullOrEmpty(SessionIndex).Select(
+                    s => new Claim(AuthServicesClaimTypes.SessionIndex, SessionIndex)))
+                .Concat((AttributeStatements ?? Enumerable.Empty<AttributeStatementModel>())
+                    .Select(att => new Claim(att.Type, att.Value)));
             var identity = new ClaimsIdentity(claims);
 
             Saml2Id saml2Id = null;
-            if (!String.IsNullOrEmpty(InResponseTo))
+            if (!string.IsNullOrEmpty(InResponseTo))
             {
                 saml2Id = new Saml2Id(InResponseTo);
             }

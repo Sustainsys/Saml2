@@ -98,10 +98,7 @@ namespace Kentor.AuthServices.Saml2P
             var x = new XElement(Saml2Namespaces.Saml2P + LocalName);
 
             x.Add(base.ToXNodes());
-            var nameId = new XElement(Saml2Namespaces.Saml2 + "NameID",
-                NameId.Value);
-            nameId.AddAttributeIfNotNullOrEmpty("Format", NameId.Format);
-            x.Add(nameId);
+            x.Add(NameId.ToXElement());
 
             x.Add(new XElement(Saml2Namespaces.Saml2P + "SessionIndex",
                 SessionIndex));

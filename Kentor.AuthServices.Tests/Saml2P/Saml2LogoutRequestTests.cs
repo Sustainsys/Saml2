@@ -10,6 +10,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
+using Kentor.AuthServices.Tests.Helpers;
 
 namespace Kentor.AuthServices.Tests.Saml2P
 {
@@ -23,27 +24,36 @@ namespace Kentor.AuthServices.Tests.Saml2P
             {
                 DestinationUrl = new Uri("http://idp.example.com/logout"),
                 Issuer = new EntityId("http://sp.example.com/"),
-                NameId = new Saml2NameIdentifier(
-                    "005a06e0-ad82-110d-a556-004005b13a2b",
-                    new Uri(NameIdFormat.Persistent.GetString())),
+                NameId = new Saml2NameIdentifier("005a06e0-ad82-110d-a556-004005b13a2b")
+                {
+                    Format = new Uri(NameIdFormat.Persistent.GetUri().AbsoluteUri),
+                    NameQualifier = "qualifier",
+                    SPNameQualifier = "spQualifier",
+                    SPProvidedId = "spId"
+                },
                 SessionIndex = "SessionId"
             };
 
-            var actual = XElement.Parse(subject.ToXml());
+            var actual = XmlHelpers.FromString(subject.ToXml());
 
-            var expected = XElement.Parse(
+            var expected = XmlHelpers.FromString(
 @"<saml2p:LogoutRequest xmlns:saml2p=""urn:oasis:names:tc:SAML:2.0:protocol""
 xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
  ID=""d2b7c388cec36fa7c39c28fd298644a8"" Version=""2.0"" IssueInstant=""2004-01-21T19:00:49Z""
  Destination=""http://idp.example.com/logout"">
  <saml2:Issuer>http://sp.example.com/</saml2:Issuer>
- <saml2:NameID Format=""urn:oasis:names:tc:SAML:2.0:nameid-format:persistent"">005a06e0-ad82-110d-a556-004005b13a2b</saml2:NameID>
+ <saml2:NameID Format=""urn:oasis:names:tc:SAML:2.0:nameid-format:persistent""
+    NameQualifier = ""qualifier""
+    SPNameQualifier = ""spQualifier""
+    SPProvidedID = ""spId"">005a06e0-ad82-110d-a556-004005b13a2b</saml2:NameID>
  <saml2p:SessionIndex>SessionId</saml2p:SessionIndex>
 </saml2p:LogoutRequest>");
 
             // Set generated expected values to the actual.
-            expected.Attribute("ID").Value = actual.Attribute("ID").Value;
-            expected.Attribute("IssueInstant").Value = actual.Attribute("IssueInstant").Value;
+            expected.DocumentElement.Attributes["ID"].Value =
+                actual.DocumentElement.Attributes["ID"].Value;
+            expected.DocumentElement.Attributes["IssueInstant"].Value =
+                actual.DocumentElement.Attributes["IssueInstant"].Value;
 
             actual.Should().BeEquivalentTo(expected);
         }
@@ -69,7 +79,9 @@ xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
             {
                 DestinationUrl = new Uri("http://idp.example.com/logout"),
                 Issuer = new EntityId("http://sp.example.com/"),
-                NameId = new Saml2NameIdentifier("005a06e0-ad82-110d-a556-004005b13a2b", new Uri(NameIdFormat.Persistent.GetString())),
+                NameId = new Saml2NameIdentifier(
+                    "005a06e0-ad82-110d-a556-004005b13a2b",
+                    new Uri(NameIdFormat.Persistent.GetUri().AbsoluteUri)),
                 SessionIndex = "SessionId",
             };
 
