@@ -58,6 +58,7 @@
     <Compile Include="Configuration\ArtifactResolutionServiceCollection.cs" />
     <Compile Include="Configuration\ArtifactResolutionServiceElement.cs" />
     <Compile Include="Configuration\ServiceCertificateCollectionExtensions.cs" />
+    <Compile Include="Saml2NameIdExtensions.cs" />
     <Compile Include="Saml2P\AuthnContextComparisonType.cs" />
     <Compile Include="Configuration\NameIdPolicyElement.cs" />
     <Compile Include="Saml2P\Saml2LogoutResponse.cs" />
@@ -65,7 +66,7 @@
     <Compile Include="Configuration\RequestedAuthnContextElement.cs" />
     <Compile Include="Configuration\SigningBehavior.cs" />
     <Compile Include="Exceptions\InvalidSignatureException.cs" />
-    <Compile Include="Internal\NameIdFormatExtension.cs" />
+    <Compile Include="NameIdFormatExtension.cs" />
     <Compile Include="MetadataPublishOverrideType.cs" />
     <Compile Include="CertificateStatus.cs" />
     <Compile Include="CertificateUse.cs" />

@@ -26,7 +26,7 @@ namespace Kentor.AuthServices.Tests.Saml2P
                 Issuer = new EntityId("http://sp.example.com/"),
                 NameId = new Saml2NameIdentifier("005a06e0-ad82-110d-a556-004005b13a2b")
                 {
-                    Format = new Uri(NameIdFormat.Persistent.GetString()),
+                    Format = new Uri(NameIdFormat.Persistent.GetUri().AbsoluteUri),
                     NameQualifier = "qualifier",
                     SPNameQualifier = "spQualifier",
                     SPProvidedId = "spId"
@@ -79,7 +79,9 @@ xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
             {
                 DestinationUrl = new Uri("http://idp.example.com/logout"),
                 Issuer = new EntityId("http://sp.example.com/"),
-                NameId = new Saml2NameIdentifier("005a06e0-ad82-110d-a556-004005b13a2b", new Uri(NameIdFormat.Persistent.GetString())),
+                NameId = new Saml2NameIdentifier(
+                    "005a06e0-ad82-110d-a556-004005b13a2b",
+                    new Uri(NameIdFormat.Persistent.GetUri().AbsoluteUri)),
                 SessionIndex = "SessionId",
             };
 
