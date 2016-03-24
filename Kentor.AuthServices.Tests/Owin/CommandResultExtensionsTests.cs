@@ -81,6 +81,25 @@ namespace Kentor.AuthServices.Tests.Owin
         }
 
         [TestMethod]
+        public void CommandResultExtensions_Apply_ClearCookie()
+        {
+            var cr = new CommandResult()
+            {
+                ClearCookieName = "CookieName"
+            };
+
+            var context = OwinTestHelpers.CreateOwinContext();
+            var dataProtector = new StubDataProtector();
+            cr.Apply(context, dataProtector);
+
+            var setCookieHeader = context.Response.Headers["Set-Cookie"];
+
+            var expected = "CookieName=; expires=Thu, 01-Jan-1970 00:00:00 GMT";
+
+            setCookieHeader.Should().Be(expected);
+        }
+
+        [TestMethod]
         public void CommandResultExtensions_Apply_Redirect()
         {
             string redirectUrl = "http://somewhere.else.example.com?Foo=Bar%20XYZ";

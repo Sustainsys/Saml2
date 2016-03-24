@@ -41,12 +41,17 @@ namespace Kentor.AuthServices.Owin
                 context.Response.Write(commandResult.Content);
             }
 
-            if(commandResult.TerminateLocalSession)
+            if (commandResult.TerminateLocalSession)
             {
                 context.Authentication.SignOut();
             }
 
-            if(!string.IsNullOrEmpty(commandResult.SetCookieData))
+            ApplyCookies(commandResult, context, dataProtector);
+        }
+
+        private static void ApplyCookies(CommandResult commandResult, IOwinContext context, IDataProtector dataProtector)
+        {
+            if (!string.IsNullOrEmpty(commandResult.SetCookieData))
             {
                 var protectedData = HttpRequestData.EscapeBase64CookieValue(
                     Convert.ToBase64String(
@@ -61,6 +66,11 @@ namespace Kentor.AuthServices.Owin
                     {
                         HttpOnly = true,
                     });
+            }
+
+            if(!string.IsNullOrEmpty(commandResult.ClearCookieName))
+            {
+                context.Response.Cookies.Delete(commandResult.ClearCookieName);
             }
         }
     }
