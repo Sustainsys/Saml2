@@ -787,9 +787,12 @@ namespace Kentor.AuthServices.Tests.Owin
                 (authTypes, callback, state) =>
                 {
                     specifiedAuthTypes = authTypes;
+                    var originalNameIdClaim = new Claim(ClaimTypes.NameIdentifier, "Saml2NameId", null, "http://idp.example.com");
+                    originalNameIdClaim.Properties[ClaimProperties.SamlNameIdentifierFormat] = "urn:format";
+
                     callback(new ClaimsIdentity(new Claim[]
                         {
-                            new Claim(ClaimTypes.NameIdentifier, "Saml2NameId", null, "http://idp.example.com"),
+                            originalNameIdClaim,
                             new Claim(AuthServicesClaimTypes.SessionIndex, "SessionId", null, "http://idp.example.com"),
                             new Claim(ClaimTypes.Role, "SomeRole", null, "http://idp.example.com")
                         }, "Federation"),
@@ -815,11 +818,14 @@ namespace Kentor.AuthServices.Tests.Owin
             specifiedAuthTypes.Should().HaveCount(1)
                 .And.Subject.Single().Should().Be(DefaultSignInAsAuthenticationType);
 
+            var expectedLogoutNameIdClaim = new Claim(AuthServicesClaimTypes.LogoutNameIdentifier, "Saml2NameId", null, "http://idp.example.com");
+            expectedLogoutNameIdClaim.Properties[ClaimProperties.SamlNameIdentifierFormat] = "urn:format";
+
             var expected = new ClaimsIdentity(new Claim[]
             {
                 new Claim(ClaimTypes.NameIdentifier, "ApplicationNameId"),
                 new Claim(AuthServicesClaimTypes.SessionIndex, "SessionId", null, "http://idp.example.com"),
-                new Claim(AuthServicesClaimTypes.LogoutNameIdentifier, "Saml2NameId", null, "http://idp.example.com")
+                expectedLogoutNameIdClaim
             }, "ApplicationIdentity");
 
             context.Authentication.AuthenticationResponseGrant.Identity
