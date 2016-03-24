@@ -808,10 +808,13 @@ namespace Kentor.AuthServices.Tests
 
             var subject = options.IdentityProviders[0];
 
+            var nameIdClaim = new Claim(ClaimTypes.NameIdentifier, "NameId", null, subject.EntityId.Id);
+            nameIdClaim.Properties[ClaimProperties.SamlNameIdentifierFormat] = "urn:nameIdFormat";
+
             Thread.CurrentPrincipal = new ClaimsPrincipal(new ClaimsIdentity(
                 new Claim[]
                 {
-                    new Claim(ClaimTypes.NameIdentifier, "NameId", null, subject.EntityId.Id),
+                    nameIdClaim,
                     new Claim(AuthServicesClaimTypes.SessionIndex, "SessionId", null, subject.EntityId.Id)
                 }, "Federation"));
 
@@ -826,9 +829,14 @@ namespace Kentor.AuthServices.Tests
             actual.Issuer.Id.Should().Be(options.SPOptions.EntityId.Id);
             actual.Id.Value.Should().NotBeEmpty();
             actual.IssueInstant.Should().Match(i => i == beforeTime || i == aftertime);
-            actual.NameId.Value.Should().Be("NameId");
             actual.SessionIndex.Should().Be("SessionId");
             actual.SigningCertificate.Thumbprint.Should().Be(SignedXmlHelper.TestCert.Thumbprint);
+
+            var expectedNameId = new Saml2NameIdentifier("NameId")
+            {
+                Format = new Uri("urn:nameIdFormat")
+            };
+            actual.NameId.ShouldBeEquivalentTo(expectedNameId);
         }
 
         [TestMethod]

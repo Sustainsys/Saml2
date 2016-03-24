@@ -518,9 +518,9 @@ namespace Kentor.AuthServices
             {
                 DestinationUrl = SingleLogoutServiceUrl,
                 Issuer = spOptions.EntityId,
-                NameId = new Saml2NameIdentifier(
-                    ClaimsPrincipal.Current.FindFirst(AuthServicesClaimTypes.LogoutNameIdentifier)?.Value
-                    ?? ClaimsPrincipal.Current.FindFirst(ClaimTypes.NameIdentifier).Value),
+                NameId = (ClaimsPrincipal.Current.FindFirst(AuthServicesClaimTypes.LogoutNameIdentifier)
+                            ?? ClaimsPrincipal.Current.FindFirst(ClaimTypes.NameIdentifier))
+                            .ToSaml2NameIdentifier(),
                 SessionIndex =
                     ClaimsPrincipal.Current.FindFirst(AuthServicesClaimTypes.SessionIndex).Value,
                 SigningCertificate = spOptions.SigningServiceCertificate,
