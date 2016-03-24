@@ -21,7 +21,30 @@ namespace Kentor.AuthServices
                 throw new ArgumentNullException(nameof(nameIdClaim));
             }
 
-            return new Saml2NameIdentifier(nameIdClaim.Value);
+            var saml2NameIdentifier = new Saml2NameIdentifier(nameIdClaim.Value);
+
+            nameIdClaim.ExtractProperty(ClaimProperties.SamlNameIdentifierFormat,
+                value => saml2NameIdentifier.Format = new Uri(value));
+            nameIdClaim.ExtractProperty(ClaimProperties.SamlNameIdentifierNameQualifier,
+                value => saml2NameIdentifier.NameQualifier = value);
+            nameIdClaim.ExtractProperty(ClaimProperties.SamlNameIdentifierSPNameQualifier,
+                value => saml2NameIdentifier.SPNameQualifier = value);
+            nameIdClaim.ExtractProperty(ClaimProperties.SamlNameIdentifierSPProvidedId,
+                value => saml2NameIdentifier.SPProvidedId = value);
+
+            return saml2NameIdentifier;
+        }
+
+        private static void ExtractProperty(
+            this Claim claim,
+            string propertyKey,
+            Action<string> propertySetter)
+        {
+            string value;
+            if(claim.Properties.TryGetValue(propertyKey, out value))
+            {
+                propertySetter(value);
+            }
         }
     }
 }
