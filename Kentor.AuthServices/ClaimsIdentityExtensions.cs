@@ -46,8 +46,7 @@ namespace Kentor.AuthServices
 
             var assertion = new Saml2Assertion(new Saml2NameIdentifier(issuer.Id))
             {
-                Subject = new Saml2Subject(new Saml2NameIdentifier(
-                    identity.Claims.Single(c => c.Type == ClaimTypes.NameIdentifier).Value)),
+                Subject = new Saml2Subject(identity.ToSaml2NameIdentifier()),
             };
 
             assertion.Statements.Add(
@@ -76,13 +75,29 @@ namespace Kentor.AuthServices
                 NotOnOrAfter = DateTime.UtcNow.AddMinutes(2)
             };
 
-            if(audience != null)
+            if (audience != null)
             {
                 assertion.Conditions.AudienceRestrictions.Add(
                     new Saml2AudienceRestriction(audience));
             }
 
             return assertion;
+        }
+
+        /// <summary>
+        /// Create a Saml2NameIdentifier from the identity.
+        /// </summary>
+        /// <param name="identity">Identity to get NameIdentifier claim from.</param>
+        /// <returns>Saml2NameIdentifier</returns>
+        public static Saml2NameIdentifier ToSaml2NameIdentifier(this ClaimsIdentity identity)
+        {
+            if(identity == null)
+            {
+                throw new ArgumentNullException(nameof(identity));
+            }
+
+            return identity.Claims.Single(c => c.Type == ClaimTypes.NameIdentifier)
+                .ToSaml2NameIdentifier();
         }
     }
 }

@@ -54,6 +54,7 @@
       <Link>VersionInfo.cs</Link>
     </Compile>
     <Compile Include="AuthServicesClaimTypes.cs" />
+    <Compile Include="ClaimsExtensions.cs" />
     <Compile Include="Configuration\ArtifactResolutionServiceCollection.cs" />
     <Compile Include="Configuration\ArtifactResolutionServiceElement.cs" />
     <Compile Include="Configuration\ServiceCertificateCollectionExtensions.cs" />
