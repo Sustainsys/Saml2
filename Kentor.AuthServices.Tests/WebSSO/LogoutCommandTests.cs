@@ -91,12 +91,17 @@ namespace Kentor.AuthServices.Tests.WebSSO
                 TerminateLocalSession = true,
                 // Deliberately not comparing Location.
                 // Deliberately not comparing SetCookieName.
-                SetCookieData = "https://sp.example.com/"
+                RequestState = new StoredRequestState(
+                    new EntityId("https://idp.example.com"),
+                    new Uri("https://sp.example.com/"),
+                    null,
+                    null)
             };
 
             actual.ShouldBeEquivalentTo(expected, opt => opt
                 .Excluding(cr => cr.Location)
-                .Excluding(cr => cr.SetCookieName));
+                .Excluding(cr => cr.SetCookieName)
+                .Excluding(cr => cr.RequestState.MessageId));
 
             var relayState = HttpUtility.ParseQueryString(actual.Location.Query)["RelayState"];
             actual.SetCookieName.Should().Be("Kentor." + relayState);
@@ -121,7 +126,7 @@ namespace Kentor.AuthServices.Tests.WebSSO
             var actual = CommandFactory.GetCommand(CommandFactory.LogoutCommandName)
                 .Run(request, options);
 
-            actual.SetCookieData.Should().Be("http://sp.example.com/LoggedOut");
+            actual.RequestState.ReturnUrl.OriginalString.Should().Be("http://sp.example.com/LoggedOut");
         }
 
         [TestMethod]
@@ -148,12 +153,17 @@ namespace Kentor.AuthServices.Tests.WebSSO
                 HttpStatusCode = HttpStatusCode.SeeOther,
                 TerminateLocalSession = true,
                 // Deliberately not comparing Location.
-                SetCookieData = "http://sp.example.com/",
+                RequestState = new StoredRequestState(
+                    new EntityId("https://idp.example.com"),
+                    new Uri("http://sp.example.com/"),
+                    null,
+                    null)
             };
 
             actual.ShouldBeEquivalentTo(expected, opt => opt
                 .Excluding(cr => cr.Location)
-                .Excluding(cr => cr.SetCookieName));
+                .Excluding(cr => cr.SetCookieName)
+                .Excluding(cr => cr.RequestState.MessageId));
             actual.Location.GetLeftPart(UriPartial.Path).Should().Be("https://idp.example.com/logout");
         }
 
@@ -173,19 +183,11 @@ namespace Kentor.AuthServices.Tests.WebSSO
             var bindResult = Saml2Binding.Get(Saml2BindingType.HttpRedirect)
                 .Bind(response);
 
-            var cookies = new KeyValuePair<string, string>[] 
-            {
-                new KeyValuePair<string, string>(
-                    "Kentor." + relayState,
-                    StubDataProtector.Protect("http://loggedout.example.com", false))
-            };
-
             var request = new HttpRequestData("GET",
                 bindResult.Location,
                 "http://sp-internal.example.com/path/AuthServices",
                 null,
-                cookies,
-                StubDataProtector.Unprotect);
+                new StoredRequestState(null, new Uri("http://loggedout.example.com"), null, null));
             
             var options = StubFactory.CreateOptions();
             ((SPOptions)options.SPOptions).PublicOrigin = new Uri("https://sp.example.com/path/");

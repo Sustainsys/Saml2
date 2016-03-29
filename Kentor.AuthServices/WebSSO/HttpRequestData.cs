@@ -46,6 +46,17 @@ namespace Kentor.AuthServices.WebSso
             Init(httpMethod, url, "/", null, Enumerable.Empty<KeyValuePair<string, string>>(), null);
         }
 
+        internal HttpRequestData(
+            string httpMethod,
+            Uri url,
+            string applicationPath,
+            IEnumerable<KeyValuePair<string, string[]>> formData,
+            StoredRequestState storedRequestState)
+        {
+            InitBasicFields(httpMethod, url, applicationPath, formData);
+            StoredRequestState = storedRequestState;
+        }
+
         private void Init(
             string httpMethod,
             Uri url,
@@ -54,13 +65,7 @@ namespace Kentor.AuthServices.WebSso
             IEnumerable<KeyValuePair<string, string>> cookies,
             Func<byte[], byte[]> cookieDecryptor)
         {
-            HttpMethod = httpMethod;
-            Url = url;
-            ApplicationUrl = new Uri(url, applicationPath);
-            Form = new ReadOnlyDictionary<string, string>(
-                (formData ?? Enumerable.Empty<KeyValuePair<string, string[]>>())
-                .ToDictionary(kv => kv.Key, kv => kv.Value.Single()));
-            QueryString = QueryStringHelper.ParseQueryString(url.Query);
+            InitBasicFields(httpMethod, url, applicationPath, formData);
 
             var relayState = QueryString["RelayState"].SingleOrDefault();
 
@@ -71,15 +76,28 @@ namespace Kentor.AuthServices.WebSso
                 {
                     var cookieData = cookies.SingleOrDefault(c => c.Key == cookieName).Value;
 
-                    var unescapedBase64Data = cookieData
+                    var encryptedData = Convert.FromBase64String(
+                        cookieData
                         .Replace('_', '/')
                         .Replace('-', '+')
-                        .Replace('.', '=');
+                        .Replace('.', '='));
 
-                    CookieData = Encoding.UTF8.GetString(cookieDecryptor(
-                        Convert.FromBase64String(unescapedBase64Data)));
+                    var decryptedData = cookieDecryptor(encryptedData);
+
+                    StoredRequestState = new StoredRequestState(decryptedData);
                 }
             }
+        }
+
+        private void InitBasicFields(string httpMethod, Uri url, string applicationPath, IEnumerable<KeyValuePair<string, string[]>> formData)
+        {
+            HttpMethod = httpMethod;
+            Url = url;
+            ApplicationUrl = new Uri(url, applicationPath);
+            Form = new ReadOnlyDictionary<string, string>(
+                (formData ?? Enumerable.Empty<KeyValuePair<string, string[]>>())
+                .ToDictionary(kv => kv.Key, kv => kv.Value.Single()));
+            QueryString = QueryStringHelper.ParseQueryString(url.Query);
         }
 
         /// <summary>
@@ -90,7 +108,7 @@ namespace Kentor.AuthServices.WebSso
         /// <returns>Escaped data</returns>
         public static string EscapeBase64CookieValue(string value)
         {
-            if(value == null)
+            if (value == null)
             {
                 throw new ArgumentNullException(nameof(value));
             }
@@ -124,10 +142,10 @@ namespace Kentor.AuthServices.WebSso
         /// </summary>
         public Uri ApplicationUrl { get; private set; }
 
+
         /// <summary>
-        /// Decrypted data from cookie named Kentor.RelayState (if there was
-        /// a RelayState param and such a cookie.
+        /// Request state from a previous call, carried over through cookie.
         /// </summary>
-        public string CookieData { get; internal set; }
+        public StoredRequestState StoredRequestState { get; private set; }
     }
 }

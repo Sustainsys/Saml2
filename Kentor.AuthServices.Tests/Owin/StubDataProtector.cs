@@ -35,27 +35,5 @@ namespace Kentor.AuthServices.Tests.Owin
                 i < 6 ? b : (byte)(b ^ 42)
                 ).ToArray();
         }
-
-        public static string Unprotect(string protectedData)
-        {
-            var unescaped = protectedData.Replace('_', '/').Replace('-', '+').Replace('.', '=');
-
-            return Encoding.UTF8.GetString(Unprotect(Convert.FromBase64String(unescaped)));
-        }
-
-        public static string Protect(string userData, bool checkEscaping = true)
-        {
-            var base64Data = Convert.ToBase64String(
-                Protect(Encoding.UTF8.GetBytes(userData)));
-
-            if (checkEscaping)
-            {
-                base64Data.Any(c => c == '+').Should().BeTrue("resulting Base64 data should contain + to test escaping");
-                base64Data.Any(c => c == '/').Should().BeTrue("resulting Base64 data should contain / to test escaping");
-                base64Data.Any(c => c == '=').Should().BeTrue("resulting Base64 data should contain = to test escaping");
-            }
-
-            return base64Data.Replace('/', '_').Replace('+', '-').Replace('=', '.');
-        }
     }
 }

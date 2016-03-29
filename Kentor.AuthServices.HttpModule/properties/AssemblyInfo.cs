@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 // General Information about an assembly is controlled through the following 
@@ -21,3 +22,5 @@ using System.Runtime.InteropServices;
 [assembly: Guid("5466be68-ecee-4495-96e9-ee3a8ae14987")]
 
 [assembly: CLSCompliant(true)]
+
+[assembly: InternalsVisibleTo("Kentor.AuthServices.Tests")]

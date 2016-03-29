@@ -295,7 +295,7 @@ namespace Kentor.AuthServices
         public Saml2AuthenticationRequest CreateAuthenticateRequest(
             Uri returnUrl,
             AuthServicesUrls authServicesUrls,
-            object relayData)
+            IDictionary<string,string> relayData)
         {
             if (authServicesUrls == null)
             {

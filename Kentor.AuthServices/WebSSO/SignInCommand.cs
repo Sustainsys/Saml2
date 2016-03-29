@@ -67,7 +67,7 @@ namespace Kentor.AuthServices.WebSso
             string returnPath,
             HttpRequestData request,
             IOptions options,
-            object relayData)
+            IDictionary<string, string> relayData)
         {
             if(options == null)
             {

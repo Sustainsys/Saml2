@@ -214,8 +214,9 @@ namespace Kentor.AuthServices.Tests.Owin
             var cookieValue = context.Response.Headers["Set-Cookie"].Split(';', '=')[1]
                 .Replace('_', '/').Replace('-', '+').Replace('.', '=');
 
-            var returnUrl = Encoding.UTF8.GetString(options.DataProtector.Unprotect(
-                Convert.FromBase64String(cookieValue)));
+            var returnUrl = new StoredRequestState(
+                options.DataProtector.Unprotect(
+                    Convert.FromBase64String(cookieValue))).ReturnUrl;
 
             returnUrl.Should().Be("https://sp.example.com/ExternalPath/LoggedOut");
         }
@@ -280,8 +281,8 @@ namespace Kentor.AuthServices.Tests.Owin
             var cookieValue = context.Response.Headers["Set-Cookie"].Split(';', '=')[1]
                 .Replace('_', '/').Replace('-', '+').Replace('.', '=');
 
-            var returnUrl = Encoding.UTF8.GetString(options.DataProtector.Unprotect(
-                Convert.FromBase64String(cookieValue)));
+            var returnUrl = new StoredRequestState(options.DataProtector.Unprotect(
+                Convert.FromBase64String(cookieValue))).ReturnUrl;
 
             returnUrl.Should().Be(expectedUrl);
         }
@@ -363,7 +364,8 @@ namespace Kentor.AuthServices.Tests.Owin
             var cookieData = HttpRequestData.EscapeBase64CookieValue(
                 Convert.ToBase64String(
                     options.DataProtector.Protect(
-                        Encoding.UTF8.GetBytes("http://loggedout.example.com/"))));
+                        new StoredRequestState(null, new Uri("http://loggedout.example.com/"), null, null)
+                            .Serialize())));
             context.Request.Headers["Cookie"] = $"Kentor.{relayState}={cookieData}";
             context.Request.Path = new PathString(requestUri.AbsolutePath);
             context.Request.QueryString = new QueryString(requestUri.Query.TrimStart('?'));
@@ -567,7 +569,7 @@ namespace Kentor.AuthServices.Tests.Owin
             StoredRequestState storedAuthnData;
             PendingAuthnRequests.TryRemove(relayState, out storedAuthnData);
 
-            ((AuthenticationProperties)storedAuthnData.RelayData).Dictionary["test"].Should().Be("SomeValue");
+            new AuthenticationProperties(storedAuthnData.RelayData).Dictionary["test"].Should().Be("SomeValue");
         }
 
         [TestMethod]
@@ -635,13 +637,16 @@ namespace Kentor.AuthServices.Tests.Owin
             var context = OwinTestHelpers.CreateOwinContext();
             context.Request.Method = "POST";
 
+            var authProps = new AuthenticationProperties()
+            {
+                IssuedUtc = new DateTime(1975, 05, 05, 05, 05, 05, DateTimeKind.Utc)
+            };
+            authProps.Dictionary["Test"] = "TestValue";
+
             var state = new StoredRequestState(new EntityId("https://idp.example.com"),
                 new Uri("http://localhost/LoggedIn"),
                 new Saml2Id(MethodBase.GetCurrentMethod().Name + "RequestID"),
-                new AuthenticationProperties());
-
-            ((AuthenticationProperties)state.RelayData).RedirectUri = state.ReturnUrl.OriginalString;
-            ((AuthenticationProperties)state.RelayData).Dictionary["Test"] = "TestValue";
+                authProps.Dictionary);
 
             var relayState = SecureKeyGenerator.CreateRelayState();
 
@@ -690,10 +695,10 @@ namespace Kentor.AuthServices.Tests.Owin
             ids[1].AddClaim(new Claim(ClaimTypes.Role, "RoleFromClaimsAuthManager", 
                 null, "ClaimsAuthenticationManagerStub"));
 
-            var middleware = new KentorAuthServicesAuthenticationMiddleware(null, CreateAppBuilder(),
+            var subject = new KentorAuthServicesAuthenticationMiddleware(null, CreateAppBuilder(),
                 StubFactory.CreateOwinOptions());
 
-            await middleware.Invoke(context);
+            await subject.Invoke(context);
 
             context.Response.StatusCode.Should().Be(302);
             context.Response.Headers["Location"].Should().Be("http://localhost/LoggedIn");
@@ -702,10 +707,14 @@ namespace Kentor.AuthServices.Tests.Owin
                 .ShouldBeEquivalentTo(ids, opt => opt.IgnoringCyclicReferences());
 
             context.Authentication.AuthenticationResponseGrant.Properties.RedirectUri
-                .Should().Be("http://localhost/LoggedIn");
+                .Should().Be("http://localhost/LoggedIn", 
+                "the StoredRequestState.ReturnUrl should overtake the value in the AuthProperties and be stored in the AuthProps");
 
             context.Authentication.AuthenticationResponseGrant.Properties.Dictionary["Test"]
                 .Should().Be("TestValue");
+
+            context.Authentication.AuthenticationResponseGrant.Properties.IssuedUtc
+                .Should().Be(authProps.IssuedUtc);
         }
 
         [TestMethod]

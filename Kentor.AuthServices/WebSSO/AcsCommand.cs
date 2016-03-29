@@ -93,10 +93,7 @@ namespace Kentor.AuthServices.WebSso
                 HttpStatusCode = HttpStatusCode.SeeOther,
                 Location = requestState?.ReturnUrl ?? options.SPOptions.ReturnUrl,
                 Principal = principal,
-                RelayData =
-                    requestState == null
-                    ? null
-                    : requestState.RelayData
+                RelayData = requestState?.RelayData
             };
         }
 

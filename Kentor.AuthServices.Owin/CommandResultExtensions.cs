@@ -51,13 +51,13 @@ namespace Kentor.AuthServices.Owin
 
         private static void ApplyCookies(CommandResult commandResult, IOwinContext context, IDataProtector dataProtector)
         {
-            if (!string.IsNullOrEmpty(commandResult.SetCookieData))
+            var serializedCookieData = commandResult.GetSerializedRequestState();
+
+            if (serializedCookieData != null)
             {
                 var protectedData = HttpRequestData.EscapeBase64CookieValue(
                     Convert.ToBase64String(
-                        dataProtector.Protect(
-                            Encoding.UTF8.GetBytes(
-                                commandResult.SetCookieData))));
+                        dataProtector.Protect(serializedCookieData)));
 
                 context.Response.Cookies.Append(
                     commandResult.SetCookieName,

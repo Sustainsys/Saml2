@@ -31,7 +31,7 @@ namespace Kentor.AuthServices.Owin
             var identities = result.Principal.Identities.Select(i =>
                 new ClaimsIdentity(i, null, Options.SignInAsAuthenticationType, i.NameClaimType, i.RoleClaimType));
 
-            var authProperties = (AuthenticationProperties)result.RelayData ?? new AuthenticationProperties();
+            var authProperties = new AuthenticationProperties(result.RelayData);
             authProperties.RedirectUri = result.Location.OriginalString;
 
             return new MultipleIdentityAuthenticationTicket(identities, authProperties);
@@ -57,12 +57,16 @@ namespace Kentor.AuthServices.Owin
                         Context.Environment.TryGetValue("KentorAuthServices.idp", out objIdp);
                         idp = objIdp as EntityId;
                     }
+                    var redirectUri = challenge.Properties.RedirectUri;
+                    // Don't serialize the RedirectUri twice.
+                    challenge.Properties.RedirectUri = null;
+
                     var result = SignInCommand.Run(
                         idp,
-                        challenge.Properties.RedirectUri,
+                        redirectUri,
                         await Context.ToHttpRequestData(Options.DataProtector.Unprotect),
                         Options,
-                        challenge.Properties);
+                        challenge.Properties.Dictionary);
 
                     result.Apply(Context, Options.DataProtector);
                 }
