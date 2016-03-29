@@ -1081,44 +1081,6 @@ namespace Kentor.AuthServices.Tests.Saml2P
         }
 
         [TestMethod]
-        public void Saml2Response_GetRequestState_ThrowsOnResponseNotValid()
-        {
-            var response =
-            @"<?xml version=""1.0"" encoding=""UTF-8""?>
-            <saml2p:Response xmlns:saml2p=""urn:oasis:names:tc:SAML:2.0:protocol""
-            xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
-            ID = """ + MethodBase.GetCurrentMethod().Name + @""" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z"">
-                <saml2:Issuer>https://idp.example.com</saml2:Issuer>
-                <saml2p:Status>
-                    <saml2p:StatusCode Value=""urn:oasis:names:tc:SAML:2.0:status:Success"" />
-                </saml2p:Status>
-                <saml2:Assertion
-                Version=""2.0"" ID=""" + MethodBase.GetCurrentMethod().Name + @"_Assertion""
-                IssueInstant=""2013-09-25T00:00:00Z"">
-                    <saml2:Issuer>https://idp.example.com</saml2:Issuer>
-                    <saml2:Subject>
-                        <saml2:NameID>SomeUser</saml2:NameID>
-                        <saml2:SubjectConfirmation Method=""urn:oasis:names:tc:SAML:2.0:cm:bearer"" />
-                    </saml2:Subject>
-                </saml2:Assertion>
-            </saml2p:Response>";
-
-            response = SignedXmlHelper.SignXml(response);
-            response = response.Replace("2013-09-25", "2013-09-26");
-
-            var r = Saml2Response.Read(response);
-
-            Action a = () => r.GetRequestState(Options.FromConfiguration);
-
-            a.ShouldThrow<InvalidSignatureException>()
-                .WithMessage("Signature didn't verify. Have the contents been tampered with?");
-
-            // Test that it throws again on subsequent calls.
-            a.ShouldThrow<InvalidSignatureException>()
-                .WithMessage("Signature didn't verify. Have the contents been tampered with?");
-        }
-
-        [TestMethod]
         public void Saml2Response_GetClaims_ThrowsOnWrongAudience()
         {
             var response =

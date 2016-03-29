@@ -352,19 +352,6 @@ namespace Kentor.AuthServices.Saml2P
         /// </summary>
         public Uri DestinationUrl { get; }
 
-        StoredRequestState requestState;
-
-        /// <summary>
-        /// State stored by a corresponding request
-        /// </summary>
-        [SuppressMessage("Microsoft.Design", "CA1041:ProvideObsoleteAttributeMessage")]
-        [Obsolete]
-        public StoredRequestState GetRequestState(IOptions options)
-        {
-            Validate(options);
-            return requestState;
-        }
-
         /// <summary>Gets all assertion element nodes from this response message.</summary>
         /// <value>All assertion element nodes.</value>
         private IEnumerable<XmlElement> GetAllAssertionElementNodes(IOptions options)
