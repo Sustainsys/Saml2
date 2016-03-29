@@ -47,13 +47,47 @@ namespace Kentor.AuthServices.Tests.WebSSO
                 Convert.ToBase64String(
                     Saml2ArtifactBinding.CreateArtifact(issuer, 0x1234)));
 
-            var relayState = MethodBase.GetCurrentMethod().Name;
+            var relayState = "relayState";
 
             PrepareArtifactState(relayState, issuer);
 
             var r = new HttpRequestData(
                 "GET",
                 new Uri($"http://example.com/path/acs?SAMLart={artifact}&RelayState={relayState}"));
+
+            StubServer.LastArtifactResolutionSoapActionHeader = null;
+
+            var result = Saml2Binding.Get(Saml2BindingType.Artifact).Unbind(r, StubFactory.CreateOptions());
+
+            var xmlDocument = new XmlDocument() { PreserveWhitespace = true };
+            xmlDocument.LoadXml("<message>   <child-node /> </message>");
+
+            var expected = new UnbindResult(xmlDocument.DocumentElement, relayState, TrustLevel.None);
+
+            result.ShouldBeEquivalentTo(expected);
+            StubServer.LastArtifactResolutionSoapActionHeader.Should().Be(
+                "http://www.oasis-open.org/committees/security");
+            StubServer.LastArtifactResolutionWasSigned.Should().BeFalse();
+        }
+
+        [TestMethod]
+        public void Saml2ArtifactBinding_Unbind_FromGet_ArtifactIsntHashOfEntityId()
+        {
+            var issuer = new EntityId("https://idp.example.com");
+            var artifact = Uri.EscapeDataString(
+                Convert.ToBase64String(
+                    Saml2ArtifactBinding.CreateArtifact(
+                        new EntityId("https://this.entityid.is.invalid"),
+                        0x1234)));
+
+            var relayState = "relayState";
+
+            var r = new HttpRequestData(
+                "GET",
+                new Uri($"http://example.com/path/acs?SAMLart={artifact}&RelayState={relayState}"),
+                null,
+                null,
+                new StoredRequestState(issuer, null, null, null));
 
             StubServer.LastArtifactResolutionSoapActionHeader = null;
 
@@ -150,7 +184,6 @@ namespace Kentor.AuthServices.Tests.WebSSO
                     new KeyValuePair<string, string[]>("SAMLart", new[] { artifact }),
                     new KeyValuePair<string, string[]>("RelayState", new[] { relayState })
                 },
-                null,
                 null);
 
             StubServer.LastArtifactResolutionSoapActionHeader = null;

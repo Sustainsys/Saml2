@@ -46,6 +46,7 @@ namespace Kentor.AuthServices.WebSso
             Init(httpMethod, url, "/", null, Enumerable.Empty<KeyValuePair<string, string>>(), null);
         }
 
+        // Used by tests.
         internal HttpRequestData(
             string httpMethod,
             Uri url,
@@ -68,6 +69,10 @@ namespace Kentor.AuthServices.WebSso
             InitBasicFields(httpMethod, url, applicationPath, formData);
 
             var relayState = QueryString["RelayState"].SingleOrDefault();
+            if(relayState == null)
+            {
+                Form.TryGetValue("RelayState", out relayState);
+            }
 
             if (relayState != null)
             {
@@ -75,18 +80,22 @@ namespace Kentor.AuthServices.WebSso
                 if (cookies.Any(c => c.Key == cookieName))
                 {
                     var cookieData = cookies.SingleOrDefault(c => c.Key == cookieName).Value;
-
-                    var encryptedData = Convert.FromBase64String(
-                        cookieData
-                        .Replace('_', '/')
-                        .Replace('-', '+')
-                        .Replace('.', '='));
+                    byte[] encryptedData = GetBinaryData(cookieData);
 
                     var decryptedData = cookieDecryptor(encryptedData);
 
                     StoredRequestState = new StoredRequestState(decryptedData);
                 }
             }
+        }
+
+        internal static byte[] GetBinaryData(string cookieData)
+        {
+            return Convert.FromBase64String(
+                cookieData
+                .Replace('_', '/')
+                .Replace('-', '+')
+                .Replace('.', '='));
         }
 
         private void InitBasicFields(string httpMethod, Uri url, string applicationPath, IEnumerable<KeyValuePair<string, string[]>> formData)
@@ -104,16 +113,19 @@ namespace Kentor.AuthServices.WebSso
         /// Escape a Base 64 encoded cookie value, matching the unescaping
         /// that is done in the ctor.
         /// </summary>
-        /// <param name="value">Base64 data to escape</param>
+        /// <param name="data">Data to escape</param>
         /// <returns>Escaped data</returns>
-        public static string EscapeBase64CookieValue(string value)
+        public static string ConvertBinaryData(byte[] data)
         {
-            if (value == null)
+            if (data == null)
             {
-                throw new ArgumentNullException(nameof(value));
+                throw new ArgumentNullException(nameof(data));
             }
 
-            return value.Replace('/', '_').Replace('+', '-').Replace('=', '.');
+            return Convert.ToBase64String(data)
+                .Replace('/', '_')
+                .Replace('+', '-')
+                .Replace('=', '.');
         }
 
         /// <summary>

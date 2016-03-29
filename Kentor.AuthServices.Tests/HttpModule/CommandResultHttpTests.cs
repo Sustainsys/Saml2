@@ -72,11 +72,8 @@ namespace Kentor.AuthServices.Tests.HttpModule
         private byte[] DecryptCookieData(string data)
         {
             return MachineKey.Unprotect(
-                    Convert.FromBase64String(data
-                        .Replace('_', '/')
-                        .Replace('-', '+')
-                        .Replace('.', '=')), 
-                    "Kentor.AuthServices");
+                HttpRequestData.GetBinaryData(data),
+                "Kentor.AuthServices");
         }
 
         [TestMethod]

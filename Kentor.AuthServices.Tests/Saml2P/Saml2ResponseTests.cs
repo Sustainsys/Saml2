@@ -61,8 +61,6 @@ namespace Kentor.AuthServices.Tests.Saml2P
                 </saml2p:Status>
             </saml2p:Response>";
 
-            string relayState = "s8923kjlf";
-
             var expected = new
             {
                 Id = new Saml2Id(MethodBase.GetCurrentMethod().Name),
@@ -75,10 +73,10 @@ namespace Kentor.AuthServices.Tests.Saml2P
                 InResponseTo = new Saml2Id("InResponseToId"),
                 RequestState = (StoredRequestState)null,
                 SecondLevelStatus = (string)null,
-                RelayState = relayState,
+                RelayState = (string)null
             };
 
-            Saml2Response.Read(response, relayState).ShouldBeEquivalentTo(
+            Saml2Response.Read(response, expected.InResponseTo).ShouldBeEquivalentTo(
                 expected, opt => opt
                     .Excluding(s => s.XmlElement)
                     .Excluding(s => s.SigningCertificate));
@@ -1236,14 +1234,12 @@ namespace Kentor.AuthServices.Tests.Saml2P
         {
             var idp = Options.FromConfiguration.IdentityProviders.Default;
 
-            var request = idp.CreateAuthenticateRequest(null, StubFactory.CreateAuthServicesUrls());
-
             var responseXML =
             @"<?xml version=""1.0"" encoding=""UTF-8""?>
             <saml2p:Response xmlns:saml2p=""urn:oasis:names:tc:SAML:2.0:protocol""
             xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
             ID = """ + MethodBase.GetCurrentMethod().Name + @""" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z""
-            InResponseTo = """ + request.Id + @""">
+            InResponseTo = ""abc123"">
                 <saml2:Issuer>https://idp.example.com</saml2:Issuer>
                 <saml2p:Status>
                     <saml2p:StatusCode Value=""urn:oasis:names:tc:SAML:2.0:status:Success"" />
@@ -1252,7 +1248,7 @@ namespace Kentor.AuthServices.Tests.Saml2P
 
             responseXML = SignedXmlHelper.SignXml(responseXML);
 
-            var response = Saml2Response.Read(responseXML, request.RelayState);
+            var response = Saml2Response.Read(responseXML, new Saml2Id("abc123"));
 
             Action a = () => response.GetClaims(Options.FromConfiguration);
             a.ShouldNotThrow();
@@ -1309,11 +1305,9 @@ namespace Kentor.AuthServices.Tests.Saml2P
         }
 
         [TestMethod]
-        public void Saml2Response_GetClaims_ThrowsOnIncorrectInResponseTo()
+        public void Saml2Response_Read_ThrowsOnIncorrectInResponseTo()
         {
             var idp = Options.FromConfiguration.IdentityProviders.Default;
-
-            var request = idp.CreateAuthenticateRequest(null, StubFactory.CreateAuthServicesUrls());
 
             var responseXML =
             @"<?xml version=""1.0"" encoding=""UTF-8""?>
@@ -1329,45 +1323,10 @@ namespace Kentor.AuthServices.Tests.Saml2P
 
             responseXML = SignedXmlHelper.SignXml(responseXML);
 
-            var response = Saml2Response.Read(responseXML, request.RelayState);
-
-            Action a = () => response.GetClaims(Options.FromConfiguration);
+            Action a = () => Saml2Response.Read(responseXML, new Saml2Id("somevalue"));
 
             a.ShouldThrow<Saml2ResponseFailedValidationException>()
-                .WithMessage("InResponseTo Id \"anothervalue\" in received response does not match Id \""
-                + request.Id + "\" of the sent request.");
-        }
-
-        [TestMethod]
-        public void Saml2Response_GetClaims_ThrowsOnReplayedRelayState()
-        {
-            var idp = Options.FromConfiguration.IdentityProviders.Default;
-
-            var request = idp.CreateAuthenticateRequest(null, StubFactory.CreateAuthServicesUrls());
-
-            var responseXML =
-            @"<?xml version=""1.0"" encoding=""UTF-8""?>
-            <saml2p:Response xmlns:saml2p=""urn:oasis:names:tc:SAML:2.0:protocol""
-            xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
-            ID = """ + MethodBase.GetCurrentMethod().Name + @""" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z""
-            InResponseTo = """ + request.Id + @""">
-                <saml2:Issuer>https://idp.example.com</saml2:Issuer>
-                <saml2p:Status>
-                    <saml2p:StatusCode Value=""urn:oasis:names:tc:SAML:2.0:status:Success"" />
-                </saml2p:Status>
-            </saml2p:Response>";
-
-            responseXML = SignedXmlHelper.SignXml(responseXML);
-
-            Action a = () =>
-            {
-                var response = Saml2Response.Read(responseXML, request.RelayState);
-                response.GetClaims(Options.FromConfiguration);
-            };
-
-            a.ShouldNotThrow();
-            a.ShouldThrow<Saml2ResponseFailedValidationException>()
-                .WithMessage("Replayed or unknown RelayState \"" + request.RelayState + "\".");
+                .WithMessage("InResponseTo Id \"anothervalue\" in received response does not match Id \"somevalue\" of the sent request.");
         }
 
         [TestMethod]
@@ -1375,14 +1334,11 @@ namespace Kentor.AuthServices.Tests.Saml2P
         {
             var idp = Options.FromConfiguration.IdentityProviders.Default;
 
-            var request = idp.CreateAuthenticateRequest(null, StubFactory.CreateAuthServicesUrls());
-
             var responseXML =
             @"<?xml version=""1.0"" encoding=""UTF-8""?>
             <saml2p:Response xmlns:saml2p=""urn:oasis:names:tc:SAML:2.0:protocol""
             xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
-            ID = """ + MethodBase.GetCurrentMethod().Name + @""" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z""
-            InResponseTo = """ + request.Id + @""">
+            ID = """ + MethodBase.GetCurrentMethod().Name + @""" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z"">
                 <saml2:Issuer>https://idp.example.com</saml2:Issuer>
                 <saml2p:Status>
                     <saml2p:StatusCode Value=""urn:oasis:names:tc:SAML:2.0:status:Requester"" />
@@ -1392,7 +1348,7 @@ namespace Kentor.AuthServices.Tests.Saml2P
             responseXML = SignedXmlHelper.SignXml(responseXML);
             responseXML = responseXML.Replace("2013-01-01", "2015-01-01"); // Break signature.
 
-            var response = Saml2Response.Read(responseXML, request.RelayState);
+            var response = Saml2Response.Read(responseXML, null);
 
             Action a = () =>
             {
@@ -1410,37 +1366,6 @@ namespace Kentor.AuthServices.Tests.Saml2P
 
             a.ShouldThrow<InvalidSignatureException>()
                 .WithMessage("Signature didn't verify. Have the contents been tampered with?");
-        }
-
-        [TestMethod]
-        public void Saml2Response_GetClaims_ThrowsOnResponseFromWrongIdp()
-        {
-            // A valid response is received, but it is not from the idp that we
-            // did send the AuthnRequest to.
-            var idp = Options.FromConfiguration.IdentityProviders.Default;
-
-            var request = idp.CreateAuthenticateRequest(null, StubFactory.CreateAuthServicesUrls());
-
-            var responseXML =
-            @"<?xml version=""1.0"" encoding=""UTF-8""?>
-            <saml2p:Response xmlns:saml2p=""urn:oasis:names:tc:SAML:2.0:protocol""
-            xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
-            ID = """ + MethodBase.GetCurrentMethod().Name + @""" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z""
-            InResponseTo = """ + request.Id + @""">
-                <saml2:Issuer>https://idp.anotheridp.com</saml2:Issuer>
-                <saml2p:Status>
-                    <saml2p:StatusCode Value=""urn:oasis:names:tc:SAML:2.0:status:Requester"" />
-                </saml2p:Status>
-            </saml2p:Response>";
-
-            responseXML = SignedXmlHelper.SignXml(responseXML);
-
-            var response = Saml2Response.Read(responseXML, request.RelayState);
-
-            Action a = () => response.GetClaims(Options.FromConfiguration);
-
-            a.ShouldThrow<Saml2ResponseFailedValidationException>().And
-                .Message.Should().Be("Expected response from idp \"https://idp.example.com\" but received response from idp \"https://idp.anotheridp.com\".");
         }
 
         [TestMethod]
@@ -1704,7 +1629,7 @@ namespace Kentor.AuthServices.Tests.Saml2P
         [TestMethod]
         public void Saml2Response_Ctor_Nullcheck()
         {
-            Action a = () => new Saml2Response(null, "foo");
+            Action a = () => new Saml2Response(null, new Saml2Id("foo"));
 
             a.ShouldThrow<ArgumentNullException>()
                 .And.ParamName.Should().Be("xml");
@@ -1833,33 +1758,6 @@ namespace Kentor.AuthServices.Tests.Saml2P
             var subject = new Saml2Response(new EntityId("issuer"), null, null, null);
 
             subject.MessageName.Should().Be("SAMLResponse");
-        }
-
-        [TestMethod]
-        public void Saml2Response_FromRequest_Remembers_ReturnUrl()
-        {
-            var idp = Options.FromConfiguration.IdentityProviders.Default;
-
-            var request = idp.CreateAuthenticateRequest(new Uri("http://localhost/testUrl.aspx"), StubFactory.CreateAuthServicesUrls());
-
-            var responseXML =
-            @"<?xml version=""1.0"" encoding=""UTF-8""?>
-            <saml2p:Response xmlns:saml2p=""urn:oasis:names:tc:SAML:2.0:protocol""
-            xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
-            ID = """ + MethodBase.GetCurrentMethod().Name + @""" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z""
-            InResponseTo = """ + request.Id + @""">
-                <saml2:Issuer>https://idp.example.com</saml2:Issuer>
-                <saml2p:Status>
-                    <saml2p:StatusCode Value=""urn:oasis:names:tc:SAML:2.0:status:Requester"" />
-                </saml2p:Status>
-            </saml2p:Response>";
-
-            responseXML = SignedXmlHelper.SignXml(responseXML);
-
-            var response = Saml2Response.Read(responseXML, request.RelayState);
-
-            response.GetRequestState(Options.FromConfiguration)
-                .ReturnUrl.Should().Be("http://localhost/testUrl.aspx");
         }
 
         [TestMethod]

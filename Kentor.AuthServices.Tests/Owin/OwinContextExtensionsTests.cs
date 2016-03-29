@@ -66,9 +66,8 @@ namespace Kentor.AuthServices.Tests.Owin
             var storedRequestState = new StoredRequestState(
                 null, new Uri("http://sp.example.com"), null, null);
 
-            var cookieData = HttpRequestData.EscapeBase64CookieValue(
-                Convert.ToBase64String(
-                    StubDataProtector.Protect(storedRequestState.Serialize())));
+            var cookieData = HttpRequestData.ConvertBinaryData(
+                    StubDataProtector.Protect(storedRequestState.Serialize()));
 
             ctx.Request.Headers["Cookie"] = $"Kentor.SomeState={cookieData}";
 

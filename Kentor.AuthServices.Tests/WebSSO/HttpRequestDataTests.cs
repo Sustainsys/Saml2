@@ -38,10 +38,10 @@ namespace Kentor.AuthServices.Tests.WebSSO
         [TestMethod]
         public void HttpRequestData_EscapeBase64CookieValue_Nullcheck()
         {
-            Action a = () => HttpRequestData.EscapeBase64CookieValue(null);
+            Action a = () => HttpRequestData.ConvertBinaryData(null);
 
             a.ShouldThrow<ArgumentNullException>()
-                .And.ParamName.Should().Be("value");
+                .And.ParamName.Should().Be("data");
         }
 
         [TestMethod]
@@ -80,9 +80,8 @@ namespace Kentor.AuthServices.Tests.WebSSO
             {
                 new KeyValuePair<string, string>(
                     "Kentor.Foo",
-                    HttpRequestData.EscapeBase64CookieValue(
-                        Convert.ToBase64String(
-                            StubDataProtector.Protect(storedRequestData.Serialize()))))
+                    HttpRequestData.ConvertBinaryData(
+                            StubDataProtector.Protect(storedRequestData.Serialize())))
             };
 
             var subject = new HttpRequestData(

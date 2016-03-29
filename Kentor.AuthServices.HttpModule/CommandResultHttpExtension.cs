@@ -82,11 +82,10 @@ namespace Kentor.AuthServices.HttpModule
 
             if (!string.IsNullOrEmpty(commandResult.SetCookieName))
             {
-                var protectedData = HttpRequestData.EscapeBase64CookieValue(
-                    Convert.ToBase64String(
+                var protectedData = HttpRequestData.ConvertBinaryData(
                         MachineKey.Protect(
                             commandResult.GetSerializedRequestState(),
-                            HttpRequestBaseExtensions.ProtectionPurpose)));
+                            HttpRequestBaseExtensions.ProtectionPurpose));
 
                 response.SetCookie(new HttpCookie(
                     commandResult.SetCookieName,

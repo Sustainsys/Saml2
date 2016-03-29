@@ -273,29 +273,26 @@ namespace Kentor.AuthServices
         /// <param name="authServicesUrls">Urls for AuthServices, used to populate fields
         /// in the created AuthnRequest</param>
         /// <returns>AuthnRequest</returns>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "returnUrl")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1041:ProvideObsoleteAttributeMessage")]
+        [Obsolete]
         public Saml2AuthenticationRequest CreateAuthenticateRequest(
             Uri returnUrl,
             AuthServicesUrls authServicesUrls)
         {
-            return CreateAuthenticateRequest(returnUrl, authServicesUrls, null);
+            return CreateAuthenticateRequest(authServicesUrls);
         }
 
         /// <summary>
         /// Create an authenticate request aimed for this idp.
         /// </summary>
-        /// <param name="returnUrl">The return url where the browser should be sent after
-        /// successful authentication.</param>
         /// <param name="authServicesUrls">Urls for AuthServices, used to populate fields
         /// in the created AuthnRequest</param>
-        /// <param name="relayData">Aux data that should be preserved across the authentication</param>
-        /// <returns>AuthnRequest</returns>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "AuthenticateRequestSigningBehavior")]
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "ServiceCertificates")]
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "AuthenticateRequests")]
         public Saml2AuthenticationRequest CreateAuthenticateRequest(
-            Uri returnUrl,
-            AuthServicesUrls authServicesUrls,
-            IDictionary<string,string> relayData)
+            AuthServicesUrls authServicesUrls)
         {
             if (authServicesUrls == null)
             {
@@ -328,10 +325,6 @@ namespace Kentor.AuthServices
 
                 authnRequest.SigningCertificate = spOptions.SigningServiceCertificate;
             }
-
-            var requestState = new StoredRequestState(EntityId, returnUrl, authnRequest.Id, relayData);
-
-            PendingAuthnRequests.Add(authnRequest.RelayState, requestState);
 
             return authnRequest;
         }

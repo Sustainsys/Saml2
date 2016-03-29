@@ -36,9 +36,9 @@ namespace Kentor.AuthServices.WebSso
                 try
                 {
                     unbindResult = binding.Unbind(request, options);
-                    var samlResponse = new Saml2Response(unbindResult.Data, unbindResult.RelayState);
+                    var samlResponse = new Saml2Response(unbindResult.Data, request.StoredRequestState?.MessageId);
 
-                    return ProcessResponse(options, samlResponse);
+                    return ProcessResponse(options, samlResponse, request.StoredRequestState);
                 }
                 catch (FormatException ex)
                 {
@@ -74,16 +74,17 @@ namespace Kentor.AuthServices.WebSso
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "returnUrl")]
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "SpOptions")]
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "ReturnUrl")]
-        private static CommandResult ProcessResponse(IOptions options, Saml2Response samlResponse)
+        private static CommandResult ProcessResponse(
+            IOptions options,
+            Saml2Response samlResponse,
+            StoredRequestState storedRequestState)
         {
             var principal = new ClaimsPrincipal(samlResponse.GetClaims(options));
 
             principal = options.SPOptions.SystemIdentityModelIdentityConfiguration
                 .ClaimsAuthenticationManager.Authenticate(null, principal);
 
-            var requestState = samlResponse.GetRequestState(options);
-
-            if(requestState == null && options.SPOptions.ReturnUrl == null)
+            if(storedRequestState == null && options.SPOptions.ReturnUrl == null)
             {
                 throw new ConfigurationErrorsException(MissingReturnUrlMessage);
             }
@@ -91,9 +92,9 @@ namespace Kentor.AuthServices.WebSso
             return new CommandResult()
             {
                 HttpStatusCode = HttpStatusCode.SeeOther,
-                Location = requestState?.ReturnUrl ?? options.SPOptions.ReturnUrl,
+                Location = storedRequestState?.ReturnUrl ?? options.SPOptions.ReturnUrl,
                 Principal = principal,
-                RelayData = requestState?.RelayData
+                RelayData = storedRequestState?.RelayData
             };
         }
 

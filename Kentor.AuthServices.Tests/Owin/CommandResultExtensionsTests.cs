@@ -79,9 +79,8 @@ namespace Kentor.AuthServices.Tests.Owin
 
             var setCookieHeader = context.Response.Headers["Set-Cookie"];
 
-            var protectedData = HttpRequestData.EscapeBase64CookieValue(
-                Convert.ToBase64String(
-                    StubDataProtector.Protect(cr.GetSerializedRequestState())));
+            var protectedData = HttpRequestData.ConvertBinaryData(
+                StubDataProtector.Protect(cr.GetSerializedRequestState()));
 
             var expected = $"CookieName={protectedData}; path=/; HttpOnly";
 

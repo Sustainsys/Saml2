@@ -55,9 +55,8 @@ namespace Kentor.AuthServices.Owin
 
             if (serializedCookieData != null)
             {
-                var protectedData = HttpRequestData.EscapeBase64CookieValue(
-                    Convert.ToBase64String(
-                        dataProtector.Protect(serializedCookieData)));
+                var protectedData = HttpRequestData.ConvertBinaryData(
+                        dataProtector.Protect(serializedCookieData));
 
                 context.Response.Cookies.Append(
                     commandResult.SetCookieName,

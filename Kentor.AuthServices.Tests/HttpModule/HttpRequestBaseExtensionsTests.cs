@@ -37,10 +37,10 @@ namespace Kentor.AuthServices.Tests.HttpModule
             request.Form.Returns(new NameValueCollection { { "Key", "Value" } });
             request.ApplicationPath.Returns(appPath);
 
-            var cookieValue = HttpRequestData.EscapeBase64CookieValue(Convert.ToBase64String(
+            var cookieValue = HttpRequestData.ConvertBinaryData(
                 MachineKey.Protect(
                     new StoredRequestState(null, new Uri("urn:someUri"), null, null).Serialize(),
-                    HttpRequestBaseExtensions.ProtectionPurpose)));
+                    HttpRequestBaseExtensions.ProtectionPurpose));
             request.Cookies.Returns(new HttpCookieCollection());
             request.Cookies.Add(new HttpCookie("Kentor.SomeState", cookieValue));
 

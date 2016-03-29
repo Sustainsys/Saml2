@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 
 namespace Kentor.AuthServices.Internal
 {
+    [Obsolete]
     static class PendingAuthnRequests
     {
         private static readonly ConcurrentDictionary<string, StoredRequestState> pendingAuthnRequest

@@ -26,20 +26,15 @@ namespace Kentor.AuthServices.Tests.WebSso
         [TestMethod]
         public void SignInCommand_Run_ReturnsAuthnRequestForDefaultIdp()
         {
-            var defaultDestination = Options.FromConfiguration.IdentityProviders.Default.SingleSignOnServiceUrl;
+            var idp = Options.FromConfiguration.IdentityProviders.Default;
+            var defaultDestination = idp.SingleSignOnServiceUrl;
 
             var result = new SignInCommand().Run(
                 new HttpRequestData("GET", new Uri("http://example.com")),
                 Options.FromConfiguration);
 
-            var expected = new CommandResult()
-            {
-                HttpStatusCode = HttpStatusCode.SeeOther,
-                Cacheability = (Cacheability) HttpCacheability.NoCache,
-                Location = new Uri(defaultDestination + "?SAMLRequest=XYZ")
-            };
-
-            result.ShouldBeEquivalentTo(expected, options => options.Excluding(cr => cr.Location));
+            result.HttpStatusCode.Should().Be(HttpStatusCode.SeeOther);
+            result.Cacheability.Should().Be((Cacheability)HttpCacheability.NoCache);
             result.Location.Host.Should().Be(defaultDestination.Host);
 
             var queries = HttpUtility.ParseQueryString(result.Location.Query);
@@ -56,15 +51,9 @@ namespace Kentor.AuthServices.Tests.WebSso
 
             var httpRequest = new HttpRequestData("GET", new Uri("http://localhost/signin?ReturnUrl=%2FReturn.aspx"));
 
-            var subject = new SignInCommand().Run(httpRequest, Options.FromConfiguration);
+            var actual = new SignInCommand().Run(httpRequest, Options.FromConfiguration);
 
-            var idp = Options.FromConfiguration.IdentityProviders.Default;
-            var relayState = HttpUtility.ParseQueryString(subject.Location.Query)["RelayState"];
-
-            StoredRequestState storedAuthnData;
-            PendingAuthnRequests.TryRemove(relayState, out storedAuthnData);
-
-            storedAuthnData.ReturnUrl.Should().Be("http://localhost/Return.aspx");
+            actual.RequestState.ReturnUrl.Should().Be("http://localhost/Return.aspx");
         }
 
         [TestMethod]

@@ -17,6 +17,7 @@ using System.Reflection;
 using System.Configuration;
 using Kentor.AuthServices.Exceptions;
 using System.IdentityModel.Metadata;
+using System.IdentityModel.Tokens;
 
 namespace Kentor.AuthServices.Tests.WebSso
 {
@@ -233,14 +234,11 @@ namespace Kentor.AuthServices.Tests.WebSso
         public void AcsCommand_Run_WithReturnUrl_SuccessfulResult()
         {
             var idp = Options.FromConfiguration.IdentityProviders.Default;
-            var request = idp.CreateAuthenticateRequest(
-                new Uri("http://localhost/testUrl.aspx"),
-                StubFactory.CreateAuthServicesUrls());
 
             var response =
             @"<saml2p:Response xmlns:saml2p=""urn:oasis:names:tc:SAML:2.0:protocol""
                 xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
-                ID = """ + MethodBase.GetCurrentMethod().Name + @""" InResponseTo = """ + request.Id + @""" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z"">
+                ID = """ + MethodBase.GetCurrentMethod().Name + @""" InResponseTo = ""InResponseToId"" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z"">
                 <saml2:Issuer>
                     https://idp.example.com
                 </saml2:Issuer>
@@ -261,7 +259,7 @@ namespace Kentor.AuthServices.Tests.WebSso
 
             var responseFormValue = Convert.ToBase64String
                 (Encoding.UTF8.GetBytes(SignedXmlHelper.SignXml(response)));
-            var relayStateFormValue = request.RelayState;
+            var relayStateFormValue = "RelayState";
 
             var r = new HttpRequestData(
                 "POST",
@@ -272,8 +270,12 @@ namespace Kentor.AuthServices.Tests.WebSso
                     new KeyValuePair<string, string[]>("SAMLResponse", new string[] { responseFormValue }),
                     new KeyValuePair<string, string[]>("RelayState", new string[] { relayStateFormValue })
                 },
-                Enumerable.Empty<KeyValuePair<string, string>>(),
-                null);
+                new StoredRequestState(
+                    new EntityId("https://idp.example.com"),
+                    new Uri("http://localhost/testUrl.aspx"),
+                    new Saml2Id("InResponseToId"),
+                    null)
+                );
 
             var ids = new ClaimsIdentity[] { new ClaimsIdentity("Federation"), new ClaimsIdentity("ClaimsAuthenticationManager") };
             ids[0].AddClaim(new Claim(ClaimTypes.NameIdentifier, "SomeUser", null, "https://idp.example.com"));
