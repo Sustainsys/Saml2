@@ -57,7 +57,7 @@ namespace Kentor.AuthServices.Tests
                     SingleSignOnServiceUrl = new Uri(idpUri)
                 };
 
-            var r = subject.CreateAuthenticateRequest(null, StubFactory.CreateAuthServicesUrls());
+            var r = subject.CreateAuthenticateRequest(StubFactory.CreateAuthServicesUrls());
 
             r.ToXElement().Attribute("Destination").Should().NotBeNull()
                 .And.Subject.Value.Should().Be(idpUri);
@@ -71,7 +71,7 @@ namespace Kentor.AuthServices.Tests
             var idp = options.IdentityProviders.Default;
 
             var urls = StubFactory.CreateAuthServicesUrls();
-            var subject = idp.CreateAuthenticateRequest(null, urls);
+            var subject = idp.CreateAuthenticateRequest(urls);
 
             var expected = new Saml2AuthenticationRequest()
             {
@@ -101,7 +101,7 @@ namespace Kentor.AuthServices.Tests
             var idp = options.IdentityProviders.Default;
 
             var urls = StubFactory.CreateAuthServicesUrlsPublicOrigin(origin);
-            var subject = idp.CreateAuthenticateRequest(null, urls);
+            var subject = idp.CreateAuthenticateRequest(urls);
 
             var expected = new Saml2AuthenticationRequest()
             {
@@ -125,7 +125,7 @@ namespace Kentor.AuthServices.Tests
 
             ((SPOptions)options.SPOptions).AttributeConsumingServices.Clear();
 
-            var subject = idp.CreateAuthenticateRequest(null, urls);
+            var subject = idp.CreateAuthenticateRequest(urls);
 
             var expected = new Saml2AuthenticationRequest()
             {
@@ -145,7 +145,7 @@ namespace Kentor.AuthServices.Tests
         {
             var idp = Options.FromConfiguration.IdentityProviders.Default;
 
-            Action a = () => idp.CreateAuthenticateRequest(new Uri("http://localhost"), null);
+            Action a = () => idp.CreateAuthenticateRequest(null);
 
             a.ShouldThrow<ArgumentNullException>().And.ParamName.Should().Be("authServicesUrls");
         }
@@ -164,7 +164,7 @@ namespace Kentor.AuthServices.Tests
             var idp = options.IdentityProviders.Default;
             var urls = StubFactory.CreateAuthServicesUrls();
 
-            var subject = idp.CreateAuthenticateRequest(null, urls);
+            var subject = idp.CreateAuthenticateRequest(urls);
 
             subject.SigningCertificate.Thumbprint.Should().Be(SignedXmlHelper.TestCert.Thumbprint);
         }
@@ -178,7 +178,7 @@ namespace Kentor.AuthServices.Tests
             var subject = options.IdentityProviders[new EntityId("https://idp2.example.com")];
             var urls = StubFactory.CreateAuthServicesUrls();
 
-            var actual = subject.CreateAuthenticateRequest(null, urls).SigningCertificate;
+            var actual = subject.CreateAuthenticateRequest(urls).SigningCertificate;
 
             (actual?.Thumbprint).Should().Be(SignedXmlHelper.TestCert2.Thumbprint);
         }
@@ -200,7 +200,7 @@ namespace Kentor.AuthServices.Tests
             };
             var urls = StubFactory.CreateAuthServicesUrls();
 
-            var actual = subject.CreateAuthenticateRequest(null, urls).SigningCertificate;
+            var actual = subject.CreateAuthenticateRequest(urls).SigningCertificate;
 
             actual.Should().BeNull();
         }
@@ -215,7 +215,7 @@ namespace Kentor.AuthServices.Tests
             var idp = options.IdentityProviders.Default;
             var urls = StubFactory.CreateAuthServicesUrls();
 
-            idp.Invoking(i => i.CreateAuthenticateRequest(null, urls))
+            idp.Invoking(i => i.CreateAuthenticateRequest(urls))
                 .ShouldThrow<ConfigurationErrorsException>()
                 .WithMessage($"Idp \"https://idp.example.com\" is configured for signed AuthenticateRequests*");
         }
@@ -747,7 +747,7 @@ namespace Kentor.AuthServices.Tests
             subject.SingleSignOnServiceUrl.Should().Be("http://wrong.entityid.example.com/acs");
             subject.WantAuthnRequestsSigned.Should().Be(true, "WantAuthnRequestsSigned should have been loaded from metadata");
 
-            Action a = () => subject.CreateAuthenticateRequest(null, StubFactory.CreateAuthServicesUrls());
+            Action a = () => subject.CreateAuthenticateRequest(StubFactory.CreateAuthServicesUrls());
             a.ShouldNotThrow();
         }
 

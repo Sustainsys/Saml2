@@ -268,24 +268,6 @@ namespace Kentor.AuthServices
         /// <summary>
         /// Create an authenticate request aimed for this idp.
         /// </summary>
-        /// <param name="returnUrl">The return url where the browser should be sent after
-        /// successful authentication.</param>
-        /// <param name="authServicesUrls">Urls for AuthServices, used to populate fields
-        /// in the created AuthnRequest</param>
-        /// <returns>AuthnRequest</returns>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "returnUrl")]
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1041:ProvideObsoleteAttributeMessage")]
-        [Obsolete]
-        public Saml2AuthenticationRequest CreateAuthenticateRequest(
-            Uri returnUrl,
-            AuthServicesUrls authServicesUrls)
-        {
-            return CreateAuthenticateRequest(authServicesUrls);
-        }
-
-        /// <summary>
-        /// Create an authenticate request aimed for this idp.
-        /// </summary>
         /// <param name="authServicesUrls">Urls for AuthServices, used to populate fields
         /// in the created AuthnRequest</param>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "AuthenticateRequestSigningBehavior")]

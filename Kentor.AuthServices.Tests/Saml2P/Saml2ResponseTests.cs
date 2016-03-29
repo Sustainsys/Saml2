@@ -1245,7 +1245,7 @@ namespace Kentor.AuthServices.Tests.Saml2P
         {
             var idp = Options.FromConfiguration.IdentityProviders.Default;
 
-            var request = idp.CreateAuthenticateRequest(null, StubFactory.CreateAuthServicesUrls());
+            var request = idp.CreateAuthenticateRequest(StubFactory.CreateAuthServicesUrls());
 
             var responseXML =
             @"<?xml version=""1.0"" encoding=""UTF-8""?>
