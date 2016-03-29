@@ -49,11 +49,12 @@ namespace Kentor.AuthServices.Tests.WebSSO
 
             var relayState = "relayState";
 
-            PrepareArtifactState(relayState, issuer);
-
             var r = new HttpRequestData(
                 "GET",
-                new Uri($"http://example.com/path/acs?SAMLart={artifact}&RelayState={relayState}"));
+                new Uri($"http://example.com/path/acs?SAMLart={artifact}&RelayState={relayState}"),
+                null,
+                null,
+                new StoredRequestState(issuer, null, null, null));
 
             StubServer.LastArtifactResolutionSoapActionHeader = null;
 
@@ -153,17 +154,6 @@ namespace Kentor.AuthServices.Tests.WebSSO
                 "http://www.oasis-open.org/committees/security");
         }
 
-        private void PrepareArtifactState(string RelayState, EntityId idp)
-        {
-            var storedState = new StoredRequestState(
-                idp,
-                new Uri("http://return.org"),
-                new Saml2Id(),
-                null);
-
-            PendingAuthnRequests.Add(RelayState, storedState);
-        }
-
         [TestMethod]
         public void Saml2ArtifactBinding_Unbind_FromPost()
         {
@@ -172,8 +162,6 @@ namespace Kentor.AuthServices.Tests.WebSSO
                     Saml2ArtifactBinding.CreateArtifact(issuer, 0x1234));
 
             var relayState = MethodBase.GetCurrentMethod().Name;
-
-            PrepareArtifactState(relayState, issuer);
 
             var r = new HttpRequestData(
                 "POST",
@@ -184,7 +172,7 @@ namespace Kentor.AuthServices.Tests.WebSSO
                     new KeyValuePair<string, string[]>("SAMLart", new[] { artifact }),
                     new KeyValuePair<string, string[]>("RelayState", new[] { relayState })
                 },
-                null);
+                new StoredRequestState(issuer, null, null, null));
 
             StubServer.LastArtifactResolutionSoapActionHeader = null;
 
