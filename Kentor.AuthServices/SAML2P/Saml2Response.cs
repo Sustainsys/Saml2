@@ -121,7 +121,7 @@ namespace Kentor.AuthServices.Saml2P
                 {
                     throw new Saml2ResponseFailedValidationException(
                         string.Format(CultureInfo.InvariantCulture,
-                        "Message contains unexpected InResponseTo {0}. No RelayState was detected so message was not expected to have an InResponseTo attribute.",
+                        "Received message contains unexpected InResponseTo \"{0}\". No RelayState was detected so message was not expected to have an InResponseTo attribute.",
                         InResponseTo));
                 }
                 if (!expectedInResponseTo.Equals(InResponseTo))
@@ -138,7 +138,7 @@ namespace Kentor.AuthServices.Saml2P
                 {
                     throw new Saml2ResponseFailedValidationException(
                         string.Format(CultureInfo.InvariantCulture,
-                        "Expected message to contain InResponseTo {0}, but found none.",
+                        "Expected message to contain InResponseTo \"{0}\", but found none.",
                         expectedInResponseTo));
                 }
             }
@@ -416,33 +416,10 @@ namespace Kentor.AuthServices.Saml2P
             return decryptionCertificates;
         }
 
-        bool validated = false;
-        AuthServicesException validationException;
-
         private void Validate(IOptions options)
         {
-            if (!validated)
-            {
-                try
-                {
-                    CheckIfUnsolicitedIsAllowed(options);
-                    ValidateSignature(options);
-                    validated = true;
-                }
-                catch (AuthServicesException ex)
-                {
-                    validationException = ex;
-                    validated = true;
-                    throw;
-                }
-            }
-            else
-            {
-                if (validationException != null)
-                {
-                    throw validationException;
-                }
-            }
+            CheckIfUnsolicitedIsAllowed(options);
+            ValidateSignature(options);
         }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "RelayState")]

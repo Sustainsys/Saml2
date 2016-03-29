@@ -1292,6 +1292,55 @@ namespace Kentor.AuthServices.Tests.Saml2P
         }
 
         [TestMethod]
+        public void Saml2Response_Read_ThrowsOnInResponseTo_When_NoneExpected()
+        {
+            var idp = Options.FromConfiguration.IdentityProviders.Default;
+
+            var responseXML =
+            @"<?xml version=""1.0"" encoding=""UTF-8""?>
+            <saml2p:Response xmlns:saml2p=""urn:oasis:names:tc:SAML:2.0:protocol""
+            xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
+            ID = """ + MethodBase.GetCurrentMethod().Name + @""" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z""
+            InResponseTo = ""InResponseTo"">
+                <saml2:Issuer>https://idp.example.com</saml2:Issuer>
+                <saml2p:Status>
+                    <saml2p:StatusCode Value=""urn:oasis:names:tc:SAML:2.0:status:Requester"" />
+                </saml2p:Status>
+            </saml2p:Response>";
+
+            responseXML = SignedXmlHelper.SignXml(responseXML);
+
+            Action a = () => Saml2Response.Read(responseXML, null);
+
+            a.ShouldThrow<Saml2ResponseFailedValidationException>()
+                .WithMessage("Received message contains unexpected InResponseTo \"InResponseTo\"*");
+        }
+
+        [TestMethod]
+        public void Saml2Response_Read_ThrowsOnNoInResponseTo_When_OneWasExpected()
+        {
+            var idp = Options.FromConfiguration.IdentityProviders.Default;
+
+            var responseXML =
+            @"<?xml version=""1.0"" encoding=""UTF-8""?>
+            <saml2p:Response xmlns:saml2p=""urn:oasis:names:tc:SAML:2.0:protocol""
+            xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
+            ID = """ + MethodBase.GetCurrentMethod().Name + @""" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z"">
+                <saml2:Issuer>https://idp.example.com</saml2:Issuer>
+                <saml2p:Status>
+                    <saml2p:StatusCode Value=""urn:oasis:names:tc:SAML:2.0:status:Requester"" />
+                </saml2p:Status>
+            </saml2p:Response>";
+
+            responseXML = SignedXmlHelper.SignXml(responseXML);
+
+            Action a = () => Saml2Response.Read(responseXML, new Saml2Id("ExpectedId"));
+
+            a.ShouldThrow<Saml2ResponseFailedValidationException>()
+                .WithMessage("Expected message to contain InResponseTo \"ExpectedId\", but found none.");
+        }
+
+        [TestMethod]
         public void Saml2Response_GetClaims_ThrowsOnTamperedMessage()
         {
             var idp = Options.FromConfiguration.IdentityProviders.Default;
