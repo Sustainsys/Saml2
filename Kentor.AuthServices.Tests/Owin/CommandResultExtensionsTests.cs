@@ -101,7 +101,7 @@ namespace Kentor.AuthServices.Tests.Owin
 
             var setCookieHeader = context.Response.Headers["Set-Cookie"];
 
-            var expected = "CookieName=; expires=Thu, 01-Jan-1970 00:00:00 GMT";
+            var expected = "CookieName=; path=/; expires=Thu, 01-Jan-1970 00:00:00 GMT";
 
             setCookieHeader.Should().Be(expected);
         }
