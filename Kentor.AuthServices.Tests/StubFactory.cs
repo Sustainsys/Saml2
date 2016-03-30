@@ -1,6 +1,7 @@
 ﻿using Kentor.AuthServices.Configuration;
 using Kentor.AuthServices.Metadata;
 using Kentor.AuthServices.Owin;
+using Kentor.AuthServices.Tests.Owin;
 using Kentor.AuthServices.WebSso;
 using System;
 using System.Collections.Generic;
@@ -169,7 +170,8 @@ namespace Kentor.AuthServices.Tests
                 sp => new KentorAuthServicesAuthenticationOptions(false)
                 {
                     SPOptions = sp,
-                    SignInAsAuthenticationType = "AuthType"
+                    SignInAsAuthenticationType = "AuthType",
+                    DataProtector = new StubDataProtector()
                 });
         }
     }

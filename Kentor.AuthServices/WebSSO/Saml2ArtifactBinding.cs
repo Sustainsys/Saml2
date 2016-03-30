@@ -8,7 +8,6 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IdentityModel.Metadata;
 using Kentor.AuthServices.Configuration;
-using Kentor.AuthServices.Internal;
 using System.Xml;
 
 namespace Kentor.AuthServices.WebSso
@@ -70,18 +69,18 @@ namespace Kentor.AuthServices.WebSso
                         request.HttpMethod));
             }
 
-            var data = ResolveArtifact(artifact, relayState, options);
+            var data = ResolveArtifact(artifact, request.StoredRequestState, options);
 
             return new UnbindResult(data, relayState, TrustLevel.None);
         }
 
         private static XmlElement ResolveArtifact(
             string artifact,
-            string relayState,
+            StoredRequestState storedRequestState,
             IOptions options)
         {
             var binaryArtifact = Convert.FromBase64String(artifact);
-            var idp = GetIdp(binaryArtifact, relayState, options);
+            var idp = GetIdp(binaryArtifact, storedRequestState, options);
             var arsIndex = (binaryArtifact[2] << 8) | binaryArtifact[3];
             var arsUri = idp.ArtifactResolutionServiceUrls[arsIndex];
 
@@ -108,11 +107,13 @@ namespace Kentor.AuthServices.WebSso
             return new Saml2ArtifactResponse(response).GetMessage();
         }
 
-        private static IdentityProvider GetIdp(byte[] binaryArtifact, string relayState, IOptions options)
+        private static IdentityProvider GetIdp(
+            byte[] binaryArtifact,
+            StoredRequestState storedRequestState,
+            IOptions options)
         {
-            if (relayState != null)
+            if(storedRequestState != null)
             {
-                var storedRequestState = PendingAuthnRequests.Get(relayState);
                 return options.IdentityProviders[storedRequestState.Idp];
             }
 

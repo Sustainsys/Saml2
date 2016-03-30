@@ -210,14 +210,18 @@ namespace Kentor.AuthServices.Tests.Owin
 
             context.Response.StatusCode.Should().Be(303);
             context.Response.Headers["Location"].Should().StartWith("https://idp.example.com/logout?SAMLRequest");
-
-            var cookieValue = context.Response.Headers["Set-Cookie"].Split(';', '=')[1]
-                .Replace('_', '/').Replace('-', '+').Replace('.', '=');
-
-            var returnUrl = Encoding.UTF8.GetString(options.DataProtector.Unprotect(
-                Convert.FromBase64String(cookieValue)));
+            var returnUrl = ExtractRequestState(options.DataProtector, context).ReturnUrl;
 
             returnUrl.Should().Be("https://sp.example.com/ExternalPath/LoggedOut");
+        }
+
+        private static StoredRequestState ExtractRequestState(IDataProtector dataProtector, OwinContext context)
+        {
+            var cookieData = context.Response.Headers["Set-Cookie"].Split(';', '=')[1];
+
+            return new StoredRequestState(
+                dataProtector.Unprotect(
+                    HttpRequestData.GetBinaryData(cookieData)));
         }
 
         [TestMethod]
@@ -280,8 +284,8 @@ namespace Kentor.AuthServices.Tests.Owin
             var cookieValue = context.Response.Headers["Set-Cookie"].Split(';', '=')[1]
                 .Replace('_', '/').Replace('-', '+').Replace('.', '=');
 
-            var returnUrl = Encoding.UTF8.GetString(options.DataProtector.Unprotect(
-                Convert.FromBase64String(cookieValue)));
+            var returnUrl = new StoredRequestState(options.DataProtector.Unprotect(
+                Convert.FromBase64String(cookieValue))).ReturnUrl;
 
             returnUrl.Should().Be(expectedUrl);
         }
@@ -360,10 +364,10 @@ namespace Kentor.AuthServices.Tests.Owin
             };
             var requestUri = Saml2Binding.Get(Saml2BindingType.HttpRedirect).Bind(response).Location;
 
-            var cookieData = HttpRequestData.EscapeBase64CookieValue(
-                Convert.ToBase64String(
+            var cookieData = HttpRequestData.ConvertBinaryData(
                     options.DataProtector.Protect(
-                        Encoding.UTF8.GetBytes("http://loggedout.example.com/"))));
+                        new StoredRequestState(null, new Uri("http://loggedout.example.com/"), null, null)
+                            .Serialize()));
             context.Request.Headers["Cookie"] = $"Kentor.{relayState}={cookieData}";
             context.Request.Path = new PathString(requestUri.AbsolutePath);
             context.Request.QueryString = new QueryString(requestUri.Query.TrimStart('?'));
@@ -524,22 +528,22 @@ namespace Kentor.AuthServices.Tests.Owin
         {
             var returnUrl = "http://sp.example.com/returnurl";
 
-            var middleware = new KentorAuthServicesAuthenticationMiddleware(
+            var options = new KentorAuthServicesAuthenticationOptions(true);
+            var subject = new KentorAuthServicesAuthenticationMiddleware(
                 new StubOwinMiddleware(401, new AuthenticationResponseChallenge(
                     new string[] { "KentorAuthServices" }, new AuthenticationProperties()
                     {
                         RedirectUri = returnUrl
                     })),
-                    CreateAppBuilder(), new KentorAuthServicesAuthenticationOptions(true));
+                    CreateAppBuilder(), options);
 
             var context = OwinTestHelpers.CreateOwinContext();
 
-            await middleware.Invoke(context);
+            await subject.Invoke(context);
 
-            StoredRequestState storedAuthnData;
-            PendingAuthnRequests.TryRemove(ExtractRelayState(context), out storedAuthnData);
+            var storedState = ExtractRequestState(options.DataProtector, context);
 
-            storedAuthnData.ReturnUrl.Should().Be(returnUrl);
+            storedState.ReturnUrl.Should().Be(returnUrl);
         }
 
         [TestMethod]
@@ -553,21 +557,21 @@ namespace Kentor.AuthServices.Tests.Owin
             };
             prop.Dictionary["test"] = "SomeValue";
 
+            var options = new KentorAuthServicesAuthenticationOptions(true);
             var middleware = new KentorAuthServicesAuthenticationMiddleware(
-                new StubOwinMiddleware(401, new AuthenticationResponseChallenge(
-                    new string[] { "KentorAuthServices" }, prop)),
-                    CreateAppBuilder(), new KentorAuthServicesAuthenticationOptions(true));
+                new StubOwinMiddleware(401,
+                    new AuthenticationResponseChallenge(
+                        new string[] { "KentorAuthServices" }, prop)),
+                CreateAppBuilder(),
+                options);
 
             var context = OwinTestHelpers.CreateOwinContext();
 
             await middleware.Invoke(context);
 
-            var relayState = ExtractRelayState(context);
+            var storedAuthnData = ExtractRequestState(options.DataProtector, context);
 
-            StoredRequestState storedAuthnData;
-            PendingAuthnRequests.TryRemove(relayState, out storedAuthnData);
-
-            ((AuthenticationProperties)storedAuthnData.RelayData).Dictionary["test"].Should().Be("SomeValue");
+            new AuthenticationProperties(storedAuthnData.RelayData).Dictionary["test"].Should().Be("SomeValue");
         }
 
         [TestMethod]
@@ -625,7 +629,7 @@ namespace Kentor.AuthServices.Tests.Owin
 
             await middleware.Invoke(context);
 
-            context.Response.StatusCode.Should().Be(302);
+            context.Response.StatusCode.Should().Be(303);
             context.Response.Headers["Location"].Should().Be("http://localhost/LoggedIn");
         }
 
@@ -635,23 +639,31 @@ namespace Kentor.AuthServices.Tests.Owin
             var context = OwinTestHelpers.CreateOwinContext();
             context.Request.Method = "POST";
 
+            var authProps = new AuthenticationProperties()
+            {
+                IssuedUtc = new DateTime(1975, 05, 05, 05, 05, 05, DateTimeKind.Utc)
+            };
+            authProps.Dictionary["Test"] = "TestValue";
+
             var state = new StoredRequestState(new EntityId("https://idp.example.com"),
                 new Uri("http://localhost/LoggedIn"),
-                new Saml2Id(MethodBase.GetCurrentMethod().Name + "RequestID"),
-                new AuthenticationProperties());
-
-            ((AuthenticationProperties)state.RelayData).RedirectUri = state.ReturnUrl.OriginalString;
-            ((AuthenticationProperties)state.RelayData).Dictionary["Test"] = "TestValue";
+                new Saml2Id("InResponseToId"),
+                authProps.Dictionary);
 
             var relayState = SecureKeyGenerator.CreateRelayState();
 
-            PendingAuthnRequests.Add(relayState, state);
+            var cookieData = HttpRequestData.ConvertBinaryData(
+                CreateAppBuilder().CreateDataProtector(
+                    typeof(KentorAuthServicesAuthenticationMiddleware).FullName)
+                    .Protect(state.Serialize()));
+
+            context.Request.Headers["Cookie"] = $"Kentor.{relayState}={cookieData}";
 
             var response =
             @"<saml2p:Response xmlns:saml2p=""urn:oasis:names:tc:SAML:2.0:protocol""
                 xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
                 ID = """ + MethodBase.GetCurrentMethod().Name + @""" Version=""2.0""
-                IssueInstant=""2013-01-01T00:00:00Z"" InResponseTo=""" + MethodBase.GetCurrentMethod().Name + @"RequestID"" >
+                IssueInstant=""2013-01-01T00:00:00Z"" InResponseTo=""InResponseToId"" >
                 <saml2:Issuer>
                     https://idp.example.com
                 </saml2:Issuer>
@@ -690,22 +702,27 @@ namespace Kentor.AuthServices.Tests.Owin
             ids[1].AddClaim(new Claim(ClaimTypes.Role, "RoleFromClaimsAuthManager", 
                 null, "ClaimsAuthenticationManagerStub"));
 
-            var middleware = new KentorAuthServicesAuthenticationMiddleware(null, CreateAppBuilder(),
+            var subject = new KentorAuthServicesAuthenticationMiddleware(null, CreateAppBuilder(),
                 StubFactory.CreateOwinOptions());
 
-            await middleware.Invoke(context);
+            await subject.Invoke(context);
 
-            context.Response.StatusCode.Should().Be(302);
+            context.Response.StatusCode.Should().Be(303);
             context.Response.Headers["Location"].Should().Be("http://localhost/LoggedIn");
+            context.Response.Headers["Set-Cookie"].Should().Be($"Kentor.{relayState}=; expires=Thu, 01-Jan-1970 00:00:00 GMT");
 
             context.Authentication.AuthenticationResponseGrant.Principal.Identities
                 .ShouldBeEquivalentTo(ids, opt => opt.IgnoringCyclicReferences());
 
             context.Authentication.AuthenticationResponseGrant.Properties.RedirectUri
-                .Should().Be("http://localhost/LoggedIn");
+                .Should().Be("http://localhost/LoggedIn", 
+                "the StoredRequestState.ReturnUrl should overtake the value in the AuthProperties and be stored in the AuthProps");
 
             context.Authentication.AuthenticationResponseGrant.Properties.Dictionary["Test"]
                 .Should().Be("TestValue");
+
+            context.Authentication.AuthenticationResponseGrant.Properties.IssuedUtc
+                .Should().Be(authProps.IssuedUtc);
         }
 
         [TestMethod]
@@ -739,8 +756,9 @@ namespace Kentor.AuthServices.Tests.Owin
             context.Request.Path = new PathString(signinPath);
             context.Request.QueryString = new QueryString("ReturnUrl=%2FHome&idp=https%3A%2F%2Fidp2.example.com");
 
-            var middleware = new KentorAuthServicesAuthenticationMiddleware(null, CreateAppBuilder(),
-                new KentorAuthServicesAuthenticationOptions(true));
+            var options = new KentorAuthServicesAuthenticationOptions(true);
+            var middleware = new KentorAuthServicesAuthenticationMiddleware(
+                null, CreateAppBuilder(), options);
 
             await middleware.Invoke(context);
 
@@ -749,8 +767,7 @@ namespace Kentor.AuthServices.Tests.Owin
 
             var relayState = ExtractRelayState(context);
 
-            StoredRequestState storedAuthnData;
-            PendingAuthnRequests.TryRemove(relayState, out storedAuthnData);
+            var storedAuthnData = ExtractRequestState(options.DataProtector, context);
 
             storedAuthnData.ReturnUrl.Should().Be("http://localhost/Home");
         }

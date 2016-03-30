@@ -41,26 +41,28 @@ namespace Kentor.AuthServices.Saml2P
         /// Read the supplied Xml and parse it into a response.
         /// </summary>
         /// <param name="xml">xml data.</param>
-        /// <param name="relayState">Relay state associated with message.</param>
+        /// <param name="expectedInResponseTo">The expected value of the
+        /// InReplyTo parameter in the message.</param>
         /// <returns>Saml2Response</returns>
         /// <exception cref="XmlException">On xml errors or unexpected xml structure.</exception>
-        public static Saml2Response Read(string xml, string relayState)
+        public static Saml2Response Read(string xml, Saml2Id expectedInResponseTo)
         {
             var x = new XmlDocument();
             x.PreserveWhitespace = true;
             x.LoadXml(xml);
 
-            return new Saml2Response(x.DocumentElement, relayState);
+            return new Saml2Response(x.DocumentElement, expectedInResponseTo);
         }
 
         /// <summary>
         /// Ctor
         /// </summary>
         /// <param name="xml">Root xml element.</param>
-        /// <param name="relayState"></param>
-        public Saml2Response(XmlElement xml, string relayState)
+        /// <param name="expectedInResponseTo">The expected value of the
+        /// InReplyTo parameter in the message.</param>
+        public Saml2Response(XmlElement xml, Saml2Id expectedInResponseTo)
         {
-            if(xml == null)
+            if (xml == null)
             {
                 throw new ArgumentNullException(nameof(xml));
             }
@@ -77,15 +79,10 @@ namespace Kentor.AuthServices.Saml2P
             }
 
             xmlElement = xml;
-            RelayState = relayState;
 
             id = new Saml2Id(xml.Attributes["ID"].Value);
 
-            var parsedInResponseTo = xml.Attributes["InResponseTo"].GetValueIfNotNull();
-            if (parsedInResponseTo != null)
-            {
-                InResponseTo = new Saml2Id(parsedInResponseTo);
-            }
+            ReadAndValidateInResponseTo(xml, expectedInResponseTo);
 
             issueInstant = DateTime.Parse(xml.Attributes["IssueInstant"].Value,
                 CultureInfo.InvariantCulture, DateTimeStyles.AdjustToUniversal);
@@ -109,6 +106,41 @@ namespace Kentor.AuthServices.Saml2P
             if (destinationUrlString != null)
             {
                 DestinationUrl = new Uri(destinationUrlString);
+            }
+        }
+
+        [SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "InResponseTo")]
+        [SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "RelayState")]
+        private void ReadAndValidateInResponseTo(XmlElement xml, Saml2Id expectedInResponseTo)
+        {
+            var parsedInResponseTo = xml.Attributes["InResponseTo"].GetValueIfNotNull();
+            if (parsedInResponseTo != null)
+            {
+                InResponseTo = new Saml2Id(parsedInResponseTo);
+                if (expectedInResponseTo == null)
+                {
+                    throw new Saml2ResponseFailedValidationException(
+                        string.Format(CultureInfo.InvariantCulture,
+                        "Received message contains unexpected InResponseTo \"{0}\". No RelayState was detected so message was not expected to have an InResponseTo attribute.",
+                        InResponseTo));
+                }
+                if (!expectedInResponseTo.Equals(InResponseTo))
+                {
+                    throw new Saml2ResponseFailedValidationException(
+                        string.Format(CultureInfo.InvariantCulture,
+                        "InResponseTo Id \"{0}\" in received response does not match Id \"{1}\" of the sent request.",
+                        InResponseTo, expectedInResponseTo));
+                }
+            }
+            else
+            {
+                if (expectedInResponseTo != null)
+                {
+                    throw new Saml2ResponseFailedValidationException(
+                        string.Format(CultureInfo.InvariantCulture,
+                        "Expected message to contain InResponseTo \"{0}\", but found none.",
+                        expectedInResponseTo));
+                }
             }
         }
 
@@ -280,7 +312,7 @@ namespace Kentor.AuthServices.Saml2P
         /// <summary>
         /// InResponseTo id.
         /// </summary>
-        public Saml2Id InResponseTo { get; }
+        public Saml2Id InResponseTo { get; private set; }
 
         readonly DateTime issueInstant;
 
@@ -319,17 +351,6 @@ namespace Kentor.AuthServices.Saml2P
         /// The destination of the response message.
         /// </summary>
         public Uri DestinationUrl { get; }
-
-        StoredRequestState requestState;
-
-        /// <summary>
-        /// State stored by a corresponding request
-        /// </summary>
-        public StoredRequestState GetRequestState(IOptions options)
-        {
-            Validate(options);
-            return requestState;
-        }
 
         /// <summary>Gets all assertion element nodes from this response message.</summary>
         /// <value>All assertion element nodes.</value>
@@ -395,38 +416,15 @@ namespace Kentor.AuthServices.Saml2P
             return decryptionCertificates;
         }
 
-        bool validated = false;
-        AuthServicesException validationException;
-
         private void Validate(IOptions options)
         {
-            if (!validated)
-            {
-                try
-                {
-                    ValidateInResponseTo(options);
-                    ValidateSignature(options);
-                    validated = true;
-                }
-                catch (AuthServicesException ex)
-                {
-                    validationException = ex;
-                    validated = true;
-                    throw;
-                }
-            }
-            else
-            {
-                if (validationException != null)
-                {
-                    throw validationException;
-                }
-            }
+            CheckIfUnsolicitedIsAllowed(options);
+            ValidateSignature(options);
         }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "RelayState")]
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "InResponseTo")]
-        private void ValidateInResponseTo(IOptions options)
+
+        private void CheckIfUnsolicitedIsAllowed(IOptions options)
         {
             if (InResponseTo == null)
             {
@@ -437,35 +435,6 @@ namespace Kentor.AuthServices.Saml2P
                 string msg = string.Format(CultureInfo.InvariantCulture,
                     "Unsolicited responses are not allowed for idp \"{0}\".", Issuer.Id);
                 throw new Saml2ResponseFailedValidationException(msg);
-            }
-            else
-            {
-                StoredRequestState storedRequestState;
-                bool knownRelayStateKey = PendingAuthnRequests.TryRemove(RelayState, out storedRequestState);
-                if (!knownRelayStateKey)
-                {
-                    string msg = string.Format(CultureInfo.InvariantCulture,
-                        "Replayed or unknown RelayState \"{0}\".", RelayState);
-
-                    throw new Saml2ResponseFailedValidationException(msg);
-                }
-                requestState = storedRequestState;
-                if(!requestState.MessageId.Equals(InResponseTo))
-                {
-                    string msg = string.Format(CultureInfo.InvariantCulture,
-                        "InResponseTo Id \"{0}\" in received response does not match Id \"{1}\" of the sent request.",
-                        InResponseTo, storedRequestState.MessageId);
-
-                    throw new Saml2ResponseFailedValidationException(msg);
-                }
-
-                if (requestState.Idp.Id != Issuer.Id)
-                {
-                    var msg = string.Format(CultureInfo.InvariantCulture,
-                        "Expected response from idp \"{0}\" but received response from idp \"{1}\".",
-                        requestState.Idp.Id, Issuer.Id);
-                    throw new Saml2ResponseFailedValidationException(msg);
-                }
             }
         }
 

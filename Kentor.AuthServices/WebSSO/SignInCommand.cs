@@ -67,7 +67,7 @@ namespace Kentor.AuthServices.WebSso
             string returnPath,
             HttpRequestData request,
             IOptions options,
-            object relayData)
+            IDictionary<string, string> relayData)
         {
             if(options == null)
             {
@@ -100,9 +100,15 @@ namespace Kentor.AuthServices.WebSso
                 Uri.TryCreate(request.Url, returnPath, out returnUrl);
             }
 
-            var authnRequest = idp.CreateAuthenticateRequest(returnUrl, urls, relayData);
+            var authnRequest = idp.CreateAuthenticateRequest(urls);
 
-            return idp.Bind(authnRequest);
+            var commandResult = idp.Bind(authnRequest);
+
+            commandResult.RequestState = new StoredRequestState(
+                idp.EntityId, returnUrl, authnRequest.Id, relayData);
+            commandResult.SetCookieName = "Kentor." + authnRequest.RelayState;
+
+            return commandResult;
         }
 
         private static CommandResult RedirectToDiscoveryService(

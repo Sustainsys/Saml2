@@ -11,6 +11,8 @@ using System.Net;
 using Kentor.AuthServices.WebSso;
 using Microsoft.Owin.Security.DataProtection;
 using System.Linq;
+using System.IdentityModel.Metadata;
+using System.IdentityModel.Tokens;
 
 namespace Kentor.AuthServices.Tests.Owin
 {
@@ -62,7 +64,11 @@ namespace Kentor.AuthServices.Tests.Owin
         {
             var cr = new CommandResult()
             {
-                SetCookieData = "???>>>SomeData",
+                RequestState = new StoredRequestState(
+                    new EntityId("http://idp.example.com"),
+                    new Uri("http://sp.example.com/loggedout"),
+                    new Saml2Id("id123"),
+                    null),
                 SetCookieName = "CookieName"
             };
 
@@ -73,7 +79,8 @@ namespace Kentor.AuthServices.Tests.Owin
 
             var setCookieHeader = context.Response.Headers["Set-Cookie"];
 
-            var protectedData = StubDataProtector.Protect(cr.SetCookieData);
+            var protectedData = HttpRequestData.ConvertBinaryData(
+                StubDataProtector.Protect(cr.GetSerializedRequestState()));
 
             var expected = $"CookieName={protectedData}; path=/; HttpOnly";
 

@@ -7,6 +7,7 @@ using Kentor.AuthServices.Tests.Helpers;
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
+using Kentor.AuthServices.WebSso;
 
 namespace Kentor.AuthServices.Tests.Owin
 {
@@ -62,15 +63,17 @@ namespace Kentor.AuthServices.Tests.Owin
             var ctx = OwinTestHelpers.CreateOwinContext();
             ctx.Request.QueryString = new QueryString("RelayState", "SomeState");
 
-            var cookieData = "???>>>Some_Cookie_Data";
+            var storedRequestState = new StoredRequestState(
+                null, new Uri("http://sp.example.com"), null, null);
 
-            var protectedData = StubDataProtector.Protect(cookieData);
+            var cookieData = HttpRequestData.ConvertBinaryData(
+                    StubDataProtector.Protect(storedRequestState.Serialize()));
 
-            ctx.Request.Headers["Cookie"] = $"Kentor.SomeState={protectedData}";
+            ctx.Request.Headers["Cookie"] = $"Kentor.SomeState={cookieData}";
 
             var actual = await ctx.ToHttpRequestData(StubDataProtector.Unprotect);
 
-            actual.CookieData.Should().Be(cookieData);
+            actual.StoredRequestState.ShouldBeEquivalentTo(storedRequestState);
         }
 
         [TestMethod]

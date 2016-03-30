@@ -9,6 +9,8 @@ using System.Net;
 using System.Web.Security;
 using System.Text;
 using System.Linq;
+using System.IdentityModel.Tokens;
+using System.IdentityModel.Metadata;
 
 namespace Kentor.AuthServices.Tests.HttpModule
 {
@@ -52,26 +54,26 @@ namespace Kentor.AuthServices.Tests.HttpModule
             new CommandResult()
             {
                 SetCookieName = "CookieName",
-                SetCookieData = "CookieData"
+                RequestState = new StoredRequestState(
+                    new EntityId("http://idp.example.com"),
+                    null,
+                    null,
+                    null)
             }.Apply(response);
 
             response.Received().SetCookie(
                 Arg.Is<HttpCookie>(c => 
                 c.Name == "CookieName"
                 && c.Value.All(ch => ch != '/' && ch != '+' && ch != '=')
-                && DecryptCookieData(c.Value) == "CookieData"
+                && new StoredRequestState(DecryptCookieData(c.Value)).Idp.Id == "http://idp.example.com"
                 && c.HttpOnly == true));
         }
 
-        private string DecryptCookieData(string data)
+        private byte[] DecryptCookieData(string data)
         {
-            return Encoding.UTF8.GetString(
-                MachineKey.Unprotect(
-                    Convert.FromBase64String(data
-                        .Replace('_', '/')
-                        .Replace('-', '+')
-                        .Replace('.', '=')), 
-                    "Kentor.AuthServices"));
+            return MachineKey.Unprotect(
+                HttpRequestData.GetBinaryData(data),
+                "Kentor.AuthServices");
         }
 
         [TestMethod]

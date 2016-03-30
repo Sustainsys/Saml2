@@ -15,6 +15,10 @@ using Kentor.AuthServices.Configuration;
 using System.IdentityModel.Metadata;
 using System.Reflection;
 using System.Threading;
+using Kentor.AuthServices.WebSso;
+using System.Web.Security;
+using Kentor.AuthServices.HttpModule;
+using System.IdentityModel.Tokens;
 
 namespace Kentor.AuthServices.Tests.Mvc
 {
@@ -59,11 +63,16 @@ namespace Kentor.AuthServices.Tests.Mvc
         [TestMethod]
         public void AuthServicesController_SignIn_Returns_SignIn()
         {
-            var subject = CreateInstanceWithContext().SignIn();
+            var subject = CreateInstanceWithContext();
+            
+            var actual = subject.SignIn().As<RedirectResult>();
 
-            subject.Should().BeOfType<RedirectResult>().And
-                .Subject.As<RedirectResult>().Url
-                .Should().Contain("?SAMLRequest");
+            var relayState = HttpUtility.ParseQueryString(new Uri(actual.Url).Query)["RelayState"];
+
+            actual.Url.Should().Contain("?SAMLRequest");
+
+            subject.Response.Received().SetCookie(
+                Arg.Is<HttpCookie>(c => c.Name == "Kentor." + relayState));
         }
 
         [TestMethod]
@@ -93,7 +102,8 @@ namespace Kentor.AuthServices.Tests.Mvc
             var response =
             @"<saml2p:Response xmlns:saml2p=""urn:oasis:names:tc:SAML:2.0:protocol""
                 xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
-                ID = """ + MethodBase.GetCurrentMethod().Name + @""" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z"">
+                ID = """ + MethodBase.GetCurrentMethod().Name + @""" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z""
+                InResponseTo=""InResponseToId"">
                 <saml2:Issuer>
                     https://idp.example.com
                 </saml2:Issuer>
@@ -115,8 +125,20 @@ namespace Kentor.AuthServices.Tests.Mvc
             var formValue = Convert.ToBase64String(Encoding.UTF8.GetBytes(
                 SignedXmlHelper.SignXml(response)));
 
-            request.Form.Returns(new NameValueCollection() { { "SAMLResponse", formValue } });
+            var relayState = "rs1234";
+
+            request.Form.Returns(new NameValueCollection()
+            {
+                { "SAMLResponse", formValue },
+                { "RelayState", relayState }
+            });
             request.Url.Returns(new Uri("http://url.example.com/url"));
+            request.Cookies.Returns(new HttpCookieCollection());
+            request.Cookies.Add(new HttpCookie("Kentor." + relayState,
+                HttpRequestData.ConvertBinaryData(
+                    MachineKey.Protect(
+                        new StoredRequestState(null, null, new Saml2Id("InResponseToId"), null).Serialize(),
+                        HttpRequestBaseExtensions.ProtectionPurpose))));
 
             var httpContext = Substitute.For<HttpContextBase>();
             httpContext.Request.Returns(request);
@@ -127,6 +149,9 @@ namespace Kentor.AuthServices.Tests.Mvc
             var expected = new { Permanent = false, Url = "http://localhost/LoggedIn" };
 
             controller.Acs().As<RedirectResult>().ShouldBeEquivalentTo(expected);
+
+            controller.Response.Received().SetCookie(
+                Arg.Is<HttpCookie>(c => c.Expires.Year == 1970));
         }
 
         [TestMethod]

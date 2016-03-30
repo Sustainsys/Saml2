@@ -46,6 +46,18 @@ namespace Kentor.AuthServices.WebSso
             Init(httpMethod, url, "/", null, Enumerable.Empty<KeyValuePair<string, string>>(), null);
         }
 
+        // Used by tests.
+        internal HttpRequestData(
+            string httpMethod,
+            Uri url,
+            string applicationPath,
+            IEnumerable<KeyValuePair<string, string[]>> formData,
+            StoredRequestState storedRequestState)
+        {
+            InitBasicFields(httpMethod, url, applicationPath, formData);
+            StoredRequestState = storedRequestState;
+        }
+
         private void Init(
             string httpMethod,
             Uri url,
@@ -54,15 +66,13 @@ namespace Kentor.AuthServices.WebSso
             IEnumerable<KeyValuePair<string, string>> cookies,
             Func<byte[], byte[]> cookieDecryptor)
         {
-            HttpMethod = httpMethod;
-            Url = url;
-            ApplicationUrl = new Uri(url, applicationPath);
-            Form = new ReadOnlyDictionary<string, string>(
-                (formData ?? Enumerable.Empty<KeyValuePair<string, string[]>>())
-                .ToDictionary(kv => kv.Key, kv => kv.Value.Single()));
-            QueryString = QueryStringHelper.ParseQueryString(url.Query);
+            InitBasicFields(httpMethod, url, applicationPath, formData);
 
             var relayState = QueryString["RelayState"].SingleOrDefault();
+            if(relayState == null)
+            {
+                Form.TryGetValue("RelayState", out relayState);
+            }
 
             if (relayState != null)
             {
@@ -70,32 +80,52 @@ namespace Kentor.AuthServices.WebSso
                 if (cookies.Any(c => c.Key == cookieName))
                 {
                     var cookieData = cookies.SingleOrDefault(c => c.Key == cookieName).Value;
+                    byte[] encryptedData = GetBinaryData(cookieData);
 
-                    var unescapedBase64Data = cookieData
-                        .Replace('_', '/')
-                        .Replace('-', '+')
-                        .Replace('.', '=');
+                    var decryptedData = cookieDecryptor(encryptedData);
 
-                    CookieData = Encoding.UTF8.GetString(cookieDecryptor(
-                        Convert.FromBase64String(unescapedBase64Data)));
+                    StoredRequestState = new StoredRequestState(decryptedData);
                 }
             }
+        }
+
+        internal static byte[] GetBinaryData(string cookieData)
+        {
+            return Convert.FromBase64String(
+                cookieData
+                .Replace('_', '/')
+                .Replace('-', '+')
+                .Replace('.', '='));
+        }
+
+        private void InitBasicFields(string httpMethod, Uri url, string applicationPath, IEnumerable<KeyValuePair<string, string[]>> formData)
+        {
+            HttpMethod = httpMethod;
+            Url = url;
+            ApplicationUrl = new Uri(url, applicationPath);
+            Form = new ReadOnlyDictionary<string, string>(
+                (formData ?? Enumerable.Empty<KeyValuePair<string, string[]>>())
+                .ToDictionary(kv => kv.Key, kv => kv.Value.Single()));
+            QueryString = QueryStringHelper.ParseQueryString(url.Query);
         }
 
         /// <summary>
         /// Escape a Base 64 encoded cookie value, matching the unescaping
         /// that is done in the ctor.
         /// </summary>
-        /// <param name="value">Base64 data to escape</param>
+        /// <param name="data">Data to escape</param>
         /// <returns>Escaped data</returns>
-        public static string EscapeBase64CookieValue(string value)
+        public static string ConvertBinaryData(byte[] data)
         {
-            if(value == null)
+            if (data == null)
             {
-                throw new ArgumentNullException(nameof(value));
+                throw new ArgumentNullException(nameof(data));
             }
 
-            return value.Replace('/', '_').Replace('+', '-').Replace('=', '.');
+            return Convert.ToBase64String(data)
+                .Replace('/', '_')
+                .Replace('+', '-')
+                .Replace('=', '.');
         }
 
         /// <summary>
@@ -124,10 +154,10 @@ namespace Kentor.AuthServices.WebSso
         /// </summary>
         public Uri ApplicationUrl { get; private set; }
 
+
         /// <summary>
-        /// Decrypted data from cookie named Kentor.RelayState (if there was
-        /// a RelayState param and such a cookie.
+        /// Request state from a previous call, carried over through cookie.
         /// </summary>
-        public string CookieData { get; internal set; }
+        public StoredRequestState StoredRequestState { get; private set; }
     }
 }

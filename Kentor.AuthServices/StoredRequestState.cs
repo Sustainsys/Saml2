@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IdentityModel.Metadata;
 using System.IdentityModel.Tokens;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -9,13 +10,12 @@ using System.Threading.Tasks;
 namespace Kentor.AuthServices
 {
     /// <summary>
-    /// Stored data for each PendingAuthnRequest
+    /// Stored data for pending requests.
     /// </summary>
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1702:CompoundWordsShouldBeCasedCorrectly", MessageId = "AuthnRequest")] // AuthnRequest is already in dictionary
     public class StoredRequestState
     {
         /// <summary>
-        /// Creates a PendingAuthnRequestData
+        /// Ctor
         /// </summary>
         /// <param name="idp">The EntityId of the IDP the request was sent to</param>
         /// <param name="returnUrl">The Url to redirect back to after a succesful login</param>
@@ -25,7 +25,7 @@ namespace Kentor.AuthServices
             EntityId idp,
             Uri returnUrl,
             Saml2Id messageId,
-            object relayData)
+            IDictionary<string,string> relayData)
         {
             Idp = idp;
             ReturnUrl = returnUrl;
@@ -52,6 +52,89 @@ namespace Kentor.AuthServices
         /// <summary>
         /// Aux data that need to be preserved across the authentication call.
         /// </summary>
-        public object RelayData { get; }
+        public IDictionary<string,string> RelayData { get; }
+
+        /// <summary>
+        /// Get a serialized representation of the data.
+        /// </summary>
+        /// <returns>Serialized data</returns>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2202:Do not dispose objects multiple times")]
+        public byte[] Serialize()
+        {
+            using (var ms = new MemoryStream())
+            using (var w = new BinaryWriter(ms, Encoding.UTF8, true))
+            {
+                w.Write(Idp?.Id ?? "");
+                w.Write(ReturnUrl?.OriginalString ?? "");
+                w.Write(MessageId?.Value ?? "");
+                var hasRelayData = RelayData != null;
+                w.Write(hasRelayData);
+                if (hasRelayData)
+                {
+                    w.Write(RelayData.Count);
+                    foreach(var kv in RelayData)
+                    {
+                        w.Write(kv.Key);
+                        var hasValue = kv.Value != null;
+                        w.Write(hasValue);
+                        if(hasValue)
+                        {
+                            w.Write(kv.Value);
+                        }
+                    }
+                }
+                w.Flush();
+                return ms.ToArray();
+            }
+        }
+
+        /// <summary>
+        /// Ctor that restores a StoredRequestState object from serialized
+        /// representation.
+        /// </summary>
+        /// <param name="data">data buffer</param>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2202:Do not dispose objects multiple times")]
+        public StoredRequestState(byte[] data)
+        {
+            using (var ms = new MemoryStream(data))
+            using (var r = new BinaryReader(ms, Encoding.UTF8, true))
+            {
+                var idp = r.ReadString();
+                if(!string.IsNullOrEmpty(idp))
+                {
+                    Idp = new EntityId(idp);
+                }
+                
+                var returnUrl = r.ReadString();
+                if(!string.IsNullOrEmpty(returnUrl))
+                {
+                    ReturnUrl = new Uri(returnUrl);
+                }
+
+                var messageId = r.ReadString();
+                if(!string.IsNullOrEmpty(messageId))
+                {
+                    MessageId = new Saml2Id(messageId);
+                }
+
+                var hasRelayData = r.ReadBoolean();
+                if(hasRelayData)
+                {
+                    RelayData = new Dictionary<string, string>();
+                    var count = r.ReadInt32();
+                    for(int i = 0; i < count; i++)
+                    {
+                        var key = r.ReadString();
+                        string value = null;
+                        var hasValue = r.ReadBoolean();
+                        if (hasValue)
+                        {
+                            value = r.ReadString();
+                        }
+                        RelayData[key] = value;
+                    }
+                }
+            }
+        }
     }
 }

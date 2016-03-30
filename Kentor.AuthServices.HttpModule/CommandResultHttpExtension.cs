@@ -82,11 +82,10 @@ namespace Kentor.AuthServices.HttpModule
 
             if (!string.IsNullOrEmpty(commandResult.SetCookieName))
             {
-                var protectedData = HttpRequestData.EscapeBase64CookieValue(
-                    Convert.ToBase64String(
+                var protectedData = HttpRequestData.ConvertBinaryData(
                         MachineKey.Protect(
-                            Encoding.UTF8.GetBytes(commandResult.SetCookieData),
-                            "Kentor.AuthServices")));
+                            commandResult.GetSerializedRequestState(),
+                            HttpRequestBaseExtensions.ProtectionPurpose));
 
                 response.SetCookie(new HttpCookie(
                     commandResult.SetCookieName,
@@ -108,7 +107,6 @@ namespace Kentor.AuthServices.HttpModule
         /// <summary>
         /// Establishes an application session by calling the session authentication module.
         /// </summary>
-        [SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", Justification = "Several words in the GitHub link")]
         [ExcludeFromCodeCoverage]
         public static void SignInOrOutSessionAuthenticationModule(this CommandResult commandResult)
         {
@@ -122,26 +120,28 @@ namespace Kentor.AuthServices.HttpModule
             {
                 var sessionToken = new SessionSecurityToken(commandResult.Principal);
 
-                if (FederatedAuthentication.SessionAuthenticationModule == null)
-                {
-                    throw new InvalidOperationException(
-                        "FederatedAuthentication.SessionAuthenticationModule is null, make sure you have loaded the SessionAuthenticationModule in web.config. " +
-                        "See https://github.com/KentorIT/authservices/blob/master/doc/Configuration.md#loading-modules");
-                }
+                EnsureSessionAuthenticationModuleAvailable();
 
                 FederatedAuthentication.SessionAuthenticationModule
                     .AuthenticateSessionSecurityToken(sessionToken, true);
             }
-            if(commandResult.TerminateLocalSession && HttpContext.Current != null)
+            if (commandResult.TerminateLocalSession && HttpContext.Current != null)
             {
-                if(FederatedAuthentication.SessionAuthenticationModule == null)
-                {
-                    throw new InvalidOperationException(
-                        "FederatedAuthentication.SessionAuthenticationModule is null, make sure you have loaded the SessionAuthenticationModule in web.config. " +
-                        "See https://github.com/KentorIT/authservices/blob/master/doc/Configuration.md#loading-modules");
-                }
+                EnsureSessionAuthenticationModuleAvailable();
 
                 FederatedAuthentication.SessionAuthenticationModule.DeleteSessionTokenCookie();
+            }
+        }
+
+        [ExcludeFromCodeCoverage]
+        [SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", Justification = "Several words in the GitHub link")]
+        private static void EnsureSessionAuthenticationModuleAvailable()
+        {
+            if (FederatedAuthentication.SessionAuthenticationModule == null)
+            {
+                throw new InvalidOperationException(
+                    "FederatedAuthentication.SessionAuthenticationModule is null, make sure you have loaded the SessionAuthenticationModule in web.config. " +
+                    "See https://github.com/KentorIT/authservices/blob/master/doc/Configuration.md#loading-modules");
             }
         }
     }

@@ -42,10 +42,12 @@ namespace Kentor.AuthServices.Mvc
         /// <returns>Redirect with sign in request</returns>
         public ActionResult SignIn()
         {
-            return CommandFactory.GetCommand(CommandFactory.SignInCommandName).Run(
+            var result = CommandFactory.GetCommand(CommandFactory.SignInCommandName).Run(
                 Request.ToHttpRequestData(),
-                Options)
-                .ToActionResult();
+                Options);
+
+            result.ApplyCookies(Response);
+            return result.ToActionResult();
         }
 
         /// <summary>
@@ -62,6 +64,7 @@ namespace Kentor.AuthServices.Mvc
                 Options);
 
             result.SignInOrOutSessionAuthenticationModule();
+            result.ApplyCookies(Response);
             return result.ToActionResult();
         }
 

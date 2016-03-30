@@ -51,13 +51,12 @@ namespace Kentor.AuthServices.Owin
 
         private static void ApplyCookies(CommandResult commandResult, IOwinContext context, IDataProtector dataProtector)
         {
-            if (!string.IsNullOrEmpty(commandResult.SetCookieData))
+            var serializedCookieData = commandResult.GetSerializedRequestState();
+
+            if (serializedCookieData != null)
             {
-                var protectedData = HttpRequestData.EscapeBase64CookieValue(
-                    Convert.ToBase64String(
-                        dataProtector.Protect(
-                            Encoding.UTF8.GetBytes(
-                                commandResult.SetCookieData))));
+                var protectedData = HttpRequestData.ConvertBinaryData(
+                        dataProtector.Protect(serializedCookieData));
 
                 context.Response.Cookies.Append(
                     commandResult.SetCookieName,
@@ -68,9 +67,19 @@ namespace Kentor.AuthServices.Owin
                     });
             }
 
-            if(!string.IsNullOrEmpty(commandResult.ClearCookieName))
+            commandResult.ApplyClearCookie(context);
+        }
+
+        public static void ApplyClearCookie(this CommandResult commandResult, IOwinContext context)
+        {
+            if (!string.IsNullOrEmpty(commandResult.ClearCookieName))
             {
-                context.Response.Cookies.Delete(commandResult.ClearCookieName);
+                context.Response.Cookies.Delete(
+                    commandResult.ClearCookieName,
+                    new CookieOptions
+                    {
+                        HttpOnly = true
+                    });
             }
         }
     }

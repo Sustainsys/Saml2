@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IdentityModel.Services;
 using System.IdentityModel.Tokens;
@@ -44,10 +45,11 @@ namespace Kentor.AuthServices.WebSso
         public string ContentType { get; set; }
 
         /// <summary>
-        /// Data relayed from a previous request, such as the Owin Authenciation
-        /// Properties.
+        /// Data relayed from a previous request, such as the dictionary storing
+        /// the Owin Authentication Properties.
         /// </summary>
-        public object RelayData { get; set; }
+        [SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly", Justification = "The RelayData is a complete piece of data, not a collection that is manipulated")]
+        public IDictionary<string, string> RelayData { get; set; }
 
         /// <summary>
         /// Indicates that the local session should be terminated. Used by
@@ -61,10 +63,17 @@ namespace Kentor.AuthServices.WebSso
         public string SetCookieName { get; set; }
 
         /// <summary>
-        /// Unencrypted data to set in cookie. Data should be encrypted when
-        /// applied to the response.
+        /// Request state to store so that it is available on next http request.
         /// </summary>
-        public string SetCookieData { get; set; }
+        public StoredRequestState RequestState { get; set; }
+
+        /// <summary>
+        /// Serialized request state.
+        /// </summary>
+        public byte[] GetSerializedRequestState()
+        {
+            return RequestState?.Serialize();
+        }
 
         /// <summary>
         /// Name of cookie to be cleared.

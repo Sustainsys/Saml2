@@ -124,7 +124,12 @@ namespace Kentor.AuthServices.WebSso
                 commandResult = Saml2Binding.Get(Saml2BindingType.HttpRedirect)
                     .Bind(logoutRequest);
 
-                commandResult.SetCookieData = GetReturnUrl(request, returnPath, options).ToString();
+                commandResult.RequestState = new StoredRequestState(
+                    idp.EntityId,
+                    GetReturnUrl(request, returnPath, options),
+                    logoutRequest.Id,
+                    null);
+
                 commandResult.SetCookieName = "Kentor." + logoutRequest.RelayState;
             }
             else
@@ -196,7 +201,7 @@ namespace Kentor.AuthServices.WebSso
             return new CommandResult()
             {
                 HttpStatusCode = HttpStatusCode.SeeOther,
-                Location = new Uri(request.CookieData),
+                Location = request.StoredRequestState.ReturnUrl,
                 ClearCookieName = "Kentor." + request.QueryString["RelayState"].Single()
             };
         }
