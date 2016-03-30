@@ -19,12 +19,17 @@ namespace Kentor.AuthServices.Metadata
     /// </summary>
     public static class MetadataLoader
     {
+        internal const string LoadIdpFoundEntitiesDescriptor = "Tried to load metadata for an IdentityProvider, which should be an <EntityDescriptor>, but found an <EntitiesDescriptor>. To load that metadata you should use the Federation configuration and not an IdentityProvider.";
+
         /// <summary>
         /// Load and parse metadata.
         /// </summary>
         /// <param name="metadataLocation">Path to metadata. A Url, absolute
         /// path or an app relative path (e.g. ~/App_Data/metadata.xml)</param>
         /// <returns>EntityDescriptor containing metadata</returns>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "EntitiesDescriptor")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "EntityDescriptor")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "IdentityProvider")]
         public static ExtendedEntityDescriptor LoadIdp(string metadataLocation)
         {
             if (metadataLocation == null)
@@ -32,7 +37,14 @@ namespace Kentor.AuthServices.Metadata
                 throw new ArgumentNullException(nameof(metadataLocation));
             }
 
-            return (ExtendedEntityDescriptor)Load(metadataLocation);
+            var result = Load(metadataLocation);
+
+            if(result is ExtendedEntitiesDescriptor)
+            {
+                throw new InvalidOperationException(LoadIdpFoundEntitiesDescriptor);
+            }
+
+            return (ExtendedEntityDescriptor)result;
         }
 
         private static MetadataBase Load(string metadataLocation)
@@ -64,11 +76,16 @@ namespace Kentor.AuthServices.Metadata
             }
         }
 
+        internal const string LoadFederationFoundEntityDescriptor = "Tried to load metadata for a Federation, which should be an <EntitiesDescriptor> containing one or more <EntityDescriptor> elements, but found an <EntityDescriptor>. To load that metadata you should use the IdentityProvider configuration and not a Federation.";
+
         /// <summary>
         /// Load and parse metadata for a federation.
         /// </summary>
         /// <param name="metadataLocation">Url to metadata</param>
         /// <returns></returns>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "EntitiesDescriptor")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "EntityDescriptor")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "IdentityProvider")]
         public static ExtendedEntitiesDescriptor LoadFederation(string metadataLocation)
         {
             if (metadataLocation == null)
@@ -76,7 +93,14 @@ namespace Kentor.AuthServices.Metadata
                 throw new ArgumentNullException(nameof(metadataLocation));
             }
 
-            return (ExtendedEntitiesDescriptor)Load(metadataLocation);
+            var result = Load(metadataLocation);
+
+            if(result is ExtendedEntityDescriptor)
+            {
+                throw new InvalidOperationException(LoadFederationFoundEntityDescriptor);
+            }
+
+            return (ExtendedEntitiesDescriptor)result;
         }
     }
 }

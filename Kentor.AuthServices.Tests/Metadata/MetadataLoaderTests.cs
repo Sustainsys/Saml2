@@ -29,6 +29,17 @@ namespace Kentor.AuthServices.Tests.Metadata
         }
 
         [TestMethod]
+        public void MetadataLoader_LoadIdp_ExplanatoryExceptionIfEntitiesDescriptorFound()
+        {
+            var metadataLocation = "http://localhost:13428/federationMetadata";
+
+            Action a = () => MetadataLoader.LoadIdp(metadataLocation);
+
+            a.ShouldThrow<InvalidOperationException>().
+                WithMessage(MetadataLoader.LoadIdpFoundEntitiesDescriptor);
+        }
+
+        [TestMethod]
         public void MetadataLoader_LoadFederation_Nullcheck()
         {
             Action a = () => MetadataLoader.LoadFederation(null);
@@ -54,6 +65,17 @@ namespace Kentor.AuthServices.Tests.Metadata
             var result = MetadataLoader.LoadFederation(metadataLocation);
 
             result.ChildEntities.First().EntityId.Id.Should().Be("https://idp.maggie.bif.ost.se:9445/idp/saml");
+        }
+
+        [TestMethod]
+        public void MetadataLoader_LoadFederation_ExplanatoryExceptionIfEntitiesDescriptorFound()
+        {
+            var entityId = "http://localhost:13428/idpMetadata";
+
+            Action a = () => MetadataLoader.LoadFederation(entityId);
+
+            a.ShouldThrow<InvalidOperationException>().
+                WithMessage(MetadataLoader.LoadFederationFoundEntityDescriptor);
         }
     }
 }
