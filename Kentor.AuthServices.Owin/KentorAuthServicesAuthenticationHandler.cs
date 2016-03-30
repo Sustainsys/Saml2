@@ -28,6 +28,8 @@ namespace Kentor.AuthServices.Owin
             var result = CommandFactory.GetCommand(CommandFactory.AcsCommandName)
                 .Run(await Context.ToHttpRequestData(Options.DataProtector.Unprotect), Options);
 
+            result.Apply(Context, Options.DataProtector);
+
             var identities = result.Principal.Identities.Select(i =>
                 new ClaimsIdentity(i, null, Options.SignInAsAuthenticationType, i.NameClaimType, i.RoleClaimType));
 
@@ -118,7 +120,7 @@ namespace Kentor.AuthServices.Owin
                 {
                     var ticket = (MultipleIdentityAuthenticationTicket)await AuthenticateAsync();
                     Context.Authentication.SignIn(ticket.Properties, ticket.Identities.ToArray());
-                    Response.Redirect(ticket.Properties.RedirectUri);
+                    // No need to redirect here. Command result is applied in AuthenticateCoreAsync.
                     return true;
                 }
 

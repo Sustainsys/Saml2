@@ -67,9 +67,19 @@ namespace Kentor.AuthServices.Owin
                     });
             }
 
-            if(!string.IsNullOrEmpty(commandResult.ClearCookieName))
+            commandResult.ApplyClearCookie(context);
+        }
+
+        public static void ApplyClearCookie(this CommandResult commandResult, IOwinContext context)
+        {
+            if (!string.IsNullOrEmpty(commandResult.ClearCookieName))
             {
-                context.Response.Cookies.Delete(commandResult.ClearCookieName);
+                context.Response.Cookies.Delete(
+                    commandResult.ClearCookieName,
+                    new CookieOptions
+                    {
+                        HttpOnly = true
+                    });
             }
         }
     }

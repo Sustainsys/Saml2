@@ -629,7 +629,7 @@ namespace Kentor.AuthServices.Tests.Owin
 
             await middleware.Invoke(context);
 
-            context.Response.StatusCode.Should().Be(302);
+            context.Response.StatusCode.Should().Be(303);
             context.Response.Headers["Location"].Should().Be("http://localhost/LoggedIn");
         }
 
@@ -707,8 +707,9 @@ namespace Kentor.AuthServices.Tests.Owin
 
             await subject.Invoke(context);
 
-            context.Response.StatusCode.Should().Be(302);
+            context.Response.StatusCode.Should().Be(303);
             context.Response.Headers["Location"].Should().Be("http://localhost/LoggedIn");
+            context.Response.Headers["Set-Cookie"].Should().Be($"Kentor.{relayState}=; expires=Thu, 01-Jan-1970 00:00:00 GMT");
 
             context.Authentication.AuthenticationResponseGrant.Principal.Identities
                 .ShouldBeEquivalentTo(ids, opt => opt.IgnoringCyclicReferences());

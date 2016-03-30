@@ -38,7 +38,12 @@ namespace Kentor.AuthServices.WebSso
                     unbindResult = binding.Unbind(request, options);
                     var samlResponse = new Saml2Response(unbindResult.Data, request.StoredRequestState?.MessageId);
 
-                    return ProcessResponse(options, samlResponse, request.StoredRequestState);
+                    var result = ProcessResponse(options, samlResponse, request.StoredRequestState);
+                    if(unbindResult.RelayState != null)
+                    {
+                        result.ClearCookieName = "Kentor." + unbindResult.RelayState;
+                    }
+                    return result;
                 }
                 catch (FormatException ex)
                 {

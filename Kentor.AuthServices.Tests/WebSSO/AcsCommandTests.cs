@@ -221,7 +221,7 @@ namespace Kentor.AuthServices.Tests.WebSso
             {
                 Principal = new ClaimsPrincipal(ids),
                 HttpStatusCode = HttpStatusCode.SeeOther,
-                Location = new Uri("https://localhost/returnUrl")
+                Location = new Uri("https://localhost/returnUrl"),
             };
 
             var options = StubFactory.CreateOptions();
@@ -259,7 +259,7 @@ namespace Kentor.AuthServices.Tests.WebSso
 
             var responseFormValue = Convert.ToBase64String
                 (Encoding.UTF8.GetBytes(SignedXmlHelper.SignXml(response)));
-            var relayStateFormValue = "RelayState";
+            var relayStateFormValue = "rs1234";
 
             var r = new HttpRequestData(
                 "POST",
@@ -285,7 +285,8 @@ namespace Kentor.AuthServices.Tests.WebSso
             {
                 Principal = new ClaimsPrincipal(ids),
                 HttpStatusCode = HttpStatusCode.SeeOther,
-                Location = new Uri("http://localhost/testUrl.aspx")
+                Location = new Uri("http://localhost/testUrl.aspx"),
+                ClearCookieName = "Kentor." + relayStateFormValue
             };
 
             new AcsCommand().Run(r, StubFactory.CreateOptions())
