@@ -97,7 +97,12 @@ namespace Kentor.AuthServices.WebSso
             Uri returnUrl = null;
             if (!string.IsNullOrEmpty(returnPath))
             {
-                Uri.TryCreate(request.Url, returnPath, out returnUrl);
+                var appRelativeUrl = request.Url.AbsolutePath.Substring(
+                    request.ApplicationUrl.AbsolutePath.Length).TrimStart('/');
+
+                returnUrl = returnPath[0] == '/'
+                    ? new Uri(urls.ApplicationUrl, returnPath.TrimStart('/'))
+                    : new Uri(new Uri(urls.ApplicationUrl, appRelativeUrl), returnPath);
             }
 
             var authnRequest = idp.CreateAuthenticateRequest(urls);
