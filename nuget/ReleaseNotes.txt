@@ -1,4 +1,7 @@
-Version 0.17.1
+Version 0.17.2
+Bug fix of incorrect URL expansions in 0.17.2.
+
+ Version 0.17.1
 
 Bug fixes, see milestone on github for complete list
 
