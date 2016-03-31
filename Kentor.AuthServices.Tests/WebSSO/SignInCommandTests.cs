@@ -63,7 +63,7 @@ namespace Kentor.AuthServices.Tests.WebSso
 
             var httpRequest = new HttpRequestData(
                 "GET",
-                new Uri("http://localhost/localpath/signin?ReturnUrl=%2FReturn.aspx"),
+                new Uri("http://localhost/path/signin?ReturnUrl=%2FReturn.aspx"),
                 "/localpath",
                 null,
                 null);
@@ -73,7 +73,7 @@ namespace Kentor.AuthServices.Tests.WebSso
 
             var actual = new SignInCommand().Run(httpRequest, options);
 
-            actual.RequestState.ReturnUrl.Should().Be("https://externalhost/path/Return.aspx");
+            actual.RequestState.ReturnUrl.Should().Be("https://externalhost/Return.aspx");
         }
 
         [TestMethod]
