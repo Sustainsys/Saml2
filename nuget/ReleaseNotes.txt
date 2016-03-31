@@ -1,4 +1,17 @@
-Version 0.17.0
+Version 0.17.1
+
+Bug fixes, see milestone on github for complete list
+
+* Validation works with load balancing without session affinity
+* Correct callback url with IdSrv3 + PublicOrigin setting.
+* More resilient to spooky metadata.
+* Correct casing of AuthnContextComparision
+
+Release contains breaking changes to the public API of the core
+Kentor.AuthServices package. Only concerns anyone using the core library
+directly. HttpModule/Mvc/Owin packages have no API changes.
+
+ Version 0.17.0
 
 BREAKING CHANGES
 =================
@@ -9,16 +22,3 @@ BREAKING CHANGES
 * Single Logout
 * Local storage of metadata
 * Option to set application URL (useful with load balancers/proxies)
-
-
- Version 0.16.0
-BREAKING CHANGE: In code based config, the entire idp certificate is now used 
-and not only the key.
-
-* Metadata improvements
-* Optionally validate certificates
-* Expose validUntil in metadata
-* RequestedAuthnContext support
-* NameIDPolicy support
-* Sign generated metadata
- 
