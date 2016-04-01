@@ -341,7 +341,7 @@ namespace Kentor.AuthServices.Tests.WebSso
                 );
 
             var options = StubFactory.CreateOptions();
-            ((SPOptions)options.SPOptions).ReturnUrl = null;
+            options.SPOptions.ReturnUrl = null;
 
             new AcsCommand().Invoking(c => c.Run(r, options))
                 .ShouldNotThrow();
@@ -387,7 +387,7 @@ namespace Kentor.AuthServices.Tests.WebSso
                 null);
 
             var options = StubFactory.CreateOptions();
-            ((SPOptions)options.SPOptions).ReturnUrl = null;
+            options.SPOptions.ReturnUrl = null;
 
             new AcsCommand().Invoking(a => a.Run(r, options))
                 .ShouldThrow<ConfigurationErrorsException>().WithMessage(AcsCommand.UnsolicitedMissingReturnUrlMessage);
@@ -433,7 +433,7 @@ namespace Kentor.AuthServices.Tests.WebSso
                 new StoredRequestState(new EntityId("https://idp.example.com"), null, new Saml2Id("InResponseToId"), null));
 
             var options = StubFactory.CreateOptions();
-            ((SPOptions)options.SPOptions).ReturnUrl = null;
+            options.SPOptions.ReturnUrl = null;
 
             new AcsCommand().Invoking(a => a.Run(r, options))
                 .ShouldThrow<ConfigurationErrorsException>().WithMessage(AcsCommand.SpInitiatedMissingReturnUrl);

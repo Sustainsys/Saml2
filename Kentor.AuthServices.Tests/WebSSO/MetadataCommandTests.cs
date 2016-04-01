@@ -34,8 +34,8 @@ namespace Kentor.AuthServices.Tests.WebSso
         public void MetadataCommand_Run_CompleteMetadata()
         {
             var options = StubFactory.CreateOptions();
-            ((SPOptions)options.SPOptions).DiscoveryServiceUrl = new Uri("http://ds.example.com");
-            ((SPOptions)options.SPOptions).AuthenticateRequestSigningBehavior = SigningBehavior.Always;
+            options.SPOptions.DiscoveryServiceUrl = new Uri("http://ds.example.com");
+            options.SPOptions.AuthenticateRequestSigningBehavior = SigningBehavior.Always;
             options.SPOptions.ServiceCertificates.Add(new ServiceCertificate()
             {
                 Certificate = SignedXmlHelper.TestCert

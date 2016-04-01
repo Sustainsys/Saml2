@@ -69,7 +69,7 @@ namespace Kentor.AuthServices.Tests.WebSso
                 null);
 
             var options = Options.FromConfiguration;
-            ((SPOptions)options.SPOptions).PublicOrigin = new Uri("https://externalhost/path/");
+            options.SPOptions.PublicOrigin = new Uri("https://externalhost/path/");
 
             var actual = new SignInCommand().Run(httpRequest, options);
 
@@ -89,7 +89,7 @@ namespace Kentor.AuthServices.Tests.WebSso
                 null);
 
             var options = Options.FromConfiguration;
-            ((SPOptions)options.SPOptions).PublicOrigin = new Uri("https://externalhost/path/");
+            options.SPOptions.PublicOrigin = new Uri("https://externalhost/path/");
 
             var actual = new SignInCommand().Run(httpRequest, options);
 
