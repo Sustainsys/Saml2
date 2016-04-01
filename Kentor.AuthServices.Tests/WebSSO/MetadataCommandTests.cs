@@ -49,6 +49,7 @@ namespace Kentor.AuthServices.Tests.WebSso
             // a reference to the ID which makes it unsuitable for string matching.
             payloadXml.DocumentElement.IsSignedBy(SignedXmlHelper.TestCert).Should().BeTrue();
             payloadXml.DocumentElement.FirstChild.LocalName.Should().Be("Signature");
+            payloadXml.DocumentElement.FirstChild["KeyInfo"].Should().NotBeNull();
             payloadXml.DocumentElement.RemoveChild("Signature", SignedXml.XmlDsigNamespaceUrl);
 
             // Ignore the ID attribute, it is just filled with a GUID that can't be easily tested.

@@ -34,7 +34,7 @@ namespace Kentor.AuthServices.Metadata
 
             if (signingCertificate != null)
             {
-                xmlDoc.Sign(signingCertificate);
+                xmlDoc.Sign(signingCertificate, true);
             }
 
             return xmlDoc.OuterXml;
