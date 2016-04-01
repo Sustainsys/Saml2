@@ -102,8 +102,7 @@ namespace Kentor.AuthServices.Saml2P
 
             if (DestinationUrl != null)
             {
-                //yield return new XAttribute("Destination", DestinationUrl);
-                yield return new XAttribute("Destination", DestinationUrl?.OriginalString);
+                yield return new XAttribute("Destination", DestinationUrl);
             }
 
             if (Issuer != null && !string.IsNullOrEmpty(Issuer.Id))
