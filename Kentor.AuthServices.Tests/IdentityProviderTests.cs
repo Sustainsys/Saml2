@@ -123,7 +123,7 @@ namespace Kentor.AuthServices.Tests
             var idp = options.IdentityProviders.Default;
             var urls = StubFactory.CreateAuthServicesUrls();
 
-            ((SPOptions)options.SPOptions).AttributeConsumingServices.Clear();
+            options.SPOptions.AttributeConsumingServices.Clear();
 
             var subject = idp.CreateAuthenticateRequest(urls);
 
@@ -154,7 +154,7 @@ namespace Kentor.AuthServices.Tests
         public void IdentityProvider_CreateAuthenticateRequest_IncludesSigningCertificate_ForConfigAlways()
         {
             var options = StubFactory.CreateOptions();
-            var spOptions = (SPOptions)options.SPOptions;
+            var spOptions = options.SPOptions;
             spOptions.AuthenticateRequestSigningBehavior = SigningBehavior.Always;
             spOptions.ServiceCertificates.Add(new ServiceCertificate
             {
@@ -173,7 +173,7 @@ namespace Kentor.AuthServices.Tests
         public void IdentityProvider_CreateAuthenticateRequest_IncludesSigningCertificate_IfIdpWants()
         {
             var options = Options.FromConfiguration;
-            var spOptions = (SPOptions)options.SPOptions;
+            var spOptions = options.SPOptions;
 
             var subject = options.IdentityProviders[new EntityId("https://idp2.example.com")];
             var urls = StubFactory.CreateAuthServicesUrls();
@@ -187,7 +187,7 @@ namespace Kentor.AuthServices.Tests
         public void IdentityProvider_CreateAuthenticateRequest_SigningBehaviorNever_OverridesIdpWantsRequestsSigned()
         {
             var options = StubFactory.CreateOptions();
-            var spOptions = (SPOptions)options.SPOptions;
+            var spOptions = options.SPOptions;
             spOptions.AuthenticateRequestSigningBehavior = SigningBehavior.Never;
             spOptions.ServiceCertificates.Add(new ServiceCertificate
             {
@@ -209,7 +209,7 @@ namespace Kentor.AuthServices.Tests
         public void IdentityProvider_CreateAuthenticateRequest_ThrowsOnMissingSigningCertificate()
         {
             var options = StubFactory.CreateOptions();
-            var spOptions = (SPOptions)options.SPOptions;
+            var spOptions = options.SPOptions;
             spOptions.AuthenticateRequestSigningBehavior = SigningBehavior.Always;
 
             var idp = options.IdentityProviders.Default;

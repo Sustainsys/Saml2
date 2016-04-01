@@ -46,24 +46,16 @@ namespace Kentor.AuthServices.Configuration
         /// </summary>
         /// <param name="spOptions"></param>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "sp")]
-        public Options(ISPOptions spOptions)
+        public Options(SPOptions spOptions)
         {
-            this.spOptions = spOptions;
+            SPOptions = spOptions;
         }
-
-        private readonly ISPOptions spOptions;
 
         /// <summary>
         /// Options for the service provider's behaviour; i.e. everything except
         /// the idp and federation list.
         /// </summary>
-        public ISPOptions SPOptions
-        {
-            get
-            {
-                return spOptions;
-            }
-        }
+        public SPOptions SPOptions { get; }
 
         private readonly IdentityProviderDictionary identityProviders = new IdentityProviderDictionary();
 

@@ -186,7 +186,7 @@ namespace Kentor.AuthServices.Tests.Owin
             var revoke = new AuthenticationResponseRevoke(new string[0]);
 
             var options = new KentorAuthServicesAuthenticationOptions(true);
-            ((SPOptions)options.SPOptions).PublicOrigin = new Uri("https://sp.example.com/ExternalPath/");
+            options.SPOptions.PublicOrigin = new Uri("https://sp.example.com/ExternalPath/");
 
             var subject = new KentorAuthServicesAuthenticationMiddleware(
                 new StubOwinMiddleware(200, revoke: revoke),
@@ -258,7 +258,7 @@ namespace Kentor.AuthServices.Tests.Owin
             var revoke = new AuthenticationResponseRevoke(new string[0]);
 
             var options = new KentorAuthServicesAuthenticationOptions(true);
-            ((SPOptions)options.SPOptions).PublicOrigin = new Uri("https://sp.example.com/ExternalPath/");
+            options.SPOptions.PublicOrigin = new Uri("https://sp.example.com/ExternalPath/");
 
             var subject = new KentorAuthServicesAuthenticationMiddleware(
                 new StubOwinMiddleware(303, revoke: revoke),
@@ -299,7 +299,7 @@ namespace Kentor.AuthServices.Tests.Owin
                 new AuthenticationProperties { RedirectUri = authPropsReturnUrl });
 
             var options = new KentorAuthServicesAuthenticationOptions(true);
-            ((SPOptions)options.SPOptions).PublicOrigin = new Uri("https://sp.example.com/ExternalPath/");
+            options.SPOptions.PublicOrigin = new Uri("https://sp.example.com/ExternalPath/");
 
             var subject = new KentorAuthServicesAuthenticationMiddleware(
                 new StubOwinMiddleware(303, revoke: revoke),

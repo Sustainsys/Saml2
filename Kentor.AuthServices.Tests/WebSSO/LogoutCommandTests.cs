@@ -80,7 +80,7 @@ namespace Kentor.AuthServices.Tests.WebSSO
 
             var options = StubFactory.CreateOptions();
             options.SPOptions.ServiceCertificates.Add(SignedXmlHelper.TestCert);
-            ((SPOptions)(options.SPOptions)).PublicOrigin = new Uri("https://sp.example.com/");
+            options.SPOptions.PublicOrigin = new Uri("https://sp.example.com/");
 
             var actual = CommandFactory.GetCommand(CommandFactory.LogoutCommandName)
                 .Run(request, options);
@@ -190,7 +190,7 @@ namespace Kentor.AuthServices.Tests.WebSSO
                 new StoredRequestState(null, new Uri("http://loggedout.example.com"), null, null));
             
             var options = StubFactory.CreateOptions();
-            ((SPOptions)options.SPOptions).PublicOrigin = new Uri("https://sp.example.com/path/");
+            options.SPOptions.PublicOrigin = new Uri("https://sp.example.com/path/");
 
             var actual = CommandFactory.GetCommand(CommandFactory.LogoutCommandName)
                 .Run(request, options);
@@ -343,7 +343,7 @@ namespace Kentor.AuthServices.Tests.WebSSO
 
             var options = StubFactory.CreateOptions();
             options.SPOptions.ServiceCertificates.Add(SignedXmlHelper.TestCert);
-            ((SPOptions)options.SPOptions).ValidateCertificates = true;
+            options.SPOptions.ValidateCertificates = true;
 
             var actual = CommandFactory.GetCommand(CommandFactory.LogoutCommandName)
                 .Invoking(c => c.Run(httpRequest, options))
@@ -420,7 +420,7 @@ namespace Kentor.AuthServices.Tests.WebSSO
                 "http://sp-internal.example.com/path/AuthServices", null, null, null);
 
             var options = StubFactory.CreateOptions();
-            ((SPOptions)options.SPOptions).PublicOrigin = new Uri("https://sp.example.com/path/");
+            options.SPOptions.PublicOrigin = new Uri("https://sp.example.com/path/");
 
             CommandFactory.GetCommand(CommandFactory.LogoutCommandName)
                 .Invoking(c => c.Run(request, options))

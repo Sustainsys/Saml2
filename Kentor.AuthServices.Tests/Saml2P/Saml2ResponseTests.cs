@@ -1796,7 +1796,7 @@ namespace Kentor.AuthServices.Tests.Saml2P
         {
             var options = StubFactory.CreateOptions();
 
-            ((SPOptions)options.SPOptions).ValidateCertificates = true;
+            options.SPOptions.ValidateCertificates = true;
 
             var responseXml = 
             @"<?xml version=""1.0"" encoding=""UTF-8""?>

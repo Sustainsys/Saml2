@@ -18,7 +18,7 @@ namespace Kentor.AuthServices.Configuration
     /// Options for the service provider's behaviour; i.e. everything except
     /// the idp and federation list.
     /// </summary>
-    public class SPOptions : ISPOptions
+    public class SPOptions
     {
         /// <summary>
         /// Ctor
@@ -192,17 +192,6 @@ namespace Kentor.AuthServices.Configuration
         /// </summary>
         public Saml2RequestedAuthnContext RequestedAuthnContext { get; set; }
 
-        /// <summary>
-        /// Contacts for the SAML2 entity.
-        /// </summary>
-        IEnumerable<ContactPerson> ISPOptions.Contacts
-        {
-            get
-            {
-                return Contacts;
-            }
-        }
-
         readonly ICollection<ContactPerson> contacts = new List<ContactPerson>();
 
         /// <summary>
@@ -213,17 +202,6 @@ namespace Kentor.AuthServices.Configuration
             get
             {
                 return contacts;
-            }
-        }
-
-        /// <summary>
-        /// Collection of attribute consuming services for the service provider.
-        /// </summary>
-        IEnumerable<AttributeConsumingService> ISPOptions.AttributeConsumingServices
-        {
-            get
-            {
-                return AttributeConsumingServices;
             }
         }
 

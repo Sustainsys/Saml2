@@ -14,7 +14,7 @@ namespace Kentor.AuthServices.Metadata
     static class SPOptionsExtensions
     {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1506:AvoidExcessiveClassCoupling")]
-        public static ExtendedEntityDescriptor CreateMetadata(this ISPOptions spOptions, AuthServicesUrls urls)
+        public static ExtendedEntityDescriptor CreateMetadata(this SPOptions spOptions, AuthServicesUrls urls)
         {
             var ed = new ExtendedEntityDescriptor
             {

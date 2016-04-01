@@ -27,7 +27,7 @@ namespace Kentor.AuthServices.Saml2P
         /// <param name="spOptions">Options for the service provider that
         /// this token handler should work with.</param>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "sp")]
-        public Saml2PSecurityTokenHandler(ISPOptions spOptions)
+        public Saml2PSecurityTokenHandler(SPOptions spOptions)
         {
             if (spOptions == null)
             {
@@ -111,7 +111,7 @@ namespace Kentor.AuthServices.Saml2P
         /// </summary>
         /// <param name="spOptions">Sp Options with configuration</param>
         /// <returns>Configured or created audience restriction.</returns>
-        private static AudienceRestriction GetAudienceRestriction(ISPOptions spOptions)
+        private static AudienceRestriction GetAudienceRestriction(SPOptions spOptions)
         {
             var audienceRestriction = spOptions.SystemIdentityModelIdentityConfiguration.AudienceRestriction;
 
