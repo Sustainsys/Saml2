@@ -253,7 +253,7 @@ namespace Kentor.AuthServices.Tests.Owin
         }
 
         private async Task KentorAuthServicesAuthenticationMiddleware_CreatesRedirectOnAuthRevoke_PreservesRedirect(
-            string location, string expectedUrl, string path = "/Account/LogOut")
+            string location, string expectedUrl, string path = "/Account/LogOut", AuthenticationProperties authProps = null)
         {
             var revoke = new AuthenticationResponseRevoke(new string[0]);
 
@@ -281,13 +281,49 @@ namespace Kentor.AuthServices.Tests.Owin
 
             await subject.Invoke(context);
 
-            var cookieValue = context.Response.Headers["Set-Cookie"].Split(';', '=')[1]
-                .Replace('_', '/').Replace('-', '+').Replace('.', '=');
+            var cookieValue = context.Response.Headers["Set-Cookie"].Split(';', '=')[1];
 
             var returnUrl = new StoredRequestState(options.DataProtector.Unprotect(
-                Convert.FromBase64String(cookieValue))).ReturnUrl;
+                HttpRequestData.GetBinaryData(cookieValue))).ReturnUrl;
 
             returnUrl.Should().Be(expectedUrl);
+        }
+
+        [TestMethod]
+        public async Task KentorAuthServicesAuthenticationMiddleware_CreatesRedirectOnAuthRevoke_UsesAuthPropsReturnUrl()
+        {
+            var authPropsReturnUrl = "http://sp.exmample.com/AuthPropsLogout";
+
+            var revoke = new AuthenticationResponseRevoke(
+                new string[0],
+                new AuthenticationProperties { RedirectUri = authPropsReturnUrl });
+
+            var options = new KentorAuthServicesAuthenticationOptions(true);
+            ((SPOptions)options.SPOptions).PublicOrigin = new Uri("https://sp.example.com/ExternalPath/");
+
+            var subject = new KentorAuthServicesAuthenticationMiddleware(
+                new StubOwinMiddleware(303, revoke: revoke),
+                CreateAppBuilder(),
+                options);
+
+            var context = OwinTestHelpers.CreateOwinContext();
+            context.Response.Headers["Location"] = "http://sp.example.com/locationHeader";
+
+            Thread.CurrentPrincipal = new ClaimsPrincipal(
+                new ClaimsIdentity(new Claim[]
+                {
+                    new Claim(ClaimTypes.NameIdentifier, "NameId", null, "https://idp.example.com"),
+                    new Claim(AuthServicesClaimTypes.SessionIndex, "SessionId", null, "https://idp.example.com")
+                }, "Federation"));
+
+            await subject.Invoke(context);
+
+            var cookieValue = context.Response.Headers["Set-Cookie"].Split(';', '=')[1];
+
+            var returnUrl = new StoredRequestState(options.DataProtector.Unprotect(
+                HttpRequestData.GetBinaryData(cookieValue))).ReturnUrl;
+
+            returnUrl.Should().Be(authPropsReturnUrl);
         }
 
         [TestMethod]

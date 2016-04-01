@@ -84,22 +84,25 @@ namespace Kentor.AuthServices.Owin
                 var request = await Context.ToHttpRequestData(Options.DataProtector.Unprotect);
                 var urls = new AuthServicesUrls(request, Options.SPOptions);
 
-                string redirectUrl;
-                if(Context.Response.StatusCode / 100 == 3)
+                string redirectUrl = revoke.Properties.RedirectUri;
+                if (string.IsNullOrEmpty(redirectUrl))
                 {
-                    var locationUrl = Context.Response.Headers["Location"];
+                    if (Context.Response.StatusCode / 100 == 3)
+                    {
+                        var locationUrl = Context.Response.Headers["Location"];
 
-                    redirectUrl = new Uri(
-                        new Uri(urls.ApplicationUrl.ToString().TrimEnd('/') + Context.Request.Path),
-                        locationUrl
-                        ).ToString();
-                }
-                else
-                {
-                    redirectUrl = new Uri(
-                        urls.ApplicationUrl,
-                        Context.Request.Path.ToUriComponent().TrimStart('/'))
-                        .ToString();
+                        redirectUrl = new Uri(
+                            new Uri(urls.ApplicationUrl.ToString().TrimEnd('/') + Context.Request.Path),
+                            locationUrl
+                            ).ToString();
+                    }
+                    else
+                    {
+                        redirectUrl = new Uri(
+                            urls.ApplicationUrl,
+                            Context.Request.Path.ToUriComponent().TrimStart('/'))
+                            .ToString();
+                    }
                 }
 
                 LogoutCommand.Run(request, redirectUrl, Options)
