@@ -48,7 +48,7 @@ namespace Kentor.AuthServices.Owin
         /// Options for the service provider's behaviour; i.e. everything except
         /// the idp and federation list.
         /// </summary>
-        public ISPOptions SPOptions { get; set; }
+        public SPOptions SPOptions { get; set; }
 
         private readonly IdentityProviderDictionary identityProviders = new IdentityProviderDictionary();
 

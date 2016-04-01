@@ -31,15 +31,15 @@ namespace Kentor.AuthServices
         /// <param name="spOptions">Service provider options to use when 
         /// creating AuthnRequests for this Idp.</param>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "sp")]
-        public IdentityProvider(EntityId entityId, ISPOptions spOptions)
+        public IdentityProvider(EntityId entityId, SPOptions spOptions)
         {
             EntityId = entityId;
             this.spOptions = spOptions;
         }
 
-        readonly ISPOptions spOptions;
+        readonly SPOptions spOptions;
 
-        internal IdentityProvider(IdentityProviderElement config, ISPOptions spOptions)
+        internal IdentityProvider(IdentityProviderElement config, SPOptions spOptions)
         {
             singleSignOnServiceUrl = config.SignOnUrl;
             SingleLogoutServiceUrl = config.LogoutUrl;

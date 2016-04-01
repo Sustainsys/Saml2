@@ -116,7 +116,7 @@ namespace Kentor.AuthServices.WebSso
 
         private static CommandResult RedirectToDiscoveryService(
             string returnPath,
-            ISPOptions spOptions,
+            SPOptions spOptions,
             AuthServicesUrls authServicesUrls)
         {
             string returnUrl = authServicesUrls.SignInUrl.OriginalString;

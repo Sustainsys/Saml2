@@ -19,7 +19,7 @@ namespace Kentor.AuthServices.Configuration
         /// Options for the service provider's behaviour; i.e. everything except
         /// the idp and federation list.
         /// </summary>
-        ISPOptions SPOptions { get; }
+        SPOptions SPOptions { get; }
 
         /// <summary>
         /// Information about known identity providers.

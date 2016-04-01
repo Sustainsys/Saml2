@@ -60,7 +60,7 @@ namespace Kentor.AuthServices.Tests.Configuration
             config.Metadata.WantAssertionsSigned = true;
             config.ValidateCertificates = true;
 
-            ISPOptions subject = new SPOptions(KentorAuthServicesSection.Current);
+            SPOptions subject = new SPOptions(KentorAuthServicesSection.Current);
             subject.ReturnUrl.Should().Be(config.ReturnUrl);
             subject.MetadataCacheDuration.Should().Be(config.Metadata.CacheDuration);
             subject.MetadataValidDuration.Should().Be(config.Metadata.ValidUntil);

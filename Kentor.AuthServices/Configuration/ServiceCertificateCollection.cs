@@ -42,7 +42,7 @@ namespace Kentor.AuthServices.Configuration
         /// Register the configured service certificates.
         /// </summary>
         /// <param name="options">Current options.</param>
-        public void RegisterServiceCertificates(ISPOptions options)
+        public void RegisterServiceCertificates(SPOptions options)
         {
             if(options == null)
             {
