@@ -116,13 +116,14 @@
     <Compile Include="ClaimsExtensionsTests.cs" />
     <Compile Include="Configuration\ConfiguredAndLoadedSigningKeysCollectionTests.cs" />
     <Compile Include="Configuration\Saml2RequestedAuthnContextTests.cs" />
-    <Compile Include="Configuration\ServiceCertificateCollectionExtensionsTests.cs" />
     <Compile Include="Configuration\ServiceCertificateCollectionTests.cs" />
+    <Compile Include="Configuration\ServiceCertificateElementCollectionTests.cs" />
     <Compile Include="Configuration\TetClassAttribute.cs" />
     <Compile Include="Exceptions\InvalidSignatureExceptionTests.cs" />
     <Compile Include="Helpers\OwinTestHelpers.cs" />
     <Compile Include="Helpers\SignedXmlHelper.cs" />
     <Compile Include="Helpers\SpinWaiter.cs" />
+    <Compile Include="Internal\CryptographyExtensionsTests.cs" />
     <Compile Include="Owin\StubDataProtector.cs" />
     <Compile Include="Saml2NameIdExtensionsTests.cs" />
     <Compile Include="Saml2P\Saml2ArtifactResolveTests.cs" />
@@ -204,13 +205,13 @@
     <None Include="App.config">
       <SubType>Designer</SubType>
     </None>
+    <Content Include="Kentor.AuthServices.TestsSignOnly.pfx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <None Include="Kentor.AuthServices.Tests.pfx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="Kentor.AuthServices.Tests2.pfx">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Kentor.AuthServices.Tests3.pfx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="packages.config" />

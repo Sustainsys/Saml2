@@ -408,10 +408,6 @@ namespace Kentor.AuthServices.Saml2P
             {
                 throw new Saml2ResponseFailedValidationException("Encrypted Assertions encountered but Service Certificate was not provided.");
             }
-            else if (decryptionCertificates.Any(c => !c.HasPrivateKey))
-            {
-                throw new Saml2ResponseFailedValidationException("Encrypted Assertions encountered but Service Certificate does not contain private key.");
-            }
 
             return decryptionCertificates;
         }

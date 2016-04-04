@@ -1,58 +1,72 @@
 ﻿using Kentor.AuthServices.Internal;
 using System;
-using System.Collections.Generic;
-using System.Configuration;
+using System.Collections.ObjectModel;
+using System.Reflection;
+using System.Security.Cryptography;
+using System.Security.Cryptography.X509Certificates;
+using System.Xml;
 
 namespace Kentor.AuthServices.Configuration
 {
     /// <summary>
-    /// Config collection of ServiceCertificateElements.
+    /// Certificates used by the service provider for signing or decryption.
     /// </summary>
-    public class ServiceCertificateCollection : ConfigurationElementCollection, IEnumerable<ServiceCertificateElement>
+    public class ServiceCertificateCollection: Collection<ServiceCertificate>
     {
         /// <summary>
-        /// Create new element of right type.
+        /// Add a certificate to the collection with default status use and
+        /// metadata behaviour.
         /// </summary>
-        /// <returns>ServiceCertificateElement</returns>
-        protected override ConfigurationElement CreateNewElement()
+        /// <param name="certificate">Certificate to add.</param>
+        public void Add(X509Certificate2 certificate)
         {
-            return new ServiceCertificateElement();
-        }
-
-        /// <summary>
-        /// Get the name of an element.
-        /// </summary>
-        /// <param name="element">ServiceCertificateElement</param>
-        /// <returns>element.Name</returns>
-        protected override object GetElementKey(ConfigurationElement element)
-        {
-            return Guid.NewGuid().ToString();
-        }
-
-        /// <summary>
-        /// Get a strongly typed enumerator.
-        /// </summary>
-        /// <returns>Strongly typed enumerator.</returns>
-        public new IEnumerator<ServiceCertificateElement> GetEnumerator()
-        {
-            return base.GetEnumerator().AsGeneric<ServiceCertificateElement>();
-        }
-
-        /// <summary>
-        /// Register the configured service certificates.
-        /// </summary>
-        /// <param name="options">Current options.</param>
-        public void RegisterServiceCertificates(SPOptions options)
-        {
-            if(options == null)
+            if (certificate == null) throw new ArgumentNullException(nameof(certificate));
+            InsertItem(base.Count, new ServiceCertificate
             {
-                throw new ArgumentNullException(nameof(options));
+                Certificate = certificate
+            });
+        }
+
+        /// <summary>
+        /// Add to the collection at the specified position.
+        /// </summary>
+        /// <param name="index">Position index.</param>
+        /// <param name="item">Service certificate to add.</param>
+        protected override void InsertItem(int index, ServiceCertificate item)
+        {
+            if (item == null) throw new ArgumentNullException(nameof(item));
+
+            if (!item.Certificate.HasPrivateKey)
+            {
+                throw new ArgumentException(@"Provided certificate is not valid because it does not contain a private key.");
             }
 
-            foreach(var serviceCertEntry in this)
+            if (item.Use == CertificateUse.Encryption || item.Use == CertificateUse.Both)
             {
-                options.ServiceCertificates.Add(new ServiceCertificate(serviceCertEntry));
+                if (!CertificateWorksForDecryption(item.Certificate))
+                {
+                    throw new ArgumentException(@"Provided certificate is not valid for encryption/decryption. If you only want to use it for signing, set the Use property to Signing (CertificateUse.Signing).");
+                }
             }
+            base.InsertItem(index, item);
+        }
+
+        private static bool CertificateWorksForDecryption(X509Certificate2 certificate)
+        {
+            var xmlDoc = new XmlDocument { PreserveWhitespace = true };
+            xmlDoc.LoadXml("<xml/>");
+            var elementToEncrypt = xmlDoc.DocumentElement;
+            elementToEncrypt.Encrypt(useOaep: false, certificate: certificate);
+
+            try
+            {
+                elementToEncrypt.OwnerDocument.DocumentElement.Decrypt(certificate.PrivateKey);
+            }
+            catch (CryptographicException)
+            {
+                return false;
+            }
+            return true;
         }
     }
 }

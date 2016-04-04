@@ -57,8 +57,8 @@
     <Compile Include="ClaimsExtensions.cs" />
     <Compile Include="Configuration\ArtifactResolutionServiceCollection.cs" />
     <Compile Include="Configuration\ArtifactResolutionServiceElement.cs" />
-    <Compile Include="Configuration\ServiceCertificateCollectionExtensions.cs" />
     <Compile Include="Saml2NameIdExtensions.cs" />
+    <Compile Include="Configuration\ServiceCertificateCollection.cs" />
     <Compile Include="Saml2P\AuthnContextComparisonType.cs" />
     <Compile Include="Configuration\NameIdPolicyElement.cs" />
     <Compile Include="Saml2P\Saml2LogoutResponse.cs" />
@@ -70,7 +70,7 @@
     <Compile Include="MetadataPublishOverrideType.cs" />
     <Compile Include="CertificateStatus.cs" />
     <Compile Include="CertificateUse.cs" />
-    <Compile Include="Configuration\ServiceCertificateCollection.cs" />
+    <Compile Include="Configuration\ServiceCertificateElementCollection.cs" />
     <Compile Include="Configuration\ServiceCertificateElement.cs" />
     <Compile Include="Saml2P\NameIdFormat.cs" />
     <Compile Include="Saml2P\Saml2ArtifactResolve.cs" />
