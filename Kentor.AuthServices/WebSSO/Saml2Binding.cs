@@ -124,7 +124,16 @@ namespace Kentor.AuthServices.WebSso
         /// <returns>A derived class instance that supports the requested binding.</returns>
         public static Saml2Binding Get(Saml2BindingType binding)
         {
-            return bindings[binding];
+            try
+            {
+                return bindings[binding];
+            }
+            catch(KeyNotFoundException ex)
+            {
+                throw new ArgumentException(string.Format(CultureInfo.InvariantCulture,
+                    "{0} is not a valid value for the Saml2BindingType enum. Have you forgotten to configure a binding for your identity provider?",
+                    binding), ex);
+            }
         }
 
         /// <summary>

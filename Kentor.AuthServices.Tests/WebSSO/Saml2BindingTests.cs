@@ -115,6 +115,16 @@ namespace Kentor.AuthServices.Tests.WebSso
             Saml2Binding.Get(r).Should().BeNull();
         }
 
+        [TestMethod]
+        public void Saml2Binding_Get_ExplanatoryExceptionOnUnknownBinding()
+        {
+            Action a = () => Saml2Binding.Get((Saml2BindingType)1473);
+
+            a.ShouldThrow<ArgumentException>()
+                .WithMessage("1473 is not a valid value for the Saml2BindingType enum. Have you forgotten to configure a binding for your identity provider?")
+                .WithInnerException<KeyNotFoundException>();
+        }
+
         class ConcreteSaml2Binding : Saml2Binding
         {
             protected internal override bool CanUnbind(HttpRequestData request)
