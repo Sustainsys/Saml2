@@ -39,7 +39,7 @@ does not need any http modules, please see the separate info on the [Owin middle
 
 ##kentor.authServices Section
 The saml2AuthenticationModule section contains the configuration of the Kentor.AuthServices
-library. It is required for the http module and the mvc controller. Thw Owin middleware Can
+library. It is required for the http module and the mvc controller. The Owin middleware Can
 read web.config, but can also be configured from code.
 
 ```
@@ -104,7 +104,7 @@ Root element of the config section.
 The name that this service provider will use for itself when sending
 messages. The name will end up in the `Issuer` field in outcoing authnRequests.
 
-The SAML standard requires the `entityId` to be an absolut URI. Typically it should
+The SAML standard requires the `entityId` to be an absolute URI. Typically it should
 be the URL where the metadata is presented. E.g.
 `http://sp.example.com/AuthServices/`.
 
@@ -171,7 +171,7 @@ metadata is used in communication with the Idp.
 *Optional child element of the [`<kentor.authServices>`](#kentor-authservices-section) element.*
 
 Controls the generation of NameIDPolicy element in AuthnRequests. The element Is
-only created if either `allowCreate` nor `format` are set to a non-default value.
+only created if either `allowCreate` or `format` are set to a non-default value.
 
 ####Attributes
 * [`allowCreate`](#allowcreate-attribute)

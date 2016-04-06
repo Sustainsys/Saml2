@@ -8,7 +8,7 @@ namespace Kentor.AuthServices.Tests
     public class SecureKeyGeneratorTests
     {
         [TestMethod]
-        public void ecureKeyGenerator_CreateRelayState()
+        public void SecureKeyGenerator_CreateRelayState()
         {
             // Loop until we've seen the replacement work.
             var containedDash = false;
