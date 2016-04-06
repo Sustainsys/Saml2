@@ -114,6 +114,7 @@
     <Reference Include="System.EnterpriseServices" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="App_Data\Kentor.AuthServices.SampleIdentityServer3.pfx" />
     <None Include="index.cshtml" />
     <Content Include="check_session.html" />
     <Content Include="oidc-token-manager.js" />

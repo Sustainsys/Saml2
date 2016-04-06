@@ -53,7 +53,7 @@ namespace SampleIdentityServer3
                     },
 
                     SigningCertificate = 
-                        new X509Certificate2(AppDomain.CurrentDomain.BaseDirectory + "\\App_Data\\Kentor.AuthServices.Tests.pfx")
+                        new X509Certificate2(AppDomain.CurrentDomain.BaseDirectory + "\\App_Data\\Kentor.AuthServices.SampleIdentityServer3.pfx")
                 };
 
                 options.AuthenticationOptions.IdentityProviders = ConfigureSaml2;
