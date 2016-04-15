@@ -335,5 +335,20 @@ namespace Kentor.AuthServices.Configuration
                 base[validateCertificates] = value;
             }
         }
+
+        const string compatibility = nameof(compatibility);
+
+        /// <summary>
+        /// Compatibility settings. Can be used to make AuthServices accept
+        /// certain non-standard behaviour.
+        /// </summary>
+        [ConfigurationProperty(compatibility)]
+        public CompatibilityElement Compatibility 
+        {
+            get
+            {
+                return (CompatibilityElement)base[compatibility];
+            }
+        }
     }
 }

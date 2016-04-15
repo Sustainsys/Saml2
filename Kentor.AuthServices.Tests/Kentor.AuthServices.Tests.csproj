@@ -114,6 +114,7 @@
   </Choose>
   <ItemGroup>
     <Compile Include="ClaimsExtensionsTests.cs" />
+    <Compile Include="Configuration\CompatibilityTests.cs" />
     <Compile Include="Configuration\ConfiguredAndLoadedSigningKeysCollectionTests.cs" />
     <Compile Include="Configuration\Saml2RequestedAuthnContextTests.cs" />
     <Compile Include="Configuration\ServiceCertificateCollectionTests.cs" />

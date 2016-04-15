@@ -13,6 +13,27 @@ namespace Kentor.AuthServices.Configuration
     public class Compatibility
     {
         /// <summary>
+        /// Ctor
+        /// </summary>
+        public Compatibility()
+        { }
+
+        /// <summary>
+        /// Ctor
+        /// </summary>
+        /// <param name="configElement">Config element to load</param>
+        public Compatibility(CompatibilityElement configElement)
+        {
+            if(configElement == null)
+            {
+                throw new ArgumentNullException(nameof(configElement));
+            }
+
+            UnpackEntitiesDescriptorInIdentityProviderMetadata =
+                configElement.UnpackEntitiesDescriptorInIdentityProviderMetadata;
+        }
+
+        /// <summary>
         /// If an EntitiesDescriptor element is found when loading metadata
         /// for en IdentityProvider, automatically check inside it if there
         /// is a single EntityDescriptor and in that case use it.
