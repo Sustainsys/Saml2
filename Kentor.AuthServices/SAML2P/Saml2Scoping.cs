@@ -18,7 +18,7 @@ namespace Kentor.AuthServices.Saml2P
         /// <param name="idPEntries">The idp entries.</param>
         /// <param name="proxyCount">The proxy count.</param>
         /// <param name="requesterIds">The requester ids.</param>
-        public Saml2Scoping(IList<Saml2IdPEntry> idPEntries, int proxyCount, IList<Saml2RequesterId> requesterIds)
+        public Saml2Scoping(IList<Saml2IdPEntry> idPEntries, int? proxyCount, IList<Saml2RequesterId> requesterIds)
         {
             IdPEntries = idPEntries;
             ProxyCount = proxyCount;
@@ -26,7 +26,8 @@ namespace Kentor.AuthServices.Saml2P
         }
         /// <summary>
         /// Gets or sets advisory list of identity providers and associated information that 
-        /// the requester deems acceptable to respond to the request.        /// </summary>
+        /// the requester deems acceptable to respond to the request.
+        /// </summary>
         /// <value>The idp entries.</value>
         public IList<Saml2IdPEntry> IdPEntries { get; }
         /// <summary>

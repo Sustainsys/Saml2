@@ -70,7 +70,7 @@ namespace Kentor.AuthServices.WebSso
             IOptions options,
             IDictionary<string, string> relayData)
         {
-            if (options == null)
+            if(options == null)
             {
                 throw new ArgumentNullException(nameof(options));
             }
@@ -96,7 +96,7 @@ namespace Kentor.AuthServices.WebSso
             }
 
             Uri returnUrl = null;
-            if (!string.IsNullOrEmpty(returnPath))
+            if(!string.IsNullOrEmpty(returnPath))
             {
                 var appRelativePath = request.Url.AbsolutePath.Substring(
                     request.ApplicationUrl.AbsolutePath.Length).TrimStart('/');

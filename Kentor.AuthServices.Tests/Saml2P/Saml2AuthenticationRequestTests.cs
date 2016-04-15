@@ -264,6 +264,23 @@ namespace Kentor.AuthServices.Tests.Saml2P
         }
 
         [TestMethod]
+        public void Saml2AuthenticationRequest_ToXElement_Scoping_NullProxyCount_AttributeNotAdded()
+        {
+            var subject = new Saml2AuthenticationRequest()
+            {
+                AssertionConsumerServiceUrl = new Uri("http://destination.example.com"),
+                Scoping = new Saml2Scoping(new List<Saml2IdPEntry>(), null, new List<Saml2RequesterId>())
+            }.ToXElement().Element(Saml2Namespaces.Saml2P + "Scoping");
+
+            var expected = new XElement(Saml2Namespaces.Saml2P + "root",
+                new XAttribute(XNamespace.Xmlns + "saml2p", Saml2Namespaces.Saml2P),
+                new XElement(Saml2Namespaces.Saml2P + "Scoping"))
+                .Elements().Single();
+
+            subject.Should().BeEquivalentTo(expected);
+        }
+
+        [TestMethod]
         public void Saml2AuthenticationRequest_ToXElement_AddsRequestedAuthnContext_ComparisonTypeMaximum()
         {
             Saml2AuthenticationRequest_ToXElement_AddsRequestedAuthnContextUtil(AuthnContextComparisonType.Maximum, "maximum");
