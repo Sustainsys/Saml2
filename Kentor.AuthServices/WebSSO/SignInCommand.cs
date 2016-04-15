@@ -96,7 +96,7 @@ namespace Kentor.AuthServices.WebSso
             }
 
             Uri returnUrl = null;
-            if(!string.IsNullOrEmpty(returnPath))
+            if (!string.IsNullOrEmpty(returnPath))
             {
                 var appRelativePath = request.Url.AbsolutePath.Substring(
                     request.ApplicationUrl.AbsolutePath.Length).TrimStart('/');
@@ -124,7 +124,7 @@ namespace Kentor.AuthServices.WebSso
         {
             string returnUrl = authServicesUrls.SignInUrl.OriginalString;
 
-            if (!string.IsNullOrEmpty(returnPath))
+            if(!string.IsNullOrEmpty(returnPath))
             {
                 returnUrl += "?ReturnUrl=" + Uri.EscapeDataString(returnPath);
             }
