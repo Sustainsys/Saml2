@@ -5,7 +5,7 @@ namespace Kentor.AuthServices.Saml2P
 {
 
     /// <summary>
-    /// Saml2RequesterId - represents a requesting entitiy on whose behalf the requester is acting.
+    /// Saml2RequesterId - represents a requesting entity on whose behalf the requester is acting.
     /// </summary>
     public class Saml2RequesterId
     {
