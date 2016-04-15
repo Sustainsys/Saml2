@@ -15,7 +15,7 @@ namespace Kentor.AuthServices.Saml2P
         /// <summary>
         /// Initializes a new instance of the <see cref="Saml2Scoping"/> class.
         /// </summary>
-        /// <param name="idPEntries">The idp entries.</param>
+        /// <param name="idPEntries">The advisory list of identity providers.</param>
         /// <param name="proxyCount">The proxy count.</param>
         /// <param name="requesterIds">The requester ids.</param>
         public Saml2Scoping(IList<Saml2IdPEntry> idPEntries, int? proxyCount, IList<Saml2RequesterId> requesterIds)
