@@ -2,14 +2,14 @@
 
 namespace Kentor.AuthServices.Saml2P
 {
+    /// <summary>
+    /// The IdPEntry specifies a single identity provider trusted by the requester to authenticate the presenter    
+    /// </summary>
     public class Saml2IdPEntry
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="Saml2IdPEntry"/> class.
         /// </summary>
-        /// <remarks>
-        /// The IdPEntry element specifies a single identity provider trusted by the requester to authenticate the presenter
-        /// </remarks>
         /// <param name="location">The location.</param>
         /// <param name="name">The name.</param>
         /// <param name="providerId">The provider identifier.</param>

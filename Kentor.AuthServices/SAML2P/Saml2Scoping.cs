@@ -6,18 +6,15 @@ using System.Xml.Linq;
 namespace Kentor.AuthServices.Saml2P
 {
     /// <summary>
-    /// Class Saml2Scoping.
+    /// Saml2Scoping specifies a set of identity providers trusted by the requester to authenticate the presenter, as well as 
+    /// limitations and context related to proxying of the authentication request message to subsequent identity 
+    /// providers by the responder.
     /// </summary>
     public class Saml2Scoping
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="Saml2Scoping"/> class.
         /// </summary>
-        /// <remarks>
-        /// Specifies a set of identity providers trusted by the requester to authenticate the presenter, as well as 
-        /// limitations and context related to proxying of the authentication request message to subsequent identity 
-        /// providers by the responder.
-        /// </remarks>
         /// <param name="idPEntries">The idp entries.</param>
         /// <param name="proxyCount">The proxy count.</param>
         /// <param name="requesterIds">The requester ids.</param>
