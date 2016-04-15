@@ -307,7 +307,7 @@ namespace Kentor.AuthServices
 
                 authnRequest.SigningCertificate = spOptions.SigningServiceCertificate;
             }
-            
+
             return authnRequest;
         }
 
@@ -503,7 +503,7 @@ namespace Kentor.AuthServices
         }
 
         /// <summary>
-        /// 
+        /// Provider for adding scoping to authentication requests.
         /// </summary>
         public ISaml2ScopingProvider ScopingProvider { get; set; }
     }
