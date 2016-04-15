@@ -61,6 +61,7 @@
     <Compile Include="Configuration\ServiceCertificateCollection.cs" />
     <Compile Include="Saml2P\AuthnContextComparisonType.cs" />
     <Compile Include="Configuration\NameIdPolicyElement.cs" />
+    <Compile Include="Saml2P\Saml2IdPEntry.cs" />
     <Compile Include="Saml2P\Saml2LogoutResponse.cs" />
     <Compile Include="Saml2P\Saml2RequestedAuthnContext.cs" />
     <Compile Include="Configuration\RequestedAuthnContextElement.cs" />
@@ -76,6 +77,8 @@
     <Compile Include="Saml2P\Saml2ArtifactResolve.cs" />
     <Compile Include="Saml2P\Saml2ArtifactResponse.cs" />
     <Compile Include="Saml2P\Saml2NameIdPolicy.cs" />
+    <Compile Include="Saml2P\Saml2RequesterId.cs" />
+    <Compile Include="Saml2P\Saml2Scoping.cs" />
     <Compile Include="Saml2P\Saml2SoapBinding.cs" />
     <Compile Include="Saml2P\Saml2StatusResponseType.cs" />
     <Compile Include="ServiceCertificate.cs" />

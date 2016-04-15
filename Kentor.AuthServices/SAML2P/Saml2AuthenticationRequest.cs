@@ -59,8 +59,13 @@ namespace Kentor.AuthServices.Saml2P
                         RequestedAuthnContext.ClassRef.OriginalString)));
             }
 
+            AddScoping(x);
+
             return x;
         }
+
+
+
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "NameIdPolicy")]
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "AllowCreate")]
@@ -89,6 +94,14 @@ namespace Kentor.AuthServices.Saml2P
                 }
 
                 xElement.Add(nameIdPolicyElement);
+            }
+        }
+
+        private void AddScoping(XElement xElement)
+        {
+            if (Scoping != null)
+            {
+                xElement.Add(Scoping.ToXElement());
             }
         }
 
@@ -170,6 +183,11 @@ namespace Kentor.AuthServices.Saml2P
         /// Index to the SP metadata where the list of requested attributes is found.
         /// </summary>
         public int? AttributeConsumingServiceIndex { get; set; }
+
+        /// <summary> 
+         /// Scoping for request 
+         /// </summary> 
+         public Saml2Scoping Scoping { get; set; }
 
         /// <summary>
         /// NameId policy.
