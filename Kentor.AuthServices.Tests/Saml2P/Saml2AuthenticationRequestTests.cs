@@ -237,11 +237,16 @@ namespace Kentor.AuthServices.Tests.Saml2P
         [TestMethod]
         public void Saml2AuthenticationRequest_ToXElement_AddsScoping()
         {
+            var requesterId = new Uri("urn://requesterid/");
+            var location = "location";
+            var name = "name";
+            var providerId = "providerId";
+
             var subject = new Saml2AuthenticationRequest()
             {
                 AssertionConsumerServiceUrl = new Uri("http://destination.example.com"),
-                Scoping = new Saml2Scoping(new List<Saml2IdPEntry> { new Saml2IdPEntry("location", "name", "provider") }, 5, new List<Saml2RequesterId> { new Saml2RequesterId(new Uri("urn://requesterId")) } )
-            }.ToXElement();
+                Scoping = new Saml2Scoping(new List<Saml2IdPEntry> { new Saml2IdPEntry(location, name, providerId) }, 5, new List<Saml2RequesterId> { new Saml2RequesterId(requesterId) } )
+            }.ToXElement().Element(Saml2Namespaces.Saml2P + "Scoping");
 
             var expected = new XElement(Saml2Namespaces.Saml2P + "root",
                 new XAttribute(XNamespace.Xmlns + "saml2p", Saml2Namespaces.Saml2P),
@@ -249,16 +254,14 @@ namespace Kentor.AuthServices.Tests.Saml2P
                     new XAttribute("ProxyCount", "5"), 
                     new XElement(Saml2Namespaces.Saml2P + "IDPList", 
                         new XElement(Saml2Namespaces.Saml2P + "IDPEntry", 
-                            new XAttribute("ProviderID", "provider"), 
-                            new XAttribute("Name", "name"), 
-                            new XAttribute("Loc", "location"))),
-                    new XElement(Saml2Namespaces.Saml2P + "RequesterID", "requesterId")))
+                            new XAttribute("ProviderID", providerId), 
+                            new XAttribute("Name", name), 
+                            new XAttribute("Loc", location))),
+                    new XElement(Saml2Namespaces.Saml2P + "RequesterID", requesterId.ToString())))
                     .Elements().Single();
 
-            subject.Element(Saml2Namespaces.Saml2P + "Scoping")
-                .Should().BeEquivalentTo(expected);
+            subject.Should().BeEquivalentTo(expected);
         }
-
 
         [TestMethod]
         public void Saml2AuthenticationRequest_ToXElement_AddsRequestedAuthnContext_ComparisonTypeMaximum()
