@@ -360,5 +360,10 @@ namespace Kentor.AuthServices.Configuration
         /// </summary>
         public bool ValidateCertificates { get; set; }
 
+        /// <summary>
+        /// Compatibility settings. Can be used to make AuthServices accept
+        /// certain non-standard behaviour.
+        /// </summary>
+        public Compatibility Compatibility { get; set; } = new Compatibility();
     }
 }

@@ -63,8 +63,8 @@ namespace Kentor.AuthServices
             }
 
             // If configured to load metadata, this will immediately do the load.
-            LoadMetadata = config.LoadMetadata;
             this.spOptions = spOptions;
+            LoadMetadata = config.LoadMetadata;
 
             // Validate if values are only from config. If metadata is loaded, validation
             // is done on metadata load.
@@ -95,9 +95,9 @@ namespace Kentor.AuthServices
         private bool loadMetadata;
 
         /// <summary>
-        /// Should this idp load metadata? If you intend to set the
-        /// <see cref="MetadataLocation"/> that must be done before setting
-        /// LoadMetadata to true.</summary>
+        /// Should this idp load metadata? The metadata is loaded immediately
+        /// when the property is set to true, so the <see cref="MetadataLocation"/>
+        /// must be correct before settingLoadMetadata to true.</summary>
         public bool LoadMetadata
         {
             get
@@ -345,7 +345,9 @@ namespace Kentor.AuthServices
             {
                 try
                 {
-                    var metadata = MetadataLoader.LoadIdp(MetadataLocation);
+                    var metadata = MetadataLoader.LoadIdp(
+                        MetadataLocation,
+                        spOptions.Compatibility.UnpackEntitiesDescriptorInIdentityProviderMetadata);
 
                     ReadMetadata(metadata);
                 }

@@ -798,6 +798,36 @@ namespace Kentor.AuthServices.Tests
         }
 
         [TestMethod]
+        public void IdentityProvider_MetadataLocation_UnpacksEntitiesDescriptor_if_configured()
+        {
+            var spOptions = StubFactory.CreateSPOptions();
+            spOptions.Compatibility.UnpackEntitiesDescriptorInIdentityProviderMetadata = true;
+
+            var subject = new IdentityProvider(
+                new EntityId("http://idp.federation.example.com/metadata"),
+                spOptions);
+
+            Action a = () => subject.MetadataLocation = "~/Metadata/SingleIdpInEntitiesDescriptor.xml";
+
+            a.ShouldNotThrow();
+        }
+
+        [TestMethod]
+        public void IdentityProvider_MetadataLocation_ThrowsWhenEntitiesDescriptorFoundAndNotAllowedByConfig()
+        {
+            var spOptions = StubFactory.CreateSPOptions();
+            spOptions.Compatibility.UnpackEntitiesDescriptorInIdentityProviderMetadata.Should().BeFalse();
+
+            var subject = new IdentityProvider(
+                new EntityId("http://idp.example.com"),
+                spOptions);
+
+            Action a = () => subject.MetadataLocation = "~/Metadata/SingleIdpInEntitiesDescriptor.xml";
+
+            a.ShouldThrow<InvalidOperationException>();
+        }
+
+        [TestMethod]
         public void IdentityProvider_CreateLogoutRequest()
         {
             var options = StubFactory.CreateOptions();
