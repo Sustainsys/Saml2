@@ -27,6 +27,7 @@ namespace Kentor.AuthServices.Configuration
         {
             systemIdentityModelIdentityConfiguration = new IdentityConfiguration(false);
             MetadataCacheDuration = new TimeSpan(1, 0, 0);
+            Compatibility = new Compatibility();
         }
 
         /// <summary>
@@ -55,6 +56,7 @@ namespace Kentor.AuthServices.Configuration
             NameIdPolicy = new Saml2NameIdPolicy(
                 configSection.NameIdPolicyElement.AllowCreate, configSection.NameIdPolicyElement.Format);
             RequestedAuthnContext = new Saml2RequestedAuthnContext(configSection.RequestedAuthnContext);
+            Compatibility = new Compatibility(configSection.Compatibility);
 
             configSection.ServiceCertificates.RegisterServiceCertificates(this);
 
@@ -360,5 +362,10 @@ namespace Kentor.AuthServices.Configuration
         /// </summary>
         public bool ValidateCertificates { get; set; }
 
+        /// <summary>
+        /// Compatibility settings. Can be used to make AuthServices accept
+        /// certain non-standard behaviour.
+        /// </summary>
+        public Compatibility Compatibility { get; set; }
     }
 }

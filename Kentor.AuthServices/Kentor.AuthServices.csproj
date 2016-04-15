@@ -57,6 +57,8 @@
     <Compile Include="ClaimsExtensions.cs" />
     <Compile Include="Configuration\ArtifactResolutionServiceCollection.cs" />
     <Compile Include="Configuration\ArtifactResolutionServiceElement.cs" />
+    <Compile Include="Configuration\Compatibility.cs" />
+    <Compile Include="Configuration\CompatibilityElement.cs" />
     <Compile Include="Saml2NameIdExtensions.cs" />
     <Compile Include="Configuration\ServiceCertificateCollection.cs" />
     <Compile Include="Saml2P\AuthnContextComparisonType.cs" />

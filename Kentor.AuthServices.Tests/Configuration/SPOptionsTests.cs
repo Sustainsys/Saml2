@@ -22,6 +22,8 @@ namespace Kentor.AuthServices.Tests.Configuration
                 KentorAuthServicesSection.Current.AllowChange = false;
                 KentorAuthServicesSection.Current.Metadata.WantAssertionsSigned = false;
                 KentorAuthServicesSection.Current.Metadata.AllowChange = false;
+                KentorAuthServicesSection.Current.Compatibility.UnpackEntitiesDescriptorInIdentityProviderMetadata = false;
+                KentorAuthServicesSection.Current.Compatibility.AllowChange = false;
             }
         }
 
@@ -59,6 +61,8 @@ namespace Kentor.AuthServices.Tests.Configuration
             config.Metadata.AllowChange = true;
             config.Metadata.WantAssertionsSigned = true;
             config.ValidateCertificates = true;
+            config.Compatibility.AllowChange = true;
+            config.Compatibility.UnpackEntitiesDescriptorInIdentityProviderMetadata = true;
 
             SPOptions subject = new SPOptions(KentorAuthServicesSection.Current);
             subject.ReturnUrl.Should().Be(config.ReturnUrl);
@@ -75,6 +79,7 @@ namespace Kentor.AuthServices.Tests.Configuration
             subject.AuthenticateRequestSigningBehavior.Should().Be(config.AuthenticateRequestSigningBehavior);
             subject.RequestedAuthnContext.ClassRef.OriginalString.Should().Be("urn:oasis:names:tc:SAML:2.0:ac:classes:PasswordProtectedTransport");
             subject.RequestedAuthnContext.Comparison.Should().Be(AuthnContextComparisonType.Minimum);
+            subject.Compatibility.UnpackEntitiesDescriptorInIdentityProviderMetadata.Should().BeTrue();
         }
 
         [TestMethod]

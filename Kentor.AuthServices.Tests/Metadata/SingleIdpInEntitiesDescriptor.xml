@@ -1,0 +1,19 @@
+﻿<EntitiesDescriptor xmlns="urn:oasis:names:tc:SAML:2.0:metadata" validUntil="2100-01-01T14:43:15Z">
+  <EntityDescriptor entityID="http://idp.federation.example.com/metadata">
+    <IDPSSODescriptor
+      protocolSupportEnumeration="urn:oasis:names:tc:SAML:2.0:protocol">
+      <KeyDescriptor>
+        <KeyInfo xmlns="http://www.w3.org/2000/09/xmldsig#">
+          <X509Data>
+            <X509Certificate>
+              MIIDKTCCAhWgAwIBAgIQoXDqga0edKNDrLX+FDyO1TAJBgUrDgMCHQUAMCYxJDAiBgNVBAMTG0tlbnRvci5BdXRoU2VydmljZXMuU3R1YklkcDAeFw0xMzEyMjcyMDU0NDVaFw0zOTEyMzEyMzU5NTlaMCYxJDAiBgNVBAMTG0tlbnRvci5BdXRoU2VydmljZXMuU3R1YklkcDCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBANAIi7po3bIVWeoEMIV60qt+MMXeCk4p58+ZqicnPUDyUuWxpft/fp0g4qARxfvJVTHCEJDGykaGuX4z3zEhB9tSz8MD7xbqHFrIIp0UJDKZFAl+zQH+eXnvG7h6P0BJR74fvGE6Y124PRMl/AE9SXwr2T2kr1wS/jO4pBRKo2H5tlhgTfsWSfIkGhvYXu5a1vP7iBqswlAzNYLUQI17okQEsli3mVzwfvDHwzOZtjnKIQA/Bs/UA21ZJZm1eGd3VEXw3vWv34hZXTWe7Hc8eBO8Yip81An+OFVEJ8kshUOtmmVtmZCAMfTq0TOwdfoDnsDHiVFp3nAS7gdUZ9rOxnECAwEAAaNbMFkwVwYDVR0BBFAwToAQOp8UfulPoU3Zor4hyctWkaEoMCYxJDAiBgNVBAMTG0tlbnRvci5BdXRoU2VydmljZXMuU3R1YklkcIIQoXDqga0edKNDrLX+FDyO1TAJBgUrDgMCHQUAA4IBAQBJN/vhEGjqQn1/lPEqezEiScCoRh2ZRBqDHJERAFLzH1DMrfp602NLYOUmbmIWoWjLoen+Pl7MEIF/lyC0WteMOEOk/pqvFMBrwbRwy1er8LbzMBbPVZaLpN858NOVdpGlilErHPkC9WtS3LIFuBz5/jnInC0JkTuf/LJP2g2OeRlJbLFJyxxK4ahTlbabzENe/jgplipDwBosbnLpMmL1B1/vj+RNHOxxaqhcsmdxhY/Zr34FyXguOLoKx9u/v8XDVB7gf/8ZH6tpMyESy2zeLjbXi9LRt7GLb5b+Fo4qDXBaTLWvuV9ltftrLkpL1rYToTGRfl+SQke7+kFM7l+N
+            </X509Certificate>
+          </X509Data>
+        </KeyInfo>
+      </KeyDescriptor>
+      <SingleSignOnService
+      Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect"
+      Location="http://idp.federation.example.com/ssoService" />
+    </IDPSSODescriptor>
+  </EntityDescriptor>
+</EntitiesDescriptor>

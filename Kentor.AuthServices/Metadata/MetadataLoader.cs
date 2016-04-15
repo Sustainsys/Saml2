@@ -19,18 +19,36 @@ namespace Kentor.AuthServices.Metadata
     /// </summary>
     public static class MetadataLoader
     {
-        internal const string LoadIdpFoundEntitiesDescriptor = "Tried to load metadata for an IdentityProvider, which should be an <EntityDescriptor>, but found an <EntitiesDescriptor>. To load that metadata you should use the Federation configuration and not an IdentityProvider.";
-
         /// <summary>
         /// Load and parse metadata.
         /// </summary>
         /// <param name="metadataLocation">Path to metadata. A Url, absolute
         /// path or an app relative path (e.g. ~/App_Data/metadata.xml)</param>
         /// <returns>EntityDescriptor containing metadata</returns>
+        public static ExtendedEntityDescriptor LoadIdp(string metadataLocation)
+        {
+            return LoadIdp(metadataLocation, false);
+        }
+        
+        internal const string LoadIdpFoundEntitiesDescriptor = "Tried to load metadata for an IdentityProvider, which should be an <EntityDescriptor>, but found an <EntitiesDescriptor>. To load that metadata you should use the Federation configuration and not an IdentityProvider. You can also set the SPOptions.Compatibility.UnpackEntitiesDescriptorInIdentityProviderMetadata option to true.";
+        internal const string LoadIdpUnpackingFoundMultipleEntityDescriptors = "Unpacked an EntitiesDescriptor when loading idp metadata, but found multiple EntityDescriptors.Unpacking is only supported if the metadata contains a single EntityDescriptor. Maybe you should use a Federation instead of configuring a single IdentityProvider";
+
+        /// <summary>
+        /// Load and parse metadata.
+        /// </summary>
+        /// <param name="metadataLocation">Path to metadata. A Url, absolute
+        /// path or an app relative path (e.g. ~/App_Data/metadata.xml)</param>
+        /// <param name="unpackEntitiesDescriptor">If the metadata contains
+        /// an EntitiesDescriptor, try to unpack it and return a single
+        /// EntityDescriptor inside if there is one.</param>
+        /// <returns>EntityDescriptor containing metadata</returns>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "EntityDescriptors")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "SPOptions")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "UnpackEntitiesDescriptorInIdentityProviderMetadata")]
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "EntitiesDescriptor")]
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "EntityDescriptor")]
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "IdentityProvider")]
-        public static ExtendedEntityDescriptor LoadIdp(string metadataLocation)
+        public static ExtendedEntityDescriptor LoadIdp(string metadataLocation, bool unpackEntitiesDescriptor)
         {
             if (metadataLocation == null)
             {
@@ -39,8 +57,19 @@ namespace Kentor.AuthServices.Metadata
 
             var result = Load(metadataLocation);
 
-            if(result is ExtendedEntitiesDescriptor)
+            var entitiesDescriptor = result as ExtendedEntitiesDescriptor;
+            if(entitiesDescriptor != null)
             {
+                if(unpackEntitiesDescriptor)
+                {
+                    if(entitiesDescriptor.ChildEntities.Count > 1)
+                    {
+                        throw new InvalidOperationException(LoadIdpUnpackingFoundMultipleEntityDescriptors);
+                    }
+
+                    return (ExtendedEntityDescriptor)entitiesDescriptor.ChildEntities.Single();
+                }
+
                 throw new InvalidOperationException(LoadIdpFoundEntitiesDescriptor);
             }
 
