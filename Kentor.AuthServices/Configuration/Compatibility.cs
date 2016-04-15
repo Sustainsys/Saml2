@@ -35,7 +35,7 @@ namespace Kentor.AuthServices.Configuration
 
         /// <summary>
         /// If an EntitiesDescriptor element is found when loading metadata
-        /// for en IdentityProvider, automatically check inside it if there
+        /// for an IdentityProvider, automatically check inside it if there
         /// is a single EntityDescriptor and in that case use it.
         /// </summary>
         public bool UnpackEntitiesDescriptorInIdentityProviderMetadata { get; set; }

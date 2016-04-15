@@ -97,6 +97,7 @@ Root element of the config section.
 * [`<identityProviders>`](#identityproviders-element)
 * [`<federations>`](#federations-element)
 * [`<serviceCertificates>`](#servicecertificates-element)
+* [`<compatibility>`](#compatibility-element)
 
 ####`entityId` Attribute
 *Attribute of the [`<kentor.authServices>`](#kentor-authservices-section) element.*
@@ -664,6 +665,7 @@ But also has the below options for configuring how the certificate will be used.
 * [`metadataPublishOverride`](#metadatapublishoverride-attribute-servicecertificate)
 
 ####`use` Attribute (ServiceCertificate)
+* Optional attribute of [`<add>`](#add-servicecertificate-element).*
 
 How should this certificate be used? 
 Options are:
@@ -672,6 +674,7 @@ Options are:
  * Both (Default)
 
 ####`status` Attribute (ServiceCertificate)
+* Optional attribute of [`<add>`](#add-servicecertificate-element).*
 
 Is this certificate for current or future use (i.e. key rollover scenario)? 
 Options are:
@@ -679,6 +682,7 @@ Options are:
  * Future
 
 ####`metadataPublishOverride` Attribute (ServiceCertificate)
+* Optional attribute of [`<add>`](#add-servicecertificate-element).*
 
 Should we override how this certificate is published in the metadata? 
 Options are:
@@ -697,7 +701,21 @@ Signing | Future | Signing | No
 Encryption | Current | Encryption _unless Future key exists_ then not published | Yes 
 Encryption | Future | Encryption | Yes 
 
+###`</compatibility>` Element
+*Optional child element of the [`<kentor.authServices>`](#kentorauthservices-section) element.*
 
+Enables overrides of default behaviour to increase compatibility with identity
+providers.
+
+####Attributes
+* [`unpackEntitiesDescriptorInIdentityProviderMetadata`](#unpackentitiesdescriptorinidentityprovidermetadata-attribute)
+
+####`unpackEntitiesDescriptorInIdentityProviderMetadata` Attribute
+* Optional attribute of [`unpackEntitiesDescriptorInIdentityProviderMetadata`](#unpackentitiesdescriptorinidentityprovidermetadata-attribute)*
+
+If an EntitiesDescriptor element is found when loading metadata for an
+IdentityProvider, automatically check inside it if there is a single
+EntityDescriptor and in that case use it.
 
 ##`<system.identityModel>` Section
 *Child element of `<configuration>` element.*
