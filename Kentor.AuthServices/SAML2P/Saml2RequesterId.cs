@@ -1,4 +1,6 @@
-﻿namespace Kentor.AuthServices.Saml2P
+﻿using System.Xml.Linq;
+
+namespace Kentor.AuthServices.Saml2P
 {
     public class Saml2RequesterId
     {
@@ -6,8 +8,12 @@
 
         public Saml2RequesterId(string id)
         {
-            this.Id = id;
+            Id = id;
         }
 
+        public XElement ToXElement()
+        {
+            return new XElement(Saml2Namespaces.Saml2P + "RequesterID", Id);
+        }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 using System.Xml.Linq;
 
 namespace Kentor.AuthServices.Saml2P
@@ -40,7 +41,6 @@ namespace Kentor.AuthServices.Saml2P
         /// <summary>
         /// Create XElement for the Saml2Scoping.
         /// </summary>
-        /// <returns>XElement.</returns>
         public XElement ToXElement()
         {
             var scopingElement = new XElement(Saml2Namespaces.Saml2P + "Scoping");
@@ -49,36 +49,17 @@ namespace Kentor.AuthServices.Saml2P
             {
                 scopingElement.AddAttributeIfNotNullOrEmpty("ProxyCount", ProxyCount.ToString(CultureInfo.InvariantCulture));
             }
+
             if (IdPEntries != null && IdPEntries.Count > 0)
             {
-                var idpListElement = new XElement(Saml2Namespaces.Saml2P + "IDPList");
-                foreach (var saml2IdPEntry in IdPEntries)
-                {
-                    var idpEntryElement = new XElement(Saml2Namespaces.Saml2P + "IDPEntry");
-
-                    if (!string.IsNullOrEmpty(saml2IdPEntry.ProviderId))
-                    {
-                        idpEntryElement.AddAttributeIfNotNullOrEmpty("ProviderID", saml2IdPEntry.ProviderId);
-                    }
-                    if (!string.IsNullOrEmpty(saml2IdPEntry.Name))
-                    {
-                        idpEntryElement.AddAttributeIfNotNullOrEmpty("Name", saml2IdPEntry.Name);
-                    }
-                    if (!string.IsNullOrEmpty(saml2IdPEntry.Location))
-                    {
-                        idpEntryElement.AddAttributeIfNotNullOrEmpty("Loc", saml2IdPEntry.Location);
-                    }
-                    idpListElement.Add(idpEntryElement);
-                }
-                scopingElement.Add(idpListElement);
+                scopingElement.Add(new XElement(Saml2Namespaces.Saml2P + "IDPList", IdPEntries.Select(x => x.ToXElement())));
             }
+
             if (RequesterIds != null && RequesterIds.Count > 0)
             {
-                foreach (var saml2RequesterId in RequesterIds)
-                {
-                    scopingElement.Add(new XElement(Saml2Namespaces.Saml2P + "RequesterID", saml2RequesterId.Id));
-                }
+                scopingElement.Add(RequesterIds.Select(x => x.ToXElement()));
             }
+
             return scopingElement;
         }
     }
