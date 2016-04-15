@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Configuration;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using FluentAssertions;
@@ -17,6 +18,7 @@ using System.Xml.Schema;
 using Kentor.AuthServices.Internal;
 using Kentor.AuthServices.WebSso;
 using System.IdentityModel.Tokens;
+using Kentor.AuthServices.Saml2P;
 
 namespace Kentor.AuthServices.Tests.WebSso
 {
@@ -186,6 +188,35 @@ namespace Kentor.AuthServices.Tests.WebSso
 
             a.ShouldThrow<ArgumentNullException>()
                 .And.ParamName.Should().Be("options");
+        }
+
+        [TestMethod]
+        public void SignInCommand_Run_With_SingleScopingProvider_Works()
+        {
+            var idp = Options.FromConfiguration.IdentityProviders.Default;
+
+            idp.ScopingProvider = new SingleSaml2ScopingProvider(new Saml2Scoping(new List<Saml2IdPEntry>(), 0, new List<Saml2RequesterId>()));
+
+            var request = new HttpRequestData("GET",
+                new Uri("http://sp.example.com?idp=" + Uri.EscapeDataString(idp.EntityId.Id)));
+
+            new SignInCommand().Run(request, Options.FromConfiguration);
+        }
+
+        [TestMethod]
+        public void SignInCommand_Run_With_ScopingProvider_IsCalled()
+        {
+            var idp = Options.FromConfiguration.IdentityProviders.Default;
+
+            var scopingProvider = Substitute.For<ISaml2ScopingProvider>();
+            idp.ScopingProvider = scopingProvider;
+
+            var request = new HttpRequestData("GET",
+                new Uri("http://sp.example.com?idp=" + Uri.EscapeDataString(idp.EntityId.Id)));
+
+            new SignInCommand().Run(request, Options.FromConfiguration);
+
+            scopingProvider.Received().GetScoping(Arg.Any<Saml2AuthenticationRequest>(), Arg.Any<IDictionary<string, string>>());
         }
     }
 }
