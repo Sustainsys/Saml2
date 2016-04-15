@@ -1,0 +1,10 @@
+﻿<EntitiesDescriptor xmlns="urn:oasis:names:tc:SAML:2.0:metadata" validUntil="2100-01-01T14:43:15Z">
+  <EntityDescriptor entityID="http://idp.federation.example.com/metadata">
+  <IDPSSODescriptor
+    protocolSupportEnumeration="urn:oasis:names:tc:SAML:2.0:protocol">
+    <SingleSignOnService
+      Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect"
+      Location="http://idp.federation.example.com/ssoService" />
+  </IDPSSODescriptor>
+  </EntityDescriptor>
+</EntitiesDescriptor>

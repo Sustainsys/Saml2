@@ -77,5 +77,26 @@ namespace Kentor.AuthServices.Tests.Metadata
             a.ShouldThrow<InvalidOperationException>().
                 WithMessage(MetadataLoader.LoadFederationFoundEntityDescriptor);
         }
+
+        [TestMethod]
+        public void MetadataLoader_LoadIdentityProvider_UnpacksEntitiesDescriptorIfFlagSet()
+        {
+            var metadataLocation = "~/Metadata/SingleIdpInEntitiesDescriptor.xml";
+
+            var actual = MetadataLoader.LoadIdp(metadataLocation, true);
+
+            actual.Should().BeOfType<ExtendedEntityDescriptor>();
+        }
+
+        [TestMethod]
+        public void MetadataLoader_LoadIdentityProvider_ThrowsOnMultipleEntityDescriptorsWhenUnpackingEntitiesDescriptor()
+        {
+            var metadataLocation = "~/Metadata/SambiMetadata.xml";
+
+            Action a = () => MetadataLoader.LoadIdp(metadataLocation, true);
+
+            a.ShouldThrow<InvalidOperationException>()
+                .WithMessage(MetadataLoader.LoadIdpUnpackingFoundMultipleEntityDescriptors);
+        }
     }
 }
