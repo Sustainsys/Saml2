@@ -1,13 +1,31 @@
-﻿namespace Kentor.AuthServices.Saml2P
+﻿using System;
+using System.Xml.Linq;
+
+namespace Kentor.AuthServices.Saml2P
 {
+
+    /// <summary>
+    /// Saml2RequesterId - represents a requesting entitiy on whose behalf the requester is acting.
+    /// </summary>
     public class Saml2RequesterId
     {
-        public string Id { get; set; }
+        private readonly Uri _id;
 
-        public Saml2RequesterId(string id)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Saml2RequesterId"/> class.
+        /// </summary>
+        /// <param name="id">The identifier.</param>
+        public Saml2RequesterId(Uri id)
         {
-            this.Id = id;
+            _id = id;
         }
 
+        /// <summary>
+        /// Create XElement for the <see cref="Saml2RequesterId"/> class.
+        /// </summary>
+        public XElement ToXElement()
+        {
+            return new XElement(Saml2Namespaces.Saml2P + "RequesterID", _id);
+        }
     }
 }

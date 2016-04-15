@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using FluentAssertions;
 using System.Xml.Linq;
@@ -232,6 +233,32 @@ namespace Kentor.AuthServices.Tests.Saml2P
             subject.Element(Saml2Namespaces.Saml2P + "NameIDPolicy")
                 .Should().BeEquivalentTo(expected);
         }
+
+        [TestMethod]
+        public void Saml2AuthenticationRequest_ToXElement_AddsScoping()
+        {
+            var subject = new Saml2AuthenticationRequest()
+            {
+                AssertionConsumerServiceUrl = new Uri("http://destination.example.com"),
+                Scoping = new Saml2Scoping(new List<Saml2IdPEntry> { new Saml2IdPEntry("location", "name", "provider") }, 5, new List<Saml2RequesterId> { new Saml2RequesterId(new Uri("urn://requesterId")) } )
+            }.ToXElement();
+
+            var expected = new XElement(Saml2Namespaces.Saml2P + "root",
+                new XAttribute(XNamespace.Xmlns + "saml2p", Saml2Namespaces.Saml2P),
+                new XElement(Saml2Namespaces.Saml2P + "Scoping",
+                    new XAttribute("ProxyCount", "5"), 
+                    new XElement(Saml2Namespaces.Saml2P + "IDPList", 
+                        new XElement(Saml2Namespaces.Saml2P + "IDPEntry", 
+                            new XAttribute("ProviderID", "provider"), 
+                            new XAttribute("Name", "name"), 
+                            new XAttribute("Loc", "location"))),
+                    new XElement(Saml2Namespaces.Saml2P + "RequesterID", "requesterId")))
+                    .Elements().Single();
+
+            subject.Element(Saml2Namespaces.Saml2P + "Scoping")
+                .Should().BeEquivalentTo(expected);
+        }
+
 
         [TestMethod]
         public void Saml2AuthenticationRequest_ToXElement_AddsRequestedAuthnContext_ComparisonTypeMaximum()

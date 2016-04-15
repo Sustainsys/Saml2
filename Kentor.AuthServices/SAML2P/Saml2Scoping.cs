@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 using System.Xml.Linq;
 
 namespace Kentor.AuthServices.Saml2P
@@ -12,6 +13,11 @@ namespace Kentor.AuthServices.Saml2P
         /// <summary>
         /// Initializes a new instance of the <see cref="Saml2Scoping"/> class.
         /// </summary>
+        /// <remarks>
+        /// Specifies a set of identity providers trusted by the requester to authenticate the presenter, as well as 
+        /// limitations and context related to proxying of the authentication request message to subsequent identity 
+        /// providers by the responder.
+        /// </remarks>
         /// <param name="idPEntries">The idp entries.</param>
         /// <param name="proxyCount">The proxy count.</param>
         /// <param name="requesterIds">The requester ids.</param>
@@ -22,17 +28,20 @@ namespace Kentor.AuthServices.Saml2P
             RequesterIds = requesterIds;
         }
         /// <summary>
-        /// Gets or sets the idp entries.
-        /// </summary>
+        /// Gets or sets advisory list of identity providers and associated information that 
+        /// the requester deems acceptable to respond to the request.        /// </summary>
         /// <value>The idp entries.</value>
         public IList<Saml2IdPEntry> IdPEntries { get; }
         /// <summary>
-        /// Gets or sets the proxy count.
+        /// Specifies the number of proxying indirections permissible between the identity provider that receives
+        /// the authentication request and the identity provider who ultimately authenticates the principal.
+        /// A count of zero permits no proxying, while omitting (null) this attribute expresses no such restriction.
         /// </summary>
         /// <value>The proxy count.</value>
-        public int ProxyCount { get; }
+        public int? ProxyCount { get; }
         /// <summary>
-        /// Gets or sets the requester ids.
+        /// Gets or sets the set of requesting entities on whose behalf the requester is acting. 
+        /// Used to communicate the chain of requesters when proxying occurs.
         /// </summary>
         /// <value>The requester ids.</value>
         public IList<Saml2RequesterId> RequesterIds { get; }
@@ -40,45 +49,25 @@ namespace Kentor.AuthServices.Saml2P
         /// <summary>
         /// Create XElement for the Saml2Scoping.
         /// </summary>
-        /// <returns>XElement.</returns>
         public XElement ToXElement()
         {
             var scopingElement = new XElement(Saml2Namespaces.Saml2P + "Scoping");
 
             if (ProxyCount > 0)
             {
-                scopingElement.AddAttributeIfNotNullOrEmpty("ProxyCount", ProxyCount.ToString(CultureInfo.InvariantCulture));
+                scopingElement.AddAttributeIfNotNullOrEmpty("ProxyCount", ProxyCount?.ToString(CultureInfo.InvariantCulture));
             }
+
             if (IdPEntries != null && IdPEntries.Count > 0)
             {
-                var idpListElement = new XElement(Saml2Namespaces.Saml2P + "IDPList");
-                foreach (var saml2IdPEntry in IdPEntries)
-                {
-                    var idpEntryElement = new XElement(Saml2Namespaces.Saml2P + "IDPEntry");
-
-                    if (!string.IsNullOrEmpty(saml2IdPEntry.ProviderId))
-                    {
-                        idpEntryElement.AddAttributeIfNotNullOrEmpty("ProviderID", saml2IdPEntry.ProviderId);
-                    }
-                    if (!string.IsNullOrEmpty(saml2IdPEntry.Name))
-                    {
-                        idpEntryElement.AddAttributeIfNotNullOrEmpty("Name", saml2IdPEntry.Name);
-                    }
-                    if (!string.IsNullOrEmpty(saml2IdPEntry.Location))
-                    {
-                        idpEntryElement.AddAttributeIfNotNullOrEmpty("Loc", saml2IdPEntry.Location);
-                    }
-                    idpListElement.Add(idpEntryElement);
-                }
-                scopingElement.Add(idpListElement);
+                scopingElement.Add(new XElement(Saml2Namespaces.Saml2P + "IDPList", IdPEntries.Select(x => x.ToXElement())));
             }
+
             if (RequesterIds != null && RequesterIds.Count > 0)
             {
-                foreach (var saml2RequesterId in RequesterIds)
-                {
-                    scopingElement.Add(new XElement(Saml2Namespaces.Saml2P + "RequesterID", saml2RequesterId.Id));
-                }
+                scopingElement.Add(RequesterIds.Select(x => x.ToXElement()));
             }
+
             return scopingElement;
         }
     }
