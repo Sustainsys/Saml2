@@ -114,6 +114,7 @@
   </Choose>
   <ItemGroup>
     <Compile Include="ClaimsExtensionsTests.cs" />
+    <Compile Include="Configuration\CompatibilityTests.cs" />
     <Compile Include="Configuration\ConfiguredAndLoadedSigningKeysCollectionTests.cs" />
     <Compile Include="Configuration\Saml2RequestedAuthnContextTests.cs" />
     <Compile Include="Configuration\ServiceCertificateCollectionTests.cs" />
@@ -239,6 +240,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Metadata\SambiMetadata.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Metadata\SingleIdpInEntitiesDescriptor.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Metadata\SkolfederationMetadata.xml">
