@@ -22,10 +22,10 @@ namespace Kentor.AuthServices.Configuration
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="authnRequest"></param>
+        /// <param name="authenticationRequest"></param>
         /// <param name="relayData"></param>
         /// <returns></returns>
-        public Saml2Scoping GetScoping(Saml2AuthenticationRequest authnRequest, IDictionary<string, string> relayData)
+        public Saml2Scoping GetScoping(Saml2AuthenticationRequest authenticationRequest, IDictionary<string, string> relayData)
         {
             return _saml2Scoping;
         }

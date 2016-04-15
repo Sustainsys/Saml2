@@ -11,9 +11,9 @@ namespace Kentor.AuthServices.Configuration
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="authnRequest"></param>
+        /// <param name="authenticationRequest"></param>
         /// <param name="relayData"></param>
         /// <returns></returns>
-        Saml2Scoping GetScoping(Saml2AuthenticationRequest authnRequest, IDictionary<string, string> relayData);
+        Saml2Scoping GetScoping(Saml2AuthenticationRequest authenticationRequest, IDictionary<string, string> relayData);
     }
 }
