@@ -9,6 +9,7 @@ using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web;
+using Kentor.AuthServices.Saml2P;
 
 namespace Kentor.AuthServices.WebSso
 {
@@ -69,7 +70,7 @@ namespace Kentor.AuthServices.WebSso
             IOptions options,
             IDictionary<string, string> relayData)
         {
-            if(options == null)
+            if (options == null)
             {
                 throw new ArgumentNullException(nameof(options));
             }
@@ -105,6 +106,8 @@ namespace Kentor.AuthServices.WebSso
 
             var authnRequest = idp.CreateAuthenticateRequest(urls);
 
+            authnRequest.Scoping = idp.ScopingProvider?.GetScoping(authnRequest, relayData);
+
             var commandResult = idp.Bind(authnRequest);
 
             commandResult.RequestState = new StoredRequestState(
@@ -121,7 +124,7 @@ namespace Kentor.AuthServices.WebSso
         {
             string returnUrl = authServicesUrls.SignInUrl.OriginalString;
 
-            if(!string.IsNullOrEmpty(returnPath))
+            if (!string.IsNullOrEmpty(returnPath))
             {
                 returnUrl += "?ReturnUrl=" + Uri.EscapeDataString(returnPath);
             }
