@@ -51,9 +51,9 @@ namespace Kentor.AuthServices.Saml2P
         {
             var scopingElement = new XElement(Saml2Namespaces.Saml2P + "Scoping");
 
-            if (ProxyCount > 0)
+            if (ProxyCount.HasValue && ProxyCount.Value >= 0)
             {
-                scopingElement.AddAttributeIfNotNullOrEmpty("ProxyCount", ProxyCount?.ToString(CultureInfo.InvariantCulture));
+                scopingElement.AddAttributeIfNotNullOrEmpty("ProxyCount", ProxyCount.Value.ToString(CultureInfo.InvariantCulture));
             }
 
             if (IdPEntries != null && IdPEntries.Count > 0)
