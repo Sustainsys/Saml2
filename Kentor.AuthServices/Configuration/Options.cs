@@ -51,7 +51,7 @@ namespace Kentor.AuthServices.Configuration
         /// </summary>
         /// <param name="spOptions"></param>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "sp")]
-        public Options(SPOptions spOptions)
+        public Options(SPOptions spOptions) : this()
         {
             SPOptions = spOptions;
         }
