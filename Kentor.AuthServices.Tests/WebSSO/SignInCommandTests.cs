@@ -200,18 +200,18 @@ namespace Kentor.AuthServices.Tests.WebSso
             var request = new HttpRequestData("GET",
                 new Uri("http://sp.example.com?idp=" + Uri.EscapeDataString(idp.EntityId.Id)));
 
-            new SignInCommand().Run(request, Options.FromConfiguration);
+            var options = Options.FromConfiguration;
+            options.Notifications.AuthenticationRequestCreated = (a, b, c) => { a.Scoping = b.ScopingProvider.GetScoping(a, c); };
+
+            new SignInCommand().Run(request, options);
         }
 
         [TestMethod]
         public void SignInCommand_Run_With_ScopingProvider_IsCalled()
         {
             var idp = Options.FromConfiguration.IdentityProviders.Default;
-
             var scopingProvider = Substitute.For<ISaml2ScopingProvider>();
             idp.ScopingProvider = scopingProvider;
-
-
 
             var request = new HttpRequestData("GET",
                 new Uri("http://sp.example.com?idp=" + Uri.EscapeDataString(idp.EntityId.Id)));
