@@ -25,5 +25,11 @@ namespace Kentor.AuthServices.Configuration
         /// Information about known identity providers.
         /// </summary>
         IdentityProviderDictionary IdentityProviders { get; }
+
+        /// <summary>
+        /// Gets the notifications
+        /// </summary>
+        /// <value>The notification</value>
+        KentorAuthServicesNotifications Notifications { get; }
     }
 }

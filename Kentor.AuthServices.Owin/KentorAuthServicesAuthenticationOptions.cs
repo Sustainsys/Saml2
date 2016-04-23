@@ -18,6 +18,8 @@ namespace Kentor.AuthServices.Owin
     /// </summary>
     public class KentorAuthServicesAuthenticationOptions : AuthenticationOptions, IOptions
     {
+        public KentorAuthServicesNotifications Notifications { get; }
+
         /// <summary>
         /// Constructor
         /// <param name="loadConfiguration">Should the options be inited by loading app/web.config?</param>
@@ -29,6 +31,7 @@ namespace Kentor.AuthServices.Owin
         {
             AuthenticationMode = AuthenticationMode.Active;
             Description.Caption = Constants.DefaultCaption;
+            Notifications = new KentorAuthServicesNotifications();
 
             if (loadConfiguration)
             {

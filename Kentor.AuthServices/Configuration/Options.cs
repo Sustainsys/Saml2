@@ -16,6 +16,11 @@ namespace Kentor.AuthServices.Configuration
     /// </summary>
     public class Options : IOptions
     {
+        private Options()
+        {
+            Notifications = new KentorAuthServicesNotifications();
+        }
+        public KentorAuthServicesNotifications Notifications { get; }
         /// <summary>
         /// Reads the options from the current config file.
         /// </summary>
