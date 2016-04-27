@@ -178,39 +178,23 @@ namespace Kentor.AuthServices.Tests.WebSso
         }
 
         [TestMethod]
-        public void SignInCommand_Run_With_SingleScopingProvider_Works()
+        public void SignInCommand_Run_Calls_AuthenticationRequestCreated_Notification()
         {
-            //var idp = Options.FromConfiguration.IdentityProviders.Default;
+            var options = StubFactory.CreateOptions();
+            var idp = options.IdentityProviders.Default;
+            options.SPOptions.DiscoveryServiceUrl = null;
+           
+            var request = new HttpRequestData("GET",
+                new Uri("http://sp.example.com"));
 
-            //idp.ScopingProvider = new SingleSaml2ScopingProvider(new Saml2Scoping(new List<Saml2IdPEntry>(), 0, new List<Saml2RequesterId>()));
+            var called = false;
 
-            //var request = new HttpRequestData("GET",
-            //    new Uri("http://sp.example.com?idp=" + Uri.EscapeDataString(idp.EntityId.Id)));
+            options.Notifications.AuthenticationRequestCreated = 
+                (a, b, c) => { called = true; };
 
-            //var options = Options.FromConfiguration;
-            //options.Notifications.AuthenticationRequestCreated = (a, b, c) => { a.Scoping = b.ScopingProvider.GetScoping(a, c); };
+            new SignInCommand().Run(request, options);
 
-            //new SignInCommand().Run(request, options);
-            Assert.Inconclusive();
-        }
-
-        [TestMethod]
-        public void SignInCommand_Run_With_ScopingProvider_IsCalled()
-        {
-            //var idp = Options.FromConfiguration.IdentityProviders.Default;
-            //var scopingProvider = Substitute.For<ISaml2ScopingProvider>();
-            //idp.ScopingProvider = scopingProvider;
-
-            //var request = new HttpRequestData("GET",
-            //    new Uri("http://sp.example.com?idp=" + Uri.EscapeDataString(idp.EntityId.Id)));
-
-            //var options = Options.FromConfiguration;
-            //options.Notifications.AuthenticationRequestCreated = (a, b, c) => { a.Scoping = b.ScopingProvider.GetScoping(a, c); };
-
-            //new SignInCommand().Run(request, options);
-
-            //scopingProvider.Received().GetScoping(Arg.Any<Saml2AuthenticationRequest>(), Arg.Any<IDictionary<string, string>>());
-            Assert.Inconclusive();
+            called.Should().BeTrue("The notification should have been called");
         }
     }
 }
