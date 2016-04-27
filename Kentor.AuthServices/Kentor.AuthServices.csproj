@@ -64,7 +64,7 @@
     <Compile Include="Configuration\ServiceCertificateCollection.cs" />
     <Compile Include="Saml2P\AuthnContextComparisonType.cs" />
     <Compile Include="Configuration\NameIdPolicyElement.cs" />
-    <Compile Include="Saml2P\Saml2IdPEntry.cs" />
+    <Compile Include="Saml2P\Saml2IdpEntry.cs" />
     <Compile Include="Saml2P\Saml2LogoutResponse.cs" />
     <Compile Include="Saml2P\Saml2RequestedAuthnContext.cs" />
     <Compile Include="Configuration\RequestedAuthnContextElement.cs" />

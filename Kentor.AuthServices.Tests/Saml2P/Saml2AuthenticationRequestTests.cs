@@ -245,8 +245,15 @@ namespace Kentor.AuthServices.Tests.Saml2P
             var subject = new Saml2AuthenticationRequest()
             {
                 AssertionConsumerServiceUrl = new Uri("http://destination.example.com"),
-                Scoping = new Saml2Scoping(new List<Saml2IdPEntry> { new Saml2IdPEntry(location, name, providerId) }, 5, new List<Saml2RequesterId> { new Saml2RequesterId(requesterId) } )
-            }.ToXElement().Element(Saml2Namespaces.Saml2P + "Scoping");
+                Scoping = new Saml2Scoping()
+                {
+                    ProxyCount = 5
+                }
+                .With(new Saml2IdpEntry(location, name, providerId))
+                .With(new Saml2RequesterId(requesterId))
+            };
+
+            var actual = subject.ToXElement().Element(Saml2Namespaces.Saml2P + "Scoping");
 
             var expected = new XElement(Saml2Namespaces.Saml2P + "root",
                 new XAttribute(XNamespace.Xmlns + "saml2p", Saml2Namespaces.Saml2P),
@@ -260,33 +267,22 @@ namespace Kentor.AuthServices.Tests.Saml2P
                     new XElement(Saml2Namespaces.Saml2P + "RequesterID", requesterId.ToString())))
                     .Elements().Single();
 
-            subject.Should().BeEquivalentTo(expected);
+            actual.Should().BeEquivalentTo(expected);
         }
 
-        [TestMethod]
-        public void Saml2AuthenticationRequest_ToXElement_Scoping_NullProxyCount_AttributeNotAdded()
-        {
-            var subject = new Saml2AuthenticationRequest()
-            {
-                AssertionConsumerServiceUrl = new Uri("http://destination.example.com"),
-                Scoping = new Saml2Scoping(new List<Saml2IdPEntry>(), null, new List<Saml2RequesterId>())
-            }.ToXElement().Element(Saml2Namespaces.Saml2P + "Scoping");
-
-            var expected = new XElement(Saml2Namespaces.Saml2P + "root",
-                new XAttribute(XNamespace.Xmlns + "saml2p", Saml2Namespaces.Saml2P),
-                new XElement(Saml2Namespaces.Saml2P + "Scoping"))
-                .Elements().Single();
-
-            subject.Should().BeEquivalentTo(expected);
-        }
         [TestMethod]
         public void Saml2AuthenticationRequest_ToXElement_Scoping_ZeroProxyCount_AttributeAdded()
         {
             var subject = new Saml2AuthenticationRequest()
             {
                 AssertionConsumerServiceUrl = new Uri("http://destination.example.com"),
-                Scoping = new Saml2Scoping(new List<Saml2IdPEntry>(), 0, new List<Saml2RequesterId>())
-            }.ToXElement().Element(Saml2Namespaces.Saml2P + "Scoping");
+                Scoping = new Saml2Scoping()
+                {
+                    ProxyCount = 0
+                }
+            };
+            
+            var actual = subject.ToXElement().Element(Saml2Namespaces.Saml2P + "Scoping");
 
             var expected = new XElement(Saml2Namespaces.Saml2P + "root",
                 new XAttribute(XNamespace.Xmlns + "saml2p", Saml2Namespaces.Saml2P),
@@ -294,32 +290,16 @@ namespace Kentor.AuthServices.Tests.Saml2P
                  new XAttribute("ProxyCount", "0")))
                 .Elements().Single();
 
-            subject.Should().BeEquivalentTo(expected);
+            actual.Should().BeEquivalentTo(expected);
         }
+
         [TestMethod]
-        public void Saml2AuthenticationRequest_ToXElement_Scoping_NegativeProxyCount_AttributeNotAdded()
+        public void Saml2AuthenticationRequest_ToXElement_Scoping_NullContents_EmptyScoping()
         {
             var subject = new Saml2AuthenticationRequest()
             {
                 AssertionConsumerServiceUrl = new Uri("http://destination.example.com"),
-                Scoping = new Saml2Scoping(new List<Saml2IdPEntry>(), -1, new List<Saml2RequesterId>())
-            }.ToXElement().Element(Saml2Namespaces.Saml2P + "Scoping");
-
-            var expected = new XElement(Saml2Namespaces.Saml2P + "root",
-                new XAttribute(XNamespace.Xmlns + "saml2p", Saml2Namespaces.Saml2P),
-                new XElement(Saml2Namespaces.Saml2P + "Scoping"))
-                .Elements().Single();
-
-            subject.Should().BeEquivalentTo(expected);
-        }
-
-        [TestMethod]
-        public void Saml2AuthenticationRequest_ToXElement_Scoping_NullInput_EmptyScoping()
-        {
-            var subject = new Saml2AuthenticationRequest()
-            {
-                AssertionConsumerServiceUrl = new Uri("http://destination.example.com"),
-                Scoping = new Saml2Scoping(null, -1, null)
+                Scoping = new Saml2Scoping()
             }.ToXElement().Element(Saml2Namespaces.Saml2P + "Scoping");
 
             var expected = new XElement(Saml2Namespaces.Saml2P + "root",
@@ -355,7 +335,7 @@ namespace Kentor.AuthServices.Tests.Saml2P
         }
 
         [TestMethod]
-        public void Saml2AuthenticateRequest_ToXElement_OmitsRequestedAuthnContext_OnNullClassRef()
+        public void Saml2AuthenticationRequest_ToXElement_OmitsRequestedAuthnContext_OnNullClassRef()
         {
             var subject = new Saml2AuthenticationRequest()
             {

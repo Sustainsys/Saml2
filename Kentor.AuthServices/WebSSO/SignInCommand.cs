@@ -1,15 +1,10 @@
 ﻿using Kentor.AuthServices.Configuration;
 using System;
 using System.Collections.Generic;
-using System.Collections.Specialized;
 using System.Globalization;
 using System.IdentityModel.Metadata;
 using System.Linq;
 using System.Net;
-using System.Text;
-using System.Threading.Tasks;
-using System.Web;
-using Kentor.AuthServices.Saml2P;
 
 namespace Kentor.AuthServices.WebSso
 {
