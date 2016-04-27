@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.IdentityModel.Metadata;
 using System.Linq;
 using System.Xml.Linq;
 
@@ -62,15 +63,15 @@ namespace Kentor.AuthServices.Saml2P
         /// requester is acting. Used to communicate the chain of requesters
         /// when proxying occurs.
         /// </summary>
-        public IList<Saml2RequesterId> RequesterIds { get; } = new List<Saml2RequesterId>();
+        public IList<EntityId> RequesterIds { get; } = new List<EntityId>();
 
         /// <summary>
-        /// Fluent config helper that adds a <see cref="Saml2RequesterId"/> to the 
+        /// Fluent config helper that adds a requester id to the
         /// <see cref="Saml2Scoping"/>
         /// </summary>
         /// <param name="requesterId">Requester Id to add</param>
         /// <returns>this</returns>
-        public Saml2Scoping With(Saml2RequesterId requesterId)
+        public Saml2Scoping WithRequesterId(EntityId requesterId)
         {
             RequesterIds.Add(requesterId);
             return this;
@@ -97,7 +98,8 @@ namespace Kentor.AuthServices.Saml2P
 
             if (RequesterIds != null && RequesterIds.Count > 0)
             {
-                scopingElement.Add(RequesterIds.Select(x => x.ToXElement()));
+                scopingElement.Add(RequesterIds.Select(x =>
+                new XElement(Saml2Namespaces.Saml2P + "RequesterID", x.Id)));
             }
 
             return scopingElement;

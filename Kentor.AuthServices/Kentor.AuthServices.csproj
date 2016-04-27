@@ -80,7 +80,6 @@
     <Compile Include="Saml2P\Saml2ArtifactResolve.cs" />
     <Compile Include="Saml2P\Saml2ArtifactResponse.cs" />
     <Compile Include="Saml2P\Saml2NameIdPolicy.cs" />
-    <Compile Include="Saml2P\Saml2RequesterId.cs" />
     <Compile Include="Saml2P\Saml2Scoping.cs" />
     <Compile Include="Saml2P\Saml2SoapBinding.cs" />
     <Compile Include="Saml2P\Saml2StatusResponseType.cs" />

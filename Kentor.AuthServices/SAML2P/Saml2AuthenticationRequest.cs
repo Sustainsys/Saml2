@@ -71,7 +71,7 @@ namespace Kentor.AuthServices.Saml2P
             if (NameIdPolicy != null &&
                 (NameIdPolicy.AllowCreate.HasValue || NameIdPolicy.Format != NameIdFormat.NotConfigured))
             {
-                if(NameIdPolicy.AllowCreate.HasValue && NameIdPolicy.Format == NameIdFormat.Transient)
+                if (NameIdPolicy.AllowCreate.HasValue && NameIdPolicy.Format == NameIdFormat.Transient)
                 {
                     throw new InvalidOperationException("When NameIdPolicy/Format is set to Transient, it is not permitted to specify AllowCreate. Change Format or leave AllowCreate as null.");
                 }
@@ -167,7 +167,7 @@ namespace Kentor.AuthServices.Saml2P
                     allowCreate = bool.Parse(allowCreateStr);
                 }
 
-                NameIdPolicy =  new Saml2NameIdPolicy(allowCreate, nameIdFormat);
+                NameIdPolicy = new Saml2NameIdPolicy(allowCreate, nameIdFormat);
             }
         }
 
@@ -182,9 +182,9 @@ namespace Kentor.AuthServices.Saml2P
         public int? AttributeConsumingServiceIndex { get; set; }
 
         /// <summary> 
-         /// Scoping for request 
-         /// </summary> 
-         public Saml2Scoping Scoping { get; set; }
+        /// Scoping for request 
+        /// </summary> 
+        public Saml2Scoping Scoping { get; set; }
 
         /// <summary>
         /// NameId policy.
