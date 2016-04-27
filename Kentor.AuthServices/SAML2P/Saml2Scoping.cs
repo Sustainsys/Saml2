@@ -89,18 +89,15 @@ namespace Kentor.AuthServices.Saml2P
                 scopingElement.AddAttributeIfNotNullOrEmpty("ProxyCount", ProxyCount);
             }
 
-            if (IdPEntries != null && IdPEntries.Count > 0)
+            if (IdPEntries.Count > 0)
             {
                 scopingElement.Add(new XElement(
                     Saml2Namespaces.Saml2P + "IDPList",
                     IdPEntries.Select(x => x.ToXElement())));
             }
 
-            if (RequesterIds != null && RequesterIds.Count > 0)
-            {
-                scopingElement.Add(RequesterIds.Select(x =>
-                new XElement(Saml2Namespaces.Saml2P + "RequesterID", x.Id)));
-            }
+            scopingElement.Add(RequesterIds.Select(x =>
+            new XElement(Saml2Namespaces.Saml2P + "RequesterID", x.Id)));
 
             return scopingElement;
         }
