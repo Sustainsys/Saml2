@@ -57,7 +57,7 @@
     <Compile Include="ClaimsExtensions.cs" />
     <Compile Include="Configuration\ArtifactResolutionServiceCollection.cs" />
     <Compile Include="Configuration\ArtifactResolutionServiceElement.cs" />
-    <Compile Include="Configuration\KentorAuthServicesNotifications .cs" />
+    <Compile Include="Configuration\KentorAuthServicesNotifications.cs" />
     <Compile Include="Configuration\Compatibility.cs" />
     <Compile Include="Configuration\CompatibilityElement.cs" />
     <Compile Include="Saml2NameIdExtensions.cs" />
