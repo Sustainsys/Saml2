@@ -107,7 +107,6 @@ namespace Kentor.AuthServices.WebSso
             var authnRequest = idp.CreateAuthenticateRequest(urls);
 
             options.Notifications.AuthenticationRequestCreated(authnRequest, idp, relayData);
-            //idp.ScopingProvider?.GetScoping(authnRequest, relayData);
 
             var commandResult = idp.Bind(authnRequest);
 

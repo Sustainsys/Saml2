@@ -18,6 +18,10 @@ namespace Kentor.AuthServices.Owin
     /// </summary>
     public class KentorAuthServicesAuthenticationOptions : AuthenticationOptions, IOptions
     {
+        /// <summary>
+        /// Set of callbacks that can be used as extension points for various
+        /// events.
+        /// </summary>
         public KentorAuthServicesNotifications Notifications { get; }
 
         /// <summary>
