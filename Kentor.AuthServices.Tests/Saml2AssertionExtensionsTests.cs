@@ -73,6 +73,35 @@ namespace Kentor.AuthServices.Tests
         }
 
         [TestMethod]
+        public void Saml2AssertionExtensions_ToXElement_Subject_ConfirmationData()
+        {
+            var subjectName = "JohnDoe";
+            var destination = new Uri("http://sp.example.com");
+            var inResponseTo = new Saml2Id("abc123");
+
+            var assertion = new Saml2Assertion(
+                new Saml2NameIdentifier("http://idp.example.com"))
+            {
+                Subject = new Saml2Subject(new Saml2NameIdentifier(subjectName))
+            };
+
+            var subject = assertion.ToXElement(destination, inResponseTo);
+
+            subject.Element(Saml2Namespaces.Saml2 + "Subject").
+                Element(Saml2Namespaces.Saml2 + "NameID").Value.Should().Be(subjectName);
+
+            subject.Element(Saml2Namespaces.Saml2 + "Subject").
+                Element(Saml2Namespaces.Saml2 + "SubjectConfirmation").
+                Element(Saml2Namespaces.Saml2 + "SubjectConfirmationData").
+                Attribute("Recipient").Value.Should().Be(destination.AbsoluteUri);
+
+            subject.Element(Saml2Namespaces.Saml2 + "Subject").
+                Element(Saml2Namespaces.Saml2 + "SubjectConfirmation").
+                Element(Saml2Namespaces.Saml2 + "SubjectConfirmationData").
+                Attribute("InResponseTo").Value.Should().Be(inResponseTo.Value);
+        }
+
+        [TestMethod]
         public void Saml2AssertionExtensions_ToXElement_Conditions()
         {
             var assertion = new Saml2Assertion(
