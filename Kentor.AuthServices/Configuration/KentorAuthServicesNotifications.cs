@@ -3,6 +3,7 @@ using Kentor.AuthServices.Saml2P;
 using System;
 using Kentor.AuthServices.WebSso;
 using System.IdentityModel.Metadata;
+using Kentor.AuthServices.Metadata;
 
 namespace Kentor.AuthServices.Configuration
 {
@@ -24,6 +25,8 @@ namespace Kentor.AuthServices.Configuration
             MessageUnbound = ur => { };
             AcsCommandResultCreated = (cr, r) => { };
             LogoutCommandResultCreated = cr => { };
+            MetadataCreated = (md, urls) => { };
+            MetadataCommandResultCreated = cr => { };
         }
 
         /// <summary>
@@ -32,7 +35,7 @@ namespace Kentor.AuthServices.Configuration
         /// modified.
         /// </summary>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
-        public Action<Saml2AuthenticationRequest, IdentityProvider, IDictionary<string, string>> 
+        public Action<Saml2AuthenticationRequest, IdentityProvider, IDictionary<string, string>>
             AuthenticationRequestCreated { get; set; }
 
         /// <summary>
@@ -86,6 +89,23 @@ namespace Kentor.AuthServices.Configuration
         /// outgoing response.
         /// </summary>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1726:UsePreferredTerms", MessageId = "Logout")]
-        public Action<CommandResult> LogoutCommandResultCreated { get; internal set; }
+        public Action<CommandResult> LogoutCommandResultCreated { get; set; }
+
+        /// <summary>
+        /// Notification called when metadata has been created, but before
+        /// signing. At this point the contents of the metadata can be
+        /// altered before presented.
+        /// </summary>
+        public Action<ExtendedEntityDescriptor, AuthServicesUrls>
+            MetadataCreated { get; set; }
+
+        /// <summary>
+        /// Notification called when the Metadata command has produced a
+        /// <see cref="CommandResult"/>, but before anything has been applied
+        /// to the outgoing response. Set the <see cref="CommandResult.HandledResult"/>
+        /// flag to suppress the library's built in apply functionality to the
+        /// outgoing response.
+        /// </summary>
+        public Action<CommandResult> MetadataCommandResultCreated {get;set;}
     }
 }

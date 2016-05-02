@@ -12,6 +12,7 @@ using System.Globalization;
 using Kentor.AuthServices.WebSso;
 using Kentor.AuthServices.Tests.Helpers;
 using System.Security.Cryptography.Xml;
+using Kentor.AuthServices.Metadata;
 
 namespace Kentor.AuthServices.Tests.WebSso
 {
@@ -155,6 +156,34 @@ namespace Kentor.AuthServices.Tests.WebSso
             Action a = () => new MetadataCommand().Run(request, options);
 
             a.ShouldThrow<MetadataSerializationException>().And.Message.Should().StartWith("ID3203");
+        }
+
+        [TestMethod]
+        public void MetadataCommand_Run_CallsNotifications()
+        {
+            var request = new HttpRequestData("GET", new Uri("http://localhost/AuthServices"));
+
+            var options = StubFactory.CreateOptions();
+
+            options.Notifications.MetadataCreated = (md, urls) =>
+            {
+                md.CacheDuration = new TimeSpan(0, 0, 17);
+                urls.ApplicationUrl.Host.Should().Be("localhost");
+            };
+
+            CommandResult notifiedCommandResult = null;
+            options.Notifications.MetadataCommandResultCreated = cr =>
+            {
+                notifiedCommandResult = cr;
+            };
+
+            var subject = new MetadataCommand();
+            var actualCommandResult = subject.Run(request, options);
+            actualCommandResult.Should().BeSameAs(notifiedCommandResult);
+
+            var parsedResult = XElement.Parse(actualCommandResult.Content);
+            parsedResult.Attribute("cacheDuration").Value
+                .Should().Be("PT17S");
         }
     }
 }
