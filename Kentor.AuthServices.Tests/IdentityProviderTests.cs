@@ -412,6 +412,17 @@ namespace Kentor.AuthServices.Tests
         }
 
         [TestMethod]
+        public void IdentityProvider_Ctor_DisableOutboundLogoutRequest()
+        {
+            var config = CreateConfig();
+            config.DisableOutboundLogoutRequests = true;
+
+            var subject = new IdentityProvider(config, StubFactory.CreateSPOptions());
+
+            subject.DisableOutboundLogoutRequests.Should().BeTrue();
+        }
+
+        [TestMethod]
         public void IdentityProvider_MetadataValidUntil_NullOnConfigured()
         {
             string idpUri = "http://idp.example.com/";

@@ -49,6 +49,7 @@ namespace Kentor.AuthServices
             metadataLocation = string.IsNullOrEmpty(config.MetadataLocation)
                 ? null : config.MetadataLocation;
             WantAuthnRequestsSigned = config.WantAuthnRequestsSigned;
+            DisableOutboundLogoutRequests = config.DisableOutboundLogoutRequests;
 
             var certificate = config.SigningCertificate.LoadCertificate();
             if (certificate != null)
