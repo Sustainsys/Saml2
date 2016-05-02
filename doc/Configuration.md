@@ -465,6 +465,7 @@ A list of identity providers known to the service provider.
 * [`wantAuthnRequestsSigned`](#wantauthnrequestssigned-attribute)
 * [`loadMetadata`](#loadmetadata-attribute)
 * [`metadataLocation`](#metadataLocation-attribute-idp)
+* [`disableOutboundLogoutRequests`](disableOutboundLogoutRequests-attribute)
 
 ####Elements
 * [`<signingCertificate>`](#signingcertificate-element)
@@ -533,6 +534,14 @@ for an idp, AuthServices normally interprets the EntityId as a url to the metada
 If the metadata is located somewhere else it can be specified with this
 configuration parameter. The location can be a URL, an absolute path to a local
 file or an app relative path (e.g. ~/App_Data/IdpMetadata.xml)
+
+####`disableOutboundLogoutRequests` Attribute
+*Optional attribute of the [`add`](#add-identityprovider-element) element*
+
+Disable outbound logout requests to this idp, even though AuthServices is
+configured for single logout and the idp supports it. This setting might be
+usable when adding SLO to an existing setup, to ensure that everyone is ready
+for SLO before activating.
 
 ###`<signingCertificate>` Element
 *Optional child element of the [`<identityProvider>`](#identityprovider-element) element*

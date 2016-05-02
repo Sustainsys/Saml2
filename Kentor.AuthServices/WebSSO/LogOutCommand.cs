@@ -124,7 +124,8 @@ namespace Kentor.AuthServices.WebSso
                 && options.IdentityProviders.TryGetValue(new EntityId(idpEntityId), out idp)
                 && ClaimsPrincipal.Current.FindFirst(AuthServicesClaimTypes.SessionIndex) != null
                 && idp.SingleLogoutServiceUrl != null
-                && options.SPOptions.SigningServiceCertificate != null)
+                && options.SPOptions.SigningServiceCertificate != null
+                && !idp.DisableOutboundLogoutRequests)
             {
                 var logoutRequest = idp.CreateLogoutRequest();
 
