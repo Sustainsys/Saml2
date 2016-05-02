@@ -60,7 +60,7 @@ namespace Kentor.AuthServices.Saml2P
 
             idpEntryElement.AddAttributeIfNotNullOrEmpty("ProviderID", ProviderId.Id);
             idpEntryElement.AddAttributeIfNotNullOrEmpty("Name", Name);
-            idpEntryElement.AddAttributeIfNotNullOrEmpty("Loc", Location.OriginalString);
+            idpEntryElement.AddAttributeIfNotNullOrEmpty("Loc", Location?.OriginalString);
 
             return idpEntryElement;
         }
