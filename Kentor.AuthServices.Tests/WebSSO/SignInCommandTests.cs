@@ -208,17 +208,17 @@ namespace Kentor.AuthServices.Tests.WebSso
                     authnRequestCreatedCalled = true;
                 };
 
-            var commandResultCreatedCalled = false;
+            CommandResult notifiedCommandResult = null;
             options.Notifications.SignInCommandResultCreated = (cr, r) =>
                 {
-                    r.Should().BeSameAs(relayData);
-                    commandResultCreatedCalled = true;
+                    notifiedCommandResult = cr;
+                    r.Should().BeSameAs(relayData);                    
                 };
 
-            SignInCommand.Run(idp.EntityId, null, request, options, relayData);
+            SignInCommand.Run(idp.EntityId, null, request, options, relayData)
+                .Should().BeSameAs(notifiedCommandResult);
 
             authnRequestCreatedCalled.Should().BeTrue("the AuthenticationRequestCreated notification should have been called");
-            commandResultCreatedCalled.Should().BeTrue("the SignInCommandResultCreated notification should have been called.");
             selectedIdpCalled.Should().BeTrue("the SelectIdentityProvider notification should have been called.");
         }
 
@@ -260,16 +260,14 @@ namespace Kentor.AuthServices.Tests.WebSso
             var request = new HttpRequestData("GET",
                 new Uri("http://sp.example.com"));
 
-            var commandResultCreatedCalled = false;
+            CommandResult notifiedCommandResult = null;
             options.Notifications.SignInCommandResultCreated = (cr, r) =>
             {
-                cr.Location.Host.Should().Be(options.SPOptions.DiscoveryServiceUrl.Host);
-                commandResultCreatedCalled = true;
+                notifiedCommandResult = cr;
             };
 
-            SignInCommand.Run(null, null, request, options, null);
-
-            commandResultCreatedCalled.Should().BeTrue("the SignInCommandResultCreated notification should be called when redirection to DS");
+            SignInCommand.Run(null, null, request, options, null)
+                .Should().BeSameAs(notifiedCommandResult);
         }
     }
 }

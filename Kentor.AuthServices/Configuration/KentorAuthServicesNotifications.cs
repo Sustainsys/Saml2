@@ -21,6 +21,8 @@ namespace Kentor.AuthServices.Configuration
             SignInCommandResultCreated = (cr, r) => { };
             SelectIdentityProvider = (ei, r) => null;
             GetBinding = Saml2Binding.Get;
+            MessageUnbound = ur => { };
+            AcsCommandResultCreated = (cr, r) => { };
         }
 
         /// <summary>
@@ -36,7 +38,7 @@ namespace Kentor.AuthServices.Configuration
         /// Notification called when the SignIn command has produced a
         /// <see cref="CommandResult"/>, but before anything has been applied
         /// to the outgoing response. Set the <see cref="CommandResult.HandledResult"/>
-        /// flag to suppress the libraries built in apply functionality to the
+        /// flag to suppress the library's built in apply functionality to the
         /// outgoing response.
         /// </summary>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
@@ -59,5 +61,20 @@ namespace Kentor.AuthServices.Configuration
         /// default is to use <see cref="Saml2Binding.Get(HttpRequestData)"/>
         /// </summary>
         public Func<HttpRequestData, Saml2Binding> GetBinding { get; set; }
+
+        /// <summary>
+        /// Notification called when the ACS command has extracted data from
+        /// request (by using <see cref="Saml2Binding.Unbind(HttpRequestData, IOptions)"/>)
+        /// </summary>
+        public Action<UnbindResult> MessageUnbound { get; set; }
+
+        /// <summary>
+        /// Notification called when the ACS command has produced a
+        /// <see cref="CommandResult"/>, but before anything has been applied
+        /// to the outgoing response. Set the <see cref="CommandResult.HandledResult"/>
+        /// flag to suppress the library's built in apply functionality to the
+        /// outgoing response.
+        /// </summary>
+        public Action<CommandResult, Saml2Response> AcsCommandResultCreated { get; set; }
     }
 }
