@@ -2,6 +2,7 @@
 using Kentor.AuthServices.Saml2P;
 using System;
 using Kentor.AuthServices.WebSso;
+using System.IdentityModel.Metadata;
 
 namespace Kentor.AuthServices.Configuration
 {
@@ -18,6 +19,7 @@ namespace Kentor.AuthServices.Configuration
         {
             AuthenticationRequestCreated = (request, provider, dictionary) => { };
             SignInCommandResultCreated = (cr, r) => { };
+            SelectIdentityProvider = (ei, r) => null;
         }
 
         /// <summary>
@@ -39,5 +41,16 @@ namespace Kentor.AuthServices.Configuration
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
         public Action<CommandResult, IDictionary<string, string>>
             SignInCommandResultCreated { get; set; }
+
+        /// <summary>
+        /// Notification called when the SignIn command is about to select
+        /// what Idp to use for the request. The EntityId is the one supplied
+        /// (e.g. through query string). To select a specicic IdentityProvider
+        /// simply return it. Return <code>null</code> to fall back to built
+        /// in selection.
+        /// </summary>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
+        public Func<EntityId, IDictionary<string, string>, IdentityProvider>
+            SelectIdentityProvider { get; set; }
     }
 }

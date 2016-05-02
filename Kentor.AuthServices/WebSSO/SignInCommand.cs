@@ -65,40 +65,42 @@ namespace Kentor.AuthServices.WebSso
             IOptions options,
             IDictionary<string, string> relayData)
         {
-            if(options == null)
+            if (options == null)
             {
                 throw new ArgumentNullException(nameof(options));
             }
 
             var urls = new AuthServicesUrls(request, options.SPOptions);
 
-            IdentityProvider idp;
-            if (idpEntityId == null || idpEntityId.Id == null)
+            IdentityProvider idp = options.Notifications.SelectIdentityProvider(idpEntityId, relayData);
+            if (idp == null)
             {
-                if (options.SPOptions.DiscoveryServiceUrl != null)
+                if (idpEntityId?.Id == null)
                 {
-                    return RedirectToDiscoveryService(returnPath, options.SPOptions, urls);
+                    if (options.SPOptions.DiscoveryServiceUrl != null)
+                    {
+                        var commandResult = RedirectToDiscoveryService(returnPath, options.SPOptions, urls);
+                        options.Notifications.SignInCommandResultCreated(commandResult, relayData);
+                        return commandResult;
+                    }
+                    idp = options.IdentityProviders.Default;
                 }
-
-                idp = options.IdentityProviders.Default;
-            }
-            else
-            {
-                if (!options.IdentityProviders.TryGetValue(idpEntityId, out idp))
+                else
                 {
-                    throw new InvalidOperationException("Unknown idp");
+                    if (!options.IdentityProviders.TryGetValue(idpEntityId, out idp))
+                    {
+                        throw new InvalidOperationException("Unknown idp");
+                    }
                 }
             }
 
-            Uri returnUrl = null;
-            if (!string.IsNullOrEmpty(returnPath))
-            {
-                var appRelativePath = request.Url.AbsolutePath.Substring(
-                    request.ApplicationUrl.AbsolutePath.Length).TrimStart('/');
+            Uri returnUrl = ExpandReturnUrl(returnPath, request, urls);
 
-                returnUrl = new Uri(new Uri(urls.ApplicationUrl, appRelativePath), returnPath);
-            }
+            return InitiateLoginToIdp(options, relayData, urls, idp, returnUrl);
+        }
 
+        private static CommandResult InitiateLoginToIdp(IOptions options, IDictionary<string, string> relayData, AuthServicesUrls urls, IdentityProvider idp, Uri returnUrl)
+        {
             var authnRequest = idp.CreateAuthenticateRequest(urls);
 
             options.Notifications.AuthenticationRequestCreated(authnRequest, idp, relayData);
@@ -112,6 +114,20 @@ namespace Kentor.AuthServices.WebSso
             options.Notifications.SignInCommandResultCreated(commandResult, relayData);
 
             return commandResult;
+        }
+
+        private static Uri ExpandReturnUrl(string returnPath, HttpRequestData request, AuthServicesUrls urls)
+        {
+            Uri returnUrl = null;
+            if (!string.IsNullOrEmpty(returnPath))
+            {
+                var appRelativePath = request.Url.AbsolutePath.Substring(
+                    request.ApplicationUrl.AbsolutePath.Length).TrimStart('/');
+
+                returnUrl = new Uri(new Uri(urls.ApplicationUrl, appRelativePath), returnPath);
+            }
+
+            return returnUrl;
         }
 
         private static CommandResult RedirectToDiscoveryService(

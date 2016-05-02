@@ -189,9 +189,18 @@ namespace Kentor.AuthServices.Tests.WebSso
             var request = new HttpRequestData("GET",
                 new Uri("http://sp.example.com"));
 
+            var selectedIdpCalled = false;
+            options.Notifications.SelectIdentityProvider =
+                (ei, r) =>
+            {
+                ei.Should().BeSameAs(idp.EntityId);
+                r.Should().BeSameAs(relayData);
+                selectedIdpCalled = true;
+                return null;
+            };
+            
             var authnRequestCreatedCalled = false;
-            options.Notifications.AuthenticationRequestCreated = 
-                (a, i, r) => 
+            options.Notifications.AuthenticationRequestCreated = (a, i, r) => 
                 {
                     a.Should().NotBeNull();
                     i.Should().BeSameAs(idp);
@@ -200,8 +209,7 @@ namespace Kentor.AuthServices.Tests.WebSso
                 };
 
             var commandResultCreatedCalled = false;
-            options.Notifications.SignInCommandResultCreated =
-                (cr, r) =>
+            options.Notifications.SignInCommandResultCreated = (cr, r) =>
                 {
                     r.Should().BeSameAs(relayData);
                     commandResultCreatedCalled = true;
@@ -209,8 +217,59 @@ namespace Kentor.AuthServices.Tests.WebSso
 
             SignInCommand.Run(idp.EntityId, null, request, options, relayData);
 
-            authnRequestCreatedCalled.Should().BeTrue("The AuthenticationRequestCreated notification should have been called");
-            commandResultCreatedCalled.Should().BeTrue("The CommandResultCreated notification should have been called.");
+            authnRequestCreatedCalled.Should().BeTrue("the AuthenticationRequestCreated notification should have been called");
+            commandResultCreatedCalled.Should().BeTrue("the SignInCommandResultCreated notification should have been called.");
+            selectedIdpCalled.Should().BeTrue("the SelectIdentityProvider notification should have been called.");
+        }
+
+        [TestMethod]
+        public void SignInCommand_Run_Uses_IdpFromNotification()
+        {
+            var options = StubFactory.CreateOptions();
+            var idp = options.IdentityProviders.Default;
+            var entityId = new EntityId("urn:invalid");
+            options.SPOptions.DiscoveryServiceUrl.Should().NotBeNull("this test assumes a non-null DS url");
+
+            var request = new HttpRequestData("GET",
+                new Uri("http://sp.example.com"));
+
+            options.Notifications.SelectIdentityProvider = (ei, r) =>
+            {
+                return idp;
+            };
+
+            var authnRequestCreatedCalled = false;
+            options.Notifications.AuthenticationRequestCreated = (a, i, r) =>
+            {
+                authnRequestCreatedCalled = true;
+                i.Should().BeSameAs(idp, "the idp from the SelectIdentityProvider notification should override the default behaviour");
+            };
+
+            SignInCommand.Run(entityId, null, request, options, null);
+
+            authnRequestCreatedCalled.Should().BeTrue("an AuthenticateRequest should have been created instead of going to the Discovery Service.");
+        }
+
+        [TestMethod]
+        public void SignInCommand_Run_Calls_CommandResultCreated_OnRedirectToDS()
+        {
+            var options = StubFactory.CreateOptions();
+            var idp = options.IdentityProviders.Default;
+            options.SPOptions.DiscoveryServiceUrl.Should().NotBeNull("this test assumes a non-null DS url");
+
+            var request = new HttpRequestData("GET",
+                new Uri("http://sp.example.com"));
+
+            var commandResultCreatedCalled = false;
+            options.Notifications.SignInCommandResultCreated = (cr, r) =>
+            {
+                cr.Location.Host.Should().Be(options.SPOptions.DiscoveryServiceUrl.Host);
+                commandResultCreatedCalled = true;
+            };
+
+            SignInCommand.Run(null, null, request, options, null);
+
+            commandResultCreatedCalled.Should().BeTrue("the SignInCommandResultCreated notification should be called when redirection to DS");
         }
     }
 }
