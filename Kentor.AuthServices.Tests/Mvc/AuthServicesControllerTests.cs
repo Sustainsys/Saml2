@@ -303,5 +303,12 @@ namespace Kentor.AuthServices.Tests.Mvc
             subject.Invoking(s => s.Logout())
                 .ShouldThrow<NotSupportedException>();
         }
+
+        [TestMethod]
+        public void AuthServicesController_Options_LoadedIfNotSet()
+        {
+            AuthServicesController.Options = null;
+            AuthServicesController.Options.Should().NotBeNull();
+        }
     }
 }
