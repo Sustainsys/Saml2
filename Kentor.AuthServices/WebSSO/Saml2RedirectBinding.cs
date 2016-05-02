@@ -21,7 +21,7 @@ using System.Xml.Linq;
 
 namespace Kentor.AuthServices.WebSso
 {
-    sealed class Saml2RedirectBinding : Saml2Binding
+    class Saml2RedirectBinding : Saml2Binding
     {
         public override CommandResult Bind(ISaml2Message message)
         {

@@ -28,7 +28,7 @@ namespace Kentor.AuthServices.WebSso
                 throw new ArgumentNullException(nameof(options));
             }
 
-            var binding = Saml2Binding.Get(request);
+            var binding = options.Notifications.GetBinding(request);
 
             if (binding != null)
             {

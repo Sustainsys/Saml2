@@ -438,5 +438,25 @@ namespace Kentor.AuthServices.Tests.WebSso
             new AcsCommand().Invoking(a => a.Run(r, options))
                 .ShouldThrow<ConfigurationErrorsException>().WithMessage(AcsCommand.SpInitiatedMissingReturnUrl);
         }
+
+        class StubBinding : Saml2RedirectBinding
+        {
+            public override UnbindResult Unbind(HttpRequestData request, IOptions options)
+            {
+                throw new NotImplementedException("StubBinding.UnBind was called");
+            }
+        }
+
+        [TestMethod]
+        public void AcsCommand_Run_UsesBindingFromNotification()
+        {
+            var options = StubFactory.CreateOptions();
+            options.Notifications.GetBinding = r => new StubBinding();
+
+            var subject = new AcsCommand();
+            subject.Invoking(s => s.Run(new HttpRequestData("GET", new Uri("http://host")), options))
+                .ShouldThrow<NotImplementedException>()
+                .WithMessage("StubBinding.*");
+        }
     }
 }

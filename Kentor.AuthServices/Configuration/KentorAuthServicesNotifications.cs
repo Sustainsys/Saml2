@@ -20,6 +20,7 @@ namespace Kentor.AuthServices.Configuration
             AuthenticationRequestCreated = (request, provider, dictionary) => { };
             SignInCommandResultCreated = (cr, r) => { };
             SelectIdentityProvider = (ei, r) => null;
+            GetBinding = Saml2Binding.Get;
         }
 
         /// <summary>
@@ -52,5 +53,11 @@ namespace Kentor.AuthServices.Configuration
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
         public Func<EntityId, IDictionary<string, string>, IdentityProvider>
             SelectIdentityProvider { get; set; }
+
+        /// <summary>
+        /// Get a binding that can unbind data from the supplied request. The
+        /// default is to use <see cref="Saml2Binding.Get(HttpRequestData)"/>
+        /// </summary>
+        public Func<HttpRequestData, Saml2Binding> GetBinding { get; set; }
     }
 }
