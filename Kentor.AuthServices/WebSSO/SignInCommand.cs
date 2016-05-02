@@ -109,6 +109,8 @@ namespace Kentor.AuthServices.WebSso
                 idp.EntityId, returnUrl, authnRequest.Id, relayData);
             commandResult.SetCookieName = "Kentor." + authnRequest.RelayState;
 
+            options.Notifications.SignInCommandResultCreated(commandResult, relayData);
+
             return commandResult;
         }
 

@@ -6,6 +6,7 @@ using System.Web;
 using Kentor.AuthServices.Configuration;
 using System.IdentityModel.Metadata;
 using Kentor.AuthServices.WebSso;
+using System.Collections.Generic;
 
 namespace Kentor.AuthServices.Tests.WebSso
 {
@@ -178,23 +179,38 @@ namespace Kentor.AuthServices.Tests.WebSso
         }
 
         [TestMethod]
-        public void SignInCommand_Run_Calls_AuthenticationRequestCreated_Notification()
+        public void SignInCommand_Run_Calls_Notifications()
         {
             var options = StubFactory.CreateOptions();
             var idp = options.IdentityProviders.Default;
+            var relayData = new Dictionary<string, string>();
             options.SPOptions.DiscoveryServiceUrl = null;
            
             var request = new HttpRequestData("GET",
                 new Uri("http://sp.example.com"));
 
-            var called = false;
-
+            var authnRequestCreatedCalled = false;
             options.Notifications.AuthenticationRequestCreated = 
-                (a, b, c) => { called = true; };
+                (a, i, r) => 
+                {
+                    a.Should().NotBeNull();
+                    i.Should().BeSameAs(idp);
+                    r.Should().BeSameAs(relayData);
+                    authnRequestCreatedCalled = true;
+                };
 
-            new SignInCommand().Run(request, options);
+            var commandResultCreatedCalled = false;
+            options.Notifications.SignInCommandResultCreated =
+                (cr, r) =>
+                {
+                    r.Should().BeSameAs(relayData);
+                    commandResultCreatedCalled = true;
+                };
 
-            called.Should().BeTrue("The notification should have been called");
+            SignInCommand.Run(idp.EntityId, null, request, options, relayData);
+
+            authnRequestCreatedCalled.Should().BeTrue("The AuthenticationRequestCreated notification should have been called");
+            commandResultCreatedCalled.Should().BeTrue("The CommandResultCreated notification should have been called.");
         }
     }
 }
