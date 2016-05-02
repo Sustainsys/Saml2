@@ -82,8 +82,16 @@ namespace Kentor.AuthServices.Tests.WebSSO
             options.SPOptions.ServiceCertificates.Add(SignedXmlHelper.TestCert);
             options.SPOptions.PublicOrigin = new Uri("https://sp.example.com/");
 
+            CommandResult notifiedCommandResult = null;
+            options.Notifications.LogoutCommandResultCreated = cr =>
+            {
+                notifiedCommandResult = cr;
+            };
+
             var actual = CommandFactory.GetCommand(CommandFactory.LogoutCommandName)
                 .Run(request, options);
+
+            actual.Should().BeSameAs(notifiedCommandResult);
 
             var expected = new CommandResult
             {
@@ -192,8 +200,16 @@ namespace Kentor.AuthServices.Tests.WebSSO
             var options = StubFactory.CreateOptions();
             options.SPOptions.PublicOrigin = new Uri("https://sp.example.com/path/");
 
+            CommandResult notifiedCommandResult = null;
+            options.Notifications.LogoutCommandResultCreated = cr =>
+            {
+                notifiedCommandResult = cr;
+            };
+
             var actual = CommandFactory.GetCommand(CommandFactory.LogoutCommandName)
                 .Run(request, options);
+
+            actual.Should().BeSameAs(notifiedCommandResult);
 
             var expected = new CommandResult
             {
@@ -224,6 +240,12 @@ namespace Kentor.AuthServices.Tests.WebSSO
 
             var options = StubFactory.CreateOptions();
             options.SPOptions.ServiceCertificates.Add(SignedXmlHelper.TestCert);
+
+            CommandResult notifiedCommandResult = null;
+            options.Notifications.LogoutCommandResultCreated = cr =>
+            {
+                notifiedCommandResult = cr;
+            };
             
             // We're using unbind to verify the created message and UnBind
             // expects the issuer to be a known Idp for signature validation.
@@ -246,6 +268,7 @@ namespace Kentor.AuthServices.Tests.WebSSO
                 .Should().NotBeNull("LogoutResponse should be signed");
 
             actual.ShouldBeEquivalentTo(expected, opt => opt.Excluding(cr => cr.Location));
+            actual.Should().BeSameAs(notifiedCommandResult);
 
             var actualUnbindResult = Saml2Binding.Get(Saml2BindingType.HttpRedirect)
                 .Unbind(new HttpRequestData("GET", actual.Location), options);
@@ -550,6 +573,20 @@ namespace Kentor.AuthServices.Tests.WebSSO
                 .Invoking(c => c.Run(request, StubFactory.CreateOptions()))
                 .ShouldThrow<InvalidSignatureException>()
                 .WithMessage("There is no Issuer element in the message, so there is no way to know what certificate to use to validate the signature.");
+        }
+
+        [TestMethod]
+        public void LogoutCommand_Run_UsesBindingFromNotification()
+        {
+            var subject = new LogoutCommand();
+            var options = StubFactory.CreateOptions();
+            options.Notifications.GetBinding = r => new StubSaml2Binding();
+
+            var request = new HttpRequestData("GET", new Uri("http://host"));
+
+            subject.Invoking(s => s.Run(request, options))
+                .ShouldThrow<NotImplementedException>()
+                .WithMessage("StubSaml2Binding.*");
         }
     }
 }

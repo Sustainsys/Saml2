@@ -202,6 +202,7 @@
     <Compile Include="MetadataRefreshSchedulerTests.cs" />
     <Compile Include="Internal\XmlHelpersTests.cs" />
     <Compile Include="WebSSO\LogoutCommandTests.cs" />
+    <Compile Include="WebSSO\StubSaml2Binding.cs" />
     <Compile Include="XmlHelpersTests.cs" />
   </ItemGroup>
   <ItemGroup>

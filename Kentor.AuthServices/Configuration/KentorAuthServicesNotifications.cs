@@ -23,6 +23,7 @@ namespace Kentor.AuthServices.Configuration
             GetBinding = Saml2Binding.Get;
             MessageUnbound = ur => { };
             AcsCommandResultCreated = (cr, r) => { };
+            LogoutCommandResultCreated = cr => { };
         }
 
         /// <summary>
@@ -76,5 +77,15 @@ namespace Kentor.AuthServices.Configuration
         /// outgoing response.
         /// </summary>
         public Action<CommandResult, Saml2Response> AcsCommandResultCreated { get; set; }
+
+        /// <summary>
+        /// Notification called when the Logout command has produced a
+        /// <see cref="CommandResult"/>, but before anything has been applied
+        /// to the outgoing response. Set the <see cref="CommandResult.HandledResult"/>
+        /// flag to suppress the library's built in apply functionality to the
+        /// outgoing response.
+        /// </summary>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1726:UsePreferredTerms", MessageId = "Logout")]
+        public Action<CommandResult> LogoutCommandResultCreated { get; internal set; }
     }
 }

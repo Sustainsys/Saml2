@@ -18,6 +18,7 @@ using System.Configuration;
 using Kentor.AuthServices.Exceptions;
 using System.IdentityModel.Metadata;
 using System.IdentityModel.Tokens;
+using Kentor.AuthServices.Tests.WebSSO;
 
 namespace Kentor.AuthServices.Tests.WebSso
 {
@@ -439,24 +440,16 @@ namespace Kentor.AuthServices.Tests.WebSso
                 .ShouldThrow<ConfigurationErrorsException>().WithMessage(AcsCommand.SpInitiatedMissingReturnUrl);
         }
 
-        class StubBinding : Saml2RedirectBinding
-        {
-            public override UnbindResult Unbind(HttpRequestData request, IOptions options)
-            {
-                throw new NotImplementedException("StubBinding.UnBind was called");
-            }
-        }
-
         [TestMethod]
         public void AcsCommand_Run_UsesBindingFromNotification()
         {
             var options = StubFactory.CreateOptions();
-            options.Notifications.GetBinding = r => new StubBinding();
+            options.Notifications.GetBinding = r => new StubSaml2Binding();
 
             var subject = new AcsCommand();
             subject.Invoking(s => s.Run(new HttpRequestData("GET", new Uri("http://host")), options))
                 .ShouldThrow<NotImplementedException>()
-                .WithMessage("StubBinding.*");
+                .WithMessage("StubSaml2Binding.*");
         }
 
         [TestMethod]
