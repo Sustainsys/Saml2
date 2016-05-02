@@ -503,5 +503,14 @@ namespace Kentor.AuthServices
                 SigningCertificate = spOptions.SigningServiceCertificate,
             };
         }
+
+        /// <summary>
+        /// Disable outbound logout requests to this idp, even though
+        /// AuthServices is configured for single logout and the idp supports
+        /// it. This setting might be usable when adding SLO to an existing
+        /// setup, to ensure that everyone is ready for SLO before activating.
+        /// </summary>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1726:UsePreferredTerms", MessageId = "Logout")]
+        public bool DisableOutboundLogoutRequests { get; set; }
     }
 }
