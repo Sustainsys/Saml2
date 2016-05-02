@@ -19,7 +19,7 @@ namespace Kentor.AuthServices.StubIdp.Controllers
             var artifact = request
                 .Element(Saml2Namespaces.SoapEnvelope + "Body")
                 .Element(Saml2Namespaces.Saml2P + "ArtifactResolve")
-                .Element(Saml2Namespaces.Saml2 + "Artifact")
+                .Element(Saml2Namespaces.Saml2P + "Artifact")
                 .Value;
 
             var requestId = request
