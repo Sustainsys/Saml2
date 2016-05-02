@@ -1,14 +1,10 @@
 ﻿using Kentor.AuthServices.Configuration;
 using System;
 using System.Collections.Generic;
-using System.Collections.Specialized;
 using System.Globalization;
 using System.IdentityModel.Metadata;
 using System.Linq;
 using System.Net;
-using System.Text;
-using System.Threading.Tasks;
-using System.Web;
 
 namespace Kentor.AuthServices.WebSso
 {
@@ -104,6 +100,8 @@ namespace Kentor.AuthServices.WebSso
             }
 
             var authnRequest = idp.CreateAuthenticateRequest(urls);
+
+            options.Notifications.AuthenticationRequestCreated(authnRequest, idp, relayData);
 
             var commandResult = idp.Bind(authnRequest);
 

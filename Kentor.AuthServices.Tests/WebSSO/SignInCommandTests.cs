@@ -1,22 +1,11 @@
 ﻿using System;
-using System.Configuration;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using FluentAssertions;
 using System.Net;
 using System.Web;
-using System.Linq;
-using NSubstitute;
-using System.IO.Compression;
-using System.IO;
-using System.Xml.Linq;
-using Kentor.AuthServices.Tests.Helpers;
 using Kentor.AuthServices.Configuration;
 using System.IdentityModel.Metadata;
-using System.Xml;
-using System.Xml.Schema;
-using Kentor.AuthServices.Internal;
 using Kentor.AuthServices.WebSso;
-using System.IdentityModel.Tokens;
 
 namespace Kentor.AuthServices.Tests.WebSso
 {
@@ -186,6 +175,26 @@ namespace Kentor.AuthServices.Tests.WebSso
 
             a.ShouldThrow<ArgumentNullException>()
                 .And.ParamName.Should().Be("options");
+        }
+
+        [TestMethod]
+        public void SignInCommand_Run_Calls_AuthenticationRequestCreated_Notification()
+        {
+            var options = StubFactory.CreateOptions();
+            var idp = options.IdentityProviders.Default;
+            options.SPOptions.DiscoveryServiceUrl = null;
+           
+            var request = new HttpRequestData("GET",
+                new Uri("http://sp.example.com"));
+
+            var called = false;
+
+            options.Notifications.AuthenticationRequestCreated = 
+                (a, b, c) => { called = true; };
+
+            new SignInCommand().Run(request, options);
+
+            called.Should().BeTrue("The notification should have been called");
         }
     }
 }

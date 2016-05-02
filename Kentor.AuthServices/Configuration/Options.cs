@@ -17,6 +17,12 @@ namespace Kentor.AuthServices.Configuration
     public class Options : IOptions
     {
         /// <summary>
+        /// Set of callbacks that can be used as extension points for various
+        /// events.
+        /// </summary>
+        public KentorAuthServicesNotifications Notifications { get; set; }
+
+        /// <summary>
         /// Reads the options from the current config file.
         /// </summary>
         /// <returns>Options object.</returns>
@@ -48,6 +54,7 @@ namespace Kentor.AuthServices.Configuration
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "sp")]
         public Options(SPOptions spOptions)
         {
+            Notifications = new KentorAuthServicesNotifications();
             SPOptions = spOptions;
         }
 

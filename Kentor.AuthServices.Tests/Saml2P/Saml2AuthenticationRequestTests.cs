@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using FluentAssertions;
 using System.Xml.Linq;
@@ -6,6 +7,7 @@ using System.IdentityModel.Tokens;
 using System.Xml;
 using Kentor.AuthServices.Saml2P;
 using System.Linq;
+using System.IdentityModel.Metadata;
 
 namespace Kentor.AuthServices.Tests.Saml2P
 {
@@ -234,6 +236,83 @@ namespace Kentor.AuthServices.Tests.Saml2P
         }
 
         [TestMethod]
+        public void Saml2AuthenticationRequest_ToXElement_AddsScoping()
+        {
+            var requesterId = "urn://requesterid/";
+            var location = "http://location";
+            var name = "name";
+            var providerId = "urn:providerId";
+
+            var subject = new Saml2AuthenticationRequest()
+            {
+                AssertionConsumerServiceUrl = new Uri("http://destination.example.com"),
+                Scoping = new Saml2Scoping()
+                {
+                    ProxyCount = 5
+                }
+                .With(new Saml2IdpEntry(new EntityId(providerId))
+                {
+                    Name = name,
+                    Location = new Uri(location)
+                })
+                .WithRequesterId(new EntityId(requesterId))
+            };
+
+            var actual = subject.ToXElement().Element(Saml2Namespaces.Saml2P + "Scoping");
+
+            var expected = new XElement(Saml2Namespaces.Saml2P + "Scoping",
+                    new XAttribute("ProxyCount", "5"),
+                    new XElement(Saml2Namespaces.Saml2P + "IDPList",
+                        new XElement(Saml2Namespaces.Saml2P + "IDPEntry",
+                            new XAttribute("ProviderID", providerId),
+                            new XAttribute("Name", name),
+                            new XAttribute("Loc", location))),
+                    new XElement(Saml2Namespaces.Saml2P + "RequesterID", requesterId.ToString()));
+
+            actual.Should().BeEquivalentTo(expected);
+        }
+
+        [TestMethod]
+        public void Saml2AuthenticationRequest_ToXElement_Scoping_ZeroProxyCount_AttributeAdded()
+        {
+            var subject = new Saml2AuthenticationRequest()
+            {
+                AssertionConsumerServiceUrl = new Uri("http://destination.example.com"),
+                Scoping = new Saml2Scoping()
+                {
+                    ProxyCount = 0
+                }
+            };
+            
+            var actual = subject.ToXElement().Element(Saml2Namespaces.Saml2P + "Scoping");
+
+            var expected = new XElement(Saml2Namespaces.Saml2P + "root",
+                new XAttribute(XNamespace.Xmlns + "saml2p", Saml2Namespaces.Saml2P),
+                new XElement(Saml2Namespaces.Saml2P + "Scoping",
+                 new XAttribute("ProxyCount", "0")))
+                .Elements().Single();
+
+            actual.Should().BeEquivalentTo(expected);
+        }
+
+        [TestMethod]
+        public void Saml2AuthenticationRequest_ToXElement_Scoping_NullContents_EmptyScoping()
+        {
+            var subject = new Saml2AuthenticationRequest()
+            {
+                AssertionConsumerServiceUrl = new Uri("http://destination.example.com"),
+                Scoping = new Saml2Scoping()
+            }.ToXElement().Element(Saml2Namespaces.Saml2P + "Scoping");
+
+            var expected = new XElement(Saml2Namespaces.Saml2P + "root",
+                new XAttribute(XNamespace.Xmlns + "saml2p", Saml2Namespaces.Saml2P),
+                new XElement(Saml2Namespaces.Saml2P + "Scoping"))
+                .Elements().Single();
+
+            subject.Should().BeEquivalentTo(expected);
+        }
+
+        [TestMethod]
         public void Saml2AuthenticationRequest_ToXElement_AddsRequestedAuthnContext_ComparisonTypeMaximum()
         {
             Saml2AuthenticationRequest_ToXElement_AddsRequestedAuthnContextUtil(AuthnContextComparisonType.Maximum, "maximum");
@@ -258,7 +337,7 @@ namespace Kentor.AuthServices.Tests.Saml2P
         }
 
         [TestMethod]
-        public void Saml2AuthenticateRequest_ToXElement_OmitsRequestedAuthnContext_OnNullClassRef()
+        public void Saml2AuthenticationRequest_ToXElement_OmitsRequestedAuthnContext_OnNullClassRef()
         {
             var subject = new Saml2AuthenticationRequest()
             {

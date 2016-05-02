@@ -57,12 +57,14 @@
     <Compile Include="ClaimsExtensions.cs" />
     <Compile Include="Configuration\ArtifactResolutionServiceCollection.cs" />
     <Compile Include="Configuration\ArtifactResolutionServiceElement.cs" />
+    <Compile Include="Configuration\KentorAuthServicesNotifications.cs" />
     <Compile Include="Configuration\Compatibility.cs" />
     <Compile Include="Configuration\CompatibilityElement.cs" />
     <Compile Include="Saml2NameIdExtensions.cs" />
     <Compile Include="Configuration\ServiceCertificateCollection.cs" />
     <Compile Include="Saml2P\AuthnContextComparisonType.cs" />
     <Compile Include="Configuration\NameIdPolicyElement.cs" />
+    <Compile Include="Saml2P\Saml2IdpEntry.cs" />
     <Compile Include="Saml2P\Saml2LogoutResponse.cs" />
     <Compile Include="Saml2P\Saml2RequestedAuthnContext.cs" />
     <Compile Include="Configuration\RequestedAuthnContextElement.cs" />
@@ -78,6 +80,7 @@
     <Compile Include="Saml2P\Saml2ArtifactResolve.cs" />
     <Compile Include="Saml2P\Saml2ArtifactResponse.cs" />
     <Compile Include="Saml2P\Saml2NameIdPolicy.cs" />
+    <Compile Include="Saml2P\Saml2Scoping.cs" />
     <Compile Include="Saml2P\Saml2SoapBinding.cs" />
     <Compile Include="Saml2P\Saml2StatusResponseType.cs" />
     <Compile Include="ServiceCertificate.cs" />

@@ -19,6 +19,12 @@ namespace Kentor.AuthServices.Owin
     public class KentorAuthServicesAuthenticationOptions : AuthenticationOptions, IOptions
     {
         /// <summary>
+        /// Set of callbacks that can be used as extension points for various
+        /// events.
+        /// </summary>
+        public KentorAuthServicesNotifications Notifications { get; }
+
+        /// <summary>
         /// Constructor
         /// <param name="loadConfiguration">Should the options be inited by loading app/web.config?</param>
         /// </summary>
@@ -29,6 +35,7 @@ namespace Kentor.AuthServices.Owin
         {
             AuthenticationMode = AuthenticationMode.Active;
             Description.Caption = Constants.DefaultCaption;
+            Notifications = new KentorAuthServicesNotifications();
 
             if (loadConfiguration)
             {
