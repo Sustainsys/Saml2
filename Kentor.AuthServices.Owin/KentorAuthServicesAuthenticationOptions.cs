@@ -22,7 +22,7 @@ namespace Kentor.AuthServices.Owin
         /// Set of callbacks that can be used as extension points for various
         /// events.
         /// </summary>
-        public KentorAuthServicesNotifications Notifications { get; }
+        public KentorAuthServicesNotifications Notifications { get; set; }
 
         /// <summary>
         /// Constructor

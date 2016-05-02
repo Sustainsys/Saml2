@@ -125,20 +125,12 @@ namespace Kentor.AuthServices.Tests.WebSso
                 .WithInnerException<KeyNotFoundException>();
         }
 
-        class ConcreteSaml2Binding : Saml2Binding
-        {
-            protected internal override bool CanUnbind(HttpRequestData request)
-            {
-                throw new NotImplementedException();
-            }
-        }
-
         [TestMethod]
         public void Saml2Binding_Bind_IsNotImplemented()
         {
             var message = new Saml2MessageImplementation();
 
-            Action a = () => new ConcreteSaml2Binding().Bind(message);
+            Action a = () => new StubSaml2Binding().Bind(message);
 
             a.ShouldThrow<NotImplementedException>();
         }
@@ -146,8 +138,16 @@ namespace Kentor.AuthServices.Tests.WebSso
         [TestMethod]
         public void Saml2Binding_Bind_ThrowsNotImplementedException()
         {
-            new ConcreteSaml2Binding().Invoking(b => b.Bind(null))
+            new StubSaml2Binding().Invoking(b => b.Bind(null))
                 .ShouldThrow<NotImplementedException>();
+        }
+
+        class ConcreteSaml2Binding : Saml2Binding
+        {
+            protected internal override bool CanUnbind(HttpRequestData request)
+            {
+                throw new NotImplementedException();
+            }
         }
 
         [TestMethod]

@@ -65,7 +65,8 @@ namespace Kentor.AuthServices.WebSso
                 throw new ArgumentNullException(nameof(options));
             }
 
-            var binding = Saml2Binding.Get(request);
+            CommandResult commandResult;
+            var binding = options.Notifications.GetBinding(request);
             if (binding != null)
             {
                 var unbindResult = binding.Unbind(request, options);
@@ -73,15 +74,21 @@ namespace Kentor.AuthServices.WebSso
                 switch (unbindResult.Data.LocalName)
                 {
                     case "LogoutRequest":
-                        return HandleRequest(unbindResult, options);
+                        commandResult = HandleRequest(unbindResult, options);
+                        break;
                     case "LogoutResponse":
-                        return HandleResponse(unbindResult, request);
+                        commandResult = HandleResponse(unbindResult, request);
+                        break;
                     default:
                         throw new NotImplementedException();
                 }
             }
-
-            return InitiateLogout(request, returnPath, options);
+            else
+            {
+                commandResult = InitiateLogout(request, returnPath, options);
+            }
+            options.Notifications.LogoutCommandResultCreated(commandResult);
+            return commandResult;
         }
 
         private static void VerifyMessageIsSigned(UnbindResult unbindResult, IOptions options)

@@ -28,7 +28,7 @@ namespace Kentor.AuthServices.WebSso
                 throw new ArgumentNullException(nameof(options));
             }
 
-            var binding = Saml2Binding.Get(request);
+            var binding = options.Notifications.GetBinding(request);
 
             if (binding != null)
             {
@@ -36,6 +36,8 @@ namespace Kentor.AuthServices.WebSso
                 try
                 {
                     unbindResult = binding.Unbind(request, options);
+                    options.Notifications.MessageUnbound(unbindResult);
+
                     var samlResponse = new Saml2Response(unbindResult.Data, request.StoredRequestState?.MessageId);
 
                     var result = ProcessResponse(options, samlResponse, request.StoredRequestState);
@@ -43,6 +45,7 @@ namespace Kentor.AuthServices.WebSso
                     {
                         result.ClearCookieName = "Kentor." + unbindResult.RelayState;
                     }
+                    options.Notifications.AcsCommandResultCreated(result, samlResponse);
                     return result;
                 }
                 catch (FormatException ex)

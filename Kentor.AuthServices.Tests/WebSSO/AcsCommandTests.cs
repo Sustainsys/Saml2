@@ -18,6 +18,7 @@ using System.Configuration;
 using Kentor.AuthServices.Exceptions;
 using System.IdentityModel.Metadata;
 using System.IdentityModel.Tokens;
+using Kentor.AuthServices.Tests.WebSSO;
 
 namespace Kentor.AuthServices.Tests.WebSso
 {
@@ -437,6 +438,79 @@ namespace Kentor.AuthServices.Tests.WebSso
 
             new AcsCommand().Invoking(a => a.Run(r, options))
                 .ShouldThrow<ConfigurationErrorsException>().WithMessage(AcsCommand.SpInitiatedMissingReturnUrl);
+        }
+
+        [TestMethod]
+        public void AcsCommand_Run_UsesBindingFromNotification()
+        {
+            var options = StubFactory.CreateOptions();
+            options.Notifications.GetBinding = r => new StubSaml2Binding();
+
+            var subject = new AcsCommand();
+            subject.Invoking(s => s.Run(new HttpRequestData("GET", new Uri("http://host")), options))
+                .ShouldThrow<NotImplementedException>()
+                .WithMessage("StubSaml2Binding.*");
+        }
+
+        [TestMethod]
+        public void AcsCommand_Run_CallsNotifications()
+        {
+            var messageId = MethodBase.GetCurrentMethod().Name;
+            var response =
+             @"<saml2p:Response xmlns:saml2p=""urn:oasis:names:tc:SAML:2.0:protocol""
+                xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
+                ID = """ + messageId + @""" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z"">
+                <saml2:Issuer>
+                    https://idp.example.com
+                </saml2:Issuer>
+                <saml2p:Status>
+                    <saml2p:StatusCode Value=""urn:oasis:names:tc:SAML:2.0:status:Success"" />
+                </saml2p:Status>
+                <saml2:Assertion
+                Version=""2.0"" ID=""" + messageId + @"_Assertion""
+                IssueInstant=""2013-09-25T00:00:00Z"">
+                    <saml2:Issuer>https://idp.example.com</saml2:Issuer>
+                    <saml2:Subject>
+                        <saml2:NameID>SomeUser</saml2:NameID>
+                        <saml2:SubjectConfirmation Method=""urn:oasis:names:tc:SAML:2.0:cm:bearer"" />
+                    </saml2:Subject>
+                    <saml2:Conditions NotOnOrAfter=""2100-01-01T00:00:00Z"" />
+                </saml2:Assertion>
+            </saml2p:Response>";
+
+            var formValue = Convert.ToBase64String(Encoding.UTF8.GetBytes(
+                SignedXmlHelper.SignXml(response)));
+
+            var requestData = new HttpRequestData(
+                "POST",
+                new Uri("http://localhost"),
+                "/ModulePath",
+                new KeyValuePair<string, string[]>[]
+                {
+                    new KeyValuePair<string, string[]>("SAMLResponse", new string[] { formValue })
+                },
+                null);
+
+            var options = StubFactory.CreateOptions();
+
+            var responseUnboundCalled = false;
+            options.Notifications.MessageUnbound = ur =>
+            {
+                ur.Should().NotBeNull();
+                responseUnboundCalled = true;
+            };
+
+            CommandResult notifiedCommandResult = null;
+            options.Notifications.AcsCommandResultCreated = (cr, r) =>
+            {
+                notifiedCommandResult = cr;
+                r.Id.Value.Should().Be(messageId);
+            };
+
+            new AcsCommand().Run(requestData, options)
+                .Should().BeSameAs(notifiedCommandResult);
+
+            responseUnboundCalled.Should().BeTrue("the ResponseUnbound notification should have been called.");
         }
     }
 }

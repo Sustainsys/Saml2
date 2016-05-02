@@ -28,7 +28,10 @@ namespace Kentor.AuthServices.Owin
             var result = CommandFactory.GetCommand(CommandFactory.AcsCommandName)
                 .Run(await Context.ToHttpRequestData(Options.DataProtector.Unprotect), Options);
 
-            result.Apply(Context, Options.DataProtector);
+            if (!result.HandledResult)
+            {
+                result.Apply(Context, Options.DataProtector);
+            }
 
             var identities = result.Principal.Identities.Select(i =>
                 new ClaimsIdentity(i, null, Options.SignInAsAuthenticationType, i.NameClaimType, i.RoleClaimType));
@@ -70,7 +73,10 @@ namespace Kentor.AuthServices.Owin
                         Options,
                         challenge.Properties.Dictionary);
 
-                    result.Apply(Context, Options.DataProtector);
+                    if (!result.HandledResult)
+                    {
+                        result.Apply(Context, Options.DataProtector);
+                    }
                 }
             }
         }
@@ -105,8 +111,12 @@ namespace Kentor.AuthServices.Owin
                     }
                 }
 
-                LogoutCommand.Run(request, redirectUrl, Options)
-                    .Apply(Context, Options.DataProtector);
+                var result = LogoutCommand.Run(request, redirectUrl, Options);
+
+                if (!result.HandledResult)
+                {
+                    result.Apply(Context, Options.DataProtector);
+                }
             }
 
             await AugmentAuthenticationGrantWithLogoutClaims(Context);
@@ -127,9 +137,13 @@ namespace Kentor.AuthServices.Owin
                     return true;
                 }
 
-                CommandFactory.GetCommand(remainingPath.Value)
-                    .Run(await Context.ToHttpRequestData(Options.DataProtector.Unprotect), Options)
-                    .Apply(Context, Options.DataProtector);
+                var result = CommandFactory.GetCommand(remainingPath.Value)
+                    .Run(await Context.ToHttpRequestData(Options.DataProtector.Unprotect), Options);
+
+                if (!result.HandledResult)
+                {
+                    result.Apply(Context, Options.DataProtector);
+                }
 
                 return true;
             }

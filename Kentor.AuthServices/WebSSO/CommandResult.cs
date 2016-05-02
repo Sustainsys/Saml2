@@ -88,5 +88,12 @@ namespace Kentor.AuthServices.WebSso
             HttpStatusCode = HttpStatusCode.OK;
             Cacheability = Cacheability.NoCache;
         }
+
+        /// <summary>
+        /// Can be set by a notification callback to indicate that the
+        /// <see cref="CommandResult"/> has been handled and should not
+        /// be applied by the AuthServices library to the response.
+        /// </summary>
+        public bool HandledResult { get; set; }
     }
 }
