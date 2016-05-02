@@ -9,7 +9,7 @@ namespace Kentor.AuthServices.Tests.Configuration
     public class FederationCollectionTests
     {
         [TestMethod]
-        public void FedrationCollection_RegisterFedartions_NullCheck()
+        public void FederationCollection_RegisterFederations_NullCheck()
         {
             var subject = new FederationCollection();
 
