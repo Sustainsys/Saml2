@@ -82,11 +82,4 @@ nuget pack -build -outputdirectory nuget Kentor.AuthServices.Mvc\Kentor.AuthServ
 nuget pack -build -outputdirectory nuget Kentor.AuthServices.Owin\Kentor.AuthServices.Owin.csproj
 nuget pack -build -outputdirectory nuget Kentor.AuthServices.HttpModule\Kentor.AuthServices.HttpModule.csproj
 
-$version = Increment-PatchNumber
-Set-Version($version)
-
-echo "Version updated to $version for development, committing..."
-
-git commit -a -m "Updated version number to $version for development."
-
 popd
