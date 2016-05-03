@@ -101,7 +101,7 @@
     <Compile Include="Metadata\RequestedAttribute.cs" />
     <Compile Include="Metadata\ExtendedEntitiesDescriptor.cs" />
     <Compile Include="ICachedMetadata.cs" />
-    <Compile Include="MetadataRefreshScheduler.cs" />
+    <Compile Include="Metadata\MetadataRefreshScheduler.cs" />
     <Compile Include="Metadata\ServiceProviderSingleSignOnDescriptorExtensions.cs" />
     <Compile Include="Metadata\ExtendedEntityDescriptor.cs" />
     <Compile Include="Exceptions\AuthServicesException.cs" />
@@ -174,7 +174,6 @@
       <link>CustomDictionary.xml</link>
     </CodeAnalysisDictionary>
   </ItemGroup>
-  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

@@ -2,8 +2,9 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using FluentAssertions;
 using NSubstitute;
+using Kentor.AuthServices.Metadata;
 
-namespace Kentor.AuthServices.Tests
+namespace Kentor.AuthServices.Tests.Metadata
 {
     [TestClass]
     public class MetadataRefreshSchedulerTests
