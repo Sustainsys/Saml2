@@ -70,16 +70,21 @@ namespace Kentor.AuthServices.Tests
             var destination = new Uri("http://sp.example.com");
             var inResponseTo = new Saml2Id("abc123");
             var notOnOrAfter = DateTime.UtcNow.AddMinutes(2);
+            var notBefore = DateTime.UtcNow;
+
             var saml2SubjectConfirmationData = new Saml2SubjectConfirmationData
             {
                 NotOnOrAfter = notOnOrAfter,
                 InResponseTo = inResponseTo,
-                Recipient = destination
+                Recipient = destination,
+                NotBefore = notBefore
             };
 
             var confirmation = saml2SubjectConfirmationData.ToXElement();
 
             confirmation.Attribute("NotOnOrAfter").Value.Should().Be(notOnOrAfter.ToSaml2DateTimeString());
+
+            confirmation.Attribute("NotBefore").Value.Should().Be(notBefore.ToSaml2DateTimeString());
 
             confirmation.Attribute("Recipient").Value.Should().Be(destination.OriginalString);
 
