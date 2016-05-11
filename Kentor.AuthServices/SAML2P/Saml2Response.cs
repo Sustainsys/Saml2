@@ -296,8 +296,7 @@ namespace Kentor.AuthServices.Saml2P
             foreach (var ci in claimsIdentities)
             {
                 responseElement.AppendChild(xml.ReadNode(
-                    ci.ToSaml2Assertion(Issuer, audience)
-                        .ToXElement(DestinationUrl, InResponseTo).CreateReader()));
+                    ci.ToSaml2Assertion(Issuer, audience, InResponseTo, DestinationUrl).ToXElement().CreateReader()));
             }
 
             xmlElement = xml.DocumentElement;

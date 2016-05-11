@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IdentityModel.Tokens;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Xml.Linq;
 
 namespace Kentor.AuthServices
@@ -20,41 +16,87 @@ namespace Kentor.AuthServices
         /// <returns>XElement</returns>
         public static XElement ToXElement(this Saml2Subject subject)
         {
-            return ToXElement(subject, null, null);
-        }
-
-        /// <summary>
-        /// Writes out the subject as an XElement.
-        /// </summary>
-        /// <param name="subject">The subject to create xml for.</param>
-        /// <param name="destination">The destination to create xml for.</param>
-        /// <param name="inResponseTo">The request ID.</param>
-        /// <returns>XElement</returns>
-        public static XElement ToXElement(this Saml2Subject subject, Uri destination, Saml2Id inResponseTo)
-        {
             if (subject == null)
             {
                 throw new ArgumentNullException(nameof(subject));
             }
 
-            var confirmationData = new XElement(Saml2Namespaces.Saml2 + "SubjectConfirmationData",
-                        new XAttribute("NotOnOrAfter",
-                            DateTime.UtcNow.AddMinutes(2).ToSaml2DateTimeString()));
-            if (destination != null)
+            var element = new XElement(Saml2Namespaces.Saml2 + "Subject",
+                subject.NameId.ToXElement());
+
+            if (subject.SubjectConfirmations != null)
             {
-                confirmationData.SetAttributeValue("Recipient", destination.AbsoluteUri);
-            }
-            if (inResponseTo != null)
-            {
-                confirmationData.SetAttributeValue("InResponseTo", inResponseTo);
+                foreach (var subjectConfirmation in subject.SubjectConfirmations)
+                {
+                    element.Add(subjectConfirmation.ToXElement());
+                }
             }
 
-            return new XElement(Saml2Namespaces.Saml2 + "Subject",
-                subject.NameId.ToXElement(),
-                new XElement(Saml2Namespaces.Saml2 + "SubjectConfirmation",
-                    new XAttribute("Method", "urn:oasis:names:tc:SAML:2.0:cm:bearer"),
-                    confirmationData)
-                );
+            return element;
+        }
+
+        /// <summary>
+        /// Writes out the subject confirmation as an XElement.
+        /// </summary>
+        /// <param name="subjectConfirmation"></param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentNullException"></exception>
+        public static XElement ToXElement(this Saml2SubjectConfirmation subjectConfirmation)
+        {
+            if (subjectConfirmation == null)
+            {
+                throw new ArgumentNullException(nameof(subjectConfirmation));
+            }
+
+            var element = new XElement(Saml2Namespaces.Saml2 + "SubjectConfirmation",
+                new XAttribute("Method", subjectConfirmation.Method.OriginalString));
+
+            if (subjectConfirmation.SubjectConfirmationData != null)
+            {
+                element.Add(subjectConfirmation.SubjectConfirmationData.ToXElement());
+            }
+
+            return element;
+        }
+
+        /// <summary>
+        /// Writes out the subject confirmation data as an XElement.
+        /// </summary>
+        /// <param name="subjectConfirmationData"></param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentNullException"></exception>
+        public static XElement ToXElement(this Saml2SubjectConfirmationData subjectConfirmationData)
+        {
+            if (subjectConfirmationData == null)
+            {
+                throw new ArgumentNullException(nameof(subjectConfirmationData));
+            }
+
+            var element = new XElement(Saml2Namespaces.Saml2 + "SubjectConfirmationData");
+
+            if (subjectConfirmationData.NotOnOrAfter.HasValue)
+            {
+                element.SetAttributeValue("NotOnOrAfter", 
+                    subjectConfirmationData.NotOnOrAfter.Value.ToSaml2DateTimeString());
+            }
+
+            if (subjectConfirmationData.InResponseTo != null)
+            {
+                element.SetAttributeValue("InResponseTo", subjectConfirmationData.InResponseTo.Value);
+            }
+
+            if (subjectConfirmationData.Recipient != null)
+            {
+                element.SetAttributeValue("Recipient", subjectConfirmationData.Recipient.OriginalString);
+            }
+
+            if (subjectConfirmationData.NotBefore.HasValue)
+            {
+                element.SetAttributeValue("NotBefore",
+                    subjectConfirmationData.NotBefore.Value.ToSaml2DateTimeString());
+            }
+
+            return element;
         }
     }
 }

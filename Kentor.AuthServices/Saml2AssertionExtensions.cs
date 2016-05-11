@@ -19,18 +19,6 @@ namespace Kentor.AuthServices
         /// <returns>XElement</returns>
         public static XElement ToXElement(this Saml2Assertion assertion)
         {
-            return ToXElement(assertion, null, null);
-        }
-
-        /// <summary>
-        /// Writes out the assertion as an XElement.
-        /// </summary>
-        /// <param name="assertion">The assertion to create xml for.</param>
-        /// <param name="destination">The destination to create xml for.</param>
-        /// <param name="inResponseTo">The request ID.</param>
-        /// <returns>XElement</returns>
-        public static XElement ToXElement(this Saml2Assertion assertion, Uri destination, Saml2Id inResponseTo)
-        {
             if(assertion == null)
             {
                 throw new ArgumentNullException(nameof(assertion));
@@ -46,7 +34,7 @@ namespace Kentor.AuthServices
 
             if (assertion.Subject != null)
             {
-                xml.Add(assertion.Subject.ToXElement(destination, inResponseTo));
+                xml.Add(assertion.Subject.ToXElement());
             }
 
             if(assertion.Conditions != null)
