@@ -24,12 +24,17 @@ namespace Kentor.AuthServices
             var element = new XElement(Saml2Namespaces.Saml2 + "Subject",
                 subject.NameId.ToXElement());
 
-            if (subject.SubjectConfirmations != null)
+            foreach (var subjectConfirmation in subject.SubjectConfirmations)
             {
-                foreach (var subjectConfirmation in subject.SubjectConfirmations)
-                {
-                    element.Add(subjectConfirmation.ToXElement());
-                }
+                element.Add(subjectConfirmation.ToXElement());
+            }
+
+            if (subject.SubjectConfirmations.Count == 0)
+            {
+                // Although SubjectConfirmation is optional in the SAML core spec, it is
+                // mandatory in the Web Browser SSO Profile and must have a value of bearer.
+                element.Add(new Saml2SubjectConfirmation(
+                    new Uri("urn:oasis:names:tc:SAML:2.0:cm:bearer")).ToXElement());
             }
 
             return element;
@@ -76,7 +81,7 @@ namespace Kentor.AuthServices
 
             if (subjectConfirmationData.NotOnOrAfter.HasValue)
             {
-                element.SetAttributeValue("NotOnOrAfter", 
+                element.SetAttributeValue("NotOnOrAfter",
                     subjectConfirmationData.NotOnOrAfter.Value.ToSaml2DateTimeString());
             }
 
