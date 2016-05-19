@@ -99,7 +99,16 @@ namespace Kentor.AuthServices.Saml2P
                 secondLevelStatus = xml["Status", Saml2Namespaces.Saml2PName]["StatusCode", Saml2Namespaces.Saml2PName]["StatusCode", Saml2Namespaces.Saml2PName].Attributes["Value"].Value;
             }
 
-            Issuer = new EntityId(xmlElement["Issuer", Saml2Namespaces.Saml2Name].GetTrimmedTextIfNotNull());
+            var maybeIssuer = xmlElement["Issuer", Saml2Namespaces.Saml2Name].GetTrimmedTextIfNotNull();
+            if (maybeIssuer == null)
+            {
+                var topAssertion = xmlElement["Assertion", Saml2Namespaces.Saml2Name];
+                if (topAssertion != null)
+                {
+                    maybeIssuer = topAssertion["Issuer", Saml2Namespaces.Saml2Name].GetTrimmedTextIfNotNull();
+                }
+            }
+            Issuer = new EntityId(maybeIssuer);
 
             var destinationUrlString = xmlElement.Attributes["Destination"].GetValueIfNotNull();
 
