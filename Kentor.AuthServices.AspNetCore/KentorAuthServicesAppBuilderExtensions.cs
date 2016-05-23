@@ -6,7 +6,7 @@ namespace Kentor.AuthServices.AspNetCore
 {
     public static class KentorAuthServicesAppBuilderExtensions
     {
-        public static IApplicationBuilder UseCookieAuthentication(this IApplicationBuilder app)
+        public static IApplicationBuilder UseKentorAuthServices(this IApplicationBuilder app)
         {
             if(app == null)
             {
@@ -16,7 +16,7 @@ namespace Kentor.AuthServices.AspNetCore
             return app.UseMiddleware<KentorAuthServicesMiddleware>();
         }
 
-        public static IApplicationBuilder UseCookieAuthentication(this IApplicationBuilder app, KentorAuthServicesOptions options)
+        public static IApplicationBuilder UseKentorAuthServices(this IApplicationBuilder app, KentorAuthServicesOptions options)
         {
             if(app == null)
             {

@@ -12,6 +12,16 @@ using Microsoft.Extensions.Logging;
 using SampleAspNetCoreApplication.Data;
 using SampleAspNetCoreApplication.Models;
 using SampleAspNetCoreApplication.Services;
+using Kentor.AuthServices.AspNetCore;
+using System.IdentityModel.Metadata;
+using Kentor.AuthServices;
+using Kentor.AuthServices.WebSso;
+using System.Security.Cryptography.X509Certificates;
+using Microsoft.AspNetCore.Hosting.Internal;
+using Kentor.AuthServices.Configuration;
+using System.Globalization;
+using Kentor.AuthServices.Metadata;
+using Microsoft.Extensions.PlatformAbstractions;
 
 namespace SampleAspNetCoreApplication
 {
@@ -24,7 +34,7 @@ namespace SampleAspNetCoreApplication
                 .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
                 .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true);
 
-            if (env.IsDevelopment())
+            if(env.IsDevelopment())
             {
                 // For more details on using the user secret store see http://go.microsoft.com/fwlink/?LinkID=532709
                 builder.AddUserSecrets();
@@ -60,7 +70,7 @@ namespace SampleAspNetCoreApplication
             loggerFactory.AddConsole(Configuration.GetSection("Logging"));
             loggerFactory.AddDebug();
 
-            if (env.IsDevelopment())
+            if(env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
                 app.UseDatabaseErrorPage();
@@ -75,6 +85,9 @@ namespace SampleAspNetCoreApplication
 
             app.UseIdentity();
 
+            var options = CreateAuthServicesOptions();
+            app.UseKentorAuthServices(options);
+
             // Add external authentication middleware below. To configure them please see http://go.microsoft.com/fwlink/?LinkID=532715
 
             app.UseMvc(routes =>
@@ -83,6 +96,89 @@ namespace SampleAspNetCoreApplication
                     name: "default",
                     template: "{controller=Home}/{action=Index}/{id?}");
             });
+        }
+
+        private KentorAuthServicesOptions CreateAuthServicesOptions()
+        {
+            var spOptions = CreateSPOptions();
+            var authServicesOptions = new KentorAuthServicesOptions(false)
+            {
+                SPOptions = spOptions
+            };
+
+            var idp = new IdentityProvider(new EntityId("http://stubidp.kentor.se/Metadata"), spOptions)
+            {
+                AllowUnsolicitedAuthnResponse = true,
+                Binding = Saml2BindingType.HttpRedirect,
+                SingleSignOnServiceUrl = new Uri("http://stubidp.kentor.se")
+            };
+
+            idp.SigningKeys.AddConfiguredKey(
+                new X509Certificate2(PlatformServices.Default.Application.ApplicationBasePath + "Kentor.AuthServices.StubIdp.cer"));
+
+            authServicesOptions.IdentityProviders.Add(idp);
+
+            // It's enough to just create the federation and associate it
+            // with the options. The federation will load the metadata and
+            // update the options with any identity providers found.
+            new Federation("http://localhost:52071/Federation", true, authServicesOptions);
+
+            return authServicesOptions;
+        }
+
+        private SPOptions CreateSPOptions()
+        {
+            var swedish = CultureInfo.GetCultureInfo("sv-se");
+
+            var organization = new Organization();
+            organization.Names.Add(new LocalizedName("Kentor", swedish));
+            organization.DisplayNames.Add(new LocalizedName("Kentor IT AB", swedish));
+            organization.Urls.Add(new LocalizedUri(new Uri("http://www.kentor.se"), swedish));
+
+            var spOptions = new SPOptions
+            {
+                EntityId = new EntityId("http://localhost:5000/AuthServices"),
+                ReturnUrl = new Uri("http://localhost:5000/Account/ExternalLoginCallback"),
+                DiscoveryServiceUrl = new Uri("http://localhost:52071/DiscoveryService"),
+                Organization = organization
+            };
+
+            var techContact = new ContactPerson
+            {
+                Type = ContactType.Technical
+            };
+            techContact.EmailAddresses.Add("authservices@example.com");
+            spOptions.Contacts.Add(techContact);
+
+            var supportContact = new ContactPerson
+            {
+                Type = ContactType.Support
+            };
+            supportContact.EmailAddresses.Add("support@example.com");
+            spOptions.Contacts.Add(supportContact);
+
+            var attributeConsumingService = new AttributeConsumingService("AuthServices")
+            {
+                IsDefault = true,
+            };
+
+            attributeConsumingService.RequestedAttributes.Add(
+                new RequestedAttribute("urn:someName")
+                {
+                    FriendlyName = "Some Name",
+                    IsRequired = true,
+                    NameFormat = RequestedAttribute.AttributeNameFormatUri
+                });
+
+            attributeConsumingService.RequestedAttributes.Add(
+                new RequestedAttribute("Minimal"));
+
+            spOptions.AttributeConsumingServices.Add(attributeConsumingService);
+
+            spOptions.ServiceCertificates.Add(new X509Certificate2(
+                AppDomain.CurrentDomain.SetupInformation.ApplicationBase + "Kentor.AuthServices.Tests.pfx"));
+
+            return spOptions;
         }
     }
 }

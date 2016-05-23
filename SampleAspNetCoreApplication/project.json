@@ -33,7 +33,8 @@
     "Microsoft.VisualStudio.Web.CodeGenerators.Mvc": {
       "version": "1.0.0-preview1-final",
       "type": "build"
-    }
+    },
+    "Kentor.AuthServices.AspNetCore": "*"
   },
 
   "tools": {
@@ -71,7 +72,8 @@
 
   "buildOptions": {
     "emitEntryPoint": true,
-    "preserveCompilationContext": true
+    "preserveCompilationContext": true,
+    "copyToOutput": [ "Kentor.AuthServices.Tests.pfx", "Kentor.AuthServices.StubIdp.cer" ]
   },
 
   "publishOptions": {
