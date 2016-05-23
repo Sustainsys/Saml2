@@ -19,7 +19,7 @@ namespace Kentor.AuthServices.AspNetCore
             }
 
             IEnumerable<KeyValuePair<string, string[]>> formData = null;
-            if(context.Request.Body != null)
+            if(context.Request.Body != null && context.Request.Method.ToUpper() == "POST")
             {
                 var formCollection = await context.Request.ReadFormAsync();
                 formData = formCollection.Select(d => new KeyValuePair<string, string[]>(d.Key, d.Value.ToArray()));
@@ -33,7 +33,13 @@ namespace Kentor.AuthServices.AspNetCore
 
             return new HttpRequestData(
                 context.Request.Method,
-                new Uri(context.Request.Host.ToString()), // TODO, correct uri from Request
+                new Uri(string.Concat(
+                        context.Request.Scheme,
+                        "://",
+                        context.Request.Host.ToUriComponent(),
+                        context.Request.PathBase.ToUriComponent(),
+                        context.Request.Path.ToUriComponent(),
+                        context.Request.QueryString.ToUriComponent())),
                 applicationRootPath,
                 formData,
                 context.Request.Cookies,
