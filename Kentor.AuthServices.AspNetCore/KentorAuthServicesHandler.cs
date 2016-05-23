@@ -125,29 +125,34 @@ namespace Kentor.AuthServices.AspNetCore
             await AugmentAuthenticationGrantWithLogoutClaims(Context);
         }
 
-        protected override async Task HandleSignInAsync(SignInContext signInContext)
+        public override async Task<bool> HandleRequestAsync()
         {
-            var authServicesPath = new PathString(Options.SPOptions.ModulePath);
+            var authServicesPath = new PathString( Options.SPOptions.ModulePath );
             PathString remainingPath;
 
-            if(Request.Path.StartsWithSegments(authServicesPath, out remainingPath))
+            if( Request.Path.StartsWithSegments( authServicesPath, out remainingPath ) )
             {
-                if(remainingPath == new PathString("/" + CommandFactory.AcsCommandName))
+                if( remainingPath == new PathString( "/" + CommandFactory.AcsCommandName ) )
                 {
-                    var authProps = new AuthenticationProperties(signInContext.Properties);
                     var authResult = await HandleAuthenticateAsync();
                     var ticket = (MultipleIdentityAuthenticationTicket)authResult.Ticket;
-                    await Context.Authentication.SignInAsync(signInContext.AuthenticationScheme, signInContext.Principal, authProps);
+                    await Context.Authentication.SignInAsync( ticket.AuthenticationScheme, ticket.Principal, ticket.Properties );
+                    // No need to redirect here. Command result is applied in AuthenticateCoreAsync.
+                    return true;
                 }
 
-                var result = CommandFactory.GetCommand(remainingPath.Value)
-                    .Run(await Context.ToHttpRequestData(Options.DataProtector.Unprotect), Options);
+                var result = CommandFactory.GetCommand( remainingPath.Value )
+                    .Run( await Context.ToHttpRequestData( Options.DataProtector.Unprotect ), Options );
 
-                if(!result.HandledResult)
+                if( !result.HandledResult )
                 {
-                    await result.ApplyAsync(Context, Options.DataProtector);
+                    await result.ApplyAsync( Context, Options.DataProtector );
                 }
+
+                return true;
             }
+
+            return false;
         }
 
         private async Task AugmentAuthenticationGrantWithLogoutClaims(HttpContext context)
