@@ -125,7 +125,7 @@ namespace Kentor.AuthServices.AspNetCore
             await AugmentAuthenticationGrantWithLogoutClaims(Context);
         }
 
-        public override async Task<bool> InvokeAsync()
+        protected override async Task HandleSignInAsync(SignInContext signInContext)
         {
             var authServicesPath = new PathString(Options.SPOptions.ModulePath);
             PathString remainingPath;
@@ -134,10 +134,10 @@ namespace Kentor.AuthServices.AspNetCore
             {
                 if(remainingPath == new PathString("/" + CommandFactory.AcsCommandName))
                 {
-                    var ticket = (MultipleIdentityAuthenticationTicket)await AuthenticateAsync();
-                    Context.Authentication.SignInAsync(ticket.Properties, ticket.Identities.ToArray());
-                    // No need to redirect here. Command result is applied in AuthenticateCoreAsync.
-                    return true;
+                    var authProps = new AuthenticationProperties(signInContext.Properties);
+                    var authResult = await HandleAuthenticateAsync();
+                    var ticket = (MultipleIdentityAuthenticationTicket)authResult.Ticket;
+                    await Context.Authentication.SignInAsync(signInContext.AuthenticationScheme, signInContext.Principal, authProps);
                 }
 
                 var result = CommandFactory.GetCommand(remainingPath.Value)
@@ -147,43 +147,39 @@ namespace Kentor.AuthServices.AspNetCore
                 {
                     await result.ApplyAsync(Context, Options.DataProtector);
                 }
-
-                return true;
             }
-
-            return false;
         }
 
         private async Task AugmentAuthenticationGrantWithLogoutClaims(HttpContext context)
         {
-            var grant = context.Authentication.AuthenticationResponseGrant;
-            var externalIdentity = await context.Authentication.AuthenticateAsync(Options.SignInAsAuthenticationType);
-            var sessionIdClaim = externalIdentity?.FindFirst(AuthServicesClaimTypes.SessionIndex);
-            var externalNameIdClaim = externalIdentity?.FindFirst(ClaimTypes.NameIdentifier);
+            //var grant = context.Authentication.AuthenticationResponseGrant;
+            //var externalIdentity = await context.Authentication.AuthenticateAsync(Options.SignInAsAuthenticationType);
+            //var sessionIdClaim = externalIdentity?.FindFirst(AuthServicesClaimTypes.SessionIndex);
+            //var externalNameIdClaim = externalIdentity?.FindFirst(ClaimTypes.NameIdentifier);
 
-            if(grant == null || externalIdentity == null || sessionIdClaim == null || externalNameIdClaim == null)
-            {
-                return;
-            }
+            //if(grant == null || externalIdentity == null || sessionIdClaim == null || externalNameIdClaim == null)
+            //{
+            //    return;
+            //}
 
-            grant.Identity.AddClaim(new Claim(
-                sessionIdClaim.Type,
-                sessionIdClaim.Value,
-                sessionIdClaim.ValueType,
-                sessionIdClaim.Issuer));
+            //grant.Identity.AddClaim(new Claim(
+            //    sessionIdClaim.Type,
+            //    sessionIdClaim.Value,
+            //    sessionIdClaim.ValueType,
+            //    sessionIdClaim.Issuer));
 
-            var logoutNameIdClaim = new Claim(
-                AuthServicesClaimTypes.LogoutNameIdentifier,
-                externalNameIdClaim.Value,
-                externalNameIdClaim.ValueType,
-                externalNameIdClaim.Issuer);
+            //var logoutNameIdClaim = new Claim(
+            //    AuthServicesClaimTypes.LogoutNameIdentifier,
+            //    externalNameIdClaim.Value,
+            //    externalNameIdClaim.ValueType,
+            //    externalNameIdClaim.Issuer);
 
-            foreach(var kv in externalNameIdClaim.Properties)
-            {
-                logoutNameIdClaim.Properties.Add(kv);
-            }
+            //foreach(var kv in externalNameIdClaim.Properties)
+            //{
+            //    logoutNameIdClaim.Properties.Add(kv);
+            //}
 
-            grant.Identity.AddClaim(logoutNameIdClaim);
+            //grant.Identity.AddClaim(logoutNameIdClaim);
         }
     }
 }
