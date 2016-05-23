@@ -127,26 +127,26 @@ namespace Kentor.AuthServices.AspNetCore
 
         public override async Task<bool> HandleRequestAsync()
         {
-            var authServicesPath = new PathString( Options.SPOptions.ModulePath );
+            var authServicesPath = new PathString(Options.SPOptions.ModulePath);
             PathString remainingPath;
 
-            if( Request.Path.StartsWithSegments( authServicesPath, out remainingPath ) )
+            if(Request.Path.StartsWithSegments(authServicesPath, out remainingPath))
             {
-                if( remainingPath == new PathString( "/" + CommandFactory.AcsCommandName ) )
+                if(remainingPath == new PathString("/" + CommandFactory.AcsCommandName))
                 {
                     var authResult = await HandleAuthenticateAsync();
                     var ticket = (MultipleIdentityAuthenticationTicket)authResult.Ticket;
-                    await Context.Authentication.SignInAsync( ticket.AuthenticationScheme, ticket.Principal, ticket.Properties );
+                    await Context.Authentication.SignInAsync(ticket.AuthenticationScheme, ticket.Principal, ticket.Properties);
                     // No need to redirect here. Command result is applied in AuthenticateCoreAsync.
                     return true;
                 }
 
-                var result = CommandFactory.GetCommand( remainingPath.Value )
-                    .Run( await Context.ToHttpRequestData( Options.DataProtector.Unprotect ), Options );
+                var result = CommandFactory.GetCommand(remainingPath.Value)
+                    .Run(await Context.ToHttpRequestData(Options.DataProtector.Unprotect), Options);
 
-                if( !result.HandledResult )
+                if(!result.HandledResult)
                 {
-                    await result.ApplyAsync( Context, Options.DataProtector );
+                    await result.ApplyAsync(Context, Options.DataProtector);
                 }
 
                 return true;
@@ -157,15 +157,15 @@ namespace Kentor.AuthServices.AspNetCore
 
         private async Task AugmentAuthenticationGrantWithLogoutClaims(HttpContext context)
         {
-            //var grant = context.Authentication.AuthenticationResponseGrant;
-            //var externalIdentity = await context.Authentication.AuthenticateAsync(Options.SignInAsAuthenticationType);
-            //var sessionIdClaim = externalIdentity?.FindFirst(AuthServicesClaimTypes.SessionIndex);
-            //var externalNameIdClaim = externalIdentity?.FindFirst(ClaimTypes.NameIdentifier);
+            ClaimsPrincipal grant = null;// context.Authentication.AuthenticationResponseGrant;
+            var externalIdentity = await context.Authentication.AuthenticateAsync(Options.SignInAsAuthenticationType);
+            var sessionIdClaim = externalIdentity?.FindFirst(AuthServicesClaimTypes.SessionIndex);
+            var externalNameIdClaim = externalIdentity?.FindFirst(ClaimTypes.NameIdentifier);
 
-            //if(grant == null || externalIdentity == null || sessionIdClaim == null || externalNameIdClaim == null)
-            //{
-            //    return;
-            //}
+            if(grant == null || externalIdentity == null || sessionIdClaim == null || externalNameIdClaim == null)
+            {
+                return;
+            }
 
             //grant.Identity.AddClaim(new Claim(
             //    sessionIdClaim.Type,
