@@ -17,6 +17,8 @@ namespace Kentor.AuthServices.AspNetCore
 {
     public class KentorAuthServicesHandler : AuthenticationHandler<KentorAuthServicesOptions>
     {
+        private AuthenticateResult _authResult;
+
         protected override async Task<AuthenticateResult> HandleAuthenticateAsync()
         {
             var acsPath = new PathString(Options.SPOptions.ModulePath)
@@ -35,13 +37,13 @@ namespace Kentor.AuthServices.AspNetCore
                 await result.ApplyAsync(Context, Options.DataProtector);
             }
 
-            var identities = result.Principal.Identities.Select(i =>
-                new ClaimsIdentity(i, null, Options.SignInAsAuthenticationType, i.NameClaimType, i.RoleClaimType));
-
             var authProperties = new AuthenticationProperties(result.RelayData);
             authProperties.RedirectUri = result.Location.OriginalString;
+            // TODO: Set this to something else?
+            authProperties.Items["LoginProvider"] = KentorAuthServicesDefaults.DefaultAuthenticationScheme;
 
-            return AuthenticateResult.Success(new MultipleIdentityAuthenticationTicket(result.Principal, authProperties, Options));
+            _authResult = AuthenticateResult.Success(new AuthenticationTicket(result.Principal, authProperties, Options.SignInAsAuthenticationType));
+            return _authResult;
         }
 
         protected override async Task<bool> HandleUnauthorizedAsync(ChallengeContext context)
@@ -134,10 +136,14 @@ namespace Kentor.AuthServices.AspNetCore
             {
                 if(remainingPath == new PathString("/" + CommandFactory.AcsCommandName))
                 {
-                    var authResult = await HandleAuthenticateAsync();
-                    var ticket = (MultipleIdentityAuthenticationTicket)authResult.Ticket;
+                    // TODO?
+
+                    //var auth = new AuthenticateContext(Options.SignInAsAuthenticationType);
+                    //await Context.Authentication.AuthenticateAsync(auth);
+                    //var authProps = new AuthenticationProperties(auth.Properties);
+                    
+                    var ticket = _authResult.Ticket;
                     await Context.Authentication.SignInAsync(ticket.AuthenticationScheme, ticket.Principal, ticket.Properties);
-                    // No need to redirect here. Command result is applied in AuthenticateCoreAsync.
                     return true;
                 }
 

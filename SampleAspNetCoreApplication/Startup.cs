@@ -22,6 +22,8 @@ using Kentor.AuthServices.Configuration;
 using System.Globalization;
 using Kentor.AuthServices.Metadata;
 using Microsoft.Extensions.PlatformAbstractions;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Options;
 
 namespace SampleAspNetCoreApplication
 {
@@ -65,7 +67,7 @@ namespace SampleAspNetCoreApplication
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory, IOptions<IdentityOptions> identityOptions)
         {
             loggerFactory.AddConsole(Configuration.GetSection("Logging"));
             loggerFactory.AddDebug();
@@ -85,7 +87,7 @@ namespace SampleAspNetCoreApplication
 
             app.UseIdentity();
 
-            var options = CreateAuthServicesOptions();
+            var options = CreateAuthServicesOptions(identityOptions.Value);
             app.UseKentorAuthServices(options);
 
             // Add external authentication middleware below. To configure them please see http://go.microsoft.com/fwlink/?LinkID=532715
@@ -98,12 +100,14 @@ namespace SampleAspNetCoreApplication
             });
         }
 
-        private KentorAuthServicesOptions CreateAuthServicesOptions()
+        private KentorAuthServicesOptions CreateAuthServicesOptions(IdentityOptions identityOptions)
         {
+            var options = new IdentityCookieOptions();
             var spOptions = CreateSPOptions();
             var authServicesOptions = new KentorAuthServicesOptions(false)
             {
-                SPOptions = spOptions
+                SPOptions = spOptions,
+                SignInAsAuthenticationType = identityOptions.Cookies.ExternalCookieAuthenticationScheme
             };
 
             var idp = new IdentityProvider(new EntityId("http://stubidp.kentor.se/Metadata"), spOptions)
