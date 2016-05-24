@@ -13,7 +13,7 @@ namespace Kentor.AuthServices.AspNetCore
             ClaimsPrincipal principal,
             AuthenticationProperties properties,
             KentorAuthServicesOptions options) :
-            base(principal, properties, options.AuthenticationScheme)
+            base(principal, properties, options.SignInAsAuthenticationType)
         {
             this.identities = principal.Identities.Select(i =>
                 new ClaimsIdentity(i, null, options.SignInAsAuthenticationType, i.NameClaimType, i.RoleClaimType));
