@@ -9,7 +9,7 @@ namespace Kentor.AuthServices.AspNetCore
 {
     static class HttpContextExtensions
     {
-        public async static Task<HttpRequestData> ToHttpRequestData(
+        public async static Task<HttpRequestData> ToHttpRequestDataAsync(
             this HttpContext context,
             Func<byte[], byte[]> cookieDecryptor)
         {
@@ -31,15 +31,17 @@ namespace Kentor.AuthServices.AspNetCore
                 applicationRootPath = "/";
             }
 
-            return new HttpRequestData(
-                context.Request.Method,
-                new Uri(string.Concat(
+            var url = new Uri(string.Concat(
                         context.Request.Scheme,
                         "://",
                         context.Request.Host.ToUriComponent(),
                         context.Request.PathBase.ToUriComponent(),
                         context.Request.Path.ToUriComponent(),
-                        context.Request.QueryString.ToUriComponent())),
+                        context.Request.QueryString.ToUriComponent()));
+
+            return new HttpRequestData(
+                context.Request.Method,
+                url,
                 applicationRootPath,
                 formData,
                 context.Request.Cookies,
