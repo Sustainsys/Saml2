@@ -4,12 +4,9 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Authentication;
 using Microsoft.AspNetCore.Http.Features.Authentication;
-using Microsoft.Extensions.Logging;
-using Microsoft.Net.Http.Headers;
 using Kentor.AuthServices.WebSso;
 using System.IdentityModel.Metadata;
 
@@ -26,11 +23,16 @@ namespace Kentor.AuthServices.AspNetCore
 
             if(Request.Path != acsPath)
             {
-                return AuthenticateResult.Fail("acsPath.");
+                return AuthenticateResult.Skip();
+            }
+
+            if(_authResult != null)
+            {
+                return _authResult;
             }
 
             var result = CommandFactory.GetCommand(CommandFactory.AcsCommandName)
-                .Run(await Context.ToHttpRequestData(Options.DataProtector.Unprotect), Options);
+                .Run(await Context.ToHttpRequestDataAsync(Options.DataProtector.Unprotect), Options);
 
             if(!result.HandledResult)
             {
@@ -72,7 +74,7 @@ namespace Kentor.AuthServices.AspNetCore
                 var result = SignInCommand.Run(
                     idp,
                     redirectUri,
-                    await Context.ToHttpRequestData(Options.DataProtector.Unprotect),
+                    await Context.ToHttpRequestDataAsync(Options.DataProtector.Unprotect),
                     Options,
                     authProps.Items);
 
@@ -92,7 +94,7 @@ namespace Kentor.AuthServices.AspNetCore
             if(signOutContext != null)
             {
                 var authProps = new AuthenticationProperties(signOutContext.Properties);
-                var request = await Context.ToHttpRequestData(Options.DataProtector.Unprotect);
+                var request = await Context.ToHttpRequestDataAsync(Options.DataProtector.Unprotect);
                 var urls = new AuthServicesUrls(request, Options.SPOptions);
 
                 string redirectUrl = authProps.RedirectUri;
@@ -136,19 +138,18 @@ namespace Kentor.AuthServices.AspNetCore
             {
                 if(remainingPath == new PathString("/" + CommandFactory.AcsCommandName))
                 {
-                    // TODO?
+                    var authResult = await HandleAuthenticateAsync();
+                    if(!authResult.Succeeded)
+                    {
+                        return false;
+                    }
 
-                    //var auth = new AuthenticateContext(Options.SignInAsAuthenticationType);
-                    //await Context.Authentication.AuthenticateAsync(auth);
-                    //var authProps = new AuthenticationProperties(auth.Properties);
-                    
-                    var ticket = _authResult.Ticket;
-                    await Context.Authentication.SignInAsync(ticket.AuthenticationScheme, ticket.Principal, ticket.Properties);
+                    await Context.Authentication.SignInAsync(authResult.Ticket.AuthenticationScheme, authResult.Ticket.Principal, authResult.Ticket.Properties);
                     return true;
                 }
 
                 var result = CommandFactory.GetCommand(remainingPath.Value)
-                    .Run(await Context.ToHttpRequestData(Options.DataProtector.Unprotect), Options);
+                    .Run(await Context.ToHttpRequestDataAsync(Options.DataProtector.Unprotect), Options);
 
                 if(!result.HandledResult)
                 {
