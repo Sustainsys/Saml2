@@ -14,8 +14,6 @@ namespace Kentor.AuthServices.AspNetCore
 {
     public class KentorAuthServicesHandler : AuthenticationHandler<KentorAuthServicesOptions>
     {
-        private AuthenticateResult _authResult;
-
         protected override async Task<AuthenticateResult> HandleAuthenticateAsync()
         {
             var acsPath = new PathString(Options.SPOptions.ModulePath)
@@ -24,11 +22,6 @@ namespace Kentor.AuthServices.AspNetCore
             if(Request.Path != acsPath)
             {
                 return AuthenticateResult.Skip();
-            }
-
-            if(_authResult != null)
-            {
-                return _authResult;
             }
 
             var result = CommandFactory.GetCommand(CommandFactory.AcsCommandName)
@@ -41,11 +34,10 @@ namespace Kentor.AuthServices.AspNetCore
 
             var authProperties = new AuthenticationProperties(result.RelayData);
             authProperties.RedirectUri = result.Location.OriginalString;
-            // TODO: Set this to something else?
-            authProperties.Items["LoginProvider"] = KentorAuthServicesDefaults.DefaultAuthenticationScheme;
+            // TODO: this should be in result.RelayData?
+            authProperties.Items["LoginProvider"] = Options.AuthenticationScheme;
 
-            _authResult = AuthenticateResult.Success(new AuthenticationTicket(result.Principal, authProperties, Options.SignInAsAuthenticationType));
-            return _authResult;
+            return AuthenticateResult.Success(new AuthenticationTicket(result.Principal, authProperties, Options.SignInAsAuthenticationType));
         }
 
         protected override async Task<bool> HandleUnauthorizedAsync(ChallengeContext context)
@@ -138,7 +130,7 @@ namespace Kentor.AuthServices.AspNetCore
             {
                 if(remainingPath == new PathString("/" + CommandFactory.AcsCommandName))
                 {
-                    var authResult = await HandleAuthenticateAsync();
+                    var authResult = await HandleAuthenticateOnceAsync();
                     if(!authResult.Succeeded)
                     {
                         return false;
@@ -164,34 +156,34 @@ namespace Kentor.AuthServices.AspNetCore
 
         private async Task AugmentAuthenticationGrantWithLogoutClaims(HttpContext context)
         {
-            ClaimsPrincipal grant = null;// context.Authentication.AuthenticationResponseGrant;
+            var grantIdentity = await context.Authentication.AuthenticateAsync(Options.AuthenticationScheme);
             var externalIdentity = await context.Authentication.AuthenticateAsync(Options.SignInAsAuthenticationType);
             var sessionIdClaim = externalIdentity?.FindFirst(AuthServicesClaimTypes.SessionIndex);
             var externalNameIdClaim = externalIdentity?.FindFirst(ClaimTypes.NameIdentifier);
 
-            if(grant == null || externalIdentity == null || sessionIdClaim == null || externalNameIdClaim == null)
+            if(grantIdentity == null || externalIdentity == null || sessionIdClaim == null || externalNameIdClaim == null)
             {
                 return;
             }
 
-            //grant.Identity.AddClaim(new Claim(
-            //    sessionIdClaim.Type,
-            //    sessionIdClaim.Value,
-            //    sessionIdClaim.ValueType,
-            //    sessionIdClaim.Issuer));
+            var sessionClaim = new Claim(
+                sessionIdClaim.Type,
+                sessionIdClaim.Value,
+                sessionIdClaim.ValueType,
+                sessionIdClaim.Issuer);
 
-            //var logoutNameIdClaim = new Claim(
-            //    AuthServicesClaimTypes.LogoutNameIdentifier,
-            //    externalNameIdClaim.Value,
-            //    externalNameIdClaim.ValueType,
-            //    externalNameIdClaim.Issuer);
+            var logoutNameIdClaim = new Claim(
+                AuthServicesClaimTypes.LogoutNameIdentifier,
+                externalNameIdClaim.Value,
+                externalNameIdClaim.ValueType,
+                externalNameIdClaim.Issuer);
 
-            //foreach(var kv in externalNameIdClaim.Properties)
-            //{
-            //    logoutNameIdClaim.Properties.Add(kv);
-            //}
+            foreach(var kv in externalNameIdClaim.Properties)
+            {
+                logoutNameIdClaim.Properties.Add(kv);
+            }
 
-            //grant.Identity.AddClaim(logoutNameIdClaim);
+            grantIdentity.AddIdentity(new ClaimsIdentity(grantIdentity.Identity, new List<Claim> { sessionClaim, logoutNameIdClaim }));
         }
     }
 }

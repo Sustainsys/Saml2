@@ -32,7 +32,7 @@ namespace Kentor.AuthServices.AspNetCore
 
             if (commandResult.TerminateLocalSession)
             {
-                await context.Authentication.SignOutAsync(string.Empty); // TODO: correct scheme
+                //await context.Authentication.SignOutAsync(string.Empty); // TODO: correct scheme
             }
 
             ApplyCookies(commandResult, context, dataProtector);

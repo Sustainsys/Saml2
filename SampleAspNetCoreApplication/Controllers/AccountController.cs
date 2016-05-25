@@ -11,6 +11,8 @@ using Microsoft.Extensions.Logging;
 using SampleAspNetCoreApplication.Models;
 using SampleAspNetCoreApplication.Models.AccountViewModels;
 using SampleAspNetCoreApplication.Services;
+using Microsoft.Extensions.Options;
+using Kentor.AuthServices.AspNetCore;
 
 namespace SampleAspNetCoreApplication.Controllers
 {
@@ -22,19 +24,22 @@ namespace SampleAspNetCoreApplication.Controllers
         private readonly IEmailSender _emailSender;
         private readonly ISmsSender _smsSender;
         private readonly ILogger _logger;
+        private readonly KentorAuthServicesOptions _kentorOptions;
 
         public AccountController(
             UserManager<ApplicationUser> userManager,
             SignInManager<ApplicationUser> signInManager,
             IEmailSender emailSender,
             ISmsSender smsSender,
-            ILoggerFactory loggerFactory)
+            ILoggerFactory loggerFactory,
+            IOptions<KentorAuthServicesOptions> kentorOptions)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _emailSender = emailSender;
             _smsSender = smsSender;
             _logger = loggerFactory.CreateLogger<AccountController>();
+            _kentorOptions = kentorOptions.Value;
         }
 
         //
@@ -133,6 +138,10 @@ namespace SampleAspNetCoreApplication.Controllers
         public async Task<IActionResult> LogOff()
         {
             await _signInManager.SignOutAsync();
+
+            // SAML sign out
+            await HttpContext.Authentication.SignOutAsync(_kentorOptions.AuthenticationScheme);
+
             _logger.LogInformation(4, "User logged out.");
             return RedirectToAction(nameof(HomeController.Index), "Home");
         }
