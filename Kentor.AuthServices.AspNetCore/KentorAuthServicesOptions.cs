@@ -20,7 +20,7 @@ namespace Kentor.AuthServices.AspNetCore
         /// Constructor
         /// </summary>
         public KentorAuthServicesOptions()
-            : this(true)
+            : this(false)
         { }
 
         /// <summary>
