@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -40,7 +41,8 @@ namespace Kentor.AuthServices.Owin
                 applicationRootPath,
                 formData,
                 context.Request.Cookies,
-                cookieDecryptor);
+                cookieDecryptor,
+                context.Request.User as ClaimsPrincipal);
         }
     }
 }

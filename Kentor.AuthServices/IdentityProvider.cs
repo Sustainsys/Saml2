@@ -483,8 +483,9 @@ namespace Kentor.AuthServices
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "ServiceCertificates")]
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "ISPOptions")]
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1726:UsePreferredTerms", MessageId = "Logout")]
-        public Saml2LogoutRequest CreateLogoutRequest()
+        public Saml2LogoutRequest CreateLogoutRequest(ClaimsPrincipal user)
         {
+            if (user == null) throw new ArgumentNullException(nameof(user));
             if (spOptions.SigningServiceCertificate == null)
             {
                 throw new InvalidOperationException(string.Format(CultureInfo.InvariantCulture,
@@ -496,11 +497,11 @@ namespace Kentor.AuthServices
             {
                 DestinationUrl = SingleLogoutServiceUrl,
                 Issuer = spOptions.EntityId,
-                NameId = (ClaimsPrincipal.Current.FindFirst(AuthServicesClaimTypes.LogoutNameIdentifier)
-                            ?? ClaimsPrincipal.Current.FindFirst(ClaimTypes.NameIdentifier))
+                NameId = (user.FindFirst(AuthServicesClaimTypes.LogoutNameIdentifier)
+                            ?? user.FindFirst(ClaimTypes.NameIdentifier))
                             .ToSaml2NameIdentifier(),
                 SessionIndex =
-                    ClaimsPrincipal.Current.FindFirst(AuthServicesClaimTypes.SessionIndex).Value,
+                    user.FindFirst(AuthServicesClaimTypes.SessionIndex).Value,
                 SigningCertificate = spOptions.SigningServiceCertificate,
             };
         }

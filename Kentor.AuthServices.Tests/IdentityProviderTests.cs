@@ -852,7 +852,7 @@ namespace Kentor.AuthServices.Tests
             var nameIdClaim = new Claim(ClaimTypes.NameIdentifier, "NameId", null, subject.EntityId.Id);
             nameIdClaim.Properties[ClaimProperties.SamlNameIdentifierFormat] = "urn:nameIdFormat";
 
-            Thread.CurrentPrincipal = new ClaimsPrincipal(new ClaimsIdentity(
+            var user = new ClaimsPrincipal(new ClaimsIdentity(
                 new Claim[]
                 {
                     nameIdClaim,
@@ -864,7 +864,7 @@ namespace Kentor.AuthServices.Tests
             // We're assuming that the creation does not take more than a
             // second, so two values will do.
             var beforeTime = DateTime.UtcNow.ToSaml2DateTimeString();
-            var actual = subject.CreateLogoutRequest();
+            var actual = subject.CreateLogoutRequest(user);
             var aftertime = DateTime.UtcNow.ToSaml2DateTimeString();
 
             actual.Issuer.Id.Should().Be(options.SPOptions.EntityId.Id);
@@ -891,7 +891,7 @@ namespace Kentor.AuthServices.Tests
 
             var subject = options.IdentityProviders[0];
 
-            Thread.CurrentPrincipal = new ClaimsPrincipal(new ClaimsIdentity(
+            var user = new ClaimsPrincipal(new ClaimsIdentity(
                 new Claim[]
                 {
                     new Claim(ClaimTypes.NameIdentifier, "ApplicationNameId"),
@@ -899,9 +899,42 @@ namespace Kentor.AuthServices.Tests
                     new Claim(AuthServicesClaimTypes.SessionIndex, "SessionId", null, subject.EntityId.Id)
                 }, "Federation"));
 
-            var actual = subject.CreateLogoutRequest();
+            var actual = subject.CreateLogoutRequest(user);
 
             actual.NameId.Value.Should().Be("Saml2NameId");
+        }
+
+        [TestMethod]
+        public void IdentityProvider_CreateLogoutRequest_IgnoresThreadPrincipal()
+        {
+            var options = StubFactory.CreateOptions();
+            options.SPOptions.ServiceCertificates.Add(new ServiceCertificate()
+            {
+                Certificate = SignedXmlHelper.TestCert
+            });
+
+            var subject = options.IdentityProviders[0];
+
+            Thread.CurrentPrincipal = new ClaimsPrincipal(new ClaimsIdentity(
+                new Claim[]
+                {
+                    new Claim(ClaimTypes.NameIdentifier, "ThreadNameId"),
+                    new Claim(AuthServicesClaimTypes.LogoutNameIdentifier, "ThreadLogoutNameId", null, subject.EntityId.Id),
+                    new Claim(AuthServicesClaimTypes.SessionIndex, "ThreadSessionId", null, subject.EntityId.Id)
+                }, "Federation"));
+
+            var user = new ClaimsPrincipal(new ClaimsIdentity(
+                new Claim[]
+                {
+                    new Claim(ClaimTypes.NameIdentifier, "ApplicationNameId"),
+                    new Claim(AuthServicesClaimTypes.LogoutNameIdentifier, "Saml2NameId", null, subject.EntityId.Id),
+                    new Claim(AuthServicesClaimTypes.SessionIndex, "SessionId", null, subject.EntityId.Id)
+                }, "Federation"));
+
+            var actual = subject.CreateLogoutRequest(user);
+
+            actual.NameId.Value.Should().Be("Saml2NameId");
+            actual.SessionIndex.Should().Be("SessionId");
         }
 
         [TestMethod]
@@ -910,16 +943,29 @@ namespace Kentor.AuthServices.Tests
             var options = StubFactory.CreateOptions();
             var subject = options.IdentityProviders[0];
 
-            Thread.CurrentPrincipal = new ClaimsPrincipal(new ClaimsIdentity(
+            var user = new ClaimsPrincipal(new ClaimsIdentity(
                 new Claim[]
                 {
                     new Claim(ClaimTypes.NameIdentifier, "NameId", null, subject.EntityId.Id),
                     new Claim(AuthServicesClaimTypes.SessionIndex, "SessionId", null, subject.EntityId.Id)
                 }, "Federation"));
 
-            subject.Invoking(s => s.CreateLogoutRequest())
+            subject.Invoking(s => s.CreateLogoutRequest(user))
                 .ShouldThrow<InvalidOperationException>()
                 .And.Message.Should().Be($"Tried to issue single logout request to https://idp.example.com, but no signing certificate for the SP is configured and single logout requires signing. Add a certificate to the ISPOptions.ServiceCertificates collection, or to <serviceCertificates> element if you're using web.config.");
+        }
+
+        [TestMethod]
+        public void IdentityProvider_CreateLogoutRequest_UserNullCheck()
+        {
+            var options = StubFactory.CreateOptions();
+            var subject = options.IdentityProviders[0];
+
+            ClaimsPrincipal user = null;
+
+            subject.Invoking(s => s.CreateLogoutRequest(user))
+                .ShouldThrow<ArgumentNullException>()
+                .And.Message.Should().Be("Value cannot be null.\r\nParameter name: user");
         }
     }
 }

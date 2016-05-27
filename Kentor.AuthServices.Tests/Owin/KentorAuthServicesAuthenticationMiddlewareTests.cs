@@ -225,8 +225,7 @@ namespace Kentor.AuthServices.Tests.Owin
             context.Request.Host = new HostString("sp-internal.example.com");
             context.Request.PathBase = new PathString("/InternalPath");
             context.Request.Path = new PathString("/LoggedOut");
-
-            Thread.CurrentPrincipal = new ClaimsPrincipal(
+            context.Request.User = new ClaimsPrincipal(
                 new ClaimsIdentity(new Claim[]
                 {
                     new Claim(ClaimTypes.NameIdentifier, "NameId", null, "https://idp.example.com"),
@@ -268,8 +267,7 @@ namespace Kentor.AuthServices.Tests.Owin
             context.Request.Host = new HostString("sp-internal.example.com");
             context.Request.PathBase = new PathString("/InternalPath");
             context.Request.Path = new PathString("/LoggedOut");
-
-            Thread.CurrentPrincipal = new ClaimsPrincipal(
+            context.Request.User = new ClaimsPrincipal(
                 new ClaimsIdentity(new Claim[]
                 {
                     new Claim(ClaimTypes.NameIdentifier, "NameId", null, "https://idp.example.com"),
@@ -337,8 +335,7 @@ namespace Kentor.AuthServices.Tests.Owin
             context.Request.PathBase = new PathString("/AppPath");
             context.Request.Path = new PathString(path);
             context.Response.Headers["Location"] = location;
-
-            Thread.CurrentPrincipal = new ClaimsPrincipal(
+            context.Request.User = new ClaimsPrincipal(
                 new ClaimsIdentity(new Claim[]
                 {
                     new Claim(ClaimTypes.NameIdentifier, "NameId", null, "https://idp.example.com"),
@@ -374,8 +371,7 @@ namespace Kentor.AuthServices.Tests.Owin
 
             var context = OwinTestHelpers.CreateOwinContext();
             context.Response.Headers["Location"] = "http://sp.example.com/locationHeader";
-
-            Thread.CurrentPrincipal = new ClaimsPrincipal(
+            context.Request.User = new ClaimsPrincipal(
                 new ClaimsIdentity(new Claim[]
                 {
                     new Claim(ClaimTypes.NameIdentifier, "NameId", null, "https://idp.example.com"),
@@ -431,7 +427,7 @@ namespace Kentor.AuthServices.Tests.Owin
 
             var context = OwinTestHelpers.CreateOwinContext();
 
-            Thread.CurrentPrincipal = new ClaimsPrincipal(
+            context.Request.User = new ClaimsPrincipal(
                 new ClaimsIdentity(new Claim[]
                 {
                     new Claim(ClaimTypes.NameIdentifier, "NameId", null, "https://idp.example.com"),
