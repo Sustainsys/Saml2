@@ -29,13 +29,11 @@ namespace Kentor.AuthServices.AspNetCore
 
             if(!result.HandledResult)
             {
-                await result.ApplyAsync(Context, Options.DataProtector);
+                result.Apply(Context, Options.DataProtector);
             }
 
             var authProperties = new AuthenticationProperties(result.RelayData);
             authProperties.RedirectUri = result.Location.OriginalString;
-            // TODO: this should be in result.RelayData?
-            authProperties.Items["LoginProvider"] = Options.AuthenticationScheme;
 
             return AuthenticateResult.Success(new AuthenticationTicket(result.Principal, authProperties, Options.SignInAsAuthenticationType));
         }
@@ -72,7 +70,7 @@ namespace Kentor.AuthServices.AspNetCore
 
                 if(!result.HandledResult)
                 {
-                    await result.ApplyAsync(Context, Options.DataProtector);
+                    result.Apply(Context, Options.DataProtector);
                 }
 
                 return true;
@@ -109,12 +107,12 @@ namespace Kentor.AuthServices.AspNetCore
                             .ToString();
                     }
                 }
-
+                
                 var result = LogoutCommand.Run(request, redirectUrl, Options);
 
                 if(!result.HandledResult)
                 {
-                    await result.ApplyAsync(Context, Options.DataProtector);
+                    result.Apply(Context, Options.DataProtector);
                 }
             }
 
@@ -145,7 +143,7 @@ namespace Kentor.AuthServices.AspNetCore
 
                 if(!result.HandledResult)
                 {
-                    await result.ApplyAsync(Context, Options.DataProtector);
+                    result.Apply(Context, Options.DataProtector);
                 }
 
                 return true;
