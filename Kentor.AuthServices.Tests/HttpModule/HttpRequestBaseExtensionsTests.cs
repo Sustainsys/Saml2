@@ -10,6 +10,7 @@ using System.Web.Security;
 using System.Text;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 
 namespace Kentor.AuthServices.Tests.HttpModule
 {
@@ -55,7 +56,8 @@ namespace Kentor.AuthServices.Tests.HttpModule
                     new KeyValuePair<string, string[]>("Key", new string[] { "Value" })
                 },
                 Enumerable.Empty<KeyValuePair<string, string>>(),
-                null);
+                null, 
+                ClaimsPrincipal.Current);
 
             actual.ShouldBeEquivalentTo(expected, opt => opt.Excluding(s => s.StoredRequestState));
             actual.StoredRequestState.ReturnUrl.AbsoluteUri.Should().Be("urn:someUri");
@@ -88,7 +90,8 @@ namespace Kentor.AuthServices.Tests.HttpModule
                     new KeyValuePair<string, string[]>("Key", new string[] { "Value" })
                 },
                 Enumerable.Empty<KeyValuePair<string, string>>(),
-                null);
+                null,
+                ClaimsPrincipal.Current);
 
             subject.ShouldBeEquivalentTo(expected);
         }
