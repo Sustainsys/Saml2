@@ -45,7 +45,8 @@ namespace Kentor.AuthServices.AspNetCore
                 applicationRootPath,
                 formData,
                 context.Request.Cookies,
-                cookieDecryptor);
+                cookieDecryptor,
+                context.User);
         }
     }
 }
