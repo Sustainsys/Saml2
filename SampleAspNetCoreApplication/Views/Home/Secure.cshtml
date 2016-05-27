@@ -1,0 +1,27 @@
+﻿@model System.Collections.Generic.IEnumerable<System.Security.Claims.Claim>
+@{
+    ViewBag.Title = "Secure";
+}
+<h2>@ViewBag.Title.</h2>
+<h3>@ViewBag.Message</h3>
+
+<p>This is a secure page that only works when logged in.</p>
+<table class="table table-bordered table-striped">
+    <thead>
+        <tr>
+            <th>Claim Type</th>
+            <th>Claim Value</th>
+            <th>Issuer</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach( var c in ViewContext.HttpContext.User.Claims )
+        {
+            <tr>
+                <td>@c.Type</td>
+                <td>@c.Value</td>
+                <td>@c.Issuer</td>
+            </tr>
+        }
+    </tbody>
+</table>
