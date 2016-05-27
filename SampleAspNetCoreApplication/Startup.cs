@@ -144,7 +144,9 @@ namespace SampleAspNetCoreApplication
             {
                 EntityId = new EntityId("http://localhost:5000/AuthServices"),
                 ReturnUrl = new Uri("http://localhost:5000/Account/ExternalLoginCallback"),
-                DiscoveryServiceUrl = new Uri("http://localhost:52071/DiscoveryService"),
+                // NOTE: Stub DiscovertService has a bug that doesn't preserve auth properties.
+                // ASP.NET Core needs auth properties to preserve the LoginProvider
+                // DiscoveryServiceUrl = new Uri("http://localhost:52071/DiscoveryService"),
                 Organization = organization
             };
 
