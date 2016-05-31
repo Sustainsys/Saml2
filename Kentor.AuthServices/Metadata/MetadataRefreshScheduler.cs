@@ -31,12 +31,41 @@ namespace Kentor.AuthServices.Metadata
             return delay;
         }
 
+        internal static TimeSpan CalculateMetadataCacheDuration(this ICachedMetadata metadata)
+        {
+            if ((metadata.ValidUntil.HasValue && metadata.CacheDuration.HasValue) ||
+                (!metadata.ValidUntil.HasValue && metadata.CacheDuration.HasValue))
+            {
+                return (TimeSpan)metadata.CacheDuration;
+            }
+
+            if (metadata.ValidUntil.HasValue && !metadata.CacheDuration.HasValue)
+            {
+                var timeRemaining = metadata.ValidUntil.Value - DateTime.UtcNow;
+                var twoMinutes = new TimeSpan(0, 2, 0).Ticks;
+                return new TimeSpan(Math.Max(Math.Min(DefaultMetadataCacheDuration.Ticks, timeRemaining.Ticks / 4), twoMinutes));
+            }
+
+            return DefaultMetadataCacheDuration;
+        }
+
         public static readonly TimeSpan DefaultMetadataCacheDuration = new TimeSpan(1, 0, 0);
 
         internal static DateTime CalculateMetadataValidUntil(this ICachedMetadata metadata)
         {
-            return metadata.ValidUntil ??
-                   DateTime.UtcNow.Add(metadata.CacheDuration ?? DefaultMetadataCacheDuration);
-        }
+            if ((metadata.ValidUntil.HasValue && metadata.CacheDuration.HasValue) ||
+                (metadata.ValidUntil.HasValue && !metadata.CacheDuration.HasValue))
+            {
+                return (DateTime)metadata.ValidUntil;
+            }
+
+            if (!metadata.ValidUntil.HasValue && metadata.CacheDuration.HasValue)
+            {
+                var extendedCacheDuration = metadata.CacheDuration.Value.Ticks * 4;
+                return DateTime.UtcNow.Add(new TimeSpan(extendedCacheDuration));
+            }
+
+            return DateTime.UtcNow.AddDays(1);
+        }        
     }
 }
