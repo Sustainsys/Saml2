@@ -17,7 +17,6 @@ using System.IdentityModel.Metadata;
 using Kentor.AuthServices;
 using Kentor.AuthServices.WebSso;
 using System.Security.Cryptography.X509Certificates;
-using Microsoft.AspNetCore.Hosting.Internal;
 using Kentor.AuthServices.Configuration;
 using System.Globalization;
 using Kentor.AuthServices.Metadata;
@@ -56,6 +55,10 @@ namespace SampleAspNetCoreApplication
             // Add framework services.
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+
+            // Register custom claims principal factory for kentor auth services to handle logout claims
+            services.AddScoped<IUserClaimsPrincipalFactory<ApplicationUser>, 
+                KentorAuthServicesUserClaimsPrincipalFactory<ApplicationUser, IdentityRole>>();
 
             services.AddIdentity<ApplicationUser, IdentityRole>()
                 .AddEntityFrameworkStores<ApplicationDbContext>()
@@ -108,8 +111,7 @@ namespace SampleAspNetCoreApplication
             var authServicesOptions = new KentorAuthServicesOptions(false)
             {
                 SPOptions = spOptions,
-                SignInAsAuthenticationType = identityOptions.Cookies.ExternalCookieAuthenticationScheme,
-                AugmentLogoutAuthenticationType = identityOptions.Cookies.ApplicationCookieAuthenticationScheme
+                SignInAsAuthenticationType = identityOptions.Cookies.ExternalCookieAuthenticationScheme
             };
 
             var idp = new IdentityProvider(new EntityId("http://stubidp.kentor.se/Metadata"), spOptions)

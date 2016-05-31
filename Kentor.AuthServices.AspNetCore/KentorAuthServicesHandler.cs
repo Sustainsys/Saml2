@@ -79,12 +79,6 @@ namespace Kentor.AuthServices.AspNetCore
             return false;
         }
 
-        protected async override Task FinishResponseAsync()
-        {
-            await AugmentAuthenticationGrantWithLogoutClaims(Context);
-            await base.FinishResponseAsync();
-        }
-
         protected override async Task HandleSignOutAsync(SignOutContext signOutContext)
         {
             if(signOutContext == null)
@@ -156,38 +150,6 @@ namespace Kentor.AuthServices.AspNetCore
             }
 
             return false;
-        }
-
-        private async Task AugmentAuthenticationGrantWithLogoutClaims(HttpContext context)
-        {
-            var grantIdentity = await context.Authentication.AuthenticateAsync(Options.AugmentLogoutAuthenticationType);
-            var externalIdentity = await context.Authentication.AuthenticateAsync(Options.SignInAsAuthenticationType);
-            var sessionIdClaim = externalIdentity?.FindFirst(AuthServicesClaimTypes.SessionIndex);
-            var externalNameIdClaim = externalIdentity?.FindFirst(ClaimTypes.NameIdentifier);
-
-            if(grantIdentity == null || externalIdentity == null || sessionIdClaim == null || externalNameIdClaim == null)
-            {
-                return;
-            }
-
-            var sessionClaim = new Claim(
-                sessionIdClaim.Type,
-                sessionIdClaim.Value,
-                sessionIdClaim.ValueType,
-                sessionIdClaim.Issuer);
-
-            var logoutNameIdClaim = new Claim(
-                AuthServicesClaimTypes.LogoutNameIdentifier,
-                externalNameIdClaim.Value,
-                externalNameIdClaim.ValueType,
-                externalNameIdClaim.Issuer);
-
-            foreach(var kv in externalNameIdClaim.Properties)
-            {
-                logoutNameIdClaim.Properties.Add(kv);
-            }
-
-            grantIdentity.AddIdentity(new ClaimsIdentity(grantIdentity.Identity, new List<Claim> { sessionClaim, logoutNameIdClaim }));
         }
     }
 }
