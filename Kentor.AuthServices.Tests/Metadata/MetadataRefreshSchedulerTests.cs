@@ -57,8 +57,8 @@ namespace Kentor.AuthServices.Tests.Metadata
         public void MetadataRefreshScheduler_CalculateMetadataValidUntil_ValidUntilMissing_CacheDurationExists()
         {
             var metadata = Substitute.For<ICachedMetadata>();
-            metadata.CacheDuration = MetadataRefreshScheduler.DefaultMetadataCacheDuration;
             metadata.ValidUntil = null;
+            metadata.CacheDuration = MetadataRefreshScheduler.DefaultMetadataCacheDuration;            
 
             var subject = metadata.CalculateMetadataValidUntil();
 
