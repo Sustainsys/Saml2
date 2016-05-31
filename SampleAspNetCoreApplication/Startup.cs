@@ -117,19 +117,13 @@ namespace SampleAspNetCoreApplication
             var idp = new IdentityProvider(new EntityId("http://stubidp.kentor.se/Metadata"), spOptions)
             {
                 AllowUnsolicitedAuthnResponse = true,
-                Binding = Saml2BindingType.HttpRedirect,
-                SingleSignOnServiceUrl = new Uri("http://stubidp.kentor.se")
+                LoadMetadata = true
             };
 
             idp.SigningKeys.AddConfiguredKey(
                 new X509Certificate2(PlatformServices.Default.Application.ApplicationBasePath + "Kentor.AuthServices.StubIdp.cer"));
 
             authServicesOptions.IdentityProviders.Add(idp);
-
-            // It's enough to just create the federation and associate it
-            // with the options. The federation will load the metadata and
-            // update the options with any identity providers found.
-            new Federation("http://localhost:52071/Federation", true, authServicesOptions);
 
             return authServicesOptions;
         }
