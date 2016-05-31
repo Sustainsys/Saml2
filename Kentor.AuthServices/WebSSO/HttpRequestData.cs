@@ -51,7 +51,7 @@ namespace Kentor.AuthServices.WebSso
         /// <param name="cookies">Cookies of request</param>
         /// <param name="cookieDecryptor">Function that decrypts cookie
         /// contents to clear text.</param>
-        /// <param name="user">Claims Principal associated with the request
+        /// <param name="user">Claims Principal associated with the request</param>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Decryptor")]
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
         public HttpRequestData(
