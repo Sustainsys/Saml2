@@ -126,6 +126,30 @@ namespace Kentor.AuthServices.Tests.Metadata
         }
 
         [TestMethod]
+        public void MetadataRefreshScheduler_CalculateMetadataCacheDuration_ShortValidUntil_CacheDurationMissing()
+        {
+            var metadata = Substitute.For<ICachedMetadata>();
+            metadata.ValidUntil = DateTime.UtcNow.AddMinutes(3);
+            metadata.CacheDuration = null;
+
+            var subject = metadata.CalculateMetadataCacheDuration();
+
+            subject.Should().BeCloseTo(new TimeSpan(0, 2, 0));
+        }
+
+        [TestMethod]
+        public void MetadataRefreshScheduler_CalculateMetadataCacheDuration_LongValidUntil_CacheDurationMissing()
+        {
+            var metadata = Substitute.For<ICachedMetadata>();
+            metadata.ValidUntil = DateTime.UtcNow.AddHours(12);
+            metadata.CacheDuration = null;
+
+            var subject = metadata.CalculateMetadataCacheDuration();
+
+            subject.Should().Be(MetadataRefreshScheduler.DefaultMetadataCacheDuration);
+        }
+
+        [TestMethod]
         public void MetadataRefreshScheduler_CalculateMetadataCacheDuration_ValidUntilMissing_CacheDurationMissing()
         {
             var metadata = Substitute.For<ICachedMetadata>();
