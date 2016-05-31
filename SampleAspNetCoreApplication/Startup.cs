@@ -120,9 +120,6 @@ namespace SampleAspNetCoreApplication
                 LoadMetadata = true
             };
 
-            idp.SigningKeys.AddConfiguredKey(
-                new X509Certificate2(PlatformServices.Default.Application.ApplicationBasePath + "Kentor.AuthServices.StubIdp.cer"));
-
             authServicesOptions.IdentityProviders.Add(idp);
 
             return authServicesOptions;
