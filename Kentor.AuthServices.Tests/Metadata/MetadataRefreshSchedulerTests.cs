@@ -12,10 +12,9 @@ namespace Kentor.AuthServices.Tests.Metadata
         [TestMethod]
         public void MetadataRefreshScheduler_GetDelay_ReturnsHalfRemaining()
         {
-            var cacheDuration = new TimeSpan(2, 0, 0);
-            var cacheDurationExpiryDate = DateTime.UtcNow.Add(cacheDuration);
+            var validUntil = DateTime.UtcNow.AddHours(2);
 
-            var subject = MetadataRefreshScheduler.GetDelay(cacheDurationExpiryDate);
+            var subject = MetadataRefreshScheduler.GetDelay(validUntil);
 
             subject.Should().BeCloseTo(new TimeSpan(1, 0, 0));
         }
@@ -23,10 +22,9 @@ namespace Kentor.AuthServices.Tests.Metadata
         [TestMethod]
         public void MetadataRefreshScheduler_GetDelay_RespectsMinInterval()
         {
-            var cacheDuration = new TimeSpan(0, 0, 10);
-            var cacheDurationExpiryDate = DateTime.UtcNow.Add(cacheDuration);
+            var validUntil = DateTime.UtcNow.AddSeconds(10);
 
-            var subject = MetadataRefreshScheduler.GetDelay(cacheDurationExpiryDate);
+            var subject = MetadataRefreshScheduler.GetDelay(validUntil);
 
             subject.Should().BeCloseTo(new TimeSpan(0, 1, 0));
         }
@@ -34,9 +32,9 @@ namespace Kentor.AuthServices.Tests.Metadata
         [TestMethod]
         public void MetadataRefreshScheduler_GetDelay_RespectsMaxInterval()
         {
-            var cacheDurationExpiryDate = new DateTime(2100, 01, 01);
+            var validUntil = new DateTime(2100, 01, 01);
 
-            var subject = MetadataRefreshScheduler.GetDelay(cacheDurationExpiryDate);
+            var subject = MetadataRefreshScheduler.GetDelay(validUntil);
 
             var maxDelay = new TimeSpan(0, 0, 0, 0, int.MaxValue);
 
