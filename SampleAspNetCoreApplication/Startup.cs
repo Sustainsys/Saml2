@@ -108,7 +108,8 @@ namespace SampleAspNetCoreApplication
             var authServicesOptions = new KentorAuthServicesOptions(false)
             {
                 SPOptions = spOptions,
-                SignInAsAuthenticationType = identityOptions.Cookies.ExternalCookieAuthenticationScheme
+                SignInAsAuthenticationType = identityOptions.Cookies.ExternalCookieAuthenticationScheme,
+                AugmentLogoutAuthenticationType = identityOptions.Cookies.ApplicationCookieAuthenticationScheme
             };
 
             var idp = new IdentityProvider(new EntityId("http://stubidp.kentor.se/Metadata"), spOptions)

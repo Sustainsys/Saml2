@@ -79,44 +79,50 @@ namespace Kentor.AuthServices.AspNetCore
             return false;
         }
 
+        protected async override Task FinishResponseAsync()
+        {
+            await AugmentAuthenticationGrantWithLogoutClaims(Context);
+            await base.FinishResponseAsync();
+        }
+
         protected override async Task HandleSignOutAsync(SignOutContext signOutContext)
         {
-            if(signOutContext != null)
+            if(signOutContext == null)
             {
-                var authProps = new AuthenticationProperties(signOutContext.Properties);
-                var request = await Context.ToHttpRequestDataAsync(Options.DataProtector.Unprotect);
-                var urls = new AuthServicesUrls(request, Options.SPOptions);
+                return;
+            }
 
-                string redirectUrl = authProps.RedirectUri;
-                if(string.IsNullOrEmpty(redirectUrl))
+            var authProps = new AuthenticationProperties(signOutContext.Properties);
+            var request = await Context.ToHttpRequestDataAsync(Options.DataProtector.Unprotect);
+            var urls = new AuthServicesUrls(request, Options.SPOptions);
+
+            string redirectUrl = authProps.RedirectUri;
+            if(string.IsNullOrEmpty(redirectUrl))
+            {
+                if(Context.Response.StatusCode / 100 == 3)
                 {
-                    if(Context.Response.StatusCode / 100 == 3)
-                    {
-                        var locationUrl = Context.Response.Headers["Location"];
+                    var locationUrl = Context.Response.Headers["Location"];
 
-                        redirectUrl = new Uri(
-                            new Uri(urls.ApplicationUrl.ToString().TrimEnd('/') + Context.Request.Path),
-                            locationUrl
-                            ).ToString();
-                    }
-                    else
-                    {
-                        redirectUrl = new Uri(
-                            urls.ApplicationUrl,
-                            Context.Request.Path.ToUriComponent().TrimStart('/'))
-                            .ToString();
-                    }
+                    redirectUrl = new Uri(
+                        new Uri(urls.ApplicationUrl.ToString().TrimEnd('/') + Context.Request.Path),
+                        locationUrl
+                        ).ToString();
                 }
-                
-                var result = LogoutCommand.Run(request, redirectUrl, Options);
-
-                if(!result.HandledResult)
+                else
                 {
-                    result.Apply(Context, Options.DataProtector);
+                    redirectUrl = new Uri(
+                        urls.ApplicationUrl,
+                        Context.Request.Path.ToUriComponent().TrimStart('/'))
+                        .ToString();
                 }
             }
 
-            await AugmentAuthenticationGrantWithLogoutClaims(Context);
+            var result = LogoutCommand.Run(request, redirectUrl, Options);
+
+            if(!result.HandledResult)
+            {
+                result.Apply(Context, Options.DataProtector);
+            }
         }
 
         public override async Task<bool> HandleRequestAsync()
@@ -154,7 +160,7 @@ namespace Kentor.AuthServices.AspNetCore
 
         private async Task AugmentAuthenticationGrantWithLogoutClaims(HttpContext context)
         {
-            var grantIdentity = await context.Authentication.AuthenticateAsync(Options.AuthenticationScheme);
+            var grantIdentity = await context.Authentication.AuthenticateAsync(Options.AugmentLogoutAuthenticationType);
             var externalIdentity = await context.Authentication.AuthenticateAsync(Options.SignInAsAuthenticationType);
             var sessionIdClaim = externalIdentity?.FindFirst(AuthServicesClaimTypes.SessionIndex);
             var externalNameIdClaim = externalIdentity?.FindFirst(ClaimTypes.NameIdentifier);

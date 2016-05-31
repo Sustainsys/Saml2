@@ -50,6 +50,8 @@ namespace Kentor.AuthServices.AspNetCore
         /// </summary>
         public string SignInAsAuthenticationType { get; set; }
 
+        public string AugmentLogoutAuthenticationType { get; set; }
+
         /// <summary>
         /// Options for the service provider's behaviour; i.e. everything except
         /// the idp and federation list.
