@@ -86,7 +86,7 @@ namespace Kentor.AuthServices.Tests.Metadata
 
             var subject = metadata.CalculateMetadataValidUntil();
 
-            subject.Should().BeCloseTo(DateTime.UtcNow.AddDays(1), precision: 100);            
+            subject.Should().BeCloseTo(DateTime.UtcNow.AddDays(1), precision: 100);
         }
 
         [TestMethod]
