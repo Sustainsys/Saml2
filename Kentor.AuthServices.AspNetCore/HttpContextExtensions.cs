@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Kentor.AuthServices.AspNetCore
 {
-    static class HttpContextExtensions
+    public static class HttpContextExtensions
     {
         public async static Task<HttpRequestData> ToHttpRequestDataAsync(
             this HttpContext context,

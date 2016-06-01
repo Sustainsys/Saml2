@@ -44,18 +44,11 @@ namespace Kentor.AuthServices.AspNetCore
             {
                 var authProps = new AuthenticationProperties(context.Properties);
 
-                EntityId idp;
+                EntityId idp = null;
                 string strIdp;
                 if(context.Properties.TryGetValue("idp", out strIdp))
                 {
                     idp = new EntityId(strIdp);
-                }
-                else
-                {
-                    object objIdp = null;
-                    // TODO: environment?
-                    //Context.Environment.TryGetValue("KentorAuthServices.idp", out objIdp);
-                    idp = objIdp as EntityId;
                 }
                 var redirectUri = authProps.RedirectUri;
                 // Don't serialize the RedirectUri twice.

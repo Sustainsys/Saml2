@@ -19,29 +19,13 @@ namespace Kentor.AuthServices.AspNetCore
         /// <summary>
         /// Constructor
         /// </summary>
-        public KentorAuthServicesOptions()
-            : this(false)
-        { }
-
-        /// <summary>
-        /// Constructor
-        /// <param name="loadConfiguration">Should the options be inited by loading app/web.config?</param>
-        /// </summary>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "KentorAuthServices")]
-        public KentorAuthServicesOptions(bool loadConfiguration)
-            : base()
+        public KentorAuthServicesOptions()
         {
             AutomaticAuthenticate = true;
             AuthenticationScheme = KentorAuthServicesDefaults.DefaultAuthenticationScheme;
             DisplayName = KentorAuthServicesDefaults.DefaultDisplayName;
             Notifications = new KentorAuthServicesNotifications();
-
-            if(loadConfiguration)
-            {
-                SPOptions = new SPOptions(KentorAuthServicesSection.Current);
-                KentorAuthServicesSection.Current.IdentityProviders.RegisterIdentityProviders(this);
-                KentorAuthServicesSection.Current.Federations.RegisterFederations(this);
-            }
         }
 
         /// <summary>

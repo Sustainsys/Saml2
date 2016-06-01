@@ -54,11 +54,10 @@ namespace Kentor.AuthServices.AspNetCore
                 throw new ConfigurationErrorsException("The SPOptions.EntityId property cannot be null. It must be set to the EntityId used to represent this system.");
             }
 
-            // TODO?
-            //if(string.IsNullOrEmpty(Options.SignInAsAuthenticationType))
-            //{
-            //    Options.SignInAsAuthenticationType = app.GetDefaultSignInAsAuthenticationType();
-            //}
+            if(string.IsNullOrEmpty(Options.SignInAsAuthenticationType))
+            {
+                throw new ConfigurationErrorsException("The SignInAsAuthenticationType property cannot be null.");
+            }
 
             Options.DataProtector = dataProtectionProvider.CreateProtector(typeof(KentorAuthServicesMiddleware).FullName, Options.AuthenticationScheme, "v2"); ;
         }

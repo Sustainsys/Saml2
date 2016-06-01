@@ -108,7 +108,7 @@ namespace SampleAspNetCoreApplication
         private KentorAuthServicesOptions CreateAuthServicesOptions(IdentityOptions identityOptions)
         {
             var spOptions = CreateSPOptions();
-            var authServicesOptions = new KentorAuthServicesOptions(false)
+            var authServicesOptions = new KentorAuthServicesOptions
             {
                 SPOptions = spOptions,
                 SignInAsAuthenticationType = identityOptions.Cookies.ExternalCookieAuthenticationScheme
