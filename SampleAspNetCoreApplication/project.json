@@ -73,7 +73,7 @@
   "buildOptions": {
     "emitEntryPoint": true,
     "preserveCompilationContext": true,
-    "copyToOutput": [ "Kentor.AuthServices.Tests.pfx", "Kentor.AuthServices.StubIdp.cer" ]
+    "copyToOutput": [ "Kentor.AuthServices.Tests.pfx" ]
   },
 
   "publishOptions": {
