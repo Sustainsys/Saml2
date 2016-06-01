@@ -15,12 +15,10 @@ using SampleAspNetCoreApplication.Services;
 using Kentor.AuthServices.AspNetCore;
 using System.IdentityModel.Metadata;
 using Kentor.AuthServices;
-using Kentor.AuthServices.WebSso;
 using System.Security.Cryptography.X509Certificates;
 using Kentor.AuthServices.Configuration;
 using System.Globalization;
 using Kentor.AuthServices.Metadata;
-using Microsoft.Extensions.PlatformAbstractions;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
 
@@ -137,7 +135,7 @@ namespace SampleAspNetCoreApplication
             var spOptions = new SPOptions
             {
                 EntityId = new EntityId("http://localhost:56327/AuthServices"),
-                ReturnUrl = new Uri("http://localhost:5000/Account/ExternalLoginCallback"),
+                ReturnUrl = new Uri("http://localhost:56327/Account/ExternalLoginCallback"),
                 // NOTE: DiscoveryService implementation in AuthServices has a 
                 // bug (GitHub issue #182) that doesn't preserve auth properties.
                 // ASP.NET Core needs auth properties to preserve the LoginProvider
