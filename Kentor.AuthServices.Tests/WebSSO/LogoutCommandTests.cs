@@ -270,6 +270,53 @@ namespace Kentor.AuthServices.Tests.WebSSO
         }
 
         [TestMethod]
+        public void LogoutCommand_Run_HandlesLogoutResponse_InPost()
+        {
+            var relayState = "TestState";
+            var response = new Saml2LogoutResponse(Saml2StatusCode.Success)
+            {
+                DestinationUrl = new Uri("http://sp.example.com/path/AuthServices/logout"),
+                Issuer = new EntityId("https://idp.example.com"),
+                InResponseTo = new Saml2Id(),
+                SigningCertificate = SignedXmlHelper.TestCert
+            };
+
+            var xml = XmlHelpers.FromString(response.ToXml());
+            xml.Sign(SignedXmlHelper.TestCert);
+
+            var responseData = Convert.ToBase64String(Encoding.UTF8.GetBytes(xml.OuterXml));
+            
+            var httpRequest = new HttpRequestData(
+                "POST",
+                new Uri("http://something"),
+                "/path",
+                new KeyValuePair<string, string[]>[]
+                {
+                    new KeyValuePair<string, string[]>("SAMLResponse", new[] { responseData }),
+                    new KeyValuePair<string, string[]>("RelayState", new[] { relayState })
+                },
+                Enumerable.Empty<KeyValuePair<string, string>>(),
+                null);
+
+            httpRequest.StoredRequestState = new StoredRequestState(null, new Uri("http://loggedout.example.com"), null, null);
+
+            var options = StubFactory.CreateOptions();
+            options.SPOptions.ServiceCertificates.Add(SignedXmlHelper.TestCert);
+
+            var actual = CommandFactory.GetCommand(CommandFactory.LogoutCommandName)
+                .Run(httpRequest, options);
+
+            var expected = new CommandResult
+            {
+                Location = new Uri("http://loggedout.example.com"),
+                HttpStatusCode = HttpStatusCode.SeeOther,
+                ClearCookieName = "Kentor." + relayState
+            };
+
+            actual.ShouldBeEquivalentTo(expected);
+        }
+
+        [TestMethod]
         public void LogoutCommand_Run_HandlesLogoutRequest_ReceivedThroughRedirectBinding()
         {
             var request = new Saml2LogoutRequest()

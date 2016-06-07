@@ -216,7 +216,7 @@ namespace Kentor.AuthServices.WebSso
             {
                 HttpStatusCode = HttpStatusCode.SeeOther,
                 Location = request.StoredRequestState.ReturnUrl,
-                ClearCookieName = "Kentor." + request.QueryString["RelayState"].Single()
+                ClearCookieName = "Kentor." + unbindResult.RelayState
             };
         }
     }
