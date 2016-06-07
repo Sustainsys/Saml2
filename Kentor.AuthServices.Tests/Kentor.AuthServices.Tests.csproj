@@ -125,6 +125,7 @@
     <Compile Include="Helpers\SignedXmlHelper.cs" />
     <Compile Include="Helpers\SpinWaiter.cs" />
     <Compile Include="Internal\CryptographyExtensionsTests.cs" />
+    <Compile Include="Internal\DelimitedStringTests.cs" />
     <Compile Include="Owin\StubDataProtector.cs" />
     <Compile Include="Saml2NameIdExtensionsTests.cs" />
     <Compile Include="Saml2P\Saml2ArtifactResolveTests.cs" />
