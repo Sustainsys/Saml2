@@ -32,7 +32,7 @@ namespace Kentor.AuthServices.HttpModule
             // Run our code post authentication to allow any session authentication
             // to be done first (required by logout) but still execute as close
             // as possible to the normal authentication step.
-            context.PostAuthenticateRequest += OnPostAuthenticateRequest;
+            context.AuthenticateRequest += OnAuthenticateRequest;
 
             // Cache configuration during the lifecycle of this module including metadata, certificates etc. 
             options = Options.FromConfiguration;
@@ -44,7 +44,7 @@ namespace Kentor.AuthServices.HttpModule
         /// </summary>
         /// <param name="sender">The http application.</param>
         /// <param name="e">Ignored</param>
-        protected void OnPostAuthenticateRequest(object sender, EventArgs e)
+        protected void OnAuthenticateRequest(object sender, EventArgs e)
         {
             var application = (HttpApplication)sender;
 
