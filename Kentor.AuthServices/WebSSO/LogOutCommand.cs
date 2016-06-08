@@ -119,8 +119,7 @@ namespace Kentor.AuthServices.WebSso
             Claim sessionIndexClaim = null;
             if (request.User != null)
             {
-                idpEntityId = request.User.FindFirst(AuthServicesClaimTypes.LogoutNameIdentifier)?.Issuer
-                    ?? request.User.FindFirst(ClaimTypes.NameIdentifier)?.Issuer;
+                idpEntityId = request.User.FindFirst(AuthServicesClaimTypes.LogoutNameIdentifier)?.Issuer;
                 sessionIndexClaim = request.User.FindFirst(AuthServicesClaimTypes.SessionIndex);
             }
 

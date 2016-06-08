@@ -251,7 +251,7 @@ namespace Kentor.AuthServices.Tests.Saml2P
         }
 
         [TestMethod]
-        public void Saml2Response_GetClaims_CorrectSignedResponseMessage_WithAuthnStatement()
+        public void Saml2Response_GetClaims_CorrectSignedResponseMessage_WithAuthnStatementGeneratesLogoutNameIdentifierAllNameIdProperties()
         {
             var response =
             @"<?xml version=""1.0"" encoding=""UTF-8""?>
@@ -267,11 +267,16 @@ namespace Kentor.AuthServices.Tests.Saml2P
                 IssueInstant=""2013-09-25T00:00:00Z"">
                     <saml2:Issuer>https://idp.example.com</saml2:Issuer>
                     <saml2:Subject>
-                        <saml2:NameID>SomeUser</saml2:NameID>
+                        <saml2:NameID
+                            NameQualifier=""NameQualifier""
+                            SPNameQualifier=""SPNameQualifier""
+                            Format=""urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress""
+                            SPProvidedID=""SPProvidedID""
+                            >someone@example.com</saml2:NameID>
                         <saml2:SubjectConfirmation Method=""urn:oasis:names:tc:SAML:2.0:cm:bearer"" />
                     </saml2:Subject>
                     <saml2:Conditions NotOnOrAfter=""2100-01-01T00:00:00Z"" />
-                    <saml2:AuthnStatement AuthnInstant=""2013-09-25T00:00:00Z"" SessionIndex=""" + MethodBase.GetCurrentMethod().Name + @""" >
+                    <saml2:AuthnStatement AuthnInstant=""2013-09-25T00:00:00Z"" SessionIndex=""17"" >
                         <saml2:AuthnContext>
                             <saml2:AuthnContextClassRef>urn:oasis:names:tc:SAML:2.0:ac:classes:PasswordProtectedTransport</saml2:AuthnContextClassRef>
                             <saml2:AuthnContextDeclRef>http://custom/password/form/consumer</saml2:AuthnContextDeclRef>
@@ -284,9 +289,52 @@ namespace Kentor.AuthServices.Tests.Saml2P
 
             var result = Saml2Response.Read(signedResponse).GetClaims(Options.FromConfiguration);
 
-            var sessionIndexClaim = result.Single().Claims.SingleOrDefault(c => c.Type == AuthServicesClaimTypes.SessionIndex);
-            sessionIndexClaim.Should().NotBeNull();
-            sessionIndexClaim.Value.Should().Be(MethodBase.GetCurrentMethod().Name);
+            var logoutInfoClaim = result.Single().Claims.SingleOrDefault(c => c.Type == AuthServicesClaimTypes.LogoutNameIdentifier);
+            logoutInfoClaim.Should().NotBeNull("the LogoutInfo claim should be generated");
+            logoutInfoClaim.Value.Should().Be("NameQualifier,SPNameQualifier,urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress,SPProvidedID,someone@example.com");
+        }
+
+        [TestMethod]
+        public void Saml2Response_GetClaims_CorrectSignedResponseMessage_WithAuthnStatementGeneratesLogoutInfo()
+        {
+            var response =
+            @"<?xml version=""1.0"" encoding=""UTF-8""?>
+            <saml2p:Response xmlns:saml2p=""urn:oasis:names:tc:SAML:2.0:protocol""
+            xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
+            ID = """ + MethodBase.GetCurrentMethod().Name + @""" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z"">
+                <saml2:Issuer>https://idp.example.com</saml2:Issuer>
+                <saml2p:Status>
+                    <saml2p:StatusCode Value=""urn:oasis:names:tc:SAML:2.0:status:Success"" />
+                </saml2p:Status>
+                <saml2:Assertion xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
+                Version=""2.0"" ID=""" + MethodBase.GetCurrentMethod().Name + @"_Assertion1""
+                IssueInstant=""2013-09-25T00:00:00Z"">
+                    <saml2:Issuer>https://idp.example.com</saml2:Issuer>
+                    <saml2:Subject>
+                        <saml2:NameID>SomeOne</saml2:NameID>
+                        <saml2:SubjectConfirmation Method=""urn:oasis:names:tc:SAML:2.0:cm:bearer"" />
+                    </saml2:Subject>
+                    <saml2:Conditions NotOnOrAfter=""2100-01-01T00:00:00Z"" />
+                    <saml2:AuthnStatement AuthnInstant=""2013-09-25T00:00:00Z"" SessionIndex=""17"" >
+                        <saml2:AuthnContext>
+                            <saml2:AuthnContextClassRef>urn:oasis:names:tc:SAML:2.0:ac:classes:PasswordProtectedTransport</saml2:AuthnContextClassRef>
+                            <saml2:AuthnContextDeclRef>http://custom/password/form/consumer</saml2:AuthnContextDeclRef>
+                        </saml2:AuthnContext>
+                    </saml2:AuthnStatement>
+                </saml2:Assertion>
+            </saml2p:Response>";
+
+            var signedResponse = SignedXmlHelper.SignXml(response);
+
+            var result = Saml2Response.Read(signedResponse).GetClaims(Options.FromConfiguration);
+
+            var logoutInfoClaim = result.Single().Claims.SingleOrDefault(c => c.Type == AuthServicesClaimTypes.LogoutNameIdentifier);
+            logoutInfoClaim.Should().NotBeNull("the Logout name identifier claim should be generated");
+            logoutInfoClaim.Value.Should().Be(",,,,SomeOne");
+
+            var sessionIdClaim = result.Single().Claims.SingleOrDefault(c => c.Type == AuthServicesClaimTypes.SessionIndex);
+            sessionIdClaim.Should().NotBeNull("the Session ID claim should be generated");
+            sessionIdClaim.Value.Should().Be("17");
         }
 
         [TestMethod]

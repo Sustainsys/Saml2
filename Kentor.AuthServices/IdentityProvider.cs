@@ -497,8 +497,7 @@ namespace Kentor.AuthServices
             {
                 DestinationUrl = SingleLogoutServiceUrl,
                 Issuer = spOptions.EntityId,
-                NameId = (user.FindFirst(AuthServicesClaimTypes.LogoutNameIdentifier)
-                            ?? user.FindFirst(ClaimTypes.NameIdentifier))
+                NameId = user.FindFirst(AuthServicesClaimTypes.LogoutNameIdentifier)
                             .ToSaml2NameIdentifier(),
                 SessionIndex =
                     user.FindFirst(AuthServicesClaimTypes.SessionIndex).Value,
