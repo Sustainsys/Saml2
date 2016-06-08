@@ -276,7 +276,7 @@ namespace Kentor.AuthServices.Tests.Mvc
             Thread.CurrentPrincipal = new ClaimsPrincipal(
                 new ClaimsIdentity(new Claim[]
                 {
-                    new Claim(ClaimTypes.NameIdentifier, "NameId", null, "https://idp.example.com"),
+                    new Claim(AuthServicesClaimTypes.LogoutNameIdentifier, ",,,,NameId", null, "https://idp.example.com"),
                     new Claim(AuthServicesClaimTypes.SessionIndex, "SessionId", null, "https://idp.example.com")
                 }, "Federation"));
 

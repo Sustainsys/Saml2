@@ -228,7 +228,7 @@ namespace Kentor.AuthServices.Tests.Owin
             context.Request.User = new ClaimsPrincipal(
                 new ClaimsIdentity(new Claim[]
                 {
-                    new Claim(ClaimTypes.NameIdentifier, "NameId", null, "https://idp.example.com"),
+                    new Claim(AuthServicesClaimTypes.LogoutNameIdentifier, ",,,,NameId", null, "https://idp.example.com"),
                     new Claim(AuthServicesClaimTypes.SessionIndex, "SessionId", null, "https://idp.example.com")
                 }, "Federation"));
 
@@ -338,7 +338,7 @@ namespace Kentor.AuthServices.Tests.Owin
             context.Request.User = new ClaimsPrincipal(
                 new ClaimsIdentity(new Claim[]
                 {
-                    new Claim(ClaimTypes.NameIdentifier, "NameId", null, "https://idp.example.com"),
+                    new Claim(AuthServicesClaimTypes.LogoutNameIdentifier, ",,,,NameId", null, "https://idp.example.com"),
                     new Claim(AuthServicesClaimTypes.SessionIndex, "SessionId", null, "https://idp.example.com")
                 }, "Federation"));
 
@@ -374,7 +374,7 @@ namespace Kentor.AuthServices.Tests.Owin
             context.Request.User = new ClaimsPrincipal(
                 new ClaimsIdentity(new Claim[]
                 {
-                    new Claim(ClaimTypes.NameIdentifier, "NameId", null, "https://idp.example.com"),
+                    new Claim(AuthServicesClaimTypes.LogoutNameIdentifier, ",,,,NameId", null, "https://idp.example.com"),
                     new Claim(AuthServicesClaimTypes.SessionIndex, "SessionId", null, "https://idp.example.com")
                 }, "Federation"));
 
@@ -430,7 +430,7 @@ namespace Kentor.AuthServices.Tests.Owin
             context.Request.User = new ClaimsPrincipal(
                 new ClaimsIdentity(new Claim[]
                 {
-                    new Claim(ClaimTypes.NameIdentifier, "NameId", null, "https://idp.example.com"),
+                    new Claim(AuthServicesClaimTypes.LogoutNameIdentifier, ",,,,NameId", null, "https://idp.example.com"),
                     new Claim(AuthServicesClaimTypes.SessionIndex, "SessionId", null, "https://idp.example.com")
                 }, "Federation"));
 
@@ -991,16 +991,22 @@ namespace Kentor.AuthServices.Tests.Owin
 
             string[] specifiedAuthTypes = null;
 
+            string logoutInfoClaimValue = ",,urn:format,,Saml2NameId";
+
+            // Emulate the external cookie middleware.
             context.Set<AuthenticateDelegate>("security.Authenticate",
                 (authTypes, callback, state) =>
                 {
                     specifiedAuthTypes = authTypes;
-                    var originalNameIdClaim = new Claim(ClaimTypes.NameIdentifier, "Saml2NameId", null, "http://idp.example.com");
-                    originalNameIdClaim.Properties[ClaimProperties.SamlNameIdentifierFormat] = "urn:format";
+                    var logoutInfoClaim = new Claim(
+                        AuthServicesClaimTypes.LogoutNameIdentifier,
+                        logoutInfoClaimValue,
+                        null,
+                        "http://idp.example.com");
 
                     callback(new ClaimsIdentity(new Claim[]
                         {
-                            originalNameIdClaim,
+                            logoutInfoClaim,
                             new Claim(AuthServicesClaimTypes.SessionIndex, "SessionId", null, "http://idp.example.com"),
                             new Claim(ClaimTypes.Role, "SomeRole", null, "http://idp.example.com")
                         }, "Federation"),
@@ -1026,15 +1032,12 @@ namespace Kentor.AuthServices.Tests.Owin
             specifiedAuthTypes.Should().HaveCount(1)
                 .And.Subject.Single().Should().Be(DefaultSignInAsAuthenticationType);
 
-            var expectedLogoutNameIdClaim = new Claim(AuthServicesClaimTypes.LogoutNameIdentifier, "Saml2NameId", null, "http://idp.example.com");
-            expectedLogoutNameIdClaim.Properties[ClaimProperties.SamlNameIdentifierFormat] = "urn:format";
-
             var expected = new ClaimsIdentity(new Claim[]
             {
                 new Claim(ClaimTypes.NameIdentifier, "ApplicationNameId"),
                 new Claim(AuthServicesClaimTypes.SessionIndex, "SessionId", null, "http://idp.example.com"),
-                expectedLogoutNameIdClaim
-            }, "ApplicationIdentity");
+                new Claim(AuthServicesClaimTypes.LogoutNameIdentifier, logoutInfoClaimValue, null, "http://idp.example.com")
+        }, "ApplicationIdentity");
 
             context.Authentication.AuthenticationResponseGrant.Identity
                 .ShouldBeEquivalentTo(expected, opt => opt.IgnoringCyclicReferences());

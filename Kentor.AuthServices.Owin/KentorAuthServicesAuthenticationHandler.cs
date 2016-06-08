@@ -156,31 +156,26 @@ namespace Kentor.AuthServices.Owin
             var grant = context.Authentication.AuthenticationResponseGrant;
             var externalIdentity = await context.Authentication.AuthenticateAsync(Options.SignInAsAuthenticationType);
             var sessionIdClaim = externalIdentity?.Identity.FindFirst(AuthServicesClaimTypes.SessionIndex);
-            var externalNameIdClaim = externalIdentity?.Identity.FindFirst(ClaimTypes.NameIdentifier);
+            var externalLogutNameIdClaim = externalIdentity?.Identity.FindFirst(AuthServicesClaimTypes.LogoutNameIdentifier);
 
-            if (grant == null || externalIdentity == null || sessionIdClaim == null || externalNameIdClaim == null)
+            if (grant == null || externalIdentity == null || sessionIdClaim == null || externalLogutNameIdClaim == null)
             {
                 return;
             }
 
+            // Need to create new claims because the claim has a back pointer
+            // to the identity it belongs to.
             grant.Identity.AddClaim(new Claim(
                 sessionIdClaim.Type,
                 sessionIdClaim.Value,
                 sessionIdClaim.ValueType,
                 sessionIdClaim.Issuer));
 
-            var logoutNameIdClaim = new Claim(
-                AuthServicesClaimTypes.LogoutNameIdentifier,
-                externalNameIdClaim.Value,
-                externalNameIdClaim.ValueType,
-                externalNameIdClaim.Issuer);
-
-            foreach(var kv in externalNameIdClaim.Properties)
-            {
-                logoutNameIdClaim.Properties.Add(kv);
-            }
-
-            grant.Identity.AddClaim(logoutNameIdClaim);
+            grant.Identity.AddClaim(new Claim(
+                externalLogutNameIdClaim.Type,
+                externalLogutNameIdClaim.Value,
+                externalLogutNameIdClaim.ValueType,
+                externalLogutNameIdClaim.Issuer));
         }
     }
 }

@@ -849,13 +849,13 @@ namespace Kentor.AuthServices.Tests
 
             var subject = options.IdentityProviders[0];
 
-            var nameIdClaim = new Claim(ClaimTypes.NameIdentifier, "NameId", null, subject.EntityId.Id);
-            nameIdClaim.Properties[ClaimProperties.SamlNameIdentifierFormat] = "urn:nameIdFormat";
+            var logoutNameIdClaim = new Claim(
+                AuthServicesClaimTypes.LogoutNameIdentifier, ",,urn:nameIdFormat,,NameId", null, subject.EntityId.Id);
 
             var user = new ClaimsPrincipal(new ClaimsIdentity(
                 new Claim[]
                 {
-                    nameIdClaim,
+                    logoutNameIdClaim,
                     new Claim(AuthServicesClaimTypes.SessionIndex, "SessionId", null, subject.EntityId.Id)
                 }, "Federation"));
 
@@ -881,30 +881,6 @@ namespace Kentor.AuthServices.Tests
         }
 
         [TestMethod]
-        public void IdentityProvider_CreateLogoutRequest_PrefersAuthServicesLogoutNameId()
-        {
-            var options = StubFactory.CreateOptions();
-            options.SPOptions.ServiceCertificates.Add(new ServiceCertificate()
-            {
-                Certificate = SignedXmlHelper.TestCert
-            });
-
-            var subject = options.IdentityProviders[0];
-
-            var user = new ClaimsPrincipal(new ClaimsIdentity(
-                new Claim[]
-                {
-                    new Claim(ClaimTypes.NameIdentifier, "ApplicationNameId"),
-                    new Claim(AuthServicesClaimTypes.LogoutNameIdentifier, "Saml2NameId", null, subject.EntityId.Id),
-                    new Claim(AuthServicesClaimTypes.SessionIndex, "SessionId", null, subject.EntityId.Id)
-                }, "Federation"));
-
-            var actual = subject.CreateLogoutRequest(user);
-
-            actual.NameId.Value.Should().Be("Saml2NameId");
-        }
-
-        [TestMethod]
         public void IdentityProvider_CreateLogoutRequest_IgnoresThreadPrincipal()
         {
             var options = StubFactory.CreateOptions();
@@ -926,8 +902,7 @@ namespace Kentor.AuthServices.Tests
             var user = new ClaimsPrincipal(new ClaimsIdentity(
                 new Claim[]
                 {
-                    new Claim(ClaimTypes.NameIdentifier, "ApplicationNameId"),
-                    new Claim(AuthServicesClaimTypes.LogoutNameIdentifier, "Saml2NameId", null, subject.EntityId.Id),
+                    new Claim(AuthServicesClaimTypes.LogoutNameIdentifier, ",,,,Saml2NameId", null, subject.EntityId.Id),
                     new Claim(AuthServicesClaimTypes.SessionIndex, "SessionId", null, subject.EntityId.Id)
                 }, "Federation"));
 

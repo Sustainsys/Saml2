@@ -72,7 +72,7 @@ namespace Kentor.AuthServices.Tests.WebSSO
             var user = new ClaimsPrincipal(
                 new ClaimsIdentity(new Claim[]
                 {
-                    new Claim(ClaimTypes.NameIdentifier, "NameId", null, "https://idp.example.com"),
+                    new Claim(AuthServicesClaimTypes.LogoutNameIdentifier, ",,,,NameId", null, "https://idp.example.com"),
                     new Claim(AuthServicesClaimTypes.SessionIndex, "SessionId", null, "https://idp.example.com")
                 }, "Federation"));
 
@@ -123,7 +123,7 @@ namespace Kentor.AuthServices.Tests.WebSSO
             var user = new ClaimsPrincipal(
                 new ClaimsIdentity(new Claim[]
                 {
-                    new Claim(ClaimTypes.NameIdentifier, "NameId", null, "https://idp.example.com"),
+                    new Claim(AuthServicesClaimTypes.LogoutNameIdentifier, ",,,,NameId", null, "https://idp.example.com"),
                     new Claim(AuthServicesClaimTypes.SessionIndex, "SessionId", null, "https://idp.example.com")
                 }, "Federation"));
 
@@ -140,45 +140,6 @@ namespace Kentor.AuthServices.Tests.WebSSO
         }
 
         [TestMethod]
-        public void LogoutCommand_Run_ReturnsLogoutRequest_PrefersAuthServicesLogoutNameId()
-        {
-            var user = new ClaimsPrincipal(
-                new ClaimsIdentity(new Claim[]
-                {
-                    new Claim(ClaimTypes.NameIdentifier, "ApplicationNameId"),
-                    new Claim(AuthServicesClaimTypes.LogoutNameIdentifier, "Saml2NameId", null, "https://idp.example.com"),
-                    new Claim(AuthServicesClaimTypes.SessionIndex, "SessionId", null, "https://idp.example.com")
-                }, "Federation"));
-
-            var request = new HttpRequestData("GET", new Uri("http://sp.example.com/AuthServices/Logout"));
-            request.User = user;
-
-            var options = StubFactory.CreateOptions();
-            options.SPOptions.ServiceCertificates.Add(SignedXmlHelper.TestCert);
-
-            var actual = CommandFactory.GetCommand(CommandFactory.LogoutCommandName)
-                .Run(request, options);
-
-            var expected = new CommandResult
-            {
-                HttpStatusCode = HttpStatusCode.SeeOther,
-                TerminateLocalSession = true,
-                // Deliberately not comparing Location.
-                RequestState = new StoredRequestState(
-                    new EntityId("https://idp.example.com"),
-                    new Uri("http://sp.example.com/"),
-                    null,
-                    null)
-            };
-
-            actual.ShouldBeEquivalentTo(expected, opt => opt
-                .Excluding(cr => cr.Location)
-                .Excluding(cr => cr.SetCookieName)
-                .Excluding(cr => cr.RequestState.MessageId));
-            actual.Location.GetLeftPart(UriPartial.Path).Should().Be("https://idp.example.com/logout");
-        }
-
-        [TestMethod]
         public void LogoutCommand_Run_ReturnsLogoutRequest_IgnoresThreadPrincipal()
         {
             Thread.CurrentPrincipal = new ClaimsPrincipal(
@@ -191,7 +152,7 @@ namespace Kentor.AuthServices.Tests.WebSSO
                 new ClaimsIdentity(new Claim[]
                 {
                     new Claim(ClaimTypes.NameIdentifier, "ApplicationNameId"),
-                    new Claim(AuthServicesClaimTypes.LogoutNameIdentifier, "Saml2NameId", null, "https://idp.example.com"),
+                    new Claim(AuthServicesClaimTypes.LogoutNameIdentifier, ",,,,Saml2NameId", null, "https://idp.example.com"),
                     new Claim(AuthServicesClaimTypes.SessionIndex, "SessionId", null, "https://idp.example.com")
                 }, "Federation"));
 
@@ -599,7 +560,7 @@ namespace Kentor.AuthServices.Tests.WebSSO
             var user = new ClaimsPrincipal(
                 new ClaimsIdentity(new Claim[]
                 {
-                    new Claim(ClaimTypes.NameIdentifier, "NameId", null, "https://idp.example.com"),
+                    new Claim(AuthServicesClaimTypes.LogoutNameIdentifier, ",,,,NameId", null, "https://idp.example.com"),
                     new Claim(AuthServicesClaimTypes.SessionIndex, "SessionId", null, "https://idp.example.com")
                 }));
 
