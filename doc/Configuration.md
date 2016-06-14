@@ -496,10 +496,13 @@ certificate configured in AuthServices as all logout messages must be signed.
 ####`allowUnsolicitedAuthnResponse` Attribute
 *Attribute of the [`<add>`](#add-identityprovider-element) element*
 
-Allow unsolicited responses. That is InResponseTo is missing in the AuthnRequest.  
-If true InResponseTo is not required. The IDP can initiate the authentication process.  
-If false InResponseTo is required. The authentication process must be initiated by an AuthnRequest from this SP.  
-Even though allowUnsolicitedAuthnResponse is true the InResponseTo must be valid if existing.
+Allow unsolicited responses. That is, Idp initiated sign on where there was no
+prior AuthnRequest. 
+If `true` InResponseTo is not required and the IDP can initiate the authentication
+process. If `false` InResponseTo is required and the authentication process must
+be initiated by an AuthnRequest from this SP. 
+Note that if the authentication was SP-intiatied, RelayState and InResponseTo
+must be present and valid.
 
 ####`binding` Attribute
 *Optional attribute of the [`<add>`](#add-identityprovider-element) element*
