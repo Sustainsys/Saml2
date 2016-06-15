@@ -5,6 +5,9 @@ using System.Security.Cryptography;
 using System.IdentityModel.Metadata;
 using System.IdentityModel.Tokens;
 using Kentor.AuthServices.Internal;
+using System.Reflection;
+using System.Collections.Generic;
+using System;
 
 namespace Kentor.AuthServices.Tests.Helpers
 {
@@ -70,6 +73,26 @@ namespace Kentor.AuthServices.Tests.Helpers
             var keyInfo2 = new KeyInfo();
             keyInfo2.AddClause(new KeyInfoX509Data(TestCert2));
             KeyInfoXml2 = keyInfo2.GetXml().OuterXml;
+        }
+
+        public static void RemoveGlobalSha256XmlSignatureSupport()
+        {
+            // Clean up after tests that globally activate SHA256 support. There
+            // is no official API for removing signature algorithms, so let's
+            // do some reflection.
+
+            var internalSyncObject = typeof(CryptoConfig)
+                .GetProperty("InternalSyncObject", BindingFlags.Static | BindingFlags.NonPublic)
+                .GetValue(null);
+
+            lock (internalSyncObject)
+            {
+                var appNameHT = (IDictionary<string, Type>)typeof(CryptoConfig)
+                    .GetField("appNameHT", BindingFlags.Static | BindingFlags.NonPublic)
+                    .GetValue(null);
+
+                appNameHT.Remove("http://www.w3.org/2001/04/xmldsig-more#rsa-sha256");
+            }
         }
     }
 }

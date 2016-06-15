@@ -70,6 +70,10 @@
     <Reference Include="System.Configuration" />
     <Reference Include="System.IdentityModel" />
     <Reference Include="System.identitymodel.services" />
+    <Reference Include="System.IdentityModel.Tokens.Jwt, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.IdentityModel.Tokens.Jwt.4.0.0\lib\net45\System.IdentityModel.Tokens.Jwt.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Security" />
     <Reference Include="System.Web" />
@@ -126,6 +130,7 @@
     <Compile Include="Helpers\SpinWaiter.cs" />
     <Compile Include="Internal\CryptographyExtensionsTests.cs" />
     <Compile Include="Internal\DelimitedStringTests.cs" />
+    <Compile Include="ManagedSHA256SignatureDescriptionTests.cs" />
     <Compile Include="Owin\StubDataProtector.cs" />
     <Compile Include="Saml2NameIdExtensionsTests.cs" />
     <Compile Include="Saml2P\Saml2ArtifactResolveTests.cs" />

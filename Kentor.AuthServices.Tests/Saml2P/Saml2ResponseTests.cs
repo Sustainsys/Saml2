@@ -28,22 +28,7 @@ namespace Kentor.AuthServices.Tests.Saml2P
         [TestCleanup]
         public void Cleanup()
         {
-            // Clean up after tests that globally activate SHA256 support. There
-            // is no official API for removing signature algorithms, so let's
-            // do some reflection.
-
-            var internalSyncObject = typeof(CryptoConfig)
-                .GetProperty("InternalSyncObject", BindingFlags.Static | BindingFlags.NonPublic)
-                .GetValue(null);
-
-            lock (internalSyncObject)
-            {
-                var appNameHT = (IDictionary<string, Type>)typeof(CryptoConfig)
-                    .GetField("appNameHT", BindingFlags.Static | BindingFlags.NonPublic)
-                    .GetValue(null);
-
-                appNameHT.Remove("http://www.w3.org/2001/04/xmldsig-more#rsa-sha256");
-            }
+            SignedXmlHelper.RemoveGlobalSha256XmlSignatureSupport();
         }
 
         [TestMethod]
