@@ -125,6 +125,7 @@
     <Compile Include="Configuration\ServiceCertificateElementCollectionTests.cs" />
     <Compile Include="Configuration\TetClassAttribute.cs" />
     <Compile Include="Exceptions\InvalidSignatureExceptionTests.cs" />
+    <Compile Include="Exceptions\InResponseToNoRelayStateValidationExceptionTests.cs" />
     <Compile Include="Helpers\OwinTestHelpers.cs" />
     <Compile Include="Helpers\SignedXmlHelper.cs" />
     <Compile Include="Helpers\SpinWaiter.cs" />
