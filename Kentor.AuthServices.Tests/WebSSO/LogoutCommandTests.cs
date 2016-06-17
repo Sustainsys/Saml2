@@ -231,6 +231,74 @@ namespace Kentor.AuthServices.Tests.WebSSO
         }
 
         [TestMethod]
+        public void LogoutCommand_Run_HandlesLogoutResponse_UsesApplicationPathWhenNoStoredRequestState()
+        {
+            var relayState = "MyRelayState";
+            var response = new Saml2LogoutResponse(Saml2StatusCode.Success)
+            {
+                DestinationUrl = new Uri("http://sp.example.com/path/AuthServices/logout"),
+                Issuer = new EntityId("https://idp.example.com"),
+                InResponseTo = new Saml2Id(),
+                SigningCertificate = SignedXmlHelper.TestCert,
+                RelayState = relayState
+            };
+
+            var bindResult = Saml2Binding.Get(Saml2BindingType.HttpRedirect)
+                .Bind(response);
+
+            var applicationPath = "http://sp-internal.example.com/path/AuthServices/";
+            var request = new HttpRequestData("GET", bindResult.Location, applicationPath, null, null);
+
+            var options = StubFactory.CreateOptions();
+
+            var actual = CommandFactory.GetCommand(CommandFactory.LogoutCommandName)
+                .Run(request, options);
+
+            var expected = new CommandResult
+            {
+                Location = new Uri(applicationPath),
+                HttpStatusCode = HttpStatusCode.SeeOther,
+                ClearCookieName = "Kentor." + relayState
+            };
+
+            actual.ShouldBeEquivalentTo(expected);
+        }
+
+        [TestMethod]
+        public void LogoutCommand_Run_HandlesLogoutResponse_UsesReturnPathWhenNoStoredRequestState()
+        {
+            var relayState = "MyRelayState";
+            var response = new Saml2LogoutResponse(Saml2StatusCode.Success)
+            {
+                DestinationUrl = new Uri("http://sp.example.com/path/AuthServices/logout"),
+                Issuer = new EntityId("https://idp.example.com"),
+                InResponseTo = new Saml2Id(),
+                SigningCertificate = SignedXmlHelper.TestCert,
+                RelayState = relayState
+            };
+
+            var bindResult = Saml2Binding.Get(Saml2BindingType.HttpRedirect)
+                .Bind(response);
+
+            var applicationPath = "http://sp-internal.example.com/path/AuthServices/";
+            var returnPath = "http://sp-internal.example.com/path/anotherpath";
+            var request = new HttpRequestData("GET", bindResult.Location, applicationPath, null, null);
+
+            var options = StubFactory.CreateOptions();
+
+            var actual = LogoutCommand.Run(request, returnPath, options);
+
+            var expected = new CommandResult
+            {
+                Location = new Uri( returnPath ),
+                HttpStatusCode = HttpStatusCode.SeeOther,
+                ClearCookieName = "Kentor." + relayState
+            };
+
+            actual.ShouldBeEquivalentTo(expected);
+        }
+
+        [TestMethod]
         public void LogoutCommand_Run_HandlesLogoutResponse_InPost()
         {
             var relayState = "TestState";
