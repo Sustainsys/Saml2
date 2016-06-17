@@ -119,7 +119,7 @@ namespace Kentor.AuthServices.Saml2P
                 InResponseTo = new Saml2Id(parsedInResponseTo);
                 if (expectedInResponseTo == null)
                 {
-                    throw new InResponseToNoRelayStateValidationException(
+                    throw new UnexpectedInResponseToException(
                         string.Format(CultureInfo.InvariantCulture,
                         "Received message contains unexpected InResponseTo \"{0}\". No RelayState was detected so message was not expected to have an InResponseTo attribute.",
                         InResponseTo));

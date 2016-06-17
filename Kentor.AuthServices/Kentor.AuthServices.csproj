@@ -60,7 +60,7 @@
     <Compile Include="Configuration\KentorAuthServicesNotifications.cs" />
     <Compile Include="Configuration\Compatibility.cs" />
     <Compile Include="Configuration\CompatibilityElement.cs" />
-    <Compile Include="Exceptions\InResponseToNoRelayStateValidationException.cs" />
+    <Compile Include="Exceptions\UnexpectedInResponseToException.cs" />
     <Compile Include="Internal\DelimitedString.cs" />
     <Compile Include="Internal\DictionaryExtensions.cs" />
     <Compile Include="ManagedSha256SignatureDescription.cs" />
