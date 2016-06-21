@@ -1304,7 +1304,7 @@ namespace Kentor.AuthServices.Tests.Saml2P
 
             Action a = () => Saml2Response.Read(responseXML, null);
 
-            a.ShouldThrow<Saml2ResponseFailedValidationException>()
+            a.ShouldThrow<UnexpectedInResponseToException>()
                 .WithMessage("Received message contains unexpected InResponseTo \"InResponseTo\"*");
         }
 
