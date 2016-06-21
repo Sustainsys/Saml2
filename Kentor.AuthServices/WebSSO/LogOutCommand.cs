@@ -161,15 +161,13 @@ namespace Kentor.AuthServices.WebSso
 
         private static Uri GetReturnUrl(HttpRequestData request, string returnPath, IOptions options)
         {
-            var urls = new AuthServicesUrls(request, options.SPOptions);
-
             if (!string.IsNullOrEmpty(returnPath))
             {
-                return new Uri(urls.ApplicationUrl, returnPath);
+                return new Uri(returnPath, UriKind.RelativeOrAbsolute);
             }
             else
             {
-                return urls.ApplicationUrl;
+                return new AuthServicesUrls(request, options.SPOptions).ApplicationUrl;
             }
         }
 

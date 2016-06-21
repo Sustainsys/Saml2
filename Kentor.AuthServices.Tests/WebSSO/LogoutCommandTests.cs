@@ -160,7 +160,7 @@ namespace Kentor.AuthServices.Tests.WebSSO
             var actual = CommandFactory.GetCommand(CommandFactory.LogoutCommandName)
                 .Run(request, options);
 
-            actual.RequestState.ReturnUrl.OriginalString.Should().Be("http://sp.example.com/LoggedOut");
+            actual.RequestState.ReturnUrl.OriginalString.Should().Be("/LoggedOut");
         }
 
         [TestMethod]
@@ -561,7 +561,7 @@ namespace Kentor.AuthServices.Tests.WebSSO
             var subject = CommandFactory.GetCommand(CommandFactory.LogoutCommandName);
                        
             var actual = subject.Run(
-                new HttpRequestData("GET", new Uri("http://localhost/Logout?ReturnUrl=LoggedOut"))
+                new HttpRequestData("GET", new Uri("http://localhost/Logout?ReturnUrl=%2FLoggedOut"))
                 {
                     User = user
                 },
@@ -570,7 +570,7 @@ namespace Kentor.AuthServices.Tests.WebSSO
             var expected = new CommandResult()
             {
                 HttpStatusCode = HttpStatusCode.SeeOther,
-                Location = new Uri("http://localhost/LoggedOut"),
+                Location = new Uri("/LoggedOut", UriKind.RelativeOrAbsolute),
                 TerminateLocalSession = true
             };
 
