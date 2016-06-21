@@ -1,3 +1,10 @@
+Version 0.19.0
+* Fix: SP-initiated logout uses configured binding.
+* Fix: Removed buggy expansion of relative ReturnUrls
+* Fix: Enabling SHA256 signatures no longer breaks IdentityServer3.
+* Support for SessionNotOnOrAfter
+* And some more, see https://github.com/KentorIT/authservices/milestones/v0.19.0 for details.
+
 Version 0.18.1
 * Bug Fix: Use AuthenticationRequest event in HttpModule.
 * Don't use ClaimsPrincipal.Current in Logout Command.
@@ -6,9 +13,3 @@ Version 0.18.1
 
 Release contains breaking changes related to logout handling, please see
 https://coding.abel.nu/2016/06/kentor-authservices-0-18-1-breaking-changes/
-
-Version 0.18.0
-* Support for Scoping
-* Notifications/callbacks
-* Bug fixes, see github milestone for complete list.
-* ADFS compatible metadata
