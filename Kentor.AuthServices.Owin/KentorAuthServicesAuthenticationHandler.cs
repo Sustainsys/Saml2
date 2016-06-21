@@ -100,19 +100,11 @@ namespace Kentor.AuthServices.Owin
                 {
                     if (Context.Response.StatusCode / 100 == 3)
                     {
-                        var locationUrl = Context.Response.Headers["Location"];
-
-                        redirectUrl = new Uri(
-                            new Uri(urls.ApplicationUrl.ToString().TrimEnd('/') + Context.Request.Path),
-                            locationUrl
-                            ).ToString();
+                        redirectUrl = Context.Response.Headers["Location"];
                     }
                     else
                     {
-                        redirectUrl = new Uri(
-                            urls.ApplicationUrl,
-                            Context.Request.Path.ToUriComponent().TrimStart('/'))
-                            .ToString();
+                        redirectUrl = Context.Request.Path.ToUriComponent();
                     }
                 }
 

@@ -235,7 +235,7 @@ namespace Kentor.AuthServices.Tests.Owin
             context.Response.Headers["Location"].Should().StartWith("https://idp.example.com/logout?SAMLRequest");
             var returnUrl = ExtractRequestState(options.DataProtector, context).ReturnUrl;
 
-            returnUrl.Should().Be("https://sp.example.com/ExternalPath/LoggedOut");
+            returnUrl.Should().Be("/LoggedOut");
         }
 
         [TestMethod]
@@ -283,70 +283,6 @@ namespace Kentor.AuthServices.Tests.Owin
             return new StoredRequestState(
                 dataProtector.Unprotect(
                     HttpRequestData.GetBinaryData(cookieData)));
-        }
-
-        [TestMethod]
-        public async Task KentorAuthServicesAuthenticationMiddleware_CreatesRedirectOnAuthRevoke_PreservesRedirect_RelativePath()
-        {
-            await KentorAuthServicesAuthenticationMiddleware_CreatesRedirectOnAuthRevoke_PreservesRedirect(
-                "LoggedOut", "https://sp.example.com/ExternalPath/Account/LoggedOut");
-        }
-
-        [TestMethod]
-        public async Task KentorAuthServicesAuthenticationMiddleware_CreatesRedirectOnAuthRevoke_PreservesRedirect_RelativePath_SimplePath()
-        {
-            await KentorAuthServicesAuthenticationMiddleware_CreatesRedirectOnAuthRevoke_PreservesRedirect(
-                "LoggedOut", "https://sp.example.com/ExternalPath/LoggedOut", "/LogOut");
-        }
-
-        [TestMethod]
-        public async Task KentorAuthServicesAuthenticationMiddleware_CreatesRedirectOnAuthRevoke_PreservesRedirect_AppRelative()
-        {
-            await KentorAuthServicesAuthenticationMiddleware_CreatesRedirectOnAuthRevoke_PreservesRedirect(
-                "/LoggedOut", "https://sp.example.com/LoggedOut");
-        }
-
-        [TestMethod]
-        public async Task KentorAuthServicesAuthenticationMiddleware_CreatesRedirectOnAuthRevoke_PreservesRedirect_Absolute()
-        {
-            await KentorAuthServicesAuthenticationMiddleware_CreatesRedirectOnAuthRevoke_PreservesRedirect(
-                "http://loggedout.example.com/SomePath", "http://loggedout.example.com/SomePath");
-        }
-
-        private async Task KentorAuthServicesAuthenticationMiddleware_CreatesRedirectOnAuthRevoke_PreservesRedirect(
-            string location, string expectedUrl, string path = "/Account/LogOut", AuthenticationProperties authProps = null)
-        {
-            var revoke = new AuthenticationResponseRevoke(new string[0]);
-
-            var options = new KentorAuthServicesAuthenticationOptions(true);
-            options.SPOptions.PublicOrigin = new Uri("https://sp.example.com/ExternalPath/");
-
-            var subject = new KentorAuthServicesAuthenticationMiddleware(
-                new StubOwinMiddleware(303, revoke: revoke),
-                CreateAppBuilder(),
-                options);
-
-            var context = OwinTestHelpers.CreateOwinContext();
-            context.Request.Scheme = "http";
-            context.Request.Host = new HostString("sp-internal.example.com");
-            context.Request.PathBase = new PathString("/AppPath");
-            context.Request.Path = new PathString(path);
-            context.Response.Headers["Location"] = location;
-            context.Request.User = new ClaimsPrincipal(
-                new ClaimsIdentity(new Claim[]
-                {
-                    new Claim(AuthServicesClaimTypes.LogoutNameIdentifier, ",,,,NameId", null, "https://idp.example.com"),
-                    new Claim(AuthServicesClaimTypes.SessionIndex, "SessionId", null, "https://idp.example.com")
-                }, "Federation"));
-
-            await subject.Invoke(context);
-
-            var cookieValue = context.Response.Headers["Set-Cookie"].Split(';', '=')[1];
-
-            var returnUrl = new StoredRequestState(options.DataProtector.Unprotect(
-                HttpRequestData.GetBinaryData(cookieValue))).ReturnUrl;
-
-            returnUrl.Should().Be(expectedUrl);
         }
 
         [TestMethod]
@@ -1021,7 +957,7 @@ namespace Kentor.AuthServices.Tests.Owin
 
             var storedAuthnData = ExtractRequestState(options.DataProtector, context);
 
-            storedAuthnData.ReturnUrl.Should().Be("http://localhost/Home");
+            storedAuthnData.ReturnUrl.Should().Be("/Home");
         }
 
         [TestMethod]

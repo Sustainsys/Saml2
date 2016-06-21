@@ -36,6 +36,13 @@ namespace Kentor.AuthServices.Tests
         }
 
         [TestMethod]
+        public void StoredRequestState_Serialize_Deserialize_RelativeReturnUrl()
+        {
+            TestSerializeDeserialize(new StoredRequestState(
+                null, new Uri("/return", UriKind.RelativeOrAbsolute), null, null));
+        }
+
+        [TestMethod]
         public void StoredRequestState_Serialize_Deserialize_MessageId()
         {
             TestSerializeDeserialize(new StoredRequestState(
