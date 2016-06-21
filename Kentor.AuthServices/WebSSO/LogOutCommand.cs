@@ -134,7 +134,7 @@ namespace Kentor.AuthServices.WebSso
             {
                 var logoutRequest = idp.CreateLogoutRequest(request.User);
 
-                commandResult = Saml2Binding.Get(Saml2BindingType.HttpRedirect)
+                commandResult = Saml2Binding.Get(idp.SingleLogoutServiceBinding)
                     .Bind(logoutRequest);
 
                 commandResult.RequestState = new StoredRequestState(

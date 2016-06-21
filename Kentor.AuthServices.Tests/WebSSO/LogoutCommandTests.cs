@@ -118,6 +118,30 @@ namespace Kentor.AuthServices.Tests.WebSSO
         }
 
         [TestMethod]
+        public void LogoutCommand_Run_ReturnsLogoutRequest_POST()
+        {
+            var user = new ClaimsPrincipal(
+                new ClaimsIdentity(new Claim[]
+                {
+                    new Claim(AuthServicesClaimTypes.LogoutNameIdentifier, ",,,,NameId", null, "https://idp.example.com"),
+                    new Claim(AuthServicesClaimTypes.SessionIndex, "SessionId", null, "https://idp.example.com")
+                }, "Federation"));
+
+            var request = new HttpRequestData("GET", new Uri("http://sp-internal.example.com/AuthServices/Logout"));
+            request.User = user;
+
+            var options = StubFactory.CreateOptions();
+            options.SPOptions.ServiceCertificates.Add(SignedXmlHelper.TestCert);
+            options.IdentityProviders[new EntityId("https://idp.example.com")]
+                .SingleLogoutServiceBinding = Saml2BindingType.HttpPost;
+
+            var actual = CommandFactory.GetCommand(CommandFactory.LogoutCommandName)
+                .Run(request, options);
+
+            actual.HttpStatusCode.Should().Be(HttpStatusCode.OK);
+        }
+
+        [TestMethod]
         public void LogoutCommand_Run_PreservesReturnUrl()
         {
             var user = new ClaimsPrincipal(
