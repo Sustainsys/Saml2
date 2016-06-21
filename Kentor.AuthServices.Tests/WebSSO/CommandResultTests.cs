@@ -29,7 +29,8 @@ namespace Kentor.AuthServices.Tests.WebSso
                 SetCookieName = (string)null,
                 RequestState = (StoredRequestState)null,
                 ClearCookieName = (string)null,
-                HandledResult = false
+                HandledResult = false,
+                SessionNotOnOrAfter = (DateTime?)null
             };
 
             new CommandResult().ShouldBeEquivalentTo(expected);
