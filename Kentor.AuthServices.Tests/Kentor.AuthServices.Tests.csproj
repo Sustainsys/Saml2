@@ -129,6 +129,7 @@
     <Compile Include="Helpers\SignedXmlHelper.cs" />
     <Compile Include="Helpers\SpinWaiter.cs" />
     <Compile Include="Internal\CryptographyExtensionsTests.cs" />
+    <Compile Include="Internal\DateTimeHelperTests.cs" />
     <Compile Include="Internal\DelimitedStringTests.cs" />
     <Compile Include="ManagedSHA256SignatureDescriptionTests.cs" />
     <Compile Include="Owin\StubDataProtector.cs" />

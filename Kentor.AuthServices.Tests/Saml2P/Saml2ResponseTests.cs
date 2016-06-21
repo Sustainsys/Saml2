@@ -5,18 +5,13 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.IdentityModel.Metadata;
 using System.IdentityModel.Tokens;
-using System.IdentityModel.Services;
 using System.Linq;
 using System.Security.Claims;
-using System.Security.Cryptography;
 using System.Security.Cryptography.Xml;
 using System.Xml;
 using System.IO;
-using Kentor.AuthServices.Internal;
 using Kentor.AuthServices.Saml2P;
 using System.Reflection;
-using System.Collections.Generic;
-using System.Security.Cryptography.X509Certificates;
 using System.IdentityModel.Selectors;
 using Kentor.AuthServices.Exceptions;
 
@@ -58,13 +53,14 @@ namespace Kentor.AuthServices.Tests.Saml2P
                 InResponseTo = new Saml2Id("InResponseToId"),
                 RequestState = (StoredRequestState)null,
                 SecondLevelStatus = (string)null,
-                RelayState = (string)null
+                RelayState = (string)null,
             };
 
             Saml2Response.Read(response, expected.InResponseTo).ShouldBeEquivalentTo(
                 expected, opt => opt
                     .Excluding(s => s.XmlElement)
-                    .Excluding(s => s.SigningCertificate));
+                    .Excluding(s => s.SigningCertificate)
+                    .Excluding(s => s.SessionNotOnOrAfter));
         }
 
         [TestMethod]
@@ -1827,6 +1823,93 @@ namespace Kentor.AuthServices.Tests.Saml2P
                 r => r.GetClaims(options))
                 .ShouldThrow<InvalidSignatureException>()
                 .And.Message.Should().Be("The signature was valid, but the verification of the certificate failed. Is it expired or revoked? Are you sure you really want to enable ValidateCertificates (it's normally not needed)?");
+        }
+
+        [TestMethod]
+        public void Saml2Response_SessionNotOnOrAfter_ExtractedFromMessage()
+        {
+            var response =
+            @"<?xml version=""1.0"" encoding=""UTF-8""?>
+            <saml2p:Response xmlns:saml2p=""urn:oasis:names:tc:SAML:2.0:protocol""
+            xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
+            ID = """ + MethodBase.GetCurrentMethod().Name + @""" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z"">
+                <saml2:Issuer>https://idp.example.com</saml2:Issuer>
+                <saml2p:Status>
+                    <saml2p:StatusCode Value=""urn:oasis:names:tc:SAML:2.0:status:Success"" />
+                </saml2p:Status>
+                <saml2:Assertion xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
+                Version=""2.0"" ID=""" + MethodBase.GetCurrentMethod().Name + $@"1""
+                IssueInstant=""2013-09-25T00:00:00Z"">
+                    <saml2:Issuer>https://idp.example.com</saml2:Issuer>
+                    <saml2:Subject>
+                        <saml2:NameID>SomeUser</saml2:NameID>
+                        <saml2:SubjectConfirmation Method=""urn:oasis:names:tc:SAML:2.0:cm:bearer"" />
+                    </saml2:Subject>
+                    <saml2:Conditions NotOnOrAfter=""2100-01-01T00:00:00Z"" />
+                    <saml2:AuthnStatement AuthnInstant=""{DateTime.UtcNow.ToSaml2DateTimeString()}"" SessionNotOnOrAfter = ""2050-01-01T00:00:00Z"">
+                        <saml2:AuthnContext>
+                            <saml2:AuthnContextClassRef>urn:oasis:names:tc:SAML:2.0:ac:classes:PasswordProtectedTransport</saml2:AuthnContextClassRef>
+                        </saml2:AuthnContext>
+                    </saml2:AuthnStatement>
+                </saml2:Assertion>
+                <saml2:Assertion xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
+                Version=""2.0"" ID=""" + MethodBase.GetCurrentMethod().Name + $@"2""
+                IssueInstant=""2013-09-25T00:00:00Z"">
+                    <saml2:Issuer>https://idp.example.com</saml2:Issuer>
+                    <saml2:Subject>
+                        <saml2:NameID>SomeOtherUser</saml2:NameID>
+                        <saml2:SubjectConfirmation Method=""urn:oasis:names:tc:SAML:2.0:cm:bearer"" />
+                    </saml2:Subject>
+                    <saml2:Conditions NotOnOrAfter=""2100-01-01T00:00:00Z"" />
+                    <saml2:AuthnStatement AuthnInstant=""{DateTime.UtcNow.ToSaml2DateTimeString()}"" SessionNotOnOrAfter = ""2051-01-01T00:00:00Z"">
+                        <saml2:AuthnContext>
+                            <saml2:AuthnContextClassRef>urn:oasis:names:tc:SAML:2.0:ac:classes:PasswordProtectedTransport</saml2:AuthnContextClassRef>
+                        </saml2:AuthnContext>
+                    </saml2:AuthnStatement>
+                </saml2:Assertion>
+            </saml2p:Response>";
+
+            var subject = Saml2Response.Read(SignedXmlHelper.SignXml(response));
+
+            subject.GetClaims(StubFactory.CreateOptions());
+
+            subject.SessionNotOnOrAfter.Should().Be(new DateTime(2050, 1, 1, 0, 0, 0, DateTimeKind.Utc));
+        }
+
+        [TestMethod]
+        public void Saml2Response_SessionNotOnOrAfter_ThrowsIfCalledBeforeGetClaims()
+        {
+            var response =
+            @"<?xml version=""1.0"" encoding=""UTF-8""?>
+            <saml2p:Response xmlns:saml2p=""urn:oasis:names:tc:SAML:2.0:protocol""
+            xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
+            ID = """ + MethodBase.GetCurrentMethod().Name + @""" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z"">
+                <saml2:Issuer>https://idp.example.com</saml2:Issuer>
+                <saml2p:Status>
+                    <saml2p:StatusCode Value=""urn:oasis:names:tc:SAML:2.0:status:Success"" />
+                </saml2p:Status>
+                <saml2:Assertion xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
+                Version=""2.0"" ID=""" + MethodBase.GetCurrentMethod().Name + $@"1""
+                IssueInstant=""2013-09-25T00:00:00Z"">
+                    <saml2:Issuer>https://idp.example.com</saml2:Issuer>
+                    <saml2:Subject>
+                        <saml2:NameID>SomeUser</saml2:NameID>
+                        <saml2:SubjectConfirmation Method=""urn:oasis:names:tc:SAML:2.0:cm:bearer"" />
+                    </saml2:Subject>
+                    <saml2:Conditions NotOnOrAfter=""2100-01-01T00:00:00Z"" />
+                    <saml2:AuthnStatement AuthnInstant=""{DateTime.UtcNow.ToSaml2DateTimeString()}"" SessionNotOnOrAfter = ""2200-01-01T00:00:00Z"">
+                        <saml2:AuthnContext>
+                            <saml2:AuthnContextClassRef>urn:oasis:names:tc:SAML:2.0:ac:classes:PasswordProtectedTransport</saml2:AuthnContextClassRef>
+                        </saml2:AuthnContext>
+                    </saml2:AuthnStatement>
+                </saml2:Assertion>
+            </saml2p:Response>";
+
+            var subject = Saml2Response.Read(SignedXmlHelper.SignXml(response));
+
+            subject.Invoking(s => { var value = s.SessionNotOnOrAfter; })
+                .ShouldThrow<InvalidOperationException>()
+                .WithMessage("*GetClaims*");
         }
     }
 }

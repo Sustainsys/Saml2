@@ -5,6 +5,7 @@ using System;
 using System.Configuration;
 using System.IdentityModel.Metadata;
 using System.IdentityModel.Services;
+using System.IdentityModel.Tokens;
 using System.Net;
 using System.Security.Claims;
 using System.Security.Cryptography;
@@ -111,7 +112,8 @@ namespace Kentor.AuthServices.WebSso
                 HttpStatusCode = HttpStatusCode.SeeOther,
                 Location = storedRequestState?.ReturnUrl ?? options.SPOptions.ReturnUrl,
                 Principal = principal,
-                RelayData = storedRequestState?.RelayData
+                RelayData = storedRequestState?.RelayData,
+                SessionNotOnOrAfter = samlResponse.SessionNotOnOrAfter
             };
         }
 

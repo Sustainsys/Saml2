@@ -514,14 +514,43 @@ namespace Kentor.AuthServices.Saml2P
 
                     handler.ValidateConditions(token.Assertion.Conditions, validateAudience);
 
+                    sessionNotOnOrAfter = DateTimeHelper.EarliestTime(sessionNotOnOrAfter,
+                    token.Assertion.Statements.OfType<Saml2AuthenticationStatement>()
+                        .SingleOrDefault()?.SessionNotOnOrAfter);
+
                     yield return handler.CreateClaims(token);
                 }
             }
         }
-
+        
         /// <summary>
         /// RelayState attached to the message.
         /// </summary>
         public string RelayState { get; } = null;
+
+        private DateTime? sessionNotOnOrAfter;
+
+        /// <summary>
+        /// Session termination time for a session generated from this
+        /// response.
+        /// </summary>
+        [SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "GetClaims")]
+        [SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "SessionNotOnOrAfter")]
+        public DateTime? SessionNotOnOrAfter
+        {
+            get
+            {
+                if(claimsIdentities == null)
+                {
+                    // This is not a good design, but will have to do for now.
+                    // The entire Saml2Response class needs some refactoring
+                    // love - probably by extracting more stuff to the 
+                    // Saml2PSecurityTokenHandler.
+                    throw new InvalidOperationException("Accessing SessionNotOnOrAfter requires GetClaims to have been called first.");
+                }
+                return sessionNotOnOrAfter;
+            }
+        }
+
     }
 }

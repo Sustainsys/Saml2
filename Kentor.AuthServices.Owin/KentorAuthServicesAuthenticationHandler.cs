@@ -38,6 +38,11 @@ namespace Kentor.AuthServices.Owin
 
             var authProperties = new AuthenticationProperties(result.RelayData);
             authProperties.RedirectUri = result.Location.OriginalString;
+            if(result.SessionNotOnOrAfter.HasValue)
+            {
+                authProperties.AllowRefresh = false;
+                authProperties.ExpiresUtc = result.SessionNotOnOrAfter.Value;
+            }
 
             return new MultipleIdentityAuthenticationTicket(identities, authProperties);
         }
