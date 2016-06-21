@@ -16,7 +16,13 @@ namespace Kentor.AuthServices.HttpModule
     [ExcludeFromCodeCoverage]
     public class Saml2AuthenticationModule : IHttpModule
     {
-        private IOptions options;
+        /// <summary>
+        /// The one and only options instance used by the
+        /// <see cref="Saml2AuthenticationModule"/>. It is instantiated by
+        /// loading the web.config, but after that it can be modified or even
+        /// replaced from code.
+        /// </summary>
+        public static IOptions Options { get; set; } = Configuration.Options.FromConfiguration;
 
         /// <summary>
         /// Init the module and subscribe to events.
@@ -33,9 +39,6 @@ namespace Kentor.AuthServices.HttpModule
             // to be done first (required by logout) but still execute as close
             // as possible to the normal authentication step.
             context.AuthenticateRequest += OnAuthenticateRequest;
-
-            // Cache configuration during the lifecycle of this module including metadata, certificates etc. 
-            options = Options.FromConfiguration;
         }
 
         /// <summary>
@@ -50,9 +53,11 @@ namespace Kentor.AuthServices.HttpModule
 
             // Strip the leading ~ from the AppRelative path.
             var appRelativePath = application.Request.AppRelativeCurrentExecutionFilePath;
-            appRelativePath = (!String.IsNullOrEmpty(appRelativePath)) ? appRelativePath.Substring(1) : String.Empty;
+            appRelativePath = (!string.IsNullOrEmpty(appRelativePath))
+                ? appRelativePath.Substring(1)
+                : string.Empty;
 
-            var modulePath = options.SPOptions.ModulePath;
+            var modulePath = Options.SPOptions.ModulePath;
 
             if (appRelativePath.StartsWith(modulePath, StringComparison.OrdinalIgnoreCase))
             {
@@ -61,7 +66,7 @@ namespace Kentor.AuthServices.HttpModule
                 var command = CommandFactory.GetCommand(commandName);
                 var commandResult = command.Run(
                     new HttpRequestWrapper(application.Request).ToHttpRequestData(),
-                    options);
+                    Options);
 
                 if (!commandResult.HandledResult)
                 {
