@@ -138,6 +138,8 @@ namespace Kentor.AuthServices.HttpModule
                 FederatedAuthentication.SessionAuthenticationModule.DeleteSessionTokenCookie();
             }
         }
+
+        [ExcludeFromCodeCoverage]
         private static DateTime CalculateSessionNotOnOrAfter()
         {
             var configuredLifeTime = (FederatedAuthentication.FederationConfiguration
