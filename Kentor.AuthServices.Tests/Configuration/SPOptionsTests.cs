@@ -515,5 +515,17 @@ namespace Kentor.AuthServices.Tests.Configuration
             result.Count.Should().Be(1);
             result[0].Status.Should().Be(CertificateStatus.Current);
         }
+
+        [TestMethod]
+        public void SPOptions_Saml2PSecurityTokenHandler_Setter()
+        {
+            var subject = StubFactory.CreateSPOptions();
+
+            var handler = new Saml2PSecurityTokenHandler(subject);
+
+            subject.Saml2PSecurityTokenHandler = handler;
+
+            subject.Saml2PSecurityTokenHandler.Should().BeSameAs(handler);
+        }
     }
 }
