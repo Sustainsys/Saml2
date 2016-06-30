@@ -61,6 +61,27 @@ namespace Kentor.AuthServices.Tests.Saml2P
         }
 
         [TestMethod]
+        public void Saml2AuthenticationRequest_ForceAuthentication_OmittedIfFalse()
+        {
+            var subject = new Saml2AuthenticationRequest() {
+                ForceAuthentication = false
+            }.ToXElement();
+
+            subject.Should().NotBeNull().And.Subject.Attribute("ForceAuthn").Should().BeNull();
+        }
+
+        [TestMethod]
+        public void Saml2AuthenticationRequest_ForceAuthentication()
+        {
+            var subject = new Saml2AuthenticationRequest() {
+                ForceAuthentication = true
+            }.ToXElement();
+
+            subject.Should().NotBeNull().And.Subject.Attribute("ForceAuthn")
+                .Should().NotBeNull().And.Subject.Value.Should().Be("true");
+        }
+
+        [TestMethod]
         public void Saml2AuthenticationRequest_Read()
         {
             var xmlData = @"<?xml version=""1.0"" encoding=""UTF-8""?>
@@ -71,19 +92,21 @@ namespace Kentor.AuthServices.Tests.Saml2P
   Version=""2.0""
   Destination=""http://destination.example.com""
   AssertionConsumerServiceURL=""https://sp.example.com/SAML2/Acs""
-  IssueInstant=""2004-12-05T09:21:59Z"">
+  IssueInstant=""2004-12-05T09:21:59Z""
+  ForceAuthn=""true"">
   <saml:Issuer>https://sp.example.com/SAML2</saml:Issuer>
 />
 </samlp:AuthnRequest>
 ";
 
             var relayState = "My relay state";
-
+            var forceAuthn = true;
             var subject = Saml2AuthenticationRequest.Read(xmlData, relayState);
 
             subject.Id.Should().Be(new Saml2Id("Saml2AuthenticationRequest_AssertionConsumerServiceUrl"));
             subject.AssertionConsumerServiceUrl.Should().Be(new Uri("https://sp.example.com/SAML2/Acs"));
             subject.RelayState.Should().Be(relayState);
+            subject.ForceAuthentication.Should().Be(forceAuthn);
         }
 
         [TestMethod]
