@@ -491,9 +491,12 @@ namespace Kentor.AuthServices.Saml2P
 
             if (status != Saml2StatusCode.Success)
             {
-                throw new UnsuccessfulSamlOperationException(string.Format("The Saml2Response must have status success to extract claims. Status: {0}.{1}"
-                , status.ToString(), statusMessage != null ? " Message: " + statusMessage + "." : string.Empty),
-                status, statusMessage, secondLevelStatus);
+                throw new UnsuccessfulSamlOperationException(string.Format("The Saml2Response must have status success to extract claims. Status: {0}.{1}",
+                                                                           status, 
+                                                                           statusMessage != null ? string.Format(" Message: {0}.", statusMessage) : string.Empty),
+                                                             status, 
+                                                             statusMessage, 
+                                                             secondLevelStatus);
             }
 
             foreach (XmlElement assertionNode in GetAllAssertionElementNodes(options))
@@ -505,12 +508,19 @@ namespace Kentor.AuthServices.Saml2P
                     var token = (Saml2SecurityToken)handler.ReadToken(reader);
                     handler.DetectReplayedToken(token);
 
+                    // Have checked for replayed token, don't need to validate OneTimeUse (Saml2SecurityTokenHandler doesn't support it either)
+                    if (token.Assertion.Conditions != null)
+                    {
+                        token.Assertion.Conditions.OneTimeUse = false;
+                    }
+
                     var validateAudience = options.SPOptions
-                        .Saml2PSecurityTokenHandler
-                        .SamlSecurityTokenRequirement
-                        .ShouldEnforceAudienceRestriction(options.SPOptions
-                        .SystemIdentityModelIdentityConfiguration
-                        .AudienceRestriction.AudienceMode, token);
+                                            .Saml2PSecurityTokenHandler
+                                            .SamlSecurityTokenRequirement
+                                            .ShouldEnforceAudienceRestriction(options.SPOptions
+                                                                                .SystemIdentityModelIdentityConfiguration
+                                                                                .AudienceRestriction.AudienceMode, 
+                                                                              token);
 
                     handler.ValidateConditions(token.Assertion.Conditions, validateAudience);
 
