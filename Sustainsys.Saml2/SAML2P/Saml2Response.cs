@@ -563,6 +563,12 @@ namespace Sustainsys.Saml2.Saml2P
 
                     handler.DetectReplayedToken(token);
 
+                    // Have checked for replayed token, don't need to validate OneTimeUse (Saml2SecurityTokenHandler doesn't support it either)
+                    if (token.Assertion.Conditions != null)
+                    {
+                        token.Assertion.Conditions.OneTimeUse = false;
+                    }
+
                     var validateAudience = options.SPOptions
                         .Saml2PSecurityTokenHandler
                         .SamlSecurityTokenRequirement
