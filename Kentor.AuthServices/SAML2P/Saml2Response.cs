@@ -509,10 +509,8 @@ namespace Kentor.AuthServices.Saml2P
                     handler.DetectReplayedToken(token);
 
                     // Have checked for replayed token, don't need to validate OneTimeUse (Saml2SecurityTokenHandler doesn't support it either)
-                    if (token.Assertion.Conditions != null)
-                    {
-                        token.Assertion.Conditions.OneTimeUse = false;
-                    }
+                    // a TechNet article that discusses this related to AD-FS http://social.technet.microsoft.com/wiki/contents/articles/2994.ad-fs-2-0-id4149-the-saml2securitytoken-is-rejected-because-the-saml2-assertion-specifies-a-onetimeuse-condition.aspx
+                    token.Assertion.Conditions.OneTimeUse = false;
 
                     var validateAudience = options.SPOptions
                                             .Saml2PSecurityTokenHandler
