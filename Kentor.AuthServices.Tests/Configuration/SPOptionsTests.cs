@@ -80,6 +80,7 @@ namespace Kentor.AuthServices.Tests.Configuration
             subject.RequestedAuthnContext.ClassRef.OriginalString.Should().Be("urn:oasis:names:tc:SAML:2.0:ac:classes:PasswordProtectedTransport");
             subject.RequestedAuthnContext.Comparison.Should().Be(AuthnContextComparisonType.Minimum);
             subject.Compatibility.UnpackEntitiesDescriptorInIdentityProviderMetadata.Should().BeTrue();
+            subject.Compatibility.AcceptOneTimeUseAssertions.Should().BeFalse();
         }
 
         [TestMethod]
