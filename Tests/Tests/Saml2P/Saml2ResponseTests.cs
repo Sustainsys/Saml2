@@ -2250,7 +2250,10 @@ namespace Sustainsys.Saml2.Tests.Saml2P
 
             var signedResponse = SignedXmlHelper.SignXml(response);
 
-            Action a = () => Saml2Response.Read(signedResponse).GetClaims(Options.FromConfiguration);
+            Options options = Options.FromConfiguration;
+            options.SPOptions.Compatibility.AcceptOneTimeUseAssertions = true;
+
+            Action a = () => Saml2Response.Read(signedResponse).GetClaims(options);
             a.ShouldNotThrow();
         }
 
@@ -2282,10 +2285,13 @@ namespace Sustainsys.Saml2.Tests.Saml2P
 
             var signedResponse = SignedXmlHelper.SignXml(response);
 
-            Action a = () => Saml2Response.Read(signedResponse).GetClaims(Options.FromConfiguration);
+            Options options = Options.FromConfiguration;
+            options.SPOptions.Compatibility.AcceptOneTimeUseAssertions = true;
+
+            Action a = () => Saml2Response.Read(signedResponse).GetClaims(options);
             a.ShouldNotThrow();
 
-            a = () => Saml2Response.Read(signedResponse).GetClaims(Options.FromConfiguration);
+            a = () => Saml2Response.Read(signedResponse).GetClaims(options);
             a.ShouldThrow<SecurityTokenReplayDetectedException>();
         }
 
