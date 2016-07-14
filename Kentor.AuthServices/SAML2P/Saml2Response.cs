@@ -105,7 +105,12 @@ namespace Kentor.AuthServices.Saml2P
 
             if (destinationUrlString != null)
             {
-                DestinationUrl = new Uri(destinationUrlString);
+                Uri parsedDestination;
+                if (!Uri.TryCreate(destinationUrlString, UriKind.Absolute, out parsedDestination))
+                {
+                    throw new BadFormatSamlResponseException("Destination value was not a valid Uri");
+                }
+                DestinationUrl = parsedDestination;
             }
         }
 
