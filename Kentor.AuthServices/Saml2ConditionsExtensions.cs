@@ -31,7 +31,10 @@ namespace Kentor.AuthServices
             xml.AddAttributeIfNotNullOrEmpty("NotOnOrAfter",
                     conditions.NotOnOrAfter?.ToSaml2DateTimeString());
 
-            foreach(var ar in conditions.AudienceRestrictions)
+            xml.AddAttributeIfNotNullOrEmpty("NotBefore",
+                 conditions.NotBefore?.ToSaml2DateTimeString());
+
+            foreach (var ar in conditions.AudienceRestrictions)
             {
                 xml.Add(new XElement(Saml2Namespaces.Saml2 + "AudienceRestriction",
                     ar.Audiences.Select(a =>
