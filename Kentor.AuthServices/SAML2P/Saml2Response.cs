@@ -208,7 +208,7 @@ namespace Kentor.AuthServices.Saml2P
             Saml2Id inResponseTo,
             string relayState,
             Uri audience,
-            params ClaimsIdentity[] claimsIdentities)
+            params ClaimsIdentity[] claimsIdentities) : this(issuer, issuerCertificate, destinationUrl, inResponseTo, relayState, audience, null, claimsIdentities)
         {
             Issuer = issuer;
             this.claimsIdentities = claimsIdentities;
@@ -219,6 +219,28 @@ namespace Kentor.AuthServices.Saml2P
             id = new Saml2Id("id" + Guid.NewGuid().ToString("N"));
             status = Saml2StatusCode.Success;
             this.audience = audience;
+        }
+
+        public Saml2Response(
+          EntityId issuer,
+          X509Certificate2 issuerCertificate,
+          Uri destinationUrl,
+          Saml2Id inResponseTo,
+          string relayState,
+          Uri audience,
+          Action<Saml2Assertion> saml2Customizations,
+          params ClaimsIdentity[] claimsIdentities)
+        {
+            Issuer = issuer;
+            this.claimsIdentities = claimsIdentities;
+            SigningCertificate = issuerCertificate;
+            DestinationUrl = destinationUrl;
+            RelayState = relayState;
+            InResponseTo = inResponseTo;
+            id = new Saml2Id("id" + Guid.NewGuid().ToString("N"));
+            status = Saml2StatusCode.Success;
+            this.audience = audience;
+            this.saml2Customizations = saml2Customizations;
         }
 
         /// <summary>
@@ -300,8 +322,9 @@ namespace Kentor.AuthServices.Saml2P
 
             foreach (var ci in claimsIdentities)
             {
-                responseElement.AppendChild(xml.ReadNode(
-                    ci.ToSaml2Assertion(Issuer, audience, InResponseTo, DestinationUrl).ToXElement().CreateReader()));
+                var saml2Assertion = ci.ToSaml2Assertion(Issuer, audience, InResponseTo, DestinationUrl);
+                saml2Customizations?.Invoke(saml2Assertion);
+                responseElement.AppendChild(xml.ReadNode(saml2Assertion.ToXElement().CreateReader()));
             }
 
             xmlElement = xml.DocumentElement;
@@ -452,6 +475,7 @@ namespace Kentor.AuthServices.Saml2P
         }
 
         private Uri audience;
+        private readonly Action<Saml2Assertion> saml2Customizations;
 
         private IEnumerable<ClaimsIdentity> claimsIdentities;
         private Exception createClaimsException;

@@ -89,8 +89,6 @@ namespace Kentor.AuthServices
             }
 
             var notOnOrAfter = DateTime.UtcNow.AddMinutes(2);
-            var notBefore = DateTime.UtcNow.AddMinutes(-2);
-
 
             assertion.Subject = new Saml2Subject(identity.ToSaml2NameIdentifier())
             {
@@ -109,8 +107,7 @@ namespace Kentor.AuthServices
 
             assertion.Conditions = new Saml2Conditions()
             {
-                NotOnOrAfter = notOnOrAfter,
-                NotBefore = notBefore
+                NotOnOrAfter = notOnOrAfter
             };
 
             if (audience != null)

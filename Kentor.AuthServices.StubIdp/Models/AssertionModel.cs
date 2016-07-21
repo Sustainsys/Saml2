@@ -83,7 +83,12 @@ namespace Kentor.AuthServices.StubIdp.Models
             return new Saml2Response(
                 new EntityId(UrlResolver.MetadataUrl.ToString()),
                 CertificateHelper.SigningCertificate, new Uri(AssertionConsumerServiceUrl),
-                saml2Id, RelayState, audienceUrl, identity);
+                saml2Id, RelayState, audienceUrl, Saml2Customizations, identity);
+        }
+
+        private static void Saml2Customizations(Saml2Assertion saml2Assertion)
+        {
+            saml2Assertion.Conditions.NotBefore = DateTime.UtcNow.AddSeconds(-2);
         }
 
         [Display(Name = "Incoming AuthnRequest")]
