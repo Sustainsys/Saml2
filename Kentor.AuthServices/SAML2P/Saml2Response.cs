@@ -209,18 +209,22 @@ namespace Kentor.AuthServices.Saml2P
             string relayState,
             Uri audience,
             params ClaimsIdentity[] claimsIdentities) : this(issuer, issuerCertificate, destinationUrl, inResponseTo, relayState, audience, null, claimsIdentities)
-        {
-            Issuer = issuer;
-            this.claimsIdentities = claimsIdentities;
-            SigningCertificate = issuerCertificate;
-            DestinationUrl = destinationUrl;
-            RelayState = relayState;
-            InResponseTo = inResponseTo;
-            id = new Saml2Id("id" + Guid.NewGuid().ToString("N"));
-            status = Saml2StatusCode.Success;
-            this.audience = audience;
-        }
+        { }
 
+
+        /// <summary>
+        /// Create a response with the supplied data.
+        /// </summary>
+        /// <param name="issuer">Issuer of the response.</param>
+        /// <param name="issuerCertificate">The certificate to use when signing
+        /// this response in XML form.</param>
+        /// <param name="destinationUrl">The destination Uri for the message</param>
+        /// <param name="inResponseTo">In response to id</param>
+        /// <param name="relayState">RelayState associated with the message.</param>
+        /// <param name="audience">Audience of the response, set as AudienceRestriction</param>
+        /// <param name="saml2Customizations">Delegate to modify the Saml2Assertion before it is written to xml</param>
+        /// <param name="claimsIdentities">Claims identities to be included in the 
+        /// response. Each identity is translated into a separate assertion.</param>
         public Saml2Response(
           EntityId issuer,
           X509Certificate2 issuerCertificate,
