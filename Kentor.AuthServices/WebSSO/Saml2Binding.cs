@@ -155,7 +155,6 @@ namespace Kentor.AuthServices.WebSso
 
         private readonly static IDictionary<Saml2BindingType, Uri> bindingUriMap = new Dictionary<Saml2BindingType, Uri>()
         {
-            { Saml2BindingType.HttpRedirect, HttpRedirectUri },
             { Saml2BindingType.HttpPost, HttpPostUri },
             { Saml2BindingType.Artifact, HttpArtifactUri }
         };
