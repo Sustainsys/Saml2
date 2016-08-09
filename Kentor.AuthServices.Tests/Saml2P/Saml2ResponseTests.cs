@@ -1998,6 +1998,7 @@ namespace Kentor.AuthServices.Tests.Saml2P
             var signedResponse = SignedXmlHelper.SignXml(response);
 
             Options options = Options.FromConfiguration;
+            options.SPOptions.Compatibility.AcceptOneTimeUseAssertions = false;
 
             Action a = () => Saml2Response.Read(signedResponse).GetClaims(options);
             a.ShouldThrow<SecurityTokenValidationException>();
