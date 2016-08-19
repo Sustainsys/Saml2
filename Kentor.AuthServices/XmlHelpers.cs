@@ -253,14 +253,17 @@ namespace Kentor.AuthServices
             }
             catch (CryptographicException)
             {
-                if (signedXml.SignatureMethod == Options.RsaSha256Namespace && CryptoConfig.CreateFromName(signedXml.SignatureMethod) == null)
-                {
-                    throw new InvalidSignatureException("SHA256 signatures require the algorithm to be registered at the process level. Call Kentor.AuthServices.Configuration.Options.GlobalEnableSha256XmlSignatures() on startup to register.");
-                }
-                else
-                {
-                    throw;
-                }
+                CheckSha256Support(signedXml);
+                throw;
+            }
+        }
+
+        [ExcludeFromCodeCoverage]
+        private static void CheckSha256Support( SignedXml signedXml )
+        {
+            if (signedXml.SignatureMethod == Options.RsaSha256Namespace && CryptoConfig.CreateFromName( signedXml.SignatureMethod ) == null)
+            {
+                throw new InvalidSignatureException("SHA256 signatures require the algorithm to be registered at the process level. Upgrade to .Net 4.6.2 or call Kentor.AuthServices.Configuration.Options.GlobalEnableSha256XmlSignatures() on startup to register.");
             }
         }
 
