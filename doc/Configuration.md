@@ -71,6 +71,11 @@ read web.config, but can also be configured from code.
          allowUnsolicitedAuthnResponse="true" 
          loadMetadata = "true" />
   </identityProviders>
+  <!-- Optional configuration for signed requests. Required for Single Logout. -->
+  <serviceCertificates>
+    <add fileName="~/App_Data/Kentor.AuthServices.Tests.pfx" />
+  </serviceCertificates>
+  <!-- Optional configuration for fetching IDP list from a federation -->
   <federations>
     <add metadataLocation="https://federation.example.com/metadata.xml" allowUnsolicitedAuthnResponse = "false" />
   </federations>
