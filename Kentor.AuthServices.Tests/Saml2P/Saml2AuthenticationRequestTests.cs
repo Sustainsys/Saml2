@@ -437,7 +437,7 @@ namespace Kentor.AuthServices.Tests.Saml2P
                 Binding = protocolBinding
             }.ToXElement();
 
-            subject.Attribute("ProtocolBinding").Value.Should().Equals(expectedProtocolBinding);
+            subject.Attribute("ProtocolBinding").Value.Should().Be(expectedProtocolBinding);
         }
     }
 }
