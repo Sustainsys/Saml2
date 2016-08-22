@@ -187,5 +187,27 @@ namespace Kentor.AuthServices.Tests.WebSso
 
             a.ShouldThrow<ArgumentNullException>().And.ParamName.Should().Be("uri");
         }
+
+        [TestMethod]
+        public void Saml2Binding_Saml2BindingTypeToUri_Artifact()
+        {
+            Saml2Binding.Saml2BindingTypeToUri(Saml2BindingType.Artifact)
+                .Should().Be(Saml2Binding.HttpArtifactUri);
+        }
+
+        [TestMethod]
+        public void Saml2Binding_Saml2BindingTypeToUri_Post()
+        {
+            Saml2Binding.Saml2BindingTypeToUri(Saml2BindingType.HttpPost)
+                .Should().Be(Saml2Binding.HttpPostUri);
+        }
+
+        [TestMethod]
+        public void Saml2Binding_Saml2BindingTypeToUri_Unknown()
+        {
+            Action a = () => Saml2Binding.Saml2BindingTypeToUri(Saml2BindingType.HttpRedirect);
+
+            a.ShouldThrow<ArgumentException>().And.Message.Should().Be("Unknown Saml2 Binding Type \"HttpRedirect\".");
+        }
     }
 }

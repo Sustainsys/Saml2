@@ -360,6 +360,18 @@ namespace Kentor.AuthServices.Tests.Saml2P
         }
 
         [TestMethod]
+        public void Saml2AuthenticationRequest_ToXElement_AddsProtocolBinding_HttpPost()
+        {
+            Saml2AuthenticationRequest_ToXElement_AddsProtocolBinding(AuthServices.WebSso.Saml2BindingType.HttpPost, "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST");
+        }
+
+        [TestMethod]
+        public void Saml2AuthenticationRequest_ToXElement_AddsProtocolBinding_Artifact()
+        {
+            Saml2AuthenticationRequest_ToXElement_AddsProtocolBinding(AuthServices.WebSso.Saml2BindingType.Artifact, "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Artifact");
+        }
+
+        [TestMethod]
         public void Saml2AuthenticationRequest_ToXElement_OmitsRequestedAuthnContext_OnNullClassRef()
         {
             var subject = new Saml2AuthenticationRequest()
@@ -415,6 +427,17 @@ namespace Kentor.AuthServices.Tests.Saml2P
             var actual = subject.Element(Saml2Namespaces.Saml2P + "RequestedAuthnContext");
 
             actual.Should().BeEquivalentTo(expected);
+        }
+
+        private void Saml2AuthenticationRequest_ToXElement_AddsProtocolBinding(AuthServices.WebSso.Saml2BindingType protocolBinding, string expectedProtocolBinding)
+        {
+            var subject = new Saml2AuthenticationRequest()
+            {
+                AssertionConsumerServiceUrl = new Uri("http://destination.example.com"),
+                Binding = protocolBinding
+            }.ToXElement();
+
+            subject.Attribute("ProtocolBinding").Value.Should().Be(expectedProtocolBinding);
         }
     }
 }
