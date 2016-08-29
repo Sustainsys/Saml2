@@ -73,6 +73,49 @@ namespace Kentor.AuthServices.Tests
         }
 
         [TestMethod]
+        public void Saml2AssertionExtensions_ToXElement_SubjectConfirmationData()
+        {
+            var subjectName = "JohnDoe";
+            var destination = new Uri("http://sp.example.com");
+            var inResponseTo = new Saml2Id("abc123");
+            var notOnOrAfter = DateTime.UtcNow.AddMinutes(2);
+
+            var assertion = new Saml2Assertion(
+                new Saml2NameIdentifier("http://idp.example.com"))
+            {
+                Subject = new Saml2Subject(new Saml2NameIdentifier(subjectName))
+                {
+                    SubjectConfirmations =
+                    {
+                        new Saml2SubjectConfirmation(
+                        new Uri("urn:oasis:names:tc:SAML:2.0:cm:bearer"),
+                        new Saml2SubjectConfirmationData
+                        {
+                            NotOnOrAfter = notOnOrAfter,
+                            InResponseTo = inResponseTo,
+                            Recipient = destination
+                        })
+                    }
+                }
+            };
+
+            var subject = assertion.ToXElement();
+
+            var confirmationData = subject.Element(Saml2Namespaces.Saml2 + "Subject").
+                Element(Saml2Namespaces.Saml2 + "SubjectConfirmation").
+                Element(Saml2Namespaces.Saml2 + "SubjectConfirmationData");
+
+            confirmationData.
+                Attribute("Recipient").Value.Should().Be(destination.OriginalString);
+
+            confirmationData.
+                Attribute("NotOnOrAfter").Value.Should().Be(notOnOrAfter.ToSaml2DateTimeString());
+
+            confirmationData.
+                Attribute("InResponseTo").Value.Should().Be(inResponseTo.Value);
+        }
+
+        [TestMethod]
         public void Saml2AssertionExtensions_ToXElement_Conditions()
         {
             var assertion = new Saml2Assertion(

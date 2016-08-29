@@ -111,6 +111,10 @@ namespace Kentor.AuthServices.Configuration
 
                 return value;
             }
+            set
+            {
+                saml2PSecurityTokenHandler = value; 
+            }
         }
 
         /// <summary>

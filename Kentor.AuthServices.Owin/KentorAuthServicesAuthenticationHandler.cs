@@ -28,13 +28,21 @@ namespace Kentor.AuthServices.Owin
             var result = CommandFactory.GetCommand(CommandFactory.AcsCommandName)
                 .Run(await Context.ToHttpRequestData(Options.DataProtector.Unprotect), Options);
 
-            result.Apply(Context, Options.DataProtector);
+            if (!result.HandledResult)
+            {
+                result.Apply(Context, Options.DataProtector);
+            }
 
             var identities = result.Principal.Identities.Select(i =>
                 new ClaimsIdentity(i, null, Options.SignInAsAuthenticationType, i.NameClaimType, i.RoleClaimType));
 
             var authProperties = new AuthenticationProperties(result.RelayData);
             authProperties.RedirectUri = result.Location.OriginalString;
+            if(result.SessionNotOnOrAfter.HasValue)
+            {
+                authProperties.AllowRefresh = false;
+                authProperties.ExpiresUtc = result.SessionNotOnOrAfter.Value;
+            }
 
             return new MultipleIdentityAuthenticationTicket(identities, authProperties);
         }
@@ -70,7 +78,10 @@ namespace Kentor.AuthServices.Owin
                         Options,
                         challenge.Properties.Dictionary);
 
-                    result.Apply(Context, Options.DataProtector);
+                    if (!result.HandledResult)
+                    {
+                        result.Apply(Context, Options.DataProtector);
+                    }
                 }
             }
         }
@@ -89,24 +100,20 @@ namespace Kentor.AuthServices.Owin
                 {
                     if (Context.Response.StatusCode / 100 == 3)
                     {
-                        var locationUrl = Context.Response.Headers["Location"];
-
-                        redirectUrl = new Uri(
-                            new Uri(urls.ApplicationUrl.ToString().TrimEnd('/') + Context.Request.Path),
-                            locationUrl
-                            ).ToString();
+                        redirectUrl = Context.Response.Headers["Location"];
                     }
                     else
                     {
-                        redirectUrl = new Uri(
-                            urls.ApplicationUrl,
-                            Context.Request.Path.ToUriComponent().TrimStart('/'))
-                            .ToString();
+                        redirectUrl = Context.Request.Path.ToUriComponent();
                     }
                 }
 
-                LogoutCommand.Run(request, redirectUrl, Options)
-                    .Apply(Context, Options.DataProtector);
+                var result = LogoutCommand.Run(request, redirectUrl, Options);
+
+                if (!result.HandledResult)
+                {
+                    result.Apply(Context, Options.DataProtector);
+                }
             }
 
             await AugmentAuthenticationGrantWithLogoutClaims(Context);
@@ -127,9 +134,13 @@ namespace Kentor.AuthServices.Owin
                     return true;
                 }
 
-                CommandFactory.GetCommand(remainingPath.Value)
-                    .Run(await Context.ToHttpRequestData(Options.DataProtector.Unprotect), Options)
-                    .Apply(Context, Options.DataProtector);
+                var result = CommandFactory.GetCommand(remainingPath.Value)
+                    .Run(await Context.ToHttpRequestData(Options.DataProtector.Unprotect), Options);
+
+                if (!result.HandledResult)
+                {
+                    result.Apply(Context, Options.DataProtector);
+                }
 
                 return true;
             }
@@ -142,31 +153,26 @@ namespace Kentor.AuthServices.Owin
             var grant = context.Authentication.AuthenticationResponseGrant;
             var externalIdentity = await context.Authentication.AuthenticateAsync(Options.SignInAsAuthenticationType);
             var sessionIdClaim = externalIdentity?.Identity.FindFirst(AuthServicesClaimTypes.SessionIndex);
-            var externalNameIdClaim = externalIdentity?.Identity.FindFirst(ClaimTypes.NameIdentifier);
+            var externalLogutNameIdClaim = externalIdentity?.Identity.FindFirst(AuthServicesClaimTypes.LogoutNameIdentifier);
 
-            if (grant == null || externalIdentity == null || sessionIdClaim == null || externalNameIdClaim == null)
+            if (grant == null || externalIdentity == null || sessionIdClaim == null || externalLogutNameIdClaim == null)
             {
                 return;
             }
 
+            // Need to create new claims because the claim has a back pointer
+            // to the identity it belongs to.
             grant.Identity.AddClaim(new Claim(
                 sessionIdClaim.Type,
                 sessionIdClaim.Value,
                 sessionIdClaim.ValueType,
                 sessionIdClaim.Issuer));
 
-            var logoutNameIdClaim = new Claim(
-                AuthServicesClaimTypes.LogoutNameIdentifier,
-                externalNameIdClaim.Value,
-                externalNameIdClaim.ValueType,
-                externalNameIdClaim.Issuer);
-
-            foreach(var kv in externalNameIdClaim.Properties)
-            {
-                logoutNameIdClaim.Properties.Add(kv);
-            }
-
-            grant.Identity.AddClaim(logoutNameIdClaim);
+            grant.Identity.AddClaim(new Claim(
+                externalLogutNameIdClaim.Type,
+                externalLogutNameIdClaim.Value,
+                externalLogutNameIdClaim.ValueType,
+                externalLogutNameIdClaim.Issuer));
         }
     }
 }

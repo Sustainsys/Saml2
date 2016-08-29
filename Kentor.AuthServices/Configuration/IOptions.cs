@@ -17,7 +17,7 @@ namespace Kentor.AuthServices.Configuration
     {
         /// <summary>
         /// Options for the service provider's behaviour; i.e. everything except
-        /// the idp and federation list.
+        /// the idp list and the notifications.
         /// </summary>
         SPOptions SPOptions { get; }
 
@@ -27,9 +27,9 @@ namespace Kentor.AuthServices.Configuration
         IdentityProviderDictionary IdentityProviders { get; }
 
         /// <summary>
-        /// Gets the notifications
+        /// Set of callbacks that can be used as extension points for various
+        /// events.
         /// </summary>
-        /// <value>The notification</value>
         KentorAuthServicesNotifications Notifications { get; }
     }
 }

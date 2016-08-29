@@ -28,10 +28,11 @@ does not need any http modules, please see the separate info on the [Owin middle
 ```
 <system.web>
   <httpModules>
-	<!-- Add these modules below any existing. -->
+	<!-- Add these modules below any existing. The SessionAuthenticatioModule
+         must be loaded before the Saml2AuthenticationModule -->
     <add name="SessionAuthenticationModule" type="System.IdentityModel.Services.SessionAuthenticationModule, System.IdentityModel.Services, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089"/>
     <!-- Only add the Saml2AuthenticationModule if you're using the Kentor.AuthServices.HttpModule
-		library. If you are using Kentor.AuthServices.Mvc you SHOULD NOT load this module.-->
+		 library. If you are using Kentor.AuthServices.Mvc you SHOULD NOT load this module.-->
 	<add name="Saml2AuthenticationModule" type="Kentor.AuthServices.HttpModule.Saml2AuthenticationModule, Kentor.AuthServices.HttpModule"/>
   </httpModules>
 </system.web>
@@ -70,6 +71,11 @@ read web.config, but can also be configured from code.
          allowUnsolicitedAuthnResponse="true" 
          loadMetadata = "true" />
   </identityProviders>
+  <!-- Optional configuration for signed requests. Required for Single Logout. -->
+  <serviceCertificates>
+    <add fileName="~/App_Data/Kentor.AuthServices.Tests.pfx" />
+  </serviceCertificates>
+  <!-- Optional configuration for fetching IDP list from a federation -->
   <federations>
     <add metadataLocation="https://federation.example.com/metadata.xml" allowUnsolicitedAuthnResponse = "false" />
   </federations>
@@ -465,6 +471,7 @@ A list of identity providers known to the service provider.
 * [`wantAuthnRequestsSigned`](#wantauthnrequestssigned-attribute)
 * [`loadMetadata`](#loadmetadata-attribute)
 * [`metadataLocation`](#metadataLocation-attribute-idp)
+* [`disableOutboundLogoutRequests`](disableOutboundLogoutRequests-attribute)
 
 ####Elements
 * [`<signingCertificate>`](#signingcertificate-element)
@@ -494,10 +501,13 @@ certificate configured in AuthServices as all logout messages must be signed.
 ####`allowUnsolicitedAuthnResponse` Attribute
 *Attribute of the [`<add>`](#add-identityprovider-element) element*
 
-Allow unsolicited responses. That is InResponseTo is missing in the AuthnRequest.  
-If true InResponseTo is not required. The IDP can initiate the authentication process.  
-If false InResponseTo is required. The authentication process must be initiated by an AuthnRequest from this SP.  
-Even though allowUnsolicitedAuthnResponse is true the InResponseTo must be valid if existing.
+Allow unsolicited responses. That is, Idp initiated sign on where there was no
+prior AuthnRequest. 
+If `true` InResponseTo is not required and the IDP can initiate the authentication
+process. If `false` InResponseTo is required and the authentication process must
+be initiated by an AuthnRequest from this SP. 
+Note that if the authentication was SP-intiatied, RelayState and InResponseTo
+must be present and valid.
 
 ####`binding` Attribute
 *Optional attribute of the [`<add>`](#add-identityprovider-element) element*
@@ -533,6 +543,14 @@ for an idp, AuthServices normally interprets the EntityId as a url to the metada
 If the metadata is located somewhere else it can be specified with this
 configuration parameter. The location can be a URL, an absolute path to a local
 file or an app relative path (e.g. ~/App_Data/IdpMetadata.xml)
+
+####`disableOutboundLogoutRequests` Attribute
+*Optional attribute of the [`add`](#add-identityprovider-element) element*
+
+Disable outbound logout requests to this idp, even though AuthServices is
+configured for single logout and the idp supports it. This setting might be
+usable when adding SLO to an existing setup, to ensure that everyone is ready
+for SLO before activating.
 
 ###`<signingCertificate>` Element
 *Optional child element of the [`<identityProvider>`](#identityprovider-element) element*

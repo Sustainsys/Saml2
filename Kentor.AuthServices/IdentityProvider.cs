@@ -49,6 +49,7 @@ namespace Kentor.AuthServices
             metadataLocation = string.IsNullOrEmpty(config.MetadataLocation)
                 ? null : config.MetadataLocation;
             WantAuthnRequestsSigned = config.WantAuthnRequestsSigned;
+            DisableOutboundLogoutRequests = config.DisableOutboundLogoutRequests;
 
             var certificate = config.SigningCertificate.LoadCertificate();
             if (certificate != null)
@@ -482,8 +483,9 @@ namespace Kentor.AuthServices
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "ServiceCertificates")]
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "ISPOptions")]
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1726:UsePreferredTerms", MessageId = "Logout")]
-        public Saml2LogoutRequest CreateLogoutRequest()
+        public Saml2LogoutRequest CreateLogoutRequest(ClaimsPrincipal user)
         {
+            if (user == null) throw new ArgumentNullException(nameof(user));
             if (spOptions.SigningServiceCertificate == null)
             {
                 throw new InvalidOperationException(string.Format(CultureInfo.InvariantCulture,
@@ -495,18 +497,21 @@ namespace Kentor.AuthServices
             {
                 DestinationUrl = SingleLogoutServiceUrl,
                 Issuer = spOptions.EntityId,
-                NameId = (ClaimsPrincipal.Current.FindFirst(AuthServicesClaimTypes.LogoutNameIdentifier)
-                            ?? ClaimsPrincipal.Current.FindFirst(ClaimTypes.NameIdentifier))
+                NameId = user.FindFirst(AuthServicesClaimTypes.LogoutNameIdentifier)
                             .ToSaml2NameIdentifier(),
                 SessionIndex =
-                    ClaimsPrincipal.Current.FindFirst(AuthServicesClaimTypes.SessionIndex).Value,
+                    user.FindFirst(AuthServicesClaimTypes.SessionIndex).Value,
                 SigningCertificate = spOptions.SigningServiceCertificate,
             };
         }
 
         /// <summary>
-        /// Provider for adding scoping to authentication requests.
+        /// Disable outbound logout requests to this idp, even though
+        /// AuthServices is configured for single logout and the idp supports
+        /// it. This setting might be usable when adding SLO to an existing
+        /// setup, to ensure that everyone is ready for SLO before activating.
         /// </summary>
-        public ISaml2ScopingProvider ScopingProvider { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1726:UsePreferredTerms", MessageId = "Logout")]
+        public bool DisableOutboundLogoutRequests { get; set; }
     }
 }

@@ -40,11 +40,18 @@ namespace Kentor.AuthServices.Mvc
         /// SignIn action that sends the AuthnRequest to the Idp.
         /// </summary>
         /// <returns>Redirect with sign in request</returns>
+        [SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "HandledResult")]
+        [SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "CommandResult")]
         public ActionResult SignIn()
         {
             var result = CommandFactory.GetCommand(CommandFactory.SignInCommandName).Run(
                 Request.ToHttpRequestData(),
                 Options);
+
+            if(result.HandledResult)
+            {
+                throw new NotSupportedException("The MVC controller doesn't support setting CommandResult.HandledResult.");
+            }
 
             result.ApplyCookies(Response);
             return result.ToActionResult();
@@ -57,11 +64,18 @@ namespace Kentor.AuthServices.Mvc
         /// <remarks>The action effectively accepts the SAMLResponse, but
         /// due to using common infrastructure it is read for the current
         /// http request.</remarks>
+        [SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "HandledResult")]
+        [SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "CommandResult")]
         public ActionResult Acs()
         {
             var result = CommandFactory.GetCommand(CommandFactory.AcsCommandName).Run(
                 Request.ToHttpRequestData(),
                 Options);
+
+            if(result.HandledResult)
+            {
+                throw new NotSupportedException("The MVC controller doesn't support setting CommandResult.HandledResult.");
+            }
 
             result.SignInOrOutSessionAuthenticationModule();
             result.ApplyCookies(Response);
@@ -72,11 +86,19 @@ namespace Kentor.AuthServices.Mvc
         /// Metadata of the service provider.
         /// </summary>
         /// <returns>ActionResult with Metadata</returns>
+        [SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "HandledResult")]
+        [SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "CommandResult")]
         public ActionResult Index()
         {
             var result = CommandFactory.GetCommand(CommandFactory.MetadataCommand).Run(
                 Request.ToHttpRequestData(),
                 Options);
+
+            if (result.HandledResult)
+            {
+                throw new NotSupportedException("The MVC controller doesn't support setting CommandResult.HandledResult.");
+            }
+
             return result.ToActionResult();
         }
 
@@ -84,11 +106,18 @@ namespace Kentor.AuthServices.Mvc
         /// Logout locally and if Idp supports it, perform a federated logout
         /// </summary>
         /// <returns>ActionResult</returns>
+        [SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "HandledResult")]
+        [SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "CommandResult")]
         [SuppressMessage("Microsoft.Naming", "CA1726:UsePreferredTerms", MessageId = "Logout")]
         public ActionResult Logout()
         {
             var result = CommandFactory.GetCommand(CommandFactory.LogoutCommandName)
                 .Run(Request.ToHttpRequestData(), Options);
+
+            if (result.HandledResult)
+            {
+                throw new NotSupportedException("The MVC controller doesn't support setting CommandResult.HandledResult.");
+            }
 
             result.SignInOrOutSessionAuthenticationModule();
             result.ApplyCookies(Response);

@@ -33,5 +33,62 @@ namespace Kentor.AuthServices.Tests
             subject.Element(Saml2Namespaces.Saml2 + "SubjectConfirmation")
                 .Attribute("Method").Value.Should().Be("urn:oasis:names:tc:SAML:2.0:cm:bearer");
         }
+
+        [TestMethod]
+        public void Saml2SubjectExtensions_ToXElement_SubjectConfirmation_CheckNull()
+        {
+            Saml2SubjectConfirmation saml2SubjectConfirmation = null;
+
+            Action a = () => saml2SubjectConfirmation.ToXElement();
+
+            a.ShouldThrow<ArgumentNullException>().And.ParamName.Should().Be("subjectConfirmation");
+        }
+
+        [TestMethod]
+        public void Saml2SubjectExtensions_ToXElement_SubjectConfirmation()
+        {
+            var saml2SubjectConfirmation = new Saml2SubjectConfirmation(new Uri("urn:oasis:names:tc:SAML:2.0:cm:bearer"));
+
+            var confirmation = saml2SubjectConfirmation.ToXElement();
+
+            confirmation.Attribute("Method").Value.Should().Be("urn:oasis:names:tc:SAML:2.0:cm:bearer");
+        }
+
+        [TestMethod]
+        public void Saml2SubjectExtensions_ToXElement_SubjectConfirmationData_CheckNull()
+        {
+            Saml2SubjectConfirmationData saml2SubjectConfirmationData = null;
+
+            Action a = () => saml2SubjectConfirmationData.ToXElement();
+
+            a.ShouldThrow<ArgumentNullException>().And.ParamName.Should().Be("subjectConfirmationData");
+        }
+
+        [TestMethod]
+        public void Saml2SubjectExtensions_ToXElement_SubjectConfirmationData()
+        {
+            var destination = new Uri("http://sp.example.com");
+            var inResponseTo = new Saml2Id("abc123");
+            var notOnOrAfter = DateTime.UtcNow.AddMinutes(2);
+            var notBefore = DateTime.UtcNow;
+
+            var saml2SubjectConfirmationData = new Saml2SubjectConfirmationData
+            {
+                NotOnOrAfter = notOnOrAfter,
+                InResponseTo = inResponseTo,
+                Recipient = destination,
+                NotBefore = notBefore
+            };
+
+            var confirmation = saml2SubjectConfirmationData.ToXElement();
+
+            confirmation.Attribute("NotOnOrAfter").Value.Should().Be(notOnOrAfter.ToSaml2DateTimeString());
+
+            confirmation.Attribute("NotBefore").Value.Should().Be(notBefore.ToSaml2DateTimeString());
+
+            confirmation.Attribute("Recipient").Value.Should().Be(destination.OriginalString);
+
+            confirmation.Attribute("InResponseTo").Value.Should().Be(inResponseTo.Value);
+        }
     }
 }

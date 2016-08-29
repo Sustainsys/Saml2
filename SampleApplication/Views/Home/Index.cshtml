@@ -26,7 +26,7 @@
 else
 {
     <p>
-        You are signed in. <a id="logout" href="@Url.Content("~/AuthServices/Logout?ReturnUrl=.%3FStatus%3DLoggedOut")">Logout</a>.
+        You are signed in. <a id="logout" href="@Url.Content("~/AuthServices/Logout?ReturnUrl=" + Uri.EscapeDataString(Url.Content("~/?Status=LoggedOut")))">Logout</a>.
     </p>
     <table>
         <thead>

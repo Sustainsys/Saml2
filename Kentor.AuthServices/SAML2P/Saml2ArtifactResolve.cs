@@ -40,7 +40,7 @@ namespace Kentor.AuthServices.Saml2P
             return new XElement(
                 Saml2Namespaces.Saml2P + "ArtifactResolve",
                 base.ToXNodes(),
-                new XElement(Saml2Namespaces.Saml2 + "Artifact", Artifact))
+                new XElement(Saml2Namespaces.Saml2P + "Artifact", Artifact))
                 .ToString();
         }
     }

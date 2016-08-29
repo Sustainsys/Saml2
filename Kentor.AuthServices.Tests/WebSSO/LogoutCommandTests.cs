@@ -69,21 +69,30 @@ namespace Kentor.AuthServices.Tests.WebSSO
         [TestMethod]
         public void LogoutCommand_Run_ReturnsLogoutRequest()
         {
-            Thread.CurrentPrincipal = new ClaimsPrincipal(
+            var user = new ClaimsPrincipal(
                 new ClaimsIdentity(new Claim[]
                 {
-                    new Claim(ClaimTypes.NameIdentifier, "NameId", null, "https://idp.example.com"),
+                    new Claim(AuthServicesClaimTypes.LogoutNameIdentifier, ",,,,NameId", null, "https://idp.example.com"),
                     new Claim(AuthServicesClaimTypes.SessionIndex, "SessionId", null, "https://idp.example.com")
                 }, "Federation"));
 
             var request = new HttpRequestData("GET", new Uri("http://sp-internal.example.com/AuthServices/Logout"));
+            request.User = user;
 
             var options = StubFactory.CreateOptions();
             options.SPOptions.ServiceCertificates.Add(SignedXmlHelper.TestCert);
             options.SPOptions.PublicOrigin = new Uri("https://sp.example.com/");
 
+            CommandResult notifiedCommandResult = null;
+            options.Notifications.LogoutCommandResultCreated = cr =>
+            {
+                notifiedCommandResult = cr;
+            };
+
             var actual = CommandFactory.GetCommand(CommandFactory.LogoutCommandName)
                 .Run(request, options);
+
+            actual.Should().BeSameAs(notifiedCommandResult);
 
             var expected = new CommandResult
             {
@@ -109,16 +118,41 @@ namespace Kentor.AuthServices.Tests.WebSSO
         }
 
         [TestMethod]
-        public void LogoutCommand_Run_PreservesReturnUrl()
+        public void LogoutCommand_Run_ReturnsLogoutRequest_POST()
         {
-            Thread.CurrentPrincipal = new ClaimsPrincipal(
+            var user = new ClaimsPrincipal(
                 new ClaimsIdentity(new Claim[]
                 {
-                    new Claim(ClaimTypes.NameIdentifier, "NameId", null, "https://idp.example.com"),
+                    new Claim(AuthServicesClaimTypes.LogoutNameIdentifier, ",,,,NameId", null, "https://idp.example.com"),
+                    new Claim(AuthServicesClaimTypes.SessionIndex, "SessionId", null, "https://idp.example.com")
+                }, "Federation"));
+
+            var request = new HttpRequestData("GET", new Uri("http://sp-internal.example.com/AuthServices/Logout"));
+            request.User = user;
+
+            var options = StubFactory.CreateOptions();
+            options.SPOptions.ServiceCertificates.Add(SignedXmlHelper.TestCert);
+            options.IdentityProviders[new EntityId("https://idp.example.com")]
+                .SingleLogoutServiceBinding = Saml2BindingType.HttpPost;
+
+            var actual = CommandFactory.GetCommand(CommandFactory.LogoutCommandName)
+                .Run(request, options);
+
+            actual.HttpStatusCode.Should().Be(HttpStatusCode.OK);
+        }
+
+        [TestMethod]
+        public void LogoutCommand_Run_PreservesReturnUrl()
+        {
+            var user = new ClaimsPrincipal(
+                new ClaimsIdentity(new Claim[]
+                {
+                    new Claim(AuthServicesClaimTypes.LogoutNameIdentifier, ",,,,NameId", null, "https://idp.example.com"),
                     new Claim(AuthServicesClaimTypes.SessionIndex, "SessionId", null, "https://idp.example.com")
                 }, "Federation"));
 
             var request = new HttpRequestData("GET", new Uri("http://sp.example.com/AuthServices/Logout?ReturnUrl=%2FLoggedOut"));
+            request.User = user;
 
             var options = StubFactory.CreateOptions();
             options.SPOptions.ServiceCertificates.Add(SignedXmlHelper.TestCert);
@@ -126,21 +160,28 @@ namespace Kentor.AuthServices.Tests.WebSSO
             var actual = CommandFactory.GetCommand(CommandFactory.LogoutCommandName)
                 .Run(request, options);
 
-            actual.RequestState.ReturnUrl.OriginalString.Should().Be("http://sp.example.com/LoggedOut");
+            actual.RequestState.ReturnUrl.OriginalString.Should().Be("/LoggedOut");
         }
 
         [TestMethod]
-        public void LogoutCommand_Run_ReturnsLogoutRequest_PrefersAuthServicesLogoutNameId()
+        public void LogoutCommand_Run_ReturnsLogoutRequest_IgnoresThreadPrincipal()
         {
             Thread.CurrentPrincipal = new ClaimsPrincipal(
                 new ClaimsIdentity(new Claim[]
                 {
+                    new Claim(ClaimTypes.NameIdentifier, "PrincipalWithNoSession"),
+                }, "Federation"));
+
+            var user = new ClaimsPrincipal(
+                new ClaimsIdentity(new Claim[]
+                {
                     new Claim(ClaimTypes.NameIdentifier, "ApplicationNameId"),
-                    new Claim(AuthServicesClaimTypes.LogoutNameIdentifier, "Saml2NameId", null, "https://idp.example.com"),
+                    new Claim(AuthServicesClaimTypes.LogoutNameIdentifier, ",,,,Saml2NameId", null, "https://idp.example.com"),
                     new Claim(AuthServicesClaimTypes.SessionIndex, "SessionId", null, "https://idp.example.com")
                 }, "Federation"));
 
             var request = new HttpRequestData("GET", new Uri("http://sp.example.com/AuthServices/Logout"));
+            request.User = user;
 
             var options = StubFactory.CreateOptions();
             options.SPOptions.ServiceCertificates.Add(SignedXmlHelper.TestCert);
@@ -192,8 +233,63 @@ namespace Kentor.AuthServices.Tests.WebSSO
             var options = StubFactory.CreateOptions();
             options.SPOptions.PublicOrigin = new Uri("https://sp.example.com/path/");
 
+            CommandResult notifiedCommandResult = null;
+            options.Notifications.LogoutCommandResultCreated = cr =>
+            {
+                notifiedCommandResult = cr;
+            };
+
             var actual = CommandFactory.GetCommand(CommandFactory.LogoutCommandName)
                 .Run(request, options);
+
+            actual.Should().BeSameAs(notifiedCommandResult);
+
+            var expected = new CommandResult
+            {
+                Location = new Uri("http://loggedout.example.com"),
+                HttpStatusCode = HttpStatusCode.SeeOther,
+                ClearCookieName = "Kentor." + relayState
+            };
+
+            actual.ShouldBeEquivalentTo(expected);
+        }
+
+        [TestMethod]
+        public void LogoutCommand_Run_HandlesLogoutResponse_InPost()
+        {
+            var relayState = "TestState";
+            var response = new Saml2LogoutResponse(Saml2StatusCode.Success)
+            {
+                DestinationUrl = new Uri("http://sp.example.com/path/AuthServices/logout"),
+                Issuer = new EntityId("https://idp.example.com"),
+                InResponseTo = new Saml2Id(),
+                SigningCertificate = SignedXmlHelper.TestCert
+            };
+
+            var xml = XmlHelpers.FromString(response.ToXml());
+            xml.Sign(SignedXmlHelper.TestCert);
+
+            var responseData = Convert.ToBase64String(Encoding.UTF8.GetBytes(xml.OuterXml));
+            
+            var httpRequest = new HttpRequestData(
+                "POST",
+                new Uri("http://something"),
+                "/path",
+                new KeyValuePair<string, string[]>[]
+                {
+                    new KeyValuePair<string, string[]>("SAMLResponse", new[] { responseData }),
+                    new KeyValuePair<string, string[]>("RelayState", new[] { relayState })
+                },
+                Enumerable.Empty<KeyValuePair<string, string>>(),
+                null);
+
+            httpRequest.StoredRequestState = new StoredRequestState(null, new Uri("http://loggedout.example.com"), null, null);
+
+            var options = StubFactory.CreateOptions();
+            options.SPOptions.ServiceCertificates.Add(SignedXmlHelper.TestCert);
+
+            var actual = CommandFactory.GetCommand(CommandFactory.LogoutCommandName)
+                .Run(httpRequest, options);
 
             var expected = new CommandResult
             {
@@ -224,6 +320,12 @@ namespace Kentor.AuthServices.Tests.WebSSO
 
             var options = StubFactory.CreateOptions();
             options.SPOptions.ServiceCertificates.Add(SignedXmlHelper.TestCert);
+
+            CommandResult notifiedCommandResult = null;
+            options.Notifications.LogoutCommandResultCreated = cr =>
+            {
+                notifiedCommandResult = cr;
+            };
             
             // We're using unbind to verify the created message and UnBind
             // expects the issuer to be a known Idp for signature validation.
@@ -246,6 +348,7 @@ namespace Kentor.AuthServices.Tests.WebSSO
                 .Should().NotBeNull("LogoutResponse should be signed");
 
             actual.ShouldBeEquivalentTo(expected, opt => opt.Excluding(cr => cr.Location));
+            actual.Should().BeSameAs(notifiedCommandResult);
 
             var actualUnbindResult = Saml2Binding.Get(Saml2BindingType.HttpRedirect)
                 .Unbind(new HttpRequestData("GET", actual.Location), options);
@@ -429,84 +532,147 @@ namespace Kentor.AuthServices.Tests.WebSSO
         }
 
         [TestMethod]
+        public void LogoutCommand_Run_LocalLogoutIfNoUser()
+        {
+            var options = StubFactory.CreateOptions();
+            options.SPOptions.ServiceCertificates.Add(SignedXmlHelper.TestCert);
+
+            LogoutCommand_Run_LocalLogout(options, user: null);
+        }
+
+        [TestMethod]
         public void LogoutCommand_Run_LocalLogoutIfUnknownNameIdIssuer()
         {
-            Thread.CurrentPrincipal = new ClaimsPrincipal(
+            var user = new ClaimsPrincipal(
                 new ClaimsIdentity(
                     new Claim[]
                     {
                         new Claim(ClaimTypes.NameIdentifier, "Someone", null, "NotEvenAUri")
                     }));
 
-            LogoutCommand_Run_LocalLogout();
+            var options = StubFactory.CreateOptions();
+            options.SPOptions.ServiceCertificates.Add(SignedXmlHelper.TestCert);
+
+            LogoutCommand_Run_LocalLogout(options, user);
         }
 
-        private void LogoutCommand_Run_LocalLogout()
+        private void LogoutCommand_Run_LocalLogout(IOptions options, ClaimsPrincipal user)
         {
             var subject = CommandFactory.GetCommand(CommandFactory.LogoutCommandName);
-
-            var options = StubFactory.CreateOptions();
-            options.SPOptions.SigningServiceCertificate.Should().BeNull("this helper is used for test of behaviour when no certificate is configured");
-            
+                       
             var actual = subject.Run(
-                new HttpRequestData("GET", new Uri("http://localhost/Logout?ReturnUrl=LoggedOut")),
+                new HttpRequestData("GET", new Uri("http://localhost/Logout?ReturnUrl=%2FLoggedOut"))
+                {
+                    User = user
+                },
                 options);
 
             var expected = new CommandResult()
             {
                 HttpStatusCode = HttpStatusCode.SeeOther,
-                Location = new Uri("http://localhost/LoggedOut"),
+                Location = new Uri("/LoggedOut", UriKind.RelativeOrAbsolute),
                 TerminateLocalSession = true
             };
 
             actual.ShouldBeEquivalentTo(expected);
         }
 
+        // Meta test to ensure that the test helper does logout if enabled.
+        [TestMethod]
+        public void LogoutCommand_Run_LocalLogoutIfEverythingIsConfigured()
+        {
+            var user = new ClaimsPrincipal(
+                new ClaimsIdentity(new Claim[]
+                {
+                    new Claim(AuthServicesClaimTypes.LogoutNameIdentifier, ",,,,NameId", null, "https://idp.example.com"),
+                    new Claim(AuthServicesClaimTypes.SessionIndex, "SessionId", null, "https://idp.example.com")
+                }));
+
+            var options = StubFactory.CreateOptions();
+            options.SPOptions.ServiceCertificates.Add(SignedXmlHelper.TestCert);
+
+            Action a = () => LogoutCommand_Run_LocalLogout(options, user);
+
+            a.ShouldThrow<AssertFailedException>();
+        }
+
         [TestMethod]
         public void LogoutCommand_Run_LocalLogoutIfNoNameId()
         {
-            ClaimsPrincipal.Current.FindFirst(ClaimTypes.NameIdentifier)
+            var user = ClaimsPrincipal.Current;
+            user.FindFirst(ClaimTypes.NameIdentifier)
                 .Should().BeNull("this is a test for the case where there is no NameIdentifier");
 
-            LogoutCommand_Run_LocalLogout();
+            var options = StubFactory.CreateOptions();
+            options.SPOptions.ServiceCertificates.Add(SignedXmlHelper.TestCert);
+
+            LogoutCommand_Run_LocalLogout(options, user);
         }
 
         [TestMethod]
         public void LogoutCommand_Run_LocalLogoutIfNoSessionId()
         {
-            Thread.CurrentPrincipal = new ClaimsPrincipal(
+            var user = new ClaimsPrincipal(
                 new ClaimsIdentity(new Claim[]
                 {
                     new Claim(ClaimTypes.NameIdentifier, "NameId", null, "https://idp.example.com")
                 }));
 
-            LogoutCommand_Run_LocalLogout();
+            var options = StubFactory.CreateOptions();
+            options.SPOptions.ServiceCertificates.Add(SignedXmlHelper.TestCert);
+
+            LogoutCommand_Run_LocalLogout(options, user);
         }
 
         [TestMethod]
         public void LogoutCommand_Run_LocalLogoutIfIdpHasNoLogoutEndpoint()
         {
-            Thread.CurrentPrincipal = new ClaimsPrincipal(
+            var user = new ClaimsPrincipal(
                 new ClaimsIdentity(new Claim[]
                 {
                     new Claim(ClaimTypes.NameIdentifier, "NameId", null, "https://idp2.example.com"),
                     new Claim(AuthServicesClaimTypes.SessionIndex, "SessionId", null, "https://idp2.example.com")
                 }));
 
-            LogoutCommand_Run_LocalLogout();
+            var options = StubFactory.CreateOptions();
+            options.SPOptions.ServiceCertificates.Add(SignedXmlHelper.TestCert);
+
+            LogoutCommand_Run_LocalLogout(options, user);
         }
 
         [TestMethod]
-        public void LogoutCommand_Run_LocalLogoutIfThereIsNoSigninCertificateForTheSP()
+        public void LogoutCommand_Run_LocalLogoutIfLogoutRequestDisabled()
         {
-            Thread.CurrentPrincipal = new ClaimsPrincipal(
+            var user = new ClaimsPrincipal(
                 new ClaimsIdentity(new Claim[]
                 {
                     new Claim(ClaimTypes.NameIdentifier, "NameId", null, "https://idp.example.com"),
                     new Claim(AuthServicesClaimTypes.SessionIndex, "SessionId", null, "https://idp.example.com")
                 }));
 
-            LogoutCommand_Run_LocalLogout();
+            var options = StubFactory.CreateOptions();
+            options.SPOptions.ServiceCertificates.Add(SignedXmlHelper.TestCert);
+
+            var idpEntityId = new EntityId("https://idp.example.com");
+            options.IdentityProviders[idpEntityId].DisableOutboundLogoutRequests = true;
+
+            LogoutCommand_Run_LocalLogout(options, user);
+        }
+
+        [TestMethod]
+        public void LogoutCommand_Run_LocalLogoutIfThereIsNoSigninCertificateForTheSP()
+        {
+            var user = new ClaimsPrincipal(
+                new ClaimsIdentity(new Claim[]
+                {
+                    new Claim(ClaimTypes.NameIdentifier, "NameId", null, "https://idp.example.com"),
+                    new Claim(AuthServicesClaimTypes.SessionIndex, "SessionId", null, "https://idp.example.com")
+                }));
+
+            var options = StubFactory.CreateOptions();
+            options.SPOptions.SigningServiceCertificate.Should().BeNull("this helper is used for test of behaviour when no certificate is configured");
+
+            LogoutCommand_Run_LocalLogout(options, user);
         }
 
         [TestMethod]
@@ -550,6 +716,20 @@ namespace Kentor.AuthServices.Tests.WebSSO
                 .Invoking(c => c.Run(request, StubFactory.CreateOptions()))
                 .ShouldThrow<InvalidSignatureException>()
                 .WithMessage("There is no Issuer element in the message, so there is no way to know what certificate to use to validate the signature.");
+        }
+
+        [TestMethod]
+        public void LogoutCommand_Run_UsesBindingFromNotification()
+        {
+            var subject = new LogoutCommand();
+            var options = StubFactory.CreateOptions();
+            options.Notifications.GetBinding = r => new StubSaml2Binding();
+
+            var request = new HttpRequestData("GET", new Uri("http://host"));
+
+            subject.Invoking(s => s.Run(request, options))
+                .ShouldThrow<NotImplementedException>()
+                .WithMessage("StubSaml2Binding.*");
         }
     }
 }

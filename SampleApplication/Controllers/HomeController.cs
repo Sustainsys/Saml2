@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IdentityModel.Services;
-using System.Linq;
-using System.Web;
-using System.Web.Mvc;
+﻿using System.Web.Mvc;
 
 namespace SampleApplication.Controllers
 {
