@@ -52,13 +52,13 @@ namespace Kentor.AuthServices.WebSso
 
         public override CommandResult Bind(ISaml2Message message)
         {
-            if (message == null)
+            if(message == null)
             {
                 throw new ArgumentNullException(nameof(message));
             }
 
             var xml = message.ToXml();
-            if (message.SigningCertificate != null)
+            if(message.SigningCertificate != null)
             {
                 var xmlDoc = new XmlDocument()
                 {
@@ -81,9 +81,20 @@ namespace Kentor.AuthServices.WebSso
 
             var encodedXml = Convert.ToBase64String(Encoding.UTF8.GetBytes(xml));
 
-            var relayStateHtml = string.IsNullOrEmpty(message.RelayState) ? null : string.Format(CultureInfo.InvariantCulture, PostHtmlRelayStateFormatString, message.RelayState);
+            var relayStateHtml = string.IsNullOrEmpty(message.RelayState) ? null 
+                : string.Format(CultureInfo.InvariantCulture, PostHtmlRelayStateFormatString, message.RelayState);
 
-            var cr = new CommandResult() {ContentType = "text/html", Content = String.Format(CultureInfo.InvariantCulture, PostHtmlFormatString, message.DestinationUrl, relayStateHtml, message.MessageName, encodedXml)};
+            var cr = new CommandResult()
+            {
+                ContentType = "text/html",
+                Content = String.Format(
+                    CultureInfo.InvariantCulture, 
+                    PostHtmlFormatString, 
+                    message.DestinationUrl, 
+                    relayStateHtml, 
+                    message.MessageName, 
+                    encodedXml)
+            };
 
             return cr;
         }
