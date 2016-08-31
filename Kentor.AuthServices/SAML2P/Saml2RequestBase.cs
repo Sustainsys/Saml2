@@ -168,5 +168,6 @@ namespace Kentor.AuthServices.Saml2P
         /// to the signature processing rules of each binding.
         /// </summary>
         public X509Certificate2 SigningCertificate { get; set; }
+        public MessageSigningAlgorithm SigningAlgorithm { get; set; }
     }
 }
