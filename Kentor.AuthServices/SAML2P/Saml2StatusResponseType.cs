@@ -55,6 +55,8 @@ namespace Kentor.AuthServices.Saml2P
         /// </summary>
         public X509Certificate2 SigningCertificate { get; set; }
 
+        public MessageSigningAlgorithm SigningAlgorithm { get; set; }
+
         /// <summary>
         /// Status code of the message.
         /// </summary>

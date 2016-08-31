@@ -68,6 +68,7 @@
     <Compile Include="Configuration\ServiceCertificateCollection.cs" />
     <Compile Include="Saml2P\AuthnContextComparisonType.cs" />
     <Compile Include="Configuration\NameIdPolicyElement.cs" />
+    <Compile Include="MessageSigningAlgorithm.cs" />
     <Compile Include="Saml2P\Saml2IdpEntry.cs" />
     <Compile Include="Saml2P\Saml2LogoutResponse.cs" />
     <Compile Include="Saml2P\Saml2RequestedAuthnContext.cs" />
@@ -170,6 +171,7 @@
     <Compile Include="Internal\StringHelpers.cs" />
     <Compile Include="WebSso\LogoutCommand.cs" />
     <Compile Include="Saml2P\Saml2LogoutRequest.cs" />
+    <Compile Include="XmlDocumentSigningExtensions.cs" />
     <Compile Include="XmlHelpers.cs" />
     <Compile Include="Metadata\FilteringXmlDictionaryReader.cs" />
   </ItemGroup>

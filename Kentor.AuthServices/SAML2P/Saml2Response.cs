@@ -227,6 +227,8 @@ namespace Kentor.AuthServices.Saml2P
         /// </summary>
         [ExcludeFromCodeCoverage]
         public X509Certificate2 SigningCertificate { get; }
+        [ExcludeFromCodeCoverage]
+        public MessageSigningAlgorithm SigningAlgorithm { get; set; }
 
         private XmlElement xmlElement;
 

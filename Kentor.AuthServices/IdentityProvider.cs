@@ -290,7 +290,8 @@ namespace Kentor.AuthServices
                 // For now we only support one attribute consuming service.
                 AttributeConsumingServiceIndex = spOptions.AttributeConsumingServices.Any() ? 0 : (int?)null,
                 NameIdPolicy = spOptions.NameIdPolicy,
-                RequestedAuthnContext = spOptions.RequestedAuthnContext
+                RequestedAuthnContext = spOptions.RequestedAuthnContext,
+                SigningAlgorithm = SigningAlgorithm
             };
 
             if (spOptions.AuthenticateRequestSigningBehavior == SigningBehavior.Always
@@ -307,10 +308,16 @@ namespace Kentor.AuthServices
                 }
 
                 authnRequest.SigningCertificate = spOptions.SigningServiceCertificate;
+                authnRequest.SigningAlgorithm = this.SigningAlgorithm;
             }
 
             return authnRequest;
         }
+
+        /// <summary>
+        /// Signing Algorithm to be used when signing the Authentication Request
+        /// </summary>
+        public MessageSigningAlgorithm SigningAlgorithm { get; set; } = MessageSigningAlgorithm.RsaSecureHashAlgorithm1;
 
         /// <summary>
         /// Bind a Saml2AuthenticateRequest using the active binding of the idp,
