@@ -100,7 +100,7 @@ namespace Kentor.AuthServices.Tests.WebSso
 
 			var relayData = new Dictionary<string, string>()
 			{
-				{"test", "value" }
+				{ "test", "value" }
 			};
 
 			var request = new HttpRequestData("GET", new Uri("http://localhost/signin?ReturnUrl=%2FReturn%2FPath"));
@@ -108,7 +108,7 @@ namespace Kentor.AuthServices.Tests.WebSso
 
             var result = new SignInCommand().Run(request, options);
 
-			result.RelayData.Should().Equal(relayData);
+			result.RequestState.RelayData.Should().Equal(relayData);
 			result.SetCookieName.Should().NotBeEmpty();
 
 			result.HttpStatusCode.Should().Be(HttpStatusCode.SeeOther);
