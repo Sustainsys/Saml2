@@ -644,6 +644,36 @@ namespace Kentor.AuthServices.Tests.Owin
         }
 
         [TestMethod]
+        public async Task KentorAuthServicesAuthenticationMiddleware_RestoresAuthenticationPropertiesFromRelayData()
+        {
+            var returnUrl = "http://sp.example.com/returnurl";
+
+            var prop = new AuthenticationProperties()
+            {
+                RedirectUri = returnUrl
+            };
+
+            var options = new KentorAuthServicesAuthenticationOptions(true);
+            var middleware = new KentorAuthServicesAuthenticationMiddleware(
+                new StubOwinMiddleware(401,
+                    new AuthenticationResponseChallenge(
+                        new string[] { "KentorAuthServices" }, prop)),
+                CreateAppBuilder(),
+                options);
+
+            var context = OwinTestHelpers.CreateOwinContext();
+
+            var testData = new Dictionary<string, string>() { { "test", "SomeValue" } };
+            var state = new StoredRequestState(null, null, null, testData);
+            context.Request.QueryString = new QueryString("RelayState", "RelayStateValue");
+            context.Request.Headers.Add("Cookie", new string[] { "Kentor.RelayStateValue=" + HttpRequestData.ConvertBinaryData(options.DataProtector.Protect(state.Serialize())) });
+
+            await middleware.Invoke(context);
+
+            context.Authentication.AuthenticationResponseChallenge.Properties.Dictionary.Should().Equal(testData);
+        }
+
+        [TestMethod]
         public async Task KentorAuthServicesAuthenticationMiddleware_AcsUsesCommandResultLocation()
         {
             // For Owin middleware, the redirect uri is part of the
