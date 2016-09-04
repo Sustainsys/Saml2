@@ -170,16 +170,24 @@ namespace Kentor.AuthServices.Tests.WebSso
 
             result.HttpStatusCode.Should().Be(HttpStatusCode.SeeOther);
 
-            var queryString = string.Format("?entityID={0}&return={1}&returnIDParam=idp",
-                Uri.EscapeDataString(options.SPOptions.EntityId.Id),
-                Uri.EscapeDataString(
-                    "http://localhost/AuthServices/SignIn?ReturnUrl="
-                    + Uri.EscapeDataString("/Return/Path")));
+			// check result scheme and host
+			result.Location.GetComponents(UriComponents.SchemeAndServer, UriFormat.Unescaped).Should().Be(dsUrl.GetComponents(UriComponents.SchemeAndServer, UriFormat.Unescaped));
+			result.Location.AbsolutePath.Should().Be(dsUrl.AbsolutePath);
 
-            var expectedLocation = new Uri(dsUrl + queryString);
+			// check querystring separately
+			var resultLocationQueryString = HttpUtility.ParseQueryString(result.Location.Query);
+			resultLocationQueryString["entityId"].Should().Be(options.SPOptions.EntityId.Id);
+			resultLocationQueryString["returnIDParam"].Should().Be("idp");
 
-            result.Location.Should().Be(expectedLocation);
-        }
+			// check return url
+			var returnUrl = new Uri(resultLocationQueryString["return"]);
+			returnUrl.GetComponents(UriComponents.SchemeAndServer, UriFormat.Unescaped).Should().Be("http://localhost");
+			returnUrl.AbsolutePath.Should().Be("/AuthServices/SignIn");
+
+			var returnUrlQueryString = HttpUtility.ParseQueryString(returnUrl.Query);
+			returnUrlQueryString["ReturnUrl"].Should().Be("/Return/Path");
+			returnUrlQueryString["RelayState"].Should().NotBeEmpty();
+		}
 
         [TestMethod]
         public void SignInCommand_Run_PublicOrigin()
