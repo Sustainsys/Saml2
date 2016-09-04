@@ -98,11 +98,20 @@ namespace Kentor.AuthServices.Tests.WebSso
                     EntityId = new EntityId("https://github.com/KentorIT/authservices")
                 });
 
-            var request = new HttpRequestData("GET", new Uri("http://localhost/signin?ReturnUrl=%2FReturn%2FPath"));
+			var relayData = new Dictionary<string, string>()
+			{
+				{"test", "value" }
+			};
+
+			var request = new HttpRequestData("GET", new Uri("http://localhost/signin?ReturnUrl=%2FReturn%2FPath"));
+			request.StoredRequestState = new StoredRequestState(null, null, null, relayData);
 
             var result = new SignInCommand().Run(request, options);
 
-            result.HttpStatusCode.Should().Be(HttpStatusCode.SeeOther);
+			result.RelayData.Should().Equal(relayData);
+			result.SetCookieName.Should().NotBeEmpty();
+
+			result.HttpStatusCode.Should().Be(HttpStatusCode.SeeOther);
 
 			// check result scheme and host
 			result.Location.GetComponents(UriComponents.SchemeAndServer, UriFormat.Unescaped).Should().Be(dsUrl.GetComponents(UriComponents.SchemeAndServer, UriFormat.Unescaped));
@@ -121,6 +130,7 @@ namespace Kentor.AuthServices.Tests.WebSso
 			var returnUrlQueryString = HttpUtility.ParseQueryString(returnUrl.Query);
 			returnUrlQueryString["ReturnUrl"].Should().Be("/Return/Path");
 			returnUrlQueryString["RelayState"].Should().NotBeEmpty();
+
 		}
 
         [TestMethod]
