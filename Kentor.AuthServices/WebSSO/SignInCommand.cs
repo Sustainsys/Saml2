@@ -42,7 +42,7 @@ namespace Kentor.AuthServices.WebSso
                 request.QueryString["ReturnUrl"].FirstOrDefault(),
                 request,
                 options,
-                null);
+				request.StoredRequestState?.RelayData);
         }
 
         /// <summary>
@@ -79,7 +79,7 @@ namespace Kentor.AuthServices.WebSso
                 {
                     if (options.SPOptions.DiscoveryServiceUrl != null)
                     {
-                        var commandResult = RedirectToDiscoveryService(returnPath, options.SPOptions, urls);
+                        var commandResult = RedirectToDiscoveryService(returnPath, options.SPOptions, urls, relayData);
                         options.Notifications.SignInCommandResultCreated(commandResult, relayData);
                         return commandResult;
                     }
@@ -121,7 +121,8 @@ namespace Kentor.AuthServices.WebSso
         private static CommandResult RedirectToDiscoveryService(
             string returnPath,
             SPOptions spOptions,
-            AuthServicesUrls authServicesUrls)
+            AuthServicesUrls authServicesUrls,
+			IDictionary<string, string> relayData)
         {
             string returnUrl = authServicesUrls.SignInUrl.OriginalString;
 
@@ -130,7 +131,10 @@ namespace Kentor.AuthServices.WebSso
                 returnUrl += "?ReturnUrl=" + Uri.EscapeDataString(returnPath);
             }
 
-            var redirectLocation = string.Format(
+			var relayState = SecureKeyGenerator.CreateRelayState();
+			returnUrl += string.IsNullOrEmpty(returnPath) ? "?" : "&" + "RelayState=" + Uri.EscapeDataString(relayState);
+
+			var redirectLocation = string.Format(
                 CultureInfo.InvariantCulture,
                 "{0}?entityID={1}&return={2}&returnIDParam=idp",
                 spOptions.DiscoveryServiceUrl,
@@ -140,8 +144,10 @@ namespace Kentor.AuthServices.WebSso
             return new CommandResult()
             {
                 HttpStatusCode = HttpStatusCode.SeeOther,
-                Location = new Uri(redirectLocation)
-            };
+                Location = new Uri(redirectLocation),
+				RequestState = new StoredRequestState(null, null, null, relayData),
+				SetCookieName = "Kentor." + relayState
+			};
         }
     }
 }
