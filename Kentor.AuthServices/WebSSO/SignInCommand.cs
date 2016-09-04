@@ -144,15 +144,19 @@ namespace Kentor.AuthServices.WebSso
         {
             string returnUrl = authServicesUrls.SignInUrl.OriginalString;
 
+			var relayState = SecureKeyGenerator.CreateRelayState();
+
             if (!string.IsNullOrEmpty(returnPath))
             {
                 returnUrl += "?ReturnUrl=" + Uri.EscapeDataString(returnPath);
+                returnUrl += "&RelayState=" + Uri.EscapeDataString(relayState);
+            }
+            else
+            {
+                returnUrl += "?RelayState=" + Uri.EscapeDataString(relayState);
             }
 
-			var relayState = SecureKeyGenerator.CreateRelayState();
-			returnUrl += string.IsNullOrEmpty(returnPath) ? "?" : "&" + "RelayState=" + Uri.EscapeDataString(relayState);
-
-			var redirectLocation = string.Format(
+            var redirectLocation = string.Format(
                 CultureInfo.InvariantCulture,
                 "{0}?entityID={1}&return={2}&returnIDParam=idp",
                 spOptions.DiscoveryServiceUrl,
