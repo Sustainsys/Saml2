@@ -122,11 +122,11 @@ namespace Kentor.AuthServices.WebSso
             string returnPath,
             SPOptions spOptions,
             AuthServicesUrls authServicesUrls,
-			IDictionary<string, string> relayData)
+            IDictionary<string, string> relayData)
         {
             string returnUrl = authServicesUrls.SignInUrl.OriginalString;
 
-			var relayState = SecureKeyGenerator.CreateRelayState();
+            var relayState = SecureKeyGenerator.CreateRelayState();
 
             if (!string.IsNullOrEmpty(returnPath))
             {
@@ -149,9 +149,9 @@ namespace Kentor.AuthServices.WebSso
             {
                 HttpStatusCode = HttpStatusCode.SeeOther,
                 Location = new Uri(redirectLocation),
-				RequestState = new StoredRequestState(null, null, null, relayData),
-				SetCookieName = "Kentor." + relayState
-			};
+                RequestState = new StoredRequestState(null, null, null, relayData),
+                SetCookieName = "Kentor." + relayState
+            };
         }
     }
 }
