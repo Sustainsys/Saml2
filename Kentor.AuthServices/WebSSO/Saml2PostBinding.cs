@@ -65,13 +65,6 @@ namespace Kentor.AuthServices.WebSso
                 };
 
                 xmlDoc.LoadXml(xml);
-
-                var assertionElement = xmlDoc.SelectSingleNode(@"//*[local-name()='Response']/*[local-name()='Assertion']") as XmlElement;
-                if (assertionElement != null)
-                {
-                    assertionElement.Sign(message.SigningCertificate, true);
-                }
-
                 xmlDoc.Sign(message.SigningCertificate, true);
                 xml = xmlDoc.OuterXml;
             }
