@@ -132,6 +132,7 @@
     <Compile Include="Internal\CryptographyExtensionsTests.cs" />
     <Compile Include="Internal\DateTimeHelperTests.cs" />
     <Compile Include="Internal\DelimitedStringTests.cs" />
+    <Compile Include="Internal\LazyDictionaryCollectionTests.cs" />
     <Compile Include="ManagedSHA256SignatureDescriptionTests.cs" />
     <Compile Include="Owin\StubDataProtector.cs" />
     <Compile Include="Saml2NameIdExtensionsTests.cs" />
