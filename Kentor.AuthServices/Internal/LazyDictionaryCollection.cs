@@ -23,6 +23,10 @@ namespace Kentor.AuthServices.Internal
         /// <param name="valueData"></param>
         public LazyDictionaryCollection(IEnumerable<KeyValuePair<TKey, TValue[]>> valueData)
         {
+            if(valueData == null)
+            {
+                throw new ArgumentNullException(nameof(valueData));
+            }
             this.valueData = valueData;
         }
 

@@ -131,9 +131,7 @@ namespace Kentor.AuthServices.WebSso
             HttpMethod = httpMethod;
             Url = url;
             ApplicationUrl = new Uri(url, applicationPath);
-            Form = new ReadOnlyDictionary<string, string>(
-                (formData ?? Enumerable.Empty<KeyValuePair<string, string[]>>())
-                .ToDictionary(kv => kv.Key, kv => kv.Value.Single()));
+            Form = new LazyDictionaryCollection<string, string>(formData ?? Enumerable.Empty<KeyValuePair<string, string[]>>());
             QueryString = QueryStringHelper.ParseQueryString(url.Query);
         }
 

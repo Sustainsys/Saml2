@@ -176,5 +176,16 @@ namespace Kentor.AuthServices.Tests.Internal
             }
             hits.Should().Be(1);
         }
+
+
+        [TestMethod]
+        public void NullCollectionShouldThrowException()
+        {
+            Action action = () =>
+            {
+                var dictionary = new LazyDictionaryCollection<string, string>(null);
+            };
+            action.ShouldThrow<ArgumentNullException>().And.ParamName.Should().Be("valueData");
+        }
     }
 }
