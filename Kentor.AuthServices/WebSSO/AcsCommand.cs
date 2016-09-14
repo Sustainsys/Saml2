@@ -41,7 +41,7 @@ namespace Kentor.AuthServices.WebSso
 
                     var samlResponse = new Saml2Response(unbindResult.Data, request.StoredRequestState?.MessageId);
 
-                    var result = ProcessResponse(options, samlResponse, request.StoredRequestState);
+                    var result = ProcessResponse(options, samlResponse, request.StoredRequestState, unbindResult.RelayState);
                     if(unbindResult.RelayState != null)
                     {
                         result.ClearCookieName = "Kentor." + unbindResult.RelayState;
@@ -88,7 +88,8 @@ namespace Kentor.AuthServices.WebSso
         private static CommandResult ProcessResponse(
             IOptions options,
             Saml2Response samlResponse,
-            StoredRequestState storedRequestState)
+            StoredRequestState storedRequestState, 
+            string relayState)
         {
             var principal = new ClaimsPrincipal(samlResponse.GetClaims(options));
 
@@ -110,7 +111,7 @@ namespace Kentor.AuthServices.WebSso
             return new CommandResult()
             {
                 HttpStatusCode = HttpStatusCode.SeeOther,
-                Location = storedRequestState?.ReturnUrl ?? options.SPOptions.ReturnUrl,
+                Location = storedRequestState?.ReturnUrl ?? options.SPOptions.ReturnUrl.AppendReturnUrl(relayState),
                 Principal = principal,
                 RelayData = storedRequestState?.RelayData,
                 SessionNotOnOrAfter = samlResponse.SessionNotOnOrAfter

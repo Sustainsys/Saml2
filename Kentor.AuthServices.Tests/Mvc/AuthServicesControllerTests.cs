@@ -160,6 +160,72 @@ namespace Kentor.AuthServices.Tests.Mvc
             var controller = new AuthServicesController();
             controller.ControllerContext = new ControllerContext(httpContext, new RouteData(), controller);
 
+            var expectedUrl = AuthServicesController.Options.SPOptions.ReturnUrl.AppendReturnUrl(relayState).OriginalString;
+            var expected = new
+            {
+                Permanent = false,
+                Url = expectedUrl
+            };
+
+            controller.Acs().As<RedirectResult>().ShouldBeEquivalentTo(expected);
+
+            controller.Response.Received().SetCookie(
+                Arg.Is<HttpCookie>(c => c.Expires.Year == 1970));
+        }
+
+        [TestMethod]
+        public void AuthServicesController_Acs_Works_WithoutRelayState()
+        {
+            var request = Substitute.For<HttpRequestBase>();
+            request.HttpMethod.Returns("POST");
+
+            var response =
+            @"<saml2p:Response xmlns:saml2p=""urn:oasis:names:tc:SAML:2.0:protocol""
+                xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
+                ID = """ + MethodBase.GetCurrentMethod().Name + @""" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z""
+                InResponseTo=""InResponseToId"">
+                <saml2:Issuer>
+                    https://idp.example.com
+                </saml2:Issuer>
+                <saml2p:Status>
+                    <saml2p:StatusCode Value=""urn:oasis:names:tc:SAML:2.0:status:Success"" />
+                </saml2p:Status>
+                <saml2:Assertion
+                Version=""2.0"" ID=""" + MethodBase.GetCurrentMethod().Name + @"_Assertion1""
+                IssueInstant=""2013-09-25T00:00:00Z"">
+                    <saml2:Issuer>https://idp.example.com</saml2:Issuer>
+                    <saml2:Subject>
+                        <saml2:NameID>SomeUser</saml2:NameID>
+                        <saml2:SubjectConfirmation Method=""urn:oasis:names:tc:SAML:2.0:cm:bearer"" />
+                    </saml2:Subject>
+                    <saml2:Conditions NotOnOrAfter=""2100-01-01T00:00:00Z"" />
+                </saml2:Assertion>
+            </saml2p:Response>";
+
+            var formValue = Convert.ToBase64String(Encoding.UTF8.GetBytes(
+                SignedXmlHelper.SignXml(response)));
+
+            var relayState = "";
+
+            request.Form.Returns(new NameValueCollection()
+            {
+                { "SAMLResponse", formValue },
+                { "RelayState", relayState }
+            });
+            request.Url.Returns(new Uri("http://url.example.com/url"));
+            request.Cookies.Returns(new HttpCookieCollection());
+            request.Cookies.Add(new HttpCookie("Kentor." + relayState,
+                HttpRequestData.ConvertBinaryData(
+                    MachineKey.Protect(
+                        new StoredRequestState(null, null, new Saml2Id("InResponseToId"), null).Serialize(),
+                        HttpRequestBaseExtensions.ProtectionPurpose))));
+
+            var httpContext = Substitute.For<HttpContextBase>();
+            httpContext.Request.Returns(request);
+
+            var controller = new AuthServicesController();
+            controller.ControllerContext = new ControllerContext(httpContext, new RouteData(), controller);
+
             var expected = new
             {
                 Permanent = false,
