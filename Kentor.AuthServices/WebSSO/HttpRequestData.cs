@@ -131,7 +131,7 @@ namespace Kentor.AuthServices.WebSso
             HttpMethod = httpMethod;
             Url = url;
             ApplicationUrl = new Uri(url, applicationPath);
-            Form = new LazyDictionaryCollection<string, string>(formData ?? Enumerable.Empty<KeyValuePair<string, string[]>>());
+            Form = new KeyValuePairLookup<string, string>(formData ?? Enumerable.Empty<KeyValuePair<string, string[]>>());
             QueryString = QueryStringHelper.ParseQueryString(url.Query);
         }
 
@@ -167,7 +167,7 @@ namespace Kentor.AuthServices.WebSso
         /// <summary>
         /// The form data associated with the request (if any).
         /// </summary>
-        public IReadOnlyDictionary<string, string> Form { get; set; }
+        public KeyValuePairLookup<string, string> Form { get; set; }
 
         /// <summary>
         /// The query string parameters of the request.

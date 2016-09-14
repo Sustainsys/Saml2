@@ -9,19 +9,19 @@ using System.Threading.Tasks;
 namespace Kentor.AuthServices.Internal
 {
     /// <summary>
-    /// Wrapper to expose an IEnumerable&lt;KeyValuePair&gt; as a IReadOnlyDictionary
+    /// Wrapper to for an IEnumerable&lt;KeyValuePair&gt; to provide simple lookup methods
     /// </summary>
     /// <typeparam name="TKey">The type of keys in the read-only dictionary.</typeparam>
     /// <typeparam name="TValue">The type of values in the read-only dictionary.</typeparam>
-    internal class LazyDictionaryCollection<TKey, TValue> : IReadOnlyDictionary<TKey, TValue>
+    public class KeyValuePairLookup<TKey, TValue>
     {
         private readonly IEnumerable<KeyValuePair<TKey, TValue[]>> valueData;
 
         /// <summary>
-        /// Initializes the LazyDictionary with data
+        /// Initializes the KeyValuePairLookup with data
         /// </summary>
         /// <param name="valueData"></param>
-        public LazyDictionaryCollection(IEnumerable<KeyValuePair<TKey, TValue[]>> valueData)
+        public KeyValuePairLookup(IEnumerable<KeyValuePair<TKey, TValue[]>> valueData)
         {
             if(valueData == null)
             {
@@ -31,7 +31,7 @@ namespace Kentor.AuthServices.Internal
         }
 
         /// <summary>
-        /// Gets the element that has the specified key in the read-only dictionary.
+        /// Gets the element that has the specified key in the KeyValuePairLookup.
         /// </summary>
         /// <param name="key">Search key</param>
         /// <returns></returns>
@@ -49,7 +49,7 @@ namespace Kentor.AuthServices.Internal
         }
 
         /// <summary>
-        /// The number of items in the dictionary
+        /// The number of items in the KeyValuePairLookup
         /// </summary>
         public int Count
         {
@@ -60,48 +60,17 @@ namespace Kentor.AuthServices.Internal
         }
 
         /// <summary>
-        /// All keys in the dictionary
-        /// </summary>
-        public IEnumerable<TKey> Keys
-        {
-            get
-            {
-                return valueData.Select(d => d.Key);
-            }
-        }
-
-        /// <summary>
-        /// All Values in the dictionary
-        /// </summary>
-        public IEnumerable<TValue> Values
-        {
-            get
-            {
-                return valueData.Select(d => d.Value.Single());
-            }
-        }
-
-        /// <summary>
-        /// Determines whether the read-only dictionary contains an element that has the
+        /// Determines whether the KeyValuePairLookup contains an element that has the
         /// specified key.
         /// </summary>
         /// <param name="key">The key to locate.</param>
         /// <returns>
-        /// true if the read-only dictionary contains an element that has the specified key;
+        /// true if the KeyValuePairLookup contains an element that has the specified key;
         /// otherwise, false.
         /// </returns>
         public bool ContainsKey(TKey key)
         {
             return valueData.Any(d => key.Equals(d.Key));
-        }
-
-        /// <summary>
-        /// Gets an enumerator for the content
-        /// </summary>
-        /// <returns></returns>
-        public IEnumerator<KeyValuePair<TKey, TValue>> GetEnumerator()
-        {
-            return valueData.Select(d => new KeyValuePair<TKey, TValue>(d.Key, d.Value.Single())).GetEnumerator();
         }
 
         /// <summary>
@@ -113,8 +82,7 @@ namespace Kentor.AuthServices.Internal
         /// key is found; otherwise, the default value for the type of the value parameter.
         /// This parameter is passed uninitialized.</param>
         /// <returns>
-        /// true if the object that implements the System.Collections.Generic.IReadOnlyDictionary`2
-        /// interface contains an element that has the specified key; otherwise, false.
+        /// true if the wrapped object has the specified key; otherwise, false.
         /// </returns>
         public bool TryGetValue(TKey key, out TValue value)
         {
@@ -126,15 +94,6 @@ namespace Kentor.AuthServices.Internal
             }
             value = valuesByKey.Single().Value.Single();
             return true;
-        }
-
-        /// <summary>
-        /// Gets an enumerator for the content
-        /// </summary>
-        /// <returns></returns>
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
         }
     }
 }

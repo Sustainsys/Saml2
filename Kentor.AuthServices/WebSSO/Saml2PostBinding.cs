@@ -19,8 +19,8 @@ namespace Kentor.AuthServices.WebSso
             }
 
             return request.HttpMethod == "POST"
-                && (request.Form.Keys.Contains("SAMLResponse")
-                    || request.Form.Keys.Contains("SAMLRequest"));
+                && (request.Form.ContainsKey("SAMLResponse")
+                    || request.Form.ContainsKey("SAMLRequest"));
         }
 
         public override UnbindResult Unbind(HttpRequestData request, IOptions options)

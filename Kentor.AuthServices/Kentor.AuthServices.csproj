@@ -64,7 +64,7 @@
     <Compile Include="Exceptions\UnexpectedInResponseToException.cs" />
     <Compile Include="Internal\DelimitedString.cs" />
     <Compile Include="Internal\DictionaryExtensions.cs" />
-    <Compile Include="Internal\LazyDictionaryCollection.cs" />
+    <Compile Include="Internal\KeyValuePairLookup.cs" />
     <Compile Include="ManagedSha256SignatureDescription.cs" />
     <Compile Include="Saml2NameIdExtensions.cs" />
     <Compile Include="Configuration\ServiceCertificateCollection.cs" />
