@@ -1,3 +1,6 @@
+# assumes you've already done the following:
+#   choco install gitlink (or downloaded from https://github.com/GitTools/GitLink)
+#   msbuild is in the path
 param (
 	[string]$version = "auto"
 )
@@ -77,9 +80,16 @@ Create-Nuspec("Kentor.AuthServices.HttpModule")
 
 echo "Building package..."
 
-nuget pack -build -outputdirectory nuget Kentor.AuthServices\Kentor.AuthServices.csproj
-nuget pack -build -outputdirectory nuget Kentor.AuthServices.Mvc\Kentor.AuthServices.Mvc.csproj
-nuget pack -build -outputdirectory nuget Kentor.AuthServices.Owin\Kentor.AuthServices.Owin.csproj
-nuget pack -build -outputdirectory nuget Kentor.AuthServices.HttpModule\Kentor.AuthServices.HttpModule.csproj
+msbuild Kentor.AuthServices\Kentor.AuthServices.csproj -p:Configuration=Release
+msbuild Kentor.AuthServices.Mvc\Kentor.AuthServices.Mvc.csproj -p:Configuration=Release
+msbuild Kentor.AuthServices.Owin\Kentor.AuthServices.Owin.csproj -p:Configuration=Release
+msbuild Kentor.AuthServices.HttpModule\Kentor.AuthServices.HttpModule.csproj -p:Configuration=Release
+
+gitlink . -include "Kentor.AuthServices,Kentor.AuthServices.Mvc,Kentor.AuthServices.Owin,Kentor.AuthServices.HttpModule"
+
+nuget pack Kentor.AuthServices\Kentor.AuthServices.csproj
+nuget pack Kentor.AuthServices.Mvc\Kentor.AuthServices.Mvc.csproj
+nuget pack Kentor.AuthServices.Owin\Kentor.AuthServices.Owin.csproj
+nuget pack Kentor.AuthServices.HttpModule\Kentor.AuthServices.HttpModule.csproj
 
 popd

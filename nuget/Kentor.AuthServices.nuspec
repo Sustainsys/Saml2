@@ -17,4 +17,7 @@
     <tags>SAML2 authentication ASP.NET SAML SSO</tags>
     <releaseNotes />
   </metadata>
+  <files>
+    <file src="bin\Release\Kentor.AuthServices.pdb*" target="lib\net45" />
+  </files> 
 </package>

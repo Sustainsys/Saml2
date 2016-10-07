@@ -65,3 +65,9 @@ Download the solution, or use the instance that's provided for free at http://st
 ## Protocol Classes
 The protocol handling classes are available as a public API as well, making it possible to 
 reuse some of the internals for writing your own service provider or identity provider.
+
+##Debugging
+For versions v0.20.0 and later the nuget packages include symbols and source link definition
+pointing to this github repository. To enable stepping from your code into the AuthServices code 
+in Visual Studio, ensure that the "Enable source server support" options is checked in
+Tools...Options...Debugging
