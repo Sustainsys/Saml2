@@ -69,5 +69,6 @@ reuse some of the internals for writing your own service provider or identity pr
 ##Debugging
 For versions v0.20.0 and later the nuget packages include symbols and source link definition
 pointing to this github repository. To enable stepping from your code into the AuthServices code 
-in Visual Studio, ensure that the "Enable source server support" options is checked in
-Tools...Options...Debugging
+in Visual Studio, ensure that the "Enable source server support" options is checked and the
+"Just my code" option is unchecked in Tools...Options...Debugging.
+See also the Troubleshooting section here: https://github.com/GitTools/GitLink#troubleshooting
