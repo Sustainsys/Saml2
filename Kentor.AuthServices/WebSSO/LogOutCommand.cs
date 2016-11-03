@@ -70,6 +70,8 @@ namespace Kentor.AuthServices.WebSso
             if (binding != null)
             {
                 var unbindResult = binding.Unbind(request, options);
+                options.Notifications.MessageUnbound(unbindResult);
+
                 VerifyMessageIsSigned(unbindResult, options);
                 switch (unbindResult.Data.LocalName)
                 {
