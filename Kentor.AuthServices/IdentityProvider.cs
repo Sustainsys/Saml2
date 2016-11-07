@@ -395,23 +395,14 @@ namespace Kentor.AuthServices
 
             WantAuthnRequestsSigned = idpDescriptor.WantAuthenticationRequestsSigned;
 
-            // Prefer an endpoint with a redirect binding, then check for POST which 
-            // is the other supported by AuthServices.
-            var ssoService = idpDescriptor.SingleSignOnServices
-                .FirstOrDefault(s => s.Binding == Saml2Binding.HttpRedirectUri) ??
-                idpDescriptor.SingleSignOnServices
-                .FirstOrDefault(s => s.Binding == Saml2Binding.HttpPostUri);
-
+            var ssoService = GetPreferredEndpoint(idpDescriptor.SingleSignOnServices);
             if (ssoService != null)
             {
                 binding = Saml2Binding.UriToSaml2BindingType(ssoService.Binding);
                 singleSignOnServiceUrl = ssoService.Location;
             }
 
-            var sloService = idpDescriptor.SingleLogoutServices
-                .Where(slo => slo.Binding == Saml2Binding.HttpRedirectUri
-                    || slo.Binding == Saml2Binding.HttpPostUri)
-                .FirstOrDefault();
+            var sloService = GetPreferredEndpoint(idpDescriptor.SingleLogoutServices);
             if (sloService != null)
             {
                 SingleLogoutServiceUrl = sloService.Location;
@@ -433,6 +424,14 @@ namespace Kentor.AuthServices
             var keys = idpDescriptor.Keys.Where(k => k.Use == KeyType.Unspecified || k.Use == KeyType.Signing);
 
             signingKeys.SetLoadedItems(keys.Select(k => k.KeyInfo.First(c => c.CanCreateKey)).ToList());
+        }
+
+        private static ProtocolEndpoint GetPreferredEndpoint(ICollection<ProtocolEndpoint> endpoints)
+        {
+            // Prefer an endpoint with a redirect binding, then check for POST which 
+            // is the other supported by AuthServices.
+            return endpoints.FirstOrDefault(s => s.Binding == Saml2Binding.HttpRedirectUri) ??
+                endpoints.FirstOrDefault(s => s.Binding == Saml2Binding.HttpPostUri);
         }
 
         private DateTime? metadataValidUntil;
