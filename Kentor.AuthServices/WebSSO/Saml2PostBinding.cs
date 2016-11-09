@@ -1,11 +1,9 @@
 ﻿using Kentor.AuthServices.Configuration;
 using Kentor.AuthServices.Saml2P;
 using System;
-using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Text;
-using System.Web;
 using System.Xml;
 
 namespace Kentor.AuthServices.WebSso

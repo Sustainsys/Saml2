@@ -35,6 +35,8 @@ namespace Kentor.AuthServices
         {
             EntityId = entityId;
             this.spOptions = spOptions;
+            if (null!=spOptions)
+                this.SigningAlgorithm = spOptions.DefaultAuthenticateRequestSigningAlgorithm;
         }
 
         readonly SPOptions spOptions;
@@ -57,6 +59,10 @@ namespace Kentor.AuthServices
                 signingKeys.AddConfiguredKey(
                     new X509RawDataKeyIdentifierClause(certificate));
             }
+
+            SigningAlgorithm = config.UseSpecificAuthenticateRequestSigningAlgorithm 
+                ? config.AuthenticateRequestSigningAlgorithm 
+                : spOptions.DefaultAuthenticateRequestSigningAlgorithm;
 
             foreach (var ars in config.ArtifactResolutionServices)
             {
@@ -291,7 +297,7 @@ namespace Kentor.AuthServices
                 AttributeConsumingServiceIndex = spOptions.AttributeConsumingServices.Any() ? 0 : (int?)null,
                 NameIdPolicy = spOptions.NameIdPolicy,
                 RequestedAuthnContext = spOptions.RequestedAuthnContext,
-                SigningAlgorithm = SigningAlgorithm
+                SigningAlgorithm = this.SigningAlgorithm
             };
 
             if (spOptions.AuthenticateRequestSigningBehavior == SigningBehavior.Always
@@ -308,7 +314,6 @@ namespace Kentor.AuthServices
                 }
 
                 authnRequest.SigningCertificate = spOptions.SigningServiceCertificate;
-                authnRequest.SigningAlgorithm = this.SigningAlgorithm;
             }
 
             return authnRequest;
@@ -508,6 +513,7 @@ namespace Kentor.AuthServices
                 SessionIndex =
                     user.FindFirst(AuthServicesClaimTypes.SessionIndex).Value,
                 SigningCertificate = spOptions.SigningServiceCertificate,
+                SigningAlgorithm = this.SigningAlgorithm
             };
         }
 
