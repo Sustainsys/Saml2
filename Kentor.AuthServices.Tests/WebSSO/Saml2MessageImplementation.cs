@@ -25,6 +25,7 @@ namespace Kentor.AuthServices.Tests.WebSSO
         public string XmlData { get; set; }
 
         public X509Certificate2 SigningCertificate { get; set; }
+        public MessageSigningAlgorithm SigningAlgorithm { get; }
 
         public EntityId Issuer { get; set; }
     }
