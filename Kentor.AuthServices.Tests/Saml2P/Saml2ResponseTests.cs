@@ -60,6 +60,7 @@ namespace Kentor.AuthServices.Tests.Saml2P
                 expected, opt => opt
                     .Excluding(s => s.XmlElement)
                     .Excluding(s => s.SigningCertificate)
+                    .Excluding(s => s.SigningAlgorithm)
                     .Excluding(s => s.SessionNotOnOrAfter));
         }
 
