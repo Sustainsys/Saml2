@@ -23,4 +23,16 @@
         RsaSecureHashAlgorithm512
 
     }
+
+    /// <summary>
+    /// Class MessageSigningDefaults.
+    /// </summary>
+    public static class MessageSigningDefaults
+    {
+        /// <summary>
+        /// The default algorithm
+        /// </summary>
+        public const MessageSigningAlgorithm DefaultAlgorithm =
+            MessageSigningAlgorithm.RsaSecureHashAlgorithm1;
+    }
 }

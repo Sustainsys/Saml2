@@ -14,7 +14,7 @@ namespace Kentor.AuthServices
     /// </summary>
     public static class XmlDocumentSigningExtensions
     {
-        private static readonly Dictionary<MessageSigningAlgorithm, string> _algorithmToNamespaceMap = new Dictionary<MessageSigningAlgorithm, string>
+        private static readonly Dictionary<MessageSigningAlgorithm, string> AlgorithmToNamespaceMap = new Dictionary<MessageSigningAlgorithm, string>
         {
             { MessageSigningAlgorithm.RsaSecureHashAlgorithm1,RSASHA1},
             { MessageSigningAlgorithm.RsaSecureHashAlgorithm256,RSASHA256},
@@ -37,29 +37,23 @@ namespace Kentor.AuthServices
         /// <returns></returns>
         public static string ToNamespace(this MessageSigningAlgorithm algorithm)
         {
-            return _algorithmToNamespaceMap[algorithm];
+            return AlgorithmToNamespaceMap[algorithm];
         }
 
-        /// <summary>
-        /// Add digital signature to an xml document. 
-        /// The default signing algorithm RSA SHA-256 is used in this method.
-        /// </summary>
-        /// <param name="xmlDocument"></param>
-        /// <param name="signingCertificate"></param>
-        public static void SignDocument(this XmlDocument xmlDocument, X509Certificate2 signingCertificate)
+        public static void SignDocument(this XmlDocument xmlDocument, X509Certificate2 signingCertificate, MessageSigningAlgorithm signingAlgorithm)
         {
-            SignDocument(xmlDocument, signingCertificate, MessageSigningAlgorithm.RsaSecureHashAlgorithm256);
+            SignDocument(xmlDocument, signingCertificate, signingAlgorithm, true);
         }
-
         /// <summary>
         /// Add digital signature to an xml document. 
         /// </summary>
         /// <param name="xmlDocument">The XML document.</param>
         /// <param name="signingCertificate">The signing certificate.</param>
         /// <param name="algorithm">The signing algorithm.</param>
+        /// <param name="includeKeyInfo">Whether to include key info clause in the resulting document</param>
         /// <exception cref="System.ArgumentNullException">
         /// </exception>
-        public static void SignDocument(this XmlDocument xmlDocument, X509Certificate2 signingCertificate, MessageSigningAlgorithm algorithm)
+        public static void SignDocument(this XmlDocument xmlDocument, X509Certificate2 signingCertificate, MessageSigningAlgorithm algorithm, bool includeKeyInfo)
         {
             if (xmlDocument == null)
             {
@@ -77,7 +71,7 @@ namespace Kentor.AuthServices
 
             string signatureMethodNamespace = algorithm.ToNamespace();
 
-            // Note that this will return a Basic crypto provider, with only SHA-1 support
+            // Note that this will return a Basic cryptoprovider, with only SHA-1 support
             var key = (RSACryptoServiceProvider) signingCertificate.PrivateKey;
 
             using (var provider = new RSACryptoServiceProvider())
@@ -85,8 +79,7 @@ namespace Kentor.AuthServices
                 CspKeyContainerInfo enhCsp = provider.CspKeyContainerInfo;
                 using (key = new RSACryptoServiceProvider(new CspParameters(enhCsp.ProviderType, enhCsp.ProviderName, key.CspKeyContainerInfo.KeyContainerName)))
                 {
-                    var signedXml = new SignedXml(xmlDocument);
-                    signedXml.SigningKey = key;
+                    var signedXml = new SignedXml(xmlDocument) {SigningKey = key};
                     signedXml.SignedInfo.CanonicalizationMethod = SignedXml.XmlDsigExcC14NTransformUrl;
                     signedXml.SignedInfo.SignatureMethod = signatureMethodNamespace;
 
@@ -94,6 +87,14 @@ namespace Kentor.AuthServices
                     reference.AddTransform(new XmlDsigEnvelopedSignatureTransform());
                     reference.AddTransform(new XmlDsigExcC14NTransform());
                     signedXml.AddReference(reference);
+
+                    if (includeKeyInfo)
+                    {
+                        var keyInfo = new KeyInfo();
+                        keyInfo.AddClause(new KeyInfoX509Data(signingCertificate));
+                        signedXml.KeyInfo = keyInfo;
+                    }
+
                     signedXml.ComputeSignature();
                     xmlDocument.DocumentElement.AppendChild(xmlDocument.ImportNode(signedXml.GetXml(), true));
                 }
