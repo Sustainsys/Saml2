@@ -21,6 +21,7 @@ namespace Kentor.AuthServices.Configuration
             AuthenticationRequestCreated = (request, provider, dictionary) => { };
             SignInCommandResultCreated = (cr, r) => { };
             SelectIdentityProvider = (ei, r) => null;
+            GetLogoutResponseState = ( httpRequestData ) => httpRequestData.StoredRequestState;
             GetBinding = Saml2Binding.Get;
             MessageUnbound = ur => { };
             AcsCommandResultCreated = (cr, r) => { };
@@ -59,6 +60,17 @@ namespace Kentor.AuthServices.Configuration
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
         public Func<EntityId, IDictionary<string, string>, IdentityProvider>
             SelectIdentityProvider { get; set; }
+
+        /// <summary>
+        /// Notification called when the logout command is about to use the 
+        /// <code>StoredRequestState</code> derived from the request's RelayState data.
+        /// Return a different StoredRequestState if you would like to customize the 
+        /// RelayState lookup. 
+        /// </summary>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1726:UsePreferredTerms", MessageId = "Logout")]
+        public Func<HttpRequestData, StoredRequestState>
+            GetLogoutResponseState { get; set; }
 
         /// <summary>
         /// Get a binding that can unbind data from the supplied request. The

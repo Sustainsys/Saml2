@@ -66,6 +66,7 @@ namespace Kentor.AuthServices.WebSso
             }
 
             CommandResult commandResult;
+            var returnUrl = GetReturnUrl(request, returnPath, options);
             var binding = options.Notifications.GetBinding(request);
             if (binding != null)
             {
@@ -77,7 +78,8 @@ namespace Kentor.AuthServices.WebSso
                         commandResult = HandleRequest(unbindResult, options);
                         break;
                     case "LogoutResponse":
-                        commandResult = HandleResponse(unbindResult, request);
+                        var storedRequestState = options.Notifications.GetLogoutResponseState(request);
+                        commandResult = HandleResponse(unbindResult, storedRequestState, options, returnUrl);
                         break;
                     default:
                         throw new NotImplementedException();
@@ -85,7 +87,7 @@ namespace Kentor.AuthServices.WebSso
             }
             else
             {
-                commandResult = InitiateLogout(request, returnPath, options);
+                commandResult = InitiateLogout(request, returnUrl, options);
             }
             options.Notifications.LogoutCommandResultCreated(commandResult);
             return commandResult;
@@ -113,7 +115,7 @@ namespace Kentor.AuthServices.WebSso
             }
         }
 
-        private static CommandResult InitiateLogout(HttpRequestData request, string returnPath, IOptions options)
+        private static CommandResult InitiateLogout(HttpRequestData request, Uri returnUrl, IOptions options)
         {
             string idpEntityId = null;
             Claim sessionIndexClaim = null;
@@ -137,20 +139,24 @@ namespace Kentor.AuthServices.WebSso
                 commandResult = Saml2Binding.Get(idp.SingleLogoutServiceBinding)
                     .Bind(logoutRequest);
 
+                commandResult.RelayState = logoutRequest.RelayState;
                 commandResult.RequestState = new StoredRequestState(
                     idp.EntityId,
-                    GetReturnUrl(request, returnPath, options),
+                    returnUrl,
                     logoutRequest.Id,
                     null);
 
-                commandResult.SetCookieName = "Kentor." + logoutRequest.RelayState;
+                if (!options.SPOptions.Compatibility.DisableLogoutStateCookie)
+                {
+                    commandResult.SetCookieName = "Kentor." + logoutRequest.RelayState;
+                }
             }
             else
             {
                 commandResult = new CommandResult
                 {
                     HttpStatusCode = HttpStatusCode.SeeOther,
-                    Location = GetReturnUrl(request, returnPath, options)
+                    Location = returnUrl
                 };
             }
 
@@ -199,7 +205,7 @@ namespace Kentor.AuthServices.WebSso
             return result;
         }
 
-        private static CommandResult HandleResponse(UnbindResult unbindResult, HttpRequestData request)
+        private static CommandResult HandleResponse(UnbindResult unbindResult, StoredRequestState storedRequestState, IOptions options, Uri returnUrl)
         {
             var status = Saml2LogoutResponse.FromXml(unbindResult.Data).Status;
             if(status != Saml2StatusCode.Success)
@@ -209,12 +215,16 @@ namespace Kentor.AuthServices.WebSso
                     status));
             }
 
-            return new CommandResult()
+            var commandResult = new CommandResult
             {
-                HttpStatusCode = HttpStatusCode.SeeOther,
-                Location = request.StoredRequestState.ReturnUrl,
-                ClearCookieName = "Kentor." + unbindResult.RelayState
+                HttpStatusCode = HttpStatusCode.SeeOther
             };
+            if (!options.SPOptions.Compatibility.DisableLogoutStateCookie)
+            {
+                commandResult.ClearCookieName = "Kentor." + unbindResult.RelayState;
+            }
+            commandResult.Location = storedRequestState?.ReturnUrl ?? returnUrl;
+            return commandResult;
         }
     }
 }

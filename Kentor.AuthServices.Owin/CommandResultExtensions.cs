@@ -55,7 +55,7 @@ namespace Kentor.AuthServices.Owin
         {
             var serializedCookieData = commandResult.GetSerializedRequestState();
 
-            if (serializedCookieData != null)
+            if (serializedCookieData != null && !string.IsNullOrEmpty(commandResult.SetCookieName))
             {
                 var protectedData = HttpRequestData.ConvertBinaryData(
                         dataProtector.Protect(serializedCookieData));
