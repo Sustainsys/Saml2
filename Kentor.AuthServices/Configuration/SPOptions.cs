@@ -28,6 +28,7 @@ namespace Kentor.AuthServices.Configuration
             systemIdentityModelIdentityConfiguration = new IdentityConfiguration(false);
             MetadataCacheDuration = new TimeSpan(1, 0, 0);
             Compatibility = new Compatibility();
+            DefaultAuthenticateRequestSigningAlgorithm = MessageSigningDefaults.DefaultAlgorithm;
         }
 
         /// <summary>
@@ -53,6 +54,7 @@ namespace Kentor.AuthServices.Configuration
             PublicOrigin = configSection.PublicOrigin;
             Organization = configSection.Organization;
             AuthenticateRequestSigningBehavior = configSection.AuthenticateRequestSigningBehavior;
+            DefaultAuthenticateRequestSigningAlgorithm = configSection.DefaultAuthenticateRequestSigningAlgorithm;
             NameIdPolicy = new Saml2NameIdPolicy(
                 configSection.NameIdPolicyElement.AllowCreate, configSection.NameIdPolicyElement.Format);
             RequestedAuthnContext = new Saml2RequestedAuthnContext(configSection.RequestedAuthnContext);
@@ -352,7 +354,10 @@ namespace Kentor.AuthServices.Configuration
         /// Signing behaviour for AuthnRequests.
         /// </summary>
         public SigningBehavior AuthenticateRequestSigningBehavior { get; set; }
-
+        /// <summary>
+        /// The default algorithm to use when signing Authentication Requests
+        /// </summary>
+        public MessageSigningAlgorithm DefaultAuthenticateRequestSigningAlgorithm { get; set; }
         /// <summary>
         /// Metadata flag that we want assertions to be signed.
         /// </summary>

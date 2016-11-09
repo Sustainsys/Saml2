@@ -11,6 +11,8 @@ using System.Reflection;
 using Kentor.AuthServices.Configuration;
 using System.Collections.Generic;
 using System.Linq;
+using Kentor.AuthServices;
+using Kentor.AuthServices.Saml2P;
 
 namespace Kentor.AuthServices.Tests
 {
@@ -252,6 +254,38 @@ namespace Kentor.AuthServices.Tests
                 x => x.IsSignedBy(SignedXmlHelper.TestCert))
                 .ShouldThrow<InvalidSignatureException>()
                 .And.Message.Should().Be("Multiple references for Xml signatures are not allowed.");
+        }
+
+        [TestMethod]
+        public void XmlDocumentSigningExtensions_Sign_Nullcheck_doc()
+        {
+            XmlDocument dd = null;
+            dd.Invoking(
+                x => x.SignDocument(TestCert, MessageSigningAlgorithm.RsaSecureHashAlgorithm1))
+                .ShouldThrow<ArgumentNullException>()
+                .And.ParamName.Should().Be("xmlDocument");
+        }
+
+
+        [TestMethod]
+        public void XmlDocumentSigningExtensions_Sign_Nullcheck_Cert()
+        {
+            xmlDocument.Invoking(
+                x => x.SignDocument(null, MessageSigningAlgorithm.RsaSecureHashAlgorithm1))
+                .ShouldThrow<ArgumentNullException>()
+                .And.ParamName.Should().Be("signingCertificate");
+        }
+
+
+        [TestMethod]
+        public void XmlDocumentSigningExtensions_Sign_Nullcheck_DocElem()
+        {
+            if (xmlDocument.DocumentElement != null) xmlDocument.RemoveChild(xmlDocument.DocumentElement);
+
+            xmlDocument.Invoking(
+                x => x.SignDocument(TestCert, MessageSigningAlgorithm.RsaSecureHashAlgorithm256))
+                .ShouldThrow<ArgumentNullException>()
+                .And.ParamName.Should().Be("xmlDocument");
         }
 
         [TestMethod]
