@@ -67,7 +67,7 @@ namespace Kentor.AuthServices.Configuration
         public Func<HttpRequestData, Saml2Binding> GetBinding { get; set; }
 
         /// <summary>
-        /// Notification called when the ACS command has extracted data from
+        /// Notification called when the command has extracted data from
         /// request (by using <see cref="Saml2Binding.Unbind(HttpRequestData, IOptions)"/>)
         /// </summary>
         public Action<UnbindResult> MessageUnbound { get; set; }

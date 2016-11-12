@@ -238,11 +238,18 @@ namespace Kentor.AuthServices.Tests.WebSSO
             {
                 notifiedCommandResult = cr;
             };
+            var responseUnboundCalled = false;
+            options.Notifications.MessageUnbound = ur =>
+            {
+                ur.Should().NotBeNull();
+                responseUnboundCalled = true;
+            };
 
             var actual = CommandFactory.GetCommand(CommandFactory.LogoutCommandName)
                 .Run(request, options);
 
             actual.Should().BeSameAs(notifiedCommandResult);
+            responseUnboundCalled.Should().BeTrue("the ResponseUnbound notification should have been called.");
 
             var expected = new CommandResult
             {
