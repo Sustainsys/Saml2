@@ -31,6 +31,9 @@ namespace Kentor.AuthServices.Configuration
 
             UnpackEntitiesDescriptorInIdentityProviderMetadata =
                 configElement.UnpackEntitiesDescriptorInIdentityProviderMetadata;
+
+            SkipInResponseToValidation =
+                configElement.SkipInResponseToValidation;
         }
 
         /// <summary>
@@ -39,5 +42,11 @@ namespace Kentor.AuthServices.Configuration
         /// is a single EntityDescriptor and in that case use it.
         /// </summary>
         public bool UnpackEntitiesDescriptorInIdentityProviderMetadata { get; set; }
+
+        /// <summary>
+        /// Some IdP implementations don't set InResponseTo attribute.
+        /// Use this property to skip validation of InReponseTo attribute on the SP side.
+        /// </summary>
+        public bool SkipInResponseToValidation { get; set; }
     }
 }
