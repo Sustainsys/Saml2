@@ -228,6 +228,14 @@ namespace Kentor.AuthServices.Tests.Helpers
     <SingleSignOnService
       Binding=""urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect""
       Location=""http://idp2Bindings.example.com/Redirect"" />
+    <SingleLogoutService
+      Binding=""urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST""
+      Location=""http://idp2Bindings.example.com/LogoutPost""
+      ResponseLocation=""http://idp2Bindings.example.com/LogoutPostResponse""/>
+    <SingleLogoutService
+      Binding=""urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect""
+      Location=""http://idp2Bindings.example.com/LogoutRedirect""
+      ResponseLocation=""http://idp2Bindings.example.com/LogoutRedirectResponse""/>
   </IDPSSODescriptor>
 </EntityDescriptor>", SignedXmlHelper.KeyInfoXml);
 
