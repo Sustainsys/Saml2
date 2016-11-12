@@ -30,11 +30,12 @@ namespace Kentor.AuthServices.Saml2P
         /// Read the supplied Xml and parse it into a response.
         /// </summary>
         /// <param name="xml">xml data.</param>
+        /// <param name="options">Options</param>
         /// <returns>Saml2Response</returns>
         /// <exception cref="XmlException">On xml errors or unexpected xml structure.</exception>
-        public static Saml2Response Read(string xml)
+        public static Saml2Response Read(string xml, IOptions options)
         {
-            return Read(xml, null);
+            return Read(xml, null, options);
         }
 
         /// <summary>
@@ -43,15 +44,16 @@ namespace Kentor.AuthServices.Saml2P
         /// <param name="xml">xml data.</param>
         /// <param name="expectedInResponseTo">The expected value of the
         /// InReplyTo parameter in the message.</param>
+        /// <param name="options">Options</param>
         /// <returns>Saml2Response</returns>
         /// <exception cref="XmlException">On xml errors or unexpected xml structure.</exception>
-        public static Saml2Response Read(string xml, Saml2Id expectedInResponseTo)
+        public static Saml2Response Read(string xml, Saml2Id expectedInResponseTo, IOptions options)
         {
             var x = new XmlDocument();
             x.PreserveWhitespace = true;
             x.LoadXml(xml);
 
-            return new Saml2Response(x.DocumentElement, expectedInResponseTo);
+            return new Saml2Response(x.DocumentElement, expectedInResponseTo, options);
         }
 
         /// <summary>
@@ -60,7 +62,8 @@ namespace Kentor.AuthServices.Saml2P
         /// <param name="xml">Root xml element.</param>
         /// <param name="expectedInResponseTo">The expected value of the
         /// InReplyTo parameter in the message.</param>
-        public Saml2Response(XmlElement xml, Saml2Id expectedInResponseTo)
+        /// <param name="options">Options</param>
+        public Saml2Response(XmlElement xml, Saml2Id expectedInResponseTo, IOptions options)
         {
             if (xml == null)
             {
@@ -82,7 +85,7 @@ namespace Kentor.AuthServices.Saml2P
 
             id = new Saml2Id(xml.Attributes["ID"].Value);
 
-            ReadAndValidateInResponseTo(xml, expectedInResponseTo);
+            ReadAndValidateInResponseTo(xml, expectedInResponseTo, options);
 
             issueInstant = DateTime.Parse(xml.Attributes["IssueInstant"].Value,
                 CultureInfo.InvariantCulture, DateTimeStyles.AdjustToUniversal);
@@ -116,7 +119,7 @@ namespace Kentor.AuthServices.Saml2P
 
         [SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "InResponseTo")]
         [SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "RelayState")]
-        private void ReadAndValidateInResponseTo(XmlElement xml, Saml2Id expectedInResponseTo)
+        private void ReadAndValidateInResponseTo(XmlElement xml, Saml2Id expectedInResponseTo, IOptions options)
         {
             var parsedInResponseTo = xml.Attributes["InResponseTo"].GetValueIfNotNull();
             if (parsedInResponseTo != null)
@@ -139,7 +142,7 @@ namespace Kentor.AuthServices.Saml2P
             }
             else
             {
-                if (expectedInResponseTo != null)
+                if (expectedInResponseTo != null && !options.SPOptions.Compatibility.SkipInResponseToValidation)
                 {
                     throw new Saml2ResponseFailedValidationException(
                         string.Format(CultureInfo.InvariantCulture,

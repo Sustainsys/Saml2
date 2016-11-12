@@ -26,6 +26,8 @@ namespace Kentor.AuthServices.Configuration
 
         const string unpackEntitiesDescriptorInIdentityProviderMetadata
             = nameof(unpackEntitiesDescriptorInIdentityProviderMetadata);
+        const string skipInResponseToValidation
+            = nameof(skipInResponseToValidation);
 
         /// <summary>
         /// If an EntitiesDescriptor element is found when loading metadata
@@ -42,6 +44,23 @@ namespace Kentor.AuthServices.Configuration
             set
             {
                 base[unpackEntitiesDescriptorInIdentityProviderMetadata] = value;
+            }
+        }
+
+        /// <summary>
+        /// Some IdP implementations don't set InResponseTo attribute.
+        /// Use this property to skip validation of InReponseTo attribute on the SP side.
+        /// </summary>
+        [ConfigurationProperty(nameof(skipInResponseToValidation), IsRequired = false)]
+        public bool SkipInResponseToValidation
+        {
+            get
+            {
+                return (bool)base[skipInResponseToValidation];
+            }
+            set
+            {
+                base[skipInResponseToValidation] = value;
             }
         }
     }
