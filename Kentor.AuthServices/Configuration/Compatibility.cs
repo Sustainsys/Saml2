@@ -31,6 +31,7 @@ namespace Kentor.AuthServices.Configuration
 
             UnpackEntitiesDescriptorInIdentityProviderMetadata =
                 configElement.UnpackEntitiesDescriptorInIdentityProviderMetadata;
+            DisableLogoutStateCookie = configElement.DisableLogoutStateCookie;
         }
 
         /// <summary>
@@ -39,5 +40,12 @@ namespace Kentor.AuthServices.Configuration
         /// is a single EntityDescriptor and in that case use it.
         /// </summary>
         public bool UnpackEntitiesDescriptorInIdentityProviderMetadata { get; set; }
+
+        /// <summary>
+        /// Do not send logout state cookie, e.g. if you are not using ReturnUrl
+        /// or if you know the cookie will be lost due to cross-domain redirects
+        /// </summary>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage( "Microsoft.Naming", "CA1726:UsePreferredTerms", MessageId = "Logout" )]
+        public bool DisableLogoutStateCookie { get; set; }
     }
 }

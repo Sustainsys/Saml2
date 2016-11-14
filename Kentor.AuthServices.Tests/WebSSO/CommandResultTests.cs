@@ -24,6 +24,7 @@ namespace Kentor.AuthServices.Tests.WebSso
                 Principal = (ClaimsPrincipal)null,
                 ContentType = (string)null,
                 Content = (string)null,
+                RelayState = (string)null,
                 RelayData = (object)null,
                 TerminateLocalSession = false,
                 SetCookieName = (string)null,

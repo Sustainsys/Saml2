@@ -101,6 +101,7 @@ namespace Kentor.AuthServices.WebSso
             {
                 Form.TryGetValue("RelayState", out relayState);
             }
+            RelayState = relayState;
 
             if (relayState != null)
             {
@@ -182,6 +183,10 @@ namespace Kentor.AuthServices.WebSso
         /// </summary>
         public Uri ApplicationUrl { get; set; }
 
+        /// <summary>
+        /// RelayState from SAML message
+        /// </summary>
+        public string RelayState { get; set; }
 
         /// <summary>
         /// Request state from a previous call, carried over through cookie.

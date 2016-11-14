@@ -88,6 +88,32 @@ namespace Kentor.AuthServices.Tests.Owin
         }
 
         [TestMethod]
+        public void CommandResultExtensions_DoesNotApplyCookieWhenNoNameSet()
+        {
+            var cr = new CommandResult()
+            {
+                RequestState = new StoredRequestState(
+                    new EntityId("http://idp.example.com"),
+                    new Uri("http://sp.example.com/loggedout"),
+                    new Saml2Id("id123"),
+                    null),
+                SetCookieName = null
+            };
+
+            var context = OwinTestHelpers.CreateOwinContext();
+
+            var dataProtector = new StubDataProtector();
+            cr.Apply(context, dataProtector);
+
+            var setCookieHeader = context.Response.Headers["Set-Cookie"];
+
+            var protectedData = HttpRequestData.ConvertBinaryData(
+                StubDataProtector.Protect(cr.GetSerializedRequestState()));
+
+            setCookieHeader.Should().Be(null);
+        }
+
+        [TestMethod]
         public void CommandResultExtensions_Apply_ClearCookie()
         {
             var cr = new CommandResult()
