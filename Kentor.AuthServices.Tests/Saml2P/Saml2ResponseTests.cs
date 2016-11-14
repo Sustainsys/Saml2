@@ -53,13 +53,14 @@ namespace Kentor.AuthServices.Tests.Saml2P
                 InResponseTo = new Saml2Id("InResponseToId"),
                 RequestState = (StoredRequestState)null,
                 SecondLevelStatus = (string)null,
-                RelayState = (string)null,
+                RelayState = (string)null
             };
 
             Saml2Response.Read(response, expected.InResponseTo).ShouldBeEquivalentTo(
                 expected, opt => opt
                     .Excluding(s => s.XmlElement)
                     .Excluding(s => s.SigningCertificate)
+                    .Excluding(s=> s.SigningAlgorithm)
                     .Excluding(s => s.SessionNotOnOrAfter));
         }
 

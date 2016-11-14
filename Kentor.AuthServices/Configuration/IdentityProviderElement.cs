@@ -1,6 +1,8 @@
 ﻿using Kentor.AuthServices.WebSso;
 using System;
 using System.Configuration;
+using System.Data.Odbc;
+using Kentor.AuthServices.Saml2P;
 
 namespace Kentor.AuthServices.Configuration
 {
@@ -103,6 +105,39 @@ namespace Kentor.AuthServices.Configuration
             {
                 base["signingCertificate"] = value;
             }
+        }
+        const string useSpecificAuthenticateRequestSigningAlgorithm = nameof(useSpecificAuthenticateRequestSigningAlgorithm);
+        /// <summary>
+        /// The authenticateRequestSigningAlgorithm.
+        /// </summary>
+        [ConfigurationProperty(useSpecificAuthenticateRequestSigningAlgorithm, IsRequired = false, DefaultValue = false)]
+        public bool UseSpecificAuthenticateRequestSigningAlgorithm
+        {
+            get
+            {
+                return (bool)base[useSpecificAuthenticateRequestSigningAlgorithm];
+            }
+            //internal set
+            //{
+            //    base[authenticateRequestSigningAlgorithm] = value;
+            //}
+        }
+
+        const string authenticateRequestSigningAlgorithm = nameof(authenticateRequestSigningAlgorithm);
+        /// <summary>
+        /// The authenticateRequestSigningAlgorithm.
+        /// </summary>
+        [ConfigurationProperty(authenticateRequestSigningAlgorithm, IsRequired = false, DefaultValue = MessageSigningDefaults.DefaultAlgorithm)]
+        public MessageSigningAlgorithm AuthenticateRequestSigningAlgorithm
+        {
+            get
+            {
+                return (MessageSigningAlgorithm)base[authenticateRequestSigningAlgorithm];
+            }
+            //internal set
+            //{
+            //    base[authenticateRequestSigningAlgorithm] = value;
+            //}
         }
 
         /// <summary>

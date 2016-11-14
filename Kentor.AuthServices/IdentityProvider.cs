@@ -35,6 +35,8 @@ namespace Kentor.AuthServices
         {
             EntityId = entityId;
             this.spOptions = spOptions;
+            if (null!=spOptions)
+                this.SigningAlgorithm = spOptions.DefaultAuthenticateRequestSigningAlgorithm;
         }
 
         readonly SPOptions spOptions;
@@ -57,6 +59,10 @@ namespace Kentor.AuthServices
                 signingKeys.AddConfiguredKey(
                     new X509RawDataKeyIdentifierClause(certificate));
             }
+
+            SigningAlgorithm = config.UseSpecificAuthenticateRequestSigningAlgorithm 
+                ? config.AuthenticateRequestSigningAlgorithm 
+                : spOptions.DefaultAuthenticateRequestSigningAlgorithm;
 
             foreach (var ars in config.ArtifactResolutionServices)
             {
@@ -290,7 +296,8 @@ namespace Kentor.AuthServices
                 // For now we only support one attribute consuming service.
                 AttributeConsumingServiceIndex = spOptions.AttributeConsumingServices.Any() ? 0 : (int?)null,
                 NameIdPolicy = spOptions.NameIdPolicy,
-                RequestedAuthnContext = spOptions.RequestedAuthnContext
+                RequestedAuthnContext = spOptions.RequestedAuthnContext,
+                SigningAlgorithm = this.SigningAlgorithm
             };
 
             if (spOptions.AuthenticateRequestSigningBehavior == SigningBehavior.Always
@@ -311,6 +318,11 @@ namespace Kentor.AuthServices
 
             return authnRequest;
         }
+
+        /// <summary>
+        /// Signing Algorithm to be used when signing the Authentication Request
+        /// </summary>
+        public MessageSigningAlgorithm SigningAlgorithm { get; set; } = MessageSigningAlgorithm.RsaSecureHashAlgorithm1;
 
         /// <summary>
         /// Bind a Saml2AuthenticateRequest using the active binding of the idp,
@@ -501,6 +513,7 @@ namespace Kentor.AuthServices
                 SessionIndex =
                     user.FindFirst(AuthServicesClaimTypes.SessionIndex).Value,
                 SigningCertificate = spOptions.SigningServiceCertificate,
+                SigningAlgorithm = this.SigningAlgorithm
             };
         }
 

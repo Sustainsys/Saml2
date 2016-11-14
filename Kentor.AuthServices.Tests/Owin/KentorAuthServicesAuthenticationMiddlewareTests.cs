@@ -204,6 +204,43 @@ namespace Kentor.AuthServices.Tests.Owin
             }
         }
 
+
+        [TestMethod]
+        public async Task KentorAuthServicesAuthenticationMiddleware_CreatesSignedPostOnAuthChallenge()
+        {
+            var middleware = new KentorAuthServicesAuthenticationMiddleware(
+                new StubOwinMiddleware(401, new AuthenticationResponseChallenge(
+                    new string[] { "KentorAuthServices" }, new AuthenticationProperties(
+                        new Dictionary<string, string>()
+                        {
+                            { "idp", "https://idp4.example.com" }
+                        }))),
+                CreateAppBuilder(),
+                new KentorAuthServicesAuthenticationOptions(true)
+                );
+
+            var context = OwinTestHelpers.CreateOwinContext();
+
+            await middleware.Invoke(context);
+
+            context.Response.StatusCode.Should().Be(200);
+            context.Response.Body.Seek(0, SeekOrigin.Begin);
+
+            // Fix to #295, where content length is incorrectly set to 0 by the
+            // next middleware. It appears as it works if the content length is
+            // simply removed. See discussion in GitHub issue #295.
+            context.Response.ContentLength.Should().NotHaveValue();
+
+            using (var reader = new StreamReader(context.Response.Body))
+            {
+                string bodyContent = reader.ReadToEnd();
+
+                // Checking some random stuff in body to make sure it looks like a SAML Post.
+                bodyContent.Should().Contain("<form action");
+                bodyContent.Should().Contain("<input type=\"hidden\" name=\"SAMLRequest\"");
+            }
+        }
+
         [TestMethod]
         public async Task KentorAuthServicesAuthenticationMiddleware_CreatesRedirectOnAuthRevoke()
         {

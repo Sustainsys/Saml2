@@ -315,12 +315,24 @@ namespace Kentor.AuthServices.Configuration
                 base[authenticateRequestSigningBehavior] = value;
             }
         }
+        const string defaultAuthenticateRequestSigningAlgorithm = nameof(defaultAuthenticateRequestSigningAlgorithm);
+        /// <summary>
+        /// The default AuthenticateRequest signing Algorithm.
+        /// </summary>
+        [ConfigurationProperty(defaultAuthenticateRequestSigningAlgorithm, IsRequired = false, DefaultValue = MessageSigningDefaults.DefaultAlgorithm)]
+        public MessageSigningAlgorithm DefaultAuthenticateRequestSigningAlgorithm
+        {
+            get
+            {
+                return (MessageSigningAlgorithm)base[defaultAuthenticateRequestSigningAlgorithm];
+            }
+        }
 
         const string validateCertificates = nameof(validateCertificates);
         /// <summary>
         /// Validate certificates when validating signatures? Normally not a
         /// good idea as SAML2 deployments typically exchange certificates
-        /// directly and isntead of relying on the public certificate
+        /// directly and instead of relying on the public certificate
         /// infrastructure.
         /// </summary>
         [ConfigurationProperty(validateCertificates, IsRequired = false)]
