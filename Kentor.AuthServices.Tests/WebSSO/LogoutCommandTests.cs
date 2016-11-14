@@ -110,10 +110,12 @@ namespace Kentor.AuthServices.Tests.WebSSO
             actual.ShouldBeEquivalentTo(expected, opt => opt
                 .Excluding(cr => cr.Location)
                 .Excluding(cr => cr.SetCookieName)
+                .Excluding(cr => cr.RelayState)
                 .Excluding(cr => cr.RequestState.MessageId));
 
             var relayState = HttpUtility.ParseQueryString(actual.Location.Query)["RelayState"];
             actual.SetCookieName.Should().Be("Kentor." + relayState);
+            actual.RelayState.Should().Be( relayState );
             actual.Location.GetLeftPart(UriPartial.Path).Should().Be("https://idp.example.com/logout");
         }
 
@@ -139,6 +141,33 @@ namespace Kentor.AuthServices.Tests.WebSSO
                 .Run(request, options);
 
             actual.HttpStatusCode.Should().Be(HttpStatusCode.OK);
+        }
+
+        [TestMethod]
+        public void LogoutCommand_Run_NoCookieName_WhenLogoutStateDisabled()
+        {
+            var user = new ClaimsPrincipal(
+                new ClaimsIdentity(new Claim[]
+                {
+                    new Claim(AuthServicesClaimTypes.LogoutNameIdentifier, ",,,,NameId", null, "https://idp.example.com"),
+                    new Claim(AuthServicesClaimTypes.SessionIndex, "SessionId", null, "https://idp.example.com")
+                }, "Federation"));
+
+            var request = new HttpRequestData("GET", new Uri("http://sp-internal.example.com/AuthServices/Logout"));
+            request.User = user;
+
+            var options = StubFactory.CreateOptions();
+            options.SPOptions.ServiceCertificates.Add(SignedXmlHelper.TestCert);
+            options.SPOptions.PublicOrigin = new Uri("https://sp.example.com/");
+            options.SPOptions.Compatibility.DisableLogoutStateCookie = true;
+
+            var actual = CommandFactory.GetCommand(CommandFactory.LogoutCommandName)
+                .Run(request, options);
+
+            var relayState = HttpUtility.ParseQueryString(actual.Location.Query)["RelayState"];
+            actual.SetCookieName.Should().Be(null);
+            actual.RelayState.Should().Be( relayState );
+            actual.Location.GetLeftPart(UriPartial.Path).Should().Be("https://idp.example.com/logout");
         }
 
         [TestMethod]
@@ -204,6 +233,7 @@ namespace Kentor.AuthServices.Tests.WebSSO
             actual.ShouldBeEquivalentTo(expected, opt => opt
                 .Excluding(cr => cr.Location)
                 .Excluding(cr => cr.SetCookieName)
+                .Excluding(cr => cr.RelayState)
                 .Excluding(cr => cr.RequestState.MessageId));
             actual.Location.GetLeftPart(UriPartial.Path).Should().Be("https://idp.example.com/logout");
         }
@@ -737,6 +767,74 @@ namespace Kentor.AuthServices.Tests.WebSSO
             subject.Invoking(s => s.Run(request, options))
                 .ShouldThrow<NotImplementedException>()
                 .WithMessage("StubSaml2Binding.*");
+        }
+
+        [TestMethod]
+        public void LogoutCommand_Run_HandlesLogoutResponse_UsesApplicationPathWhenStateDisabled()
+        {
+            var response = new Saml2LogoutResponse(Saml2StatusCode.Success)
+            {
+                DestinationUrl = new Uri("http://sp.example.com/path/AuthServices/logout"),
+                Issuer = new EntityId("https://idp.example.com"),
+                InResponseTo = new Saml2Id(),
+                SigningCertificate = SignedXmlHelper.TestCert,
+                RelayState = null
+            };
+
+            var bindResult = Saml2Binding.Get(Saml2BindingType.HttpRedirect)
+                .Bind(response);
+
+            var applicationPath = "http://sp-internal.example.com/path/AuthServices/";
+            var request = new HttpRequestData("GET", bindResult.Location, applicationPath, null, null);
+
+            var options = StubFactory.CreateOptions();
+            options.SPOptions.Compatibility.DisableLogoutStateCookie = true;
+
+            var actual = CommandFactory.GetCommand(CommandFactory.LogoutCommandName)
+                .Run(request, options);
+
+            var expected = new CommandResult
+            {
+                Location = new Uri(applicationPath),
+                HttpStatusCode = HttpStatusCode.SeeOther,
+                ClearCookieName = null
+            };
+
+            actual.ShouldBeEquivalentTo(expected);
+        }
+
+        [TestMethod]
+        public void LogoutCommand_Run_HandlesLogoutResponse_UsesReturnPathWhenStateDisabled()
+        {
+            var response = new Saml2LogoutResponse(Saml2StatusCode.Success)
+            {
+                DestinationUrl = new Uri("http://sp.example.com/path/AuthServices/logout"),
+                Issuer = new EntityId("https://idp.example.com"),
+                InResponseTo = new Saml2Id(),
+                SigningCertificate = SignedXmlHelper.TestCert,
+                RelayState = null
+            };
+
+            var bindResult = Saml2Binding.Get(Saml2BindingType.HttpRedirect)
+                .Bind(response);
+
+            var applicationPath = "http://sp-internal.example.com/path/AuthServices/";
+            var returnPath = "http://sp-internal.example.com/path/anotherpath";
+            var request = new HttpRequestData("GET", bindResult.Location, applicationPath, null, null);
+
+            var options = StubFactory.CreateOptions();
+            options.SPOptions.Compatibility.DisableLogoutStateCookie = true;
+
+            var actual = LogoutCommand.Run(request, returnPath, options);
+
+            var expected = new CommandResult
+            {
+                Location = new Uri( returnPath ),
+                HttpStatusCode = HttpStatusCode.SeeOther,
+                ClearCookieName = null
+            };
+
+            actual.ShouldBeEquivalentTo(expected);
         }
     }
 }

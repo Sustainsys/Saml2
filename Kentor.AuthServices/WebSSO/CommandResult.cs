@@ -70,6 +70,11 @@ namespace Kentor.AuthServices.WebSso
         public string SetCookieName { get; set; }
 
         /// <summary>
+        /// SAML RelayState value
+        /// </summary>
+        public string RelayState { get; set; }
+
+        /// <summary>
         /// Request state to store so that it is available on next http request.
         /// </summary>
         public StoredRequestState RequestState { get; set; }
