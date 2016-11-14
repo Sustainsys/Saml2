@@ -107,6 +107,12 @@ namespace Kentor.AuthServices.WebSso
                 }
                 var idp = options.IdentityProviders[new EntityId(issuer)];
 
+                if (unbindResult.Data.LocalName == "LogoutRequest" && idp.AllowUnsignedLogOutRequest)
+                    return;
+
+                if (unbindResult.Data.LocalName == "LogoutResponse" && idp.AllowUnsignedLogOutResponse)
+                    return;
+
                 if (!unbindResult.Data.IsSignedByAny(idp.SigningKeys, options.SPOptions.ValidateCertificates))
                 {
                     throw new UnsuccessfulSamlOperationException(string.Format(CultureInfo.InvariantCulture,

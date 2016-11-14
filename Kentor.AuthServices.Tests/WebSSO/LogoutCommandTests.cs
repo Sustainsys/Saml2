@@ -292,6 +292,53 @@ namespace Kentor.AuthServices.Tests.WebSSO
         }
 
         [TestMethod]
+        public void LogoutCommand_Run_HandlesLogoutResponseWithoutSignature_SuccessWhenAllowUnsignedLogoutResponse()
+        {
+            var relayState = "MyRelayState";
+            var response = new Saml2LogoutResponse(Saml2StatusCode.Success)
+            {
+                DestinationUrl = new Uri("http://sp.example.com/path/AuthServices/logout"),
+                Issuer = new EntityId("https://idp.example.com"),
+                InResponseTo = new Saml2Id(),
+                SigningCertificate = null,
+                RelayState = relayState
+            };
+
+            var bindResult = Saml2Binding.Get(Saml2BindingType.HttpRedirect)
+                .Bind(response);
+
+            var request = new HttpRequestData("GET",
+                bindResult.Location,
+                "http://sp-internal.example.com/path/AuthServices",
+                null,
+                new StoredRequestState(null, new Uri("http://loggedout.example.com"), null, null));
+
+            var options = StubFactory.CreateOptions();
+            options.SPOptions.PublicOrigin = new Uri("https://sp.example.com/path/");
+            options.IdentityProviders[0].AllowUnsignedLogOutResponse = true;
+
+            CommandResult notifiedCommandResult = null;
+            options.Notifications.LogoutCommandResultCreated = cr =>
+            {
+                notifiedCommandResult = cr;
+            };
+
+            var actual = CommandFactory.GetCommand(CommandFactory.LogoutCommandName)
+                .Run(request, options);
+
+            actual.Should().BeSameAs(notifiedCommandResult);
+
+            var expected = new CommandResult
+            {
+                Location = new Uri("http://loggedout.example.com"),
+                HttpStatusCode = HttpStatusCode.SeeOther,
+                ClearCookieName = "Kentor." + relayState
+            };
+
+            actual.ShouldBeEquivalentTo(expected);
+        }
+
+        [TestMethod]
         public void LogoutCommand_Run_HandlesLogoutResponse_InPost()
         {
             var relayState = "TestState";
@@ -364,6 +411,83 @@ namespace Kentor.AuthServices.Tests.WebSSO
                 notifiedCommandResult = cr;
             };
             
+            // We're using unbind to verify the created message and UnBind
+            // expects the issuer to be a known Idp for signature validation.
+            // Add a dummy with the right issuer name and key.
+            var dummyIdp = new IdentityProvider(options.SPOptions.EntityId, options.SPOptions);
+            dummyIdp.SigningKeys.AddConfiguredKey(SignedXmlHelper.TestCert);
+            options.IdentityProviders.Add(dummyIdp);
+
+            var actual = CommandFactory.GetCommand(CommandFactory.LogoutCommandName)
+                .Run(httpRequest, options);
+
+            var expected = new CommandResult()
+            {
+                HttpStatusCode = HttpStatusCode.SeeOther,
+                TerminateLocalSession = true
+                // Deliberately not comparing Location
+            };
+
+            HttpUtility.ParseQueryString(actual.Location.Query)["Signature"]
+                .Should().NotBeNull("LogoutResponse should be signed");
+
+            actual.ShouldBeEquivalentTo(expected, opt => opt.Excluding(cr => cr.Location));
+            actual.Should().BeSameAs(notifiedCommandResult);
+
+            var actualUnbindResult = Saml2Binding.Get(Saml2BindingType.HttpRedirect)
+                .Unbind(new HttpRequestData("GET", actual.Location), options);
+
+            var actualMessage = actualUnbindResult.Data;
+
+            var expectedMessage = XmlHelpers.FromString(
+                $@"<samlp:LogoutResponse xmlns:samlp=""urn:oasis:names:tc:SAML:2.0:protocol""
+                    xmlns=""urn:oasis:names:tc:SAML:2.0:assertion""
+                    Destination=""https://idp.example.com/logout""
+                    Version=""2.0"">
+                    <Issuer>{options.SPOptions.EntityId.Id}</Issuer>
+                    <samlp:Status>
+                        <samlp:StatusCode Value=""urn:oasis:names:tc:SAML:2.0:status:Success""/>
+                    </samlp:Status>
+                </samlp:LogoutResponse>").DocumentElement;
+
+            // Set generated attributes to actual values.
+            expectedMessage.SetAttribute("ID", actualMessage.GetAttribute("ID"));
+            expectedMessage.SetAttribute("IssueInstant", actualMessage.GetAttribute("IssueInstant"));
+            expectedMessage.SetAttribute("InResponseTo", request.Id.Value);
+
+            actualMessage.Should().BeEquivalentTo(expectedMessage);
+
+            actualUnbindResult.RelayState.Should().Be(request.RelayState);
+            actualUnbindResult.TrustLevel.Should().Be(TrustLevel.Signature);
+        }
+
+        [TestMethod]
+        public void LogoutCommand_Run_HandlesLogoutRequestWithoutSignatureThroughRedirectBinding_SuccessWhenAllowUnsignedLogOutRequest()
+        {
+            var request = new Saml2LogoutRequest()
+            {
+                DestinationUrl = new Uri("http://sp.example.com/path/AuthServices/logout"),
+                Issuer = new EntityId("https://idp.example.com"),
+                SigningCertificate = null,
+                NameId = new Saml2NameIdentifier("NameId"),
+                SessionIndex = "SessionID",
+            };
+
+            var bindResult = Saml2Binding.Get(Saml2BindingType.HttpRedirect)
+                .Bind(request);
+
+            var httpRequest = new HttpRequestData("GET", bindResult.Location);
+
+            var options = StubFactory.CreateOptions();
+            options.SPOptions.ServiceCertificates.Add(SignedXmlHelper.TestCert);
+            options.IdentityProviders[0].AllowUnsignedLogOutRequest = true;
+
+            CommandResult notifiedCommandResult = null;
+            options.Notifications.LogoutCommandResultCreated = cr =>
+            {
+                notifiedCommandResult = cr;
+            };
+
             // We're using unbind to verify the created message and UnBind
             // expects the issuer to be a known Idp for signature validation.
             // Add a dummy with the right issuer name and key.

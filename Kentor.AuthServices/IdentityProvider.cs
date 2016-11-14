@@ -46,6 +46,9 @@ namespace Kentor.AuthServices
             EntityId = new EntityId(config.EntityId);
             binding = config.Binding;
             AllowUnsolicitedAuthnResponse = config.AllowUnsolicitedAuthnResponse;
+            AllowUnsignedLogOutResponse = config.AllowUnsignedLogOutResponse;
+            AllowUnsignedLogOutRequest = config.AllowUnsignedLogOutRequest;
+
             metadataLocation = string.IsNullOrEmpty(config.MetadataLocation)
                 ? null : config.MetadataLocation;
             WantAuthnRequestsSigned = config.WantAuthnRequestsSigned;
@@ -243,6 +246,16 @@ namespace Kentor.AuthServices
         /// Is this idp allowed to send unsolicited responses, i.e. idp initiated sign in?
         /// </summary>
         public bool AllowUnsolicitedAuthnResponse { get; set; }
+
+        /// <summary>
+        /// Is this idp allowed to send unsigned log out responses
+        /// </summary>
+        public bool AllowUnsignedLogOutResponse { get; set; }
+
+        /// <summary>
+        /// Is this idp allowed to send unsigned log out request
+        /// </summary>
+        public bool AllowUnsignedLogOutRequest { get; set; }
 
         private string metadataLocation;
 
