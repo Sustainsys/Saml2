@@ -46,8 +46,8 @@ namespace Kentor.AuthServices
             EntityId = new EntityId(config.EntityId);
             binding = config.Binding;
             AllowUnsolicitedAuthnResponse = config.AllowUnsolicitedAuthnResponse;
-            AllowUnsignedLogOutResponse = config.AllowUnsignedLogOutResponse;
-            AllowUnsignedLogOutRequest = config.AllowUnsignedLogOutRequest;
+            AllowUnsignedLogOffResponse = config.AllowUnsignedLogOffResponse;
+            AllowUnsignedLogOffRequest = config.AllowUnsignedLogOffRequest;
 
             metadataLocation = string.IsNullOrEmpty(config.MetadataLocation)
                 ? null : config.MetadataLocation;
@@ -250,12 +250,12 @@ namespace Kentor.AuthServices
         /// <summary>
         /// Is this idp allowed to send unsigned log out responses
         /// </summary>
-        public bool AllowUnsignedLogOutResponse { get; set; }
+        public bool AllowUnsignedLogOffResponse { get; set; }
 
         /// <summary>
         /// Is this idp allowed to send unsigned log out request
         /// </summary>
-        public bool AllowUnsignedLogOutRequest { get; set; }
+        public bool AllowUnsignedLogOffRequest { get; set; }
 
         private string metadataLocation;
 

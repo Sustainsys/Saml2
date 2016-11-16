@@ -292,7 +292,7 @@ namespace Kentor.AuthServices.Tests.WebSSO
         }
 
         [TestMethod]
-        public void LogoutCommand_Run_HandlesLogoutResponseWithoutSignature_SuccessWhenAllowUnsignedLogoutResponse()
+        public void LogoutCommand_Run_HandlesLogoutResponseWithoutSignature_SuccessWhenallowUnsignedLogOffResponse()
         {
             var relayState = "MyRelayState";
             var response = new Saml2LogoutResponse(Saml2StatusCode.Success)
@@ -315,7 +315,7 @@ namespace Kentor.AuthServices.Tests.WebSSO
 
             var options = StubFactory.CreateOptions();
             options.SPOptions.PublicOrigin = new Uri("https://sp.example.com/path/");
-            options.IdentityProviders[0].AllowUnsignedLogOutResponse = true;
+            options.IdentityProviders[0].AllowUnsignedLogOffResponse = true;
 
             CommandResult notifiedCommandResult = null;
             options.Notifications.LogoutCommandResultCreated = cr =>
@@ -462,7 +462,7 @@ namespace Kentor.AuthServices.Tests.WebSSO
         }
 
         [TestMethod]
-        public void LogoutCommand_Run_HandlesLogoutRequestWithoutSignatureThroughRedirectBinding_SuccessWhenAllowUnsignedLogOutRequest()
+        public void LogoutCommand_Run_HandlesLogoutRequestWithoutSignatureThroughRedirectBinding_SuccessWhenAllowUnsignedLogOffRequest()
         {
             var request = new Saml2LogoutRequest()
             {
@@ -480,7 +480,7 @@ namespace Kentor.AuthServices.Tests.WebSSO
 
             var options = StubFactory.CreateOptions();
             options.SPOptions.ServiceCertificates.Add(SignedXmlHelper.TestCert);
-            options.IdentityProviders[0].AllowUnsignedLogOutRequest = true;
+            options.IdentityProviders[0].AllowUnsignedLogOffRequest = true;
 
             CommandResult notifiedCommandResult = null;
             options.Notifications.LogoutCommandResultCreated = cr =>

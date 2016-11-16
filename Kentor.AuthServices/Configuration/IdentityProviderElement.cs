@@ -125,12 +125,12 @@ namespace Kentor.AuthServices.Configuration
         /// If true log out response without signature is still accepted
         /// If false log out response without signature is not accepted
         /// </summary>
-        [ConfigurationProperty("allowUnsignedLogOutResponse", IsRequired = false, DefaultValue = false)]
-        public bool AllowUnsignedLogOutResponse
+        [ConfigurationProperty("allowUnsignedLogOffResponse", IsRequired = false, DefaultValue = false)]
+        public bool AllowUnsignedLogOffResponse
         {
             get
             {
-                return (bool)base["allowUnsignedLogOutResponse"];
+                return (bool)base["allowUnsignedLogOffResponse"];
             }
         }
 
@@ -139,12 +139,12 @@ namespace Kentor.AuthServices.Configuration
         /// If true log out request without signature is still accepted
         /// If false log out request without signature is not accepted
         /// </summary>
-        [ConfigurationProperty("allowUnsignedLogOutRequest", IsRequired = false, DefaultValue = false)]
-        public bool AllowUnsignedLogOutRequest
+        [ConfigurationProperty("allowUnsignedLogOffRequest", IsRequired = false, DefaultValue = false)]
+        public bool AllowUnsignedLogOffRequest
         {
             get
             {
-                return (bool)base["allowUnsignedLogOutRequest"];
+                return (bool)base["allowUnsignedLogOffRequest"];
             }
         }
 

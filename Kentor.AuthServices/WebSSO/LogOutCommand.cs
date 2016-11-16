@@ -107,12 +107,12 @@ namespace Kentor.AuthServices.WebSso
                 }
                 var idp = options.IdentityProviders[new EntityId(issuer)];
 
-                if (unbindResult.Data.LocalName == "LogoutRequest" && idp.AllowUnsignedLogOutRequest)
+                if (unbindResult.Data.LocalName == "LogoutRequest" && idp.AllowUnsignedLogOffRequest)
                 {
                     return;
                 }
 
-                if (unbindResult.Data.LocalName == "LogoutResponse" && idp.AllowUnsignedLogOutResponse)
+                if (unbindResult.Data.LocalName == "LogoutResponse" && idp.AllowUnsignedLogOffResponse)
                 {
                     return;
                 }

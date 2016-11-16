@@ -467,8 +467,8 @@ A list of identity providers known to the service provider.
 * [`signOnUrl`](#signonurl-attribute)
 * [`logoutUrl`](#logouturl-attribute)
 * [`allowUnsolicitedAuthnResponse`](#allowunsolicitedauthnresponse-attribute)
-* [`allowUnsignedLogOutRequest`](#allowUnsignedLogOutRequest-attribute)
-* [`allowUnsignedLogOutResponse`](#allowUnsignedLogOutResponse-attribute)
+* [`allowUnsignedLogOffRequest`](#allowUnsignedLogOffRequest-attribute)
+* [`allowUnsignedLogOffResponse`](#allowUnsignedLogOffResponse-attribute)
 * [`binding`](#binding-attribute)
 * [`wantAuthnRequestsSigned`](#wantauthnrequestssigned-attribute)
 * [`loadMetadata`](#loadmetadata-attribute)
@@ -511,14 +511,14 @@ be initiated by an AuthnRequest from this SP.
 Note that if the authentication was SP-intiatied, RelayState and InResponseTo
 must be present and valid.
 
-####`allowUnsignedLogOutRequest` Attribute
+####`allowUnsignedLogOffRequest` Attribute
 *Attribute of the [`<add>`](#add-identityprovider-element) element*
 
 Allow the identity provider to send the saml log out request without the signature.
 If `true` signature in the saml log out request is not required from the IDP.
 If `false` signature in the saml log out request is required from the IDP (Default behavior).
 
-####`allowUnsignedLogOutResponse` Attribute
+####`allowUnsignedLogOffResponse` Attribute
 *Attribute of the [`<add>`](#add-identityprovider-element) element*
 
 Allow the identity provider to send the saml log out response without the signature.
