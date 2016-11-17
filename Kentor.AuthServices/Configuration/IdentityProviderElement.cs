@@ -125,12 +125,13 @@ namespace Kentor.AuthServices.Configuration
         /// If true log out response without signature is still accepted
         /// If false log out response without signature is not accepted
         /// </summary>
-        [ConfigurationProperty("allowUnsignedLogOffResponse", IsRequired = false, DefaultValue = false)]
-        public bool AllowUnsignedLogOffResponse
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1726:UsePreferredTerms", MessageId = "LogOut")]
+        [ConfigurationProperty("allowUnsignedLogOutResponse", IsRequired = false, DefaultValue = false)]
+        public bool AllowUnsignedLogOutResponse
         {
             get
             {
-                return (bool)base["allowUnsignedLogOffResponse"];
+                return (bool)base["allowUnsignedLogOutResponse"];
             }
         }
 
@@ -139,12 +140,13 @@ namespace Kentor.AuthServices.Configuration
         /// If true log out request without signature is still accepted
         /// If false log out request without signature is not accepted
         /// </summary>
-        [ConfigurationProperty("allowUnsignedLogOffRequest", IsRequired = false, DefaultValue = false)]
-        public bool AllowUnsignedLogOffRequest
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1726:UsePreferredTerms", MessageId = "LogOut")]
+        [ConfigurationProperty("allowUnsignedLogOutRequest", IsRequired = false, DefaultValue = false)]
+        public bool AllowUnsignedLogOutRequest
         {
             get
             {
-                return (bool)base["allowUnsignedLogOffRequest"];
+                return (bool)base["allowUnsignedLogOutRequest"];
             }
         }
 
