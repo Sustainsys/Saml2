@@ -211,6 +211,7 @@ namespace Kentor.AuthServices.Tests.Owin
 
             var options = new KentorAuthServicesAuthenticationOptions(true);
             options.SPOptions.PublicOrigin = new Uri("https://sp.example.com/ExternalPath/");
+            options.SPOptions.Compatibility.StrictOwinAuthenticationMode = false;
 
             var subject = new KentorAuthServicesAuthenticationMiddleware(
                 new StubOwinMiddleware(200, revoke: revoke),
@@ -322,15 +323,18 @@ namespace Kentor.AuthServices.Tests.Owin
         }
 
         [TestMethod]
-        public async Task KentorAuthServicesAuthenticationMiddleware_DoesntRedirectOnUnspecifiedAuthRevoke_WhenPassive()
+        public async Task KentorAuthServicesAuthenticationMiddleware_DoesntRedirectOnUnspecifiedAuthRevoke_WhenPassiveAndStrictCompatibility()
         {
+            var options = new KentorAuthServicesAuthenticationOptions(true)
+            {
+                AuthenticationMode = AuthenticationMode.Passive,
+            };
+            options.SPOptions.Compatibility.StrictOwinAuthenticationMode = true;
+
             var subject = new KentorAuthServicesAuthenticationMiddleware(
                 new StubOwinMiddleware(200, revoke: new AuthenticationResponseRevoke(new string[0])),
                 CreateAppBuilder(),
-                new KentorAuthServicesAuthenticationOptions(true)
-                {
-                    AuthenticationMode = AuthenticationMode.Passive
-                });
+                options);
 
             var context = OwinTestHelpers.CreateOwinContext();
 
