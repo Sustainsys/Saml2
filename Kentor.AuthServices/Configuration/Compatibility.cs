@@ -47,5 +47,12 @@ namespace Kentor.AuthServices.Configuration
         /// </summary>
         [System.Diagnostics.CodeAnalysis.SuppressMessage( "Microsoft.Naming", "CA1726:UsePreferredTerms", MessageId = "Logout" )]
         public bool DisableLogoutStateCookie { get; set; }
+
+        /// <summary>
+        /// Honor the owin authentication mode even on logout. Normally the logout
+        /// handling is always done as if the middleware was active, to allow for
+        /// simple sign out without specifying an auth type.
+        /// </summary>
+        public bool StrictOwinAuthenticationMode { get; set; }
     }
 }

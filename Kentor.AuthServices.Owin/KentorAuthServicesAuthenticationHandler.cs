@@ -88,7 +88,12 @@ namespace Kentor.AuthServices.Owin
 
         protected async override Task ApplyResponseGrantAsync()
         {
-            var revoke = Helper.LookupSignOut(Options.AuthenticationType, Options.AuthenticationMode);
+            // Automatically sign out, even if passive because passive sign in and auto sign out
+            // is typically most common scenario. Unless strict compatibility is set.
+            var mode = Options.SPOptions.Compatibility.StrictOwinAuthenticationMode ?
+                Options.AuthenticationMode : AuthenticationMode.Active;
+
+            var revoke = Helper.LookupSignOut(Options.AuthenticationType, mode);
 
             if (revoke != null)
             {
