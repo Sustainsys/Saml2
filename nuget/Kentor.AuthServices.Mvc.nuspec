@@ -1,0 +1,28 @@
+﻿<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>$id$</id>
+    <version>$version$</version>
+    <title>$title$</title>
+    <authors>$author$</authors>
+    <owners>$author$</owners>
+    <licenseUrl>https://github.com/KentorIT/authservices/blob/master/LICENSE</licenseUrl>
+    <projectUrl>https://github.com/KentorIT/authservices</projectUrl>
+    <iconUrl>https://raw.github.com/KentorIT/authservices/master/nuget/kentor.png</iconUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <summary>A SAML2 Service Provider for ASP.NET MVC. The package adds an MVC controller that handles the SAML SignIn and SignOut. It is built on top of the claims model of .NET 4.5 and uses the present infrastructure for claims translation, session authentication cookies etc.</summary>
+    <description>
+      A SAML2 Service Provider for ASP.NET MVC. Install in project and add sections to web.config. No coding required. The package adds an MVC controller that handles the SAML SignIn and SignOut. It works with the claims model of .NET 4.5 and uses the present infrastructure for claims translation, session authentication cookies etc.
+    </description>
+    <copyright>Copyright Kentor and contributors 2013-2015</copyright>
+    <tags>SAML2 authentication ASP.NET SAML SSO AspNetMvc Mvc</tags>
+    <releaseNotes />
+    <dependencies>
+      <group>
+        <dependency id="Kentor.AuthServices" version="[$version$]" />
+        <dependency id="Kentor.AuthServices.HttpModule" version="[$version$]" />
+        <dependency id="Microsoft.AspNet.Mvc" version="4.0.20710" />
+      </group>
+    </dependencies>
+  </metadata>
+</package>

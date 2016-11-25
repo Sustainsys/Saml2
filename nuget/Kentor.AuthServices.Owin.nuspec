@@ -1,0 +1,25 @@
+﻿<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>$id$</id>
+    <version>$version$</version>
+    <title>$title$</title>
+    <authors>$author$</authors>
+    <owners>$author$</owners>
+    <licenseUrl>https://github.com/KentorIT/authservices/blob/master/LICENSE</licenseUrl>
+    <projectUrl>https://github.com/KentorIT/authservices</projectUrl>
+    <iconUrl>https://raw.github.com/KentorIT/authservices/master/nuget/kentor.png</iconUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>
+      A SAML2 Owin middleware, compatible with ASP.NET Identity for external logins.
+    </description>
+    <copyright>Copyright Kentor and contributors 2015</copyright>
+    <tags>SAML2 authentication ASP.NET SAML SSO Owin</tags>
+    <releaseNotes />
+    <dependencies>
+      <group>
+        <dependency id="Kentor.AuthServices" version="[$version$]" />
+      </group>
+    </dependencies>
+  </metadata>
+</package>

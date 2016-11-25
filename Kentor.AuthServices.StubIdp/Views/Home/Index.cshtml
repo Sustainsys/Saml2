@@ -1,0 +1,150 @@
+﻿@model HomePageModel
+@if (!string.IsNullOrEmpty(Model.CustomDescription))
+{
+    <div style="white-space:pre-wrap">@Model.CustomDescription</div>
+}
+else
+{
+    <p>
+        The SAML messages sent by the Stub Idp will be signed with
+        <em>@Html.ActionLink("this certificate", "Index", "Certificate")</em>.
+        To validate the responses you need to download it and configure your
+        service provider to trust it. <em>Caution</em>: Never trust this
+        certificate in a production environment as it will allow anyone to sign
+        in to your application as whatever user they choose.
+    </p>
+
+    @Html.Partial("_MetadataLink")
+
+    <p>
+        This form will allow you to send a SAML2 Response to a service provider.
+        If the In Response To ID field is empty, the Response is considered
+        unsolicited (IDP initiated).
+    </p>
+    
+    <p>
+        The stub idp also features 
+        @Html.ActionLink("single logout support", "Index", "Logout").
+    </p>
+
+    <p>
+        If you want to build your own user list you can @Html.ActionLink("create your own IDP", "Index", "Manage", new { idpId = Guid.NewGuid() }, null)
+    </p>
+}
+@{
+    var additionalClasses = "";
+    if (Model.HideDetails)
+    {
+        additionalClasses = "initially-hidden";
+    }
+}
+@using (Html.BeginForm("Index", "Home", FormMethod.Post, new { @class = additionalClasses }))
+{
+    @Html.HiddenFor(m => m.CustomDescription) @*Preserve value on post-redisplay*@
+    <div id="user-dropdown-placeholder" style="display:none">
+        <label for="userList">Select user</label>
+        <select id="userList"></select>
+
+        <div id="userDescription"></div>
+        <hr class="hide-details" />
+    </div>
+    @Html.ValidationSummary()
+
+    if (Model.AssertionModel.AuthnRequestXml != null)
+    {
+        <div class="hide-details">
+            @Html.LabelFor(m => m.AssertionModel.AuthnRequestXml)
+            <pre class="xml">@Model.AssertionModel.AuthnRequestXml</pre>
+        </div>
+    }
+
+    <div class="hide-details">
+        @Html.LabelFor(m => m.AssertionModel.InResponseTo)
+        @Html.EditorFor(m => m.AssertionModel.InResponseTo)
+        @Html.ValidationMessageFor(m => m.AssertionModel.InResponseTo)
+    </div>
+
+    <div class="hide-details">
+        @Html.LabelFor(m => m.AssertionModel.AssertionConsumerServiceUrl)
+        @Html.EditorFor(m => m.AssertionModel.AssertionConsumerServiceUrl)
+        @Html.ValidationMessageFor(m => m.AssertionModel.AssertionConsumerServiceUrl)
+    </div>
+
+    <div class="hide-details">
+        @Html.LabelFor(m => m.AssertionModel.Audience)
+        @Html.EditorFor(m => m.AssertionModel.Audience)
+        @Html.ValidationMessageFor(m => m.AssertionModel.Audience)
+    </div>
+
+    <div class="hide-details">
+        <label>Send response via</label>
+        <div class="radio-button-group">
+            <input type="radio" name="AssertionModel.ResponseBinding" id="binding_post" 
+                   checked="@(Model.AssertionModel.ResponseBinding == Kentor.AuthServices.WebSso.Saml2BindingType.HttpPost)"
+                   value="HttpPost"/>
+            <label for="binding_post">Http POST Binding</label>
+            <br />
+            <input type="radio" name="AssertionModel.ResponseBinding" id="binding_artifact"
+                   checked="@(Model.AssertionModel.ResponseBinding == Kentor.AuthServices.WebSso.Saml2BindingType.Artifact)"
+                   value="Artifact"/>
+            <label for="binding_artifact">Artifact Binding over Http Redirect</label>
+        </div>
+    </div>
+
+
+    <div class="hide-details">
+        @Html.LabelFor(m => m.AssertionModel.RelayState)
+        @Html.EditorFor(m => m.AssertionModel.RelayState)
+        @Html.ValidationMessageFor(m => m.AssertionModel.RelayState)
+    </div>
+
+    <div class="hide-details">
+        @Html.LabelFor(m => m.AssertionModel.NameId)
+        @Html.EditorFor(m => m.AssertionModel.NameId)
+        @Html.ValidationMessageFor(m => m.AssertionModel.NameId)
+    </div>
+
+    <div class="hide-details">
+        @Html.LabelFor(m => m.AssertionModel.SessionIndex)
+        @Html.EditorFor(m => m.AssertionModel.SessionIndex)
+        @Html.ValidationMessageFor(m => m.AssertionModel.SessionIndex)
+    </div>
+
+    <fieldset class="hide-details">
+        <legend>AttributeStatements</legend>
+        <div id="attributes-placeholder" style="display:none">
+            <div class="attribute-type">Type</div>
+            <div class="attribute-value">Value</div>
+        </div>
+        <button id="add-attribute">Add attribute</button>
+    </fieldset>
+    <p></p>
+    <button id="submit">Log in</button>
+    <a class="show-details" href="#" style="display:none">Show details</a>
+}
+
+
+
+<script id="attributeRowTemplate" type="text/html">
+    @* Mustache.js template for each attribute row *@
+    @*Array model binding using Index property, see http://haacked.com/archive/2008/10/23/model-binding-to-a-list.aspx/*@
+    <div class="attribute-row">
+        <input type="hidden" name="AssertionModel.AttributeStatements.Index" value="{{rowIndex}}" />
+        <input type="text" data-val="true" data-val-required="The Type field is required." class="attribute-type" name="AssertionModel.AttributeStatements[{{rowIndex}}].Type" value="{{type}}" />
+        <input type="text" data-val="true" data-val-required="The Value field is required." class="attribute-value" name="AssertionModel.AttributeStatements[{{rowIndex}}].Value" value="{{value}}" />
+        <span class="field-validation-valid" data-valmsg-for="AssertionModel.AttributeStatements[{{rowIndex}}].Type" data-valmsg-replace="true"></span>
+        <span class="field-validation-valid" data-valmsg-for="AssertionModel.AttributeStatements[{{rowIndex}}].Value" data-valmsg-replace="true"></span>
+        <button class="remove-attribute">Delete</button>
+    </div>
+</script>
+
+@* Mustache.js template for a user item display in the select2 list *@
+<script id="userListTemplate" type="text/html">
+    <div>
+        {{DisplayName}}
+        <br />
+        <em>
+            {{Description}}
+        </em>
+    </div>
+</script>

@@ -1,0 +1,42 @@
+﻿@model DiscoveryServiceModel
+@{
+    ViewBag.Title = "Disovery Service";
+}
+
+<h2>Discovery Service</h2>
+<p>
+    This is a dummy discovery service. Normally this page isn't accessed
+    directly. A service provider (SP) can redirect the client here according
+    to the
+    <a href="https://www.oasis-open.org/committees/download.php/28049/sstc-saml-idp-discovery-cs-01.pdf" target="_blank">
+        idp discovery protocol
+    </a> to have the client select an idp to use to authenticate.
+</p>
+
+@using(Html.BeginForm())
+{
+    <div>
+        @Html.LabelFor(m => m.entityID)
+        @Html.DisplayFor(m => m.entityID)
+    </div>
+    
+    <div>
+        @Html.LabelFor(m => m.@return)
+        @Html.EditorFor(m => m.@return)
+        @Html.ValidationMessageFor(m => m.@return)
+    </div>
+    
+    <div>
+        @Html.LabelFor(m => m.returnIDParam)
+        @Html.EditorFor(m => m.returnIDParam)
+        @Html.ValidationMessageFor(m => m.returnIDParam)
+    </div>
+    
+    <div>
+        @Html.LabelFor(m => m.SelectedIdp)
+        @Html.EditorFor(m => m.SelectedIdp)
+        @Html.ValidationMessageFor(m => m.SelectedIdp)
+    </div>
+    
+    <button id="submit">Redirect back to SP</button>
+}

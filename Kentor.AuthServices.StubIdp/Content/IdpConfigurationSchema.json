@@ -1,0 +1,105 @@
+﻿{
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "DefaultAssertionConsumerServiceUrl": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "DefaultAudience": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "IdpDescription": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "HideDetails": {
+      "type": [
+        "boolean",
+        "null"
+      ]
+    },
+    "UserList": {
+      "type": [
+        "array",
+        "null"
+      ],
+      "items": {
+        "type": [
+          "object",
+          "null"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "DisplayName": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "Description": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "Assertion": {
+            "type": [
+              "object",
+              "null"
+            ],
+            "properties": {
+              "NameId": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "AttributeStatements": {
+                "type": [
+                  "array",
+                  "null"
+                ],
+                "items": {
+                  "type": [
+                    "object",
+                    "null"
+                  ],
+                  "properties": {
+                    "Type": {
+                      "type": "string"
+                    },
+                    "Value": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "Type",
+                    "Value"
+                  ]
+                }
+              }
+            },
+            "required": [
+              "NameId"
+            ]
+          }
+        },
+        "required": [
+          "DisplayName",
+          "Assertion"
+        ]
+      }
+    }
+  },
+  "required": [
+    "UserList"
+  ]
+}

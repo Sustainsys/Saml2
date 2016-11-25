@@ -1,0 +1,29 @@
+﻿<Dictionary>
+<Words>
+  <Unrecognized>
+  </Unrecognized>
+  <Recognized>
+    <Word>Auth</Word>
+    <Word>Authn</Word>
+    <Word>AuthnRequest</Word>
+    <Word>Kentor</Word>
+    <Word>Idp</Word>
+    <Word>Mvc</Word>
+    <Word>Acs</Word>
+    <Word>Owin</Word>
+    <Word>Sso</Word>
+    <Word>AuthServices</Word>
+  </Recognized>
+  <Deprecated>
+  </Deprecated>
+  <Compound>
+  </Compound>
+  <DiscreteExceptions>
+    <Term>AuthServices</Term>
+  </DiscreteExceptions>
+</Words>
+<Acronyms>
+  <CasingExceptions>
+  </CasingExceptions>
+</Acronyms>
+</Dictionary>

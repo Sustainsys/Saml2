@@ -1,0 +1,43 @@
+﻿@model ManageIdpModel
+<h1>
+    Manage your own IDP
+</h1>
+<p>
+    We have created a unique IDP for you with entityId <a href="@UrlResolver.MetadataUrl">@UrlResolver.MetadataUrl</a>.
+</p>
+<p>
+    Bookmark <a href="@UrlResolver.ManageUrl">@UrlResolver.ManageUrl</a> to be
+    able to manage your IDP in the future. On your IDP you can set a custom
+    description, a custom ACS and a custom user list. This is done by entering
+    a JSON document below.
+</p>
+<p>
+    The configuration for your IDP must be conforming to the JSON schema 
+    <a href="@Url.Content("~/Content/IdpConfigurationSchema.json")">IdpConfigurationSchema.json</a>
+    The first time you visit this page a template document will be displayed.
+</p>
+<p>
+    Your IDP name will not be published. As long as you don't expose your 
+    entity id anywhere probably no one will find your IDP. However there is no 
+    further security preventing anyone (including server admins) from reading 
+    and modifying your IDP data. Don't expose sensitive data.
+    By law you are not allowed to store personal information of real persons, 
+    especially not civic/social security numbers.
+</p>
+
+@Html.Partial("_MetadataLink")
+
+@using (Html.BeginForm("Index", "Manage"))
+{
+    @Html.ValidationSummary()
+    <div>
+        @Html.LabelFor(m => m.JsonData)
+    </div>
+    <div class="textarea-large">
+        @Html.EditorFor(m => m.JsonData)
+    </div>
+    <div>
+        @Html.ValidationMessageFor(m => m.JsonData)
+    </div>
+    <button>Submit</button>
+}
