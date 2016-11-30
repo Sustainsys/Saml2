@@ -17,7 +17,7 @@ namespace Kentor.AuthServices.Saml2P
         private Saml2Id id = new Saml2Id("id" + Guid.NewGuid().ToString("N"));
 
         /// <summary>
-        /// The id of the request.
+        /// The id of the request. 
         /// </summary>
         public Saml2Id Id
         {

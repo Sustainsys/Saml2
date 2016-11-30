@@ -34,7 +34,7 @@ namespace Kentor.AuthServices.Tests.Saml2P
 
             subject.Should().NotBeNull().And.Subject.Attribute("ID").Should().NotBeNull();
             subject.Attribute("AttributeConsumingServiceIndex").Should().BeNull();
-        }
+        } 
 
         [TestMethod]
         public void Saml2AuthenticationRequest_ToXElement_AddsAttributeConsumingServiceIndex()

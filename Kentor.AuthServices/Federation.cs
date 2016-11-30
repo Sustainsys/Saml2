@@ -23,7 +23,7 @@ namespace Kentor.AuthServices
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "sp")]
         public Federation(FederationElement config, IOptions options)
         {
-            if (config == null)
+            if (config == null) 
             {
                 throw new ArgumentNullException(nameof(config));
             }
