@@ -1,21 +1,19 @@
-﻿using System.Collections.Generic;
-using Kentor.AuthServices.Configuration;
+﻿using Kentor.AuthServices.Configuration;
+using Kentor.AuthServices.Metadata;
+using Kentor.AuthServices.Saml2P;
+using Kentor.AuthServices.WebSso;
 using System;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Configuration;
 using System.Globalization;
 using System.IdentityModel.Metadata;
 using System.IdentityModel.Tokens;
 using System.Linq;
-using System.Security.Cryptography;
-using System.Security.Cryptography.Xml;
-using Kentor.AuthServices.Internal;
-using Kentor.AuthServices.Metadata;
-using Kentor.AuthServices.Saml2P;
-using Kentor.AuthServices.WebSso;
-using System.Threading.Tasks;
 using System.Net;
-using System.Collections.Concurrent;
 using System.Security.Claims;
+using System.Threading.Tasks;
+using System.Xml.Linq;
 
 namespace Kentor.AuthServices
 {
@@ -141,6 +139,11 @@ namespace Kentor.AuthServices
                 binding = value;
             }
         }
+
+        /// <summary>
+        /// The provider specific request message extensions.
+        /// </summary>
+        public IEnumerable<XNode> RequestExtensions { get; set; }
 
         private Uri singleSignOnServiceUrl;
 
@@ -290,7 +293,8 @@ namespace Kentor.AuthServices
                 // For now we only support one attribute consuming service.
                 AttributeConsumingServiceIndex = spOptions.AttributeConsumingServices.Any() ? 0 : (int?)null,
                 NameIdPolicy = spOptions.NameIdPolicy,
-                RequestedAuthnContext = spOptions.RequestedAuthnContext
+                RequestedAuthnContext = spOptions.RequestedAuthnContext,
+                ExtensionsContent = RequestExtensions,
             };
 
             if (spOptions.AuthenticateRequestSigningBehavior == SigningBehavior.Always
