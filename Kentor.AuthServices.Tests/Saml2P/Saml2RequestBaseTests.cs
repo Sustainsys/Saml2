@@ -5,7 +5,6 @@ using System.Text.RegularExpressions;
 using System.Xml.Linq;
 using System.IdentityModel.Metadata;
 using Kentor.AuthServices.Saml2P;
-using System.Xml;
 
 namespace Kentor.AuthServices.Tests.Saml2P
 {
@@ -31,14 +30,6 @@ namespace Kentor.AuthServices.Tests.Saml2P
         public void TestReadBasePropertiesWithNull()
         {
             ReadBaseProperties(null);
-        }
-
-        public ConcreteSaml2Request TestReadBasePropertiesWith(string xml)
-        {
-            var doc = new XmlDocument();
-            doc.LoadXml(xml);
-            ReadBaseProperties(doc.DocumentElement);
-            return this;
         }
     }
 
@@ -148,14 +139,6 @@ namespace Kentor.AuthServices.Tests.Saml2P
         }
 
         [TestMethod]
-        public void Saml2RequestBase_ToXNodes_Extensions()
-        {
-            var content = XElement.Parse("<additional />");
-            var r = new ConcreteSaml2Request() { ExtensionsContent = new[] { content } };
-            r.ToXElement().Element(Saml2Namespaces.Saml2P + "Extensions").FirstNode.Should().Be(content);
-        }
-
-        [TestMethod]
         public void Saml2RequestBase_MessageName()
         {
             var subject = new ConcreteSaml2Request();
@@ -168,14 +151,6 @@ namespace Kentor.AuthServices.Tests.Saml2P
             var subject = new ConcreteSaml2Request();
             Action a = () => subject.TestReadBasePropertiesWithNull();
             a.ShouldThrow<ArgumentNullException>().And.ParamName.Should().Be("xml");
-        }
-
-        [TestMethod]
-        public void Saml2RequestBase_ReadBasePropertiesWithAdditionalExtensionContent_ShouldConvertChildNodes()
-        {
-            var xml = "<saml2p:ConcreteRequest xmlns:saml2p=\"urn:oasis:names:tc:SAML:2.0:protocol\" ID=\"id2ade1f56e9d1443b93216a0466a76e70\" Version=\"2.0\"><saml2p:Extensions><additional /></saml2p:Extensions></saml2p:ConcreteRequest>";
-            var subject = new ConcreteSaml2Request().TestReadBasePropertiesWith(xml);
-            subject.ExtensionsContent.Should().HaveCount(1);
         }
     }
 }
