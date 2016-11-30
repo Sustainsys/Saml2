@@ -2,12 +2,9 @@
 using Kentor.AuthServices.Metadata;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Globalization;
 using System.IdentityModel.Metadata;
 using System.Linq;
 using System.Net;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Kentor.AuthServices
@@ -80,12 +77,21 @@ namespace Kentor.AuthServices
 
                     var identityProviders = new List<IdentityProvider>();
 
-                    foreach(var idpMetadata in identityProvidersMetadata)
+                    foreach (var idpMetadata in identityProvidersMetadata)
                     {
                         var idp = new IdentityProvider(idpMetadata.EntityId, options.SPOptions)
                         {
                             AllowUnsolicitedAuthnResponse = allowUnsolicitedAuthnResponse
                         };
+
+                        IdentityProvider match;
+
+                        if (options.IdentityProviders != null &&
+                            options.IdentityProviders.TryGetValue(idpMetadata.EntityId, out match) &&
+                            match.RequestExtensions != null)
+                        {
+                            idp.RequestExtensions = match.RequestExtensions.ToList();
+                        }
 
                         idp.ReadMetadata(idpMetadata);
                         identityProviders.Add(idp);
