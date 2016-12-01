@@ -84,15 +84,6 @@ namespace Kentor.AuthServices
                             AllowUnsolicitedAuthnResponse = allowUnsolicitedAuthnResponse
                         };
 
-                        IdentityProvider match;
-
-                        if (options.IdentityProviders != null &&
-                            options.IdentityProviders.TryGetValue(idpMetadata.EntityId, out match) &&
-                            match.RequestExtensions != null)
-                        {
-                            idp.RequestExtensions = match.RequestExtensions.ToList();
-                        }
-
                         idp.ReadMetadata(idpMetadata);
                         identityProviders.Add(idp);
                     }
@@ -135,6 +126,13 @@ namespace Kentor.AuthServices
             // Add or update the idps in the new metadata.
             foreach (var idp in identityProviders)
             {
+                IdentityProvider existing;
+                if (options.IdentityProviders.TryGetValue(idp.EntityId, out existing) &&
+                    existing.RequestExtensions != null)
+                {
+                    idp.RequestExtensions = existing.RequestExtensions;
+                }
+
                 options.IdentityProviders[idp.EntityId] = idp;
                 registeredIdentityProviders.Remove(idp.EntityId.Id);
             }
