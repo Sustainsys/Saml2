@@ -33,6 +33,13 @@ package contains the Owin middleware.
 Once installed the `web.config` of the application must be updated with configuration.
 See [configuration](doc/Configuration.md) for details.
 
+##Troubleshooting
+
+* Check the [issues archive](https://github.com/KentorIT/authservices/issues)
+* Check the [SAML2 specification](http://saml.xml.org/saml-specifications), start with the core section.
+* Log your actual SAML2 conversation with [SAML Chrome Panel](https://chrome.google.com/webstore/detail/saml-chrome-panel/paijfdbeoenhembfhkhllainmocckace) or [SAML Tracer for Firefox](https://addons.mozilla.org/sv-se/firefox/addon/saml-tracer/)
+* Last but not least. Download the AuthServices source and check out whats really happening.
+
 ##Saml2AuthenticationModule
 The Saml2AuthenticationModule is modeled after the WSFederationAuthenticationModule
 to provide Saml2 authentication to IIS web sites. In many cases it should just be
