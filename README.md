@@ -10,7 +10,7 @@ web sites, allowing the web site to act as a SAML2 Service Provider (SP).
 Kentor.AuthServices is open sourced and contributions are welcome, please see 
 [contributing guidelines](CONTRIBUTING.md) for info on coding standards etc.
 
-##Using
+## Using
 The AuthServices library can be used through three different ways:
 
 * An Http Module, loaded into the IIS pipeline. The module is compatible with ASP.NET web 
@@ -33,35 +33,35 @@ package contains the Owin middleware.
 Once installed the `web.config` of the application must be updated with configuration.
 See [configuration](doc/Configuration.md) for details.
 
-##Troubleshooting
+## Troubleshooting
 
 * Check the [issues archive](https://github.com/KentorIT/authservices/issues)
 * Check the [SAML2 specification](http://saml.xml.org/saml-specifications), start with the core section.
 * Log your actual SAML2 conversation with [SAML Chrome Panel](https://chrome.google.com/webstore/detail/saml-chrome-panel/paijfdbeoenhembfhkhllainmocckace) or [SAML Tracer for Firefox](https://addons.mozilla.org/sv-se/firefox/addon/saml-tracer/)
 * Last but not least. Download the AuthServices source and check out whats really happening.
 
-##Saml2AuthenticationModule
+## Saml2AuthenticationModule
 The Saml2AuthenticationModule is modeled after the WSFederationAuthenticationModule
 to provide Saml2 authentication to IIS web sites. In many cases it should just be
 [configured](doc/Configuration.md) in and work without any code written in the application 
 at all (even though [providing an own ClaimsAuthenticationManager](doc/ClaimsAuthenticationManager.md)
 for claims translation is highly recommended).
 
-##Mvc Controller
+## Mvc Controller
 The MVC package contains an MVC controller that will be accessible in your application just
 by installing the package in the application. For MVC applications a controller is preferred
 over using the authentication module as it integrates with MVC's error handling.
 
-##Owin Middleware
+## Owin Middleware
 The Owin middleware is modeled after the external authentication modules for social login
 (such as Google, Facebook, Twitter). This allows easy integration with ASP.NET Identity 
 for keeping application specific user and role information. See the 
 [Owin Middleware](doc/OwinMiddleware.md) page for information on how to set up and use the middleware.
 
-##Stub Idp
+## Stub Idp
 The solution also contains a stub (i.e. dummy) identity provider that can be used for testing.
 Download the solution, or use the instance that's provided for free at http://stubidp.kentor.se.
 
-##Protocol Classes
+## Protocol Classes
 The protocol handling classes are available as a public API as well, making it possible to 
 reuse some of the internals for writing your own service provider or identity provider.
