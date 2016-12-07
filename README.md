@@ -28,7 +28,7 @@ forms sites.
 
 Note that this last usage scenario enables SAML identity providers to be integrated within
 [IdentityServer3](https://github.com/IdentityServer/IdentityServer3) package.  Review [this document](doc/IdentityServer3Okta.md) to see how to configure AuthServices
-with IdentityServer3 and Okta to add Okta as an identity provider to an IdentityServer3 project.
+with IdentityServer3 and Okta to add Okta as an identity provider to an IdentityServer3 project. There is also a SampleIdentityServer3 project in the AuthServices repository.
 
 There are four nuget packages available. The core 
 [Kentor.AuthServices](https://www.nuget.org/packages/Kentor.AuthServices/) contains the core
@@ -43,10 +43,10 @@ See [configuration](doc/Configuration.md) for details.
 
 ## Troubleshooting
 
-* Check the [issues archive](https://github.com/KentorIT/authservices/issues)
-* Check the [SAML2 specification](http://saml.xml.org/saml-specifications), start with the core section.
-* Log your actual SAML2 conversation with [SAML Chrome Panel](https://chrome.google.com/webstore/detail/saml-chrome-panel/paijfdbeoenhembfhkhllainmocckace) or [SAML Tracer for Firefox](https://addons.mozilla.org/sv-se/firefox/addon/saml-tracer/)
-* Last but not least. Download the AuthServices source and check out whats really happening.
+* Check the [issues archive](https://github.com/KentorIT/authservices/issues).
+* Check the [SAML2 specification](http://saml.xml.org/saml-specifications), starting with the core section.
+* Log your actual SAML2 conversation with [SAML Chrome Panel](https://chrome.google.com/webstore/detail/saml-chrome-panel/paijfdbeoenhembfhkhllainmocckace) or [SAML Tracer for Firefox](https://addons.mozilla.org/sv-se/firefox/addon/saml-tracer/).
+* Last but not least, download the AuthServices source and check out what's really happening.
 
 ## Saml2AuthenticationModule
 The Saml2AuthenticationModule is modeled after the WSFederationAuthenticationModule
