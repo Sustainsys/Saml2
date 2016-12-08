@@ -175,7 +175,7 @@ namespace Kentor.AuthServices.WebSso
             }
             else
             {
-                return new AuthServicesUrls(request, options.SPOptions).ApplicationUrl;
+                return new AuthServicesUrls(request, options).ApplicationUrl;
             }
         }
 
