@@ -174,6 +174,9 @@ with load balancers or reverse proxies. It can also be used if the application
 can be accessed by several external URLs to make sure that the registered in
 metadata is used in communication with the Idp.
 
+If you need to set this value on a per-request basis, provide a GetPublicOrigin
+Notification function instead.
+
 ###`<nameIdPolicy>` Element
 *Optional child element of the [`<kentor.authServices>`](#kentor-authservices-section) element.*
 

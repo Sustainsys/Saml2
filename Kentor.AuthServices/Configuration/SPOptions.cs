@@ -179,7 +179,8 @@ namespace Kentor.AuthServices.Configuration
         /// application root path from the HTTP request when creating links. 
         /// This might not be accurate in reverse proxy or load-balancing
         /// situations. You can override the origin used for link generation
-        /// using this property.
+        /// for the entire application using this property. To override per request,
+        /// implement a <code>GetPublicOrigin</code> Notification function.
         /// </summary>
         public Uri PublicOrigin { get; set; }
 
