@@ -20,7 +20,7 @@ namespace Kentor.AuthServices.Tests.WebSso
         [TestMethod]
         public void AuthServicesUrls_Ctor_NullCheckRequest()
         {
-            Action a = () => new AuthServicesUrls(null, new SPOptions());
+            Action a = () => new AuthServicesUrls(null, new Options(new SPOptions()));
 
             a.ShouldThrow<ArgumentNullException>().And.ParamName.Should().Be("request"); ;
         }
@@ -32,7 +32,7 @@ namespace Kentor.AuthServices.Tests.WebSso
                 new HttpRequestData("GET", new Uri("http://localhost")),
                 null);
 
-            a.ShouldThrow<ArgumentNullException>().And.ParamName.Should().Be("spOptions");
+            a.ShouldThrow<ArgumentNullException>().And.ParamName.Should().Be("options");
         }
 
         [TestMethod]
@@ -98,7 +98,7 @@ namespace Kentor.AuthServices.Tests.WebSso
                 null);
 
             var options = StubFactory.CreateOptions();
-            var subject = new AuthServicesUrls(request, options.SPOptions);
+            var subject = new AuthServicesUrls(request, options);
             subject.ApplicationUrl.OriginalString.Should().EndWith("/");
         }
 
@@ -149,7 +149,7 @@ namespace Kentor.AuthServices.Tests.WebSso
             request.ApplicationPath.Returns(appPath);
             var options = StubFactory.CreateOptionsPublicOrigin(new Uri("https://my.public.origin:8443/OtherPath"));
             var subject = request.ToHttpRequestData();
-            var urls = new AuthServicesUrls(subject, options.SPOptions);
+            var urls = new AuthServicesUrls(subject, options);
             urls.AssertionConsumerServiceUrl.ShouldBeEquivalentTo("https://my.public.origin:8443/OtherPath/AuthServices/Acs");
             urls.SignInUrl.ShouldBeEquivalentTo("https://my.public.origin:8443/OtherPath/AuthServices/SignIn");
         }
@@ -160,9 +160,22 @@ namespace Kentor.AuthServices.Tests.WebSso
             var ctx = OwinTestHelpers.CreateOwinContext();
             var options = StubFactory.CreateOptionsPublicOrigin(new Uri("https://my.public.origin:8443/"));
             var subject = await ctx.ToHttpRequestData(null);
-            var urls = new AuthServicesUrls(subject, options.SPOptions);
+            var urls = new AuthServicesUrls(subject, options);
             urls.AssertionConsumerServiceUrl.ShouldBeEquivalentTo("https://my.public.origin:8443/AuthServices/Acs");
             urls.SignInUrl.ShouldBeEquivalentTo("https://my.public.origin:8443/AuthServices/SignIn");
+        }
+
+        [TestMethod]
+        public void AuthServicesUrls_Ctor_PerRequest_PublicOrigin()
+        {
+            var options = StubFactory.CreateOptionsPublicOrigin(new Uri("https://my.public.origin:8443/"));
+            options.Notifications.GetPublicOrigin = (requestData) =>
+            {
+                return new Uri("https://special.public.origin/");
+            };
+            var urls = new AuthServicesUrls(new HttpRequestData("get", new Uri("http://servername/")), options);
+            urls.AssertionConsumerServiceUrl.ShouldBeEquivalentTo("https://special.public.origin/AuthServices/Acs");
+            urls.SignInUrl.ShouldBeEquivalentTo("https://special.public.origin/AuthServices/SignIn");
         }
     }
 }
