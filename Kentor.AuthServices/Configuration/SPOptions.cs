@@ -357,7 +357,7 @@ namespace Kentor.AuthServices.Configuration
         /// <summary>
         /// The default algorithm to use when signing Authentication Requests
         /// </summary>
-        public MessageSigningAlgorithm DefaultAuthenticateRequestSigningAlgorithm { get; set; }
+        public string DefaultAuthenticateRequestSigningAlgorithm { get; set; }
         /// <summary>
         /// Metadata flag that we want assertions to be signed.
         /// </summary>

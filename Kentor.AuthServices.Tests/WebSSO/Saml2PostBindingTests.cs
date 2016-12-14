@@ -7,6 +7,8 @@ using System.IdentityModel.Tokens;
 using System.Xml;
 using System.Text;
 using System.Collections.Generic;
+using IdentityServer3.Core;
+using Kentor.AuthServices.Saml2P;
 using Kentor.AuthServices.WebSso;
 using Kentor.AuthServices.Tests.WebSSO;
 using Kentor.AuthServices.Tests.Helpers;
@@ -183,7 +185,8 @@ value=""PHJvb3Q+PGNvbnRlbnQ+ZGF0YTwvY29udGVudD48L3Jvb3Q+""/>
                 XmlData = "<root ID=\"id\"><content>data</content></root>",
                 MessageName = "SAMLMessageName",
                 RelayState = "ABC1234",
-                SigningCertificate = SignedXmlHelper.TestCert
+                SigningCertificate = SignedXmlHelper.TestCert,
+                SigningAlgorithm = MessageSigningAlgorithm.RsaSecureHashAlgorithm1
             };
 
             var signedXml = SignedXmlHelper.SignXml(message.XmlData, true);

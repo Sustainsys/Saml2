@@ -48,7 +48,7 @@ namespace Kentor.AuthServices.WebSso
 
         private static string AddSignature(string queryString, ISaml2Message message)
         {
-            string signingAlgorithmUrl = message.SigningAlgorithm.ToNamespace();
+            string signingAlgorithmUrl = XmlDocumentSigningExtensions.AlgorithmToXmlDsigNamespace(message.SigningAlgorithm);
 
             queryString += "&SigAlg=" + Uri.EscapeDataString(signingAlgorithmUrl);
             var signatureDescription = (SignatureDescription)CryptoConfig.CreateFromName(signingAlgorithmUrl);

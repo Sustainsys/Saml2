@@ -14,7 +14,7 @@ namespace Kentor.AuthServices
     /// </summary>
     public static class XmlDocumentSigningExtensions
     {
-        private static readonly Dictionary<MessageSigningAlgorithm, string> AlgorithmToNamespaceMap = new Dictionary<MessageSigningAlgorithm, string>
+        private static readonly Dictionary<string, string> AlgorithmToNamespaceMap = new Dictionary<string, string>
         {
             { MessageSigningAlgorithm.RsaSecureHashAlgorithm1,RSASHA1},
             { MessageSigningAlgorithm.RsaSecureHashAlgorithm256,RSASHA256},
@@ -35,12 +35,21 @@ namespace Kentor.AuthServices
         /// </summary>
         /// <param name="algorithm"></param>
         /// <returns></returns>
-        public static string ToNamespace(this MessageSigningAlgorithm algorithm)
+        public static string AlgorithmToXmlDsigNamespace(string algorithm)
         {
+            if (string.IsNullOrEmpty(algorithm))
+                return AlgorithmToNamespaceMap[MessageSigningDefaults.DefaultAlgorithm]; //logout,etc.
+
             return AlgorithmToNamespaceMap[algorithm];
         }
 
-        public static void SignDocument(this XmlDocument xmlDocument, X509Certificate2 signingCertificate, MessageSigningAlgorithm signingAlgorithm)
+        /// <summary>
+        /// Signs the document.
+        /// </summary>
+        /// <param name="xmlDocument">The XML document.</param>
+        /// <param name="signingCertificate">The signing certificate.</param>
+        /// <param name="signingAlgorithm">The signing algorithm.</param>
+        public static void SignDocument(this XmlDocument xmlDocument, X509Certificate2 signingCertificate, string signingAlgorithm)
         {
             SignDocument(xmlDocument, signingCertificate, signingAlgorithm, true);
         }
@@ -53,7 +62,7 @@ namespace Kentor.AuthServices
         /// <param name="includeKeyInfo">Whether to include key info clause in the resulting document</param>
         /// <exception cref="System.ArgumentNullException">
         /// </exception>
-        public static void SignDocument(this XmlDocument xmlDocument, X509Certificate2 signingCertificate, MessageSigningAlgorithm algorithm, bool includeKeyInfo)
+        public static void SignDocument(this XmlDocument xmlDocument, X509Certificate2 signingCertificate, string algorithm, bool includeKeyInfo)
         {
             if (xmlDocument == null)
             {
@@ -69,7 +78,7 @@ namespace Kentor.AuthServices
                 throw new ArgumentNullException(nameof(signingCertificate));
             }
 
-            string signatureMethodNamespace = algorithm.ToNamespace();
+            string signatureMethodNamespace = AlgorithmToXmlDsigNamespace(algorithm);
 
             // Note that this will return a Basic cryptoprovider, with only SHA-1 support
             var key = (RSACryptoServiceProvider) signingCertificate.PrivateKey;
