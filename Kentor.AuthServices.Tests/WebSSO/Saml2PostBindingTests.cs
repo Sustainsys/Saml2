@@ -7,7 +7,6 @@ using System.IdentityModel.Tokens;
 using System.Xml;
 using System.Text;
 using System.Collections.Generic;
-using IdentityServer3.Core;
 using Kentor.AuthServices.Saml2P;
 using Kentor.AuthServices.WebSso;
 using Kentor.AuthServices.Tests.WebSSO;
