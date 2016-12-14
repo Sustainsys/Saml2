@@ -87,6 +87,7 @@ namespace Kentor.AuthServices.Tests
 
             subject.ShouldBeEquivalentTo(expected, opt => opt
             .Excluding(au => au.Id)
+            .Excluding(au=>au.SigningAlgorithm)
             .Excluding(au => au.RelayState));
 
             subject.RelayState.Should().HaveLength(56);
@@ -113,6 +114,7 @@ namespace Kentor.AuthServices.Tests
 
             subject.ShouldBeEquivalentTo(expected, opt => opt
             .Excluding(au => au.Id)
+            .Excluding(au => au.SigningAlgorithm)
             .Excluding(au => au.RelayState));
         }
 
@@ -137,6 +139,7 @@ namespace Kentor.AuthServices.Tests
 
             subject.ShouldBeEquivalentTo(expected, opt => opt
                 .Excluding(au => au.Id)
+                .Excluding(au => au.SigningAlgorithm)
                 .Excluding(au => au.RelayState));
         }
 

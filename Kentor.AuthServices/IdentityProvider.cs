@@ -322,7 +322,7 @@ namespace Kentor.AuthServices
         /// <summary>
         /// Signing Algorithm to be used when signing the Authentication Request
         /// </summary>
-        public MessageSigningAlgorithm SigningAlgorithm { get; set; } = MessageSigningAlgorithm.RsaSecureHashAlgorithm1;
+        public string SigningAlgorithm { get; set; } = MessageSigningAlgorithm.RsaSecureHashAlgorithm1;
 
         /// <summary>
         /// Bind a Saml2AuthenticateRequest using the active binding of the idp,

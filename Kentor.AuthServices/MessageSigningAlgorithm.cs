@@ -3,24 +3,24 @@
     /// <summary>
     /// Enum MessageSigningAlgorithm
     /// </summary>
-    public enum MessageSigningAlgorithm
+    public static class MessageSigningAlgorithm
     {
         /// <summary>
         /// The rsasha1
         /// </summary>
-        RsaSecureHashAlgorithm1,
+        public const string RsaSecureHashAlgorithm1 = "RsaSecureHashAlgorithm1";
         /// <summary>
         /// The rsasha256
         /// </summary>
-        RsaSecureHashAlgorithm256,
+        public const string RsaSecureHashAlgorithm256 = "RsaSecureHashAlgorithm256";
         /// <summary>
         /// The rsasha384
         /// </summary>
-        RsaSecureHashAlgorithm384,
+        public const string RsaSecureHashAlgorithm384 = "RsaSecureHashAlgorithm384";
         /// <summary>
         /// The rsasha512
         /// </summary>
-        RsaSecureHashAlgorithm512
+        public const string RsaSecureHashAlgorithm512 = "RsaSecureHashAlgorithm512";
 
     }
 
@@ -32,7 +32,7 @@
         /// <summary>
         /// The default algorithm
         /// </summary>
-        public const MessageSigningAlgorithm DefaultAlgorithm =
+        public const string DefaultAlgorithm =
             MessageSigningAlgorithm.RsaSecureHashAlgorithm1;
     }
 }
