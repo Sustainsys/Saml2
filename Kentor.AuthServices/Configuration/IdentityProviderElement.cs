@@ -128,11 +128,11 @@ namespace Kentor.AuthServices.Configuration
         /// The authenticateRequestSigningAlgorithm.
         /// </summary>
         [ConfigurationProperty(authenticateRequestSigningAlgorithm, IsRequired = false, DefaultValue = MessageSigningDefaults.DefaultAlgorithm)]
-        public MessageSigningAlgorithm AuthenticateRequestSigningAlgorithm
+        public string AuthenticateRequestSigningAlgorithm
         {
             get
             {
-                return (MessageSigningAlgorithm)base[authenticateRequestSigningAlgorithm];
+                return (string)base[authenticateRequestSigningAlgorithm];
             }
             //internal set
             //{

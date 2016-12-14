@@ -320,11 +320,11 @@ namespace Kentor.AuthServices.Configuration
         /// The default AuthenticateRequest signing Algorithm.
         /// </summary>
         [ConfigurationProperty(defaultAuthenticateRequestSigningAlgorithm, IsRequired = false, DefaultValue = MessageSigningDefaults.DefaultAlgorithm)]
-        public MessageSigningAlgorithm DefaultAuthenticateRequestSigningAlgorithm
+        public string DefaultAuthenticateRequestSigningAlgorithm
         {
             get
             {
-                return (MessageSigningAlgorithm)base[defaultAuthenticateRequestSigningAlgorithm];
+                return (string)base[defaultAuthenticateRequestSigningAlgorithm];
             }
         }
 
