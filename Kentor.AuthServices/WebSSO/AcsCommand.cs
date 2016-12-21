@@ -46,6 +46,12 @@ namespace Kentor.AuthServices.WebSso
                     {
                         result.ClearCookieName = "Kentor." + unbindResult.RelayState;
                     }
+
+                    if (request.StoredRequestState == null)
+                    {
+                        options.Notifications.UnsolicitedAuthnResponseReceived(result, samlResponse);
+                    }
+
                     options.Notifications.AcsCommandResultCreated(result, samlResponse);
                     return result;
                 }

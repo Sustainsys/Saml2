@@ -25,6 +25,7 @@ namespace Kentor.AuthServices.Configuration
             GetPublicOrigin = ( httpRequestData ) => null;
             GetBinding = Saml2Binding.Get;
             MessageUnbound = ur => { };
+            UnsolicitedAuthnResponseReceived = (cr, r) => { };
             AcsCommandResultCreated = (cr, r) => { };
             LogoutCommandResultCreated = cr => { };
             MetadataCreated = (md, urls) => { };
@@ -93,6 +94,15 @@ namespace Kentor.AuthServices.Configuration
         /// request (by using <see cref="Saml2Binding.Unbind(HttpRequestData, IOptions)"/>)
         /// </summary>
         public Action<UnbindResult> MessageUnbound { get; set; }
+
+        /// <summary>
+        /// Notification called when the ACS command has produced a
+        /// <see cref="CommandResult"/> after receiving an unsolicited Authn response,
+        /// but before anything has been applied to the outgoing response. Set the
+        /// <see cref="CommandResult.HandledResult"/> flag to suppress the library's built
+        /// in apply functionality to the outgoing response.
+        /// </summary>
+        public Action<CommandResult, Saml2Response> UnsolicitedAuthnResponseReceived { get; set; }
 
         /// <summary>
         /// Notification called when the ACS command has produced a
