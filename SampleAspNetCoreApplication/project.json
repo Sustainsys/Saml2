@@ -1,92 +1,85 @@
-﻿{
+{
   "userSecretsId": "aspnet-SampleAspNetCoreApplication-e0922abd-6dcb-4b59-b0f0-075ca915e204",
 
   "dependencies": {
-    "Microsoft.AspNetCore.Authentication.Cookies": "1.0.0-rc2-final",
-    "Microsoft.AspNetCore.Diagnostics": "1.0.0-rc2-final",
-    "Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore": "1.0.0-rc2-final",
-    "Microsoft.AspNetCore.Identity.EntityFrameworkCore": "1.0.0-rc2-final",
-    "Microsoft.AspNetCore.Mvc": "1.0.0-rc2-final",
-    "Microsoft.AspNetCore.Razor.Tools": {
-      "version": "1.0.0-preview1-final",
+    "Kentor.AuthServices.AspNetCore": "1.0.0-*",
+    "Microsoft.AspNetCore.Authentication.Cookies": "1.0.1",
+    "Microsoft.AspNetCore.Diagnostics": "1.0.1",
+    "Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore": "1.0.1",
+    "Microsoft.AspNetCore.Identity.EntityFrameworkCore": "1.0.1",
+    "Microsoft.AspNetCore.Mvc": "1.0.2",
+    "Microsoft.AspNetCore.Razor.Tools": "1.0.0-preview2-final",
+    "Microsoft.AspNetCore.Routing": "1.0.2",
+    "Microsoft.AspNetCore.Server.IISIntegration": "1.0.1",
+    "Microsoft.AspNetCore.Server.Kestrel": "1.0.2",
+    "Microsoft.AspNetCore.StaticFiles": "1.0.1",
+    "Microsoft.EntityFrameworkCore.SqlServer": "1.0.2",
+    "Microsoft.EntityFrameworkCore.SqlServer.Design": {
+      "version": "1.0.2",
       "type": "build"
     },
-    "Microsoft.AspNetCore.Server.IISIntegration": "1.0.0-rc2-final",
-    "Microsoft.AspNetCore.Server.Kestrel": "1.0.0-rc2-final",
-    "Microsoft.AspNetCore.StaticFiles": "1.0.0-rc2-final",
-    "Microsoft.EntityFrameworkCore.SqlServer": "1.0.0-rc2-final",
-    "Microsoft.EntityFrameworkCore.Tools": {
-      "version": "1.0.0-preview1-final",
-      "type": "build"
+    "Microsoft.EntityFrameworkCore.Design": {
+      "type": "build",
+      "version": "1.0.0-preview2-final"
     },
-    "Microsoft.Extensions.Configuration.EnvironmentVariables": "1.0.0-rc2-final",
-    "Microsoft.Extensions.Configuration.Json": "1.0.0-rc2-final",
-    "Microsoft.Extensions.Configuration.UserSecrets": "1.0.0-rc2-final",
-    "Microsoft.Extensions.Logging": "1.0.0-rc2-final",
-    "Microsoft.Extensions.Logging.Console": "1.0.0-rc2-final",
-    "Microsoft.Extensions.Logging.Debug": "1.0.0-rc2-final",
-    "Microsoft.VisualStudio.Web.BrowserLink.Loader": "14.0.0-rc2-final",
+    "Microsoft.Extensions.Configuration.EnvironmentVariables": "1.0.1",
+    "Microsoft.Extensions.Configuration.Json": "1.0.1",
+    "Microsoft.Extensions.Configuration.UserSecrets": "1.0.1",
+    "Microsoft.Extensions.Logging": "1.0.1",
+    "Microsoft.Extensions.Logging.Console": "1.0.1",
+    "Microsoft.Extensions.Logging.Debug": "1.0.1",
+    "Microsoft.Extensions.Options.ConfigurationExtensions": "1.0.1",
+    "Microsoft.VisualStudio.Web.BrowserLink.Loader": "14.0.1",
     "Microsoft.VisualStudio.Web.CodeGeneration.Tools": {
-      "version": "1.0.0-preview1-final",
+      "version": "1.0.0-preview2-final",
       "type": "build"
     },
     "Microsoft.VisualStudio.Web.CodeGenerators.Mvc": {
-      "version": "1.0.0-preview1-final",
+      "version": "1.0.0-preview2-final",
       "type": "build"
-    },
-    "Kentor.AuthServices.AspNetCore": "*"
+    }
   },
 
   "tools": {
-    "Microsoft.AspNetCore.Razor.Tools": {
-      "version": "1.0.0-preview1-final",
-      "imports": "portable-net45+win8+dnxcore50"
-    },
-    "Microsoft.AspNetCore.Server.IISIntegration.Tools": {
-      "version": "1.0.0-preview1-final",
-      "imports": "portable-net45+win8+dnxcore50"
-    },
-    "Microsoft.EntityFrameworkCore.Tools": {
-      "version": "1.0.0-preview1-final",
-      "imports": [
-        "portable-net45+win8+dnxcore50",
-        "portable-net45+win8"
-      ]
-    },
-    "Microsoft.Extensions.SecretManager.Tools": {
-      "version": "1.0.0-preview1-final",
-      "imports": "portable-net45+win8+dnxcore50"
-    },
+    "BundlerMinifier.Core": "2.0.238",
+    "Microsoft.AspNetCore.Razor.Tools": "1.0.0-preview4-final",
+    "Microsoft.AspNetCore.Server.IISIntegration.Tools": "1.0.0-preview2-final",
+    "Microsoft.EntityFrameworkCore.Tools": "1.0.0-preview2-final",
+    "Microsoft.Extensions.SecretManager.Tools": "1.0.0-preview2-final",
     "Microsoft.VisualStudio.Web.CodeGeneration.Tools": {
-      "version": "1.0.0-preview1-final",
+      "version": "1.0.0-preview2-final",
       "imports": [
-        "portable-net45+win8+dnxcore50",
         "portable-net45+win8"
       ]
+
     }
   },
 
   "frameworks": {
-    "net451": { }
+    "net451": {}
   },
 
   "buildOptions": {
     "emitEntryPoint": true,
-    "preserveCompilationContext": true,
-    "copyToOutput": [ "Kentor.AuthServices.Tests.pfx" ]
+    "preserveCompilationContext": true
+  },
+
+  "runtimeOptions": {
+    "configProperties": {
+      "System.GC.Server": true
+    }
   },
 
   "publishOptions": {
     "include": [
       "wwwroot",
-      "Views",
-      "appsettings.json",
-      "web.config"
+      "web.config",
+      "Kentor.AuthServices.Tests.pfx"
     ]
   },
 
   "scripts": {
-    "prepublish": [ "npm install", "bower install", "gulp clean", "gulp min" ],
+    "prepublish": [ "bower install", "dotnet bundle" ],
     "postpublish": [ "dotnet publish-iis --publish-folder %publish:OutputPath% --framework %publish:FullTargetFramework%" ]
   }
 }

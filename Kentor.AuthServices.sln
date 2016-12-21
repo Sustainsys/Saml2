@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.25123.0
+VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kentor.AuthServices", "Kentor.AuthServices\Kentor.AuthServices.csproj", "{93BA675E-A159-4701-B68B-C4B81015C556}"
 EndProject
@@ -10,6 +10,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		CodeCoverage.runsettings = CodeCoverage.runsettings
 		CONTRIBUTING.md = CONTRIBUTING.md
 		CONTRIBUTORS.txt = CONTRIBUTORS.txt
+		global.json = global.json
 		Kentor.AuthServices.ruleset = Kentor.AuthServices.ruleset
 		LICENSE = LICENSE
 		README.md = README.md
@@ -56,7 +57,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SampleIdentityServer3", "Sa
 EndProject
 Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Kentor.AuthServices.AspNetCore", "Kentor.AuthServices.AspNetCore\Kentor.AuthServices.AspNetCore.xproj", "{E4F5A9E4-296D-4619-90BD-C939A03DCD2A}"
 EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "SampleAspNetCoreApplication", "SampleAspNetCoreApplication\SampleAspNetCoreApplication.xproj", "{4F644542-A5FE-4F79-991E-54AB05B26CDA}"
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "SampleAspNetCoreApplication", "SampleAspNetCoreApplication\SampleAspNetCoreApplication.xproj", "{B9645BFF-89F1-4071-AD05-2B9CC2635531}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -105,10 +106,10 @@ Global
 		{E4F5A9E4-296D-4619-90BD-C939A03DCD2A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E4F5A9E4-296D-4619-90BD-C939A03DCD2A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E4F5A9E4-296D-4619-90BD-C939A03DCD2A}.Release|Any CPU.Build.0 = Release|Any CPU
-		{4F644542-A5FE-4F79-991E-54AB05B26CDA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{4F644542-A5FE-4F79-991E-54AB05B26CDA}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{4F644542-A5FE-4F79-991E-54AB05B26CDA}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{4F644542-A5FE-4F79-991E-54AB05B26CDA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B9645BFF-89F1-4071-AD05-2B9CC2635531}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B9645BFF-89F1-4071-AD05-2B9CC2635531}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B9645BFF-89F1-4071-AD05-2B9CC2635531}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B9645BFF-89F1-4071-AD05-2B9CC2635531}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
