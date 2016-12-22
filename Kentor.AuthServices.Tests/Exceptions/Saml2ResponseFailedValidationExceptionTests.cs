@@ -9,19 +9,19 @@ namespace Kentor.AuthServices.Tests.Exceptions
     public class Saml2ResponseFailedValidationExceptionTests
     {
         [TestMethod]
-        public void Saml2ResponseFailedValidationExecption_DefaultCtor()
+        public void Saml2ResponseFailedValidationException_DefaultCtor()
         {
             ExceptionTestHelpers.TestDefaultCtor<Saml2ResponseFailedValidationException>();
         }
 
         [TestMethod]
-        public void Saml2ResponseFailedValidationExecption_SerializationCtor()
+        public void Saml2ResponseFailedValidationException_SerializationCtor()
         {
             ExceptionTestHelpers.TestSerializationCtor<Saml2ResponseFailedValidationException>();
         }
 
         [TestMethod]
-        public void Saml2ResponseFailedValidationExecption_StringCtor()
+        public void Saml2ResponseFailedValidationException_StringCtor()
         {
             var msg = "Message!";
             var subject = new Saml2ResponseFailedValidationException(msg);

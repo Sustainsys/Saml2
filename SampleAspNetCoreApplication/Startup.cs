@@ -90,7 +90,7 @@ namespace SampleAspNetCoreApplication
 
             app.UseIdentity();
 
-            var options = CreateAuthServicesOptions(identityOptions.Value);
+            var options = CreateAuthServicesOptions(identityOptions.Value, env);
             app.UseKentorAuthServices(options);
 
             // Add external authentication middleware below. To configure them please see http://go.microsoft.com/fwlink/?LinkID=532715
@@ -103,9 +103,9 @@ namespace SampleAspNetCoreApplication
             });
         }
 
-        private KentorAuthServicesOptions CreateAuthServicesOptions(IdentityOptions identityOptions)
+        private KentorAuthServicesOptions CreateAuthServicesOptions(IdentityOptions identityOptions, IHostingEnvironment env)
         {
-            var spOptions = CreateSPOptions();
+            var spOptions = CreateSPOptions(env);
             var authServicesOptions = new KentorAuthServicesOptions
             {
                 SPOptions = spOptions,
@@ -123,7 +123,7 @@ namespace SampleAspNetCoreApplication
             return authServicesOptions;
         }
 
-        private SPOptions CreateSPOptions()
+        private SPOptions CreateSPOptions(IHostingEnvironment env)
         {
             var swedish = CultureInfo.GetCultureInfo("sv-se");
 
@@ -175,8 +175,10 @@ namespace SampleAspNetCoreApplication
 
             spOptions.AttributeConsumingServices.Add(attributeConsumingService);
 
+            Console.WriteLine(AppDomain.CurrentDomain.SetupInformation.ApplicationBase);
+
             spOptions.ServiceCertificates.Add(new X509Certificate2(
-                AppDomain.CurrentDomain.SetupInformation.ApplicationBase + "Kentor.AuthServices.Tests.pfx"));
+                env.ContentRootPath + "/Kentor.AuthServices.Tests.pfx"));
 
             return spOptions;
         }

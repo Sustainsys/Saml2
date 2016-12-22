@@ -21,6 +21,8 @@ namespace Kentor.AuthServices.Configuration
             AuthenticationRequestCreated = (request, provider, dictionary) => { };
             SignInCommandResultCreated = (cr, r) => { };
             SelectIdentityProvider = (ei, r) => null;
+            GetLogoutResponseState = ( httpRequestData ) => httpRequestData.StoredRequestState;
+            GetPublicOrigin = ( httpRequestData ) => null;
             GetBinding = Saml2Binding.Get;
             MessageUnbound = ur => { };
             AcsCommandResultCreated = (cr, r) => { };
@@ -61,13 +63,33 @@ namespace Kentor.AuthServices.Configuration
             SelectIdentityProvider { get; set; }
 
         /// <summary>
+        /// Notification called when the logout command is about to use the 
+        /// <code>StoredRequestState</code> derived from the request's RelayState data.
+        /// Return a different StoredRequestState if you would like to customize the 
+        /// RelayState lookup. 
+        /// </summary>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1726:UsePreferredTerms", MessageId = "Logout")]
+        public Func<HttpRequestData, StoredRequestState>
+            GetLogoutResponseState { get; set; }
+
+        /// <summary>
+        /// Notification called when a command is about to construct a fully-qualified url
+        /// Return a non-null Uri if you need to override this per request. Otherwise
+        /// it will fall back to the normal logic that checks the request Uri 
+        /// and the SPOptions.PublicOrigin setting
+        /// </summary>
+        public Func<HttpRequestData, Uri>
+            GetPublicOrigin { get; set; }
+
+        /// <summary>
         /// Get a binding that can unbind data from the supplied request. The
         /// default is to use <see cref="Saml2Binding.Get(HttpRequestData)"/>
         /// </summary>
         public Func<HttpRequestData, Saml2Binding> GetBinding { get; set; }
 
         /// <summary>
-        /// Notification called when the ACS command has extracted data from
+        /// Notification called when the command has extracted data from
         /// request (by using <see cref="Saml2Binding.Unbind(HttpRequestData, IOptions)"/>)
         /// </summary>
         public Action<UnbindResult> MessageUnbound { get; set; }

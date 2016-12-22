@@ -43,47 +43,7 @@ namespace Kentor.AuthServices.Tests.WebSso
 
             var actual = new SignInCommand().Run(httpRequest, Options.FromConfiguration);
 
-            actual.RequestState.ReturnUrl.Should().Be("http://localhost/Return.aspx");
-        }
-
-        [TestMethod]
-        public void SignInCommand_Run_MapsReturnUrl_UsingPublicOrigin_AbsolutePath()
-        {
-            var defaultDestination = Options.FromConfiguration.IdentityProviders.Default.SingleSignOnServiceUrl;
-
-            var httpRequest = new HttpRequestData(
-                "GET",
-                new Uri("http://localhost/path/signin?ReturnUrl=%2FReturn.aspx"),
-                "/localpath",
-                null,
-                null);
-
-            var options = Options.FromConfiguration;
-            options.SPOptions.PublicOrigin = new Uri("https://externalhost/path/");
-
-            var actual = new SignInCommand().Run(httpRequest, options);
-
-            actual.RequestState.ReturnUrl.Should().Be("https://externalhost/Return.aspx");
-        }
-
-        [TestMethod]
-        public void SignInCommand_Run_MapsReturnUrl_UsingPublicOrigin_RelativePath()
-        {
-            var defaultDestination = Options.FromConfiguration.IdentityProviders.Default.SingleSignOnServiceUrl;
-
-            var httpRequest = new HttpRequestData(
-                "GET",
-                new Uri("http://localhost/localpath/account/signin?ReturnUrl=Return.aspx"),
-                "/localpath",
-                null,
-                null);
-
-            var options = Options.FromConfiguration;
-            options.SPOptions.PublicOrigin = new Uri("https://externalhost/path/");
-
-            var actual = new SignInCommand().Run(httpRequest, options);
-
-            actual.RequestState.ReturnUrl.Should().Be("https://externalhost/path/account/Return.aspx");
+            actual.RequestState.ReturnUrl.Should().Be("/Return.aspx");
         }
 
         [TestMethod]

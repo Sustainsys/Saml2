@@ -153,6 +153,12 @@ namespace Kentor.AuthServices.WebSso
             { HttpPostUri, Saml2BindingType.HttpPost }
         };
 
+        private readonly static IDictionary<Saml2BindingType, Uri> bindingUriMap = new Dictionary<Saml2BindingType, Uri>()
+        {
+            { Saml2BindingType.HttpPost, HttpPostUri },
+            { Saml2BindingType.Artifact, HttpArtifactUri }
+        };
+
         /// <summary>
         /// Gets the Saml2BindingType enum value for a Saml2Binding type uri, where the
         /// uri should be one specified in the standard.
@@ -174,6 +180,24 @@ namespace Kentor.AuthServices.WebSso
             }
 
             var msg = string.Format(CultureInfo.InvariantCulture, "Unknown Saml2 Binding Uri \"{0}\".", uri);
+            throw new ArgumentException(msg);
+        }
+
+        /// <summary>
+        /// Gets the Uri for a Saml2BindingType.
+        /// </summary>
+        /// <param name="type">Saml2BindingType</param>
+        /// <returns>Uri constant for the speicified Binding Type</returns>
+        /// <exception cref="ArgumentException">If the type is not mapped.</exception>
+        public static Uri Saml2BindingTypeToUri(Saml2BindingType type)
+        {
+            Uri uri;
+            if (bindingUriMap.TryGetValue(type, out uri))
+            {
+                return uri;
+            }
+
+            var msg = string.Format(CultureInfo.InvariantCulture, "Unknown Saml2 Binding Type \"{0}\".", type);
             throw new ArgumentException(msg);
         }
     }

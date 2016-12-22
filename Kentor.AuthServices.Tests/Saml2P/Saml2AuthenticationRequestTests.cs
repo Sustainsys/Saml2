@@ -61,6 +61,27 @@ namespace Kentor.AuthServices.Tests.Saml2P
         }
 
         [TestMethod]
+        public void Saml2AuthenticationRequest_ForceAuthentication_OmittedIfFalse()
+        {
+            var subject = new Saml2AuthenticationRequest() {
+                ForceAuthentication = false
+            }.ToXElement();
+
+            subject.Should().NotBeNull().And.Subject.Attribute("ForceAuthn").Should().BeNull();
+        }
+
+        [TestMethod]
+        public void Saml2AuthenticationRequest_ForceAuthentication()
+        {
+            var subject = new Saml2AuthenticationRequest() {
+                ForceAuthentication = true
+            }.ToXElement();
+
+            subject.Should().NotBeNull().And.Subject.Attribute("ForceAuthn")
+                .Should().NotBeNull().And.Subject.Value.Should().Be("true");
+        }
+
+        [TestMethod]
         public void Saml2AuthenticationRequest_Read()
         {
             var xmlData = @"<?xml version=""1.0"" encoding=""UTF-8""?>
@@ -71,19 +92,21 @@ namespace Kentor.AuthServices.Tests.Saml2P
   Version=""2.0""
   Destination=""http://destination.example.com""
   AssertionConsumerServiceURL=""https://sp.example.com/SAML2/Acs""
-  IssueInstant=""2004-12-05T09:21:59Z"">
+  IssueInstant=""2004-12-05T09:21:59Z""
+  ForceAuthn=""true"">
   <saml:Issuer>https://sp.example.com/SAML2</saml:Issuer>
 />
 </samlp:AuthnRequest>
 ";
 
             var relayState = "My relay state";
-
+            var forceAuthn = true;
             var subject = Saml2AuthenticationRequest.Read(xmlData, relayState);
 
             subject.Id.Should().Be(new Saml2Id("Saml2AuthenticationRequest_AssertionConsumerServiceUrl"));
             subject.AssertionConsumerServiceUrl.Should().Be(new Uri("https://sp.example.com/SAML2/Acs"));
             subject.RelayState.Should().Be(relayState);
+            subject.ForceAuthentication.Should().Be(forceAuthn);
         }
 
         [TestMethod]
@@ -337,6 +360,18 @@ namespace Kentor.AuthServices.Tests.Saml2P
         }
 
         [TestMethod]
+        public void Saml2AuthenticationRequest_ToXElement_AddsProtocolBinding_HttpPost()
+        {
+            Saml2AuthenticationRequest_ToXElement_AddsProtocolBinding(AuthServices.WebSso.Saml2BindingType.HttpPost, "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST");
+        }
+
+        [TestMethod]
+        public void Saml2AuthenticationRequest_ToXElement_AddsProtocolBinding_Artifact()
+        {
+            Saml2AuthenticationRequest_ToXElement_AddsProtocolBinding(AuthServices.WebSso.Saml2BindingType.Artifact, "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Artifact");
+        }
+
+        [TestMethod]
         public void Saml2AuthenticationRequest_ToXElement_OmitsRequestedAuthnContext_OnNullClassRef()
         {
             var subject = new Saml2AuthenticationRequest()
@@ -392,6 +427,17 @@ namespace Kentor.AuthServices.Tests.Saml2P
             var actual = subject.Element(Saml2Namespaces.Saml2P + "RequestedAuthnContext");
 
             actual.Should().BeEquivalentTo(expected);
+        }
+
+        private void Saml2AuthenticationRequest_ToXElement_AddsProtocolBinding(AuthServices.WebSso.Saml2BindingType protocolBinding, string expectedProtocolBinding)
+        {
+            var subject = new Saml2AuthenticationRequest()
+            {
+                AssertionConsumerServiceUrl = new Uri("http://destination.example.com"),
+                Binding = protocolBinding
+            }.ToXElement();
+
+            subject.Attribute("ProtocolBinding").Value.Should().Be(expectedProtocolBinding);
         }
     }
 }

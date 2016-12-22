@@ -38,7 +38,6 @@
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
-    <Reference Include="System.Deployment" />
     <Reference Include="System.IdentityModel" />
     <Reference Include="System.identitymodel.services" />
     <Reference Include="System.Runtime.Serialization" />
@@ -60,6 +59,8 @@
     <Compile Include="Configuration\KentorAuthServicesNotifications.cs" />
     <Compile Include="Configuration\Compatibility.cs" />
     <Compile Include="Configuration\CompatibilityElement.cs" />
+    <Compile Include="Internal\DateTimeHelper.cs" />
+    <Compile Include="Exceptions\UnexpectedInResponseToException.cs" />
     <Compile Include="Internal\DelimitedString.cs" />
     <Compile Include="Internal\DictionaryExtensions.cs" />
     <Compile Include="ManagedSha256SignatureDescription.cs" />

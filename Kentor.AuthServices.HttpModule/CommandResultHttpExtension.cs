@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.IdentityModel.Configuration;
 using System.IdentityModel.Services;
 using System.IdentityModel.Tokens;
 using System.Linq;
@@ -118,7 +119,12 @@ namespace Kentor.AuthServices.HttpModule
             // Ignore this if we're not running inside IIS, e.g. in unit tests.
             if (commandResult.Principal != null && HttpContext.Current != null)
             {
-                var sessionToken = new SessionSecurityToken(commandResult.Principal);
+                var sessionToken = new SessionSecurityToken(
+                    commandResult.Principal,
+                    null,
+                    DateTime.UtcNow,
+                    commandResult.SessionNotOnOrAfter ??
+                    CalculateSessionNotOnOrAfter());
 
                 EnsureSessionAuthenticationModuleAvailable();
 
@@ -131,6 +137,16 @@ namespace Kentor.AuthServices.HttpModule
 
                 FederatedAuthentication.SessionAuthenticationModule.DeleteSessionTokenCookie();
             }
+        }
+
+        [ExcludeFromCodeCoverage]
+        private static DateTime CalculateSessionNotOnOrAfter()
+        {
+            var configuredLifeTime = (FederatedAuthentication.FederationConfiguration
+                    .IdentityConfiguration.SecurityTokenHandlers[typeof(SessionSecurityToken)]
+                    as SessionSecurityTokenHandler).TokenLifetime;
+
+            return DateTime.UtcNow.Add(configuredLifeTime);
         }
 
         [ExcludeFromCodeCoverage]

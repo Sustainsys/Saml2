@@ -125,10 +125,12 @@
     <Compile Include="Configuration\ServiceCertificateElementCollectionTests.cs" />
     <Compile Include="Configuration\TetClassAttribute.cs" />
     <Compile Include="Exceptions\InvalidSignatureExceptionTests.cs" />
+    <Compile Include="Exceptions\UnexpectedInResponseToExceptionTests.cs" />
     <Compile Include="Helpers\OwinTestHelpers.cs" />
     <Compile Include="Helpers\SignedXmlHelper.cs" />
     <Compile Include="Helpers\SpinWaiter.cs" />
     <Compile Include="Internal\CryptographyExtensionsTests.cs" />
+    <Compile Include="Internal\DateTimeHelperTests.cs" />
     <Compile Include="Internal\DelimitedStringTests.cs" />
     <Compile Include="ManagedSHA256SignatureDescriptionTests.cs" />
     <Compile Include="Owin\StubDataProtector.cs" />

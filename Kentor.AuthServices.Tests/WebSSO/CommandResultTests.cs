@@ -24,12 +24,14 @@ namespace Kentor.AuthServices.Tests.WebSso
                 Principal = (ClaimsPrincipal)null,
                 ContentType = (string)null,
                 Content = (string)null,
+                RelayState = (string)null,
                 RelayData = (object)null,
                 TerminateLocalSession = false,
                 SetCookieName = (string)null,
                 RequestState = (StoredRequestState)null,
                 ClearCookieName = (string)null,
-                HandledResult = false
+                HandledResult = false,
+                SessionNotOnOrAfter = (DateTime?)null
             };
 
             new CommandResult().ShouldBeEquivalentTo(expected);

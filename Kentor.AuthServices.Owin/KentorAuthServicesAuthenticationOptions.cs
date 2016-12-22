@@ -33,7 +33,7 @@ namespace Kentor.AuthServices.Owin
         public KentorAuthServicesAuthenticationOptions(bool loadConfiguration)
             : base(Constants.DefaultAuthenticationType)
         {
-            AuthenticationMode = AuthenticationMode.Active;
+            AuthenticationMode = AuthenticationMode.Passive;
             Description.Caption = Constants.DefaultCaption;
             Notifications = new KentorAuthServicesNotifications();
 

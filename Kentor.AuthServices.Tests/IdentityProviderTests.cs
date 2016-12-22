@@ -388,6 +388,19 @@ namespace Kentor.AuthServices.Tests
         }
 
         [TestMethod]
+        public void IdentityProvider_Ctor_PrefersRedirectBindingForLogout()
+        {
+            var config = CreateConfig();
+            config.LoadMetadata = true;
+            config.EntityId = "http://localhost:13428/idpMetadataWithMultipleBindings";
+
+            var subject = new IdentityProvider(config, Options.FromConfiguration.SPOptions);
+
+            subject.SingleLogoutServiceBinding.Should().Be(Saml2BindingType.HttpRedirect);
+            subject.SingleLogoutServiceUrl.Should().Be( "http://idp2Bindings.example.com/LogoutRedirect" );
+        }
+
+        [TestMethod]
         public void IdentityProvider_Ctor_UseMetadataLocationUrl()
         {
             var config = CreateConfig();

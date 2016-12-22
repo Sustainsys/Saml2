@@ -38,6 +38,11 @@ namespace Kentor.AuthServices.Owin
 
             var authProperties = new AuthenticationProperties(result.RelayData);
             authProperties.RedirectUri = result.Location.OriginalString;
+            if(result.SessionNotOnOrAfter.HasValue)
+            {
+                authProperties.AllowRefresh = false;
+                authProperties.ExpiresUtc = result.SessionNotOnOrAfter.Value;
+            }
 
             return new MultipleIdentityAuthenticationTicket(identities, authProperties);
         }
@@ -83,31 +88,28 @@ namespace Kentor.AuthServices.Owin
 
         protected async override Task ApplyResponseGrantAsync()
         {
-            var revoke = Helper.LookupSignOut(Options.AuthenticationType, Options.AuthenticationMode);
+            // Automatically sign out, even if passive because passive sign in and auto sign out
+            // is typically most common scenario. Unless strict compatibility is set.
+            var mode = Options.SPOptions.Compatibility.StrictOwinAuthenticationMode ?
+                Options.AuthenticationMode : AuthenticationMode.Active;
+
+            var revoke = Helper.LookupSignOut(Options.AuthenticationType, mode);
 
             if (revoke != null)
             {
                 var request = await Context.ToHttpRequestData(Options.DataProtector.Unprotect);
-                var urls = new AuthServicesUrls(request, Options.SPOptions);
+                var urls = new AuthServicesUrls(request, Options);
 
                 string redirectUrl = revoke.Properties.RedirectUri;
                 if (string.IsNullOrEmpty(redirectUrl))
                 {
                     if (Context.Response.StatusCode / 100 == 3)
                     {
-                        var locationUrl = Context.Response.Headers["Location"];
-
-                        redirectUrl = new Uri(
-                            new Uri(urls.ApplicationUrl.ToString().TrimEnd('/') + Context.Request.Path),
-                            locationUrl
-                            ).ToString();
+                        redirectUrl = Context.Response.Headers["Location"];
                     }
                     else
                     {
-                        redirectUrl = new Uri(
-                            urls.ApplicationUrl,
-                            Context.Request.Path.ToUriComponent().TrimStart('/'))
-                            .ToString();
+                        redirectUrl = Context.Request.Path.ToUriComponent();
                     }
                 }
 

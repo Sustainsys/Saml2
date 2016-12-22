@@ -21,7 +21,7 @@ namespace Kentor.AuthServices.WebSso
                 throw new ArgumentNullException(nameof(options));
             }
 
-            var urls = new AuthServicesUrls(request, options.SPOptions);
+            var urls = new AuthServicesUrls(request, options);
 
             var metadata = options.SPOptions.CreateMetadata(urls);
             options.Notifications.MetadataCreated(metadata, urls);
