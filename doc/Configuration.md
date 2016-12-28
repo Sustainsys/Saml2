@@ -26,16 +26,16 @@ to be loaded and if using the http module that needs to be loaded as well. The o
 does not need any http modules, please see the separate info on the [Owin middleware](OwinMiddleware.md).
 
 ```
-<system.web>
-  <httpModules>
+<system.webServer>
+  <modules>
 	<!-- Add these modules below any existing. The SessionAuthenticatioModule
          must be loaded before the Saml2AuthenticationModule -->
     <add name="SessionAuthenticationModule" type="System.IdentityModel.Services.SessionAuthenticationModule, System.IdentityModel.Services, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089"/>
     <!-- Only add the Saml2AuthenticationModule if you're using the Kentor.AuthServices.HttpModule
 		 library. If you are using Kentor.AuthServices.Mvc you SHOULD NOT load this module.-->
 	<add name="Saml2AuthenticationModule" type="Kentor.AuthServices.HttpModule.Saml2AuthenticationModule, Kentor.AuthServices.HttpModule"/>
-  </httpModules>
-</system.web>
+  </modules>
+</system.webServer>
 ```
 
 ##kentor.authServices Section
