@@ -71,6 +71,11 @@ namespace Kentor.AuthServices.Owin
                     // Don't serialize the RedirectUri twice.
                     challenge.Properties.RedirectUri = null;
 
+                    if (redirectUri == null && Options.AuthenticationMode == AuthenticationMode.Active)
+                    {
+                        redirectUri = Context.Request.Uri.ToString();
+                    }
+
                     var result = SignInCommand.Run(
                         idp,
                         redirectUri,
