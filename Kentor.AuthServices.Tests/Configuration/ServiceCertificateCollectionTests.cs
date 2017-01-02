@@ -76,7 +76,7 @@ namespace Kentor.AuthServices.Tests.Configuration
             Action a = () => subject.Add(new ServiceCertificate { Use = CertificateUse.Encryption, Certificate = SignedXmlHelper.TestCertSignOnly });
 
             a.ShouldThrow<ArgumentException>()
-                .WithMessage(@"Provided certificate is not valid for encryption/decryption. If you only want to use it for signing, set the Use property to Signing (CertificateUse.Signing).");
+                .WithMessage( @"Provided certificate is not valid for encryption/decryption. There may be insufficient permissions to its private key in the windows certificate store or the certificate itself may not have the correct purposes. If you only want to use it for signing, set the Use property to Signing (CertificateUse.Signing)." );
         }
 
         [TestMethod]
