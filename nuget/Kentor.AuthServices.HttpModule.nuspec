@@ -23,4 +23,7 @@
       </group>
     </dependencies>
   </metadata>
+  <files>
+    <file src="bin\Release\Kentor.AuthServices.HttpModule.pdb*" target="lib\net45" />
+  </files> 
 </package>
