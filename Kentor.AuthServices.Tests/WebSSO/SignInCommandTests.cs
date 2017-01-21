@@ -47,6 +47,18 @@ namespace Kentor.AuthServices.Tests.WebSso
         }
 
         [TestMethod]
+        public void SignInCommand_Run_ChecksForLocalReturnUrl()
+        {
+            var defaultDestination = Options.FromConfiguration.IdentityProviders.Default.SingleSignOnServiceUrl;
+            var absoluteUri = HttpUtility.UrlEncode("http://google.com");
+            var httpRequest = new HttpRequestData("GET", new Uri($"http://localhost/signin?ReturnUrl={absoluteUri}"));
+
+            Action a = () => new SignInCommand().Run(httpRequest, Options.FromConfiguration);
+
+            a.ShouldThrow<InvalidOperationException>().WithMessage("Return Url must be a relative Url.");
+        }
+
+        [TestMethod]
         public void SignInCommand_Run_With_Idp2_ReturnsAuthnRequestForSecondIdp()
         {
             var secondIdp = Options.FromConfiguration.IdentityProviders[1];
