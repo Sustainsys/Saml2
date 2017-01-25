@@ -193,6 +193,17 @@ namespace Kentor.AuthServices.Tests.WebSSO
         }
 
         [TestMethod]
+        public void LogoutCommand_Run_ChecksForLocalReturnUrl()
+        {
+            var absoluteUri = HttpUtility.UrlEncode("http://google.com");
+            var request = new HttpRequestData("GET", new Uri($"http://sp.example.com/AuthServices/Logout?ReturnUrl={absoluteUri}"));
+            var options = StubFactory.CreateOptions();
+
+            Action a = () => CommandFactory.GetCommand(CommandFactory.LogoutCommandName).Run(request, options);
+            a.ShouldThrow<InvalidOperationException>().WithMessage("Return Url must be a relative Url.");
+        }
+
+        [TestMethod]
         public void LogoutCommand_Run_ReturnsLogoutRequest_IgnoresThreadPrincipal()
         {
             Thread.CurrentPrincipal = new ClaimsPrincipal(
