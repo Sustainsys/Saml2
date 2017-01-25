@@ -23,6 +23,7 @@ namespace Kentor.AuthServices.Configuration
             SelectIdentityProvider = (ei, r) => null;
             GetLogoutResponseState = ( httpRequestData ) => httpRequestData.StoredRequestState;
             GetPublicOrigin = ( httpRequestData ) => null;
+            ProcessSingleLogoutResponseStatus = ( response, state ) => false;
             GetBinding = Saml2Binding.Get;
             MessageUnbound = ur => { };
             AcsCommandResultCreated = (cr, r) => { };
@@ -81,6 +82,15 @@ namespace Kentor.AuthServices.Configuration
         /// </summary>
         public Func<HttpRequestData, Uri>
             GetPublicOrigin { get; set; }
+
+        /// <summary>
+        /// Notification called when single logout status is returned from IDP.
+        /// Return true to indicate that your notification has handled this status. Otherwise
+        /// it will fall back to the normal status processing logic.
+        /// </summary>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage( "Microsoft.Naming", "CA1726:UsePreferredTerms", MessageId = "Logout" )]
+        public Func<Saml2LogoutResponse, StoredRequestState, bool>
+            ProcessSingleLogoutResponseStatus { get; set; }
 
         /// <summary>
         /// Get a binding that can unbind data from the supplied request. The
