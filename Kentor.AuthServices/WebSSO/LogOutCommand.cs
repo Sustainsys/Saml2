@@ -209,12 +209,16 @@ namespace Kentor.AuthServices.WebSso
 
         private static CommandResult HandleResponse(UnbindResult unbindResult, StoredRequestState storedRequestState, IOptions options, Uri returnUrl)
         {
-            var status = Saml2LogoutResponse.FromXml(unbindResult.Data).Status;
-            if(status != Saml2StatusCode.Success)
-            {
-                throw new UnsuccessfulSamlOperationException(string.Format(CultureInfo.InvariantCulture,
-                    "Idp returned status \"{0}\", indicating that the single logout failed. The local session has been successfully terminated.",
-                    status));
+            var logoutResponse = Saml2LogoutResponse.FromXml(unbindResult.Data);
+            var notificationHandledTheStatus = options.Notifications.ProcessSingleLogoutResponseStatus(logoutResponse, storedRequestState);
+            if (!notificationHandledTheStatus) { 
+                var status = logoutResponse.Status;
+                if(status != Saml2StatusCode.Success)
+                {
+                    throw new UnsuccessfulSamlOperationException(string.Format(CultureInfo.InvariantCulture,
+                        "Idp returned status \"{0}\", indicating that the single logout failed. The local session has been successfully terminated.",
+                        status));
+                }
             }
 
             var commandResult = new CommandResult

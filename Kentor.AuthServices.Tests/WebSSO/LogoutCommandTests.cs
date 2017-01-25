@@ -569,6 +569,31 @@ namespace Kentor.AuthServices.Tests.WebSSO
         }
 
         [TestMethod]
+        public void LogoutCommand_Run_LetsNotificationHandleStatus()
+        {
+            var response = new Saml2LogoutResponse(Saml2StatusCode.Requester)
+            {
+                DestinationUrl = new Uri("http://sp.example.com/path/AuthServices/logout"),
+                Issuer = new EntityId("https://idp.example.com"),
+                InResponseTo = new Saml2Id(),
+                SigningCertificate = SignedXmlHelper.TestCert
+            };
+
+            var bindResult = Saml2Binding.Get(Saml2BindingType.HttpRedirect)
+                .Bind(response);
+
+            var request = new HttpRequestData("GET", bindResult.Location,
+                "http://sp-internal.example.com/path/AuthServices", null, null, null);
+
+            var options = StubFactory.CreateOptions();
+            options.SPOptions.PublicOrigin = new Uri("https://sp.example.com/path/");
+            options.Notifications.ProcessSingleLogoutResponseStatus = (logoutResponse, requestState) => true;
+
+            var actual = CommandFactory.GetCommand(CommandFactory.LogoutCommandName).Run(request, options);
+            actual.Location.ShouldBeEquivalentTo(options.SPOptions.PublicOrigin);
+        }
+
+        [TestMethod]
         public void LogoutCommand_Run_LocalLogoutIfNoUser()
         {
             var options = StubFactory.CreateOptions();
