@@ -58,6 +58,15 @@ namespace Kentor.AuthServices.Tests.WebSSO
         }
 
         [TestMethod]
+        public void LogoutCommand_StaticRun_NullcheckOptions()
+        {
+            Action a = () => LogoutCommand.Run(new HttpRequestData("GET", new Uri("http://localhost")), null, null);
+
+            a.ShouldThrow<ArgumentNullException>()
+                .And.ParamName.Should().Be("options");
+        }
+
+        [TestMethod]
         public void LogoutCommand_Run_NullcheckOptions()
         {
             CommandFactory.GetCommand(CommandFactory.LogoutCommandName)
