@@ -204,6 +204,28 @@ namespace Kentor.AuthServices.Tests.WebSSO
         }
 
         [TestMethod]
+        public void LogoutCommand_Run_Calls_NotificationForAbsoluteUrl()
+        {
+            var absoluteUri = HttpUtility.UrlEncode("http://google.com");
+            var request = new HttpRequestData("GET", new Uri($"http://sp.example.com/AuthServices/Logout?ReturnUrl={absoluteUri}"));
+            var options = StubFactory.CreateOptions();
+
+            var validateAbsoluteReturnUrlCalled = false;
+
+            options.Notifications.ValidateAbsoluteReturnUrl =
+                (url) =>
+                {
+                    validateAbsoluteReturnUrlCalled = true;
+                    return true;
+
+                };
+
+            Action a = () => CommandFactory.GetCommand(CommandFactory.LogoutCommandName).Run(request, options);
+            a.ShouldNotThrow<InvalidOperationException>("the ValidateAbsoluteReturnUrl notification returns true");
+            validateAbsoluteReturnUrlCalled.Should().BeTrue("the ValidateAbsoluteReturnUrl notification should have been called");
+        }
+
+        [TestMethod]
         public void LogoutCommand_Run_ReturnsLogoutRequest_IgnoresThreadPrincipal()
         {
             Thread.CurrentPrincipal = new ClaimsPrincipal(
