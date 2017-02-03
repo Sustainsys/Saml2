@@ -30,6 +30,7 @@ namespace Kentor.AuthServices.Configuration
             LogoutCommandResultCreated = cr => { };
             MetadataCreated = (md, urls) => { };
             MetadataCommandResultCreated = cr => { };
+            ValidateAbsoluteReturnUrl = url => false;
         }
 
         /// <summary>
@@ -139,5 +140,13 @@ namespace Kentor.AuthServices.Configuration
         /// outgoing response.
         /// </summary>
         public Action<CommandResult> MetadataCommandResultCreated {get;set;}
+
+        /// <summary>
+        /// Notification called by the SignIn and Logout commands to validate a ReturnUrl that is not relative.
+        /// Return true to indicate that you accept the ReturnUrl, false otherwise.
+        /// Default validation do not accept any absolute URL.
+        /// When false is returned, the SignIn and Logout commands will throw an <see cref="InvalidOperationException"/>.
+        /// </summary>
+        public Func<string, bool> ValidateAbsoluteReturnUrl { get; set; }
     }
 }

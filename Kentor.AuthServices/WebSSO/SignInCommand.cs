@@ -41,7 +41,10 @@ namespace Kentor.AuthServices.WebSso
             Uri parsedUri;
             if (returnUrl != null && !Uri.TryCreate(returnUrl, UriKind.Relative, out parsedUri))
             {
-                throw new InvalidOperationException( "Return Url must be a relative Url." );
+                if (!options.Notifications.ValidateAbsoluteReturnUrl(returnUrl))
+                {
+                    throw new InvalidOperationException("Return Url must be a relative Url.");
+                }
             }
 
             return Run(

@@ -36,11 +36,19 @@ namespace Kentor.AuthServices.WebSso
                 throw new ArgumentNullException(nameof(request));
             }
 
+            if (options == null)
+            {
+                throw new ArgumentNullException(nameof(options));
+            }
+
             var returnUrl = request.QueryString["ReturnUrl"].SingleOrDefault();
             Uri parsedUri;
             if (returnUrl != null && !Uri.TryCreate(returnUrl, UriKind.Relative, out parsedUri))
             {
-                throw new InvalidOperationException( "Return Url must be a relative Url." );
+                if (!options.Notifications.ValidateAbsoluteReturnUrl(returnUrl))
+                {
+                    throw new InvalidOperationException("Return Url must be a relative Url.");
+                }
             }
 
             return Run(request, returnUrl, options);

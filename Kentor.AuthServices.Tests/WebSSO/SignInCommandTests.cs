@@ -59,6 +59,48 @@ namespace Kentor.AuthServices.Tests.WebSso
         }
 
         [TestMethod]
+        public void SignInCommand_Run_Calls_NotificationForAbsoluteUrl()
+        {
+            var defaultDestination = Options.FromConfiguration.IdentityProviders.Default.SingleSignOnServiceUrl;
+            var absoluteUri = HttpUtility.UrlEncode("http://google.com");
+            var httpRequest = new HttpRequestData("GET", new Uri($"http://localhost/signin?ReturnUrl={absoluteUri}"));
+            var validateAbsoluteReturnUrlCalled = false;
+
+            Options.FromConfiguration.Notifications.ValidateAbsoluteReturnUrl =
+                (url) =>
+                {
+                    validateAbsoluteReturnUrlCalled = true;
+                    return true;
+                };
+            
+            Action a = () => new SignInCommand().Run(httpRequest, Options.FromConfiguration);
+
+            a.ShouldNotThrow<InvalidOperationException>("the ValidateAbsoluteReturnUrl notification returns true");
+            validateAbsoluteReturnUrlCalled.Should().BeTrue("the ValidateAbsoluteReturnUrl notification should have been called");
+        }
+
+        [TestMethod]
+        public void SignInCommand_Run_DoNotCalls_NotificationForRelativeUrl()
+        {
+            var defaultDestination = Options.FromConfiguration.IdentityProviders.Default.SingleSignOnServiceUrl;
+            var relativeUri = HttpUtility.UrlEncode("Secure");
+            var httpRequest = new HttpRequestData("GET", new Uri($"http://localhost/signin?ReturnUrl={relativeUri}"));
+            var validateAbsoluteReturnUrlCalled = false;
+
+            Options.FromConfiguration.Notifications.ValidateAbsoluteReturnUrl =
+                (url) =>
+                {
+                    validateAbsoluteReturnUrlCalled = true;
+                    return true;
+                };
+
+            Action a = () => new SignInCommand().Run(httpRequest, Options.FromConfiguration);
+
+            a.ShouldNotThrow<InvalidOperationException>("the ReturnUrl is relative");
+            validateAbsoluteReturnUrlCalled.Should().BeFalse("the ValidateAbsoluteReturnUrl notification should not have been called");
+        }
+
+        [TestMethod]
         public void SignInCommand_Run_With_Idp2_ReturnsAuthnRequestForSecondIdp()
         {
             var secondIdp = Options.FromConfiguration.IdentityProviders[1];

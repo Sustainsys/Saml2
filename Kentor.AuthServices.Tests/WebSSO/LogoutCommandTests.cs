@@ -58,6 +58,15 @@ namespace Kentor.AuthServices.Tests.WebSSO
         }
 
         [TestMethod]
+        public void LogoutCommand_StaticRun_NullcheckOptions()
+        {
+            Action a = () => LogoutCommand.Run(new HttpRequestData("GET", new Uri("http://localhost")), null, null);
+
+            a.ShouldThrow<ArgumentNullException>()
+                .And.ParamName.Should().Be("options");
+        }
+
+        [TestMethod]
         public void LogoutCommand_Run_NullcheckOptions()
         {
             CommandFactory.GetCommand(CommandFactory.LogoutCommandName)
@@ -201,6 +210,48 @@ namespace Kentor.AuthServices.Tests.WebSSO
 
             Action a = () => CommandFactory.GetCommand(CommandFactory.LogoutCommandName).Run(request, options);
             a.ShouldThrow<InvalidOperationException>().WithMessage("Return Url must be a relative Url.");
+        }
+
+        [TestMethod]
+        public void LogoutCommand_Run_Calls_NotificationForAbsoluteUrl()
+        {
+            var absoluteUri = HttpUtility.UrlEncode("http://google.com");
+            var request = new HttpRequestData("GET", new Uri($"http://sp.example.com/AuthServices/Logout?ReturnUrl={absoluteUri}"));
+            var options = StubFactory.CreateOptions();
+
+            var validateAbsoluteReturnUrlCalled = false;
+
+            options.Notifications.ValidateAbsoluteReturnUrl =
+                (url) =>
+                {
+                    validateAbsoluteReturnUrlCalled = true;
+                    return true;
+                };
+
+            Action a = () => CommandFactory.GetCommand(CommandFactory.LogoutCommandName).Run(request, options);
+            a.ShouldNotThrow<InvalidOperationException>("the ValidateAbsoluteReturnUrl notification returns true");
+            validateAbsoluteReturnUrlCalled.Should().BeTrue("the ValidateAbsoluteReturnUrl notification should have been called");
+        }
+
+        [TestMethod]
+        public void LogoutCommand_Run_DoNotCalls_NotificationForRelativeUrl()
+        {
+            var relativeUri = HttpUtility.UrlEncode("/");
+            var request = new HttpRequestData("GET", new Uri($"http://sp.example.com/AuthServices/Logout?ReturnUrl={relativeUri}"));
+            var options = StubFactory.CreateOptions();
+
+            var validateAbsoluteReturnUrlCalled = false;
+
+            options.Notifications.ValidateAbsoluteReturnUrl =
+                (url) =>
+                {
+                    validateAbsoluteReturnUrlCalled = true;
+                    return true;
+                };
+
+            Action a = () => CommandFactory.GetCommand(CommandFactory.LogoutCommandName).Run(request, options);
+            a.ShouldNotThrow<InvalidOperationException>("the ReturnUrl is relative");
+            validateAbsoluteReturnUrlCalled.Should().BeFalse("the ValidateAbsoluteReturnUrl notification should not have been called");
         }
 
         [TestMethod]
