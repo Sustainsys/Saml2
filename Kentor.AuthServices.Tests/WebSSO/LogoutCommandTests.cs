@@ -226,12 +226,32 @@ namespace Kentor.AuthServices.Tests.WebSSO
                 {
                     validateAbsoluteReturnUrlCalled = true;
                     return true;
-
                 };
 
             Action a = () => CommandFactory.GetCommand(CommandFactory.LogoutCommandName).Run(request, options);
             a.ShouldNotThrow<InvalidOperationException>("the ValidateAbsoluteReturnUrl notification returns true");
             validateAbsoluteReturnUrlCalled.Should().BeTrue("the ValidateAbsoluteReturnUrl notification should have been called");
+        }
+
+        [TestMethod]
+        public void LogoutCommand_Run_DoNotCalls_NotificationForRelativeUrl()
+        {
+            var relativeUri = HttpUtility.UrlEncode("/");
+            var request = new HttpRequestData("GET", new Uri($"http://sp.example.com/AuthServices/Logout?ReturnUrl={relativeUri}"));
+            var options = StubFactory.CreateOptions();
+
+            var validateAbsoluteReturnUrlCalled = false;
+
+            options.Notifications.ValidateAbsoluteReturnUrl =
+                (url) =>
+                {
+                    validateAbsoluteReturnUrlCalled = true;
+                    return true;
+                };
+
+            Action a = () => CommandFactory.GetCommand(CommandFactory.LogoutCommandName).Run(request, options);
+            a.ShouldNotThrow<InvalidOperationException>("the ReturnUrl is relative");
+            validateAbsoluteReturnUrlCalled.Should().BeFalse("the ValidateAbsoluteReturnUrl notification should not have been called");
         }
 
         [TestMethod]
