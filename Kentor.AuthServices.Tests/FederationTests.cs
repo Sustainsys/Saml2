@@ -9,6 +9,7 @@ using Kentor.AuthServices.Metadata;
 using Kentor.AuthServices.Tests.Helpers;
 using Kentor.AuthServices.Tests.Metadata;
 using System.Threading;
+using System.Xml.Linq;
 
 namespace Kentor.AuthServices.Tests
 {
@@ -180,6 +181,28 @@ namespace Kentor.AuthServices.Tests
                 .Should().BeFalse("idp2 should be removed after reload");
             options.IdentityProviders.TryGetValue(new EntityId("http://idp3.federation.example.com/metadata"), out idp)
                 .Should().BeTrue("idp3 should be loaded after reload");
+        }
+
+        [TestMethod]
+        public void Federation_ReloadOfMetadata_RetainsProviderSpecificExtensions()
+        {
+            MetadataRefreshScheduler.minInterval = new TimeSpan(0, 0, 0, 0, 5);
+            
+            var content = new[] { XElement.Parse("<additional />") };
+            var entityId = new EntityId("http://idp1.federation.example.com/metadata");
+            var options = StubFactory.CreateOptions();
+
+            options.IdentityProviders.Add(new IdentityProvider(entityId, options.SPOptions)
+            {
+                RequestExtensions = content.ToList(),
+            });
+            
+            var subject = new Federation(
+                "http://localhost:13428/federationMetadataShortCacheDuration",
+                false,
+                options);
+            
+            options.IdentityProviders[entityId].RequestExtensions.Should().Equal(content);
         }
 
         [TestMethod]

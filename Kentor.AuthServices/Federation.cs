@@ -2,12 +2,9 @@
 using Kentor.AuthServices.Metadata;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Globalization;
 using System.IdentityModel.Metadata;
 using System.Linq;
 using System.Net;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Kentor.AuthServices
@@ -26,7 +23,7 @@ namespace Kentor.AuthServices
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "sp")]
         public Federation(FederationElement config, IOptions options)
         {
-            if (config == null)
+            if (config == null) 
             {
                 throw new ArgumentNullException(nameof(config));
             }
@@ -80,7 +77,7 @@ namespace Kentor.AuthServices
 
                     var identityProviders = new List<IdentityProvider>();
 
-                    foreach(var idpMetadata in identityProvidersMetadata)
+                    foreach (var idpMetadata in identityProvidersMetadata)
                     {
                         var idp = new IdentityProvider(idpMetadata.EntityId, options.SPOptions)
                         {
@@ -129,6 +126,13 @@ namespace Kentor.AuthServices
             // Add or update the idps in the new metadata.
             foreach (var idp in identityProviders)
             {
+                IdentityProvider existing;
+                if (options.IdentityProviders.TryGetValue(idp.EntityId, out existing) &&
+                    existing.RequestExtensions != null)
+                {
+                    idp.RequestExtensions = existing.RequestExtensions;
+                }
+
                 options.IdentityProviders[idp.EntityId] = idp;
                 registeredIdentityProviders.Remove(idp.EntityId.Id);
             }

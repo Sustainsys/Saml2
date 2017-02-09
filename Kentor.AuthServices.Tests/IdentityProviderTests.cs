@@ -18,6 +18,7 @@ using System.Security.Cryptography.Xml;
 using System.Security.Cryptography.X509Certificates;
 using System.Security.Claims;
 using System.Security.Principal;
+using System.Xml.Linq;
 
 namespace Kentor.AuthServices.Tests
 {
@@ -61,6 +62,22 @@ namespace Kentor.AuthServices.Tests
 
             r.ToXElement().Attribute("Destination").Should().NotBeNull()
                 .And.Subject.Value.Should().Be(idpUri);
+        }
+
+        [TestMethod]
+        public void IdentityProvider_CreateAuthenticateRequest_ExtensionsInXml()
+        {
+            var content = XElement.Parse("<additional />");
+
+            var options = StubFactory.CreateOptions();
+            var subject = options.IdentityProviders.Default;
+
+            subject.RequestExtensions = new[] { content };
+
+            var r = subject.CreateAuthenticateRequest(StubFactory.CreateAuthServicesUrls());
+
+            r.ToXElement().Element(Saml2Namespaces.Saml2P + "Extensions").Should().NotBeNull()
+                .And.Subject.FirstNode.Should().Be(content);
         }
 
         [TestMethod]
@@ -219,7 +236,7 @@ namespace Kentor.AuthServices.Tests
                 .ShouldThrow<ConfigurationErrorsException>()
                 .WithMessage($"Idp \"https://idp.example.com\" is configured for signed AuthenticateRequests*");
         }
-
+        
         [TestMethod]
         public void IdentityProvider_Certificate_FromFile()
         {
