@@ -315,16 +315,18 @@ namespace Kentor.AuthServices.Configuration
                 base[authenticateRequestSigningBehavior] = value;
             }
         }
-        const string defaultAuthenticateRequestSigningAlgorithm = nameof(defaultAuthenticateRequestSigningAlgorithm);
+
+        const string signingAlgorithm = nameof(signingAlgorithm);
         /// <summary>
-        /// The default AuthenticateRequest signing Algorithm.
+        /// Signing algorithm for metadata and outbound messages. Can be 
+        /// overriden for each <see cref="IdentityProvider"/>.
         /// </summary>
-        [ConfigurationProperty(defaultAuthenticateRequestSigningAlgorithm, IsRequired = false, DefaultValue = MessageSigningDefaults.DefaultAlgorithm)]
-        public string DefaultAuthenticateRequestSigningAlgorithm
+        [ConfigurationProperty(signingAlgorithm, IsRequired = false)]
+        public string SigningAlgorithm
         {
             get
-            {
-                return (string)base[defaultAuthenticateRequestSigningAlgorithm];
+            {   
+                return (string)base[signingAlgorithm];
             }
         }
 

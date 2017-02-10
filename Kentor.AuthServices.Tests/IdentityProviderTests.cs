@@ -310,6 +310,15 @@ namespace Kentor.AuthServices.Tests
         }
 
         [TestMethod]
+        public void IdentityProvider_Ctor_NullcheckSpOptions()
+        {
+            Action a = () => new IdentityProvider(new EntityId("urn:foo"), null);
+
+            a.ShouldThrow<ArgumentNullException>()
+                .And.ParamName.Should().Be("spOptions");
+        }
+
+        [TestMethod]
         public void IdentityProvider_Ctor_MissingBindingThrows()
         {
             var config = CreateConfig();

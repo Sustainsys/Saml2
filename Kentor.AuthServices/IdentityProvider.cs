@@ -33,10 +33,14 @@ namespace Kentor.AuthServices
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "sp")]
         public IdentityProvider(EntityId entityId, SPOptions spOptions)
         {
+            if(spOptions == null)
+            {
+                throw new ArgumentNullException(nameof(spOptions));
+            }
+
             EntityId = entityId;
             this.spOptions = spOptions;
-            if (null!=spOptions)
-                this.SigningAlgorithm = spOptions.DefaultAuthenticateRequestSigningAlgorithm;
+            SigningAlgorithm = spOptions.SigningAlgorithm;
         }
 
         readonly SPOptions spOptions;
@@ -62,7 +66,7 @@ namespace Kentor.AuthServices
 
             SigningAlgorithm = config.UseSpecificAuthenticateRequestSigningAlgorithm 
                 ? config.AuthenticateRequestSigningAlgorithm 
-                : spOptions.DefaultAuthenticateRequestSigningAlgorithm;
+                : spOptions.SigningAlgorithm;
 
             foreach (var ars in config.ArtifactResolutionServices)
             {
