@@ -28,6 +28,7 @@ namespace Kentor.AuthServices.Configuration
             systemIdentityModelIdentityConfiguration = new IdentityConfiguration(false);
             MetadataCacheDuration = new TimeSpan(1, 0, 0);
             Compatibility = new Compatibility();
+            SigningAlgorithm = XmlHelpers.GetDefaltSigningAlgorithmName();
         }
 
         /// <summary>
@@ -52,6 +53,7 @@ namespace Kentor.AuthServices.Configuration
             ModulePath = configSection.ModulePath;
             PublicOrigin = configSection.PublicOrigin;
             Organization = configSection.Organization;
+            SigningAlgorithm = XmlHelpers.GetFullSigningAlgorithmName(configSection.SigningAlgorithm);
             AuthenticateRequestSigningBehavior = configSection.AuthenticateRequestSigningBehavior;
             NameIdPolicy = new Saml2NameIdPolicy(
                 configSection.NameIdPolicyElement.AllowCreate, configSection.NameIdPolicyElement.Format);

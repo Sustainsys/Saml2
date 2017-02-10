@@ -13,6 +13,7 @@ using System.Globalization;
 using System.Diagnostics.CodeAnalysis;
 using System.Xml.Linq;
 using System.IO;
+using Kentor.AuthServices.Internal;
 
 namespace Kentor.AuthServices
 {
@@ -116,6 +117,28 @@ namespace Kentor.AuthServices
         }
 
         /// <summary>
+        /// Sign an xml document with the supplied cert.
+        /// </summary>
+        /// <param name="xmlDocument">XmlDocument to be signed. The signature is
+        /// added as a node in the document, right after the Issuer node.</param>
+        /// <param name="cert">Certificate to use when signing.</param>
+        /// <param name="includeKeyInfo">Include public key in signed output.</param>
+        /// <param name="signingAlgorithm">Uri of signing algorithm to use.</param>
+        public static void Sign(
+            this XmlDocument xmlDocument,
+            X509Certificate2 cert,
+            bool includeKeyInfo,
+            string signingAlgorithm)
+        {
+            if (xmlDocument == null)
+            {
+                throw new ArgumentNullException(nameof(xmlDocument));
+            }
+
+            xmlDocument.DocumentElement.Sign(cert, includeKeyInfo, signingAlgorithm);
+        }
+
+        /// <summary>
         /// Sign an xml element with the supplied cert.
         /// </summary>
         /// <param name="xmlElement">xmlElement to be signed. The signature is
@@ -123,6 +146,23 @@ namespace Kentor.AuthServices
         /// <param name="cert">Certificate to use when signing.</param>
         /// <param name="includeKeyInfo">Include public key in signed output.</param>
         public static void Sign(this XmlElement xmlElement, X509Certificate2 cert, bool includeKeyInfo)
+        {
+            xmlElement.Sign(cert, includeKeyInfo, GetDefaltSigningAlgorithmName());
+        }
+
+        /// <summary>
+        /// Sign an xml element with the supplied cert.
+        /// </summary>
+        /// <param name="xmlElement">xmlElement to be signed. The signature is
+        /// added as a node in the document, right after the Issuer node.</param>
+        /// <param name="cert">Certificate to use when signing.</param>
+        /// <param name="includeKeyInfo">Include public key in signed output.</param>
+        /// <param name="signingAlgorithm">The signing algorithm to use.</param>
+        public static void Sign(
+            this XmlElement xmlElement,
+            X509Certificate2 cert,
+            bool includeKeyInfo,
+            string signingAlgorithm)
         {
             if (xmlElement == null)
             {
@@ -142,8 +182,10 @@ namespace Kentor.AuthServices
             // For both, the ID/Reference and the Transform/Canonicalization see as well: 
             // https://www.oasis-open.org/committees/download.php/35711/sstc-saml-core-errata-2.0-wd-06-diff.pdf section 5.4.2 and 5.4.3
 
-            signedXml.SigningKey = (RSACryptoServiceProvider)cert.PrivateKey;
+            signedXml.SigningKey = ((RSACryptoServiceProvider)cert.PrivateKey)
+                .GetSha256EnabledRSACryptoServiceProvider();
             signedXml.SignedInfo.CanonicalizationMethod = SignedXml.XmlDsigExcC14NTransformUrl;
+            signedXml.SignedInfo.SignatureMethod = signingAlgorithm;
 
             var reference = new Reference { Uri = "#" + xmlElement.GetAttribute("ID") };
             reference.AddTransform(new XmlDsigEnvelopedSignatureTransform());
@@ -483,6 +525,40 @@ namespace Kentor.AuthServices
                 xmlWriter.Flush();
                 return strWriter.ToString();
             }
+        }
+
+        /// <summary>
+        /// Store a list of signing algorithms that are available in SignedXml.
+        /// This needs to be done through reflection, to keep the library
+        /// targetting lowest supported .NET version, while still getting
+        /// access to new algorithms if the hosting application targets a
+        /// later version.
+        /// </summary>
+        private static readonly IEnumerable<string> signingAlgorithms =
+            typeof(SignedXml).GetFields()
+            .Where(f => f.Name.StartsWith("XmlDsigRSASHA", StringComparison.Ordinal))
+            .Select(f => (string)f.GetRawConstantValue())
+            .ToList();
+
+        internal static string GetFullSigningAlgorithmName(string shortName)
+        {
+            return string.IsNullOrEmpty(shortName) ?
+                GetDefaltSigningAlgorithmName()
+                : signingAlgorithms.Single(
+                a => a.EndsWith(shortName, StringComparison.OrdinalIgnoreCase));
+        }
+
+        // Can't test the fallback behaviour on a machine that has a modern
+        // framework installed.
+        [ExcludeFromCodeCoverage]
+        internal static string GetDefaltSigningAlgorithmName()
+        {
+            var rsaSha256Name = "http://www.w3.org/2001/04/xmldsig-more#rsa-sha256";
+            if (signingAlgorithms.Contains(rsaSha256Name))
+            {
+                return rsaSha256Name;
+            }
+            return SignedXml.XmlDsigRSASHA1Url;
         }
     }
 }

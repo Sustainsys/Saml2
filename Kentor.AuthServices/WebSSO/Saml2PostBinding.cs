@@ -65,15 +65,7 @@ namespace Kentor.AuthServices.WebSso
 
                 xmlDoc.LoadXml(xml);
 
-                switch (message.SigningAlgorithm)
-                {
-                    case MessageSigningAlgorithm.RsaSecureHashAlgorithm1:
-                        xmlDoc.Sign(message.SigningCertificate, true);
-                        break;
-                    default:
-                        xmlDoc.SignDocument(message.SigningCertificate, message.SigningAlgorithm);
-                        break;
-                }
+                xmlDoc.Sign(message.SigningCertificate, true, message.SigningAlgorithm);
                 xml = xmlDoc.OuterXml;
             }
 

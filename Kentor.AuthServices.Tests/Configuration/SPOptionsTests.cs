@@ -6,6 +6,7 @@ using System.IdentityModel.Metadata;
 using FluentAssertions;
 using Kentor.AuthServices.Tests.Helpers;
 using Kentor.AuthServices.Saml2P;
+using System.Security.Cryptography.Xml;
 
 namespace Kentor.AuthServices.Tests.Configuration
 {
@@ -79,6 +80,7 @@ namespace Kentor.AuthServices.Tests.Configuration
             subject.NameIdPolicy.Format.Should().Be(config.NameIdPolicyElement.Format);
             subject.Organization.Should().Be(config.organization);
             subject.AuthenticateRequestSigningBehavior.Should().Be(config.AuthenticateRequestSigningBehavior);
+            subject.SigningAlgorithm.Should().Be(SignedXml.XmlDsigRSASHA256Url);
             subject.RequestedAuthnContext.ClassRef.OriginalString.Should().Be("urn:oasis:names:tc:SAML:2.0:ac:classes:PasswordProtectedTransport");
             subject.RequestedAuthnContext.Comparison.Should().Be(AuthnContextComparisonType.Minimum);
             subject.Compatibility.UnpackEntitiesDescriptorInIdentityProviderMetadata.Should().BeTrue();
@@ -147,6 +149,14 @@ namespace Kentor.AuthServices.Tests.Configuration
 
             subject.MetadataCacheDuration.Should().Be(new TimeSpan(1, 0, 0));
             subject.MetadataValidDuration.Should().NotHaveValue();
+        }
+
+        [TestMethod]
+        public void SPOptions_SigningAlgorithm_DefaultValue()
+        {
+            var subject = new SPOptions();
+
+            subject.SigningAlgorithm.Should().Be(SignedXml.XmlDsigRSASHA256Url);
         }
 
         [TestMethod]

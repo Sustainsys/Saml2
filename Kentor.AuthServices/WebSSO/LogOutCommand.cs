@@ -210,6 +210,7 @@ namespace Kentor.AuthServices.WebSso
             {
                 DestinationUrl = idp.SingleLogoutServiceResponseUrl,
                 SigningCertificate = options.SPOptions.SigningServiceCertificate,
+                SigningAlgorithm = idp.OutboundSigningAlgorithm,
                 InResponseTo = request.Id,
                 Issuer = options.SPOptions.EntityId,
                 RelayState = unbindResult.RelayState

@@ -257,38 +257,6 @@ namespace Kentor.AuthServices.Tests
         }
 
         [TestMethod]
-        public void XmlDocumentSigningExtensions_Sign_Nullcheck_doc()
-        {
-            XmlDocument dd = null;
-            dd.Invoking(
-                x => x.SignDocument(TestCert, MessageSigningAlgorithm.RsaSecureHashAlgorithm1))
-                .ShouldThrow<ArgumentNullException>()
-                .And.ParamName.Should().Be("xmlDocument");
-        }
-
-
-        [TestMethod]
-        public void XmlDocumentSigningExtensions_Sign_Nullcheck_Cert()
-        {
-            xmlDocument.Invoking(
-                x => x.SignDocument(null, MessageSigningAlgorithm.RsaSecureHashAlgorithm1))
-                .ShouldThrow<ArgumentNullException>()
-                .And.ParamName.Should().Be("signingCertificate");
-        }
-
-
-        [TestMethod]
-        public void XmlDocumentSigningExtensions_Sign_Nullcheck_DocElem()
-        {
-            if (xmlDocument.DocumentElement != null) xmlDocument.RemoveChild(xmlDocument.DocumentElement);
-
-            xmlDocument.Invoking(
-                x => x.SignDocument(TestCert, MessageSigningAlgorithm.RsaSecureHashAlgorithm256))
-                .ShouldThrow<ArgumentNullException>()
-                .And.ParamName.Should().Be("xmlDocument");
-        }
-
-        [TestMethod]
         public void XmlHelpers_IsSignedBy_ThrowsInformativeMessageOnSha256Signature()
         {
             // With .Net 4.6.2 and above this test will not throw any error because the SHA256 is now built-in
