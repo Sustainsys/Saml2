@@ -11,6 +11,8 @@ using System.Reflection;
 using Kentor.AuthServices.Configuration;
 using System.Collections.Generic;
 using System.Linq;
+using Kentor.AuthServices;
+using Kentor.AuthServices.Saml2P;
 
 namespace Kentor.AuthServices.Tests
 {

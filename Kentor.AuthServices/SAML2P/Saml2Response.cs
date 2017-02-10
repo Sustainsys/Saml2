@@ -228,6 +228,14 @@ namespace Kentor.AuthServices.Saml2P
         [ExcludeFromCodeCoverage]
         public X509Certificate2 SigningCertificate { get; }
 
+        /// <summary>
+        /// The signing algorithm to use when signing the message during binding, 
+        /// according to the signature processing rules of each binding.
+        /// </summary>
+        /// <value>The signing algorithm.</value>
+        [ExcludeFromCodeCoverage]
+        public string SigningAlgorithm { get; set; }
+
         private XmlElement xmlElement;
 
         /// <summary>

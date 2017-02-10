@@ -12,6 +12,7 @@ using System.Text;
 using System.Xml;
 using System.IdentityModel.Metadata;
 using Kentor.AuthServices.Exceptions;
+using System.Security.Cryptography.Xml;
 
 namespace Kentor.AuthServices.Tests.WebSso
 {
@@ -181,7 +182,8 @@ namespace Kentor.AuthServices.Tests.WebSso
                 RelayState = includeRelayState ? "SomeState that needs escaping #%=3" : null,
                 DestinationUrl = new Uri("http://host"),
                 MessageName = messageName,
-                SigningCertificate = SignedXmlHelper.TestCert
+                SigningCertificate = SignedXmlHelper.TestCert,
+                SigningAlgorithm = SignedXml.XmlDsigRSASHA256Url
             };
 
             if(!string.IsNullOrEmpty(issuer))

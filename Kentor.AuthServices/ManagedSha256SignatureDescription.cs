@@ -1,11 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using Kentor.AuthServices.Internal;
+using System;
 using System.Diagnostics.CodeAnalysis;
-using System.Linq;
 using System.Security.Cryptography;
-using System.Security.Cryptography.Xml;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Kentor.AuthServices
 {
@@ -55,41 +51,12 @@ namespace Kentor.AuthServices
                 throw new ArgumentNullException(nameof(key));
             }
 
-            var provider = (RSACryptoServiceProvider)key;
+            var provider = ((RSACryptoServiceProvider)key)
+                .GetSha256EnabledRSACryptoServiceProvider();
 
-            // The provider is probably using the default ProviderType. That's
-            // a problem, because it doesn't support SHA256. Let's do some
-            // black magic and create a new provider of a type that supports
-            // SHA256 without the user ever knowing we fix this. This is what 
-            // is done in X509AsymmetricKey.GetSignatureFormatter if 
-            // http://www.w3.org/2001/04/xmldsig-more#rsa-sha256 isn't
-            // a known algorithm, so users kind of expect this to be handled
-            // for them magically.
-
-            var cspParams = new CspParameters();
-            cspParams.ProviderType = 24; //PROV_RSA_AES
-            cspParams.KeyContainerName = provider.CspKeyContainerInfo.KeyContainerName;
-            cspParams.KeyNumber = (int)provider.CspKeyContainerInfo.KeyNumber;
-            SetMachineKeyFlag(provider, cspParams);
-
-            cspParams.Flags |= CspProviderFlags.UseExistingKey;
-
-            provider = new RSACryptoServiceProvider(cspParams);
-
-            var f = new RSAPKCS1SignatureFormatter(provider);
-            f.SetHashAlgorithm(typeof(SHA256Managed).FullName);
-            return f;
-        }
-
-        // We don't want to use Machine Key store during tests, so let's
-        // put this one in an own method that's not included in coverage metrics.
-        [ExcludeFromCodeCoverage]
-        private static void SetMachineKeyFlag(RSACryptoServiceProvider provider, CspParameters cspParams)
-        {
-            if (provider.CspKeyContainerInfo.MachineKeyStore)
-            {
-                cspParams.Flags = CspProviderFlags.UseMachineKeyStore;
-            }
+            var formatter = new RSAPKCS1SignatureFormatter(provider);
+            formatter.SetHashAlgorithm(typeof(SHA256Managed).FullName);
+            return formatter;
         }
     }
 }
