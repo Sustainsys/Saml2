@@ -28,7 +28,9 @@ namespace Kentor.AuthServices.WebSso
 
             var result = new CommandResult()
             {
-                Content = metadata.ToXmlString(options.SPOptions.SigningServiceCertificate),
+                Content = metadata.ToXmlString(
+                    options.SPOptions.SigningServiceCertificate,
+                    options.SPOptions.SigningAlgorithm),
                 ContentType = "application/samlmetadata+xml"
             };
 
