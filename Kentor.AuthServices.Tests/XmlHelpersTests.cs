@@ -37,6 +37,15 @@ namespace Kentor.AuthServices.Tests
         }
 
         [TestMethod]
+        public void XmlHelpers_Sign_Nullhceck_XmlDocument2()
+        {
+            XmlDocument xd = null;
+            Action a = () => xd.Sign(TestCert, false, "");
+
+            a.ShouldThrow<ArgumentNullException>().And.ParamName.Should().Be("xmlDocument");
+        }
+
+        [TestMethod]
         public void XmlHelpers_Sign_Nullcheck_xmlElement()
         {
             ((XmlElement)null).Invoking(

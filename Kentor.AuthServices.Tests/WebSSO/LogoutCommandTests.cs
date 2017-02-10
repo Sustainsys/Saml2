@@ -644,7 +644,8 @@ namespace Kentor.AuthServices.Tests.WebSSO
                 DestinationUrl = new Uri("http://sp.example.com/path/AuthServices/logout"),
                 Issuer = new EntityId("https://idp.example.com"),
                 InResponseTo = new Saml2Id(),
-                SigningCertificate = SignedXmlHelper.TestCert
+                SigningCertificate = SignedXmlHelper.TestCert,
+                SigningAlgorithm = SignedXml.XmlDsigRSASHA256Url,
             };
 
             var bindResult = Saml2Binding.Get(Saml2BindingType.HttpRedirect)
