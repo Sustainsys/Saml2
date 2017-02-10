@@ -187,7 +187,11 @@ namespace Kentor.AuthServices
             signedXml.SignedInfo.CanonicalizationMethod = SignedXml.XmlDsigExcC14NTransformUrl;
             signedXml.SignedInfo.SignatureMethod = signingAlgorithm;
 
-            var reference = new Reference { Uri = "#" + xmlElement.GetAttribute("ID") };
+            var reference = new Reference
+            {
+                Uri = "#" + xmlElement.GetAttribute("ID"),
+                DigestMethod = GetCorrespondingDigestAlgorithm(signingAlgorithm)
+            };
             reference.AddTransform(new XmlDsigEnvelopedSignatureTransform());
             reference.AddTransform(new XmlDsigExcC14NTransform());
 
@@ -559,6 +563,21 @@ namespace Kentor.AuthServices
                 return rsaSha256Name;
             }
             return SignedXml.XmlDsigRSASHA1Url;
+        }
+
+        private static readonly IEnumerable<string> digestAlgorithms =
+            typeof(SignedXml).GetFields()
+            .Where(f => f.Name.StartsWith("XmlDsigSHA", StringComparison.Ordinal))
+            .Select(f => (string)f.GetRawConstantValue())
+            .ToList();
+
+        internal static string GetCorrespondingDigestAlgorithm(string signingAlgorithm)
+        {
+            var matchPattern = signingAlgorithm.Substring(signingAlgorithm.LastIndexOf('-') + 1);
+
+            return digestAlgorithms.Single(a => a.EndsWith(
+                matchPattern,
+                StringComparison.Ordinal));
         }
     }
 }
