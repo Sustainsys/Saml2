@@ -40,7 +40,7 @@ namespace Kentor.AuthServices
 
             EntityId = entityId;
             this.spOptions = spOptions;
-            SigningAlgorithm = spOptions.SigningAlgorithm;
+            OutboundSigningAlgorithm = spOptions.SigningAlgorithm;
         }
 
         readonly SPOptions spOptions;
@@ -64,10 +64,10 @@ namespace Kentor.AuthServices
                     new X509RawDataKeyIdentifierClause(certificate));
             }
 
-            SigningAlgorithm = config.UseSpecificAuthenticateRequestSigningAlgorithm 
-                ? config.AuthenticateRequestSigningAlgorithm 
-                : spOptions.SigningAlgorithm;
-
+            OutboundSigningAlgorithm = string.IsNullOrEmpty(config.OutboundSigningAlgorithm) ?
+                spOptions.SigningAlgorithm : 
+                XmlHelpers.GetFullSigningAlgorithmName(config.OutboundSigningAlgorithm);
+                
             foreach (var ars in config.ArtifactResolutionServices)
             {
                 ArtifactResolutionServiceUrls[ars.Index] = ars.Location;
@@ -301,7 +301,7 @@ namespace Kentor.AuthServices
                 AttributeConsumingServiceIndex = spOptions.AttributeConsumingServices.Any() ? 0 : (int?)null,
                 NameIdPolicy = spOptions.NameIdPolicy,
                 RequestedAuthnContext = spOptions.RequestedAuthnContext,
-                SigningAlgorithm = this.SigningAlgorithm
+                SigningAlgorithm = this.OutboundSigningAlgorithm
             };
 
             if (spOptions.AuthenticateRequestSigningBehavior == SigningBehavior.Always
@@ -324,9 +324,9 @@ namespace Kentor.AuthServices
         }
 
         /// <summary>
-        /// Signing Algorithm to be used when signing the Authentication Request
+        /// Signing Algorithm to be used when signing oubound messages.
         /// </summary>
-        public string SigningAlgorithm { get; set; } = MessageSigningAlgorithm.RsaSecureHashAlgorithm1;
+        public string OutboundSigningAlgorithm { get; set; }
 
         /// <summary>
         /// Bind a Saml2AuthenticateRequest using the active binding of the idp,
@@ -517,7 +517,7 @@ namespace Kentor.AuthServices
                 SessionIndex =
                     user.FindFirst(AuthServicesClaimTypes.SessionIndex).Value,
                 SigningCertificate = spOptions.SigningServiceCertificate,
-                SigningAlgorithm = this.SigningAlgorithm
+                SigningAlgorithm = OutboundSigningAlgorithm
             };
         }
 

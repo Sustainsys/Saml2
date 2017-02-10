@@ -106,38 +106,19 @@ namespace Kentor.AuthServices.Configuration
                 base["signingCertificate"] = value;
             }
         }
-        const string useSpecificAuthenticateRequestSigningAlgorithm = nameof(useSpecificAuthenticateRequestSigningAlgorithm);
-        /// <summary>
-        /// The authenticateRequestSigningAlgorithm.
-        /// </summary>
-        [ConfigurationProperty(useSpecificAuthenticateRequestSigningAlgorithm, IsRequired = false, DefaultValue = false)]
-        public bool UseSpecificAuthenticateRequestSigningAlgorithm
-        {
-            get
-            {
-                return (bool)base[useSpecificAuthenticateRequestSigningAlgorithm];
-            }
-            //internal set
-            //{
-            //    base[authenticateRequestSigningAlgorithm] = value;
-            //}
-        }
 
-        const string authenticateRequestSigningAlgorithm = nameof(authenticateRequestSigningAlgorithm);
+        const string outboundSigningAlgorithm = nameof(outboundSigningAlgorithm);
         /// <summary>
-        /// The authenticateRequestSigningAlgorithm.
+        /// Signing algorithm for outbound messages to this Idp. Overrides the
+        /// main signature algorithm configured in <see cref="SPOptions"/>.
         /// </summary>
-        [ConfigurationProperty(authenticateRequestSigningAlgorithm, IsRequired = false, DefaultValue = MessageSigningDefaults.DefaultAlgorithm)]
-        public string AuthenticateRequestSigningAlgorithm
+        [ConfigurationProperty(outboundSigningAlgorithm, IsRequired = false)]
+        public string OutboundSigningAlgorithm
         {
             get
             {
-                return (string)base[authenticateRequestSigningAlgorithm];
+                return (string)base[outboundSigningAlgorithm];
             }
-            //internal set
-            //{
-            //    base[authenticateRequestSigningAlgorithm] = value;
-            //}
         }
 
         /// <summary>

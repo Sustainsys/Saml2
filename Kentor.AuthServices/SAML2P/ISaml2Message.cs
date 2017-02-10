@@ -54,6 +54,7 @@ namespace Kentor.AuthServices.Saml2P
         /// </summary>
         /// <value>The signing algorithm.</value>
         string SigningAlgorithm { get; }
+
         /// <summary>
         /// Issuer of the message.
         /// </summary>

@@ -5,6 +5,7 @@ using FluentAssertions;
 using System.Xml;
 using Kentor.AuthServices.Internal;
 using Kentor.AuthServices.Tests.Helpers;
+using System.Security.Cryptography.Xml;
 
 namespace Kentor.AuthServices.Tests.Internal
 {
@@ -151,6 +152,37 @@ namespace Kentor.AuthServices.Tests.Internal
             parsed.OuterXml.Should().Be(expected);
             // Don't change semantics.
             parsed.DocumentElement.Should().BeEquivalentTo(xmlDoc.DocumentElement);
+        }
+
+        [TestMethod]
+        public void XmlHelpers_GetFullSigningAlgorithmName_MapsSha256()
+        {
+            var shortName = "sha256";
+
+            var expected = SignedXml.XmlDsigRSASHA256Url;
+
+            XmlHelpers.GetFullSigningAlgorithmName(shortName)
+                .Should().Be(expected);
+        }
+
+        [TestMethod]
+        public void XmlHelpers_GetFullSigningAlgorithmName_MapsSHA256()
+        {
+            var shortName = "SHA256";
+
+            var expected = SignedXml.XmlDsigRSASHA256Url;
+
+            XmlHelpers.GetFullSigningAlgorithmName(shortName)
+                .Should().Be(expected);
+        }
+
+        [TestMethod]
+        public void XmlHelpers_GetFullSigningAlgorithmName_DefaultsToSha256IfAvailable()
+        {
+            var expected = SignedXml.XmlDsigRSASHA256Url;
+
+            XmlHelpers.GetFullSigningAlgorithmName("")
+                .Should().Be(expected);
         }
     }
 }

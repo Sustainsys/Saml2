@@ -11,6 +11,7 @@ using Kentor.AuthServices.Saml2P;
 using Kentor.AuthServices.WebSso;
 using Kentor.AuthServices.Tests.WebSSO;
 using Kentor.AuthServices.Tests.Helpers;
+using System.Security.Cryptography.Xml;
 
 namespace Kentor.AuthServices.Tests.WebSso
 {
@@ -185,7 +186,7 @@ value=""PHJvb3Q+PGNvbnRlbnQ+ZGF0YTwvY29udGVudD48L3Jvb3Q+""/>
                 MessageName = "SAMLMessageName",
                 RelayState = "ABC1234",
                 SigningCertificate = SignedXmlHelper.TestCert,
-                SigningAlgorithm = MessageSigningAlgorithm.RsaSecureHashAlgorithm1
+                SigningAlgorithm = SignedXml.XmlDsigRSASHA256Url
             };
 
             var signedXml = SignedXmlHelper.SignXml(message.XmlData, true);

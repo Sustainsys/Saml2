@@ -1,6 +1,7 @@
 ﻿using Kentor.AuthServices.Configuration;
 using Kentor.AuthServices.Exceptions;
 using Kentor.AuthServices.Saml2P;
+using Kentor.AuthServices.Internal;
 using System;
 using System.Globalization;
 using System.IdentityModel.Metadata;
@@ -48,13 +49,16 @@ namespace Kentor.AuthServices.WebSso
 
         private static string AddSignature(string queryString, ISaml2Message message)
         {
-            string signingAlgorithmUrl = XmlDocumentSigningExtensions.AlgorithmToXmlDsigNamespace(message.SigningAlgorithm);
+            string signingAlgorithmUrl = message.SigningAlgorithm;
 
             queryString += "&SigAlg=" + Uri.EscapeDataString(signingAlgorithmUrl);
             var signatureDescription = (SignatureDescription)CryptoConfig.CreateFromName(signingAlgorithmUrl);
             HashAlgorithm hashAlg = signatureDescription.CreateDigest();
             hashAlg.ComputeHash(Encoding.UTF8.GetBytes(queryString));
-            AsymmetricSignatureFormatter asymmetricSignatureFormatter = signatureDescription.CreateFormatter(message.SigningCertificate.PrivateKey);
+            AsymmetricSignatureFormatter asymmetricSignatureFormatter = 
+                signatureDescription.CreateFormatter(
+                    ((RSACryptoServiceProvider)message.SigningCertificate.PrivateKey)
+                    .GetSha256EnabledRSACryptoServiceProvider());
             byte[] signatureValue = asymmetricSignatureFormatter.CreateSignature(hashAlg);
             queryString += "&Signature=" + Uri.EscapeDataString(Convert.ToBase64String(signatureValue));
             return queryString;
