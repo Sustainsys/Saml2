@@ -316,11 +316,25 @@ namespace Kentor.AuthServices.Configuration
             }
         }
 
+        const string signingAlgorithm = nameof(signingAlgorithm);
+        /// <summary>
+        /// Signing algorithm for metadata and outbound messages. Can be 
+        /// overriden for each <see cref="IdentityProvider"/>.
+        /// </summary>
+        [ConfigurationProperty(signingAlgorithm, IsRequired = false)]
+        public string SigningAlgorithm
+        {
+            get
+            {   
+                return (string)base[signingAlgorithm];
+            }
+        }
+
         const string validateCertificates = nameof(validateCertificates);
         /// <summary>
         /// Validate certificates when validating signatures? Normally not a
         /// good idea as SAML2 deployments typically exchange certificates
-        /// directly and isntead of relying on the public certificate
+        /// directly and instead of relying on the public certificate
         /// infrastructure.
         /// </summary>
         [ConfigurationProperty(validateCertificates, IsRequired = false)]

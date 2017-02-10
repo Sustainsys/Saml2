@@ -1,6 +1,8 @@
 ﻿using Kentor.AuthServices.WebSso;
 using System;
 using System.Configuration;
+using System.Data.Odbc;
+using Kentor.AuthServices.Saml2P;
 
 namespace Kentor.AuthServices.Configuration
 {
@@ -102,6 +104,20 @@ namespace Kentor.AuthServices.Configuration
             internal set
             {
                 base["signingCertificate"] = value;
+            }
+        }
+
+        const string outboundSigningAlgorithm = nameof(outboundSigningAlgorithm);
+        /// <summary>
+        /// Signing algorithm for outbound messages to this Idp. Overrides the
+        /// main signature algorithm configured in <see cref="SPOptions"/>.
+        /// </summary>
+        [ConfigurationProperty(outboundSigningAlgorithm, IsRequired = false)]
+        public string OutboundSigningAlgorithm
+        {
+            get
+            {
+                return (string)base[outboundSigningAlgorithm];
             }
         }
 

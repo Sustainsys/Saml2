@@ -6,6 +6,7 @@ using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
 using System.IdentityModel.Metadata;
+using System.Security.Cryptography.Xml;
 
 namespace Kentor.AuthServices.Tests.WebSSO
 {
@@ -25,6 +26,8 @@ namespace Kentor.AuthServices.Tests.WebSSO
         public string XmlData { get; set; }
 
         public X509Certificate2 SigningCertificate { get; set; }
+
+        public string SigningAlgorithm { get; set; } = SignedXml.XmlDsigRSASHA256Url;
 
         public EntityId Issuer { get; set; }
     }

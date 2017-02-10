@@ -28,6 +28,7 @@ namespace Kentor.AuthServices.Configuration
             systemIdentityModelIdentityConfiguration = new IdentityConfiguration(false);
             MetadataCacheDuration = new TimeSpan(1, 0, 0);
             Compatibility = new Compatibility();
+            SigningAlgorithm = XmlHelpers.GetDefaltSigningAlgorithmName();
         }
 
         /// <summary>
@@ -52,6 +53,7 @@ namespace Kentor.AuthServices.Configuration
             ModulePath = configSection.ModulePath;
             PublicOrigin = configSection.PublicOrigin;
             Organization = configSection.Organization;
+            SigningAlgorithm = XmlHelpers.GetFullSigningAlgorithmName(configSection.SigningAlgorithm);
             AuthenticateRequestSigningBehavior = configSection.AuthenticateRequestSigningBehavior;
             NameIdPolicy = new Saml2NameIdPolicy(
                 configSection.NameIdPolicyElement.AllowCreate, configSection.NameIdPolicyElement.Format);
@@ -354,6 +356,12 @@ namespace Kentor.AuthServices.Configuration
         /// </summary>
         public SigningBehavior AuthenticateRequestSigningBehavior { get; set; }
 
+        /// <summary>
+        /// Signing algorithm for metadata and outbound messages. Can be 
+        /// overriden for each <see cref="IdentityProvider"/>.
+        /// </summary>
+        public string SigningAlgorithm { get; set; }
+        
         /// <summary>
         /// Metadata flag that we want assertions to be signed.
         /// </summary>
