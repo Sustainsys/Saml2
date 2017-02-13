@@ -213,6 +213,7 @@ namespace Kentor.AuthServices.Saml2P
             Issuer = issuer;
             this.claimsIdentities = claimsIdentities;
             SigningCertificate = issuerCertificate;
+            SigningAlgorithm = XmlHelpers.GetDefaltSigningAlgorithmName();
             DestinationUrl = destinationUrl;
             RelayState = relayState;
             InResponseTo = inResponseTo;

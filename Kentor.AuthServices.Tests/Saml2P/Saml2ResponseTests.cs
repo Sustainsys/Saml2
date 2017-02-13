@@ -1677,7 +1677,7 @@ namespace Kentor.AuthServices.Tests.Saml2P
             // to avoid heisenbugs if the second counter is updated while creating
             // the response.
             string before = DateTime.UtcNow.ToSaml2DateTimeString();
-            var response = new Saml2Response(issuer, SignedXmlHelper.TestCert,
+            var response = new Saml2Response(issuer, null,
                 new Uri(destination), null, identity);
             string after = DateTime.UtcNow.ToSaml2DateTimeString();
 
@@ -1705,7 +1705,7 @@ namespace Kentor.AuthServices.Tests.Saml2P
                 new Claim(ClaimTypes.NameIdentifier, "JohnDoe") 
             });
 
-            var response = new Saml2Response(new EntityId("issuer"), SignedXmlHelper.TestCert,
+            var response = new Saml2Response(new EntityId("issuer"), null,
                 new Uri("http://destination.example.com"), null, identity);
 
             var xml = response.XmlElement;
@@ -1724,7 +1724,7 @@ namespace Kentor.AuthServices.Tests.Saml2P
                 new Claim(ClaimTypes.NameIdentifier, "JohnDoe") 
             });
 
-            var response = new Saml2Response(new EntityId("issuer"), SignedXmlHelper.TestCert,
+            var response = new Saml2Response(new EntityId("issuer"), null,
                 new Uri("http://destination.example.com"), new Saml2Id("InResponseToID"), identity);
 
             var xml = response.XmlElement;
@@ -1744,7 +1744,7 @@ namespace Kentor.AuthServices.Tests.Saml2P
 
             var subject = new Saml2Response(
                 new EntityId("issuer"),
-                SignedXmlHelper.TestCert,
+                null,
                 new Uri("http://destination.example.com"),
                 new Saml2Id("InResponseToID"),
                 null,
@@ -1766,6 +1766,14 @@ namespace Kentor.AuthServices.Tests.Saml2P
             var subject = new Saml2Response(new EntityId("issuer"), null, null, null, "ABC123");
 
             subject.RelayState.Should().Be("ABC123");
+        }
+
+        [TestMethod]
+        public void Saml2Response_FromData_SigningDetails()
+        {
+            var subject = new Saml2Response(new EntityId("issuer"), SignedXmlHelper.TestCert, null, null);
+
+            subject.SigningAlgorithm.Should().Be(SignedXml.XmlDsigRSASHA256Url);
         }
 
         [TestMethod]
