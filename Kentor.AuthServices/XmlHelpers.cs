@@ -147,7 +147,7 @@ namespace Kentor.AuthServices
         /// <param name="includeKeyInfo">Include public key in signed output.</param>
         public static void Sign(this XmlElement xmlElement, X509Certificate2 cert, bool includeKeyInfo)
         {
-            xmlElement.Sign(cert, includeKeyInfo, GetDefaltSigningAlgorithmName());
+            xmlElement.Sign(cert, includeKeyInfo, GetDefaultSigningAlgorithmName());
         }
 
         /// <summary>
@@ -547,7 +547,7 @@ namespace Kentor.AuthServices
         internal static string GetFullSigningAlgorithmName(string shortName)
         {
             return string.IsNullOrEmpty(shortName) ?
-                GetDefaltSigningAlgorithmName()
+                GetDefaultSigningAlgorithmName()
                 : signingAlgorithms.Single(
                 a => a.EndsWith(shortName, StringComparison.OrdinalIgnoreCase));
         }
@@ -555,7 +555,7 @@ namespace Kentor.AuthServices
         // Can't test the fallback behaviour on a machine that has a modern
         // framework installed.
         [ExcludeFromCodeCoverage]
-        internal static string GetDefaltSigningAlgorithmName()
+        internal static string GetDefaultSigningAlgorithmName()
         {
             var rsaSha256Name = "http://www.w3.org/2001/04/xmldsig-more#rsa-sha256";
             if (signingAlgorithms.Contains(rsaSha256Name))

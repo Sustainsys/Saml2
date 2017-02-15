@@ -28,7 +28,7 @@ namespace Kentor.AuthServices.Configuration
             systemIdentityModelIdentityConfiguration = new IdentityConfiguration(false);
             MetadataCacheDuration = new TimeSpan(1, 0, 0);
             Compatibility = new Compatibility();
-            SigningAlgorithm = XmlHelpers.GetDefaltSigningAlgorithmName();
+            SigningAlgorithm = XmlHelpers.GetDefaultSigningAlgorithmName();
         }
 
         /// <summary>
