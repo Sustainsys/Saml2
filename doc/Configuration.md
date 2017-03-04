@@ -40,8 +40,8 @@ does not need any http modules, please see the separate info on the [Owin middle
 
 ##kentor.authServices Section
 The saml2AuthenticationModule section contains the configuration of the Kentor.AuthServices
-library. It is required for the http module and the mvc controller. The Owin middleware Can
-read web.config, but can also be configured from code.
+library. It is required for the http module and the mvc controller. The Owin middleware can
+read web.config, but can also be configured from code (see [Owin middleware](OwinMiddleware.md)).
 
 ```
 <kentor.authServices entityId="http://localhost:17009"
