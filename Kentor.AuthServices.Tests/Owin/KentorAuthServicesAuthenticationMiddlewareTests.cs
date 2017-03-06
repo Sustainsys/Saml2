@@ -661,6 +661,26 @@ namespace Kentor.AuthServices.Tests.Owin
         }
 
         [TestMethod]
+        public async Task KentorAuthServicesAuthenticationMiddleware_SkipSignUpCommand()
+        {
+            var returnUrl = "http://sp.example.com/returnurl";
+
+            var options = new KentorAuthServicesAuthenticationOptions(false) {SPOptions = new SPOptions() { EntityId = new EntityId("entityId")} };
+            var subject = new KentorAuthServicesAuthenticationMiddleware(
+                new StubOwinMiddleware(401, new AuthenticationResponseChallenge(
+                    new string[] { "KentorAuthServices" }, new AuthenticationProperties()
+                    {
+                        RedirectUri = returnUrl
+                    })),
+                    CreateAppBuilder(), options);
+
+            var context = OwinTestHelpers.CreateOwinContext();
+
+            await subject.Invoke(context);
+            context.Response.StatusCode.Should().Be(401);
+        }
+
+        [TestMethod]
         public async Task KentorAuthServicesAuthenticationMiddleware_StoresAuthenticationProperties()
         {
             var returnUrl = "http://sp.example.com/returnurl";

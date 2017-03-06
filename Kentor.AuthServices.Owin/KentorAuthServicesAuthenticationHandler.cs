@@ -67,20 +67,23 @@ namespace Kentor.AuthServices.Owin
                         Context.Environment.TryGetValue("KentorAuthServices.idp", out objIdp);
                         idp = objIdp as EntityId;
                     }
-                    var redirectUri = challenge.Properties.RedirectUri;
-                    // Don't serialize the RedirectUri twice.
-                    challenge.Properties.RedirectUri = null;
-
-                    var result = SignInCommand.Run(
-                        idp,
-                        redirectUri,
-                        await Context.ToHttpRequestData(Options.DataProtector.Unprotect),
-                        Options,
-                        challenge.Properties.Dictionary);
-
-                    if (!result.HandledResult)
+                    if (idp != null || !Options.IdentityProviders.IsEmpty)
                     {
-                        result.Apply(Context, Options.DataProtector);
+                        var redirectUri = challenge.Properties.RedirectUri;
+                        // Don't serialize the RedirectUri twice.
+                        challenge.Properties.RedirectUri = null;
+
+                        var result = SignInCommand.Run(
+                            idp,
+                            redirectUri,
+                            await Context.ToHttpRequestData(Options.DataProtector.Unprotect),
+                            Options,
+                            challenge.Properties.Dictionary);
+
+                        if (!result.HandledResult)
+                        {
+                            result.Apply(Context, Options.DataProtector);
+                        }
                     }
                 }
             }
