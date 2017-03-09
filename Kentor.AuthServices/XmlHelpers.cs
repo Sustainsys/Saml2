@@ -212,37 +212,21 @@ namespace Kentor.AuthServices
 
         /// <summary>
         /// Checks if an xml element is signed by the given certificate, through
-        /// a contained enveloped signature. Helper for tests. Production
-        /// code always should handle multiple possible signing keys.
-        /// </summary>
-        /// <param name="xmlElement">Xml Element that should be signed</param>
-        /// <param name="certificate">Certificate that should validate</param>
-        /// <returns>Is the signature correct?</returns>
-        internal static bool IsSignedBy(this XmlElement xmlElement, X509Certificate2 certificate)
-        {
-            if (certificate == null)
-            {
-                throw new ArgumentNullException(nameof(certificate));
-            }
-
-            return xmlElement.IsSignedByAny(
-                Enumerable.Repeat(new X509RawDataKeyIdentifierClause(certificate), 1), false);
-        }
-
-        /// <summary>
-        /// Checks if an xml element is signed by the given certificate, through
         /// a contained enveloped signature.
         /// </summary>
         /// <param name="xmlElement">Xml Element that should be signed</param>
         /// <param name="signingKeys">Signing keys to test, one should validate.</param>
         /// <param name="validateCertificate">Should the certificate be validated too?</param>
+        /// <param name="minimumSigningAlgorithm">The mininum signing algorithm
+        /// strength allowed.</param>
         /// <returns>True on correct signature, false on missing signature</returns>
         /// <exception cref="InvalidSignatureException">If the data has
         /// been tampered with or is not valid according to the SAML spec.</exception>
         public static bool IsSignedByAny(
             this XmlElement xmlElement, 
             IEnumerable<SecurityKeyIdentifierClause> signingKeys,
-            bool validateCertificate)
+            bool validateCertificate,
+            string minimumSigningAlgorithm)
         {
             if (xmlElement == null)
             {
@@ -259,7 +243,7 @@ namespace Kentor.AuthServices
             }
 
             signedXml.LoadXml(signatureElement);
-            ValidateSignedInfo(signedXml, xmlElement);
+            ValidateSignedInfo(signedXml, xmlElement, minimumSigningAlgorithm);
             VerifySignature(signingKeys, signedXml, signatureElement, validateCertificate);
 
             return true;
@@ -389,14 +373,34 @@ namespace Kentor.AuthServices
             SignedXml.XmlDsigExcC14NWithCommentsTransformUrl
             };
 
-        private static void ValidateSignedInfo(SignedXml signedXml, XmlElement xmlElement)
+        private static void ValidateSignedInfo(
+            SignedXml signedXml,
+            XmlElement xmlElement,
+            string minimumSigningAlgorithm)
         {
-            if(signedXml.SignedInfo.References.Count == 0)
+            var signatureMethod = signedXml.SignedInfo.SignatureMethod;
+            if (!signingAlgorithms.SkipWhile(a => a != minimumSigningAlgorithm)
+                .Contains(signatureMethod))
+            {
+                throw new InvalidSignatureException(
+                    "The signing algorithm " + signatureMethod +
+                    " is weaker than the minimum accepted " + minimumSigningAlgorithm + ".");
+            }
+
+            ValidateReference(signedXml, xmlElement, GetCorrespondingDigestAlgorithm(minimumSigningAlgorithm));
+        }
+
+        private static void ValidateReference(
+            SignedXml signedXml,
+            XmlElement xmlElement,
+            string mininumDigestAlgorithm)
+        {
+            if (signedXml.SignedInfo.References.Count == 0)
             {
                 throw new InvalidSignatureException("No reference found in Xml signature, it doesn't validate the Xml data.");
             }
 
-            if(signedXml.SignedInfo.References.Count != 1)
+            if (signedXml.SignedInfo.References.Count != 1)
             {
                 throw new InvalidSignatureException("Multiple references for Xml signatures are not allowed.");
             }
@@ -405,8 +409,8 @@ namespace Kentor.AuthServices
             var id = reference.Uri.Substring(1);
 
             var idElement = signedXml.GetIdElement(xmlElement.OwnerDocument, id);
-            
-            if(idElement != xmlElement)
+
+            if (idElement != xmlElement)
             {
                 throw new InvalidSignatureException("Incorrect reference on Xml signature. The reference must be to the root element of the element containing the signature.");
             }
@@ -418,6 +422,13 @@ namespace Kentor.AuthServices
                     throw new InvalidSignatureException(
                         "Transform \"" + transform.Algorithm + "\" found in Xml signature SHOULD NOT be used with SAML2.");
                 }
+            }
+
+            if(!digestAlgorithms.SkipWhile(a => a != mininumDigestAlgorithm)
+                .Contains(reference.DigestMethod))
+            {
+                throw new InvalidSignatureException("The digest method " + reference.DigestMethod
+                    + " is weaker than the minimum accepted " + mininumDigestAlgorithm + ".");
             }
         }
 
@@ -542,6 +553,7 @@ namespace Kentor.AuthServices
             typeof(SignedXml).GetFields()
             .Where(f => f.Name.StartsWith("XmlDsigRSASHA", StringComparison.Ordinal))
             .Select(f => (string)f.GetRawConstantValue())
+            .OrderBy(f => f)
             .ToList();
 
         internal static string GetFullSigningAlgorithmName(string shortName)
@@ -569,6 +581,7 @@ namespace Kentor.AuthServices
             typeof(SignedXml).GetFields()
             .Where(f => f.Name.StartsWith("XmlDsigSHA", StringComparison.Ordinal))
             .Select(f => (string)f.GetRawConstantValue())
+            .OrderBy(f => f)
             .ToList();
 
         internal static string GetCorrespondingDigestAlgorithm(string signingAlgorithm)

@@ -452,9 +452,9 @@ namespace Kentor.AuthServices.Saml2P
         {
             var idpKeys = options.IdentityProviders[Issuer].SigningKeys;
 
-            if(!xmlElement.IsSignedByAny(idpKeys, options.SPOptions.ValidateCertificates)
+            if(!xmlElement.IsSignedByAny(idpKeys, options.SPOptions.ValidateCertificates, SignedXml.XmlDsigRSASHA1Url)
                 && GetAllAssertionElementNodes(options)
-                .Any(a => !a.IsSignedByAny(idpKeys, options.SPOptions.ValidateCertificates)))
+                .Any(a => !a.IsSignedByAny(idpKeys, options.SPOptions.ValidateCertificates, SignedXml.XmlDsigRSASHA1Url)))
             {
                 throw new Saml2ResponseFailedValidationException("The SAML Response is not signed and contains unsigned Assertions. Response cannot be trusted.");
             }

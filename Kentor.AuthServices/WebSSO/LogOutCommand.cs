@@ -8,6 +8,7 @@ using Kentor.AuthServices.Exceptions;
 using System.Globalization;
 using System.Configuration;
 using System.Linq;
+using System.Security.Cryptography.Xml;
 
 namespace Kentor.AuthServices.WebSso
 {
@@ -120,7 +121,10 @@ namespace Kentor.AuthServices.WebSso
                 }
                 var idp = options.IdentityProviders[new EntityId(issuer)];
 
-                if (!unbindResult.Data.IsSignedByAny(idp.SigningKeys, options.SPOptions.ValidateCertificates))
+                if (!unbindResult.Data.IsSignedByAny(
+                    idp.SigningKeys,
+                    options.SPOptions.ValidateCertificates,
+                    SignedXml.XmlDsigRSASHA1Url))
                 {
                     throw new UnsuccessfulSamlOperationException(string.Format(CultureInfo.InvariantCulture,
                         "Received a {0} from {1} that cannot be processed because it is not signed.",
