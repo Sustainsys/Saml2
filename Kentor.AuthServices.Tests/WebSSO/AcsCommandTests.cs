@@ -19,6 +19,7 @@ using Kentor.AuthServices.Exceptions;
 using System.IdentityModel.Metadata;
 using System.IdentityModel.Tokens;
 using Kentor.AuthServices.Tests.WebSSO;
+using System.Security.Cryptography.Xml;
 
 namespace Kentor.AuthServices.Tests.WebSso
 {

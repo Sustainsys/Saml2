@@ -1395,6 +1395,38 @@ namespace Kentor.AuthServices.Tests.Saml2P
         }
 
         [TestMethod]
+        public void Saml2Response_GetClaims_ThrowsOnWeakSigningAlgoritm()
+        {
+            var idp = Options.FromConfiguration.IdentityProviders.Default;
+
+            var responseXML =
+            @"<?xml version=""1.0"" encoding=""UTF-8""?>
+            <saml2p:Response xmlns:saml2p=""urn:oasis:names:tc:SAML:2.0:protocol""
+            xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
+            ID = """ + MethodBase.GetCurrentMethod().Name + @""" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z"">
+                <saml2:Issuer>https://idp.example.com</saml2:Issuer>
+                <saml2p:Status>
+                    <saml2p:StatusCode Value=""urn:oasis:names:tc:SAML:2.0:status:Requester"" />
+                </saml2p:Status>
+            </saml2p:Response>";
+
+            responseXML = SignedXmlHelper.SignXml(responseXML);
+
+            var response = Saml2Response.Read(responseXML, null);
+
+            var options = StubFactory.CreateOptions();
+            options.SPOptions.MinIncomingSigningAlgorithm = SignedXml.XmlDsigRSASHA512Url;
+
+            Action a = () =>
+            {
+                response.GetClaims(options);
+            };
+
+            a.ShouldThrow<InvalidSignatureException>()
+                .WithMessage("*rsa-sha256*weak*rsa-sha512*");
+        }
+
+        [TestMethod]
         public void Saml2Response_GetClaims_ThrowsOnReplayAssertionId()
         {
             var response =

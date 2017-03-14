@@ -379,7 +379,7 @@ namespace Kentor.AuthServices
             string minimumSigningAlgorithm)
         {
             var signatureMethod = signedXml.SignedInfo.SignatureMethod;
-            if (!signingAlgorithms.SkipWhile(a => a != minimumSigningAlgorithm)
+            if (!KnownSigningAlgorithms.SkipWhile(a => a != minimumSigningAlgorithm)
                 .Contains(signatureMethod))
             {
                 throw new InvalidSignatureException(
@@ -549,7 +549,7 @@ namespace Kentor.AuthServices
         /// access to new algorithms if the hosting application targets a
         /// later version.
         /// </summary>
-        private static readonly IEnumerable<string> signingAlgorithms =
+        internal static readonly IEnumerable<string> KnownSigningAlgorithms =
             typeof(SignedXml).GetFields()
             .Where(f => f.Name.StartsWith("XmlDsigRSASHA", StringComparison.Ordinal))
             .Select(f => (string)f.GetRawConstantValue())
@@ -560,7 +560,7 @@ namespace Kentor.AuthServices
         {
             return string.IsNullOrEmpty(shortName) ?
                 GetDefaultSigningAlgorithmName()
-                : signingAlgorithms.Single(
+                : KnownSigningAlgorithms.Single(
                 a => a.EndsWith(shortName, StringComparison.OrdinalIgnoreCase));
         }
 
@@ -570,7 +570,7 @@ namespace Kentor.AuthServices
         internal static string GetDefaultSigningAlgorithmName()
         {
             var rsaSha256Name = "http://www.w3.org/2001/04/xmldsig-more#rsa-sha256";
-            if (signingAlgorithms.Contains(rsaSha256Name))
+            if (KnownSigningAlgorithms.Contains(rsaSha256Name))
             {
                 return rsaSha256Name;
             }
