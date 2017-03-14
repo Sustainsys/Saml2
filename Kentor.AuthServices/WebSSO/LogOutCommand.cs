@@ -124,7 +124,7 @@ namespace Kentor.AuthServices.WebSso
                 if (!unbindResult.Data.IsSignedByAny(
                     idp.SigningKeys,
                     options.SPOptions.ValidateCertificates,
-                    SignedXml.XmlDsigRSASHA1Url))
+                    options.SPOptions.MinIncomingSigningAlgorithm))
                 {
                     throw new UnsuccessfulSamlOperationException(string.Format(CultureInfo.InvariantCulture,
                         "Received a {0} from {1} that cannot be processed because it is not signed.",
