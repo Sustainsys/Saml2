@@ -16,6 +16,7 @@ using System.Threading.Tasks;
 using System.Net;
 using System.Collections.Concurrent;
 using System.Security.Claims;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Kentor.AuthServices
 {
@@ -472,10 +473,24 @@ namespace Kentor.AuthServices
 
                 if (LoadMetadata)
                 {
-                    Task.Delay(MetadataRefreshScheduler.GetDelay(value.Value))
-                        .ContinueWith((_) => DoLoadMetadata());
+                    ScheduleMetadataRefresh();
                 }
             }
+        }
+
+        // Exclude because we don't want to wait for a GC run during unit test run
+        // to trigger the case when the Idp has been garbaged collected.
+        [ExcludeFromCodeCoverage]
+        private void ScheduleMetadataRefresh()
+        {
+            // Use a weak reference to allow garbage collector to collect any
+            // non-referenced IdentityProvider objects without the timer being
+            // the thing that keeps it alive.
+            var weakThis = new WeakReference(this);
+
+            Task.Delay(MetadataRefreshScheduler.GetDelay(MetadataValidUntil.Value))
+                .ContinueWith((_) =>
+                (weakThis.Target as IdentityProvider)?.DoLoadMetadata());
         }
 
         /// <summary>
