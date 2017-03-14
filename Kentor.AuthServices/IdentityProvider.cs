@@ -33,7 +33,7 @@ namespace Kentor.AuthServices
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "sp")]
         public IdentityProvider(EntityId entityId, SPOptions spOptions)
         {
-            if(spOptions == null)
+            if (spOptions == null)
             {
                 throw new ArgumentNullException(nameof(spOptions));
             }
@@ -65,9 +65,9 @@ namespace Kentor.AuthServices
             }
 
             OutboundSigningAlgorithm = string.IsNullOrEmpty(config.OutboundSigningAlgorithm) ?
-                spOptions.OutboundSigningAlgorithm : 
+                spOptions.OutboundSigningAlgorithm :
                 XmlHelpers.GetFullSigningAlgorithmName(config.OutboundSigningAlgorithm);
-                
+
             foreach (var ars in config.ArtifactResolutionServices)
             {
                 ArtifactResolutionServiceUrls[ars.Index] = ars.Location;
@@ -118,18 +118,15 @@ namespace Kentor.AuthServices
             set
             {
                 loadMetadata = value;
-                if (loadMetadata)
+                try
                 {
-                    try
-                    {
-                        DoLoadMetadata();
-                        Validate();
-                    }
-                    catch (WebException)
-                    {
-                        // Ignore if metadata load failed, an automatic
-                        // retry has been scheduled.
-                    }
+                    DoLoadMetadata();
+                    Validate();
+                }
+                catch (WebException)
+                {
+                    // Ignore if metadata load failed, an automatic
+                    // retry has been scheduled.
                 }
             }
         }
@@ -362,20 +359,23 @@ namespace Kentor.AuthServices
 
         private void DoLoadMetadata()
         {
-            lock (metadataLoadLock)
+            if (LoadMetadata)
             {
-                try
+                lock (metadataLoadLock)
                 {
-                    var metadata = MetadataLoader.LoadIdp(
-                        MetadataLocation,
-                        spOptions.Compatibility.UnpackEntitiesDescriptorInIdentityProviderMetadata);
+                    try
+                    {
+                        var metadata = MetadataLoader.LoadIdp(
+                            MetadataLocation,
+                            spOptions.Compatibility.UnpackEntitiesDescriptorInIdentityProviderMetadata);
 
-                    ReadMetadata(metadata);
-                }
-                catch (WebException)
-                {
-                    MetadataValidUntil = DateTime.MinValue;
-                    throw;
+                        ReadMetadata(metadata);
+                    }
+                    catch (WebException)
+                    {
+                        MetadataValidUntil = DateTime.MinValue;
+                        throw;
+                    }
                 }
             }
         }
