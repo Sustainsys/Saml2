@@ -16,6 +16,7 @@ using System.Threading.Tasks;
 using System.Net;
 using System.Collections.Concurrent;
 using System.Security.Claims;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Kentor.AuthServices
 {
@@ -33,7 +34,7 @@ namespace Kentor.AuthServices
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "sp")]
         public IdentityProvider(EntityId entityId, SPOptions spOptions)
         {
-            if(spOptions == null)
+            if (spOptions == null)
             {
                 throw new ArgumentNullException(nameof(spOptions));
             }
@@ -65,9 +66,9 @@ namespace Kentor.AuthServices
             }
 
             OutboundSigningAlgorithm = string.IsNullOrEmpty(config.OutboundSigningAlgorithm) ?
-                spOptions.OutboundSigningAlgorithm : 
+                spOptions.OutboundSigningAlgorithm :
                 XmlHelpers.GetFullSigningAlgorithmName(config.OutboundSigningAlgorithm);
-                
+
             foreach (var ars in config.ArtifactResolutionServices)
             {
                 ArtifactResolutionServiceUrls[ars.Index] = ars.Location;
@@ -118,18 +119,15 @@ namespace Kentor.AuthServices
             set
             {
                 loadMetadata = value;
-                if (loadMetadata)
+                try
                 {
-                    try
-                    {
-                        DoLoadMetadata();
-                        Validate();
-                    }
-                    catch (WebException)
-                    {
-                        // Ignore if metadata load failed, an automatic
-                        // retry has been scheduled.
-                    }
+                    DoLoadMetadata();
+                    Validate();
+                }
+                catch (WebException)
+                {
+                    // Ignore if metadata load failed, an automatic
+                    // retry has been scheduled.
                 }
             }
         }
@@ -362,20 +360,23 @@ namespace Kentor.AuthServices
 
         private void DoLoadMetadata()
         {
-            lock (metadataLoadLock)
+            if (LoadMetadata)
             {
-                try
+                lock (metadataLoadLock)
                 {
-                    var metadata = MetadataLoader.LoadIdp(
-                        MetadataLocation,
-                        spOptions.Compatibility.UnpackEntitiesDescriptorInIdentityProviderMetadata);
+                    try
+                    {
+                        var metadata = MetadataLoader.LoadIdp(
+                            MetadataLocation,
+                            spOptions.Compatibility.UnpackEntitiesDescriptorInIdentityProviderMetadata);
 
-                    ReadMetadata(metadata);
-                }
-                catch (WebException)
-                {
-                    MetadataValidUntil = DateTime.MinValue;
-                    throw;
+                        ReadMetadata(metadata);
+                    }
+                    catch (WebException)
+                    {
+                        MetadataValidUntil = DateTime.MinValue;
+                        throw;
+                    }
                 }
             }
         }
@@ -472,10 +473,24 @@ namespace Kentor.AuthServices
 
                 if (LoadMetadata)
                 {
-                    Task.Delay(MetadataRefreshScheduler.GetDelay(value.Value))
-                        .ContinueWith((_) => DoLoadMetadata());
+                    ScheduleMetadataRefresh();
                 }
             }
+        }
+
+        // Exclude because we don't want to wait for a GC run during unit test run
+        // to trigger the case when the Idp has been garbaged collected.
+        [ExcludeFromCodeCoverage]
+        private void ScheduleMetadataRefresh()
+        {
+            // Use a weak reference to allow garbage collector to collect any
+            // non-referenced IdentityProvider objects without the timer being
+            // the thing that keeps it alive.
+            var weakThis = new WeakReference(this);
+
+            Task.Delay(MetadataRefreshScheduler.GetDelay(MetadataValidUntil.Value))
+                .ContinueWith((_) =>
+                (weakThis.Target as IdentityProvider)?.DoLoadMetadata());
         }
 
         /// <summary>
