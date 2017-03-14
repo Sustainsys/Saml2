@@ -689,6 +689,46 @@ namespace Kentor.AuthServices.Tests.Owin
         }
 
         [TestMethod]
+        public async Task KentorAuthServicesAuthenticationMiddleware_UsesReturnUrl_WhenActive()
+        {
+            var options = new KentorAuthServicesAuthenticationOptions(true);
+            options.AuthenticationMode = AuthenticationMode.Active;
+            var middleware = new KentorAuthServicesAuthenticationMiddleware(
+                new StubOwinMiddleware(401,
+                    new AuthenticationResponseChallenge(
+                        new string[] { "KentorAuthServices" }, new AuthenticationProperties() ) ),
+                CreateAppBuilder(),
+                options);
+
+            var context = OwinTestHelpers.CreateOwinContext();
+            context.Request.Host = new HostString("host3");
+            context.Request.Path = new PathString("/path3");
+            context.Request.QueryString = new QueryString("p1=value1");
+
+            await middleware.Invoke(context);
+            var storedAuthnData = ExtractRequestState(options.DataProtector, context);
+            storedAuthnData.ReturnUrl.Should().Be( "http://host3/path3?p1=value1" );
+        }
+
+        [TestMethod]
+        public async Task KentorAuthServicesAuthenticationMiddleware_UsesChallenge_WhenPassive()
+        {
+            var options = new KentorAuthServicesAuthenticationOptions(true);
+            options.AuthenticationMode = AuthenticationMode.Passive;
+            var middleware = new KentorAuthServicesAuthenticationMiddleware(
+                new StubOwinMiddleware(401,
+                    new AuthenticationResponseChallenge(
+                        new string[] { "KentorAuthServices" }, new AuthenticationProperties() ) ),
+                CreateAppBuilder(),
+                options);
+
+            var context = OwinTestHelpers.CreateOwinContext();
+            await middleware.Invoke(context);
+            var storedAuthnData = ExtractRequestState(options.DataProtector, context);
+            storedAuthnData.ReturnUrl.Should().BeNull();
+        }
+
+        [TestMethod]
         public async Task KentorAuthServicesAuthenticationMiddleware_AcsUsesCommandResultLocation()
         {
             // For Owin middleware, the redirect uri is part of the
