@@ -221,6 +221,10 @@ namespace Kentor.AuthServices
                 ReloadMetadataIfRequired();
                 return singleLogoutServiceResponseUrl ?? SingleLogoutServiceUrl;
             }
+            set
+            {
+                singleLogoutServiceResponseUrl = value;
+            }
         }
 
         private Saml2BindingType singleLogoutServiceBinding;

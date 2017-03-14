@@ -967,5 +967,16 @@ namespace Kentor.AuthServices.Tests
                 .ShouldThrow<ArgumentNullException>()
                 .And.Message.Should().Be("Value cannot be null.\r\nParameter name: user");
         }
+
+        [TestMethod]
+        public void IdentityProvider_SingleLogoutServiceResponseUrl()
+        {
+            var subject = new IdentityProvider(new EntityId("http://example.com"), StubFactory.CreateSPOptions());
+            var url = new Uri("http://some.url.example.com/logout-response");
+
+            subject.SingleLogoutServiceResponseUrl = url;
+
+            subject.SingleLogoutServiceResponseUrl.OriginalString.Should().Be(url.OriginalString);
+        }
     }
 }
