@@ -40,7 +40,7 @@ namespace Kentor.AuthServices
 
             EntityId = entityId;
             this.spOptions = spOptions;
-            OutboundSigningAlgorithm = spOptions.SigningAlgorithm;
+            OutboundSigningAlgorithm = spOptions.OutboundSigningAlgorithm;
         }
 
         readonly SPOptions spOptions;
@@ -65,7 +65,7 @@ namespace Kentor.AuthServices
             }
 
             OutboundSigningAlgorithm = string.IsNullOrEmpty(config.OutboundSigningAlgorithm) ?
-                spOptions.SigningAlgorithm : 
+                spOptions.OutboundSigningAlgorithm : 
                 XmlHelpers.GetFullSigningAlgorithmName(config.OutboundSigningAlgorithm);
                 
             foreach (var ars in config.ArtifactResolutionServices)

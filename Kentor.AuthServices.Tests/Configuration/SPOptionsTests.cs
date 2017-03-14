@@ -79,7 +79,7 @@ namespace Kentor.AuthServices.Tests.Configuration
             subject.NameIdPolicy.Format.Should().Be(config.NameIdPolicyElement.Format);
             subject.Organization.Should().Be(config.organization);
             subject.AuthenticateRequestSigningBehavior.Should().Be(config.AuthenticateRequestSigningBehavior);
-            subject.SigningAlgorithm.Should().Be(SignedXml.XmlDsigRSASHA256Url);
+            subject.OutboundSigningAlgorithm.Should().Be(SignedXml.XmlDsigRSASHA256Url);
             subject.MinIncomingSigningAlgorithm.Should().Be(SignedXml.XmlDsigRSASHA1Url);
             subject.RequestedAuthnContext.ClassRef.OriginalString.Should().Be("urn:oasis:names:tc:SAML:2.0:ac:classes:PasswordProtectedTransport");
             subject.RequestedAuthnContext.Comparison.Should().Be(AuthnContextComparisonType.Minimum);
@@ -156,7 +156,7 @@ namespace Kentor.AuthServices.Tests.Configuration
         {
             var subject = new SPOptions();
 
-            subject.SigningAlgorithm.Should().Be(SignedXml.XmlDsigRSASHA256Url);
+            subject.OutboundSigningAlgorithm.Should().Be(SignedXml.XmlDsigRSASHA256Url);
         }
 
         [TestMethod]
