@@ -376,18 +376,31 @@ namespace Kentor.AuthServices
         private static void ValidateSignedInfo(
             SignedXml signedXml,
             XmlElement xmlElement,
-            string minimumSigningAlgorithm)
+            string minIncomingSignatureAlgorithm)
         {
             var signatureMethod = signedXml.SignedInfo.SignatureMethod;
-            if (!KnownSigningAlgorithms.SkipWhile(a => a != minimumSigningAlgorithm)
+            ValidateSignatureMethodStrength(minIncomingSignatureAlgorithm, signatureMethod);
+
+            ValidateReference(signedXml, xmlElement, GetCorrespondingDigestAlgorithm(minIncomingSignatureAlgorithm));
+        }
+
+        /// <summary>
+        /// Check if the signature method is at least as strong as the mininum one.
+        /// </summary>
+        /// <param name="minIncomingSignatureAlgorithm"></param>
+        /// <param name="signatureMethod"></param>
+        /// <exception cref="InvalidSignatureException">If the signaturemethod is too weak.</exception>
+        public static void ValidateSignatureMethodStrength(
+            string minIncomingSignatureAlgorithm,
+            string signatureMethod)
+        {
+            if (!KnownSigningAlgorithms.SkipWhile(a => a != minIncomingSignatureAlgorithm)
                 .Contains(signatureMethod))
             {
                 throw new InvalidSignatureException(
                     "The signing algorithm " + signatureMethod +
-                    " is weaker than the minimum accepted " + minimumSigningAlgorithm + ".");
+                    " is weaker than the minimum accepted " + minIncomingSignatureAlgorithm + ".");
             }
-
-            ValidateReference(signedXml, xmlElement, GetCorrespondingDigestAlgorithm(minimumSigningAlgorithm));
         }
 
         private static void ValidateReference(

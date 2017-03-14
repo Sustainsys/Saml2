@@ -116,12 +116,12 @@ namespace Kentor.AuthServices.WebSso
                 throw new InvalidSignatureException(string.Format(CultureInfo.InvariantCulture, "Cannot verify signature of message from unknown sender {0}.", issuer));
             }
 
-            CheckSignature(request, idp);
+            CheckSignature(request, idp, options);
 
             return TrustLevel.Signature;
         }
 
-        private static void CheckSignature(HttpRequestData request, IdentityProvider idp)
+        private static void CheckSignature(HttpRequestData request, IdentityProvider idp, IOptions options)
         {
             // Can't use the query string params as found in HttpReqeustData
             // because they are already unescaped and we need the exact format
@@ -149,6 +149,8 @@ namespace Kentor.AuthServices.WebSso
             var signedString = string.Format(CultureInfo.InvariantCulture, "{0}{1}&SigAlg={2}", msgParam, relayStateParam, rawQueryStringParams["SigAlg"]);
 
             var sigAlg = request.QueryString["SigAlg"].Single();
+
+            XmlHelpers.ValidateSignatureMethodStrength(options.SPOptions.MinIncomingSigningAlgorithm, sigAlg);
 
             var signatureDescription = (SignatureDescription) CryptoConfig.CreateFromName(sigAlg);
 
