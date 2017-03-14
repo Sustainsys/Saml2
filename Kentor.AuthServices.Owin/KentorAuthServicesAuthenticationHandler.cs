@@ -71,10 +71,22 @@ namespace Kentor.AuthServices.Owin
                     // Don't serialize the RedirectUri twice.
                     challenge.Properties.RedirectUri = null;
 
+                    var httpRequestData = await Context.ToHttpRequestData(Options.DataProtector.Unprotect);
+                    if (httpRequestData.StoredRequestState != null)
+                    {
+                        foreach (var item in httpRequestData.StoredRequestState.RelayData)
+                        {
+                            if (!challenge.Properties.Dictionary.ContainsKey(item.Key))
+                            {
+                                challenge.Properties.Dictionary.Add(item.Key, item.Value);
+                            }
+                        }
+                    }
+
                     var result = SignInCommand.Run(
                         idp,
                         redirectUri,
-                        await Context.ToHttpRequestData(Options.DataProtector.Unprotect),
+                        httpRequestData,
                         Options,
                         challenge.Properties.Dictionary);
 
