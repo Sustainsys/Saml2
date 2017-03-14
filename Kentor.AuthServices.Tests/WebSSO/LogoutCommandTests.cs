@@ -518,6 +518,44 @@ namespace Kentor.AuthServices.Tests.WebSSO
                 .Keys.Should().Contain("SAMLResponse", "if the request was properly detected a response should be generated");
         }
 
+        [TestMethod]
+        public void LogoutCommand_Run_ChecksSignatureAlgorithmStrength()
+        {
+            var request = new Saml2LogoutRequest()
+            {
+                DestinationUrl = new Uri("http://sp.example.com/path/AuthServices/logout"),
+                Issuer = new EntityId("https://idp.example.com"),
+                SigningCertificate = SignedXmlHelper.TestCert,
+                SigningAlgorithm = SignedXml.XmlDsigRSASHA256Url, // Ignored
+                NameId = new Saml2NameIdentifier("NameId"),
+                SessionIndex = "SessionID"
+            };
+
+            var xml = XmlHelpers.FromString(request.ToXml());
+            xml.Sign(SignedXmlHelper.TestCert);
+
+            var requestData = Convert.ToBase64String(Encoding.UTF8.GetBytes(xml.OuterXml));
+
+            var httpRequest = new HttpRequestData(
+                "POST",
+                new Uri("http://something"),
+                "/path",
+                new KeyValuePair<string, string[]>[]
+                {
+                    new KeyValuePair<string, string[]>("SAMLRequest", new[] { requestData })
+                },
+                null,
+                null);
+
+            var options = StubFactory.CreateOptions();
+            options.SPOptions.MinIncomingSigningAlgorithm = SignedXml.XmlDsigRSASHA384Url;
+            options.SPOptions.ServiceCertificates.Add(SignedXmlHelper.TestCert);
+
+            CommandFactory.GetCommand(CommandFactory.LogoutCommandName)
+                .Invoking(c => c.Run(httpRequest, options))
+                .ShouldThrow<InvalidSignatureException>()
+                .WithMessage("*weak*");
+        }
 
         [TestMethod]
         public void LogoutCommand_Run_ThrowsOnSignatureInLogoutRequestReceivedThroughPostBindingIfCertificateIsntValid_WhenCertificateValidationIsConfigured()

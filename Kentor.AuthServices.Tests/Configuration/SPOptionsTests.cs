@@ -29,7 +29,6 @@ namespace Kentor.AuthServices.Tests.Configuration
             }
         }
 
-
         const string entityId = "http://localhost/idp";
         const string otherEntityId = "http://something.else.com";
 
@@ -80,7 +79,8 @@ namespace Kentor.AuthServices.Tests.Configuration
             subject.NameIdPolicy.Format.Should().Be(config.NameIdPolicyElement.Format);
             subject.Organization.Should().Be(config.organization);
             subject.AuthenticateRequestSigningBehavior.Should().Be(config.AuthenticateRequestSigningBehavior);
-            subject.SigningAlgorithm.Should().Be(SignedXml.XmlDsigRSASHA256Url);
+            subject.OutboundSigningAlgorithm.Should().Be(SignedXml.XmlDsigRSASHA256Url);
+            subject.MinIncomingSigningAlgorithm.Should().Be(SignedXml.XmlDsigRSASHA1Url);
             subject.RequestedAuthnContext.ClassRef.OriginalString.Should().Be("urn:oasis:names:tc:SAML:2.0:ac:classes:PasswordProtectedTransport");
             subject.RequestedAuthnContext.Comparison.Should().Be(AuthnContextComparisonType.Minimum);
             subject.Compatibility.UnpackEntitiesDescriptorInIdentityProviderMetadata.Should().BeTrue();
@@ -156,7 +156,25 @@ namespace Kentor.AuthServices.Tests.Configuration
         {
             var subject = new SPOptions();
 
-            subject.SigningAlgorithm.Should().Be(SignedXml.XmlDsigRSASHA256Url);
+            subject.OutboundSigningAlgorithm.Should().Be(SignedXml.XmlDsigRSASHA256Url);
+        }
+
+        [TestMethod]
+        public void SPOptions_MinIncomingSigningAlgorithm_DefaultValue()
+        {
+            var subject = new SPOptions();
+
+            subject.MinIncomingSigningAlgorithm.Should().Be(SignedXml.XmlDsigRSASHA256Url);
+        }
+
+        [TestMethod]
+        public void SPOptions_MininumSigningAlgorithm_ThrowsOnUnknownAlgorithm()
+        {
+            var subject = new SPOptions();
+
+            subject.Invoking(s => s.MinIncomingSigningAlgorithm = "InvalidName")
+                .ShouldThrow<ArgumentException>()
+                .WithMessage("*unknown*not supported*");
         }
 
         [TestMethod]

@@ -95,7 +95,8 @@ Root element of the config section.
 * [`authenticateRequestSigningBehavior`](#authenticaterequestsigningbehavior-attribute)
 * [`validateCertificates`](#validatecertificates-attribute)
 * [`publicOrigin`](#publicorigin-attribute)
-* [`signingAlgorithm`](#signingalgorithm-attribute)
+* [`outboundSigningAlgorithm`](#signingalgorithm-attribute)
+* [`minIncomingSigningAlgorithm`](#minincomingsigningalgorithm-attribute)
 
 ####Elements
 * [`<nameIdPolicy>`](#nameidpolicy-element)
@@ -178,7 +179,7 @@ metadata is used in communication with the Idp.
 If you need to set this value on a per-request basis, provide a GetPublicOrigin
 Notification function instead.
 
-####`signingAlgorithm` Attribute
+####`outboundSigningAlgorithm` Attribute
 *Optional Attribute of the [`<kentor.authServices>`](#kentor-authservices-section) element.*
 
 By default AuthServices uses SHA256 signatures if running on .NET 4.6.2 or later and
@@ -190,7 +191,24 @@ otherwise SHA1 signatures. Set this to set the default signing algorithm for any
 * SHA384
 * SHA512
 
-The algorithm can be overridden for each IdentityProvider too.
+The full url identifying the algorithm can also be provided. The algorithm can be overridden for 
+each IdentityProvider too.
+
+####`minIncomingSigningAlgorithm` Attribute
+*Optional Attribute of the [`<kentor.authServices>`](#kentor-authservices-section) element.*
+
+The minimum strength required on signatures on incoming messages. Messages with a too weak
+signing algorithm will be rejected.
+
+By default AuthServices requires SHA256 signatures if running on .NET 4.6.2 or later and
+otherwise SHA1 signatures. Possible values:
+
+* SHA1
+* SHA256
+* SHA384
+* SHA512
+
+The full url identifying the algorithm can also be provided.
 
 ###`<nameIdPolicy>` Element
 *Optional child element of the [`<kentor.authServices>`](#kentor-authservices-section) element.*

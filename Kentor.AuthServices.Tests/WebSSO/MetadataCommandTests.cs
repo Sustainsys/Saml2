@@ -37,7 +37,7 @@ namespace Kentor.AuthServices.Tests.WebSso
             var options = StubFactory.CreateOptions();
             options.SPOptions.DiscoveryServiceUrl = new Uri("http://ds.example.com");
             options.SPOptions.AuthenticateRequestSigningBehavior = SigningBehavior.Always;
-            options.SPOptions.SigningAlgorithm = SignedXml.XmlDsigRSASHA384Url;
+            options.SPOptions.OutboundSigningAlgorithm = SignedXml.XmlDsigRSASHA384Url;
             options.SPOptions.ServiceCertificates.Add(new ServiceCertificate()
             {
                 Certificate = SignedXmlHelper.TestCertSignOnly,

@@ -270,6 +270,25 @@ namespace Kentor.AuthServices.Tests.WebSso
         }
 
         [TestMethod]
+        public void Saml2RedirectBinding_Unbind_ThrowsOnWeakSignatureAlgorithm()
+        {
+            var url = CreateAndBindMessageWithSignature().Location;
+
+            var request = new HttpRequestData("GET", url);
+
+            var options = StubFactory.CreateOptions();
+            options.SPOptions.MinIncomingSigningAlgorithm = SignedXml.XmlDsigRSASHA384Url;
+
+            // Check that the created url indeed is signed with SHA256.
+            url.OriginalString.Should().Contain("sha256");
+
+            var actual = Saml2Binding.Get(request)
+                .Invoking(b => b.Unbind(request, options))
+                .ShouldThrow<InvalidSignatureException>()
+                .WithMessage("*weak*");
+        }
+
+        [TestMethod]
         public void Saml2RedirectBinding_Unbind_ThrowsOnSignatureWithTamperedData_SAMLRequest()
         {
             var url = CreateAndBindMessageWithSignature(messageName: "SAMLRequest").Location.ToString();
