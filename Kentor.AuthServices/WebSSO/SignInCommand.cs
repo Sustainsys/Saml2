@@ -5,6 +5,7 @@ using System.Globalization;
 using System.IdentityModel.Metadata;
 using System.Linq;
 using System.Net;
+using Kentor.AuthServices.Internal;
 
 namespace Kentor.AuthServices.WebSso
 {
@@ -40,8 +41,7 @@ namespace Kentor.AuthServices.WebSso
 
             var returnUrl = request.QueryString["ReturnUrl"].FirstOrDefault();
             options.SPOptions.Logger.WriteVerbose("Extracted ReturnUrl " + returnUrl + " from query string");
-            Uri parsedUri;
-            if (returnUrl != null && !Uri.TryCreate(returnUrl, UriKind.Relative, out parsedUri))
+            if (returnUrl != null && !PathHelper.IsLocalWebUrl(returnUrl))
             {
                 if (!options.Notifications.ValidateAbsoluteReturnUrl(returnUrl))
                 {

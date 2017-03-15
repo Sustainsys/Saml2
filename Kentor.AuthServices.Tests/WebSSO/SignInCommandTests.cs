@@ -59,6 +59,18 @@ namespace Kentor.AuthServices.Tests.WebSso
         }
 
         [TestMethod]
+        public void SignInCommand_Run_ChecksForLocalReturnUrlProtocolRelative()
+        {
+            var defaultDestination = Options.FromConfiguration.IdentityProviders.Default.SingleSignOnServiceUrl;
+            var absoluteUri = HttpUtility.UrlEncode("//google.com");
+            var httpRequest = new HttpRequestData("GET", new Uri($"http://localhost/signin?ReturnUrl={absoluteUri}"));
+
+            Action a = () => new SignInCommand().Run(httpRequest, Options.FromConfiguration);
+
+            a.ShouldThrow<InvalidOperationException>().WithMessage("Return Url must be a relative Url.");
+        }
+
+        [TestMethod]
         public void SignInCommand_Run_Calls_NotificationForAbsoluteUrl()
         {
             var defaultDestination = Options.FromConfiguration.IdentityProviders.Default.SingleSignOnServiceUrl;
@@ -83,7 +95,7 @@ namespace Kentor.AuthServices.Tests.WebSso
         public void SignInCommand_Run_DoNotCalls_NotificationForRelativeUrl()
         {
             var defaultDestination = Options.FromConfiguration.IdentityProviders.Default.SingleSignOnServiceUrl;
-            var relativeUri = HttpUtility.UrlEncode("Secure");
+            var relativeUri = HttpUtility.UrlEncode("~/Secure");
             var httpRequest = new HttpRequestData("GET", new Uri($"http://localhost/signin?ReturnUrl={relativeUri}"));
             var validateAbsoluteReturnUrlCalled = false;
 

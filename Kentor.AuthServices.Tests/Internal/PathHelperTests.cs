@@ -67,5 +67,67 @@ namespace Kentor.AuthServices.Tests.Internal
             bool result = PathHelper.IsWebRootRelative("");
             result.Should().BeFalse();
         }
+
+        [TestMethod]
+        public void PathHelper_IsLocal_ShouldThrowOnNull()
+        {
+            Action a = () => PathHelper.IsLocalWebUrl(null);
+            a.ShouldThrow<ArgumentNullException>().And.ParamName.Should().Be("url");
+        }
+
+        [TestMethod]
+        public void PathHelper_IsLocal_ShouldAcceptRootRelative()
+        {
+            PathHelper.IsLocalWebUrl("/").Should().BeTrue();
+            PathHelper.IsLocalWebUrl("/myfolder").Should().BeTrue();
+            PathHelper.IsLocalWebUrl("/google.com").Should().BeTrue();
+        }
+
+        [TestMethod]
+        public void PathHelper_IsLocal_ShouldAcceptAppRelative()
+        {
+            PathHelper.IsLocalWebUrl("~/").Should().BeTrue();
+            PathHelper.IsLocalWebUrl("~/folder/1").Should().BeTrue();
+            PathHelper.IsLocalWebUrl("~/1.html").Should().BeTrue();
+        }
+
+        [TestMethod]
+        public void PathHelper_IsLocal_ShouldRejectAbsolute()
+        {
+            PathHelper.IsLocalWebUrl("http://google.com").Should().BeFalse();
+            PathHelper.IsLocalWebUrl("https://google.com").Should().BeFalse();
+            PathHelper.IsLocalWebUrl("httP://google.com").Should().BeFalse();
+        }
+
+        [TestMethod]
+        public void PathHelper_IsLocal_ShouldRejectProtocolRelative()
+        {
+            PathHelper.IsLocalWebUrl("//google.com").Should().BeFalse();
+            PathHelper.IsLocalWebUrl("//google").Should().BeFalse();
+        }
+
+        [TestMethod]
+        public void PathHelper_IsLocal_ShouldRejectPathRelative()
+        {
+            PathHelper.IsLocalWebUrl("./folder").Should().BeFalse();
+            PathHelper.IsLocalWebUrl("../folder").Should().BeFalse();
+            PathHelper.IsLocalWebUrl("../../folder").Should().BeFalse();
+            PathHelper.IsLocalWebUrl("file.html").Should().BeFalse();
+        }
+
+        [TestMethod]
+        public void PathHelper_IsLocal_ShouldRejectInvalidUrls()
+        {
+            PathHelper.IsLocalWebUrl(@"///google.com").Should().BeFalse();
+            PathHelper.IsLocalWebUrl(@"/\google.com").Should().BeFalse();
+            PathHelper.IsLocalWebUrl(@"/\").Should().BeFalse();
+            PathHelper.IsLocalWebUrl(@"http:/google.com").Should().BeFalse();
+            PathHelper.IsLocalWebUrl(@"http/:google.com").Should().BeFalse();
+            PathHelper.IsLocalWebUrl(@"http//:google.com").Should().BeFalse();
+            PathHelper.IsLocalWebUrl(@"http:///google.com").Should().BeFalse();
+            PathHelper.IsLocalWebUrl(@"http:\\google.com").Should().BeFalse();
+            PathHelper.IsLocalWebUrl(@"http:\\google.com\").Should().BeFalse();
+            PathHelper.IsLocalWebUrl(@"http:\\google.com/").Should().BeFalse();
+        }
     }
 }

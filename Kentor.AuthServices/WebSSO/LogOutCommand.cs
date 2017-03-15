@@ -9,6 +9,7 @@ using System.Globalization;
 using System.Configuration;
 using System.Linq;
 using System.Security.Cryptography.Xml;
+using Kentor.AuthServices.Internal;
 
 namespace Kentor.AuthServices.WebSso
 {
@@ -43,8 +44,7 @@ namespace Kentor.AuthServices.WebSso
             }
 
             var returnUrl = request.QueryString["ReturnUrl"].SingleOrDefault();
-            Uri parsedUri;
-            if (returnUrl != null && !Uri.TryCreate(returnUrl, UriKind.Relative, out parsedUri))
+            if (returnUrl != null && !PathHelper.IsLocalWebUrl(returnUrl))
             {
                 if (!options.Notifications.ValidateAbsoluteReturnUrl(returnUrl))
                 {
