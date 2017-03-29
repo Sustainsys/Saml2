@@ -416,7 +416,6 @@ namespace Kentor.AuthServices.Tests
         public void IdentityProvider_Ctor_UseMetadataLocationUrl()
         {
             var config = CreateConfig();
-            config.LoadMetadata = true;
             config.MetadataLocation = "http://localhost:13428/idpMetadataDifferentEntityId";
             config.EntityId = "some-idp";
 

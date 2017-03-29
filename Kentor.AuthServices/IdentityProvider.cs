@@ -76,7 +76,7 @@ namespace Kentor.AuthServices
 
             // If configured to load metadata, this will immediately do the load.
             this.spOptions = spOptions;
-            LoadMetadata = config.LoadMetadata;
+            LoadMetadata = config.LoadMetadata || !string.IsNullOrEmpty(config.MetadataLocation);
 
             // Validate if values are only from config. If metadata is loaded, validation
             // is done on metadata load.
