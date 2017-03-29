@@ -478,19 +478,27 @@ namespace Kentor.AuthServices
             }
         }
 
-        // Exclude because we don't want to wait for a GC run during unit test run
-        // to trigger the case when the Idp has been garbaged collected.
-        [ExcludeFromCodeCoverage]
         private void ScheduleMetadataRefresh()
         {
             // Use a weak reference to allow garbage collector to collect any
             // non-referenced IdentityProvider objects without the timer being
             // the thing that keeps it alive.
-            var weakThis = new WeakReference(this);
+            var weakThis = new WeakReference<IdentityProvider>(this);
 
             Task.Delay(MetadataRefreshScheduler.GetDelay(MetadataValidUntil.Value))
-                .ContinueWith((_) =>
-                (weakThis.Target as IdentityProvider)?.DoLoadMetadata());
+                .ContinueWith((_) => DoLoadMetadataIfTargetAlive(weakThis));
+        }
+
+        // Exclude because we don't want to wait for a GC run during unit test run
+        // to trigger the case when the Idp has been garbaged collected.
+        [ExcludeFromCodeCoverage]
+        private void DoLoadMetadataIfTargetAlive(WeakReference<IdentityProvider> target)
+        {
+            IdentityProvider idp;
+            if(target.TryGetTarget(out idp))
+            {
+                idp.DoLoadMetadata();
+            }
         }
 
         /// <summary>
