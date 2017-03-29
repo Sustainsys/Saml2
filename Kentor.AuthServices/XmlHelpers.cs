@@ -257,41 +257,39 @@ namespace Kentor.AuthServices
         {
             FixSignatureIndex(signedXml, signatureElement);
 
-            try
+            CheckSha256Support(signedXml);
+
+            foreach (var keyIdentifier in signingKeys)
             {
-                foreach(var keyIdentifier in signingKeys)
+                var key = ((AsymmetricSecurityKey)keyIdentifier.CreateKey())
+                .GetAsymmetricAlgorithm(SignedXml.XmlDsigRSASHA1Url, false);
+
+                if (signedXml.CheckSignature(key))
                 {
-                    var key = ((AsymmetricSecurityKey)keyIdentifier.CreateKey())
-                    .GetAsymmetricAlgorithm(SignedXml.XmlDsigRSASHA1Url, false);
-
-                    if(signedXml.CheckSignature(key))
-                    {
-                        ValidateCertificate(validateCertificate, keyIdentifier);
-                        return;
-                    }
+                    ValidateCertificate(validateCertificate, keyIdentifier);
+                    return;
                 }
-                var containedKey = signedXml.Signature.KeyInfo.OfType<KeyInfoX509Data>()
-                    .SingleOrDefault()?.Certificates.OfType<X509Certificate2>()
-                    .SingleOrDefault();
-
-                if (containedKey != null && signedXml.CheckSignature(containedKey, true))
-                {
-                    throw new InvalidSignatureException("The signature verified correctly with the key contained in the signature, but that key is not trusted.");
-                }
-
-                throw new InvalidSignatureException("Signature didn't verify. Have the contents been tampered with?");
             }
-            catch (CryptographicException)
+            var containedKey = signedXml.Signature.KeyInfo.OfType<KeyInfoX509Data>()
+                .SingleOrDefault()?.Certificates.OfType<X509Certificate2>()
+                .SingleOrDefault();
+
+            if (containedKey != null && signedXml.CheckSignature(containedKey, true))
             {
-                CheckSha256Support(signedXml);
-                throw;
+                throw new InvalidSignatureException("The signature verified correctly with the key contained in the signature, but that key is not trusted.");
             }
+
+            throw new InvalidSignatureException("Signature didn't verify. Have the contents been tampered with?");
         }
 
+        private static readonly Lazy<object> rsaSha256Algorithm = 
+            new Lazy<object>(() => CryptoConfig.CreateFromName(Options.RsaSha256Uri));
+
         [ExcludeFromCodeCoverage]
-        private static void CheckSha256Support( SignedXml signedXml )
+        private static void CheckSha256Support(SignedXml signedXml)
         {
-            if (signedXml.SignatureMethod == Options.RsaSha256Namespace && CryptoConfig.CreateFromName( signedXml.SignatureMethod ) == null)
+            if (signedXml.SignatureMethod == Options.RsaSha256Uri
+                && rsaSha256Algorithm.Value == null)
             {
                 throw new InvalidSignatureException("SHA256 signatures require the algorithm to be registered at the process level. Upgrade to .Net 4.6.2 or call Kentor.AuthServices.Configuration.Options.GlobalEnableSha256XmlSignatures() on startup to register.");
             }

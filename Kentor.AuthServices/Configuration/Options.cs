@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Security.Cryptography;
 
 namespace Kentor.AuthServices.Configuration
@@ -69,7 +71,7 @@ namespace Kentor.AuthServices.Configuration
             }
         }
 
-        static internal readonly string RsaSha256Namespace = "http://www.w3.org/2001/04/xmldsig-more#rsa-sha256";
+        internal const string RsaSha256Uri = "http://www.w3.org/2001/04/xmldsig-more#rsa-sha256";
 
         /// <summary>
         /// Make Sha256 signature algorithm available in this process (not just Kentor.AuthServices)
@@ -77,7 +79,17 @@ namespace Kentor.AuthServices.Configuration
         [System.Diagnostics.CodeAnalysis.SuppressMessage( "Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Sha" )]
         public static void GlobalEnableSha256XmlSignatures()
         {
-            CryptoConfig.AddAlgorithm(typeof(ManagedSHA256SignatureDescription), RsaSha256Namespace);
+            CryptoConfig.AddAlgorithm(typeof(ManagedSHA256SignatureDescription), RsaSha256Uri);
+
+            AddRsaSha256IfMissing((IList<string>)XmlHelpers.KnownSigningAlgorithms);
+        }
+
+        internal static void AddRsaSha256IfMissing(IList<string> knownAlgorithms)
+        {
+            if (knownAlgorithms.Count == 1)
+            {
+                knownAlgorithms.Add(RsaSha256Uri);
+            }
         }
     }
 }

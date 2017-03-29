@@ -9,6 +9,7 @@ using System.IdentityModel.Tokens;
 using Kentor.AuthServices.Tests.Helpers;
 using System.Linq;
 using System.Security.Claims;
+using System.Security.Cryptography.Xml;
 
 namespace Kentor.AuthServices.Tests.Configuration
 {
@@ -63,6 +64,35 @@ namespace Kentor.AuthServices.Tests.Configuration
 
             handler.Invoking(h => h.WriteToken(token))
                 .ShouldNotThrow();
+        }
+
+        [TestMethod]
+        public void Options_GlobalEnableSha256Signatures_DoesntAlterKnownAlgorithmsIfSha256AlreadyPresent()
+        {
+            var knownAlgorithmsCopy = XmlHelpers.KnownSigningAlgorithms.ToList();
+
+            Options.AddRsaSha256IfMissing(knownAlgorithmsCopy);
+
+            knownAlgorithmsCopy.ShouldBeEquivalentTo(XmlHelpers.KnownSigningAlgorithms);
+        }
+
+        [TestMethod]
+        public void Options_GlobalEnableSha256Signatures_AddsSha256IfOnlySha1InList()
+        {
+            var knownAlgorithms = new List<string>()
+            {
+                SignedXml.XmlDsigRSASHA1Url
+            };
+
+            Options.AddRsaSha256IfMissing(knownAlgorithms);
+
+            var expected = new List<string>()
+            {
+                SignedXml.XmlDsigRSASHA1Url,
+                SignedXml.XmlDsigRSASHA256Url
+            };
+
+            knownAlgorithms.ShouldBeEquivalentTo(expected);
         }
     }
 }
