@@ -492,7 +492,7 @@ namespace Kentor.AuthServices
         // Exclude because we don't want to wait for a GC run during unit test run
         // to trigger the case when the Idp has been garbaged collected.
         [ExcludeFromCodeCoverage]
-        private void DoLoadMetadataIfTargetAlive(WeakReference<IdentityProvider> target)
+        private static void DoLoadMetadataIfTargetAlive(WeakReference<IdentityProvider> target)
         {
             IdentityProvider idp;
             if(target.TryGetTarget(out idp))
