@@ -71,7 +71,7 @@ namespace Kentor.AuthServices.Tests.Configuration
         {
             var knownAlgorithmsCopy = XmlHelpers.KnownSigningAlgorithms.ToList();
 
-            Options.AddRsaSha256IfMissing(knownAlgorithmsCopy);
+            Options.AddAlgorithmIfMissing(knownAlgorithmsCopy, SignedXml.XmlDsigRSASHA256Url);
 
             knownAlgorithmsCopy.ShouldBeEquivalentTo(XmlHelpers.KnownSigningAlgorithms);
         }
@@ -84,7 +84,7 @@ namespace Kentor.AuthServices.Tests.Configuration
                 SignedXml.XmlDsigRSASHA1Url
             };
 
-            Options.AddRsaSha256IfMissing(knownAlgorithms);
+            Options.AddAlgorithmIfMissing(knownAlgorithms, SignedXml.XmlDsigRSASHA256Url);
 
             var expected = new List<string>()
             {

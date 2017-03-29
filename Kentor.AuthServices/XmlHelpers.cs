@@ -435,7 +435,7 @@ namespace Kentor.AuthServices
                 }
             }
 
-            if(!digestAlgorithms.SkipWhile(a => a != mininumDigestAlgorithm)
+            if(!DigestAlgorithms.SkipWhile(a => a != mininumDigestAlgorithm)
                 .Contains(reference.DigestMethod))
             {
                 throw new InvalidSignatureException("The digest method " + reference.DigestMethod
@@ -588,7 +588,7 @@ namespace Kentor.AuthServices
             return SignedXml.XmlDsigRSASHA1Url;
         }
 
-        private static readonly IEnumerable<string> digestAlgorithms =
+        internal static readonly IEnumerable<string> DigestAlgorithms =
             typeof(SignedXml).GetFields()
             .Where(f => f.Name.StartsWith("XmlDsigSHA", StringComparison.Ordinal))
             .Select(f => (string)f.GetRawConstantValue())
@@ -599,7 +599,7 @@ namespace Kentor.AuthServices
         {
             var matchPattern = signingAlgorithm.Substring(signingAlgorithm.LastIndexOf('-') + 1);
 
-            return digestAlgorithms.Single(a => a.EndsWith(
+            return DigestAlgorithms.Single(a => a.EndsWith(
                 matchPattern,
                 StringComparison.Ordinal));
         }
