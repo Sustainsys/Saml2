@@ -29,7 +29,7 @@ namespace Kentor.AuthServices.Tests.WebSso
         [TestMethod]
         public void AcsCommand_Run_NullCheckRequest()
         {
-            Action a = () => new AcsCommand().Run(null, new Options(null));
+            Action a = () => new AcsCommand().Run(null, StubFactory.CreateOptions());
 
             // Verify exception is thrown and that it is thrown directly by the Run()
             // method and not by some method being called by Run().

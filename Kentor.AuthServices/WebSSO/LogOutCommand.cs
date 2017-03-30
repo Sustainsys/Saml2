@@ -152,7 +152,7 @@ namespace Kentor.AuthServices.WebSso
             IdentityProvider idp;
             var knownIdp = options.IdentityProviders.TryGetValue(new EntityId(idpEntityId), out idp);
 
-            options.Logger.WriteVerbose("Initiating logout, checking requirements for federated logout"
+            options.SPOptions.Logger.WriteVerbose("Initiating logout, checking requirements for federated logout"
                 + "\nIssuer of LogoutNameIdentifier claim (should be Idp entity id): " + idpEntityId
                 + "\nIssuer is a known Idp: " + knownIdp
                 + "\nSession index claim (should have a value): " + sessionIndexClaim
@@ -185,7 +185,7 @@ namespace Kentor.AuthServices.WebSso
                     commandResult.SetCookieName = "Kentor." + logoutRequest.RelayState;
                 }
 
-                options.Logger.WriteInformation("Sending logout request to " + idp.EntityId.Id);
+                options.SPOptions.Logger.WriteInformation("Sending logout request to " + idp.EntityId.Id);
             }
             else
             {
@@ -194,7 +194,7 @@ namespace Kentor.AuthServices.WebSso
                     HttpStatusCode = HttpStatusCode.SeeOther,
                     Location = returnUrl
                 };
-                options.Logger.WriteInformation("Doing a local only logout.");
+                options.SPOptions.Logger.WriteInformation("Doing a local only logout.");
             }
 
             commandResult.TerminateLocalSession = true;
@@ -238,7 +238,7 @@ namespace Kentor.AuthServices.WebSso
                 RelayState = unbindResult.RelayState
             };
 
-            options.Logger.WriteInformation("Got a logout request " + request.Id
+            options.SPOptions.Logger.WriteInformation("Got a logout request " + request.Id
                 + ", responding with logout response " + response.Id);
 
             var result = Saml2Binding.Get(idp.SingleLogoutServiceBinding).Bind(response);
@@ -270,7 +270,7 @@ namespace Kentor.AuthServices.WebSso
             }
             commandResult.Location = storedRequestState?.ReturnUrl ?? returnUrl;
 
-            options.Logger.WriteInformation("Received logout response " + logoutResponse.Id
+            options.SPOptions.Logger.WriteInformation("Received logout response " + logoutResponse.Id
                 + ", redirecting to " + commandResult.Location);
 
             return commandResult;

@@ -47,7 +47,7 @@ namespace Kentor.AuthServices.WebSso
 
             xmlDoc.LoadXml(Encoding.UTF8.GetString(Convert.FromBase64String(encodedMessage)));
 
-            options.Logger.WriteVerbose("Http POST binding extracted message\n" + xmlDoc.OuterXml);
+            options.SPOptions.Logger.WriteVerbose("Http POST binding extracted message\n" + xmlDoc.OuterXml);
 
             string relayState = null;
             request.Form.TryGetValue("RelayState", out relayState);

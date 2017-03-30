@@ -38,7 +38,7 @@ namespace Kentor.AuthServices.WebSso
             var publicOrigin = options.Notifications.GetPublicOrigin(request) ?? options.SPOptions.PublicOrigin ?? request.ApplicationUrl;
             Init(publicOrigin, options.SPOptions.ModulePath);
 
-            options.Logger.WriteVerbose("Expanded AuthServicesUrl"
+            options.SPOptions.Logger.WriteVerbose("Expanded AuthServicesUrl"
                 + "\nAssertionConsumerServiceUrl: " + AssertionConsumerServiceUrl
                 + "\nSignInUrl: " + SignInUrl
                 + "\nLogoutUrl: " + LogoutUrl

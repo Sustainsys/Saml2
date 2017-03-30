@@ -83,7 +83,7 @@ namespace Kentor.AuthServices.Owin
                 ? " The received SAML data is\n" + ex.Data["Saml2Response"]
                 : "";
 
-            Options.Logger.WriteError("Saml2 Authentication failed." + samlResponse, ex);
+            Options.SPOptions.Logger.WriteError("Saml2 Authentication failed." + samlResponse, ex);
             return new MultipleIdentityAuthenticationTicket(
                 Enumerable.Empty<ClaimsIdentity>(),
                 authProperties);
@@ -207,7 +207,7 @@ namespace Kentor.AuthServices.Owin
                 }
                 catch(Exception ex)
                 {
-                    Options.Logger.WriteError("Error in AuthServices for " + Request.Path, ex);
+                    Options.SPOptions.Logger.WriteError("Error in AuthServices for " + Request.Path, ex);
                     throw;
                 }
             }

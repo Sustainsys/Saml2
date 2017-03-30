@@ -73,7 +73,7 @@ namespace Kentor.AuthServices.WebSso
                         request.HttpMethod));
             }
 
-            options.Logger.WriteVerbose("Artifact binding found Artifact\n" + artifact);
+            options.SPOptions.Logger.WriteVerbose("Artifact binding found Artifact\n" + artifact);
 
             var data = ResolveArtifact(artifact, request.StoredRequestState, options);
 
@@ -108,11 +108,11 @@ namespace Kentor.AuthServices.WebSso
                 payload = xmlDoc.OuterXml;
             }
 
-            options.Logger.WriteVerbose("Calling idp " + idp.EntityId.Id + " to resolve artifact\n" + artifact);
+            options.SPOptions.Logger.WriteVerbose("Calling idp " + idp.EntityId.Id + " to resolve artifact\n" + artifact);
 
             var response = Saml2SoapBinding.SendSoapRequest(payload, arsUri);
 
-            options.Logger.WriteVerbose("Artifact resolved returned\n" + response);
+            options.SPOptions.Logger.WriteVerbose("Artifact resolved returned\n" + response);
 
             return new Saml2ArtifactResponse(response).GetMessage();
         }

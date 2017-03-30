@@ -1352,10 +1352,8 @@ namespace Kentor.AuthServices.Tests.Owin
             context.Request.Path = new PathString("/AuthServices/SignIn");
             context.Request.QueryString = new QueryString("idp=incorrect");
 
-            var options = new KentorAuthServicesAuthenticationOptions(true)
-            {
-                Logger = Substitute.For<ILoggerAdapter>()
-            };
+            var options = new KentorAuthServicesAuthenticationOptions(true);
+            options.SPOptions.Logger = Substitute.For<ILoggerAdapter>();
 
             var subject = new KentorAuthServicesAuthenticationMiddleware(
                 null,
@@ -1364,7 +1362,7 @@ namespace Kentor.AuthServices.Tests.Owin
 
             subject.Awaiting(async s => await s.Invoke(context)).ShouldThrow<InvalidOperationException>();
             
-            options.Logger.Received().WriteError(
+            options.SPOptions.Logger.Received().WriteError(
                 "Error in AuthServices for /AuthServices/SignIn", Arg.Any<Exception>());
         }
 
@@ -1421,7 +1419,7 @@ namespace Kentor.AuthServices.Tests.Owin
             context.Request.ContentType = encodedBodyData.Headers.ContentType.ToString();
 
             var options = new KentorAuthServicesAuthenticationOptions(true);
-            options.Logger = Substitute.For<ILoggerAdapter>();
+            options.SPOptions.Logger = Substitute.For<ILoggerAdapter>();
 
             var subject = new KentorAuthServicesAuthenticationMiddleware(
                 null,
@@ -1430,7 +1428,7 @@ namespace Kentor.AuthServices.Tests.Owin
 
             await subject.Invoke(context);
 
-            options.Logger.Received().WriteError(
+            options.SPOptions.Logger.Received().WriteError(
                 "Saml2 Authentication failed. The received SAML data is\n<DummyXml />",
                 Arg.Any<BadFormatSamlResponseException>());
         }
@@ -1444,7 +1442,7 @@ namespace Kentor.AuthServices.Tests.Owin
             context.Request.Method = "POST";
 
             var options = new KentorAuthServicesAuthenticationOptions(true);
-            options.Logger = Substitute.For<ILoggerAdapter>();
+            options.SPOptions.Logger = Substitute.For<ILoggerAdapter>();
 
             var subject = new KentorAuthServicesAuthenticationMiddleware(
                 null,
@@ -1453,7 +1451,7 @@ namespace Kentor.AuthServices.Tests.Owin
 
             await subject.Invoke(context);
 
-            options.Logger.Received().WriteError(
+            options.SPOptions.Logger.Received().WriteError(
                 "Saml2 Authentication failed.",
                 Arg.Any<NoSamlResponseFoundException>());
         }

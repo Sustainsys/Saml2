@@ -88,7 +88,7 @@ namespace Kentor.AuthServices.WebSso
 
                         xml.LoadXml(Encoding.UTF8.GetString(deCompressed.GetBuffer()));
 
-                        options?.Logger.WriteVerbose("Http Redirect binding extracted message\n" + xml.OuterXml);
+                        options?.SPOptions.Logger.WriteVerbose("Http Redirect binding extracted message\n" + xml.OuterXml);
 
                         return new UnbindResult(xml.DocumentElement, request.QueryString["RelayState"].SingleOrDefault(), GetTrustLevel(xml.DocumentElement, request, options));
                     }

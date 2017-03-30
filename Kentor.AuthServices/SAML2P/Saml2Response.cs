@@ -387,7 +387,7 @@ namespace Kentor.AuthServices.Saml2P
 
             if (encryptedAssertions.Count() > 0)
             {
-                options.Logger.WriteVerbose("Found encrypted assertions, decrypting...");
+                options.SPOptions.Logger.WriteVerbose("Found encrypted assertions, decrypting...");
 
                 var decryptionCertificates = GetCertificatesValidForDecryption(options);
 
@@ -443,7 +443,7 @@ namespace Kentor.AuthServices.Saml2P
                 var idp = options.IdentityProviders[Issuer];
                 if (idp.AllowUnsolicitedAuthnResponse)
                 {
-                    options.Logger.WriteVerbose("Received unsolicited Saml Response " + Id 
+                    options.SPOptions.Logger.WriteVerbose("Received unsolicited Saml Response " + Id 
                         + " which is allowed for idp " + idp.EntityId.Id);
                     return;
                 }
@@ -465,7 +465,7 @@ namespace Kentor.AuthServices.Saml2P
             {
                 throw new Saml2ResponseFailedValidationException("The SAML Response is not signed and contains unsigned Assertions. Response cannot be trusted.");
             }
-            options.Logger.WriteVerbose("Signature validation passed for Saml Response " + Id);
+            options.SPOptions.Logger.WriteVerbose("Signature validation passed for Saml Response " + Id);
         }
 
         private Uri audience;
@@ -525,7 +525,7 @@ namespace Kentor.AuthServices.Saml2P
                     var handler = options.SPOptions.Saml2PSecurityTokenHandler;
 
                     var token = (Saml2SecurityToken)handler.ReadToken(reader);
-                    options.Logger.WriteVerbose("Extracted SAML assertion " + token.Id);
+                    options.SPOptions.Logger.WriteVerbose("Extracted SAML assertion " + token.Id);
 
                     handler.DetectReplayedToken(token);
 
@@ -538,7 +538,7 @@ namespace Kentor.AuthServices.Saml2P
 
                     handler.ValidateConditions(token.Assertion.Conditions, validateAudience);
 
-                    options.Logger.WriteVerbose("Validated conditions for SAML2 Response " + Id);
+                    options.SPOptions.Logger.WriteVerbose("Validated conditions for SAML2 Response " + Id);
 
                     sessionNotOnOrAfter = DateTimeHelper.EarliestTime(sessionNotOnOrAfter,
                     token.Assertion.Statements.OfType<Saml2AuthenticationStatement>()

@@ -58,9 +58,9 @@ namespace Kentor.AuthServices.Owin
             options.DataProtector = app.CreateDataProtector(
                 typeof(KentorAuthServicesAuthenticationMiddleware).FullName);
 
-            if(options.Logger == null)
+            if(options.SPOptions.Logger == null)
             {
-                options.Logger = new OwinLoggerAdapter(app.CreateLogger<KentorAuthServicesAuthenticationMiddleware>());
+                options.SPOptions.Logger = new OwinLoggerAdapter(app.CreateLogger<KentorAuthServicesAuthenticationMiddleware>());
             }
         }
 

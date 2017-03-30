@@ -39,7 +39,7 @@ namespace Kentor.AuthServices.WebSso
             }
 
             var returnUrl = request.QueryString["ReturnUrl"].FirstOrDefault();
-            options.Logger.WriteVerbose("Extracted ReturnUrl " + returnUrl + " from query string");
+            options.SPOptions.Logger.WriteVerbose("Extracted ReturnUrl " + returnUrl + " from query string");
             Uri parsedUri;
             if (returnUrl != null && !Uri.TryCreate(returnUrl, UriKind.Relative, out parsedUri))
             {
@@ -94,11 +94,12 @@ namespace Kentor.AuthServices.WebSso
                     {
                         var commandResult = RedirectToDiscoveryService(returnPath, options.SPOptions, urls);
                         options.Notifications.SignInCommandResultCreated(commandResult, relayData);
-                        options.Logger.WriteInformation("Redirecting to Discovery Service to select Idp.");
+                        options.SPOptions.Logger.WriteInformation("Redirecting to Discovery Service to select Idp.");
                         return commandResult;
                     }
                     idp = options.IdentityProviders.Default;
-                    options.Logger.WriteVerbose("No specific idp requested and no Discovery Service configured. " + 
+                    options.SPOptions.Logger.WriteVerbose(
+                        "No specific idp requested and no Discovery Service configured. " + 
                         "Falling back to use configured default Idp " + idp.EntityId.Id);
                 }
                 else
@@ -114,7 +115,7 @@ namespace Kentor.AuthServices.WebSso
                 ? null
                 : new Uri(returnPath, UriKind.RelativeOrAbsolute);
 
-            options.Logger.WriteInformation("Initiating login to " + idp.EntityId.Id);
+            options.SPOptions.Logger.WriteInformation("Initiating login to " + idp.EntityId.Id);
             return InitiateLoginToIdp(options, relayData, urls, idp, returnUrl);
         }
 

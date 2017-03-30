@@ -89,11 +89,5 @@ namespace Kentor.AuthServices.Owin
         /// Gets or sets the type used to secure data handled by the middleware.
         /// </summary>
         internal IDataProtector DataProtector { get; set; }
-
-        /// <summary>
-        /// Logger adapter to be used. By default uses a 
-        /// <see cref="OwinLoggerAdapter"/> instantiated from the owin logger.
-        /// </summary>
-        public ILoggerAdapter Logger { get; set; }
     }
 }
