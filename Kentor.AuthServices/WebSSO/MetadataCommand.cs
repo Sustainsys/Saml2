@@ -36,6 +36,8 @@ namespace Kentor.AuthServices.WebSso
 
             options.Notifications.MetadataCommandResultCreated(result);
 
+            options.Logger.WriteInformation("Created metadata");
+
             return result;
         }
     }
