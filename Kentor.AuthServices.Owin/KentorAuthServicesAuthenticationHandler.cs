@@ -138,7 +138,21 @@ namespace Kentor.AuthServices.Owin
             {
                 if(remainingPath == new PathString("/" + CommandFactory.AcsCommandName))
                 {
+                    var localUser = this.TryGetLocalUser(Options.SPOptions.ModulePath.Substring(1));
                     var ticket = (MultipleIdentityAuthenticationTicket)await AuthenticateAsync();
+
+                    if (localUser != null)
+                    {
+                        var externalNameIdentifier = ticket.Identity.ToSaml2NameIdentifier();
+
+                        if (externalNameIdentifier.Value != localUser.Item2)
+                        {
+                            // Sign out the local user (on identity server) if they are not the same
+                            // newly authenticated user.
+                            Context.Authentication.SignOut(localUser.Item1.AuthenticationType);
+                        }
+                    }
+
                     Context.Authentication.SignIn(ticket.Properties, ticket.Identities.ToArray());
                     // No need to redirect here. Command result is applied in AuthenticateCoreAsync.
                     return true;
@@ -183,6 +197,32 @@ namespace Kentor.AuthServices.Owin
                 externalLogutNameIdClaim.Value,
                 externalLogutNameIdClaim.ValueType,
                 externalLogutNameIdClaim.Issuer));
+        }
+
+        private Tuple<ClaimsIdentity, string> TryGetLocalUser(string idp)
+        {
+            var user = Context.Authentication.User;
+
+            if (null != user)
+            {
+                var localUser = user.Identities
+                    .Where(x => x.Claims.Any(c => c.Type == "idp" && c.Value == idp))
+                    .FirstOrDefault();
+
+                if (localUser != null)
+                {
+                    var logoutClaim = localUser.Claims.Where(x => x.Type == AuthServicesClaimTypes.LogoutNameIdentifier)
+                        .FirstOrDefault();
+
+                    if (logoutClaim != null)
+                    {
+                        var nameIdentifier = logoutClaim.ToSaml2NameIdentifier();
+                        return new Tuple<ClaimsIdentity, string>(localUser, nameIdentifier.Value);
+                    }
+                }
+            }
+
+            return null;
         }
     }
 }
