@@ -1,6 +1,7 @@
 ﻿using Kentor.AuthServices.Configuration;
 using Kentor.AuthServices.WebSso;
 using Microsoft.Owin;
+using Microsoft.Owin.Infrastructure;
 using Microsoft.Owin.Security;
 using Microsoft.Owin.Security.Infrastructure;
 using System;
@@ -25,26 +26,67 @@ namespace Kentor.AuthServices.Owin
                 return null;
             }
 
-            var result = CommandFactory.GetCommand(CommandFactory.AcsCommandName)
-                .Run(await Context.ToHttpRequestData(Options.DataProtector.Unprotect), Options);
-
-            if (!result.HandledResult)
+            var httpRequestData = await Context.ToHttpRequestData(Options.DataProtector.Unprotect);
+            try
             {
-                result.Apply(Context, Options.DataProtector);
+                var result = CommandFactory.GetCommand(CommandFactory.AcsCommandName)
+                    .Run(httpRequestData, Options);
+
+                if (!result.HandledResult)
+                {
+                    result.Apply(Context, Options.DataProtector);
+                }
+
+                var identities = result.Principal.Identities.Select(i =>
+                    new ClaimsIdentity(i, null, Options.SignInAsAuthenticationType, i.NameClaimType, i.RoleClaimType));
+
+                var authProperties = new AuthenticationProperties(result.RelayData);
+                authProperties.RedirectUri = result.Location.OriginalString;
+                if (result.SessionNotOnOrAfter.HasValue)
+                {
+                    authProperties.AllowRefresh = false;
+                    authProperties.ExpiresUtc = result.SessionNotOnOrAfter.Value;
+                }
+
+                return new MultipleIdentityAuthenticationTicket(identities, authProperties);
+            }
+            catch (Exception ex)
+            {
+                return CreateErrorAuthenticationTicket(httpRequestData, ex);
+            }
+        }
+
+        private AuthenticationTicket CreateErrorAuthenticationTicket(HttpRequestData httpRequestData, Exception ex)
+        {
+            AuthenticationProperties authProperties = null;
+            if (httpRequestData.StoredRequestState != null)
+            {
+                authProperties = new AuthenticationProperties(
+                    httpRequestData.StoredRequestState.RelayData);
+
+                // ReturnUrl is removed from AuthProps dictionary to save space, need to put it back.
+                authProperties.RedirectUri = httpRequestData.StoredRequestState.ReturnUrl.OriginalString;
+            }
+            else
+            {
+                authProperties = new AuthenticationProperties
+                {
+                    RedirectUri = Options.SPOptions.ReturnUrl.OriginalString
+                };
             }
 
-            var identities = result.Principal.Identities.Select(i =>
-                new ClaimsIdentity(i, null, Options.SignInAsAuthenticationType, i.NameClaimType, i.RoleClaimType));
+            // The Google middleware adds this, so let's follow that example.
+            authProperties.RedirectUri = WebUtilities.AddQueryString(
+                authProperties.RedirectUri, "error", "access_denied");
 
-            var authProperties = new AuthenticationProperties(result.RelayData);
-            authProperties.RedirectUri = result.Location.OriginalString;
-            if(result.SessionNotOnOrAfter.HasValue)
-            {
-                authProperties.AllowRefresh = false;
-                authProperties.ExpiresUtc = result.SessionNotOnOrAfter.Value;
-            }
+            string samlResponse = ex.Data.Contains("Saml2Response")
+                ? " The received SAML data is\n" + ex.Data["Saml2Response"]
+                : "";
 
-            return new MultipleIdentityAuthenticationTicket(identities, authProperties);
+            Options.SPOptions.Logger.WriteError("Saml2 Authentication failed." + samlResponse, ex);
+            return new MultipleIdentityAuthenticationTicket(
+                Enumerable.Empty<ClaimsIdentity>(),
+                authProperties);
         }
 
         protected override async Task ApplyResponseChallengeAsync()
@@ -134,25 +176,40 @@ namespace Kentor.AuthServices.Owin
             var authServicesPath = new PathString(Options.SPOptions.ModulePath);
             PathString remainingPath;
 
-            if(Request.Path.StartsWithSegments(authServicesPath, out remainingPath))
+            if (Request.Path.StartsWithSegments(authServicesPath, out remainingPath))
             {
-                if(remainingPath == new PathString("/" + CommandFactory.AcsCommandName))
+                if (remainingPath == new PathString("/" + CommandFactory.AcsCommandName))
                 {
                     var ticket = (MultipleIdentityAuthenticationTicket)await AuthenticateAsync();
-                    Context.Authentication.SignIn(ticket.Properties, ticket.Identities.ToArray());
-                    // No need to redirect here. Command result is applied in AuthenticateCoreAsync.
+                    if (ticket.Identities.Any())
+                    {
+                        Context.Authentication.SignIn(ticket.Properties, ticket.Identities.ToArray());
+                        // No need to redirect here. Command result is applied in AuthenticateCoreAsync.
+                    }
+                    else
+                    {
+                        Response.Redirect(ticket.Properties.RedirectUri);
+                    }
                     return true;
                 }
 
-                var result = CommandFactory.GetCommand(remainingPath.Value)
-                    .Run(await Context.ToHttpRequestData(Options.DataProtector.Unprotect), Options);
-
-                if (!result.HandledResult)
+                try
                 {
-                    result.Apply(Context, Options.DataProtector);
-                }
+                    var result = CommandFactory.GetCommand(remainingPath.Value)
+                        .Run(await Context.ToHttpRequestData(Options.DataProtector.Unprotect), Options);
 
-                return true;
+                    if (!result.HandledResult)
+                    {
+                        result.Apply(Context, Options.DataProtector);
+                    }
+
+                    return true;
+                }
+                catch(Exception ex)
+                {
+                    Options.SPOptions.Logger.WriteError("Error in AuthServices for " + Request.Path, ex);
+                    throw;
+                }
             }
 
             return false;

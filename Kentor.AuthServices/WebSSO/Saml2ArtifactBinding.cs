@@ -49,6 +49,10 @@ namespace Kentor.AuthServices.WebSso
             {
                 throw new ArgumentNullException(nameof(request));
             }
+            if(options == null)
+            {
+                throw new ArgumentNullException(nameof(options));
+            }
 
             string relayState;
             string artifact;
@@ -68,6 +72,8 @@ namespace Kentor.AuthServices.WebSso
                         "Artifact binding can only use GET or POST http method, but found {0}",
                         request.HttpMethod));
             }
+
+            options.SPOptions.Logger.WriteVerbose("Artifact binding found Artifact\n" + artifact);
 
             var data = ResolveArtifact(artifact, request.StoredRequestState, options);
 
@@ -102,7 +108,11 @@ namespace Kentor.AuthServices.WebSso
                 payload = xmlDoc.OuterXml;
             }
 
+            options.SPOptions.Logger.WriteVerbose("Calling idp " + idp.EntityId.Id + " to resolve artifact\n" + artifact);
+
             var response = Saml2SoapBinding.SendSoapRequest(payload, arsUri);
+
+            options.SPOptions.Logger.WriteVerbose("Artifact resolved returned\n" + response);
 
             return new Saml2ArtifactResponse(response).GetMessage();
         }
@@ -161,8 +171,9 @@ namespace Kentor.AuthServices.WebSso
         /// Binds a message to a http response with HTTP Redirect.
         /// </summary>
         /// <param name="message">Message to bind.</param>
+        /// <param name="logger">Logger to use.</param>
         /// <returns>CommandResult.</returns>
-        public override CommandResult Bind(ISaml2Message message)
+        public override CommandResult Bind(ISaml2Message message, ILoggerAdapter logger)
         {
             if(message == null)
             {

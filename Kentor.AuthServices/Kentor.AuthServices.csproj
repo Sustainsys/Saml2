@@ -59,11 +59,13 @@
     <Compile Include="Configuration\KentorAuthServicesNotifications.cs" />
     <Compile Include="Configuration\Compatibility.cs" />
     <Compile Include="Configuration\CompatibilityElement.cs" />
+    <Compile Include="ILoggerAdapter.cs" />
     <Compile Include="Internal\DateTimeHelper.cs" />
     <Compile Include="Exceptions\UnexpectedInResponseToException.cs" />
     <Compile Include="Internal\DelimitedString.cs" />
     <Compile Include="Internal\DictionaryExtensions.cs" />
     <Compile Include="ManagedSha256SignatureDescription.cs" />
+    <Compile Include="NullLoggerAdapter.cs" />
     <Compile Include="Saml2NameIdExtensions.cs" />
     <Compile Include="Configuration\ServiceCertificateCollection.cs" />
     <Compile Include="Saml2P\AuthnContextComparisonType.cs" />

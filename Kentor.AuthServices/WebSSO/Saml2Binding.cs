@@ -82,10 +82,20 @@ namespace Kentor.AuthServices.WebSso
         /// Binds a message to a http response.
         /// </summary>
         /// <param name="message">Message to bind.</param>
+        /// <param name="logger">Logger to log use, can be null.</param>
         /// <returns>CommandResult.</returns>
-        public virtual CommandResult Bind(ISaml2Message message)
+        public virtual CommandResult Bind(ISaml2Message message, ILoggerAdapter logger)
         {
             throw new NotImplementedException();
+        }
+        /// <summary>
+        /// Binds a message to a http response.
+        /// </summary>
+        /// <param name="message">Message to bind.</param>
+        /// <returns>CommandResult.</returns>
+        public CommandResult Bind(ISaml2Message message)
+        {
+            return Bind(message, null);
         }
 
         /// <summary>

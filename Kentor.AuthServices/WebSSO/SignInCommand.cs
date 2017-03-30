@@ -25,6 +25,7 @@ namespace Kentor.AuthServices.WebSso
         /// <param name="request">Request data.</param>
         /// <param name="options">Options</param>
         /// <returns>CommandResult</returns>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "ReturnUrl")]
         public CommandResult Run(HttpRequestData request, IOptions options)
         {
             if (request == null)
@@ -38,6 +39,7 @@ namespace Kentor.AuthServices.WebSso
             }
 
             var returnUrl = request.QueryString["ReturnUrl"].FirstOrDefault();
+            options.SPOptions.Logger.WriteVerbose("Extracted ReturnUrl " + returnUrl + " from query string");
             Uri parsedUri;
             if (returnUrl != null && !Uri.TryCreate(returnUrl, UriKind.Relative, out parsedUri))
             {
@@ -85,21 +87,26 @@ namespace Kentor.AuthServices.WebSso
             IdentityProvider idp = options.Notifications.SelectIdentityProvider(idpEntityId, relayData);
             if (idp == null)
             {
-                if (idpEntityId?.Id == null)
+                var idpEntityIdString = idpEntityId?.Id;
+                if (idpEntityIdString == null)
                 {
                     if (options.SPOptions.DiscoveryServiceUrl != null)
                     {
                         var commandResult = RedirectToDiscoveryService(returnPath, options.SPOptions, urls);
                         options.Notifications.SignInCommandResultCreated(commandResult, relayData);
+                        options.SPOptions.Logger.WriteInformation("Redirecting to Discovery Service to select Idp.");
                         return commandResult;
                     }
                     idp = options.IdentityProviders.Default;
+                    options.SPOptions.Logger.WriteVerbose(
+                        "No specific idp requested and no Discovery Service configured. " + 
+                        "Falling back to use configured default Idp " + idp.EntityId.Id);
                 }
                 else
                 {
                     if (!options.IdentityProviders.TryGetValue(idpEntityId, out idp))
                     {
-                        throw new InvalidOperationException("Unknown idp");
+                        throw new InvalidOperationException("Unknown idp " + idpEntityIdString);
                     }
                 }
             }
@@ -108,6 +115,7 @@ namespace Kentor.AuthServices.WebSso
                 ? null
                 : new Uri(returnPath, UriKind.RelativeOrAbsolute);
 
+            options.SPOptions.Logger.WriteInformation("Initiating login to " + idp.EntityId.Id);
             return InitiateLoginToIdp(options, relayData, urls, idp, returnUrl);
         }
 
@@ -124,7 +132,7 @@ namespace Kentor.AuthServices.WebSso
             commandResult.SetCookieName = "Kentor." + authnRequest.RelayState;
 
             options.Notifications.SignInCommandResultCreated(commandResult, relayData);
-
+            
             return commandResult;
         }
 
@@ -135,7 +143,7 @@ namespace Kentor.AuthServices.WebSso
         {
             string returnUrl = authServicesUrls.SignInUrl.OriginalString;
 
-            if(!string.IsNullOrEmpty(returnPath))
+            if (!string.IsNullOrEmpty(returnPath))
             {
                 returnUrl += "?ReturnUrl=" + Uri.EscapeDataString(returnPath);
             }

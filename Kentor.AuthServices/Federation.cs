@@ -73,6 +73,7 @@ namespace Kentor.AuthServices
             {
                 try
                 {
+                    options.SPOptions.Logger?.WriteInformation("Loading metadata for federation from " + metadataLocation);
                     var metadata = MetadataLoader.LoadFederation(metadataLocation);
 
                     var identityProvidersMetadata = metadata.ChildEntities.Cast<ExtendedEntityDescriptor>()
@@ -99,6 +100,7 @@ namespace Kentor.AuthServices
                 }
                 catch (WebException ex)
                 {
+                    options.SPOptions.Logger?.WriteError("Metadata loading failed from " + metadataLocation, ex);
                     var now = DateTime.UtcNow;
 
                     if (MetadataValidUntil < now)

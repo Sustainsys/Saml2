@@ -484,12 +484,18 @@ namespace Kentor.AuthServices.Tests
             subject.MetadataValidUntil.Should().BeCloseTo(expectedValidUntil, 1000);
         }
 
-        IdentityProvider CreateSubjectForMetadataRefresh()
+        IdentityProvider CreateSubjectForMetadataRefresh(bool setLoggerToNull = false)
         {
             var config = CreateConfig();
             config.LoadMetadata = true;
             config.EntityId = "http://localhost:13428/idpMetadataVeryShortCacheDuration";
-            return new IdentityProvider(config, Options.FromConfiguration.SPOptions);
+            var spOptions = Options.FromConfiguration.SPOptions;
+            if(setLoggerToNull)
+            {
+                spOptions = StubFactory.CreateSPOptions();
+                spOptions.Logger = null;
+            }
+            return new IdentityProvider(config, spOptions);
         }
 
         [TestMethod]
@@ -675,7 +681,7 @@ namespace Kentor.AuthServices.Tests
             MetadataRefreshScheduler.minInterval = new TimeSpan(0, 0, 0, 0, 1);
             StubServer.IdpAndFederationShortCacheDurationAvailable = false;
 
-            var subject = CreateSubjectForMetadataRefresh();
+            var subject = CreateSubjectForMetadataRefresh(true);
 
             StubServer.IdpAndFederationShortCacheDurationAvailable = true;
 

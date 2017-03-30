@@ -404,5 +404,10 @@ namespace Kentor.AuthServices.Configuration
                 minIncomingSigningAlgorithm = value;
             }
         }
+
+        /// <summary>
+        /// Adapter to logging framework of hosting application.
+        /// </summary>
+        public ILoggerAdapter Logger { get; set; }
     }
 }

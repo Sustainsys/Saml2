@@ -122,7 +122,7 @@ namespace Kentor.AuthServices.Tests.WebSso
 
             Action a = () => new SignInCommand().Run(request, Options.FromConfiguration);
 
-            a.ShouldThrow<InvalidOperationException>().WithMessage("Unknown idp");
+            a.ShouldThrow<InvalidOperationException>().WithMessage("Unknown idp no-such-idp-in-config");
         }
 
         [TestMethod]

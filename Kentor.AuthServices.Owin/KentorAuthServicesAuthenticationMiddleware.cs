@@ -10,6 +10,7 @@ using Microsoft.Owin.Security;
 using Microsoft.Owin.Security.DataProtection;
 using Microsoft.Owin.Security.DataHandler;
 using System.Configuration;
+using Microsoft.Owin.Logging;
 
 namespace Kentor.AuthServices.Owin
 {
@@ -28,7 +29,9 @@ namespace Kentor.AuthServices.Owin
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1062:Validate arguments of public methods", MessageId = "2", Justification = "options is validated by base ctor. Test case for null options giving ArgumentNullException works.")]
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "SPOptions")]
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "EntityId")]
-        public KentorAuthServicesAuthenticationMiddleware(OwinMiddleware next, IAppBuilder app,
+        public KentorAuthServicesAuthenticationMiddleware(
+            OwinMiddleware next,
+            IAppBuilder app,
             KentorAuthServicesAuthenticationOptions options)
             :base (next, options)
         {
@@ -54,6 +57,11 @@ namespace Kentor.AuthServices.Owin
 
             options.DataProtector = app.CreateDataProtector(
                 typeof(KentorAuthServicesAuthenticationMiddleware).FullName);
+
+            if(options.SPOptions.Logger == null)
+            {
+                options.SPOptions.Logger = new OwinLoggerAdapter(app.CreateLogger<KentorAuthServicesAuthenticationMiddleware>());
+            }
         }
 
         /// <summary>

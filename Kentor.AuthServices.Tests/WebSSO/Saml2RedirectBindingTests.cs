@@ -28,7 +28,7 @@ namespace Kentor.AuthServices.Tests.WebSso
         }
 
         [TestMethod]
-        public void Saml2RedirectBinding_Unbind_NullcheckRequest()
+        public void Saml2RedirectBinding_Unbind_Nullcheck_Request()
         {
             Saml2Binding.Get(Saml2BindingType.HttpRedirect)
                 .Invoking(b => b.Unbind(null, null))
@@ -332,6 +332,21 @@ namespace Kentor.AuthServices.Tests.WebSso
                 .Unbind(request, null);
 
             actual.TrustLevel.Should().Be(TrustLevel.None);
+        }
+
+        [TestMethod]
+        public void Saml2RedirectBinding_Bind_WritesLogIfLoggerNotNull()
+        {
+            var message = new Saml2MessageImplementation()
+            {
+                DestinationUrl = new Uri("http://destination"),
+                XmlData = "<xml/>"
+            };
+            var logger = Substitute.For<ILoggerAdapter>();
+
+            Saml2Binding.Get(Saml2BindingType.HttpRedirect).Bind(message, logger);
+
+            logger.Received().WriteVerbose("Sending message over Http Redirect Binding\n<xml/>");
         }
     }
 }

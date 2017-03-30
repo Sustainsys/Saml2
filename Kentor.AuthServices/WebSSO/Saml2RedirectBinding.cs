@@ -18,14 +18,17 @@ namespace Kentor.AuthServices.WebSso
 {
     class Saml2RedirectBinding : Saml2Binding
     {
-        public override CommandResult Bind(ISaml2Message message)
+        public override CommandResult Bind(ISaml2Message message, ILoggerAdapter logger)
         {
             if (message == null)
             {
                 throw new ArgumentNullException(nameof(message));
             }
 
-            var serializedRequest = Serialize(message.ToXml());
+            var messageXml = message.ToXml();
+            logger?.WriteVerbose("Sending message over Http Redirect Binding\n" + messageXml);
+
+            var serializedRequest = Serialize(messageXml);
 
             var queryString = message.MessageName + "=" + serializedRequest
                 + (string.IsNullOrEmpty(message.RelayState) ? ""
@@ -84,6 +87,8 @@ namespace Kentor.AuthServices.WebSso
                         var xml = new XmlDocument() {PreserveWhitespace = true};
 
                         xml.LoadXml(Encoding.UTF8.GetString(deCompressed.GetBuffer()));
+
+                        options?.SPOptions.Logger.WriteVerbose("Http Redirect binding extracted message\n" + xml.OuterXml);
 
                         return new UnbindResult(xml.DocumentElement, request.QueryString["RelayState"].SingleOrDefault(), GetTrustLevel(xml.DocumentElement, request, options));
                     }

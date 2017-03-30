@@ -31,12 +31,22 @@ namespace Kentor.AuthServices.Tests.WebSSO
         }
 
         [TestMethod]
-        public void Saml2ArtifactBinding_Unbind_Nullcheck()
+        public void Saml2ArtifactBinding_Unbind_Nullcheck_Request()
         {
             Saml2Binding.Get(Saml2BindingType.Artifact)
                 .Invoking(b => b.Unbind(null, null))
                 .ShouldThrow<ArgumentNullException>()
                 .And.ParamName.Should().Be("request");
+        }
+
+        [TestMethod]
+        public void Saml2ArtifactBinding_Unbind_Nullcheck_Options()
+        {
+            Saml2Binding.Get(Saml2BindingType.Artifact)
+                .Invoking(b => b.Unbind(new HttpRequestData("GET", new Uri("http://localhost")), null))
+                .ShouldThrow<ArgumentNullException>()
+                .And.ParamName.Should().Be("options");
+
         }
 
         [TestMethod]
@@ -226,7 +236,7 @@ namespace Kentor.AuthServices.Tests.WebSSO
             var r = new HttpRequestData("PUT", new Uri("http://host"));
 
             Saml2Binding.Get(Saml2BindingType.Artifact)
-                .Invoking(b => b.Unbind(r, null))
+                .Invoking(b => b.Unbind(r, StubFactory.CreateOptions()))
                 .ShouldThrow<InvalidOperationException>()
                 .WithMessage("Artifact binding can only use GET or POST http method, but found PUT");
         }

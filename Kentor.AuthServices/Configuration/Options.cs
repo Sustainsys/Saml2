@@ -50,6 +50,10 @@ namespace Kentor.AuthServices.Configuration
         {
             Notifications = new KentorAuthServicesNotifications();
             SPOptions = spOptions;
+            if(SPOptions.Logger == null)
+            {
+                SPOptions.Logger = new NullLoggerAdapter();
+            }
         }
 
         /// <summary>

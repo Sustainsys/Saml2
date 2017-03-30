@@ -70,6 +70,7 @@
     <Compile Include="KentorAuthServicesAuthenticationOptions.cs" />
     <Compile Include="MultipleIdentityAuthenticationTicket.cs" />
     <Compile Include="OwinContextExtensions.cs" />
+    <Compile Include="OwinLoggerAdapter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -107,6 +107,9 @@ namespace Kentor.AuthServices.WebSso
                 }
             }
 
+            options.SPOptions.Logger.WriteInformation("Successfully processed SAML response " + samlResponse.Id
+                + " and authenticated " + principal.FindFirst(ClaimTypes.NameIdentifier).Value);
+
             return new CommandResult()
             {
                 HttpStatusCode = HttpStatusCode.SeeOther,
