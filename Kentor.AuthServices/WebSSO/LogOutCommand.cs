@@ -134,6 +134,11 @@ namespace Kentor.AuthServices.WebSso
             }
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "signingCertificate")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "SingleLogoutServiceUrl")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "SPOptions")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "LogoutNameIdentifier")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "DisableOutboundLogoutRequests")]
         private static CommandResult InitiateLogout(HttpRequestData request, Uri returnUrl, IOptions options)
         {
             string idpEntityId = null;
@@ -144,10 +149,20 @@ namespace Kentor.AuthServices.WebSso
                 sessionIndexClaim = request.User.FindFirst(AuthServicesClaimTypes.SessionIndex);
             }
 
-            CommandResult commandResult;
             IdentityProvider idp;
+            var knownIdp = options.IdentityProviders.TryGetValue(new EntityId(idpEntityId), out idp);
+
+            options.Logger.WriteVerbose("Initiating logout, checking requirements for federated logout"
+                + "\nIssuer of LogoutNameIdentifier claim (should be Idp entity id): " + idpEntityId
+                + "\nIssuer is a known Idp: " + knownIdp
+                + "\nSession index claim (should have a value): " + sessionIndexClaim
+                + "\nIdp has SingleLogoutServiceUrl: " + idp?.SingleLogoutServiceUrl.OriginalString
+                + "\nThere is a signingCertificate in SPOptions: " + (options.SPOptions.SigningServiceCertificate != null)
+                + "\nIdp configured to DisableOutboundLogoutRequests (should be false): " + idp?.DisableOutboundLogoutRequests);
+
+            CommandResult commandResult;
             if(idpEntityId != null 
-                && options.IdentityProviders.TryGetValue(new EntityId(idpEntityId), out idp)
+                && knownIdp
                 && sessionIndexClaim != null
                 && idp.SingleLogoutServiceUrl != null
                 && options.SPOptions.SigningServiceCertificate != null
@@ -169,6 +184,8 @@ namespace Kentor.AuthServices.WebSso
                 {
                     commandResult.SetCookieName = "Kentor." + logoutRequest.RelayState;
                 }
+
+                options.Logger.WriteInformation("Sending logout request to " + idp.EntityId.Id);
             }
             else
             {
@@ -177,6 +194,7 @@ namespace Kentor.AuthServices.WebSso
                     HttpStatusCode = HttpStatusCode.SeeOther,
                     Location = returnUrl
                 };
+                options.Logger.WriteInformation("Doing a local only logout.");
             }
 
             commandResult.TerminateLocalSession = true;
@@ -220,6 +238,9 @@ namespace Kentor.AuthServices.WebSso
                 RelayState = unbindResult.RelayState
             };
 
+            options.Logger.WriteInformation("Got a logout request " + request.Id
+                + ", responding with logout response " + response.Id);
+
             var result = Saml2Binding.Get(idp.SingleLogoutServiceBinding).Bind(response);
             result.TerminateLocalSession = true;
             return result;
@@ -248,6 +269,10 @@ namespace Kentor.AuthServices.WebSso
                 commandResult.ClearCookieName = "Kentor." + unbindResult.RelayState;
             }
             commandResult.Location = storedRequestState?.ReturnUrl ?? returnUrl;
+
+            options.Logger.WriteInformation("Received logout response " + logoutResponse.Id
+                + ", redirecting to " + commandResult.Location);
+
             return commandResult;
         }
     }
