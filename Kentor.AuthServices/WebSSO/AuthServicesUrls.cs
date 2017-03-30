@@ -39,10 +39,10 @@ namespace Kentor.AuthServices.WebSso
             Init(publicOrigin, options.SPOptions.ModulePath);
 
             options.SPOptions.Logger.WriteVerbose("Expanded AuthServicesUrl"
-                + "\nAssertionConsumerServiceUrl: " + AssertionConsumerServiceUrl
-                + "\nSignInUrl: " + SignInUrl
-                + "\nLogoutUrl: " + LogoutUrl
-                + "\nApplicationUrl: " + ApplicationUrl);
+                + "\n  AssertionConsumerServiceUrl: " + AssertionConsumerServiceUrl
+                + "\n  SignInUrl: " + SignInUrl
+                + "\n  LogoutUrl: " + LogoutUrl
+                + "\n  ApplicationUrl: " + ApplicationUrl);
         }
 
         /// <summary>
