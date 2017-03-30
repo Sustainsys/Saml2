@@ -52,8 +52,13 @@ namespace SampleIdentityServer3
                         EnableSignOutPrompt = false
                     },
 
-                    SigningCertificate = 
-                        new X509Certificate2(AppDomain.CurrentDomain.BaseDirectory + "\\App_Data\\Kentor.AuthServices.SampleIdentityServer3.pfx")
+                    SigningCertificate =
+                        new X509Certificate2(AppDomain.CurrentDomain.BaseDirectory + "\\App_Data\\Kentor.AuthServices.SampleIdentityServer3.pfx"),
+
+                    LoggingOptions = new LoggingOptions
+                    {
+                        EnableKatanaLogging = true
+                    }
                 };
 
                 options.AuthenticationOptions.IdentityProviders = ConfigureSaml2;
