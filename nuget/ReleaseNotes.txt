@@ -1,3 +1,7 @@
+Version 0.21.0
+* Added Logging
+* Fixed GlobalEnableSha256XmlSignatures that was broken in v0.20.0
+
 Version 0.20.0
 * Security Fix: Open redirect issue with ReturnUrl
 * Improved active/passive handling for Owin middleware
@@ -5,9 +9,3 @@ Version 0.20.0
 * More Notifications for custom behaviour
 And some more, see https://github.com/KentorIT/authservices/milestones/v0.20.0 for details.
 
-Version 0.19.0
-* Fix: SP-initiated logout uses configured binding.
-* Fix: Removed buggy expansion of relative ReturnUrls
-* Fix: Enabling SHA256 signatures no longer breaks IdentityServer3.
-* Support for SessionNotOnOrAfter
-* And some more, see https://github.com/KentorIT/authservices/milestones/v0.19.0 for details.
