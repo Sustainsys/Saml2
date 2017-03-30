@@ -26,6 +26,7 @@ using Kentor.AuthServices.WebSso;
 using System.Security.Principal;
 namespace Kentor.AuthServices.Tests.Owin
 {
+    using AuthServices.Exceptions;
     using Microsoft.Owin.Security.DataProtection;
     using System.Configuration;
     using System.Security.Cryptography.Xml;
@@ -1177,7 +1178,7 @@ namespace Kentor.AuthServices.Tests.Owin
         {
             var context = OwinTestHelpers.CreateOwinContext();
 
-            var middleware = new KentorAuthServicesAuthenticationMiddleware(
+            var subject = new KentorAuthServicesAuthenticationMiddleware(
                 new StubOwinMiddleware(200, null),
                 CreateAppBuilder(),
                 new KentorAuthServicesAuthenticationOptions(false)
@@ -1188,9 +1189,7 @@ namespace Kentor.AuthServices.Tests.Owin
                     }
                 });
 
-            Func<Task> f = async () => await middleware.Invoke(context);
-
-            f.ShouldNotThrow();
+            subject.Awaiting(async s => await s.Invoke(context)).ShouldNotThrow();
         }
 
         [TestMethod]
@@ -1347,6 +1346,29 @@ namespace Kentor.AuthServices.Tests.Owin
         }
 
         [TestMethod]
+        public void KentorAuthServicesAuthenticationMiddleware_LogsCommandExceptions()
+        {
+            var context = OwinTestHelpers.CreateOwinContext();
+            context.Request.Path = new PathString("/AuthServices/SignIn");
+            context.Request.QueryString = new QueryString("idp=incorrect");
+
+            var options = new KentorAuthServicesAuthenticationOptions(true)
+            {
+                Logger = Substitute.For<ILoggerAdapter>()
+            };
+
+            var subject = new KentorAuthServicesAuthenticationMiddleware(
+                null,
+                CreateAppBuilder(),
+                options);
+
+            subject.Awaiting(async s => await s.Invoke(context)).ShouldThrow<InvalidOperationException>();
+            
+            options.Logger.Received().WriteError(
+                "Error in AuthServices for /AuthServices/SignIn", Arg.Any<Exception>());
+        }
+
+        [TestMethod]
         public void KentorAuthServicesAuthenticationMiddleware_Ctor_NullCheckOptionsSpOptions()
         {
             var options = new KentorAuthServicesAuthenticationOptions(false);
@@ -1376,6 +1398,64 @@ namespace Kentor.AuthServices.Tests.Owin
             a.ShouldThrow<ConfigurationErrorsException>()
                 .WithMessage("The SPOptions.EntityId property cannot be null. It must be set to the EntityId used to represent this system.");
 
+        }
+
+        [TestMethod]
+        public async Task KentorAuthServicesAuthenticationMiddleware_IncludesSamlResponseInLoggedError()
+        {
+            var context = OwinTestHelpers.CreateOwinContext();
+
+            context.Request.Path = new PathString("/AuthServices/Acs");
+            context.Request.Method = "POST";
+
+            var response = "<DummyXml />";
+
+            var bodyData = new KeyValuePair<string, string>[] {
+                new KeyValuePair<string, string>("SAMLResponse",
+                    Convert.ToBase64String(Encoding.UTF8.GetBytes(response))),
+            };
+
+            var encodedBodyData = new FormUrlEncodedContent(bodyData);
+
+            context.Request.Body = encodedBodyData.ReadAsStreamAsync().Result;
+            context.Request.ContentType = encodedBodyData.Headers.ContentType.ToString();
+
+            var options = new KentorAuthServicesAuthenticationOptions(true);
+            options.Logger = Substitute.For<ILoggerAdapter>();
+
+            var subject = new KentorAuthServicesAuthenticationMiddleware(
+                null,
+                CreateAppBuilder(),
+                options);
+
+            await subject.Invoke(context);
+
+            options.Logger.Received().WriteError(
+                "Saml2 Authentication failed. The received SAML data is\n<DummyXml />",
+                Arg.Any<BadFormatSamlResponseException>());
+        }
+
+        [TestMethod]
+        public async Task KentorAuthServicesAuthenticationMiddleware_LogsErrorWhenNoSamlResponseIsAvailable()
+        {
+            var context = OwinTestHelpers.CreateOwinContext();
+
+            context.Request.Path = new PathString("/AuthServices/Acs");
+            context.Request.Method = "POST";
+
+            var options = new KentorAuthServicesAuthenticationOptions(true);
+            options.Logger = Substitute.For<ILoggerAdapter>();
+
+            var subject = new KentorAuthServicesAuthenticationMiddleware(
+                null,
+                CreateAppBuilder(),
+                options);
+
+            await subject.Invoke(context);
+
+            options.Logger.Received().WriteError(
+                "Saml2 Authentication failed.",
+                Arg.Any<NoSamlResponseFoundException>());
         }
     }
 }

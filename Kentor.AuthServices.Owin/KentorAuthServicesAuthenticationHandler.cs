@@ -79,7 +79,11 @@ namespace Kentor.AuthServices.Owin
             authProperties.RedirectUri = WebUtilities.AddQueryString(
                 authProperties.RedirectUri, "error", "access_denied");
 
-            Options.Logger.WriteError("Saml2 Authentication failed.", ex);
+            string samlResponse = ex.Data.Contains("Saml2Response")
+                ? " The received SAML data is\n" + ex.Data["Saml2Response"]
+                : "";
+
+            Options.Logger.WriteError("Saml2 Authentication failed." + samlResponse, ex);
             return new MultipleIdentityAuthenticationTicket(
                 Enumerable.Empty<ClaimsIdentity>(),
                 authProperties);
