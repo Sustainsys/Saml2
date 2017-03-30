@@ -40,7 +40,7 @@ namespace Kentor.AuthServices.Tests.WebSso
         }
 
         [TestMethod]
-        public void Saml2PostBinding_Unbind_Nullcheck()
+        public void Saml2PostBinding_Unbind_Nullcheck_Request()
         {
             Saml2Binding.Get(Saml2BindingType.HttpPost)
                 .Invoking(b => b.Unbind(null, null))
@@ -48,10 +48,19 @@ namespace Kentor.AuthServices.Tests.WebSso
         }
 
         [TestMethod]
+        public void Saml2PostBinding_Unbind_Nullcheck_Options()
+        {
+            Saml2Binding.Get(Saml2BindingType.HttpPost)
+                .Invoking(b => b.Unbind(new HttpRequestData("GET", new Uri("http://localhost")), null))
+                .ShouldThrow<ArgumentNullException>()
+                .And.ParamName.Should().Be("options");
+        }
+
+        [TestMethod]
         public void Saml2PostBinding_Unbind_ThrowsOnNotBase64Encoded()
         {
             Saml2Binding.Get(Saml2BindingType.HttpPost)
-                .Invoking(b => b.Unbind(CreateRequest("foo"), null))
+                .Invoking(b => b.Unbind(CreateRequest("foo"), StubFactory.CreateOptions()))
                 .ShouldThrow<FormatException>();
         }
 
@@ -62,7 +71,8 @@ namespace Kentor.AuthServices.Tests.WebSso
 
             var r = CreateRequest(Convert.ToBase64String(Encoding.UTF8.GetBytes(response)));
 
-            Saml2Binding.Get(Saml2BindingType.HttpPost).Unbind(r, null).Data.OuterXml.Should().Be(response);
+            Saml2Binding.Get(Saml2BindingType.HttpPost).Unbind(r, StubFactory.CreateOptions())
+                .Data.OuterXml.Should().Be(response);
         }
 
         [TestMethod]
@@ -76,7 +86,7 @@ namespace Kentor.AuthServices.Tests.WebSso
                 relayState);
 
             Saml2Binding.Get(Saml2BindingType.HttpPost)
-                .Unbind(r, null).RelayState.Should().Be(relayState);
+                .Unbind(r, StubFactory.CreateOptions()).RelayState.Should().Be(relayState);
         }
 
         [TestMethod]
@@ -244,7 +254,7 @@ value=""" + expectedValue + @"""/>
         }
 
         [TestMethod]
-        public void Saml2PostBinding_CanUnbind_Nullcheck()
+        public void Saml2PostBinding_CanUnbind_Nullcheck_Request()
         {
             Saml2Binding.Get(Saml2BindingType.HttpPost)
                 .Invoking(b => b.CanUnbind(null))

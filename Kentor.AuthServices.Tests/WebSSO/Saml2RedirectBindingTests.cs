@@ -28,7 +28,7 @@ namespace Kentor.AuthServices.Tests.WebSso
         }
 
         [TestMethod]
-        public void Saml2RedirectBinding_Unbind_NullcheckRequest()
+        public void Saml2RedirectBinding_Unbind_Nullcheck_Request()
         {
             Saml2Binding.Get(Saml2BindingType.HttpRedirect)
                 .Invoking(b => b.Unbind(null, null))

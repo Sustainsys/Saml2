@@ -49,6 +49,10 @@ namespace Kentor.AuthServices.WebSso
             {
                 throw new ArgumentNullException(nameof(request));
             }
+            if(options == null)
+            {
+                throw new ArgumentNullException(nameof(options));
+            }
 
             string relayState;
             string artifact;
@@ -68,6 +72,8 @@ namespace Kentor.AuthServices.WebSso
                         "Artifact binding can only use GET or POST http method, but found {0}",
                         request.HttpMethod));
             }
+
+            options.Logger.WriteVerbose("Artifact binding found Artifact\n" + artifact);
 
             var data = ResolveArtifact(artifact, request.StoredRequestState, options);
 
@@ -102,7 +108,11 @@ namespace Kentor.AuthServices.WebSso
                 payload = xmlDoc.OuterXml;
             }
 
+            options.Logger.WriteVerbose("Calling idp " + idp.EntityId.Id + " to resolve artifact\n" + artifact);
+
             var response = Saml2SoapBinding.SendSoapRequest(payload, arsUri);
+
+            options.Logger.WriteVerbose("Artifact resolved returned\n" + response);
 
             return new Saml2ArtifactResponse(response).GetMessage();
         }
