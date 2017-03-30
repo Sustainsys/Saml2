@@ -366,14 +366,16 @@ namespace Kentor.AuthServices
                 {
                     try
                     {
+                        spOptions.Logger?.WriteInformation("Loading metadata for idp " + EntityId.Id);
                         var metadata = MetadataLoader.LoadIdp(
                             MetadataLocation,
                             spOptions.Compatibility.UnpackEntitiesDescriptorInIdentityProviderMetadata);
 
                         ReadMetadata(metadata);
                     }
-                    catch (WebException)
+                    catch (WebException ex)
                     {
+                        spOptions.Logger?.WriteError("Failed to load metadata for idp " + EntityId.Id, ex);
                         MetadataValidUntil = DateTime.MinValue;
                         throw;
                     }
