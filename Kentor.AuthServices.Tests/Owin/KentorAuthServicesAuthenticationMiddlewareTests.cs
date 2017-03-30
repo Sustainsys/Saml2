@@ -1369,8 +1369,6 @@ namespace Kentor.AuthServices.Tests.Owin
         }
 
         [TestMethod]
-
-        [TestMethod]
         public void KentorAuthServicesAuthenticationMiddleware_Ctor_NullCheckOptionsSpOptions()
         {
             var options = new KentorAuthServicesAuthenticationOptions(false);

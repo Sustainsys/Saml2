@@ -85,7 +85,8 @@ namespace Kentor.AuthServices.WebSso
             IdentityProvider idp = options.Notifications.SelectIdentityProvider(idpEntityId, relayData);
             if (idp == null)
             {
-                if (idpEntityId?.Id == null)
+                var idpEntityIdString = idpEntityId?.Id;
+                if (idpEntityIdString == null)
                 {
                     if (options.SPOptions.DiscoveryServiceUrl != null)
                     {
@@ -99,7 +100,7 @@ namespace Kentor.AuthServices.WebSso
                 {
                     if (!options.IdentityProviders.TryGetValue(idpEntityId, out idp))
                     {
-                        throw new InvalidOperationException("Unknown idp " + idpEntityId.Id);
+                        throw new InvalidOperationException("Unknown idp " + idpEntityIdString);
                     }
                 }
             }
@@ -135,7 +136,7 @@ namespace Kentor.AuthServices.WebSso
         {
             string returnUrl = authServicesUrls.SignInUrl.OriginalString;
 
-            if(!string.IsNullOrEmpty(returnPath))
+            if (!string.IsNullOrEmpty(returnPath))
             {
                 returnUrl += "?ReturnUrl=" + Uri.EscapeDataString(returnPath);
             }
