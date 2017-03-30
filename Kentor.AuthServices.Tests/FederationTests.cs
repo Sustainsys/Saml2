@@ -237,6 +237,8 @@ namespace Kentor.AuthServices.Tests
             MetadataRefreshScheduler.minInterval = new TimeSpan(0, 0, 0, 0, 5);
 
             var options = StubFactory.CreateOptions();
+            // Disable logging in this case, to trigger the code path when logger is null.
+            options.SPOptions.Logger = null;
 
             var subject = new Federation(
                 "http://localhost:13428/federationMetadataShortCacheDuration",
