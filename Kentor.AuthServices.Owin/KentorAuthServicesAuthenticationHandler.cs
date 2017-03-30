@@ -193,15 +193,23 @@ namespace Kentor.AuthServices.Owin
                     return true;
                 }
 
-                var result = CommandFactory.GetCommand(remainingPath.Value)
-                    .Run(await Context.ToHttpRequestData(Options.DataProtector.Unprotect), Options);
-
-                if (!result.HandledResult)
+                try
                 {
-                    result.Apply(Context, Options.DataProtector);
-                }
+                    var result = CommandFactory.GetCommand(remainingPath.Value)
+                        .Run(await Context.ToHttpRequestData(Options.DataProtector.Unprotect), Options);
 
-                return true;
+                    if (!result.HandledResult)
+                    {
+                        result.Apply(Context, Options.DataProtector);
+                    }
+
+                    return true;
+                }
+                catch(Exception ex)
+                {
+                    Options.Logger.WriteError("Error in AuthServices for " + Request.Path, ex);
+                    throw;
+                }
             }
 
             return false;

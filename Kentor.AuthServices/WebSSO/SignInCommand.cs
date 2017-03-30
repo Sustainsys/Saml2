@@ -99,7 +99,7 @@ namespace Kentor.AuthServices.WebSso
                 {
                     if (!options.IdentityProviders.TryGetValue(idpEntityId, out idp))
                     {
-                        throw new InvalidOperationException("Unknown idp");
+                        throw new InvalidOperationException("Unknown idp " + idpEntityId.Id);
                     }
                 }
             }
