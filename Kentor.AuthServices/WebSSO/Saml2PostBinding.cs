@@ -48,7 +48,7 @@ namespace Kentor.AuthServices.WebSso
             return new UnbindResult(xmlDoc.DocumentElement, relayState, TrustLevel.None);
         }
 
-        public override CommandResult Bind(ISaml2Message message)
+        public override CommandResult Bind(ISaml2Message message, ILoggerAdapter logger)
         {
             if(message == null)
             {
@@ -56,6 +56,7 @@ namespace Kentor.AuthServices.WebSso
             }
 
             var xml = message.ToXml();
+
             if(message.SigningCertificate != null)
             {
                 var xmlDoc = new XmlDocument()
@@ -68,6 +69,8 @@ namespace Kentor.AuthServices.WebSso
                 xmlDoc.Sign(message.SigningCertificate, true, message.SigningAlgorithm);
                 xml = xmlDoc.OuterXml;
             }
+
+            logger?.WriteVerbose("Sending message over Http POST binding\n" + xml);
 
             var encodedXml = Convert.ToBase64String(Encoding.UTF8.GetBytes(xml));
 

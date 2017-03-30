@@ -7,28 +7,33 @@ using System.Threading.Tasks;
 namespace Kentor.AuthServices
 {
     /// <summary>
-    /// Interface for an adapter around the logging framework used on each
-    /// platform.
+    /// Logger adapter that does nothing.
     /// </summary>
-    public interface ILoggerAdapter
+    public class NullLoggerAdapter : ILoggerAdapter
     {
-        /// <summary>
-        /// Write informational message.
-        /// </summary>
-        /// <param name="message">Message to write.</param>
-        void WriteInformation(string message);
-
         /// <summary>
         /// Write an error message
         /// </summary>
         /// <param name="message">Message</param>
         /// <param name="ex">Exception to include in error message.</param>
-        void WriteError(string message, Exception ex);
+        public void WriteError(string message, Exception ex)
+        {
+        }
+
+        /// <summary>
+        /// Write informational message.
+        /// </summary>
+        /// <param name="message">Message to write.</param>
+        public void WriteInformation(string message)
+        {
+        }
 
         /// <summary>
         /// Write an informational message on the verbose level.
         /// </summary>
         /// <param name="message">Message to write</param>
-        void WriteVerbose(string message);
+        public void WriteVerbose(string message)
+        {
+        }
     }
 }

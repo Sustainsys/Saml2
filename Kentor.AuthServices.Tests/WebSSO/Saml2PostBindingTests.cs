@@ -12,6 +12,7 @@ using Kentor.AuthServices.WebSso;
 using Kentor.AuthServices.Tests.WebSSO;
 using Kentor.AuthServices.Tests.Helpers;
 using System.Security.Cryptography.Xml;
+using NSubstitute;
 
 namespace Kentor.AuthServices.Tests.WebSso
 {
@@ -84,6 +85,21 @@ namespace Kentor.AuthServices.Tests.WebSso
             Saml2Binding.Get(Saml2BindingType.HttpPost)
                 .Invoking(b => b.Bind(null))
                 .ShouldThrow<ArgumentNullException>().And.ParamName.Should().Be("message");
+        }
+
+        [TestMethod]
+        public void Saml2PostBinding_Bind_LogsIfLoggerNonNull()
+        {
+            var logger = Substitute.For<ILoggerAdapter>();
+
+            Saml2Binding.Get(Saml2BindingType.HttpPost)
+                .Bind(new Saml2MessageImplementation
+                {
+                    XmlData = "<xml/>"
+                },
+                logger);
+
+            logger.Received().WriteVerbose("Sending message over Http POST binding\n<xml/>");
         }
 
         [TestMethod]

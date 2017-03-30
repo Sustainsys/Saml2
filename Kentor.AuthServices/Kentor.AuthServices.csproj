@@ -65,6 +65,7 @@
     <Compile Include="Internal\DelimitedString.cs" />
     <Compile Include="Internal\DictionaryExtensions.cs" />
     <Compile Include="ManagedSha256SignatureDescription.cs" />
+    <Compile Include="NullLoggerAdapter.cs" />
     <Compile Include="Saml2NameIdExtensions.cs" />
     <Compile Include="Configuration\ServiceCertificateCollection.cs" />
     <Compile Include="Saml2P\AuthnContextComparisonType.cs" />

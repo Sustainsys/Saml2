@@ -161,8 +161,9 @@ namespace Kentor.AuthServices.WebSso
         /// Binds a message to a http response with HTTP Redirect.
         /// </summary>
         /// <param name="message">Message to bind.</param>
+        /// <param name="logger">Logger to use.</param>
         /// <returns>CommandResult.</returns>
-        public override CommandResult Bind(ISaml2Message message)
+        public override CommandResult Bind(ISaml2Message message, ILoggerAdapter logger)
         {
             if(message == null)
             {

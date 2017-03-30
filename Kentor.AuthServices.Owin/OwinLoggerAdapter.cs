@@ -41,5 +41,14 @@ namespace Kentor.AuthServices.Owin
         {
             logger.WriteInformation(message);
         }
+
+        /// <summary>
+        /// Write a verbose informational message.
+        /// </summary>
+        /// <param name="message">Message to write</param>
+        public void WriteVerbose(string message)
+        {
+            logger.WriteVerbose(message);
+        }
     }
 }

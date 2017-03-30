@@ -17,6 +17,11 @@ namespace Kentor.AuthServices.WebSso
         /// </summary>
         /// <param name="request">Request to get application root url from.</param>
         /// <param name="options">Options to get module path and (optional) notification hooks from.</param>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "SignInUrl")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "LogoutUrl")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "AuthServicesUrl")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "AssertionConsumerServiceUrl")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "ApplicationUrl")]
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2208:InstantiateArgumentExceptionsCorrectly"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "sp")]
         public AuthServicesUrls(HttpRequestData request, IOptions options)
         {
@@ -32,6 +37,12 @@ namespace Kentor.AuthServices.WebSso
 
             var publicOrigin = options.Notifications.GetPublicOrigin(request) ?? options.SPOptions.PublicOrigin ?? request.ApplicationUrl;
             Init(publicOrigin, options.SPOptions.ModulePath);
+
+            options.Logger.WriteVerbose("Expanded AuthServicesUrl"
+                + "\nAssertionConsumerServiceUrl: " + AssertionConsumerServiceUrl
+                + "\nSignInUrl: " + SignInUrl
+                + "\nLogoutUrl: " + LogoutUrl
+                + "\nApplicationUrl: " + ApplicationUrl);
         }
 
         /// <summary>

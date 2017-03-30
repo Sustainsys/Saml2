@@ -31,5 +31,10 @@ namespace Kentor.AuthServices.Configuration
         /// events.
         /// </summary>
         KentorAuthServicesNotifications Notifications { get; }
+
+        /// <summary>
+        /// Adapter to logging framework of hosting application.
+        /// </summary>
+        ILoggerAdapter Logger { get; }
     }
 }

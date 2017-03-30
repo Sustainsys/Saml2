@@ -49,6 +49,7 @@ namespace Kentor.AuthServices.Configuration
         public Options(SPOptions spOptions)
         {
             Notifications = new KentorAuthServicesNotifications();
+            Logger = new NullLoggerAdapter();
             SPOptions = spOptions;
         }
 
@@ -70,6 +71,12 @@ namespace Kentor.AuthServices.Configuration
                 return identityProviders;
             }
         }
+
+        /// <summary>
+        /// Logger adapter around host logging framework. Defaults to a <see cref="NullLoggerAdapter"/>
+        /// instance that does nothing.
+        /// </summary>
+        public ILoggerAdapter Logger { get; set; }
 
         internal const string RsaSha256Uri = "http://www.w3.org/2001/04/xmldsig-more#rsa-sha256";
         internal const string Sha256Uri = "http://www.w3.org/2001/04/xmlenc#sha256";
