@@ -710,13 +710,13 @@ namespace Kentor.AuthServices.Tests.WebSSO
         }
 
         [TestMethod]
-        public void LogoutCommand_Run_LocalLogoutIfUnknownNameIdIssuer()
+        public void LogoutCommand_Run_LocalLogoutIfUnknownNameLogoutNameIdIssuer()
         {
             var user = new ClaimsPrincipal(
                 new ClaimsIdentity(
                     new Claim[]
                     {
-                        new Claim(ClaimTypes.NameIdentifier, "Someone", null, "NotEvenAUri")
+                        new Claim(AuthServicesClaimTypes.LogoutNameIdentifier, ",,,,NameId", null, "https://unknown.invalid"),
                     }));
 
             var options = StubFactory.CreateOptions();
@@ -748,7 +748,7 @@ namespace Kentor.AuthServices.Tests.WebSSO
 
         // Meta test to ensure that the test helper does logout if enabled.
         [TestMethod]
-        public void LogoutCommand_Run_LocalLogoutIfEverythingIsConfigured()
+        public void LogoutCommand_Run_FederatedLogoutIfEverythingIsConfigured()
         {
             var user = new ClaimsPrincipal(
                 new ClaimsIdentity(new Claim[]
@@ -766,10 +766,10 @@ namespace Kentor.AuthServices.Tests.WebSSO
         }
 
         [TestMethod]
-        public void LogoutCommand_Run_LocalLogoutIfNoNameId()
+        public void LogoutCommand_Run_LocalLogoutIfNoLogoutNameId()
         {
             var user = ClaimsPrincipal.Current;
-            user.FindFirst(ClaimTypes.NameIdentifier)
+            user.FindFirst(AuthServicesClaimTypes.LogoutNameIdentifier)
                 .Should().BeNull("this is a test for the case where there is no NameIdentifier");
 
             var options = StubFactory.CreateOptions();
@@ -784,7 +784,7 @@ namespace Kentor.AuthServices.Tests.WebSSO
             var user = new ClaimsPrincipal(
                 new ClaimsIdentity(new Claim[]
                 {
-                    new Claim(ClaimTypes.NameIdentifier, "NameId", null, "https://idp.example.com")
+                    new Claim(AuthServicesClaimTypes.LogoutNameIdentifier, ",,,,NameId", null, "https://idp.example.com"),
                 }));
 
             var options = StubFactory.CreateOptions();
@@ -799,7 +799,7 @@ namespace Kentor.AuthServices.Tests.WebSSO
             var user = new ClaimsPrincipal(
                 new ClaimsIdentity(new Claim[]
                 {
-                    new Claim(ClaimTypes.NameIdentifier, "NameId", null, "https://idp2.example.com"),
+                    new Claim(AuthServicesClaimTypes.LogoutNameIdentifier, ",,,,NameId", null, "https://idp2.example.com"),
                     new Claim(AuthServicesClaimTypes.SessionIndex, "SessionId", null, "https://idp2.example.com")
                 }));
 
@@ -815,7 +815,7 @@ namespace Kentor.AuthServices.Tests.WebSSO
             var user = new ClaimsPrincipal(
                 new ClaimsIdentity(new Claim[]
                 {
-                    new Claim(ClaimTypes.NameIdentifier, "NameId", null, "https://idp.example.com"),
+                    new Claim(AuthServicesClaimTypes.LogoutNameIdentifier, ",,,,NameId", null, "https://idp.example.com"),
                     new Claim(AuthServicesClaimTypes.SessionIndex, "SessionId", null, "https://idp.example.com")
                 }));
 
@@ -834,7 +834,7 @@ namespace Kentor.AuthServices.Tests.WebSSO
             var user = new ClaimsPrincipal(
                 new ClaimsIdentity(new Claim[]
                 {
-                    new Claim(ClaimTypes.NameIdentifier, "NameId", null, "https://idp.example.com"),
+                    new Claim(AuthServicesClaimTypes.LogoutNameIdentifier, ",,,,NameId", null, "https://idp.example.com"),
                     new Claim(AuthServicesClaimTypes.SessionIndex, "SessionId", null, "https://idp.example.com")
                 }));
 

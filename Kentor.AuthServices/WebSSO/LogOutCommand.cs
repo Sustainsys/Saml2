@@ -156,7 +156,7 @@ namespace Kentor.AuthServices.WebSso
                 + "\n  Issuer of LogoutNameIdentifier claim (should be Idp entity id): " + idpEntityId
                 + "\n  Issuer is a known Idp: " + knownIdp
                 + "\n  Session index claim (should have a value): " + sessionIndexClaim
-                + "\n  Idp has SingleLogoutServiceUrl: " + idp?.SingleLogoutServiceUrl.OriginalString
+                + "\n  Idp has SingleLogoutServiceUrl: " + idp?.SingleLogoutServiceUrl?.OriginalString
                 + "\n  There is a signingCertificate in SPOptions: " + (options.SPOptions.SigningServiceCertificate != null)
                 + "\n  Idp configured to DisableOutboundLogoutRequests (should be false): " + idp?.DisableOutboundLogoutRequests);
 
