@@ -29,11 +29,6 @@ namespace Kentor.AuthServices.WebSso
                 throw new ArgumentNullException(nameof(request));
             }
 
-            if(options == null)
-            {
-                throw new ArgumentNullException(nameof(options));
-            }
-
             var xmlDoc = new XmlDocument()
             {
                 PreserveWhitespace = true
@@ -47,7 +42,7 @@ namespace Kentor.AuthServices.WebSso
 
             xmlDoc.LoadXml(Encoding.UTF8.GetString(Convert.FromBase64String(encodedMessage)));
 
-            options.SPOptions.Logger.WriteVerbose("Http POST binding extracted message\n" + xmlDoc.OuterXml);
+            options?.SPOptions.Logger.WriteVerbose("Http POST binding extracted message\n" + xmlDoc.OuterXml);
 
             string relayState = null;
             request.Form.TryGetValue("RelayState", out relayState);

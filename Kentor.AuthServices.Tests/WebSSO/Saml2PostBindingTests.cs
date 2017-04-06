@@ -48,12 +48,18 @@ namespace Kentor.AuthServices.Tests.WebSso
         }
 
         [TestMethod]
-        public void Saml2PostBinding_Unbind_Nullcheck_Options()
+        public void Saml2PostBinding_Unbind_WorksEvenIfOptionsIsNull()
         {
+            string response = "<responsestring/>";
+            string relayState = "someState";
+
+            var request = CreateRequest(
+                Convert.ToBase64String(Encoding.UTF8.GetBytes(response)),
+                relayState);
+
             Saml2Binding.Get(Saml2BindingType.HttpPost)
-                .Invoking(b => b.Unbind(new HttpRequestData("GET", new Uri("http://localhost")), null))
-                .ShouldThrow<ArgumentNullException>()
-                .And.ParamName.Should().Be("options");
+                .Invoking(b => b.Unbind(request, null))
+                .ShouldNotThrow();
         }
 
         [TestMethod]
