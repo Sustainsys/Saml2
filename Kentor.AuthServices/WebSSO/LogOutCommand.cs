@@ -214,6 +214,8 @@ namespace Kentor.AuthServices.WebSso
             }
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "SingleLogoutServiceUrl")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "SingleLogoutService")]
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "LogoutRequest")]
         private static CommandResult HandleRequest(UnbindResult unbindResult, IOptions options)
         {
@@ -224,8 +226,19 @@ namespace Kentor.AuthServices.WebSso
             if(options.SPOptions.SigningServiceCertificate == null)
             {
                 throw new ConfigurationErrorsException(string.Format(CultureInfo.InvariantCulture,
-                    "Received a LogoutRequest from \"{0}\" but cannot reply because single logout responses must be signed and there is no signing certificate configured. Looks like the idp is configured for Single Logout despite AuthServices not exposing that functionality in the metadata.",
+                    "Received a LogoutRequest from \"{0}\" but cannot reply because single logout responses " +
+                    "must be signed and there is no signing certificate configured. Looks like the idp is " +
+                    "configured for Single Logout despite AuthServices not exposing that functionality in the metadata.",
                     request.Issuer.Id));
+            }
+
+            if(idp.SingleLogoutServiceResponseUrl == null)
+            {
+                throw new InvalidOperationException(string.Format(CultureInfo.InvariantCulture,
+                    "Received a LogoutRequest from \"{0}\" but cannot reply because on logout endpoint is " +
+                    "configured on the idp. Set a SingleLogoutServiceUrl if the idp is configured manually, " +
+                    "or check that the idp metadata contains a SingleLogoutService endpoint.",
+                    idp.EntityId.Id));
             }
 
             var response = new Saml2LogoutResponse(Saml2StatusCode.Success)

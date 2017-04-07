@@ -622,6 +622,33 @@ namespace Kentor.AuthServices.Tests.WebSSO
         }
 
         [TestMethod]
+        public void LogoutCommand_Run_IncomingRequest_ThrowsOnNoConfiguredLogoutEndPointOnIdp()
+        {
+            var request = new Saml2LogoutRequest()
+            {
+                DestinationUrl = new Uri("http://sp.example.com/path/AuthServices/logout"),
+                Issuer = new EntityId("https://idp2.example.com"),
+                SigningCertificate = SignedXmlHelper.TestCert,
+                SigningAlgorithm = SignedXml.XmlDsigRSASHA256Url,
+                NameId = new Saml2NameIdentifier("NameId"),
+                SessionIndex = "SessionID"
+            };
+
+            var bindResult = Saml2Binding.Get(Saml2BindingType.HttpRedirect)
+                .Bind(request);
+
+            var httpRequest = new HttpRequestData("GET", bindResult.Location);
+
+            var options = StubFactory.CreateOptions();
+            options.SPOptions.ServiceCertificates.Add(SignedXmlHelper.TestCert);
+
+            CommandFactory.GetCommand(CommandFactory.LogoutCommandName)
+                .Invoking(c => c.Run(httpRequest, options))
+                .ShouldThrow<InvalidOperationException>()
+                .WithMessage("*LogoutRequest*\"https://idp2.example.com\"*cannot reply*logout endpoint*idp*");
+        }
+
+        [TestMethod]
         public void LogoutCommand_Run_IncomingRequest_ThroughRedirectBinding_ThrowsOnMissingSignature()
         {
             var request = new Saml2LogoutRequest()
