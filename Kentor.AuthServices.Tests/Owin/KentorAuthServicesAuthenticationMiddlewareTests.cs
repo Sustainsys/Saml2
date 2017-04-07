@@ -844,6 +844,69 @@ namespace Kentor.AuthServices.Tests.Owin
         }
 
         [TestMethod]
+        public async Task KentorAuthServicesAuthenticationMiddleware_AcsLogsAndRedirectsToApplicationRootOnNoReturnUrlAndNoStoredRequestState()
+        {
+            var context = OwinTestHelpers.CreateOwinContext();
+            context.Request.Method = "POST";
+
+            var response =
+                @"<saml2p:Response xmlns:saml2p=""urn:oasis:names:tc:SAML:2.0:protocol""
+                xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
+                ID = """ + MethodBase.GetCurrentMethod().Name + @""" Version=""2.0""
+                IssueInstant=""2013-01-01T00:00:00Z"">
+                <saml2:Issuer>
+                    https://idp.example.com
+                </saml2:Issuer>
+                <saml2p:Status>
+                    <saml2p:StatusCode Value=""urn:oasis:names:tc:SAML:2.0:status:Success"" />
+                </saml2p:Status>
+                <saml2:Assertion
+                Version=""2.0"" ID=""" + MethodBase.GetCurrentMethod().Name + @"_Assertion1""
+                IssueInstant=""2013-09-25T00:00:00Z"">
+                    <saml2:Issuer>https://idp.example.com</saml2:Issuer>
+                    <saml2:Subject>
+                        <saml2:NameID>SomeUser</saml2:NameID>
+                        <saml2:SubjectConfirmation Method=""urn:oasis:names:tc:SAML:2.0:cm:bearer"" />
+                    </saml2:Subject>
+                    <saml2:Conditions NotOnOrAfter=""2100-01-01T00:00:00Z"" />
+                </saml2:Assertion>
+            </saml2p:Response>";
+
+            var bodyData = new KeyValuePair<string, string>[] {
+                new KeyValuePair<string, string>("SAMLResponse",
+                    Convert.ToBase64String(Encoding.UTF8.GetBytes(response)))
+            };
+
+            var encodedBodyData = new FormUrlEncodedContent(bodyData);
+
+            context.Request.Body = encodedBodyData.ReadAsStreamAsync().Result;
+            context.Request.ContentType = encodedBodyData.Headers.ContentType.ToString();
+            context.Request.Host = new HostString("localhost");
+            context.Request.Path = new PathString("/AuthServices/Acs");
+            context.Request.PathBase = new PathString("/ApplicationPath");
+
+            var options = new KentorAuthServicesAuthenticationOptions(true)
+            {
+                SignInAsAuthenticationType = "AuthType"
+            };
+            options.SPOptions.ReturnUrl = null;
+
+            options.SPOptions.Logger = Substitute.For<ILoggerAdapter>();
+
+            var subject = new KentorAuthServicesAuthenticationMiddleware(
+                null,
+                CreateAppBuilder(),
+                options);
+
+            await subject.Invoke(context);
+
+            context.Response.StatusCode.Should().Be(302);
+            context.Response.Headers["Location"].Should().Be("http://localhost/ApplicationPath?error=access_denied");
+            context.Authentication.AuthenticationResponseGrant.Should().BeNull();
+            options.SPOptions.Logger.Received().WriteError(Arg.Any<string>(), null);
+        }
+
+        [TestMethod]
         public async Task KentorAuthServicesAuthenticationMiddleware_AcsRedirectsToAuthPropsReturnUriWithoutSignInOnError()
         {
             var context = OwinTestHelpers.CreateOwinContext();

@@ -56,6 +56,8 @@ namespace Kentor.AuthServices.Owin
             }
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "SPOptions")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "ReturnUrl")]
         private AuthenticationTicket CreateErrorAuthenticationTicket(HttpRequestData httpRequestData, Exception ex)
         {
             AuthenticationProperties authProperties = null;
@@ -69,9 +71,21 @@ namespace Kentor.AuthServices.Owin
             }
             else
             {
+                var redirectUrl = Options.SPOptions.ReturnUrl;
+
+                if (redirectUrl == null)
+                {
+                    Options.SPOptions.Logger.WriteError(
+                        "An error occurred and no request state with a return url is available. " +
+                        "The fallback behavior is to redirect to the location configured in " +
+                        "SPOptions.ReturnUrl. However, that is null so a redirect is done to the " +
+                        "application root instead.", null);
+
+                    redirectUrl = httpRequestData.ApplicationUrl;
+                }
                 authProperties = new AuthenticationProperties
                 {
-                    RedirectUri = Options.SPOptions.ReturnUrl.OriginalString
+                    RedirectUri = redirectUrl.OriginalString
                 };
             }
 
