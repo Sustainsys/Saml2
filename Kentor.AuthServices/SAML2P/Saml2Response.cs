@@ -126,7 +126,9 @@ namespace Kentor.AuthServices.Saml2P
                 {
                     throw new UnexpectedInResponseToException(
                         string.Format(CultureInfo.InvariantCulture,
-                        "Received message contains unexpected InResponseTo \"{0}\". No RelayState was detected so message was not expected to have an InResponseTo attribute.",
+                        "Received message contains unexpected InResponseTo \"{0}\". No cookie preserving state " +
+                        "from the request was found so the message was not expected to have an InResponseTo attribute. " +
+                        "This error typically occurs if the cookie set when doing SP-initiated sign on have been lost.",
                         InResponseTo));
                 }
                 if (!expectedInResponseTo.Equals(InResponseTo))
