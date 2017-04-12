@@ -1,11 +1,7 @@
+Version 0.21.1
+* Fix Local logout broken in v0.21.0
+* Fixes to error handling: Various error conditions have got better messages, instead of hard to understand null reference exceptions.
+
 Version 0.21.0
 * Added Logging
 * Fixed GlobalEnableSha256XmlSignatures that was broken in v0.20.0
-
-Version 0.20.0
-* Security Fix: Open redirect issue with ReturnUrl
-* Improved active/passive handling for Owin middleware
-* SHA256/384/512 support
-* More Notifications for custom behaviour
-And some more, see https://github.com/KentorIT/authservices/milestones/v0.20.0 for details.
-
