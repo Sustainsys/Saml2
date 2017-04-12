@@ -39,6 +39,7 @@ namespace Kentor.AuthServices.StubIdp.Models
             {
                 DestinationUrl = DestinationUrl,
                 SigningCertificate = CertificateHelper.SigningCertificate,
+                SigningAlgorithm = SignedXml.XmlDsigRSASHA256Url,
                 Issuer = new EntityId(UrlResolver.MetadataUrl.ToString()),
                 NameId = new Saml2NameIdentifier(NameId),
                 SessionIndex = SessionIndex,
