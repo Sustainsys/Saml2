@@ -515,9 +515,9 @@ namespace Kentor.AuthServices.Saml2P
 
             if (status != Saml2StatusCode.Success)
             {
-                throw new UnsuccessfulSamlOperationException(string.Format("The Saml2Response must have status success to extract claims. Status: {0}.{1}"
-                , status.ToString(), statusMessage != null ? " Message: " + statusMessage + "." : string.Empty),
-                status, statusMessage, secondLevelStatus);
+                throw new UnsuccessfulSamlOperationException(
+                    "The Saml2Response must have status success to extract claims.",
+                    status, statusMessage, secondLevelStatus);
             }
 
             foreach (XmlElement assertionNode in GetAllAssertionElementNodes(options))

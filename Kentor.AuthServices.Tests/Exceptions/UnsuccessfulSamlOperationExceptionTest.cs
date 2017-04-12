@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Kentor.AuthServices.Exceptions;
+using Kentor.AuthServices.Saml2P;
 
 namespace Kentor.AuthServices.Tests.Exceptions
 {
@@ -32,6 +33,7 @@ namespace Kentor.AuthServices.Tests.Exceptions
 
             subject.Message.Should().Be(msg);
         }
+
         [TestMethod]
         public void InvalidSamlOperationException_StringInnerExCtor()
         {
@@ -43,5 +45,24 @@ namespace Kentor.AuthServices.Tests.Exceptions
             subject.InnerException.Should().Be(inner);
         }
 
+        [TestMethod]
+        public void InvalidSamlOperationException_SamlStatusCodeCtor()
+        {
+            var message = "Message!";
+            var status = Saml2StatusCode.RequestVersionDeprecated;
+            var statusMessage = "Request Version Deprecated";
+            var secondLevelStatus = "Second Level Status";
+
+            var subject = new UnsuccessfulSamlOperationException(
+                message,
+                status,
+                statusMessage,
+                secondLevelStatus);
+
+            subject.Message.Should().Be("Message!\n" +
+                "  Saml2 Status Code: RequestVersionDeprecated\n" +
+                "  Saml2 Status Message: Request Version Deprecated\n" +
+                "  Saml2 Second Level Status: Second Level Status");
+        }
     }
 }

@@ -27,14 +27,19 @@ namespace Kentor.AuthServices.Exceptions
         /// Second level status of SAML2Response
         /// </summary>
         public string SecondLevelStatus { get; set; }
+
         /// <summary>
-        /// 
+        /// Ctor, bundling the Saml2 status codes and message into the exception message.
         /// </summary>
         /// <param name="message">Exception message.</param>
         /// <param name="statusCode">Status of the SAML2Response</param>
         /// <param name="statusMessage">Status message of SAML2Response</param>
         /// <param name="secondLevelStatus">Second level status of SAML2Response</param>
-        public UnsuccessfulSamlOperationException(string message, Saml2StatusCode statusCode, string statusMessage, string secondLevelStatus) : base(message)
+        public UnsuccessfulSamlOperationException(string message, Saml2StatusCode statusCode, string statusMessage, string secondLevelStatus) : 
+            base(message + "\n" +
+                "  Saml2 Status Code: " + statusCode + "\n" +
+                "  Saml2 Status Message: " + statusMessage + "\n" +
+                "  Saml2 Second Level Status: " + secondLevelStatus)
         {
             this.Status = statusCode;
             this.StatusMessage = statusMessage;

@@ -1597,7 +1597,7 @@ namespace Kentor.AuthServices.Tests.Saml2P
             Action a = () => subject.GetClaims(Options.FromConfiguration);
 
             a.ShouldThrow<UnsuccessfulSamlOperationException>()
-                .WithMessage("The Saml2Response must have status success to extract claims. Status: Requester.")
+                .WithMessage("The Saml2Response must have status success to extract claims.\n*Status Code: Requester*")
                 .Where(x => x.Status == Saml2StatusCode.Requester);
 
         }
@@ -1626,9 +1626,8 @@ namespace Kentor.AuthServices.Tests.Saml2P
             Action a = () => subject.GetClaims(Options.FromConfiguration);
 
             a.ShouldThrow<UnsuccessfulSamlOperationException>()
-                .WithMessage("The Saml2Response must have status success to extract claims. Status: Responder. Message: A status message.")
+                .WithMessage("The Saml2Response must have status success to extract claims.*Status Code: Responder*Message: A status message*RequestDenied")
                 .Where(x => x.Status == Saml2StatusCode.Responder && x.StatusMessage == "A status message" && x.SecondLevelStatus == "urn:oasis:names:tc:SAML:2.0:status:RequestDenied");
-
         }
 
         [TestMethod]
@@ -1663,7 +1662,7 @@ namespace Kentor.AuthServices.Tests.Saml2P
             Action a = () => subject.GetClaims(Options.FromConfiguration);
 
             a.ShouldThrow<UnsuccessfulSamlOperationException>()
-                .WithMessage("The Saml2Response must have status success to extract claims. Status: Requester. Message: A status message.")
+                .WithMessage("The Saml2Response must have status success to extract claims.*Status Code: Requester*Message: A status message*")
                 .Where(x => x.Status == Saml2StatusCode.Requester);
 
         }
