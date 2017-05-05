@@ -1,7 +1,9 @@
+Version 0.21.2
+* Security fix: Flawed validation of Return URL causes Open Redirect
+* Security fix: XML External Entity Processing on .NET 4.5
+* Security fix: Malicious Idp can cause write to arbitrary files
+* Fix: Null Reference without NameIdentifier Claim.
+
 Version 0.21.1
 * Fix Local logout broken in v0.21.0
 * Fixes to error handling: Various error conditions have got better messages, instead of hard to understand null reference exceptions.
-
-Version 0.21.0
-* Added Logging
-* Fixed GlobalEnableSha256XmlSignatures that was broken in v0.20.0
