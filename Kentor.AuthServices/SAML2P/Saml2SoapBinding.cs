@@ -58,6 +58,21 @@ namespace Kentor.AuthServices.Saml2P
         /// <returns>Response.</returns>
         public static XmlElement SendSoapRequest(string payload, Uri destination)
         {
+            if(destination == null)
+            {
+                throw new ArgumentNullException(nameof(destination));
+            }
+
+            switch (destination.Scheme)
+            {
+                case "http":
+                case "https":
+                    break;
+                default:
+                    throw new ArgumentException("The Uri scheme " + destination.Scheme +
+                        " is not allowed for outbound SOAP messages. Only http or https URLs are allowed.");
+            }
+
             var message = CreateSoapBody(payload);
 
             using (var client = new WebClient())
