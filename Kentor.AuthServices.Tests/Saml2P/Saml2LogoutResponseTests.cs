@@ -29,9 +29,9 @@ namespace Kentor.AuthServices.Tests.Saml2P
                         </samlp:Status>
                     </samlp:LogoutResponse>";
 
-            var expectedNode = XmlHelpers.FromString(expectedXml).DocumentElement;
+            var expectedNode = XmlHelpers.XmlDocumentFromString(expectedXml).DocumentElement;
 
-            var xmlDoc = new XmlDocument();
+            var xmlDoc = XmlHelpers.CreateSafeXmlDocument();
 
             subject.AppendTo(xmlDoc);
 
@@ -61,9 +61,9 @@ namespace Kentor.AuthServices.Tests.Saml2P
                     </samlp:Status>
                 </samlp:LogoutResponse>";
 
-            var expectedElement = XmlHelpers.FromString(expectedXml).DocumentElement;
+            var expectedElement = XmlHelpers.XmlDocumentFromString(expectedXml).DocumentElement;
 
-            var xmlDoc = new XmlDocument();
+            var xmlDoc = XmlHelpers.CreateSafeXmlDocument();
             subject.AppendTo(xmlDoc);
 
             xmlDoc.DocumentElement.Should().BeEquivalentTo(expectedElement, "XML should be full LogoutResponse");
@@ -79,7 +79,7 @@ namespace Kentor.AuthServices.Tests.Saml2P
                 InResponseTo = new Saml2Id()
             };
 
-            var xmlDoc = new XmlDocument();
+            var xmlDoc = XmlHelpers.CreateSafeXmlDocument();
             subject.AppendTo(xmlDoc);
             var expected = xmlDoc.OuterXml;
 

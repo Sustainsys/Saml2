@@ -29,18 +29,15 @@ namespace Kentor.AuthServices.WebSso
                 throw new ArgumentNullException(nameof(request));
             }
 
-            var xmlDoc = new XmlDocument()
-            {
-                PreserveWhitespace = true
-            };
-
             string encodedMessage;
             if (!request.Form.TryGetValue("SAMLResponse", out encodedMessage))
             {
                 encodedMessage = request.Form["SAMLRequest"];
             }
 
-            xmlDoc.LoadXml(Encoding.UTF8.GetString(Convert.FromBase64String(encodedMessage)));
+            var xmlDoc = XmlHelpers.XmlDocumentFromString(
+                Encoding.UTF8.GetString(
+                    Convert.FromBase64String(encodedMessage)));
 
             options?.SPOptions.Logger.WriteVerbose("Http POST binding extracted message\n" + xmlDoc.OuterXml);
 
@@ -61,12 +58,7 @@ namespace Kentor.AuthServices.WebSso
 
             if(message.SigningCertificate != null)
             {
-                var xmlDoc = new XmlDocument()
-                {
-                    PreserveWhitespace = true
-                };
-
-                xmlDoc.LoadXml(xml);
+                var xmlDoc = XmlHelpers.XmlDocumentFromString(xml);
 
                 xmlDoc.Sign(message.SigningCertificate, true, message.SigningAlgorithm);
                 xml = xmlDoc.OuterXml;

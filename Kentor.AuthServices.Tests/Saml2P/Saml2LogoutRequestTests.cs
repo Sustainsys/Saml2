@@ -34,9 +34,9 @@ namespace Kentor.AuthServices.Tests.Saml2P
                 SessionIndex = "SessionId"
             };
 
-            var actual = XmlHelpers.FromString(subject.ToXml());
+            var actual = XmlHelpers.XmlDocumentFromString(subject.ToXml());
 
-            var expected = XmlHelpers.FromString(
+            var expected = XmlHelpers.XmlDocumentFromString(
 @"<saml2p:LogoutRequest xmlns:saml2p=""urn:oasis:names:tc:SAML:2.0:protocol""
 xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
  ID=""d2b7c388cec36fa7c39c28fd298644a8"" Version=""2.0"" IssueInstant=""2004-01-21T19:00:49Z""
@@ -71,7 +71,7 @@ xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
  <saml2p:SessionIndex>SessionId</saml2p:SessionIndex>
 </saml2p:LogoutRequest>";
 
-            var xmlDoc = XmlHelpers.FromString(xmlData);
+            var xmlDoc = XmlHelpers.XmlDocumentFromString(xmlData);
 
             var subject = Saml2LogoutRequest.FromXml(xmlDoc.DocumentElement);
 
@@ -98,7 +98,7 @@ xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
  <saml2:NameID>005a06e0-ad82-110d-a556-004005b13a2b</saml2:NameID>
 </saml2p:LogoutRequest>";
 
-            var xmlDoc = XmlHelpers.FromString(xmlData);
+            var xmlDoc = XmlHelpers.XmlDocumentFromString(xmlData);
 
             var subject = Saml2LogoutRequest.FromXml(xmlDoc.DocumentElement);
 

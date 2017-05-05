@@ -13,8 +13,7 @@ namespace Kentor.AuthServices.Tests.Internal
         [TestMethod]
         public void XmlHelpers_Encrypt_OaepTrue()
         {
-            var xmlDoc = new XmlDocument { PreserveWhitespace = true };
-            xmlDoc.LoadXml("<xml />");
+            var xmlDoc = XmlHelpers.XmlDocumentFromString("<xml />");
             var elementToEncrypt = xmlDoc.DocumentElement;
             elementToEncrypt.Encrypt(useOaep: true, certificate: SignedXmlHelper.TestCert);
 
@@ -27,8 +26,7 @@ namespace Kentor.AuthServices.Tests.Internal
         [TestMethod]
         public void XmlHelpers_Encrypt_OaepFalse()
         {
-            var xmlDoc = new XmlDocument { PreserveWhitespace = true };
-            xmlDoc.LoadXml("<xml />");
+            var xmlDoc = XmlHelpers.XmlDocumentFromString("<xml />");
             var elementToEncrypt = xmlDoc.DocumentElement;
             elementToEncrypt.Encrypt(useOaep: false, certificate: SignedXmlHelper.TestCert);
 
@@ -41,7 +39,7 @@ namespace Kentor.AuthServices.Tests.Internal
         [TestMethod]
         public void XmlHelpers_Encrypt_NullCert()
         {
-            new XmlDocument().DocumentElement.Invoking(
+            XmlHelpers.CreateSafeXmlDocument().DocumentElement.Invoking(
                 e => e.Encrypt(false, null))
                 .ShouldThrow<ArgumentNullException>()
                 .And.ParamName.Should().Be("certificate");

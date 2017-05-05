@@ -53,8 +53,7 @@ namespace Kentor.AuthServices.Configuration
 
         private static bool CertificateWorksForDecryption(X509Certificate2 certificate)
         {
-            var xmlDoc = new XmlDocument { PreserveWhitespace = true };
-            xmlDoc.LoadXml("<xml/>");
+            var xmlDoc = XmlHelpers.XmlDocumentFromString("<xml/>");
             var elementToEncrypt = xmlDoc.DocumentElement;
             elementToEncrypt.Encrypt(useOaep: false, certificate: certificate);
 

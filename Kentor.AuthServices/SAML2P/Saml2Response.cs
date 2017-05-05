@@ -47,9 +47,7 @@ namespace Kentor.AuthServices.Saml2P
         /// <exception cref="XmlException">On xml errors or unexpected xml structure.</exception>
         public static Saml2Response Read(string xml, Saml2Id expectedInResponseTo)
         {
-            var x = new XmlDocument();
-            x.PreserveWhitespace = true;
-            x.LoadXml(xml);
+            var x = XmlHelpers.XmlDocumentFromString(xml);
 
             return new Saml2Response(x.DocumentElement, expectedInResponseTo);
         }
@@ -280,7 +278,7 @@ namespace Kentor.AuthServices.Saml2P
 
         private void CreateXmlElement()
         {
-            var xml = new XmlDocument();
+            var xml = XmlHelpers.CreateSafeXmlDocument();
 
             var responseElement = xml.CreateElement("saml2p", "Response", Saml2Namespaces.Saml2PName);
 

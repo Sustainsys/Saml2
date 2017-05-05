@@ -47,7 +47,7 @@ namespace Kentor.AuthServices.Tests.WebSso
 
             var subject = new MetadataCommand().Run(request, options);
 
-            var payloadXml = XmlHelpers.FromString(subject.Content);
+            var payloadXml = XmlHelpers.XmlDocumentFromString(subject.Content);
 
             // Validate signature, location of it  and then drop it. It contains
             // a reference to the ID which makes it unsuitable for string matching.
@@ -103,7 +103,7 @@ namespace Kentor.AuthServices.Tests.WebSso
             + "<ContactPerson contactType=\"technical\" />"
             + "</EntityDescriptor>";
 
-            payloadXml.Should().BeEquivalentTo(XmlHelpers.FromString(expectedXml));
+            payloadXml.Should().BeEquivalentTo(XmlHelpers.XmlDocumentFromString(expectedXml));
             subject.ContentType.Should().Be("application/samlmetadata+xml");
         }
 

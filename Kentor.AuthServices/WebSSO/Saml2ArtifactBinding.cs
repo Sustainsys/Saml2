@@ -98,12 +98,7 @@ namespace Kentor.AuthServices.WebSso
 
             if (options.SPOptions.SigningServiceCertificate != null)
             {
-                var xmlDoc = new XmlDocument()
-                {
-                    PreserveWhitespace = true
-                };
-
-                xmlDoc.LoadXml(payload);
+                var xmlDoc = XmlHelpers.XmlDocumentFromString(payload);
                 xmlDoc.Sign(options.SPOptions.SigningServiceCertificate, true);
                 payload = xmlDoc.OuterXml;
             }

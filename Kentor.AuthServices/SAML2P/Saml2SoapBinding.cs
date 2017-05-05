@@ -40,11 +40,7 @@ namespace Kentor.AuthServices.Saml2P
         /// <returns>Parsed data.</returns>
         public static XmlElement ExtractBody(string xml)
         {
-            var xmlDoc = new XmlDocument()
-            {
-                PreserveWhitespace = true
-            };
-            xmlDoc.LoadXml(xml);
+            var xmlDoc = XmlHelpers.XmlDocumentFromString(xml);
 
             return xmlDoc.DocumentElement["Body", Saml2Namespaces.SoapEnvelopeName]
                 .ChildNodes.OfType<XmlElement>().Single();

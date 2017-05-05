@@ -30,7 +30,7 @@ namespace Kentor.AuthServices.Metadata
         {
             var serializer = ExtendedMetadataSerializer.WriterInstance;
 
-            var xmlDoc = new XmlDocument();
+            var xmlDoc = XmlHelpers.CreateSafeXmlDocument();
             using (var xmlWriter = xmlDoc.CreateNavigator().AppendChild())
             {
                 serializer.WriteMetadata(xmlWriter, metadata);

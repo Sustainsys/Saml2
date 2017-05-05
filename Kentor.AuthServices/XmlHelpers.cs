@@ -34,20 +34,33 @@ namespace Kentor.AuthServices
         }
 
         /// <summary>
-        /// Parse XML data from a string.
+        /// Creates an Xml document with secure settings and initialized it from
+        /// a string.
         /// </summary>
         /// <param name="source">Source string to load</param>
         /// <returns>Xml document</returns>
-        public static XmlDocument FromString(string source)
+        public static XmlDocument XmlDocumentFromString(string source)
         {
-            var xmlDoc = new XmlDocument()
-            {
-                PreserveWhitespace = true
-            };
+            var xmlDoc = CreateSafeXmlDocument();
 
             xmlDoc.LoadXml(source);
 
             return xmlDoc;
+        }
+
+        /// <summary>
+        /// Create an Xml Document with secure settings, specifically
+        /// disabling xml external entities. Also set PreserveWhiteSpace = true
+        /// </summary>
+        /// <returns>Xml Document</returns>
+        public static XmlDocument CreateSafeXmlDocument()
+        {
+            return new XmlDocument()
+            {
+                // Null is the default on 4.6 and later, but not on 4.5.
+                XmlResolver = null,
+                PreserveWhitespace = true
+            };
         }
 
         /// <summary>

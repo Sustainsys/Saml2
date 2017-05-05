@@ -378,7 +378,7 @@ namespace Kentor.AuthServices.Tests.WebSSO
                 SigningCertificate = SignedXmlHelper.TestCert
             };
 
-            var xml = XmlHelpers.FromString(response.ToXml());
+            var xml = XmlHelpers.XmlDocumentFromString(response.ToXml());
             xml.Sign(SignedXmlHelper.TestCert);
 
             var responseData = Convert.ToBase64String(Encoding.UTF8.GetBytes(xml.OuterXml));
@@ -468,7 +468,7 @@ namespace Kentor.AuthServices.Tests.WebSSO
 
             var actualMessage = actualUnbindResult.Data;
 
-            var expectedMessage = XmlHelpers.FromString(
+            var expectedMessage = XmlHelpers.XmlDocumentFromString(
                 $@"<samlp:LogoutResponse xmlns:samlp=""urn:oasis:names:tc:SAML:2.0:protocol""
                     xmlns=""urn:oasis:names:tc:SAML:2.0:assertion""
                     Destination=""https://idp.example.com/logout""
@@ -503,7 +503,7 @@ namespace Kentor.AuthServices.Tests.WebSSO
                 SigningAlgorithm = SignedXml.XmlDsigRSASHA256Url
             };
 
-            var xml = XmlHelpers.FromString(request.ToXml());
+            var xml = XmlHelpers.XmlDocumentFromString(request.ToXml());
             xml.Sign(SignedXmlHelper.TestCert);
 
             var requestData = Convert.ToBase64String(Encoding.UTF8.GetBytes(xml.OuterXml));
@@ -542,7 +542,7 @@ namespace Kentor.AuthServices.Tests.WebSSO
                 SessionIndex = "SessionID"
             };
 
-            var xml = XmlHelpers.FromString(request.ToXml());
+            var xml = XmlHelpers.XmlDocumentFromString(request.ToXml());
             xml.Sign(SignedXmlHelper.TestCert);
 
             var requestData = Convert.ToBase64String(Encoding.UTF8.GetBytes(xml.OuterXml));
@@ -580,7 +580,7 @@ namespace Kentor.AuthServices.Tests.WebSSO
                 SessionIndex = "SessionID",
             };
 
-            var xml = XmlHelpers.FromString(request.ToXml());
+            var xml = XmlHelpers.XmlDocumentFromString(request.ToXml());
             xml.Sign(SignedXmlHelper.TestCert);
 
             var requestData = Convert.ToBase64String(Encoding.UTF8.GetBytes(xml.OuterXml));

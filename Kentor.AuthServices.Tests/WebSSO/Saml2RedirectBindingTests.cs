@@ -81,7 +81,7 @@ namespace Kentor.AuthServices.Tests.WebSso
 
             var result = Saml2Binding.Get(Saml2BindingType.HttpRedirect).Unbind(request, null);
 
-            var expectedXml = XmlHelpers.FromString(ExampleXmlData).DocumentElement;
+            var expectedXml = XmlHelpers.XmlDocumentFromString(ExampleXmlData).DocumentElement;
 
             result.RelayState.Should().Be(null);
             result.Data.Should().BeEquivalentTo(expectedXml);
