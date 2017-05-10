@@ -75,6 +75,7 @@ read web.config, but can also be configured from code (see [Owin middleware](Owi
   <serviceCertificates>
     <add fileName="~/App_Data/Kentor.AuthServices.Tests.pfx" />
   </serviceCertificates>
+  <artifactResolutionTlsCertificate fileName="~/App_Data/Kentor.AuthServices.Tests.pfx" />
   <!-- Optional configuration for fetching IDP list from a federation -->
   <federations>
     <add metadataLocation="https://federation.example.com/metadata.xml" allowUnsolicitedAuthnResponse = "false" />
@@ -105,6 +106,7 @@ Root element of the config section.
 * [`<identityProviders>`](#identityproviders-element)
 * [`<federations>`](#federations-element)
 * [`<serviceCertificates>`](#servicecertificates-element)
+* [`<artifactResolutionTlsCertificate>`](#artifactResolutionTlsCertificate-element)
 * [`<compatibility>`](#compatibility-element)
 
 #### `entityId` Attribute
@@ -767,6 +769,11 @@ Signing | Current | Signing | Yes
 Signing | Future | Signing | No 
 Encryption | Current | Encryption _unless Future key exists_ then not published | Yes 
 Encryption | Future | Encryption | Yes 
+
+### `<artifactResolutionTlsCertificate>` Element
+*Optional child element of the [`<kentor.authServices>`](#kentorauthservices-section) element.*
+
+The client TLS certificate to add to the artifact resolve SOAP request.
 
 ### `<compatibility>` Element
 *Optional child element of the [`<kentor.authServices>`](#kentorauthservices-section) element.*

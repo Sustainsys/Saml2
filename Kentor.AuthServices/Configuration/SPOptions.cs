@@ -54,6 +54,7 @@ namespace Kentor.AuthServices.Configuration
             ModulePath = configSection.ModulePath;
             PublicOrigin = configSection.PublicOrigin;
             Organization = configSection.Organization;
+            ArtifactResolutionTlsCertificate = configSection.ArtifactResolutionTlsCertificate.LoadCertificate();
             OutboundSigningAlgorithm = XmlHelpers.GetFullSigningAlgorithmName(configSection.OutboundSigningAlgorithm);
             MinIncomingSigningAlgorithm = XmlHelpers.GetFullSigningAlgorithmName(configSection.MinIncomingSigningAlgorithm);
             AuthenticateRequestSigningBehavior = configSection.AuthenticateRequestSigningBehavior;
@@ -285,6 +286,12 @@ namespace Kentor.AuthServices.Configuration
                 return signingCertificates.FirstOrDefault();
             }
         }
+
+        /// <summary>
+        /// Client TLS Certificate to add to the artifact resolve SOAP request.
+        /// </summary>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Tls", Justification = "TLS is a well known abbreviation for Transport Layer Security")]
+        public X509Certificate2 ArtifactResolutionTlsCertificate { get; set; }
 
         /// <summary>
         /// Certificates to be published in metadata

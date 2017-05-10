@@ -1,12 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Net;
-using System.Text;
-using System.Threading.Tasks;
+using System.Security.Cryptography.X509Certificates;
 using System.Xml;
-using System.Xml.Linq;
+using Kentor.AuthServices.Internal;
 
 namespace Kentor.AuthServices.Saml2P
 {
@@ -29,7 +27,8 @@ namespace Kentor.AuthServices.Saml2P
         /// <returns></returns>
         public static string CreateSoapBody(string payload)
         {
-            return string.Format(CultureInfo.InvariantCulture,
+            return string.Format(
+                CultureInfo.InvariantCulture,
                 soapFormatString, payload);
         }
 
@@ -55,18 +54,41 @@ namespace Kentor.AuthServices.Saml2P
         /// </summary>
         /// <param name="payload">Message payload</param>
         /// <param name="destination">Destination endpoint</param>
+        /// <param name="signingServiceCertificate"></param>
+        /// <param name="artifactResolutionTlsCertificate"></param>
         /// <returns>Response.</returns>
-        public static XmlElement SendSoapRequest(string payload, Uri destination)
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Tls")]
+        public static XmlElement SendSoapRequest(string payload, Uri destination, X509Certificate2 signingServiceCertificate, X509Certificate2 artifactResolutionTlsCertificate)
         {
-            var message = CreateSoapBody(payload);
-
-            using (var client = new WebClient())
+            using (var client = new ClientCertificateWebClient(artifactResolutionTlsCertificate))
             {
                 client.Headers.Add("SOAPAction", "http://www.oasis-open.org/committees/security");
+
+                var message = BuildSoapMesssage(payload, signingServiceCertificate);
+
                 var response = client.UploadString(destination, message);
 
                 return ExtractBody(response);
             }
+        }
+
+        private static string BuildSoapMesssage(string payload, X509Certificate2 clientCertificate)
+        {
+            if (clientCertificate != null)
+            {
+                var xmlDoc = new XmlDocument
+                {
+                    PreserveWhitespace = true
+                };
+
+                xmlDoc.LoadXml(payload);
+                xmlDoc.Sign(clientCertificate, true);
+                payload = xmlDoc.OuterXml;
+            }
+
+            var message = CreateSoapBody(payload);
+
+            return message;
         }
     }
 }
