@@ -182,8 +182,9 @@ Notification function instead.
 #### `outboundSigningAlgorithm` Attribute
 *Optional Attribute of the [`<kentor.authServices>`](#kentor-authservices-section) element.*
 
-By default AuthServices uses SHA256 signatures if running on .NET 4.6.2 or later and
-otherwise SHA1 signatures. Set this to set the default signing algorithm for any messages
+By default AuthServices uses SHA256 signatures if running on .NET 4.6.2 or later or when you
+have called `GlobalEnableSha256XmlSignatures()`. Otherwise, it uses SHA1 signatures. 
+Use this attribute to set the default signing algorithm for any messages
 (including metadata) that AuthServices generates. Possible values:
 
 * SHA1
@@ -200,8 +201,10 @@ each IdentityProvider too.
 The minimum strength required on signatures on incoming messages. Messages with a too weak
 signing algorithm will be rejected.
 
-By default AuthServices requires SHA256 signatures if running on .NET 4.6.2 or later and
-otherwise SHA1 signatures. Possible values:
+By default AuthServices requires SHA256 signatures if running on .NET 4.6.2 or later or when you
+have called `GlobalEnableSha256XmlSignatures()`. Otherwise, it uses SHA1 signatures. 
+
+Possible values:
 
 * SHA1
 * SHA256
