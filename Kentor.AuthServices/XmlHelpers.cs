@@ -400,6 +400,7 @@ namespace Kentor.AuthServices
         /// <param name="minIncomingSignatureAlgorithm"></param>
         /// <param name="signatureMethod"></param>
         /// <exception cref="InvalidSignatureException">If the signaturemethod is too weak.</exception>
+        [SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "minIncomingSigningAlgorithm")]
         public static void ValidateSignatureMethodStrength(
             string minIncomingSignatureAlgorithm,
             string signatureMethod)
@@ -409,7 +410,8 @@ namespace Kentor.AuthServices
             {
                 throw new InvalidSignatureException(
                     "The signing algorithm " + signatureMethod +
-                    " is weaker than the minimum accepted " + minIncomingSignatureAlgorithm + ".");
+                    " is weaker than the minimum accepted " + minIncomingSignatureAlgorithm +
+                    ". If you want to allow this signing algorithm, use the minIncomingSigningAlgorithm configuration attribute.");
             }
         }
 
