@@ -27,7 +27,8 @@ logic. For example:
 You can see a full example of this in the **SampleOwinApplication** project included in the
 source code. See the [Startup.Auth.cs file](https://github.com/KentorIT/authservices/blob/master/SampleOwinApplication/App_Start/Startup.Auth.cs)
 
-##Selecting Idp
+## Selecting Idp
+
 An Owin-based application issues an AuthenticationResponseChallenge to ask the
 middleware to begin the authentication procedure. In that challenge, there is
 a properties dictionary. To use a specified idp, the entity id of the idp should
