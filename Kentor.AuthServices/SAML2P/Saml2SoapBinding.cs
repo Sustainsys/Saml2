@@ -60,6 +60,8 @@ namespace Kentor.AuthServices.Saml2P
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Tls")]
         public static XmlElement SendSoapRequest(string payload, Uri destination, X509Certificate2 signingServiceCertificate, X509Certificate2 artifactResolutionTlsCertificate)
         {
+            AssertDestinationIsValid(destination);
+
             using (var client = new ClientCertificateWebClient(artifactResolutionTlsCertificate))
             {
                 client.Headers.Add("SOAPAction", "http://www.oasis-open.org/committees/security");
@@ -69,6 +71,24 @@ namespace Kentor.AuthServices.Saml2P
                 var response = client.UploadString(destination, message);
 
                 return ExtractBody(response);
+            }
+        }
+
+        private static void AssertDestinationIsValid(Uri destination)
+        {
+            if (destination == null)
+            {
+                throw new ArgumentNullException(nameof(destination));
+            }
+
+            switch (destination.Scheme)
+            {
+                case "http":
+                case "https":
+                    break;
+                default:
+                    throw new ArgumentException("The Uri scheme " + destination.Scheme +
+                                                " is not allowed for outbound SOAP messages. Only http or https URLs are allowed.");
             }
         }
 
