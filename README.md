@@ -30,7 +30,8 @@ The [Kentor.AuthServices.Mvc](https://www.nuget.org/packages/Kentor.AuthServices
 package contains the MVC controller and the [Kentor.AuthServices.Owin](https://www.nuget.org/packages/Kentor.AuthServices.Owin/)
 package contains the Owin middleware.
 
-Once installed the `web.config` of the application must be updated with configuration.
+Once the nuget packages are installed you must provide configuration either through code
+or through `web.config` sections.
 See [configuration](doc/Configuration.md) for details.
 
 ## Troubleshooting

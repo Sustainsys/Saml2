@@ -65,11 +65,35 @@ namespace Kentor.AuthServices.Internal
                 return false;
             }
 
-            if (virtualPath[0] == '~')
+            if (virtualPath.StartsWith(@"~/", StringComparison.Ordinal))
             {
                 return true;
             }
 
+            return false;
+        }
+
+        /// <summary>
+        /// Determines if a url is relative to current host, excluding protocol-relative addresses
+        /// </summary>
+        /// <param name="url">The path that is to be tested.</param>
+        /// <returns>True if the url is relative otherwise false.</returns>
+        public static bool IsLocalWebUrl(string url)
+        {
+            if (url == null)
+            {
+                throw new ArgumentNullException(nameof(url));
+            }
+            if (IsWebRootRelative(url))
+            {
+                return true;
+            }
+            if (url.StartsWith(@"/", StringComparison.Ordinal)
+                && !url.StartsWith( @"//", StringComparison.Ordinal)
+                && !url.StartsWith( @"/\", StringComparison.Ordinal))
+            {
+                return true;
+            }
             return false;
         }
     }

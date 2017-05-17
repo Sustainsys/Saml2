@@ -631,13 +631,11 @@ namespace Kentor.AuthServices.Tests.Saml2P
 
             var signedAssertion1 = SignedXmlHelper.SignXml(assertion1);
 
-            var signedAssertion1Doc = new XmlDocument { PreserveWhitespace = true };
-            signedAssertion1Doc.LoadXml(signedAssertion1);
+            var signedAssertion1Doc = XmlHelpers.XmlDocumentFromString(signedAssertion1);
 
             var signatureToCopy = signedAssertion1Doc.DocumentElement["Signature", SignedXml.XmlDsigNamespaceUrl];
 
-            var assertionToInjectDoc = new XmlDocument { PreserveWhitespace = true };
-            assertionToInjectDoc.LoadXml(assertionToInject);
+            var assertionToInjectDoc = XmlHelpers.XmlDocumentFromString(assertionToInject);
 
             assertionToInjectDoc.DocumentElement.AppendChild(assertionToInjectDoc.ImportNode(signatureToCopy, true));
 

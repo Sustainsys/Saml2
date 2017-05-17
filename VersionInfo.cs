@@ -1,7 +1,7 @@
 using System.Reflection;
 
 [assembly: AssemblyCompany("Kentor")]
-[assembly: AssemblyCopyright("Copyright © Kentor and contributors 2013-2014")]
+[assembly: AssemblyCopyright("Copyright © Kentor and contributors 2013-2017")]
 
 
 // Kentor.AuthServices uses semantic versioning in three parts
@@ -13,6 +13,6 @@ using System.Reflection;
 // An odd patch number is a development version, an even patch number is
 // a relased version.
 
-[assembly: AssemblyVersion("0.21.1")]
-[assembly: AssemblyFileVersion("0.21.1")]
-[assembly: AssemblyInformationalVersion("0.21.1")]
+[assembly: AssemblyVersion("0.21.2")]
+[assembly: AssemblyFileVersion("0.21.2")]
+[assembly: AssemblyInformationalVersion("0.21.2")]

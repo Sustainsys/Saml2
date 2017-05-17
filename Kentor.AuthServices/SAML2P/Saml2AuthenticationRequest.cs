@@ -132,9 +132,7 @@ namespace Kentor.AuthServices.Saml2P
             {
                 return null;
             }
-            var x = new XmlDocument();
-            x.PreserveWhitespace = true;
-            x.LoadXml(xml);
+            var x = XmlHelpers.XmlDocumentFromString(xml);
 
             return new Saml2AuthenticationRequest(x.DocumentElement, relayState);
         }

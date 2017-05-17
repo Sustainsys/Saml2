@@ -84,9 +84,8 @@ namespace Kentor.AuthServices.WebSso
                     {
                         decompressedStream.CopyTo(deCompressed);
 
-                        var xml = new XmlDocument() {PreserveWhitespace = true};
-
-                        xml.LoadXml(Encoding.UTF8.GetString(deCompressed.GetBuffer()));
+                        var xml = XmlHelpers.XmlDocumentFromString(
+                            Encoding.UTF8.GetString(deCompressed.GetBuffer()));
 
                         options?.SPOptions.Logger.WriteVerbose("Http Redirect binding extracted message\n" + xml.OuterXml);
 

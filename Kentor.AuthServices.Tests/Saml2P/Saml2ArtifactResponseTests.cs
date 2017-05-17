@@ -45,7 +45,7 @@ namespace Kentor.AuthServices.Tests.Saml2P
   </samlp:LogoutRequest>
 </samlp:ArtifactResponse>";
 
-            var xmlDocument = XmlHelpers.FromString(xml);
+            var xmlDocument = XmlHelpers.XmlDocumentFromString(xml);
             var xmlElement = xmlDocument.DocumentElement;
 
             var subject = new Saml2ArtifactResponse(xmlElement);
@@ -79,7 +79,7 @@ namespace Kentor.AuthServices.Tests.Saml2P
   </samlp:LogoutRequest>
 </samlp:ArtifactResponse>";
 
-            var xmlDoc = XmlHelpers.FromString(xml);
+            var xmlDoc = XmlHelpers.XmlDocumentFromString(xml);
 
             var subject = new Saml2ArtifactResponse(xmlDoc.DocumentElement);
 
@@ -112,7 +112,7 @@ namespace Kentor.AuthServices.Tests.Saml2P
   </samlp:LogoutRequest>
 </samlp:ArtifactResponse>";
 
-            var xmlDoc = XmlHelpers.FromString(xml);
+            var xmlDoc = XmlHelpers.XmlDocumentFromString(xml);
 
             var subject = new Saml2ArtifactResponse(xmlDoc.DocumentElement);
 
@@ -145,8 +145,7 @@ namespace Kentor.AuthServices.Tests.Saml2P
   </samlp:LogoutRequest>
 </samlp:ArtifactResponse>";
 
-            var xmlDocument = new XmlDocument() { PreserveWhitespace = true };
-            xmlDocument.LoadXml(xml);
+            var xmlDocument = XmlHelpers.XmlDocumentFromString(xml);
 
             var xmlElement = xmlDocument.DocumentElement;
 

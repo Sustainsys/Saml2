@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Globalization;
 using System.Linq;
-using System.Net;
 using System.Security.Cryptography.X509Certificates;
 using System.Xml;
 using Kentor.AuthServices.Internal;
@@ -39,11 +38,7 @@ namespace Kentor.AuthServices.Saml2P
         /// <returns>Parsed data.</returns>
         public static XmlElement ExtractBody(string xml)
         {
-            var xmlDoc = new XmlDocument()
-            {
-                PreserveWhitespace = true
-            };
-            xmlDoc.LoadXml(xml);
+            var xmlDoc = XmlHelpers.XmlDocumentFromString(xml);
 
             return xmlDoc.DocumentElement["Body", Saml2Namespaces.SoapEnvelopeName]
                 .ChildNodes.OfType<XmlElement>().Single();
@@ -96,12 +91,8 @@ namespace Kentor.AuthServices.Saml2P
         {
             if (clientCertificate != null)
             {
-                var xmlDoc = new XmlDocument
-                {
-                    PreserveWhitespace = true
-                };
+                var xmlDoc = XmlHelpers.XmlDocumentFromString(payload);
 
-                xmlDoc.LoadXml(payload);
                 xmlDoc.Sign(clientCertificate, true);
                 payload = xmlDoc.OuterXml;
             }

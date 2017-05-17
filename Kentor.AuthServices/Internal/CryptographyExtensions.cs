@@ -51,8 +51,7 @@ namespace Kentor.AuthServices.Internal
 
         internal static XmlElement Decrypt(this XmlElement element, AsymmetricAlgorithm key)
         {
-            var xmlDoc = new XmlDocument { PreserveWhitespace = true };
-            xmlDoc.LoadXml(element.OuterXml);
+            var xmlDoc = XmlHelpers.XmlDocumentFromString(element.OuterXml);
 
             var exml = new RSAEncryptedXml(xmlDoc, (RSA)key);
 

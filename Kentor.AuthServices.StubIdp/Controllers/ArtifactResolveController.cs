@@ -39,12 +39,7 @@ namespace Kentor.AuthServices.StubIdp.Controllers
 
             if(message.SigningCertificate != null)
             {
-                var xmlDoc = new XmlDocument()
-                {
-                    PreserveWhitespace = true
-                };
-
-                xmlDoc.LoadXml(xml);
+                var xmlDoc = XmlHelpers.XmlDocumentFromString(xml);
                 xmlDoc.Sign(message.SigningCertificate, true);
                 xml = xmlDoc.OuterXml;
             }

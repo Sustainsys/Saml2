@@ -214,6 +214,17 @@ namespace Kentor.AuthServices.Tests.WebSSO
         }
 
         [TestMethod]
+        public void LogoutCommand_Run_ChecksForLocalReturnUrlProtocolRelative()
+        {
+            var absoluteUri = HttpUtility.UrlEncode("//google.com");
+            var request = new HttpRequestData("GET", new Uri($"http://sp.example.com/AuthServices/Logout?ReturnUrl={absoluteUri}"));
+            var options = StubFactory.CreateOptions();
+
+            Action a = () => CommandFactory.GetCommand(CommandFactory.LogoutCommandName).Run(request, options);
+            a.ShouldThrow<InvalidOperationException>().WithMessage("Return Url must be a relative Url.");
+        }
+
+        [TestMethod]
         public void LogoutCommand_Run_Calls_NotificationForAbsoluteUrl()
         {
             var absoluteUri = HttpUtility.UrlEncode("http://google.com");
@@ -367,7 +378,7 @@ namespace Kentor.AuthServices.Tests.WebSSO
                 SigningCertificate = SignedXmlHelper.TestCert
             };
 
-            var xml = XmlHelpers.FromString(response.ToXml());
+            var xml = XmlHelpers.XmlDocumentFromString(response.ToXml());
             xml.Sign(SignedXmlHelper.TestCert);
 
             var responseData = Convert.ToBase64String(Encoding.UTF8.GetBytes(xml.OuterXml));
@@ -457,7 +468,7 @@ namespace Kentor.AuthServices.Tests.WebSSO
 
             var actualMessage = actualUnbindResult.Data;
 
-            var expectedMessage = XmlHelpers.FromString(
+            var expectedMessage = XmlHelpers.XmlDocumentFromString(
                 $@"<samlp:LogoutResponse xmlns:samlp=""urn:oasis:names:tc:SAML:2.0:protocol""
                     xmlns=""urn:oasis:names:tc:SAML:2.0:assertion""
                     Destination=""https://idp.example.com/logout""
@@ -492,7 +503,7 @@ namespace Kentor.AuthServices.Tests.WebSSO
                 SigningAlgorithm = SignedXml.XmlDsigRSASHA256Url
             };
 
-            var xml = XmlHelpers.FromString(request.ToXml());
+            var xml = XmlHelpers.XmlDocumentFromString(request.ToXml());
             xml.Sign(SignedXmlHelper.TestCert);
 
             var requestData = Convert.ToBase64String(Encoding.UTF8.GetBytes(xml.OuterXml));
@@ -531,7 +542,7 @@ namespace Kentor.AuthServices.Tests.WebSSO
                 SessionIndex = "SessionID"
             };
 
-            var xml = XmlHelpers.FromString(request.ToXml());
+            var xml = XmlHelpers.XmlDocumentFromString(request.ToXml());
             xml.Sign(SignedXmlHelper.TestCert);
 
             var requestData = Convert.ToBase64String(Encoding.UTF8.GetBytes(xml.OuterXml));
@@ -569,7 +580,7 @@ namespace Kentor.AuthServices.Tests.WebSSO
                 SessionIndex = "SessionID",
             };
 
-            var xml = XmlHelpers.FromString(request.ToXml());
+            var xml = XmlHelpers.XmlDocumentFromString(request.ToXml());
             xml.Sign(SignedXmlHelper.TestCert);
 
             var requestData = Convert.ToBase64String(Encoding.UTF8.GetBytes(xml.OuterXml));

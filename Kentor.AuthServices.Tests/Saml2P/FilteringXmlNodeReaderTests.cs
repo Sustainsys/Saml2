@@ -32,11 +32,7 @@ namespace Kentor.AuthServices.Tests.Saml2P
                 <b:removeChild>Just kidding, this should be kept.</b:removeChild>
             </a:root>";
 
-            var xmlDoc = new XmlDocument()
-            {
-                PreserveWhitespace = preserveWhiteSpace
-            };
-            xmlDoc.LoadXml(xmlData);
+            var xmlDoc = XmlHelpers.XmlDocumentFromString(xmlData);
 
             var subject = new FilteringXmlNodeReader("urn:a", "removeChild", xmlDoc.DocumentElement);
 

@@ -96,7 +96,7 @@ Root element of the config section.
 * [`authenticateRequestSigningBehavior`](#authenticaterequestsigningbehavior-attribute)
 * [`validateCertificates`](#validatecertificates-attribute)
 * [`publicOrigin`](#publicorigin-attribute)
-* [`outboundSigningAlgorithm`](#signingalgorithm-attribute)
+* [`outboundSigningAlgorithm`](#outboundsigningalgorithm-attribute)
 * [`minIncomingSigningAlgorithm`](#minincomingsigningalgorithm-attribute)
 
 #### Elements
@@ -184,8 +184,9 @@ Notification function instead.
 #### `outboundSigningAlgorithm` Attribute
 *Optional Attribute of the [`<kentor.authServices>`](#kentor-authservices-section) element.*
 
-By default AuthServices uses SHA256 signatures if running on .NET 4.6.2 or later and
-otherwise SHA1 signatures. Set this to set the default signing algorithm for any messages
+By default AuthServices uses SHA256 signatures if running on .NET 4.6.2 or later or when you
+have called `GlobalEnableSha256XmlSignatures()`. Otherwise, it uses SHA1 signatures. 
+Use this attribute to set the default signing algorithm for any messages
 (including metadata) that AuthServices generates. Possible values:
 
 * SHA1
@@ -202,8 +203,10 @@ each IdentityProvider too.
 The minimum strength required on signatures on incoming messages. Messages with a too weak
 signing algorithm will be rejected.
 
-By default AuthServices requires SHA256 signatures if running on .NET 4.6.2 or later and
-otherwise SHA1 signatures. Possible values:
+By default AuthServices requires SHA256 signatures if running on .NET 4.6.2 or later or when you
+have called `GlobalEnableSha256XmlSignatures()`. Otherwise, it uses SHA1 signatures. 
+
+Possible values:
 
 * SHA1
 * SHA256
@@ -510,7 +513,7 @@ A list of identity providers known to the service provider.
 * [`loadMetadata`](#loadmetadata-attribute)
 * [`metadataLocation`](#metadataLocation-attribute-idp)
 * [`disableOutboundLogoutRequests`](disableOutboundLogoutRequests-attribute)
-* [`outboundSigningAlgorithm`](outboundSigningAlgorithm-attribute)
+* [`outboundSigningAlgorithm`](outboundSigningAlgorithm-attribute-idp)
 
 #### Elements
 * [`<signingCertificate>`](#signingcertificate-element)
@@ -592,7 +595,7 @@ configured for single logout and the idp supports it. This setting might be
 usable when adding SLO to an existing setup, to ensure that everyone is ready
 for SLO before activating.
 
-#### `outboundSigningAlgorithm` Attribute
+#### `outboundSigningAlgorithm` Attribute (Idp)
 *Optional attribute of the [`add`](#add-identityprovider-element) element*
 By default AuthServices uses SHA256 signatures if running on .NET 4.6.2 or later and
 otherwise SHA1 signatures. Set this to set the signing algorithm for any outbound messages

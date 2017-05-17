@@ -70,8 +70,8 @@ namespace Kentor.AuthServices.Tests.WebSSO
 
             var result = Saml2Binding.Get(Saml2BindingType.Artifact).Unbind(r, StubFactory.CreateOptions());
 
-            var xmlDocument = new XmlDocument() { PreserveWhitespace = true };
-            xmlDocument.LoadXml("<message>   <child-node /> </message>");
+            var xmlDocument = XmlHelpers.XmlDocumentFromString(
+                "<message>   <child-node /> </message>");
 
             var expected = new UnbindResult(xmlDocument.DocumentElement, relayState, TrustLevel.None);
 
@@ -104,8 +104,8 @@ namespace Kentor.AuthServices.Tests.WebSSO
 
             var result = Saml2Binding.Get(Saml2BindingType.Artifact).Unbind(r, StubFactory.CreateOptions());
 
-            var xmlDocument = new XmlDocument() { PreserveWhitespace = true };
-            xmlDocument.LoadXml("<message>   <child-node /> </message>");
+            var xmlDocument = XmlHelpers.XmlDocumentFromString(
+                "<message>   <child-node /> </message>");
 
             var expected = new UnbindResult(xmlDocument.DocumentElement, relayState, TrustLevel.None);
 
@@ -154,8 +154,8 @@ namespace Kentor.AuthServices.Tests.WebSSO
 
             var result = Saml2Binding.Get(Saml2BindingType.Artifact).Unbind(r, StubFactory.CreateOptions());
 
-            var xmlDocument = new XmlDocument() { PreserveWhitespace = true };
-            xmlDocument.LoadXml("<message>   <child-node /> </message>");
+            var xmlDocument = XmlHelpers.XmlDocumentFromString(
+                "<message>   <child-node /> </message>");
 
             var expected = new UnbindResult(xmlDocument.DocumentElement, null, TrustLevel.None);
 
@@ -188,8 +188,8 @@ namespace Kentor.AuthServices.Tests.WebSSO
 
             var result = Saml2Binding.Get(Saml2BindingType.Artifact).Unbind(r, StubFactory.CreateOptions());
 
-            var xmlDocument = new XmlDocument() { PreserveWhitespace = true };
-            xmlDocument.LoadXml("<message>   <child-node /> </message>");
+            var xmlDocument = XmlHelpers.XmlDocumentFromString(
+                "<message>   <child-node /> </message>");
 
             var expected = new UnbindResult(xmlDocument.DocumentElement, relayState, TrustLevel.None);
 
@@ -220,8 +220,8 @@ namespace Kentor.AuthServices.Tests.WebSSO
 
             var result = Saml2Binding.Get(Saml2BindingType.Artifact).Unbind(r, StubFactory.CreateOptions());
 
-            var xmlDocument = new XmlDocument() { PreserveWhitespace = true };
-            xmlDocument.LoadXml("<message>   <child-node /> </message>");
+            var xmlDocument = XmlHelpers.XmlDocumentFromString(
+                "<message>   <child-node /> </message>");
 
             var expected = new UnbindResult(xmlDocument.DocumentElement, null, TrustLevel.None);
 

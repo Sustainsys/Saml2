@@ -35,8 +35,7 @@ namespace Kentor.AuthServices.Tests.Helpers
 
         public static string SignXml(string xml, bool includeKeyInfo = false, bool preserveWhitespace = true)
         {
-            var xmlDoc = new XmlDocument { PreserveWhitespace = preserveWhitespace };
-            xmlDoc.LoadXml(xml);
+            var xmlDoc = XmlHelpers.XmlDocumentFromString(xml);
 
             xmlDoc.Sign(TestCert, includeKeyInfo);
 
@@ -50,7 +49,7 @@ namespace Kentor.AuthServices.Tests.Helpers
                 certificate = TestCert2;
             }
 
-            var xmlDoc = new XmlDocument { PreserveWhitespace = true };
+            var xmlDoc = XmlHelpers.CreateSafeXmlDocument();
             var wrappedAssertion = $@"<saml2:EncryptedAssertion xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion"">{assertionXml}</saml2:EncryptedAssertion>";
             xmlDoc.LoadXml(wrappedAssertion);
             var elementToEncrypt = (XmlElement)xmlDoc.GetElementsByTagName("Assertion", Saml2Namespaces.Saml2Name)[0];

@@ -34,20 +34,33 @@ namespace Kentor.AuthServices
         }
 
         /// <summary>
-        /// Parse XML data from a string.
+        /// Creates an Xml document with secure settings and initialized it from
+        /// a string.
         /// </summary>
         /// <param name="source">Source string to load</param>
         /// <returns>Xml document</returns>
-        public static XmlDocument FromString(string source)
+        public static XmlDocument XmlDocumentFromString(string source)
         {
-            var xmlDoc = new XmlDocument()
-            {
-                PreserveWhitespace = true
-            };
+            var xmlDoc = CreateSafeXmlDocument();
 
             xmlDoc.LoadXml(source);
 
             return xmlDoc;
+        }
+
+        /// <summary>
+        /// Create an Xml Document with secure settings, specifically
+        /// disabling xml external entities. Also set PreserveWhiteSpace = true
+        /// </summary>
+        /// <returns>Xml Document</returns>
+        public static XmlDocument CreateSafeXmlDocument()
+        {
+            return new XmlDocument()
+            {
+                // Null is the default on 4.6 and later, but not on 4.5.
+                XmlResolver = null,
+                PreserveWhitespace = true
+            };
         }
 
         /// <summary>
@@ -257,8 +270,6 @@ namespace Kentor.AuthServices
         {
             FixSignatureIndex(signedXml, signatureElement);
 
-            CheckSha256Support(signedXml);
-
             foreach (var keyIdentifier in signingKeys)
             {
                 var key = ((AsymmetricSecurityKey)keyIdentifier.CreateKey())
@@ -286,9 +297,9 @@ namespace Kentor.AuthServices
             new Lazy<object>(() => CryptoConfig.CreateFromName(Options.RsaSha256Uri));
 
         [ExcludeFromCodeCoverage]
-        private static void CheckSha256Support(SignedXml signedXml)
+        private static void CheckSha256Support(string signatureMethod)
         {
-            if (signedXml.SignatureMethod == Options.RsaSha256Uri
+            if (signatureMethod == Options.RsaSha256Uri
                 && rsaSha256Algorithm.Value == null)
             {
                 throw new InvalidSignatureException("SHA256 signatures require the algorithm to be registered at the process level. Upgrade to .Net 4.6.2 or call Kentor.AuthServices.Configuration.Options.GlobalEnableSha256XmlSignatures() on startup to register.");
@@ -377,6 +388,7 @@ namespace Kentor.AuthServices
             string minIncomingSignatureAlgorithm)
         {
             var signatureMethod = signedXml.SignedInfo.SignatureMethod;
+            CheckSha256Support(signatureMethod);
             ValidateSignatureMethodStrength(minIncomingSignatureAlgorithm, signatureMethod);
 
             ValidateReference(signedXml, xmlElement, GetCorrespondingDigestAlgorithm(minIncomingSignatureAlgorithm));
@@ -388,6 +400,7 @@ namespace Kentor.AuthServices
         /// <param name="minIncomingSignatureAlgorithm"></param>
         /// <param name="signatureMethod"></param>
         /// <exception cref="InvalidSignatureException">If the signaturemethod is too weak.</exception>
+        [SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "minIncomingSigningAlgorithm")]
         public static void ValidateSignatureMethodStrength(
             string minIncomingSignatureAlgorithm,
             string signatureMethod)
@@ -397,7 +410,8 @@ namespace Kentor.AuthServices
             {
                 throw new InvalidSignatureException(
                     "The signing algorithm " + signatureMethod +
-                    " is weaker than the minimum accepted " + minIncomingSignatureAlgorithm + ".");
+                    " is weaker than the minimum accepted " + minIncomingSignatureAlgorithm +
+                    ". If you want to allow this signing algorithm, use the minIncomingSigningAlgorithm configuration attribute.");
             }
         }
 

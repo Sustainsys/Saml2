@@ -305,7 +305,7 @@ value=""" + expectedValue + @"""/>
 
             var actual = Saml2Binding.Get(request).Unbind(request, StubFactory.CreateOptions());
 
-            actual.Data.Should().BeEquivalentTo(XmlHelpers.FromString("<data/>").DocumentElement);
+            actual.Data.Should().BeEquivalentTo(XmlHelpers.XmlDocumentFromString("<data/>").DocumentElement);
             actual.RelayState.Should().BeNull();
             actual.TrustLevel.Should().Be(TrustLevel.None);
         }
