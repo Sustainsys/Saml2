@@ -291,7 +291,7 @@ namespace Kentor.AuthServices.Configuration
         /// Client TLS Certificate to add to the artifact resolve SOAP request.
         /// </summary>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Tls", Justification = "TLS is a well known abbreviation for Transport Layer Security")]
-        public X509Certificate2 ArtifactResolutionTlsCertificate { get; set; }
+        public X509Certificate2 ArtifactResolutionTlsCertificate { get; }
 
         /// <summary>
         /// Certificates to be published in metadata

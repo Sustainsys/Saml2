@@ -390,10 +390,6 @@ namespace Kentor.AuthServices.Configuration
             {
                 return (CertificateElement)base["artifactResolutionTlsCertificate"];
             }
-            internal set
-            {
-                base["artifactResolutionTlsCertificate"] = value;
-            }
         }
     }
 }
