@@ -33,7 +33,7 @@ namespace Kentor.AuthServices.Internal
 
             if (_certificate != null)
             {
-                request?.ClientCertificates.Add(_certificate);
+                request.ClientCertificates.Add(_certificate);
             }
 
             return request;
