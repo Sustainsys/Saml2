@@ -42,7 +42,7 @@ namespace Sustainsys.Saml2.Tests.Metadata
         [TestMethod]
         public void MetadataLoader_LoadFederation_Nullcheck()
         {
-            Action a = () => MetadataLoader.LoadFederation((string)null);
+            Action a = () => MetadataLoader.LoadFederation(null);
 
             a.ShouldThrow<ArgumentNullException>().And.ParamName.Should().Be("metadataLocation");
         }
