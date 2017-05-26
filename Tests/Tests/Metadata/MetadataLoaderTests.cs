@@ -23,7 +23,7 @@ namespace Sustainsys.Saml2.Tests.Metadata
         [TestMethod]
         public void MetadataLoader_LoadIdp_Nullcheck()
         {
-            Action a = () => MetadataLoader.LoadIdp(null);
+            Action a = () => MetadataLoader.LoadIdp((string)null);
 
             a.ShouldThrow<ArgumentNullException>().And.ParamName.Should().Be("metadataLocation");
         }
@@ -42,7 +42,7 @@ namespace Sustainsys.Saml2.Tests.Metadata
         [TestMethod]
         public void MetadataLoader_LoadFederation_Nullcheck()
         {
-            Action a = () => MetadataLoader.LoadFederation(null);
+            Action a = () => MetadataLoader.LoadFederation((string)null);
 
             a.ShouldThrow<ArgumentNullException>().And.ParamName.Should().Be("metadataLocation");
         }
