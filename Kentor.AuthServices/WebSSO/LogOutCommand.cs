@@ -161,10 +161,10 @@ namespace Kentor.AuthServices.WebSso
                 + "\n  Idp configured to DisableOutboundLogoutRequests (should be false): " + idp?.DisableOutboundLogoutRequests);
 
             CommandResult commandResult;
-            if(idpEntityId != null 
+            if (idpEntityId != null
                 && knownIdp
                 && sessionIndexClaim != null
-                && idp.SingleLogoutServiceUrl != null
+                && idp?.SingleLogoutServiceUrl != null
                 && options.SPOptions.SigningServiceCertificate != null
                 && !idp.DisableOutboundLogoutRequests)
             {
