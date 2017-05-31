@@ -1,0 +1,43 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+
+
+<h1>Sample Saml2 ASP.NET Core Authentication Application</h1>
+<p>
+    This is a sample ASP.NET Core application for Saml2 authentication using the ASP.NET Core Middleware with ASP.NET Core Identity.
+</p>
+
+@if( !User.Identity.IsAuthenticated )
+{
+    <p>
+        You are currently <span id="status">not signed in</span>.
+    </p>
+}
+else
+{
+    <p>
+        You are <span id="status">signed in</span>.
+    </p>
+    <table class="table table-bordered table-striped">
+        <thead>
+            <tr>
+                <th>Claim Type</th>
+                <th>Claim Value</th>
+                <th>Issuer</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach( var c in ViewContext.HttpContext.User.Claims )
+            {
+                <tr>
+                    <td>@c.Type</td>
+                    <td>@c.Value</td>
+                    <td>@c.Issuer</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+<a href="@Url.Content("~/AuthServices")">Service Provider Metadata</a>
