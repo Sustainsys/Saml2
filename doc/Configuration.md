@@ -253,7 +253,7 @@ If no value is specified, no format is specified in the generated AuthnRequests.
 If `Transient` is specified, it is not permitted to specify `allowCreate` 
 (see 3.4.1.1 in the SAML2 Core spec).
 
-###`<requestedAuthnContext>` element
+### `<requestedAuthnContext>` element
 *Optional child element of the [`<kentor.authServices>`](#kentor-authservices-section) element.*
 
 #### Attributes
