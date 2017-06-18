@@ -9,7 +9,7 @@ namespace Sustainsys.Saml2.Configuration
 {
     /// <summary>
     /// Compatibility settings. Can be used to make Saml2 accept
-    /// certain non-standard behaviour.
+        /// certain non-standard behaviour.
     /// </summary>
     public class CompatibilityElement : ConfigurationElement
     {
@@ -32,7 +32,7 @@ namespace Sustainsys.Saml2.Configuration
         /// for an IdentityProvider, automatically check inside it if there
         /// is a single EntityDescriptor and in that case use it.
         /// </summary>
-        [ConfigurationProperty(nameof(unpackEntitiesDescriptorInIdentityProviderMetadata), IsRequired = false)]
+        [ConfigurationProperty(unpackEntitiesDescriptorInIdentityProviderMetadata, IsRequired = false)]
         public bool UnpackEntitiesDescriptorInIdentityProviderMetadata
         {
             get
@@ -45,15 +45,14 @@ namespace Sustainsys.Saml2.Configuration
             }
         }
 
-        const string disableLogoutStateCookie
-            = nameof(disableLogoutStateCookie);
+        const string disableLogoutStateCookie = nameof(disableLogoutStateCookie);
 
         /// <summary>
         /// Do not send logout state cookie, e.g. if you are not using ReturnUrl
         /// or if you know the cookie will be lost due to cross-domain redirects
         /// </summary>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage( "Microsoft.Naming", "CA1726:UsePreferredTerms", MessageId = "Logout" )]
-        [ConfigurationProperty(nameof(disableLogoutStateCookie), IsRequired = false)]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1726:UsePreferredTerms", MessageId = "Logout")]
+        [ConfigurationProperty(disableLogoutStateCookie, IsRequired = false)]
         public bool DisableLogoutStateCookie
         {
             get
@@ -63,6 +62,27 @@ namespace Sustainsys.Saml2.Configuration
             set
             {
                 base[disableLogoutStateCookie] = value;
+            }
+        }
+
+        const string ignoreMissingInResponseTo = nameof(ignoreMissingInResponseTo);
+
+        /// <summary>
+        /// Ignore the check for the missing InResponseTo attribute in the Saml response.
+        /// This is different to setting the allowUnsolicitedAuthnResponse as it will only
+        /// ignore the InResponseTo attribute if there is no relayState. Setting
+        /// IgnoreMissingInResponseTo to true will always skip the check.
+        /// </summary>
+        [ConfigurationProperty(ignoreMissingInResponseTo, IsRequired = false)]
+        public bool IgnoreMissingInResponseTo
+        {
+            get
+            {
+                return (bool)base[ignoreMissingInResponseTo];
+            }
+            set
+            {
+                base[ignoreMissingInResponseTo] = value;
             }
         }
     }
