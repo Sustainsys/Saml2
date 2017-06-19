@@ -90,7 +90,7 @@ namespace Kentor.AuthServices.Tests
             .Excluding(au=>au.SigningAlgorithm)
             .Excluding(au => au.RelayState));
 
-            subject.RelayState.Should().HaveLength(56);
+            subject.RelayState.Should().HaveLength(24);
         }
 
         [TestMethod]

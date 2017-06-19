@@ -20,7 +20,7 @@ namespace Kentor.AuthServices.Tests
 
                 // Can't really test a random algo any better than expecting a
                 // specific length of the result and the right chars.
-                result.Length.Should().Be(56);
+                result.Length.Should().Be(24);
 
                 containedDash = containedDash || result.Contains("-");
                 containedUnderscore = containedUnderscore || result.Contains("_");
