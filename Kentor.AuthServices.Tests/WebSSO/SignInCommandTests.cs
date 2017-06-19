@@ -295,5 +295,18 @@ namespace Kentor.AuthServices.Tests.WebSso
             SignInCommand.Run(null, null, request, options, null)
                 .Should().BeSameAs(notifiedCommandResult);
         }
+
+        [TestMethod]
+        public void SignInCommand_Run_RedirectToDsWorksWithoutSpecifiedReturnPath()
+        {
+            var options = StubFactory.CreateOptions();
+
+            var request = new HttpRequestData("GET",
+                new Uri("http://sp.example.com/AuthServices/SignIn"));
+
+            Action a = () => SignInCommand.Run(null, null, request, options, null);
+
+            a.ShouldNotThrow();
+        }
     }
 }
