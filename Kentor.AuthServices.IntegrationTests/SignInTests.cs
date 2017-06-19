@@ -61,7 +61,7 @@ namespace Kentor.AuthServices.IntegrationTests
         {
             I.Open("http://localhost:2181")
                 .Click("a[href=\"/Home/Secure\"]")
-                .Assert.Text("http://localhost:2181/AuthServices/SignIn?ReturnUrl=%2FHome%2FSecure").In("#return");
+                .Assert.Text(s => s.StartsWith("http://localhost:2181/AuthServices/SignIn?ReturnUrl=%2FHome%2FSecure&RelayState=")).In("#return");
 
             I.Click("#submit")
                 .Assert.Text("http://localhost:2181/AuthServices/Acs").In("#AssertionModel_AssertionConsumerServiceUrl");
@@ -88,7 +88,7 @@ namespace Kentor.AuthServices.IntegrationTests
         {
             I.Open("http://localhost:17009/SamplePath")
                 .Click("a[href=\"/SamplePath/AuthServices/SignIn\"]")
-                .Assert.Text("http://localhost:17009/SamplePath/AuthServices/SignIn").In("#return");
+                .Assert.Text(s => s.StartsWith("http://localhost:17009/SamplePath/AuthServices/SignIn?RelayState=")).In("#return");
 
             I.Click("#submit")
                 .Assert.Text("http://localhost:17009/SamplePath/AuthServices/Acs").In("#AssertionModel_AssertionConsumerServiceUrl");
@@ -148,7 +148,7 @@ namespace Kentor.AuthServices.IntegrationTests
         {
             I.Open("http://localhost:57294/Account/Login")
                 .Click("#KentorAuthServices")
-                .Assert.Text("http://localhost:57294/AuthServices/SignIn?ReturnUrl=%2FAccount%2FExternalLoginCallback").In("#return");
+                .Assert.Text(s => s.StartsWith("http://localhost:57294/AuthServices/SignIn?ReturnUrl=%2FAccount%2FExternalLoginCallback&RelayState=")).In("#return");
 
             I.Click("#submit")
                 .Assert.Text("http://localhost:57294/AuthServices/Acs").In("#AssertionModel_AssertionConsumerServiceUrl");
