@@ -26,7 +26,6 @@ namespace Kentor.AuthServices.WebSso
         /// <param name="request">Request data.</param>
         /// <param name="options">Options</param>
         /// <returns>CommandResult</returns>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "ReturnUrl")]
         public CommandResult Run(HttpRequestData request, IOptions options)
         {
             if (request == null)
@@ -39,22 +38,55 @@ namespace Kentor.AuthServices.WebSso
                 throw new ArgumentNullException(nameof(options));
             }
 
-            var returnUrl = request.QueryString["ReturnUrl"].FirstOrDefault();
-            options.SPOptions.Logger.WriteVerbose("Extracted ReturnUrl " + returnUrl + " from query string");
-            if (returnUrl != null && !PathHelper.IsLocalWebUrl(returnUrl))
-            {
-                if (!options.Notifications.ValidateAbsoluteReturnUrl(returnUrl))
-                {
-                    throw new InvalidOperationException("Return Url must be a relative Url.");
-                }
-            }
+            var returnUrl = GetReturnUrl(request, options);
 
-            return Run(
+            var result = Run(
                 new EntityId(request.QueryString["idp"].FirstOrDefault()),
                 returnUrl,
                 request,
                 options,
-				request.StoredRequestState?.RelayData);
+                request.StoredRequestState?.RelayData);
+
+            if (request.RelayState != null)
+            {
+                result.ClearCookieName = "Kentor." + request.RelayState;
+            }
+
+            return result;
+        }
+
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "SignIn")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "RelayState")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "ReturnUrl")]
+        private static string GetReturnUrl(HttpRequestData request, IOptions options)
+        {
+            var returnUrl = request.QueryString["ReturnUrl"].FirstOrDefault();
+            if (returnUrl != null)
+            {
+                if (request.RelayState != null)
+                {
+                    throw new InvalidOperationException("Both a ReturnUrl and a RelayState query " +
+                        "string parameter found in call to SignIn. That is not allowed. If a " +
+                        "RelayState is found the call is a response to a discovery service request. " +
+                        "The ReturnUrl has been added erroneously by the discovery service.");
+                }
+
+                options.SPOptions.Logger.WriteVerbose("Extracted ReturnUrl " + returnUrl + " from query string");
+                if (!PathHelper.IsLocalWebUrl(returnUrl))
+                {
+                    if (!options.Notifications.ValidateAbsoluteReturnUrl(returnUrl))
+                    {
+                        throw new InvalidOperationException("Return Url must be a relative Url.");
+                    }
+                }
+            }
+
+            if (request.StoredRequestState != null)
+            {
+                returnUrl = request.StoredRequestState.ReturnUrl.OriginalString;
+            }
+
+            return returnUrl;
         }
 
         /// <summary>
@@ -99,7 +131,7 @@ namespace Kentor.AuthServices.WebSso
                     }
                     idp = options.IdentityProviders.Default;
                     options.SPOptions.Logger.WriteVerbose(
-                        "No specific idp requested and no Discovery Service configured. " + 
+                        "No specific idp requested and no Discovery Service configured. " +
                         "Falling back to use configured default Idp " + idp.EntityId.Id);
                 }
                 else
@@ -132,7 +164,7 @@ namespace Kentor.AuthServices.WebSso
             commandResult.SetCookieName = "Kentor." + authnRequest.RelayState;
 
             options.Notifications.SignInCommandResultCreated(commandResult, relayData);
-            
+
             return commandResult;
         }
 
@@ -146,15 +178,7 @@ namespace Kentor.AuthServices.WebSso
 
             var relayState = SecureKeyGenerator.CreateRelayState();
 
-            if (!string.IsNullOrEmpty(returnPath))
-            {
-                returnUrl += "?ReturnUrl=" + Uri.EscapeDataString(returnPath);
-                returnUrl += "&RelayState=" + Uri.EscapeDataString(relayState);
-            }
-            else
-            {
-                returnUrl += "?RelayState=" + Uri.EscapeDataString(relayState);
-            }
+            returnUrl += "?RelayState=" + Uri.EscapeDataString(relayState);
 
             var redirectLocation = string.Format(
                 CultureInfo.InvariantCulture,
@@ -163,11 +187,17 @@ namespace Kentor.AuthServices.WebSso
                 Uri.EscapeDataString(spOptions.EntityId.Id),
                 Uri.EscapeDataString(returnUrl));
 
+            var requestState = new StoredRequestState(
+                null,
+                returnPath == null ? null : new Uri(returnPath, UriKind.RelativeOrAbsolute),
+                null,
+                relayData);
+
             return new CommandResult()
             {
                 HttpStatusCode = HttpStatusCode.SeeOther,
                 Location = new Uri(redirectLocation),
-                RequestState = new StoredRequestState(null, null, null, relayData),
+                RequestState = requestState,
                 SetCookieName = "Kentor." + relayState
             };
         }

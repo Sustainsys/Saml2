@@ -164,40 +164,26 @@ namespace Kentor.AuthServices.Tests.WebSso
                     EntityId = new EntityId("https://github.com/KentorIT/authservices")
                 });
 
-			var relayData = new Dictionary<string, string>()
-			{
-				{ "test", "value" }
-			};
-
-			var request = new HttpRequestData("GET", new Uri("http://localhost/signin?ReturnUrl=%2FReturn%2FPath"));
-			request.StoredRequestState = new StoredRequestState(null, null, null, relayData);
+            var request = new HttpRequestData("GET", new Uri("http://localhost/signin?ReturnUrl=%2FReturn%2FPath"));
 
             var result = new SignInCommand().Run(request, options);
 
-			result.RequestState.RelayData.Should().Equal(relayData);
-			result.SetCookieName.Should().NotBeEmpty();
+            result.HttpStatusCode.Should().Be(HttpStatusCode.SeeOther);
 
-			result.HttpStatusCode.Should().Be(HttpStatusCode.SeeOther);
+            result.SetCookieName.Should().StartWith("Kentor.");
 
-			// check result scheme and host
-			result.Location.GetComponents(UriComponents.SchemeAndServer, UriFormat.Unescaped).Should().Be(dsUrl.GetComponents(UriComponents.SchemeAndServer, UriFormat.Unescaped));
-			result.Location.AbsolutePath.Should().Be(dsUrl.AbsolutePath);
+            var relayState = result.SetCookieName.Substring("Kentor.".Length);
 
-			// check querystring separately
-			var resultLocationQueryString = HttpUtility.ParseQueryString(result.Location.Query);
-			resultLocationQueryString["entityId"].Should().Be(options.SPOptions.EntityId.Id);
-			resultLocationQueryString["returnIDParam"].Should().Be("idp");
+            var queryString = string.Format("?entityID={0}&return={1}&returnIDParam=idp",
+                Uri.EscapeDataString(options.SPOptions.EntityId.Id),
+                Uri.EscapeDataString(
+                    "http://localhost/AuthServices/SignIn?RelayState=" + relayState));
 
-			// check return url
-			var returnUrl = new Uri(resultLocationQueryString["return"]);
-			returnUrl.GetComponents(UriComponents.SchemeAndServer, UriFormat.Unescaped).Should().Be("http://localhost");
-			returnUrl.AbsolutePath.Should().Be("/AuthServices/SignIn");
+            var expectedLocation = new Uri(dsUrl + queryString);
 
-			var returnUrlQueryString = HttpUtility.ParseQueryString(returnUrl.Query);
-			returnUrlQueryString["ReturnUrl"].Should().Be("/Return/Path");
-			returnUrlQueryString["RelayState"].Should().NotBeEmpty();
-
-		}
+            result.Location.Should().Be(expectedLocation);
+            result.RequestState.ReturnUrl.Should().Be("/Return/Path");
+        }
 
         [TestMethod]
         public void SignInCommand_Run_PublicOrigin()
@@ -312,6 +298,62 @@ namespace Kentor.AuthServices.Tests.WebSso
 
             SignInCommand.Run(null, null, request, options, null)
                 .Should().BeSameAs(notifiedCommandResult);
+        }
+
+        [TestMethod]
+        public void SignInCommand_Run_CarriesOverRelayStateOnReturnFromDS()
+        {
+            var options = StubFactory.CreateOptions();
+            var idp = options.IdentityProviders.Default;
+
+            var relayData = new Dictionary<string, string>
+            {
+                { "key", "value" }
+            };
+            var relayState = "RelayState";
+            var returnUrl = new Uri("/SignedIn", UriKind.Relative);
+            var storedRequestState = new StoredRequestState(
+                null,
+                returnUrl,
+                null,
+                relayData);
+
+            var uri = new Uri("http://sp.example.com/AuthServices/SignIn?RelayState="
+                + relayState
+                + "&idp="
+                + Uri.EscapeDataString(idp.EntityId.Id));
+
+            var request = new HttpRequestData("GET",
+                uri,
+                "/AuthServices",
+                null,
+                storedRequestState)
+            {
+                RelayState = relayState
+            };
+
+            var subject = CommandFactory.GetCommand(CommandFactory.SignInCommandName);
+
+            var actual = subject.Run(request, options);
+
+            actual.ClearCookieName.Should().Be("Kentor." + relayState, "cookie should be cleared");
+            actual.RequestState.ReturnUrl.Should().Be(returnUrl);
+            actual.RequestState.Idp.Id.Should().Be(idp.EntityId.Id);
+            actual.RequestState.RelayData.ShouldBeEquivalentTo(relayData);
+        }
+
+        [TestMethod]
+        public void SignInCommand_Run_ThrowsOnBothRelayStateAndReturnUrl()
+        {
+            var uri = new Uri("http://sp.example.com/AuthServices/SignIn?ReturnUrl=%2FLoggedIn&RelayState=state");
+
+            var request = new HttpRequestData("GET", uri);
+
+            var subject = CommandFactory.GetCommand(CommandFactory.SignInCommandName);
+
+            subject.Invoking(s => s.Run(request, StubFactory.CreateOptions()))
+                .ShouldThrow<InvalidOperationException>().
+                WithMessage("*Both*ReturnUrl*RelayState*");
         }
     }
 }
