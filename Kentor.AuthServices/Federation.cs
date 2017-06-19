@@ -9,6 +9,8 @@ using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
+using System.Security.Cryptography.X509Certificates;
+using System.IdentityModel.Tokens;
 
 namespace Kentor.AuthServices
 {
@@ -31,7 +33,7 @@ namespace Kentor.AuthServices
                 throw new ArgumentNullException(nameof(config));
             }
 
-            Init(config.MetadataLocation, config.AllowUnsolicitedAuthnResponse, options);
+            Init(config.MetadataLocation, config.AllowUnsolicitedAuthnResponse, options, null);
         }
 
         /// <summary>
@@ -45,8 +47,50 @@ namespace Kentor.AuthServices
         /// instances and register identity providers in.</param>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "sp")]
         public Federation(string metadataLocation, bool allowUnsolicitedAuthnResponse, IOptions options)
+            : this (metadataLocation,
+                  allowUnsolicitedAuthnResponse,
+                  options,
+                  (IEnumerable<SecurityKeyIdentifierClause>)null)
+        { }
+
+        /// <summary>
+        /// Ctor
+        /// </summary>
+        /// <param name="metadataLocation">Location (url, local path or app 
+        /// relative path such as ~/App_Data) where metadata is located.</param>
+        /// <param name="allowUnsolicitedAuthnResponse">Should unsolicited responses 
+        /// from idps in this federation be accepted?</param>
+        /// <param name="options">Options to pass on to created IdentityProvider
+        /// instances and register identity providers in.</param>
+        /// <param name="signingKeys">List of signing keys to use to validate metadata.</param>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "sp")]
+        public Federation(string metadataLocation,
+            bool allowUnsolicitedAuthnResponse,
+            IOptions options,
+            IEnumerable<X509Certificate2> signingKeys)
+            :this (metadataLocation,
+                 allowUnsolicitedAuthnResponse,
+                 options, 
+                 signingKeys.Select(k => new X509RawDataKeyIdentifierClause(k)))
+        { }
+
+        /// <summary>
+        /// Ctor
+        /// </summary>
+        /// <param name="metadataLocation">Location (url, local path or app 
+        /// relative path such as ~/App_Data) where metadata is located.</param>
+        /// <param name="allowUnsolicitedAuthnResponse">Should unsolicited responses 
+        /// from idps in this federation be accepted?</param>
+        /// <param name="options">Options to pass on to created IdentityProvider
+        /// instances and register identity providers in.</param>
+        /// <param name="signingKeys">List of signing keys to use to validate metadata.</param>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "sp")]
+        public Federation(string metadataLocation,
+            bool allowUnsolicitedAuthnResponse,
+            IOptions options,
+            IEnumerable<SecurityKeyIdentifierClause> signingKeys)
         {
-            Init(metadataLocation, allowUnsolicitedAuthnResponse, options);
+            Init(metadataLocation, allowUnsolicitedAuthnResponse, options, signingKeys);
         }
 
         private bool allowUnsolicitedAuthnResponse;
@@ -56,11 +100,15 @@ namespace Kentor.AuthServices
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1500:VariableNamesShouldNotMatchFieldNames", MessageId = "metadataLocation")]
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1500:VariableNamesShouldNotMatchFieldNames", MessageId = "allowUnsolicitedAuthnResponse")]
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1500:VariableNamesShouldNotMatchFieldNames", MessageId = "options")]
-        private void Init(string metadataLocation, bool allowUnsolicitedAuthnResponse, IOptions options)
+        private void Init(string metadataLocation,
+            bool allowUnsolicitedAuthnResponse,
+            IOptions options,
+            IEnumerable<SecurityKeyIdentifierClause> signingKeys)
         {
             this.allowUnsolicitedAuthnResponse = allowUnsolicitedAuthnResponse;
             this.options = options;
             this.metadataLocation = metadataLocation;
+            SigningKeys = signingKeys?.ToList();
 
             LoadMetadata();
         }
@@ -74,7 +122,7 @@ namespace Kentor.AuthServices
                 try
                 {
                     options.SPOptions.Logger?.WriteInformation("Loading metadata for federation from " + metadataLocation);
-                    var metadata = MetadataLoader.LoadFederation(metadataLocation);
+                    var metadata = MetadataLoader.LoadFederation(metadataLocation, SigningKeys);
 
                     var identityProvidersMetadata = metadata.ChildEntities.Cast<ExtendedEntityDescriptor>()
                         .Where(ed => ed.RoleDescriptors.OfType<IdentityProviderSingleSignOnDescriptor>().Any());
@@ -175,6 +223,11 @@ namespace Kentor.AuthServices
                 ScheduleMetadataReload();
             }
         }
+
+        /// <summary>
+        /// Signing keys to use to verify the metadata before using it.
+        /// </summary>
+        public IList<SecurityKeyIdentifierClause> SigningKeys { get; private set; }
 
         private void ScheduleMetadataReload()
         {

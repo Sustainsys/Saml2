@@ -98,6 +98,33 @@ namespace Kentor.AuthServices.Tests.Helpers
 </EntitiesDescriptor>
 ", SignedXmlHelper.KeyInfoXml);
 
+            var federationMetadataSigned = string.Format(
+@"<EntitiesDescriptor ID=""federationMetadataSigned"" xmlns=""urn:oasis:names:tc:SAML:2.0:metadata"" validUntil=""2100-01-01T14:43:15Z"">
+  <EntityDescriptor entityID=""http://idp.federation.example.com/metadata"">
+    <IDPSSODescriptor
+      protocolSupportEnumeration=""urn:oasis:names:tc:SAML:2.0:protocol"">
+      <KeyDescriptor use=""signing"">
+        {0}
+      </KeyDescriptor>
+      <SingleSignOnService
+        Binding=""urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect""
+        Location=""http://idp.federation.example.com/ssoService"" />
+    </IDPSSODescriptor>
+  </EntityDescriptor>
+  <EntityDescriptor entityID=""http://sp.federation.example.com/metadata"">
+    <SPSSODescriptor
+      protocolSupportEnumeration=""urn:oasis:names:tc:SAML:2.0:protocol"">
+      <AssertionConsumerService index=""0""
+        Binding=""urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST""
+        Location=""http://sp.federation.example.com/acs"" />
+    </SPSSODescriptor>
+  </EntityDescriptor>
+</EntitiesDescriptor>
+", SignedXmlHelper.KeyInfoXml);
+
+            content["/federationMetadataSigned"] =
+                SignedXmlHelper.SignXml(federationMetadataSigned);
+
             if (IdpAndFederationShortCacheDurationAvailable)
             {
                 content["/federationMetadataVeryShortCacheDuration"] = string.Format(
@@ -356,7 +383,7 @@ entityID=""http://localhost:13428/idpMetadataVeryShortCacheDuration"" cacheDurat
                 LastArtifactResolutionWasSigned = parsedRequest
                     .Element(Saml2Namespaces.SoapEnvelope + "Body")
                     .Element(Saml2Namespaces.Saml2P + "ArtifactResolve")
-                    .Element(XNamespace.Get(SignedXml.XmlDsigNamespaceUrl)+ "Signature")
+                    .Element(XNamespace.Get(SignedXml.XmlDsigNamespaceUrl) + "Signature")
                     != null;
 
                 var response = string.Format(

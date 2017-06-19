@@ -9,6 +9,9 @@ using Kentor.AuthServices.Metadata;
 using Kentor.AuthServices.Tests.Helpers;
 using Kentor.AuthServices.Tests.Metadata;
 using System.Threading;
+using System.Security.Cryptography.X509Certificates;
+using System.Collections.Generic;
+using Kentor.AuthServices.Exceptions;
 
 namespace Kentor.AuthServices.Tests
 {
@@ -275,6 +278,44 @@ namespace Kentor.AuthServices.Tests
 
             options.IdentityProviders.TryGetValue(new EntityId("http://idp1.federation.example.com/metadata"), out idp)
                 .Should().BeTrue("idp should be readded when metadata is refreshed.");
+        }
+
+        [TestMethod]
+        public void Federation_RejectsIfNotSignedWhenConfiguredWithKeys()
+        {
+            var options = StubFactory.CreateOptions();
+
+            var metadataLocation = "http://localhost:13428/federationMetadata";
+
+            Action a = () => new Federation(
+                metadataLocation,
+                true,
+                options,
+                new List<X509Certificate2>()
+                {
+                    SignedXmlHelper.TestCert
+                });
+
+            a.ShouldThrow<InvalidSignatureException>();
+        }
+
+        [TestMethod]
+        public void Federation_AcceptsCorrectlySignedMetadataWhenConfiguredWithKeys()
+        {
+            var options = StubFactory.CreateOptions();
+
+            var metadataLocation = "http://localhost:13428/federationMetadataSigned";
+
+            Action a = () => new Federation(
+                metadataLocation,
+                true,
+                options,
+                new List<X509Certificate2>()
+                {
+                    SignedXmlHelper.TestCert
+                });
+
+            a.ShouldNotThrow();
         }
     }
 }
