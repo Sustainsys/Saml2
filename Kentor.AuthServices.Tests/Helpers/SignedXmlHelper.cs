@@ -33,11 +33,24 @@ namespace Kentor.AuthServices.Tests.Helpers
                 (new X509SecurityToken(TestCertSignOnly))
                 .CreateKeyIdentifierClause<X509RawDataKeyIdentifierClause>()));
 
-        public static string SignXml(string xml, bool includeKeyInfo = false, bool preserveWhitespace = true)
+        public static string SignXml(
+            string xml,
+            bool includeKeyInfo = false,
+            bool preserveWhitespace = true,
+            string signingAlgorithmName = null)
         {
-            var xmlDoc = XmlHelpers.XmlDocumentFromString(xml);
+            var xmlDoc = XmlHelpers.CreateSafeXmlDocument();
+            xmlDoc.PreserveWhitespace = preserveWhitespace;
+            xmlDoc.LoadXml(xml);
 
-            xmlDoc.Sign(TestCert, includeKeyInfo);
+            if(string.IsNullOrEmpty(signingAlgorithmName))
+            {
+                xmlDoc.Sign(TestCert, includeKeyInfo);
+            }
+            else
+            {
+                xmlDoc.Sign(TestCert, includeKeyInfo, signingAlgorithmName);
+            }
 
             return xmlDoc.OuterXml;
         }        

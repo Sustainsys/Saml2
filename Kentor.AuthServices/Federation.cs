@@ -123,7 +123,10 @@ namespace Kentor.AuthServices
                 try
                 {
                     options.SPOptions.Logger?.WriteInformation("Loading metadata for federation from " + metadataLocation);
-                    var metadata = MetadataLoader.LoadFederation(metadataLocation, SigningKeys);
+                    var metadata = MetadataLoader.LoadFederation(
+                        metadataLocation,
+                        SigningKeys,
+                        options.SPOptions.MinIncomingSigningAlgorithm);
 
                     var identityProvidersMetadata = metadata.ChildEntities.Cast<ExtendedEntityDescriptor>()
                         .Where(ed => ed.RoleDescriptors.OfType<IdentityProviderSingleSignOnDescriptor>().Any());

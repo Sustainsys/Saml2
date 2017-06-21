@@ -12,6 +12,7 @@ using System.Threading;
 using System.Security.Cryptography.X509Certificates;
 using System.Collections.Generic;
 using Kentor.AuthServices.Exceptions;
+using System.Security.Cryptography.Xml;
 
 namespace Kentor.AuthServices.Tests
 {
@@ -299,7 +300,8 @@ namespace Kentor.AuthServices.Tests
                 });
 
             a.ShouldNotThrow();
-            subject.LastMetadataLoadException.Should().BeOfType<InvalidSignatureException>();
+            subject.LastMetadataLoadException.As<InvalidSignatureException>()
+                .Message.Should().Match("Signature*failed*");
         }
 
         [TestMethod]
@@ -341,8 +343,31 @@ namespace Kentor.AuthServices.Tests
                 });
 
             a.ShouldNotThrow();
-            subject.LastMetadataLoadException.Should().BeOfType<InvalidSignatureException>();
+            subject.LastMetadataLoadException.As<InvalidSignatureException>()
+                .Message.Should().Match("*tampered*");
+        }
+
+        [TestMethod]
+        public void Federation_RejectsTooWeakMetadataSignatureAlgorithmWhenConfiguredWithKeys()
+        {
+            var options = StubFactory.CreateOptions();
+            options.SPOptions.MinIncomingSigningAlgorithm = SignedXml.XmlDsigRSASHA512Url;
+
+            var metadataLocation = "http://localhost:13428/federationMetadataSigned";
+
+            Federation subject = null;
+            Action a = () => subject = new Federation(
+                metadataLocation,
+                true,
+                options,
+                new List<X509Certificate2>()
+                {
+                    SignedXmlHelper.TestCert
+                });
+
+            a.ShouldNotThrow();
+            subject.LastMetadataLoadException.As<InvalidSignatureException>()
+                .Message.Should().Match("*algorithm*256*weak*512*");
         }
     }
-   
 }

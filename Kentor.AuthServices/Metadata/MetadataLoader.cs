@@ -58,7 +58,7 @@ namespace Kentor.AuthServices.Metadata
                 throw new ArgumentNullException(nameof(metadataLocation));
             }
 
-            var result = Load(metadataLocation, null);
+            var result = Load(metadataLocation, null, null);
 
             var entitiesDescriptor = result as ExtendedEntitiesDescriptor;
             if(entitiesDescriptor != null)
@@ -81,7 +81,8 @@ namespace Kentor.AuthServices.Metadata
 
         private static MetadataBase Load(
             string metadataLocation,
-            IEnumerable<SecurityKeyIdentifierClause> signingKeys)
+            IEnumerable<SecurityKeyIdentifierClause> signingKeys,
+            string minIncomingSigningAlgorithm)
         {
             if(PathHelper.IsWebRootRelative(metadataLocation))
             {
@@ -95,7 +96,7 @@ namespace Kentor.AuthServices.Metadata
                     stream,
                     XmlDictionaryReaderQuotas.Max);
 
-                reader = ValidateSignature(reader, signingKeys);
+                reader = ValidateSignature(reader, signingKeys, minIncomingSigningAlgorithm);
 
                 return Load(reader);
             }
@@ -104,7 +105,8 @@ namespace Kentor.AuthServices.Metadata
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope", Justification = "No unmanaged resources involved, safe to ignore")]
         private static XmlDictionaryReader ValidateSignature(
             XmlDictionaryReader reader,
-            IEnumerable<SecurityKeyIdentifierClause> signingKeys)
+            IEnumerable<SecurityKeyIdentifierClause> signingKeys,
+            string minIncomingSigningAlgorithm)
         {
             if (signingKeys == null)
                 return reader;
@@ -112,7 +114,7 @@ namespace Kentor.AuthServices.Metadata
             var xmlDoc = XmlHelpers.CreateSafeXmlDocument();
             xmlDoc.Load(reader);
 
-            if(!xmlDoc.DocumentElement.IsSignedByAny(signingKeys, false, SignedXml.XmlDsigRSASHA1Url))
+            if(!xmlDoc.DocumentElement.IsSignedByAny(signingKeys, false, minIncomingSigningAlgorithm))
             {
                 throw new InvalidSignatureException("Signature validation failed for federation metadata.");
             }
@@ -143,7 +145,7 @@ namespace Kentor.AuthServices.Metadata
         /// <returns>Extended entitiesdescriptor</returns>
         public static ExtendedEntitiesDescriptor LoadFederation(string metadataLocation)
         {
-            return LoadFederation(metadataLocation, null);
+            return LoadFederation(metadataLocation, null, null);
         }
 
         /// <summary>
@@ -151,20 +153,23 @@ namespace Kentor.AuthServices.Metadata
         /// </summary>
         /// <param name="metadataLocation">Url to metadata</param>
         /// <param name="signingKeys"></param>
+        /// <param name="minIncomingSigningAlgorithm">Mininum strength accepted
+        /// for signing algorithm.</param>
         /// <returns>Extended entitiesdescriptor</returns>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "EntitiesDescriptor")]
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "EntityDescriptor")]
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "IdentityProvider")]
         public static ExtendedEntitiesDescriptor LoadFederation(
             string metadataLocation,
-            IEnumerable<SecurityKeyIdentifierClause> signingKeys)
+            IEnumerable<SecurityKeyIdentifierClause> signingKeys,
+            string minIncomingSigningAlgorithm)
         {
             if (metadataLocation == null)
             {
                 throw new ArgumentNullException(nameof(metadataLocation));
             }
 
-            var result = Load(metadataLocation, signingKeys);
+            var result = Load(metadataLocation, signingKeys, minIncomingSigningAlgorithm);
 
             if (result is ExtendedEntityDescriptor)
             {
