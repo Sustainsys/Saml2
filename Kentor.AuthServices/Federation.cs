@@ -33,7 +33,12 @@ namespace Kentor.AuthServices
                 throw new ArgumentNullException(nameof(config));
             }
 
-            Init(config.MetadataLocation, config.AllowUnsolicitedAuthnResponse, options, null);
+            var signingKeys = config.SigningCertificates.Any() ?
+                config.SigningCertificates.Select(
+                sc => new X509RawDataKeyIdentifierClause(sc.LoadCertificate()))
+                : null;
+
+            Init(config.MetadataLocation, config.AllowUnsolicitedAuthnResponse, options, signingKeys);
         }
 
         /// <summary>
@@ -93,9 +98,10 @@ namespace Kentor.AuthServices
             Init(metadataLocation, allowUnsolicitedAuthnResponse, options, signingKeys);
         }
 
-        private bool allowUnsolicitedAuthnResponse;
+        // Internal to allow checking from tests.
+        internal bool allowUnsolicitedAuthnResponse;
+        internal string metadataLocation;
         private IOptions options;
-        private string metadataLocation;
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1500:VariableNamesShouldNotMatchFieldNames", MessageId = "metadataLocation")]
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1500:VariableNamesShouldNotMatchFieldNames", MessageId = "allowUnsolicitedAuthnResponse")]

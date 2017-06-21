@@ -13,6 +13,7 @@ using System.Security.Cryptography.X509Certificates;
 using System.Collections.Generic;
 using Kentor.AuthServices.Exceptions;
 using System.Security.Cryptography.Xml;
+using System.IdentityModel.Tokens;
 
 namespace Kentor.AuthServices.Tests
 {
@@ -36,6 +37,35 @@ namespace Kentor.AuthServices.Tests
             Action a = () => new Federation(null, Options.FromConfiguration);
 
             a.ShouldThrow<ArgumentNullException>().And.ParamName.Should().Be("config");
+        }
+
+        [TestMethod]
+        public void Federation_Ctor_LoadsConfig()
+        {
+            var config = KentorAuthServicesSection.Current
+                .Federations.First();
+
+            var options = StubFactory.CreateOptions();
+
+            var subject = new Federation(config, options);
+
+            subject.metadataLocation.Should().Be("http://localhost:13428/federationMetadataSigned");
+            subject.allowUnsolicitedAuthnResponse.Should().BeTrue();
+            subject.SigningKeys.First().As<X509RawDataKeyIdentifierClause>()
+                .Matches(SignedXmlHelper.TestCert).Should().BeTrue();
+        }
+
+        [TestMethod]
+        public void Federation_Ctor_ConvertsEmptySigningCertificateFromConfigToNull()
+        {
+            var config = KentorAuthServicesSection.Current
+                .Federations.Skip(1).Single();
+
+            var options = StubFactory.CreateOptions();
+
+            var subject = new Federation(config, options);
+
+            subject.SigningKeys.Should().BeNull();
         }
 
         [TestMethod]
@@ -288,9 +318,7 @@ namespace Kentor.AuthServices.Tests
 
             var metadataLocation = "http://localhost:13428/federationMetadata";
 
-            Federation subject = null;
-
-            Action a = () => subject = new Federation(
+            var subject = new Federation(
                 metadataLocation,
                 true,
                 options,
@@ -299,7 +327,6 @@ namespace Kentor.AuthServices.Tests
                     SignedXmlHelper.TestCert
                 });
 
-            a.ShouldNotThrow();
             subject.LastMetadataLoadException.As<InvalidSignatureException>()
                 .Message.Should().Match("Signature*failed*");
         }
@@ -311,8 +338,7 @@ namespace Kentor.AuthServices.Tests
 
             var metadataLocation = "http://localhost:13428/federationMetadataSigned";
 
-            Federation subject = null;
-            Action a = () => subject = new Federation(
+            var subject = new Federation(
                 metadataLocation,
                 true,
                 options,
@@ -321,7 +347,6 @@ namespace Kentor.AuthServices.Tests
                     SignedXmlHelper.TestCert
                 });
 
-            a.ShouldNotThrow();
             subject.LastMetadataLoadException.Should().BeNull();
         }
 
@@ -332,8 +357,7 @@ namespace Kentor.AuthServices.Tests
 
             var metadataLocation = "http://localhost:13428/federationMetadataSignedTampered";
 
-            Federation subject = null;
-            Action a = () => subject = new Federation(
+            var subject = new Federation(
                 metadataLocation,
                 true,
                 options,
@@ -342,7 +366,6 @@ namespace Kentor.AuthServices.Tests
                     SignedXmlHelper.TestCert
                 });
 
-            a.ShouldNotThrow();
             subject.LastMetadataLoadException.As<InvalidSignatureException>()
                 .Message.Should().Match("*tampered*");
         }
@@ -355,8 +378,7 @@ namespace Kentor.AuthServices.Tests
 
             var metadataLocation = "http://localhost:13428/federationMetadataSigned";
 
-            Federation subject = null;
-            Action a = () => subject = new Federation(
+            var subject = new Federation(
                 metadataLocation,
                 true,
                 options,
@@ -365,7 +387,6 @@ namespace Kentor.AuthServices.Tests
                     SignedXmlHelper.TestCert
                 });
 
-            a.ShouldNotThrow();
             subject.LastMetadataLoadException.As<InvalidSignatureException>()
                 .Message.Should().Match("*algorithm*256*weak*512*");
         }
@@ -378,8 +399,7 @@ namespace Kentor.AuthServices.Tests
 
             var metadataLocation = "http://localhost:13428/federationMetadataSigned";
 
-            Federation subject = null;
-            Action a = () => subject = new Federation(
+            var subject = new Federation(
                 metadataLocation,
                 true,
                 options,
@@ -388,7 +408,6 @@ namespace Kentor.AuthServices.Tests
                     SignedXmlHelper.TestCert
                 });
 
-            a.ShouldNotThrow();
             subject.LastMetadataLoadException.As<InvalidSignatureException>()
                 .Message.Should().Match("*verification*certificate*failed*");
         }
