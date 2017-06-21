@@ -287,26 +287,9 @@ namespace Kentor.AuthServices.Tests
 
             var metadataLocation = "http://localhost:13428/federationMetadata";
 
-            Action a = () => new Federation(
-                metadataLocation,
-                true,
-                options,
-                new List<X509Certificate2>()
-                {
-                    SignedXmlHelper.TestCert
-                });
+            Federation subject = null;
 
-            a.ShouldThrow<InvalidSignatureException>();
-        }
-
-        [TestMethod]
-        public void Federation_AcceptsCorrectlySignedMetadataWhenConfiguredWithKeys()
-        {
-            var options = StubFactory.CreateOptions();
-
-            var metadataLocation = "http://localhost:13428/federationMetadataSigned";
-
-            Action a = () => new Federation(
+            Action a = () => subject = new Federation(
                 metadataLocation,
                 true,
                 options,
@@ -316,6 +299,50 @@ namespace Kentor.AuthServices.Tests
                 });
 
             a.ShouldNotThrow();
+            subject.LastMetadataLoadException.Should().BeOfType<InvalidSignatureException>();
+        }
+
+        [TestMethod]
+        public void Federation_AcceptsCorrectlySignedMetadataWhenConfiguredWithKeys()
+        {
+            var options = StubFactory.CreateOptions();
+
+            var metadataLocation = "http://localhost:13428/federationMetadataSigned";
+
+            Federation subject = null;
+            Action a = () => subject = new Federation(
+                metadataLocation,
+                true,
+                options,
+                new List<X509Certificate2>()
+                {
+                    SignedXmlHelper.TestCert
+                });
+
+            a.ShouldNotThrow();
+            subject.LastMetadataLoadException.Should().BeNull();
+        }
+
+        [TestMethod]
+        public void Federation_RejectsTamperedMetadataWhenConfiguredWithKeys()
+        {
+            var options = StubFactory.CreateOptions();
+
+            var metadataLocation = "http://localhost:13428/federationMetadataSignedTampered";
+
+            Federation subject = null;
+            Action a = () => subject = new Federation(
+                metadataLocation,
+                true,
+                options,
+                new List<X509Certificate2>()
+                {
+                    SignedXmlHelper.TestCert
+                });
+
+            a.ShouldNotThrow();
+            subject.LastMetadataLoadException.Should().BeOfType<InvalidSignatureException>();
         }
     }
+   
 }

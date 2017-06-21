@@ -115,6 +115,7 @@ namespace Kentor.AuthServices
 
         private object metadataLoadLock = new object();
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes", Justification ="We want a retry, regardless of exception type")]
         private void LoadMetadata()
         {
             lock (metadataLoadLock)
@@ -146,7 +147,7 @@ namespace Kentor.AuthServices
 
                     LastMetadataLoadException = null;
                 }
-                catch (WebException ex)
+                catch (Exception ex)
                 {
                     options.SPOptions.Logger?.WriteError("Metadata loading failed from " + metadataLocation, ex);
                     var now = DateTime.UtcNow;
@@ -168,7 +169,7 @@ namespace Kentor.AuthServices
         }
 
         // Used for testing.
-        internal WebException LastMetadataLoadException { get; private set; }
+        internal Exception LastMetadataLoadException { get; private set; }
 
         // Use a string and not EntityId as List<> doesn't support setting a
         // custom equality comparer as required to handle EntityId correctly.
