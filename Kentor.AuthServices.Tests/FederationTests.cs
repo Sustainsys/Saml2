@@ -369,5 +369,28 @@ namespace Kentor.AuthServices.Tests
             subject.LastMetadataLoadException.As<InvalidSignatureException>()
                 .Message.Should().Match("*algorithm*256*weak*512*");
         }
+
+        [TestMethod]
+        public void Federation_ValidatesCertificateWhenConfigured()
+        {
+            var options = StubFactory.CreateOptions();
+            options.SPOptions.ValidateCertificates = true;
+
+            var metadataLocation = "http://localhost:13428/federationMetadataSigned";
+
+            Federation subject = null;
+            Action a = () => subject = new Federation(
+                metadataLocation,
+                true,
+                options,
+                new List<X509Certificate2>()
+                {
+                    SignedXmlHelper.TestCert
+                });
+
+            a.ShouldNotThrow();
+            subject.LastMetadataLoadException.As<InvalidSignatureException>()
+                .Message.Should().Match("*verification*certificate*failed*");
+        }
     }
 }

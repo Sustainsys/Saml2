@@ -126,6 +126,7 @@ namespace Kentor.AuthServices
                     var metadata = MetadataLoader.LoadFederation(
                         metadataLocation,
                         SigningKeys,
+                        options.SPOptions.ValidateCertificates,
                         options.SPOptions.MinIncomingSigningAlgorithm);
 
                     var identityProvidersMetadata = metadata.ChildEntities.Cast<ExtendedEntityDescriptor>()
