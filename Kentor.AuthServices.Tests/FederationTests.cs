@@ -9,6 +9,11 @@ using Kentor.AuthServices.Metadata;
 using Kentor.AuthServices.Tests.Helpers;
 using Kentor.AuthServices.Tests.Metadata;
 using System.Threading;
+using System.Security.Cryptography.X509Certificates;
+using System.Collections.Generic;
+using Kentor.AuthServices.Exceptions;
+using System.Security.Cryptography.Xml;
+using System.IdentityModel.Tokens;
 
 namespace Kentor.AuthServices.Tests
 {
@@ -32,6 +37,35 @@ namespace Kentor.AuthServices.Tests
             Action a = () => new Federation(null, Options.FromConfiguration);
 
             a.ShouldThrow<ArgumentNullException>().And.ParamName.Should().Be("config");
+        }
+
+        [TestMethod]
+        public void Federation_Ctor_LoadsConfig()
+        {
+            var config = KentorAuthServicesSection.Current
+                .Federations.First();
+
+            var options = StubFactory.CreateOptions();
+
+            var subject = new Federation(config, options);
+
+            subject.metadataLocation.Should().Be("http://localhost:13428/federationMetadataSigned");
+            subject.allowUnsolicitedAuthnResponse.Should().BeTrue();
+            subject.SigningKeys.First().As<X509RawDataKeyIdentifierClause>()
+                .Matches(SignedXmlHelper.TestCert).Should().BeTrue();
+        }
+
+        [TestMethod]
+        public void Federation_Ctor_ConvertsEmptySigningCertificateFromConfigToNull()
+        {
+            var config = KentorAuthServicesSection.Current
+                .Federations.Skip(1).Single();
+
+            var options = StubFactory.CreateOptions();
+
+            var subject = new Federation(config, options);
+
+            subject.SigningKeys.Should().BeNull();
         }
 
         [TestMethod]
@@ -275,6 +309,107 @@ namespace Kentor.AuthServices.Tests
 
             options.IdentityProviders.TryGetValue(new EntityId("http://idp1.federation.example.com/metadata"), out idp)
                 .Should().BeTrue("idp should be readded when metadata is refreshed.");
+        }
+
+        [TestMethod]
+        public void Federation_RejectsIfNotSignedWhenConfiguredWithKeys()
+        {
+            var options = StubFactory.CreateOptions();
+
+            var metadataLocation = "http://localhost:13428/federationMetadata";
+
+            var subject = new Federation(
+                metadataLocation,
+                true,
+                options,
+                new List<X509Certificate2>()
+                {
+                    SignedXmlHelper.TestCert
+                });
+
+            subject.LastMetadataLoadException.As<InvalidSignatureException>()
+                .Message.Should().Match("Signature*failed*");
+        }
+
+        [TestMethod]
+        public void Federation_AcceptsCorrectlySignedMetadataWhenConfiguredWithKeys()
+        {
+            var options = StubFactory.CreateOptions();
+
+            var metadataLocation = "http://localhost:13428/federationMetadataSigned";
+
+            var subject = new Federation(
+                metadataLocation,
+                true,
+                options,
+                new List<X509Certificate2>()
+                {
+                    SignedXmlHelper.TestCert
+                });
+
+            subject.LastMetadataLoadException.Should().BeNull();
+        }
+
+        [TestMethod]
+        public void Federation_RejectsTamperedMetadataWhenConfiguredWithKeys()
+        {
+            var options = StubFactory.CreateOptions();
+
+            var metadataLocation = "http://localhost:13428/federationMetadataSignedTampered";
+
+            var subject = new Federation(
+                metadataLocation,
+                true,
+                options,
+                new List<X509Certificate2>()
+                {
+                    SignedXmlHelper.TestCert
+                });
+
+            subject.LastMetadataLoadException.As<InvalidSignatureException>()
+                .Message.Should().Match("*tampered*");
+        }
+
+        [TestMethod]
+        public void Federation_RejectsTooWeakMetadataSignatureAlgorithmWhenConfiguredWithKeys()
+        {
+            var options = StubFactory.CreateOptions();
+            options.SPOptions.MinIncomingSigningAlgorithm = SignedXml.XmlDsigRSASHA512Url;
+
+            var metadataLocation = "http://localhost:13428/federationMetadataSigned";
+
+            var subject = new Federation(
+                metadataLocation,
+                true,
+                options,
+                new List<X509Certificate2>()
+                {
+                    SignedXmlHelper.TestCert
+                });
+
+            subject.LastMetadataLoadException.As<InvalidSignatureException>()
+                .Message.Should().Match("*algorithm*256*weak*512*");
+        }
+
+        [TestMethod]
+        public void Federation_ValidatesCertificateWhenConfigured()
+        {
+            var options = StubFactory.CreateOptions();
+            options.SPOptions.ValidateCertificates = true;
+
+            var metadataLocation = "http://localhost:13428/federationMetadataSigned";
+
+            var subject = new Federation(
+                metadataLocation,
+                true,
+                options,
+                new List<X509Certificate2>()
+                {
+                    SignedXmlHelper.TestCert
+                });
+
+            subject.LastMetadataLoadException.As<InvalidSignatureException>()
+                .Message.Should().Match("*verification*certificate*failed*");
         }
     }
 }

@@ -114,7 +114,6 @@ namespace Kentor.AuthServices.Tests
             var options = factory(CreateSPOptions());
 
             KentorAuthServicesSection.Current.IdentityProviders.RegisterIdentityProviders(options);
-            KentorAuthServicesSection.Current.Federations.RegisterFederations(options);
 
             return options;
         }
