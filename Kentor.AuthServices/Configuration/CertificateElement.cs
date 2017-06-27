@@ -47,7 +47,7 @@ namespace Kentor.AuthServices.Configuration
         }
 
         /// <summary>
-        /// Store name to search.
+        /// The password of the certificate.
         /// </summary>
         [ConfigurationProperty("password")]
         [ExcludeFromCodeCoverage]
