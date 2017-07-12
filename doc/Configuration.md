@@ -763,7 +763,7 @@ Options are:
  * DoNotPublish
 
 Use | Status | Published in Metatadata | Used by AuthServices
------------- | ------------- | ------------- | ------------- | -------------
+------------ | ------------- | ------------- | -------------
 Both | Current | Unspecified _unless Future key exists_, then Signing | Yes 
 Both | Future | Unspecified | For decryption only 
 Signing | Current | Signing | Yes 
