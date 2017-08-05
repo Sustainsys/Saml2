@@ -61,6 +61,9 @@
     <Compile Include="Configuration\Compatibility.cs" />
     <Compile Include="Configuration\CompatibilityElement.cs" />
     <Compile Include="ILoggerAdapter.cs" />
+    <Compile Include="Internal\ClientCertificateWebClient.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Internal\DateTimeHelper.cs" />
     <Compile Include="Exceptions\UnexpectedInResponseToException.cs" />
     <Compile Include="Internal\DelimitedString.cs" />
