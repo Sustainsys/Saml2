@@ -379,7 +379,7 @@ namespace Kentor.AuthServices.Configuration
         /// <summary>
         /// Validate certificates when validating signatures? Normally not a
         /// good idea as SAML2 deployments typically exchange certificates
-        /// directly and isntead of relying on the public certificate
+        /// directly and instead of relying on the public certificate
         /// infrastructure.
         /// </summary>
         public bool ValidateCertificates { get; set; }

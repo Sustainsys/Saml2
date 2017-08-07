@@ -39,6 +39,7 @@ See [configuration](doc/Configuration.md) for details.
 * Check the [issues archive](https://github.com/KentorIT/authservices/issues).
 * Check the [SAML2 specification](http://saml.xml.org/saml-specifications), starting with the core section.
 * Log your actual SAML2 conversation with [SAML Chrome Panel](https://chrome.google.com/webstore/detail/saml-chrome-panel/paijfdbeoenhembfhkhllainmocckace) or [SAML Tracer for Firefox](https://addons.mozilla.org/sv-se/firefox/addon/saml-tracer/).
+* Connect an `ILoggerAdapter` to your `SPOptions.Logger`. If you are using the OWIN middleware this is done for you automatically and you can see the output in the OWIN/Katana logging.
 * Last but not least, download the AuthServices source and check out what's really happening.
 
 ## Saml2AuthenticationModule
