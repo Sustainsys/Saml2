@@ -21,6 +21,8 @@ namespace Kentor.AuthServices.Saml2P
     /// </summary>
     public class Saml2PSecurityTokenHandler : Saml2SecurityTokenHandler
     {
+        private SPOptions spOptions;
+
         /// <summary>
         /// Ctor
         /// </summary>
@@ -40,6 +42,8 @@ namespace Kentor.AuthServices.Saml2P
                 AudienceRestriction = GetAudienceRestriction(spOptions),
                 SaveBootstrapContext = spOptions.SystemIdentityModelIdentityConfiguration.SaveBootstrapContext
             };
+
+            this.spOptions = spOptions;
         }
 
         /// <summary>
@@ -77,6 +81,21 @@ namespace Kentor.AuthServices.Saml2P
         public new void ValidateConditions(Saml2Conditions conditions, bool enforceAudienceRestriction)
         {
             base.ValidateConditions(conditions, enforceAudienceRestriction);
+        }
+
+        /// <summary>
+        /// Read the authentication context section from the underlying xml
+        /// </summary>
+        /// <param name="reader">Conditions to check</param>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1062:Validate arguments of public methods", MessageId = "0")]
+        protected override Saml2AuthenticationContext ReadAuthenticationContext(System.Xml.XmlReader reader)
+        {
+            if (spOptions.Compatibility.IgnoreAuthenticationContextInResponse)
+            {
+                reader.Skip();
+                return new Saml2AuthenticationContext();
+            }
+            return base.ReadAuthenticationContext(reader);
         }
 
         /// <summary>
