@@ -325,12 +325,11 @@ namespace Kentor.AuthServices
                         keyIdentifier.GetType().Name));
                 }
 
-                using (var certificate = new X509Certificate2(rawCert.GetX509RawData()))
+                var certificate = new X509Certificate2(rawCert.GetX509RawData());
+                
+                if (!certificate.Verify())
                 {
-                    if (!certificate.Verify())
-                    {
-                        throw new InvalidSignatureException("The signature was valid, but the verification of the certificate failed. Is it expired or revoked? Are you sure you really want to enable ValidateCertificates (it's normally not needed)?");
-                    }
+                    throw new InvalidSignatureException("The signature was valid, but the verification of the certificate failed. Is it expired or revoked? Are you sure you really want to enable ValidateCertificates (it's normally not needed)?");
                 }
             }
         }
