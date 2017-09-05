@@ -59,7 +59,7 @@ namespace Kentor.AuthServices.Tests.Saml2P
         {
             string payload = "Doesn't matter";
 
-            Action a = () => Saml2SoapBinding.SendSoapRequest(payload, null);
+            Action a = () => Saml2SoapBinding.SendSoapRequest(payload, null, null, null);
 
             a.ShouldThrow<ArgumentNullException>()
                 .And.ParamName.Should().Be("destination");
@@ -74,7 +74,7 @@ namespace Kentor.AuthServices.Tests.Saml2P
             var payload = "Doesn't matter";
             var destination = new Uri("file://c:/Kentor-Unit-Test.txt");
 
-            Action a = () => Saml2SoapBinding.SendSoapRequest(payload, destination);
+            Action a = () => Saml2SoapBinding.SendSoapRequest(payload, destination, null, null);
 
             a.ShouldThrow<ArgumentException>()
                 .WithMessage("*file*");
@@ -86,7 +86,7 @@ namespace Kentor.AuthServices.Tests.Saml2P
             var payload = "Doesn't matter";
             var destination = new Uri("http://localhost/Endpoint");
 
-            Action a = () => Saml2SoapBinding.SendSoapRequest(payload, destination);
+            Action a = () => Saml2SoapBinding.SendSoapRequest(payload, destination, null, null);
 
             // Destination is not listening, but we should get an exception that shows it
             // at least tried to connect there.
@@ -99,7 +99,7 @@ namespace Kentor.AuthServices.Tests.Saml2P
             var payload = "Doesn't matter";
             var destination = new Uri("https://localhost/Endpoint");
 
-            Action a = () => Saml2SoapBinding.SendSoapRequest(payload, destination);
+            Action a = () => Saml2SoapBinding.SendSoapRequest(payload, destination, null, null);
 
             // Destination is not listening, but we should get an exception that shows it
             // at least tried to connect there.

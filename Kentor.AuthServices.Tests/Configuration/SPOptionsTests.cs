@@ -229,6 +229,23 @@ namespace Kentor.AuthServices.Tests.Configuration
         }
 
         [TestMethod]
+        public void SPOptions_ArtifactResolutionTlsCertificate_NullWhenEmpty()
+        {
+            var subject = new SPOptions();
+
+            subject.ArtifactResolutionTlsCertificate.Should().Be(null);
+        }
+
+        [TestMethod]
+        public void SPOptions_ArtifactResolutionTlsCertificate_LoadsFromConfig()
+        {
+            var config = KentorAuthServicesSection.Current;
+            var subject = new SPOptions(config);
+
+            subject.ArtifactResolutionTlsCertificate.Should().NotBe(null);
+        }
+
+        [TestMethod]
         public void SPOptions_DecryptionCertificate_EmptyWhenNoneAdded()
         {
             var subject = new SPOptions();
