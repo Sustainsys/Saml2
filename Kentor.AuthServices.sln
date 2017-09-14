@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26730.12
+VisualStudioVersion = 15.0.26730.15
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kentor.AuthServices", "Kentor.AuthServices\Kentor.AuthServices.csproj", "{93BA675E-A159-4701-B68B-C4B81015C556}"
 EndProject
@@ -64,6 +64,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kentor.AuthServices.TestHel
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kentor.AuthServices.Owin.Tests", "Kentor.AuthServices.Owin.Tests\Kentor.AuthServices.Owin.Tests.csproj", "{0E01A985-54CC-4190-851F-6475C7BB1A5D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kentor.AuthServices.HttpModule.Tests", "Kentor.AuthServices.HttpModule.Tests\Kentor.AuthServices.HttpModule.Tests.csproj", "{4D3EADFB-93E9-4F66-BD61-FBAC9E30A294}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -122,6 +124,10 @@ Global
 		{0E01A985-54CC-4190-851F-6475C7BB1A5D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0E01A985-54CC-4190-851F-6475C7BB1A5D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0E01A985-54CC-4190-851F-6475C7BB1A5D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4D3EADFB-93E9-4F66-BD61-FBAC9E30A294}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4D3EADFB-93E9-4F66-BD61-FBAC9E30A294}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4D3EADFB-93E9-4F66-BD61-FBAC9E30A294}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4D3EADFB-93E9-4F66-BD61-FBAC9E30A294}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -135,6 +141,7 @@ Global
 		{F09D61F6-CA41-4B73-B59E-2A5C5626F058} = {F3C8CC66-4CE9-4683-BC31-B89AF47A5897}
 		{CF1E517E-B2FE-48E1-8BB9-4D9981695C47} = {F3C8CC66-4CE9-4683-BC31-B89AF47A5897}
 		{0E01A985-54CC-4190-851F-6475C7BB1A5D} = {F3C8CC66-4CE9-4683-BC31-B89AF47A5897}
+		{4D3EADFB-93E9-4F66-BD61-FBAC9E30A294} = {F3C8CC66-4CE9-4683-BC31-B89AF47A5897}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {A8812E38-A212-46DD-B51F-AB653F39E4ED}

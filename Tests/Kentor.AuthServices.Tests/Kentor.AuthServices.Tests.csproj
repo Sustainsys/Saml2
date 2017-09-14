@@ -129,7 +129,6 @@
     <Compile Include="Exceptions\UnexpectedInResponseToExceptionTests.cs" />
     <Compile Include="Helpers\SpinWaiter.cs" />
     <Compile Include="Helpers\XmlElementExtensions.cs" />
-    <Compile Include="HttpModule\CommandResultHttpSharedTests.cs" />
     <Compile Include="Internal\CryptographyExtensionsTests.cs" />
     <Compile Include="Internal\DateTimeHelperTests.cs" />
     <Compile Include="Internal\DelimitedStringTests.cs" />
@@ -143,8 +142,6 @@
     <Compile Include="Saml2P\Saml2ScopingTests.cs" />
     <Compile Include="Saml2P\Saml2SoapBindingTests.cs" />
     <Compile Include="ServiceCertificateTests.cs" />
-    <Compile Include="HttpModule\CommandResultHttpTests.cs" />
-    <Compile Include="HttpModule\HttpRequestBaseExtensionsTests.cs" />
     <Compile Include="Internal\QueryStringHelperTests.cs" />
     <Compile Include="Internal\PathHelperTests.cs" />
     <Compile Include="Exceptions\UnsuccessfulSamlOperationExceptionTest.cs" />
@@ -208,10 +205,6 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Kentor.AuthServices.HttpModule\Kentor.AuthServices.HttpModule.csproj">
-      <Project>{86a588e8-2e2d-4394-9545-24d8ea939cf2}</Project>
-      <Name>Kentor.AuthServices.HttpModule</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\Kentor.AuthServices.TestHelpers\Kentor.AuthServices.TestHelpers.csproj">
       <Project>{CF1E517E-B2FE-48E1-8BB9-4D9981695C47}</Project>
       <Name>Kentor.AuthServices.TestHelpers</Name>

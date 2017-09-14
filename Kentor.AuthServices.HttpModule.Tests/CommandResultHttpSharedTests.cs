@@ -6,7 +6,7 @@ using NSubstitute;
 using System;
 using System.Web;
 
-namespace Kentor.AuthServices.Tests.HttpModule
+namespace Kentor.AuthServices.HttpModule.Tests
 {
     [TestClass]
     public partial class CommandResultHttpTests

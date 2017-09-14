@@ -12,7 +12,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 
-namespace Kentor.AuthServices.Tests.HttpModule
+namespace Kentor.AuthServices.HttpModule.Tests
 {
     [TestClass]
     public class HttpRequestBaseExtensionsTests

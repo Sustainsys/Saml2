@@ -12,7 +12,7 @@ using System.Linq;
 using System.IdentityModel.Tokens;
 using System.IdentityModel.Metadata;
 
-namespace Kentor.AuthServices.Tests.HttpModule
+namespace Kentor.AuthServices.HttpModule.Tests
 {
     public partial class CommandResultHttpTests
     {
