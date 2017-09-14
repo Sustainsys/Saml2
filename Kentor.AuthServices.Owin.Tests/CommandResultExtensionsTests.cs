@@ -1,20 +1,13 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Kentor.AuthServices.Mvc;
-using FluentAssertions;
-using System.Web.Mvc;
-using Kentor.AuthServices.Tests.Helpers;
-using Kentor.AuthServices.Owin;
 using System.IO;
-using System.Text;
 using System.Net;
 using Kentor.AuthServices.WebSso;
-using Microsoft.Owin.Security.DataProtection;
-using System.Linq;
+using FluentAssertions;
 using System.IdentityModel.Metadata;
 using System.IdentityModel.Tokens;
 
-namespace Kentor.AuthServices.Tests.Owin
+namespace Kentor.AuthServices.Owin.Tests
 {
     [TestClass]
     public class CommandResultExtensionsTests

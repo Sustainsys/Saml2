@@ -10,11 +10,9 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Linq;
 using Kentor.AuthServices.Saml2P;
-using System.IdentityModel.Tokens;
-using Kentor.AuthServices.Internal;
 using System.Reflection;
 using Kentor.AuthServices.Tests.Helpers;
-using System.Xml;
+using Kentor.AuthServices.TestHelpers;
 
 namespace Kentor.AuthServices.Tests.WebSSO
 {

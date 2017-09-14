@@ -8,6 +8,7 @@ using Kentor.AuthServices.WebSso;
 using System.IO;
 using System.Xml.Linq;
 using System.Security.Cryptography.Xml;
+using Kentor.AuthServices.TestHelpers;
 
 namespace Kentor.AuthServices.Tests.Helpers
 {

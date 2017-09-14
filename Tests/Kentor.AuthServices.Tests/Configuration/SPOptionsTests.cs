@@ -4,9 +4,9 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Kentor.AuthServices.Configuration;
 using System.IdentityModel.Metadata;
 using FluentAssertions;
-using Kentor.AuthServices.Tests.Helpers;
 using Kentor.AuthServices.Saml2P;
 using System.Security.Cryptography.Xml;
+using Kentor.AuthServices.TestHelpers;
 
 namespace Kentor.AuthServices.Tests.Configuration
 {

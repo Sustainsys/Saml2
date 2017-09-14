@@ -5,9 +5,9 @@ using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Kentor.AuthServices.Tests
+namespace Kentor.AuthServices.TestHelpers
 {
-    class ClaimsAuthenticationManagerStub : ClaimsAuthenticationManager
+    public class ClaimsAuthenticationManagerStub : ClaimsAuthenticationManager
     {
         public bool ClearNameIdentifier { get; set; } = false;
 

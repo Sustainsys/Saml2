@@ -15,7 +15,10 @@ namespace Kentor.AuthServices.HttpModule
     /// </summary>
     public static class HttpRequestBaseExtensions
     {
-        internal const string ProtectionPurpose = "Kentor.AuthServices";
+        /// <summary>
+        /// Purpose string used with data protection.
+        /// </summary>
+        public const string ProtectionPurpose = "Kentor.AuthServices";
 
         /// <summary>
         /// Extension method to convert a HttpRequestBase to a HttpRequestData.

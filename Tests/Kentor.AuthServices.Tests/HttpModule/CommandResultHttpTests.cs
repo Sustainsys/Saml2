@@ -14,8 +14,7 @@ using System.IdentityModel.Metadata;
 
 namespace Kentor.AuthServices.Tests.HttpModule
 {
-    [TestClass]
-    public class CommandResultHttpTests
+    public partial class CommandResultHttpTests
     {
         [TestMethod]
         public void CommandResultHttp_Apply_ChecksResponseNull()
@@ -90,24 +89,6 @@ namespace Kentor.AuthServices.Tests.HttpModule
                 Arg.Is<HttpCookie>(c =>
                 c.Name == "CookieName"
                 && c.Expires == new DateTime(1970, 01, 01)));
-        }
-
-        [TestMethod]
-        public void CommandResultHttp_ApplyCookies_NullCheck_CommandResult()
-        {
-            ((CommandResult)null)
-                .Invoking(cr => cr.ApplyCookies(Substitute.For<HttpResponseBase>()))
-                .ShouldThrow<ArgumentNullException>()
-                .And.ParamName.Should().Be("commandResult");
-        }
-
-        [TestMethod]
-        public void CommandResultHttp_ApplyCookies_NullCheck_Response()
-        {
-            new CommandResult()
-                .Invoking(cr => cr.ApplyCookies(null))
-                .ShouldThrow<ArgumentNullException>()
-                .And.ParamName.Should().Be("response");
         }
 
         [TestMethod]

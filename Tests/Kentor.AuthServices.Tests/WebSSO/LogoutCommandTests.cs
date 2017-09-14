@@ -2,8 +2,7 @@
 using Kentor.AuthServices.Configuration;
 using Kentor.AuthServices.Exceptions;
 using Kentor.AuthServices.Saml2P;
-using Kentor.AuthServices.Tests.Helpers;
-using Kentor.AuthServices.Tests.Owin;
+using Kentor.AuthServices.TestHelpers;
 using Kentor.AuthServices.WebSso;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
@@ -18,7 +17,6 @@ using System.Security.Cryptography.Xml;
 using System.Security.Principal;
 using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 using System.Web;
 
 namespace Kentor.AuthServices.Tests.WebSSO

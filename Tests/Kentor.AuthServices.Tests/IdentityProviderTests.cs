@@ -8,16 +8,14 @@ using System.Configuration;
 using System.IdentityModel.Metadata;
 using Kentor.AuthServices.Saml2P;
 using Kentor.AuthServices.WebSso;
-using System.Net;
-using Kentor.AuthServices.Tests.Metadata;
 using Kentor.AuthServices.Metadata;
 using System.Threading;
 using System.Security.Cryptography;
 using System.IdentityModel.Tokens;
-using System.Security.Cryptography.Xml;
 using System.Security.Cryptography.X509Certificates;
 using System.Security.Claims;
 using System.Security.Principal;
+using Kentor.AuthServices.TestHelpers;
 
 namespace Kentor.AuthServices.Tests
 {

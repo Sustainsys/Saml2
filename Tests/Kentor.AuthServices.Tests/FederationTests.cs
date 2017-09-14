@@ -14,6 +14,7 @@ using System.Collections.Generic;
 using Kentor.AuthServices.Exceptions;
 using System.Security.Cryptography.Xml;
 using System.IdentityModel.Tokens;
+using Kentor.AuthServices.TestHelpers;
 
 namespace Kentor.AuthServices.Tests
 {

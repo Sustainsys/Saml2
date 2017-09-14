@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Threading.Tasks;
 using System.Web;
@@ -11,6 +10,7 @@ using Kentor.AuthServices.Tests.Helpers;
 using Kentor.AuthServices.WebSso;
 using NSubstitute;
 using Kentor.AuthServices.Owin;
+using Kentor.AuthServices.TestHelpers;
 
 namespace Kentor.AuthServices.Tests.WebSso
 {
@@ -152,17 +152,6 @@ namespace Kentor.AuthServices.Tests.WebSso
             var urls = new AuthServicesUrls(subject, options);
             urls.AssertionConsumerServiceUrl.ShouldBeEquivalentTo("https://my.public.origin:8443/OtherPath/AuthServices/Acs");
             urls.SignInUrl.ShouldBeEquivalentTo("https://my.public.origin:8443/OtherPath/AuthServices/SignIn");
-        }
-
-        [TestMethod]
-        public async Task AuthServicesUrls_Ctor_FromOwinHttpRequestData_PublicOrigin()
-        {
-            var ctx = OwinTestHelpers.CreateOwinContext();
-            var options = StubFactory.CreateOptionsPublicOrigin(new Uri("https://my.public.origin:8443/"));
-            var subject = await ctx.ToHttpRequestData(null);
-            var urls = new AuthServicesUrls(subject, options);
-            urls.AssertionConsumerServiceUrl.ShouldBeEquivalentTo("https://my.public.origin:8443/AuthServices/Acs");
-            urls.SignInUrl.ShouldBeEquivalentTo("https://my.public.origin:8443/AuthServices/SignIn");
         }
 
         [TestMethod]

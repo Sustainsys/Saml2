@@ -9,13 +9,11 @@ using Kentor.AuthServices.Exceptions;
 using System.Security.Cryptography;
 using System.Reflection;
 using Kentor.AuthServices.Configuration;
-using System.Collections.Generic;
 using System.Linq;
-using Kentor.AuthServices;
-using Kentor.AuthServices.Saml2P;
 using System.Xml.Linq;
 using System.IdentityModel.Tokens;
 using Kentor.AuthServices.Internal;
+using Kentor.AuthServices.TestHelpers;
 
 namespace Kentor.AuthServices.Tests
 {

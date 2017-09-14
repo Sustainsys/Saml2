@@ -127,15 +127,13 @@
     <Compile Include="Configuration\TetClassAttribute.cs" />
     <Compile Include="Exceptions\InvalidSignatureExceptionTests.cs" />
     <Compile Include="Exceptions\UnexpectedInResponseToExceptionTests.cs" />
-    <Compile Include="Helpers\OwinTestHelpers.cs" />
-    <Compile Include="Helpers\SignedXmlHelper.cs" />
     <Compile Include="Helpers\SpinWaiter.cs" />
     <Compile Include="Helpers\XmlElementExtensions.cs" />
+    <Compile Include="HttpModule\CommandResultHttpSharedTests.cs" />
     <Compile Include="Internal\CryptographyExtensionsTests.cs" />
     <Compile Include="Internal\DateTimeHelperTests.cs" />
     <Compile Include="Internal\DelimitedStringTests.cs" />
     <Compile Include="ManagedSHA256SignatureDescriptionTests.cs" />
-    <Compile Include="Owin\StubDataProtector.cs" />
     <Compile Include="Saml2NameIdExtensionsTests.cs" />
     <Compile Include="Saml2P\Saml2ArtifactResolveTests.cs" />
     <Compile Include="Saml2P\Saml2ArtifactResponseTests.cs" />
@@ -151,8 +149,6 @@
     <Compile Include="Internal\PathHelperTests.cs" />
     <Compile Include="Exceptions\UnsuccessfulSamlOperationExceptionTest.cs" />
     <Compile Include="Metadata\MetadatabaseExtensionsTests.cs" />
-    <Compile Include="Mvc\AuthServicesControllerTests.cs" />
-    <Compile Include="ClaimsAuthenticationManagerStub.cs" />
     <Compile Include="ExceptionTestHelpers.cs" />
     <Compile Include="Saml2P\FilteringXmlNodeReaderTests.cs" />
     <Compile Include="Exceptions\Saml2ResponseFailedValidationExceptionTests.cs" />
@@ -164,7 +160,6 @@
     <Compile Include="WebSSO\MetadataCommandTests.cs" />
     <Compile Include="ExtendedMetadataSerializerTests.cs" />
     <Compile Include="Helpers\StubServer.cs" />
-    <Compile Include="Owin\CommandResultExtensionsTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="WebSSO\CommandFactoryTests.cs" />
     <Compile Include="WebSSO\NotFoundCommandTests.cs" />
@@ -190,12 +185,8 @@
     <Compile Include="Internal\DateTimeExtensionsTests.cs" />
     <Compile Include="Saml2SubjectExtensionsTests.cs" />
     <Compile Include="Saml2ConditionsExtensionsTests.cs" />
-    <Compile Include="Mvc\CommandResultExtensionsTests.cs" />
     <Compile Include="Owin\KentorAuthServicesAuthenticationExtensionsTests.cs" />
-    <Compile Include="Owin\KentorAuthServicesAuthenticationMiddlewareTests.cs" />
-    <Compile Include="Owin\StubOwinMiddleware.cs" />
     <Compile Include="Owin\MultipleIdentityAuthenticationTicketTests.cs" />
-    <Compile Include="Owin\OwinContextExtensionsTests.cs" />
     <Compile Include="Owin\KentorAuthServicesAuthenticationOptionsTests.cs" />
     <Compile Include="Metadata\MetadataLoaderTests.cs" />
     <Compile Include="Internal\EntityIdEqualityComparerTests.cs" />
@@ -206,7 +197,6 @@
     <Compile Include="Configuration\FederationCollectionTests.cs" />
     <Compile Include="Configuration\IdentityProviderDictionaryTests.cs" />
     <Compile Include="Configuration\OptionsTests.cs" />
-    <Compile Include="StubFactory.cs" />
     <Compile Include="WebSSO\AuthServicesUrlsTests.cs" />
     <Compile Include="Configuration\KentorAuthServicesSectionTests.cs" />
     <Compile Include="Metadata\MetadataRefreshSchedulerTests.cs" />
@@ -218,15 +208,6 @@
     <None Include="App.config">
       <SubType>Designer</SubType>
     </None>
-    <Content Include="Kentor.AuthServices.TestsSignOnly.pfx">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <None Include="Kentor.AuthServices.Tests.pfx">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Kentor.AuthServices.Tests2.pfx">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
@@ -234,13 +215,13 @@
       <Project>{86a588e8-2e2d-4394-9545-24d8ea939cf2}</Project>
       <Name>Kentor.AuthServices.HttpModule</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Kentor.AuthServices.Mvc\Kentor.AuthServices.Mvc.csproj">
-      <Project>{7d32f0a3-cec8-4dc6-a096-5905ea9c3770}</Project>
-      <Name>Kentor.AuthServices.Mvc</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\Kentor.AuthServices.Owin\Kentor.AuthServices.Owin.csproj">
       <Project>{fa1e7723-124c-4d2d-a731-e16400b0073b}</Project>
       <Name>Kentor.AuthServices.Owin</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Kentor.AuthServices.TestHelpers\Kentor.AuthServices.TestHelpers.csproj">
+      <Project>{CF1E517E-B2FE-48E1-8BB9-4D9981695C47}</Project>
+      <Name>Kentor.AuthServices.TestHelpers</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Kentor.AuthServices\Kentor.AuthServices.csproj">
       <Project>{93ba675e-a159-4701-b68b-c4b81015c556}</Project>
@@ -261,7 +242,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Mvc\" />
+  </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">
       <ItemGroup>

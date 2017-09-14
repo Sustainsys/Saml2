@@ -1,18 +1,13 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System.Web;
 using FluentAssertions;
-using System.Collections.Specialized;
-using System.IdentityModel.Tokens;
-using System.Xml;
 using System.Text;
 using System.Collections.Generic;
-using Kentor.AuthServices.Saml2P;
 using Kentor.AuthServices.WebSso;
 using Kentor.AuthServices.Tests.WebSSO;
-using Kentor.AuthServices.Tests.Helpers;
 using System.Security.Cryptography.Xml;
 using NSubstitute;
+using Kentor.AuthServices.TestHelpers;
 
 namespace Kentor.AuthServices.Tests.WebSso
 {

@@ -1,17 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using FluentAssertions;
-using System.Text.RegularExpressions;
 using System.IdentityModel.Metadata;
-using Kentor.AuthServices.Configuration;
-using System.Globalization;
 using Kentor.AuthServices.Metadata;
 using Kentor.AuthServices.WebSso;
-using Kentor.AuthServices.Tests.Helpers;
+using Kentor.AuthServices.TestHelpers;
 
 namespace Kentor.AuthServices.Tests.Configuration
 {

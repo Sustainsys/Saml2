@@ -1,26 +1,25 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using FluentAssertions;
-using System.Web.Mvc;
-using Kentor.AuthServices.Mvc;
-using NSubstitute;
-using System.Web;
 using System.Text;
 using System.Collections.Specialized;
 using System.Security.Claims;
-using System.Web.Routing;
-using Kentor.AuthServices.Tests.Helpers;
 using System.Xml.Linq;
-using Kentor.AuthServices.Configuration;
-using System.IdentityModel.Metadata;
 using System.Reflection;
 using System.Threading;
+using Kentor.AuthServices.HttpModule;
+using Kentor.AuthServices.TestHelpers;
+using NSubstitute;
+using System.Web.Mvc;
+using System.Web;
+using Kentor.AuthServices.Configuration;
+using System.IdentityModel.Metadata;
 using Kentor.AuthServices.WebSso;
 using System.Web.Security;
-using Kentor.AuthServices.HttpModule;
 using System.IdentityModel.Tokens;
+using System.Web.Routing;
 
-namespace Kentor.AuthServices.Tests.Mvc
+namespace Kentor.AuthServices.Mvc.Tests
 {
     [TestClass]
     public class AuthServicesControllerTests

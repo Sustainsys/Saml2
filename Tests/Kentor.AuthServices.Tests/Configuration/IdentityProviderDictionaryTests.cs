@@ -3,6 +3,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Kentor.AuthServices.Configuration;
 using FluentAssertions;
 using System.IdentityModel.Metadata;
+using Kentor.AuthServices.TestHelpers;
 
 namespace Kentor.AuthServices.Tests.Configuration
 {

@@ -1,6 +1,6 @@
 ﻿using FluentAssertions;
 using Kentor.AuthServices.Configuration;
-using Kentor.AuthServices.Tests.Helpers;
+using Kentor.AuthServices.TestHelpers;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Security.Cryptography.X509Certificates;

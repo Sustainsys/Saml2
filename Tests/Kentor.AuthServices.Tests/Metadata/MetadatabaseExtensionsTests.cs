@@ -2,12 +2,11 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Kentor.AuthServices.Metadata;
 using System.IdentityModel.Metadata;
-using System.IdentityModel.Tokens;
 using System.Xml.Linq;
-using Kentor.AuthServices.Tests.Helpers;
 using System.Security.Cryptography.Xml;
 using Kentor.AuthServices.WebSso;
 using FluentAssertions;
+using Kentor.AuthServices.TestHelpers;
 
 namespace Kentor.AuthServices.Tests.Metadata
 {

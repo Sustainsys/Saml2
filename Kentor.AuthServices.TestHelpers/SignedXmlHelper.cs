@@ -9,7 +9,7 @@ using System.Reflection;
 using System.Collections.Generic;
 using System;
 
-namespace Kentor.AuthServices.Tests.Helpers
+namespace Kentor.AuthServices.TestHelpers
 {
     public class SignedXmlHelper
     {
@@ -67,7 +67,7 @@ namespace Kentor.AuthServices.Tests.Helpers
             xmlDoc.LoadXml(wrappedAssertion);
             var elementToEncrypt = (XmlElement)xmlDoc.GetElementsByTagName("Assertion", Saml2Namespaces.Saml2Name)[0];
 
-            elementToEncrypt.Encrypt( useOaep, certificate);
+            elementToEncrypt.Encrypt(useOaep, certificate);
 
             return xmlDoc.OuterXml;
         }

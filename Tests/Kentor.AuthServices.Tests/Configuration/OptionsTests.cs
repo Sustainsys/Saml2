@@ -6,10 +6,10 @@ using System.Collections.Generic;
 using Kentor.AuthServices.Configuration;
 using Kentor.AuthServices.WebSso;
 using System.IdentityModel.Tokens;
-using Kentor.AuthServices.Tests.Helpers;
 using System.Linq;
 using System.Security.Claims;
 using System.Security.Cryptography.Xml;
+using Kentor.AuthServices.TestHelpers;
 
 namespace Kentor.AuthServices.Tests.Configuration
 {

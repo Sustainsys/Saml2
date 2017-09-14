@@ -1,6 +1,5 @@
 ﻿using FluentAssertions;
 using Kentor.AuthServices.Configuration;
-using Kentor.AuthServices.Tests.Helpers;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.IdentityModel.Metadata;
@@ -14,6 +13,7 @@ using Kentor.AuthServices.Saml2P;
 using System.Reflection;
 using System.IdentityModel.Selectors;
 using Kentor.AuthServices.Exceptions;
+using Kentor.AuthServices.TestHelpers;
 
 namespace Kentor.AuthServices.Tests.Saml2P
 {

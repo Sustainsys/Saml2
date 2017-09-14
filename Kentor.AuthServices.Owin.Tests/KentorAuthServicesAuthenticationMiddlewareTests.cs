@@ -1,20 +1,15 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Kentor.AuthServices.Owin;
 using FluentAssertions;
 using Microsoft.Owin;
 using Owin;
 using Microsoft.Owin.Security;
 using System.Collections.Generic;
 using System.Linq;
-using System.Web;
-using Kentor.AuthServices.Tests.Helpers;
 using System.IO;
 using System.Text;
 using System.Security.Claims;
 using Kentor.AuthServices.Configuration;
-using System.Net.Http;
-using NSubstitute;
 using System.Xml.Linq;
 using System.Threading.Tasks;
 using System.IdentityModel.Tokens;
@@ -24,12 +19,17 @@ using System.Threading;
 using Kentor.AuthServices.Saml2P;
 using Kentor.AuthServices.WebSso;
 using System.Security.Principal;
-namespace Kentor.AuthServices.Tests.Owin
+
+namespace Kentor.AuthServices.Owin.Tests
 {
     using AuthServices.Exceptions;
+    using Kentor.AuthServices.TestHelpers;
     using Microsoft.Owin.Security.DataProtection;
+    using NSubstitute;
     using System.Configuration;
+    using System.Net.Http;
     using System.Security.Cryptography.Xml;
+    using System.Web;
     using AuthenticateDelegate = Func<string[], Action<IIdentity, IDictionary<string, string>, IDictionary<string, object>, object>, object, Task>;
 
     [TestClass]
@@ -179,7 +179,7 @@ namespace Kentor.AuthServices.Tests.Owin
                     new string[] { "KentorAuthServices" }, new AuthenticationProperties(
                         new Dictionary<string, string>()
                         {
-                            { "idp", "http://localhost:13428/idpMetadata" }
+                            { "idp", "https://idp4.example.com" }
                         }))),
                 CreateAppBuilder(),
                 new KentorAuthServicesAuthenticationOptions(true));
@@ -1048,7 +1048,7 @@ namespace Kentor.AuthServices.Tests.Owin
                 null, "ClaimsAuthenticationManagerStub"));
 
             var subject = new KentorAuthServicesAuthenticationMiddleware(null, CreateAppBuilder(),
-                StubFactory.CreateOwinOptions());
+                OwinStubFactory.CreateOwinOptions());
 
             await subject.Invoke(context);
 
@@ -1114,7 +1114,7 @@ namespace Kentor.AuthServices.Tests.Owin
             context.Request.Host = new HostString("localhost");
             context.Request.Path = new PathString("/AuthServices/Acs");
 
-            var options = StubFactory.CreateOwinOptions();
+            var options = OwinStubFactory.CreateOwinOptions();
             options.Notifications.AcsCommandResultCreated = (cr, r) =>
             {
                 cr.HandledResult = true;
@@ -1174,7 +1174,7 @@ namespace Kentor.AuthServices.Tests.Owin
             context.Request.Host = new HostString("localhost");
             context.Request.Path = new PathString("/AuthServices/Acs");
 
-            var options = StubFactory.CreateOwinOptions();
+            var options = OwinStubFactory.CreateOwinOptions();
 
             var subject = new KentorAuthServicesAuthenticationMiddleware(
                 null, CreateAppBuilder(), options);

@@ -1,7 +1,5 @@
 ﻿using Kentor.AuthServices.Configuration;
 using Kentor.AuthServices.Metadata;
-using Kentor.AuthServices.Owin;
-using Kentor.AuthServices.Tests.Owin;
 using Kentor.AuthServices.WebSso;
 using System;
 using System.Collections.Generic;
@@ -13,21 +11,21 @@ using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Kentor.AuthServices.Tests
+namespace Kentor.AuthServices.TestHelpers
 {
-    class StubFactory
+    public class StubFactory
     {
-        internal static AuthServicesUrls CreateAuthServicesUrls()
+        public static AuthServicesUrls CreateAuthServicesUrls()
         {
             return new AuthServicesUrls(new Uri("http://localhost"), "/AuthServices");
         }
 
-        internal static AuthServicesUrls CreateAuthServicesUrlsPublicOrigin(Uri publicOrigin)
+        public static AuthServicesUrls CreateAuthServicesUrlsPublicOrigin(Uri publicOrigin)
         {
             return new AuthServicesUrls(publicOrigin, "/AuthServices");
         }
 
-        internal static SPOptions CreateSPOptions()
+        public static SPOptions CreateSPOptions()
         {
             var org = new Organization();
 
@@ -59,7 +57,7 @@ namespace Kentor.AuthServices.Tests
             return options;
         }
 
-        internal static SPOptions CreateSPOptions(Uri publicOrigin)
+        public static SPOptions CreateSPOptions(Uri publicOrigin)
         {
             var options = CreateSPOptions();
             options.PublicOrigin = publicOrigin;
@@ -109,7 +107,7 @@ namespace Kentor.AuthServices.Tests
             options.Contacts.Add(new ContactPerson(ContactType.Technical)); // Deliberately void of info.
         }
 
-        private static IOptions CreateOptions(Func<SPOptions, IOptions> factory)
+        public static IOptions CreateOptions(Func<SPOptions, IOptions> factory)
         {
             var options = factory(CreateSPOptions());
 
@@ -118,7 +116,7 @@ namespace Kentor.AuthServices.Tests
             return options;
         }
 
-        internal static Options CreateOptions()
+        public static Options CreateOptions()
         {
             return (Options)CreateOptions(sp => new Options(sp));
         }
@@ -132,20 +130,9 @@ namespace Kentor.AuthServices.Tests
 
             return options;
         }
-        internal static Options CreateOptionsPublicOrigin(Uri publicOrigin)
+        public static Options CreateOptionsPublicOrigin(Uri publicOrigin)
         {
             return (Options)CreateOptionsPublicOrigin(sp => new Options(sp), publicOrigin);
-        }
-
-        internal static KentorAuthServicesAuthenticationOptions CreateOwinOptions()
-        {
-            return (KentorAuthServicesAuthenticationOptions)CreateOptions(
-                sp => new KentorAuthServicesAuthenticationOptions(false)
-                {
-                    SPOptions = sp,
-                    SignInAsAuthenticationType = "AuthType",
-                    DataProtector = new StubDataProtector()
-                });
         }
     }
 }

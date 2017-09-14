@@ -1,13 +1,9 @@
 ﻿using FluentAssertions;
-using Kentor.AuthServices.Tests.Helpers;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using NSubstitute;
 using System;
-using System.Collections.Specialized;
 using System.Net;
 using System.Security.Claims;
 using System.Text;
-using System.Web;
 using System.Xml;
 using System.Linq;
 using System.Collections.Generic;
@@ -19,7 +15,7 @@ using Kentor.AuthServices.Exceptions;
 using System.IdentityModel.Metadata;
 using System.IdentityModel.Tokens;
 using Kentor.AuthServices.Tests.WebSSO;
-using System.Security.Cryptography.Xml;
+using Kentor.AuthServices.TestHelpers;
 
 namespace Kentor.AuthServices.Tests.WebSso
 {

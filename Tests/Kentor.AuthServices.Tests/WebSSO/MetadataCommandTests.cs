@@ -1,18 +1,13 @@
 ﻿using System;
-using System.Web;
-using System.Linq;
 using System.Xml.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using NSubstitute;
 using FluentAssertions;
 using System.IdentityModel.Metadata;
-using System.Xml;
 using Kentor.AuthServices.Configuration;
-using System.Globalization;
 using Kentor.AuthServices.WebSso;
 using Kentor.AuthServices.Tests.Helpers;
 using System.Security.Cryptography.Xml;
-using Kentor.AuthServices.Metadata;
+using Kentor.AuthServices.TestHelpers;
 
 namespace Kentor.AuthServices.Tests.WebSso
 {

@@ -1,14 +1,7 @@
-﻿using FluentAssertions;
-using Kentor.AuthServices.WebSso;
-using Microsoft.Owin.Security.DataProtection;
-using System;
-using System.Collections.Generic;
+﻿using Microsoft.Owin.Security.DataProtection;
 using System.Linq;
-using System.Net;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace Kentor.AuthServices.Tests.Owin
+namespace Kentor.AuthServices.Owin.Tests
 {
     class StubDataProtector : IDataProtector
     {

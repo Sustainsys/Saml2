@@ -4,15 +4,12 @@ using FluentAssertions;
 using NSubstitute;
 using System.Web;
 using Kentor.AuthServices.WebSso;
-using Kentor.AuthServices.Saml2P;
 using Kentor.AuthServices.Tests.WebSSO;
-using Kentor.AuthServices.Tests.Helpers;
 using System.Security.Cryptography;
 using System.Text;
-using System.Xml;
-using System.IdentityModel.Metadata;
 using Kentor.AuthServices.Exceptions;
 using System.Security.Cryptography.Xml;
+using Kentor.AuthServices.TestHelpers;
 
 namespace Kentor.AuthServices.Tests.WebSso
 {

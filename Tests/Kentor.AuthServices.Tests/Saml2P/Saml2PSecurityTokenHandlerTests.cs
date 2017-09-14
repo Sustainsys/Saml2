@@ -6,6 +6,7 @@ using Kentor.AuthServices.Configuration;
 
 namespace Kentor.AuthServices.Tests.Saml2P
 {
+    using Kentor.AuthServices.TestHelpers;
     using System.IdentityModel.Selectors;
     using System.IdentityModel.Tokens;
     using System.Linq;

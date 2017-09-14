@@ -63,37 +63,6 @@ namespace Kentor.AuthServices.Tests.WebSSO
 
             a.ShouldNotThrow();
         }
-
-        [TestMethod]
-        public void HttpRequestData_Ctor_Deserialize_StoredRequestState()
-        {
-            var url = new Uri("http://example.com:42/ApplicationPath/Path?RelayState=Foo");
-            string appPath = "/ApplicationPath";
-
-            var storedRequestData = new StoredRequestState(
-                    new EntityId("http://idp.example.com"),
-                    new Uri("http://sp.example.com/loggedout"),
-                    new Saml2Id("id123"),
-                    null);
-
-            var cookies = new KeyValuePair<string, string>[]
-            {
-                new KeyValuePair<string, string>(
-                    "Kentor.Foo",
-                    HttpRequestData.ConvertBinaryData(
-                            StubDataProtector.Protect(storedRequestData.Serialize())))
-            };
-
-            var subject = new HttpRequestData(
-                 "GET",
-                 url,
-                 appPath,
-                 Enumerable.Empty<KeyValuePair<string, string[]>>(),
-                 cookies,
-                 StubDataProtector.Unprotect);
-
-            subject.StoredRequestState.ShouldBeEquivalentTo(storedRequestData);
-        }
     }
 }
 
