@@ -77,7 +77,10 @@
     <Compile Include="AuthServicesUrlsTests.cs" />
     <Compile Include="CommandResultExtensionsTests.cs" />
     <Compile Include="HttpRequestDataTests.cs" />
+    <Compile Include="KentorAuthServicesAuthenticationExtensionsTests.cs" />
     <Compile Include="KentorAuthServicesAuthenticationMiddlewareTests.cs" />
+    <Compile Include="KentorAuthServicesAuthenticationOptionsTests.cs" />
+    <Compile Include="MultipleIdentityAuthenticationTicketTests.cs" />
     <Compile Include="OwinContextExtensionsTests.cs" />
     <Compile Include="OwinStubFactory.cs" />
     <Compile Include="OwinTestHelpers.cs" />
@@ -102,6 +105,11 @@
       <Project>{93BA675E-A159-4701-B68B-C4B81015C556}</Project>
       <Name>Kentor.AuthServices</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="federation.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <Import Project="$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets" Condition="Exists('$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets')" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -6,7 +6,7 @@ using FluentAssertions;
 using System.Linq;
 using Kentor.AuthServices.Owin;
 
-namespace Kentor.AuthServices.Tests.Owin
+namespace Kentor.AuthServices.Owin.Tests
 {
     [TestClass]
     public class MultipleIdentityAuthenticationTicketTests

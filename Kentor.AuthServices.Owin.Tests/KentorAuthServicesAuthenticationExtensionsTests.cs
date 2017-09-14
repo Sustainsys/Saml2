@@ -5,7 +5,7 @@ using Owin;
 using Kentor.AuthServices.Owin;
 using FluentAssertions;
 
-namespace Kentor.AuthServices.Tests.Owin
+namespace Kentor.AuthServices.Owin.Tests
 {
     [TestClass]
     public class KentorAuthServicesAuthenticationExtensionsTests

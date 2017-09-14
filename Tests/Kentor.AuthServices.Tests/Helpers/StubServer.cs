@@ -101,7 +101,7 @@ namespace Kentor.AuthServices.Tests.Helpers
 
             var federationMetadataSigned = string.Format(
 @"<EntitiesDescriptor ID=""federationMetadataSigned"" xmlns=""urn:oasis:names:tc:SAML:2.0:metadata"" validUntil=""2100-01-01T14:43:15Z"">
-  <EntityDescriptor entityID=""http://idp.federation.example.com/metadata"">
+  <EntityDescriptor entityID=""http://idp.signedfederation.example.com/metadata"">
     <IDPSSODescriptor
       protocolSupportEnumeration=""urn:oasis:names:tc:SAML:2.0:protocol"">
       <KeyDescriptor use=""signing"">
@@ -109,7 +109,7 @@ namespace Kentor.AuthServices.Tests.Helpers
       </KeyDescriptor>
       <SingleSignOnService
         Binding=""urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect""
-        Location=""http://idp.federation.example.com/ssoService"" />
+        Location=""http://idp.signedfederation.example.com/ssoService"" />
     </IDPSSODescriptor>
   </EntityDescriptor>
 </EntitiesDescriptor>

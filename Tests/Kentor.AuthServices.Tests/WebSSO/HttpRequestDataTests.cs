@@ -1,14 +1,9 @@
 ﻿using FluentAssertions;
-using Kentor.AuthServices.Tests.Owin;
 using Kentor.AuthServices.WebSso;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
-using System.IdentityModel.Metadata;
-using System.IdentityModel.Tokens;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Kentor.AuthServices.Tests.WebSSO
 {

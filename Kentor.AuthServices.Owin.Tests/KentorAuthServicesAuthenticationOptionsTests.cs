@@ -5,7 +5,7 @@ using FluentAssertions;
 using Microsoft.Owin.Security;
 using System.IdentityModel.Metadata;
 
-namespace Kentor.AuthServices.Tests.Owin
+namespace Kentor.AuthServices.Owin.Tests
 {
     [TestClass]
     public class KentorAuthServicesAuthenticationOptionsTests

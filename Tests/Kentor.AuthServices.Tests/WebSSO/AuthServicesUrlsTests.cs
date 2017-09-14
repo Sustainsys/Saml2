@@ -1,15 +1,12 @@
 ﻿using System;
 using System.Collections.Specialized;
-using System.Threading.Tasks;
 using System.Web;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Kentor.AuthServices.Configuration;
 using FluentAssertions;
 using Kentor.AuthServices.HttpModule;
-using Kentor.AuthServices.Tests.Helpers;
 using Kentor.AuthServices.WebSso;
 using NSubstitute;
-using Kentor.AuthServices.Owin;
 using Kentor.AuthServices.TestHelpers;
 
 namespace Kentor.AuthServices.Tests.WebSso
