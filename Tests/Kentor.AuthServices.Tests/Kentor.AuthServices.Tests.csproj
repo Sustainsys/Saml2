@@ -205,7 +205,7 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Kentor.AuthServices.TestHelpers\Kentor.AuthServices.TestHelpers.csproj">
+    <ProjectReference Include="..\Kentor.AuthServices.TestHelpers\Kentor.AuthServices.TestHelpers.csproj">
       <Project>{CF1E517E-B2FE-48E1-8BB9-4D9981695C47}</Project>
       <Name>Kentor.AuthServices.TestHelpers</Name>
     </ProjectReference>
