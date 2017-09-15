@@ -131,6 +131,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\VersionInfo.cs">
+      <Link>VersionInfo.cs</Link>
+    </Compile>
+    <Compile Include="HttpRequestExtensions.cs" />
     <Compile Include="Saml2Defaults.cs" />
     <Compile Include="Saml2Handler.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -139,6 +143,12 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Kentor.AuthServices\Kentor.AuthServices.csproj">
+      <Project>{93BA675E-A159-4701-B68B-C4B81015C556}</Project>
+      <Name>Kentor.AuthServices</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

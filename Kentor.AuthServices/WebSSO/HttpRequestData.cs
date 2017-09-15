@@ -34,7 +34,7 @@ namespace Kentor.AuthServices.WebSso
             string httpMethod,
             Uri url,
             string applicationPath,
-            IEnumerable<KeyValuePair<string, string[]>> formData,
+            IEnumerable<KeyValuePair<string, IEnumerable<string>>> formData,
             IEnumerable<KeyValuePair<string, string>> cookies,
             Func<byte[], byte[]> cookieDecryptor) : this(httpMethod, url, applicationPath, formData, cookies, cookieDecryptor, user: null)
         {
@@ -58,7 +58,7 @@ namespace Kentor.AuthServices.WebSso
             string httpMethod,
             Uri url,
             string applicationPath,
-            IEnumerable<KeyValuePair<string, string[]>> formData,
+            IEnumerable<KeyValuePair<string, IEnumerable<string>>> formData,
             IEnumerable<KeyValuePair<string, string>> cookies,
             Func<byte[], byte[]> cookieDecryptor,
             ClaimsPrincipal user)
@@ -77,7 +77,7 @@ namespace Kentor.AuthServices.WebSso
             string httpMethod,
             Uri url,
             string applicationPath,
-            IEnumerable<KeyValuePair<string, string[]>> formData,
+            IEnumerable<KeyValuePair<string, IEnumerable<string>>> formData,
             StoredRequestState storedRequestState)
         {
             InitBasicFields(httpMethod, url, applicationPath, formData);
@@ -88,7 +88,7 @@ namespace Kentor.AuthServices.WebSso
             string httpMethod,
             Uri url,
             string applicationPath,
-            IEnumerable<KeyValuePair<string, string[]>> formData,
+            IEnumerable<KeyValuePair<string, IEnumerable<string>>> formData,
             IEnumerable<KeyValuePair<string, string>> cookies,
             Func<byte[], byte[]> cookieDecryptor,
             ClaimsPrincipal user)
@@ -127,13 +127,13 @@ namespace Kentor.AuthServices.WebSso
                 .Replace('.', '='));
         }
 
-        private void InitBasicFields(string httpMethod, Uri url, string applicationPath, IEnumerable<KeyValuePair<string, string[]>> formData)
+        private void InitBasicFields(string httpMethod, Uri url, string applicationPath, IEnumerable<KeyValuePair<string, IEnumerable<string>>> formData)
         {
             HttpMethod = httpMethod;
             Url = url;
             ApplicationUrl = new Uri(url, applicationPath);
             Form = new ReadOnlyDictionary<string, string>(
-                (formData ?? Enumerable.Empty<KeyValuePair<string, string[]>>())
+                (formData ?? Enumerable.Empty<KeyValuePair<string, IEnumerable<string>>>())
                 .ToDictionary(kv => kv.Key, kv => kv.Value.Single()));
             QueryString = QueryStringHelper.ParseQueryString(url.Query);
         }

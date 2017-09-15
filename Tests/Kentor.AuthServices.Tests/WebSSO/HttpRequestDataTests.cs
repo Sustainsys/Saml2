@@ -20,9 +20,9 @@ namespace Kentor.AuthServices.Tests.WebSSO
                  "GET",
                  url,
                  appPath,
-                 new KeyValuePair<string, string[]>[]
+                 new KeyValuePair<string, IEnumerable<string>>[]
                 {
-                    new KeyValuePair<string, string[]>("Key", new string[] { "Value" })
+                    new KeyValuePair<string, IEnumerable<string>>("Key", new string[] { "Value" })
                 },
                 null,
                 null);
@@ -49,9 +49,9 @@ namespace Kentor.AuthServices.Tests.WebSSO
                  "GET",
                  url,
                  appPath,
-                 new KeyValuePair<string, string[]>[]
+                 new KeyValuePair<string, IEnumerable<string>>[]
                  {
-                    new KeyValuePair<string, string[]>("Key", new string[] { "Value" })
+                    new KeyValuePair<string, IEnumerable<string>>("Key", new string[] { "Value" })
                  },
                  Enumerable.Empty<KeyValuePair<string, string>>(),
                  null);

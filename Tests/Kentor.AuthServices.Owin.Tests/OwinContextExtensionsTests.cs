@@ -13,7 +13,7 @@ namespace Kentor.AuthServices.Owin.Tests
     public class OwinContextExtensionsTests
     {
         [TestMethod]
-        public async Task OwinContextExtensionsTests_ToHttpRequestData_NullYieldsNull()
+        public async Task OwinContextExtensions_ToHttpRequestData_NullYieldsNull()
         {
             IOwinContext ctx = null;
 
@@ -23,7 +23,7 @@ namespace Kentor.AuthServices.Owin.Tests
         }
 
         [TestMethod]
-        public async Task OwinContextExtensionsTests_ToHttpRequestData()
+        public async Task OwinContextExtensions_ToHttpRequestData()
         {
             var ctx = OwinTestHelpers.CreateOwinContext();
 
@@ -44,7 +44,7 @@ namespace Kentor.AuthServices.Owin.Tests
         }
 
         [TestMethod]
-        public async Task OwinContextExtensionsTests_ToHttpRequestData_ApplicationNotInRoot()
+        public async Task OwinContextExtensions_ToHttpRequestData_ApplicationNotInRoot()
         {
             var ctx = OwinTestHelpers.CreateOwinContext();
 
@@ -56,7 +56,7 @@ namespace Kentor.AuthServices.Owin.Tests
         }
 
         [TestMethod]
-        public async Task OwinContextExtensionsTests_ToHttpRequestData_ReadsRelayStateCookie()
+        public async Task OwinContextExtensions_ToHttpRequestData_ReadsRelayStateCookie()
         {
             var ctx = OwinTestHelpers.CreateOwinContext();
             ctx.Request.QueryString = new QueryString("RelayState", "SomeState");
@@ -75,7 +75,7 @@ namespace Kentor.AuthServices.Owin.Tests
         }
 
         [TestMethod]
-        public void OwinContextExtensionsTests_ToHttpRequestData_HandlesRelayStateWithoutCookie()
+        public void OwinContextExtensions_ToHttpRequestData_HandlesRelayStateWithoutCookie()
         {
             var ctx = OwinTestHelpers.CreateOwinContext();
             ctx.Request.QueryString = new QueryString("RelayState", "SomeState");

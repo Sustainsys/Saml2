@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using System;
 
 namespace Sustainsys.Saml2.AspNetCore2
 {
@@ -30,7 +31,13 @@ namespace Sustainsys.Saml2.AspNetCore2
         /// <InheritDocs />
         protected override Task<HandleRequestResult> HandleRemoteAuthenticateAsync()
         {
-            throw new System.NotImplementedException();
+            throw new NotImplementedException();
+        }
+
+        /// <InheritDocs />
+        protected override Task HandleChallengeAsync(AuthenticationProperties properties)
+        {
+            throw new NotImplementedException();
         }
     }
 }
