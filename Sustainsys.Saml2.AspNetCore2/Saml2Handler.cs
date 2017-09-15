@@ -5,6 +5,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System;
 using Kentor.AuthServices.WebSso;
+using Microsoft.AspNetCore.DataProtection;
 
 namespace Sustainsys.Saml2.AspNetCore2
 {
@@ -13,6 +14,8 @@ namespace Sustainsys.Saml2.AspNetCore2
     /// </summary>
     public class Saml2Handler : RemoteAuthenticationHandler<Saml2Options>
     {
+        IDataProtector dataProtector;
+
         /// <summary>
         /// Ctor
         /// </summary>
@@ -20,13 +23,16 @@ namespace Sustainsys.Saml2.AspNetCore2
         /// <param name="logger">Logger</param>
         /// <param name="encoder">Encoder</param>
         /// <param name="clock">Clock</param>
+        /// <param name="dataProtectorProvider">Data Protector Provider</param>
         public Saml2Handler(
             IOptionsMonitor<Saml2Options> options,
             ILoggerFactory logger,
             UrlEncoder encoder,
-            ISystemClock clock) 
+            ISystemClock clock,
+            IDataProtectionProvider dataProtectorProvider) 
             : base(options, logger, encoder, clock)
         {
+            dataProtector = dataProtectorProvider.CreateProtector(GetType().FullName);
         }
 
         /// <InheritDocs />
@@ -43,7 +49,7 @@ namespace Sustainsys.Saml2.AspNetCore2
             var result = CommandFactory.GetCommand(CommandFactory.SignInCommandName)
                 .Run(requestData, Options);
 
-            result.Apply(Context);
+            result.Apply(Context, dataProtector);
 
             return Task.CompletedTask;
         }

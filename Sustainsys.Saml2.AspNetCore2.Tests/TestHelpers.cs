@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Collections;
+using System.IO;
 
 namespace Sustainsys.Saml2.AspNetCore2.Tests
 {
@@ -49,8 +50,6 @@ namespace Sustainsys.Saml2.AspNetCore2.Tests
         public static HttpContext CreateHttpContext()
         {
             var context = Substitute.For<HttpContext>();
-            var request = Substitute.For<HttpRequest>();
-            context.Request.Returns(request);
 
             var form = Substitute.For<IFormCollection>();
             context.Request.Form.Returns(new FormValues());
@@ -61,6 +60,8 @@ namespace Sustainsys.Saml2.AspNetCore2.Tests
             context.Request.Path = new PathString("/somePath");
             context.Request.PathBase = new PathString("");
             context.Request.QueryString = new QueryString("?param=value");
+
+            context.Response.Body.Returns(new MemoryStream());
 
             return context;
         }

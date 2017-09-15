@@ -39,7 +39,8 @@ namespace Sustainsys.Saml2.AspNetCore2.Tests
                 
                 Options = new DummyOptionsMonitor(options);
 
-                Subject = new Saml2Handler(Options, LoggerFactory, UrlEncoder, Clock);
+                Subject = new Saml2Handler(
+                    Options, LoggerFactory, UrlEncoder, Clock, new StubDataProtector());
 
                 Subject.InitializeAsync(AuthenticationScheme, HttpContext)
                     .Wait();

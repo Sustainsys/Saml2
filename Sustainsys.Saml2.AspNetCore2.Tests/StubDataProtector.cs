@@ -31,7 +31,7 @@ namespace Sustainsys.Saml2.AspNetCore2.Tests
 
         public IDataProtector CreateProtector(string purpose)
         {
-            throw new System.NotImplementedException();
+            return this;
         }
     }
 }
