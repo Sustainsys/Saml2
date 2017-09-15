@@ -52,9 +52,7 @@ namespace Sustainsys.Saml2.AspNetCore2.Tests
             }
         }
 
-
-        [TestMethod]
-        public async Task HttpContextExtensionsTests_ToHttpRequestData()
+        HttpContext CreateHttpContext()
         {
             var context = Substitute.For<HttpContext>();
             var request = Substitute.For<HttpRequest>();
@@ -70,6 +68,13 @@ namespace Sustainsys.Saml2.AspNetCore2.Tests
             context.Request.PathBase = new PathString();
             context.Request.QueryString = new QueryString("?param=value");
 
+            return context;
+        }
+
+        [TestMethod]
+        public async Task HttpContextExtensions_ToHttpRequestData()
+        {
+            var context = CreateHttpContext();
             var actual = await context.ToHttpRequestData(StubDataProtector.Unprotect);
 
             actual.Url.Should().Be(new Uri("https://sp.example.com/somePath"));
@@ -80,17 +85,17 @@ namespace Sustainsys.Saml2.AspNetCore2.Tests
             actual.ApplicationUrl.Should().Be(new Uri("https://sp.example.com/"));
         }
 
-        //[TestMethod]
-        //public async Task OwinContextExtensionsTests_ToHttpRequestData_ApplicationNotInRoot()
-        //{
-        //    var ctx = OwinTestHelpers.CreateOwinContext();
+        [TestMethod]
+        public async Task HttpContextExtensions_ToHttpRequestData_ApplicationNotInRoot()
+        {
+            var context = CreateHttpContext();
 
-        //    ctx.Request.PathBase = new PathString("/ApplicationPath");
+            context.Request.PathBase = new PathString("/ApplicationPath");
 
-        //    var actual = await ctx.ToHttpRequestData(null);
+            var actual = await context.ToHttpRequestData(null);
 
-        //    actual.ApplicationUrl.Should().Be(new Uri("http://sp.example.com/ApplicationPath"));
-        //}
+            actual.ApplicationUrl.Should().Be(new Uri("https://sp.example.com/ApplicationPath"));
+        }
 
         //[TestMethod]
         //public async Task OwinContextExtensionsTests_ToHttpRequestData_ReadsRelayStateCookie()
