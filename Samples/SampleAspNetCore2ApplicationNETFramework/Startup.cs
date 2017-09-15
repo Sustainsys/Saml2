@@ -11,6 +11,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using SampleAspNetCore2ApplicationNETFramework.Data;
 using SampleAspNetCore2ApplicationNETFramework.Services;
+using System.IdentityModel.Metadata;
+using Kentor.AuthServices;
 
 namespace SampleAspNetCore2ApplicationNETFramework
 {
@@ -45,7 +47,16 @@ namespace SampleAspNetCore2ApplicationNETFramework
             services.AddSingleton<IEmailSender, EmailSender>();
 
             services.AddAuthentication()
-                .AddSaml2(options => { });
+                .AddSaml2(options => 
+                {
+                    options.SPOptions.EntityId = new EntityId("https://localhost:44342/AuthServices");
+                    options.IdentityProviders.Add(
+                        new IdentityProvider(
+                            new EntityId("http://localhost:52071/Metadata"), options.SPOptions)
+                        {
+                            LoadMetadata = true
+                        });
+                });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

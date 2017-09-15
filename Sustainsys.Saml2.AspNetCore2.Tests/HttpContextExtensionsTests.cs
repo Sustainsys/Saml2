@@ -17,65 +17,11 @@ namespace Sustainsys.Saml2.AspNetCore2.Tests
     [TestClass]
     public class HttpContextExtensionsTests
     {
-        class FormValues : IFormCollection
-        {
-            public StringValues this[string key] => throw new NotImplementedException();
-
-            public int Count => throw new NotImplementedException();
-
-            public ICollection<string> Keys => throw new NotImplementedException();
-
-            public IFormFileCollection Files => throw new NotImplementedException();
-
-            public bool ContainsKey(string key)
-            {
-                throw new NotImplementedException();
-            }
-
-            public IEnumerator<KeyValuePair<string, StringValues>> GetEnumerator()
-            {
-                return new[]
-                {
-                    new KeyValuePair<string, StringValues>("Input1", new StringValues("Value1")),
-                    new KeyValuePair<string, StringValues>("Input2", new StringValues("Value2"))
-                }.AsEnumerable().GetEnumerator();
-            }
-
-            public bool TryGetValue(string key, out StringValues value)
-            {
-                throw new NotImplementedException();
-            }
-
-            IEnumerator IEnumerable.GetEnumerator()
-            {
-                throw new NotImplementedException();
-            }
-        }
-
-        HttpContext CreateHttpContext()
-        {
-            var context = Substitute.For<HttpContext>();
-            var request = Substitute.For<HttpRequest>();
-            context.Request.Returns(request);
-
-            var form = Substitute.For<IFormCollection>();
-            context.Request.Form.Returns(new FormValues());
-            context.Request.Method = "POST";
-            context.Request.ContentType = "application/x-www-form-urlencoded";
-            context.Request.Host = new HostString("sp.example.com");
-            context.Request.Scheme = "https";
-            context.Request.Path = new PathString("/somePath");
-            context.Request.PathBase = new PathString();
-            context.Request.QueryString = new QueryString("?param=value");
-
-            return context;
-        }
-
         [TestMethod]
-        public async Task HttpContextExtensions_ToHttpRequestData()
+        public void HttpContextExtensions_ToHttpRequestData()
         {
-            var context = CreateHttpContext();
-            var actual = await context.ToHttpRequestData(StubDataProtector.Unprotect);
+            var context = TestHelpers.CreateHttpContext();
+            var actual = context.ToHttpRequestData(StubDataProtector.Unprotect);
 
             actual.Url.Should().Be(new Uri("https://sp.example.com/somePath"));
             actual.Form.Count.Should().Be(2);
@@ -86,13 +32,13 @@ namespace Sustainsys.Saml2.AspNetCore2.Tests
         }
 
         [TestMethod]
-        public async Task HttpContextExtensions_ToHttpRequestData_ApplicationNotInRoot()
+        public void HttpContextExtensions_ToHttpRequestData_ApplicationNotInRoot()
         {
-            var context = CreateHttpContext();
+            var context = TestHelpers.CreateHttpContext();
 
             context.Request.PathBase = new PathString("/ApplicationPath");
 
-            var actual = await context.ToHttpRequestData(null);
+            var actual = context.ToHttpRequestData(null);
 
             actual.ApplicationUrl.Should().Be(new Uri("https://sp.example.com/ApplicationPath"));
         }

@@ -25,4 +25,9 @@
   <ItemGroup>
     <ProjectReference Include="..\..\Sustainsys.Saml2.AspNetCore2\Sustainsys.Saml2.AspNetCore2.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <Reference Include="System.IdentityModel">
+      <HintPath>..\..\..\..\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.5\System.IdentityModel.dll</HintPath>
+    </Reference>
+  </ItemGroup>
 </Project>

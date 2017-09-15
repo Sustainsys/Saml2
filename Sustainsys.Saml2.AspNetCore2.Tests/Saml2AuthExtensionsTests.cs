@@ -20,6 +20,9 @@ namespace Sustainsys.Saml2.AspNetCore2.Tests
 
             serviceCollection.Should().Contain(
                 sd => sd.ImplementationType == typeof(Saml2Handler));
+
+            serviceCollection.Should().Contain(
+                sd => sd.ImplementationType == typeof(PostConfigureSaml2Options));
         }
     }
 }

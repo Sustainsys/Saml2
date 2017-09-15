@@ -9,7 +9,7 @@ namespace Sustainsys.Saml2.AspNetCore2
 {
     static class HttpRequestExtensions
     {
-        public static async Task<HttpRequestData> ToHttpRequestData(
+        public static HttpRequestData ToHttpRequestData(
             this HttpContext httpContext,
             Func<byte[], byte[]> cookieDecryptor)
         {
@@ -21,10 +21,13 @@ namespace Sustainsys.Saml2.AspNetCore2
                 + request.Host
                 + request.Path);
 
+            var pathBase = httpContext.Request.PathBase.Value;
+            pathBase = pathBase == "" ? "/" : pathBase;
+
             return new HttpRequestData(
                 httpContext.Request.Method,
                 uri,
-                httpContext.Request.PathBase.Value ?? "/",
+                pathBase,
                 request.Form.Select(f => new KeyValuePair<string, IEnumerable<string>>(f.Key, f.Value)),
                 null,
                 cookieDecryptor);

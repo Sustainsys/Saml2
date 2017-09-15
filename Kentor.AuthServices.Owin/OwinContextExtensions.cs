@@ -39,7 +39,7 @@ namespace Kentor.AuthServices.Owin
                 context.Request.Method,
                 context.Request.Uri,
                 applicationRootPath,
-                formData.Select(f => new KeyValuePair<string, IEnumerable<string>>(f.Key, f.Value)),
+                formData?.Select(f => new KeyValuePair<string, IEnumerable<string>>(f.Key, f.Value)),
                 context.Request.Cookies,
                 cookieDecryptor,
                 context.Request.User as ClaimsPrincipal);

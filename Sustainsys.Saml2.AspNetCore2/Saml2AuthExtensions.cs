@@ -1,4 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authentication;
+using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Options;
 using Sustainsys.Saml2.AspNetCore2;
 using System;
 using System.Collections.Generic;
@@ -23,12 +25,12 @@ namespace Microsoft.Extensions.DependencyInjection
             this AuthenticationBuilder builder,
             Action<Saml2Options> options)
         {
-            builder.AddRemoteScheme<Saml2Options, Saml2Handler>(
+            builder.Services.TryAddEnumerable(ServiceDescriptor.Singleton<IPostConfigureOptions<Saml2Options>, PostConfigureSaml2Options>());
+
+            return builder.AddRemoteScheme<Saml2Options, Saml2Handler>(
                 Saml2Defaults.Scheme,
                 Saml2Defaults.DisplayName,
                 options);
-
-            return builder;
         }
     }
 }

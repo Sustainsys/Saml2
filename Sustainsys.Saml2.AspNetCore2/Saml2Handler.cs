@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System;
+using Kentor.AuthServices.WebSso;
 
 namespace Sustainsys.Saml2.AspNetCore2
 {
@@ -37,7 +38,14 @@ namespace Sustainsys.Saml2.AspNetCore2
         /// <InheritDocs />
         protected override Task HandleChallengeAsync(AuthenticationProperties properties)
         {
-            throw new NotImplementedException();
+            var requestData = Context.ToHttpRequestData(null);
+
+            var result = CommandFactory.GetCommand(CommandFactory.SignInCommandName)
+                .Run(requestData, Options);
+
+            result.Apply(Context);
+
+            return Task.CompletedTask;
         }
     }
 }
