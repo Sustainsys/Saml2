@@ -35,6 +35,13 @@ namespace Kentor.AuthServices.WebSso
         public ClaimsPrincipal Principal { get; set; }
 
         /// <summary>
+        /// Session termination time. Priority order: 1. SessionNotOnOrAfter in
+        /// assertion. 2. WIF configured lifetime with SessionSecurityTokenHandler
+        /// 3. SessionSecurityTokenHandler default.
+        /// </summary>
+        public DateTime? SessionNotOnOrAfter { get; set; }
+
+        /// <summary>
         /// The response body that is the result of the command.
         /// </summary>
         public string Content { get; set; }
@@ -63,6 +70,11 @@ namespace Kentor.AuthServices.WebSso
         public string SetCookieName { get; set; }
 
         /// <summary>
+        /// SAML RelayState value
+        /// </summary>
+        public string RelayState { get; set; }
+
+        /// <summary>
         /// Request state to store so that it is available on next http request.
         /// </summary>
         public StoredRequestState RequestState { get; set; }
@@ -88,5 +100,12 @@ namespace Kentor.AuthServices.WebSso
             HttpStatusCode = HttpStatusCode.OK;
             Cacheability = Cacheability.NoCache;
         }
+
+        /// <summary>
+        /// Can be set by a notification callback to indicate that the
+        /// <see cref="CommandResult"/> has been handled and should not
+        /// be applied by the AuthServices library to the response.
+        /// </summary>
+        public bool HandledResult { get; set; }
     }
 }

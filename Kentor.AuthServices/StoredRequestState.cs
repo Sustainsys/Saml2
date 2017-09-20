@@ -108,7 +108,7 @@ namespace Kentor.AuthServices
                 var returnUrl = r.ReadString();
                 if(!string.IsNullOrEmpty(returnUrl))
                 {
-                    ReturnUrl = new Uri(returnUrl);
+                    ReturnUrl = new Uri(returnUrl, UriKind.RelativeOrAbsolute);
                 }
 
                 var messageId = r.ReadString();

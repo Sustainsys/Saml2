@@ -19,7 +19,7 @@ namespace Kentor.AuthServices.StubIdp.Controllers
             var artifact = request
                 .Element(Saml2Namespaces.SoapEnvelope + "Body")
                 .Element(Saml2Namespaces.Saml2P + "ArtifactResolve")
-                .Element(Saml2Namespaces.Saml2 + "Artifact")
+                .Element(Saml2Namespaces.Saml2P + "Artifact")
                 .Value;
 
             var requestId = request
@@ -39,12 +39,7 @@ namespace Kentor.AuthServices.StubIdp.Controllers
 
             if(message.SigningCertificate != null)
             {
-                var xmlDoc = new XmlDocument()
-                {
-                    PreserveWhitespace = true
-                };
-
-                xmlDoc.LoadXml(xml);
+                var xmlDoc = XmlHelpers.XmlDocumentFromString(xml);
                 xmlDoc.Sign(message.SigningCertificate, true);
                 xml = xmlDoc.OuterXml;
             }

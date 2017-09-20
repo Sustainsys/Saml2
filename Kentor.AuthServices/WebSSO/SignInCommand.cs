@@ -1,14 +1,11 @@
 ﻿using Kentor.AuthServices.Configuration;
 using System;
 using System.Collections.Generic;
-using System.Collections.Specialized;
 using System.Globalization;
 using System.IdentityModel.Metadata;
 using System.Linq;
 using System.Net;
-using System.Text;
-using System.Threading.Tasks;
-using System.Web;
+using Kentor.AuthServices.Internal;
 
 namespace Kentor.AuthServices.WebSso
 {
@@ -41,12 +38,55 @@ namespace Kentor.AuthServices.WebSso
                 throw new ArgumentNullException(nameof(options));
             }
 
-            return Run(
+            var returnUrl = GetReturnUrl(request, options);
+
+            var result = Run(
                 new EntityId(request.QueryString["idp"].FirstOrDefault()),
-                request.QueryString["ReturnUrl"].FirstOrDefault(),
+                returnUrl,
                 request,
                 options,
-                null);
+                request.StoredRequestState?.RelayData);
+
+            if (request.RelayState != null)
+            {
+                result.ClearCookieName = "Kentor." + request.RelayState;
+            }
+
+            return result;
+        }
+
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "SignIn")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "RelayState")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "ReturnUrl")]
+        private static string GetReturnUrl(HttpRequestData request, IOptions options)
+        {
+            var returnUrl = request.QueryString["ReturnUrl"].FirstOrDefault();
+            if (returnUrl != null)
+            {
+                if (request.RelayState != null)
+                {
+                    throw new InvalidOperationException("Both a ReturnUrl and a RelayState query " +
+                        "string parameter found in call to SignIn. That is not allowed. If a " +
+                        "RelayState is found the call is a response to a discovery service request. " +
+                        "The ReturnUrl has been added erroneously by the discovery service.");
+                }
+
+                options.SPOptions.Logger.WriteVerbose("Extracted ReturnUrl " + returnUrl + " from query string");
+                if (!PathHelper.IsLocalWebUrl(returnUrl))
+                {
+                    if (!options.Notifications.ValidateAbsoluteReturnUrl(returnUrl))
+                    {
+                        throw new InvalidOperationException("Return Url must be a relative Url.");
+                    }
+                }
+            }
+
+            if (request.StoredRequestState != null)
+            {
+                returnUrl = request.StoredRequestState.ReturnUrl.OriginalString;
+            }
+
+            return returnUrl;
         }
 
         /// <summary>
@@ -69,41 +109,53 @@ namespace Kentor.AuthServices.WebSso
             IOptions options,
             IDictionary<string, string> relayData)
         {
-            if(options == null)
+            if (options == null)
             {
                 throw new ArgumentNullException(nameof(options));
             }
 
-            var urls = new AuthServicesUrls(request, options.SPOptions);
+            var urls = new AuthServicesUrls(request, options);
 
-            IdentityProvider idp;
-            if (idpEntityId == null || idpEntityId.Id == null)
+            IdentityProvider idp = options.Notifications.SelectIdentityProvider(idpEntityId, relayData);
+            if (idp == null)
             {
-                if (options.SPOptions.DiscoveryServiceUrl != null)
+                var idpEntityIdString = idpEntityId?.Id;
+                if (idpEntityIdString == null)
                 {
-                    return RedirectToDiscoveryService(returnPath, options.SPOptions, urls);
+                    if (options.SPOptions.DiscoveryServiceUrl != null)
+                    {
+                        var commandResult = RedirectToDiscoveryService(returnPath, options.SPOptions, urls, relayData);
+                        options.Notifications.SignInCommandResultCreated(commandResult, relayData);
+                        options.SPOptions.Logger.WriteInformation("Redirecting to Discovery Service to select Idp.");
+                        return commandResult;
+                    }
+                    idp = options.IdentityProviders.Default;
+                    options.SPOptions.Logger.WriteVerbose(
+                        "No specific idp requested and no Discovery Service configured. " +
+                        "Falling back to use configured default Idp " + idp.EntityId.Id);
                 }
-
-                idp = options.IdentityProviders.Default;
-            }
-            else
-            {
-                if (!options.IdentityProviders.TryGetValue(idpEntityId, out idp))
+                else
                 {
-                    throw new InvalidOperationException("Unknown idp");
+                    if (!options.IdentityProviders.TryGetValue(idpEntityId, out idp))
+                    {
+                        throw new InvalidOperationException("Unknown idp " + idpEntityIdString);
+                    }
                 }
             }
 
-            Uri returnUrl = null;
-            if (!string.IsNullOrEmpty(returnPath))
-            {
-                var appRelativePath = request.Url.AbsolutePath.Substring(
-                    request.ApplicationUrl.AbsolutePath.Length).TrimStart('/');
+            var returnUrl = string.IsNullOrEmpty(returnPath)
+                ? null
+                : new Uri(returnPath, UriKind.RelativeOrAbsolute);
 
-                returnUrl = new Uri(new Uri(urls.ApplicationUrl, appRelativePath), returnPath);
-            }
+            options.SPOptions.Logger.WriteInformation("Initiating login to " + idp.EntityId.Id);
+            return InitiateLoginToIdp(options, relayData, urls, idp, returnUrl);
+        }
 
+        private static CommandResult InitiateLoginToIdp(IOptions options, IDictionary<string, string> relayData, AuthServicesUrls urls, IdentityProvider idp, Uri returnUrl)
+        {
             var authnRequest = idp.CreateAuthenticateRequest(urls);
+
+            options.Notifications.AuthenticationRequestCreated(authnRequest, idp, relayData);
 
             var commandResult = idp.Bind(authnRequest);
 
@@ -111,20 +163,22 @@ namespace Kentor.AuthServices.WebSso
                 idp.EntityId, returnUrl, authnRequest.Id, relayData);
             commandResult.SetCookieName = "Kentor." + authnRequest.RelayState;
 
+            options.Notifications.SignInCommandResultCreated(commandResult, relayData);
+
             return commandResult;
         }
 
         private static CommandResult RedirectToDiscoveryService(
             string returnPath,
             SPOptions spOptions,
-            AuthServicesUrls authServicesUrls)
+            AuthServicesUrls authServicesUrls,
+            IDictionary<string, string> relayData)
         {
             string returnUrl = authServicesUrls.SignInUrl.OriginalString;
 
-            if(!string.IsNullOrEmpty(returnPath))
-            {
-                returnUrl += "?ReturnUrl=" + Uri.EscapeDataString(returnPath);
-            }
+            var relayState = SecureKeyGenerator.CreateRelayState();
+
+            returnUrl += "?RelayState=" + Uri.EscapeDataString(relayState);
 
             var redirectLocation = string.Format(
                 CultureInfo.InvariantCulture,
@@ -133,10 +187,18 @@ namespace Kentor.AuthServices.WebSso
                 Uri.EscapeDataString(spOptions.EntityId.Id),
                 Uri.EscapeDataString(returnUrl));
 
+            var requestState = new StoredRequestState(
+                null,
+                returnPath == null ? null : new Uri(returnPath, UriKind.RelativeOrAbsolute),
+                null,
+                relayData);
+
             return new CommandResult()
             {
                 HttpStatusCode = HttpStatusCode.SeeOther,
-                Location = new Uri(redirectLocation)
+                Location = new Uri(redirectLocation),
+                RequestState = requestState,
+                SetCookieName = "Kentor." + relayState
             };
         }
     }

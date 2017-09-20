@@ -28,6 +28,8 @@ namespace Kentor.AuthServices.Configuration
             systemIdentityModelIdentityConfiguration = new IdentityConfiguration(false);
             MetadataCacheDuration = new TimeSpan(1, 0, 0);
             Compatibility = new Compatibility();
+            OutboundSigningAlgorithm = XmlHelpers.GetDefaultSigningAlgorithmName();
+            MinIncomingSigningAlgorithm = XmlHelpers.GetDefaultSigningAlgorithmName();
         }
 
         /// <summary>
@@ -52,6 +54,8 @@ namespace Kentor.AuthServices.Configuration
             ModulePath = configSection.ModulePath;
             PublicOrigin = configSection.PublicOrigin;
             Organization = configSection.Organization;
+            OutboundSigningAlgorithm = XmlHelpers.GetFullSigningAlgorithmName(configSection.OutboundSigningAlgorithm);
+            MinIncomingSigningAlgorithm = XmlHelpers.GetFullSigningAlgorithmName(configSection.MinIncomingSigningAlgorithm);
             AuthenticateRequestSigningBehavior = configSection.AuthenticateRequestSigningBehavior;
             NameIdPolicy = new Saml2NameIdPolicy(
                 configSection.NameIdPolicyElement.AllowCreate, configSection.NameIdPolicyElement.Format);
@@ -110,6 +114,10 @@ namespace Kentor.AuthServices.Configuration
                 }
 
                 return value;
+            }
+            set
+            {
+                saml2PSecurityTokenHandler = value; 
             }
         }
 
@@ -175,7 +183,8 @@ namespace Kentor.AuthServices.Configuration
         /// application root path from the HTTP request when creating links. 
         /// This might not be accurate in reverse proxy or load-balancing
         /// situations. You can override the origin used for link generation
-        /// using this property.
+        /// for the entire application using this property. To override per request,
+        /// implement a <code>GetPublicOrigin</code> Notification function.
         /// </summary>
         public Uri PublicOrigin { get; set; }
 
@@ -350,6 +359,12 @@ namespace Kentor.AuthServices.Configuration
         public SigningBehavior AuthenticateRequestSigningBehavior { get; set; }
 
         /// <summary>
+        /// Signing algorithm for metadata and outbound messages. Can be 
+        /// overriden for each <see cref="IdentityProvider"/>.
+        /// </summary>
+        public string OutboundSigningAlgorithm { get; set; }
+        
+        /// <summary>
         /// Metadata flag that we want assertions to be signed.
         /// </summary>
         public bool WantAssertionsSigned { get; set; }
@@ -357,7 +372,7 @@ namespace Kentor.AuthServices.Configuration
         /// <summary>
         /// Validate certificates when validating signatures? Normally not a
         /// good idea as SAML2 deployments typically exchange certificates
-        /// directly and isntead of relying on the public certificate
+        /// directly and instead of relying on the public certificate
         /// infrastructure.
         /// </summary>
         public bool ValidateCertificates { get; set; }
@@ -367,5 +382,32 @@ namespace Kentor.AuthServices.Configuration
         /// certain non-standard behaviour.
         /// </summary>
         public Compatibility Compatibility { get; set; }
+
+        private string minIncomingSigningAlgorithm;
+        
+        /// <summary>
+        /// Minimum accepted signature algorithm for any incoming messages.
+        /// </summary>
+        public string MinIncomingSigningAlgorithm
+        {
+            get
+            {
+                return minIncomingSigningAlgorithm;
+            }
+            set
+            {
+                if(!XmlHelpers.KnownSigningAlgorithms.Contains(value))
+                {
+                    throw new ArgumentException("The signing algorithm " + value +
+                        " is unknown or not supported by the current .NET Framework.");
+                }
+                minIncomingSigningAlgorithm = value;
+            }
+        }
+
+        /// <summary>
+        /// Adapter to logging framework of hosting application.
+        /// </summary>
+        public ILoggerAdapter Logger { get; set; }
     }
 }

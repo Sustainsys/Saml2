@@ -128,7 +128,7 @@ namespace Kentor.AuthServices.Configuration
         /// Application root relative path for AuthServices endpoints. The 
         /// default is "AuthServices".
         /// </summary>
-        [ConfigurationProperty(modulePath, IsRequired=false, DefaultValue="/AuthServices")]
+        [ConfigurationProperty(modulePath, IsRequired = false, DefaultValue = "/AuthServices")]
         [RegexStringValidator("/.*")]
         public string ModulePath
         {
@@ -147,7 +147,7 @@ namespace Kentor.AuthServices.Configuration
         {
             get
             {
-                return (NameIdPolicyElement) base[nameIdPolicy];
+                return (NameIdPolicyElement)base[nameIdPolicy];
             }
         }
 
@@ -176,10 +176,10 @@ namespace Kentor.AuthServices.Configuration
             {
                 // If the entire organization element is missing in the config file,
                 // Metadata.Organization will still be instantiated, but the Url will be null.
-                if(organization == null && Metadata.Organization.Url != null)
+                if (organization == null && Metadata.Organization.Url != null)
                 {
                     var culture = CultureInfo.InvariantCulture;
-                    if(!string.IsNullOrEmpty(Metadata.Organization.Language))
+                    if (!string.IsNullOrEmpty(Metadata.Organization.Language))
                     {
                         culture = CultureInfo.GetCultureInfo(Metadata.Organization.Language);
                     }
@@ -222,12 +222,12 @@ namespace Kentor.AuthServices.Configuration
         {
             get
             {
-                if(contacts == null)
+                if (contacts == null)
                 {
                     // Won't assign directly to avoid a race condition.
                     var temp = new List<ContactPerson>();
 
-                    foreach(var configPerson in Metadata.Contacts)
+                    foreach (var configPerson in Metadata.Contacts)
                     {
                         var contactPerson = new ContactPerson(configPerson.ContactType)
                         {
@@ -236,12 +236,12 @@ namespace Kentor.AuthServices.Configuration
                             Surname = configPerson.Surname.NullIfEmpty(),
                         };
 
-                        if(!string.IsNullOrEmpty(configPerson.PhoneNumber))
+                        if (!string.IsNullOrEmpty(configPerson.PhoneNumber))
                         {
                             contactPerson.TelephoneNumbers.Add(configPerson.PhoneNumber);
                         }
 
-                        if(!string.IsNullOrEmpty(configPerson.Email))
+                        if (!string.IsNullOrEmpty(configPerson.Email))
                         {
                             contactPerson.EmailAddresses.Add(configPerson.Email);
                         }
@@ -273,11 +273,11 @@ namespace Kentor.AuthServices.Configuration
                     foreach (var confAttribute in Metadata.RequestedAttributes)
                     {
                         acs.RequestedAttributes.Add(new RequestedAttribute(confAttribute.Name)
-                            {
-                                FriendlyName = confAttribute.FriendlyName,
-                                IsRequired = confAttribute.IsRequired,
-                                NameFormat = confAttribute.NameFormat
-                            });
+                        {
+                            FriendlyName = confAttribute.FriendlyName,
+                            IsRequired = confAttribute.IsRequired,
+                            NameFormat = confAttribute.NameFormat
+                        });
                     }
 
                     yield return acs;
@@ -316,11 +316,38 @@ namespace Kentor.AuthServices.Configuration
             }
         }
 
+        const string outboundSigningAlgorithm = nameof(outboundSigningAlgorithm);
+        /// <summary>
+        /// Signing algorithm for metadata and outbound messages. Can be 
+        /// overriden for each <see cref="IdentityProvider"/>.
+        /// </summary>
+        [ConfigurationProperty(outboundSigningAlgorithm, IsRequired = false)]
+        public string OutboundSigningAlgorithm
+        {
+            get
+            {
+                return (string)base[outboundSigningAlgorithm];
+            }
+        }
+
+        const string minIncomingSigningAlgorithm = nameof(minIncomingSigningAlgorithm);
+        /// <summary>
+        /// Weakest accepted signing algorithm for inbound messages.
+        /// </summary>
+        [ConfigurationProperty(minIncomingSigningAlgorithm, IsRequired = false)]
+        public string MinIncomingSigningAlgorithm
+        {
+            get
+            {
+                return (string)base[minIncomingSigningAlgorithm];
+            }
+        }
+
         const string validateCertificates = nameof(validateCertificates);
         /// <summary>
         /// Validate certificates when validating signatures? Normally not a
         /// good idea as SAML2 deployments typically exchange certificates
-        /// directly and isntead of relying on the public certificate
+        /// directly and instead of relying on the public certificate
         /// infrastructure.
         /// </summary>
         [ConfigurationProperty(validateCertificates, IsRequired = false)]
@@ -343,7 +370,7 @@ namespace Kentor.AuthServices.Configuration
         /// certain non-standard behaviour.
         /// </summary>
         [ConfigurationProperty(compatibility)]
-        public CompatibilityElement Compatibility 
+        public CompatibilityElement Compatibility
         {
             get
             {

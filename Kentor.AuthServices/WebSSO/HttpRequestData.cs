@@ -8,6 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web;
+using System.Security.Claims;
 
 namespace Kentor.AuthServices.WebSso
 {
@@ -35,15 +36,40 @@ namespace Kentor.AuthServices.WebSso
             string applicationPath,
             IEnumerable<KeyValuePair<string, string[]>> formData,
             IEnumerable<KeyValuePair<string, string>> cookies,
-            Func<byte[], byte[]> cookieDecryptor)
+            Func<byte[], byte[]> cookieDecryptor) : this(httpMethod, url, applicationPath, formData, cookies, cookieDecryptor, user: null)
         {
-            Init(httpMethod, url, applicationPath, formData, cookies, cookieDecryptor);
+            // empty
+        }
+
+        /// <summary>
+        /// Ctor
+        /// </summary>
+        /// <param name="httpMethod">Http method of the request</param>
+        /// <param name="url">Full url requested</param>
+        /// <param name="formData">Form data, if present (only for POST requests)</param>
+        /// <param name="applicationPath">Path to the application root</param>
+        /// <param name="cookies">Cookies of request</param>
+        /// <param name="cookieDecryptor">Function that decrypts cookie
+        /// contents to clear text.</param>
+        /// <param name="user">Claims Principal associated with the request</param>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Decryptor")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
+        public HttpRequestData(
+            string httpMethod,
+            Uri url,
+            string applicationPath,
+            IEnumerable<KeyValuePair<string, string[]>> formData,
+            IEnumerable<KeyValuePair<string, string>> cookies,
+            Func<byte[], byte[]> cookieDecryptor,
+            ClaimsPrincipal user)
+        {
+            Init(httpMethod, url, applicationPath, formData, cookies, cookieDecryptor, user);
         }
 
         // Used by tests.
         internal HttpRequestData(string httpMethod, Uri url)
         {
-            Init(httpMethod, url, "/", null, Enumerable.Empty<KeyValuePair<string, string>>(), null);
+            Init(httpMethod, url, "/", null, Enumerable.Empty<KeyValuePair<string, string>>(), null, null);
         }
 
         // Used by tests.
@@ -64,15 +90,18 @@ namespace Kentor.AuthServices.WebSso
             string applicationPath,
             IEnumerable<KeyValuePair<string, string[]>> formData,
             IEnumerable<KeyValuePair<string, string>> cookies,
-            Func<byte[], byte[]> cookieDecryptor)
+            Func<byte[], byte[]> cookieDecryptor,
+            ClaimsPrincipal user)
         {
             InitBasicFields(httpMethod, url, applicationPath, formData);
+            User = user;
 
             var relayState = QueryString["RelayState"].SingleOrDefault();
             if(relayState == null)
             {
                 Form.TryGetValue("RelayState", out relayState);
             }
+            RelayState = relayState;
 
             if (relayState != null)
             {
@@ -131,33 +160,42 @@ namespace Kentor.AuthServices.WebSso
         /// <summary>
         /// The http method of the request.
         /// </summary>
-        public string HttpMethod { get; private set; }
+        public string HttpMethod { get; set; }
 
         /// <summary>
         /// The complete Url of the request.
         /// </summary>
-        public Uri Url { get; private set; }
+        public Uri Url { get; set; }
 
         /// <summary>
         /// The form data associated with the request (if any).
         /// </summary>
-        public IReadOnlyDictionary<string, string> Form { get; private set; }
+        public IReadOnlyDictionary<string, string> Form { get; set; }
 
         /// <summary>
         /// The query string parameters of the request.
         /// </summary>
-        public ILookup<String, String> QueryString { get; private set; }
+        public ILookup<String, String> QueryString { get; set; }
 
         /// <summary>
         /// The root Url of the application. This includes the virtual directory
         /// that the application is installed in, e.g. http://hosting.example.com/myapp/
         /// </summary>
-        public Uri ApplicationUrl { get; private set; }
+        public Uri ApplicationUrl { get; set; }
 
+        /// <summary>
+        /// RelayState from SAML message
+        /// </summary>
+        public string RelayState { get; set; }
 
         /// <summary>
         /// Request state from a previous call, carried over through cookie.
         /// </summary>
-        public StoredRequestState StoredRequestState { get; private set; }
+        public StoredRequestState StoredRequestState { get; set; }
+
+        /// <summary>
+        /// User (if any) associated with the request
+        /// </summary>
+        public ClaimsPrincipal User { get; set; }
     }
 }

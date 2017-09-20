@@ -1,6 +1,8 @@
 ﻿using Kentor.AuthServices.WebSso;
 using System;
 using System.Configuration;
+using System.Data.Odbc;
+using Kentor.AuthServices.Saml2P;
 
 namespace Kentor.AuthServices.Configuration
 {
@@ -105,6 +107,20 @@ namespace Kentor.AuthServices.Configuration
             }
         }
 
+        const string outboundSigningAlgorithm = nameof(outboundSigningAlgorithm);
+        /// <summary>
+        /// Signing algorithm for outbound messages to this Idp. Overrides the
+        /// main signature algorithm configured in <see cref="SPOptions"/>.
+        /// </summary>
+        [ConfigurationProperty(outboundSigningAlgorithm, IsRequired = false)]
+        public string OutboundSigningAlgorithm
+        {
+            get
+            {
+                return (string)base[outboundSigningAlgorithm];
+            }
+        }
+
         /// <summary>
         /// Allow unsolicited responses. That is InResponseTo is missing in the AuthnRequest.
         /// If true InResponseTo is not required.
@@ -179,6 +195,28 @@ namespace Kentor.AuthServices.Configuration
             get
             {
                 return (bool)base[wantAuthnRequestsSigned];
+            }
+        }
+
+        const string disableOutboundLogoutRequests = nameof(disableOutboundLogoutRequests);
+
+        /// <summary>
+        /// Disable outbound logout requests to this idp, even though
+        /// AuthServices is configured for single logout and the idp supports
+        /// it. This setting might be usable when adding SLO to an existing
+        /// setup, to ensure that everyone is ready for SLO before activating.
+        /// </summary>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1726:UsePreferredTerms", MessageId = "Logout")]
+        [ConfigurationProperty(disableOutboundLogoutRequests, IsRequired = false, DefaultValue = false)]
+        public bool DisableOutboundLogoutRequests
+        {
+            get
+            {
+                return (bool)base[disableOutboundLogoutRequests];
+            }
+            set
+            {
+                base[disableOutboundLogoutRequests] = value;
             }
         }
     }

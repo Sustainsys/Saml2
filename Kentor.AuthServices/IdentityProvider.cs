@@ -16,6 +16,7 @@ using System.Threading.Tasks;
 using System.Net;
 using System.Collections.Concurrent;
 using System.Security.Claims;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Kentor.AuthServices
 {
@@ -33,8 +34,14 @@ namespace Kentor.AuthServices
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "sp")]
         public IdentityProvider(EntityId entityId, SPOptions spOptions)
         {
+            if (spOptions == null)
+            {
+                throw new ArgumentNullException(nameof(spOptions));
+            }
+
             EntityId = entityId;
             this.spOptions = spOptions;
+            OutboundSigningAlgorithm = spOptions.OutboundSigningAlgorithm;
         }
 
         readonly SPOptions spOptions;
@@ -49,6 +56,7 @@ namespace Kentor.AuthServices
             metadataLocation = string.IsNullOrEmpty(config.MetadataLocation)
                 ? null : config.MetadataLocation;
             WantAuthnRequestsSigned = config.WantAuthnRequestsSigned;
+            DisableOutboundLogoutRequests = config.DisableOutboundLogoutRequests;
 
             var certificate = config.SigningCertificate.LoadCertificate();
             if (certificate != null)
@@ -57,6 +65,10 @@ namespace Kentor.AuthServices
                     new X509RawDataKeyIdentifierClause(certificate));
             }
 
+            OutboundSigningAlgorithm = string.IsNullOrEmpty(config.OutboundSigningAlgorithm) ?
+                spOptions.OutboundSigningAlgorithm :
+                XmlHelpers.GetFullSigningAlgorithmName(config.OutboundSigningAlgorithm);
+
             foreach (var ars in config.ArtifactResolutionServices)
             {
                 ArtifactResolutionServiceUrls[ars.Index] = ars.Location;
@@ -64,7 +76,7 @@ namespace Kentor.AuthServices
 
             // If configured to load metadata, this will immediately do the load.
             this.spOptions = spOptions;
-            LoadMetadata = config.LoadMetadata;
+            LoadMetadata = config.LoadMetadata || !string.IsNullOrEmpty(config.MetadataLocation);
 
             // Validate if values are only from config. If metadata is loaded, validation
             // is done on metadata load.
@@ -107,18 +119,15 @@ namespace Kentor.AuthServices
             set
             {
                 loadMetadata = value;
-                if (loadMetadata)
+                try
                 {
-                    try
-                    {
-                        DoLoadMetadata();
-                        Validate();
-                    }
-                    catch (WebException)
-                    {
-                        // Ignore if metadata load failed, an automatic
-                        // retry has been scheduled.
-                    }
+                    DoLoadMetadata();
+                    Validate();
+                }
+                catch (WebException)
+                {
+                    // Ignore if metadata load failed, an automatic
+                    // retry has been scheduled.
                 }
             }
         }
@@ -210,6 +219,10 @@ namespace Kentor.AuthServices
                 ReloadMetadataIfRequired();
                 return singleLogoutServiceResponseUrl ?? SingleLogoutServiceUrl;
             }
+            set
+            {
+                singleLogoutServiceResponseUrl = value;
+            }
         }
 
         private Saml2BindingType singleLogoutServiceBinding;
@@ -289,7 +302,8 @@ namespace Kentor.AuthServices
                 // For now we only support one attribute consuming service.
                 AttributeConsumingServiceIndex = spOptions.AttributeConsumingServices.Any() ? 0 : (int?)null,
                 NameIdPolicy = spOptions.NameIdPolicy,
-                RequestedAuthnContext = spOptions.RequestedAuthnContext
+                RequestedAuthnContext = spOptions.RequestedAuthnContext,
+                SigningAlgorithm = this.OutboundSigningAlgorithm
             };
 
             if (spOptions.AuthenticateRequestSigningBehavior == SigningBehavior.Always
@@ -310,6 +324,11 @@ namespace Kentor.AuthServices
 
             return authnRequest;
         }
+
+        /// <summary>
+        /// Signing Algorithm to be used when signing oubound messages.
+        /// </summary>
+        public string OutboundSigningAlgorithm { get; set; }
 
         /// <summary>
         /// Bind a Saml2AuthenticateRequest using the active binding of the idp,
@@ -341,20 +360,25 @@ namespace Kentor.AuthServices
 
         private void DoLoadMetadata()
         {
-            lock (metadataLoadLock)
+            if (LoadMetadata)
             {
-                try
+                lock (metadataLoadLock)
                 {
-                    var metadata = MetadataLoader.LoadIdp(
-                        MetadataLocation,
-                        spOptions.Compatibility.UnpackEntitiesDescriptorInIdentityProviderMetadata);
+                    try
+                    {
+                        spOptions.Logger?.WriteInformation("Loading metadata for idp " + EntityId.Id);
+                        var metadata = MetadataLoader.LoadIdp(
+                            MetadataLocation,
+                            spOptions.Compatibility.UnpackEntitiesDescriptorInIdentityProviderMetadata);
 
-                    ReadMetadata(metadata);
-                }
-                catch (WebException)
-                {
-                    MetadataValidUntil = DateTime.MinValue;
-                    throw;
+                        ReadMetadata(metadata);
+                    }
+                    catch (WebException ex)
+                    {
+                        spOptions.Logger?.WriteError("Failed to load metadata for idp " + EntityId.Id, ex);
+                        MetadataValidUntil = DateTime.MinValue;
+                        throw;
+                    }
                 }
             }
         }
@@ -394,23 +418,14 @@ namespace Kentor.AuthServices
 
             WantAuthnRequestsSigned = idpDescriptor.WantAuthenticationRequestsSigned;
 
-            // Prefer an endpoint with a redirect binding, then check for POST which 
-            // is the other supported by AuthServices.
-            var ssoService = idpDescriptor.SingleSignOnServices
-                .FirstOrDefault(s => s.Binding == Saml2Binding.HttpRedirectUri) ??
-                idpDescriptor.SingleSignOnServices
-                .FirstOrDefault(s => s.Binding == Saml2Binding.HttpPostUri);
-
+            var ssoService = GetPreferredEndpoint(idpDescriptor.SingleSignOnServices);
             if (ssoService != null)
             {
                 binding = Saml2Binding.UriToSaml2BindingType(ssoService.Binding);
                 singleSignOnServiceUrl = ssoService.Location;
             }
 
-            var sloService = idpDescriptor.SingleLogoutServices
-                .Where(slo => slo.Binding == Saml2Binding.HttpRedirectUri
-                    || slo.Binding == Saml2Binding.HttpPostUri)
-                .FirstOrDefault();
+            var sloService = GetPreferredEndpoint(idpDescriptor.SingleLogoutServices);
             if (sloService != null)
             {
                 SingleLogoutServiceUrl = sloService.Location;
@@ -434,6 +449,14 @@ namespace Kentor.AuthServices
             signingKeys.SetLoadedItems(keys.Select(k => k.KeyInfo.First(c => c.CanCreateKey)).ToList());
         }
 
+        private static ProtocolEndpoint GetPreferredEndpoint(ICollection<ProtocolEndpoint> endpoints)
+        {
+            // Prefer an endpoint with a redirect binding, then check for POST which 
+            // is the other supported by AuthServices.
+            return endpoints.FirstOrDefault(s => s.Binding == Saml2Binding.HttpRedirectUri) ??
+                endpoints.FirstOrDefault(s => s.Binding == Saml2Binding.HttpPostUri);
+        }
+
         private DateTime? metadataValidUntil;
 
         /// <summary>
@@ -452,9 +475,31 @@ namespace Kentor.AuthServices
 
                 if (LoadMetadata)
                 {
-                    Task.Delay(MetadataRefreshScheduler.GetDelay(value.Value))
-                        .ContinueWith((_) => DoLoadMetadata());
+                    ScheduleMetadataRefresh();
                 }
+            }
+        }
+
+        private void ScheduleMetadataRefresh()
+        {
+            // Use a weak reference to allow garbage collector to collect any
+            // non-referenced IdentityProvider objects without the timer being
+            // the thing that keeps it alive.
+            var weakThis = new WeakReference<IdentityProvider>(this);
+
+            Task.Delay(MetadataRefreshScheduler.GetDelay(MetadataValidUntil.Value))
+                .ContinueWith((_) => DoLoadMetadataIfTargetAlive(weakThis));
+        }
+
+        // Exclude because we don't want to wait for a GC run during unit test run
+        // to trigger the case when the Idp has been garbaged collected.
+        [ExcludeFromCodeCoverage]
+        private static void DoLoadMetadataIfTargetAlive(WeakReference<IdentityProvider> target)
+        {
+            IdentityProvider idp;
+            if(target.TryGetTarget(out idp))
+            {
+                idp.DoLoadMetadata();
             }
         }
 
@@ -482,8 +527,9 @@ namespace Kentor.AuthServices
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "ServiceCertificates")]
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "ISPOptions")]
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1726:UsePreferredTerms", MessageId = "Logout")]
-        public Saml2LogoutRequest CreateLogoutRequest()
+        public Saml2LogoutRequest CreateLogoutRequest(ClaimsPrincipal user)
         {
+            if (user == null) throw new ArgumentNullException(nameof(user));
             if (spOptions.SigningServiceCertificate == null)
             {
                 throw new InvalidOperationException(string.Format(CultureInfo.InvariantCulture,
@@ -495,13 +541,22 @@ namespace Kentor.AuthServices
             {
                 DestinationUrl = SingleLogoutServiceUrl,
                 Issuer = spOptions.EntityId,
-                NameId = (ClaimsPrincipal.Current.FindFirst(AuthServicesClaimTypes.LogoutNameIdentifier)
-                            ?? ClaimsPrincipal.Current.FindFirst(ClaimTypes.NameIdentifier))
+                NameId = user.FindFirst(AuthServicesClaimTypes.LogoutNameIdentifier)
                             .ToSaml2NameIdentifier(),
                 SessionIndex =
-                    ClaimsPrincipal.Current.FindFirst(AuthServicesClaimTypes.SessionIndex).Value,
+                    user.FindFirst(AuthServicesClaimTypes.SessionIndex).Value,
                 SigningCertificate = spOptions.SigningServiceCertificate,
+                SigningAlgorithm = OutboundSigningAlgorithm
             };
         }
+
+        /// <summary>
+        /// Disable outbound logout requests to this idp, even though
+        /// AuthServices is configured for single logout and the idp supports
+        /// it. This setting might be usable when adding SLO to an existing
+        /// setup, to ensure that everyone is ready for SLO before activating.
+        /// </summary>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1726:UsePreferredTerms", MessageId = "Logout")]
+        public bool DisableOutboundLogoutRequests { get; set; }
     }
 }

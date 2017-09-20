@@ -110,7 +110,7 @@ namespace Kentor.AuthServices.Configuration
                 string fileName = FileName;
                 fileName = PathHelper.MapPath(fileName);
                 
-                return new X509Certificate2(fileName);
+                return new X509Certificate2(fileName, "", X509KeyStorageFlags.MachineKeySet);
             }
             else
             {

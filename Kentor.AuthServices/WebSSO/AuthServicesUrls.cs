@@ -16,21 +16,33 @@ namespace Kentor.AuthServices.WebSso
         /// Resolve the urls for AuthServices from an http request and options.
         /// </summary>
         /// <param name="request">Request to get application root url from.</param>
-        /// <param name="spOptions">SP Options to get module path from.</param>
+        /// <param name="options">Options to get module path and (optional) notification hooks from.</param>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "SignInUrl")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "LogoutUrl")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "AuthServicesUrl")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "AssertionConsumerServiceUrl")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "ApplicationUrl")]
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2208:InstantiateArgumentExceptionsCorrectly"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "sp")]
-        public AuthServicesUrls(HttpRequestData request, SPOptions spOptions)
+        public AuthServicesUrls(HttpRequestData request, IOptions options)
         {
             if (request == null)
             {
                 throw new ArgumentNullException(nameof(request));
             }
 
-            if (spOptions == null)
+            if (options == null)
             {
-                throw new ArgumentNullException(nameof(spOptions));
+                throw new ArgumentNullException(nameof(options));
             }
 
-            Init(request.ApplicationUrl, spOptions);
+            var publicOrigin = options.Notifications.GetPublicOrigin(request) ?? options.SPOptions.PublicOrigin ?? request.ApplicationUrl;
+            Init(publicOrigin, options.SPOptions.ModulePath);
+
+            options.SPOptions.Logger.WriteVerbose("Expanded AuthServicesUrl"
+                + "\n  AssertionConsumerServiceUrl: " + AssertionConsumerServiceUrl
+                + "\n  SignInUrl: " + SignInUrl
+                + "\n  LogoutUrl: " + LogoutUrl
+                + "\n  ApplicationUrl: " + ApplicationUrl);
         }
 
         /// <summary>
@@ -93,12 +105,6 @@ namespace Kentor.AuthServices.WebSso
             SignInUrl = new Uri(authServicesRoot + CommandFactory.SignInCommandName);
             ApplicationUrl = publicOrigin;
             LogoutUrl = new Uri(authServicesRoot + CommandFactory.LogoutCommandName);
-        }
-
-        void Init(Uri applicationUrl, SPOptions spOptions)
-        {
-            var publicOrigin = spOptions.PublicOrigin ?? applicationUrl;
-            Init(publicOrigin, spOptions.ModulePath);
         }
 
         /// <summary>

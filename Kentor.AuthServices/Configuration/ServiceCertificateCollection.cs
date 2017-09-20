@@ -45,7 +45,7 @@ namespace Kentor.AuthServices.Configuration
             {
                 if (!CertificateWorksForDecryption(item.Certificate))
                 {
-                    throw new ArgumentException(@"Provided certificate is not valid for encryption/decryption. If you only want to use it for signing, set the Use property to Signing (CertificateUse.Signing).");
+                    throw new ArgumentException(@"Provided certificate is not valid for encryption/decryption. There may be insufficient permissions to its private key in the windows certificate store or the certificate itself may not have the correct purposes. If you only want to use it for signing, set the Use property to Signing (CertificateUse.Signing).");
                 }
             }
             base.InsertItem(index, item);
@@ -53,8 +53,7 @@ namespace Kentor.AuthServices.Configuration
 
         private static bool CertificateWorksForDecryption(X509Certificate2 certificate)
         {
-            var xmlDoc = new XmlDocument { PreserveWhitespace = true };
-            xmlDoc.LoadXml("<xml/>");
+            var xmlDoc = XmlHelpers.XmlDocumentFromString("<xml/>");
             var elementToEncrypt = xmlDoc.DocumentElement;
             elementToEncrypt.Encrypt(useOaep: false, certificate: certificate);
 

@@ -28,7 +28,7 @@ namespace Kentor.AuthServices.Saml2P
         /// <returns>string containing the Xml data.</returns>
         public override string ToXml()
         {
-            var doc = new XmlDocument();
+            var doc = XmlHelpers.CreateSafeXmlDocument();
             AppendTo(doc);
             return doc.DocumentElement.OuterXml;
         }

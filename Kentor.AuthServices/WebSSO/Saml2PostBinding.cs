@@ -4,7 +4,6 @@ using System;
 using System.Globalization;
 using System.Linq;
 using System.Text;
-using System.Web;
 using System.Xml;
 
 namespace Kentor.AuthServices.WebSso
@@ -30,18 +29,17 @@ namespace Kentor.AuthServices.WebSso
                 throw new ArgumentNullException(nameof(request));
             }
 
-            var xmlDoc = new XmlDocument()
-            {
-                PreserveWhitespace = true
-            };
-
             string encodedMessage;
             if (!request.Form.TryGetValue("SAMLResponse", out encodedMessage))
             {
                 encodedMessage = request.Form["SAMLRequest"];
             }
 
-            xmlDoc.LoadXml(Encoding.UTF8.GetString(Convert.FromBase64String(encodedMessage)));
+            var xmlDoc = XmlHelpers.XmlDocumentFromString(
+                Encoding.UTF8.GetString(
+                    Convert.FromBase64String(encodedMessage)));
+
+            options?.SPOptions.Logger.WriteVerbose("Http POST binding extracted message\n" + xmlDoc.OuterXml);
 
             string relayState = null;
             request.Form.TryGetValue("RelayState", out relayState);
@@ -49,7 +47,7 @@ namespace Kentor.AuthServices.WebSso
             return new UnbindResult(xmlDoc.DocumentElement, relayState, TrustLevel.None);
         }
 
-        public override CommandResult Bind(ISaml2Message message)
+        public override CommandResult Bind(ISaml2Message message, ILoggerAdapter logger)
         {
             if(message == null)
             {
@@ -57,32 +55,31 @@ namespace Kentor.AuthServices.WebSso
             }
 
             var xml = message.ToXml();
+
             if(message.SigningCertificate != null)
             {
-                var xmlDoc = new XmlDocument()
-                {
-                    PreserveWhitespace = true
-                };
+                var xmlDoc = XmlHelpers.XmlDocumentFromString(xml);
 
-                xmlDoc.LoadXml(xml);
-                xmlDoc.Sign(message.SigningCertificate, true);
+                xmlDoc.Sign(message.SigningCertificate, true, message.SigningAlgorithm);
                 xml = xmlDoc.OuterXml;
             }
 
+            logger?.WriteVerbose("Sending message over Http POST binding\n" + xml);
+
             var encodedXml = Convert.ToBase64String(Encoding.UTF8.GetBytes(xml));
 
-            var relayStateHtml = string.IsNullOrEmpty(message.RelayState) ? null
+            var relayStateHtml = string.IsNullOrEmpty(message.RelayState) ? null 
                 : string.Format(CultureInfo.InvariantCulture, PostHtmlRelayStateFormatString, message.RelayState);
 
             var cr = new CommandResult()
             {
                 ContentType = "text/html",
                 Content = String.Format(
-                    CultureInfo.InvariantCulture,
-                    PostHtmlFormatString,
-                    message.DestinationUrl,
-                    relayStateHtml,
-                    message.MessageName,
+                    CultureInfo.InvariantCulture, 
+                    PostHtmlFormatString, 
+                    message.DestinationUrl, 
+                    relayStateHtml, 
+                    message.MessageName, 
                     encodedXml)
             };
 

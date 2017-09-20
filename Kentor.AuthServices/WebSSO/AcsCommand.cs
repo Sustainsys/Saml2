@@ -5,6 +5,7 @@ using System;
 using System.Configuration;
 using System.IdentityModel.Metadata;
 using System.IdentityModel.Services;
+using System.IdentityModel.Tokens;
 using System.Net;
 using System.Security.Claims;
 using System.Security.Cryptography;
@@ -28,7 +29,7 @@ namespace Kentor.AuthServices.WebSso
                 throw new ArgumentNullException(nameof(options));
             }
 
-            var binding = Saml2Binding.Get(request);
+            var binding = options.Notifications.GetBinding(request);
 
             if (binding != null)
             {
@@ -36,6 +37,8 @@ namespace Kentor.AuthServices.WebSso
                 try
                 {
                     unbindResult = binding.Unbind(request, options);
+                    options.Notifications.MessageUnbound(unbindResult);
+
                     var samlResponse = new Saml2Response(unbindResult.Data, request.StoredRequestState?.MessageId);
 
                     var result = ProcessResponse(options, samlResponse, request.StoredRequestState);
@@ -43,6 +46,7 @@ namespace Kentor.AuthServices.WebSso
                     {
                         result.ClearCookieName = "Kentor." + unbindResult.RelayState;
                     }
+                    options.Notifications.AcsCommandResultCreated(result, samlResponse);
                     return result;
                 }
                 catch (FormatException ex)
@@ -103,12 +107,16 @@ namespace Kentor.AuthServices.WebSso
                 }
             }
 
+            options.SPOptions.Logger.WriteInformation("Successfully processed SAML response " + samlResponse.Id
+                + " and authenticated " + principal.FindFirst(ClaimTypes.NameIdentifier)?.Value);
+
             return new CommandResult()
             {
                 HttpStatusCode = HttpStatusCode.SeeOther,
                 Location = storedRequestState?.ReturnUrl ?? options.SPOptions.ReturnUrl,
                 Principal = principal,
-                RelayData = storedRequestState?.RelayData
+                RelayData = storedRequestState?.RelayData,
+                SessionNotOnOrAfter = samlResponse.SessionNotOnOrAfter
             };
         }
 

@@ -32,6 +32,11 @@ namespace Kentor.AuthServices.StubIdp.Models
                 Binding = Saml2Binding.HttpRedirectUri,
                 Location = UrlResolver.SsoServiceUrl
             });
+            idpSsoDescriptor.SingleSignOnServices.Add(new ProtocolEndpoint()
+            {
+                Binding = Saml2Binding.HttpPostUri,
+                Location = UrlResolver.SsoServiceUrl
+            });
 
             idpSsoDescriptor.ArtifactResolutionServices.Add(0, new IndexedProtocolEndpoint()
             {

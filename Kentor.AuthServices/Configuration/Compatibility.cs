@@ -31,6 +31,7 @@ namespace Kentor.AuthServices.Configuration
 
             UnpackEntitiesDescriptorInIdentityProviderMetadata =
                 configElement.UnpackEntitiesDescriptorInIdentityProviderMetadata;
+            DisableLogoutStateCookie = configElement.DisableLogoutStateCookie;
         }
 
         /// <summary>
@@ -39,5 +40,19 @@ namespace Kentor.AuthServices.Configuration
         /// is a single EntityDescriptor and in that case use it.
         /// </summary>
         public bool UnpackEntitiesDescriptorInIdentityProviderMetadata { get; set; }
+
+        /// <summary>
+        /// Do not send logout state cookie, e.g. if you are not using ReturnUrl
+        /// or if you know the cookie will be lost due to cross-domain redirects
+        /// </summary>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage( "Microsoft.Naming", "CA1726:UsePreferredTerms", MessageId = "Logout" )]
+        public bool DisableLogoutStateCookie { get; set; }
+
+        /// <summary>
+        /// Honor the owin authentication mode even on logout. Normally the logout
+        /// handling is always done as if the middleware was active, to allow for
+        /// simple sign out without specifying an auth type.
+        /// </summary>
+        public bool StrictOwinAuthenticationMode { get; set; }
     }
 }

@@ -5,7 +5,7 @@ param (
 $ErrorActionPreference = "Stop"
 
 $status = (git status)
-$clean = $status| select-string "working directory clean"
+$clean = $status| select-string "working tree clean"
 
 if ("$clean" -eq "")
 {
@@ -81,12 +81,5 @@ nuget pack -build -outputdirectory nuget Kentor.AuthServices\Kentor.AuthServices
 nuget pack -build -outputdirectory nuget Kentor.AuthServices.Mvc\Kentor.AuthServices.Mvc.csproj
 nuget pack -build -outputdirectory nuget Kentor.AuthServices.Owin\Kentor.AuthServices.Owin.csproj
 nuget pack -build -outputdirectory nuget Kentor.AuthServices.HttpModule\Kentor.AuthServices.HttpModule.csproj
-
-$version = Increment-PatchNumber
-Set-Version($version)
-
-echo "Version updated to $version for development, committing..."
-
-git commit -a -m "Updated version number to $version for development."
 
 popd

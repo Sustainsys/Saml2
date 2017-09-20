@@ -1,6 +1,7 @@
 ﻿using Kentor.AuthServices.Configuration;
 using Kentor.AuthServices.WebSso;
 using Microsoft.Owin;
+using Microsoft.Owin.Infrastructure;
 using Microsoft.Owin.Security;
 using Microsoft.Owin.Security.Infrastructure;
 using System;
@@ -25,18 +26,81 @@ namespace Kentor.AuthServices.Owin
                 return null;
             }
 
-            var result = CommandFactory.GetCommand(CommandFactory.AcsCommandName)
-                .Run(await Context.ToHttpRequestData(Options.DataProtector.Unprotect), Options);
+            var httpRequestData = await Context.ToHttpRequestData(Options.DataProtector.Unprotect);
+            try
+            {
+                var result = CommandFactory.GetCommand(CommandFactory.AcsCommandName)
+                    .Run(httpRequestData, Options);
 
-            result.Apply(Context, Options.DataProtector);
+                if (!result.HandledResult)
+                {
+                    result.Apply(Context, Options.DataProtector);
+                }
 
-            var identities = result.Principal.Identities.Select(i =>
-                new ClaimsIdentity(i, null, Options.SignInAsAuthenticationType, i.NameClaimType, i.RoleClaimType));
+                var identities = result.Principal.Identities.Select(i =>
+                    new ClaimsIdentity(i, null, Options.SignInAsAuthenticationType, i.NameClaimType, i.RoleClaimType));
 
-            var authProperties = new AuthenticationProperties(result.RelayData);
-            authProperties.RedirectUri = result.Location.OriginalString;
+                var authProperties = new AuthenticationProperties(result.RelayData);
+                authProperties.RedirectUri = result.Location.OriginalString;
+                if (result.SessionNotOnOrAfter.HasValue)
+                {
+                    authProperties.AllowRefresh = false;
+                    authProperties.ExpiresUtc = result.SessionNotOnOrAfter.Value;
+                }
 
-            return new MultipleIdentityAuthenticationTicket(identities, authProperties);
+                return new MultipleIdentityAuthenticationTicket(identities, authProperties);
+            }
+            catch (Exception ex)
+            {
+                return CreateErrorAuthenticationTicket(httpRequestData, ex);
+            }
+        }
+
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "SPOptions")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "ReturnUrl")]
+        private AuthenticationTicket CreateErrorAuthenticationTicket(HttpRequestData httpRequestData, Exception ex)
+        {
+            AuthenticationProperties authProperties = null;
+            if (httpRequestData.StoredRequestState != null)
+            {
+                authProperties = new AuthenticationProperties(
+                    httpRequestData.StoredRequestState.RelayData);
+
+                // ReturnUrl is removed from AuthProps dictionary to save space, need to put it back.
+                authProperties.RedirectUri = httpRequestData.StoredRequestState.ReturnUrl.OriginalString;
+            }
+            else
+            {
+                var redirectUrl = Options.SPOptions.ReturnUrl;
+
+                if (redirectUrl == null)
+                {
+                    Options.SPOptions.Logger.WriteError(
+                        "An error occurred and no request state with a return url is available. " +
+                        "The fallback behavior is to redirect to the location configured in " +
+                        "SPOptions.ReturnUrl. However, that is null so a redirect is done to the " +
+                        "application root instead.", null);
+
+                    redirectUrl = httpRequestData.ApplicationUrl;
+                }
+                authProperties = new AuthenticationProperties
+                {
+                    RedirectUri = redirectUrl.OriginalString
+                };
+            }
+
+            // The Google middleware adds this, so let's follow that example.
+            authProperties.RedirectUri = WebUtilities.AddQueryString(
+                authProperties.RedirectUri, "error", "access_denied");
+
+            string samlResponse = ex.Data.Contains("Saml2Response")
+                ? " The received SAML data is\n" + ex.Data["Saml2Response"]
+                : "";
+
+            Options.SPOptions.Logger.WriteError("Saml2 Authentication failed." + samlResponse, ex);
+            return new MultipleIdentityAuthenticationTicket(
+                Enumerable.Empty<ClaimsIdentity>(),
+                authProperties);
         }
 
         protected override async Task ApplyResponseChallengeAsync()
@@ -63,6 +127,11 @@ namespace Kentor.AuthServices.Owin
                     // Don't serialize the RedirectUri twice.
                     challenge.Properties.RedirectUri = null;
 
+                    if (redirectUri == null && Options.AuthenticationMode == AuthenticationMode.Active)
+                    {
+                        redirectUri = Context.Request.Uri.ToString();
+                    }
+
                     var result = SignInCommand.Run(
                         idp,
                         redirectUri,
@@ -70,43 +139,47 @@ namespace Kentor.AuthServices.Owin
                         Options,
                         challenge.Properties.Dictionary);
 
-                    result.Apply(Context, Options.DataProtector);
+                    if (!result.HandledResult)
+                    {
+                        result.Apply(Context, Options.DataProtector);
+                    }
                 }
             }
         }
 
         protected async override Task ApplyResponseGrantAsync()
         {
-            var revoke = Helper.LookupSignOut(Options.AuthenticationType, Options.AuthenticationMode);
+            // Automatically sign out, even if passive because passive sign in and auto sign out
+            // is typically most common scenario. Unless strict compatibility is set.
+            var mode = Options.SPOptions.Compatibility.StrictOwinAuthenticationMode ?
+                Options.AuthenticationMode : AuthenticationMode.Active;
+
+            var revoke = Helper.LookupSignOut(Options.AuthenticationType, mode);
 
             if (revoke != null)
             {
                 var request = await Context.ToHttpRequestData(Options.DataProtector.Unprotect);
-                var urls = new AuthServicesUrls(request, Options.SPOptions);
+                var urls = new AuthServicesUrls(request, Options);
 
                 string redirectUrl = revoke.Properties.RedirectUri;
                 if (string.IsNullOrEmpty(redirectUrl))
                 {
                     if (Context.Response.StatusCode / 100 == 3)
                     {
-                        var locationUrl = Context.Response.Headers["Location"];
-
-                        redirectUrl = new Uri(
-                            new Uri(urls.ApplicationUrl.ToString().TrimEnd('/') + Context.Request.Path),
-                            locationUrl
-                            ).ToString();
+                        redirectUrl = Context.Response.Headers["Location"];
                     }
                     else
                     {
-                        redirectUrl = new Uri(
-                            urls.ApplicationUrl,
-                            Context.Request.Path.ToUriComponent().TrimStart('/'))
-                            .ToString();
+                        redirectUrl = Context.Request.Path.ToUriComponent();
                     }
                 }
 
-                LogoutCommand.Run(request, redirectUrl, Options)
-                    .Apply(Context, Options.DataProtector);
+                var result = LogoutCommand.Run(request, redirectUrl, Options);
+
+                if (!result.HandledResult)
+                {
+                    result.Apply(Context, Options.DataProtector);
+                }
             }
 
             await AugmentAuthenticationGrantWithLogoutClaims(Context);
@@ -117,21 +190,40 @@ namespace Kentor.AuthServices.Owin
             var authServicesPath = new PathString(Options.SPOptions.ModulePath);
             PathString remainingPath;
 
-            if(Request.Path.StartsWithSegments(authServicesPath, out remainingPath))
+            if (Request.Path.StartsWithSegments(authServicesPath, out remainingPath))
             {
-                if(remainingPath == new PathString("/" + CommandFactory.AcsCommandName))
+                if (remainingPath == new PathString("/" + CommandFactory.AcsCommandName))
                 {
                     var ticket = (MultipleIdentityAuthenticationTicket)await AuthenticateAsync();
-                    Context.Authentication.SignIn(ticket.Properties, ticket.Identities.ToArray());
-                    // No need to redirect here. Command result is applied in AuthenticateCoreAsync.
+                    if (ticket.Identities.Any())
+                    {
+                        Context.Authentication.SignIn(ticket.Properties, ticket.Identities.ToArray());
+                        // No need to redirect here. Command result is applied in AuthenticateCoreAsync.
+                    }
+                    else
+                    {
+                        Response.Redirect(ticket.Properties.RedirectUri);
+                    }
                     return true;
                 }
 
-                CommandFactory.GetCommand(remainingPath.Value)
-                    .Run(await Context.ToHttpRequestData(Options.DataProtector.Unprotect), Options)
-                    .Apply(Context, Options.DataProtector);
+                try
+                {
+                    var result = CommandFactory.GetCommand(remainingPath.Value)
+                        .Run(await Context.ToHttpRequestData(Options.DataProtector.Unprotect), Options);
 
-                return true;
+                    if (!result.HandledResult)
+                    {
+                        result.Apply(Context, Options.DataProtector);
+                    }
+
+                    return true;
+                }
+                catch(Exception ex)
+                {
+                    Options.SPOptions.Logger.WriteError("Error in AuthServices for " + Request.Path, ex);
+                    throw;
+                }
             }
 
             return false;
@@ -142,31 +234,26 @@ namespace Kentor.AuthServices.Owin
             var grant = context.Authentication.AuthenticationResponseGrant;
             var externalIdentity = await context.Authentication.AuthenticateAsync(Options.SignInAsAuthenticationType);
             var sessionIdClaim = externalIdentity?.Identity.FindFirst(AuthServicesClaimTypes.SessionIndex);
-            var externalNameIdClaim = externalIdentity?.Identity.FindFirst(ClaimTypes.NameIdentifier);
+            var externalLogutNameIdClaim = externalIdentity?.Identity.FindFirst(AuthServicesClaimTypes.LogoutNameIdentifier);
 
-            if (grant == null || externalIdentity == null || sessionIdClaim == null || externalNameIdClaim == null)
+            if (grant == null || externalIdentity == null || sessionIdClaim == null || externalLogutNameIdClaim == null)
             {
                 return;
             }
 
+            // Need to create new claims because the claim has a back pointer
+            // to the identity it belongs to.
             grant.Identity.AddClaim(new Claim(
                 sessionIdClaim.Type,
                 sessionIdClaim.Value,
                 sessionIdClaim.ValueType,
                 sessionIdClaim.Issuer));
 
-            var logoutNameIdClaim = new Claim(
-                AuthServicesClaimTypes.LogoutNameIdentifier,
-                externalNameIdClaim.Value,
-                externalNameIdClaim.ValueType,
-                externalNameIdClaim.Issuer);
-
-            foreach(var kv in externalNameIdClaim.Properties)
-            {
-                logoutNameIdClaim.Properties.Add(kv);
-            }
-
-            grant.Identity.AddClaim(logoutNameIdClaim);
+            grant.Identity.AddClaim(new Claim(
+                externalLogutNameIdClaim.Type,
+                externalLogutNameIdClaim.Value,
+                externalLogutNameIdClaim.ValueType,
+                externalLogutNameIdClaim.Issuer));
         }
     }
 }

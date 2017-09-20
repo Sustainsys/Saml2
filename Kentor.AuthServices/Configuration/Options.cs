@@ -1,13 +1,7 @@
 ﻿using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Deployment.Internal.CodeSigning;
-using System.IdentityModel.Configuration;
-using System.IdentityModel.Metadata;
-using System.Linq;
+using System.Diagnostics.CodeAnalysis;
 using System.Security.Cryptography;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Kentor.AuthServices.Configuration
 {
@@ -16,6 +10,12 @@ namespace Kentor.AuthServices.Configuration
     /// </summary>
     public class Options : IOptions
     {
+        /// <summary>
+        /// Set of callbacks that can be used as extension points for various
+        /// events.
+        /// </summary>
+        public KentorAuthServicesNotifications Notifications { get; set; }
+
         /// <summary>
         /// Reads the options from the current config file.
         /// </summary>
@@ -48,7 +48,12 @@ namespace Kentor.AuthServices.Configuration
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "sp")]
         public Options(SPOptions spOptions)
         {
+            Notifications = new KentorAuthServicesNotifications();
             SPOptions = spOptions;
+            if(SPOptions.Logger == null)
+            {
+                SPOptions.Logger = new NullLoggerAdapter();
+            }
         }
 
         /// <summary>
@@ -70,7 +75,8 @@ namespace Kentor.AuthServices.Configuration
             }
         }
 
-        static internal readonly string RsaSha256Namespace = "http://www.w3.org/2001/04/xmldsig-more#rsa-sha256";
+        internal const string RsaSha256Uri = "http://www.w3.org/2001/04/xmldsig-more#rsa-sha256";
+        internal const string Sha256Uri = "http://www.w3.org/2001/04/xmlenc#sha256";
 
         /// <summary>
         /// Make Sha256 signature algorithm available in this process (not just Kentor.AuthServices)
@@ -78,7 +84,18 @@ namespace Kentor.AuthServices.Configuration
         [System.Diagnostics.CodeAnalysis.SuppressMessage( "Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Sha" )]
         public static void GlobalEnableSha256XmlSignatures()
         {
-            CryptoConfig.AddAlgorithm(typeof(RSAPKCS1SHA256SignatureDescription), RsaSha256Namespace);
+            CryptoConfig.AddAlgorithm(typeof(ManagedSHA256SignatureDescription), RsaSha256Uri);
+
+            AddAlgorithmIfMissing((IList<string>)XmlHelpers.KnownSigningAlgorithms, RsaSha256Uri);
+            AddAlgorithmIfMissing((IList<string>)XmlHelpers.DigestAlgorithms, Sha256Uri);
+        }
+
+        internal static void AddAlgorithmIfMissing(IList<string> knownAlgorithms, string newAlgorithm)
+        {
+            if (knownAlgorithms.Count == 1)
+            {
+                knownAlgorithms.Add(newAlgorithm);
+            }
         }
     }
 }
