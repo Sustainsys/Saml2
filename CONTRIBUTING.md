@@ -73,7 +73,7 @@ You may set up a free build of all branches in your GitHub fork by signing up to
 
 ## Branching
 To make a clean pull request, it is important to follow some git best practices. Nancy
-has an [excellent guide](https://github.com/NancyFx/Nancy/blob/master/CONTRIBUTING.md) that outlines
+has an [excellent guide](https://github.com/NancyFx/Nancy/wiki/Git-Workflow) that outlines
 the steps required.
 
 ## Contributors File
