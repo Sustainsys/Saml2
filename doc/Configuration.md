@@ -187,10 +187,10 @@ have called `GlobalEnableSha256XmlSignatures()`. Otherwise, it uses SHA1 signatu
 Use this attribute to set the default signing algorithm for any messages
 (including metadata) that AuthServices generates. Possible values:
 
-* SHA1
-* SHA256
-* SHA384
-* SHA512
+* `SHA1` (or `http://www.w3.org/2000/09/xmldsig#rsa-sha1`)
+* `SHA256`
+* `SHA384`
+* `SHA512`
 
 The full url identifying the algorithm can also be provided. The algorithm can be overridden for 
 each IdentityProvider too.
@@ -206,10 +206,10 @@ have called `GlobalEnableSha256XmlSignatures()`. Otherwise, it uses SHA1 signatu
 
 Possible values:
 
-* SHA1
-* SHA256
-* SHA384
-* SHA512
+* `SHA1` (or `http://www.w3.org/2000/09/xmldsig#rsa-sha1`)
+* `SHA256`
+* `SHA384`
+* `SHA512`
 
 The full url identifying the algorithm can also be provided.
 
