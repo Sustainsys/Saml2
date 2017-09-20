@@ -44,26 +44,5 @@ namespace Kentor.AuthServices.Configuration
                 base[unpackEntitiesDescriptorInIdentityProviderMetadata] = value;
             }
         }
-
-        const string disableLogoutStateCookie
-            = nameof(disableLogoutStateCookie);
-
-        /// <summary>
-        /// Do not send logout state cookie, e.g. if you are not using ReturnUrl
-        /// or if you know the cookie will be lost due to cross-domain redirects
-        /// </summary>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage( "Microsoft.Naming", "CA1726:UsePreferredTerms", MessageId = "Logout" )]
-        [ConfigurationProperty(nameof(disableLogoutStateCookie), IsRequired = false)]
-        public bool DisableLogoutStateCookie
-        {
-            get
-            {
-                return (bool)base[disableLogoutStateCookie];
-            }
-            set
-            {
-                base[disableLogoutStateCookie] = value;
-            }
-        }
     }
 }

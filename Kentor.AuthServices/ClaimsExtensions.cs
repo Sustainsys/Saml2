@@ -1,5 +1,4 @@
-﻿using Kentor.AuthServices.Internal;
-using System;
+﻿using System;
 using System.IdentityModel.Tokens;
 using System.Security.Claims;
 
@@ -11,69 +10,26 @@ namespace Kentor.AuthServices
     public static class ClaimsExtensions
     {
         /// <summary>
-        /// Create a Saml2NameIdentifier from a claim.
+        /// Create a Saml2NameIdentifier from a NameIdentifier claim.
         /// </summary>
-        /// <param name="claim">Name identifier or AuthServices logout info claim.</param>
+        /// <param name="nameIdClaim">Name identifier claim.</param>
         /// <returns>Saml2NameIdentifier</returns>
-        /// <remarks>The field order is:NameQualifier,SPNameQualifier,Format,SPProvidedID,Value</remarks>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1726:UsePreferredTerms", MessageId = "logout")]
-        public static Saml2NameIdentifier ToSaml2NameIdentifier(this Claim claim)
+        public static Saml2NameIdentifier ToSaml2NameIdentifier(this Claim nameIdClaim)
         {
-            if (claim == null)
+            if(nameIdClaim == null)
             {
-                throw new ArgumentNullException(nameof(claim));
+                throw new ArgumentNullException(nameof(nameIdClaim));
             }
 
-            if (claim.Type == AuthServicesClaimTypes.LogoutNameIdentifier)
-            {
-                return ProcessLogoutNameIdentifier(claim);
-            }
+            var saml2NameIdentifier = new Saml2NameIdentifier(nameIdClaim.Value);
 
-            if(claim.Type == ClaimTypes.NameIdentifier)
-            {
-                return ProcessNameIdentifier(claim);
-            }
-
-            throw new ArgumentException("ToSaml2NameIdentifier can only process an AuthServices logout name identifier claim.", nameof(claim));
-        }
-
-        private static Saml2NameIdentifier ProcessLogoutNameIdentifier(Claim claim)
-        {
-            var fields = DelimitedString.Split(claim.Value);
-
-            var saml2NameIdentifier = new Saml2NameIdentifier(fields[4]);
-
-            if (!string.IsNullOrEmpty(fields[0]))
-            {
-                saml2NameIdentifier.NameQualifier = fields[0];
-            }
-            if (!string.IsNullOrEmpty(fields[1]))
-            {
-                saml2NameIdentifier.SPNameQualifier = fields[1];
-            }
-            if (!string.IsNullOrEmpty(fields[2]))
-            {
-                saml2NameIdentifier.Format = new Uri(fields[2]);
-            }
-            if (!string.IsNullOrEmpty(fields[3]))
-            {
-                saml2NameIdentifier.SPProvidedId = fields[3];
-            }
-
-            return saml2NameIdentifier;
-        }
-
-        private static Saml2NameIdentifier ProcessNameIdentifier(Claim claim)
-        { 
-            var saml2NameIdentifier = new Saml2NameIdentifier(claim.Value);
-
-            claim.ExtractProperty(ClaimProperties.SamlNameIdentifierFormat,
+            nameIdClaim.ExtractProperty(ClaimProperties.SamlNameIdentifierFormat,
                 value => saml2NameIdentifier.Format = new Uri(value));
-            claim.ExtractProperty(ClaimProperties.SamlNameIdentifierNameQualifier,
+            nameIdClaim.ExtractProperty(ClaimProperties.SamlNameIdentifierNameQualifier,
                 value => saml2NameIdentifier.NameQualifier = value);
-            claim.ExtractProperty(ClaimProperties.SamlNameIdentifierSPNameQualifier,
+            nameIdClaim.ExtractProperty(ClaimProperties.SamlNameIdentifierSPNameQualifier,
                 value => saml2NameIdentifier.SPNameQualifier = value);
-            claim.ExtractProperty(ClaimProperties.SamlNameIdentifierSPProvidedId,
+            nameIdClaim.ExtractProperty(ClaimProperties.SamlNameIdentifierSPProvidedId,
                 value => saml2NameIdentifier.SPProvidedId = value);
 
             return saml2NameIdentifier;
@@ -85,7 +41,7 @@ namespace Kentor.AuthServices
             Action<string> propertySetter)
         {
             string value;
-            if (claim.Properties.TryGetValue(propertyKey, out value))
+            if(claim.Properties.TryGetValue(propertyKey, out value))
             {
                 propertySetter(value);
             }

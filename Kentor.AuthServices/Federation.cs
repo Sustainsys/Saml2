@@ -9,8 +9,6 @@ using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
-using System.Security.Cryptography.X509Certificates;
-using System.IdentityModel.Tokens;
 
 namespace Kentor.AuthServices
 {
@@ -33,12 +31,7 @@ namespace Kentor.AuthServices
                 throw new ArgumentNullException(nameof(config));
             }
 
-            var signingKeys = config.SigningCertificates.Any() ?
-                config.SigningCertificates.Select(
-                sc => new X509RawDataKeyIdentifierClause(sc.LoadCertificate()))
-                : null;
-
-            Init(config.MetadataLocation, config.AllowUnsolicitedAuthnResponse, options, signingKeys);
+            Init(config.MetadataLocation, config.AllowUnsolicitedAuthnResponse, options);
         }
 
         /// <summary>
@@ -52,88 +45,35 @@ namespace Kentor.AuthServices
         /// instances and register identity providers in.</param>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "sp")]
         public Federation(string metadataLocation, bool allowUnsolicitedAuthnResponse, IOptions options)
-            : this (metadataLocation,
-                  allowUnsolicitedAuthnResponse,
-                  options,
-                  (IEnumerable<SecurityKeyIdentifierClause>)null)
-        { }
-
-        /// <summary>
-        /// Ctor
-        /// </summary>
-        /// <param name="metadataLocation">Location (url, local path or app 
-        /// relative path such as ~/App_Data) where metadata is located.</param>
-        /// <param name="allowUnsolicitedAuthnResponse">Should unsolicited responses 
-        /// from idps in this federation be accepted?</param>
-        /// <param name="options">Options to pass on to created IdentityProvider
-        /// instances and register identity providers in.</param>
-        /// <param name="signingKeys">List of signing keys to use to validate metadata.</param>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "sp")]
-        public Federation(string metadataLocation,
-            bool allowUnsolicitedAuthnResponse,
-            IOptions options,
-            IEnumerable<X509Certificate2> signingKeys)
-            :this (metadataLocation,
-                 allowUnsolicitedAuthnResponse,
-                 options, 
-                 signingKeys.Select(k => new X509RawDataKeyIdentifierClause(k)))
-        { }
-
-        /// <summary>
-        /// Ctor
-        /// </summary>
-        /// <param name="metadataLocation">Location (url, local path or app 
-        /// relative path such as ~/App_Data) where metadata is located.</param>
-        /// <param name="allowUnsolicitedAuthnResponse">Should unsolicited responses 
-        /// from idps in this federation be accepted?</param>
-        /// <param name="options">Options to pass on to created IdentityProvider
-        /// instances and register identity providers in.</param>
-        /// <param name="signingKeys">List of signing keys to use to validate metadata.</param>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "sp")]
-        public Federation(string metadataLocation,
-            bool allowUnsolicitedAuthnResponse,
-            IOptions options,
-            IEnumerable<SecurityKeyIdentifierClause> signingKeys)
         {
-            Init(metadataLocation, allowUnsolicitedAuthnResponse, options, signingKeys);
+            Init(metadataLocation, allowUnsolicitedAuthnResponse, options);
         }
 
-        // Internal to allow checking from tests.
-        internal bool allowUnsolicitedAuthnResponse;
-        internal string metadataLocation;
+        private bool allowUnsolicitedAuthnResponse;
         private IOptions options;
+        private string metadataLocation;
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1500:VariableNamesShouldNotMatchFieldNames", MessageId = "metadataLocation")]
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1500:VariableNamesShouldNotMatchFieldNames", MessageId = "allowUnsolicitedAuthnResponse")]
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1500:VariableNamesShouldNotMatchFieldNames", MessageId = "options")]
-        private void Init(string metadataLocation,
-            bool allowUnsolicitedAuthnResponse,
-            IOptions options,
-            IEnumerable<SecurityKeyIdentifierClause> signingKeys)
+        private void Init(string metadataLocation, bool allowUnsolicitedAuthnResponse, IOptions options)
         {
             this.allowUnsolicitedAuthnResponse = allowUnsolicitedAuthnResponse;
             this.options = options;
             this.metadataLocation = metadataLocation;
-            SigningKeys = signingKeys?.ToList();
 
             LoadMetadata();
         }
 
         private object metadataLoadLock = new object();
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes", Justification ="We want a retry, regardless of exception type")]
         private void LoadMetadata()
         {
             lock (metadataLoadLock)
             {
                 try
                 {
-                    options.SPOptions.Logger?.WriteInformation("Loading metadata for federation from " + metadataLocation);
-                    var metadata = MetadataLoader.LoadFederation(
-                        metadataLocation,
-                        SigningKeys,
-                        options.SPOptions.ValidateCertificates,
-                        options.SPOptions.MinIncomingSigningAlgorithm);
+                    var metadata = MetadataLoader.LoadFederation(metadataLocation);
 
                     var identityProvidersMetadata = metadata.ChildEntities.Cast<ExtendedEntityDescriptor>()
                         .Where(ed => ed.RoleDescriptors.OfType<IdentityProviderSingleSignOnDescriptor>().Any());
@@ -157,9 +97,8 @@ namespace Kentor.AuthServices
 
                     LastMetadataLoadException = null;
                 }
-                catch (Exception ex)
+                catch (WebException ex)
                 {
-                    options.SPOptions.Logger?.WriteError("Metadata loading failed from " + metadataLocation, ex);
                     var now = DateTime.UtcNow;
 
                     if (MetadataValidUntil < now)
@@ -179,7 +118,7 @@ namespace Kentor.AuthServices
         }
 
         // Used for testing.
-        internal Exception LastMetadataLoadException { get; private set; }
+        internal WebException LastMetadataLoadException { get; private set; }
 
         // Use a string and not EntityId as List<> doesn't support setting a
         // custom equality comparer as required to handle EntityId correctly.
@@ -234,11 +173,6 @@ namespace Kentor.AuthServices
                 ScheduleMetadataReload();
             }
         }
-
-        /// <summary>
-        /// Signing keys to use to verify the metadata before using it.
-        /// </summary>
-        public IList<SecurityKeyIdentifierClause> SigningKeys { get; private set; }
 
         private void ScheduleMetadataReload()
         {

@@ -27,15 +27,6 @@ namespace Kentor.AuthServices.StubIdp.Controllers
                 AssertionModel = AssertionModel.CreateFromConfiguration(),
             };
 
-            ReadCustomIdpConfig(idpId, model);
-
-            HandleReceivedAuthnReqest(model);
-
-            return View(model);
-        }
-
-        private void ReadCustomIdpConfig(Guid? idpId, HomePageModel model)
-        {
             if (idpId.HasValue)
             {
                 var fileData = GetCachedConfiguration(idpId.Value);
@@ -46,7 +37,7 @@ namespace Kentor.AuthServices.StubIdp.Controllers
                         // Override default StubIdp Acs with Acs from IdpConfiguration
                         model.AssertionModel.AssertionConsumerServiceUrl = fileData.DefaultAssertionConsumerServiceUrl;
                     }
-                    if (!string.IsNullOrEmpty(fileData.DefaultAssertionConsumerServiceUrl))
+                    if(!string.IsNullOrEmpty(fileData.DefaultAssertionConsumerServiceUrl))
                     {
                         model.AssertionModel.Audience = fileData.DefaultAudience;
                     }
@@ -56,37 +47,25 @@ namespace Kentor.AuthServices.StubIdp.Controllers
                     model.HideDetails = fileData.HideDetails;
                 }
             }
-        }
 
-        private bool HandleReceivedAuthnReqest(HomePageModel model)
-        {
             var requestData = Request.ToHttpRequestData(true);
-            var binding = Saml2Binding.Get(requestData);
-            if (binding != null)
+            if (requestData.QueryString["SAMLRequest"].Any())
             {
-                var extractedMessage = binding.Unbind(requestData, null);
+                var extractedMessage = Saml2Binding.Get(Saml2BindingType.HttpRedirect)
+                    .Unbind(requestData, null);
 
                 var request = new Saml2AuthenticationRequest(
                     extractedMessage.Data,
                     extractedMessage.RelayState);
 
                 model.AssertionModel.InResponseTo = request.Id.Value;
-                if(request.AssertionConsumerServiceUrl != null)
-                {
-                    model.AssertionModel.AssertionConsumerServiceUrl = 
-                        request.AssertionConsumerServiceUrl.ToString();
-                }
+                model.AssertionModel.AssertionConsumerServiceUrl = request.AssertionConsumerServiceUrl.ToString();
                 model.AssertionModel.RelayState = extractedMessage.RelayState;
                 model.AssertionModel.Audience = request.Issuer.Id;
                 model.AssertionModel.AuthnRequestXml = extractedMessage.Data.PrettyPrint();
-
-                // Suppress error messages from the model - what we received
-                // in the post isn't even a model.
-                ModelState.Clear();
-
-                return true;
             }
-            return false;
+
+            return View(model);
         }
 
         [HttpPost]
@@ -98,16 +77,6 @@ namespace Kentor.AuthServices.StubIdp.Controllers
 
                 return Saml2Binding.Get(model.AssertionModel.ResponseBinding)
                     .Bind(response).ToActionResult();
-            }
-
-            if (model.AssertionModel == null)
-            {
-                model.AssertionModel = AssertionModel.CreateFromConfiguration();
-            };
-
-            if (HandleReceivedAuthnReqest(model))
-            {
-                ReadCustomIdpConfig(idpId, model);
             }
 
             return View(model);

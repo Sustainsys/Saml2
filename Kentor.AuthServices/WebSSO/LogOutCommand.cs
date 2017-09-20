@@ -8,8 +8,6 @@ using Kentor.AuthServices.Exceptions;
 using System.Globalization;
 using System.Configuration;
 using System.Linq;
-using System.Security.Cryptography.Xml;
-using Kentor.AuthServices.Internal;
 
 namespace Kentor.AuthServices.WebSso
 {
@@ -38,19 +36,7 @@ namespace Kentor.AuthServices.WebSso
                 throw new ArgumentNullException(nameof(request));
             }
 
-            if (options == null)
-            {
-                throw new ArgumentNullException(nameof(options));
-            }
-
             var returnUrl = request.QueryString["ReturnUrl"].SingleOrDefault();
-            if (returnUrl != null && !PathHelper.IsLocalWebUrl(returnUrl))
-            {
-                if (!options.Notifications.ValidateAbsoluteReturnUrl(returnUrl))
-                {
-                    throw new InvalidOperationException("Return Url must be a relative Url.");
-                }
-            }
 
             return Run(request, returnUrl, options);
         }
@@ -79,34 +65,23 @@ namespace Kentor.AuthServices.WebSso
                 throw new ArgumentNullException(nameof(options));
             }
 
-            CommandResult commandResult;
-            var returnUrl = GetReturnUrl(request, returnPath, options);
-            var binding = options.Notifications.GetBinding(request);
+            var binding = Saml2Binding.Get(request);
             if (binding != null)
             {
                 var unbindResult = binding.Unbind(request, options);
-                options.Notifications.MessageUnbound(unbindResult);
-
                 VerifyMessageIsSigned(unbindResult, options);
                 switch (unbindResult.Data.LocalName)
                 {
                     case "LogoutRequest":
-                        commandResult = HandleRequest(unbindResult, options);
-                        break;
+                        return HandleRequest(unbindResult, options);
                     case "LogoutResponse":
-                        var storedRequestState = options.Notifications.GetLogoutResponseState(request);
-                        commandResult = HandleResponse(unbindResult, storedRequestState, options, returnUrl);
-                        break;
+                        return HandleResponse(unbindResult, request);
                     default:
                         throw new NotImplementedException();
                 }
             }
-            else
-            {
-                commandResult = InitiateLogout(request, returnUrl, options);
-            }
-            options.Notifications.LogoutCommandResultCreated(commandResult);
-            return commandResult;
+
+            return InitiateLogout(request, returnPath, options);
         }
 
         private static void VerifyMessageIsSigned(UnbindResult unbindResult, IOptions options)
@@ -121,10 +96,7 @@ namespace Kentor.AuthServices.WebSso
                 }
                 var idp = options.IdentityProviders[new EntityId(issuer)];
 
-                if (!unbindResult.Data.IsSignedByAny(
-                    idp.SigningKeys,
-                    options.SPOptions.ValidateCertificates,
-                    options.SPOptions.MinIncomingSigningAlgorithm))
+                if (!unbindResult.Data.IsSignedByAny(idp.SigningKeys, options.SPOptions.ValidateCertificates))
                 {
                     throw new UnsuccessfulSamlOperationException(string.Format(CultureInfo.InvariantCulture,
                         "Received a {0} from {1} that cannot be processed because it is not signed.",
@@ -134,67 +106,39 @@ namespace Kentor.AuthServices.WebSso
             }
         }
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "signingCertificate")]
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "SingleLogoutServiceUrl")]
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "SPOptions")]
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "LogoutNameIdentifier")]
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "DisableOutboundLogoutRequests")]
-        private static CommandResult InitiateLogout(HttpRequestData request, Uri returnUrl, IOptions options)
+        private static CommandResult InitiateLogout(HttpRequestData request, string returnPath, IOptions options)
         {
-            string idpEntityId = null;
-            Claim sessionIndexClaim = null;
-            if (request.User != null)
-            {
-                idpEntityId = request.User.FindFirst(AuthServicesClaimTypes.LogoutNameIdentifier)?.Issuer;
-                sessionIndexClaim = request.User.FindFirst(AuthServicesClaimTypes.SessionIndex);
-            }
-
-            IdentityProvider idp;
-            var knownIdp = options.IdentityProviders.TryGetValue(new EntityId(idpEntityId), out idp);
-
-            options.SPOptions.Logger.WriteVerbose("Initiating logout, checking requirements for federated logout"
-                + "\n  Issuer of LogoutNameIdentifier claim (should be Idp entity id): " + idpEntityId
-                + "\n  Issuer is a known Idp: " + knownIdp
-                + "\n  Session index claim (should have a value): " + sessionIndexClaim
-                + "\n  Idp has SingleLogoutServiceUrl: " + idp?.SingleLogoutServiceUrl?.OriginalString
-                + "\n  There is a signingCertificate in SPOptions: " + (options.SPOptions.SigningServiceCertificate != null)
-                + "\n  Idp configured to DisableOutboundLogoutRequests (should be false): " + idp?.DisableOutboundLogoutRequests);
+            var idpEntityId = ClaimsPrincipal.Current.FindFirst(AuthServicesClaimTypes.LogoutNameIdentifier)?.Issuer
+                ?? ClaimsPrincipal.Current.FindFirst(ClaimTypes.NameIdentifier)?.Issuer;
 
             CommandResult commandResult;
+            IdentityProvider idp;
             if(idpEntityId != null 
-                && knownIdp
-                && sessionIndexClaim != null
+                && options.IdentityProviders.TryGetValue(new EntityId(idpEntityId), out idp)
+                && ClaimsPrincipal.Current.FindFirst(AuthServicesClaimTypes.SessionIndex) != null
                 && idp.SingleLogoutServiceUrl != null
-                && options.SPOptions.SigningServiceCertificate != null
-                && !idp.DisableOutboundLogoutRequests)
+                && options.SPOptions.SigningServiceCertificate != null)
             {
-                var logoutRequest = idp.CreateLogoutRequest(request.User);
+                var logoutRequest = idp.CreateLogoutRequest();
 
-                commandResult = Saml2Binding.Get(idp.SingleLogoutServiceBinding)
+                commandResult = Saml2Binding.Get(Saml2BindingType.HttpRedirect)
                     .Bind(logoutRequest);
 
-                commandResult.RelayState = logoutRequest.RelayState;
                 commandResult.RequestState = new StoredRequestState(
                     idp.EntityId,
-                    returnUrl,
+                    GetReturnUrl(request, returnPath, options),
                     logoutRequest.Id,
                     null);
 
-                if (!options.SPOptions.Compatibility.DisableLogoutStateCookie)
-                {
-                    commandResult.SetCookieName = "Kentor." + logoutRequest.RelayState;
-                }
-
-                options.SPOptions.Logger.WriteInformation("Sending logout request to " + idp.EntityId.Id);
+                commandResult.SetCookieName = "Kentor." + logoutRequest.RelayState;
             }
             else
             {
                 commandResult = new CommandResult
                 {
                     HttpStatusCode = HttpStatusCode.SeeOther,
-                    Location = returnUrl
+                    Location = GetReturnUrl(request, returnPath, options)
                 };
-                options.SPOptions.Logger.WriteInformation("Doing a local only logout.");
             }
 
             commandResult.TerminateLocalSession = true;
@@ -204,18 +148,18 @@ namespace Kentor.AuthServices.WebSso
 
         private static Uri GetReturnUrl(HttpRequestData request, string returnPath, IOptions options)
         {
+            var urls = new AuthServicesUrls(request, options.SPOptions);
+
             if (!string.IsNullOrEmpty(returnPath))
             {
-                return new Uri(returnPath, UriKind.RelativeOrAbsolute);
+                return new Uri(urls.ApplicationUrl, returnPath);
             }
             else
             {
-                return new AuthServicesUrls(request, options).ApplicationUrl;
+                return urls.ApplicationUrl;
             }
         }
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "SingleLogoutServiceUrl")]
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "SingleLogoutService")]
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "LogoutRequest")]
         private static CommandResult HandleRequest(UnbindResult unbindResult, IOptions options)
         {
@@ -226,67 +170,40 @@ namespace Kentor.AuthServices.WebSso
             if(options.SPOptions.SigningServiceCertificate == null)
             {
                 throw new ConfigurationErrorsException(string.Format(CultureInfo.InvariantCulture,
-                    "Received a LogoutRequest from \"{0}\" but cannot reply because single logout responses " +
-                    "must be signed and there is no signing certificate configured. Looks like the idp is " +
-                    "configured for Single Logout despite AuthServices not exposing that functionality in the metadata.",
+                    "Received a LogoutRequest from \"{0}\" but cannot reply because single logout responses must be signed and there is no signing certificate configured. Looks like the idp is configured for Single Logout despite AuthServices not exposing that functionality in the metadata.",
                     request.Issuer.Id));
-            }
-
-            if(idp.SingleLogoutServiceResponseUrl == null)
-            {
-                throw new InvalidOperationException(string.Format(CultureInfo.InvariantCulture,
-                    "Received a LogoutRequest from \"{0}\" but cannot reply because on logout endpoint is " +
-                    "configured on the idp. Set a SingleLogoutServiceUrl if the idp is configured manually, " +
-                    "or check that the idp metadata contains a SingleLogoutService endpoint.",
-                    idp.EntityId.Id));
             }
 
             var response = new Saml2LogoutResponse(Saml2StatusCode.Success)
             {
                 DestinationUrl = idp.SingleLogoutServiceResponseUrl,
                 SigningCertificate = options.SPOptions.SigningServiceCertificate,
-                SigningAlgorithm = idp.OutboundSigningAlgorithm,
                 InResponseTo = request.Id,
                 Issuer = options.SPOptions.EntityId,
                 RelayState = unbindResult.RelayState
             };
-
-            options.SPOptions.Logger.WriteInformation("Got a logout request " + request.Id
-                + ", responding with logout response " + response.Id);
 
             var result = Saml2Binding.Get(idp.SingleLogoutServiceBinding).Bind(response);
             result.TerminateLocalSession = true;
             return result;
         }
 
-        private static CommandResult HandleResponse(UnbindResult unbindResult, StoredRequestState storedRequestState, IOptions options, Uri returnUrl)
+        private static CommandResult HandleResponse(UnbindResult unbindResult, HttpRequestData request)
         {
-            var logoutResponse = Saml2LogoutResponse.FromXml(unbindResult.Data);
-            var notificationHandledTheStatus = options.Notifications.ProcessSingleLogoutResponseStatus(logoutResponse, storedRequestState);
-            if (!notificationHandledTheStatus) { 
-                var status = logoutResponse.Status;
-                if(status != Saml2StatusCode.Success)
-                {
-                    throw new UnsuccessfulSamlOperationException(string.Format(CultureInfo.InvariantCulture,
-                        "Idp returned status \"{0}\", indicating that the single logout failed. The local session has been successfully terminated.",
-                        status));
-                }
+            var status = Saml2LogoutResponse.FromXml(unbindResult.Data).Status;
+            if(status != Saml2StatusCode.Success)
+            {
+                throw new UnsuccessfulSamlOperationException(string.Format(CultureInfo.InvariantCulture,
+                    "Idp returned status \"{0}\", indicating that the single logout failed. The local session has been successfully terminated.",
+                    status));
             }
 
-            var commandResult = new CommandResult
+            return new CommandResult()
             {
-                HttpStatusCode = HttpStatusCode.SeeOther
+                HttpStatusCode = HttpStatusCode.SeeOther,
+                Location = request.StoredRequestState.ReturnUrl,
+                ClearCookieName = "Kentor." + request.QueryString["RelayState"].Single()
             };
-            if (!options.SPOptions.Compatibility.DisableLogoutStateCookie)
-            {
-                commandResult.ClearCookieName = "Kentor." + unbindResult.RelayState;
-            }
-            commandResult.Location = storedRequestState?.ReturnUrl ?? returnUrl;
-
-            options.SPOptions.Logger.WriteInformation("Received logout response " + logoutResponse.Id
-                + ", redirecting to " + commandResult.Location);
-
-            return commandResult;
         }
     }
 }

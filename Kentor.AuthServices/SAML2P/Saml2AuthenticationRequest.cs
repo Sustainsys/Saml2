@@ -43,16 +43,8 @@ namespace Kentor.AuthServices.Saml2P
             var x = new XElement(Saml2Namespaces.Saml2P + LocalName);
 
             x.Add(base.ToXNodes());
-            if (Binding.HasValue)
-            {
-                x.AddAttributeIfNotNullOrEmpty("ProtocolBinding", Saml2Binding.Saml2BindingTypeToUri(Binding.Value));
-            }
             x.AddAttributeIfNotNullOrEmpty("AssertionConsumerServiceURL", AssertionConsumerServiceUrl);
             x.AddAttributeIfNotNullOrEmpty("AttributeConsumingServiceIndex", AttributeConsumingServiceIndex);
-            if (ForceAuthentication)
-            {
-                x.Add(new XAttribute("ForceAuthn", ForceAuthentication));
-            }
 
             AddNameIdPolicy(x);
 
@@ -67,8 +59,6 @@ namespace Kentor.AuthServices.Saml2P
                         RequestedAuthnContext.ClassRef.OriginalString)));
             }
 
-            AddScoping(x);
-
             return x;
         }
 
@@ -79,7 +69,7 @@ namespace Kentor.AuthServices.Saml2P
             if (NameIdPolicy != null &&
                 (NameIdPolicy.AllowCreate.HasValue || NameIdPolicy.Format != NameIdFormat.NotConfigured))
             {
-                if (NameIdPolicy.AllowCreate.HasValue && NameIdPolicy.Format == NameIdFormat.Transient)
+                if(NameIdPolicy.AllowCreate.HasValue && NameIdPolicy.Format == NameIdFormat.Transient)
                 {
                     throw new InvalidOperationException("When NameIdPolicy/Format is set to Transient, it is not permitted to specify AllowCreate. Change Format or leave AllowCreate as null.");
                 }
@@ -99,14 +89,6 @@ namespace Kentor.AuthServices.Saml2P
                 }
 
                 xElement.Add(nameIdPolicyElement);
-            }
-        }
-
-        private void AddScoping(XElement xElement)
-        {
-            if (Scoping != null)
-            {
-                xElement.Add(Scoping.ToXElement());
             }
         }
 
@@ -132,7 +114,9 @@ namespace Kentor.AuthServices.Saml2P
             {
                 return null;
             }
-            var x = XmlHelpers.XmlDocumentFromString(xml);
+            var x = new XmlDocument();
+            x.PreserveWhitespace = true;
+            x.LoadXml(xml);
 
             return new Saml2AuthenticationRequest(x.DocumentElement, relayState);
         }
@@ -155,12 +139,6 @@ namespace Kentor.AuthServices.Saml2P
                 AssertionConsumerServiceUrl = new Uri(AssertionConsumerServiceUriString);
             }
 
-            var forceAuthnString = xml.Attributes["ForceAuthn"].GetValueIfNotNull();
-            if (forceAuthnString != null)
-            {
-                ForceAuthentication = bool.Parse(forceAuthnString);
-            }
-
             var node = xml["NameIDPolicy", Saml2Namespaces.Saml2PName];
             if (node != null)
             {
@@ -179,7 +157,7 @@ namespace Kentor.AuthServices.Saml2P
                     allowCreate = bool.Parse(allowCreateStr);
                 }
 
-                NameIdPolicy = new Saml2NameIdPolicy(allowCreate, nameIdFormat);
+                NameIdPolicy =  new Saml2NameIdPolicy(allowCreate, nameIdFormat);
             }
         }
 
@@ -193,11 +171,6 @@ namespace Kentor.AuthServices.Saml2P
         /// </summary>
         public int? AttributeConsumingServiceIndex { get; set; }
 
-        /// <summary> 
-        /// Scoping for request 
-        /// </summary> 
-        public Saml2Scoping Scoping { get; set; }
-
         /// <summary>
         /// NameId policy.
         /// </summary>
@@ -207,18 +180,5 @@ namespace Kentor.AuthServices.Saml2P
         /// RequestedAuthnContext.
         /// </summary>
         public Saml2RequestedAuthnContext RequestedAuthnContext { get; set; }
-
-        /// <summary>
-        /// Saml2BindingType.
-        /// </summary>
-        public Saml2BindingType? Binding { get; set; }
-
-        /// <summary>
-        /// Sets whether request should force the idp to authenticate the presenter directly, 
-        /// rather than rely on a previous security context.
-        /// If false, the ForceAuthn parameter is omitted from the request.
-        /// If true, the request is sent with ForceAuthn="true".
-        /// </summary>
-        public bool ForceAuthentication { get; set; } = false;
     }
 }

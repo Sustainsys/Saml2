@@ -22,10 +22,7 @@ namespace Kentor.AuthServices
         /// <returns>Random string 56-chars string</returns>
         public static string CreateRelayState()
         {
-            // 16 is considered secure, but Base64 pads 16 bytes so
-            // use 18 to make it even with Base64 that encodes multiples 
-            // of 3 bytes)
-            var bytes = new byte[18];
+            var bytes = new byte[42];
             random.GetBytes(bytes);
 
             return Convert.ToBase64String(bytes)

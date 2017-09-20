@@ -49,8 +49,7 @@
     <Compile Include="..\VersionInfo.cs">
       <Link>VersionInfo.cs</Link>
     </Compile>
-    <Compile Include="CommandResultHttpExtensions.cs" />
-    <Compile Include="CommandResultHttpExtensionsShared.cs" />
+    <Compile Include="CommandResultHttpExtension.cs" />
     <Compile Include="HttpRequestBaseExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Saml2AuthenticationModule.cs" />

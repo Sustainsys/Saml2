@@ -20,6 +20,7 @@
     <dependencies>
       <group>
         <dependency id="Kentor.AuthServices" version="[$version$]" />
+        <dependency id="Kentor.AuthServices.HttpModule" version="[$version$]" />
         <dependency id="Microsoft.AspNet.Mvc" version="4.0.20710" />
       </group>
     </dependencies>

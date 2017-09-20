@@ -1,14 +1,11 @@
-﻿using Kentor.AuthServices.Exceptions;
-using Kentor.AuthServices.Internal;
+﻿using Kentor.AuthServices.Internal;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IdentityModel.Metadata;
-using System.IdentityModel.Tokens;
 using System.IO;
 using System.Linq;
 using System.Net;
-using System.Security.Cryptography.X509Certificates;
 using System.Security.Cryptography.Xml;
 using System.Text;
 using System.Threading.Tasks;
@@ -58,7 +55,7 @@ namespace Kentor.AuthServices.Metadata
                 throw new ArgumentNullException(nameof(metadataLocation));
             }
 
-            var result = Load(metadataLocation, null, false, null);
+            var result = Load(metadataLocation);
 
             var entitiesDescriptor = result as ExtendedEntitiesDescriptor;
             if(entitiesDescriptor != null)
@@ -79,11 +76,7 @@ namespace Kentor.AuthServices.Metadata
             return (ExtendedEntityDescriptor)result;
         }
 
-        private static MetadataBase Load(
-            string metadataLocation,
-            IEnumerable<SecurityKeyIdentifierClause> signingKeys,
-            bool validateCertificate,
-            string minIncomingSigningAlgorithm)
+        private static MetadataBase Load(string metadataLocation)
         {
             if(PathHelper.IsWebRootRelative(metadataLocation))
             {
@@ -93,55 +86,22 @@ namespace Kentor.AuthServices.Metadata
             using (var client = new WebClient())
             using (var stream = client.OpenRead(metadataLocation))
             {
-                var reader = XmlDictionaryReader.CreateTextReader(
-                    stream,
-                    XmlDictionaryReaderQuotas.Max);
-
-                if(signingKeys != null)
-                {
-                    reader = ValidateSignature(
-                        reader,
-                        signingKeys,
-                        validateCertificate,
-                        minIncomingSigningAlgorithm);
-                }
-
-                return Load(reader);
+                return Load(stream);
             }
         }
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope", Justification = "No unmanaged resources involved, safe to ignore")]
-        private static XmlDictionaryReader ValidateSignature(
-            XmlDictionaryReader reader,
-            IEnumerable<SecurityKeyIdentifierClause> signingKeys,
-            bool validateCertificate,
-            string minIncomingSigningAlgorithm)
-        {
-            var xmlDoc = XmlHelpers.CreateSafeXmlDocument();
-            xmlDoc.Load(reader);
-
-            if(!xmlDoc.DocumentElement.IsSignedByAny(
-                signingKeys,
-                validateCertificate,
-                minIncomingSigningAlgorithm))
-            {
-                throw new InvalidSignatureException("Signature validation failed for federation metadata.");
-            }
-
-            return XmlDictionaryReader.CreateDictionaryReader(
-                new XmlNodeReader(xmlDoc));
-        }
-
-        internal static MetadataBase Load(XmlDictionaryReader reader)
+        internal static MetadataBase Load(Stream metadataStream)
         {
             var serializer = ExtendedMetadataSerializer.ReaderInstance;
-            
-            // Filter out the signature from the metadata, as the built in MetadataSerializer
-            // doesn't handle the XmlDsigNamespaceUrl http://www.w3.org/2000/09/xmldsig# which
-            // is allowed (and for SAMLv1 even recommended).
-            using (var filter = new FilteringXmlDictionaryReader(SignedXml.XmlDsigNamespaceUrl, "Signature", reader))
+            using (var reader = XmlDictionaryReader.CreateTextReader(metadataStream, XmlDictionaryReaderQuotas.Max))
             {
-                return serializer.ReadMetadata(filter);
+                // Filter out the signature from the metadata, as the built in MetadataSerializer
+                // doesn't handle the XmlDsigNamespaceUrl http://www.w3.org/2000/09/xmldsig# which
+                // is allowed (and for SAMLv1 even recommended).
+                using (var filter = new FilteringXmlDictionaryReader(SignedXml.XmlDsigNamespaceUrl, "Signature", reader))
+                {
+                    return serializer.ReadMetadata(filter);
+                }
             }
         }
 
@@ -151,51 +111,25 @@ namespace Kentor.AuthServices.Metadata
         /// Load and parse metadata for a federation.
         /// </summary>
         /// <param name="metadataLocation">Url to metadata</param>
-        /// <returns>Extended entitiesdescriptor</returns>
-        public static ExtendedEntitiesDescriptor LoadFederation(string metadataLocation)
-        {
-            return LoadFederation(metadataLocation, null, false, null);
-        }
-
-        /// <summary>
-        /// Load and parse metadata for a federation.
-        /// </summary>
-        /// <param name="metadataLocation">Url to metadata</param>
-        /// <param name="signingKeys"></param>
-        /// <param name="validateCertificate">Validate the certificate when doing
-        /// signature validation. Normally a bad idea with SAML2 as certificates
-        /// are not required to be valid but are only used as conventient carriers
-        /// for keys.</param>
-        /// <param name="minIncomingSigningAlgorithm">Mininum strength accepted
-        /// for signing algorithm.</param>
-        /// <returns>Extended entitiesdescriptor</returns>
+        /// <returns></returns>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "EntitiesDescriptor")]
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "EntityDescriptor")]
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "IdentityProvider")]
-        public static ExtendedEntitiesDescriptor LoadFederation(
-            string metadataLocation,
-            IEnumerable<SecurityKeyIdentifierClause> signingKeys,
-            bool validateCertificate,
-            string minIncomingSigningAlgorithm)
+        public static ExtendedEntitiesDescriptor LoadFederation(string metadataLocation)
         {
             if (metadataLocation == null)
             {
                 throw new ArgumentNullException(nameof(metadataLocation));
             }
 
-            var result = Load(
-                metadataLocation,
-                signingKeys,
-                validateCertificate,
-                minIncomingSigningAlgorithm);
+            var result = Load(metadataLocation);
 
-            if (result is ExtendedEntityDescriptor)
+            if(result is ExtendedEntityDescriptor)
             {
                 throw new InvalidOperationException(LoadFederationFoundEntityDescriptor);
             }
 
             return (ExtendedEntitiesDescriptor)result;
         }
-
     }
 }
