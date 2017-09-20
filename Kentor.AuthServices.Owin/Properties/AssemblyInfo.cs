@@ -24,4 +24,3 @@ using System.Runtime.InteropServices;
 [assembly: CLSCompliant(true)]
 
 [assembly: InternalsVisibleTo("Kentor.AuthServices.Tests")]
-[assembly: InternalsVisibleTo("Kentor.AuthServices.Owin.Tests")]

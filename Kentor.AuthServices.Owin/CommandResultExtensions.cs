@@ -33,15 +33,6 @@ namespace Kentor.AuthServices.Owin
                 context.Response.Headers["Location"] = commandResult.Location.OriginalString;
             }
 
-            if (commandResult.TerminateLocalSession)
-            {
-                context.Authentication.SignOut();
-            }
-
-            ApplyCookies(commandResult, context, dataProtector);
-
-            // Write the content last, it causes the headers to be flushed
-            // on some hosts.
             if (commandResult.Content != null)
             {
                 // Remove value set by other middleware and let the host calculate
@@ -49,13 +40,20 @@ namespace Kentor.AuthServices.Owin
                 context.Response.ContentLength = null;
                 context.Response.Write(commandResult.Content);
             }
+
+            if (commandResult.TerminateLocalSession)
+            {
+                context.Authentication.SignOut();
+            }
+
+            ApplyCookies(commandResult, context, dataProtector);
         }
 
         private static void ApplyCookies(CommandResult commandResult, IOwinContext context, IDataProtector dataProtector)
         {
             var serializedCookieData = commandResult.GetSerializedRequestState();
 
-            if (serializedCookieData != null && !string.IsNullOrEmpty(commandResult.SetCookieName))
+            if (serializedCookieData != null)
             {
                 var protectedData = HttpRequestData.ConvertBinaryData(
                         dataProtector.Protect(serializedCookieData));

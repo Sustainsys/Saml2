@@ -1,6 +1,15 @@
 ﻿using Kentor.AuthServices.Configuration;
+using Microsoft.Owin;
 using Microsoft.Owin.Security;
 using Microsoft.Owin.Security.DataProtection;
+using System;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.IdentityModel.Configuration;
+using System.IdentityModel.Metadata;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace Kentor.AuthServices.Owin
 {
@@ -10,12 +19,6 @@ namespace Kentor.AuthServices.Owin
     public class KentorAuthServicesAuthenticationOptions : AuthenticationOptions, IOptions
     {
         /// <summary>
-        /// Set of callbacks that can be used as extension points for various
-        /// events.
-        /// </summary>
-        public KentorAuthServicesNotifications Notifications { get; set; }
-
-        /// <summary>
         /// Constructor
         /// <param name="loadConfiguration">Should the options be inited by loading app/web.config?</param>
         /// </summary>
@@ -24,9 +27,8 @@ namespace Kentor.AuthServices.Owin
         public KentorAuthServicesAuthenticationOptions(bool loadConfiguration)
             : base(Constants.DefaultAuthenticationType)
         {
-            AuthenticationMode = AuthenticationMode.Passive;
+            AuthenticationMode = AuthenticationMode.Active;
             Description.Caption = Constants.DefaultCaption;
-            Notifications = new KentorAuthServicesNotifications();
 
             if (loadConfiguration)
             {

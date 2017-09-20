@@ -34,26 +34,6 @@ namespace Kentor.AuthServices
             EntityId issuer,
             Uri audience)
         {
-            return ToSaml2Assertion(identity, issuer, audience, null, null);
-        }
-
-        /// <summary>
-        /// Creates a Saml2Assertion from a ClaimsIdentity.
-        /// </summary>
-        /// <param name="identity">Claims to include in Assertion.</param>
-        /// <param name="issuer">Issuer to include in assertion.</param>
-        /// <param name="audience">Audience to set as audience restriction.</param>
-        /// <param name="inResponseTo">In response to id</param>
-        /// <param name="destinationUri">The destination Uri for the message</param>
-        /// <returns>Saml2Assertion</returns>
-        /// <exception cref="ArgumentNullException"></exception>
-        public static Saml2Assertion ToSaml2Assertion(
-            this ClaimsIdentity identity,
-            EntityId issuer,
-            Uri audience,
-            Saml2Id inResponseTo,
-            Uri destinationUri)
-        {
             if (identity == null)
             {
                 throw new ArgumentNullException(nameof(identity));
@@ -64,7 +44,10 @@ namespace Kentor.AuthServices
                 throw new ArgumentNullException(nameof(issuer));
             }
 
-            var assertion = new Saml2Assertion(new Saml2NameIdentifier(issuer.Id));
+            var assertion = new Saml2Assertion(new Saml2NameIdentifier(issuer.Id))
+            {
+                Subject = new Saml2Subject(identity.ToSaml2NameIdentifier()),
+            };
 
             assertion.Statements.Add(
                 new Saml2AuthenticationStatement(
@@ -77,8 +60,7 @@ namespace Kentor.AuthServices
 
             var attributeClaims = identity.Claims.Where(
                 c => c.Type != ClaimTypes.NameIdentifier
-                && c.Type != AuthServicesClaimTypes.SessionIndex).GroupBy(c => c.Type)
-                .ToArray();
+                && c.Type != AuthServicesClaimTypes.SessionIndex).GroupBy(c => c.Type);
 
             if (attributeClaims.Any())
             {
@@ -88,26 +70,9 @@ namespace Kentor.AuthServices
                             ac => new Saml2Attribute(ac.Key, ac.Select(c => c.Value)))));
             }
 
-            var notOnOrAfter = DateTime.UtcNow.AddMinutes(2);
-
-            assertion.Subject = new Saml2Subject(identity.ToSaml2NameIdentifier())
-            {
-                SubjectConfirmations =
-                {
-                    new Saml2SubjectConfirmation(
-                        new Uri("urn:oasis:names:tc:SAML:2.0:cm:bearer"),
-                        new Saml2SubjectConfirmationData
-                        {
-                            NotOnOrAfter = notOnOrAfter,
-                            InResponseTo = inResponseTo,
-                            Recipient = destinationUri
-                        })
-                }
-            };
-
             assertion.Conditions = new Saml2Conditions()
             {
-                NotOnOrAfter = notOnOrAfter
+                NotOnOrAfter = DateTime.UtcNow.AddMinutes(2)
             };
 
             if (audience != null)

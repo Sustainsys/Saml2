@@ -47,7 +47,9 @@ namespace Kentor.AuthServices.Saml2P
         /// <exception cref="XmlException">On xml errors or unexpected xml structure.</exception>
         public static Saml2Response Read(string xml, Saml2Id expectedInResponseTo)
         {
-            var x = XmlHelpers.XmlDocumentFromString(xml);
+            var x = new XmlDocument();
+            x.PreserveWhitespace = true;
+            x.LoadXml(xml);
 
             return new Saml2Response(x.DocumentElement, expectedInResponseTo);
         }
@@ -103,12 +105,7 @@ namespace Kentor.AuthServices.Saml2P
 
             if (destinationUrlString != null)
             {
-                Uri parsedDestination;
-                if (!Uri.TryCreate(destinationUrlString, UriKind.Absolute, out parsedDestination))
-                {
-                    throw new BadFormatSamlResponseException("Destination value was not a valid Uri");
-                }
-                DestinationUrl = parsedDestination;
+                DestinationUrl = new Uri(destinationUrlString);
             }
         }
 
@@ -122,11 +119,9 @@ namespace Kentor.AuthServices.Saml2P
                 InResponseTo = new Saml2Id(parsedInResponseTo);
                 if (expectedInResponseTo == null)
                 {
-                    throw new UnexpectedInResponseToException(
+                    throw new Saml2ResponseFailedValidationException(
                         string.Format(CultureInfo.InvariantCulture,
-                        "Received message contains unexpected InResponseTo \"{0}\". No cookie preserving state " +
-                        "from the request was found so the message was not expected to have an InResponseTo attribute. " +
-                        "This error typically occurs if the cookie set when doing SP-initiated sign on have been lost.",
+                        "Received message contains unexpected InResponseTo \"{0}\". No RelayState was detected so message was not expected to have an InResponseTo attribute.",
                         InResponseTo));
                 }
                 if (!expectedInResponseTo.Equals(InResponseTo))
@@ -213,7 +208,6 @@ namespace Kentor.AuthServices.Saml2P
             Issuer = issuer;
             this.claimsIdentities = claimsIdentities;
             SigningCertificate = issuerCertificate;
-            SigningAlgorithm = XmlHelpers.GetDefaultSigningAlgorithmName();
             DestinationUrl = destinationUrl;
             RelayState = relayState;
             InResponseTo = inResponseTo;
@@ -228,14 +222,6 @@ namespace Kentor.AuthServices.Saml2P
         /// </summary>
         [ExcludeFromCodeCoverage]
         public X509Certificate2 SigningCertificate { get; }
-
-        /// <summary>
-        /// The signing algorithm to use when signing the message during binding, 
-        /// according to the signature processing rules of each binding.
-        /// </summary>
-        /// <value>The signing algorithm.</value>
-        [ExcludeFromCodeCoverage]
-        public string SigningAlgorithm { get; set; }
 
         private XmlElement xmlElement;
 
@@ -278,7 +264,7 @@ namespace Kentor.AuthServices.Saml2P
 
         private void CreateXmlElement()
         {
-            var xml = XmlHelpers.CreateSafeXmlDocument();
+            var xml = new XmlDocument();
 
             var responseElement = xml.CreateElement("saml2p", "Response", Saml2Namespaces.Saml2PName);
 
@@ -310,7 +296,7 @@ namespace Kentor.AuthServices.Saml2P
             foreach (var ci in claimsIdentities)
             {
                 responseElement.AppendChild(xml.ReadNode(
-                    ci.ToSaml2Assertion(Issuer, audience, InResponseTo, DestinationUrl).ToXElement().CreateReader()));
+                    ci.ToSaml2Assertion(Issuer, audience).ToXElement().CreateReader()));
             }
 
             xmlElement = xml.DocumentElement;
@@ -387,8 +373,6 @@ namespace Kentor.AuthServices.Saml2P
 
             if (encryptedAssertions.Count() > 0)
             {
-                options.SPOptions.Logger.WriteVerbose("Found encrypted assertions, decrypting...");
-
                 var decryptionCertificates = GetCertificatesValidForDecryption(options);
 
                 bool decrypted = false;
@@ -440,11 +424,8 @@ namespace Kentor.AuthServices.Saml2P
         {
             if (InResponseTo == null)
             {
-                var idp = options.IdentityProviders[Issuer];
-                if (idp.AllowUnsolicitedAuthnResponse)
+                if (options.IdentityProviders[Issuer].AllowUnsolicitedAuthnResponse)
                 {
-                    options.SPOptions.Logger.WriteVerbose("Received unsolicited Saml Response " + Id 
-                        + " which is allowed for idp " + idp.EntityId.Id);
                     return;
                 }
                 string msg = string.Format(CultureInfo.InvariantCulture,
@@ -457,15 +438,12 @@ namespace Kentor.AuthServices.Saml2P
         {
             var idpKeys = options.IdentityProviders[Issuer].SigningKeys;
 
-            var minAlgorithm = options.SPOptions.MinIncomingSigningAlgorithm;
-
-            if(!xmlElement.IsSignedByAny(idpKeys, options.SPOptions.ValidateCertificates, minAlgorithm)
+            if(!xmlElement.IsSignedByAny(idpKeys, options.SPOptions.ValidateCertificates)
                 && GetAllAssertionElementNodes(options)
-                .Any(a => !a.IsSignedByAny(idpKeys, options.SPOptions.ValidateCertificates, minAlgorithm)))
+                .Any(a => !a.IsSignedByAny(idpKeys, options.SPOptions.ValidateCertificates)))
             {
                 throw new Saml2ResponseFailedValidationException("The SAML Response is not signed and contains unsigned Assertions. Response cannot be trusted.");
             }
-            options.SPOptions.Logger.WriteVerbose("Signature validation passed for Saml Response " + Id);
         }
 
         private Uri audience;
@@ -513,9 +491,9 @@ namespace Kentor.AuthServices.Saml2P
 
             if (status != Saml2StatusCode.Success)
             {
-                throw new UnsuccessfulSamlOperationException(
-                    "The Saml2Response must have status success to extract claims.",
-                    status, statusMessage, secondLevelStatus);
+                throw new UnsuccessfulSamlOperationException(string.Format("The Saml2Response must have status success to extract claims. Status: {0}.{1}"
+                , status.ToString(), statusMessage != null ? " Message: " + statusMessage + "." : string.Empty),
+                status, statusMessage, secondLevelStatus);
             }
 
             foreach (XmlElement assertionNode in GetAllAssertionElementNodes(options))
@@ -525,8 +503,6 @@ namespace Kentor.AuthServices.Saml2P
                     var handler = options.SPOptions.Saml2PSecurityTokenHandler;
 
                     var token = (Saml2SecurityToken)handler.ReadToken(reader);
-                    options.SPOptions.Logger.WriteVerbose("Extracted SAML assertion " + token.Id);
-
                     handler.DetectReplayedToken(token);
 
                     var validateAudience = options.SPOptions
@@ -538,45 +514,14 @@ namespace Kentor.AuthServices.Saml2P
 
                     handler.ValidateConditions(token.Assertion.Conditions, validateAudience);
 
-                    options.SPOptions.Logger.WriteVerbose("Validated conditions for SAML2 Response " + Id);
-
-                    sessionNotOnOrAfter = DateTimeHelper.EarliestTime(sessionNotOnOrAfter,
-                    token.Assertion.Statements.OfType<Saml2AuthenticationStatement>()
-                        .SingleOrDefault()?.SessionNotOnOrAfter);
-
                     yield return handler.CreateClaims(token);
                 }
             }
         }
-        
+
         /// <summary>
         /// RelayState attached to the message.
         /// </summary>
         public string RelayState { get; } = null;
-
-        private DateTime? sessionNotOnOrAfter;
-
-        /// <summary>
-        /// Session termination time for a session generated from this
-        /// response.
-        /// </summary>
-        [SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "GetClaims")]
-        [SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "SessionNotOnOrAfter")]
-        public DateTime? SessionNotOnOrAfter
-        {
-            get
-            {
-                if(claimsIdentities == null)
-                {
-                    // This is not a good design, but will have to do for now.
-                    // The entire Saml2Response class needs some refactoring
-                    // love - probably by extracting more stuff to the 
-                    // Saml2PSecurityTokenHandler.
-                    throw new InvalidOperationException("Accessing SessionNotOnOrAfter requires GetClaims to have been called first.");
-                }
-                return sessionNotOnOrAfter;
-            }
-        }
-
     }
 }

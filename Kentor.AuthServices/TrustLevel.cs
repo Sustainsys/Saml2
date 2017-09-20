@@ -30,7 +30,8 @@ namespace Kentor.AuthServices
         TlsTransport = 200,
 
         /// <summary>
-        /// The data was signed and have been verified by a signing key.
+        /// The data was signed and have been verified by a signing key. The 
+        /// data integrity algorithm is 160 bit Sha-1.
         /// </summary>
         Signature = 300,
 

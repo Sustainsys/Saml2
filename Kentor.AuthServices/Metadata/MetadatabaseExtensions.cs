@@ -21,16 +21,12 @@ namespace Kentor.AuthServices.Metadata
         /// <param name="metadata">Metadata to serialize.</param>
         /// <param name="signingCertificate">Certificate to sign the metadata
         /// with. Supply null to not sign.</param>
-        /// <param name="signingAlgorithm">Algorithm to use when signing.</param>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2202:Do not dispose objects multiple times")]
-        public static string ToXmlString(
-            this MetadataBase metadata,
-            X509Certificate2 signingCertificate,
-            string signingAlgorithm)
+        public static string ToXmlString(this MetadataBase metadata, X509Certificate2 signingCertificate)
         {
             var serializer = ExtendedMetadataSerializer.WriterInstance;
 
-            var xmlDoc = XmlHelpers.CreateSafeXmlDocument();
+            var xmlDoc = new XmlDocument();
             using (var xmlWriter = xmlDoc.CreateNavigator().AppendChild())
             {
                 serializer.WriteMetadata(xmlWriter, metadata);
@@ -38,7 +34,7 @@ namespace Kentor.AuthServices.Metadata
 
             if (signingCertificate != null)
             {
-                xmlDoc.Sign(signingCertificate, true, signingAlgorithm);
+                xmlDoc.Sign(signingCertificate, true);
             }
 
             return xmlDoc.OuterXml;
