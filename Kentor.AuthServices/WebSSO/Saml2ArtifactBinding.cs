@@ -26,7 +26,7 @@ namespace Kentor.AuthServices.WebSso
         /// <returns></returns>
         protected internal override bool CanUnbind(HttpRequestData request)
         {
-            if (request == null)
+            if(request == null)
             {
                 throw new ArgumentNullException(nameof(request));
             }
@@ -45,11 +45,11 @@ namespace Kentor.AuthServices.WebSso
         /// <returns>True if the binding supports the current request.</returns>
         public override UnbindResult Unbind(HttpRequestData request, IOptions options)
         {
-            if (request == null)
+            if(request == null)
             {
                 throw new ArgumentNullException(nameof(request));
             }
-            if (options == null)
+            if(options == null)
             {
                 throw new ArgumentNullException(nameof(options));
             }
@@ -57,7 +57,7 @@ namespace Kentor.AuthServices.WebSso
             string relayState;
             string artifact;
 
-            switch (request.HttpMethod)
+            switch(request.HttpMethod)
             {
                 case "GET":
                     relayState = request.QueryString["RelayState"].SingleOrDefault();
@@ -90,19 +90,25 @@ namespace Kentor.AuthServices.WebSso
             var arsIndex = (binaryArtifact[2] << 8) | binaryArtifact[3];
             var arsUri = idp.ArtifactResolutionServiceUrls[arsIndex];
 
-            var payload = new Saml2ArtifactResolve
+            var payload = new Saml2ArtifactResolve()
             {
                 Artifact = artifact,
                 Issuer = options.SPOptions.EntityId
             }.ToXml();
 
-            var signingServiceCertificate = options.SPOptions.SigningServiceCertificate;
-            var artifactResolutionTlsCertificate = options.SPOptions.ArtifactResolutionTlsCertificate;
+            if (options.SPOptions.SigningServiceCertificate != null)
+            {
+                var xmlDoc = XmlHelpers.XmlDocumentFromString(payload);
+                xmlDoc.Sign(options.SPOptions.SigningServiceCertificate, true);
+                payload = xmlDoc.OuterXml;
+            }
 
             options.SPOptions.Logger.WriteVerbose("Calling idp " + idp.EntityId.Id + " to resolve artifact\n" + artifact);
 
-            var response =
-                Saml2SoapBinding.SendSoapRequest(payload, arsUri, signingServiceCertificate, artifactResolutionTlsCertificate);
+            var response = Saml2SoapBinding.SendSoapRequest(
+                payload, 
+                arsUri,
+                options.SPOptions.ArtifactResolutionTlsCertificate);
 
             options.SPOptions.Logger.WriteVerbose("Artifact resolved returned\n" + response);
 
@@ -114,7 +120,7 @@ namespace Kentor.AuthServices.WebSso
             StoredRequestState storedRequestState,
             IOptions options)
         {
-            if (storedRequestState != null)
+            if(storedRequestState != null)
             {
                 return options.IdentityProviders[storedRequestState.Idp];
             }
@@ -140,7 +146,7 @@ namespace Kentor.AuthServices.WebSso
         /// that the requester should use to resolve the artifact.</param>
         public static byte[] CreateArtifact(EntityId issuer, int endpointIndex)
         {
-            if (issuer == null)
+            if(issuer == null)
             {
                 throw new ArgumentNullException(nameof(issuer));
             }
@@ -167,7 +173,7 @@ namespace Kentor.AuthServices.WebSso
         /// <returns>CommandResult.</returns>
         public override CommandResult Bind(ISaml2Message message, ILoggerAdapter logger)
         {
-            if (message == null)
+            if(message == null)
             {
                 throw new ArgumentNullException(nameof(message));
             }

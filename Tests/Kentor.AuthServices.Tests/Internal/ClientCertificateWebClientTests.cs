@@ -12,7 +12,7 @@ namespace Kentor.AuthServices.Tests.Internal
     public class ClientCertificateWebClientTests
     {
         [TestMethod]
-        public void Create_WithoutCertificate_ShouldAddNothngToRequest()
+        public void Create_WithoutCertificate_ShouldAddNothingToRequest()
         {
             var client = new TestableClientCertificateWebClient(null);
             var payload = "Doesn't matter";

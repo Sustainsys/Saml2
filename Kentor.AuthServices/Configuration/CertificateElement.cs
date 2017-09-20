@@ -3,7 +3,9 @@ using System;
 using System.Configuration;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
+using System.Linq;
 using System.Security.Cryptography.X509Certificates;
+using System.Web;
 
 namespace Kentor.AuthServices.Configuration
 {
@@ -34,8 +36,14 @@ namespace Kentor.AuthServices.Configuration
         [ConfigurationProperty("fileName")]
         public string FileName
         {
-            get { return (string) this["fileName"]; }
-            internal set { base["fileName"] = value; }
+            get
+            {
+                return (string)this["fileName"];
+            }
+            internal set
+            {
+                base["fileName"] = value;
+            }
         }
 
         /// <summary>
@@ -45,7 +53,10 @@ namespace Kentor.AuthServices.Configuration
         [ExcludeFromCodeCoverage]
         public StoreName StoreName
         {
-            get { return (StoreName) this["storeName"]; }
+            get
+            {
+                return (StoreName)this["storeName"];
+            }
         }
 
         /// <summary>
@@ -55,7 +66,10 @@ namespace Kentor.AuthServices.Configuration
         [ExcludeFromCodeCoverage]
         public StoreLocation StoreLocation
         {
-            get { return (StoreLocation) this["storeLocation"]; }
+            get
+            {
+                return (StoreLocation)this["storeLocation"];
+            }
         }
 
         /// <summary>
@@ -65,7 +79,10 @@ namespace Kentor.AuthServices.Configuration
         [ExcludeFromCodeCoverage]
         public string FindValue
         {
-            get { return (string) this["findValue"]; }
+            get
+            {
+                return (string)this["findValue"];
+            }
         }
 
         /// <summary>
@@ -75,7 +92,10 @@ namespace Kentor.AuthServices.Configuration
         [ExcludeFromCodeCoverage]
         public X509FindType X509FindType
         {
-            get { return (X509FindType) this["x509FindType"]; }
+            get
+            {
+                return (X509FindType)this["x509FindType"];
+            }
         }
 
         /// <summary>
@@ -89,39 +109,39 @@ namespace Kentor.AuthServices.Configuration
             {
                 string fileName = FileName;
                 fileName = PathHelper.MapPath(fileName);
-
+                
                 return new X509Certificate2(fileName, "", X509KeyStorageFlags.MachineKeySet);
             }
             else
             {
                 // A 0 store location indicates that attributes to load from store are not present
                 // in the config.
-                if (StoreLocation == 0)
+                if (StoreLocation != 0)
                 {
-                    return null;
-                }
-
-                var store = new X509Store(StoreName, StoreLocation);
-                try
-                {
+                    var store = new X509Store(StoreName, StoreLocation);
                     store.Open(OpenFlags.ReadOnly);
-
-                    var certs = store.Certificates.Find(X509FindType, FindValue, false);
-
-                    if (certs.Count != 1)
+                    try
                     {
-                        throw new InvalidOperationException(
-                            string.Format(CultureInfo.InvariantCulture,
+                        var certs = store.Certificates.Find(X509FindType, FindValue, false);
+
+                        if (certs.Count != 1)
+                        {
+                            throw new InvalidOperationException(
+                                string.Format(CultureInfo.InvariantCulture,
                                 "Finding cert through {0} in {1}:{2} with value {3} matched {4} certificates. A unique match is required.",
                                 X509FindType, StoreLocation, StoreName, FindValue, certs.Count));
+                        }
+
+                        return certs[0];
                     }
-
-                    return certs[0];
-
+                    finally
+                    {
+                        store.Close();
+                    }
                 }
-                finally
+                else
                 {
-                    store.Close();
+                    return null;
                 }
             }
         }

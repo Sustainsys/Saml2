@@ -10,7 +10,6 @@ using Kentor.AuthServices.Metadata;
 using Kentor.AuthServices.Saml2P;
 using System.Diagnostics.CodeAnalysis;
 using System.Collections.ObjectModel;
-using System.Security.Cryptography.X509Certificates;
 
 namespace Kentor.AuthServices.Configuration
 {
