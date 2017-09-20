@@ -10,7 +10,7 @@ namespace Kentor.AuthServices.Internal
     /// </summary>
     internal class ClientCertificateWebClient : WebClient
     {
-        private readonly X509Certificate2 _certificate;
+        private readonly X509Certificate2 certificate;
 
         /// <summary>
         /// Register the certificate to be used for this requets.
@@ -18,7 +18,7 @@ namespace Kentor.AuthServices.Internal
         /// <param name="certificate"></param>
         public ClientCertificateWebClient(X509Certificate2 certificate)
         {
-            _certificate = certificate;
+            this.certificate = certificate;
         }
 
         /// <summary>
@@ -31,9 +31,9 @@ namespace Kentor.AuthServices.Internal
         {
             var request = (HttpWebRequest)base.GetWebRequest(address);
 
-            if (_certificate != null)
+            if (certificate != null)
             {
-                request.ClientCertificates.Add(_certificate);
+                request.ClientCertificates.Add(certificate);
             }
 
             return request;
