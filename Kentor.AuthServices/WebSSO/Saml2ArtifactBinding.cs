@@ -182,7 +182,7 @@ namespace Kentor.AuthServices.WebSso
 
             ((IDictionary<byte[], ISaml2Message>)PendingMessages).Add(artifact, message);
 
-            var relayParam = string.IsNullOrEmpty(message.RelayState) ? ""
+            var relayParam = string.IsNullOrEmpty(message.RelayState) ? "" 
                 : "&RelayState=" + Uri.EscapeDataString(message.RelayState);
 
             return new CommandResult
