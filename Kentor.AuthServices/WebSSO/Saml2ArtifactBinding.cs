@@ -32,7 +32,7 @@ namespace Kentor.AuthServices.WebSso
             }
 
             return (request.HttpMethod == "GET" && request.QueryString.Contains("SAMLart"))
-                   || (request.HttpMethod == "POST" && request.Form.ContainsKey("SAMLart"));
+                || (request.HttpMethod == "POST" && request.Form.ContainsKey("SAMLart"));
         }
 
         /// <summary>
@@ -132,7 +132,7 @@ namespace Kentor.AuthServices.WebSso
 
             return options.IdentityProviders.KnownIdentityProviders
                 .Single(idp => sha1.ComputeHash(
-                        Encoding.UTF8.GetBytes(idp.EntityId.Id))
+                    Encoding.UTF8.GetBytes(idp.EntityId.Id))
                     .SequenceEqual(sourceId));
         }
 
@@ -189,9 +189,9 @@ namespace Kentor.AuthServices.WebSso
             {
                 HttpStatusCode = System.Net.HttpStatusCode.SeeOther,
                 Location = new Uri(message.DestinationUrl.OriginalString
-                                   + (string.IsNullOrEmpty(message.DestinationUrl.Query) ? "?" : "&")
-                                   + "SAMLart=" + Uri.EscapeDataString(Convert.ToBase64String(artifact))
-                                   + relayParam)
+                + (string.IsNullOrEmpty(message.DestinationUrl.Query) ? "?" : "&")
+                + "SAMLart=" + Uri.EscapeDataString(Convert.ToBase64String(artifact))
+                + relayParam)
             };
         }
 
