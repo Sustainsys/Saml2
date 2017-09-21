@@ -12,6 +12,7 @@ namespace Sustainsys.Saml2.AspNetCore2.Tests
         public DummyOptionsMonitor(Saml2Options options)
         {
             new PostConfigureSaml2Options().PostConfigure(null, options);
+            options.SignInScheme = options.SignInScheme ?? "TestSignInScheme";
             CurrentValue = options;
         }
 

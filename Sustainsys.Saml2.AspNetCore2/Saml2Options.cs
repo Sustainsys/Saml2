@@ -15,8 +15,11 @@ namespace Sustainsys.Saml2.AspNetCore2
         /// </summary>
         public Saml2Options()
         {
-            CallbackPath = new PathString("/Saml2/Acs");
-            SPOptions = new SPOptions();
+            SPOptions = new SPOptions()
+            {
+                ModulePath = "/Saml2"
+            };
+            CallbackPath = SPOptions.ModulePath + "/Acs";
         }
 
         /// <summary>

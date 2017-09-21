@@ -19,7 +19,8 @@ namespace Sustainsys.Saml2.AspNetCore2
                 request.Scheme
                 + "://"
                 + request.Host
-                + request.Path);
+                + request.Path
+                + request.QueryString);
 
             var pathBase = httpContext.Request.PathBase.Value;
             pathBase = pathBase == "" ? "/" : pathBase;
@@ -28,8 +29,9 @@ namespace Sustainsys.Saml2.AspNetCore2
                 httpContext.Request.Method,
                 uri,
                 pathBase,
-                request.Form.Select(f => new KeyValuePair<string, IEnumerable<string>>(f.Key, f.Value)),
-                null,
+                request.Form.Select(
+                    f => new KeyValuePair<string, IEnumerable<string>>(f.Key, f.Value)),
+                request.Cookies,
                 cookieDecryptor);
         }
     }

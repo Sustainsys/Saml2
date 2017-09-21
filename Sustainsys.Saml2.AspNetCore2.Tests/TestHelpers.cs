@@ -57,8 +57,8 @@ namespace Sustainsys.Saml2.AspNetCore2.Tests
             context.Request.ContentType = "application/x-www-form-urlencoded";
             context.Request.Host = new HostString("sp.example.com");
             context.Request.Scheme = "https";
-            context.Request.Path = new PathString("/somePath");
-            context.Request.PathBase = new PathString("");
+            context.Request.Path = "/somePath";
+            context.Request.PathBase = "";
             context.Request.QueryString = new QueryString("?param=value");
 
             context.Response.Body.Returns(new MemoryStream());

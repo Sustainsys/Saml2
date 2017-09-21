@@ -6,6 +6,7 @@ using Microsoft.Extensions.Options;
 using System;
 using Kentor.AuthServices.WebSso;
 using Microsoft.AspNetCore.DataProtection;
+using System.Security.Claims;
 
 namespace Sustainsys.Saml2.AspNetCore2
 {
@@ -38,7 +39,21 @@ namespace Sustainsys.Saml2.AspNetCore2
         /// <InheritDocs />
         protected override Task<HandleRequestResult> HandleRemoteAuthenticateAsync()
         {
-            throw new NotImplementedException();
+            var requestData = Context.ToHttpRequestData(dataProtector.Unprotect);
+
+            var commandResult = CommandFactory.GetCommand(CommandFactory.AcsCommandName)
+                .Run(requestData, Options);
+
+            var properties = new AuthenticationProperties(commandResult.RelayData)
+            {
+                RedirectUri = commandResult.Location.OriginalString
+            };
+
+            var ticket = new AuthenticationTicket(
+                commandResult.Principal,
+                properties,
+                Scheme.Name);
+            return Task.FromResult(HandleRequestResult.Success(ticket));
         }
 
         /// <InheritDocs />
@@ -46,8 +61,16 @@ namespace Sustainsys.Saml2.AspNetCore2
         {
             var requestData = Context.ToHttpRequestData(null);
 
-            var result = CommandFactory.GetCommand(CommandFactory.SignInCommandName)
-                .Run(requestData, Options);
+            // Don't serialize the return url twice, move it to our location.
+            var redirectUri = properties.RedirectUri;
+            properties.RedirectUri = null;
+
+            var result = SignInCommand.Run(
+                null,
+                redirectUri,
+                requestData,
+                Options,
+                properties.Items);
 
             result.Apply(Context, dataProtector);
 

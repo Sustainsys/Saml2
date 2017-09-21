@@ -11,6 +11,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Collections;
+using Kentor.AuthServices;
 
 namespace Sustainsys.Saml2.AspNetCore2.Tests
 {
@@ -21,9 +22,10 @@ namespace Sustainsys.Saml2.AspNetCore2.Tests
         public void HttpContextExtensions_ToHttpRequestData()
         {
             var context = TestHelpers.CreateHttpContext();
+
             var actual = context.ToHttpRequestData(StubDataProtector.Unprotect);
 
-            actual.Url.Should().Be(new Uri("https://sp.example.com/somePath"));
+            actual.Url.Should().Be(new Uri("https://sp.example.com/somePath?param=value"));
             actual.Form.Count.Should().Be(2);
             actual.Form["Input1"].Should().Be("Value1");
             actual.Form["Input2"].Should().Be("Value2");
@@ -36,31 +38,33 @@ namespace Sustainsys.Saml2.AspNetCore2.Tests
         {
             var context = TestHelpers.CreateHttpContext();
 
-            context.Request.PathBase = new PathString("/ApplicationPath");
+            context.Request.PathBase = "/ApplicationPath";
 
             var actual = context.ToHttpRequestData(null);
 
             actual.ApplicationUrl.Should().Be(new Uri("https://sp.example.com/ApplicationPath"));
         }
 
-        //[TestMethod]
-        //public async Task OwinContextExtensionsTests_ToHttpRequestData_ReadsRelayStateCookie()
-        //{
-        //    var ctx = OwinTestHelpers.CreateOwinContext();
-        //    ctx.Request.QueryString = new QueryString("RelayState", "SomeState");
+        [TestMethod]
+        public void HttpContextExtensionsTests_ToHttpRequestData_ReadsRelayStateCookie()
+        {
+            var context = TestHelpers.CreateHttpContext();
+            context.Request.QueryString = new QueryString("?RelayState=SomeState");
+           
+            var storedRequestState = new StoredRequestState(
+                null, new Uri("http://sp.example.com"), null, null);
 
-        //    var storedRequestState = new StoredRequestState(
-        //        null, new Uri("http://sp.example.com"), null, null);
+            var cookieData = HttpRequestData.ConvertBinaryData(
+                    StubDataProtector.Protect(storedRequestState.Serialize()));
 
-        //    var cookieData = HttpRequestData.ConvertBinaryData(
-        //            StubDataProtector.Protect(storedRequestState.Serialize()));
+            context.Request.Cookies = new StubCookieCollection(
+                Enumerable.Repeat(new KeyValuePair<string, string>(
+                    $"Kentor.SomeState", cookieData), 1));
 
-        //    ctx.Request.Headers["Cookie"] = $"Kentor.SomeState={cookieData}";
+            var actual = context.ToHttpRequestData(StubDataProtector.Unprotect);
 
-        //    var actual = await ctx.ToHttpRequestData(StubDataProtector.Unprotect);
-
-        //    actual.StoredRequestState.ShouldBeEquivalentTo(storedRequestState);
-        //}
+            actual.StoredRequestState.ShouldBeEquivalentTo(storedRequestState);
+        }
 
         //[TestMethod]
         //public void OwinContextExtensionsTests_ToHttpRequestData_HandlesRelayStateWithoutCookie()
