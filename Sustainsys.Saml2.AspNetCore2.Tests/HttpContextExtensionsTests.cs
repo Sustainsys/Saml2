@@ -46,7 +46,7 @@ namespace Sustainsys.Saml2.AspNetCore2.Tests
         }
 
         [TestMethod]
-        public void HttpContextExtensionsTests_ToHttpRequestData_ReadsRelayStateCookie()
+        public void HttpContextExtensions_ToHttpRequestData_ReadsRelayStateCookie()
         {
             var context = TestHelpers.CreateHttpContext();
             context.Request.QueryString = new QueryString("?RelayState=SomeState");
@@ -66,15 +66,14 @@ namespace Sustainsys.Saml2.AspNetCore2.Tests
             actual.StoredRequestState.ShouldBeEquivalentTo(storedRequestState);
         }
 
-        //[TestMethod]
-        //public void OwinContextExtensionsTests_ToHttpRequestData_HandlesRelayStateWithoutCookie()
-        //{
-        //    var ctx = OwinTestHelpers.CreateOwinContext();
-        //    ctx.Request.QueryString = new QueryString("RelayState", "SomeState");
+        [TestMethod]
+        public void OwinContextExtensions_ToHttpRequestData_HandlesRelayStateWithoutCookie()
+        {
+            var context = TestHelpers.CreateHttpContext();
+            context.Request.QueryString = new QueryString("?RelayState=SomeState");
 
-        //    ctx.Invoking(async c => await c.ToHttpRequestData(null))
-        //        .ShouldNotThrow();
-        //}
-
+            context.Invoking(c => c.ToHttpRequestData(null))
+                .ShouldNotThrow();
+        }
     }
 }
