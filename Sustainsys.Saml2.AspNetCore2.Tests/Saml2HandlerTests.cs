@@ -109,18 +109,6 @@ namespace Sustainsys.Saml2.AspNetCore2.Tests
         }
 
         [TestMethod]
-        public async Task Saml2Handler_HandleChallengeAsync_NullChecksProperties()
-        {
-            var context = new Saml2HandlerTestContext();
-
-            await context.Subject.ChallengeAsync(null);
-
-            context.Subject.Invoking(async s => await s.ChallengeAsync(null))
-                .ShouldThrow<ArgumentNullException>().
-                 And.ParamName.Should().Be("properties");
-        }
-
-        [TestMethod]
         public async Task Saml2Handler_Acs_Works()
         {
             var context = new Saml2HandlerTestContext();
@@ -217,6 +205,28 @@ namespace Sustainsys.Saml2.AspNetCore2.Tests
             actualAuthProps.Items["Test"].Should().Be("TestValue");
 
             context.HttpContext.Response.Received().Redirect(state.ReturnUrl.OriginalString);
+        }
+
+        [TestMethod]
+        public void Saml2Handler_ShouldHandleRequestAsync_ChecksModulePath()
+        {
+            var context = new Saml2HandlerTestContext();
+            context.HttpContext.Request.Path = "/TestPath/Acs";
+
+            context.Options.CurrentValue.SPOptions.ModulePath = "/TestPath";
+
+            context.Subject.ShouldHandleRequestAsync().Result.Should().BeTrue();
+        }
+
+        [TestMethod]
+        public void Saml2Handler_ShouldHandleRequestAsync_IgnoresCallbackPath()
+        {
+            var context = new Saml2HandlerTestContext();
+            context.HttpContext.Request.Path = "/TestPath";
+
+            context.Options.CurrentValue.CallbackPath = "/TestPath";
+
+            context.Subject.ShouldHandleRequestAsync().Result.Should().BeFalse();
         }
     }
 }

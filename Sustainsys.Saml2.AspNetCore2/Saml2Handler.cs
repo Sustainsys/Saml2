@@ -82,5 +82,12 @@ namespace Sustainsys.Saml2.AspNetCore2
 
             return Task.CompletedTask;
         }
+
+        /// <InheritDocs />
+        public override Task<bool> ShouldHandleRequestAsync()
+        {
+            var acsPath = Options.SPOptions.ModulePath + "/" + CommandFactory.AcsCommandName;
+            return Task.FromResult(acsPath == Request.Path);
+        }
     }
 }

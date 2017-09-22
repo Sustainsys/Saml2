@@ -1,4 +1,5 @@
 ﻿using Kentor.AuthServices.Configuration;
+using Kentor.AuthServices.WebSso;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
 using System;
@@ -19,7 +20,7 @@ namespace Sustainsys.Saml2.AspNetCore2
             {
                 ModulePath = "/Saml2"
             };
-            CallbackPath = SPOptions.ModulePath + "/Acs";
+            CallbackPath = "/The CallbackPath property isn't used by the Saml2 Service, it is built from the ModulePath in the SPOptions";
         }
 
         /// <summary>
