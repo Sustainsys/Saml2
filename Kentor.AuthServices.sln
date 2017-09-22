@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26730.15
+VisualStudioVersion = 15.0.26730.16
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kentor.AuthServices", "Kentor.AuthServices\Kentor.AuthServices.csproj", "{93BA675E-A159-4701-B68B-C4B81015C556}"
 EndProject
@@ -66,6 +66,12 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kentor.AuthServices.Owin.Te
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kentor.AuthServices.HttpModule.Tests", "Tests\Kentor.AuthServices.HttpModule.Tests\Kentor.AuthServices.HttpModule.Tests.csproj", "{4D3EADFB-93E9-4F66-BD61-FBAC9E30A294}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SampleAspNetCore2ApplicationNETFramework", "Samples\SampleAspNetCore2ApplicationNETFramework\SampleAspNetCore2ApplicationNETFramework.csproj", "{8EB3820A-4DB4-4875-A155-6C3D7458983E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sustainsys.Saml2.AspNetCore2", "Sustainsys.Saml2.AspNetCore2\Sustainsys.Saml2.AspNetCore2.csproj", "{0A1A7E8C-838C-4114-894B-564592417AFA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sustainsys.Saml2.AspNetCore2.Tests", "Tests\Sustainsys.Saml2.AspNetCore2.Tests\Sustainsys.Saml2.AspNetCore2.Tests.csproj", "{20359A9A-6435-4264-8B36-22CD76731432}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -128,6 +134,18 @@ Global
 		{4D3EADFB-93E9-4F66-BD61-FBAC9E30A294}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4D3EADFB-93E9-4F66-BD61-FBAC9E30A294}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4D3EADFB-93E9-4F66-BD61-FBAC9E30A294}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8EB3820A-4DB4-4875-A155-6C3D7458983E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8EB3820A-4DB4-4875-A155-6C3D7458983E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8EB3820A-4DB4-4875-A155-6C3D7458983E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8EB3820A-4DB4-4875-A155-6C3D7458983E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0A1A7E8C-838C-4114-894B-564592417AFA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0A1A7E8C-838C-4114-894B-564592417AFA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0A1A7E8C-838C-4114-894B-564592417AFA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0A1A7E8C-838C-4114-894B-564592417AFA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{20359A9A-6435-4264-8B36-22CD76731432}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{20359A9A-6435-4264-8B36-22CD76731432}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{20359A9A-6435-4264-8B36-22CD76731432}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{20359A9A-6435-4264-8B36-22CD76731432}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -142,6 +160,8 @@ Global
 		{CF1E517E-B2FE-48E1-8BB9-4D9981695C47} = {F3C8CC66-4CE9-4683-BC31-B89AF47A5897}
 		{0E01A985-54CC-4190-851F-6475C7BB1A5D} = {F3C8CC66-4CE9-4683-BC31-B89AF47A5897}
 		{4D3EADFB-93E9-4F66-BD61-FBAC9E30A294} = {F3C8CC66-4CE9-4683-BC31-B89AF47A5897}
+		{8EB3820A-4DB4-4875-A155-6C3D7458983E} = {09639770-8C2B-4D30-BBFC-4F6DD1A92C89}
+		{20359A9A-6435-4264-8B36-22CD76731432} = {F3C8CC66-4CE9-4683-BC31-B89AF47A5897}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {A8812E38-A212-46DD-B51F-AB653F39E4ED}

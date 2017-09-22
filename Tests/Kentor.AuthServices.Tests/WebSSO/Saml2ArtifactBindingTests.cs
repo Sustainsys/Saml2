@@ -175,10 +175,10 @@ namespace Kentor.AuthServices.Tests.WebSSO
                 "POST",
                 new Uri("http://example.com"),
                 "/ModulePath",
-                new KeyValuePair<string, string[]>[]
+                new KeyValuePair<string, IEnumerable<string>>[]
                 {
-                    new KeyValuePair<string, string[]>("SAMLart", new[] { artifact }),
-                    new KeyValuePair<string, string[]>("RelayState", new[] { relayState })
+                    new KeyValuePair<string, IEnumerable<string>>("SAMLart", new[] { artifact }),
+                    new KeyValuePair<string, IEnumerable<string>>("RelayState", new[] { relayState })
                 },
                 new StoredRequestState(issuer, null, null, null));
 
@@ -207,9 +207,9 @@ namespace Kentor.AuthServices.Tests.WebSSO
                 "POST",
                 new Uri("http://example.com"),
                 "/ModulePath",
-                new KeyValuePair<string, string[]>[]
+                new KeyValuePair<string, IEnumerable<string>>[]
                 {
-                    new KeyValuePair<string, string[]>("SAMLart", new[] { artifact }),
+                    new KeyValuePair<string, IEnumerable<string>>("SAMLart", new[] { artifact }),
                 },
                 null,
                 null);

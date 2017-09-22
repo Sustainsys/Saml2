@@ -20,9 +20,9 @@ namespace Kentor.AuthServices.Tests.WebSso
                 "POST",
                 new Uri("http://example.com"),
                 "/ModulePath",
-                new KeyValuePair<string, string[]>[]
+                new KeyValuePair<string, IEnumerable<string>>[]
                 {
-                    new KeyValuePair<string, string[]>("SAMLResponse", new string[] { "Some Data" })
+                    new KeyValuePair<string, IEnumerable<string>>("SAMLResponse", new string[] { "Some Data" })
                 },
                 null,
                 null);
@@ -47,9 +47,9 @@ namespace Kentor.AuthServices.Tests.WebSso
                 "POST",
                 new Uri("http://example.com/ModulePath"),
                 "/ModulePath",
-                new KeyValuePair<string, string[]>[]
+                new KeyValuePair<string, IEnumerable<string>>[]
                 {
-                    new KeyValuePair<string, string[]>("SAMLart", new string[] { "Some Data" })
+                    new KeyValuePair<string, IEnumerable<string>>("SAMLart", new string[] { "Some Data" })
                 },
                 null,
                 null);
@@ -72,9 +72,9 @@ namespace Kentor.AuthServices.Tests.WebSso
                 "GET",
                 new Uri("http://example.com"),
                 "/ModulePath",
-                new KeyValuePair<string, string[]>[]
+                new KeyValuePair<string, IEnumerable<string>>[]
                 {
-                    new KeyValuePair<string, string[]>("SAMLResponse", new string[] { "Some Data" })
+                    new KeyValuePair<string, IEnumerable<string>>("SAMLResponse", new string[] { "Some Data" })
                 },
                 null,
                 null);
@@ -89,9 +89,9 @@ namespace Kentor.AuthServices.Tests.WebSso
                 "GET",
                 new Uri("http://example.com"),
                 "/ModulePath",
-                new KeyValuePair<string, string[]>[]
+                new KeyValuePair<string, IEnumerable<string>>[]
                 {
-                    new KeyValuePair<string, string[]>("SAMLart", new string[] { "Some Data" })
+                    new KeyValuePair<string, IEnumerable<string>>("SAMLart", new string[] { "Some Data" })
                 },
                 null,
                 null);
