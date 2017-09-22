@@ -25,6 +25,11 @@ namespace Microsoft.Extensions.DependencyInjection
             this AuthenticationBuilder builder,
             Action<Saml2Options> options)
         {
+            if(builder == null)
+            {
+                throw new ArgumentNullException(nameof(builder));
+            }
+
             builder.Services.TryAddEnumerable(ServiceDescriptor.Singleton<IPostConfigureOptions<Saml2Options>, PostConfigureSaml2Options>());
 
             return builder.AddRemoteScheme<Saml2Options, Saml2Handler>(

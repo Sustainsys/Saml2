@@ -12,6 +12,11 @@ namespace Sustainsys.Saml2.AspNetCore2
     {
         public void PostConfigure(string name, Saml2Options options)
         {
+            if(options == null)
+            {
+                throw new ArgumentNullException(nameof(options));
+            }
+
             options.SPOptions.Logger = options.SPOptions.Logger ?? new NullLoggerAdapter();
         }
     }

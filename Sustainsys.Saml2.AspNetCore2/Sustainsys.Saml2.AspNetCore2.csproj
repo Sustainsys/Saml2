@@ -21,7 +21,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <DocumentationFile>bin\Debug\Sustainsys.Saml2.AspNetCore2.xml</DocumentationFile>
-    <RunCodeAnalysis>false</RunCodeAnalysis>
+    <RunCodeAnalysis>true</RunCodeAnalysis>
     <CodeAnalysisRuleSet>..\Kentor.AuthServices.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
@@ -138,6 +138,7 @@
       <Link>VersionInfo.cs</Link>
     </Compile>
     <Compile Include="CommandResultExtensions.cs" />
+    <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="HttpRequestExtensions.cs" />
     <Compile Include="PostConfigureSaml2Options.cs" />
     <Compile Include="Saml2Defaults.cs" />
@@ -154,6 +155,11 @@
       <Project>{93BA675E-A159-4701-B68B-C4B81015C556}</Project>
       <Name>Kentor.AuthServices</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <CodeAnalysisDictionary Include="..\CustomDictionary.xml">
+      <Link>CustomDictionary.xml</Link>
+    </CodeAnalysisDictionary>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

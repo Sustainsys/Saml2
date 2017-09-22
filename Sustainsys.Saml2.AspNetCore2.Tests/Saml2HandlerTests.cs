@@ -109,6 +109,18 @@ namespace Sustainsys.Saml2.AspNetCore2.Tests
         }
 
         [TestMethod]
+        public async Task Saml2Handler_HandleChallengeAsync_NullChecksProperties()
+        {
+            var context = new Saml2HandlerTestContext();
+
+            await context.Subject.ChallengeAsync(null);
+
+            context.Subject.Invoking(async s => await s.ChallengeAsync(null))
+                .ShouldThrow<ArgumentNullException>().
+                 And.ParamName.Should().Be("properties");
+        }
+
+        [TestMethod]
         public async Task Saml2Handler_Acs_Works()
         {
             var context = new Saml2HandlerTestContext();

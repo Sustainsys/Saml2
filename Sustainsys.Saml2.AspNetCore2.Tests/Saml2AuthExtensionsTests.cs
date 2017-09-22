@@ -3,6 +3,7 @@ using FluentAssertions;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System;
 using System.Linq;
 
 namespace Sustainsys.Saml2.AspNetCore2.Tests
@@ -23,6 +24,15 @@ namespace Sustainsys.Saml2.AspNetCore2.Tests
 
             serviceCollection.Should().Contain(
                 sd => sd.ImplementationType == typeof(PostConfigureSaml2Options));
+        }
+
+        [TestMethod]
+        public void Saml2AuthExtensions_AddSaml2_NullCheckBuilder()
+        {
+            AuthenticationBuilder builder = null;
+
+            builder.Invoking(b => b.AddSaml2(opt => { }))
+                .ShouldThrow<ArgumentNullException>();
         }
     }
 }

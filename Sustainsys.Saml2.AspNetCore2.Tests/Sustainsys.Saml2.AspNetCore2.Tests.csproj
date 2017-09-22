@@ -99,6 +99,7 @@
     <Compile Include="CommandResultExtensionsTests.cs" />
     <Compile Include="DummyOptionsMonitor.cs" />
     <Compile Include="HttpContextExtensionsTests.cs" />
+    <Compile Include="PostConfigureSaml2OptionsTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Saml2AuthExtensionsTests.cs" />
     <Compile Include="Saml2HandlerTests.cs" />

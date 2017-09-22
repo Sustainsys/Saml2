@@ -33,6 +33,11 @@ namespace Sustainsys.Saml2.AspNetCore2
             IDataProtectionProvider dataProtectorProvider) 
             : base(options, logger, encoder, clock)
         {
+            if(dataProtectorProvider == null)
+            {
+                throw new ArgumentNullException(nameof(dataProtectorProvider));
+            }
+
             dataProtector = dataProtectorProvider.CreateProtector(GetType().FullName);
         }
 
@@ -57,6 +62,7 @@ namespace Sustainsys.Saml2.AspNetCore2
         }
 
         /// <InheritDocs />
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1062:Validate arguments of public methods", MessageId = "0", Justification = "Upstream caller ensures it's not null")]
         protected override Task HandleChallengeAsync(AuthenticationProperties properties)
         {
             var requestData = Context.ToHttpRequestData(null);

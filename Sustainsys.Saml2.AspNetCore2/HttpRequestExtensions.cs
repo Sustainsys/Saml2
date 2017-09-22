@@ -23,7 +23,7 @@ namespace Sustainsys.Saml2.AspNetCore2
                 + request.QueryString);
 
             var pathBase = httpContext.Request.PathBase.Value;
-            pathBase = pathBase == "" ? "/" : pathBase;
+            pathBase = string.IsNullOrEmpty(pathBase) ? "/" : pathBase;
 
             return new HttpRequestData(
                 httpContext.Request.Method,
