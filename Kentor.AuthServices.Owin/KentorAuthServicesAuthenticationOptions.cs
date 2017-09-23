@@ -1,15 +1,6 @@
 ﻿using Kentor.AuthServices.Configuration;
-using Microsoft.Owin;
 using Microsoft.Owin.Security;
 using Microsoft.Owin.Security.DataProtection;
-using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.IdentityModel.Configuration;
-using System.IdentityModel.Metadata;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Kentor.AuthServices.Owin
 {

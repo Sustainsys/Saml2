@@ -38,5 +38,18 @@ namespace Kentor.AuthServices.Configuration
                 return (bool)base[allowUnsolicitedAuthnResponse];
             }
         }
+
+        /// <summary>
+        /// Signing certificates for the federation
+        /// </summary>
+        [ConfigurationProperty("", IsDefaultCollection = true)]
+        [ConfigurationCollection(typeof(CertificateCollection), AddItemName = "signingCertificate")]
+        public CertificateCollection SigningCertificates
+        {
+            get
+            {
+                return (CertificateCollection)base[""];
+            }
+        }
     }
 }
