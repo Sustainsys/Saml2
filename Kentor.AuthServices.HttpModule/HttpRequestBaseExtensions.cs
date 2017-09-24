@@ -56,7 +56,7 @@ namespace Kentor.AuthServices.HttpModule
                 requestBase.Url,
                 requestBase.ApplicationPath,
                 requestBase.Form.Cast<string>().Select((de, i) =>
-                    new KeyValuePair<string, string[]>(de, ((string)requestBase.Form[i]).Split(','))),
+                    new KeyValuePair<string, IEnumerable<string>>(de, ((string)requestBase.Form[i]).Split(','))),
                 cookies,
                 v => MachineKey.Unprotect(v, ProtectionPurpose),
                 ClaimsPrincipal.Current);

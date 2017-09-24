@@ -16,14 +16,14 @@ namespace Kentor.AuthServices.Tests.WebSso
     {
         private HttpRequestData CreateRequest(string encodedResponse, string relayState = null)
         {
-            var formData = new List<KeyValuePair<string, string[]>>()
+            var formData = new List<KeyValuePair<string, IEnumerable<string>>>()
             {
-                new KeyValuePair<string, string[]>("SAMLResponse", new string[] {encodedResponse })
+                new KeyValuePair<string, IEnumerable<string>>("SAMLResponse", new string[] {encodedResponse })
             };
 
             if (!string.IsNullOrEmpty(relayState))
             {
-                formData.Add(new KeyValuePair<string, string[]>("RelayState", new string[] { relayState }));
+                formData.Add(new KeyValuePair<string, IEnumerable<string>>("RelayState", new string[] { relayState }));
             };
 
             return new HttpRequestData(
@@ -271,9 +271,9 @@ value=""" + expectedValue + @"""/>
                 "POST",
                 new Uri("http://something"),
                 "/path",
-                new KeyValuePair<string, string[]>[]
+                new KeyValuePair<string, IEnumerable<string>>[]
                 {
-                    new KeyValuePair<string, string[]>("SAMLRequest", new[] { requestData })
+                    new KeyValuePair<string, IEnumerable<string>>("SAMLRequest", new[] { requestData })
                 },
                 null,
                 null);
@@ -291,9 +291,9 @@ value=""" + expectedValue + @"""/>
                 "POST",
                 new Uri("http://something"),
                 "/path",
-                new KeyValuePair<string, string[]>[]
+                new KeyValuePair<string, IEnumerable<string>>[]
                 {
-                    new KeyValuePair<string, string[]>("SAMLRequest", new[] { requestData })
+                    new KeyValuePair<string, IEnumerable<string>>("SAMLRequest", new[] { requestData })
                 },
                 null,
                 null);

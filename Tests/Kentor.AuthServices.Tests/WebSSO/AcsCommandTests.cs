@@ -60,9 +60,9 @@ namespace Kentor.AuthServices.Tests.WebSso
                 "POST",
                 new Uri("http://localhost"),
                 "/ModulePath",
-                new KeyValuePair<string, string[]>[]
+                new KeyValuePair<string, IEnumerable<string>>[]
                 {
-                    new KeyValuePair<string, string[]>("SAMLResponse", new string[] { "#¤!2" })
+                    new KeyValuePair<string, IEnumerable<string>>("SAMLResponse", new string[] { "#¤!2" })
                 },
                 Enumerable.Empty<KeyValuePair<string, string>>(),
                 null);
@@ -82,9 +82,9 @@ namespace Kentor.AuthServices.Tests.WebSso
                 "POST",
                 new Uri("http://localhost"),
                 "/ModulePath",
-                new KeyValuePair<string, string[]>[]
+                new KeyValuePair<string, IEnumerable<string>>[]
                 {
-                    new KeyValuePair<string, string[]>("SAMLResponse", new string[] { encoded })
+                    new KeyValuePair<string, IEnumerable<string>>("SAMLResponse", new string[] { encoded })
                 },
                 Enumerable.Empty<KeyValuePair<string, string>>(),
                 null);
@@ -109,9 +109,9 @@ namespace Kentor.AuthServices.Tests.WebSso
                 "POST",
                 new Uri("http://localhost"),
                 "/ModulePath",
-                new KeyValuePair<string, string[]>[]
+                new KeyValuePair<string, IEnumerable<string>>[]
                 {
-                    new KeyValuePair<string, string[]>("SAMLResponse", new string[] { encoded })
+                    new KeyValuePair<string, IEnumerable<string>>("SAMLResponse", new string[] { encoded })
                 },
                 Enumerable.Empty<KeyValuePair<string, string>>(),
                 null);
@@ -131,9 +131,9 @@ namespace Kentor.AuthServices.Tests.WebSso
                 "POST",
                 new Uri("http://localhost"),
                 "/ModulePath",
-                new KeyValuePair<string, string[]>[]
+                new KeyValuePair<string, IEnumerable<string>>[]
                 {
-                    new KeyValuePair<string, string[]>("SAMLResponse", new string[] { encoded })
+                    new KeyValuePair<string, IEnumerable<string>>("SAMLResponse", new string[] { encoded })
                 },
                 Enumerable.Empty<KeyValuePair<string, string>>(),
                 null);
@@ -158,9 +158,9 @@ namespace Kentor.AuthServices.Tests.WebSso
                 "POST",
                 new Uri("http://localhost"),
                 "/ModulePath",
-                new KeyValuePair<string, string[]>[]
+                new KeyValuePair<string, IEnumerable<string>>[]
                 {
-                    new KeyValuePair<string, string[]>("SAMLart", new string[] { artifactString })
+                    new KeyValuePair<string, IEnumerable<string>>("SAMLart", new string[] { artifactString })
                 },
                 Enumerable.Empty<KeyValuePair<string, string>>(),
                 null);
@@ -204,9 +204,9 @@ namespace Kentor.AuthServices.Tests.WebSso
                 "POST",
                 new Uri("http://localhost"),
                 "/ModulePath",
-                new KeyValuePair<string, string[]>[]
+                new KeyValuePair<string, IEnumerable<string>>[]
                 {
-                    new KeyValuePair<string, string[]>("SAMLResponse", new string[] { formValue })
+                    new KeyValuePair<string, IEnumerable<string>>("SAMLResponse", new string[] { formValue })
                 },
                 Enumerable.Empty<KeyValuePair<string, string>>(),
                 null);
@@ -263,10 +263,10 @@ namespace Kentor.AuthServices.Tests.WebSso
                 "POST",
                 new Uri("http://localhost"),
                 "/ModulePath",
-                new KeyValuePair<string, string[]>[]
+                new KeyValuePair<string, IEnumerable<string>>[]
                 {
-                    new KeyValuePair<string, string[]>("SAMLResponse", new string[] { responseFormValue }),
-                    new KeyValuePair<string, string[]>("RelayState", new string[] { relayStateFormValue })
+                    new KeyValuePair<string, IEnumerable<string>>("SAMLResponse", new string[] { responseFormValue }),
+                    new KeyValuePair<string, IEnumerable<string>>("RelayState", new string[] { relayStateFormValue })
                 },
                 new StoredRequestState(
                     new EntityId("https://idp.example.com"),
@@ -325,9 +325,9 @@ namespace Kentor.AuthServices.Tests.WebSso
                 "POST",
                 new Uri("http://localhost"),
                 "/ModulePath",
-                new KeyValuePair<string, string[]>[]
+                new KeyValuePair<string, IEnumerable<string>>[]
                 {
-                    new KeyValuePair<string, string[]>("SAMLResponse", new string[] { responseFormValue }),
+                    new KeyValuePair<string, IEnumerable<string>>("SAMLResponse", new string[] { responseFormValue }),
                 },
                 null);
 
@@ -379,10 +379,10 @@ namespace Kentor.AuthServices.Tests.WebSso
                 "POST",
                 new Uri("http://localhost"),
                 "/ModulePath",
-                new KeyValuePair<string, string[]>[]
+                new KeyValuePair<string, IEnumerable<string>>[]
                 {
-                    new KeyValuePair<string, string[]>("SAMLResponse", new string[] { responseFormValue }),
-                    new KeyValuePair<string, string[]>("RelayState", new string[] { relayStateFormValue })
+                    new KeyValuePair<string, IEnumerable<string>>("SAMLResponse", new string[] { responseFormValue }),
+                    new KeyValuePair<string, IEnumerable<string>>("RelayState", new string[] { relayStateFormValue })
                 },
                 new StoredRequestState(
                     new EntityId("https://idp.example.com"),
@@ -430,9 +430,9 @@ namespace Kentor.AuthServices.Tests.WebSso
                 "POST",
                 new Uri("http://localhost"),
                 "/ModulePath",
-                new KeyValuePair<string, string[]>[]
+                new KeyValuePair<string, IEnumerable<string>>[]
                 {
-                    new KeyValuePair<string, string[]>("SAMLResponse", new string[] { formValue })
+                    new KeyValuePair<string, IEnumerable<string>>("SAMLResponse", new string[] { formValue })
                 },
                 Enumerable.Empty<KeyValuePair<string, string>>(),
                 null);
@@ -477,9 +477,9 @@ namespace Kentor.AuthServices.Tests.WebSso
                 "POST",
                 new Uri("http://localhost"),
                 "/ModulePath",
-                new KeyValuePair<string, string[]>[]
+                new KeyValuePair<string, IEnumerable<string>>[]
                 {
-                    new KeyValuePair<string, string[]>("SAMLResponse", new string[] { formValue })
+                    new KeyValuePair<string, IEnumerable<string>>("SAMLResponse", new string[] { formValue })
                 },
                 new StoredRequestState(new EntityId("https://idp.example.com"), null, new Saml2Id("InResponseToId"), null));
 
@@ -535,9 +535,9 @@ namespace Kentor.AuthServices.Tests.WebSso
                 "POST",
                 new Uri("http://localhost"),
                 "/ModulePath",
-                new KeyValuePair<string, string[]>[]
+                new KeyValuePair<string, IEnumerable<string>>[]
                 {
-                    new KeyValuePair<string, string[]>("SAMLResponse", new string[] { formValue })
+                    new KeyValuePair<string, IEnumerable<string>>("SAMLResponse", new string[] { formValue })
                 },
                 null);
 
@@ -601,9 +601,9 @@ namespace Kentor.AuthServices.Tests.WebSso
                 "POST",
                 new Uri("http://localhost"),
                 "/ModulePath",
-                new KeyValuePair<string, string[]>[]
+                new KeyValuePair<string, IEnumerable<string>>[]
                 {
-                    new KeyValuePair<string, string[]>("SAMLResponse", new string[] { formValue })
+                    new KeyValuePair<string, IEnumerable<string>>("SAMLResponse", new string[] { formValue })
                 },
                 null);
 
@@ -653,9 +653,9 @@ namespace Kentor.AuthServices.Tests.WebSso
                 "POST",
                 new Uri("http://localhost"),
                 "/ModulePath",
-                new KeyValuePair<string, string[]>[]
+                new KeyValuePair<string, IEnumerable<string>>[]
                 {
-                    new KeyValuePair<string, string[]>("SAMLResponse", new string[] { formValue })
+                    new KeyValuePair<string, IEnumerable<string>>("SAMLResponse", new string[] { formValue })
                 },
                 null);
 

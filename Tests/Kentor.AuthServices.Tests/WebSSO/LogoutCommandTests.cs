@@ -385,10 +385,10 @@ namespace Kentor.AuthServices.Tests.WebSSO
                 "POST",
                 new Uri("http://something"),
                 "/path",
-                new KeyValuePair<string, string[]>[]
+                new KeyValuePair<string, IEnumerable<string>>[]
                 {
-                    new KeyValuePair<string, string[]>("SAMLResponse", new[] { responseData }),
-                    new KeyValuePair<string, string[]>("RelayState", new[] { relayState })
+                    new KeyValuePair<string, IEnumerable<string>>("SAMLResponse", new[] { responseData }),
+                    new KeyValuePair<string, IEnumerable<string>>("RelayState", new[] { relayState })
                 },
                 Enumerable.Empty<KeyValuePair<string, string>>(),
                 null);
@@ -510,9 +510,9 @@ namespace Kentor.AuthServices.Tests.WebSSO
                 "POST",
                 new Uri("http://something"),
                 "/path",
-                new KeyValuePair<string, string[]>[]
+                new KeyValuePair<string, IEnumerable<string>>[]
                 {
-                    new KeyValuePair<string, string[]>("SAMLRequest", new[] { requestData })
+                    new KeyValuePair<string, IEnumerable<string>>("SAMLRequest", new[] { requestData })
                 },
                 null,
                 null);
@@ -549,9 +549,9 @@ namespace Kentor.AuthServices.Tests.WebSSO
                 "POST",
                 new Uri("http://something"),
                 "/path",
-                new KeyValuePair<string, string[]>[]
+                new KeyValuePair<string, IEnumerable<string>>[]
                 {
-                    new KeyValuePair<string, string[]>("SAMLRequest", new[] { requestData })
+                    new KeyValuePair<string, IEnumerable<string>>("SAMLRequest", new[] { requestData })
                 },
                 null,
                 null);
@@ -587,9 +587,9 @@ namespace Kentor.AuthServices.Tests.WebSSO
                 "POST",
                 new Uri("http://something"),
                 "/path",
-                new KeyValuePair<string, string[]>[]
+                new KeyValuePair<string, IEnumerable<string>>[]
                 {
-                    new KeyValuePair<string, string[]>("SAMLRequest", new[] { requestData })
+                    new KeyValuePair<string, IEnumerable<string>>("SAMLRequest", new[] { requestData })
                 },
                 null,
                 null);

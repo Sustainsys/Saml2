@@ -51,9 +51,9 @@ namespace Kentor.AuthServices.HttpModule.Tests
                 "GET",
                 url,
                 appPath,
-                new KeyValuePair<string, string[]>[]
+                new KeyValuePair<string, IEnumerable<string>>[]
                 {
-                    new KeyValuePair<string, string[]>("Key", new string[] { "Value" })
+                    new KeyValuePair<string, IEnumerable<string>>("Key", new string[] { "Value" })
                 },
                 Enumerable.Empty<KeyValuePair<string, string>>(),
                 null, 
@@ -85,9 +85,9 @@ namespace Kentor.AuthServices.HttpModule.Tests
                 "GET",
                 url,
                 appPath,
-                new KeyValuePair<string, string[]>[]
+                new KeyValuePair<string, IEnumerable<string>>[]
                 {
-                    new KeyValuePair<string, string[]>("Key", new string[] { "Value" })
+                    new KeyValuePair<string, IEnumerable<string>>("Key", new string[] { "Value" })
                 },
                 Enumerable.Empty<KeyValuePair<string, string>>(),
                 null,

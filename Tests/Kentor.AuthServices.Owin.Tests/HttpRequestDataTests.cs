@@ -40,7 +40,7 @@ namespace Kentor.AuthServices.Owin.Tests
                  "GET",
                  url,
                  appPath,
-                 Enumerable.Empty<KeyValuePair<string, string[]>>(),
+                 Enumerable.Empty<KeyValuePair<string, IEnumerable<string>>>(),
                  cookies,
                  StubDataProtector.Unprotect);
 
