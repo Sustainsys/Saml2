@@ -120,17 +120,20 @@ namespace Kentor.AuthServices.Saml2P
             {
                 var nameIdClaim = subject.FindFirst(ClaimTypes.NameIdentifier);
 
-                subject.AddClaim(
-                    new Claim(
-                        AuthServicesClaimTypes.LogoutNameIdentifier,
-                        DelimitedString.Join(
-                            nameIdClaim.Properties.GetValueOrEmpty(ClaimProperties.SamlNameIdentifierNameQualifier),                     
-                            nameIdClaim.Properties.GetValueOrEmpty(ClaimProperties.SamlNameIdentifierSPNameQualifier),
-                            nameIdClaim.Properties.GetValueOrEmpty(ClaimProperties.SamlNameIdentifierFormat),
-                            nameIdClaim.Properties.GetValueOrEmpty(ClaimProperties.SamlNameIdentifierSPProvidedId),
-                            nameIdClaim.Value),
-                        null,
-                        issuer));
+                if (nameIdClaim != null)
+                {
+                    subject.AddClaim(
+                        new Claim(
+                            AuthServicesClaimTypes.LogoutNameIdentifier,
+                            DelimitedString.Join(
+                                nameIdClaim.Properties.GetValueOrEmpty(ClaimProperties.SamlNameIdentifierNameQualifier),
+                                nameIdClaim.Properties.GetValueOrEmpty(ClaimProperties.SamlNameIdentifierSPNameQualifier),
+                                nameIdClaim.Properties.GetValueOrEmpty(ClaimProperties.SamlNameIdentifierFormat),
+                                nameIdClaim.Properties.GetValueOrEmpty(ClaimProperties.SamlNameIdentifierSPProvidedId),
+                                nameIdClaim.Value),
+                            null,
+                            issuer));
+                }
 
                 subject.AddClaim(
                     new Claim(AuthServicesClaimTypes.SessionIndex, statement.SessionIndex, null, issuer));
