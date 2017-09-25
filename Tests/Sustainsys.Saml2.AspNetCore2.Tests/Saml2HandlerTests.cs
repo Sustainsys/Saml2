@@ -15,6 +15,7 @@ using System;
 using System.Collections.Generic;
 using System.IdentityModel.Metadata;
 using System.IdentityModel.Tokens;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Security.Claims;
@@ -31,25 +32,10 @@ namespace Sustainsys.Saml2.AspNetCore2.Tests
         {
             public Saml2HandlerTestContext()
             {
-                var options = new Saml2Options();
-                options.SPOptions.EntityId = new EntityId("http://sp.example.com/saml2");
-
-                var idp = new IdentityProvider(
-                    new EntityId("https://idp.example.com"),
-                    options.SPOptions)
-                {
-                    SingleSignOnServiceUrl = new Uri("https://idp.example.com/sso"),
-                    Binding = Saml2BindingType.HttpRedirect
-                };
-
-                idp.SigningKeys.AddConfiguredKey(SignedXmlHelper.TestCert);
-
-                options.IdentityProviders.Add(idp);
-
-                Options = new DummyOptionsMonitor(options);
-
                 Subject = new Saml2Handler(
-                    Options, LoggerFactory, UrlEncoder, Clock, new StubDataProtector());
+                    OptionsCache,
+                    new StubDataProtector(),
+                    OptionsFactory);
 
                 Subject.InitializeAsync(AuthenticationScheme, HttpContext)
                     .Wait();
@@ -58,20 +44,36 @@ namespace Sustainsys.Saml2.AspNetCore2.Tests
             public AuthenticationScheme AuthenticationScheme
                 => new AuthenticationScheme("Saml2", "Saml2", typeof(Saml2Handler));
 
-            public IOptionsMonitor<Saml2Options> Options { get; }
-
-            public ILoggerFactory LoggerFactory
-                => Substitute.For<ILoggerFactory>();
-
-            public UrlEncoder UrlEncoder
-                => Substitute.For<UrlEncoder>();
-
-            public ISystemClock Clock
-                => Substitute.For<ISystemClock>();
+            public Saml2Options Options { get; }
 
             public Saml2Handler Subject { get; }
 
             public HttpContext HttpContext { get; } = TestHelpers.CreateHttpContext();
+
+            public OptionsCache<Saml2Options> OptionsCache { get; } = new OptionsCache<Saml2Options>();
+
+            public OptionsFactory<Saml2Options> OptionsFactory { get; } =
+                new OptionsFactory<Saml2Options>(
+                    Enumerable.Repeat<IConfigureOptions<Saml2Options>>(
+                        new ConfigureNamedOptions<Saml2Options>("Saml2", opt =>
+                    {
+                        opt.SPOptions.EntityId = new EntityId("http://sp.example.com/saml2");
+
+                        var idp = new IdentityProvider(
+                            new EntityId("https://idp.example.com"),
+                            opt.SPOptions)
+                        {
+                            SingleSignOnServiceUrl = new Uri("https://idp.example.com/sso"),
+                            Binding = Saml2BindingType.HttpRedirect
+                        };
+
+                        idp.SigningKeys.AddConfiguredKey(SignedXmlHelper.TestCert);
+
+                        opt.IdentityProviders.Add(idp);
+
+                    }), 1),
+                    Enumerable.Repeat<IPostConfigureOptions<Saml2Options>>(
+                        new PostConfigureSaml2Options(null, TestHelpers.GetAuthenticationOptions()), 1));
         }
 
         [TestMethod]
@@ -194,7 +196,7 @@ namespace Sustainsys.Saml2.AspNetCore2.Tests
 
             await authService.SignInAsync(
                 context.HttpContext,
-                "TestSignInScheme",
+                TestHelpers.defaultSignInScheme,
                 Arg.Do<ClaimsPrincipal>(p => principal = p),
                 Arg.Do<AuthenticationProperties>(ap => actualAuthProps = ap));
 
@@ -204,29 +206,68 @@ namespace Sustainsys.Saml2.AspNetCore2.Tests
             actualAuthProps.IssuedUtc.Should().Be(authProps.IssuedUtc);
             actualAuthProps.Items["Test"].Should().Be("TestValue");
 
-            context.HttpContext.Response.Received().Redirect(state.ReturnUrl.OriginalString);
+            context.HttpContext.Response.Headers["Location"].Single().Should().Be(
+                state.ReturnUrl.OriginalString);
+            context.HttpContext.Response.StatusCode.Should().Be(303);
         }
 
         [TestMethod]
-        public void Saml2Handler_ShouldHandleRequestAsync_ChecksModulePath()
+        public async Task Saml2Handler_HandleRequestAsync_OnlyHandlesModulePath()
         {
             var context = new Saml2HandlerTestContext();
-            context.HttpContext.Request.Path = "/TestPath/Acs";
 
-            context.Options.CurrentValue.SPOptions.ModulePath = "/TestPath";
+            context.HttpContext.Request.Path = "/NotModulePath";
 
-            context.Subject.ShouldHandleRequestAsync().Result.Should().BeTrue();
+            (await context.Subject.HandleRequestAsync())
+                .Should().BeFalse();
         }
 
         [TestMethod]
-        public void Saml2Handler_ShouldHandleRequestAsync_IgnoresCallbackPath()
+        public async Task Saml2Handler_HandleRequestAsync_Returns404ForUnknownWithinModulePath()
         {
             var context = new Saml2HandlerTestContext();
-            context.HttpContext.Request.Path = "/TestPath";
 
-            context.Options.CurrentValue.CallbackPath = "/TestPath";
+            context.HttpContext.Request.Path = "/Saml2/NotACommandName";
 
-            context.Subject.ShouldHandleRequestAsync().Result.Should().BeFalse();
+            (await context.Subject.HandleRequestAsync())
+                .Should().BeTrue();
+
+            context.HttpContext.Response.StatusCode.Should().Be(404);
+        }
+
+        [TestMethod]
+        public void Saml2Handler_ChallengeAsync_NullchecksProperties()
+        {
+            var context = new Saml2HandlerTestContext();
+
+            context.Subject.Invoking(s => s.ChallengeAsync(null))
+                .ShouldThrow<ArgumentNullException>()
+                .And.ParamName.Should().Be("properties");
+        }
+
+        [TestMethod]
+        public void Saml2Handler_Ctor_NullcheckDataProtectorProvider()
+        {
+            Action a = () => new Saml2Handler(null, null, null);
+
+            a.ShouldThrow<ArgumentNullException>()
+                .And.ParamName.Should().Be("dataProtectorProvider");
+        }
+
+        [TestMethod]
+        public void Saml2Handler_HandleRequestAsync_ReturnsMetadata()
+        {
+            var context = new Saml2HandlerTestContext();
+
+            context.HttpContext.Request.Path = "/Saml2";
+
+            context.Subject.HandleRequestAsync();
+
+            context.HttpContext.Response.StatusCode.Should().Be(200);
+
+            Encoding.UTF8.GetString(
+                context.HttpContext.Response.Body.As<MemoryStream>().GetBuffer())
+                .Should().StartWith("<EntityDescriptor");
         }
     }
 }

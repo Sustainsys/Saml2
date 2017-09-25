@@ -8,6 +8,8 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Collections;
 using System.IO;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.Extensions.Options;
 
 namespace Sustainsys.Saml2.AspNetCore2.Tests
 {
@@ -66,5 +68,18 @@ namespace Sustainsys.Saml2.AspNetCore2.Tests
             return context;
         }
 
+        public const string defaultSignInScheme = nameof(defaultSignInScheme);
+
+        public static IOptions<AuthenticationOptions> GetAuthenticationOptions()
+        {
+            var authOptions = Substitute.For<AuthenticationOptions>();
+            authOptions.DefaultSignInScheme = defaultSignInScheme;
+
+            var iOptions = Substitute.For<IOptions<AuthenticationOptions>>();
+
+            iOptions.Value.Returns(authOptions);
+
+            return iOptions;
+        }
     }
 }

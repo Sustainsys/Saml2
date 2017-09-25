@@ -6,20 +6,26 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using Microsoft.AspNetCore.Authentication;
 
 namespace Sustainsys.Saml2.AspNetCore2
 {
     class PostConfigureSaml2Options : IPostConfigureOptions<Saml2Options>
     {
         private ILoggerFactory loggerFactory;
+        private IOptions<AuthenticationOptions> authOptions;
 
         /// <summary>
         /// Ctor
         /// </summary>
         /// <param name="loggerFactory">Logger factory to use to hook up Saml2 loggin.</param>
-        public PostConfigureSaml2Options(ILoggerFactory loggerFactory)
+        /// <param name="authOptions">Authentication options, to look up Default Sign In schema</param>
+        public PostConfigureSaml2Options(
+            ILoggerFactory loggerFactory,
+            IOptions<AuthenticationOptions> authOptions)
         {
             this.loggerFactory = loggerFactory;
+            this.authOptions = authOptions;
         }
 
         public void PostConfigure(string name, Saml2Options options)
@@ -39,6 +45,10 @@ namespace Sustainsys.Saml2.AspNetCore2
                 options.SPOptions.Logger = new NullLoggerAdapter();
             }
             options.SPOptions.Logger.WriteVerbose("Saml2 logging enabled.");
+
+            options.SignInScheme = options.SignInScheme 
+                ?? authOptions.Value.DefaultSignInScheme
+                ?? authOptions.Value.DefaultScheme;
         }
     }
 }

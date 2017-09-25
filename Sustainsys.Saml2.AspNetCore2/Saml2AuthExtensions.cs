@@ -19,11 +19,24 @@ namespace Microsoft.Extensions.DependencyInjection
         /// Register Saml2 Authentication with default scheme name.
         /// </summary>
         /// <param name="builder">Authentication Builder</param>
-        /// <param name="options">Saml2 Options</param>
+        /// <param name="configureOptions">Action that configures the Saml2 Options</param>
+        /// <returns></returns>
+        public static AuthenticationBuilder AddSaml2(
+            this AuthenticationBuilder builder,
+            Action<Saml2Options> configureOptions)
+            => builder.AddSaml2(Saml2Defaults.Scheme, configureOptions);
+
+        /// <summary>
+        /// Register Saml2 Authentication with a custom scheme name.
+        /// </summary>
+        /// <param name="builder">Authentication Builder</param>
+        /// <param name="scheme">Name of the authentication scheme</param>
+        /// <param name="configureOptions">Action that configures Saml2 Options</param>
         /// <returns>Authentication Builder</returns>
         public static AuthenticationBuilder AddSaml2(
             this AuthenticationBuilder builder,
-            Action<Saml2Options> options)
+            string scheme,
+            Action<Saml2Options> configureOptions)
         {
             if(builder == null)
             {
@@ -32,10 +45,23 @@ namespace Microsoft.Extensions.DependencyInjection
 
             builder.Services.TryAddEnumerable(ServiceDescriptor.Singleton<IPostConfigureOptions<Saml2Options>, PostConfigureSaml2Options>());
 
-            return builder.AddRemoteScheme<Saml2Options, Saml2Handler>(
-                Saml2Defaults.Scheme,
-                Saml2Defaults.DisplayName,
-                options);
+            builder.Services.Configure<AuthenticationOptions>(o =>
+            {
+                o.AddScheme(scheme, s =>
+                {
+                    s.HandlerType = typeof(Saml2Handler);
+                    s.DisplayName = Saml2Defaults.DisplayName;
+                });
+            });
+            
+            if (configureOptions != null)
+            {
+                builder.Services.Configure(scheme, configureOptions);
+            }
+
+            builder.Services.AddTransient<Saml2Handler>();
+
+            return builder;
         }
     }
 }

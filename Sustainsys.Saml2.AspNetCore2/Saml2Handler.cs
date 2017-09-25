@@ -7,87 +7,113 @@ using System;
 using Kentor.AuthServices.WebSso;
 using Microsoft.AspNetCore.DataProtection;
 using System.Security.Claims;
+using Microsoft.AspNetCore.Http;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Sustainsys.Saml2.AspNetCore2
 {
     /// <summary>
     /// Authentication handler for Saml2
     /// </summary>
-    public class Saml2Handler : RemoteAuthenticationHandler<Saml2Options>
+    public class Saml2Handler : IAuthenticationRequestHandler
     {
-        IDataProtector dataProtector;
+        private readonly IOptionsMonitorCache<Saml2Options> optionsCache;
+        Saml2Options options;
+        HttpContext context;
+        private readonly IDataProtector dataProtector;
+        AuthenticationScheme scheme;
+        private readonly IOptionsFactory<Saml2Options> optionsFactory;
 
         /// <summary>
         /// Ctor
         /// </summary>
-        /// <param name="options">Options</param>
-        /// <param name="logger">Logger</param>
-        /// <param name="encoder">Encoder</param>
-        /// <param name="clock">Clock</param>
+        /// <param name="optionsCache">Options</param>
         /// <param name="dataProtectorProvider">Data Protector Provider</param>
+        /// <param name="optionsFactory">Factory for options</param>
         public Saml2Handler(
-            IOptionsMonitor<Saml2Options> options,
-            ILoggerFactory logger,
-            UrlEncoder encoder,
-            ISystemClock clock,
-            IDataProtectionProvider dataProtectorProvider) 
-            : base(options, logger, encoder, clock)
+            IOptionsMonitorCache<Saml2Options> optionsCache,
+            IDataProtectionProvider dataProtectorProvider,
+            IOptionsFactory<Saml2Options> optionsFactory)
         {
-            if(dataProtectorProvider == null)
+            if (dataProtectorProvider == null)
             {
                 throw new ArgumentNullException(nameof(dataProtectorProvider));
             }
 
             dataProtector = dataProtectorProvider.CreateProtector(GetType().FullName);
+
+            this.optionsFactory = optionsFactory;
+            this.optionsCache = optionsCache;
         }
 
-        /// <InheritDocs />
-        protected override Task<HandleRequestResult> HandleRemoteAuthenticateAsync()
+        /// <InheritDoc />
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1500:VariableNamesShouldNotMatchFieldNames", MessageId = "scheme")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1500:VariableNamesShouldNotMatchFieldNames", MessageId = "context")]
+        public Task InitializeAsync(AuthenticationScheme scheme, HttpContext context)
         {
-            var requestData = Context.ToHttpRequestData(dataProtector.Unprotect);
+            this.context = context;
+            this.scheme = scheme;
+            options = optionsCache.GetOrAdd(scheme.Name, () => optionsFactory.Create(scheme.Name));
 
-            var commandResult = CommandFactory.GetCommand(CommandFactory.AcsCommandName)
-                .Run(requestData, Options);
+            return Task.CompletedTask;
+        }
 
-            var properties = new AuthenticationProperties(commandResult.RelayData)
+        /// <InheritDoc />
+        [ExcludeFromCodeCoverage]
+        public Task<AuthenticateResult> AuthenticateAsync()
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <InheritDoc />
+        public Task ChallengeAsync(AuthenticationProperties properties)
+        {
+            if (properties == null)
             {
-                RedirectUri = commandResult.Location.OriginalString
-            };
-
-            var ticket = new AuthenticationTicket(
-                commandResult.Principal,
-                properties,
-                Scheme.Name);
-            return Task.FromResult(HandleRequestResult.Success(ticket));
-        }
-
-        /// <InheritDocs />
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1062:Validate arguments of public methods", MessageId = "0", Justification = "Upstream caller ensures it's not null")]
-        protected override Task HandleChallengeAsync(AuthenticationProperties properties)
-        {
-            var requestData = Context.ToHttpRequestData(null);
+                throw new ArgumentNullException(nameof(properties));
+            }
 
             // Don't serialize the return url twice, move it to our location.
             var redirectUri = properties.RedirectUri;
             properties.RedirectUri = null;
 
+            var requestData = context.ToHttpRequestData(null);
+
             var result = SignInCommand.Run(
                 null,
                 redirectUri,
                 requestData,
-                Options,
+                options,
                 properties.Items);
 
-            result.Apply(Context, dataProtector);
+            result.Apply(context, dataProtector, scheme.Name);
 
             return Task.CompletedTask;
         }
 
-        /// <InheritDocs />
-        public override Task<bool> ShouldHandleRequestAsync()
+        /// <InheritDoc />
+        [ExcludeFromCodeCoverage]
+        public Task ForbidAsync(AuthenticationProperties properties)
         {
-            var acsPath = Options.SPOptions.ModulePath + "/" + CommandFactory.AcsCommandName;
-            return Task.FromResult(acsPath == Request.Path);
+            throw new NotImplementedException();
+        }
+
+        /// <InheritDoc />
+        public Task<bool> HandleRequestAsync()
+        {
+            if(context.Request.Path.StartsWithSegments(options.SPOptions.ModulePath, StringComparison.Ordinal))
+            {
+                var commandName = context.Request.Path.Value.Substring(
+                    options.SPOptions.ModulePath.Length).TrimStart('/');
+
+                var commandResult = CommandFactory.GetCommand(commandName).Run(
+                    context.ToHttpRequestData(dataProtector.Unprotect), options);
+
+                commandResult.Apply(context, dataProtector, options.SignInScheme);
+
+                return Task.FromResult(true);
+            }
+            return Task.FromResult(false);
         }
     }
 }

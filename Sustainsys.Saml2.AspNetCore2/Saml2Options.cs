@@ -9,7 +9,7 @@ namespace Sustainsys.Saml2.AspNetCore2
     /// <summary>
     /// Options for Saml2 Authentication
     /// </summary>
-    public class Saml2Options : RemoteAuthenticationOptions, IOptions
+    public class Saml2Options : AuthenticationSchemeOptions, IOptions
     {
         /// <summary>
         /// Ctor
@@ -20,8 +20,13 @@ namespace Sustainsys.Saml2.AspNetCore2
             {
                 ModulePath = "/Saml2"
             };
-            CallbackPath = "/The CallbackPath property isn't used by the Saml2 Service, it is built from the ModulePath in the SPOptions";
         }
+
+        /// <summary>
+        /// Authentication scheme to sign in with to establish a session after
+        /// the SAML2 authentication is done.
+        /// </summary>
+        public string SignInScheme { get; set; }
 
         /// <summary>
         /// Options for the service provider's behaviour; i.e. everything except
