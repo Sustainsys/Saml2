@@ -52,7 +52,7 @@ namespace Kentor.AuthServices.Configuration
         /// Do not send logout state cookie, e.g. if you are not using ReturnUrl
         /// or if you know the cookie will be lost due to cross-domain redirects
         /// </summary>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage( "Microsoft.Naming", "CA1726:UsePreferredTerms", MessageId = "Logout" )]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1726:UsePreferredTerms", MessageId = "Logout")]
         [ConfigurationProperty(nameof(disableLogoutStateCookie), IsRequired = false)]
         public bool DisableLogoutStateCookie
         {
@@ -63,6 +63,28 @@ namespace Kentor.AuthServices.Configuration
             set
             {
                 base[disableLogoutStateCookie] = value;
+            }
+        }
+
+        const string ignoreMissingInResponseTo
+            = nameof(ignoreMissingInResponseTo);
+
+        /// <summary>
+        /// Ignore the check for the missing InResponseTo attribute in the Saml response.
+        /// This is different to setting the allowUnsolicitedAuthnResponse as it will only 
+        /// ignore the InResponseTo attribute if there is no relayState. Setting 
+        /// IgnoreMissingInResponseTo to true will always skip the check.
+        /// </summary>
+        [ConfigurationProperty(nameof(ignoreMissingInResponseTo), IsRequired = false)]
+        public bool IgnoreMissingInResponseTo
+        {
+            get
+            {
+                return (bool)base[ignoreMissingInResponseTo];
+            }
+            set
+            {
+                base[ignoreMissingInResponseTo] = value;
             }
         }
     }

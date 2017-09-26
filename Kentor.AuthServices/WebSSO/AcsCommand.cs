@@ -39,7 +39,7 @@ namespace Kentor.AuthServices.WebSso
                     unbindResult = binding.Unbind(request, options);
                     options.Notifications.MessageUnbound(unbindResult);
 
-                    var samlResponse = new Saml2Response(unbindResult.Data, request.StoredRequestState?.MessageId);
+                    var samlResponse = new Saml2Response(unbindResult.Data, request.StoredRequestState?.MessageId, options);
 
                     var result = ProcessResponse(options, samlResponse, request.StoredRequestState);
                     if(unbindResult.RelayState != null)

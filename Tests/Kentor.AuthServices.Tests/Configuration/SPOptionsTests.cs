@@ -25,6 +25,7 @@ namespace Kentor.AuthServices.Tests.Configuration
                 KentorAuthServicesSection.Current.Metadata.AllowChange = false;
                 KentorAuthServicesSection.Current.Compatibility.UnpackEntitiesDescriptorInIdentityProviderMetadata = false;
                 KentorAuthServicesSection.Current.Compatibility.DisableLogoutStateCookie = false;
+                KentorAuthServicesSection.Current.Compatibility.IgnoreMissingInResponseTo = false;
                 KentorAuthServicesSection.Current.Compatibility.AllowChange = false;
             }
         }
@@ -65,6 +66,7 @@ namespace Kentor.AuthServices.Tests.Configuration
             config.Compatibility.AllowChange = true;
             config.Compatibility.UnpackEntitiesDescriptorInIdentityProviderMetadata = true;
             config.Compatibility.DisableLogoutStateCookie = true;
+            config.Compatibility.IgnoreMissingInResponseTo = true;
 
             SPOptions subject = new SPOptions(KentorAuthServicesSection.Current);
             subject.ReturnUrl.Should().Be(config.ReturnUrl);
@@ -85,6 +87,7 @@ namespace Kentor.AuthServices.Tests.Configuration
             subject.RequestedAuthnContext.Comparison.Should().Be(AuthnContextComparisonType.Minimum);
             subject.Compatibility.UnpackEntitiesDescriptorInIdentityProviderMetadata.Should().BeTrue();
             subject.Compatibility.DisableLogoutStateCookie.Should().BeTrue();
+            subject.Compatibility.IgnoreMissingInResponseTo.Should().BeTrue();
         }
 
         [TestMethod]
