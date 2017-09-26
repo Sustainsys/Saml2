@@ -1,13 +1,4 @@
-﻿using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.IdentityModel.Configuration;
-using System.IdentityModel.Metadata;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Kentor.AuthServices.Configuration
+﻿namespace Kentor.AuthServices.Configuration
 {
     /// <summary>
     /// Root interface for the options objects, handling all configuration of

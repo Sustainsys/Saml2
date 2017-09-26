@@ -122,7 +122,7 @@ namespace Kentor.AuthServices.Metadata
         private static SecurityKeyIdentifierClause ReadX509Certificate(XmlReader reader)
         {
             reader.ReadStartElement("X509Certificate", SignedXml.XmlDsigNamespaceUrl);
-            var clause = new X509RawDataKeyIdentifierClause(
+            var clause = new X509CertificateKeyIdentifierClause(
                 ((XmlDictionaryReader)reader).ReadContentAsBase64());
             reader.ReadEndElement();
 

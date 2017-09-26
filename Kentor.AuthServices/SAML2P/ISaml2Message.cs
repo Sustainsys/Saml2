@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IdentityModel.Metadata;
-using System.Linq;
+﻿using Microsoft.IdentityModel.Tokens.Saml2;
+using System;
 using System.Security.Cryptography.X509Certificates;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Kentor.AuthServices.Saml2P
 {
@@ -58,6 +54,6 @@ namespace Kentor.AuthServices.Saml2P
         /// <summary>
         /// Issuer of the message.
         /// </summary>
-        EntityId Issuer { get; }
+        Saml2NameIdentifier Issuer { get; }
     }
 }

@@ -2,7 +2,6 @@
 using Kentor.AuthServices.Saml2P;
 using System;
 using Kentor.AuthServices.WebSso;
-using System.IdentityModel.Metadata;
 using Kentor.AuthServices.Metadata;
 
 namespace Kentor.AuthServices.Configuration

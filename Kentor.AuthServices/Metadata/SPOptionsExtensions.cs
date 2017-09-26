@@ -73,7 +73,7 @@ namespace Kentor.AuthServices.Metadata
                             new KeyDescriptor
                             {
                                 Use = (KeyType)(byte)serviceCert.Use,
-                                KeyInfo = new SecurityKeyIdentifier(securityToken.CreateKeyIdentifierClause<X509RawDataKeyIdentifierClause>())
+                                KeyInfo = new SecurityKeyIdentifier(securityToken.CreateKeyIdentifierClause<X509CertificateKeyIdentifierClause>())
                             }
                         );
                     }

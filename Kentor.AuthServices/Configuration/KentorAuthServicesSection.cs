@@ -1,15 +1,13 @@
-﻿using System;
+﻿#if NET45
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Configuration;
 using System.Globalization;
-using System.IdentityModel.Metadata;
 using System.Linq;
 using Kentor.AuthServices.Internal;
 using Kentor.AuthServices.Metadata;
-using Kentor.AuthServices.Saml2P;
-using System.Diagnostics.CodeAnalysis;
-using System.Collections.ObjectModel;
+using System.IdentityModel.Metadata;
 
 namespace Kentor.AuthServices.Configuration
 {
@@ -379,3 +377,4 @@ namespace Kentor.AuthServices.Configuration
         }
     }
 }
+#endif

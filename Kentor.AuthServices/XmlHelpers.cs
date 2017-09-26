@@ -1,19 +1,19 @@
 ﻿using System;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
-using System.Security.Cryptography.Xml;
 using System.Xml;
 using System.Linq;
 using Kentor.AuthServices.Exceptions;
 using System.Collections.Generic;
 using Kentor.AuthServices.Configuration;
 using System.Reflection;
-using System.IdentityModel.Tokens;
 using System.Globalization;
 using System.Diagnostics.CodeAnalysis;
 using System.Xml.Linq;
 using System.IO;
 using Kentor.AuthServices.Internal;
+using Microsoft.IdentityModel.Tokens;
+using System.Security.Cryptography.Xml;
 
 namespace Kentor.AuthServices
 {
@@ -272,8 +272,8 @@ namespace Kentor.AuthServices
 
             foreach (var keyIdentifier in signingKeys)
             {
-                var key = ((AsymmetricSecurityKey)keyIdentifier.CreateKey())
-                .GetAsymmetricAlgorithm(SignedXml.XmlDsigRSASHA1Url, false);
+                var key = ((X509SecurityKey)keyIdentifier.CreateKey())
+                    .PublicKey;
 
                 if (signedXml.CheckSignature(key))
                 {
@@ -325,7 +325,7 @@ namespace Kentor.AuthServices
                         keyIdentifier.GetType().Name));
                 }
 
-                if (!new X509Certificate2(rawCert.GetX509RawData()).Verify())
+                if (!rawCert.Certificate.Verify())
                 {
                     throw new InvalidSignatureException("The signature was valid, but the verification of the certificate failed. Is it expired or revoked? Are you sure you really want to enable ValidateCertificates (it's normally not needed)?");
                 }

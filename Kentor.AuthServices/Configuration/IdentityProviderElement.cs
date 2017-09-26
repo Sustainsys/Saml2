@@ -1,4 +1,5 @@
-﻿using Kentor.AuthServices.WebSso;
+﻿#if NET45
+using Kentor.AuthServices.WebSso;
 using System;
 using System.Configuration;
 using System.Data.Odbc;
@@ -221,3 +222,4 @@ namespace Kentor.AuthServices.Configuration
         }
     }
 }
+#endif

@@ -1,7 +1,8 @@
-﻿using System.Collections;
+﻿using Kentor.AuthServices.Metadata;
+using Microsoft.IdentityModel.Tokens;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using System.IdentityModel.Tokens;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
@@ -9,7 +10,7 @@ using System.Security.Cryptography.X509Certificates;
 namespace Kentor.AuthServices.Configuration
 {
     /// <summary>
-    /// Collection of items with two sources: configured and loaded dyanically.
+    /// Collection of items with two sources: configured and loaded dynamically.
     /// The dynamically loaded can reset while the configured are kept.
     /// metadata.
     /// </summary>

@@ -1,8 +1,8 @@
 ﻿using System;
-using System.IdentityModel.Tokens;
 using System.Security.Claims;
 using System.Linq;
-using System.IdentityModel.Metadata;
+using Microsoft.IdentityModel.Tokens.Saml2;
+using Kentor.AuthServices.Metadata;
 
 namespace Kentor.AuthServices
 {
@@ -113,7 +113,7 @@ namespace Kentor.AuthServices
             if (audience != null)
             {
                 assertion.Conditions.AudienceRestrictions.Add(
-                    new Saml2AudienceRestriction(audience));
+                    new Saml2AudienceRestriction(audience.OriginalString));
             }
 
             return assertion;

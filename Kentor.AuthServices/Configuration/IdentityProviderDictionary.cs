@@ -1,7 +1,7 @@
 ﻿using Kentor.AuthServices.Internal;
+using Kentor.AuthServices.Metadata;
 using System;
 using System.Collections.Generic;
-using System.IdentityModel.Metadata;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;

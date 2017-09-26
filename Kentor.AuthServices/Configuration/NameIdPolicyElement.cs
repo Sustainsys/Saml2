@@ -1,4 +1,5 @@
-﻿using System.Configuration;
+﻿#if NET45
+using System.Configuration;
 using Kentor.AuthServices.Saml2P;
 
 namespace Kentor.AuthServices.Configuration
@@ -33,3 +34,4 @@ namespace Kentor.AuthServices.Configuration
         }
     }
 }
+#endif

@@ -5,8 +5,6 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IdentityModel.Configuration;
-using System.IdentityModel.Metadata;
-using System.IdentityModel.Services.Configuration;
 using System.Linq;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
@@ -32,6 +30,7 @@ namespace Kentor.AuthServices.Configuration
             MinIncomingSigningAlgorithm = XmlHelpers.GetDefaultSigningAlgorithmName();
         }
 
+#if NET45
         /// <summary>
         /// Construct the options from the given configuration section
         /// </summary>
@@ -74,6 +73,7 @@ namespace Kentor.AuthServices.Configuration
                 Contacts.Add(contact);
             }
         }
+#endif
 
         /// <summary>
         /// Return Uri to redirect the client to, if no return uri was specified

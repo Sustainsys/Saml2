@@ -1,4 +1,6 @@
-﻿using Kentor.AuthServices.Internal;
+﻿#if NET45
+
+using Kentor.AuthServices.Internal;
 using System;
 using System.Collections.ObjectModel;
 using System.Reflection;
@@ -69,3 +71,4 @@ namespace Kentor.AuthServices.Configuration
         }
     }
 }
+#endif

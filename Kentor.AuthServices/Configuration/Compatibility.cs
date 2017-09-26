@@ -18,6 +18,7 @@ namespace Kentor.AuthServices.Configuration
         public Compatibility()
         { }
 
+#if NET45
         /// <summary>
         /// Ctor
         /// </summary>
@@ -33,6 +34,7 @@ namespace Kentor.AuthServices.Configuration
                 configElement.UnpackEntitiesDescriptorInIdentityProviderMetadata;
             DisableLogoutStateCookie = configElement.DisableLogoutStateCookie;
         }
+#endif
 
         /// <summary>
         /// If an EntitiesDescriptor element is found when loading metadata

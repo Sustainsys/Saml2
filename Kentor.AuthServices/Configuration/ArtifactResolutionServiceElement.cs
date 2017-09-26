@@ -1,4 +1,5 @@
-﻿using System;
+﻿#if NET45
+using System;
 using System.Configuration;
 
 namespace Kentor.AuthServices.Configuration
@@ -35,3 +36,4 @@ namespace Kentor.AuthServices.Configuration
         }
     }
 }
+#endif

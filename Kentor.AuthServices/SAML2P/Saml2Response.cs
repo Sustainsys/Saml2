@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
-using System.IdentityModel.Tokens;
 using System.Linq;
 using System.Security.Claims;
 using System.Security.Cryptography.X509Certificates;
@@ -10,10 +9,11 @@ using System.Xml;
 using Kentor.AuthServices.Configuration;
 using System.IdentityModel.Metadata;
 using System.Security.Cryptography;
-using System.IdentityModel.Services;
 using Kentor.AuthServices.Internal;
 using Kentor.AuthServices.Exceptions;
 using System.Diagnostics.CodeAnalysis;
+using Microsoft.IdentityModel.Tokens.Saml2;
+using Kentor.AuthServices.Metadata;
 
 namespace Kentor.AuthServices.Saml2P
 {
@@ -298,7 +298,7 @@ namespace Kentor.AuthServices.Saml2P
             xml.AppendChild(responseElement);
 
             var issuerElement = xml.CreateElement("saml2", "Issuer", Saml2Namespaces.Saml2Name);
-            issuerElement.InnerText = Issuer.Id;
+            issuerElement.InnerText = Issuer.Value;
             responseElement.AppendChild(issuerElement);
 
             var statusElement = xml.CreateElement("saml2p", "Status", Saml2Namespaces.Saml2PName);
@@ -359,7 +359,7 @@ namespace Kentor.AuthServices.Saml2P
         /// <summary>
         /// Issuer (= sender) of the response.
         /// </summary>
-        public EntityId Issuer { get; }
+        public Saml2NameIdentifier Issuer { get; }
 
         /// <summary>
         /// The destination of the response message.
@@ -440,7 +440,7 @@ namespace Kentor.AuthServices.Saml2P
         {
             if (InResponseTo == null)
             {
-                var idp = options.IdentityProviders[Issuer];
+                var idp = options.IdentityProviders[Issuer.AsEntityId()];
                 if (idp.AllowUnsolicitedAuthnResponse)
                 {
                     options.SPOptions.Logger.WriteVerbose("Received unsolicited Saml Response " + Id 
@@ -455,7 +455,7 @@ namespace Kentor.AuthServices.Saml2P
 
         private void ValidateSignature(IOptions options)
         {
-            var idpKeys = options.IdentityProviders[Issuer].SigningKeys;
+            var idpKeys = options.IdentityProviders[Issuer.AsEntityId()].SigningKeys;
 
             var minAlgorithm = options.SPOptions.MinIncomingSigningAlgorithm;
 
@@ -507,7 +507,7 @@ namespace Kentor.AuthServices.Saml2P
             return claimsIdentities;
         }
 
-        private IEnumerable<ClaimsIdentity> CreateClaims(IOptions options)
+        private ClaimsPrincipal CreateClaimsPrincipal(IOptions options)
         {
             Validate(options);
 
@@ -518,33 +518,19 @@ namespace Kentor.AuthServices.Saml2P
                     status, statusMessage, secondLevelStatus);
             }
 
+            return handle
+
             foreach (XmlElement assertionNode in GetAllAssertionElementNodes(options))
             {
                 using (var reader = new FilteringXmlNodeReader(SignedXml.XmlDsigNamespaceUrl, "Signature", assertionNode))
                 {
-                    var handler = options.SPOptions.Saml2PSecurityTokenHandler;
+                    var handler = new Saml2SecurityTokenHandler();
 
-                    var token = (Saml2SecurityToken)handler.ReadToken(reader);
+                    var token = (Saml2SecurityToken)handler.ReadToken(
+                        reader, options.SPOptions.TokenValidationParameters);
                     options.SPOptions.Logger.WriteVerbose("Extracted SAML assertion " + token.Id);
 
-                    handler.DetectReplayedToken(token);
-
-                    var validateAudience = options.SPOptions
-                        .Saml2PSecurityTokenHandler
-                        .SamlSecurityTokenRequirement
-                        .ShouldEnforceAudienceRestriction(options.SPOptions
-                        .SystemIdentityModelIdentityConfiguration
-                        .AudienceRestriction.AudienceMode, token);
-
-                    handler.ValidateConditions(token.Assertion.Conditions, validateAudience);
-
-                    options.SPOptions.Logger.WriteVerbose("Validated conditions for SAML2 Response " + Id);
-
-                    sessionNotOnOrAfter = DateTimeHelper.EarliestTime(sessionNotOnOrAfter,
-                    token.Assertion.Statements.OfType<Saml2AuthenticationStatement>()
-                        .SingleOrDefault()?.SessionNotOnOrAfter);
-
-                    yield return handler.CreateClaims(token);
+                    yield return handler.ValidateToken;
                 }
             }
         }
