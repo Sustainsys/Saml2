@@ -370,7 +370,7 @@ is used in).
 * [`name`](#name-attribute-organization)
 * [`displayName`](#displayname-attribute)
 * [`url`](#url-attribute)
-* [`langauge`](#language-attribute)
+* [`language`](#language-attribute)
 
 #### `name` Attribute (organization)
 *Attribute of the [`<organization>`](#organization-element) element.*
