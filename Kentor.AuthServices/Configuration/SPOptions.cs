@@ -1,5 +1,6 @@
 ﻿using Kentor.AuthServices.Metadata;
 using Kentor.AuthServices.Saml2P;
+using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -9,6 +10,9 @@ using System.Linq;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
+#if NET45
+using System.IdentityModel.Metadata;
+#endif
 
 namespace Kentor.AuthServices.Configuration
 {
@@ -409,5 +413,7 @@ namespace Kentor.AuthServices.Configuration
         /// Adapter to logging framework of hosting application.
         /// </summary>
         public ILoggerAdapter Logger { get; set; }
+
+        public TokenValidationParameters TokenValidationParameters { get; internal set; }
     }
 }

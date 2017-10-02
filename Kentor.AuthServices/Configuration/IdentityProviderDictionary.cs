@@ -6,6 +6,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+#if NET45
+using System.IdentityModel.Metadata;
+#endif
+
+
 namespace Kentor.AuthServices.Configuration
 {
     /// <summary>

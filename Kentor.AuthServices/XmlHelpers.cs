@@ -14,6 +14,7 @@ using System.IO;
 using Kentor.AuthServices.Internal;
 using Microsoft.IdentityModel.Tokens;
 using System.Security.Cryptography.Xml;
+using Kentor.AuthServices.Metadata;
 
 namespace Kentor.AuthServices
 {
@@ -317,7 +318,7 @@ namespace Kentor.AuthServices
         {
             if (validateCertificate)
             {
-                var rawCert = keyIdentifier as X509RawDataKeyIdentifierClause;
+                var rawCert = keyIdentifier as X509CertificateKeyIdentifierClause;
                 if (rawCert == null)
                 {
                     throw new InvalidOperationException(string.Format(CultureInfo.InvariantCulture,

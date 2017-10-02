@@ -8,6 +8,6 @@ namespace Kentor.AuthServices.Metadata
     public static class SecurityKeyIdentifierClauseExtensions
     {
         public static SecurityKey CreateKey(this SecurityKeyIdentifierClause clause)
-            => ((X509RawDataKeyIdentifierClause)clause).CreateKey();
+            => ((X509CertificateKeyIdentifierClause)clause).CreateKey();
     }
 }

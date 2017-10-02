@@ -17,7 +17,7 @@ namespace Kentor.AuthServices
         /// <param name="identity">Claims to include in Assertion.</param>
         /// <param name="issuer">Issuer to include in assertion.</param>
         /// <returns>Saml2Assertion</returns>
-        public static Saml2Assertion ToSaml2Assertion(this ClaimsIdentity identity, EntityId issuer)
+        public static Saml2Assertion ToSaml2Assertion(this ClaimsIdentity identity, Saml2NameIdentifier issuer)
         {
             return ToSaml2Assertion(identity, issuer, null);
         }
@@ -31,7 +31,7 @@ namespace Kentor.AuthServices
         /// <returns>Saml2Assertion</returns>
         public static Saml2Assertion ToSaml2Assertion(
             this ClaimsIdentity identity,
-            EntityId issuer,
+            Saml2NameIdentifier issuer,
             Uri audience)
         {
             return ToSaml2Assertion(identity, issuer, audience, null, null);
@@ -49,7 +49,7 @@ namespace Kentor.AuthServices
         /// <exception cref="ArgumentNullException"></exception>
         public static Saml2Assertion ToSaml2Assertion(
             this ClaimsIdentity identity,
-            EntityId issuer,
+            Saml2NameIdentifier issuer,
             Uri audience,
             Saml2Id inResponseTo,
             Uri destinationUri)

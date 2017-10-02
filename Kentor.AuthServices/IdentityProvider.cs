@@ -46,6 +46,7 @@ namespace Kentor.AuthServices
 
         readonly SPOptions spOptions;
 
+#if NET45
         internal IdentityProvider(IdentityProviderElement config, SPOptions spOptions)
         {
             singleSignOnServiceUrl = config.SignOnUrl;
@@ -62,7 +63,7 @@ namespace Kentor.AuthServices
             if (certificate != null)
             {
                 signingKeys.AddConfiguredKey(
-                    new X509RawDataKeyIdentifierClause(certificate));
+                    new X509CertificateKeyIdentifierClause(certificate));
             }
 
             OutboundSigningAlgorithm = string.IsNullOrEmpty(config.OutboundSigningAlgorithm) ?
@@ -85,6 +86,7 @@ namespace Kentor.AuthServices
                 Validate();
             }
         }
+#endif
 
         private void Validate()
         {

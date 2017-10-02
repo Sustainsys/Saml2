@@ -34,7 +34,7 @@ namespace Kentor.AuthServices.Configuration
         /// <param name="certificate">Certificate to add.</param>
         public void AddConfiguredKey(X509Certificate2 certificate)
         {
-            AddConfiguredKey(new X509RawDataKeyIdentifierClause(certificate));
+            AddConfiguredKey(new X509CertificateKeyIdentifierClause(certificate));
         }
 
         /// <summary>

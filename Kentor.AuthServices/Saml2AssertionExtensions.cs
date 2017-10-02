@@ -1,9 +1,6 @@
-﻿using System;
-using System.Globalization;
-using System.IdentityModel.Tokens;
-using System.Linq;
+﻿using Microsoft.IdentityModel.Tokens.Saml2;
+using System;
 using System.Xml.Linq;
-using Kentor.AuthServices.Internal;
 
 namespace Kentor.AuthServices
 {

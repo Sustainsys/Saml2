@@ -3,6 +3,9 @@ using Kentor.AuthServices.Saml2P;
 using System;
 using Kentor.AuthServices.WebSso;
 using Kentor.AuthServices.Metadata;
+#if NET45
+using System.IdentityModel.Metadata;
+#endif
 
 namespace Kentor.AuthServices.Configuration
 {
