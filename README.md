@@ -1,5 +1,5 @@
-[![Build status](https://ci.appveyor.com/api/projects/status/ybu4ptb6tktg1kht?branch=master&svg=true&passingText=master%20-%20OK&failingText=master%20-%20Failed!&pendingText=master%20-%20Pending...)](https://ci.appveyor.com/project/KentorIT/AuthServices)
-[![Coverage Status](https://coveralls.io/repos/KentorIT/authservices/badge.svg?branch=master&service=github)](https://coveralls.io/github/KentorIT/authservices?branch=master)
+[![Build status](https://ci.appveyor.com/api/projects/status/kf9r7lh4mh28rg2d?branch=master&svg=true&passingText=master%20-%20OK&failingText=master%20-%20Failed!&pendingText=master%20-%20Pending...)](https://ci.appveyor.com/project/Sustainsys/Saml2)
+[![Coverage Status](https://coveralls.io/repos/github/Sustainsys/Saml2/badge.svg?branch=master)](https://coveralls.io/github/Sustainsys/Saml2?branch=master)
 [![Join the chat at https://gitter.im/Susatinsys/Saml2](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/Sustainsys/Saml2)
 Sustainsys.Saml2
 =============
