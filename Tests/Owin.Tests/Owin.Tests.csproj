@@ -97,9 +97,9 @@
       <Project>{fa1e7723-124c-4d2d-a731-e16400b0073b}</Project>
       <Name>Kentor.AuthServices.Owin</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Kentor.AuthServices.TestHelpers\Kentor.AuthServices.TestHelpers.csproj">
+    <ProjectReference Include="..\TestHelpers\TestHelpers.csproj">
       <Project>{cf1e517e-b2fe-48e1-8bb9-4d9981695c47}</Project>
-      <Name>Kentor.AuthServices.TestHelpers</Name>
+      <Name>TestHelpers</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Kentor.AuthServices\Kentor.AuthServices.csproj">
       <Project>{93BA675E-A159-4701-B68B-C4B81015C556}</Project>

@@ -14,14 +14,14 @@ namespace Kentor.AuthServices.Tests.Internal
             String path = PathHelper.BasePath;
 
             // Rather poor test, although before and after this string contains variable parts.
-            path.Should().Contain(@"\Kentor.AuthServices.Tests\bin\");
+            path.Should().Contain(@"\Tests\bin\");
         }
 
         [TestMethod]
         public void PathHelper_MapPath_ShouldResolvePath()
         {
             String mappedPath = PathHelper.MapPath("~/test/file.test");
-            mappedPath.Should().Contain(@"\Kentor.AuthServices.Tests\bin\").And.EndWith(@"\test\file.test");
+            mappedPath.Should().Contain(@"\Tests\bin\").And.EndWith(@"\test\file.test");
         }
 
         [TestMethod]

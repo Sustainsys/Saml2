@@ -120,9 +120,9 @@
       <Project>{0a1a7e8c-838c-4114-894b-564592417afa}</Project>
       <Name>Sustainsys.Saml2.AspNetCore2</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Kentor.AuthServices.TestHelpers\Kentor.AuthServices.TestHelpers.csproj">
+    <ProjectReference Include="..\TestHelpers\TestHelpers.csproj">
       <Project>{CF1E517E-B2FE-48E1-8BB9-4D9981695C47}</Project>
-      <Name>Kentor.AuthServices.TestHelpers</Name>
+      <Name>TestHelpers</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets" Condition="Exists('$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets')" />

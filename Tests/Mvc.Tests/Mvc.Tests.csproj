@@ -82,10 +82,10 @@
     <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\Kentor.AuthServices.HttpModule.Tests\CommandResultHttpSharedTests.cs">
+    <Compile Include="..\HttpModule.Tests\CommandResultHttpSharedTests.cs">
       <Link>CommandResultHttpSharedTests.cs</Link>
     </Compile>
-    <Compile Include="..\Kentor.AuthServices.HttpModule.Tests\HttpRequestBaseExtensionsTests.cs">
+    <Compile Include="..\HttpModule.Tests\HttpRequestBaseExtensionsTests.cs">
       <Link>HttpRequestBaseExtensionsTests.cs</Link>
     </Compile>
     <Compile Include="AuthServicesControllerTests.cs" />
@@ -101,9 +101,9 @@
       <Project>{7d32f0a3-cec8-4dc6-a096-5905ea9c3770}</Project>
       <Name>Kentor.AuthServices.Mvc</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Kentor.AuthServices.TestHelpers\Kentor.AuthServices.TestHelpers.csproj">
+    <ProjectReference Include="..\TestHelpers\TestHelpers.csproj">
       <Project>{cf1e517e-b2fe-48e1-8bb9-4d9981695c47}</Project>
-      <Name>Kentor.AuthServices.TestHelpers</Name>
+      <Name>TestHelpers</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Kentor.AuthServices\Kentor.AuthServices.csproj">
       <Project>{93BA675E-A159-4701-B68B-C4B81015C556}</Project>
