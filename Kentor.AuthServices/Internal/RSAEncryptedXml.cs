@@ -51,6 +51,7 @@ namespace Kentor.AuthServices.Internal
         // Override EncryptedXml.GetDecryptionKey to avoid calling into CryptoConfig.CreateFromName
         // When detect AES, we need to return AesCryptoServiceProvider (FIPS certified) instead of AesManaged (FIPS obsolated)
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope")]
+        [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverageAttribute]
         public override SymmetricAlgorithm GetDecryptionKey(EncryptedData encryptedData, string symmetricAlgorithmUri)
         {
             if (encryptedData == null)
@@ -97,6 +98,7 @@ namespace Kentor.AuthServices.Internal
         }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", "CA1309:UseOrdinalStringComparison", MessageId = "System.String.Equals(System.String,System.String,System.StringComparison)")]
+        [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverageAttribute]
         private static bool IsAesDetected(EncryptedData encryptedData, string symmetricAlgorithmUri)
         {
             if (encryptedData != null &&
