@@ -76,7 +76,7 @@ namespace Sustainsys.Saml2.AspNetCore2.Tests
             context.Response.Headers["Location"].SingleOrDefault()
                 .Should().Be("https://destination.com/", "location header should be set");
             context.Response.Cookies.Received().Append(
-                "Saml2.123", expectedCookieData, Arg.Is<CookieOptions>(co => co.HttpOnly));
+                "Saml2.123", expectedCookieData, Arg.Is<CookieOptions>(co => co.HttpOnly && co.SameSite == SameSiteMode.None));
 
             context.Response.Cookies.Received().Delete("Clear-Cookie");
 
