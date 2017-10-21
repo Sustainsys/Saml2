@@ -344,6 +344,47 @@ namespace Kentor.AuthServices.Tests.WebSso
         }
 
         [TestMethod]
+        public void SignInCommand_Run_WorksWithoutReturnUrlOnReturnFromDS()
+        {
+            var options = StubFactory.CreateOptions();
+            var idp = options.IdentityProviders.Default;
+
+            var relayData = new Dictionary<string, string>
+            {
+                { "key", "value" }
+            };
+            var relayState = "RelayState";
+            var storedRequestState = new StoredRequestState(
+                null,
+                null,
+                null,
+                relayData);
+
+            var uri = new Uri("http://sp.example.com/AuthServices/SignIn?RelayState="
+                + relayState
+                + "&idp="
+                + Uri.EscapeDataString(idp.EntityId.Id));
+
+            var request = new HttpRequestData("GET",
+                uri,
+                "/AuthServices",
+                null,
+                storedRequestState)
+            {
+                RelayState = relayState
+            };
+
+            var subject = CommandFactory.GetCommand(CommandFactory.SignInCommandName);
+
+            var actual = subject.Run(request, options);
+
+            actual.ClearCookieName.Should().Be("Kentor." + relayState, "cookie should be cleared");
+            actual.RequestState.ReturnUrl.Should().BeNull();
+            actual.RequestState.Idp.Id.Should().Be(idp.EntityId.Id);
+            actual.RequestState.RelayData.ShouldBeEquivalentTo(relayData);
+        }
+
+        [TestMethod]
         public void SignInCommand_Run_ThrowsOnBothRelayStateAndReturnUrl()
         {
             var uri = new Uri("http://sp.example.com/AuthServices/SignIn?ReturnUrl=%2FLoggedIn&RelayState=state");
