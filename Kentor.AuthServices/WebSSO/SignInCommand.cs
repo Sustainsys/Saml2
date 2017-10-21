@@ -83,7 +83,7 @@ namespace Kentor.AuthServices.WebSso
 
             if (request.StoredRequestState != null)
             {
-                returnUrl = request.StoredRequestState.ReturnUrl.OriginalString;
+                returnUrl = request.StoredRequestState.ReturnUrl?.OriginalString;
             }
 
             return returnUrl;
