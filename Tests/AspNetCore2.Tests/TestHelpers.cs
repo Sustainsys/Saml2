@@ -68,6 +68,23 @@ namespace Sustainsys.Saml2.AspNetCore2.Tests
             return context;
         }
 
+        public static HttpContext CreateHttpGet()
+        {
+            var context = Substitute.For<HttpContext>();
+
+            context.Request.Method = "GET";
+            context.Request.Form.Returns(x => { throw new InvalidOperationException(); });
+            context.Request.Host = new HostString("sp.example.com");
+            context.Request.Scheme = "https";
+            context.Request.Path = "/somePath";
+            context.Request.PathBase = "";
+            context.Request.QueryString = new QueryString("?param=value");
+
+            context.Response.Body.Returns(new MemoryStream());
+
+            return context;
+        }
+
         public const string defaultSignInScheme = nameof(defaultSignInScheme);
 
         public static IOptions<AuthenticationOptions> GetAuthenticationOptions()

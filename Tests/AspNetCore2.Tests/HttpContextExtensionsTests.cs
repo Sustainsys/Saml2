@@ -34,6 +34,19 @@ namespace Sustainsys.Saml2.AspNetCore2.Tests
         }
 
         [TestMethod]
+        public void HttpContextExtensions_ToHttpRequestData_Get()
+        {
+            var context = TestHelpers.CreateHttpGet();
+
+            var actual = context.ToHttpRequestData(StubDataProtector.Unprotect);
+
+            actual.Url.Should().Be(new Uri("https://sp.example.com/somePath?param=value"));
+            actual.Form.Count.Should().Be(0);
+            actual.HttpMethod.Should().Be("GET");
+            actual.ApplicationUrl.Should().Be(new Uri("https://sp.example.com/"));
+        }
+
+        [TestMethod]
         public void HttpContextExtensions_ToHttpRequestData_ApplicationNotInRoot()
         {
             var context = TestHelpers.CreateHttpContext();
