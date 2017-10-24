@@ -110,6 +110,14 @@ else
         @Html.ValidationMessageFor(m => m.AssertionModel.SessionIndex)
     </div>
 
+    <div class="hide-details">
+        @Html.LabelFor(m => m.AssertionModel.EnforceXmlns)
+        <div class="check-box">
+            @Html.EditorFor(m => m.AssertionModel.EnforceXmlns)
+            @Html.ValidationMessageFor(m => m.AssertionModel.EnforceXmlns)
+        </div>
+    </div>
+
     <fieldset class="hide-details">
         <legend>AttributeStatements</legend>
         <div id="attributes-placeholder" style="display:none">

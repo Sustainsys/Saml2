@@ -1778,6 +1778,7 @@ namespace Kentor.AuthServices.Tests.Saml2P
                 new Saml2Id("InResponseToID"),
                 null,
                 new Uri(audience),
+                false,
                 identity);
 
             var actual = subject.XmlElement;

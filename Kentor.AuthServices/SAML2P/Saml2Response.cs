@@ -186,7 +186,7 @@ namespace Kentor.AuthServices.Saml2P
             Saml2Id inResponseTo,
             string relayState,
             params ClaimsIdentity[] claimsIdentities)
-            : this(issuer, signingCertificate, destinationUrl, inResponseTo, relayState, null, claimsIdentities)
+            : this(issuer, signingCertificate, destinationUrl, inResponseTo, relayState, null, false, claimsIdentities)
         { }
 
         /// <summary>
@@ -198,6 +198,7 @@ namespace Kentor.AuthServices.Saml2P
         /// <param name="destinationUrl">The destination Uri for the message</param>
         /// <param name="inResponseTo">In response to id</param>
         /// <param name="relayState">RelayState associated with the message.</param>
+        /// <param name="enforceXmlns">Flag for xmlns values in generated xml</param>
         /// <param name="claimsIdentities">Claims identities to be included in the 
         /// <param name="audience">Audience of the response, set as AudienceRestriction</param>
         /// response. Each identity is translated into a separate assertion.</param>
@@ -208,6 +209,7 @@ namespace Kentor.AuthServices.Saml2P
             Saml2Id inResponseTo,
             string relayState,
             Uri audience,
+            bool enforceXmlns,
             params ClaimsIdentity[] claimsIdentities)
         {
             Issuer = issuer;
@@ -217,6 +219,7 @@ namespace Kentor.AuthServices.Saml2P
             DestinationUrl = destinationUrl;
             RelayState = relayState;
             InResponseTo = inResponseTo;
+            EnforceXmlns = enforceXmlns;
             id = new Saml2Id("id" + Guid.NewGuid().ToString("N"));
             status = Saml2StatusCode.Success;
             this.audience = audience;
@@ -310,7 +313,7 @@ namespace Kentor.AuthServices.Saml2P
             foreach (var ci in claimsIdentities)
             {
                 responseElement.AppendChild(xml.ReadNode(
-                    ci.ToSaml2Assertion(Issuer, audience, InResponseTo, DestinationUrl).ToXElement().CreateReader()));
+                    ci.ToSaml2Assertion(Issuer, audience, InResponseTo, DestinationUrl).ToXElement(EnforceXmlns).CreateReader()));
             }
 
             xmlElement = xml.DocumentElement;
@@ -365,6 +368,11 @@ namespace Kentor.AuthServices.Saml2P
         /// The destination of the response message.
         /// </summary>
         public Uri DestinationUrl { get; }
+
+        /// <summary>
+        /// Flag for xmlns values in generated xml
+        /// </summary>
+        public bool EnforceXmlns { get; }
 
         /// <summary>Gets all assertion element nodes from this response message.</summary>
         /// <value>All assertion element nodes.</value>

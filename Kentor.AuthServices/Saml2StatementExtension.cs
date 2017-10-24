@@ -21,6 +21,17 @@ namespace Kentor.AuthServices
         /// <returns>XElement</returns>
         public static XElement ToXElement(this Saml2Statement statement)
         {
+            return statement.ToXElement(false);
+        }
+
+        /// <summary>
+        /// Writes out the statement as an XElement.
+        /// </summary>
+        /// <param name="statement">Statement to create xml for.</param>
+        /// <param name="enforceXmlns">Enforce xmlns values for attributes.</param>
+        /// <returns>XElement</returns>
+        public static XElement ToXElement(this Saml2Statement statement, bool enforceXmlns)
+        {
             if (statement == null)
             {
                 throw new ArgumentNullException(nameof(statement));
@@ -29,11 +40,11 @@ namespace Kentor.AuthServices
             var attributeStatement = statement as Saml2AttributeStatement;
             if (attributeStatement != null)
             {
-                return ToXElement(attributeStatement);
+                return ToXElement(attributeStatement, enforceXmlns);
             }
 
             var authnStatement = statement as Saml2AuthenticationStatement;
-            if(authnStatement != null)
+            if (authnStatement != null)
             {
                 return ToXElement(authnStatement);
             }
@@ -49,7 +60,7 @@ namespace Kentor.AuthServices
                     new XElement(Saml2Namespaces.Saml2 + "AuthnContextClassRef",
                         authnStatement.AuthenticationContext.ClassReference.OriginalString)));
 
-            if(authnStatement.SessionIndex != null)
+            if (authnStatement.SessionIndex != null)
             {
                 result.Add(new XAttribute("SessionIndex", authnStatement.SessionIndex));
             }
@@ -57,7 +68,7 @@ namespace Kentor.AuthServices
             return result;
         }
 
-        private static XElement ToXElement(Saml2AttributeStatement attributeStatement)
+        private static XElement ToXElement(Saml2AttributeStatement attributeStatement, bool enforceXmlns)
         {
             var element = new XElement(Saml2Namespaces.Saml2 + "AttributeStatement");
 
@@ -69,9 +80,18 @@ namespace Kentor.AuthServices
                 attributeElement.AddAttributeIfNotNullOrEmpty("NameFormat", attribute.NameFormat);
                 attributeElement.AddAttributeIfNotNullOrEmpty("OriginalIssuer", attribute.OriginalIssuer);
 
+                XNamespace xs = @"http://www.w3.org/2001/XMLSchema";
+                XNamespace xsi = @"http://www.w3.org/2001/XMLSchema-instance";
+
                 foreach (var value in attribute.Values)
                 {
-                    attributeElement.Add(new XElement(Saml2Namespaces.Saml2 + "AttributeValue", value));
+                    if (enforceXmlns)
+                        attributeElement.Add(new XElement(Saml2Namespaces.Saml2 + "AttributeValue", value,
+                            new XAttribute(XNamespace.Xmlns + "xsi", xsi.NamespaceName),
+                            new XAttribute(XNamespace.Xmlns + "xs", xs.NamespaceName),
+                            new XAttribute(xsi + "type", @"xs:string")));
+                    else
+                        attributeElement.Add(new XElement(Saml2Namespaces.Saml2 + "AttributeValue", value));
                 }
 
                 element.Add(attributeElement);

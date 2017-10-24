@@ -53,7 +53,8 @@ namespace Kentor.AuthServices.StubIdp.Controllers
 
                     model.CustomDescription = fileData.IdpDescription;
                     model.AssertionModel.NameId = null;
-                    model.HideDetails = fileData.HideDetails;
+                    model.AssertionModel.EnforceXmlns = fileData.EnforceXmlns;
+                    model.HideDetails = fileData.HideDetails;                    
                 }
             }
         }

@@ -10,7 +10,7 @@ namespace Kentor.AuthServices.StubIdp.Models
 {
     public static class MetadataModel
     {
-        public static ExtendedEntityDescriptor CreateIdpMetadata(bool includeCacheDuration = true)
+        public static ExtendedEntityDescriptor CreateIdpMetadata(bool defaultPost = false, bool includeCacheDuration = true)
         {
             var metadata = new ExtendedEntityDescriptor()
             {
@@ -27,11 +27,13 @@ namespace Kentor.AuthServices.StubIdp.Models
             idpSsoDescriptor.ProtocolsSupported.Add(new Uri("urn:oasis:names:tc:SAML:2.0:protocol"));
             metadata.RoleDescriptors.Add(idpSsoDescriptor);
 
-            idpSsoDescriptor.SingleSignOnServices.Add(new ProtocolEndpoint()
-            {
-                Binding = Saml2Binding.HttpRedirectUri,
-                Location = UrlResolver.SsoServiceUrl
-            });
+            if (!defaultPost)
+                idpSsoDescriptor.SingleSignOnServices.Add(new ProtocolEndpoint()
+                {
+                    Binding = Saml2Binding.HttpRedirectUri,
+                    Location = UrlResolver.SsoServiceUrl
+                });
+
             idpSsoDescriptor.SingleSignOnServices.Add(new ProtocolEndpoint()
             {
                 Binding = Saml2Binding.HttpPostUri,
@@ -63,7 +65,7 @@ namespace Kentor.AuthServices.StubIdp.Models
             return metadata;
         }
 
-        public static ExtendedEntitiesDescriptor CreateFederationMetadata()
+        public static ExtendedEntitiesDescriptor CreateFederationMetadata(bool defaultPost = false)
         {
             var metadata = new ExtendedEntitiesDescriptor
             {
@@ -72,7 +74,7 @@ namespace Kentor.AuthServices.StubIdp.Models
                 ValidUntil = DateTime.UtcNow.AddDays(1)
             };
 
-            metadata.ChildEntities.Add(CreateIdpMetadata(false));
+            metadata.ChildEntities.Add(CreateIdpMetadata(defaultPost, false));
 
             return metadata;
         }

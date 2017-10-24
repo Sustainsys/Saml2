@@ -1,5 +1,7 @@
 {
   "HideDetails": false,
+  "EnforceXmlns": false,
+  "EnforcePOST": false,
   "UserList": [
     {
       "DisplayName": "John Doe",

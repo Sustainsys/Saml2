@@ -28,6 +28,9 @@ namespace Kentor.AuthServices.StubIdp.Models
         [Display(Name = "Audience")]
         public string Audience { get; set; }
 
+        [Display(Name = "Enforce xmlns attributes")]
+        public bool EnforceXmlns { get; set; }
+
         public ICollection<AttributeStatementModel> AttributeStatements { get; set; }
 
         public const string DefaultSessionIndex = "42";
@@ -83,7 +86,7 @@ namespace Kentor.AuthServices.StubIdp.Models
             return new Saml2Response(
                 new EntityId(UrlResolver.MetadataUrl.ToString()),
                 CertificateHelper.SigningCertificate, new Uri(AssertionConsumerServiceUrl),
-                saml2Id, RelayState, audienceUrl, identity);
+                saml2Id, RelayState, audienceUrl, EnforceXmlns, identity);
         }
 
         [Display(Name = "Incoming AuthnRequest")]

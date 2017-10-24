@@ -19,6 +19,17 @@ namespace Kentor.AuthServices
         /// <returns>XElement</returns>
         public static XElement ToXElement(this Saml2Assertion assertion)
         {
+            return assertion.ToXElement(false);
+        }
+
+        /// <summary>
+        /// Writes out the assertion as an XElement.
+        /// </summary>
+        /// <param name="assertion">The assertion to create xml for.</param>
+        /// <param name="enforceXmlns">Enforce xmlns values for attributes.</param>
+        /// <returns>XElement</returns>
+        public static XElement ToXElement(this Saml2Assertion assertion, bool enforceXmlns)
+        {
             if(assertion == null)
             {
                 throw new ArgumentNullException(nameof(assertion));
@@ -46,7 +57,7 @@ namespace Kentor.AuthServices
             {
                 foreach (var statement in assertion.Statements)
                 {
-                    xml.Add(statement.ToXElement());
+                    xml.Add(statement.ToXElement(enforceXmlns));
                 };
             }
 

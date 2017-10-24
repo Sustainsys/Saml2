@@ -26,6 +26,18 @@
         "null"
       ]
     },
+    "EnforceXmlns": {
+      "type": [
+        "boolean",
+        "null"
+      ]
+    },
+    "EnforcePOST": {
+      "type": [
+        "boolean",
+        "null"
+      ]
+    },
     "UserList": {
       "type": [
         "array",
