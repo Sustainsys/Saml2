@@ -183,5 +183,61 @@ namespace Kentor.AuthServices.Tests
 
             actualAuthnXml.Should().BeEquivalentTo(expectedAuthnXml);
         }
+
+        [TestMethod]
+        public void Saml2AssertionExtensions_ToXElement_Statements_Xmlns()
+        {
+            var attributeValue = "Test";
+            var assertion = new Saml2Assertion(
+                new Saml2NameIdentifier("http://idp.example.com"));
+
+            assertion.Statements.Add(
+                new Saml2AttributeStatement(new Saml2Attribute(ClaimTypes.Role, attributeValue)));
+
+            assertion.Statements.Add(
+                new Saml2AuthenticationStatement(
+                    new Saml2AuthenticationContext(
+                        new Uri("urn:oasis:names:tc:SAML:2.0:ac:classes:unspecified")))
+                {
+                    SessionIndex = "SessionIndex"
+                });
+
+            // Grab time before and after to use when comparing times. Even if
+            // the time changes in the middle of the test, it should match one
+            // of these times (unless you're debugging and spending more than
+            // one second stepping through the code).
+            var timeBefore = DateTime.UtcNow;
+            var result = assertion.ToXElement(true);
+            var timeAfter = DateTime.UtcNow;
+
+            XNamespace xs = @"http://www.w3.org/2001/XMLSchema";
+            XNamespace xsi = @"http://www.w3.org/2001/XMLSchema-instance";
+
+            var actualAttributeXml = result.Element(Saml2Namespaces.Saml2 + "AttributeStatement");
+            var expectedAttributeXml = new XElement(Saml2Namespaces.Saml2 + "AttributeStatement",
+                new XElement(Saml2Namespaces.Saml2 + "Attribute",
+                new XAttribute("Name", ClaimTypes.Role),
+                new XElement(Saml2Namespaces.Saml2 + "AttributeValue", attributeValue,
+                            new XAttribute(XNamespace.Xmlns + "xsi", xsi.NamespaceName),
+                            new XAttribute(XNamespace.Xmlns + "xs", xs.NamespaceName),
+                            new XAttribute(xsi + "type", @"xs:string"))));
+            actualAttributeXml.Should().BeEquivalentTo(expectedAttributeXml);
+
+            var actualAuthnXml = result.Element(Saml2Namespaces.Saml2 + "AuthnStatement");
+
+            // Compare time first and then drop it to avoid race issues
+            var authnInstant = actualAuthnXml.Attribute("AuthnInstant");
+            authnInstant.Value.Should().Match(
+                d => d == timeBefore.ToSaml2DateTimeString() || d == timeAfter.ToSaml2DateTimeString());
+            authnInstant.Remove();
+
+            var expectedAuthnXml = new XElement(Saml2Namespaces.Saml2 + "AuthnStatement",
+                new XAttribute("SessionIndex", "SessionIndex"),
+                new XElement(Saml2Namespaces.Saml2 + "AuthnContext",
+                    new XElement(Saml2Namespaces.Saml2 + "AuthnContextClassRef",
+                        "urn:oasis:names:tc:SAML:2.0:ac:classes:unspecified")));
+
+            actualAuthnXml.Should().BeEquivalentTo(expectedAuthnXml);
+        }
     }
 }
