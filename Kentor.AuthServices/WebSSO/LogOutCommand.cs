@@ -1,6 +1,5 @@
 ﻿using System;
 using Kentor.AuthServices.Configuration;
-using System.IdentityModel.Metadata;
 using System.Security.Claims;
 using System.Net;
 using Kentor.AuthServices.Saml2P;
@@ -10,6 +9,10 @@ using System.Configuration;
 using System.Linq;
 using System.Security.Cryptography.Xml;
 using Kentor.AuthServices.Internal;
+using Kentor.AuthServices.Metadata;
+#if NET45
+using System.IdentityModel.Metadata;
+#endif
 
 namespace Kentor.AuthServices.WebSso
 {
@@ -221,15 +224,15 @@ namespace Kentor.AuthServices.WebSso
         {
             var request = Saml2LogoutRequest.FromXml(unbindResult.Data);
 
-            var idp = options.IdentityProviders[request.Issuer];
+            var idp = options.IdentityProviders[request.Issuer.AsEntityId()];
 
             if(options.SPOptions.SigningServiceCertificate == null)
             {
-                throw new ConfigurationErrorsException(string.Format(CultureInfo.InvariantCulture,
+                throw new InvalidOperationException(string.Format(CultureInfo.InvariantCulture,
                     "Received a LogoutRequest from \"{0}\" but cannot reply because single logout responses " +
                     "must be signed and there is no signing certificate configured. Looks like the idp is " +
                     "configured for Single Logout despite AuthServices not exposing that functionality in the metadata.",
-                    request.Issuer.Id));
+                    request.Issuer.Value));
             }
 
             if(idp.SingleLogoutServiceResponseUrl == null)

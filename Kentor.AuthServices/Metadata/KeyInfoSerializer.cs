@@ -1,4 +1,5 @@
-﻿using System;
+﻿#if NET45
+using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IdentityModel.Selectors;
@@ -122,11 +123,12 @@ namespace Kentor.AuthServices.Metadata
         private static SecurityKeyIdentifierClause ReadX509Certificate(XmlReader reader)
         {
             reader.ReadStartElement("X509Certificate", SignedXml.XmlDsigNamespaceUrl);
-            var clause = new X509CertificateKeyIdentifierClause(
-                ((XmlDictionaryReader)reader).ReadContentAsBase64());
-            reader.ReadEndElement();
+            //var clause = new X509CertificateKeyIdentifierClause(
+            //    ((XmlDictionaryReader)reader).ReadContentAsBase64());
+            //reader.ReadEndElement();
 
-            return clause;
+            //return clause;
+            return null;
         }
 
         #region overrides throwing NotImplementedException
@@ -199,3 +201,4 @@ namespace Kentor.AuthServices.Metadata
         #endregion
     }
 }
+#endif

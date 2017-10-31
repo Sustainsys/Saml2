@@ -5,12 +5,14 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.IdentityModel.Configuration;
 using System.Linq;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.IdentityModel.Tokens.Saml2;
+#if NET45
 using System.IdentityModel.Metadata;
+#endif
 
 namespace Kentor.AuthServices.Configuration
 {
@@ -25,8 +27,9 @@ namespace Kentor.AuthServices.Configuration
         /// </summary>
         public SPOptions()
         {
-            systemIdentityModelIdentityConfiguration = new IdentityConfiguration(false);
+#if NET45
             MetadataCacheDuration = new TimeSpan(1, 0, 0);
+#endif
             Compatibility = new Compatibility();
             OutboundSigningAlgorithm = XmlHelpers.GetDefaultSigningAlgorithmName();
             MinIncomingSigningAlgorithm = XmlHelpers.GetDefaultSigningAlgorithmName();
@@ -43,7 +46,6 @@ namespace Kentor.AuthServices.Configuration
             {
                 throw new ArgumentNullException(nameof(configSection));
             }
-            systemIdentityModelIdentityConfiguration = new IdentityConfiguration(true);
 
             ReturnUrl = configSection.ReturnUrl;
             MetadataCacheDuration = configSection.Metadata.CacheDuration;
@@ -51,7 +53,7 @@ namespace Kentor.AuthServices.Configuration
             WantAssertionsSigned = configSection.Metadata.WantAssertionsSigned;
             ValidateCertificates = configSection.ValidateCertificates;
             DiscoveryServiceUrl = configSection.DiscoveryServiceUrl;
-            EntityId = configSection.EntityId;
+            EntityId = new Saml2NameIdentifier(configSection.EntityId.Id);
             ModulePath = configSection.ModulePath;
             PublicOrigin = configSection.PublicOrigin;
             Organization = configSection.Organization;
@@ -96,59 +98,16 @@ namespace Kentor.AuthServices.Configuration
         /// </summary>
         public TimeSpan? MetadataValidDuration { get; set; }
 
-        volatile private Saml2PSecurityTokenHandler saml2PSecurityTokenHandler;
-
-        /// <summary>
-        /// The security token handler used to process incoming assertions for this SP.
-        /// The default value is to lazy create one using the current EntityId.
-        /// </summary>
-        public Saml2PSecurityTokenHandler Saml2PSecurityTokenHandler
-        {
-            get
-            {
-                // Capture in a local variable to prevent race conditions. Reads and writes
-                // of references are atomic so there is no need for a lock.
-                var value = saml2PSecurityTokenHandler;
-                if(value == null)
-                {
-                    // Set the saved value, but don't trust it - still use a local var for the return.
-                    saml2PSecurityTokenHandler = value = new Saml2PSecurityTokenHandler(this);
-                }
-
-                return value;
-            }
-            set
-            {
-                saml2PSecurityTokenHandler = value; 
-            }
-        }
-
         /// <summary>
         /// Url to discovery service to use if no idp is specified in the sign in call.
         /// </summary>
         public Uri DiscoveryServiceUrl { get; set; }
 
-        private EntityId entityId;
-
         /// <summary>
         /// EntityId - The identity of the ServiceProvider to use when sending requests to Idp
         /// and presenting the SP in metadata.
         /// </summary>
-        public EntityId EntityId
-        {
-            get
-            {
-                return entityId;
-            }
-            set
-            {
-                if(saml2PSecurityTokenHandler != null)
-                {
-                    throw new InvalidOperationException("Can't change entity id when a token handler has been instantiated.");
-                }
-                entityId = value;
-            }
-        }
+        public Saml2NameIdentifier EntityId { get; set; }
 
         private string modulePath = "/AuthServices";
 
@@ -232,19 +191,6 @@ namespace Kentor.AuthServices.Configuration
             get
             {
                 return attributeConsumingServices;
-            }
-        }
-
-        private IdentityConfiguration systemIdentityModelIdentityConfiguration;
-
-        /// <summary>
-        /// The System.IdentityModel configuration to use.
-        /// </summary>
-        public IdentityConfiguration SystemIdentityModelIdentityConfiguration
-        {
-            get
-            {
-                return systemIdentityModelIdentityConfiguration;
             }
         }
 

@@ -2,10 +2,13 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+#if NET45
 using System.IdentityModel.Metadata;
+#endif
 using System.Linq;
 using System.Net;
 using Kentor.AuthServices.Internal;
+using Kentor.AuthServices.Metadata;
 
 namespace Kentor.AuthServices.WebSso
 {
@@ -184,7 +187,7 @@ namespace Kentor.AuthServices.WebSso
                 CultureInfo.InvariantCulture,
                 "{0}?entityID={1}&return={2}&returnIDParam=idp",
                 spOptions.DiscoveryServiceUrl,
-                Uri.EscapeDataString(spOptions.EntityId.Id),
+                Uri.EscapeDataString(spOptions.EntityId.Value),
                 Uri.EscapeDataString(returnUrl));
 
             var requestState = new StoredRequestState(

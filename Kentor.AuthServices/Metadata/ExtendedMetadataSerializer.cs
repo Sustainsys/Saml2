@@ -1,4 +1,5 @@
-﻿using System;
+﻿#if NET45
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IdentityModel.Metadata;
@@ -48,8 +49,7 @@ namespace Kentor.AuthServices.Metadata
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1062:Validate arguments of public methods", MessageId = "0", Justification = "Method is only called by base class no validation needed.")]
         protected override void WriteCustomAttributes<T>(XmlWriter writer, T source)
         {
-            var cachedMetadata = source as ICachedMetadata;
-            if (cachedMetadata != null)
+            if (source is ICachedMetadata cachedMetadata)
             {
                 if (cachedMetadata.CacheDuration.HasValue)
                 {
@@ -65,7 +65,7 @@ namespace Kentor.AuthServices.Metadata
                 }
             }
 
-            if(typeof(T) == typeof(EntityDescriptor))
+            if (typeof(T) == typeof(EntityDescriptor))
             {
                 writer.WriteAttributeString("xmlns", "saml2", null, Saml2Namespaces.Saml2Name);
             }
@@ -73,9 +73,7 @@ namespace Kentor.AuthServices.Metadata
             // The framework calls this callback several times when writing
             // a SPSSODescriptor. Every time with T being a more specialized
             // class. Only do the writing in the final, most specialized call.
-            var extendedSPSsoDescriptor = source as ExtendedServiceProviderSingleSignOnDescriptor;
-            if (extendedSPSsoDescriptor != null 
-                && typeof(T) == typeof(ServiceProviderSingleSignOnDescriptor))
+            if (source is ExtendedServiceProviderSingleSignOnDescriptor extendedSPSsoDescriptor && typeof(T) == typeof(ServiceProviderSingleSignOnDescriptor))
             {
                 // This is really an element. But it must be placed first of the child elements
                 // and WriteCustomAttributes is called at the right place for that.
@@ -192,3 +190,4 @@ namespace Kentor.AuthServices.Metadata
         }
     }
 }
+#endif

@@ -6,9 +6,12 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.IdentityModel.Metadata;
 using Kentor.AuthServices.Configuration;
 using System.Xml;
+#if NET45
+using System.IdentityModel.Metadata;
+#endif
+using Kentor.AuthServices.Metadata;
 
 namespace Kentor.AuthServices.WebSso
 {

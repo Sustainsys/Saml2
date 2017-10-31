@@ -3,9 +3,9 @@ using Kentor.AuthServices.Exceptions;
 using Kentor.AuthServices.Saml2P;
 using System;
 using System.Configuration;
+#if NET45
 using System.IdentityModel.Metadata;
-using System.IdentityModel.Services;
-using System.IdentityModel.Tokens;
+#endif
 using System.Net;
 using System.Security.Claims;
 using System.Security.Cryptography;
@@ -92,18 +92,15 @@ namespace Kentor.AuthServices.WebSso
         {
             var principal = new ClaimsPrincipal(samlResponse.GetClaims(options));
 
-            principal = options.SPOptions.SystemIdentityModelIdentityConfiguration
-                .ClaimsAuthenticationManager.Authenticate(null, principal);
-
             if(options.SPOptions.ReturnUrl == null)
             {
                 if (storedRequestState == null)
                 {
-                    throw new ConfigurationErrorsException(UnsolicitedMissingReturnUrlMessage);
+                    throw new InvalidOperationException(UnsolicitedMissingReturnUrlMessage);
                 }
                 if(storedRequestState.ReturnUrl == null)
                 {
-                    throw new ConfigurationErrorsException(SpInitiatedMissingReturnUrl);
+                    throw new InvalidOperationException(SpInitiatedMissingReturnUrl);
                 }
             }
 
