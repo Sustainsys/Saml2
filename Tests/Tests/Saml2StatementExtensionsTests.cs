@@ -31,6 +31,17 @@ namespace Kentor.AuthServices.Tests
                 .And.Message.Should().Be("Statement of type StubSaml2Statement is not supported.");
         }
 
+        [TestMethod]
+        public void Saml2StatementExtensions_ToXElement_Subject()
+        {
+            var subjectName = "JohnDoe";
+            var statement = new Saml2AttributeStatement(new Saml2Attribute("Subject", subjectName));
+
+            var subject = statement.ToXElement();
+
+            subject.Element(Saml2Namespaces.Saml2 + "Attribute").Value.Should().Be(subjectName);
+        }
+
         private class StubSaml2Statement : Saml2Statement
         {
         }
