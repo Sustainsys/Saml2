@@ -97,7 +97,7 @@ namespace Kentor.AuthServices.Saml2P
                 secondLevelStatus = xml["Status", Saml2Namespaces.Saml2PName]["StatusCode", Saml2Namespaces.Saml2PName]["StatusCode", Saml2Namespaces.Saml2PName].Attributes["Value"].Value;
             }
 
-            Issuer = new EntityId(xmlElement["Issuer", Saml2Namespaces.Saml2Name].GetTrimmedTextIfNotNull());
+            Issuer = new Saml2NameIdentifier(xmlElement["Issuer", Saml2Namespaces.Saml2Name].GetTrimmedTextIfNotNull());
 
             var destinationUrlString = xmlElement.Attributes["Destination"].GetValueIfNotNull();
 
@@ -160,7 +160,7 @@ namespace Kentor.AuthServices.Saml2P
         /// <param name="claimsIdentities">Claims identities to be included in the 
         /// response. Each identity is translated into a separate assertion.</param>
         public Saml2Response(
-            EntityId issuer,
+            Saml2NameIdentifier issuer,
             X509Certificate2 signingCertificate,
             Uri destinationUrl,
             Saml2Id inResponseTo,
@@ -180,7 +180,7 @@ namespace Kentor.AuthServices.Saml2P
         /// <param name="claimsIdentities">Claims identities to be included in the 
         /// response. Each identity is translated into a separate assertion.</param>
         public Saml2Response(
-            EntityId issuer,
+            Saml2NameIdentifier issuer,
             X509Certificate2 signingCertificate,
             Uri destinationUrl,
             Saml2Id inResponseTo,
@@ -202,7 +202,7 @@ namespace Kentor.AuthServices.Saml2P
         /// <param name="audience">Audience of the response, set as AudienceRestriction</param>
         /// response. Each identity is translated into a separate assertion.</param>
         public Saml2Response(
-            EntityId issuer,
+            Saml2NameIdentifier issuer,
             X509Certificate2 issuerCertificate,
             Uri destinationUrl,
             Saml2Id inResponseTo,
@@ -448,7 +448,7 @@ namespace Kentor.AuthServices.Saml2P
                     return;
                 }
                 string msg = string.Format(CultureInfo.InvariantCulture,
-                    "Unsolicited responses are not allowed for idp \"{0}\".", Issuer.Id);
+                    "Unsolicited responses are not allowed for idp \"{0}\".", Issuer.Value);
                 throw new Saml2ResponseFailedValidationException(msg);
             }
         }
@@ -495,7 +495,7 @@ namespace Kentor.AuthServices.Saml2P
             {
                 try
                 {
-                    claimsIdentities = CreateClaims(options).ToList();
+                    //claimsIdentities = CreateClaimsPrincipal(options);
                 }
                 catch (Exception ex)
                 {
@@ -518,7 +518,7 @@ namespace Kentor.AuthServices.Saml2P
                     status, statusMessage, secondLevelStatus);
             }
 
-            return handle
+            var principal = new ClaimsPrincipal();
 
             foreach (XmlElement assertionNode in GetAllAssertionElementNodes(options))
             {
@@ -526,13 +526,15 @@ namespace Kentor.AuthServices.Saml2P
                 {
                     var handler = new Saml2SecurityTokenHandler();
 
-                    var token = (Saml2SecurityToken)handler.ReadToken(
-                        reader, options.SPOptions.TokenValidationParameters);
-                    options.SPOptions.Logger.WriteVerbose("Extracted SAML assertion " + token.Id);
+                    //var token = (Saml2SecurityToken)handler.ValidateToken.ReadToken(
+                    //    reader, options.SPOptions.TokenValidationParameters);
+                    //options.SPOptions.Logger.WriteVerbose("Extracted SAML assertion " + token.Id);
 
-                    yield return handler.ValidateToken;
+                    //principal.AddIdentity(handler.ValidateToken(;
                 }
             }
+
+            return principal;
         }
         
         /// <summary>

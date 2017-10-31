@@ -16,12 +16,7 @@
   <ItemGroup Condition=" '$(TargetFramework)' == 'net45' ">
     <Reference Include="System.Configuration" />
     <Reference Include="System.Security" />
-  </ItemGroup>
-  
-  <ItemGroup>
-    <Reference Include="System.IdentityModel">
-      <HintPath>..\..\..\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.5\System.IdentityModel.dll</HintPath>
-    </Reference>
+    <Reference Include="System.IdentityModel" />
   </ItemGroup>
 
 </Project>

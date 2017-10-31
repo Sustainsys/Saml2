@@ -8,8 +8,8 @@ using System.Threading.Tasks;
 using System.Xml;
 using System.Xml.Linq;
 using Kentor.AuthServices.Internal;
-using System.IdentityModel.Tokens;
 using System.Security.Cryptography.X509Certificates;
+using Microsoft.IdentityModel.Tokens.Saml2;
 
 namespace Kentor.AuthServices.Saml2P
 {
@@ -80,7 +80,7 @@ namespace Kentor.AuthServices.Saml2P
         /// <summary>
         /// The issuer of the request.
         /// </summary>
-        public EntityId Issuer { get; set; }
+        public Saml2NameIdentifier Issuer { get; set; }
 
         /// <summary>
         /// The SAML2 request name

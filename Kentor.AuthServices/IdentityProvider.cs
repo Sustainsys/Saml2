@@ -3,8 +3,6 @@ using Kentor.AuthServices.Configuration;
 using System;
 using System.Configuration;
 using System.Globalization;
-using System.IdentityModel.Metadata;
-using System.IdentityModel.Tokens;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Security.Cryptography.Xml;
@@ -17,6 +15,9 @@ using System.Net;
 using System.Collections.Concurrent;
 using System.Security.Claims;
 using System.Diagnostics.CodeAnalysis;
+#if NET45
+using System.IdentityModel.Metadata;
+#endif
 
 namespace Kentor.AuthServices
 {
@@ -92,20 +93,21 @@ namespace Kentor.AuthServices
         {
             if (Binding == 0)
             {
-                throw new ConfigurationErrorsException("Missing binding configuration on Idp " + EntityId.Id + ".");
+                throw new InvalidOperationException("Missing binding configuration on Idp " + EntityId.Id + ".");
             }
 
             if (!SigningKeys.Any())
             {
-                throw new ConfigurationErrorsException("Missing signing certificate configuration on Idp " + EntityId.Id + ".");
+                throw new InvalidOperationException("Missing signing certificate configuration on Idp " + EntityId.Id + ".");
             }
 
             if (SingleSignOnServiceUrl == null)
             {
-                throw new ConfigurationErrorsException("Missing assertion consumer service url configuration on Idp " + EntityId.Id + ".");
+                throw new InvalidOperationException("Missing assertion consumer service url configuration on Idp " + EntityId.Id + ".");
             }
         }
 
+#if NET45
         private bool loadMetadata;
 
         /// <summary>
@@ -133,7 +135,7 @@ namespace Kentor.AuthServices
                 }
             }
         }
-
+#endif
         private Saml2BindingType binding;
 
         /// <summary>
@@ -314,7 +316,7 @@ namespace Kentor.AuthServices
             {
                 if (spOptions.SigningServiceCertificate == null)
                 {
-                    throw new ConfigurationErrorsException(
+                    throw new InvalidOperationException(
                         string.Format(
                             CultureInfo.InvariantCulture,
                             "Idp \"{0}\" is configured for signed AuthenticateRequests, but ServiceCertificates configuration contains no certificate with usage \"Signing\" or \"Both\". To resolve this issue you can a) add a service certificate with usage \"Signing\" or \"Both\" (default if not specified is \"Both\") or b) Set the AuthenticateRequestSigningBehavior configuration property to \"Never\".",
@@ -353,11 +355,14 @@ namespace Kentor.AuthServices
         {
             get
             {
+#if NET45
                 ReloadMetadataIfRequired();
+#endif
                 return signingKeys;
             }
         }
 
+#if NET45
         object metadataLoadLock = new object();
 
         private void DoLoadMetadata()
@@ -448,7 +453,7 @@ namespace Kentor.AuthServices
 
             var keys = idpDescriptor.Keys.Where(k => k.Use == KeyType.Unspecified || k.Use == KeyType.Signing);
 
-            signingKeys.SetLoadedItems(keys.Select(k => k.KeyInfo.First(c => c.CanCreateKey)).ToList());
+            //signingKeys.SetLoadedItems(keys.Select(k => k.KeyInfo.First(c => c.CanCreateKey)).ToList());
         }
 
         private static ProtocolEndpoint GetPreferredEndpoint(ICollection<ProtocolEndpoint> endpoints)
@@ -504,12 +509,14 @@ namespace Kentor.AuthServices
                 idp.DoLoadMetadata();
             }
         }
+#endif
 
         /// <summary>
         /// Does this Idp want the AuthnRequests signed?
         /// </summary>
         public bool WantAuthnRequestsSigned { get; set; }
 
+#if NET45
         private void ReloadMetadataIfRequired()
         {
             if (LoadMetadata && MetadataValidUntil.Value < DateTime.UtcNow)
@@ -520,6 +527,7 @@ namespace Kentor.AuthServices
                 }
             }
         }
+#endif
 
         /// <summary>
         /// Create a logout request to the idp, for the current identity.

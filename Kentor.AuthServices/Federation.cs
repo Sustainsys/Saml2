@@ -19,6 +19,7 @@ namespace Kentor.AuthServices
     /// </summary>
     public class Federation
     {
+#if NET45
         /// <summary>
         /// Ctor
         /// </summary>
@@ -40,6 +41,7 @@ namespace Kentor.AuthServices
 
             Init(config.MetadataLocation, config.AllowUnsolicitedAuthnResponse, options, signingKeys);
         }
+#endif
 
         /// <summary>
         /// Ctor

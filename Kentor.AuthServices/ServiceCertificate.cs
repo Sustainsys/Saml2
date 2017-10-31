@@ -19,6 +19,7 @@ namespace Kentor.AuthServices
             MetadataPublishOverride = MetadataPublishOverrideType.None;
         }
 
+#if NET45
         /// <summary>
         /// Ctor for loading from configuration
         /// </summary>
@@ -34,7 +35,7 @@ namespace Kentor.AuthServices
             MetadataPublishOverride = serviceCertElement.MetadataPublishOverride;
             Certificate = serviceCertElement.LoadCertificate();
         }
-
+#endif
         /// <summary>
         /// X509 Certificate
         /// </summary>

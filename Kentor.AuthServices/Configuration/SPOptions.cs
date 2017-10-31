@@ -10,9 +10,7 @@ using System.Linq;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
-#if NET45
 using System.IdentityModel.Metadata;
-#endif
 
 namespace Kentor.AuthServices.Configuration
 {
@@ -192,10 +190,12 @@ namespace Kentor.AuthServices.Configuration
         /// </summary>
         public Uri PublicOrigin { get; set; }
 
+#if NET45
         /// <summary>
         /// Metadata describing the organization responsible for the entity.
         /// </summary>
         public Organization Organization { get; set; }
+#endif
 
         /// <summary>
         /// NameId Policy.
@@ -207,6 +207,7 @@ namespace Kentor.AuthServices.Configuration
         /// </summary>
         public Saml2RequestedAuthnContext RequestedAuthnContext { get; set; }
 
+#if NET45
         readonly ICollection<ContactPerson> contacts = new List<ContactPerson>();
 
         /// <summary>
@@ -219,6 +220,7 @@ namespace Kentor.AuthServices.Configuration
                 return contacts;
             }
         }
+#endif
 
         readonly ICollection<AttributeConsumingService> attributeConsumingServices = new List<AttributeConsumingService>();
 
