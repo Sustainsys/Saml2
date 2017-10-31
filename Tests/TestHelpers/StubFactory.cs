@@ -46,11 +46,6 @@ namespace Kentor.AuthServices.TestHelpers
                 ReturnUrl = new Uri("https://localhost/returnUrl")
             };
 
-            options.SystemIdentityModelIdentityConfiguration.ClaimsAuthenticationManager
-                = new ClaimsAuthenticationManagerStub();
-            options.SystemIdentityModelIdentityConfiguration.AudienceRestriction.AudienceMode
-                = AudienceUriMode.Never;
-
             AddContacts(options);
             AddAttributeConsumingServices(options);
 
