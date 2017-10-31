@@ -1,4 +1,5 @@
-﻿using System;
+﻿#if NET45
+using System;
 using System.Collections.Generic;
 using System.IdentityModel.Metadata;
 using System.Linq;
@@ -24,3 +25,4 @@ namespace Kentor.AuthServices.Metadata
         public DateTime? ValidUntil { get; set; }
     }
 }
+#endif

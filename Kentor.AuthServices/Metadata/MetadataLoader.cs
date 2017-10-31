@@ -1,4 +1,5 @@
-﻿using Kentor.AuthServices.Exceptions;
+﻿#if NET45
+using Kentor.AuthServices.Exceptions;
 using Kentor.AuthServices.Internal;
 using System;
 using System.Collections.Generic;
@@ -121,7 +122,8 @@ namespace Kentor.AuthServices.Metadata
             xmlDoc.Load(reader);
 
             if(!xmlDoc.DocumentElement.IsSignedByAny(
-                signingKeys,
+                //signingKeys,
+                null,
                 validateCertificate,
                 minIncomingSigningAlgorithm))
             {
@@ -199,3 +201,4 @@ namespace Kentor.AuthServices.Metadata
 
     }
 }
+#endif

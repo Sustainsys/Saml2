@@ -67,13 +67,17 @@ namespace Kentor.AuthServices
         { 
             var saml2NameIdentifier = new Saml2NameIdentifier(claim.Value);
 
-            claim.ExtractProperty(ClaimProperties.SamlNameIdentifierFormat,
+            claim.ExtractProperty(
+                Microsoft.IdentityModel.Tokens.Saml2.ClaimProperties.SamlNameIdentifierFormat,
                 value => saml2NameIdentifier.Format = new Uri(value));
-            claim.ExtractProperty(ClaimProperties.SamlNameIdentifierNameQualifier,
+            claim.ExtractProperty(
+                Microsoft.IdentityModel.Tokens.Saml2.ClaimProperties.SamlNameIdentifierNameQualifier,
                 value => saml2NameIdentifier.NameQualifier = value);
-            claim.ExtractProperty(ClaimProperties.SamlNameIdentifierSPNameQualifier,
+            claim.ExtractProperty(
+                Microsoft.IdentityModel.Tokens.Saml2.ClaimProperties.SamlNameIdentifierSPNameQualifier,
                 value => saml2NameIdentifier.SPNameQualifier = value);
-            claim.ExtractProperty(ClaimProperties.SamlNameIdentifierSPProvidedId,
+            claim.ExtractProperty(
+                Microsoft.IdentityModel.Tokens.Saml2.ClaimProperties.SamlNameIdentifierSPProvidedId,
                 value => saml2NameIdentifier.SPProvidedId = value);
 
             return saml2NameIdentifier;

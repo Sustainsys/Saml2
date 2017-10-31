@@ -1,4 +1,5 @@
-﻿using System;
+﻿#if NET45
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -45,3 +46,4 @@ namespace Kentor.AuthServices.Metadata
         public bool IsDefault { get; set; }
     }
 }
+#endif

@@ -30,7 +30,9 @@ namespace Kentor.AuthServices.Configuration
             MessageUnbound = ur => { };
             AcsCommandResultCreated = (cr, r) => { };
             LogoutCommandResultCreated = cr => { };
+#if NET45
             MetadataCreated = (md, urls) => { };
+#endif
             MetadataCommandResultCreated = cr => { };
             ValidateAbsoluteReturnUrl = url => false;
         }
@@ -126,6 +128,7 @@ namespace Kentor.AuthServices.Configuration
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1726:UsePreferredTerms", MessageId = "Logout")]
         public Action<CommandResult> LogoutCommandResultCreated { get; set; }
 
+#if NET45
         /// <summary>
         /// Notification called when metadata has been created, but before
         /// signing. At this point the contents of the metadata can be
@@ -133,6 +136,7 @@ namespace Kentor.AuthServices.Configuration
         /// </summary>
         public Action<ExtendedEntityDescriptor, AuthServicesUrls>
             MetadataCreated { get; set; }
+#endif
 
         /// <summary>
         /// Notification called when the Metadata command has produced a

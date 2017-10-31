@@ -13,6 +13,7 @@ using SampleAspNetCore2ApplicationNETFramework.Data;
 using SampleAspNetCore2ApplicationNETFramework.Services;
 using System.IdentityModel.Metadata;
 using Kentor.AuthServices;
+using Microsoft.IdentityModel.Tokens.Saml2;
 
 namespace SampleAspNetCore2ApplicationNETFramework
 {
@@ -49,7 +50,7 @@ namespace SampleAspNetCore2ApplicationNETFramework
             services.AddAuthentication()
                 .AddSaml2(options => 
                 {
-                    options.SPOptions.EntityId = new EntityId("https://localhost:44342/AuthServices");
+                    options.SPOptions.EntityId = new Saml2NameIdentifier("https://localhost:44342/AuthServices");
                     options.IdentityProviders.Add(
                         new IdentityProvider(
                             new EntityId("http://localhost:52071/Metadata"), options.SPOptions)

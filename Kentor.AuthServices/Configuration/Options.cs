@@ -16,6 +16,7 @@ namespace Kentor.AuthServices.Configuration
         /// </summary>
         public KentorAuthServicesNotifications Notifications { get; set; }
 
+#if NET45
         /// <summary>
         /// Reads the options from the current config file.
         /// </summary>
@@ -40,6 +41,7 @@ namespace Kentor.AuthServices.Configuration
 
             return options;
         }
+#endif
 
         /// <summary>
         /// Creates an options object with the specified SPOptions.

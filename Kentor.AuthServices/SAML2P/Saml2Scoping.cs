@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
+#if NET45
 using System.IdentityModel.Metadata;
+#endif
+using Kentor.AuthServices.Metadata;
 using System.Linq;
 using System.Xml.Linq;
 

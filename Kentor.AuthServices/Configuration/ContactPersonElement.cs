@@ -2,7 +2,9 @@
 using Kentor.AuthServices.Metadata;
 using System.Configuration;
 using System.Diagnostics;
+#if NET45
 using System.IdentityModel.Metadata;
+#endif
 
 namespace Kentor.AuthServices.Configuration
 {

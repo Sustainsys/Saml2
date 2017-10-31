@@ -64,7 +64,7 @@ namespace Kentor.AuthServices
                 throw new ArgumentNullException(nameof(issuer));
             }
 
-            var assertion = new Saml2Assertion(new Saml2NameIdentifier(issuer.Id));
+            var assertion = new Saml2Assertion(issuer);
 
             assertion.Statements.Add(
                 new Saml2AuthenticationStatement(

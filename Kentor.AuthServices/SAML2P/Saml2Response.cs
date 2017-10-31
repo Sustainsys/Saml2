@@ -7,7 +7,6 @@ using System.Security.Cryptography.X509Certificates;
 using System.Security.Cryptography.Xml;
 using System.Xml;
 using Kentor.AuthServices.Configuration;
-using System.IdentityModel.Metadata;
 using System.Security.Cryptography;
 using Kentor.AuthServices.Internal;
 using Kentor.AuthServices.Exceptions;
@@ -103,8 +102,7 @@ namespace Kentor.AuthServices.Saml2P
 
             if (destinationUrlString != null)
             {
-                Uri parsedDestination;
-                if (!Uri.TryCreate(destinationUrlString, UriKind.Absolute, out parsedDestination))
+                if (!Uri.TryCreate(destinationUrlString, UriKind.Absolute, out Uri parsedDestination))
                 {
                     throw new BadFormatSamlResponseException("Destination value was not a valid Uri");
                 }

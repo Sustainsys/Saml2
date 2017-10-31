@@ -260,6 +260,7 @@ namespace Kentor.AuthServices
         /// </summary>
         public bool AllowUnsolicitedAuthnResponse { get; set; }
 
+#if NET45
         private string metadataLocation;
 
         /// <summary>
@@ -281,6 +282,7 @@ namespace Kentor.AuthServices
                 LoadMetadata = true;
             }
         }
+#endif
 
         /// <summary>
         /// Create an authenticate request aimed for this idp.
@@ -304,7 +306,9 @@ namespace Kentor.AuthServices
                 AssertionConsumerServiceUrl = authServicesUrls.AssertionConsumerServiceUrl,
                 Issuer = spOptions.EntityId,
                 // For now we only support one attribute consuming service.
+#if NET45
                 AttributeConsumingServiceIndex = spOptions.AttributeConsumingServices.Any() ? 0 : (int?)null,
+#endif
                 NameIdPolicy = spOptions.NameIdPolicy,
                 RequestedAuthnContext = spOptions.RequestedAuthnContext,
                 SigningAlgorithm = this.OutboundSigningAlgorithm
@@ -355,9 +359,7 @@ namespace Kentor.AuthServices
         {
             get
             {
-#if NET45
                 ReloadMetadataIfRequired();
-#endif
                 return signingKeys;
             }
         }
@@ -503,8 +505,7 @@ namespace Kentor.AuthServices
         [ExcludeFromCodeCoverage]
         private static void DoLoadMetadataIfTargetAlive(WeakReference<IdentityProvider> target)
         {
-            IdentityProvider idp;
-            if(target.TryGetTarget(out idp))
+            if(target.TryGetTarget(out IdentityProvider idp))
             {
                 idp.DoLoadMetadata();
             }
@@ -516,9 +517,9 @@ namespace Kentor.AuthServices
         /// </summary>
         public bool WantAuthnRequestsSigned { get; set; }
 
-#if NET45
         private void ReloadMetadataIfRequired()
         {
+#if NET45
             if (LoadMetadata && MetadataValidUntil.Value < DateTime.UtcNow)
             {
                 lock (metadataLoadLock)
@@ -526,8 +527,8 @@ namespace Kentor.AuthServices
                     DoLoadMetadata();
                 }
             }
-        }
 #endif
+        }
 
         /// <summary>
         /// Create a logout request to the idp, for the current identity.

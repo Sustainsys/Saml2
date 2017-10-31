@@ -4,8 +4,6 @@ using Kentor.AuthServices.Saml2P;
 using Kentor.AuthServices.Internal;
 using System;
 using System.Globalization;
-using System.IdentityModel.Metadata;
-using System.IdentityModel.Tokens;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
@@ -13,6 +11,11 @@ using System.Net;
 using System.Security.Cryptography;
 using System.Text;
 using System.Xml;
+using Microsoft.IdentityModel.Tokens;
+#if NET45
+using System.IdentityModel.Metadata;
+#endif
+using Kentor.AuthServices.Metadata;
 
 namespace Kentor.AuthServices.WebSso
 {
@@ -163,10 +166,10 @@ namespace Kentor.AuthServices.WebSso
 
             var signature = Convert.FromBase64String(request.QueryString["Signature"].Single());
 
-            if (!idp.SigningKeys.Any(kic => signatureDescription.CreateDeformatter(((AsymmetricSecurityKey) kic.CreateKey()).GetAsymmetricAlgorithm(sigAlg, false)).VerifySignature(hashAlg, signature)))
-            {
-                throw new InvalidSignatureException(string.Format(CultureInfo.InvariantCulture, "Message from {0} failed signature verification", idp.EntityId.Id));
-            }
+            //if (!idp.SigningKeys.Any(kic => signatureDescription.CreateDeformatter(((AsymmetricSecurityKey) kic.CreateKey()).GetAsymmetricAlgorithm(sigAlg, false)).VerifySignature(hashAlg, signature)))
+            //{
+            //    throw new InvalidSignatureException(string.Format(CultureInfo.InvariantCulture, "Message from {0} failed signature verification", idp.EntityId.Id));
+            //}
         }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2202:Do not dispose objects multiple times", Justification = "The MemoryStream is not disposed by the DeflateStream - we're using the keep-open flag.")]

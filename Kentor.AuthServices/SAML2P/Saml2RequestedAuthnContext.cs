@@ -8,6 +8,7 @@ namespace Kentor.AuthServices.Saml2P
     /// </summary>
     public class Saml2RequestedAuthnContext
     {
+#if NET45
         /// <summary>
         /// Ctor
         /// </summary>
@@ -29,6 +30,7 @@ namespace Kentor.AuthServices.Saml2P
 
             Comparison = requestedAuthnContextElement.Comparison;
         }
+#endif
 
         /// <summary>
         /// Ctor

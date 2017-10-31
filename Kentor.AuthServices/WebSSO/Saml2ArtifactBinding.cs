@@ -166,7 +166,7 @@ namespace Kentor.AuthServices.WebSso
         }
 
         /// <summary>
-        /// Binds a message to a http response with HTTP Redirect.
+        /// Binds a message to a http response with HTTP Artifact.
         /// </summary>
         /// <param name="message">Message to bind.</param>
         /// <param name="logger">Logger to use.</param>
@@ -178,7 +178,7 @@ namespace Kentor.AuthServices.WebSso
                 throw new ArgumentNullException(nameof(message));
             }
 
-            var artifact = CreateArtifact(message.Issuer, 0);
+            var artifact = CreateArtifact(message.Issuer.AsEntityId(), 0);
 
             ((IDictionary<byte[], ISaml2Message>)PendingMessages).Add(artifact, message);
 

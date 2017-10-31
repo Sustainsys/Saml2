@@ -1,4 +1,5 @@
-﻿using System;
+﻿#if NET45
+using System;
 using System.Collections.Generic;
 using System.IdentityModel.Metadata;
 using System.Linq;
@@ -18,7 +19,7 @@ namespace Kentor.AuthServices.Metadata
         {
             var ed = new ExtendedEntityDescriptor
             {
-                EntityId = spOptions.EntityId,
+                EntityId = new EntityId(spOptions.EntityId.Value),
                 Organization = spOptions.Organization,
                 CacheDuration = spOptions.MetadataCacheDuration,
             };
@@ -73,7 +74,7 @@ namespace Kentor.AuthServices.Metadata
                             new KeyDescriptor
                             {
                                 Use = (KeyType)(byte)serviceCert.Use,
-                                KeyInfo = new SecurityKeyIdentifier(securityToken.CreateKeyIdentifierClause<X509CertificateKeyIdentifierClause>())
+                                //KeyInfo = new SecurityKeyIdentifier(securityToken.CreateKeyIdentifierClause<X509CertificateKeyIdentifierClause>())
                             }
                         );
                     }
@@ -106,3 +107,4 @@ namespace Kentor.AuthServices.Metadata
         }
     }
 }
+#endif

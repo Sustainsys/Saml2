@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IdentityModel.Tokens;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 using Kentor.AuthServices.Internal;
+using Microsoft.IdentityModel.Tokens.Saml2;
 
 namespace Kentor.AuthServices
 {
@@ -35,7 +35,7 @@ namespace Kentor.AuthServices
             {
                 xml.Add(new XElement(Saml2Namespaces.Saml2 + "AudienceRestriction",
                     ar.Audiences.Select(a =>
-                    new XElement(Saml2Namespaces.Saml2 + "Audience", a.OriginalString))));
+                    new XElement(Saml2Namespaces.Saml2 + "Audience", a))));
             }
 
             return xml;

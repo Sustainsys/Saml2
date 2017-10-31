@@ -1,5 +1,8 @@
 ﻿using System;
+#if NET45
 using System.IdentityModel.Metadata;
+#endif
+using Kentor.AuthServices.Metadata;
 using System.Xml.Linq;
 
 namespace Kentor.AuthServices.Saml2P
@@ -43,11 +46,7 @@ namespace Kentor.AuthServices.Saml2P
             }
             set
             {
-                if(value == null)
-                {
-                    throw new ArgumentNullException(nameof(value));
-                }
-                providerId = value;
+                providerId = value ?? throw new ArgumentNullException(nameof(value));
             }
         }
 

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
-using System.IdentityModel.Metadata;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -105,9 +104,9 @@ namespace Kentor.AuthServices.Saml2P
                 yield return new XAttribute("Destination", DestinationUrl.OriginalString);
             }
 
-            if (Issuer != null && !string.IsNullOrEmpty(Issuer.Id))
+            if (Issuer != null && !string.IsNullOrEmpty(Issuer.Value))
             {
-                yield return new XElement(Saml2Namespaces.Saml2 + "Issuer", Issuer.Id);
+                yield return new XElement(Saml2Namespaces.Saml2 + "Issuer", Issuer.Value);
             }
         }
 
@@ -134,7 +133,7 @@ namespace Kentor.AuthServices.Saml2P
             var issuerNode = xml["Issuer", Saml2Namespaces.Saml2Name];
             if(issuerNode != null)
             {
-                Issuer = new EntityId(issuerNode.InnerXml);
+                Issuer = new Saml2NameIdentifier(issuerNode.InnerXml);
             }
         }
 

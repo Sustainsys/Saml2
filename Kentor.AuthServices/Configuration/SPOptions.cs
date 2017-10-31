@@ -179,7 +179,6 @@ namespace Kentor.AuthServices.Configuration
                 return contacts;
             }
         }
-#endif
 
         readonly ICollection<AttributeConsumingService> attributeConsumingServices = new List<AttributeConsumingService>();
 
@@ -193,6 +192,7 @@ namespace Kentor.AuthServices.Configuration
                 return attributeConsumingServices;
             }
         }
+#endif
 
         readonly ServiceCertificateCollection serviceCertificates = new ServiceCertificateCollection();
 

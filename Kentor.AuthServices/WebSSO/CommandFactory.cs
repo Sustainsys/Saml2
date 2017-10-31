@@ -41,7 +41,9 @@ namespace Kentor.AuthServices.WebSso
         { 
             { SignInCommandName, new SignInCommand() },
             { AcsCommandName, new AcsCommand() },
+#if NET45
             { MetadataCommand, new MetadataCommand() },
+#endif
             { LogoutCommandName, new LogoutCommand() }
         };
 

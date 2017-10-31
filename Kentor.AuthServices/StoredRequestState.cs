@@ -1,7 +1,10 @@
-﻿using System;
+﻿using Kentor.AuthServices.Metadata;
+using Microsoft.IdentityModel.Tokens.Saml2;
+using System;
 using System.Collections.Generic;
+#if NET45
 using System.IdentityModel.Metadata;
-using System.IdentityModel.Tokens;
+#endif
 using System.IO;
 using System.Linq;
 using System.Text;

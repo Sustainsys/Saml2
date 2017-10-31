@@ -46,7 +46,7 @@ namespace Kentor.AuthServices.Saml2P
                 .AddAttribute("IssueInstant", IssueInstant.ToSaml2DateTimeString())
                 .AddAttributeIfNotNull("InResponseTo", InResponseTo)
                 .AddAttributeIfNotNull("Destination", DestinationUrl?.OriginalString)
-                .If(Issuer != null, x => x.AddElement("Issuer", Saml2Namespaces.Saml2Uri, Issuer.Id))
+                .If(Issuer != null, x => x.AddElement("Issuer", Saml2Namespaces.Saml2Uri, Issuer.Value))
                 .StartElement("Status", Saml2Namespaces.Saml2PUri)
                     .StartElement("StatusCode", Saml2Namespaces.Saml2PUri)
                     .AddAttribute("Value", StatusCodeHelper.FromCode(Status));

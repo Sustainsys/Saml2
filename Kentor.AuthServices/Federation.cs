@@ -1,4 +1,5 @@
-﻿using Kentor.AuthServices.Configuration;
+﻿#if NET45
+using Kentor.AuthServices.Configuration;
 using Kentor.AuthServices.Metadata;
 using System;
 using System.Collections.Generic;
@@ -249,3 +250,4 @@ namespace Kentor.AuthServices
         }
     }
 }
+#endif

@@ -1,7 +1,7 @@
 ﻿using Kentor.AuthServices.Saml2P;
+using Microsoft.IdentityModel.Tokens.Saml2;
 using System;
 using System.Collections.Generic;
-using System.IdentityModel.Tokens;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;

@@ -1,8 +1,10 @@
-﻿using System;
+﻿#if NET45
+using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens;
 using System.Linq;
 using System.Text;
+
 
 namespace Kentor.AuthServices.Metadata
 {
@@ -43,3 +45,4 @@ namespace Kentor.AuthServices.Metadata
         public static readonly Uri AttributeNameFormatBasic = new Uri("urn:oasis:names:tc:SAML:2.0:attrname-format:basic");
     }
 }
+#endif
