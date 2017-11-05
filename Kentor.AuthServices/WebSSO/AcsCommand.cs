@@ -15,8 +15,19 @@ using System.Xml;
 
 namespace Kentor.AuthServices.WebSso
 {
-    class AcsCommand : ICommand
+    /// <summary>
+    /// Represents the assertion consumer service command behaviour.
+    /// Instances of this class can be created directly or by using the factory method
+    /// CommandFactory.GetCommand(CommandFactory.AcsCommandName).
+    /// </summary>
+    public class AcsCommand : ICommand
     {
+        /// <summary>
+        /// Run the command, initiating or handling the assertion consumer sequence.
+        /// </summary>
+        /// <param name="request">Request data.</param>
+        /// <param name="options">Options</param>
+        /// <returns>CommandResult</returns>
         public CommandResult Run(HttpRequestData request, IOptions options)
         {
             if(request == null)
