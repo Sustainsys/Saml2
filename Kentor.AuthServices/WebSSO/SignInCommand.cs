@@ -10,16 +10,12 @@ using Kentor.AuthServices.Internal;
 namespace Kentor.AuthServices.WebSso
 {
     /// <summary>
-    /// The sign in command. Use 
-    /// CommandFactory.Get(CommandFactory.SignInCommandName) to get an instance.
+    /// Represents the sign in command behaviour.
+    /// Instances of this class can be created directly or by using the factory method
+    /// CommandFactory.GetCommand(CommandFactory.SignInCommandName).
     /// </summary>
     public class SignInCommand : ICommand
     {
-        /// <summary>
-        /// Ctor, don't want anyone to create instances.
-        /// </summary>
-        internal SignInCommand() { }
-
         /// <summary>
         /// Run the command, initiating the sign in sequence.
         /// </summary>
