@@ -1,16 +1,9 @@
 ﻿using FluentAssertions;
-using Kentor.AuthServices.Internal;
 using Kentor.AuthServices.Saml2P;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
-using System.Collections.Generic;
 using System.IdentityModel.Metadata;
-using System.IdentityModel.Tokens;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Xml.Linq;
-using Kentor.AuthServices.Tests.Helpers;
+using Microsoft.IdentityModel.Tokens.Saml2;
 
 namespace Kentor.AuthServices.Tests.Saml2P
 {
@@ -23,7 +16,7 @@ namespace Kentor.AuthServices.Tests.Saml2P
             var subject = new Saml2LogoutRequest()
             {
                 DestinationUrl = new Uri("http://idp.example.com/logout"),
-                Issuer = new EntityId("http://sp.example.com/"),
+                Issuer = new Saml2NameIdentifier("http://sp.example.com/"),
                 NameId = new Saml2NameIdentifier("005a06e0-ad82-110d-a556-004005b13a2b")
                 {
                     Format = new Uri(NameIdFormat.Persistent.GetUri().AbsoluteUri),
@@ -78,7 +71,7 @@ xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
             var expected = new Saml2LogoutRequest(new Saml2Id("d2b7c388cec36fa7c39c28fd298644a8"))
             {
                 DestinationUrl = new Uri("http://idp.example.com/logout"),
-                Issuer = new EntityId("http://sp.example.com/"),
+                Issuer = new Saml2NameIdentifier("http://sp.example.com/"),
                 NameId = new Saml2NameIdentifier(
                     "005a06e0-ad82-110d-a556-004005b13a2b",
                     new Uri(NameIdFormat.Persistent.GetUri().AbsoluteUri)),

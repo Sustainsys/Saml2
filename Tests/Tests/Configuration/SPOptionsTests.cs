@@ -33,19 +33,6 @@ namespace Kentor.AuthServices.Tests.Configuration
         const string otherEntityId = "http://something.else.com";
 
         [TestMethod]
-        public void SPOptions_Saml2PSecurityTokenHandler_DefaultInstanceCreated()
-        {
-            var subject = new SPOptions
-            {
-                EntityId = new EntityId(entityId)
-            };
-
-            subject.Saml2PSecurityTokenHandler.Should().NotBeNull();
-            subject.Saml2PSecurityTokenHandler.Configuration.AudienceRestriction.AllowedAudienceUris
-                .Should().Contain(new Uri(entityId));
-        }
-
-        [TestMethod]
         public void SPOptions_Constructor_ThrowsOnNullConfiguration()
         {
             Action a = () => new SPOptions(null);
@@ -85,21 +72,6 @@ namespace Kentor.AuthServices.Tests.Configuration
             subject.RequestedAuthnContext.Comparison.Should().Be(AuthnContextComparisonType.Minimum);
             subject.Compatibility.UnpackEntitiesDescriptorInIdentityProviderMetadata.Should().BeTrue();
             subject.Compatibility.DisableLogoutStateCookie.Should().BeTrue();
-        }
-
-        [TestMethod]
-        public void SPOptions_EntityId_SettingThrowsIfTokenHandlerCreated()
-        {
-            var subject = new SPOptions
-            {
-                EntityId = new EntityId(entityId)
-            };
-
-            subject.Saml2PSecurityTokenHandler.Should().NotBeNull();
-
-            Action a = () => subject.EntityId = new EntityId(otherEntityId);
-
-            a.ShouldThrow<InvalidOperationException>("Can't change entity id when a token handler has been instantiated.");
         }
 
         [TestMethod]
@@ -545,18 +517,6 @@ namespace Kentor.AuthServices.Tests.Configuration
             var result = subject.MetadataCertificates;
             result.Count.Should().Be(1);
             result[0].Status.Should().Be(CertificateStatus.Current);
-        }
-
-        [TestMethod]
-        public void SPOptions_Saml2PSecurityTokenHandler_Setter()
-        {
-            var subject = StubFactory.CreateSPOptions();
-
-            var handler = new Saml2PSecurityTokenHandler(subject);
-
-            subject.Saml2PSecurityTokenHandler = handler;
-
-            subject.Saml2PSecurityTokenHandler.Should().BeSameAs(handler);
         }
     }
 }

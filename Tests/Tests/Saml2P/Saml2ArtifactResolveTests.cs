@@ -1,14 +1,8 @@
 ﻿using Kentor.AuthServices.Saml2P;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using FluentAssertions;
-using Kentor.AuthServices.WebSso;
-using System.IdentityModel.Metadata;
 using System.Xml.Linq;
+using Microsoft.IdentityModel.Tokens.Saml2;
 
 namespace Kentor.AuthServices.Tests.Saml2P
 {
@@ -21,7 +15,7 @@ namespace Kentor.AuthServices.Tests.Saml2P
             var artifact = "MyArtifact";
             var subject = new Saml2ArtifactResolve()
             {
-                Issuer = new EntityId("http://sp.example.com"),
+                Issuer = new Saml2NameIdentifier("http://sp.example.com"),
                 Artifact = artifact
             };
 

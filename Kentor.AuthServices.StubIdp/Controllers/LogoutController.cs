@@ -32,7 +32,7 @@ namespace Kentor.AuthServices.StubIdp.Controllers
                             {
                                 LogoutRequestXml = unbindResult.Data.PrettyPrint(),
                                 InResponseTo = logoutRequest.Id.Value,
-                                DestinationUrl = new Uri(new Uri(logoutRequest.Issuer.Id + "/"), "Logout"),
+                                DestinationUrl = new Uri(new Uri(logoutRequest.Issuer.Value + "/"), "Logout"),
                                 RelayState = Request.QueryString["RelayState"]
                             };
                             return View("RespondToLogout", model);

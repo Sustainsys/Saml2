@@ -3,11 +3,12 @@ using System.Xml;
 using System.Security.Cryptography.Xml;
 using System.Security.Cryptography;
 using System.IdentityModel.Metadata;
-using System.IdentityModel.Tokens;
+using Microsoft.IdentityModel.Tokens.Xml;
 using Kentor.AuthServices.Internal;
 using System.Reflection;
 using System.Collections.Generic;
 using System;
+using Microsoft.IdentityModel.Tokens;
 
 namespace Kentor.AuthServices.TestHelpers
 {
@@ -19,19 +20,23 @@ namespace Kentor.AuthServices.TestHelpers
 
         public static readonly X509Certificate2 TestCertSignOnly = new X509Certificate2("Kentor.AuthServices.TestsSignOnly.pfx");
 
-        public static readonly RsaKeyIdentifierClause TestKey =
-            new RsaKeyIdentifierClause((RSA)TestCert.PublicKey.Key);
+        //public static readonly RsaKeyIdentifierClause TestKey =
+        //    new RsaKeyIdentifierClause((RSA)TestCert.PublicKey.Key);
+        public static readonly SecurityKeyIdentifierClause TestKey = null;
 
-        public static readonly RsaKeyIdentifierClause TestKey2 =
-            new RsaKeyIdentifierClause((RSA)TestCert2.PublicKey.Key);
+        //public static readonly RsaKeyIdentifierClause TestKey2 =
+        //    new RsaKeyIdentifierClause((RSA)TestCert2.PublicKey.Key);
+        public static readonly SecurityKeyIdentifierClause TestKey2 = null;
 
-        public static readonly RsaKeyIdentifierClause TestKeySignOnly =
-            new RsaKeyIdentifierClause((RSA)TestCertSignOnly.PublicKey.Key);
+        //public static readonly RsaKeyIdentifierClause TestKeySignOnly =
+        //    new RsaKeyIdentifierClause((RSA)TestCertSignOnly.PublicKey.Key);
+        public static readonly SecurityKeyIdentifierClause TestKeySignOnly = null;
 
-        public static readonly KeyDescriptor TestKeyDescriptor = new KeyDescriptor(
-            new SecurityKeyIdentifier(
-                (new X509SecurityToken(TestCertSignOnly))
-                .CreateKeyIdentifierClause<X509RawDataKeyIdentifierClause>()));
+        //public static readonly KeyDescriptor TestKeyDescriptor = new KeyDescriptor(
+        //    new SecurityKeyIdentifier(
+        //        (new X509SecurityToken(TestCertSignOnly))
+        //        .CreateKeyIdentifierClause<X509RawDataKeyIdentifierClause>()));
+        public static readonly KeyDescriptor TestKeyDescriptor = null;
 
         public static string SignXml(
             string xml,

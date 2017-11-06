@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Configuration;
 using System.IdentityModel.Metadata;
-using System.IdentityModel.Tokens;
+using Microsoft.IdentityModel.Tokens.Saml2;
 using System.Linq;
 using System.Security.Claims;
 
@@ -60,7 +60,7 @@ namespace Kentor.AuthServices.StubIdp.Models
         public Saml2Response ToSaml2Response()
         {
             var nameIdClaim = new Claim(ClaimTypes.NameIdentifier, NameId);
-            nameIdClaim.Properties[ClaimProperties.SamlNameIdentifierFormat] = 
+            nameIdClaim.Properties[Microsoft.IdentityModel.Tokens.Saml2.ClaimProperties.SamlNameIdentifierFormat] = 
                 NameIdFormat.Unspecified.GetUri().AbsoluteUri;
             var claims =
                 new Claim[] { nameIdClaim }
@@ -81,7 +81,7 @@ namespace Kentor.AuthServices.StubIdp.Models
                 : new Uri(Audience);
 
             return new Saml2Response(
-                new EntityId(UrlResolver.MetadataUrl.ToString()),
+                new Saml2NameIdentifier(UrlResolver.MetadataUrl.ToString()),
                 CertificateHelper.SigningCertificate, new Uri(AssertionConsumerServiceUrl),
                 saml2Id, RelayState, audienceUrl, identity);
         }

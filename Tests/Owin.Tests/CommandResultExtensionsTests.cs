@@ -5,7 +5,7 @@ using System.Net;
 using Kentor.AuthServices.WebSso;
 using FluentAssertions;
 using System.IdentityModel.Metadata;
-using System.IdentityModel.Tokens;
+using Microsoft.IdentityModel.Tokens.Saml2;
 
 namespace Kentor.AuthServices.Owin.Tests
 {

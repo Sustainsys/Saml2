@@ -77,7 +77,7 @@ namespace Kentor.AuthServices.StubIdp.Controllers
                         request.AssertionConsumerServiceUrl.ToString();
                 }
                 model.AssertionModel.RelayState = extractedMessage.RelayState;
-                model.AssertionModel.Audience = request.Issuer.Id;
+                model.AssertionModel.Audience = request.Issuer.Value;
                 model.AssertionModel.AuthnRequestXml = extractedMessage.Data.PrettyPrint();
 
                 // Suppress error messages from the model - what we received

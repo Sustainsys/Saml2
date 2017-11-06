@@ -1,6 +1,7 @@
 ﻿using FluentAssertions;
 using Kentor.AuthServices.Configuration;
 using Kentor.AuthServices.Exceptions;
+using Kentor.AuthServices.Metadata;
 using Kentor.AuthServices.Saml2P;
 using Kentor.AuthServices.TestHelpers;
 using Kentor.AuthServices.WebSso;
@@ -9,7 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.IdentityModel.Metadata;
-using System.IdentityModel.Tokens;
+using Microsoft.IdentityModel.Tokens.Saml2;
 using System.Linq;
 using System.Net;
 using System.Security.Claims;
@@ -317,7 +318,7 @@ namespace Kentor.AuthServices.Tests.WebSSO
             var response = new Saml2LogoutResponse(Saml2StatusCode.Success)
             {
                 DestinationUrl = new Uri("http://sp.example.com/path/AuthServices/logout"),
-                Issuer = new EntityId("https://idp.example.com"),
+                Issuer = new Saml2NameIdentifier("https://idp.example.com"),
                 InResponseTo = new Saml2Id(),
                 SigningCertificate = SignedXmlHelper.TestCert,
                 SigningAlgorithm = SignedXml.XmlDsigRSASHA256Url,
@@ -371,7 +372,7 @@ namespace Kentor.AuthServices.Tests.WebSSO
             var response = new Saml2LogoutResponse(Saml2StatusCode.Success)
             {
                 DestinationUrl = new Uri("http://sp.example.com/path/AuthServices/logout"),
-                Issuer = new EntityId("https://idp.example.com"),
+                Issuer = new Saml2NameIdentifier("https://idp.example.com"),
                 InResponseTo = new Saml2Id(),
                 SigningCertificate = SignedXmlHelper.TestCert
             };
@@ -417,7 +418,7 @@ namespace Kentor.AuthServices.Tests.WebSSO
             var request = new Saml2LogoutRequest()
             {
                 DestinationUrl = new Uri("http://sp.example.com/path/AuthServices/logout"),
-                Issuer = new EntityId("https://idp.example.com"),
+                Issuer = new Saml2NameIdentifier("https://idp.example.com"),
                 SigningCertificate = SignedXmlHelper.TestCert,
                 NameId = new Saml2NameIdentifier("NameId"),
                 SessionIndex = "SessionID",
@@ -441,7 +442,7 @@ namespace Kentor.AuthServices.Tests.WebSSO
             // We're using unbind to verify the created message and UnBind
             // expects the issuer to be a known Idp for signature validation.
             // Add a dummy with the right issuer name and key.
-            var dummyIdp = new IdentityProvider(options.SPOptions.EntityId, options.SPOptions);
+            var dummyIdp = new IdentityProvider(options.SPOptions.EntityId.AsEntityId(), options.SPOptions);
             dummyIdp.SigningKeys.AddConfiguredKey(SignedXmlHelper.TestCert);
             options.IdentityProviders.Add(dummyIdp);
 
@@ -471,7 +472,7 @@ namespace Kentor.AuthServices.Tests.WebSSO
                     xmlns=""urn:oasis:names:tc:SAML:2.0:assertion""
                     Destination=""https://idp.example.com/logout""
                     Version=""2.0"">
-                    <Issuer>{options.SPOptions.EntityId.Id}</Issuer>
+                    <Issuer>{options.SPOptions.EntityId.Value}</Issuer>
                     <samlp:Status>
                         <samlp:StatusCode Value=""urn:oasis:names:tc:SAML:2.0:status:Success""/>
                     </samlp:Status>
@@ -494,7 +495,7 @@ namespace Kentor.AuthServices.Tests.WebSSO
             var request = new Saml2LogoutRequest()
             {
                 DestinationUrl = new Uri("http://sp.example.com/path/AuthServices/logout"),
-                Issuer = new EntityId("https://idp.example.com"),
+                Issuer = new Saml2NameIdentifier("https://idp.example.com"),
                 SigningCertificate = SignedXmlHelper.TestCert,
                 NameId = new Saml2NameIdentifier("NameId"),
                 SessionIndex = "SessionID",
@@ -533,7 +534,7 @@ namespace Kentor.AuthServices.Tests.WebSSO
             var request = new Saml2LogoutRequest()
             {
                 DestinationUrl = new Uri("http://sp.example.com/path/AuthServices/logout"),
-                Issuer = new EntityId("https://idp.example.com"),
+                Issuer = new Saml2NameIdentifier("https://idp.example.com"),
                 SigningCertificate = SignedXmlHelper.TestCert,
                 SigningAlgorithm = SignedXml.XmlDsigRSASHA256Url, // Ignored
                 NameId = new Saml2NameIdentifier("NameId"),
@@ -572,7 +573,7 @@ namespace Kentor.AuthServices.Tests.WebSSO
             var request = new Saml2LogoutRequest()
             {
                 DestinationUrl = new Uri("http://sp.example.com/path/AuthServices/logout"),
-                Issuer = new EntityId("https://idp.example.com"),
+                Issuer = new Saml2NameIdentifier("https://idp.example.com"),
                 SigningCertificate = SignedXmlHelper.TestCert,
                 NameId = new Saml2NameIdentifier("NameId"),
                 SessionIndex = "SessionID",
@@ -610,7 +611,7 @@ namespace Kentor.AuthServices.Tests.WebSSO
             var request = new Saml2LogoutRequest()
             {
                 DestinationUrl = new Uri("http://sp.example.com/path/AuthServices/logout"),
-                Issuer = new EntityId("https://idp.example.com"),
+                Issuer = new Saml2NameIdentifier("https://idp.example.com"),
                 SigningCertificate = SignedXmlHelper.TestCert,
                 SigningAlgorithm = SignedXml.XmlDsigRSASHA256Url,
                 NameId = new Saml2NameIdentifier("NameId"),
@@ -636,7 +637,7 @@ namespace Kentor.AuthServices.Tests.WebSSO
             var request = new Saml2LogoutRequest()
             {
                 DestinationUrl = new Uri("http://sp.example.com/path/AuthServices/logout"),
-                Issuer = new EntityId("https://idp2.example.com"),
+                Issuer = new Saml2NameIdentifier("https://idp2.example.com"),
                 SigningCertificate = SignedXmlHelper.TestCert,
                 SigningAlgorithm = SignedXml.XmlDsigRSASHA256Url,
                 NameId = new Saml2NameIdentifier("NameId"),
@@ -663,7 +664,7 @@ namespace Kentor.AuthServices.Tests.WebSSO
             var request = new Saml2LogoutRequest()
             {
                 DestinationUrl = new Uri("http://sp.example.com/path/AuthServices/logout"),
-                Issuer = new EntityId("https://idp.example.com"),
+                Issuer = new Saml2NameIdentifier("https://idp.example.com"),
                 NameId = new Saml2NameIdentifier("NameId"),
                 SessionIndex = "SessionID"
             };
@@ -689,7 +690,7 @@ namespace Kentor.AuthServices.Tests.WebSSO
             var response = new Saml2LogoutResponse(Saml2StatusCode.Requester)
             {
                 DestinationUrl = new Uri("http://sp.example.com/path/AuthServices/logout"),
-                Issuer = new EntityId("https://idp.example.com"),
+                Issuer = new Saml2NameIdentifier("https://idp.example.com"),
                 InResponseTo = new Saml2Id(),
                 SigningCertificate = SignedXmlHelper.TestCert,
                 SigningAlgorithm = SignedXml.XmlDsigRSASHA256Url
@@ -716,7 +717,7 @@ namespace Kentor.AuthServices.Tests.WebSSO
             var response = new Saml2LogoutResponse(Saml2StatusCode.Requester)
             {
                 DestinationUrl = new Uri("http://sp.example.com/path/AuthServices/logout"),
-                Issuer = new EntityId("https://idp.example.com"),
+                Issuer = new Saml2NameIdentifier("https://idp.example.com"),
                 InResponseTo = new Saml2Id(),
                 SigningCertificate = SignedXmlHelper.TestCert,
                 SigningAlgorithm = SignedXml.XmlDsigRSASHA256Url,
@@ -943,7 +944,7 @@ namespace Kentor.AuthServices.Tests.WebSSO
             var response = new Saml2LogoutResponse(Saml2StatusCode.Success)
             {
                 DestinationUrl = new Uri("http://sp.example.com/path/AuthServices/logout"),
-                Issuer = new EntityId("https://idp.example.com"),
+                Issuer = new Saml2NameIdentifier("https://idp.example.com"),
                 InResponseTo = new Saml2Id(),
                 SigningCertificate = SignedXmlHelper.TestCert,
                 SigningAlgorithm = SignedXml.XmlDsigRSASHA256Url,
@@ -978,7 +979,7 @@ namespace Kentor.AuthServices.Tests.WebSSO
             var response = new Saml2LogoutResponse(Saml2StatusCode.Success)
             {
                 DestinationUrl = new Uri("http://sp.example.com/path/AuthServices/logout"),
-                Issuer = new EntityId("https://idp.example.com"),
+                Issuer = new Saml2NameIdentifier("https://idp.example.com"),
                 InResponseTo = new Saml2Id(),
                 SigningCertificate = SignedXmlHelper.TestCert,
                 SigningAlgorithm = SignedXml.XmlDsigRSASHA256Url,

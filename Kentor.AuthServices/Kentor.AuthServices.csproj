@@ -9,10 +9,6 @@
     <LangVersion>latest</LangVersion>
   </PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Microsoft.IdentityModel.Tokens.Saml" Version="5.2.0-preview1-408290725" />
-  </ItemGroup>
-
   <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
     <PackageReference Include="System.Security.Cryptography.Xml">
       <Version>4.4.0</Version>
@@ -23,6 +19,10 @@
     <Reference Include="System.Configuration" />
     <Reference Include="System.Security" />
     <Reference Include="System.IdentityModel" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <PackageReference Include="Microsoft.IdentityModel.Tokens.Saml" Version="5.2.0-preview1-41102095947" />
   </ItemGroup>
 
 </Project>

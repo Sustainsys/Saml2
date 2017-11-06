@@ -13,7 +13,7 @@ using System.Reflection;
 using System.Configuration;
 using Kentor.AuthServices.Exceptions;
 using System.IdentityModel.Metadata;
-using System.IdentityModel.Tokens;
+using Microsoft.IdentityModel.Tokens.Saml2;
 using Kentor.AuthServices.Tests.WebSSO;
 using Kentor.AuthServices.TestHelpers;
 
@@ -336,9 +336,6 @@ namespace Kentor.AuthServices.Tests.WebSso
             ids[1].AddClaim(new Claim(ClaimTypes.Role, "RoleFromClaimsAuthManager", null, "ClaimsAuthenticationManagerStub"));
 
             var options = StubFactory.CreateOptions();
-            options.SPOptions.SystemIdentityModelIdentityConfiguration
-                .ClaimsAuthenticationManager.As<ClaimsAuthenticationManagerStub>()
-                .ClearNameIdentifier = true;
 
             new AcsCommand().Invoking(c => c.Run(r, options))
                 .ShouldNotThrow();

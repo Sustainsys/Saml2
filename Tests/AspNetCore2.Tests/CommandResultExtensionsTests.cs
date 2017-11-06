@@ -8,7 +8,7 @@ using NSubstitute;
 using System;
 using System.Collections.Generic;
 using System.IdentityModel.Metadata;
-using System.IdentityModel.Tokens;
+using Microsoft.IdentityModel.Tokens.Saml2;
 using System.IO;
 using System.Linq;
 using System.Security.Claims;

@@ -13,6 +13,7 @@ using Kentor.AuthServices.Saml2P;
 using System.Reflection;
 using Kentor.AuthServices.Tests.Helpers;
 using Kentor.AuthServices.TestHelpers;
+using Microsoft.IdentityModel.Tokens.Saml2;
 
 namespace Kentor.AuthServices.Tests.WebSSO
 {
@@ -248,7 +249,7 @@ namespace Kentor.AuthServices.Tests.WebSSO
                 MessageName = "ShouldBeIgnored",
                 RelayState = "ABC& needs escape",
                 XmlData = "<XML />",
-                Issuer = new EntityId("http://idp.example.com"),
+                Issuer = new Saml2NameIdentifier("http://idp.example.com"),
             };
 
             var result = Saml2Binding.Get(Saml2BindingType.Artifact).Bind(message);
@@ -284,7 +285,7 @@ namespace Kentor.AuthServices.Tests.WebSSO
                 MessageName = "ShouldBeIgnored",
                 RelayState = "ABC123",
                 XmlData = "<XML />",
-                Issuer = new EntityId("http://idp.example.com")
+                Issuer = new Saml2NameIdentifier("http://idp.example.com")
             };
 
             var result = Saml2Binding.Get(Saml2BindingType.Artifact).Bind(message);
@@ -300,7 +301,7 @@ namespace Kentor.AuthServices.Tests.WebSSO
                 DestinationUrl = new Uri("http://example.com/destination?q=a"),
                 MessageName = "ShouldBeIgnored",
                 XmlData = "<XML />",
-                Issuer = new EntityId("http://idp.example.com")
+                Issuer = new Saml2NameIdentifier("http://idp.example.com")
             };
 
             Action a = () => Saml2Binding.Get(Saml2BindingType.Artifact).Bind(message);

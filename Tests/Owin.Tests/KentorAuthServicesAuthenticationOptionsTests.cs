@@ -24,7 +24,7 @@ namespace Kentor.AuthServices.Owin.Tests
         {
             var subject = new KentorAuthServicesAuthenticationOptions(true);
 
-            subject.SPOptions.EntityId.Id.Should().Be("https://github.com/KentorIT/authservices");
+            subject.SPOptions.EntityId.Value.Should().Be("https://github.com/KentorIT/authservices");
 
             subject.IdentityProviders.IsEmpty.Should().BeFalse();
             subject.IdentityProviders[new EntityId("https://idp.example.com")]

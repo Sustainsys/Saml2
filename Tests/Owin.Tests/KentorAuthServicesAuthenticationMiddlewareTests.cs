@@ -12,7 +12,7 @@ using System.Security.Claims;
 using Kentor.AuthServices.Configuration;
 using System.Xml.Linq;
 using System.Threading.Tasks;
-using System.IdentityModel.Tokens;
+using Microsoft.IdentityModel.Tokens.Saml2;
 using System.IdentityModel.Metadata;
 using System.Reflection;
 using System.Threading;
@@ -435,7 +435,7 @@ namespace Kentor.AuthServices.Owin.Tests
                 RelayState = relayState,
                 SigningCertificate = SignedXmlHelper.TestCert,
                 SigningAlgorithm = SignedXml.XmlDsigRSASHA256Url,
-                Issuer = new EntityId("https://idp.example.com")
+                Issuer = new Saml2NameIdentifier("https://idp.example.com")
             };
             var requestUri = Saml2Binding.Get(Saml2BindingType.HttpRedirect).Bind(response).Location;
 
@@ -473,7 +473,7 @@ namespace Kentor.AuthServices.Owin.Tests
                 SessionIndex = "SessionId",
                 DestinationUrl = new Uri("http://sp.example.com/AuthServices/Logout"),
                 NameId = new Saml2NameIdentifier("NameId"),
-                Issuer = new EntityId("https://idp.example.com"),
+                Issuer = new Saml2NameIdentifier("https://idp.example.com"),
                 SigningCertificate = SignedXmlHelper.TestCert,
                 SigningAlgorithm = SignedXml.XmlDsigRSASHA256Url
             };
@@ -517,7 +517,7 @@ namespace Kentor.AuthServices.Owin.Tests
                 SessionIndex = "SessionId",
                 DestinationUrl = new Uri("http://sp.example.com/AuthServices/Logout"),
                 NameId = new Saml2NameIdentifier("NameId"),
-                Issuer = new EntityId("https://idp.example.com"),
+                Issuer = new Saml2NameIdentifier("https://idp.example.com"),
                 SigningCertificate = SignedXmlHelper.TestCert,
                 SigningAlgorithm = SignedXml.XmlDsigRSASHA256Url
             };
@@ -1248,7 +1248,7 @@ namespace Kentor.AuthServices.Owin.Tests
                 {
                     SPOptions = new SPOptions()
                     {
-                        EntityId = new EntityId("http://localhost/metadata")
+                        EntityId = new Saml2NameIdentifier("http://localhost/metadata")
                     }
                 });
 

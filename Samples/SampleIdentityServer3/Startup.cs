@@ -19,6 +19,7 @@ using System.Threading.Tasks;
 using Serilog;
 using Microsoft.Owin.Security;
 using IdentityServer3.Core.Extensions;
+using Microsoft.IdentityModel.Tokens.Saml2;
 
 [assembly: OwinStartupAttribute(typeof(SampleIdentityServer3.Startup))]
 
@@ -132,7 +133,7 @@ namespace SampleIdentityServer3
             {
                 SPOptions = new SPOptions
                 {
-                    EntityId = new EntityId("http://localhost:4589/IdSrv3/AuthServices"),
+                    EntityId = new Saml2NameIdentifier("http://localhost:4589/IdSrv3/AuthServices"),
                 },
                 SignInAsAuthenticationType = signInAsType,
                 Caption = "SAML2p"

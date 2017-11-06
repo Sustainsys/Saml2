@@ -8,6 +8,7 @@ using Kentor.AuthServices.WebSso;
 using Kentor.AuthServices.Tests.Helpers;
 using System.Security.Cryptography.Xml;
 using Kentor.AuthServices.TestHelpers;
+using Microsoft.IdentityModel.Tokens.Saml2;
 
 namespace Kentor.AuthServices.Tests.WebSso
 {
@@ -107,7 +108,7 @@ namespace Kentor.AuthServices.Tests.WebSso
         {
             var spOptions = new SPOptions()
             {
-                EntityId = new EntityId("http://localhost/AuthServices"),
+                EntityId = new Saml2NameIdentifier("http://localhost/AuthServices"),
             };
             var options = new Options(spOptions);
 

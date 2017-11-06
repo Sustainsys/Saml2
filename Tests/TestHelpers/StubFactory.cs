@@ -1,6 +1,7 @@
 ﻿using Kentor.AuthServices.Configuration;
 using Kentor.AuthServices.Metadata;
 using Kentor.AuthServices.WebSso;
+using Microsoft.IdentityModel.Tokens.Saml2;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -37,7 +38,7 @@ namespace Kentor.AuthServices.TestHelpers
 
             var options = new SPOptions
             {
-                EntityId = new EntityId("https://github.com/KentorIT/authservices"),
+                EntityId = new Saml2NameIdentifier("https://github.com/KentorIT/authservices"),
                 MetadataCacheDuration = new TimeSpan(0, 0, 42),
                 MetadataValidDuration = TimeSpan.FromDays(24),
                 WantAssertionsSigned = true,

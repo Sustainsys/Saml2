@@ -29,10 +29,12 @@ namespace Kentor.AuthServices.Tests.Helpers
                 throw new ArgumentNullException(nameof(certificate));
             }
 
-            return xmlElement.IsSignedByAny(
-                Enumerable.Repeat(new X509RawDataKeyIdentifierClause(certificate), 1),
-                false,
-                SignedXml.XmlDsigRSASHA1Url);
+            //return xmlElement.IsSignedByAny(
+            //    Enumerable.Repeat(new X509RawDataKeyIdentifierClause(certificate), 1),
+            //    false,
+            //    SignedXml.XmlDsigRSASHA1Url);
+
+            throw new NotImplementedException();
         }
     }
 }

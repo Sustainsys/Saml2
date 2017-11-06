@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.IdentityModel.Metadata;
 using System.Security.Cryptography.Xml;
+using Microsoft.IdentityModel.Tokens.Saml2;
 
 namespace Kentor.AuthServices.Tests.WebSSO
 {
@@ -29,6 +30,6 @@ namespace Kentor.AuthServices.Tests.WebSSO
 
         public string SigningAlgorithm { get; set; } = SignedXml.XmlDsigRSASHA256Url;
 
-        public EntityId Issuer { get; set; }
+        public Saml2NameIdentifier Issuer { get; set; }
     }
 }

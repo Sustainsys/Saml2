@@ -1,11 +1,11 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System.IdentityModel.Tokens;
 using FluentAssertions;
 using System.Collections.Generic;
 using System.Security.Claims;
 using Kentor.AuthServices.Internal;
 using System.Xml.Linq;
+using Microsoft.IdentityModel.Tokens.Saml2;
 
 namespace Kentor.AuthServices.Tests
 {

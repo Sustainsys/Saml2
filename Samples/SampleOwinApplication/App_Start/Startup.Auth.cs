@@ -3,7 +3,6 @@ using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin;
 using Microsoft.Owin.Security.Cookies;
-using Microsoft.Owin.Security.Google;
 using Owin;
 using SampleOwinApplication.Models;
 using Kentor.AuthServices.Owin;
@@ -14,9 +13,7 @@ using Kentor.AuthServices.Metadata;
 using Kentor.AuthServices;
 using Kentor.AuthServices.WebSso;
 using System.Security.Cryptography.X509Certificates;
-using System.Web.Hosting;
-using System.IdentityModel.Selectors;
-using System.IdentityModel.Tokens;
+using Microsoft.IdentityModel.Tokens.Saml2;
 
 namespace SampleOwinApplication
 {
@@ -66,10 +63,11 @@ namespace SampleOwinApplication
                     SingleSignOnServiceUrl = new Uri("http://stubidp.kentor.se")
                 };
 
-            idp.SigningKeys.AddConfiguredKey(
-                new X509Certificate2(
-                    HostingEnvironment.MapPath(
-                        "~/App_Data/Kentor.AuthServices.StubIdp.cer")));
+            //idp.SigningKeys.AddConfiguredKey(
+            //    new X509Certificate2(
+            //        HostingEnvironment.MapPath(
+            //            "~/App_Data/Kentor.AuthServices.StubIdp.cer")));
+            throw new NotImplementedException();
 
             authServicesOptions.IdentityProviders.Add(idp);
 
@@ -92,7 +90,7 @@ namespace SampleOwinApplication
 
             var spOptions = new SPOptions
             {
-                EntityId = new EntityId("http://localhost:57294/AuthServices"),
+                EntityId = new Saml2NameIdentifier("http://localhost:57294/AuthServices"),
                 ReturnUrl = new Uri("http://localhost:57294/Account/ExternalLoginCallback"),
                 DiscoveryServiceUrl = new Uri("http://localhost:52071/DiscoveryService"),
                 Organization = organization

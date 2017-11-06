@@ -1,11 +1,9 @@
 ﻿using FluentAssertions;
 using Kentor.AuthServices.Saml2P;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Kentor.AuthServices.Tests.Helpers;
-using System.Xml;
 using System.IdentityModel.Metadata;
 using System;
-using System.IdentityModel.Tokens;
+using Microsoft.IdentityModel.Tokens.Saml2;
 
 namespace Kentor.AuthServices.Tests.Saml2P
 {
@@ -43,7 +41,7 @@ namespace Kentor.AuthServices.Tests.Saml2P
         {
             var subject = new Saml2LogoutResponse(Saml2StatusCode.Requester)
             {
-                Issuer = new EntityId("https://ServiceProvider.com/SAML"),
+                Issuer = new Saml2NameIdentifier("https://ServiceProvider.com/SAML"),
                 DestinationUrl = new Uri("https://IdentityProvider.com/Logout"),
                 InResponseTo = new Saml2Id()
             };
@@ -74,7 +72,7 @@ namespace Kentor.AuthServices.Tests.Saml2P
         {
             var subject = new Saml2LogoutResponse(Saml2StatusCode.Requester)
             {
-                Issuer = new EntityId("https://ServiceProvider.com/SAML"),
+                Issuer = new Saml2NameIdentifier("https://ServiceProvider.com/SAML"),
                 DestinationUrl = new Uri("https://IdentityProvider.com/Logout"),
                 InResponseTo = new Saml2Id()
             };

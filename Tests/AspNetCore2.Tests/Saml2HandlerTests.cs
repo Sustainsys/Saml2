@@ -1,12 +1,9 @@
 ﻿using FluentAssertions;
 using Kentor.AuthServices;
-using Kentor.AuthServices.Configuration;
 using Kentor.AuthServices.TestHelpers;
 using Kentor.AuthServices.WebSso;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Primitives;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -14,13 +11,12 @@ using NSubstitute;
 using System;
 using System.Collections.Generic;
 using System.IdentityModel.Metadata;
-using System.IdentityModel.Tokens;
+using Microsoft.IdentityModel.Tokens.Saml2;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Security.Claims;
 using System.Text;
-using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 
 namespace Sustainsys.Saml2.AspNetCore2.Tests
@@ -57,7 +53,7 @@ namespace Sustainsys.Saml2.AspNetCore2.Tests
                     Enumerable.Repeat<IConfigureOptions<Saml2Options>>(
                         new ConfigureNamedOptions<Saml2Options>("Saml2", opt =>
                     {
-                        opt.SPOptions.EntityId = new EntityId("http://sp.example.com/saml2");
+                        opt.SPOptions.EntityId = new Saml2NameIdentifier("http://sp.example.com/saml2");
 
                         var idp = new IdentityProvider(
                             new EntityId("https://idp.example.com"),

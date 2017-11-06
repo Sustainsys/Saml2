@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.IdentityModel.Metadata;
-using System.IdentityModel.Tokens;
+using Microsoft.IdentityModel.Tokens.Saml2;
 using System.Linq;
 using System.Security.Cryptography.Xml;
 using System.Web;
@@ -40,7 +40,7 @@ namespace Kentor.AuthServices.StubIdp.Models
                 DestinationUrl = DestinationUrl,
                 SigningCertificate = CertificateHelper.SigningCertificate,
                 SigningAlgorithm = SignedXml.XmlDsigRSASHA256Url,
-                Issuer = new EntityId(UrlResolver.MetadataUrl.ToString()),
+                Issuer = new Saml2NameIdentifier(UrlResolver.MetadataUrl.ToString()),
                 NameId = new Saml2NameIdentifier(NameId),
                 SessionIndex = SessionIndex,
             };
@@ -70,7 +70,7 @@ namespace Kentor.AuthServices.StubIdp.Models
                 SigningCertificate = CertificateHelper.SigningCertificate,
                 SigningAlgorithm = SignedXml.XmlDsigRSASHA256Url,
                 InResponseTo = new Saml2Id(InResponseTo),
-                Issuer = new EntityId(UrlResolver.MetadataUrl.ToString()),
+                Issuer = new Saml2NameIdentifier(UrlResolver.MetadataUrl.ToString()),
                 RelayState = RelayState
             };
         }

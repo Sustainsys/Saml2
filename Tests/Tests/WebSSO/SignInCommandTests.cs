@@ -8,6 +8,7 @@ using System.IdentityModel.Metadata;
 using Kentor.AuthServices.WebSso;
 using System.Collections.Generic;
 using Kentor.AuthServices.TestHelpers;
+using Microsoft.IdentityModel.Tokens.Saml2;
 
 namespace Kentor.AuthServices.Tests.WebSso
 {
@@ -162,7 +163,7 @@ namespace Kentor.AuthServices.Tests.WebSso
             var options = new Options(new SPOptions
                 {
                     DiscoveryServiceUrl = dsUrl,
-                    EntityId = new EntityId("https://github.com/KentorIT/authservices")
+                    EntityId = new Saml2NameIdentifier("https://github.com/KentorIT/authservices")
                 });
 
             var request = new HttpRequestData("GET", new Uri("http://localhost/signin?ReturnUrl=%2FReturn%2FPath"));
@@ -176,7 +177,7 @@ namespace Kentor.AuthServices.Tests.WebSso
             var relayState = result.SetCookieName.Substring("Kentor.".Length);
 
             var queryString = string.Format("?entityID={0}&return={1}&returnIDParam=idp",
-                Uri.EscapeDataString(options.SPOptions.EntityId.Id),
+                Uri.EscapeDataString(options.SPOptions.EntityId.Value),
                 Uri.EscapeDataString(
                     "http://localhost/AuthServices/SignIn?RelayState=" + relayState));
 

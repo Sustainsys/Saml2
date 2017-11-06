@@ -1,6 +1,6 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System.IdentityModel.Tokens;
+using Microsoft.IdentityModel.Tokens.Saml2;
 using FluentAssertions;
 using System.Linq;
 using System.Xml.Linq;
@@ -39,11 +39,11 @@ namespace Kentor.AuthServices.Tests
             var conditions = new Saml2Conditions();
             conditions.AudienceRestrictions.Add(new Saml2AudienceRestriction(new[]
             {
-                new Uri("http://foo1"),
-                new Uri("http://foo2")
+                "http://foo1",
+                "http://foo2"
             }));
 
-            conditions.AudienceRestrictions.Add(new Saml2AudienceRestriction(new Uri("http://bar")));
+            conditions.AudienceRestrictions.Add(new Saml2AudienceRestriction("http://bar"));
 
             var actual = conditions.ToXElement();
 

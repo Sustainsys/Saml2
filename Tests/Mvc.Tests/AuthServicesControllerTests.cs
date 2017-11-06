@@ -16,7 +16,7 @@ using Kentor.AuthServices.Configuration;
 using System.IdentityModel.Metadata;
 using Kentor.AuthServices.WebSso;
 using System.Web.Security;
-using System.IdentityModel.Tokens;
+using Microsoft.IdentityModel.Tokens.Saml2;
 using System.Web.Routing;
 
 namespace Kentor.AuthServices.Mvc.Tests
@@ -94,7 +94,7 @@ namespace Kentor.AuthServices.Mvc.Tests
             AuthServicesController.Options = new Options(new SPOptions
             {
                 DiscoveryServiceUrl = new Uri("http://ds.example.com"),
-                EntityId = new EntityId("https://github.com/KentorIT/authservices")
+                EntityId = new Saml2NameIdentifier("https://github.com/KentorIT/authservices")
             });
 
             var subject = CreateInstanceWithContext();
@@ -255,7 +255,7 @@ namespace Kentor.AuthServices.Mvc.Tests
             {
                 DiscoveryServiceUrl = new Uri("http://ds.example.com"),
                 PublicOrigin = new Uri("https://my.public.origin:8443"),
-                EntityId = new EntityId("https://github.com/KentorIT/authservices")
+                EntityId = new Saml2NameIdentifier("https://github.com/KentorIT/authservices")
             });
 
             var subject = CreateInstanceWithContext();

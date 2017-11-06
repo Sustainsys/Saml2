@@ -3,8 +3,7 @@ using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Security.Claims;
 using FluentAssertions;
-using System.IdentityModel.Metadata;
-using System.IdentityModel.Tokens;
+using Microsoft.IdentityModel.Tokens.Saml2;
 
 namespace Kentor.AuthServices.Tests
 {
@@ -16,7 +15,7 @@ namespace Kentor.AuthServices.Tests
         {
             ClaimsIdentity identity = null;
 
-            Action a = () => identity.ToSaml2Assertion(new EntityId("foo"));
+            Action a = () => identity.ToSaml2Assertion(new Saml2NameIdentifier("foo"));
 
             a.ShouldThrow<ArgumentNullException>().And.ParamName.Should().Be("identity");
         }
@@ -40,7 +39,7 @@ namespace Kentor.AuthServices.Tests
                 new Claim(ClaimTypes.NameIdentifier, subject)
             });
 
-            var a = ci.ToSaml2Assertion(new EntityId("http://idp.example.com"));
+            var a = ci.ToSaml2Assertion(new Saml2NameIdentifier("http://idp.example.com"));
 
             a.Subject.NameId.Value.Should().Be(subject);
         }
@@ -54,7 +53,7 @@ namespace Kentor.AuthServices.Tests
                 new Claim(ClaimTypes.Email, "me@example.com")
             });
 
-            var issuer = new EntityId("http://idp.example.com");
+            var issuer = new Saml2NameIdentifier("http://idp.example.com");
             var actual = subject.ToSaml2Assertion(issuer);
 
             actual.Statements.OfType<Saml2AuthenticationStatement>()
@@ -78,11 +77,11 @@ namespace Kentor.AuthServices.Tests
                 new Claim(ClaimTypes.Email, "me@example.com"),
             });
 
-            var actual = ci.ToSaml2Assertion(new EntityId("http://idp.example.com"));
+            var actual = ci.ToSaml2Assertion(new Saml2NameIdentifier("http://idp.example.com"));
 
             actual.Statements.OfType<Saml2AttributeStatement>().Should().HaveCount(1);
-            actual.Statements.OfType<Saml2AttributeStatement>().Single().Attributes[0].Values[0].Should().Be("Test");
-            actual.Statements.OfType<Saml2AttributeStatement>().Single().Attributes[1].Values[0].Should().Be("me@example.com");
+            actual.Statements.OfType<Saml2AttributeStatement>().Single().Attributes.First().Values.Single().Should().Be("Test");
+            actual.Statements.OfType<Saml2AttributeStatement>().Single().Attributes.Skip(1).First().Values.Single().Should().Be("me@example.com");
         }
 
         [TestMethod]
@@ -94,7 +93,7 @@ namespace Kentor.AuthServices.Tests
                 new Claim(ClaimTypes.Role, "Test2"),
             });
 
-            var assertion = ci.ToSaml2Assertion(new EntityId("http://idp.example.com"));
+            var assertion = ci.ToSaml2Assertion(new Saml2NameIdentifier("http://idp.example.com"));
 
             assertion.Statements.OfType<Saml2AttributeStatement>().Should().HaveCount(1);
             var actual = assertion.Statements.OfType<Saml2AttributeStatement>().Single();
@@ -112,7 +111,7 @@ namespace Kentor.AuthServices.Tests
                 new Claim(ClaimTypes.NameIdentifier, "JohnDoe")
             });
 
-            var a = ci.ToSaml2Assertion(new EntityId("http://idp.example.com"));
+            var a = ci.ToSaml2Assertion(new Saml2NameIdentifier("http://idp.example.com"));
 
             // Default validity time is hearby defined to two minutes.
             a.Conditions.NotOnOrAfter.Value.Should().BeCloseTo(DateTime.UtcNow.AddMinutes(2));
@@ -128,12 +127,12 @@ namespace Kentor.AuthServices.Tests
             var audience = "http://sp.example.com/";
 
             var a = ci.ToSaml2Assertion(
-                new EntityId("http://idp.example.com/"),
+                new Saml2NameIdentifier("http://idp.example.com/"),
                 new Uri(audience));
 
             a.Conditions.AudienceRestrictions.Should().HaveCount(1, "there should be one set of audience restrictions")
                 .And.Subject.Single().Audiences.Should().HaveCount(1, "there should be one allowed audience")
-                .And.Subject.Single().AbsoluteUri.Should()
+                .And.Subject.Single().Should()
                 .Be("http://sp.example.com/");
         }
 
