@@ -290,13 +290,13 @@
     <Content Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Kentor.AuthServices.Owin\Kentor.AuthServices.Owin.csproj">
+    <ProjectReference Include="..\..\Sustainsys.Saml2.Owin\Sustainsys.Saml2.Owin.csproj">
       <Project>{fa1e7723-124c-4d2d-a731-e16400b0073b}</Project>
-      <Name>Kentor.AuthServices.Owin</Name>
+      <Name>Sustainsys.Saml2.Owin</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Kentor.AuthServices\Kentor.AuthServices.csproj">
+    <ProjectReference Include="..\..\Kentor.AuthServices\Sustainsys.Saml2.csproj">
       <Project>{93ba675e-a159-4701-b68b-c4b81015c556}</Project>
-      <Name>Kentor.AuthServices</Name>
+      <Name>Sustainsys.Saml2</Name>
     </ProjectReference>
   </ItemGroup>
   <PropertyGroup>

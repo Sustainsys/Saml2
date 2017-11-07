@@ -7,16 +7,17 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="FluentAssertions" Version="4.19.4" />
     <PackageReference Include="Microsoft.IdentityModel.Tokens.Saml" Version="5.2.0-preview1-41106190734" />
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.3.0-preview-20170628-02" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.5.0-preview-20171031-01" />
     <PackageReference Include="MSTest.TestAdapter" Version="1.1.18" />
     <PackageReference Include="MSTest.TestFramework" Version="1.1.18" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\Kentor.AuthServices\Kentor.AuthServices.csproj" />
+    <ProjectReference Include="..\..\Sustainsys.Saml2\Sustainsys.Saml2.csproj" />
   </ItemGroup>
 
-  <Import Project="..\..\Tests.Shared\Tests.Shared\Tests.Shared.projitems" Label="Shared" />
+  <Import Project="..\..\Tests\Tests.Shared\Tests.Shared.projitems" Label="Shared" />
 
 </Project>

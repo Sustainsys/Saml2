@@ -156,9 +156,9 @@
     <Content Include="Scripts\jquery-2.1.1.min.map" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Kentor.AuthServices.Mvc\Kentor.AuthServices.Mvc.csproj">
+    <ProjectReference Include="..\..\Sustainsys.Saml2.Mvc\Sustainsys.Saml2.Mvc.csproj">
       <Project>{7d32f0a3-cec8-4dc6-a096-5905ea9c3770}</Project>
-      <Name>Kentor.AuthServices.Mvc</Name>
+      <Name>Sustainsys.Saml2.Mvc</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

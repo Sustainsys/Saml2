@@ -115,17 +115,17 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Kentor.AuthServices.Mvc\Kentor.AuthServices.Mvc.csproj">
+    <ProjectReference Include="..\..\Sustainsys.Saml2.Mvc\Sustainsys.Saml2.Mvc.csproj">
       <Project>{7d32f0a3-cec8-4dc6-a096-5905ea9c3770}</Project>
-      <Name>Kentor.AuthServices.Mvc</Name>
+      <Name>Sustainsys.Saml2.Mvc</Name>
     </ProjectReference>
     <ProjectReference Include="..\TestHelpers\TestHelpers.csproj">
       <Project>{cf1e517e-b2fe-48e1-8bb9-4d9981695c47}</Project>
       <Name>TestHelpers</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Kentor.AuthServices\Kentor.AuthServices.csproj">
+    <ProjectReference Include="..\..\Kentor.AuthServices\Sustainsys.Saml2.csproj">
       <Project>{93BA675E-A159-4701-B68B-C4B81015C556}</Project>
-      <Name>Kentor.AuthServices</Name>
+      <Name>Sustainsys.Saml2</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets" Condition="Exists('$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets')" />

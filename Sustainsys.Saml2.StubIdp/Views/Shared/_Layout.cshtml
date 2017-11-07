@@ -1,0 +1,36 @@
+﻿<!DOCTYPE html>
+
+<html>
+<head>
+    <title>Kentor.AuthServices Stub Idp</title>
+    @System.Web.Optimization.Styles.Render("~/Content/css-bundle")
+    @System.Web.Optimization.Scripts.Render("~/Scripts/js")
+    <meta name="description" content="A stub idp for testing" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+</head>
+<body>
+    <div id="main">
+        <header>
+            <h1>Kentor.AuthServices.StubIdp</h1>
+            This is a free stub (or dummy) SAML2 identity provider that can be
+            used for testing a SAML2 service provider implementation. The stub is
+            part of the
+            <a href="https://github.com/KentorIT/authservices">AuthServices</a>
+            project by <a href="http://www.kentor.se">Kentor</a>.
+        </header>
+        @RenderBody()
+    </div>
+    <script>
+        (function (i, s, o, g, r, a, m) {
+            i['GoogleAnalyticsObject'] = r; i[r] = i[r] || function () {
+                (i[r].q = i[r].q || []).push(arguments)
+            }, i[r].l = 1 * new Date(); a = s.createElement(o),
+            m = s.getElementsByTagName(o)[0]; a.async = 1; a.src = g; m.parentNode.insertBefore(a, m)
+        })(window, document, 'script', '//www.google-analytics.com/analytics.js', 'ga');
+
+        ga('create', 'UA-46788957-1', 'kentor.se');
+        ga('send', 'pageview');
+
+    </script>
+</body>
+</html>
