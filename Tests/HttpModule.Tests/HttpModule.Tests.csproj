@@ -98,7 +98,7 @@
       <Project>{CF1E517E-B2FE-48E1-8BB9-4D9981695C47}</Project>
       <Name>TestHelpers</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Kentor.AuthServices\Sustainsys.Saml2.csproj">
+    <ProjectReference Include="..\..\Sustainsys.Saml2\Sustainsys.Saml2.csproj">
       <Project>{93BA675E-A159-4701-B68B-C4B81015C556}</Project>
       <Name>Sustainsys.Saml2</Name>
     </ProjectReference>

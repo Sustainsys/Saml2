@@ -294,7 +294,7 @@
       <Project>{fa1e7723-124c-4d2d-a731-e16400b0073b}</Project>
       <Name>Sustainsys.Saml2.Owin</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Kentor.AuthServices\Sustainsys.Saml2.csproj">
+    <ProjectReference Include="..\..\Sustainsys.Saml2\Sustainsys.Saml2.csproj">
       <Project>{93ba675e-a159-4701-b68b-c4b81015c556}</Project>
       <Name>Sustainsys.Saml2</Name>
     </ProjectReference>

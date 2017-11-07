@@ -16,8 +16,9 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\Sustainsys.Saml2\Sustainsys.Saml2.csproj" />
+    <ProjectReference Include="..\TestHelpers\TestHelpers.csproj" />
   </ItemGroup>
 
-  <Import Project="..\..\Tests\Tests.Shared\Tests.Shared.projitems" Label="Shared" />
+  <Import Project="..\Tests.Shared\Tests.Shared.projitems" Label="Shared" />
 
 </Project>

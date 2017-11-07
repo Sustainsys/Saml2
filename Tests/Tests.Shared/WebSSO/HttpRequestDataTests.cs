@@ -1,5 +1,5 @@
 ﻿using FluentAssertions;
-using Sustainsys.Saml2.WebSso;
+using Kentor.AuthServices.WebSso;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
