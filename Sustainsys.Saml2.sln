@@ -1,9 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26730.16
+VisualStudioVersion = 15.0.27004.2006
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kentor.AuthServices", "Kentor.AuthServices\Kentor.AuthServices.csproj", "{93BA675E-A159-4701-B68B-C4B81015C556}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Kentor.AuthServices", "Kentor.AuthServices\Kentor.AuthServices.csproj", "{93BA675E-A159-4701-B68B-C4B81015C556}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{E0C4834E-A7A9-476F-8F46-B2D533190872}"
 	ProjectSection(SolutionItems) = preProject
@@ -56,7 +56,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SampleOwinApplication", "Sa
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{F3C8CC66-4CE9-4683-BC31-B89AF47A5897}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests", "Tests\Tests\Tests.csproj", "{D3334615-C970-464F-8F45-50CB53A5C0EE}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests.NET45", "Tests\Tests.Net45\Tests.NET45.csproj", "{D3334615-C970-464F-8F45-50CB53A5C0EE}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mvc.Tests", "Tests\Mvc.Tests\Mvc.Tests.csproj", "{F09D61F6-CA41-4B73-B59E-2A5C5626F058}"
 EndProject
