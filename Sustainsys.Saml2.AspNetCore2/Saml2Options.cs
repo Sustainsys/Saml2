@@ -20,6 +20,8 @@ namespace Sustainsys.Saml2.AspNetCore2
             {
                 ModulePath = "/Saml2"
             };
+            IdentityProviders = new IdentityProviderDictionary();
+            Notifications = new KentorAuthServicesNotifications();
         }
 
         /// <summary>
@@ -37,14 +39,12 @@ namespace Sustainsys.Saml2.AspNetCore2
         /// <summary>
         /// Information about known identity providers.
         /// </summary>
-        public IdentityProviderDictionary IdentityProviders { get; }
-            = new IdentityProviderDictionary();
+        public IdentityProviderDictionary IdentityProviders { get; private set; }
 
         /// <summary>
         /// Set of callbacks that can be used as extension points for various
         /// events.
         /// </summary>
-        public KentorAuthServicesNotifications Notifications =>
-            new KentorAuthServicesNotifications();
+        public KentorAuthServicesNotifications Notifications { get; private set; }
     }
 }
