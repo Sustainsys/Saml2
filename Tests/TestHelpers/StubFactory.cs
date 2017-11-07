@@ -5,8 +5,9 @@ using Microsoft.IdentityModel.Tokens.Saml2;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+#if NET45
 using System.IdentityModel.Metadata;
-using System.IdentityModel.Selectors;
+#endif
 using System.Linq;
 using System.Security.Claims;
 using System.Text;
@@ -28,6 +29,7 @@ namespace Kentor.AuthServices.TestHelpers
 
         public static SPOptions CreateSPOptions()
         {
+#if NET45
             var org = new Organization();
 
             org.Names.Add(new LocalizedName("Kentor.AuthServices", CultureInfo.InvariantCulture));
@@ -35,21 +37,24 @@ namespace Kentor.AuthServices.TestHelpers
             org.Urls.Add(new LocalizedUri(
                 new Uri("http://github.com/KentorIT/authservices"),
                 CultureInfo.InvariantCulture));
-
+#endif
             var options = new SPOptions
             {
                 EntityId = new Saml2NameIdentifier("https://github.com/KentorIT/authservices"),
+#if NET45
                 MetadataCacheDuration = new TimeSpan(0, 0, 42),
                 MetadataValidDuration = TimeSpan.FromDays(24),
                 WantAssertionsSigned = true,
                 Organization = org,
+#endif
                 DiscoveryServiceUrl = new Uri("https://ds.example.com"),
                 ReturnUrl = new Uri("https://localhost/returnUrl")
             };
 
+#if NET45
             AddContacts(options);
             AddAttributeConsumingServices(options);
-
+#endif
             return options;
         }
 
@@ -61,6 +66,7 @@ namespace Kentor.AuthServices.TestHelpers
             return options;
         }
 
+#if NET45
         private static void AddAttributeConsumingServices(SPOptions options)
         {
             var a1 = new RequestedAttribute("urn:attributeName")
@@ -102,10 +108,24 @@ namespace Kentor.AuthServices.TestHelpers
             options.Contacts.Add(supportContact);
             options.Contacts.Add(new ContactPerson(ContactType.Technical)); // Deliberately void of info.
         }
+#endif
 
         public static IOptions CreateOptions(Func<SPOptions, IOptions> factory)
         {
             var options = factory(CreateSPOptions());
+
+            var idp = new IdentityProvider(new EntityId("https://idp.example.com"), options.SPOptions)
+            {
+                SingleSignOnServiceUrl = new Uri("https://idp.example.com/idp"),
+                SingleLogoutServiceUrl = new Uri("https://idp.example.com/logout"),
+                AllowUnsolicitedAuthnResponse = true,
+                Binding = Saml2BindingType.HttpRedirect,
+            };
+            idp.SigningKeys.AddConfiguredKey(SignedXmlHelper.TestCert);
+            idp.ArtifactResolutionServiceUrls.Add(4660, new )
+
+
+
 
             KentorAuthServicesSection.Current.IdentityProviders.RegisterIdentityProviders(options);
 
