@@ -13,6 +13,10 @@
     <PackageReference Include="MSTest.TestFramework" Version="1.1.18" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\..\Kentor.AuthServices\Kentor.AuthServices.csproj" />
+  </ItemGroup>
+
   <Import Project="..\..\Tests.Shared\Tests.Shared\Tests.Shared.projitems" Label="Shared" />
 
 </Project>

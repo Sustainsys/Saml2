@@ -74,7 +74,12 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AspNetCore2.Tests", "Tests\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests.NetStandard2", "Tests\Tests.NetStandard2\Tests.NetStandard2.csproj", "{82F15D99-9C0F-47F8-BF66-518EB092650C}"
 EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Tests.Shared", "Tests.Shared\Tests.Shared\Tests.Shared.shproj", "{5615433D-0B69-41DF-8398-1FD2004B8243}"
+EndProject
 Global
+	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		Tests.Shared\Tests.Shared\Tests.Shared.projitems*{5615433d-0b69-41df-8398-1fd2004b8243}*SharedItemsImports = 13
+	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
@@ -169,6 +174,7 @@ Global
 		{8EB3820A-4DB4-4875-A155-6C3D7458983E} = {09639770-8C2B-4D30-BBFC-4F6DD1A92C89}
 		{20359A9A-6435-4264-8B36-22CD76731432} = {F3C8CC66-4CE9-4683-BC31-B89AF47A5897}
 		{82F15D99-9C0F-47F8-BF66-518EB092650C} = {F3C8CC66-4CE9-4683-BC31-B89AF47A5897}
+		{5615433D-0B69-41DF-8398-1FD2004B8243} = {F3C8CC66-4CE9-4683-BC31-B89AF47A5897}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {A8812E38-A212-46DD-B51F-AB653F39E4ED}

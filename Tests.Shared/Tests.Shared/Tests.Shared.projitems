@@ -9,5 +9,6 @@
     <Import_RootNamespace>Tests.Shared</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)WebSSO\HttpRequestDataTests.cs" />
   </ItemGroup>
 </Project>
