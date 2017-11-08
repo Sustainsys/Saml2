@@ -3,15 +3,11 @@ using Kentor.AuthServices.Metadata;
 using Kentor.AuthServices.WebSso;
 using Microsoft.IdentityModel.Tokens.Saml2;
 using System;
-using System.Collections.Generic;
 using System.Globalization;
-#if NET45
+#if NET47
 using System.IdentityModel.Metadata;
 #endif
-using System.Linq;
 using System.Security.Claims;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Kentor.AuthServices.TestHelpers
 {
@@ -29,7 +25,7 @@ namespace Kentor.AuthServices.TestHelpers
 
         public static SPOptions CreateSPOptions()
         {
-#if NET45
+#if NET47
             var org = new Organization();
 
             org.Names.Add(new LocalizedName("Kentor.AuthServices", CultureInfo.InvariantCulture));
@@ -41,7 +37,7 @@ namespace Kentor.AuthServices.TestHelpers
             var options = new SPOptions
             {
                 EntityId = new Saml2NameIdentifier("https://github.com/KentorIT/authservices"),
-#if NET45
+#if NET47
                 MetadataCacheDuration = new TimeSpan(0, 0, 42),
                 MetadataValidDuration = TimeSpan.FromDays(24),
                 WantAssertionsSigned = true,
@@ -51,22 +47,14 @@ namespace Kentor.AuthServices.TestHelpers
                 ReturnUrl = new Uri("https://localhost/returnUrl")
             };
 
-#if NET45
+#if NET47
             AddContacts(options);
             AddAttributeConsumingServices(options);
 #endif
             return options;
         }
 
-        public static SPOptions CreateSPOptions(Uri publicOrigin)
-        {
-            var options = CreateSPOptions();
-            options.PublicOrigin = publicOrigin;
-
-            return options;
-        }
-
-#if NET45
+#if NET47
         private static void AddAttributeConsumingServices(SPOptions options)
         {
             var a1 = new RequestedAttribute("urn:attributeName")
@@ -122,12 +110,39 @@ namespace Kentor.AuthServices.TestHelpers
                 Binding = Saml2BindingType.HttpRedirect,
             };
             idp.SigningKeys.AddConfiguredKey(SignedXmlHelper.TestCert);
-            idp.ArtifactResolutionServiceUrls.Add(4660, new )
+            idp.ArtifactResolutionServiceUrls.Add(4660, new Uri("http://localhost:13428/ars"));
+            options.IdentityProviders.Add(idp);
 
+            idp = new IdentityProvider(new EntityId("https://idp2.example.com"), options.SPOptions)
+            {
+                SingleSignOnServiceUrl = new Uri("https://idp2.example.com/idp"),
+                AllowUnsolicitedAuthnResponse = false,
+                Binding = Saml2BindingType.HttpRedirect,
+                WantAuthnRequestsSigned = true
+            };
+            idp.SigningKeys.AddConfiguredKey(SignedXmlHelper.TestCert);
+            options.IdentityProviders.Add(idp);
 
+#if NET47
+            idp = new IdentityProvider(new EntityId("localhost:13428/idpMetadata"), options.SPOptions)
+            {
+                AllowUnsolicitedAuthnResponse = true,
+                LoadMetadata = true
+            };
+            options.IdentityProviders.Add(idp);
+#endif
 
+            idp = new IdentityProvider(new EntityId("https://idp4.example.com"), options.SPOptions)
+            {
+                SingleSignOnServiceUrl = new Uri("https://idp4.example.com/idp"),
+                AllowUnsolicitedAuthnResponse = false,
+                Binding = Saml2BindingType.HttpPost,
+                OutboundSigningAlgorithm = Options.RsaSha256Uri,
+                WantAuthnRequestsSigned = true
+            };
 
-            KentorAuthServicesSection.Current.IdentityProviders.RegisterIdentityProviders(options);
+            idp.SigningKeys.AddConfiguredKey(SignedXmlHelper.TestCert);
+            options.IdentityProviders.Add(idp);
 
             return options;
         }
@@ -135,20 +150,6 @@ namespace Kentor.AuthServices.TestHelpers
         public static Options CreateOptions()
         {
             return (Options)CreateOptions(sp => new Options(sp));
-        }
-
-        private static IOptions CreateOptionsPublicOrigin(Func<SPOptions, IOptions> factory, Uri publicOrigin)
-        {
-            var options = factory(CreateSPOptions(publicOrigin));
-
-            KentorAuthServicesSection.Current.IdentityProviders.RegisterIdentityProviders(options);
-            KentorAuthServicesSection.Current.Federations.RegisterFederations(options);
-
-            return options;
-        }
-        public static Options CreateOptionsPublicOrigin(Uri publicOrigin)
-        {
-            return (Options)CreateOptionsPublicOrigin(sp => new Options(sp), publicOrigin);
         }
     }
 }
