@@ -12,8 +12,9 @@ using Kentor.AuthServices.WebSso;
 using System.Reflection;
 using Kentor.AuthServices.Exceptions;
 using Microsoft.IdentityModel.Tokens.Saml2;
-using Kentor.AuthServices.Tests.WebSSO;
 using Kentor.AuthServices.TestHelpers;
+using Kentor.AuthServices.Metadata;
+using Kentor.AuthServices.Tests.WebSSO;
 
 namespace Kentor.AuthServices.Tests.WebSso
 {
@@ -45,7 +46,7 @@ namespace Kentor.AuthServices.Tests.WebSso
         {
             Action a = () => new AcsCommand().Run(
                 new HttpRequestData("GET", new Uri("http://localhost")),
-                Options.FromConfiguration);
+                StubFactory.CreateOptions());
 
             a.ShouldThrow<NoSamlResponseFoundException>()
                 .WithMessage("No Saml2 Response found in the http request.");
@@ -65,7 +66,7 @@ namespace Kentor.AuthServices.Tests.WebSso
                 Enumerable.Empty<KeyValuePair<string, string>>(),
                 null);
 
-            Action a = () => new AcsCommand().Run(r, Options.FromConfiguration);
+            Action a = () => new AcsCommand().Run(r, StubFactory.CreateOptions());
 
             a.ShouldThrow<BadFormatSamlResponseException>()
                 .WithMessage("The SAML Response did not contain valid BASE64 encoded data.")
@@ -87,7 +88,7 @@ namespace Kentor.AuthServices.Tests.WebSso
                 Enumerable.Empty<KeyValuePair<string, string>>(),
                 null);
 
-            Action a = () => new AcsCommand().Run(r, Options.FromConfiguration);
+            Action a = () => new AcsCommand().Run(r, StubFactory.CreateOptions());
 
             a.ShouldThrow<BadFormatSamlResponseException>()
                 .WithMessage("The SAML response contains incorrect XML")
@@ -114,7 +115,7 @@ namespace Kentor.AuthServices.Tests.WebSso
                 Enumerable.Empty<KeyValuePair<string, string>>(),
                 null);
 
-            Action a = () => new AcsCommand().Run(r, Options.FromConfiguration);
+            Action a = () => new AcsCommand().Run(r, StubFactory.CreateOptions());
 
             a.ShouldThrow<Exception>()
                 .And.Data["Saml2Response"].Should().Be(payload);
@@ -136,7 +137,7 @@ namespace Kentor.AuthServices.Tests.WebSso
                 Enumerable.Empty<KeyValuePair<string, string>>(),
                 null);
 
-            Action a = () => new AcsCommand().Run(r, Options.FromConfiguration);
+            Action a = () => new AcsCommand().Run(r, StubFactory.CreateOptions());
 
             a.ShouldThrow<BadFormatSamlResponseException>();
         }
@@ -163,7 +164,7 @@ namespace Kentor.AuthServices.Tests.WebSso
                 Enumerable.Empty<KeyValuePair<string, string>>(),
                 null);
 
-            Action a = () => new AcsCommand().Run(r, Options.FromConfiguration);
+            Action a = () => new AcsCommand().Run(r, StubFactory.CreateOptions());
 
             // The real exception was masked by a NullRef in the exception
             // handler in AcsCommand.Run
@@ -209,9 +210,8 @@ namespace Kentor.AuthServices.Tests.WebSso
                 Enumerable.Empty<KeyValuePair<string, string>>(),
                 null);
 
-            var ids = new ClaimsIdentity[] { new ClaimsIdentity("Federation"), new ClaimsIdentity("ClaimsAuthenticationManager") };
+            var ids = new ClaimsIdentity[] { new ClaimsIdentity("AuthenticationTypes.Federation") };
             ids[0].AddClaim(new Claim(ClaimTypes.NameIdentifier, "SomeUser", null, "https://idp.example.com"));
-            ids[1].AddClaim(new Claim(ClaimTypes.Role, "RoleFromClaimsAuthManager", null, "ClaimsAuthenticationManagerStub"));
 
             var expected = new CommandResult()
             {
@@ -229,7 +229,7 @@ namespace Kentor.AuthServices.Tests.WebSso
         [TestMethod]
         public void AcsCommand_Run_WithReturnUrl_SuccessfulResult()
         {
-            var idp = Options.FromConfiguration.IdentityProviders.Default;
+            var idp = StubFactory.CreateOptions().IdentityProviders.Default;
 
             var response =
             @"<saml2p:Response xmlns:saml2p=""urn:oasis:names:tc:SAML:2.0:protocol""
@@ -292,7 +292,7 @@ namespace Kentor.AuthServices.Tests.WebSso
         [TestMethod]
         public void AcsCommand_Run_ClaimsAuthenticationManager_RemovesNameIdentifierClaim()
         {
-            var idp = Options.FromConfiguration.IdentityProviders.Default;
+            var idp = StubFactory.CreateOptions().IdentityProviders.Default;
 
             var response =
             @"<saml2p:Response xmlns:saml2p=""urn:oasis:names:tc:SAML:2.0:protocol""
@@ -342,7 +342,7 @@ namespace Kentor.AuthServices.Tests.WebSso
         [TestMethod]
         public void AcsCommand_Run_WithReturnUrl_SuccessfulResult_NoConfigReturnUrl()
         {
-            var idp = Options.FromConfiguration.IdentityProviders.Default;
+            var idp = StubFactory.CreateOptions().IdentityProviders.Default;
 
             var response =
             @"<saml2p:Response xmlns:saml2p=""urn:oasis:names:tc:SAML:2.0:protocol""
@@ -436,7 +436,7 @@ namespace Kentor.AuthServices.Tests.WebSso
             options.SPOptions.ReturnUrl = null;
 
             new AcsCommand().Invoking(a => a.Run(r, options))
-                .ShouldThrow<ConfigurationErrorsException>().WithMessage(AcsCommand.UnsolicitedMissingReturnUrlMessage);
+                .ShouldThrow<InvalidOperationException>().WithMessage(AcsCommand.UnsolicitedMissingReturnUrlMessage);
         }
 
         [TestMethod]
@@ -482,7 +482,7 @@ namespace Kentor.AuthServices.Tests.WebSso
             options.SPOptions.ReturnUrl = null;
 
             new AcsCommand().Invoking(a => a.Run(r, options))
-                .ShouldThrow<ConfigurationErrorsException>().WithMessage(AcsCommand.SpInitiatedMissingReturnUrl);
+                .ShouldThrow<InvalidOperationException>().WithMessage(AcsCommand.SpInitiatedMissingReturnUrl);
         }
 
         [TestMethod]

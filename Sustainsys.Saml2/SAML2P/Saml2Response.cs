@@ -13,6 +13,7 @@ using Kentor.AuthServices.Exceptions;
 using System.Diagnostics.CodeAnalysis;
 using Microsoft.IdentityModel.Tokens.Saml2;
 using Kentor.AuthServices.Metadata;
+using Microsoft.IdentityModel.Tokens;
 
 namespace Kentor.AuthServices.Saml2P
 {
@@ -493,7 +494,7 @@ namespace Kentor.AuthServices.Saml2P
             {
                 try
                 {
-                    //claimsIdentities = CreateClaimsPrincipal(options);
+                    claimsIdentities = CreateClaimsPrincipal(options).Identities;
                 }
                 catch (Exception ex)
                 {
@@ -518,18 +519,25 @@ namespace Kentor.AuthServices.Saml2P
 
             var principal = new ClaimsPrincipal();
 
+            var handler = new Saml2SecurityTokenHandler();
+
+            var validationParams = new TokenValidationParameters()
+            {
+                RequireSignedTokens = false,
+                ValidIssuer = Issuer.Value
+            };
+
             foreach (XmlElement assertionNode in GetAllAssertionElementNodes(options))
             {
-                using (var reader = new FilteringXmlNodeReader(SignedXml.XmlDsigNamespaceUrl, "Signature", assertionNode))
-                {
-                    var handler = new Saml2SecurityTokenHandler();
+                SecurityToken token;
+                var assertionPrincipal = handler.ValidateToken(
+                    assertionNode.OuterXml,
+                    validationParams,
+                    out token); 
 
-                    //var token = (Saml2SecurityToken)handler.ValidateToken.ReadToken(
-                    //    reader, options.SPOptions.TokenValidationParameters);
-                    //options.SPOptions.Logger.WriteVerbose("Extracted SAML assertion " + token.Id);
+                options.SPOptions.Logger.WriteVerbose("Extracted SAML assertion " + token.Id);
 
-                    //principal.AddIdentity(handler.ValidateToken(;
-                }
+                principal.AddIdentity(assertionPrincipal.Identities.Single());
             }
 
             return principal;

@@ -21,7 +21,7 @@ using System.Runtime.InteropServices;
 [assembly: CLSCompliant(true)]
 
 [assembly: InternalsVisibleTo("Tests.NET45")]
-[assembly: InternalsVisibleTo("Tests.NetStandard")]
+[assembly: InternalsVisibleTo("Tests.NetStandard2")]
 [assembly: InternalsVisibleTo("TestHelpers")]
 [assembly: InternalsVisibleTo("Owin.Tests")]
 [assembly: InternalsVisibleTo("HttpModule.Tests")]

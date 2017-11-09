@@ -196,8 +196,11 @@ namespace Kentor.AuthServices
             // For both, the ID/Reference and the Transform/Canonicalization see as well: 
             // https://www.oasis-open.org/committees/download.php/35711/sstc-saml-core-errata-2.0-wd-06-diff.pdf section 5.4.2 and 5.4.3
 
-            signedXml.SigningKey = ((RSACryptoServiceProvider)cert.PrivateKey)
-                .GetSha256EnabledRSACryptoServiceProvider();
+#warning Check if this is needed on .NET Core
+            //signedXml.SigningKey = ((RSACryptoServiceProvider)cert.PrivateKey)
+            //    .GetSha256EnabledRSACryptoServiceProvider();
+            signedXml.SigningKey = cert.PrivateKey;
+
             signedXml.SignedInfo.CanonicalizationMethod = SignedXml.XmlDsigExcC14NTransformUrl;
             signedXml.SignedInfo.SignatureMethod = signingAlgorithm;
 

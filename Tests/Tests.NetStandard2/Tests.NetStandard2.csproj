@@ -8,7 +8,7 @@
 
   <ItemGroup>
     <PackageReference Include="FluentAssertions" Version="4.19.4" />
-    <PackageReference Include="Microsoft.IdentityModel.Tokens.Saml" Version="5.2.0-preview1-41106190734" />
+    <PackageReference Include="Microsoft.IdentityModel.Tokens.Saml" Version="5.2.0-preview1-41109052106" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.5.0-preview-20171031-01" />
     <PackageReference Include="MSTest.TestAdapter" Version="1.1.18" />
     <PackageReference Include="MSTest.TestFramework" Version="1.1.18" />
