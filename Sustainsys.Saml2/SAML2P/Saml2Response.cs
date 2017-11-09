@@ -128,7 +128,7 @@ namespace Kentor.AuthServices.Saml2P
                         "This error typically occurs if the cookie set when doing SP-initiated sign on have been lost.",
                         InResponseTo));
                 }
-                if (!expectedInResponseTo.Equals(InResponseTo))
+                if (!expectedInResponseTo.Value.Equals(InResponseTo.Value))
                 {
                     throw new Saml2ResponseFailedValidationException(
                         string.Format(CultureInfo.InvariantCulture,
@@ -529,11 +529,16 @@ namespace Kentor.AuthServices.Saml2P
 
             foreach (XmlElement assertionNode in GetAllAssertionElementNodes(options))
             {
-                SecurityToken token;
                 var assertionPrincipal = handler.ValidateToken(
                     assertionNode.OuterXml,
                     validationParams,
-                    out token); 
+                    out SecurityToken token);
+
+                var saml2Token = (Saml2SecurityToken)token;
+
+                sessionNotOnOrAfter = DateTimeHelper.EarliestTime(sessionNotOnOrAfter,
+                    saml2Token.Assertion.Statements.OfType<Saml2AuthenticationStatement>()
+                    .SingleOrDefault()?.SessionNotOnOrAfter);
 
                 options.SPOptions.Logger.WriteVerbose("Extracted SAML assertion " + token.Id);
 
