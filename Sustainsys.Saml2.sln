@@ -56,11 +56,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SampleOwinApplication", "Sa
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{F3C8CC66-4CE9-4683-BC31-B89AF47A5897}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tests.NET45", "Tests\Tests.Net45\Tests.NET45.csproj", "{D3334615-C970-464F-8F45-50CB53A5C0EE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tests.NET47", "Tests\Tests.Net47\Tests.NET47.csproj", "{D3334615-C970-464F-8F45-50CB53A5C0EE}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mvc.Tests", "Tests\Mvc.Tests\Mvc.Tests.csproj", "{F09D61F6-CA41-4B73-B59E-2A5C5626F058}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestHelpers", "Tests\TestHelpers\TestHelpers.csproj", "{CF1E517E-B2FE-48E1-8BB9-4D9981695C47}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestHelpers", "Tests\TestHelpers\TestHelpers.csproj", "{CF1E517E-B2FE-48E1-8BB9-4D9981695C47}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Owin.Tests", "Tests\Owin.Tests\Owin.Tests.csproj", "{0E01A985-54CC-4190-851F-6475C7BB1A5D}"
 EndProject

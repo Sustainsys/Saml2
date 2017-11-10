@@ -4,11 +4,14 @@ using FluentAssertions;
 using System.Net;
 using System.Web;
 using Kentor.AuthServices.Configuration;
-using System.IdentityModel.Metadata;
 using Kentor.AuthServices.WebSso;
 using System.Collections.Generic;
 using Kentor.AuthServices.TestHelpers;
 using Microsoft.IdentityModel.Tokens.Saml2;
+using Kentor.AuthServices.Metadata;
+#if NET47
+using System.IdentityModel.Metadata;
+#endif
 
 namespace Kentor.AuthServices.Tests.WebSso
 {
@@ -18,15 +21,18 @@ namespace Kentor.AuthServices.Tests.WebSso
         [TestMethod]
         public void SignInCommand_Run_ReturnsAuthnRequestForDefaultIdp()
         {
-            var idp = Options.FromConfiguration.IdentityProviders.Default;
+            var options = StubFactory.CreateOptions();
+            options.SPOptions.DiscoveryServiceUrl = null;
+
+            var idp = options.IdentityProviders.Default;
             var defaultDestination = idp.SingleSignOnServiceUrl;
 
             var result = new SignInCommand().Run(
                 new HttpRequestData("GET", new Uri("http://example.com")),
-                Options.FromConfiguration);
+                options);
 
             result.HttpStatusCode.Should().Be(HttpStatusCode.SeeOther);
-            result.Cacheability.Should().Be((Cacheability)HttpCacheability.NoCache);
+            result.Cacheability.Should().Be(Cacheability.NoCache);
             result.Location.Host.Should().Be(defaultDestination.Host);
 
             var queries = HttpUtility.ParseQueryString(result.Location.Query);
@@ -39,11 +45,12 @@ namespace Kentor.AuthServices.Tests.WebSso
         [TestMethod]
         public void SignInCommand_Run_MapsReturnUrl()
         {
-            var defaultDestination = Options.FromConfiguration.IdentityProviders.Default.SingleSignOnServiceUrl;
+            var options = StubFactory.CreateOptions();
+            var defaultDestination = options.IdentityProviders.Default.SingleSignOnServiceUrl;
 
             var httpRequest = new HttpRequestData("GET", new Uri("http://localhost/signin?ReturnUrl=%2FReturn.aspx"));
 
-            var actual = new SignInCommand().Run(httpRequest, Options.FromConfiguration);
+            var actual = new SignInCommand().Run(httpRequest, options);
 
             actual.RequestState.ReturnUrl.Should().Be("/Return.aspx");
         }
@@ -51,11 +58,12 @@ namespace Kentor.AuthServices.Tests.WebSso
         [TestMethod]
         public void SignInCommand_Run_ChecksForLocalReturnUrl()
         {
-            var defaultDestination = Options.FromConfiguration.IdentityProviders.Default.SingleSignOnServiceUrl;
+            var options = StubFactory.CreateOptions();
+            var defaultDestination = options.IdentityProviders.Default.SingleSignOnServiceUrl;
             var absoluteUri = HttpUtility.UrlEncode("http://google.com");
             var httpRequest = new HttpRequestData("GET", new Uri($"http://localhost/signin?ReturnUrl={absoluteUri}"));
 
-            Action a = () => new SignInCommand().Run(httpRequest, Options.FromConfiguration);
+            Action a = () => new SignInCommand().Run(httpRequest, options);
 
             a.ShouldThrow<InvalidOperationException>().WithMessage("Return Url must be a relative Url.");
         }
@@ -63,11 +71,12 @@ namespace Kentor.AuthServices.Tests.WebSso
         [TestMethod]
         public void SignInCommand_Run_ChecksForLocalReturnUrlProtocolRelative()
         {
-            var defaultDestination = Options.FromConfiguration.IdentityProviders.Default.SingleSignOnServiceUrl;
+            var options = StubFactory.CreateOptions();
+            var defaultDestination = options.IdentityProviders.Default.SingleSignOnServiceUrl;
             var absoluteUri = HttpUtility.UrlEncode("//google.com");
             var httpRequest = new HttpRequestData("GET", new Uri($"http://localhost/signin?ReturnUrl={absoluteUri}"));
 
-            Action a = () => new SignInCommand().Run(httpRequest, Options.FromConfiguration);
+            Action a = () => new SignInCommand().Run(httpRequest, options);
 
             a.ShouldThrow<InvalidOperationException>().WithMessage("Return Url must be a relative Url.");
         }
@@ -75,19 +84,20 @@ namespace Kentor.AuthServices.Tests.WebSso
         [TestMethod]
         public void SignInCommand_Run_Calls_NotificationForAbsoluteUrl()
         {
-            var defaultDestination = Options.FromConfiguration.IdentityProviders.Default.SingleSignOnServiceUrl;
+            var options = StubFactory.CreateOptions();
+            var defaultDestination = options.IdentityProviders.Default.SingleSignOnServiceUrl;
             var absoluteUri = HttpUtility.UrlEncode("http://google.com");
             var httpRequest = new HttpRequestData("GET", new Uri($"http://localhost/signin?ReturnUrl={absoluteUri}"));
             var validateAbsoluteReturnUrlCalled = false;
 
-            Options.FromConfiguration.Notifications.ValidateAbsoluteReturnUrl =
+            options.Notifications.ValidateAbsoluteReturnUrl =
                 (url) =>
                 {
                     validateAbsoluteReturnUrlCalled = true;
                     return true;
                 };
             
-            Action a = () => new SignInCommand().Run(httpRequest, Options.FromConfiguration);
+            Action a = () => new SignInCommand().Run(httpRequest, options);
 
             a.ShouldNotThrow<InvalidOperationException>("the ValidateAbsoluteReturnUrl notification returns true");
             validateAbsoluteReturnUrlCalled.Should().BeTrue("the ValidateAbsoluteReturnUrl notification should have been called");
@@ -96,19 +106,20 @@ namespace Kentor.AuthServices.Tests.WebSso
         [TestMethod]
         public void SignInCommand_Run_DoNotCalls_NotificationForRelativeUrl()
         {
-            var defaultDestination = Options.FromConfiguration.IdentityProviders.Default.SingleSignOnServiceUrl;
+            var options = StubFactory.CreateOptions();
+            var defaultDestination = options.IdentityProviders.Default.SingleSignOnServiceUrl;
             var relativeUri = HttpUtility.UrlEncode("~/Secure");
             var httpRequest = new HttpRequestData("GET", new Uri($"http://localhost/signin?ReturnUrl={relativeUri}"));
             var validateAbsoluteReturnUrlCalled = false;
 
-            Options.FromConfiguration.Notifications.ValidateAbsoluteReturnUrl =
+            options.Notifications.ValidateAbsoluteReturnUrl =
                 (url) =>
                 {
                     validateAbsoluteReturnUrlCalled = true;
                     return true;
                 };
 
-            Action a = () => new SignInCommand().Run(httpRequest, Options.FromConfiguration);
+            Action a = () => new SignInCommand().Run(httpRequest, options);
 
             a.ShouldNotThrow<InvalidOperationException>("the ReturnUrl is relative");
             validateAbsoluteReturnUrlCalled.Should().BeFalse("the ValidateAbsoluteReturnUrl notification should not have been called");
@@ -117,14 +128,17 @@ namespace Kentor.AuthServices.Tests.WebSso
         [TestMethod]
         public void SignInCommand_Run_With_Idp2_ReturnsAuthnRequestForSecondIdp()
         {
-            var secondIdp = Options.FromConfiguration.IdentityProviders[1];
+            var options = StubFactory.CreateOptions();
+            options.SPOptions.ServiceCertificates.Add(SignedXmlHelper.TestCert);
+
+            var secondIdp = options.IdentityProviders[1];
             var secondDestination = secondIdp.SingleSignOnServiceUrl;
             var secondEntityId = secondIdp.EntityId;
 
             var request = new HttpRequestData("GET",
                 new Uri("http://sp.example.com?idp=" + Uri.EscapeDataString(secondEntityId.Id)));
 
-            var subject = new SignInCommand().Run(request, Options.FromConfiguration);
+            var subject = new SignInCommand().Run(request, options);
 
             subject.Location.Host.Should().Be(secondDestination.Host);
         }
@@ -132,9 +146,11 @@ namespace Kentor.AuthServices.Tests.WebSso
         [TestMethod]
         public void SignInCommand_Run_With_InvalidIdp_ThrowsException()
         {
+            var options = StubFactory.CreateOptions();
+
             var request = new HttpRequestData("GET", new Uri("http://localhost/signin?idp=no-such-idp-in-config"));
 
-            Action a = () => new SignInCommand().Run(request, Options.FromConfiguration);
+            Action a = () => new SignInCommand().Run(request, options);
 
             a.ShouldThrow<InvalidOperationException>().WithMessage("Unknown idp no-such-idp-in-config");
         }
@@ -142,7 +158,8 @@ namespace Kentor.AuthServices.Tests.WebSso
         [TestMethod]
         public void SignInCommand_Run_NullCheckRequest()
         {
-            Action a = () => new SignInCommand().Run(null, Options.FromConfiguration);
+            var options = StubFactory.CreateOptions();
+            Action a = () => new SignInCommand().Run(null, options);
 
             a.ShouldThrow<ArgumentNullException>().And.ParamName.Should().Be("request");
         }
@@ -190,13 +207,15 @@ namespace Kentor.AuthServices.Tests.WebSso
         [TestMethod]
         public void SignInCommand_Run_PublicOrigin()
         {
-            var options = StubFactory.CreateOptionsPublicOrigin(new Uri("https://my.public.origin:8443"));
+            var options = StubFactory.CreateOptions();
+            options.SPOptions.PublicOrigin = new Uri("https://my.public.origin:8443");
+              
             var idp = options.IdentityProviders.Default;
 
             var request = new HttpRequestData("GET",
                 new Uri("http://sp.example.com?idp=" + Uri.EscapeDataString(idp.EntityId.Id)));
 
-            var subject = new SignInCommand().Run(request, Options.FromConfiguration);
+            var subject = new SignInCommand().Run(request, options);
 
             subject.Location.Host.Should().Be(new Uri("https://idp.example.com").Host);
         }

@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>net45</TargetFramework>
+    <TargetFramework>net47</TargetFramework>
   </PropertyGroup>
 
   <ItemGroup>
@@ -13,6 +13,15 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\Sustainsys.Saml2\Sustainsys.Saml2.csproj" />
+    <ProjectReference Include="..\TestHelpers\TestHelpers.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="System.Web" />
+  </ItemGroup>
+
+  <ItemGroup Condition=" '$(TargetFramework)' == 'net47'">
+    <Reference Include="System.IdentityModel" />
   </ItemGroup>
 
   <Import Project="..\..\Tests\Tests.Shared\Tests.Shared.projitems" Label="Shared" />

@@ -11,6 +11,7 @@
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)WebSSO\AcsCommandTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)WebSSO\HttpRequestDataTests.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)WebSSO\SignInCommandTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)WebSSO\StubSaml2Binding.cs" />
   </ItemGroup>
   <ItemGroup>
