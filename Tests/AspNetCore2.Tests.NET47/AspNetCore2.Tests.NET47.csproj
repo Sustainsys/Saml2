@@ -1,13 +1,18 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp2.0</TargetFramework>
+    <TargetFramework>net47</TargetFramework>
   </PropertyGroup>
 
   <Import Project="..\AspNetCore2.Tests.Shared\AspNetCore2.Tests.Shared.projitems" Label="Shared" />
 
   <ItemGroup>
+    <PackageReference Include="FluentAssertions" Version="4.19.4" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.Abstractions" Version="2.0.0" />
+    <PackageReference Include="Microsoft.IdentityModel.Tokens.Saml" Version="5.2.0-preview1-41109052106" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.5.0" />
+    <PackageReference Include="MSTest.TestAdapter" Version="1.1.18" />
+    <PackageReference Include="MSTest.TestFramework" Version="1.1.18" />
     <PackageReference Include="NSubstitute" Version="3.1.0" />
   </ItemGroup>
 
