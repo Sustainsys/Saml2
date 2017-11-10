@@ -14,15 +14,4 @@
     <Compile Include="$(MSBuildThisFileDirectory)WebSSO\SignInCommandTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)WebSSO\StubSaml2Binding.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <None Include="$(MSBuildThisFileDirectory)Kentor.AuthServices.Tests.pfx">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="$(MSBuildThisFileDirectory)Kentor.AuthServices.Tests2.pfx">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="$(MSBuildThisFileDirectory)Kentor.AuthServices.TestsSignOnly.pfx">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
 </Project>

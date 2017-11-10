@@ -10,7 +10,9 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NSubstitute;
 using System;
 using System.Collections.Generic;
+#if NET47
 using System.IdentityModel.Metadata;
+#endif
 using Microsoft.IdentityModel.Tokens.Saml2;
 using System.IO;
 using System.Linq;
@@ -18,6 +20,7 @@ using System.Reflection;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
+using Kentor.AuthServices.Metadata;
 
 namespace Sustainsys.Saml2.AspNetCore2.Tests
 {

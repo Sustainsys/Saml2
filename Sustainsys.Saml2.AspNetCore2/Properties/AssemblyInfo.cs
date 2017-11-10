@@ -29,4 +29,7 @@ using System.Runtime.InteropServices;
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
 
+#warning Remove when done porting
 [assembly: InternalsVisibleTo("AspNetCore2.Tests")]
+[assembly: InternalsVisibleTo("AspNetCore2.Tests.Net47")]
+[assembly: InternalsVisibleTo("AspNetCore2.Tests.NetCore2")]

@@ -18,6 +18,11 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\Sustainsys.Saml2.AspNetCore2\Sustainsys.Saml2.AspNetCore2.csproj" />
+    <ProjectReference Include="..\TestHelpers\TestHelpers.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="System.IdentityModel" />
   </ItemGroup>
 
 </Project>

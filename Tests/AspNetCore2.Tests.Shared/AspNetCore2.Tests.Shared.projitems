@@ -10,7 +10,14 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)AspNetCoreLoggerAdapterTests.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)CommandResultExtensionsTests.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)HttpContextExtensionsTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MockLogger.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PostConfigureSaml2OptionsTests.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Saml2AuthExtensionsTests.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Saml2HandlerTests.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)StubCookieCollection.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)StubDataProtector.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)TestHelpers.cs" />
   </ItemGroup>
 </Project>

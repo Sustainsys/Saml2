@@ -19,4 +19,16 @@
     <ProjectReference Include="..\..\Sustainsys.Saml2\Sustainsys.Saml2.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="Kentor.AuthServices.Tests.pfx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Kentor.AuthServices.Tests2.pfx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Kentor.AuthServices.TestsSignOnly.pfx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>
