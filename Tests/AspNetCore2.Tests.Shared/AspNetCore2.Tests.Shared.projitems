@@ -9,6 +9,8 @@
     <Import_RootNamespace>AspNetCore2.Tests.Shared</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)AspNetCoreLoggerAdapterTests.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)MockLogger.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)TestHelpers.cs" />
   </ItemGroup>
 </Project>

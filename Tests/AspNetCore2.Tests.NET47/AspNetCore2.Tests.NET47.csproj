@@ -11,4 +11,8 @@
     <PackageReference Include="NSubstitute" Version="3.1.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\..\Sustainsys.Saml2.AspNetCore2\Sustainsys.Saml2.AspNetCore2.csproj" />
+  </ItemGroup>
+
 </Project>
