@@ -72,17 +72,20 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sustainsys.Saml2.AspNetCore
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AspNetCore2.Tests", "Tests\AspNetCore2.Tests\AspNetCore2.Tests.csproj", "{20359A9A-6435-4264-8B36-22CD76731432}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tests.NetStandard2", "Tests\Tests.NetStandard2\Tests.NetStandard2.csproj", "{82F15D99-9C0F-47F8-BF66-518EB092650C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tests.NetCore2", "Tests\Tests.NetCore2\Tests.NetCore2.csproj", "{82F15D99-9C0F-47F8-BF66-518EB092650C}"
 EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Tests.Shared", "Tests\Tests.Shared\Tests.Shared.shproj", "{5615433D-0B69-41DF-8398-1FD2004B8243}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AspNetCore2.Tests.NET47", "Tests\AspNetCore2.Tests.NET47\AspNetCore2.Tests.NET47.csproj", "{4A6595DE-463E-4196-AA9D-5E123EC71446}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AspNetCore2.Tests.NetStandard", "Tests\AspNetCore2.Tests.NetStandard\AspNetCore2.Tests.NetStandard.csproj", "{48AEA41B-E921-4287-9B63-918CBBA4A243}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AspNetCore2.Tests.NetCore2", "Tests\AspNetCore2.Tests.NetCore2\AspNetCore2.Tests.NetCore2.csproj", "{48AEA41B-E921-4287-9B63-918CBBA4A243}"
+EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "AspNetCore2.Tests.Shared", "Tests\AspNetCore2.Tests.Shared\AspNetCore2.Tests.Shared.shproj", "{9427C3AF-8841-4E4C-BDC7-67F42C47E624}"
 EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		Tests\Tests.Shared\Tests.Shared.projitems*{5615433d-0b69-41df-8398-1fd2004b8243}*SharedItemsImports = 13
+		Tests\AspNetCore2.Tests.Shared\AspNetCore2.Tests.Shared.projitems*{9427c3af-8841-4e4c-bdc7-67f42c47e624}*SharedItemsImports = 13
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -189,6 +192,7 @@ Global
 		{5615433D-0B69-41DF-8398-1FD2004B8243} = {F3C8CC66-4CE9-4683-BC31-B89AF47A5897}
 		{4A6595DE-463E-4196-AA9D-5E123EC71446} = {F3C8CC66-4CE9-4683-BC31-B89AF47A5897}
 		{48AEA41B-E921-4287-9B63-918CBBA4A243} = {F3C8CC66-4CE9-4683-BC31-B89AF47A5897}
+		{9427C3AF-8841-4E4C-BDC7-67F42C47E624} = {F3C8CC66-4CE9-4683-BC31-B89AF47A5897}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {A8812E38-A212-46DD-B51F-AB653F39E4ED}

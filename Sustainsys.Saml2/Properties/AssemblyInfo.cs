@@ -21,10 +21,13 @@ using System.Runtime.InteropServices;
 [assembly: CLSCompliant(true)]
 
 [assembly: InternalsVisibleTo("Tests.NET47")]
-[assembly: InternalsVisibleTo("Tests.NetStandard2")]
+[assembly: InternalsVisibleTo("Tests.NetCore2")]
 [assembly: InternalsVisibleTo("TestHelpers")]
 [assembly: InternalsVisibleTo("Owin.Tests")]
 [assembly: InternalsVisibleTo("HttpModule.Tests")]
+[assembly: InternalsVisibleTo("AspNetCore2.Tests.Net47")]
+[assembly: InternalsVisibleTo("AspNetCore2.Tests.NetCore2")]
+#warning Remove this
 [assembly: InternalsVisibleTo("AspNetCore2.Tests")]
 
 // Required for NSubstitute to be able to generate stub for internal interface.

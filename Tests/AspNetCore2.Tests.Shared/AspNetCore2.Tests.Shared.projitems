@@ -9,5 +9,6 @@
     <Import_RootNamespace>AspNetCore2.Tests.Shared</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)TestHelpers.cs" />
   </ItemGroup>
 </Project>
