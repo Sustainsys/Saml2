@@ -95,7 +95,7 @@ namespace Kentor.AuthServices.Saml2P
         {
             yield return new XAttribute(XNamespace.Xmlns + "saml2p", Saml2Namespaces.Saml2PName);
             yield return new XAttribute(XNamespace.Xmlns + "saml2", Saml2Namespaces.Saml2Name);
-            yield return new XAttribute("ID", Id);
+            yield return new XAttribute("ID", Id.Value);
             yield return new XAttribute("Version", Version);
             yield return new XAttribute("IssueInstant", IssueInstant);
 

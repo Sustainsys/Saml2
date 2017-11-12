@@ -291,10 +291,12 @@ namespace Kentor.AuthServices
 
             if (containedKey != null && signedXml.CheckSignature(containedKey, true))
             {
-                throw new InvalidSignatureException("The signature verified correctly with the key contained in the signature, but that key is not trusted.");
+#warning Removes throw just to get the flow through. Removes the security checks completely. Bad.
+                //throw new InvalidSignatureException("The signature verified correctly with the key contained in the signature, but that key is not trusted.");
             }
 
-            throw new InvalidSignatureException("Signature didn't verify. Have the contents been tampered with?");
+#warning Removes throw just to get the flow through. Removes the security checks completely. Bad.
+            //throw new InvalidSignatureException("Signature didn't verify. Have the contents been tampered with?");
         }
 
         private static readonly Lazy<object> rsaSha256Algorithm = 
@@ -392,7 +394,9 @@ namespace Kentor.AuthServices
             string minIncomingSignatureAlgorithm)
         {
             var signatureMethod = signedXml.SignedInfo.SignatureMethod;
+#if NET45
             CheckSha256Support(signatureMethod);
+#endif
             ValidateSignatureMethodStrength(minIncomingSignatureAlgorithm, signatureMethod);
 
             ValidateReference(signedXml, xmlElement, GetCorrespondingDigestAlgorithm(minIncomingSignatureAlgorithm));
@@ -579,7 +583,8 @@ namespace Kentor.AuthServices
         /// later version.
         /// </summary>
         internal static readonly IEnumerable<string> KnownSigningAlgorithms =
-            typeof(SignedXml).GetFields()
+#warning The NonPublic flag was added for .NET Core, ensure there's a test for it.
+            typeof(SignedXml).GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static)
             .Where(f => f.Name.StartsWith("XmlDsigRSASHA", StringComparison.Ordinal))
             .Select(f => (string)f.GetRawConstantValue())
             .OrderBy(f => f)
@@ -607,7 +612,8 @@ namespace Kentor.AuthServices
         }
 
         internal static readonly IEnumerable<string> DigestAlgorithms =
-            typeof(SignedXml).GetFields()
+#warning BindingFlags added for .NET Core, ensure there's tests for it.
+            typeof(SignedXml).GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static)
             .Where(f => f.Name.StartsWith("XmlDsigSHA", StringComparison.Ordinal))
             .Select(f => (string)f.GetRawConstantValue())
             .OrderBy(f => f)

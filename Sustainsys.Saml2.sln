@@ -80,6 +80,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AspNetCore2.Tests.NetCore2"
 EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "AspNetCore2.Tests.Shared", "Tests\AspNetCore2.Tests.Shared\AspNetCore2.Tests.Shared.shproj", "{9427C3AF-8841-4E4C-BDC7-67F42C47E624}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SampleAspNetCore2ApplicationNETCore", "Samples\SampleAspNetCore2ApplicationNETCore\SampleAspNetCore2ApplicationNETCore.csproj", "{21CCADA2-5A5C-4E51-9CD0-70A83AEF8BDE}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		Tests\Tests.Shared\Tests.Shared.projitems*{5615433d-0b69-41df-8398-1fd2004b8243}*SharedItemsImports = 13
@@ -166,6 +168,10 @@ Global
 		{48AEA41B-E921-4287-9B63-918CBBA4A243}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{48AEA41B-E921-4287-9B63-918CBBA4A243}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{48AEA41B-E921-4287-9B63-918CBBA4A243}.Release|Any CPU.Build.0 = Release|Any CPU
+		{21CCADA2-5A5C-4E51-9CD0-70A83AEF8BDE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{21CCADA2-5A5C-4E51-9CD0-70A83AEF8BDE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{21CCADA2-5A5C-4E51-9CD0-70A83AEF8BDE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{21CCADA2-5A5C-4E51-9CD0-70A83AEF8BDE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -186,6 +192,7 @@ Global
 		{4A6595DE-463E-4196-AA9D-5E123EC71446} = {F3C8CC66-4CE9-4683-BC31-B89AF47A5897}
 		{48AEA41B-E921-4287-9B63-918CBBA4A243} = {F3C8CC66-4CE9-4683-BC31-B89AF47A5897}
 		{9427C3AF-8841-4E4C-BDC7-67F42C47E624} = {F3C8CC66-4CE9-4683-BC31-B89AF47A5897}
+		{21CCADA2-5A5C-4E51-9CD0-70A83AEF8BDE} = {09639770-8C2B-4D30-BBFC-4F6DD1A92C89}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {A8812E38-A212-46DD-B51F-AB653F39E4ED}

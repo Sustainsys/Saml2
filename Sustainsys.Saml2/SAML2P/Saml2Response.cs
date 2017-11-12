@@ -524,7 +524,8 @@ namespace Kentor.AuthServices.Saml2P
             var validationParams = new TokenValidationParameters()
             {
                 RequireSignedTokens = false,
-                ValidIssuer = Issuer.Value
+                ValidIssuer = Issuer.Value,
+                ValidAudience = options.SPOptions.EntityId.Value,
             };
 
             foreach (XmlElement assertionNode in GetAllAssertionElementNodes(options))
