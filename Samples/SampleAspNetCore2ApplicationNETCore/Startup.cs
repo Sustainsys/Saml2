@@ -11,6 +11,7 @@ using Kentor.AuthServices;
 using Microsoft.IdentityModel.Tokens.Saml2;
 using Kentor.AuthServices.Metadata;
 using Kentor.AuthServices.WebSso;
+using System.Security.Cryptography.X509Certificates;
 
 namespace SampleAspNetCore2ApplicationNetCore
 {
@@ -48,14 +49,16 @@ namespace SampleAspNetCore2ApplicationNetCore
                 .AddSaml2(options => 
                 {
                     options.SPOptions.EntityId = new Saml2NameIdentifier("https://localhost:44343/Saml2");
-                    options.IdentityProviders.Add(
-                        new IdentityProvider(
-                            new EntityId("http://stubidp.kentor.se/Metadata"), options.SPOptions)
+                    var idp = new IdentityProvider(
+                        new EntityId("http://stubidp.kentor.se/Metadata"), options.SPOptions)
                         {
                             SingleSignOnServiceUrl = new Uri("http://stubidp.kentor.se/"),
                             Binding = Saml2BindingType.HttpRedirect
-                        });
+                        };
+                    idp.SigningKeys.AddConfiguredKey(new X509Certificate2("Kentor.AuthServices.StubIdp.cer"));
+                    options.IdentityProviders.Add(idp);
                 });
+            
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

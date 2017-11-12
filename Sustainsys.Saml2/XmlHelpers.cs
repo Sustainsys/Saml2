@@ -241,7 +241,7 @@ namespace Kentor.AuthServices
         /// been tampered with or is not valid according to the SAML spec.</exception>
         public static bool IsSignedByAny(
             this XmlElement xmlElement, 
-            IEnumerable<SecurityKeyIdentifierClause> signingKeys,
+            IEnumerable<AsymmetricSecurityKey> signingKeys,
             bool validateCertificate,
             string minimumSigningAlgorithm)
         {
@@ -267,21 +267,39 @@ namespace Kentor.AuthServices
         }
 
         private static void VerifySignature(
-            IEnumerable<SecurityKeyIdentifierClause> signingKeys,
+            IEnumerable<AsymmetricSecurityKey> signingKeys,
             SignedXml signedXml,
             XmlElement signatureElement,
             bool validateCertificate)
         {
+#if NET45
             FixSignatureIndex(signedXml, signatureElement);
+#endif
 
-            foreach (var keyIdentifier in signingKeys)
+            foreach (var signingKey in signingKeys)
             {
-                var key = ((X509SecurityKey)keyIdentifier.CreateKey())
-                    .PublicKey;
-
-                if (signedXml.CheckSignature(key))
+                AsymmetricAlgorithm asymmetricAlgorithm = null;
+                X509SecurityKey x509SigningKey = null;
+                if (signingKey is X509SecurityKey)
                 {
-                    ValidateCertificate(validateCertificate, keyIdentifier);
+                    x509SigningKey = (X509SecurityKey)signingKey;
+                    asymmetricAlgorithm = x509SigningKey.PublicKey;
+                }
+                else
+                {
+                    if (signingKey is RsaSecurityKey rsaSigningKey)
+                    {
+                        asymmetricAlgorithm = rsaSigningKey.Rsa;
+                    }
+                    else
+                    {
+                        throw new InvalidOperationException("Unknown SecurityKey type");
+                    }
+                }
+
+                if (signedXml.CheckSignature(asymmetricAlgorithm))
+                {
+                    ValidateCertificate(validateCertificate, x509SigningKey);
                     return;
                 }
             }
@@ -291,12 +309,10 @@ namespace Kentor.AuthServices
 
             if (containedKey != null && signedXml.CheckSignature(containedKey, true))
             {
-#warning Removes throw just to get the flow through. Removes the security checks completely. Bad.
-                //throw new InvalidSignatureException("The signature verified correctly with the key contained in the signature, but that key is not trusted.");
+                throw new InvalidSignatureException("The signature verified correctly with the key contained in the signature, but that key is not trusted.");
             }
 
-#warning Removes throw just to get the flow through. Removes the security checks completely. Bad.
-            //throw new InvalidSignatureException("Signature didn't verify. Have the contents been tampered with?");
+            throw new InvalidSignatureException("Signature didn't verify. Have the contents been tampered with?");
         }
 
         private static readonly Lazy<object> rsaSha256Algorithm = 
@@ -319,19 +335,17 @@ namespace Kentor.AuthServices
         // mysteriously start to fail when the cert expired.
         [SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "ValidateCertificates")]
         [ExcludeFromCodeCoverage]
-        private static void ValidateCertificate(bool validateCertificate, SecurityKeyIdentifierClause keyIdentifier)
+        private static void ValidateCertificate(bool validateCertificate, X509SecurityKey signingKey)
         {
             if (validateCertificate)
             {
-                var rawCert = keyIdentifier as X509CertificateKeyIdentifierClause;
-                if (rawCert == null)
+                if (signingKey == null)
                 {
                     throw new InvalidOperationException(string.Format(CultureInfo.InvariantCulture,
-                        "Certificate validation enabled, but the signing key identifier is of type {0} which cannot be validated as a certificate.",
-                        keyIdentifier.GetType().Name));
+                        "Certificate validation enabled, but the signing key identifier is of type {0} which cannot be validated as a certificate."));
                 }
 
-                if (!rawCert.Certificate.Verify())
+                if (!signingKey.Certificate.Verify())
                 {
                     throw new InvalidSignatureException("The signature was valid, but the verification of the certificate failed. Is it expired or revoked? Are you sure you really want to enable ValidateCertificates (it's normally not needed)?");
                 }
@@ -341,6 +355,7 @@ namespace Kentor.AuthServices
         static readonly PropertyInfo signaturePosition = typeof(XmlDsigEnvelopedSignatureTransform)
             .GetProperty("SignaturePosition", BindingFlags.Instance | BindingFlags.NonPublic);
 
+#if NET45
         /// <summary>
         /// Workaround for a bug in Reference.LoadXml incorrectly counting index
         /// of signature from the start of the document, not from the start of
@@ -380,6 +395,7 @@ namespace Kentor.AuthServices
                 signaturePosition.SetValue(transform, correctSignaturePosition);
             }
         }
+#endif
 
         private static readonly string[] allowedTransforms = new string[]
             {

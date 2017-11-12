@@ -14,16 +14,18 @@ namespace Kentor.AuthServices.Configuration
     /// The dynamically loaded can reset while the configured are kept.
     /// metadata.
     /// </summary>
-    public  class ConfiguredAndLoadedSigningKeysCollection: IEnumerable<SecurityKeyIdentifierClause>
+    public  class ConfiguredAndLoadedSigningKeysCollection: IEnumerable<AsymmetricSecurityKey>
     {
-        private IList<SecurityKeyIdentifierClause> configuredItems = new List<SecurityKeyIdentifierClause>();
-        private IList<SecurityKeyIdentifierClause> loadedItems = new List<SecurityKeyIdentifierClause>();
+        private IList<AsymmetricSecurityKey> configuredItems 
+            = new List<AsymmetricSecurityKey>();
+        private IList<AsymmetricSecurityKey> loadedItems 
+            = new List<AsymmetricSecurityKey>();
 
         /// <summary>
         /// Add a configured key.
         /// </summary>
         /// <param name="key">Key to add.</param>
-        public void AddConfiguredKey(SecurityKeyIdentifierClause key)
+        public void AddConfiguredKey(AsymmetricSecurityKey key)
         {
             configuredItems.Add(key);
         }
@@ -34,7 +36,7 @@ namespace Kentor.AuthServices.Configuration
         /// <param name="certificate">Certificate to add.</param>
         public void AddConfiguredKey(X509Certificate2 certificate)
         {
-            AddConfiguredKey(new X509CertificateKeyIdentifierClause(certificate));
+            AddConfiguredKey(new X509SecurityKey(certificate));
         }
 
         /// <summary>
@@ -42,7 +44,7 @@ namespace Kentor.AuthServices.Configuration
         /// are cleared, configured items remain.
         /// </summary>
         /// <param name="items">Items to set</param>
-        public void SetLoadedItems(IList<SecurityKeyIdentifierClause> items)
+        public void SetLoadedItems(IList<AsymmetricSecurityKey> items)
         {
             loadedItems = items;
         }
@@ -50,7 +52,7 @@ namespace Kentor.AuthServices.Configuration
         /// <summary>
         /// The loaded items.
         /// </summary>
-        public IEnumerable<SecurityKeyIdentifierClause> LoadedItems
+        public IEnumerable<AsymmetricSecurityKey> LoadedItems
         {
             get
             {
@@ -62,7 +64,7 @@ namespace Kentor.AuthServices.Configuration
         /// Gets an enumerator to the combined set of keys.
         /// </summary>
         /// <returns>Enumerator</returns>
-        public IEnumerator<SecurityKeyIdentifierClause> GetEnumerator()
+        public IEnumerator<AsymmetricSecurityKey> GetEnumerator()
         {
             return configuredItems.Union(loadedItems).GetEnumerator();
         }

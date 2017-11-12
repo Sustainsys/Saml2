@@ -63,8 +63,7 @@ namespace Kentor.AuthServices
             var certificate = config.SigningCertificate.LoadCertificate();
             if (certificate != null)
             {
-                signingKeys.AddConfiguredKey(
-                    new X509CertificateKeyIdentifierClause(certificate));
+                signingKeys.AddConfiguredKey(certificate);
             }
 
             OutboundSigningAlgorithm = string.IsNullOrEmpty(config.OutboundSigningAlgorithm) ?
