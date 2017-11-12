@@ -253,6 +253,7 @@ namespace Sustainsys.Saml2.AspNetCore2.Tests
                 .And.ParamName.Should().Be("dataProtectorProvider");
         }
 
+#if NET47
         [TestMethod]
         public void Saml2Handler_HandleRequestAsync_ReturnsMetadata()
         {
@@ -268,5 +269,6 @@ namespace Sustainsys.Saml2.AspNetCore2.Tests
                 context.HttpContext.Response.Body.As<MemoryStream>().GetBuffer())
                 .Should().StartWith("<EntityDescriptor");
         }
+#endif
     }
 }

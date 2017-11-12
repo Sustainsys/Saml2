@@ -19,7 +19,7 @@ namespace Kentor.AuthServices.Internal
         {
             get
             {
-#if NETSTANDARD2_0
+#if NETCOREAPP2_0
                 return null;
 #else
                 return Path.GetDirectoryName(AppDomain.CurrentDomain.SetupInformation.ConfigurationFile);

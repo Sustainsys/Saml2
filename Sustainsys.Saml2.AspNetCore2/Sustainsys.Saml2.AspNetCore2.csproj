@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>Netstandard2.0</TargetFramework>
+    <TargetFrameworks>netcoreapp2.0;net47</TargetFrameworks>
   </PropertyGroup>
 
   <ItemGroup>
@@ -12,6 +12,10 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Sustainsys.Saml2\Sustainsys.Saml2.csproj" />
+  </ItemGroup>
+
+  <ItemGroup Condition=" '$(TargetFramework)' == 'net47' ">
+    <Reference Include="System.IdentityModel" />
   </ItemGroup>
 
   </Project>
