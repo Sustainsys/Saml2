@@ -16,11 +16,18 @@ namespace Kentor.AuthServices.StubIdp
                 namedIdpSegment = namedIdpSegment + "/";
             }
             Guid parsedGuid;
+
+            var appBasePath = HttpContext.Current.Request.ApplicationPath;
+            if (!appBasePath.EndsWith("/"))
+            {
+                appBasePath = appBasePath + "/";
+            }
+
             if (!string.IsNullOrEmpty(namedIdpSegment) && Guid.TryParse(namedIdpSegment.TrimEnd('/'), out parsedGuid))
             {
-                return new Uri(HttpContext.Current.Request.Url, HttpContext.Current.Request.ApplicationPath + namedIdpSegment + path);
+                return new Uri(HttpContext.Current.Request.Url, appBasePath + namedIdpSegment + path);
             }
-            return new Uri(HttpContext.Current.Request.Url, HttpContext.Current.Request.ApplicationPath + path);
+            return new Uri(HttpContext.Current.Request.Url, appBasePath + path);
         }
 
         public static Uri RootUrl
