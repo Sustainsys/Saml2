@@ -54,7 +54,7 @@ namespace Kentor.AuthServices.Tests.Saml2P
                 RequestState = (StoredRequestState)null,
                 SecondLevelStatus = (string)null,
                 RelayState = (string)null,
-                EnforceXmlns = false,
+                EnforceAttributeXSString = false,
             };
 
             Saml2Response.Read(response, expected.InResponseTo).ShouldBeEquivalentTo(
@@ -1779,7 +1779,6 @@ namespace Kentor.AuthServices.Tests.Saml2P
                 new Saml2Id("InResponseToID"),
                 null,
                 new Uri(audience),
-                false,
                 identity);
 
             var actual = subject.XmlElement;

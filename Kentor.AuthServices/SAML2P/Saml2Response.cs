@@ -198,7 +198,6 @@ namespace Kentor.AuthServices.Saml2P
         /// <param name="destinationUrl">The destination Uri for the message</param>
         /// <param name="inResponseTo">In response to id</param>
         /// <param name="relayState">RelayState associated with the message.</param>
-        /// <param name="enforceXmlns">Flag for xmlns values in generated xml</param>
         /// <param name="claimsIdentities">Claims identities to be included in the 
         /// <param name="audience">Audience of the response, set as AudienceRestriction</param>
         /// response. Each identity is translated into a separate assertion.</param>
@@ -209,7 +208,6 @@ namespace Kentor.AuthServices.Saml2P
             Saml2Id inResponseTo,
             string relayState,
             Uri audience,
-            bool enforceXmlns,
             params ClaimsIdentity[] claimsIdentities)
         {
             Issuer = issuer;
@@ -219,7 +217,43 @@ namespace Kentor.AuthServices.Saml2P
             DestinationUrl = destinationUrl;
             RelayState = relayState;
             InResponseTo = inResponseTo;
-            EnforceXmlns = enforceXmlns;
+            EnforceAttributeXSString = false;
+            id = new Saml2Id("id" + Guid.NewGuid().ToString("N"));
+            status = Saml2StatusCode.Success;
+            this.audience = audience;
+        }
+
+        /// <summary>
+        /// Create a response with the supplied data.
+        /// </summary>
+        /// <param name="issuer">Issuer of the response.</param>
+        /// <param name="issuerCertificate">The certificate to use when signing
+        /// this response in XML form.</param>
+        /// <param name="destinationUrl">The destination Uri for the message</param>
+        /// <param name="inResponseTo">In response to id</param>
+        /// <param name="relayState">RelayState associated with the message.</param>
+        /// <param name="enforceAttributeXSString">Flag for xmlns values in generated xml</param>
+        /// <param name="claimsIdentities">Claims identities to be included in the 
+        /// <param name="audience">Audience of the response, set as AudienceRestriction</param>
+        /// response. Each identity is translated into a separate assertion.</param>
+        public Saml2Response(
+            EntityId issuer,
+            X509Certificate2 issuerCertificate,
+            Uri destinationUrl,
+            Saml2Id inResponseTo,
+            string relayState,
+            Uri audience,
+            bool enforceAttributeXSString,
+            params ClaimsIdentity[] claimsIdentities)
+        {
+            Issuer = issuer;
+            this.claimsIdentities = claimsIdentities;
+            SigningCertificate = issuerCertificate;
+            SigningAlgorithm = XmlHelpers.GetDefaultSigningAlgorithmName();
+            DestinationUrl = destinationUrl;
+            RelayState = relayState;
+            InResponseTo = inResponseTo;
+            EnforceAttributeXSString = enforceAttributeXSString;
             id = new Saml2Id("id" + Guid.NewGuid().ToString("N"));
             status = Saml2StatusCode.Success;
             this.audience = audience;
@@ -313,7 +347,7 @@ namespace Kentor.AuthServices.Saml2P
             foreach (var ci in claimsIdentities)
             {
                 responseElement.AppendChild(xml.ReadNode(
-                    ci.ToSaml2Assertion(Issuer, audience, InResponseTo, DestinationUrl).ToXElement(EnforceXmlns).CreateReader()));
+                    ci.ToSaml2Assertion(Issuer, audience, InResponseTo, DestinationUrl).ToXElement(EnforceAttributeXSString).CreateReader()));
             }
 
             xmlElement = xml.DocumentElement;
@@ -372,7 +406,7 @@ namespace Kentor.AuthServices.Saml2P
         /// <summary>
         /// Flag for xmlns values in generated xml
         /// </summary>
-        public bool EnforceXmlns { get; }
+        public bool EnforceAttributeXSString { get; }
 
         /// <summary>Gets all assertion element nodes from this response message.</summary>
         /// <value>All assertion element nodes.</value>

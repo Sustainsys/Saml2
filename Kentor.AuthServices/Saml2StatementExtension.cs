@@ -28,9 +28,9 @@ namespace Kentor.AuthServices
         /// Writes out the statement as an XElement.
         /// </summary>
         /// <param name="statement">Statement to create xml for.</param>
-        /// <param name="enforceXmlns">Enforce xmlns values for attributes.</param>
+        /// <param name="enforceAttributeXSString">Enforce xml schema for attributes.</param>
         /// <returns>XElement</returns>
-        public static XElement ToXElement(this Saml2Statement statement, bool enforceXmlns)
+        public static XElement ToXElement(this Saml2Statement statement, bool enforceAttributeXSString)
         {
             if (statement == null)
             {
@@ -40,7 +40,7 @@ namespace Kentor.AuthServices
             var attributeStatement = statement as Saml2AttributeStatement;
             if (attributeStatement != null)
             {
-                return ToXElement(attributeStatement, enforceXmlns);
+                return ToXElement(attributeStatement, enforceAttributeXSString);
             }
 
             var authnStatement = statement as Saml2AuthenticationStatement;
@@ -68,7 +68,7 @@ namespace Kentor.AuthServices
             return result;
         }
 
-        private static XElement ToXElement(Saml2AttributeStatement attributeStatement, bool enforceXmlns)
+        private static XElement ToXElement(Saml2AttributeStatement attributeStatement, bool enforceAttributeXSString)
         {
             var element = new XElement(Saml2Namespaces.Saml2 + "AttributeStatement");
 
@@ -85,13 +85,16 @@ namespace Kentor.AuthServices
 
                 foreach (var value in attribute.Values)
                 {
-                    if (enforceXmlns)
-                        attributeElement.Add(new XElement(Saml2Namespaces.Saml2 + "AttributeValue", value,
+                    var attributeValueElement = new XElement(Saml2Namespaces.Saml2 + "AttributeValue", value);
+                    attributeElement.Add(attributeValueElement);
+
+                    if (enforceAttributeXSString)
+                    {
+                        attributeValueElement.Add(
                             new XAttribute(XNamespace.Xmlns + "xsi", xsi.NamespaceName),
                             new XAttribute(XNamespace.Xmlns + "xs", xs.NamespaceName),
-                            new XAttribute(xsi + "type", @"xs:string")));
-                    else
-                        attributeElement.Add(new XElement(Saml2Namespaces.Saml2 + "AttributeValue", value));
+                            new XAttribute(xsi + "type", @"xs:string"));
+                    }
                 }
 
                 element.Add(attributeElement);

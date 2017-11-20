@@ -26,7 +26,7 @@
         "null"
       ]
     },
-    "EnforceXmlns": {
+    "EnforceAttributeXSString": {
       "type": [
         "boolean",
         "null"

@@ -59,6 +59,22 @@ namespace Kentor.AuthServices.StubIdp.Controllers
             return fileData;
         }
 
+        protected bool GetEnforcePostFromConfig(Guid? idpId)
+        {
+            bool enforcePost = false;
+
+            if (idpId.HasValue)
+            {
+                var fileData = GetCachedConfiguration(idpId.Value);
+                if (fileData != null)
+                {
+                    enforcePost = fileData.EnforcePOST;
+                }
+            }
+
+            return enforcePost;
+        }
+
         // Based on http://stackoverflow.com/a/17658754/401728
         protected ActionResult TestETag(string content, string responseETag, string contentType)
         {

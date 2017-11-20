@@ -18,27 +18,11 @@ namespace Kentor.AuthServices.StubIdp.Controllers
         // GET: Metadata
         public ActionResult Index(Guid? idpId)
         {
-            var postDefault = ReadCustomIdpConfig(idpId);
+            var enforcePost = GetEnforcePostFromConfig(idpId);
             return Content(
-                CreateMetadataString(postDefault),
+                CreateMetadataString(enforcePost),
                 "application/samlmetadata+xml");
-        }
-
-        private bool ReadCustomIdpConfig(Guid? idpId)
-        {
-            bool postDefault = false;
-
-            if (idpId.HasValue)
-            {
-                var fileData = GetCachedConfiguration(idpId.Value);
-                if (fileData != null)
-                {
-                    postDefault = fileData.EnforcePOST;
-                }
-            }
-
-            return postDefault;
-        }
+        }        
 
         private static string CreateMetadataString(bool defaultPost)
         {
@@ -49,9 +33,9 @@ namespace Kentor.AuthServices.StubIdp.Controllers
 
         public ActionResult BrowserFriendly(Guid? idpId)
         {
-            var postDefault = ReadCustomIdpConfig(idpId);
+            var enforcePost = GetEnforcePostFromConfig(idpId);
             return Content(
-                CreateMetadataString(postDefault),
+                CreateMetadataString(enforcePost),
                 "text/xml");
         }
     }

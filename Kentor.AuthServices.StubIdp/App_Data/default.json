@@ -1,6 +1,6 @@
 {
   "HideDetails": false,
-  "EnforceXmlns": false,
+  "EnforceAttributeXSString": false,
   "EnforcePOST": false,
   "UserList": [
     {

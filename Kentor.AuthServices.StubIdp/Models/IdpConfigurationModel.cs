@@ -19,7 +19,7 @@ namespace Kentor.AuthServices.StubIdp.Models
             DefaultAudience = GetJsonValue(JsonData, "DefaultAudience");
             IdpDescription = GetJsonValue(jsonData, "IdpDescription");
             HideDetails = (GetJsonValue(jsonData, "HideDetails") ?? "true").ToLower() == "true";
-            EnforceXmlns = (GetJsonValue(jsonData, "EnforceXmlns") ?? "true").ToLower() == "true";
+            EnforceAttributeXSString = (GetJsonValue(jsonData, "EnforceAttributeXSString") ?? "true").ToLower() == "true";
             EnforcePOST = (GetJsonValue(jsonData, "EnforcePOST") ?? "true").ToLower() == "true";
         }
 
@@ -58,7 +58,7 @@ namespace Kentor.AuthServices.StubIdp.Models
 
         public bool HideDetails { get; }
 
-        public bool EnforceXmlns { get; }
+        public bool EnforceAttributeXSString { get; }
 
         public bool EnforcePOST { get; }
     }
