@@ -1,161 +1,183 @@
-﻿@dark-grey: #3F3F3F;
-@light-grey: #CCCCCC;
-@red: #E11B22;
+﻿@dark-grey: #4D4D4D;
+@grey: #5F5F5F;
+@blue: #29ABE2;
+@dark-blue: #339CC9;
 
-html {
-    background-color: @light-grey;
-}
+@screen-sm-min: 768px;
 
 body {
-    background-color: @light-grey;
-    max-width: 800px;
-    margin-left: auto;
-    margin-right: auto;
+    font-family: 'Titillium Web', Arial, Helvetica, sans-serif;
+    margin-top: 180px;
+    background-color: @grey;
 }
 
-#main {
-    background-color: white;
-    color: @dark-grey;
-    box-shadow: 10px 10px 5px @dark-grey;
-    margin-bottom: 20px;
-    margin-top: 20px;
-    padding: 20px;
-}
-
-header {
-    background-image: url(Kentor.png);
-    background-repeat: no-repeat;
-    height: 30px;
-    position: relative;
-    padding-bottom: 20px;
-    margin-bottom: 20px;
-    border-bottom: 5px solid @dark-grey;
-    padding-top: 68px;
-    font-style: italic;
-    font-size: 0.8em;
-
-    h1 {
-        display: block;
-        position: absolute;
-        left: 220px;
-        bottom: 47px;
-        font-style: normal;
-    }
-}
-
-
-@input-width: 500px;
-@label-width: 200px;
-
-pre.xml {
-    font-size: 12px;
-    width: @input-width;
-    margin-left: @label-width;
-    background-color: @light-grey;
-    overflow-x: scroll;
-    overflow-y: visible;
-}
-
-label {
-    font-weight: bold;
-    float: left;
-    width: @label-width;
-}
-
-form {
-    @error-color: @red;
-    margin-top: 30px;
-
-    .radio-button-group{
-        label{
-            float: none;
-            font-weight: normal;
-        }
-        input{
-            width: auto;
-        }
-        float:left;
-    }
-
-    input {
-        width: @input-width;
-    }
-
-    .validation-summary-errors {
-        color: @error-color;
-    }
-
-    .field-validation-error {
-        color: @error-color;
-        font-size: 0.9em;
-        display: block;
-        float: left;
-        margin-left: @label-width;
-    }
-
-    div {
-        min-height: 50px;
-
-        &.validation-summary-valid {
-            min-height: initial;
-        }
-    }
-
-    .input-validation-error {
-        background-color: #ffa6a6;
-        border-color: @error-color;
-    }
-
-    #userDescription {
-        margin-top: 10px;
-        white-space: pre-wrap;
-        margin-left: @label-width;
-        font-style: italic;
-    }
-}
-
-#attributes-placeholder {
-    div {
-        min-height: 30px;
-    }
-
-    .attribute-type {
-        width: 60%;
-    }
-
-    .attribute-value {
-        width: 25%;
-    }
-
-    div.attribute-type, div.attribute-value {
-        display: inline-block;
-        font-weight: bold;
-    }
-
-    button {
-        width: 10%;
-    }
-}
-
-.textarea-large textarea {
+.container, .container-fluid {
+    color: white;
     width: 100%;
-    min-height: 300px;
+    padding-left: 25px;
+    padding-right: 24px;
 }
 
-#submit {
-    border: 0 none;
-    border-radius: 5px;
-    padding: 12px 55px;
-    cursor: pointer;
-    color: #FFFFFF;
-    background: #3AB54A;
-    transition: all 80ms ease-in-out;
+.card {
+    .contents {
+        background-color: @dark-grey;
+        font-weight: 300;
+        font-size: 27px;
+        padding: 40px 40px 40px 40px;
+    }
 
-    &:hover, &:active, &:focus {
-        background: #53e065;
+    h2 {
+        padding-left: 40px;
+        background-color: @dark-blue;
+        text-transform: uppercase;
+        font-weight: 600;
+        font-size: 32px;
+        padding-top: 40px;
+        padding-bottom: 40px;
+        margin-bottom: 0px;
     }
 }
 
-.initially-hidden .hide-details {
-    display: none;
+.tagline {
+    font-size: 106px;
+    font-weight: 200;
+    text-align: center;
+    padding-top: 40px;
+    padding-bottom: 40px;
+}
+
+.navbar-sustainsys {
+    font-weight: 600;
+    letter-spacing: 2px;
+    font-size: 32px;
+    background-color: @dark-grey;
+    color: white;
+    text-transform: uppercase;
+    border-bottom: 5px solid @grey;
+}
+
+.navbar-toggle {
+    margin-top: 140px;
+    .icon-bar {
+        background-color: white;
+    }
+    margin-bottom: 0px;
+}
+
+.navbar-right {
+    float: right;
+}
+
+.navbar-left {
+    float: left;
+}
+
+@media (min-width: 768px) {
+    .navbar-nav {
+        margin-left: 40px;
+
+        > li {
+            > a {
+                padding-top: 80px;
+                padding-bottom: 80px;
+                padding-left: 40px;
+                padding-right: 40px;
+            }
+        }
+    }
+}
+
+@media (max-width: 767px) {
+    .navbar-nav {
+        > li {
+            > a {
+                color: white;
+                padding-top: 20px;
+                padding-bottom: 20px;
+            }
+        }
+    }
+}
+
+.navbar-nav {
+
+    > li {
+        > a {
+            color: white;
+        }
+
+        > a:focus, > a:hover {
+            background-color: @dark-blue;
+        }
+    }
+}
+
+a {
+    color: @blue;
+    font-weight: 600;
+}
+
+a:hover {
+    color: @blue;
+}
+
+a:visited {
+    color: @blue;
+    font-weight: 200;
+}
+
+.form-control {
+    color: black;
+    font-size: 27px;
+    font-weight: 400;
+}
+
+.input-validation-error {
+    border: 2px dashed red;
+}
+
+.field-validation-error {
+    font-weight: 400;
+    color: red;
+}
+
+.select2 {
+    color: black;
+    font-weight: 400;
+}
+
+input[type=radio] {
+    height: 1em;
+    width: 1em;
+    position: relative;
+    top: 4px;
+}
+
+.radio-group label {
+    margin-right: 40px;
+    min-width: 440px;
+}
+
+.panel-heading{
+    font-weight: 700;
+}
+
+.panel{
+    color: black;
+}
+
+.button{
+    font-weight: 400;
+}
+
+button.remove-attribute{
+    margin-top: -13px;
+}
+
+.btn{
+    font-size: 27px;
+}
+
+.btn-primary{
+    background-color: @dark-blue;
 }

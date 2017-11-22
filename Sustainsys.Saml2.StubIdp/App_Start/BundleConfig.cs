@@ -17,7 +17,6 @@ namespace Kentor.AuthServices.StubIdp
                 }
                 .Include(
                 "~/Content/css/select2.css",
-                "~/Content/normalize.css",
                 "~/Content/site.less"));
 
             bundles.Add(new ScriptBundle("~/Scripts/js").Include(
