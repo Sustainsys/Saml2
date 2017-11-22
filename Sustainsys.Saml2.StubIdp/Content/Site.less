@@ -1,0 +1,161 @@
+﻿@dark-grey: #3F3F3F;
+@light-grey: #CCCCCC;
+@red: #E11B22;
+
+html {
+    background-color: @light-grey;
+}
+
+body {
+    background-color: @light-grey;
+    max-width: 800px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+#main {
+    background-color: white;
+    color: @dark-grey;
+    box-shadow: 10px 10px 5px @dark-grey;
+    margin-bottom: 20px;
+    margin-top: 20px;
+    padding: 20px;
+}
+
+header {
+    background-image: url(Kentor.png);
+    background-repeat: no-repeat;
+    height: 30px;
+    position: relative;
+    padding-bottom: 20px;
+    margin-bottom: 20px;
+    border-bottom: 5px solid @dark-grey;
+    padding-top: 68px;
+    font-style: italic;
+    font-size: 0.8em;
+
+    h1 {
+        display: block;
+        position: absolute;
+        left: 220px;
+        bottom: 47px;
+        font-style: normal;
+    }
+}
+
+
+@input-width: 500px;
+@label-width: 200px;
+
+pre.xml {
+    font-size: 12px;
+    width: @input-width;
+    margin-left: @label-width;
+    background-color: @light-grey;
+    overflow-x: scroll;
+    overflow-y: visible;
+}
+
+label {
+    font-weight: bold;
+    float: left;
+    width: @label-width;
+}
+
+form {
+    @error-color: @red;
+    margin-top: 30px;
+
+    .radio-button-group{
+        label{
+            float: none;
+            font-weight: normal;
+        }
+        input{
+            width: auto;
+        }
+        float:left;
+    }
+
+    input {
+        width: @input-width;
+    }
+
+    .validation-summary-errors {
+        color: @error-color;
+    }
+
+    .field-validation-error {
+        color: @error-color;
+        font-size: 0.9em;
+        display: block;
+        float: left;
+        margin-left: @label-width;
+    }
+
+    div {
+        min-height: 50px;
+
+        &.validation-summary-valid {
+            min-height: initial;
+        }
+    }
+
+    .input-validation-error {
+        background-color: #ffa6a6;
+        border-color: @error-color;
+    }
+
+    #userDescription {
+        margin-top: 10px;
+        white-space: pre-wrap;
+        margin-left: @label-width;
+        font-style: italic;
+    }
+}
+
+#attributes-placeholder {
+    div {
+        min-height: 30px;
+    }
+
+    .attribute-type {
+        width: 60%;
+    }
+
+    .attribute-value {
+        width: 25%;
+    }
+
+    div.attribute-type, div.attribute-value {
+        display: inline-block;
+        font-weight: bold;
+    }
+
+    button {
+        width: 10%;
+    }
+}
+
+.textarea-large textarea {
+    width: 100%;
+    min-height: 300px;
+}
+
+#submit {
+    border: 0 none;
+    border-radius: 5px;
+    padding: 12px 55px;
+    cursor: pointer;
+    color: #FFFFFF;
+    background: #3AB54A;
+    transition: all 80ms ease-in-out;
+
+    &:hover, &:active, &:focus {
+        background: #53e065;
+    }
+}
+
+.initially-hidden .hide-details {
+    display: none;
+}
