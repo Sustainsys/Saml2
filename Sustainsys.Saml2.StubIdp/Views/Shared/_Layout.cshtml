@@ -2,23 +2,41 @@
 
 <html>
 <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>Kentor.AuthServices Stub Idp</title>
+    <title>Sustainsys.Saml2 Stub Idp</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <link href="https://fonts.googleapis.com/css?family=Titillium+Web:200,400,700" rel="stylesheet">
     @System.Web.Optimization.Styles.Render("~/Content/css-bundle")
     @System.Web.Optimization.Scripts.Render("~/Scripts/js")
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.3/umd/popper.min.js" integrity="sha384-vFJXuSJphROIrBnz7yo7oB41mKfc8JzQZiCq4NCceLEaO4IHwicKwpJf9c9IpFgh" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js" integrity="sha384-alpBpkh1PFOepccYVYDB4do5UnbKysX5WZXm3XxPqe5iKTfUKjNkCk9SaVuEZflJ" crossorigin="anonymous"></script>
     <meta name="description" content="A stub idp for testing" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 </head>
 <body>
-    <div id="main">
-        <header>
-            <h1>Kentor.AuthServices.StubIdp</h1>
-            This is a free stub (or dummy) SAML2 identity provider that can be
-            used for testing a SAML2 service provider implementation. The stub is
-            part of the
-            <a href="https://github.com/KentorIT/authservices">AuthServices</a>
-            project by <a href="http://www.kentor.se">Kentor</a>.
-        </header>
+    <div class="nav navbar navbar-sustainsys navbar-fixed-top">
+        <div class="navbar-left">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+        </div>
+        <div class="navbar-header navbar-right">
+            <a href="https://sustainsys.com">
+                <img src="~/Content/Sustainsys.png" />
+            </a>
+        </div>
+        <div class="navbar-collapse collapse">
+            <ul class="nav navbar-nav">
+                <li>@Html.ActionLink("Home", "Index", "Home")</li>
+                <li>@Html.ActionLink("Metadata", "BrowserFriendly", "Metadata")</li>
+                <li><a href="https://github.com/Sustainsys/Saml2">Source</a></li>
+            </ul>
+        </div>
+    </div>
         @RenderBody()
     </div>
     <script>

@@ -115,8 +115,7 @@
   <ItemGroup>
     <Content Include="Content\css\select2.css" />
     <Content Include="Content\css\select2.min.css" />
-    <Content Include="Content\Kentor.png" />
-    <Content Include="Content\normalize.css" />
+    <Content Include="Content\Sustainsys.png" />
     <Content Include="Global.asax" />
     <Content Include="Content\Site.less" />
     <Content Include="App_Data\Kentor.AuthServices.StubIdp.pfx" />
