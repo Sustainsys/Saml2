@@ -155,10 +155,17 @@ else
                     The SAML messages sent by the Stub Idp will be signed with
                     @Html.ActionLink("this certificate", "Index", "Certificate").
                     To validate the responses you need to download it and configure your
-                    service provider to trust it. <em>Caution</em>: Never trust this
-                    certificate in a production environment as it will allow anyone to sign
-                    in to your application as whatever user they choose.
+                    service provider to trust it. 
                 </p>
+                <div class="panel panel-warning">
+                    <div class="panel-heading">
+                        Warning
+                    </div>
+                    <div class="panel-body">
+                        Never trust the stub idp certificate in a production environment as it will
+                        allow anyone to sign in to your application as whatever user they choose.
+                    </div>
+                </div>
                 @Html.Partial("_MetadataLink")
                 <p>
                     The stub idp also features
