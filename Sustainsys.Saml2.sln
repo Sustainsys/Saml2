@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26730.16
+VisualStudioVersion = 15.0.27004.2009
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kentor.AuthServices", "Kentor.AuthServices\Kentor.AuthServices.csproj", "{93BA675E-A159-4701-B68B-C4B81015C556}"
 EndProject
@@ -38,7 +38,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "nuget", "nuget", "{8EE1C45E
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kentor.AuthServices.Mvc", "Kentor.AuthServices.Mvc\Kentor.AuthServices.Mvc.csproj", "{7D32F0A3-CEC8-4DC6-A096-5905EA9C3770}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kentor.AuthServices.StubIdp", "Kentor.AuthServices.StubIdp\Kentor.AuthServices.StubIdp.csproj", "{7B60747D-6337-4424-ACB5-7D580EC1E1A1}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sustainsys.Saml2.StubIdp", "Sustainsys.Saml2.StubIdp\Sustainsys.Saml2.StubIdp.csproj", "{7B60747D-6337-4424-ACB5-7D580EC1E1A1}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kentor.AuthServices.Owin", "Kentor.AuthServices.Owin\Kentor.AuthServices.Owin.csproj", "{FA1E7723-124C-4D2D-A731-E16400B0073B}"
 EndProject
