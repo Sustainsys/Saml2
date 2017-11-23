@@ -130,7 +130,7 @@
 
                 $("#userList").focus();
                 var hideDetails = (data.HideDetails || typeof (data.HideDetails) === "undefined"); // default == true
-                showDetails(!hideDetails)
+                showDetails(!hideDetails);
 
                 // if there are validation errors displayed from server side, show the details anyway to make the errors visible
                 if ($("input.input-validation-error").length > 0) {
