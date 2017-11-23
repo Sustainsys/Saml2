@@ -7,7 +7,7 @@
 
 body {
     font-family: 'Titillium Web', Arial, Helvetica, sans-serif;
-    margin-top: 180px;
+    margin-top: 100px;
     background-color: @grey;
 }
 
@@ -57,19 +57,11 @@ body {
 }
 
 .navbar-toggle {
-    margin-top: 140px;
+    /*margin-top: 140px;*/
     .icon-bar {
         background-color: white;
     }
     margin-bottom: 0px;
-}
-
-.navbar-right {
-    float: right;
-}
-
-.navbar-left {
-    float: left;
 }
 
 @media (min-width: 768px) {
@@ -78,10 +70,10 @@ body {
 
         > li {
             > a {
-                padding-top: 80px;
-                padding-bottom: 80px;
-                padding-left: 40px;
-                padding-right: 40px;
+                padding-top: 40px;
+                padding-bottom: 40px;
+                padding-left: 20px;
+                padding-right: 20px;
             }
         }
     }
@@ -110,6 +102,10 @@ body {
             background-color: @dark-blue;
         }
     }
+}
+
+.navbar-header img{
+    /*height: 80px;*/
 }
 
 a {
@@ -183,8 +179,32 @@ button.remove-attribute{
 
 .btn{
     font-size: 27px;
+    border-radius: 0px;
+    box-shadow: 3px 3px 1px @grey;
 }
 
 .btn-primary{
     background-color: @dark-blue;
 }
+
+.form-control, .panel {
+    border-radius: 0px;
+}
+
+.select2-container--default .select2-selection--single {
+    border-radius: 0px;
+    height: 34px;
+
+    .select2-selection__arrow {
+        b {
+            border-top-width: 10px;
+            border-bottom-width: 10px !important;
+        }
+    }
+}
+
+.attribute-row .glyphicon{
+    font-size: 16px;
+
+}
+
