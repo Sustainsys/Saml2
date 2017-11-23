@@ -2,12 +2,11 @@
 @grey: #5F5F5F;
 @blue: #29ABE2;
 @dark-blue: #339CC9;
-
 @screen-sm-min: 768px;
 
 body {
     font-family: 'Titillium Web', Arial, Helvetica, sans-serif;
-    margin-top: 100px;
+    margin-top: 200px;
     background-color: @grey;
 }
 
@@ -27,18 +26,27 @@ body {
     }
 
     h2 {
-        padding-left: 40px;
-        background-color: @dark-blue;
-        text-transform: uppercase;
-        font-weight: 600;
-        font-size: 32px;
-        padding-top: 40px;
-        padding-bottom: 40px;
-        margin-bottom: 0px;
+        padding-left: 20px;
     }
 }
 
+.card h2, .page-heading {
+    line-height: 1.1;
+    background-color: @dark-blue;
+    text-transform: uppercase;
+    font-weight: 700;
+    font-size: 32px;
+    padding-top: 20px;
+    padding-bottom: 20px;
+    margin-bottom: 0px;
+}
+
+.page-heading{
+    padding-left: 60px;
+}
+
 .tagline {
+    margin-top: -100px;
     font-size: 106px;
     font-weight: 200;
     text-align: center;

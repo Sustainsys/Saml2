@@ -31,11 +31,21 @@
         </div>
         <div class="navbar-collapse collapse">
             <ul class="nav navbar-nav">
-                <li>@Html.ActionLink("Home", "Index", "Home")</li>
+                <li><a href="@Request.ApplicationPath">Home</a></li>
                 <li>@Html.ActionLink("Metadata", "BrowserFriendly", "Metadata")</li>
+                @if(ViewContext.RouteData.Values["idpId"] != null)
+                {
+                    <li>@Html.ActionLink("Manage", "Index", "Manage")</li>
+                }
                 <li><a href="https://github.com/Sustainsys/Saml2">Source</a></li>
             </ul>
         </div>
+        @if(ViewBag.Title != null)
+        {
+            <div class="page-heading">
+                @ViewBag.Title
+            </div>
+        }
     </div>
     @RenderBody()
     <script>
