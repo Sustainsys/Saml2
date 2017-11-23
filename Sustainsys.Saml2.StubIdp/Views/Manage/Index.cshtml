@@ -5,13 +5,13 @@
 
 
 <div class="container">
-    <div class="col-lg-8 card">
+    <div class="col-lg-7 card">
         <h2>Idp Tenant Config</h2>
         <div class="contents">
             @using (Html.BeginForm("Index", "Manage"))
             {
                 <div class="form-group">
-                    @Html.TextAreaFor(m => m.JsonData, new { @class = "form-control", rows="20" })
+                    @Html.TextAreaFor(m => m.JsonData, new { @class = "form-control", rows="30" })
                     @Html.ValidationMessageFor(m => m.JsonData)
                 </div>
                 <button class="btn btn-primary">Submit</button>
@@ -20,7 +20,7 @@
 
     </div>
 
-    <div class="col-lg-4 card">
+    <div class="col-lg-5 card">
         <h2>About Idp Tenants</h2>
         <div class="contents">
             <p>

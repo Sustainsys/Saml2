@@ -99,16 +99,20 @@ body {
     }
 }
 
-.navbar-nav {
+.nav {
 
     > li {
         > a {
             color: white;
         }
 
-        > a:focus, > a:hover {
+        > a:focus, > a:hover  {
             background-color: @dark-blue;
         }
+    }
+
+    .open>a, .open>a:focus, open>a:hover{
+        background-color: @dark-blue;
     }
 }
 
@@ -180,7 +184,6 @@ button.remove-attribute{
 
 .btn{
     font-size: 27px;
-    border-radius: 0px;
     box-shadow: 3px 3px 1px @grey;
 }
 
@@ -192,7 +195,7 @@ button.remove-attribute{
     background-color: @dark-blue;
 }
 
-.form-control, .panel {
+.form-control, .panel, .btn, .dropdown-menu {
     border-radius: 0px;
 }
 
@@ -213,3 +216,6 @@ button.remove-attribute{
 
 }
 
+textarea.form-control{
+    font-size: 16px;
+}
