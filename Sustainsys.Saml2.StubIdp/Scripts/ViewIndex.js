@@ -123,7 +123,7 @@
                 $("#userList").select2({
                     data: data.UserList,
                     templateResult: formatState,
-                    width: "500px",
+                    width: "100%",
                     minimumInputLength: minimumInputLength,
                     placeholder: "Select a user"
                 });
