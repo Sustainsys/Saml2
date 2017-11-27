@@ -143,6 +143,10 @@ namespace Kentor.AuthServices.WebSso
                 ? null
                 : new Uri(returnPath, UriKind.RelativeOrAbsolute);
 
+            // check if returnUrl has been setup in SPOptions
+            if (options.SPOptions.ReturnUrl != null)
+                returnUrl = options.SPOptions.ReturnUrl;
+
             options.SPOptions.Logger.WriteInformation("Initiating login to " + idp.EntityId.Id);
             return InitiateLoginToIdp(options, relayData, urls, idp, returnUrl);
         }
