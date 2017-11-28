@@ -1,4 +1,4 @@
-﻿using Kentor.AuthServices.Metadata;
+using Kentor.AuthServices.Metadata;
 using Kentor.AuthServices.WebSso;
 using System;
 using System.Collections.Generic;
@@ -10,7 +10,17 @@ namespace Kentor.AuthServices.StubIdp.Models
 {
     public static class MetadataModel
     {
-        public static ExtendedEntityDescriptor CreateIdpMetadata(bool includeCacheDuration = true)
+        public static ExtendedEntityDescriptor CreateIdpMetadata()
+        {
+            return CreateIdpMetadata(true, false);
+        }
+
+        public static ExtendedEntityDescriptor CreateIdpMetadata(bool enforcePost)
+        {
+            return CreateIdpMetadata(true, enforcePost);
+        }
+
+        public static ExtendedEntityDescriptor CreateIdpMetadata(bool includeCacheDuration, bool enforcePost)
         {
             var metadata = new ExtendedEntityDescriptor()
             {
@@ -27,11 +37,13 @@ namespace Kentor.AuthServices.StubIdp.Models
             idpSsoDescriptor.ProtocolsSupported.Add(new Uri("urn:oasis:names:tc:SAML:2.0:protocol"));
             metadata.RoleDescriptors.Add(idpSsoDescriptor);
 
-            idpSsoDescriptor.SingleSignOnServices.Add(new ProtocolEndpoint()
-            {
-                Binding = Saml2Binding.HttpRedirectUri,
-                Location = UrlResolver.SsoServiceUrl
-            });
+            if (!enforcePost)
+                idpSsoDescriptor.SingleSignOnServices.Add(new ProtocolEndpoint()
+                {
+                    Binding = Saml2Binding.HttpRedirectUri,
+                    Location = UrlResolver.SsoServiceUrl
+                });
+
             idpSsoDescriptor.SingleSignOnServices.Add(new ProtocolEndpoint()
             {
                 Binding = Saml2Binding.HttpPostUri,
@@ -63,7 +75,7 @@ namespace Kentor.AuthServices.StubIdp.Models
             return metadata;
         }
 
-        public static ExtendedEntitiesDescriptor CreateFederationMetadata()
+        public static ExtendedEntitiesDescriptor CreateFederationMetadata(bool enforcePost)
         {
             var metadata = new ExtendedEntitiesDescriptor
             {
@@ -72,7 +84,7 @@ namespace Kentor.AuthServices.StubIdp.Models
                 ValidUntil = DateTime.UtcNow.AddDays(1)
             };
 
-            metadata.ChildEntities.Add(CreateIdpMetadata(false));
+            metadata.ChildEntities.Add(CreateIdpMetadata(false, enforcePost));
 
             return metadata;
         }

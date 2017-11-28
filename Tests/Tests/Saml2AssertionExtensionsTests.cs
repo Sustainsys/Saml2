@@ -183,5 +183,39 @@ namespace Kentor.AuthServices.Tests
 
             actualAuthnXml.Should().BeEquivalentTo(expectedAuthnXml);
         }
+
+        [TestMethod]
+        public void Saml2AssertionExtensions_ToXElement_Statements_Xmls()
+        {
+            var attributeValue = "Test";
+            var assertion = new Saml2Assertion(
+                new Saml2NameIdentifier("http://idp.example.com"));
+
+            assertion.Statements.Add(
+                new Saml2AttributeStatement(new Saml2Attribute(ClaimTypes.Role, attributeValue)));
+
+            assertion.Statements.Add(
+                new Saml2AuthenticationStatement(
+                    new Saml2AuthenticationContext(
+                        new Uri("urn:oasis:names:tc:SAML:2.0:ac:classes:unspecified")))
+                {
+                    SessionIndex = "SessionIndex"
+                });
+
+            var result = assertion.ToXElement(true);
+
+            XNamespace xs = @"http://www.w3.org/2001/XMLSchema";
+            XNamespace xsi = @"http://www.w3.org/2001/XMLSchema-instance";
+
+            var actualAttributeXml = result.Element(Saml2Namespaces.Saml2 + "AttributeStatement");
+            var expectedAttributeXml = new XElement(Saml2Namespaces.Saml2 + "AttributeStatement",
+                new XElement(Saml2Namespaces.Saml2 + "Attribute",
+                new XAttribute("Name", ClaimTypes.Role),
+                new XElement(Saml2Namespaces.Saml2 + "AttributeValue", attributeValue,
+                            new XAttribute(XNamespace.Xmlns + "xsi", xsi.NamespaceName),
+                            new XAttribute(XNamespace.Xmlns + "xs", xs.NamespaceName),
+                            new XAttribute(xsi + "type", @"xs:string"))));
+            actualAttributeXml.Should().BeEquivalentTo(expectedAttributeXml);
+        }
     }
 }

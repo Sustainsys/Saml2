@@ -1,5 +1,7 @@
 {
   "HideDetails": false,
+  "EnforceAttributeXSString": false,
+  "EnforcePOST": false,
   "UserList": [
     {
       "DisplayName": "John Doe",

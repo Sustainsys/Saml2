@@ -1,4 +1,4 @@
-﻿@model HomePageModel
+@model HomePageModel
 @{
     var additionalClasses = "";
     if (Model.HideDetails)
@@ -119,20 +119,28 @@ else
                     </div>
                 </div>
 
-                <div class="hide-details panel panel-default">
-                    <div class="panel-heading">Attribute Statements</div>
-                    <div class="panel-body">
-                        <div id="attributes-placeholder" class="row" style="display:none">
-                            <label class="col-md-5">Type</label>
-                            <label class="col-md-5">Value</label>
+                    <div class="hide-details form-group row">
+                        @Html.LabelFor(m => m.AssertionModel.EnforceAttributeXSString, new { @class = "col-form-label col-md-4" })
+                        <div class="col-md-8">
+                            @Html.CheckBoxFor(m => m.AssertionModel.EnforceAttributeXSString, new { @class = "form-control" })
+                            @Html.ValidationMessageFor(m => m.AssertionModel.EnforceAttributeXSString)
                         </div>
-                        <button class="btn glyphicon glyphicon-plus" id="add-attribute"></button>
                     </div>
-                </div>
-                <p></p>
-                <button class="btn btn-primary" id="submit">Log in</button>
-                <button class="show-details btn btn-secondary">Show Details</button>
-            }
+
+                    <div class="hide-details panel panel-default">
+                        <div class="panel-heading">Attribute Statements</div>
+                        <div class="panel-body">
+                            <div id="attributes-placeholder" class="row" style="display:none">
+                                <label class="col-md-5">Type</label>
+                                <label class="col-md-5">Value</label>
+                            </div>
+                            <button class="btn glyphicon glyphicon-plus" id="add-attribute"></button>
+                        </div>
+                    </div>
+                    <p></p>
+                    <button class="btn btn-primary" id="submit">Log in</button>
+                    <a class="show-details" href="#" style="display:none">Show details</a>
+                }
 
         </div>
     </div>

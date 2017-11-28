@@ -1,4 +1,4 @@
-﻿using System.IO;
+using System.IO;
 using System.Net.Mime;
 using Kentor.AuthServices.StubIdp.Models;
 using System;
@@ -53,7 +53,8 @@ namespace Kentor.AuthServices.StubIdp.Controllers
 
                     model.CustomDescription = fileData.IdpDescription;
                     model.AssertionModel.NameId = null;
-                    model.HideDetails = fileData.HideDetails;
+                    model.AssertionModel.EnforceAttributeXSString = fileData.EnforceAttributeXSString;
+                    model.HideDetails = fileData.HideDetails;                    
                 }
             }
         }

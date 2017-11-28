@@ -54,6 +54,7 @@ namespace Kentor.AuthServices.Tests.Saml2P
                 RequestState = (StoredRequestState)null,
                 SecondLevelStatus = (string)null,
                 RelayState = (string)null,
+                EnforceAttributeXSString = false,
             };
 
             Saml2Response.Read(response, expected.InResponseTo).ShouldBeEquivalentTo(

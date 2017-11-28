@@ -1,4 +1,4 @@
-﻿using Kentor.AuthServices.Saml2P;
+using Kentor.AuthServices.Saml2P;
 using Kentor.AuthServices.WebSso;
 using System;
 using System.Collections.Generic;
@@ -27,6 +27,9 @@ namespace Kentor.AuthServices.StubIdp.Models
 
         [Display(Name = "Audience")]
         public string Audience { get; set; }
+
+        [Display(Name = "Enforce Xml Schema attributes")]
+        public bool EnforceAttributeXSString { get; set; }
 
         public ICollection<AttributeStatementModel> AttributeStatements { get; set; }
 
@@ -83,7 +86,7 @@ namespace Kentor.AuthServices.StubIdp.Models
             return new Saml2Response(
                 new EntityId(UrlResolver.MetadataUrl.ToString()),
                 CertificateHelper.SigningCertificate, new Uri(AssertionConsumerServiceUrl),
-                saml2Id, RelayState, audienceUrl, identity);
+                saml2Id, RelayState, audienceUrl, EnforceAttributeXSString, identity);
         }
 
         [Display(Name = "Incoming AuthnRequest")]

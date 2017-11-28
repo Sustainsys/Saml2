@@ -1,4 +1,4 @@
-﻿{
+{
   "type": "object",
   "additionalProperties": false,
   "properties": {
@@ -21,6 +21,18 @@
       ]
     },
     "HideDetails": {
+      "type": [
+        "boolean",
+        "null"
+      ]
+    },
+    "EnforceAttributeXSString": {
+      "type": [
+        "boolean",
+        "null"
+      ]
+    },
+    "EnforcePOST": {
       "type": [
         "boolean",
         "null"

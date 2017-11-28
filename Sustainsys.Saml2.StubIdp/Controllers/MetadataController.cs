@@ -1,4 +1,4 @@
-﻿using Kentor.AuthServices.StubIdp.Models;
+using Kentor.AuthServices.StubIdp.Models;
 using System;
 using System.Collections.Generic;
 using System.IdentityModel.Metadata;
@@ -13,27 +13,29 @@ using System.Security.Cryptography.Xml;
 
 namespace Kentor.AuthServices.StubIdp.Controllers
 {
-    public class MetadataController : Controller
+    public class MetadataController : BaseController
     {
         // GET: Metadata
-        public ActionResult Index()
+        public ActionResult Index(Guid? idpId)
         {
+            var enforcePost = GetEnforcePostFromConfig(idpId);
             return Content(
-                CreateMetadataString(),
+                CreateMetadataString(enforcePost),
                 "application/samlmetadata+xml");
-        }
+        }        
 
-        private static string CreateMetadataString()
+        private static string CreateMetadataString(bool defaultPost)
         {
-            return MetadataModel.CreateIdpMetadata()
+            return MetadataModel.CreateIdpMetadata(defaultPost)
                             .ToXmlString(CertificateHelper.SigningCertificate,
                             SignedXml.XmlDsigRSASHA256Url);
         }
 
-        public ActionResult BrowserFriendly()
+        public ActionResult BrowserFriendly(Guid? idpId)
         {
+            var enforcePost = GetEnforcePostFromConfig(idpId);
             return Content(
-                CreateMetadataString(),
+                CreateMetadataString(enforcePost),
                 "text/xml");
         }
     }
