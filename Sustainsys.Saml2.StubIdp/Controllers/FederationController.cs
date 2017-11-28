@@ -1,4 +1,4 @@
-﻿using Kentor.AuthServices.StubIdp.Models;
+using Kentor.AuthServices.StubIdp.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;

@@ -1,4 +1,4 @@
-﻿using Kentor.AuthServices.Saml2P;
+using Kentor.AuthServices.Saml2P;
 using Kentor.AuthServices.WebSso;
 using System;
 using System.Collections.Generic;

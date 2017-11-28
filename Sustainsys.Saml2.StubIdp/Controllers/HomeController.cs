@@ -1,4 +1,4 @@
-﻿using System.IO;
+using System.IO;
 using System.Net.Mime;
 using Kentor.AuthServices.StubIdp.Models;
 using System;

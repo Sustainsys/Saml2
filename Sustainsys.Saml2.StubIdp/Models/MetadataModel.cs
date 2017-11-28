@@ -1,4 +1,4 @@
-﻿using Kentor.AuthServices.Metadata;
+using Kentor.AuthServices.Metadata;
 using Kentor.AuthServices.WebSso;
 using System;
 using System.Collections.Generic;
