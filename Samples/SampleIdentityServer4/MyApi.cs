@@ -11,8 +11,8 @@ namespace SampleIdentityServer4
     public class MyApi : ControllerBase
     {
         [HttpGet]
-        [Authorize]
-        // TODO: Set Authentication Scheme to JWT handler.
+        // [Authorize]
+        // TODO: Set Authentication Scheme to bearer.
         public IActionResult Get()
         {
             return new JsonResult(from c in User.Claims select new { c.Type, c.Value });

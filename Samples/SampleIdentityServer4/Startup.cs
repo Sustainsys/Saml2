@@ -17,13 +17,14 @@ namespace SampleIdentityServer4
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddMvc();
+
             services.AddIdentityServer()
                 .AddDeveloperSigningCredential()
+                .AddInMemoryIdentityResources(GetIdentityResources())
                 .AddInMemoryApiResources(GetApiResources())
                 .AddInMemoryClients(GetClients())
                 .AddTestUsers(GetUsers());
-
-            services.AddMvc();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -37,8 +38,10 @@ namespace SampleIdentityServer4
             app.UseAuthentication();
             
             app.UseIdentityServer();
-            
-            app.UseMvc();
+
+            app.UseStaticFiles();
+            app.UseMvcWithDefaultRoute();
+           
         }
 
         static IEnumerable<ApiResource> GetApiResources()
@@ -85,6 +88,15 @@ namespace SampleIdentityServer4
                     Username = "bob",
                     Password = "password"
                 }
+            };
+        }
+
+        static IEnumerable<IdentityResource> GetIdentityResources()
+        {
+            return new List<IdentityResource>
+            {
+                new IdentityResources.OpenId(),
+                new IdentityResources.Profile()
             };
         }
     }
