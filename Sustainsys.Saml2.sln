@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.27004.2008
+VisualStudioVersion = 15.0.27004.2009
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sustainsys.Saml2", "Sustainsys.Saml2\Sustainsys.Saml2.csproj", "{93BA675E-A159-4701-B68B-C4B81015C556}"
 EndProject
@@ -81,6 +81,8 @@ EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "AspNetCore2.Tests.Shared", "Tests\AspNetCore2.Tests.Shared\AspNetCore2.Tests.Shared.shproj", "{9427C3AF-8841-4E4C-BDC7-67F42C47E624}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SampleAspNetCore2ApplicationNETCore", "Samples\SampleAspNetCore2ApplicationNETCore\SampleAspNetCore2ApplicationNETCore.csproj", "{21CCADA2-5A5C-4E51-9CD0-70A83AEF8BDE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SampleIdentityServer4", "Samples\SampleIdentityServer4\SampleIdentityServer4.csproj", "{07FB6B30-14BE-4524-B767-BF156660FC7E}"
 EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
@@ -172,6 +174,10 @@ Global
 		{21CCADA2-5A5C-4E51-9CD0-70A83AEF8BDE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{21CCADA2-5A5C-4E51-9CD0-70A83AEF8BDE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{21CCADA2-5A5C-4E51-9CD0-70A83AEF8BDE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{07FB6B30-14BE-4524-B767-BF156660FC7E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{07FB6B30-14BE-4524-B767-BF156660FC7E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{07FB6B30-14BE-4524-B767-BF156660FC7E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{07FB6B30-14BE-4524-B767-BF156660FC7E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -193,6 +199,7 @@ Global
 		{48AEA41B-E921-4287-9B63-918CBBA4A243} = {F3C8CC66-4CE9-4683-BC31-B89AF47A5897}
 		{9427C3AF-8841-4E4C-BDC7-67F42C47E624} = {F3C8CC66-4CE9-4683-BC31-B89AF47A5897}
 		{21CCADA2-5A5C-4E51-9CD0-70A83AEF8BDE} = {09639770-8C2B-4D30-BBFC-4F6DD1A92C89}
+		{07FB6B30-14BE-4524-B767-BF156660FC7E} = {09639770-8C2B-4D30-BBFC-4F6DD1A92C89}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {A8812E38-A212-46DD-B51F-AB653F39E4ED}
