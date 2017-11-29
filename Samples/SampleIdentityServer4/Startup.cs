@@ -8,6 +8,13 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using IdentityServer4.Models;
 using IdentityServer4.Test;
+using Kentor.AuthServices.Configuration;
+using Microsoft.IdentityModel.Tokens.Saml2;
+using Kentor.AuthServices;
+using Kentor.AuthServices.Metadata;
+using Kentor.AuthServices.WebSso;
+using System.Security.Cryptography.X509Certificates;
+using IdentityServer4;
 
 namespace SampleIdentityServer4
 {
@@ -25,6 +32,29 @@ namespace SampleIdentityServer4
                 .AddInMemoryApiResources(GetApiResources())
                 .AddInMemoryClients(GetClients())
                 .AddTestUsers(GetUsers());
+
+            services.AddAuthentication()
+                .AddSaml2(opt =>
+                {
+                    opt.SignInScheme = IdentityServerConstants.ExternalCookieAuthenticationScheme;
+
+                    opt.SPOptions = new SPOptions
+                    {
+                        EntityId = new Saml2NameIdentifier("https://SampleIdentityServer4")
+                    };
+
+                    var idp = new IdentityProvider(
+                        new EntityId("https://stubidp.sustainsys.com/Metadata"),
+                        opt.SPOptions)
+                    {
+                        Binding = Saml2BindingType.HttpRedirect,
+                        SingleSignOnServiceUrl = new Uri("https://stubidp.sustainsys.com")
+                    };
+
+                    idp.SigningKeys.AddConfiguredKey(new X509Certificate2("Kentor.AuthServices.StubIdp.cer"));
+
+                    opt.IdentityProviders.Add(idp);
+                });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
