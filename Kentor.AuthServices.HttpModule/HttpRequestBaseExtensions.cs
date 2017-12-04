@@ -15,7 +15,10 @@ namespace Kentor.AuthServices.HttpModule
     /// </summary>
     public static class HttpRequestBaseExtensions
     {
-        internal const string ProtectionPurpose = "Kentor.AuthServices";
+        /// <summary>
+        /// Purpose string used with data protection.
+        /// </summary>
+        public const string ProtectionPurpose = "Kentor.AuthServices";
 
         /// <summary>
         /// Extension method to convert a HttpRequestBase to a HttpRequestData.
@@ -53,7 +56,7 @@ namespace Kentor.AuthServices.HttpModule
                 requestBase.Url,
                 requestBase.ApplicationPath,
                 requestBase.Form.Cast<string>().Select((de, i) =>
-                    new KeyValuePair<string, string[]>(de, ((string)requestBase.Form[i]).Split(','))),
+                    new KeyValuePair<string, IEnumerable<string>>(de, ((string)requestBase.Form[i]).Split(','))),
                 cookies,
                 v => MachineKey.Unprotect(v, ProtectionPurpose),
                 ClaimsPrincipal.Current);

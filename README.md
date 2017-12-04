@@ -1,11 +1,12 @@
-[![Build status](https://ci.appveyor.com/api/projects/status/ybu4ptb6tktg1kht?branch=master&svg=true&passingText=master%20-%20OK&failingText=master%20-%20Failed!&pendingText=master%20-%20Pending...)](https://ci.appveyor.com/project/KentorIT/AuthServices)
-[![Coverage Status](https://coveralls.io/repos/KentorIT/authservices/badge.svg?branch=master&service=github)](https://coveralls.io/github/KentorIT/authservices?branch=master)
-[![Join the chat at https://gitter.im/KentorIT/authservices](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/KentorIT/authservices)
-Kentor Authentication Services
+[![Build status](https://ci.appveyor.com/api/projects/status/kf9r7lh4mh28rg2d?branch=master&svg=true&passingText=master%20-%20OK&failingText=master%20-%20Failed!&pendingText=master%20-%20Pending...)](https://ci.appveyor.com/project/Sustainsys/Saml2)
+[![Coverage Status](https://coveralls.io/repos/github/Sustainsys/Saml2/badge.svg?branch=master)](https://coveralls.io/github/Sustainsys/Saml2?branch=master)
+[![Join the chat at https://gitter.im/Susatinsys/Saml2](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/Sustainsys/Saml2)
+Sustainsys.Saml2
 =============
 
-The Kentor Authentication services is a library that adds SAML2P support to ASP.NET and IIS
-web sites, allowing the web site to act as a SAML2 Service Provider (SP).
+The Sustainsys.Saml2 library adds SAML2P support to ASP.NET web sites, allowing the web site
+to act as a SAML2 Service Provider (SP).
+The library is undergoing a rename from the former name Kentor.AuthServices.
 
 Kentor.AuthServices is open sourced and contributions are welcome, please see 
 [contributing guidelines](CONTRIBUTING.md) for info on coding standards etc.

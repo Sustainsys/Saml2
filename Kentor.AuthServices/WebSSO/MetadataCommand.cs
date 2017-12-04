@@ -12,8 +12,19 @@ using Kentor.AuthServices.Metadata;
 
 namespace Kentor.AuthServices.WebSso
 {
-    class MetadataCommand : ICommand
+    /// <summary>
+    /// Represents the service provider metadata command behaviour.
+    /// Instances of this class can be created directly or by using the factory method
+    /// CommandFactory.GetCommand(CommandFactory.MetadataCommandName).
+    /// </summary>
+    public class MetadataCommand : ICommand
     {
+        /// <summary>
+        /// Run the command, creating and returning the service provider metadata.
+        /// </summary>
+        /// <param name="request">Request data.</param>
+        /// <param name="options">Options</param>
+        /// <returns>CommandResult</returns>
         public CommandResult Run(HttpRequestData request, IOptions options)
         {
             if(options == null)

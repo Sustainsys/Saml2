@@ -14,17 +14,13 @@ using Kentor.AuthServices.Internal;
 namespace Kentor.AuthServices.WebSso
 {
     /// <summary>
-    /// The logout command. Use 
-    /// CommandFactory.Get(CommandFactory.LogoutCommandName) to get an instance.
+    /// Represents the logout command behaviour.
+    /// Instances of this class can be created directly or by using the factory method
+    /// CommandFactory.GetCommand(CommandFactory.LogoutCommandName).
     /// </summary>
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1726:UsePreferredTerms", MessageId = "Logout")]
     public class LogoutCommand : ICommand
     {
-        /// <summary>
-        /// Ctor, don't want anyone to create instances.
-        /// </summary>
-        internal LogoutCommand() { }
-
         /// <summary>
         /// Run the command, initiating or handling the logout sequence.
         /// </summary>

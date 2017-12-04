@@ -1,0 +1,64 @@
+﻿@model ManageIdpModel
+@{
+    ViewBag.Title = "Manage Idp Tenant";
+}
+
+
+<div class="container">
+    <div class="col-lg-7 card">
+        <h2>Idp Tenant Config</h2>
+        <div class="contents">
+            @using (Html.BeginForm("Index", "Manage"))
+            {
+                <div class="form-group">
+                    @Html.TextAreaFor(m => m.JsonData, new { @class = "form-control", rows="30" })
+                    @Html.ValidationMessageFor(m => m.JsonData)
+                </div>
+                <button class="btn btn-primary">Submit</button>
+            }
+        </div>
+
+    </div>
+
+    <div class="col-lg-5 card">
+        <h2>About Idp Tenants</h2>
+        <div class="contents">
+            <p>
+            <p>
+                We have created a unique IDP tenant for you with entityId 
+                <a href="@UrlResolver.MetadataUrl">@UrlResolver.MetadataUrl</a>.
+            </p>
+            <p>
+                Bookmark <a href="@UrlResolver.ManageUrl">@UrlResolver.ManageUrl</a> to be
+                able to manage your IDP tenant in the future. On your IDP you can set a custom
+                description, a custom ACS and a custom user list. This is done by entering
+                a JSON document to the left.
+            </p>
+            <div class="panel panel-danger">
+                <div class="panel-heading">
+                    No personal identifiable information
+                </div>
+                <div class="panel-body">
+                    By law (EU GDPR) you are not allowed to store any personal identiable
+                    information of any real persons.
+                </div>
+            </div>
+
+            <p>
+                The configuration for your IDP tenant must be conforming to the JSON schema
+                <a href="@Url.Content("~/Content/IdpConfigurationSchema.json")">IdpConfigurationSchema.json</a>
+                The first time you visit this page a template document will be displayed.
+            </p>
+            <p>
+                Your IDP tenant id will not be published. As long as you don't expose your
+                entity id anywhere probably no one will find your IDP. However there is no
+                further security preventing anyone (including server admins) from reading
+                and modifying your IDP data. Don't expose sensitive data.
+            </p>
+
+            @Html.Partial("_MetadataLink")
+
+        </div>
+    </div>
+</div>
+

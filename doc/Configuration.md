@@ -3,8 +3,8 @@ kentor.AuthServices Configuration
 To use Kentor.AuthServices in an application and configure it in web.config
 (which is the default for the httpmodule and mvc libraries) it must be enabled 
 in the application's `web.config`. The sample applications contains complete
-working [`web.config`](../SampleApplication/Web.config) examples. For 
-ASP.NET MVC applications see [`this working web.config`](../SampleMvcApplication/Web.config)
+working [`web.config`](../Samples/SampleApplication/Web.config) examples. For 
+ASP.NET MVC applications see [`this working web.config`](../Samples/SampleMvcApplication/Web.config)
 example. Applications using the owin library usually make their configuration
 in code and in that case no web.config changes are needed. If an owin library
 is set up to use web.config (by passing `true` to the `KentorAuthServicesAuthenticationOptions` 
@@ -189,10 +189,10 @@ have called `GlobalEnableSha256XmlSignatures()`. Otherwise, it uses SHA1 signatu
 Use this attribute to set the default signing algorithm for any messages
 (including metadata) that AuthServices generates. Possible values:
 
-* SHA1
-* SHA256
-* SHA384
-* SHA512
+* `SHA1` (or `http://www.w3.org/2000/09/xmldsig#rsa-sha1`)
+* `SHA256`
+* `SHA384`
+* `SHA512`
 
 The full url identifying the algorithm can also be provided. The algorithm can be overridden for 
 each IdentityProvider too.
@@ -208,10 +208,10 @@ have called `GlobalEnableSha256XmlSignatures()`. Otherwise, it uses SHA1 signatu
 
 Possible values:
 
-* SHA1
-* SHA256
-* SHA384
-* SHA512
+* `SHA1` (or `http://www.w3.org/2000/09/xmldsig#rsa-sha1`)
+* `SHA256`
+* `SHA384`
+* `SHA512`
 
 The full url identifying the algorithm can also be provided.
 
@@ -372,7 +372,7 @@ is used in).
 * [`name`](#name-attribute-organization)
 * [`displayName`](#displayname-attribute)
 * [`url`](#url-attribute)
-* [`langauge`](#language-attribute)
+* [`language`](#language-attribute)
 
 #### `name` Attribute (organization)
 *Attribute of the [`<organization>`](#organization-element) element.*
@@ -793,6 +793,10 @@ providers.
 If an EntitiesDescriptor element is found when loading metadata for an
 IdentityProvider, automatically check inside it if there is a single
 EntityDescriptor and in that case use it.
+
+#### `IgnoreAuthenticationContextInResponse` Attribute
+
+Do not read the AuthnContext element in Saml2Response. If you do not need these values to be present as claims in the generated identity, using this option can prevent XML format errors ("System.Xml.XmlException: ID0013: The value must be an absolute URI"), when value cannot parse as absolute URI.
 
 ## `<system.identityModel>` Section
 *Child element of `<configuration>` element.*

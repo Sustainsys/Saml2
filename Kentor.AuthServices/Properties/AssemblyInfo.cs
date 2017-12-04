@@ -23,7 +23,11 @@ using System.Runtime.InteropServices;
 
 [assembly: CLSCompliant(true)]
 
-[assembly: InternalsVisibleTo("Kentor.AuthServices.Tests")]
+[assembly: InternalsVisibleTo("Tests")]
+[assembly: InternalsVisibleTo("TestHelpers")]
+[assembly: InternalsVisibleTo("Owin.Tests")]
+[assembly: InternalsVisibleTo("HttpModule.Tests")]
+[assembly: InternalsVisibleTo("AspNetCore2.Tests")]
 
 // Required for NSubstitute to be able to generate stub for internal interface.
 [assembly: InternalsVisibleTo("DynamicProxyGenAssembly2")]
