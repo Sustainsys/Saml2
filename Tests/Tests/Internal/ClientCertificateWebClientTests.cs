@@ -69,7 +69,7 @@ namespace Kentor.AuthServices.Tests.Internal
             {
                 var request = base.GetWebRequest(address);
 
-                var httpWebRequest = (HttpWebRequest) request;
+                var httpWebRequest = (HttpWebRequest)request;
                 if (httpWebRequest != null)
                 {
                     HasCertificateInRequest = httpWebRequest.ClientCertificates.Contains(_expectedCertificate);

@@ -1,16 +1,12 @@
 ﻿using Kentor.AuthServices.Metadata;
 using Kentor.AuthServices.Saml2P;
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IdentityModel.Configuration;
 using System.IdentityModel.Metadata;
-using System.IdentityModel.Services.Configuration;
 using System.Linq;
 using System.Security.Cryptography.X509Certificates;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Kentor.AuthServices.Configuration
 {

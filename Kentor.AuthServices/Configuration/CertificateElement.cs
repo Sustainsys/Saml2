@@ -3,7 +3,9 @@ using System;
 using System.Configuration;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
+using System.Linq;
 using System.Security.Cryptography.X509Certificates;
+using System.Web;
 
 namespace Kentor.AuthServices.Configuration
 {
@@ -100,12 +102,10 @@ namespace Kentor.AuthServices.Configuration
                 {
                     return null;
                 }
-
                 var store = new X509Store(StoreName, StoreLocation);
+                store.Open(OpenFlags.ReadOnly);
                 try
                 {
-                    store.Open(OpenFlags.ReadOnly);
-
                     var certs = store.Certificates.Find(X509FindType, FindValue, false);
 
                     if (certs.Count != 1)
@@ -117,7 +117,6 @@ namespace Kentor.AuthServices.Configuration
                     }
 
                     return certs[0];
-
                 }
                 finally
                 {

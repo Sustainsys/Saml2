@@ -28,7 +28,9 @@ namespace Kentor.AuthServices.Saml2P
         {
             return string.Format(
                 CultureInfo.InvariantCulture,
-                soapFormatString, payload);
+                soapFormatString, 
+                payload
+            );
         }
 
         /// <summary>
@@ -52,8 +54,11 @@ namespace Kentor.AuthServices.Saml2P
         /// <param name="signingServiceCertificate"></param>
         /// <param name="artifactResolutionTlsCertificate"></param>
         /// <returns>Response.</returns>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Tls")]
-        public static XmlElement SendSoapRequest(string payload, Uri destination, X509Certificate2 signingServiceCertificate, X509Certificate2 artifactResolutionTlsCertificate)
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming",
+            "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Tls",
+            Justification = "TLS is a well known abbreviation for Transport Layer Security")]
+        public static XmlElement SendSoapRequest(string payload, Uri destination,
+            X509Certificate2 signingServiceCertificate, X509Certificate2 artifactResolutionTlsCertificate)
         {
             AssertDestinationIsValid(destination);
 
@@ -91,8 +96,12 @@ namespace Kentor.AuthServices.Saml2P
         {
             if (clientCertificate != null)
             {
-                var xmlDoc = XmlHelpers.XmlDocumentFromString(payload);
+                var xmlDoc = new XmlDocument
+                {
+                    PreserveWhitespace = true
+                };
 
+                xmlDoc.LoadXml(payload);
                 xmlDoc.Sign(clientCertificate, true);
                 payload = xmlDoc.OuterXml;
             }

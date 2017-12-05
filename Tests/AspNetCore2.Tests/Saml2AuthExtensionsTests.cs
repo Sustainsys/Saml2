@@ -1,5 +1,4 @@
-﻿
-using FluentAssertions;
+﻿using FluentAssertions;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
@@ -15,7 +14,7 @@ namespace Sustainsys.Saml2.AspNetCore2.Tests
         [TestMethod]
         public void Saml2AuthExtensions_AddSaml2_RegistersSaml2Scheme_DefaultScheme()
         {
-            var serviceCollection = new ServiceCollection();
+            IServiceCollection serviceCollection = new ServiceCollection();
             var builder = new AuthenticationBuilder(serviceCollection);
 
             var configureOptionsCalled = false;
@@ -55,7 +54,7 @@ namespace Sustainsys.Saml2.AspNetCore2.Tests
         [TestMethod]
         public void Saml2AuthExtensions_AddSaml2_RegisterSaml2Scheme_CustomScheme()
         {
-            var serviceCollection = new ServiceCollection();
+            IServiceCollection serviceCollection = new ServiceCollection();
             var builder = new AuthenticationBuilder(serviceCollection);
 
             builder.AddSaml2("CustomScheme", opt => { })
@@ -72,7 +71,7 @@ namespace Sustainsys.Saml2.AspNetCore2.Tests
                 .ImplementationInstance.As<ConfigureNamedOptions<Saml2Options>>()
                 .Name.Should().Be("CustomScheme", "configuration should be registered for right name");
         }
-            
+
         [TestMethod]
         public void Saml2AuthExtensions_AddSaml2_NullCheckBuilder()
         {
@@ -83,3 +82,4 @@ namespace Sustainsys.Saml2.AspNetCore2.Tests
         }
     }
 }
+

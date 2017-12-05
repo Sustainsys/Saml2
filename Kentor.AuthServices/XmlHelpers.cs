@@ -70,12 +70,12 @@ namespace Kentor.AuthServices
         /// <param name="attributeName">Name of attribute to remove.</param>
         public static void Remove(this XmlAttributeCollection attributes, string attributeName)
         {
-            if (attributes == null)
+            if(attributes == null)
             {
                 throw new ArgumentNullException(nameof(attributes));
             }
 
-            if (attributeName == null)
+            if(attributeName == null)
             {
                 throw new ArgumentNullException(nameof(attributeName));
             }
@@ -93,17 +93,17 @@ namespace Kentor.AuthServices
         /// <param name="ns">Namespace of child</param>
         public static void RemoveChild(this XmlElement xmlElement, string name, string ns)
         {
-            if (xmlElement == null)
+            if(xmlElement == null)
             {
                 throw new ArgumentNullException(nameof(xmlElement));
             }
 
-            if (name == null)
+            if(name == null)
             {
                 throw new ArgumentNullException(nameof(name));
             }
 
-            if (ns == null)
+            if(ns == null)
             {
                 throw new ArgumentNullException(nameof(ns));
             }
@@ -121,7 +121,7 @@ namespace Kentor.AuthServices
         /// <param name="includeKeyInfo">Include public key in signed output.</param>
         public static void Sign(this XmlDocument xmlDocument, X509Certificate2 cert, bool includeKeyInfo)
         {
-            if (xmlDocument == null)
+            if(xmlDocument == null)
             {
                 throw new ArgumentNullException(nameof(xmlDocument));
             }
@@ -236,7 +236,7 @@ namespace Kentor.AuthServices
         /// <exception cref="InvalidSignatureException">If the data has
         /// been tampered with or is not valid according to the SAML spec.</exception>
         public static bool IsSignedByAny(
-            this XmlElement xmlElement,
+            this XmlElement xmlElement, 
             IEnumerable<SecurityKeyIdentifierClause> signingKeys,
             bool validateCertificate,
             string minimumSigningAlgorithm)
@@ -293,7 +293,7 @@ namespace Kentor.AuthServices
             throw new InvalidSignatureException("Signature didn't verify. Have the contents been tampered with?");
         }
 
-        private static readonly Lazy<object> rsaSha256Algorithm =
+        private static readonly Lazy<object> rsaSha256Algorithm = 
             new Lazy<object>(() => CryptoConfig.CreateFromName(Options.RsaSha256Uri));
 
         [ExcludeFromCodeCoverage]
@@ -346,16 +346,16 @@ namespace Kentor.AuthServices
         private static void FixSignatureIndex(SignedXml signedXml, XmlElement signatureElement)
         {
             Transform transform = null;
-            foreach (var t in ((Reference)signedXml.SignedInfo.References[0]).TransformChain)
+            foreach(var t in ((Reference)signedXml.SignedInfo.References[0]).TransformChain)
             {
                 var envelopeTransform = t as XmlDsigEnvelopedSignatureTransform;
-                if (envelopeTransform != null)
+                if(envelopeTransform != null)
                 {
                     transform = envelopeTransform;
                 }
             }
 
-            if (signaturePosition != null)
+            if(signaturePosition != null)
             {
                 var nsm = new XmlNamespaceManager(signatureElement.OwnerDocument.NameTable);
                 nsm.AddNamespace("ds", SignedXml.XmlDsigNamespaceUrl);
@@ -449,7 +449,7 @@ namespace Kentor.AuthServices
                 }
             }
 
-            if (!DigestAlgorithms.SkipWhile(a => a != mininumDigestAlgorithm)
+            if(!DigestAlgorithms.SkipWhile(a => a != mininumDigestAlgorithm)
                 .Contains(reference.DigestMethod))
             {
                 throw new InvalidSignatureException("The digest method " + reference.DigestMethod
@@ -495,7 +495,7 @@ namespace Kentor.AuthServices
         private static XmlDocument GetOwnerDoc(this XmlNode node)
         {
             var doc = node as XmlDocument;
-            if (doc != null)
+            if(doc != null)
             {
                 return doc;
             }
@@ -512,7 +512,7 @@ namespace Kentor.AuthServices
 
         internal static XmlElement AddAttributeIfNotNull(this XmlElement parent, string name, object value)
         {
-            if (value != null)
+            if(value != null)
             {
                 parent.SetAttribute(name, value.ToString());
             }
@@ -551,7 +551,7 @@ namespace Kentor.AuthServices
         [SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope", Justification = "I don't care, the StringWriter contains no references to unmanaged resources")]
         public static string PrettyPrint(this XmlElement xml)
         {
-            if (xml == null)
+            if(xml == null)
             {
                 throw new ArgumentNullException(nameof(xml));
             }
@@ -619,4 +619,3 @@ namespace Kentor.AuthServices
         }
     }
 }
-

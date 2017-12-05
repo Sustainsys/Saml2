@@ -31,8 +31,8 @@ namespace Kentor.AuthServices.WebSso
                 throw new ArgumentNullException(nameof(request));
             }
 
-            return (request.HttpMethod == "GET" && request.QueryString.Contains("SAMLart"))
-                   || (request.HttpMethod == "POST" && request.Form.ContainsKey("SAMLart"));
+            return request.HttpMethod == "GET" && request.QueryString.Contains("SAMLart")
+                   || request.HttpMethod == "POST" && request.Form.ContainsKey("SAMLart");
         }
 
         /// <summary>
@@ -176,7 +176,8 @@ namespace Kentor.AuthServices.WebSso
 
             ((IDictionary<byte[], ISaml2Message>)PendingMessages).Add(artifact, message);
 
-            var relayParam = string.IsNullOrEmpty(message.RelayState) ? ""
+            var relayParam = string.IsNullOrEmpty(message.RelayState)
+                ? ""
                 : "&RelayState=" + Uri.EscapeDataString(message.RelayState);
 
             return new CommandResult

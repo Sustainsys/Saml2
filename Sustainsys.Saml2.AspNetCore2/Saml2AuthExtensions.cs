@@ -1,14 +1,10 @@
-﻿using Microsoft.AspNetCore.Authentication;
+﻿using System;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
-using Sustainsys.Saml2.AspNetCore2;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace Microsoft.Extensions.DependencyInjection
+namespace Sustainsys.Saml2.AspNetCore2
 {
     /// <summary>
     /// Extensions methods for adding Saml2 authentication
