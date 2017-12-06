@@ -17,7 +17,8 @@ namespace Kentor.AuthServices.WebSso
         /// <summary>
         /// The name of the Assertion Consumer Service Command.
         /// </summary>
-        public const string AcsCommandName = "Acs";
+#warning Hack to make path fully configurable. Fix a better per instance config mechanism.
+        public static string AcsCommandName { get; set; } = "Acs";
 
         /// <summary>
         /// The name of the Sign In Command.
@@ -36,16 +37,17 @@ namespace Kentor.AuthServices.WebSso
         /// </summary>
         public const string MetadataCommand = "";
 
-        private static readonly IDictionary<string, ICommand> commands =
-        new Dictionary<string, ICommand>(StringComparer.OrdinalIgnoreCase) 
-        { 
-            { SignInCommandName, new SignInCommand() },
-            { AcsCommandName, new AcsCommand() },
-#if NET45
-            { MetadataCommand, new MetadataCommand() },
-#endif
-            { LogoutCommandName, new LogoutCommand() }
-        };
+        private static readonly Lazy<IDictionary<string, ICommand>> commands =
+            new Lazy<IDictionary<string, ICommand>>(() =>
+                new Dictionary<string, ICommand>(StringComparer.OrdinalIgnoreCase)
+                {
+                    { SignInCommandName, new SignInCommand() },
+                    { AcsCommandName, new AcsCommand() },
+        #if NET45
+                    { MetadataCommand, new MetadataCommand() },
+        #endif
+                    { LogoutCommandName, new LogoutCommand() }
+                });
 
         /// <summary>
         /// Gets a command for a command name.
@@ -67,7 +69,7 @@ namespace Kentor.AuthServices.WebSso
                 commandName = commandName.Substring(1);
             }
 
-            if (commands.TryGetValue(commandName, out command))
+            if (commands.Value.TryGetValue(commandName, out command))
             {
                 return command;
             }

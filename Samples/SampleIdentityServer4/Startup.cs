@@ -33,6 +33,8 @@ namespace SampleIdentityServer4
                 .AddInMemoryClients(GetClients())
                 .AddTestUsers(GetUsers());
 
+            CommandFactory.AcsCommandName = "AssertionConsumerService";
+
             services.AddAuthentication()
                 .AddSaml2(opt =>
                 {
