@@ -530,20 +530,27 @@ namespace Kentor.AuthServices.Saml2P
 
             foreach (XmlElement assertionNode in GetAllAssertionElementNodes(options))
             {
-                var assertionPrincipal = handler.ValidateToken(
-                    assertionNode.OuterXml,
-                    validationParams,
-                    out SecurityToken token);
+#warning Implement test for the filtering reader, use example from customer with InlusiveNamespaces.
+                using (var reader = new FilteringXmlNodeReader(SignedXml.XmlDsigNamespaceUrl, "Signature", assertionNode))
+                {
+                    reader.Read();
+                    var tokenXmlWithoutSignature = reader.ReadOuterXml();
 
-                var saml2Token = (Saml2SecurityToken)token;
+                    var assertionPrincipal = handler.ValidateToken(
+                        tokenXmlWithoutSignature,
+                        validationParams,
+                        out SecurityToken token);
 
-                sessionNotOnOrAfter = DateTimeHelper.EarliestTime(sessionNotOnOrAfter,
-                    saml2Token.Assertion.Statements.OfType<Saml2AuthenticationStatement>()
-                    .SingleOrDefault()?.SessionNotOnOrAfter);
+                    var saml2Token = (Saml2SecurityToken)token;
 
-                options.SPOptions.Logger.WriteVerbose("Extracted SAML assertion " + token.Id);
+                    sessionNotOnOrAfter = DateTimeHelper.EarliestTime(sessionNotOnOrAfter,
+                        saml2Token.Assertion.Statements.OfType<Saml2AuthenticationStatement>()
+                        .SingleOrDefault()?.SessionNotOnOrAfter);
 
-                principal.AddIdentity(assertionPrincipal.Identities.Single());
+                    options.SPOptions.Logger.WriteVerbose("Extracted SAML assertion " + token.Id);
+
+                    principal.AddIdentity(assertionPrincipal.Identities.Single());
+                }
             }
 
             return principal;
