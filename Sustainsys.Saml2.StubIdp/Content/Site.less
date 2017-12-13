@@ -17,6 +17,13 @@ body {
     padding-right: 24px;
 }
 
+@media(max-width: 767px){
+    .container, .container-fluid{
+        padding-left: 0px;
+        padding-right: 0px;
+    }
+}
+
 .card {
     .contents {
         background-color: @dark-grey;
@@ -38,7 +45,7 @@ body {
     font-size: 32px;
     padding-top: 20px;
     padding-bottom: 20px;
-    margin-bottom: 0px;
+    margin-bottom: 0px; 
 }
 
 .page-heading{
@@ -57,8 +64,8 @@ body {
     font-size: 5vw;
     font-weight: 200;
     text-align: center;
-    padding-top: 40px;
-    padding-bottom: 40px;
+    padding-top: 35px;
+    padding-bottom: 20px;
 }
 
 .navbar-sustainsys {
@@ -77,6 +84,10 @@ body {
         background-color: white;
     }
     margin-bottom: 0px;
+}
+
+.dropdown-menu > li > a{
+    color: white;
 }
 
 @media (min-width: 768px) {
@@ -98,6 +109,10 @@ body {
     .tagline {
         font-size: 40px;
     }
+
+    body{
+        margin-top: 150px;
+    }
     
     .navbar-nav {
         > li {
@@ -107,6 +122,17 @@ body {
                 padding-bottom: 20px;
             }
         }
+    }
+   
+    .card .contents {
+        font-size: 18px;
+    }
+}
+
+@media (max-width: 900px)
+{
+    .navbar-right img {
+        height: 50px;
     }
 }
 
@@ -129,7 +155,13 @@ body {
 
 .navbar-right{
     margin-right: 15px;
+    img{
+        max-height: 100px;
+    }
+
 }
+
+
 
 a {
     color: @blue;
@@ -149,6 +181,13 @@ a:visited {
     color: black;
     font-size: 27px;
     font-weight: 400;
+}
+
+@media (max-width: 767px)
+{
+    .form-control{
+        font-size: 18px;
+    }
 }
 
 .input-validation-error {
@@ -174,7 +213,6 @@ input[type=radio] {
 
 .radio-group label {
     margin-right: 40px;
-    min-width: 440px;
 }
 
 .panel-heading{
