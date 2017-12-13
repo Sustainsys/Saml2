@@ -183,10 +183,12 @@ else
             <label class="hidden-md hidden-lg col-form-label">Value</label>
             <input class="pull-right form-control" type="text" data-val="true" data-val-required="The Value field is required." class="form-control" name="AssertionModel.AttributeStatements[{{rowIndex}}].Value" value="{{value}}" />
         </div>
-        <span class="field-validation-valid" data-valmsg-for="AssertionModel.AttributeStatements[{{rowIndex}}].Type" data-valmsg-replace="true"></span>
-        <span class="field-validation-valid" data-valmsg-for="AssertionModel.AttributeStatements[{{rowIndex}}].Value" data-valmsg-replace="true"></span>
-        <div class="col-md-1">
+        <div class="col-md-1 col-xs-1">
             <button class="btn remove-attribute glyphicon glyphicon-trash"></button>
+        </div>
+        <div class="col-xs-11 col-md-12">
+            <span class="col-md-5 field-validation-valid" data-valmsg-for="AssertionModel.AttributeStatements[{{rowIndex}}].Type" data-valmsg-replace="true"></span>
+            <span class="col-md-5 field-validation-valid" data-valmsg-for="AssertionModel.AttributeStatements[{{rowIndex}}].Value" data-valmsg-replace="true"></span>
         </div>
     </div>
 </script>
