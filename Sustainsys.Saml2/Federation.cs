@@ -37,7 +37,7 @@ namespace Kentor.AuthServices
 
             var signingKeys = config.SigningCertificates.Any() ?
                 config.SigningCertificates.Select(
-                sc => new X509RawDataKeyIdentifierClause(sc.LoadCertificate()))
+                sc => new Microsoft.IdentityModel.Tokens.X509SecurityKey(sc.LoadCertificate()))
                 : null;
 
             Init(config.MetadataLocation, config.AllowUnsolicitedAuthnResponse, options, signingKeys);
@@ -58,7 +58,7 @@ namespace Kentor.AuthServices
             : this (metadataLocation,
                   allowUnsolicitedAuthnResponse,
                   options,
-                  (IEnumerable<SecurityKeyIdentifierClause>)null)
+                  (IEnumerable<Microsoft.IdentityModel.Tokens.AsymmetricSecurityKey>)null)
         { }
 
         /// <summary>
@@ -79,7 +79,7 @@ namespace Kentor.AuthServices
             :this (metadataLocation,
                  allowUnsolicitedAuthnResponse,
                  options, 
-                 signingKeys.Select(k => new X509RawDataKeyIdentifierClause(k)))
+                 signingKeys.Select(k => new Microsoft.IdentityModel.Tokens.X509SecurityKey(k)))
         { }
 
         /// <summary>
@@ -96,7 +96,7 @@ namespace Kentor.AuthServices
         public Federation(string metadataLocation,
             bool allowUnsolicitedAuthnResponse,
             IOptions options,
-            IEnumerable<SecurityKeyIdentifierClause> signingKeys)
+            IEnumerable<Microsoft.IdentityModel.Tokens.AsymmetricSecurityKey> signingKeys)
         {
             Init(metadataLocation, allowUnsolicitedAuthnResponse, options, signingKeys);
         }
@@ -112,7 +112,7 @@ namespace Kentor.AuthServices
         private void Init(string metadataLocation,
             bool allowUnsolicitedAuthnResponse,
             IOptions options,
-            IEnumerable<SecurityKeyIdentifierClause> signingKeys)
+            IEnumerable<Microsoft.IdentityModel.Tokens.AsymmetricSecurityKey> signingKeys)
         {
             this.allowUnsolicitedAuthnResponse = allowUnsolicitedAuthnResponse;
             this.options = options;
@@ -241,7 +241,7 @@ namespace Kentor.AuthServices
         /// <summary>
         /// Signing keys to use to verify the metadata before using it.
         /// </summary>
-        public IList<SecurityKeyIdentifierClause> SigningKeys { get; private set; }
+        public IList<Microsoft.IdentityModel.Tokens.AsymmetricSecurityKey> SigningKeys { get; private set; }
 
         private void ScheduleMetadataReload()
         {

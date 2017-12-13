@@ -15,7 +15,9 @@ using System.Net;
 using System.Collections.Concurrent;
 using System.Security.Claims;
 using System.Diagnostics.CodeAnalysis;
+using System.Security.Cryptography.X509Certificates;
 #if NET45
+using System.IdentityModel.Tokens;
 using System.IdentityModel.Metadata;
 #endif
 
@@ -454,8 +456,22 @@ namespace Kentor.AuthServices
 
             var keys = idpDescriptor.Keys.Where(k => k.Use == KeyType.Unspecified || k.Use == KeyType.Signing);
 
-            //signingKeys.SetLoadedItems(keys.Select(k => k.KeyInfo.First(c => c.CanCreateKey)).ToList());
+            signingKeys.SetLoadedItems(keys.Select(kd => ToMsmAssymmetricSecurityKey(kd.KeyInfo)).ToList());
         }
+
+        private static Microsoft.IdentityModel.Tokens.AsymmetricSecurityKey 
+            ToMsmAssymmetricSecurityKey(SecurityKeyIdentifier keyIdentifier)
+        {
+            var clause = keyIdentifier.First(ki => ki.CanCreateKey);
+
+            if(clause is X509RawDataKeyIdentifierClause x509Clause)
+            {
+                return new Microsoft.IdentityModel.Tokens.X509SecurityKey(
+                    new X509Certificate2(x509Clause.GetX509RawData()));
+            }
+            throw new NotImplementedException();
+        }
+
 
         private static ProtocolEndpoint GetPreferredEndpoint(ICollection<ProtocolEndpoint> endpoints)
         {

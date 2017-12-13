@@ -82,7 +82,7 @@ namespace Kentor.AuthServices.Metadata
 
         private static MetadataBase Load(
             string metadataLocation,
-            IEnumerable<SecurityKeyIdentifierClause> signingKeys,
+            IEnumerable<Microsoft.IdentityModel.Tokens.AsymmetricSecurityKey> signingKeys,
             bool validateCertificate,
             string minIncomingSigningAlgorithm)
         {
@@ -114,7 +114,7 @@ namespace Kentor.AuthServices.Metadata
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope", Justification = "No unmanaged resources involved, safe to ignore")]
         private static XmlDictionaryReader ValidateSignature(
             XmlDictionaryReader reader,
-            IEnumerable<SecurityKeyIdentifierClause> signingKeys,
+            IEnumerable<Microsoft.IdentityModel.Tokens.AsymmetricSecurityKey> signingKeys,
             bool validateCertificate,
             string minIncomingSigningAlgorithm)
         {
@@ -122,8 +122,7 @@ namespace Kentor.AuthServices.Metadata
             xmlDoc.Load(reader);
 
             if(!xmlDoc.DocumentElement.IsSignedByAny(
-                //signingKeys,
-                null,
+                signingKeys,
                 validateCertificate,
                 minIncomingSigningAlgorithm))
             {
@@ -176,7 +175,7 @@ namespace Kentor.AuthServices.Metadata
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "IdentityProvider")]
         public static ExtendedEntitiesDescriptor LoadFederation(
             string metadataLocation,
-            IEnumerable<SecurityKeyIdentifierClause> signingKeys,
+            IEnumerable<Microsoft.IdentityModel.Tokens.AsymmetricSecurityKey> signingKeys,
             bool validateCertificate,
             string minIncomingSigningAlgorithm)
         {

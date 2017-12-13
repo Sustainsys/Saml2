@@ -53,7 +53,7 @@ namespace SampleAspNetCore2ApplicationNETFramework
                     options.SPOptions.EntityId = new Saml2NameIdentifier("https://localhost:44342/Saml2");
                     options.IdentityProviders.Add(
                         new IdentityProvider(
-                            new EntityId("http://localhost:52071/Metadata"), options.SPOptions)
+                            new EntityId("https://stubidp.sustainsys.com/Metadata"), options.SPOptions)
                         {
                             LoadMetadata = true
                         });
