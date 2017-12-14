@@ -88,6 +88,38 @@ body {
 
 .dropdown-menu > li > a{
     color: white;
+    font-size: 27px;
+}
+
+ul.dropdown-menu {
+    background-color: @dark-grey;
+}
+
+.navbar-right {
+    background-image: url("Sustainsys.png");
+    background-size: 327px 100px;
+    background-repeat: no-repeat;
+    height: 100px;
+    width: 327px;
+    margin-right: 15px;
+
+    img {
+        max-height: 100px;
+    }
+}
+
+@media (max-width: 1075px) {
+    .navbar-right {
+        width: 80px;
+    }
+}
+
+@media (max-width: 829px) {
+    .navbar-right {
+        width: 164px;
+        height: 50px;
+        background-size: 164px 50px;
+    }
 }
 
 @media (min-width: 768px) {
@@ -98,8 +130,8 @@ body {
             > a {
                 padding-top: 40px;
                 padding-bottom: 40px;
-                padding-left: 20px;
-                padding-right: 20px;
+                padding-left: 15px;
+                padding-right: 15px;
             }
         }
     }
@@ -129,10 +161,17 @@ body {
     }
 }
 
-@media (max-width: 900px)
-{
-    .navbar-right img {
-        height: 50px;
+@media (max-width: 550px){
+    .navbar-nav > li > a{
+        font-size: 28px;
+    }
+
+    .navbar-right{
+        width: 40px;
+    }
+    
+    .dropdown-menu > li > a {
+        font-size: 18px;
     }
 }
 
@@ -152,15 +191,6 @@ body {
         background-color: @dark-blue;
     }
 }
-
-.navbar-right{
-    margin-right: 15px;
-    img{
-        max-height: 100px;
-    }
-
-}
-
 
 
 a {

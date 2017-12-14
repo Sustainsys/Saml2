@@ -24,30 +24,44 @@
                 <span class="icon-bar"></span>
             </button>
         </div>
-        <div class="navbar-header navbar-right">
-            <a href="https://sustainsys.com">
-                <img class="pull-right" src="~/Content/Sustainsys.png" />
-            </a>
-        </div>
+        <a href="https://sustainsys.com">
+            <div class="navbar-header navbar-right pull-right"></div>
+        </a>
         <div class="navbar-collapse collapse">
             <ul class="nav navbar-nav">
                 <li><a href="@Request.ApplicationPath">Home</a></li>
-                <li>@Html.ActionLink("Metadata", "BrowserFriendly", "Metadata")</li>
-                @if (ViewContext.RouteData.Values["idpId"] != null)
-                {
-                    <li class="dropdown">
-                        <a class="dropdown-toggle" href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            Tenant<span class="caret"></span>
-                        </a>
-                        <ul class="dropdown-menu">
-                            <li>
-                                @Html.ActionLink("Home", "Index", "Home", null, new { @class="dropdown-item" })
-                                @Html.ActionLink("Manage", "Index", "Manage", null, new { @class = "dropdown-item" })
-                            </li>
-                        </ul>
-                    </li>
-                }
-                <li><a href="https://github.com/Sustainsys/Saml2">Source</a></li>
+                <li class="dropdown">
+                    <a class="dropdown-toggle" href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        Metadata<span class="caret"></span>
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li>@Html.ActionLink("Single Idp", "BrowserFriendly", "Metadata")</li>
+                        <li>@Html.ActionLink("Federation", "BrowswerFriendly", "Federation")</li>
+                    </ul>
+                </li>
+                <li class="dropdown">
+                    <a class="dropdown-toggle" href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        Tenant<span class="caret"></span>
+                    </a>
+                    <ul class="dropdown-menu">
+                    @if (ViewContext.RouteData.Values["idpId"] != null)
+                    {
+                        <li>@Html.ActionLink("Home", "Index", "Home", null, new { @class = "dropdown-item" })</li>
+                        <li>@Html.ActionLink("Manage", "Index", "Manage", null, new { @class = "dropdown-item" })</li>
+                    }
+                    <li>@Html.ActionLink("Create New", "Index", "Manage", new { idpId = Guid.NewGuid() }, null)</li>
+                    </ul>
+                </li>
+                <li class="dropdown">
+                    <a class="dropdown-toggle" href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        Services<span class="caret"></span>
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li>@Html.ActionLink("Single Sign On", "Index", "Home")</li>
+                        <li>@Html.ActionLink("Single Logout", "Index", "Logout")</li>
+                        <li>@Html.ActionLink("Discovery Service", "Index", "DiscoveryService")</li>
+                    </ul>
+                </li>
             </ul>
         </div>
         @if(ViewBag.Title != null)
