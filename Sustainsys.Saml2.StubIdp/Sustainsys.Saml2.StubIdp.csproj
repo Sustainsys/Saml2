@@ -125,6 +125,8 @@
     <Content Include="robots.txt" />
     <Content Include="Scripts\ICanHaz.js" />
     <Content Include="Scripts\ICanHaz.min.js" />
+    <Content Include="App_Data\stubidp.sustainsys.com.cer" />
+    <Content Include="App_Data\stubidp.sustainsys.com.pfx" />
     <None Include="Scripts\jquery-1.11.3.intellisense.js" />
     <Content Include="Scripts\jquery-1.11.3.js" />
     <Content Include="Scripts\jquery-1.11.3.min.js" />
