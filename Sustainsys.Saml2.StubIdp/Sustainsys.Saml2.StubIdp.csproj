@@ -186,6 +186,7 @@
     <Content Include="Views\Logout\InitiateLogout.cshtml" />
     <Content Include="Views\Logout\RespondToLogout.cshtml" />
     <Content Include="Views\Logout\ReceivedLogoutResponse.cshtml" />
+    <Content Include="Views\Shared\_About.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

@@ -1,25 +1,44 @@
 ﻿@model RespondToLogoutRequestModel
-
-@using (Html.BeginForm("RespondToLogoutRequest", "Logout"))
-{
-    <div>
-        @Html.LabelFor(m => m.LogoutRequestXml)
-        <pre class="xml">@Model.LogoutRequestXml</pre>
-    </div>
-    <div>
-        @Html.LabelFor(m => m.InResponseTo)
-        @Html.EditorFor(m => m.InResponseTo)
-        @Html.ValidationMessageFor(m => m.InResponseTo)
-    </div>
-    <div>
-        @Html.LabelFor(m => m.RelayState)
-        @Html.EditorFor(m => m.RelayState)
-        @Html.ValidationMessageFor(m => m.RelayState)
-    </div>
-    <div>
-        @Html.LabelFor(m => m.DestinationUrl)
-        @Html.EditorFor(m => m.DestinationUrl)
-        @Html.ValidationMessageFor(m => m.DestinationUrl)
-    </div>
-    <button id="submit">Logout</button>
+@{
+    ViewBag.Title = "Single Logout";
 }
+<div class="container">
+    <div class="col-lg-8 card">
+        <h2>Respond to Single Logout Request</h2>
+        <div class="contents">
+            @using (Html.BeginForm("RespondToLogoutRequest", "Logout"))
+            {
+                <div class="form-group row">
+                    <label class="col-form-label col-md-4">@Html.DisplayNameFor(m => m.LogoutRequestXml)</label>
+                    <div class="col-md-8">
+                        <pre class="xml">@Model.LogoutRequestXml</pre>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    @Html.LabelFor(m => m.InResponseTo, new { @class = "col-form-label col-md-4" })
+                    <div class="col-md-8">
+                        @Html.TextBoxFor(m => m.InResponseTo, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(m => m.InResponseTo)
+                    </div>
+                </div>
+                <div class="form-group row">
+                    @Html.LabelFor(m => m.RelayState, new { @class = "col-form-label col-md-4" })
+                    <div class="col-md-8">
+                        @Html.TextBoxFor(m => m.RelayState, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(m => m.RelayState)
+                    </div>
+                </div>
+                <div class="form-group row">
+                    @Html.LabelFor(m => m.DestinationUrl, new { @class = "col-form-label col-md-4" })
+                    <div class="col-md-8">
+                        @Html.TextBoxFor(m => m.DestinationUrl, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(m => m.DestinationUrl)
+                    </div>
+                </div>
+                <button class="btn btn-primary" id="submit">Logout</button>
+            }
+        </div>
+    </div>
+    @Html.Partial("_About")
+</div>
+

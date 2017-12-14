@@ -23,9 +23,8 @@ else
         <h2>Send SAML2 Response</h2>
         <div class="contents">
             <p>
-                This form will allow you to send a SAML2 Response to a service provider.
-                If the In Response To ID field is empty, the Response is considered
-                unsolicited (IDP initiated).
+                This form will send a SAML2 Response to a service provider. If the In Response To ID
+                field is empty, the Response is considered unsolicited (IDP initiated).
             </p>
             <p>
                 The pre-filled values in the user selection box are just an example. If you 
@@ -46,7 +45,7 @@ else
                 if (Model.AssertionModel.AuthnRequestXml != null)
                 {
                     <div class="hide-details form-group row">
-                        @Html.LabelFor(m => m.AssertionModel.AuthnRequestXml, new { @class = "col-form-label col-md-4" })
+                        <label class="col-form-label col-md-4"></label>
                         <div class="col-md-8">
                             <pre class="xml">@Model.AssertionModel.AuthnRequestXml</pre>
                         </div>
@@ -76,7 +75,7 @@ else
                         @Html.ValidationMessageFor(m => m.AssertionModel.Audience)
                     </div>
                 </div>
-
+                 
                 <div class="hide-details form-group row">
                     <label class="col-form-label col-md-4">Send response via</label>
                     <div class="radio-group col-md-8">
@@ -136,38 +135,8 @@ else
 
         </div>
     </div>
-    <div class="col-lg-4 card">
-        <h2>About</h2>
-        <div class="contents">
-            <p>
-                The Stub Idp is part of the <a href="https://github.com/Sustainsys/Saml2">
-                    Sustainsys.Saml2
-                </a> open source package for ASP.NET.
-            </p>
-            <p>
-                The SAML messages sent by the Stub Idp will be signed with
-                @Html.ActionLink("this certificate", "Index", "Certificate").
-                To validate the responses you need to download it and configure your
-                service provider to trust it. 
-            </p>
-            <div class="panel panel-warning">
-                <div class="panel-heading">
-                    Warning
-                </div>
-                <div class="panel-body">
-                    Never trust the stub idp certificate in a production environment as it will
-                    allow anyone to sign in to your application as whatever user they choose.
-                </div>
-            </div>
-            @Html.Partial("_MetadataLink")
-            <p>
-                The stub idp also features
-                @Html.ActionLink("single logout support", "Index", "Logout").
-            </p>
-        </div>
-    </div>
+    @Html.Partial("_About")
 </div>
-
 
 
 <script id="attributeRowTemplate" type="text/html">

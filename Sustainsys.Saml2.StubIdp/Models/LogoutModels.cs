@@ -31,8 +31,6 @@ namespace Kentor.AuthServices.StubIdp.Models
         [DisplayName("Subject NameID")]
         public string NameId { get; set; }
 
-        public bool AutoPost { get; set; }
-
         public Saml2LogoutRequest ToLogoutRequest()
         {
             return new Saml2LogoutRequest()
