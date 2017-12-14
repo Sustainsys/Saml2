@@ -15,7 +15,7 @@
             <div class="form-group row">
                 @Html.LabelFor(m => m.Status, new { @class = "col-form-label col-md-4" })
                 <div class="col-md-8">
-                    <span id="status" class="col-md8">@Html.DisplayFor(m => m.Status)</span>
+                    @Html.DisplayFor(m => m.Status)
                 </div>
             </div>
             <p>
