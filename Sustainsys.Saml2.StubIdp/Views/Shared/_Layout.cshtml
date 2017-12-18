@@ -16,17 +16,17 @@
 </head>
 <body>
     <div class="nav navbar navbar-sustainsys navbar-fixed-top">
-        <div class="navbar-header pull-left">
+        <div class="navbar-header">
             <button type="button" class="navbar-toggle pull-left" data-toggle="collapse" data-target=".navbar-collapse">
                 <span class="sr-only">Toggle navigation</span>
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
+            <a href="https://sustainsys.com">
+                <div class="navbar-right pull-right"></div>
+            </a>
         </div>
-        <a href="https://sustainsys.com">
-            <div class="navbar-header navbar-right pull-right"></div>
-        </a>
         <div class="navbar-collapse collapse">
             <ul class="nav navbar-nav">
                 <li><a href="@Request.ApplicationPath">Home</a></li>
@@ -44,12 +44,12 @@
                         Tenant<span class="caret"></span>
                     </a>
                     <ul class="dropdown-menu">
-                    @if (ViewContext.RouteData.Values["idpId"] != null)
+                        @if (ViewContext.RouteData.Values["idpId"] != null)
                     {
                         <li>@Html.ActionLink("Home", "Index", "Home", null, new { @class = "dropdown-item" })</li>
                         <li>@Html.ActionLink("Manage", "Index", "Manage", null, new { @class = "dropdown-item" })</li>
-                    }
-                    <li>@Html.ActionLink("Create New", "Index", "Manage", new { idpId = Guid.NewGuid() }, null)</li>
+                }
+                        <li>@Html.ActionLink("Create New", "Index", "Manage", new { idpId = Guid.NewGuid() }, null)</li>
                     </ul>
                 </li>
                 <li class="dropdown">
