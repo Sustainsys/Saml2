@@ -20,9 +20,9 @@ namespace Kentor.AuthServices.StubIdp.Controllers
                 "application/samlmetadata+xml");
         }
 
-        private static string CreateMetadataString(bool defaultPost)
+        private static string CreateMetadataString(bool enforcePost)
         {
-            return MetadataModel.CreateFederationMetadata(defaultPost).ToXmlString(
+            return MetadataModel.CreateFederationMetadata(enforcePost).ToXmlString(
                 CertificateHelper.SigningCertificate,
                 SignedXml.XmlDsigRSASHA256Url);
         }
