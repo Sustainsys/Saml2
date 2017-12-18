@@ -45,6 +45,9 @@ namespace Kentor.AuthServices
         /// <param name="audience">Audience to set as audience restriction.</param>
         /// <param name="inResponseTo">In response to id</param>
         /// <param name="destinationUri">The destination Uri for the message</param>
+        /// <param name="sessionNotOnOrAfter">The time instant at which the session between the principal 
+        /// identified by the subject and the SAML authority issuing this statement
+        /// must be considered ended.</param>
         /// <returns>Saml2Assertion</returns>
         /// <exception cref="ArgumentNullException"></exception>
         public static Saml2Assertion ToSaml2Assertion(
