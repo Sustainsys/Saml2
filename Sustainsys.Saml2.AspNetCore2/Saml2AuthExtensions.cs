@@ -37,6 +37,21 @@ namespace Microsoft.Extensions.DependencyInjection
             this AuthenticationBuilder builder,
             string scheme,
             Action<Saml2Options> configureOptions)
+            => builder.AddSaml2(scheme, Saml2Defaults.DisplayName, configureOptions);
+
+        /// <summary>
+        /// Register Saml2 Authentication with a custom scheme name.
+        /// </summary>
+        /// <param name="builder">Authentication Builder</param>
+        /// <param name="scheme">Name of the authentication scheme</param>
+        /// <param name="configureOptions">Action that configures Saml2 Options</param>
+        /// <param name="displayName">Display name of scheme</param>
+        /// <returns>Authentication Builder</returns>
+        public static AuthenticationBuilder AddSaml2(
+            this AuthenticationBuilder builder,
+            string scheme,
+            string displayName,
+            Action<Saml2Options> configureOptions)
         {
             if(builder == null)
             {
@@ -50,7 +65,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 o.AddScheme(scheme, s =>
                 {
                     s.HandlerType = typeof(Saml2Handler);
-                    s.DisplayName = Saml2Defaults.DisplayName;
+                    s.DisplayName = displayName;
                 });
             });
             

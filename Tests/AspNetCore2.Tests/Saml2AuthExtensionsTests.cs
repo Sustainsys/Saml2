@@ -72,7 +72,24 @@ namespace Sustainsys.Saml2.AspNetCore2.Tests
                 .ImplementationInstance.As<ConfigureNamedOptions<Saml2Options>>()
                 .Name.Should().Be("CustomScheme", "configuration should be registered for right name");
         }
-            
+
+        [TestMethod]
+        public void Saml2AuthExtensions_AddSaml2_RegisterSaml2Scheme_CustomDisplayName()
+        {
+            var serviceCollection = new ServiceCollection();
+            var builder = new AuthenticationBuilder(serviceCollection);
+
+            builder.AddSaml2("CustomScheme", "DisplayName", opt => { })
+                .Should().BeSameAs(builder);
+
+            var authOptions = new AuthenticationOptions();
+            serviceCollection.Single(sd => sd.ServiceType == typeof(IConfigureOptions<AuthenticationOptions>))
+                .ImplementationInstance.As<IConfigureOptions<AuthenticationOptions>>()
+                .Configure(authOptions);
+
+            authOptions.Schemes.Single().DisplayName.Should().Be("DisplayName", "scheme should be added with right dispaly name");
+        }
+
         [TestMethod]
         public void Saml2AuthExtensions_AddSaml2_NullCheckBuilder()
         {
