@@ -209,7 +209,7 @@ namespace Kentor.AuthServices.Saml2P
         public Saml2RequestedAuthnContext RequestedAuthnContext { get; set; }
 
         /// <summary>
-        /// Saml2BindingType.
+        /// Binding type to request the Idp to use when responding.
         /// </summary>
         public Saml2BindingType? Binding { get; set; }
 
