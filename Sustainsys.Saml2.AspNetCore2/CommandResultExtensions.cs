@@ -4,16 +4,18 @@ using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Http;
 using System;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace Sustainsys.Saml2.AspNetCore2
 {
     static class CommandResultExtensions
     {
-        public static void Apply(
+        public static async Task Apply(
             this CommandResult commandResult,
             HttpContext httpContext,
             IDataProtector dataProtector,
-            string SignInScheme)
+            string signInScheme,
+            string signOutScheme)
         {
             httpContext.Response.StatusCode = (int)commandResult.HttpStatusCode;
 
@@ -48,7 +50,7 @@ namespace Sustainsys.Saml2.AspNetCore2
             {
                 var buffer = Encoding.UTF8.GetBytes(commandResult.Content);
                 httpContext.Response.ContentType = commandResult.ContentType;
-                httpContext.Response.Body.Write(buffer, 0, buffer.Length);
+                await httpContext.Response.Body.WriteAsync(buffer, 0, buffer.Length);
             }
 
             if(commandResult.Principal != null)
@@ -57,7 +59,12 @@ namespace Sustainsys.Saml2.AspNetCore2
                 {
                     RedirectUri = commandResult.Location.OriginalString
                 };
-                httpContext.SignInAsync(SignInScheme, commandResult.Principal, authProps);
+                await httpContext.SignInAsync(signInScheme, commandResult.Principal, authProps);
+            }
+
+            if(commandResult.TerminateLocalSession)
+            {
+                await httpContext.SignOutAsync(signOutScheme ?? signInScheme);
             }
         }
     }

@@ -67,7 +67,7 @@ namespace Sustainsys.Saml2.AspNetCore2.Tests
                 Arg.Do<ClaimsPrincipal>(p => principal = p),
                 Arg.Do<AuthenticationProperties>(ap => authProps = ap));
 
-            commandResult.Apply(context, new StubDataProtector(), "TestSignInScheme");
+            await commandResult.Apply(context, new StubDataProtector(), "TestSignInScheme", null);
 
             var expectedCookieData = HttpRequestData.ConvertBinaryData(
                 StubDataProtector.Protect(commandResult.GetSerializedRequestState()));
@@ -103,7 +103,7 @@ namespace Sustainsys.Saml2.AspNetCore2.Tests
             context.RequestServices.GetService(typeof(IAuthenticationService))
                 .Returns(authService);
 
-            commandResult.Apply(context, new StubDataProtector(), "TestSignInScheme");
+            await commandResult.Apply(context, new StubDataProtector(), "TestSignInScheme", null);
 
             context.Response.StatusCode.Should().Be(200);
             context.Response.Headers.Keys.Should().NotContain("Location");

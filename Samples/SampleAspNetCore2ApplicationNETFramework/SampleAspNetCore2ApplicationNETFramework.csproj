@@ -28,4 +28,9 @@
   <ItemGroup>
     <Reference Include="System.IdentityModel" />
   </ItemGroup>
+  <ItemGroup>
+    <None Update="Sustainsys.Saml2.Tests.pfx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
 </Project>

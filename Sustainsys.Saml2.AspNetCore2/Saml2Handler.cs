@@ -15,13 +15,14 @@ namespace Sustainsys.Saml2.AspNetCore2
     /// <summary>
     /// Authentication handler for Saml2
     /// </summary>
-    public class Saml2Handler : IAuthenticationRequestHandler
+    public class Saml2Handler : IAuthenticationRequestHandler, IAuthenticationSignOutHandler
     {
         private readonly IOptionsMonitorCache<Saml2Options> optionsCache;
-        Saml2Options options;
+
+        // Internal to be visible to tests.
+        internal Saml2Options options;
         HttpContext context;
         private readonly IDataProtector dataProtector;
-        AuthenticationScheme scheme;
         private readonly IOptionsFactory<Saml2Options> optionsFactory;
 
         /// <summary>
@@ -52,7 +53,6 @@ namespace Sustainsys.Saml2.AspNetCore2
         public Task InitializeAsync(AuthenticationScheme scheme, HttpContext context)
         {
             this.context = context;
-            this.scheme = scheme;
             options = optionsCache.GetOrAdd(scheme.Name, () => optionsFactory.Create(scheme.Name));
 
             return Task.CompletedTask;
@@ -66,7 +66,7 @@ namespace Sustainsys.Saml2.AspNetCore2
         }
 
         /// <InheritDoc />
-        public Task ChallengeAsync(AuthenticationProperties properties)
+        public async Task ChallengeAsync(AuthenticationProperties properties)
         {
             if (properties == null)
             {
@@ -86,9 +86,7 @@ namespace Sustainsys.Saml2.AspNetCore2
                 options,
                 properties.Items);
 
-            result.Apply(context, dataProtector, scheme.Name);
-
-            return Task.CompletedTask;
+            await result.Apply(context, dataProtector, null, null);
         }
 
         /// <InheritDoc />
@@ -99,7 +97,7 @@ namespace Sustainsys.Saml2.AspNetCore2
         }
 
         /// <InheritDoc />
-        public Task<bool> HandleRequestAsync()
+        public async Task<bool> HandleRequestAsync()
         {
             if(context.Request.Path.StartsWithSegments(options.SPOptions.ModulePath, StringComparison.Ordinal))
             {
@@ -109,11 +107,34 @@ namespace Sustainsys.Saml2.AspNetCore2
                 var commandResult = CommandFactory.GetCommand(commandName).Run(
                     context.ToHttpRequestData(dataProtector.Unprotect), options);
 
-                commandResult.Apply(context, dataProtector, options.SignInScheme);
+                await commandResult.Apply(context, dataProtector, options.SignInScheme, options.SignOutScheme);
 
-                return Task.FromResult(true);
+                return true;
             }
-            return Task.FromResult(false);
+            return false;
+        }
+
+        /// <summary>
+        /// Initiate a federated sign out if supported (Idp supports it and sp has a configured
+        /// signing certificate)
+        /// </summary>
+        /// <param name="properties">Authentication props, containing a return url.</param>
+        /// <returns>Task</returns>
+        public async Task SignOutAsync(AuthenticationProperties properties)
+        {
+            if (properties == null)
+            {
+                throw new ArgumentNullException(nameof(properties));
+            }
+
+            await LogoutCommand.InitiateLogout(
+                context.ToHttpRequestData(dataProtector.Unprotect),
+                new Uri(properties.RedirectUri, UriKind.RelativeOrAbsolute),
+                options,
+                // In the Asp.Net Core2 model, it's the caller's responsibility to terminate the
+                // local session on an SP-initiated logout.
+                terminateLocalSession: false)
+                .Apply(context, dataProtector, null, null);
         }
     }
 }

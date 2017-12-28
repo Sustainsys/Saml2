@@ -1,6 +1,7 @@
 ﻿using FluentAssertions;
 using Kentor.AuthServices;
 using Kentor.AuthServices.Configuration;
+using Kentor.AuthServices.Saml2P;
 using Kentor.AuthServices.TestHelpers;
 using Kentor.AuthServices.WebSso;
 using Microsoft.AspNetCore.Authentication;
@@ -19,6 +20,8 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Security.Claims;
+using System.Security.Cryptography.X509Certificates;
+using System.Security.Cryptography.Xml;
 using System.Text;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
@@ -43,8 +46,6 @@ namespace Sustainsys.Saml2.AspNetCore2.Tests
 
             public AuthenticationScheme AuthenticationScheme
                 => new AuthenticationScheme("Saml2", "Saml2", typeof(Saml2Handler));
-
-            public Saml2Options Options { get; }
 
             public Saml2Handler Subject { get; }
 
@@ -240,8 +241,9 @@ namespace Sustainsys.Saml2.AspNetCore2.Tests
         {
             var context = new Saml2HandlerTestContext();
 
-            context.Subject.Invoking(s => s.ChallengeAsync(null))
-                .ShouldThrow<ArgumentNullException>()
+            Func<Task> f = async () => await context.Subject.ChallengeAsync(null);
+
+            f.ShouldThrow<ArgumentNullException>()
                 .And.ParamName.Should().Be("properties");
         }
 
@@ -255,19 +257,137 @@ namespace Sustainsys.Saml2.AspNetCore2.Tests
         }
 
         [TestMethod]
-        public void Saml2Handler_HandleRequestAsync_ReturnsMetadata()
+        public async Task Saml2Handler_HandleRequestAsync_ReturnsMetadata()
         {
             var context = new Saml2HandlerTestContext();
 
             context.HttpContext.Request.Path = "/Saml2";
 
-            context.Subject.HandleRequestAsync();
+            await context.Subject.HandleRequestAsync();
 
             context.HttpContext.Response.StatusCode.Should().Be(200);
 
             Encoding.UTF8.GetString(
                 context.HttpContext.Response.Body.As<MemoryStream>().GetBuffer())
                 .Should().StartWith("<EntityDescriptor");
+        }
+
+        [TestMethod]
+        public async Task Saml2Handler_SignOutAsync_RedirectsIfLogoutDisabled()
+        {
+            var context = new Saml2HandlerTestContext();
+
+            context.Subject.options.IdentityProviders.Default
+                .SingleLogoutServiceUrl.Should().BeNull("this test assumes that the idp doesn't support logout.");
+
+            IAuthenticationSignOutHandler subject = context.Subject;
+
+            var redirectUri = "https://sp.example.com/loggedout";
+
+            var props = new AuthenticationProperties()
+            {
+                RedirectUri = redirectUri
+            };
+            await subject.SignOutAsync(props);
+
+            context.HttpContext.Response.Body.Length.Should().Be(0, "if logout is disabled, nothing should be written to body");
+            context.HttpContext.Response.StatusCode.Should().Be(303, "if logout is disabled, a redirect to logged out page should be done.");
+            context.HttpContext.Response.Headers["Location"].Single().Should().Be(redirectUri, "if logout is disabled a redirect to logged out page should be done.");
+            context.HttpContext.Response.Headers.TryGetValue("Set-Cookie", out StringValues _).Should().BeFalse("if logout is disabled, no cookies should be altered");
+        }
+
+        [TestMethod]
+        public async Task Saml2Handler_SignOutAsync_InitiatesSignOutIfConfigured()
+        {
+            var context = new Saml2HandlerTestContext();
+
+            context.Subject.options.IdentityProviders.Default.SingleLogoutServiceUrl = new Uri("https://idp.example.com/Logout");
+            context.Subject.options.SPOptions.ServiceCertificates.Add(new X509Certificate2("Sustainsys.Saml2.Tests.pfx"));
+            context.HttpContext.User = new ClaimsPrincipal(
+                new ClaimsIdentity(new Claim[]
+                {
+                    new Claim(AuthServicesClaimTypes.LogoutNameIdentifier, ",,,,NameId", null, "https://idp.example.com"),
+                    new Claim(AuthServicesClaimTypes.SessionIndex, "SessionId", null, "https://idp.example.com")
+                }, "Federation"));
+
+            IAuthenticationSignOutHandler subject = context.Subject;
+
+            var props = new AuthenticationProperties()
+            {
+                RedirectUri = "/loggedout"
+            };
+
+            await subject.SignOutAsync(props);
+
+            context.HttpContext.Response.Body.Length.Should().Be(0, "when using redirect binding, nothing should be written to body");
+            context.HttpContext.Response.StatusCode.Should().Be(303, "when using redirect binding, status code shoulde be 303");
+            context.HttpContext.Response.Headers["Location"].Single().Should().StartWith("https://idp.example.com/Logout?SAMLRequest=",
+                "location should be set for outbound redirect binding");
+
+            context.HttpContext.Response.Cookies.Received().Append(
+                Arg.Is<string>(s => s.StartsWith("Kentor.")),
+                Arg.Is<string>(s => new StoredRequestState(StubDataProtector.Unprotect(HttpRequestData.GetBinaryData(s)))
+                    .ReturnUrl.OriginalString == "/loggedout"),
+                Arg.Any<CookieOptions>());
+        }
+
+        [TestMethod]
+        public void Saml2Handler_SignOutAsync_NullcheckProperties()
+        {
+            var context = new Saml2HandlerTestContext();
+            
+            Func<Task> f = async () => await context.Subject.SignOutAsync(null);
+
+            f.ShouldThrow<ArgumentNullException>().And.ParamName.Should().Be("properties");
+        }
+
+        [TestMethod]
+        public async Task Saml2Handler_HandleRequestAsync_TerminatesLocalSessionOnLogoutRequest_SignOutSchemeSet()
+        {
+            await Saml2Handler_HandleRequestAsync_TerminatesLocalSessionOnLogoutRequest("SignOutScheme");
+        }
+
+        [TestMethod]
+        public async Task Saml2Handler_HandleRequestAsync_TerminatesLocalSessionOnLogoutRequest_NoSignOutSchemeSet()
+        {
+            await Saml2Handler_HandleRequestAsync_TerminatesLocalSessionOnLogoutRequest(null);
+        }
+
+        public async Task Saml2Handler_HandleRequestAsync_TerminatesLocalSessionOnLogoutRequest(string signOutScheme)
+        {
+            var context = new Saml2HandlerTestContext();
+
+            context.Subject.options.IdentityProviders.Default.SingleLogoutServiceUrl = new Uri("https://idp.example.com/Logout");
+            context.Subject.options.SPOptions.ServiceCertificates.Add(new X509Certificate2("Sustainsys.Saml2.Tests.pfx"));
+            context.Subject.options.SignOutScheme = signOutScheme;
+
+            var request = new Saml2LogoutRequest()
+            {
+                SessionIndex = "SessionId",
+                DestinationUrl = new Uri("http://sp.example.com/Saml2/Logout"),
+                NameId = new Saml2NameIdentifier("NameId"),
+                Issuer = new EntityId("https://idp.example.com"),
+                SigningCertificate = SignedXmlHelper.TestCert,
+                SigningAlgorithm = SignedXml.XmlDsigRSASHA256Url
+            };
+
+            var url = Saml2Binding.Get(Saml2BindingType.HttpRedirect)
+                .Bind(request).Location;
+
+            context.HttpContext.Request.Path = new PathString(url.AbsolutePath);
+            context.HttpContext.Request.QueryString = new QueryString(url.Query);
+
+            var authService = Substitute.For<IAuthenticationService>();
+
+            context.HttpContext.RequestServices.GetService(typeof(IAuthenticationService))
+                .Returns(authService);
+
+            await context.Subject.HandleRequestAsync();
+
+            await authService.Received().SignOutAsync(
+                context.HttpContext,
+                signOutScheme ?? TestHelpers.defaultSignInScheme,
+                null);
         }
     }
 }

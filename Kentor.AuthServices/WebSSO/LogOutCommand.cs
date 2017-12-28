@@ -99,7 +99,7 @@ namespace Kentor.AuthServices.WebSso
             }
             else
             {
-                commandResult = InitiateLogout(request, returnUrl, options);
+                commandResult = InitiateLogout(request, returnUrl, options, true);
             }
             options.Notifications.LogoutCommandResultCreated(commandResult);
             return commandResult;
@@ -130,13 +130,32 @@ namespace Kentor.AuthServices.WebSso
             }
         }
 
+        /// <summary>
+        /// Initiatiate a federated logout.
+        /// </summary>
+        /// <param name="request">Request data</param>
+        /// <param name="returnUrl">Return url to redirect to after logout</param>
+        /// <param name="options">optins</param>
+        /// <param name="terminateLocalSession">Terminate local session as part of signout?</param>
+        /// <returns></returns>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1726:UsePreferredTerms", MessageId = "Logout")]
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "signingCertificate")]
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "SingleLogoutServiceUrl")]
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "SPOptions")]
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "LogoutNameIdentifier")]
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "DisableOutboundLogoutRequests")]
-        private static CommandResult InitiateLogout(HttpRequestData request, Uri returnUrl, IOptions options)
+        public static CommandResult InitiateLogout(HttpRequestData request, Uri returnUrl, IOptions options, bool terminateLocalSession)
         {
+            if(request == null)
+            {
+                throw new ArgumentNullException(nameof(request));
+            }
+
+            if(options == null)
+            {
+                throw new ArgumentNullException(nameof(options));
+            }
+
             string idpEntityId = null;
             Claim sessionIndexClaim = null;
             if (request.User != null)
@@ -181,6 +200,8 @@ namespace Kentor.AuthServices.WebSso
                     commandResult.SetCookieName = "Kentor." + logoutRequest.RelayState;
                 }
 
+                commandResult.TerminateLocalSession = terminateLocalSession;
+
                 options.SPOptions.Logger.WriteInformation("Sending logout request to " + idp.EntityId.Id);
             }
             else
@@ -188,12 +209,14 @@ namespace Kentor.AuthServices.WebSso
                 commandResult = new CommandResult
                 {
                     HttpStatusCode = HttpStatusCode.SeeOther,
-                    Location = returnUrl
+                    Location = returnUrl,
+                    TerminateLocalSession = terminateLocalSession
                 };
-                options.SPOptions.Logger.WriteInformation("Doing a local only logout.");
-            }
 
-            commandResult.TerminateLocalSession = true;
+                options.SPOptions.Logger.WriteInformation(
+                    "Federated logout not possible, redirecting to post-logout" 
+                    + (terminateLocalSession ? " and clearing local session" : ""));
+            }
 
             return commandResult;
         }

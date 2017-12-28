@@ -49,6 +49,10 @@ namespace Sustainsys.Saml2.AspNetCore2
             options.SignInScheme = options.SignInScheme 
                 ?? authOptions.Value.DefaultSignInScheme
                 ?? authOptions.Value.DefaultScheme;
+
+            options.SignOutScheme = options.SignOutScheme
+                ?? authOptions.Value.DefaultSignOutScheme
+                ?? authOptions.Value.DefaultAuthenticateScheme;
         }
     }
 }
