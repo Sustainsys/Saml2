@@ -1,6 +1,7 @@
 ﻿using FluentAssertions;
 using Kentor.AuthServices;
 using Kentor.AuthServices.Configuration;
+using Kentor.AuthServices.Saml2P;
 using Kentor.AuthServices.TestHelpers;
 using Kentor.AuthServices.WebSso;
 using Microsoft.AspNetCore.Authentication;
@@ -20,6 +21,7 @@ using System.Linq;
 using System.Reflection;
 using System.Security.Claims;
 using System.Security.Cryptography.X509Certificates;
+using System.Security.Cryptography.Xml;
 using System.Text;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
@@ -239,8 +241,9 @@ namespace Sustainsys.Saml2.AspNetCore2.Tests
         {
             var context = new Saml2HandlerTestContext();
 
-            context.Subject.Invoking(s => s.ChallengeAsync(null))
-                .ShouldThrow<ArgumentNullException>()
+            Func<Task> f = async () => await context.Subject.ChallengeAsync(null);
+
+            f.ShouldThrow<ArgumentNullException>()
                 .And.ParamName.Should().Be("properties");
         }
 
@@ -254,13 +257,13 @@ namespace Sustainsys.Saml2.AspNetCore2.Tests
         }
 
         [TestMethod]
-        public void Saml2Handler_HandleRequestAsync_ReturnsMetadata()
+        public async Task Saml2Handler_HandleRequestAsync_ReturnsMetadata()
         {
             var context = new Saml2HandlerTestContext();
 
             context.HttpContext.Request.Path = "/Saml2";
 
-            context.Subject.HandleRequestAsync();
+            await context.Subject.HandleRequestAsync();
 
             context.HttpContext.Response.StatusCode.Should().Be(200);
 
@@ -332,8 +335,59 @@ namespace Sustainsys.Saml2.AspNetCore2.Tests
         public void Saml2Handler_SignOutAsync_NullcheckProperties()
         {
             var context = new Saml2HandlerTestContext();
-            context.Subject.Invoking(s => s.SignOutAsync(null))
-                .ShouldThrow<ArgumentNullException>().And.ParamName.Should().Be("properties");
+            
+            Func<Task> f = async () => await context.Subject.SignOutAsync(null);
+
+            f.ShouldThrow<ArgumentNullException>().And.ParamName.Should().Be("properties");
+        }
+
+        [TestMethod]
+        public async Task Saml2Handler_HandleRequestAsync_TerminatesLocalSessionOnLogoutRequest_SignOutSchemeSet()
+        {
+            await Saml2Handler_HandleRequestAsync_TerminatesLocalSessionOnLogoutRequest("SignOutScheme");
+        }
+
+        [TestMethod]
+        public async Task Saml2Handler_HandleRequestAsync_TerminatesLocalSessionOnLogoutRequest_NoSignOutSchemeSet()
+        {
+            await Saml2Handler_HandleRequestAsync_TerminatesLocalSessionOnLogoutRequest(null);
+        }
+
+        public async Task Saml2Handler_HandleRequestAsync_TerminatesLocalSessionOnLogoutRequest(string signOutScheme)
+        {
+            var context = new Saml2HandlerTestContext();
+
+            context.Subject.options.IdentityProviders.Default.SingleLogoutServiceUrl = new Uri("https://idp.example.com/Logout");
+            context.Subject.options.SPOptions.ServiceCertificates.Add(new X509Certificate2("Sustainsys.Saml2.Tests.pfx"));
+            context.Subject.options.SignOutScheme = signOutScheme;
+
+            var request = new Saml2LogoutRequest()
+            {
+                SessionIndex = "SessionId",
+                DestinationUrl = new Uri("http://sp.example.com/Saml2/Logout"),
+                NameId = new Saml2NameIdentifier("NameId"),
+                Issuer = new EntityId("https://idp.example.com"),
+                SigningCertificate = SignedXmlHelper.TestCert,
+                SigningAlgorithm = SignedXml.XmlDsigRSASHA256Url
+            };
+
+            var url = Saml2Binding.Get(Saml2BindingType.HttpRedirect)
+                .Bind(request).Location;
+
+            context.HttpContext.Request.Path = new PathString(url.AbsolutePath);
+            context.HttpContext.Request.QueryString = new QueryString(url.Query);
+
+            var authService = Substitute.For<IAuthenticationService>();
+
+            context.HttpContext.RequestServices.GetService(typeof(IAuthenticationService))
+                .Returns(authService);
+
+            await context.Subject.HandleRequestAsync();
+
+            await authService.Received().SignOutAsync(
+                context.HttpContext,
+                signOutScheme ?? TestHelpers.defaultSignInScheme,
+                null);
         }
     }
 }

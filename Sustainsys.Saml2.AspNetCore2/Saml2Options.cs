@@ -28,6 +28,13 @@ namespace Sustainsys.Saml2.AspNetCore2
         /// </summary>
         public string SignInScheme { get; set; }
 
+
+        /// <summary>
+        /// Authentication scheme to sign out with when a logout requerst is
+        /// received from the idp.
+        /// </summary>
+        public string SignOutScheme { get; set; }
+
         /// <summary>
         /// Options for the service provider's behaviour; i.e. everything except
         /// the idp list and the notifications.
