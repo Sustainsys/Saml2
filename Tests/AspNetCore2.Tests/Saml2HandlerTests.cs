@@ -44,8 +44,6 @@ namespace Sustainsys.Saml2.AspNetCore2.Tests
             public AuthenticationScheme AuthenticationScheme
                 => new AuthenticationScheme("Saml2", "Saml2", typeof(Saml2Handler));
 
-            public Saml2Options Options { get; }
-
             public Saml2Handler Subject { get; }
 
             public HttpContext HttpContext { get; } = TestHelpers.CreateHttpContext();
@@ -268,6 +266,24 @@ namespace Sustainsys.Saml2.AspNetCore2.Tests
             Encoding.UTF8.GetString(
                 context.HttpContext.Response.Body.As<MemoryStream>().GetBuffer())
                 .Should().StartWith("<EntityDescriptor");
+        }
+
+        [TestMethod]
+        public async Task Saml2Handler_SignOutAsync_IgnoresSignOutIfLogoutDisabled()
+        {
+            var context = new Saml2HandlerTestContext();
+
+            context.Subject.options.IdentityProviders.Default
+                .SingleLogoutServiceUrl.Should().BeNull("this test assumes that the idp doesn't support logout.");
+
+            IAuthenticationSignOutHandler subject = context.Subject;
+
+            var props = new AuthenticationProperties();
+            await subject.SignOutAsync(props);
+
+            context.HttpContext.Response.Body.Length.Should().Be(0, "if logout is disabled, nothing should be written to body");
+            context.HttpContext.Response.StatusCode.Should().Be(0, "if logout is disabled, status code shouldn't be touched");
+            context.HttpContext.Response.Headers.TryGetValue("Set-Cookie", out StringValues _).Should().BeFalse("if logout is disabled, no cookies should be altered");
         }
     }
 }

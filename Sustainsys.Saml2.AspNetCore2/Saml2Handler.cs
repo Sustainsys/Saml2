@@ -15,10 +15,12 @@ namespace Sustainsys.Saml2.AspNetCore2
     /// <summary>
     /// Authentication handler for Saml2
     /// </summary>
-    public class Saml2Handler : IAuthenticationRequestHandler
+    public class Saml2Handler : IAuthenticationRequestHandler, IAuthenticationSignOutHandler
     {
         private readonly IOptionsMonitorCache<Saml2Options> optionsCache;
-        Saml2Options options;
+
+        // Internal to be visible to tests.
+        internal Saml2Options options;
         HttpContext context;
         private readonly IDataProtector dataProtector;
         AuthenticationScheme scheme;
@@ -114,6 +116,17 @@ namespace Sustainsys.Saml2.AspNetCore2
                 return Task.FromResult(true);
             }
             return Task.FromResult(false);
+        }
+
+        /// <summary>
+        /// Initiate a federated sign out if supported (Idp supports it and sp has a configured
+        /// signing certificate)
+        /// </summary>
+        /// <param name="properties">Authenticaiton props, containing a return url.</param>
+        /// <returns>Task</returns>
+        public Task SignOutAsync(AuthenticationProperties properties)
+        {
+            return Task.CompletedTask;
         }
     }
 }
