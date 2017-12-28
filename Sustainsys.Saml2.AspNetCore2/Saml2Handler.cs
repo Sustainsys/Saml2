@@ -122,10 +122,24 @@ namespace Sustainsys.Saml2.AspNetCore2
         /// Initiate a federated sign out if supported (Idp supports it and sp has a configured
         /// signing certificate)
         /// </summary>
-        /// <param name="properties">Authenticaiton props, containing a return url.</param>
+        /// <param name="properties">Authentication props, containing a return url.</param>
         /// <returns>Task</returns>
         public Task SignOutAsync(AuthenticationProperties properties)
         {
+            if (properties == null)
+            {
+                throw new ArgumentNullException(nameof(properties));
+            }
+
+            LogoutCommand.InitiateLogout(
+                context.ToHttpRequestData(dataProtector.Unprotect),
+                new Uri(properties.RedirectUri),
+                options,
+                // In the Asp.Net Core2 model, it's the callers responsibility to terminate the
+                // local session on an SP-initiated logout.
+                terminateLocalSession: false)
+                ?.Apply(context, dataProtector, null);
+
             return Task.CompletedTask;
         }
     }

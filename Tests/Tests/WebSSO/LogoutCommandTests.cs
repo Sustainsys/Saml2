@@ -1006,5 +1006,25 @@ namespace Kentor.AuthServices.Tests.WebSSO
 
             actual.ShouldBeEquivalentTo(expected);
         }
+
+        [TestMethod]
+        public void LogoutCommand_InitiateLogout_NullcheckRequest()
+        {
+            Action a = () => LogoutCommand.InitiateLogout(null, null, null, false);
+
+            a.ShouldThrow<ArgumentNullException>().And.ParamName.Should().Be("request");
+        }
+
+        [TestMethod]
+        public void LogoutCommand_InitiateLogout_NullcheckOptions()
+        {
+            Action a = () => LogoutCommand.InitiateLogout(
+                new HttpRequestData("GET", new Uri("http://l")),
+                null,
+                null,
+                false);
+
+            a.ShouldThrow<ArgumentNullException>().And.ParamName.Should().Be("options");
+        }
     }
 }

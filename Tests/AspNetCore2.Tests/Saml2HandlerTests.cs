@@ -19,6 +19,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Security.Claims;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
@@ -278,12 +279,58 @@ namespace Sustainsys.Saml2.AspNetCore2.Tests
 
             IAuthenticationSignOutHandler subject = context.Subject;
 
-            var props = new AuthenticationProperties();
+            var props = new AuthenticationProperties()
+            {
+                RedirectUri = "https://sp.example.com/loggedout"
+            };
             await subject.SignOutAsync(props);
 
             context.HttpContext.Response.Body.Length.Should().Be(0, "if logout is disabled, nothing should be written to body");
             context.HttpContext.Response.StatusCode.Should().Be(0, "if logout is disabled, status code shouldn't be touched");
             context.HttpContext.Response.Headers.TryGetValue("Set-Cookie", out StringValues _).Should().BeFalse("if logout is disabled, no cookies should be altered");
+        }
+
+        [TestMethod]
+        public async Task Saml2Handler_SignOutAsync_InitiatesSignOutIfConfigured()
+        {
+            var context = new Saml2HandlerTestContext();
+
+            context.Subject.options.IdentityProviders.Default.SingleLogoutServiceUrl = new Uri("https://idp.example.com/Logout");
+            context.Subject.options.SPOptions.ServiceCertificates.Add(new X509Certificate2("Sustainsys.Saml2.Tests.pfx"));
+            context.HttpContext.User = new ClaimsPrincipal(
+                new ClaimsIdentity(new Claim[]
+                {
+                    new Claim(AuthServicesClaimTypes.LogoutNameIdentifier, ",,,,NameId", null, "https://idp.example.com"),
+                    new Claim(AuthServicesClaimTypes.SessionIndex, "SessionId", null, "https://idp.example.com")
+                }, "Federation"));
+
+            IAuthenticationSignOutHandler subject = context.Subject;
+
+            var props = new AuthenticationProperties()
+            {
+                RedirectUri = "https://sp.example.com/loggedout"
+            };
+
+            await subject.SignOutAsync(props);
+
+            context.HttpContext.Response.Body.Length.Should().Be(0, "when using redirect binding, nothing should be written to body");
+            context.HttpContext.Response.StatusCode.Should().Be(303, "when using redirect binding, status code shoulde be 303");
+            context.HttpContext.Response.Headers["Location"].Single().Should().StartWith("https://idp.example.com/Logout?SAMLRequest=",
+                "location should be set for outbound redirect binding");
+
+            context.HttpContext.Response.Cookies.Received().Append(
+                Arg.Is<string>(s => s.StartsWith("Kentor.")),
+                Arg.Is<string>(s => new StoredRequestState(StubDataProtector.Unprotect(HttpRequestData.GetBinaryData(s)))
+                    .ReturnUrl.OriginalString == "https://sp.example.com/loggedout"),
+                Arg.Any<CookieOptions>());
+        }
+
+        [TestMethod]
+        public void Saml2Handler_SignOutAsync_NullcheckProperties()
+        {
+            var context = new Saml2HandlerTestContext();
+            context.Subject.Invoking(s => s.SignOutAsync(null))
+                .ShouldThrow<ArgumentNullException>().And.ParamName.Should().Be("properties");
         }
     }
 }

@@ -37,7 +37,8 @@ namespace Sustainsys.Saml2.AspNetCore2
                 pathBase,
                 formData,
                 request.Cookies,
-                cookieDecryptor);
+                cookieDecryptor,
+                httpContext.User);
         }
     }
 }
