@@ -270,7 +270,7 @@ namespace Sustainsys.Saml2.AspNetCore2.Tests
         }
 
         [TestMethod]
-        public async Task Saml2Handler_SignOutAsync_IgnoresSignOutIfLogoutDisabled()
+        public async Task Saml2Handler_SignOutAsync_RedirectsIfLogoutDisabled()
         {
             var context = new Saml2HandlerTestContext();
 
@@ -279,14 +279,17 @@ namespace Sustainsys.Saml2.AspNetCore2.Tests
 
             IAuthenticationSignOutHandler subject = context.Subject;
 
+            var redirectUri = "https://sp.example.com/loggedout";
+
             var props = new AuthenticationProperties()
             {
-                RedirectUri = "https://sp.example.com/loggedout"
+                RedirectUri = redirectUri
             };
             await subject.SignOutAsync(props);
 
             context.HttpContext.Response.Body.Length.Should().Be(0, "if logout is disabled, nothing should be written to body");
-            context.HttpContext.Response.StatusCode.Should().Be(0, "if logout is disabled, status code shouldn't be touched");
+            context.HttpContext.Response.StatusCode.Should().Be(303, "if logout is disabled, a redirect to logged out page should be done.");
+            context.HttpContext.Response.Headers["Location"].Single().Should().Be(redirectUri, "if logout is disabled a redirect to logged out page should be done.");
             context.HttpContext.Response.Headers.TryGetValue("Set-Cookie", out StringValues _).Should().BeFalse("if logout is disabled, no cookies should be altered");
         }
 
@@ -308,7 +311,7 @@ namespace Sustainsys.Saml2.AspNetCore2.Tests
 
             var props = new AuthenticationProperties()
             {
-                RedirectUri = "https://sp.example.com/loggedout"
+                RedirectUri = "/loggedout"
             };
 
             await subject.SignOutAsync(props);
@@ -321,7 +324,7 @@ namespace Sustainsys.Saml2.AspNetCore2.Tests
             context.HttpContext.Response.Cookies.Received().Append(
                 Arg.Is<string>(s => s.StartsWith("Kentor.")),
                 Arg.Is<string>(s => new StoredRequestState(StubDataProtector.Unprotect(HttpRequestData.GetBinaryData(s)))
-                    .ReturnUrl.OriginalString == "https://sp.example.com/loggedout"),
+                    .ReturnUrl.OriginalString == "/loggedout"),
                 Arg.Any<CookieOptions>());
         }
 

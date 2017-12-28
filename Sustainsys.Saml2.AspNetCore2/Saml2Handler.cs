@@ -133,12 +133,12 @@ namespace Sustainsys.Saml2.AspNetCore2
 
             LogoutCommand.InitiateLogout(
                 context.ToHttpRequestData(dataProtector.Unprotect),
-                new Uri(properties.RedirectUri),
+                new Uri(properties.RedirectUri, UriKind.RelativeOrAbsolute),
                 options,
                 // In the Asp.Net Core2 model, it's the callers responsibility to terminate the
                 // local session on an SP-initiated logout.
                 terminateLocalSession: false)
-                ?.Apply(context, dataProtector, null);
+                .Apply(context, dataProtector, null);
 
             return Task.CompletedTask;
         }

@@ -13,6 +13,7 @@ using SampleAspNetCore2ApplicationNETFramework.Data;
 using SampleAspNetCore2ApplicationNETFramework.Services;
 using System.IdentityModel.Metadata;
 using Kentor.AuthServices;
+using System.Security.Cryptography.X509Certificates;
 
 namespace SampleAspNetCore2ApplicationNETFramework
 {
@@ -49,13 +50,15 @@ namespace SampleAspNetCore2ApplicationNETFramework
             services.AddAuthentication()
                 .AddSaml2(options => 
                 {
-                    options.SPOptions.EntityId = new EntityId("https://localhost:44342/AuthServices");
+                    options.SPOptions.EntityId = new EntityId("https://localhost:44342/Saml2");
                     options.IdentityProviders.Add(
                         new IdentityProvider(
                             new EntityId("http://localhost:52071/Metadata"), options.SPOptions)
                         {
                             LoadMetadata = true
                         });
+
+                    options.SPOptions.ServiceCertificates.Add(new X509Certificate2("Sustainsys.Saml2.Tests.pfx"));
                 });
         }
 

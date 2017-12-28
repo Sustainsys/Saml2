@@ -206,22 +206,16 @@ namespace Kentor.AuthServices.WebSso
             }
             else
             {
-                if(terminateLocalSession)
+                commandResult = new CommandResult
                 {
-                    commandResult = new CommandResult
-                    {
-                        HttpStatusCode = HttpStatusCode.SeeOther,
-                        Location = returnUrl,
-                        TerminateLocalSession = true
-                    };
+                    HttpStatusCode = HttpStatusCode.SeeOther,
+                    Location = returnUrl,
+                    TerminateLocalSession = terminateLocalSession
+                };
 
-                    options.SPOptions.Logger.WriteInformation("Doing a local only logout.");
-                }
-                else
-                {
-                    commandResult = null;
-                    options.SPOptions.Logger.WriteInformation("Federated logout not possible and local logout fallback disabled, doing nothing");
-                }
+                options.SPOptions.Logger.WriteInformation(
+                    "Federated logout not possible, redirecting to post-logout" 
+                    + (terminateLocalSession ? " and clearing local session" : ""));
             }
 
             return commandResult;
