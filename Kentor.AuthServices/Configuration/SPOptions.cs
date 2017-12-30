@@ -1,5 +1,5 @@
-﻿using Kentor.AuthServices.Metadata;
-using Kentor.AuthServices.Saml2P;
+﻿using Sustainsys.Saml2.Metadata;
+using Sustainsys.Saml2.Saml2P;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -12,7 +12,7 @@ using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Kentor.AuthServices.Configuration
+namespace Sustainsys.Saml2.Configuration
 {
     /// <summary>
     /// Options for the service provider's behaviour; i.e. everything except
@@ -36,7 +36,7 @@ namespace Kentor.AuthServices.Configuration
         /// Construct the options from the given configuration section
         /// </summary>
         /// <param name="configSection"></param>
-        public SPOptions(KentorAuthServicesSection configSection)
+        public SPOptions(SustainsysSaml2Section configSection)
         {
             if (configSection == null)
             {
@@ -148,11 +148,11 @@ namespace Kentor.AuthServices.Configuration
             }
         }
 
-        private string modulePath = "/AuthServices";
+        private string modulePath = "/Saml2";
 
         /// <summary>
-        /// Application root relative path for AuthServices endpoints. The
-        /// default is "/AuthServices".
+        /// Application root relative path for Saml2 endpoints. The
+        /// default is "/Saml2".
         /// </summary>
         public string ModulePath
         {
@@ -378,7 +378,7 @@ namespace Kentor.AuthServices.Configuration
         public bool ValidateCertificates { get; set; }
 
         /// <summary>
-        /// Compatibility settings. Can be used to make AuthServices accept
+        /// Compatibility settings. Can be used to make Saml2 accept
         /// certain non-standard behaviour.
         /// </summary>
         public Compatibility Compatibility { get; set; }

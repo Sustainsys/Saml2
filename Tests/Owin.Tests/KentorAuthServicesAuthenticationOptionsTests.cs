@@ -1,30 +1,30 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Kentor.AuthServices.Owin;
+using Sustainsys.Saml2.Owin;
 using FluentAssertions;
 using Microsoft.Owin.Security;
 using System.IdentityModel.Metadata;
 
-namespace Kentor.AuthServices.Owin.Tests
+namespace Sustainsys.Saml2.Owin.Tests
 {
     [TestClass]
-    public class KentorAuthServicesAuthenticationOptionsTests
+    public class SustainsysSaml2AuthenticationOptionsTests
     {
         [TestMethod]
-        public void KentorAuthServicesAuthenticationOptions_Ctor_SetsDefault()
+        public void SustainsysSaml2AuthenticationOptions_Ctor_SetsDefault()
         {
-            var subject = new KentorAuthServicesAuthenticationOptions(true);
+            var subject = new SustainsysSaml2AuthenticationOptions(true);
 
             subject.Description.Caption.Should().Be(Constants.DefaultCaption);
             subject.AuthenticationMode.Should().Be(AuthenticationMode.Passive);
         }
 
         [TestMethod]
-        public void KentorAuthServicesAuthenticationOptions_Ctor_LoadsConfiguration()
+        public void SustainsysSaml2AuthenticationOptions_Ctor_LoadsConfiguration()
         {
-            var subject = new KentorAuthServicesAuthenticationOptions(true);
+            var subject = new SustainsysSaml2AuthenticationOptions(true);
 
-            subject.SPOptions.EntityId.Id.Should().Be("https://github.com/KentorIT/authservices");
+            subject.SPOptions.EntityId.Id.Should().Be("https://github.com/SustainsysIT/Saml2");
 
             subject.IdentityProviders.IsEmpty.Should().BeFalse();
             subject.IdentityProviders[new EntityId("https://idp.example.com")]
@@ -32,26 +32,26 @@ namespace Kentor.AuthServices.Owin.Tests
         }
 
         [TestMethod]
-        public void KentorAuthServicesAuthenticationOptions_Ctor_IgnoresConfiguration()
+        public void SustainsysSaml2AuthenticationOptions_Ctor_IgnoresConfiguration()
         {
-            var subject = new KentorAuthServicesAuthenticationOptions(false);
+            var subject = new SustainsysSaml2AuthenticationOptions(false);
 
             subject.SPOptions.Should().BeNull();
             subject.IdentityProviders.IsEmpty.Should().BeTrue();
         }
 
         [TestMethod]
-        public void KentorAuthServicesAuthenticationOptions_Ctor_LoadsIdpFromConfiguration()
+        public void SustainsysSaml2AuthenticationOptions_Ctor_LoadsIdpFromConfiguration()
         {
-            var subject = new KentorAuthServicesAuthenticationOptions(true);
+            var subject = new SustainsysSaml2AuthenticationOptions(true);
 
             subject.IdentityProviders.Default.EntityId.Id.Should().Be("https://idp.example.com");
         }
 
         [TestMethod]
-        public void KentorAuthServicesAuthenticationOptions_Ctor_LoadsFederationFromConfigurationAndRegistersIdp()
+        public void SustainsysSaml2AuthenticationOptions_Ctor_LoadsFederationFromConfigurationAndRegistersIdp()
         {
-            var subject = new KentorAuthServicesAuthenticationOptions(true);
+            var subject = new SustainsysSaml2AuthenticationOptions(true);
 
             Action a = () =>
             {
@@ -62,9 +62,9 @@ namespace Kentor.AuthServices.Owin.Tests
         }
 
         [TestMethod]
-        public void KentorAuthServicesAuthenticationOptions_Caption()
+        public void SustainsysSaml2AuthenticationOptions_Caption()
         {
-            var subject = new KentorAuthServicesAuthenticationOptions(false)
+            var subject = new SustainsysSaml2AuthenticationOptions(false)
             {
                 Caption = "MyCaption"
             };

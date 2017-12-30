@@ -3,15 +3,15 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using FluentAssertions;
 using System.IdentityModel.Metadata;
 using System.Collections.Generic;
-using Kentor.AuthServices.Configuration;
-using Kentor.AuthServices.WebSso;
+using Sustainsys.Saml2.Configuration;
+using Sustainsys.Saml2.WebSso;
 using System.IdentityModel.Tokens;
 using System.Linq;
 using System.Security.Claims;
 using System.Security.Cryptography.Xml;
-using Kentor.AuthServices.TestHelpers;
+using Sustainsys.Saml2.TestHelpers;
 
-namespace Kentor.AuthServices.Tests.Configuration
+namespace Sustainsys.Saml2.Tests.Configuration
 {
     [TestClass]
     public class OptionsTests

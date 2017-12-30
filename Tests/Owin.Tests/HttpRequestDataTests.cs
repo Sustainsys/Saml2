@@ -1,5 +1,5 @@
 ﻿using FluentAssertions;
-using Kentor.AuthServices.WebSso;
+using Sustainsys.Saml2.WebSso;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
@@ -9,7 +9,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Kentor.AuthServices.Owin.Tests
+namespace Sustainsys.Saml2.Owin.Tests
 {
     [TestClass]
     public class HttpRequestDataTests
@@ -31,7 +31,7 @@ namespace Kentor.AuthServices.Owin.Tests
             var cookies = new KeyValuePair<string, string>[]
             {
                 new KeyValuePair<string, string>(
-                    "Kentor.Foo",
+                    "Sustainsys.Foo",
                     HttpRequestData.ConvertBinaryData(
                             StubDataProtector.Protect(storedRequestData.Serialize())))
             };

@@ -1,10 +1,10 @@
 using System.Reflection;
 
-[assembly: AssemblyCompany("Kentor")]
-[assembly: AssemblyCopyright("Copyright © Kentor and contributors 2013-2017")]
+[assembly: AssemblyCompany("Sustainsys")]
+[assembly: AssemblyCopyright("Copyright © Sustainsys and contributors 2013-2017")]
 
 
-// Kentor.AuthServices uses semantic versioning in three parts
+// Sustainsys.Saml2 uses semantic versioning in three parts
 //
 //      Major Version
 //      Minor Version 

@@ -1,7 +1,7 @@
-﻿using Kentor.AuthServices.Configuration;
+﻿using Sustainsys.Saml2.Configuration;
 using System.Web;
 
-namespace Kentor.AuthServices.WebSso
+namespace Sustainsys.Saml2.WebSso
 {
     /// <summary>
     /// A command - corresponds to an action in Mvc.

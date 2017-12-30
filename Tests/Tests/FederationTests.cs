@@ -4,19 +4,19 @@ using System.IO;
 using FluentAssertions;
 using System.IdentityModel.Metadata;
 using System.Linq;
-using Kentor.AuthServices.Configuration;
-using Kentor.AuthServices.Metadata;
-using Kentor.AuthServices.Tests.Helpers;
-using Kentor.AuthServices.Tests.Metadata;
+using Sustainsys.Saml2.Configuration;
+using Sustainsys.Saml2.Metadata;
+using Sustainsys.Saml2.Tests.Helpers;
+using Sustainsys.Saml2.Tests.Metadata;
 using System.Threading;
 using System.Security.Cryptography.X509Certificates;
 using System.Collections.Generic;
-using Kentor.AuthServices.Exceptions;
+using Sustainsys.Saml2.Exceptions;
 using System.Security.Cryptography.Xml;
 using System.IdentityModel.Tokens;
-using Kentor.AuthServices.TestHelpers;
+using Sustainsys.Saml2.TestHelpers;
 
-namespace Kentor.AuthServices.Tests
+namespace Sustainsys.Saml2.Tests
 {
     [TestClass]
     public class FederationTests
@@ -43,7 +43,7 @@ namespace Kentor.AuthServices.Tests
         [TestMethod]
         public void Federation_Ctor_LoadsConfig()
         {
-            var config = KentorAuthServicesSection.Current
+            var config = SustainsysSaml2Section.Current
                 .Federations.First();
 
             var options = StubFactory.CreateOptions();
@@ -59,7 +59,7 @@ namespace Kentor.AuthServices.Tests
         [TestMethod]
         public void Federation_Ctor_ConvertsEmptySigningCertificateFromConfigToNull()
         {
-            var config = KentorAuthServicesSection.Current
+            var config = SustainsysSaml2Section.Current
                 .Federations.Skip(1).Single();
 
             var options = StubFactory.CreateOptions();
@@ -72,7 +72,7 @@ namespace Kentor.AuthServices.Tests
         [TestMethod]
         public void Federation_LoadSambiTestMetadata()
         {
-            // Sambi is the Swedish health care federation. To test that AuthServices
+            // Sambi is the Swedish health care federation. To test that Saml2
             // handles some real world metadata, the metadadata from Sambi's test
             // environment is used.
 
@@ -94,7 +94,7 @@ namespace Kentor.AuthServices.Tests
         public void Federation_LoadSkolfederationMetadata()
         {
             // Skolfederation is the Swedish national school federation. To test that
-            // AuthServices handles some real world metadata, the metadata from the
+            // Saml2 handles some real world metadata, the metadata from the
             // skolfederation federation is used.
 
             var options = StubFactory.CreateOptions();
@@ -115,7 +115,7 @@ namespace Kentor.AuthServices.Tests
         public void Federation_LoadInCommonMetadata()
         {
             // InCommon is the large US university federation. To test that
-            // AuthServices handles some real world metadata, the metadata from
+            // Saml2 handles some real world metadata, the metadata from
             // the InCommon federation is used.
 
             var options = StubFactory.CreateOptions();

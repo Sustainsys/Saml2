@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Kentor.AuthServices.Tests.Configuration
+namespace Sustainsys.Saml2.Tests.Configuration
 {
     internal class TetClassAttribute : Attribute
     {

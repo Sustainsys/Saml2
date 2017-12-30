@@ -4,13 +4,13 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
 using Owin;
-using Kentor.AuthServices.WebSso;
+using Sustainsys.Saml2.WebSso;
 using System.IO;
 using System.Xml.Linq;
 using System.Security.Cryptography.Xml;
-using Kentor.AuthServices.TestHelpers;
+using Sustainsys.Saml2.TestHelpers;
 
-namespace Kentor.AuthServices.Tests.Helpers
+namespace Sustainsys.Saml2.Tests.Helpers
 {
     [TestClass]
     public class StubServer

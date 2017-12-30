@@ -7,7 +7,7 @@ using System.Net;
 using System.Security.Claims;
 using System.Web;
 
-namespace Kentor.AuthServices.WebSso
+namespace Sustainsys.Saml2.WebSso
 {
     /// <summary>
     /// The results of a command.
@@ -104,7 +104,7 @@ namespace Kentor.AuthServices.WebSso
         /// <summary>
         /// Can be set by a notification callback to indicate that the
         /// <see cref="CommandResult"/> has been handled and should not
-        /// be applied by the AuthServices library to the response.
+        /// be applied by the Saml2 library to the response.
         /// </summary>
         public bool HandledResult { get; set; }
     }

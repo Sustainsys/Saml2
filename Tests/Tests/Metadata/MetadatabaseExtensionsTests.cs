@@ -1,14 +1,14 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Kentor.AuthServices.Metadata;
+using Sustainsys.Saml2.Metadata;
 using System.IdentityModel.Metadata;
 using System.Xml.Linq;
 using System.Security.Cryptography.Xml;
-using Kentor.AuthServices.WebSso;
+using Sustainsys.Saml2.WebSso;
 using FluentAssertions;
-using Kentor.AuthServices.TestHelpers;
+using Sustainsys.Saml2.TestHelpers;
 
-namespace Kentor.AuthServices.Tests.Metadata
+namespace Sustainsys.Saml2.Tests.Metadata
 {
     [TestClass]
     public class MetadatabaseExtensionsTests

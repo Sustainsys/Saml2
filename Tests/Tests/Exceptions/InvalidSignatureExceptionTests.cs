@@ -1,9 +1,9 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using FluentAssertions;
-using Kentor.AuthServices.Exceptions;
+using Sustainsys.Saml2.Exceptions;
 
-namespace Kentor.AuthServices.Tests.Exceptions
+namespace Sustainsys.Saml2.Tests.Exceptions
 {
     [TestClass]
     public class InvalidSignatureExceptionTests

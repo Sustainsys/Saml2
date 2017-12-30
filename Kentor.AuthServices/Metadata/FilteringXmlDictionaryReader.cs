@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
 
-namespace Kentor.AuthServices.Metadata
+namespace Sustainsys.Saml2.Metadata
 {
     class FilteringXmlDictionaryReader : DelegatingXmlDictionaryReader
     {

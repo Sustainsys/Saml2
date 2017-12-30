@@ -1,6 +1,6 @@
-﻿using Kentor.AuthServices.Configuration;
-using Kentor.AuthServices.Exceptions;
-using Kentor.AuthServices.Saml2P;
+﻿using Sustainsys.Saml2.Configuration;
+using Sustainsys.Saml2.Exceptions;
+using Sustainsys.Saml2.Saml2P;
 using System;
 using System.Configuration;
 using System.IdentityModel.Metadata;
@@ -13,7 +13,7 @@ using System.Security.Cryptography.X509Certificates;
 using System.Web;
 using System.Xml;
 
-namespace Kentor.AuthServices.WebSso
+namespace Sustainsys.Saml2.WebSso
 {
     /// <summary>
     /// Represents the assertion consumer service command behaviour.
@@ -55,7 +55,7 @@ namespace Kentor.AuthServices.WebSso
                     var result = ProcessResponse(options, samlResponse, request.StoredRequestState);
                     if(unbindResult.RelayState != null)
                     {
-                        result.ClearCookieName = "Kentor." + unbindResult.RelayState;
+                        result.ClearCookieName = "Sustainsys." + unbindResult.RelayState;
                     }
                     options.Notifications.AcsCommandResultCreated(result, samlResponse);
                     return result;
@@ -135,12 +135,12 @@ namespace Kentor.AuthServices.WebSso
 @"Unsolicited SAML response received, but no ReturnUrl is configured.
 
 When receiving unsolicited SAML responses (i.e. IDP initiated login),
-AuthServices will redirect the client to the configured ReturnUrl after
+Saml2 will redirect the client to the configured ReturnUrl after
 successful authentication, but it is not configured.
 
 In code-based config, add a ReturnUrl by setting the
 options.SpOptions.ReturnUrl property. In the config file, set the returnUrl
-attribute of the <kentor.authServices> element.";
+attribute of the <Sustainsys.Saml2> element.";
 
         internal const string SpInitiatedMissingReturnUrl =
 @"Successfully received and validated response from Idp, but don't know

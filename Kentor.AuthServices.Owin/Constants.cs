@@ -4,11 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Kentor.AuthServices.Owin
+namespace Sustainsys.Saml2.Owin
 {
     static class Constants
     {
-        public const string DefaultAuthenticationType = "KentorAuthServices";
+        public const string DefaultAuthenticationType = "SustainsysSaml2";
         public const string DefaultCaption = "SAML2 Federation";
     }
 }

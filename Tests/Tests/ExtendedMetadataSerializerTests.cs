@@ -4,15 +4,15 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.IO;
 using System.Text;
 using FluentAssertions;
-using Kentor.AuthServices.Metadata;
+using Sustainsys.Saml2.Metadata;
 using System.IdentityModel.Metadata;
 using System.Xml.Linq;
-using Kentor.AuthServices.WebSso;
+using Sustainsys.Saml2.WebSso;
 using System.Linq;
 using System.IdentityModel.Tokens;
 using System.ServiceModel.Security;
 
-namespace Kentor.AuthServices.Tests
+namespace Sustainsys.Saml2.Tests
 {
     [TestClass]
     public class ExtendedMetadataSerializerTests

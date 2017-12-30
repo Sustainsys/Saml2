@@ -6,13 +6,13 @@ Sustainsys.Saml2
 
 The Sustainsys.Saml2 library adds SAML2P support to ASP.NET web sites, allowing the web site
 to act as a SAML2 Service Provider (SP).
-The library is undergoing a rename from the former name Kentor.AuthServices.
+The library is undergoing a rename from the former name Sustainsys.Saml2.
 
-Kentor.AuthServices is open sourced and contributions are welcome, please see 
+Sustainsys.Saml2 is open sourced and contributions are welcome, please see 
 [contributing guidelines](CONTRIBUTING.md) for info on coding standards etc.
 
 ## Using
-The AuthServices library can be used through three different ways:
+The Saml2 library can be used through three different ways:
 
 * An Http Module, loaded into the IIS pipeline. The module is compatible with ASP.NET web 
 forms sites.
@@ -20,15 +20,15 @@ forms sites.
 * An Owin Middleware to use with the Owin Pipeline or for integration with ASP.NET Identity.
 
 Note that this last usage scenario enables SAML identity providers to be integrated within
-[IdentityServer3](https://github.com/IdentityServer/IdentityServer3) package.  Review [this document](doc/IdentityServer3Okta.md) to see how to configure AuthServices
-with IdentityServer3 and Okta to add Okta as an identity provider to an IdentityServer3 project. There is also a SampleIdentityServer3 project in the AuthServices repository.
+[IdentityServer3](https://github.com/IdentityServer/IdentityServer3) package.  Review [this document](doc/IdentityServer3Okta.md) to see how to configure Saml2
+with IdentityServer3 and Okta to add Okta as an identity provider to an IdentityServer3 project. There is also a SampleIdentityServer3 project in the Saml2 repository.
 
 There are four nuget packages available. The core 
-[Kentor.AuthServices](https://www.nuget.org/packages/Kentor.AuthServices/) contains the core
-functionality. The [Kentor.AuthServices.HttpModule](https://www.nuget.org/packages/Kentor.AuthServices.HttpModule/)
+[Sustainsys.Saml2](https://www.nuget.org/packages/Sustainsys.Saml2/) contains the core
+functionality. The [Sustainsys.Saml2.HttpModule](https://www.nuget.org/packages/Sustainsys.Saml2.HttpModule/)
 contains an IIS Http Module (previously this was included in the core package). 
-The [Kentor.AuthServices.Mvc](https://www.nuget.org/packages/Kentor.AuthServices.Mvc/)
-package contains the MVC controller and the [Kentor.AuthServices.Owin](https://www.nuget.org/packages/Kentor.AuthServices.Owin/)
+The [Sustainsys.Saml2.Mvc](https://www.nuget.org/packages/Sustainsys.Saml2.Mvc/)
+package contains the MVC controller and the [Sustainsys.Saml2.Owin](https://www.nuget.org/packages/Sustainsys.Saml2.Owin/)
 package contains the Owin middleware.
 
 Once the nuget packages are installed you must provide configuration either through code
@@ -37,11 +37,11 @@ See [configuration](doc/Configuration.md) for details.
 
 ## Troubleshooting
 
-* Check the [issues archive](https://github.com/KentorIT/authservices/issues).
+* Check the [issues archive](https://github.com/SustainsysIT/Saml2/issues).
 * Check the [SAML2 specification](http://saml.xml.org/saml-specifications), starting with the core section.
 * Log your actual SAML2 conversation with [SAML Chrome Panel](https://chrome.google.com/webstore/detail/saml-chrome-panel/paijfdbeoenhembfhkhllainmocckace) or [SAML Tracer for Firefox](https://addons.mozilla.org/sv-se/firefox/addon/saml-tracer/).
 * Connect an `ILoggerAdapter` to your `SPOptions.Logger`. If you are using the OWIN middleware this is done for you automatically and you can see the output in the OWIN/Katana logging.
-* Last but not least, download the AuthServices source and check out what's really happening.
+* Last but not least, download the Saml2 source and check out what's really happening.
 
 ## Saml2AuthenticationModule
 The Saml2AuthenticationModule is modeled after the WSFederationAuthenticationModule
@@ -63,7 +63,7 @@ for keeping application specific user and role information. See the
 
 ## Stub Idp
 The solution also contains a stub (i.e. dummy) identity provider that can be used for testing.
-Download the solution, or use the instance that's provided for free at http://stubidp.kentor.se.
+Download the solution, or use the instance that's provided for free at http://stubidp.Sustainsys.se.
 
 ## Protocol Classes
 The protocol handling classes are available as a public API as well, making it possible to 

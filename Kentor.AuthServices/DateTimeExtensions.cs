@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Xml;
 
-namespace Kentor.AuthServices
+namespace Sustainsys.Saml2
 {
     /// <summary>
     /// Helper methods for DateTime formatting.

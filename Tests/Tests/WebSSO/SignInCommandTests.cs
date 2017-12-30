@@ -3,13 +3,13 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using FluentAssertions;
 using System.Net;
 using System.Web;
-using Kentor.AuthServices.Configuration;
+using Sustainsys.Saml2.Configuration;
 using System.IdentityModel.Metadata;
-using Kentor.AuthServices.WebSso;
+using Sustainsys.Saml2.WebSso;
 using System.Collections.Generic;
-using Kentor.AuthServices.TestHelpers;
+using Sustainsys.Saml2.TestHelpers;
 
-namespace Kentor.AuthServices.Tests.WebSso
+namespace Sustainsys.Saml2.Tests.WebSso
 {
     [TestClass]
     public class SignInCommandTests
@@ -162,7 +162,7 @@ namespace Kentor.AuthServices.Tests.WebSso
             var options = new Options(new SPOptions
                 {
                     DiscoveryServiceUrl = dsUrl,
-                    EntityId = new EntityId("https://github.com/KentorIT/authservices")
+                    EntityId = new EntityId("https://github.com/SustainsysIT/Saml2")
                 });
 
             var request = new HttpRequestData("GET", new Uri("http://localhost/signin?ReturnUrl=%2FReturn%2FPath"));
@@ -171,14 +171,14 @@ namespace Kentor.AuthServices.Tests.WebSso
 
             result.HttpStatusCode.Should().Be(HttpStatusCode.SeeOther);
 
-            result.SetCookieName.Should().StartWith("Kentor.");
+            result.SetCookieName.Should().StartWith("Sustainsys.");
 
-            var relayState = result.SetCookieName.Substring("Kentor.".Length);
+            var relayState = result.SetCookieName.Substring("Sustainsys.".Length);
 
             var queryString = string.Format("?entityID={0}&return={1}&returnIDParam=idp",
                 Uri.EscapeDataString(options.SPOptions.EntityId.Id),
                 Uri.EscapeDataString(
-                    "http://localhost/AuthServices/SignIn?RelayState=" + relayState));
+                    "http://localhost/Saml2/SignIn?RelayState=" + relayState));
 
             var expectedLocation = new Uri(dsUrl + queryString);
 
@@ -319,14 +319,14 @@ namespace Kentor.AuthServices.Tests.WebSso
                 null,
                 relayData);
 
-            var uri = new Uri("http://sp.example.com/AuthServices/SignIn?RelayState="
+            var uri = new Uri("http://sp.example.com/Saml2/SignIn?RelayState="
                 + relayState
                 + "&idp="
                 + Uri.EscapeDataString(idp.EntityId.Id));
 
             var request = new HttpRequestData("GET",
                 uri,
-                "/AuthServices",
+                "/Saml2",
                 null,
                 storedRequestState)
             {
@@ -337,7 +337,7 @@ namespace Kentor.AuthServices.Tests.WebSso
 
             var actual = subject.Run(request, options);
 
-            actual.ClearCookieName.Should().Be("Kentor." + relayState, "cookie should be cleared");
+            actual.ClearCookieName.Should().Be("Sustainsys." + relayState, "cookie should be cleared");
             actual.RequestState.ReturnUrl.Should().Be(returnUrl);
             actual.RequestState.Idp.Id.Should().Be(idp.EntityId.Id);
             actual.RequestState.RelayData.ShouldBeEquivalentTo(relayData);
@@ -360,14 +360,14 @@ namespace Kentor.AuthServices.Tests.WebSso
                 null,
                 relayData);
 
-            var uri = new Uri("http://sp.example.com/AuthServices/SignIn?RelayState="
+            var uri = new Uri("http://sp.example.com/Saml2/SignIn?RelayState="
                 + relayState
                 + "&idp="
                 + Uri.EscapeDataString(idp.EntityId.Id));
 
             var request = new HttpRequestData("GET",
                 uri,
-                "/AuthServices",
+                "/Saml2",
                 null,
                 storedRequestState)
             {
@@ -378,7 +378,7 @@ namespace Kentor.AuthServices.Tests.WebSso
 
             var actual = subject.Run(request, options);
 
-            actual.ClearCookieName.Should().Be("Kentor." + relayState, "cookie should be cleared");
+            actual.ClearCookieName.Should().Be("Sustainsys." + relayState, "cookie should be cleared");
             actual.RequestState.ReturnUrl.Should().BeNull();
             actual.RequestState.Idp.Id.Should().Be(idp.EntityId.Id);
             actual.RequestState.RelayData.ShouldBeEquivalentTo(relayData);
@@ -387,7 +387,7 @@ namespace Kentor.AuthServices.Tests.WebSso
         [TestMethod]
         public void SignInCommand_Run_ThrowsOnBothRelayStateAndReturnUrl()
         {
-            var uri = new Uri("http://sp.example.com/AuthServices/SignIn?ReturnUrl=%2FLoggedIn&RelayState=state");
+            var uri = new Uri("http://sp.example.com/Saml2/SignIn?ReturnUrl=%2FLoggedIn&RelayState=state");
 
             var request = new HttpRequestData("GET", uri);
 
@@ -404,7 +404,7 @@ namespace Kentor.AuthServices.Tests.WebSso
             var options = StubFactory.CreateOptions();
 
             var request = new HttpRequestData("GET",
-                new Uri("http://sp.example.com/AuthServices/SignIn"));
+                new Uri("http://sp.example.com/Saml2/SignIn"));
 
             Action a = () => SignInCommand.Run(null, null, request, options, null);
 

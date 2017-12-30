@@ -6,10 +6,10 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("Kentor.AuthServices.Owin")]
+[assembly: AssemblyTitle("Sustainsys.Saml2.Owin")]
 [assembly: AssemblyDescription("Saml2 Authentication Owin Middleware")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyProduct("Kentor.AuthServices.Owin")]
+[assembly: AssemblyProduct("Sustainsys.Saml2.Owin")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

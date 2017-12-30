@@ -4,7 +4,7 @@ using System.Security.Claims;
 using System.Linq;
 using System.IdentityModel.Metadata;
 
-namespace Kentor.AuthServices
+namespace Sustainsys.Saml2
 {
     /// <summary>
     /// Extension methods for Claims Identities
@@ -72,12 +72,12 @@ namespace Kentor.AuthServices
                         new Uri("urn:oasis:names:tc:SAML:2.0:ac:classes:unspecified")))
                 {
                     SessionIndex = identity.Claims.SingleOrDefault(
-                        c => c.Type == AuthServicesClaimTypes.SessionIndex)?.Value
+                        c => c.Type == Saml2ClaimTypes.SessionIndex)?.Value
                 });
 
             var attributeClaims = identity.Claims.Where(
                 c => c.Type != ClaimTypes.NameIdentifier
-                && c.Type != AuthServicesClaimTypes.SessionIndex).GroupBy(c => c.Type)
+                && c.Type != Saml2ClaimTypes.SessionIndex).GroupBy(c => c.Type)
                 .ToArray();
 
             if (attributeClaims.Any())

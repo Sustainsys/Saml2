@@ -1,5 +1,5 @@
-﻿using Kentor.AuthServices.Exceptions;
-using Kentor.AuthServices.Internal;
+﻿using Sustainsys.Saml2.Exceptions;
+using Sustainsys.Saml2.Internal;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -15,7 +15,7 @@ using System.Threading.Tasks;
 using System.Xml;
 using System.Xml.Linq;
 
-namespace Kentor.AuthServices.Metadata
+namespace Sustainsys.Saml2.Metadata
 {
     /// <summary>
     /// Helper for loading SAML2 metadata

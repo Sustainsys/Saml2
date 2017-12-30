@@ -1,7 +1,7 @@
 ﻿using System.Configuration;
-using Kentor.AuthServices.Saml2P;
+using Sustainsys.Saml2.Saml2P;
 
-namespace Kentor.AuthServices.Configuration
+namespace Sustainsys.Saml2.Configuration
 {
     /// <summary>
     /// NamedId policy configuration element.

@@ -2,9 +2,9 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using FluentAssertions;
 using System.Web.Mvc;
-using Kentor.AuthServices.WebSso;
+using Sustainsys.Saml2.WebSso;
 
-namespace Kentor.AuthServices.Mvc.Tests
+namespace Sustainsys.Saml2.Mvc.Tests
 {
     [TestClass]
     public class CommandResultExtensionsTests

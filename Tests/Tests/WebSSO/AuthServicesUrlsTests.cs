@@ -2,29 +2,29 @@
 using System.Collections.Specialized;
 using System.Web;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Kentor.AuthServices.Configuration;
+using Sustainsys.Saml2.Configuration;
 using FluentAssertions;
-using Kentor.AuthServices.WebSso;
+using Sustainsys.Saml2.WebSso;
 using NSubstitute;
-using Kentor.AuthServices.TestHelpers;
+using Sustainsys.Saml2.TestHelpers;
 
-namespace Kentor.AuthServices.Tests.WebSso
+namespace Sustainsys.Saml2.Tests.WebSso
 {
     [TestClass]
-    public class AuthServicesUrlsTests
+    public class Saml2UrlsTests
     {
         [TestMethod]
-        public void AuthServicesUrls_Ctor_NullCheckRequest()
+        public void Saml2Urls_Ctor_NullCheckRequest()
         {
-            Action a = () => new AuthServicesUrls(null, new Options(new SPOptions()));
+            Action a = () => new Saml2Urls(null, new Options(new SPOptions()));
 
             a.ShouldThrow<ArgumentNullException>().And.ParamName.Should().Be("request"); ;
         }
 
         [TestMethod]
-        public void AuthServicesUrls_Ctor_NullCheckOptions()
+        public void Saml2Urls_Ctor_NullCheckOptions()
         {
-            Action a = () => new AuthServicesUrls(
+            Action a = () => new Saml2Urls(
                 new HttpRequestData("GET", new Uri("http://localhost")),
                 null);
 
@@ -32,17 +32,17 @@ namespace Kentor.AuthServices.Tests.WebSso
         }
 
         [TestMethod]
-        public void AuthServicesUrls_Ctor_NullCheckApplicationUrl()
+        public void Saml2Urls_Ctor_NullCheckApplicationUrl()
         {
-            Action a = () => new AuthServicesUrls(null, "modulePath");
+            Action a = () => new Saml2Urls(null, "modulePath");
 
             a.ShouldThrow<ArgumentNullException>().And.ParamName.Should().Be("applicationUrl");
         }
 
         [TestMethod]
-        public void AuthServicesUrls_Ctor_NullCheckModulePath()
+        public void Saml2Urls_Ctor_NullCheckModulePath()
         {
-            Action a = () => new AuthServicesUrls(new Uri("http://localhost"), modulePath: null);
+            Action a = () => new Saml2Urls(new Uri("http://localhost"), modulePath: null);
 
             a.ShouldThrow<ArgumentNullException>("modulePath");
         }
@@ -53,37 +53,37 @@ namespace Kentor.AuthServices.Tests.WebSso
             var appUrl = new Uri("http://localhost:73/SomePath");
             var modulePath = "/modulePath";
 
-            var subject = new AuthServicesUrls(appUrl, modulePath);
+            var subject = new Saml2Urls(appUrl, modulePath);
 
             subject.AssertionConsumerServiceUrl.Should().Be(new Uri("http://localhost:73/SomePath/modulePath/Acs"));
             subject.SignInUrl.Should().Be(new Uri("http://localhost:73/SomePath/modulePath/SignIn"));
         }
 
         [TestMethod]
-        public void AuthServicesUrls_Ctor_HandlesApplicationInRoot()
+        public void Saml2Urls_Ctor_HandlesApplicationInRoot()
         {
             var appUrl = new Uri("http://localhost:42/");
             var modulePath = "/modulePath";
 
-            var subject = new AuthServicesUrls(appUrl, modulePath);
+            var subject = new Saml2Urls(appUrl, modulePath);
 
             subject.AssertionConsumerServiceUrl.Should().Be(new Uri("http://localhost:42/modulePath/Acs"));
             subject.SignInUrl.Should().Be(new Uri("http://localhost:42/modulePath/SignIn"));
         }
 
         [TestMethod]
-        public void AuthServicesUrls_Ctor_ChecksModulePathStartsWithSlash()
+        public void Saml2Urls_Ctor_ChecksModulePathStartsWithSlash()
         {
             var appUrl = new Uri("http://localhost:42");
             var modulePath = "modulePath";
 
-            Action a = () => new AuthServicesUrls(appUrl, modulePath);
+            Action a = () => new Saml2Urls(appUrl, modulePath);
 
             a.ShouldThrow<ArgumentException>("modulePath should start with /.");
         }
 
         [TestMethod]
-        public void AuthServicesUrls_Ctor_EnsuresApplicationUrlEndsWithSlash()
+        public void Saml2Urls_Ctor_EnsuresApplicationUrlEndsWithSlash()
         {
             var request = new HttpRequestData(
                 "GET",
@@ -94,7 +94,7 @@ namespace Kentor.AuthServices.Tests.WebSso
                 null);
 
             var options = StubFactory.CreateOptions();
-            var subject = new AuthServicesUrls(request, options);
+            var subject = new Saml2Urls(request, options);
             subject.ApplicationUrl.OriginalString.Should().EndWith("/");
         }
 
@@ -105,7 +105,7 @@ namespace Kentor.AuthServices.Tests.WebSso
             var signinUrl = new Uri("http://localhost:73/MyApp/MySignin");
             var appUrl = new Uri("http://localhost:73/MyApp");
 
-            var subject = new AuthServicesUrls(acsUrl, signinUrl, appUrl);
+            var subject = new Saml2Urls(acsUrl, signinUrl, appUrl);
 
             subject.AssertionConsumerServiceUrl.ToString().Should().Be(acsUrl.ToString());
             subject.SignInUrl.ToString().Should().Be(signinUrl.ToString());
@@ -113,19 +113,19 @@ namespace Kentor.AuthServices.Tests.WebSso
         }
 
         [TestMethod]
-        public void AuthServicesUrls_Ctor_AllowsNullAcs()
+        public void Saml2Urls_Ctor_AllowsNullAcs()
         {
             // AssertionConsumerServiceURL is optional in the SAML spec 
-            var subject = new AuthServicesUrls(null, new Uri("http://localhost/signin"), null);
+            var subject = new Saml2Urls(null, new Uri("http://localhost/signin"), null);
 
             subject.AssertionConsumerServiceUrl.Should().Be(null);
             subject.SignInUrl.ToString().Should().Be("http://localhost/signin");
         }
 
         [TestMethod]
-        public void AuthServicesUrls_Ctor_NullCheckSignin()
+        public void Saml2Urls_Ctor_NullCheckSignin()
         {
-            Action a = () => new AuthServicesUrls(
+            Action a = () => new Saml2Urls(
                 new Uri("http://localhost/signin"),
                 signInUrl: null,
                 applicationUrl: new Uri("http://localhost"));
@@ -134,16 +134,16 @@ namespace Kentor.AuthServices.Tests.WebSso
         }
 
         [TestMethod]
-        public void AuthServicesUrls_Ctor_PerRequest_PublicOrigin()
+        public void Saml2Urls_Ctor_PerRequest_PublicOrigin()
         {
             var options = StubFactory.CreateOptionsPublicOrigin(new Uri("https://my.public.origin:8443/"));
             options.Notifications.GetPublicOrigin = (requestData) =>
             {
                 return new Uri("https://special.public.origin/");
             };
-            var urls = new AuthServicesUrls(new HttpRequestData("get", new Uri("http://servername/")), options);
-            urls.AssertionConsumerServiceUrl.ShouldBeEquivalentTo("https://special.public.origin/AuthServices/Acs");
-            urls.SignInUrl.ShouldBeEquivalentTo("https://special.public.origin/AuthServices/SignIn");
+            var urls = new Saml2Urls(new HttpRequestData("get", new Uri("http://servername/")), options);
+            urls.AssertionConsumerServiceUrl.ShouldBeEquivalentTo("https://special.public.origin/Saml2/Acs");
+            urls.SignInUrl.ShouldBeEquivalentTo("https://special.public.origin/Saml2/SignIn");
         }
     }
 }

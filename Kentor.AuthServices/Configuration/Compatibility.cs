@@ -4,10 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Kentor.AuthServices.Configuration
+namespace Sustainsys.Saml2.Configuration
 {
     /// <summary>
-    /// Compatibility settings. Can be used to make AuthServices accept
+    /// Compatibility settings. Can be used to make Saml2 accept
     /// certain non-standard behaviour.
     /// </summary>
     public class Compatibility

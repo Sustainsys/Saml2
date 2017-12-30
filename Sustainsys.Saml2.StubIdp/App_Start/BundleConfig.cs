@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Optimization;
-using Kentor.AuthServices.StubIdp.App_Start;
+using Sustainsys.Saml2.StubIdp.App_Start;
 
-namespace Kentor.AuthServices.StubIdp
+namespace Sustainsys.Saml2.StubIdp
 {
     public static class BundleConfig
     {

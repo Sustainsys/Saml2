@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using System.Xml;
 using System.Xml.Linq;
 
-namespace Kentor.AuthServices
+namespace Sustainsys.Saml2
 {
     /// <summary>
     /// SAML2 namespace constants.

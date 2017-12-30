@@ -5,11 +5,11 @@ using FluentAssertions;
 using System.Xml.Linq;
 using System.IdentityModel.Tokens;
 using System.Xml;
-using Kentor.AuthServices.Saml2P;
+using Sustainsys.Saml2.Saml2P;
 using System.Linq;
 using System.IdentityModel.Metadata;
 
-namespace Kentor.AuthServices.Tests.Saml2P
+namespace Sustainsys.Saml2.Tests.Saml2P
 {
     [TestClass]
     public class Saml2AuthenticationRequestTests
@@ -362,13 +362,13 @@ namespace Kentor.AuthServices.Tests.Saml2P
         [TestMethod]
         public void Saml2AuthenticationRequest_ToXElement_AddsProtocolBinding_HttpPost()
         {
-            Saml2AuthenticationRequest_ToXElement_AddsProtocolBinding(AuthServices.WebSso.Saml2BindingType.HttpPost, "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST");
+            Saml2AuthenticationRequest_ToXElement_AddsProtocolBinding(Saml2.WebSso.Saml2BindingType.HttpPost, "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST");
         }
 
         [TestMethod]
         public void Saml2AuthenticationRequest_ToXElement_AddsProtocolBinding_Artifact()
         {
-            Saml2AuthenticationRequest_ToXElement_AddsProtocolBinding(AuthServices.WebSso.Saml2BindingType.Artifact, "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Artifact");
+            Saml2AuthenticationRequest_ToXElement_AddsProtocolBinding(Saml2.WebSso.Saml2BindingType.Artifact, "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Artifact");
         }
 
         [TestMethod]
@@ -409,7 +409,7 @@ namespace Kentor.AuthServices.Tests.Saml2P
 
         private void Saml2AuthenticationRequest_ToXElement_AddsRequestedAuthnContextUtil(AuthnContextComparisonType comparisonType, string expectedComparisonType)
         {
-            var classRef = "http://www.kentor.se";
+            var classRef = "http://www.Sustainsys.se";
             var subject = new Saml2AuthenticationRequest()
             {
                 AssertionConsumerServiceUrl = new Uri("http://destination.example.com"),
@@ -429,7 +429,7 @@ namespace Kentor.AuthServices.Tests.Saml2P
             actual.Should().BeEquivalentTo(expected);
         }
 
-        private void Saml2AuthenticationRequest_ToXElement_AddsProtocolBinding(AuthServices.WebSso.Saml2BindingType protocolBinding, string expectedProtocolBinding)
+        private void Saml2AuthenticationRequest_ToXElement_AddsProtocolBinding(Saml2.WebSso.Saml2BindingType protocolBinding, string expectedProtocolBinding)
         {
             var subject = new Saml2AuthenticationRequest()
             {

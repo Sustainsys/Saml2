@@ -5,7 +5,7 @@ using FluentAssertions;
 using System.Linq;
 using System.Xml.Linq;
 
-namespace Kentor.AuthServices.Tests
+namespace Sustainsys.Saml2.Tests
 {
     [TestClass]
     public class Saml2ConditionsExtensionsTests

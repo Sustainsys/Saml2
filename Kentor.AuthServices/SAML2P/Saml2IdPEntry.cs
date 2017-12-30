@@ -2,7 +2,7 @@
 using System.IdentityModel.Metadata;
 using System.Xml.Linq;
 
-namespace Kentor.AuthServices.Saml2P
+namespace Sustainsys.Saml2.Saml2P
 {
     /// <summary>
     /// The Saml2IdPEntry specifies a single identity provider trusted by the

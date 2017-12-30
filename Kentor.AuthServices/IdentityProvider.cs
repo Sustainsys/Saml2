@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using Kentor.AuthServices.Configuration;
+using Sustainsys.Saml2.Configuration;
 using System;
 using System.Configuration;
 using System.Globalization;
@@ -8,17 +8,17 @@ using System.IdentityModel.Tokens;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Security.Cryptography.Xml;
-using Kentor.AuthServices.Internal;
-using Kentor.AuthServices.Metadata;
-using Kentor.AuthServices.Saml2P;
-using Kentor.AuthServices.WebSso;
+using Sustainsys.Saml2.Internal;
+using Sustainsys.Saml2.Metadata;
+using Sustainsys.Saml2.Saml2P;
+using Sustainsys.Saml2.WebSso;
 using System.Threading.Tasks;
 using System.Net;
 using System.Collections.Concurrent;
 using System.Security.Claims;
 using System.Diagnostics.CodeAnalysis;
 
-namespace Kentor.AuthServices
+namespace Sustainsys.Saml2
 {
     /// <summary>
     /// Represents a known identity provider that this service provider can communicate with.
@@ -281,23 +281,23 @@ namespace Kentor.AuthServices
         /// <summary>
         /// Create an authenticate request aimed for this idp.
         /// </summary>
-        /// <param name="authServicesUrls">Urls for AuthServices, used to populate fields
+        /// <param name="saml2Urls">Urls for Saml2, used to populate fields
         /// in the created AuthnRequest</param>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "AuthenticateRequestSigningBehavior")]
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "ServiceCertificates")]
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "AuthenticateRequests")]
         public Saml2AuthenticationRequest CreateAuthenticateRequest(
-            AuthServicesUrls authServicesUrls)
+            Saml2Urls saml2Urls)
         {
-            if (authServicesUrls == null)
+            if (saml2Urls == null)
             {
-                throw new ArgumentNullException(nameof(authServicesUrls));
+                throw new ArgumentNullException(nameof(saml2Urls));
             }
 
             var authnRequest = new Saml2AuthenticationRequest()
             {
                 DestinationUrl = SingleSignOnServiceUrl,
-                AssertionConsumerServiceUrl = authServicesUrls.AssertionConsumerServiceUrl,
+                AssertionConsumerServiceUrl = saml2Urls.AssertionConsumerServiceUrl,
                 Issuer = spOptions.EntityId,
                 // For now we only support one attribute consuming service.
                 AttributeConsumingServiceIndex = spOptions.AttributeConsumingServices.Any() ? 0 : (int?)null,
@@ -452,7 +452,7 @@ namespace Kentor.AuthServices
         private static ProtocolEndpoint GetPreferredEndpoint(ICollection<ProtocolEndpoint> endpoints)
         {
             // Prefer an endpoint with a redirect binding, then check for POST which 
-            // is the other supported by AuthServices.
+            // is the other supported by Saml2.
             return endpoints.FirstOrDefault(s => s.Binding == Saml2Binding.HttpRedirectUri) ??
                 endpoints.FirstOrDefault(s => s.Binding == Saml2Binding.HttpPostUri);
         }
@@ -541,10 +541,10 @@ namespace Kentor.AuthServices
             {
                 DestinationUrl = SingleLogoutServiceUrl,
                 Issuer = spOptions.EntityId,
-                NameId = user.FindFirst(AuthServicesClaimTypes.LogoutNameIdentifier)
+                NameId = user.FindFirst(Saml2ClaimTypes.LogoutNameIdentifier)
                             .ToSaml2NameIdentifier(),
                 SessionIndex =
-                    user.FindFirst(AuthServicesClaimTypes.SessionIndex).Value,
+                    user.FindFirst(Saml2ClaimTypes.SessionIndex).Value,
                 SigningCertificate = spOptions.SigningServiceCertificate,
                 SigningAlgorithm = OutboundSigningAlgorithm
             };
@@ -552,7 +552,7 @@ namespace Kentor.AuthServices
 
         /// <summary>
         /// Disable outbound logout requests to this idp, even though
-        /// AuthServices is configured for single logout and the idp supports
+        /// Saml2 is configured for single logout and the idp supports
         /// it. This setting might be usable when adding SLO to an existing
         /// setup, to ensure that everyone is ready for SLO before activating.
         /// </summary>

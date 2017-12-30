@@ -1,11 +1,11 @@
-﻿namespace Kentor.AuthServices
+﻿namespace Sustainsys.Saml2
 {
     /// <summary>
     /// Claim type constants.
     /// </summary>
-    public static class AuthServicesClaimTypes
+    public static class Saml2ClaimTypes
     {
-        internal const string ClaimTypeNamespace = "http://kentor.se/AuthServices";
+        internal const string ClaimTypeNamespace = "http://Sustainsys.se/Saml2";
 
         /// <summary>
         /// Session index is set by the idp and is used to correlate sessions

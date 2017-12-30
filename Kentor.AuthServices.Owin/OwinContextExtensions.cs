@@ -1,4 +1,4 @@
-﻿using Kentor.AuthServices.WebSso;
+﻿using Sustainsys.Saml2.WebSso;
 using Microsoft.Owin;
 using Microsoft.Owin.Security.DataProtection;
 using System;
@@ -10,7 +10,7 @@ using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Kentor.AuthServices.Owin
+namespace Sustainsys.Saml2.Owin
 {
     static class OwinContextExtensions
     {

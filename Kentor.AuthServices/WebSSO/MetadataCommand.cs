@@ -1,4 +1,4 @@
-﻿using Kentor.AuthServices.Configuration;
+﻿using Sustainsys.Saml2.Configuration;
 using System;
 using System.Collections.Generic;
 using System.IdentityModel.Metadata;
@@ -8,9 +8,9 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Web;
 using System.Xml.Linq;
-using Kentor.AuthServices.Metadata;
+using Sustainsys.Saml2.Metadata;
 
-namespace Kentor.AuthServices.WebSso
+namespace Sustainsys.Saml2.WebSso
 {
     /// <summary>
     /// Represents the service provider metadata command behaviour.
@@ -32,7 +32,7 @@ namespace Kentor.AuthServices.WebSso
                 throw new ArgumentNullException(nameof(options));
             }
 
-            var urls = new AuthServicesUrls(request, options);
+            var urls = new Saml2Urls(request, options);
 
             var metadata = options.SPOptions.CreateMetadata(urls);
             options.Notifications.MetadataCreated(metadata, urls);

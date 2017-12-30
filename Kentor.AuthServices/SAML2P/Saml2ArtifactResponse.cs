@@ -1,5 +1,5 @@
-﻿using Kentor.AuthServices.Exceptions;
-using Kentor.AuthServices.Internal;
+﻿using Sustainsys.Saml2.Exceptions;
+using Sustainsys.Saml2.Internal;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
 
-namespace Kentor.AuthServices.Saml2P
+namespace Sustainsys.Saml2.Saml2P
 {
     /// <summary>
     /// A Saml2 ArtifactResponse message as specified in SAML2 Core 3.5.2.

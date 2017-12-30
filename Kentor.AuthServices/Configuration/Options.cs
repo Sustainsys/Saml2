@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Security.Cryptography;
 
-namespace Kentor.AuthServices.Configuration
+namespace Sustainsys.Saml2.Configuration
 {
     /// <summary>
     /// Options implementation for handling in memory options.
@@ -14,7 +14,7 @@ namespace Kentor.AuthServices.Configuration
         /// Set of callbacks that can be used as extension points for various
         /// events.
         /// </summary>
-        public KentorAuthServicesNotifications Notifications { get; set; }
+        public SustainsysSaml2Notifications Notifications { get; set; }
 
         /// <summary>
         /// Reads the options from the current config file.
@@ -33,10 +33,10 @@ namespace Kentor.AuthServices.Configuration
 
         private static Options LoadOptionsFromConfiguration()
         {
-            var spOptions = new SPOptions(KentorAuthServicesSection.Current);
+            var spOptions = new SPOptions(SustainsysSaml2Section.Current);
             var options = new Options(spOptions);
-            KentorAuthServicesSection.Current.IdentityProviders.RegisterIdentityProviders(options);
-            KentorAuthServicesSection.Current.Federations.RegisterFederations(options);
+            SustainsysSaml2Section.Current.IdentityProviders.RegisterIdentityProviders(options);
+            SustainsysSaml2Section.Current.Federations.RegisterFederations(options);
 
             return options;
         }
@@ -48,7 +48,7 @@ namespace Kentor.AuthServices.Configuration
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "sp")]
         public Options(SPOptions spOptions)
         {
-            Notifications = new KentorAuthServicesNotifications();
+            Notifications = new SustainsysSaml2Notifications();
             SPOptions = spOptions;
             if(SPOptions.Logger == null)
             {
@@ -79,7 +79,7 @@ namespace Kentor.AuthServices.Configuration
         internal const string Sha256Uri = "http://www.w3.org/2001/04/xmlenc#sha256";
 
         /// <summary>
-        /// Make Sha256 signature algorithm available in this process (not just Kentor.AuthServices)
+        /// Make Sha256 signature algorithm available in this process (not just Sustainsys.Saml2)
         /// </summary>
         [System.Diagnostics.CodeAnalysis.SuppressMessage( "Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Sha" )]
         public static void GlobalEnableSha256XmlSignatures()

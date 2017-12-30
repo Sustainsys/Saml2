@@ -1,6 +1,6 @@
-﻿using Kentor.AuthServices.Configuration;
-using Kentor.AuthServices.Metadata;
-using Kentor.AuthServices.WebSso;
+﻿using Sustainsys.Saml2.Configuration;
+using Sustainsys.Saml2.Metadata;
+using Sustainsys.Saml2.WebSso;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -11,33 +11,33 @@ using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Kentor.AuthServices.TestHelpers
+namespace Sustainsys.Saml2.TestHelpers
 {
     public class StubFactory
     {
-        public static AuthServicesUrls CreateAuthServicesUrls()
+        public static Saml2Urls CreateSaml2Urls()
         {
-            return new AuthServicesUrls(new Uri("http://localhost"), "/AuthServices");
+            return new Saml2Urls(new Uri("http://localhost"), "/Saml2");
         }
 
-        public static AuthServicesUrls CreateAuthServicesUrlsPublicOrigin(Uri publicOrigin)
+        public static Saml2Urls CreateSaml2UrlsPublicOrigin(Uri publicOrigin)
         {
-            return new AuthServicesUrls(publicOrigin, "/AuthServices");
+            return new Saml2Urls(publicOrigin, "/Saml2");
         }
 
         public static SPOptions CreateSPOptions()
         {
             var org = new Organization();
 
-            org.Names.Add(new LocalizedName("Kentor.AuthServices", CultureInfo.InvariantCulture));
-            org.DisplayNames.Add(new LocalizedName("Kentor AuthServices", CultureInfo.InvariantCulture));
+            org.Names.Add(new LocalizedName("Sustainsys.Saml2", CultureInfo.InvariantCulture));
+            org.DisplayNames.Add(new LocalizedName("Sustainsys Saml2", CultureInfo.InvariantCulture));
             org.Urls.Add(new LocalizedUri(
-                new Uri("http://github.com/KentorIT/authservices"),
+                new Uri("http://github.com/SustainsysIT/Saml2"),
                 CultureInfo.InvariantCulture));
 
             var options = new SPOptions
             {
-                EntityId = new EntityId("https://github.com/KentorIT/authservices"),
+                EntityId = new EntityId("https://github.com/SustainsysIT/Saml2"),
                 MetadataCacheDuration = new TimeSpan(0, 0, 42),
                 MetadataValidDuration = TimeSpan.FromDays(24),
                 WantAssertionsSigned = true,
@@ -93,15 +93,15 @@ namespace Kentor.AuthServices.TestHelpers
         {
             var supportContact = new ContactPerson(ContactType.Support)
             {
-                Company = "Kentor",
+                Company = "Sustainsys",
                 GivenName = "Anders",
                 Surname = "Abel",
             };
 
             supportContact.TelephoneNumbers.Add("+46 8 587 650 00");
             supportContact.TelephoneNumbers.Add("+46 708 96 50 63");
-            supportContact.EmailAddresses.Add("info@kentor.se");
-            supportContact.EmailAddresses.Add("anders.abel@kentor.se");
+            supportContact.EmailAddresses.Add("info@Sustainsys.se");
+            supportContact.EmailAddresses.Add("anders.abel@Sustainsys.se");
 
             options.Contacts.Add(supportContact);
             options.Contacts.Add(new ContactPerson(ContactType.Technical)); // Deliberately void of info.
@@ -111,7 +111,7 @@ namespace Kentor.AuthServices.TestHelpers
         {
             var options = factory(CreateSPOptions());
 
-            KentorAuthServicesSection.Current.IdentityProviders.RegisterIdentityProviders(options);
+            SustainsysSaml2Section.Current.IdentityProviders.RegisterIdentityProviders(options);
 
             return options;
         }
@@ -125,8 +125,8 @@ namespace Kentor.AuthServices.TestHelpers
         {
             var options = factory(CreateSPOptions(publicOrigin));
 
-            KentorAuthServicesSection.Current.IdentityProviders.RegisterIdentityProviders(options);
-            KentorAuthServicesSection.Current.Federations.RegisterFederations(options);
+            SustainsysSaml2Section.Current.IdentityProviders.RegisterIdentityProviders(options);
+            SustainsysSaml2Section.Current.Federations.RegisterFederations(options);
 
             return options;
         }

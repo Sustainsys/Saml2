@@ -1,22 +1,22 @@
 ﻿using System.IO;
 using System.Net.Mime;
-using Kentor.AuthServices.StubIdp.Models;
+using Sustainsys.Saml2.StubIdp.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
-using Kentor.AuthServices.Mvc;
+using Sustainsys.Saml2.Mvc;
 using System.IdentityModel.Metadata;
-using Kentor.AuthServices.Configuration;
+using Sustainsys.Saml2.Configuration;
 using System.IdentityModel.Tokens;
 using System.Configuration;
-using Kentor.AuthServices.Saml2P;
-using Kentor.AuthServices.WebSso;
-using Kentor.AuthServices.HttpModule;
+using Sustainsys.Saml2.Saml2P;
+using Sustainsys.Saml2.WebSso;
+using Sustainsys.Saml2.HttpModule;
 using System.Xml;
 
-namespace Kentor.AuthServices.StubIdp.Controllers
+namespace Sustainsys.Saml2.StubIdp.Controllers
 {
     public class HomeController : BaseController
     {

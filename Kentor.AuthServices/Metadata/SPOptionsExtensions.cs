@@ -5,16 +5,16 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
-using Kentor.AuthServices.Configuration;
-using Kentor.AuthServices.WebSso;
+using Sustainsys.Saml2.Configuration;
+using Sustainsys.Saml2.WebSso;
 using System.IdentityModel.Tokens;
 
-namespace Kentor.AuthServices.Metadata
+namespace Sustainsys.Saml2.Metadata
 {
     static class SPOptionsExtensions
     {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1506:AvoidExcessiveClassCoupling")]
-        public static ExtendedEntityDescriptor CreateMetadata(this SPOptions spOptions, AuthServicesUrls urls)
+        public static ExtendedEntityDescriptor CreateMetadata(this SPOptions spOptions, Saml2Urls urls)
         {
             var ed = new ExtendedEntityDescriptor
             {

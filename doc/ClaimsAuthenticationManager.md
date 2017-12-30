@@ -22,6 +22,6 @@ If the configuration is done in code (typically for the OWIN middleware) the
 
 ## Single Logout
 If you are using Single Logout, you need to make sure that the claims containing
-the AuthServices logout information are present in the returned identity. The
-types of the claims are available in `AuthServicesClaimTypes.SessionIndex` and
-`AuthServicesClaimTypes.LogoutNameIdentifier`.
+the Saml2 logout information are present in the returned identity. The
+types of the claims are available in `Saml2ClaimTypes.SessionIndex` and
+`Saml2ClaimTypes.LogoutNameIdentifier`.

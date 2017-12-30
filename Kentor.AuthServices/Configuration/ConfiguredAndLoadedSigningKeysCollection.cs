@@ -6,7 +6,7 @@ using System.Linq;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 
-namespace Kentor.AuthServices.Configuration
+namespace Sustainsys.Saml2.Configuration
 {
     /// <summary>
     /// Collection of items with two sources: configured and loaded dyanically.

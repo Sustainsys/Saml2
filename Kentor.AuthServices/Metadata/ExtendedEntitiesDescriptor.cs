@@ -6,7 +6,7 @@ using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Kentor.AuthServices.Metadata
+namespace Sustainsys.Saml2.Metadata
 {
     /// <summary>
     /// Extended entitiesdescriptor for SAML2 metadata, adding more attributes.

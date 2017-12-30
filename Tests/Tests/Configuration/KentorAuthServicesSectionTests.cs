@@ -1,17 +1,17 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Kentor.AuthServices.Configuration;
+using Sustainsys.Saml2.Configuration;
 using FluentAssertions;
 using System.IdentityModel.Metadata;
 using System.Globalization;
 using System.Linq;
-using Kentor.AuthServices.Metadata;
-using Kentor.AuthServices.TestHelpers;
+using Sustainsys.Saml2.Metadata;
+using Sustainsys.Saml2.TestHelpers;
 
-namespace Kentor.AuthServices.Tests.Configuration
+namespace Sustainsys.Saml2.Tests.Configuration
 {
     [TestClass]
-    public class KentorAuthServicesSectionTests
+    public class SustainsysSaml2SectionTests
     {
         Uri organizationSectionUrl;
         string organizationSectionName, organizationSectionDisplayName;
@@ -19,27 +19,27 @@ namespace Kentor.AuthServices.Tests.Configuration
         [TestInitialize]
         public void BackupOrganizationSection()
         {
-            organizationSectionUrl = KentorAuthServicesSection.Current.Metadata.Organization.Url;
-            organizationSectionName = KentorAuthServicesSection.Current.Metadata.Organization.Name;
-            organizationSectionDisplayName = KentorAuthServicesSection.Current.Metadata.Organization.DisplayName;
+            organizationSectionUrl = SustainsysSaml2Section.Current.Metadata.Organization.Url;
+            organizationSectionName = SustainsysSaml2Section.Current.Metadata.Organization.Name;
+            organizationSectionDisplayName = SustainsysSaml2Section.Current.Metadata.Organization.DisplayName;
         }
 
         [TestCleanup]
         public void RestoreOrganizationSection()
         {
-            if(!KentorAuthServicesSection.Current.Metadata.Organization.IsReadOnly())
+            if(!SustainsysSaml2Section.Current.Metadata.Organization.IsReadOnly())
             {
-                KentorAuthServicesSection.Current.Metadata.Organization.Url = organizationSectionUrl;
-                KentorAuthServicesSection.Current.Metadata.Organization.Name = organizationSectionName;
-                KentorAuthServicesSection.Current.Metadata.Organization.DisplayName = organizationSectionDisplayName;
-                KentorAuthServicesSection.Current.Metadata.Organization.AllowConfigEdits(false);
+                SustainsysSaml2Section.Current.Metadata.Organization.Url = organizationSectionUrl;
+                SustainsysSaml2Section.Current.Metadata.Organization.Name = organizationSectionName;
+                SustainsysSaml2Section.Current.Metadata.Organization.DisplayName = organizationSectionDisplayName;
+                SustainsysSaml2Section.Current.Metadata.Organization.AllowConfigEdits(false);
             }
         }
 
         [TestMethod]
-        public void KentorAuthServicesSection_Organization_LoadedFromConfig()
+        public void SustainsysSaml2Section_Organization_LoadedFromConfig()
         {
-            var subject = KentorAuthServicesSection.Current.Organization;
+            var subject = SustainsysSaml2Section.Current.Organization;
 
             Organization expected = new Organization();
             expected.DisplayNames.Add(new LocalizedName("displayName", CultureInfo.GetCultureInfo("sv")));
@@ -50,27 +50,27 @@ namespace Kentor.AuthServices.Tests.Configuration
         }
 
         [TestMethod]
-        public void KentorAuthServicesSection_Organization_HandlesMissing()
+        public void SustainsysSaml2Section_Organization_HandlesMissing()
         {
             // If the organization element is missing in the config file, it will
             // still be present in the read config (which is stupid) and the strings
             // will be empty and the Url null. So let's pretend that the element
             // is missing from the config file by setting those values.
-            KentorAuthServicesSection.Current.Metadata.Organization.AllowConfigEdits(true);
-            KentorAuthServicesSection.Current.Metadata.Organization.Url = null;
-            KentorAuthServicesSection.Current.Metadata.Organization.Name = "";
-            KentorAuthServicesSection.Current.Metadata.Organization.DisplayName = "";
+            SustainsysSaml2Section.Current.Metadata.Organization.AllowConfigEdits(true);
+            SustainsysSaml2Section.Current.Metadata.Organization.Url = null;
+            SustainsysSaml2Section.Current.Metadata.Organization.Name = "";
+            SustainsysSaml2Section.Current.Metadata.Organization.DisplayName = "";
 
             // Reset the cached organization instance to force a reevaluation.
-            KentorAuthServicesSection.Current.organization = null;
+            SustainsysSaml2Section.Current.organization = null;
 
-            KentorAuthServicesSection.Current.Organization.Should().BeNull();
+            SustainsysSaml2Section.Current.Organization.Should().BeNull();
         }
 
         [TestMethod]
-        public void KentorAuthServicesSection_Contacts_LoadedFromConfig()
+        public void SustainsysSaml2Section_Contacts_LoadedFromConfig()
         {
-            var subject = KentorAuthServicesSection.Current.Contacts;
+            var subject = SustainsysSaml2Section.Current.Contacts;
 
             var expected = StubFactory.CreateSPOptions().Contacts;
 
@@ -80,14 +80,14 @@ namespace Kentor.AuthServices.Tests.Configuration
             expected.First().EmailAddresses.Remove(expected.First().EmailAddresses.First());
 
             var secondTech = new ContactPerson(ContactType.Technical);
-            secondTech.EmailAddresses.Add("info@kentor.se");
+            secondTech.EmailAddresses.Add("info@Sustainsys.se");
             expected.Add(secondTech);
 
             subject.ShouldBeEquivalentTo(expected);
         }
 
         [TestMethod]
-        public void KentorAuthServicesSection_Attributes_LoadedFromConfig()
+        public void SustainsysSaml2Section_Attributes_LoadedFromConfig()
         {
             var expected = new AttributeConsumingService("SP")
                 {
@@ -109,15 +109,15 @@ namespace Kentor.AuthServices.Tests.Configuration
                     IsRequired = false
                 });
 
-            var subject = KentorAuthServicesSection.Current.AttributeConsumingServices.Single();
+            var subject = SustainsysSaml2Section.Current.AttributeConsumingServices.Single();
 
             subject.ShouldBeEquivalentTo(expected);
         }
 
         [TestMethod]
-        public void KentorAuthServicesSection_Attributes_EmptyIfNotConfigured()
+        public void SustainsysSaml2Section_Attributes_EmptyIfNotConfigured()
         {
-            var subject = new KentorAuthServicesSection();
+            var subject = new SustainsysSaml2Section();
             subject.AllowChange = true;
             subject.Metadata = new MetadataElement();
 

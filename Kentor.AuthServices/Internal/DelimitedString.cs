@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Kentor.AuthServices.Internal
+namespace Sustainsys.Saml2.Internal
 {
     /// <summary>
     /// Helpers for delimited string, with support for escaping the delimiter

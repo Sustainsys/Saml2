@@ -1,9 +1,9 @@
-﻿using Kentor.AuthServices.WebSso;
+﻿using Sustainsys.Saml2.WebSso;
 using System;
 using System.Net;
 using System.Web;
 
-namespace Kentor.AuthServices.HttpModule
+namespace Sustainsys.Saml2.HttpModule
 {
     public static partial class CommandResultHttpExtensions
     {

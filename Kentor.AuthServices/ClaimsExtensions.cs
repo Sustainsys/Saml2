@@ -1,9 +1,9 @@
-﻿using Kentor.AuthServices.Internal;
+﻿using Sustainsys.Saml2.Internal;
 using System;
 using System.IdentityModel.Tokens;
 using System.Security.Claims;
 
-namespace Kentor.AuthServices
+namespace Sustainsys.Saml2
 {
     /// <summary>
     /// Extension methods for claims.
@@ -13,7 +13,7 @@ namespace Kentor.AuthServices
         /// <summary>
         /// Create a Saml2NameIdentifier from a claim.
         /// </summary>
-        /// <param name="claim">Name identifier or AuthServices logout info claim.</param>
+        /// <param name="claim">Name identifier or Saml2 logout info claim.</param>
         /// <returns>Saml2NameIdentifier</returns>
         /// <remarks>The field order is:NameQualifier,SPNameQualifier,Format,SPProvidedID,Value</remarks>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1726:UsePreferredTerms", MessageId = "logout")]
@@ -24,7 +24,7 @@ namespace Kentor.AuthServices
                 throw new ArgumentNullException(nameof(claim));
             }
 
-            if (claim.Type == AuthServicesClaimTypes.LogoutNameIdentifier)
+            if (claim.Type == Saml2ClaimTypes.LogoutNameIdentifier)
             {
                 return ProcessLogoutNameIdentifier(claim);
             }
@@ -34,7 +34,7 @@ namespace Kentor.AuthServices
                 return ProcessNameIdentifier(claim);
             }
 
-            throw new ArgumentException("ToSaml2NameIdentifier can only process an AuthServices logout name identifier claim.", nameof(claim));
+            throw new ArgumentException("ToSaml2NameIdentifier can only process an Saml2 logout name identifier claim.", nameof(claim));
         }
 
         private static Saml2NameIdentifier ProcessLogoutNameIdentifier(Claim claim)

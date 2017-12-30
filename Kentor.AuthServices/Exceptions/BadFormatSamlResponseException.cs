@@ -5,13 +5,13 @@ using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Kentor.AuthServices.Exceptions
+namespace Sustainsys.Saml2.Exceptions
 {
     /// <summary>
     /// A SAML response was found, but could not be parsed due to formatting issues.
     /// </summary>
     [Serializable]
-    public class BadFormatSamlResponseException: AuthServicesException
+    public class BadFormatSamlResponseException: Saml2Exception
     {
         /// <summary>
         /// Ctor

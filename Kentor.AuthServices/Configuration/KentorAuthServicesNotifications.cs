@@ -1,22 +1,22 @@
 ﻿using System.Collections.Generic;
-using Kentor.AuthServices.Saml2P;
+using Sustainsys.Saml2.Saml2P;
 using System;
-using Kentor.AuthServices.WebSso;
+using Sustainsys.Saml2.WebSso;
 using System.IdentityModel.Metadata;
-using Kentor.AuthServices.Metadata;
+using Sustainsys.Saml2.Metadata;
 
-namespace Kentor.AuthServices.Configuration
+namespace Sustainsys.Saml2.Configuration
 {
     /// <summary>
     /// Set of callbacks that can be used as extension points for various
     /// events.
     /// </summary>
-    public class KentorAuthServicesNotifications
+    public class SustainsysSaml2Notifications
     {
         /// <summary>
         /// Ctor, setting all callbacks to do-nothing versions.
         /// </summary>
-        public KentorAuthServicesNotifications()
+        public SustainsysSaml2Notifications()
         {
             AuthenticationRequestCreated = (request, provider, dictionary) => { };
             SignInCommandResultCreated = (cr, r) => { };
@@ -129,7 +129,7 @@ namespace Kentor.AuthServices.Configuration
         /// signing. At this point the contents of the metadata can be
         /// altered before presented.
         /// </summary>
-        public Action<ExtendedEntityDescriptor, AuthServicesUrls>
+        public Action<ExtendedEntityDescriptor, Saml2Urls>
             MetadataCreated { get; set; }
 
         /// <summary>

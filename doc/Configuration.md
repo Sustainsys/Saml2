@@ -1,13 +1,13 @@
-kentor.AuthServices Configuration
+Sustainsys.Saml2 Configuration
 =============
-To use Kentor.AuthServices in an application and configure it in web.config
+To use Sustainsys.Saml2 in an application and configure it in web.config
 (which is the default for the httpmodule and mvc libraries) it must be enabled 
 in the application's `web.config`. The sample applications contains complete
 working [`web.config`](../Samples/SampleApplication/Web.config) examples. For 
 ASP.NET MVC applications see [`this working web.config`](../Samples/SampleMvcApplication/Web.config)
 example. Applications using the owin library usually make their configuration
 in code and in that case no web.config changes are needed. If an owin library
-is set up to use web.config (by passing `true` to the `KentorAuthServicesAuthenticationOptions` 
+is set up to use web.config (by passing `true` to the `SustainsysSaml2AuthenticationOptions` 
 constructor) the information here applies.
 
 ## Config Sections
@@ -17,7 +17,7 @@ Three new config sections are required. Add these under `configuration/configSec
   <!-- Add these sections below any existing. -->
   <section name="system.identityModel" type="System.IdentityModel.Configuration.SystemIdentityModelSection, System.IdentityModel, Version=4.0.0.0, Culture=neutral, PublicKeyToken=B77A5C561934E089" />
   <section name="system.identityModel.services" type="System.IdentityModel.Services.Configuration.SystemIdentityModelServicesSection, System.IdentityModel.Services, Version=4.0.0.0, Culture=neutral, PublicKeyToken=B77A5C561934E089" />   
-  <section name="kentor.authServices" type="Kentor.AuthServices.Configuration.KentorAuthServicesSection, Kentor.AuthServices"/>
+  <section name="Sustainsys.Saml2" type="Sustainsys.Saml2.Configuration.SustainsysSaml2Section, Sustainsys.Saml2"/>
 </configSections>
 ```
 ## Loading modules
@@ -31,40 +31,40 @@ does not need any http modules, please see the separate info on the [Owin middle
 	<!-- Add these modules below any existing. The SessionAuthenticatioModule
          must be loaded before the Saml2AuthenticationModule -->
     <add name="SessionAuthenticationModule" type="System.IdentityModel.Services.SessionAuthenticationModule, System.IdentityModel.Services, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089"/>
-    <!-- Only add the Saml2AuthenticationModule if you're using the Kentor.AuthServices.HttpModule
-		 library. If you are using Kentor.AuthServices.Mvc you SHOULD NOT load this module.-->
-	<add name="Saml2AuthenticationModule" type="Kentor.AuthServices.HttpModule.Saml2AuthenticationModule, Kentor.AuthServices.HttpModule"/>
+    <!-- Only add the Saml2AuthenticationModule if you're using the Sustainsys.Saml2.HttpModule
+		 library. If you are using Sustainsys.Saml2.Mvc you SHOULD NOT load this module.-->
+	<add name="Saml2AuthenticationModule" type="Sustainsys.Saml2.HttpModule.Saml2AuthenticationModule, Sustainsys.Saml2.HttpModule"/>
   </modules>
 </system.webServer>
 ```
 
-## kentor.authServices Section
-The saml2AuthenticationModule section contains the configuration of the Kentor.AuthServices
+## Sustainsys.Saml2 Section
+The saml2AuthenticationModule section contains the configuration of the Sustainsys.Saml2
 library. It is required for the http module and the mvc controller. The Owin middleware can
 read web.config, but can also be configured from code (see [Owin middleware](OwinMiddleware.md)).
 
 ```
-<kentor.authServices entityId="http://localhost:17009"
+<Sustainsys.Saml2 entityId="http://localhost:17009"
                      returnUrl="http://localhost:17009/SamplePath/"
                      discoveryServiceUrl="http://localhost:52071/DiscoveryService" 
 					 authenticateRequestSigningBehavior="Always">
   <nameIdPolicy allowCreate="true" format="Persistent"/>
   <metadata cacheDuration="0:0:42" validDuration="7.12:00:00" wantAssertionsSigned="true">
-    <organization name="Kentor IT AB" displayName="Kentor" url="http://www.kentor.se" language="sv" />
-    <contactPerson type="Other" email="info@kentor.se" />
+    <organization name="Sustainsys IT AB" displayName="Sustainsys" url="http://www.Sustainsys.se" language="sv" />
+    <contactPerson type="Other" email="info@Sustainsys.se" />
     <requestedAttributes>
       <add friendlyName ="Some Name" name="urn:someName" nameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri" isRequired="true" />
       <add name="Minimal" />
     </requestedAttributes>
   </metadata>
   <identityProviders>
-    <add entityId="http://stubidp.kentor.se/Metadata" 
-         signOnUrl="http://stubidp.kentor.se" 
+    <add entityId="http://stubidp.Sustainsys.se/Metadata" 
+         signOnUrl="http://stubidp.Sustainsys.se" 
          allowUnsolicitedAuthnResponse="true"
 		 binding="HttpRedirect"
 		 wantAuthnRequestsSigned="true">
       <signingCertificate storeName="AddressBook" storeLocation="CurrentUser" 
-                          findValue="Kentor.AuthServices.StubIdp" x509FindType="FindBySubjectName" />
+                          findValue="Sustainsys.Saml2.StubIdp" x509FindType="FindBySubjectName" />
     </add>
     <add entityId="example-idp"
          metadataLocation="https://idp.example.com/Metadata"
@@ -73,16 +73,16 @@ read web.config, but can also be configured from code (see [Owin middleware](Owi
   </identityProviders>
   <!-- Optional configuration for signed requests. Required for Single Logout. -->
   <serviceCertificates>
-    <add fileName="~/App_Data/Kentor.AuthServices.Tests.pfx" />
+    <add fileName="~/App_Data/Sustainsys.Saml2.Tests.pfx" />
   </serviceCertificates>
   <!-- Optional configuration for fetching IDP list from a federation -->
   <federations>
     <add metadataLocation="https://federation.example.com/metadata.xml" allowUnsolicitedAuthnResponse = "false" />
   </federations>
-</kentor.authServices>
+</Sustainsys.Saml2>
 ```
 
-### `<kentor.authServices>` Element
+### `<Sustainsys.Saml2>` Element
 *Child element of `<configuration>` element.*
 
 Root element of the config section.
@@ -108,52 +108,52 @@ Root element of the config section.
 * [`<compatibility>`](#compatibility-element)
 
 #### `entityId` Attribute
-*Attribute of the [`<kentor.authServices>`](#kentor-authservices-section) element.*
+*Attribute of the [`<Sustainsys.Saml2>`](#Sustainsys-Saml2-section) element.*
 
 The name that this service provider will use for itself when sending
 messages. The name will end up in the `Issuer` field in outcoing authnRequests.
 
 The SAML standard requires the `entityId` to be an absolute URI. Typically it should
 be the URL where the metadata is presented. E.g.
-`http://sp.example.com/AuthServices/`.
+`http://sp.example.com/Saml2/`.
 
 #### `returnUrl` Attribute
-*Attribute of the [`<kentor.authServices>`](#kentor-authservices-section) element.*
+*Attribute of the [`<Sustainsys.Saml2>`](#Sustainsys-Saml2-section) element.*
 
 The Url that you want users to be redirected to once the authentication is
 complete. This is typically the start page of the application, or a special
 signed in start page.
 
 #### `discoveryServiceUrl` Attribute
-*Optional Attribute of the [`<kentor.authServices>`](#kentor-authservices-section) element.*
+*Optional Attribute of the [`<Sustainsys.Saml2>`](#Sustainsys-Saml2-section) element.*
 
 Optional attribute that specifies an idp discovery service to use if no idp
 is specified when calling sign in. Without this attribute, the first idp known
 will be used if none is specified.
 
 #### `modulePath` Attribute
-*Optional Attribute of the [`<kentor.authServices>`](#kentor-authservices-section) element.*
+*Optional Attribute of the [`<Sustainsys.Saml2>`](#Sustainsys-Saml2-section) element.*
 
-Optional attribute that indicates the base path of the AuthServices endpoints.
-Defaults to `/AuthServices` if not specified. This can usually be left as the
-default, but if several instances of AuthServices are loaded into the
+Optional attribute that indicates the base path of the Saml2 endpoints.
+Defaults to `/Saml2` if not specified. This can usually be left as the
+default, but if several instances of Saml2 are loaded into the
 same process they must each get a separate base path.
 
 #### `authenticateRequestSigningBehavior` Attribute
-*Optional Attribute of the [`<kentor.AuthServices>`](#kentor-authservices-section) element.*
+*Optional Attribute of the [`<Sustainsys.Saml2>`](#Sustainsys-Saml2-section) element.*
 
 Optional attribute that sets the signing behavior for generated AuthnRequests.
 Two values are supported:
 
-* `Never`: AuthServices will never sign any
+* `Never`: Saml2 will never sign any
   created AuthnRequests.
-* `Always`: AuthServices will always sign all AuthnRequests.
+* `Always`: Saml2 will always sign all AuthnRequests.
 * `IfIdpWantAuthnRequestsSigned` (default if the attribute is missing):
-  AuthServices will sign AuthnRequests if the idp is configured for it (through
+  Saml2 will sign AuthnRequests if the idp is configured for it (through
   config or listed in idp metadata).
 
 #### `validateCertificates` Attribute
-*Optional Attribute of the [`<kentor.authServices>`](#kentor-authservices-section) element.*
+*Optional Attribute of the [`<Sustainsys.Saml2>`](#Sustainsys-Saml2-section) element.*
 
 Normally certificates for the IDPs signing use is communicated through metadata
 and in case of a breach, the metadata is updated with new data. If you want
@@ -162,9 +162,9 @@ SAML metadata specification explicitly places no requirements on certificate
 validation, so don't be surprised if an Idp certificate doesn't pass validation.
 
 #### `publicOrigin` Attribute
-*Optional Attribute of the [`<kentor.authServices>`](#kentor-authservices-section) element.*
+*Optional Attribute of the [`<Sustainsys.Saml2>`](#Sustainsys-Saml2-section) element.*
 
-Optional attribute that indicates the base url of the AuthServices endpoints.
+Optional attribute that indicates the base url of the Saml2 endpoints.
 It should be the root path of the application. E.g. The SignIn url is built
 up as PublicOrigin + / + modulePath + /SignIn.
 
@@ -180,12 +180,12 @@ If you need to set this value on a per-request basis, provide a GetPublicOrigin
 Notification function instead.
 
 #### `outboundSigningAlgorithm` Attribute
-*Optional Attribute of the [`<kentor.authServices>`](#kentor-authservices-section) element.*
+*Optional Attribute of the [`<Sustainsys.Saml2>`](#Sustainsys-Saml2-section) element.*
 
-By default AuthServices uses SHA256 signatures if running on .NET 4.6.2 or later or when you
+By default Saml2 uses SHA256 signatures if running on .NET 4.6.2 or later or when you
 have called `GlobalEnableSha256XmlSignatures()`. Otherwise, it uses SHA1 signatures. 
 Use this attribute to set the default signing algorithm for any messages
-(including metadata) that AuthServices generates. Possible values:
+(including metadata) that Saml2 generates. Possible values:
 
 * `SHA1` (or `http://www.w3.org/2000/09/xmldsig#rsa-sha1`)
 * `SHA256`
@@ -196,12 +196,12 @@ The full url identifying the algorithm can also be provided. The algorithm can b
 each IdentityProvider too.
 
 #### `minIncomingSigningAlgorithm` Attribute
-*Optional Attribute of the [`<kentor.authServices>`](#kentor-authservices-section) element.*
+*Optional Attribute of the [`<Sustainsys.Saml2>`](#Sustainsys-Saml2-section) element.*
 
 The minimum strength required on signatures on incoming messages. Messages with a too weak
 signing algorithm will be rejected.
 
-By default AuthServices requires SHA256 signatures if running on .NET 4.6.2 or later or when you
+By default Saml2 requires SHA256 signatures if running on .NET 4.6.2 or later or when you
 have called `GlobalEnableSha256XmlSignatures()`. Otherwise, it uses SHA1 signatures. 
 
 Possible values:
@@ -214,7 +214,7 @@ Possible values:
 The full url identifying the algorithm can also be provided.
 
 ### `<nameIdPolicy>` Element
-*Optional child element of the [`<kentor.authServices>`](#kentor-authservices-section) element.*
+*Optional child element of the [`<Sustainsys.Saml2>`](#Sustainsys-Saml2-section) element.*
 
 Controls the generation of NameIDPolicy element in AuthnRequests. The element Is
 only created if either `allowCreate` or `format` are set to a non-default value.
@@ -254,7 +254,7 @@ If `Transient` is specified, it is not permitted to specify `allowCreate`
 (see 3.4.1.1 in the SAML2 Core spec).
 
 ### `<requestedAuthnContext>` element
-*Optional child element of the [`<kentor.authServices>`](#kentor-authservices-section) element.*
+*Optional child element of the [`<Sustainsys.Saml2>`](#Sustainsys-Saml2-section) element.*
 
 #### Attributes
 * [`classRef`](#classref-attribute)
@@ -309,7 +309,7 @@ better is accepted. `Better` is exclusive, meaning that the specified classRef
 is not accepted.
 
 ### `<metadata>` Element
-*Optional child element of the [`<kentor.authServices>`](#kentor-authservices-section) element.*
+*Optional child element of the [`<Sustainsys.Saml2>`](#Sustainsys-Saml2-section) element.*
 
 The metadata part of the configuration can be used to tweak the generated
 metadata. These configuration options only affects how the metadata is
@@ -354,7 +354,7 @@ validDuration to the current time. Examples of valid format strings:
 *Optional attribute of the [`<metadata>`](#metadata-element) element.*
 
 Optional attribute to signal to IDPs that we want the Assertions themselves 
-signed and not only the SAML response. AuthServices supports both, so for
+signed and not only the SAML response. Saml2 supports both, so for
 normal usage this shouldn't matter. If set to `false` the entire 
 `wantAssertionsSigned` attribute is dropped from the metadata as the default
 values is false.
@@ -363,7 +363,7 @@ values is false.
 *Optional child element of the [`<metadata>`](#metadata-element) element.*
 
 Provides information about the organization supplying the SAML2 entity (in plain
-English that means the organization that supplies the application that AuthServices
+English that means the organization that supplies the application that Saml2
 is used in).
 
 #### Attributes
@@ -438,13 +438,13 @@ Surname of the person.
 *Optional attribute of the [`<contactPerson>`](#contactperson-element) element.*
 
 Phone number of the person. The SAML standard allows multiple phone number to
-be specified. AuthServices supports that, but not through the configuration file.
+be specified. Saml2 supports that, but not through the configuration file.
 
 #### `email` Attribute
 *Optional attribute of the [`<contactPerson>`](#contactperson-element) element.*
 
 Email address of the person. The SAML standard allows multiple email addresses to
-be specified. AuthServices supports that, but not through the configuration file.
+be specified. Saml2 supports that, but not through the configuration file.
 
 ### `<requestedAttributes>` Element
 *Optional child element of the [`<metadata>`](#metadata-element) element.*
@@ -491,7 +491,7 @@ Is this attribute required by the service provider or is it just a request that
 it would be nice if the Idp includes it?
 
 ### `<identityProviders>` Element
-*Optional child element of the [`<kentor.authServices>`](#kentor-authservices-section) element.*
+*Optional child element of the [`<Sustainsys.Saml2>`](#Sustainsys-Saml2-section) element.*
 
 A list of identity providers known to the service provider.
 
@@ -536,7 +536,7 @@ on the network of the server won't work.
 
 The url where the identity provider listens for incoming logout requests and
 responses. To enable single logout behaviour there must also be a service
-certificate configured in AuthServices as all logout messages must be signed.
+certificate configured in Saml2 as all logout messages must be signed.
 
 #### `allowUnsolicitedAuthnResponse` Attribute
 *Attribute of the [`<add>`](#add-identityprovider-element) element*
@@ -580,7 +580,7 @@ the configured certificate will take precedence over any contents in the metadat
 
 The SAML2 metadata standard strongly suggests that the Entity Id of a SAML2 entity
 is a URL where the metadata of the entity can be found. When loading metadata
-for an idp, AuthServices normally interprets the EntityId as a url to the metadata.
+for an idp, Saml2 normally interprets the EntityId as a url to the metadata.
 If the metadata is located somewhere else it can be specified with this
 configuration parameter. The location can be a URL, an absolute path to a local
 file or an app relative path (e.g. ~/App_Data/IdpMetadata.xml)
@@ -588,14 +588,14 @@ file or an app relative path (e.g. ~/App_Data/IdpMetadata.xml)
 #### `disableOutboundLogoutRequests` Attribute
 *Optional attribute of the [`add`](#add-identityprovider-element) element*
 
-Disable outbound logout requests to this idp, even though AuthServices is
+Disable outbound logout requests to this idp, even though Saml2 is
 configured for single logout and the idp supports it. This setting might be
 usable when adding SLO to an existing setup, to ensure that everyone is ready
 for SLO before activating.
 
 #### `outboundSigningAlgorithm` Attribute (Idp)
 *Optional attribute of the [`add`](#add-identityprovider-element) element*
-By default AuthServices uses SHA256 signatures if running on .NET 4.6.2 or later and
+By default Saml2 uses SHA256 signatures if running on .NET 4.6.2 or later and
 otherwise SHA1 signatures. Set this to set the signing algorithm for any outbound messages
 for this identity provider. Possible values:
 
@@ -676,7 +676,7 @@ Valid values are those from the
 enumeration.
 
 ### `<federations>` Element
-*Optional child element of the `<kentor.authServices>`(#kentor-authservices-section) element.*
+*Optional child element of the `<Sustainsys.Saml2>`(#Sustainsys-Saml2-section) element.*
 
 Contains a list of federations that the service provider knows and trusts.
 
@@ -695,7 +695,7 @@ Adds a known federation.
 #### `metadataLocation` Attribute (Federation)
 *Attribute of [`<add>`](#add-federation-element)*
 
-URL to the full metadata of the federation. AuthServices will download the
+URL to the full metadata of the federation. Saml2 will download the
 metadata and add all identity providers found to the list of known and trusted
 identity providers. The location can be a URL, an absolute path to a local
 file or an app relative path (e.g. ~/App_Data/IdpMetadata.xml)
@@ -708,7 +708,7 @@ Decided whether unsolicited authn responses should be allowed from the identity 
 in the federation.
 
 ### `<serviceCertificates>` Element
-*Optional child element of the [`<kentor.authServices>`](#kentorauthservices-section) element.*
+*Optional child element of the [`<Sustainsys.Saml2>`](#SustainsysSaml2-section) element.*
 
 Specifies the certificate(s) that the service provider uses for encrypted assertions
 (and for signed requests, once that feature is added).
@@ -762,7 +762,7 @@ Options are:
  * PublishSigning
  * DoNotPublish
 
-Use | Status | Published in Metatadata | Used by AuthServices
+Use | Status | Published in Metatadata | Used by Saml2
 ------------ | ------------- | ------------- | -------------
 Both | Current | Unspecified _unless Future key exists_, then Signing | Yes 
 Both | Future | Unspecified | For decryption only 
@@ -772,7 +772,7 @@ Encryption | Current | Encryption _unless Future key exists_ then not published 
 Encryption | Future | Encryption | Yes 
 
 ### `<compatibility>` Element
-*Optional child element of the [`<kentor.authServices>`](#kentorauthservices-section) element.*
+*Optional child element of the [`<Sustainsys.Saml2>`](#SustainsysSaml2-section) element.*
 
 Enables overrides of default behaviour to increase compatibility with identity
 providers.
@@ -801,7 +801,7 @@ be empty (use `<system.identityModel />`).
 ```
 <system.identityModel>
   <identityConfiguration>
-    <claimsAuthenticationManager type="Kentor.AuthServices.Tests.ClaimsAuthenticationManagerStub, Kentor.AuthServices.Tests"/>
+    <claimsAuthenticationManager type="Sustainsys.Saml2.Tests.ClaimsAuthenticationManagerStub, Sustainsys.Saml2.Tests"/>
   </identityConfiguration>
 </system.identityModel>
 ```

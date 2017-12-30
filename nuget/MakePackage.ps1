@@ -18,10 +18,10 @@ if ("$master" -eq "")
 }
 
 pushd ..
-del Kentor.AuthServices\bin\Release\*.dll
-del Kentor.AuthServices.Mvc\bin\Release\*.dll
-del Kentor.AuthServices.Owin\bin\Release\*.dll
-del Kentor.AuthServices.HttpModule\bin\Release\*.dll
+del Sustainsys.Saml2\bin\Release\*.dll
+del Sustainsys.Saml2.Mvc\bin\Release\*.dll
+del Sustainsys.Saml2.Owin\bin\Release\*.dll
+del Sustainsys.Saml2.HttpModule\bin\Release\*.dll
 del Sustainsys.Saml2.AspNetCore2\bin\Release\*.dll
 
 echo "Creating nuspec files..."
@@ -34,18 +34,18 @@ function Create-Nuspec($projectName)
 		set-content $projectName\$projectName.nuspec
 }
 
-Create-Nuspec("Kentor.AuthServices")
-Create-Nuspec("Kentor.AuthServices.Mvc")
-Create-Nuspec("Kentor.AuthServices.Owin")
-Create-Nuspec("Kentor.AuthServices.HttpModule")
+Create-Nuspec("Sustainsys.Saml2")
+Create-Nuspec("Sustainsys.Saml2.Mvc")
+Create-Nuspec("Sustainsys.Saml2.Owin")
+Create-Nuspec("Sustainsys.Saml2.HttpModule")
 Create-Nuspec("Sustainsys.Saml2.AspNetCore2")
 
 echo "Building packages..."
 
-nuget pack -build -outputdirectory nuget Kentor.AuthServices\Kentor.AuthServices.csproj
-nuget pack -build -outputdirectory nuget Kentor.AuthServices.Mvc\Kentor.AuthServices.Mvc.csproj
-nuget pack -build -outputdirectory nuget Kentor.AuthServices.Owin\Kentor.AuthServices.Owin.csproj
-nuget pack -build -outputdirectory nuget Kentor.AuthServices.HttpModule\Kentor.AuthServices.HttpModule.csproj
+nuget pack -build -outputdirectory nuget Sustainsys.Saml2\Sustainsys.Saml2.csproj
+nuget pack -build -outputdirectory nuget Sustainsys.Saml2.Mvc\Sustainsys.Saml2.Mvc.csproj
+nuget pack -build -outputdirectory nuget Sustainsys.Saml2.Owin\Sustainsys.Saml2.Owin.csproj
+nuget pack -build -outputdirectory nuget Sustainsys.Saml2.HttpModule\Sustainsys.Saml2.HttpModule.csproj
 nuget pack -build -outputdirectory nuget Sustainsys.Saml2.AspNetCore2\Sustainsys.Saml2.AspNetCore2.csproj
 
 popd

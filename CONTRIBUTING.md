@@ -1,8 +1,8 @@
 Contributing
 ===========
 
-Kentor.AuthServices is maintained by and have mostly been developed by Kentor in Stockholm,
-Sweden. The library's source code is hosted on [github](https://github.com/KentorIT/authservices).
+Sustainsys.Saml2 is maintained by and have mostly been developed by Sustainsys in Stockholm,
+Sweden. The library's source code is hosted on [github](https://github.com/SustainsysIT/Saml2).
 
 When doing work on protocol features, it is recommended to consult the
 [official SAML specifications](https://wiki.oasis-open.org/security/FrontPage#SAMLV2.0Standard).
@@ -16,7 +16,7 @@ Discussing before writing code significantly reduces the risk of getting a pull 
 denied.
 
 ## Versioning
-Kentor Authentication services uses semantic versioning as defined on http://semver.org/.
+Sustainsys Authentication services uses semantic versioning as defined on http://semver.org/.
 
     Given a version number MAJOR.MINOR.PATCH, increment the:
 
@@ -46,7 +46,7 @@ not a 30-inch development monster-monitor in vertical orientation).
 * The code is formatted to (mostly) fit in 80 columns.
 
 ## Unit Tests
-The core Kentor.AuthServices library has been developed using TDD (Test Driven Development). All
+The core Sustainsys.Saml2 library has been developed using TDD (Test Driven Development). All
 functionality is covered by tests, and it will remain that way. Pull requests will only be
 merged if they contain tests covering the added functionality. Parts of the code that aren't
 practically possible to test because of tight integration with the web server (see e.g. 
@@ -59,14 +59,14 @@ There are also some integration tests that run through the sample applications a
 sure that they work. To run the integration tests:
 * Make sure that you have Google Chrome installed.
 * Open the main solution.
-* Set multiple startup projects: Kentor.AuthServices.StubIdp, SampleApplication, SampleMvcApplication 
+* Set multiple startup projects: Sustainsys.Saml2.StubIdp, SampleApplication, SampleMvcApplication 
 and SampleOwinApplication.
 * Debug the solution.
-* Open Kentor.AuthServices.IntegrationTests in a separate Visual Studio Instance.
+* Open Sustainsys.Saml2.IntegrationTests in a separate Visual Studio Instance.
 * Run all tests in the IntegrationTests solution.
 
 ## Continous integration / build server
-Kentor.AuthServices contains configuration for [AppVeyor CI](|https://ci.appveyor.com/).
+Sustainsys.Saml2 contains configuration for [AppVeyor CI](|https://ci.appveyor.com/).
 
 You may set up a free build of all branches in your GitHub fork by signing up to AppVeyor 
 (preferably with your GitHub account) and then creating a new project for your GitHub fork.

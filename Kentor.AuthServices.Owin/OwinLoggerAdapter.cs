@@ -5,10 +5,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Kentor.AuthServices.Owin
+namespace Sustainsys.Saml2.Owin
 {
     /// <summary>
-    /// Adapter for AuthServices logging around owin logging system.
+    /// Adapter for Saml2 logging around owin logging system.
     /// </summary>
     public class OwinLoggerAdapter : ILoggerAdapter
     {

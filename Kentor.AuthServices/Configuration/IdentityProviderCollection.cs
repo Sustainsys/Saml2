@@ -5,9 +5,9 @@ using System.IdentityModel.Metadata;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Kentor.AuthServices.Internal;
+using Sustainsys.Saml2.Internal;
 
-namespace Kentor.AuthServices.Configuration
+namespace Sustainsys.Saml2.Configuration
 {
     /// <summary>
     /// Config collection of IdentityProviderElements.

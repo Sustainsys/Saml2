@@ -1,18 +1,18 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Web;
-using Kentor.AuthServices.HttpModule;
+using Sustainsys.Saml2.HttpModule;
 using FluentAssertions;
 using NSubstitute;
 using System.Collections.Specialized;
-using Kentor.AuthServices.WebSso;
+using Sustainsys.Saml2.WebSso;
 using System.Web.Security;
 using System.Text;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 
-namespace Kentor.AuthServices.HttpModule.Tests
+namespace Sustainsys.Saml2.HttpModule.Tests
 {
     [TestClass]
     public class HttpRequestBaseExtensionsTests
@@ -43,7 +43,7 @@ namespace Kentor.AuthServices.HttpModule.Tests
                     new StoredRequestState(null, new Uri("urn:someUri"), null, null).Serialize(),
                     HttpRequestBaseExtensions.ProtectionPurpose));
             request.Cookies.Returns(new HttpCookieCollection());
-            request.Cookies.Add(new HttpCookie("Kentor.SomeState", cookieValue));
+            request.Cookies.Add(new HttpCookie("Sustainsys.SomeState", cookieValue));
 
             var actual = request.ToHttpRequestData();
 
@@ -77,7 +77,7 @@ namespace Kentor.AuthServices.HttpModule.Tests
 
             var cookieValue = "SomethingThatCannotBeDecrypted";
             request.Cookies.Returns(new HttpCookieCollection());
-            request.Cookies.Add(new HttpCookie("Kentor.SomeState", cookieValue));
+            request.Cookies.Add(new HttpCookie("Sustainsys.SomeState", cookieValue));
 
             var subject = request.ToHttpRequestData(true);
 

@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 using System.Xml;
 using System.Xml.Linq;
 
-namespace Kentor.AuthServices.Saml2P
+namespace Sustainsys.Saml2.Saml2P
 {
     /// <summary>
     /// Saml2 Soap binding implementation.

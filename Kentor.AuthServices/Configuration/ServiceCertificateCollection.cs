@@ -1,4 +1,4 @@
-﻿using Kentor.AuthServices.Internal;
+﻿using Sustainsys.Saml2.Internal;
 using System;
 using System.Collections.ObjectModel;
 using System.Reflection;
@@ -6,7 +6,7 @@ using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 using System.Xml;
 
-namespace Kentor.AuthServices.Configuration
+namespace Sustainsys.Saml2.Configuration
 {
     /// <summary>
     /// Certificates used by the service provider for signing or decryption.

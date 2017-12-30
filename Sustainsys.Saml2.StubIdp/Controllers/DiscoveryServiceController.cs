@@ -1,11 +1,11 @@
-﻿using Kentor.AuthServices.StubIdp.Models;
+﻿using Sustainsys.Saml2.StubIdp.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 
-namespace Kentor.AuthServices.StubIdp.Controllers
+namespace Sustainsys.Saml2.StubIdp.Controllers
 {
     public class DiscoveryServiceController : Controller
     {

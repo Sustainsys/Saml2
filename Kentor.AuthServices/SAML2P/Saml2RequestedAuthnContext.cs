@@ -1,7 +1,7 @@
-﻿using Kentor.AuthServices.Configuration;
+﻿using Sustainsys.Saml2.Configuration;
 using System;
 
-namespace Kentor.AuthServices.Saml2P
+namespace Sustainsys.Saml2.Saml2P
 {
     /// <summary>
     /// Configuration of RequestedAuthnContext

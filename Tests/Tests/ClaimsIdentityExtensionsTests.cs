@@ -6,7 +6,7 @@ using FluentAssertions;
 using System.IdentityModel.Metadata;
 using System.IdentityModel.Tokens;
 
-namespace Kentor.AuthServices.Tests
+namespace Sustainsys.Saml2.Tests
 {
     [TestClass]
     public class ClaimsIdentityExtensionsTests
@@ -50,7 +50,7 @@ namespace Kentor.AuthServices.Tests
         {
             var subject = new ClaimsIdentity(new Claim[] {
                 new Claim(ClaimTypes.NameIdentifier, "NameId"),
-                new Claim(AuthServicesClaimTypes.SessionIndex, "SessionID"),
+                new Claim(Saml2ClaimTypes.SessionIndex, "SessionID"),
                 new Claim(ClaimTypes.Email, "me@example.com")
             });
 

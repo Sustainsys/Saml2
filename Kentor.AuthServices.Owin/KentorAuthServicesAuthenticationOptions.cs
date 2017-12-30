@@ -1,38 +1,38 @@
-﻿using Kentor.AuthServices.Configuration;
+﻿using Sustainsys.Saml2.Configuration;
 using Microsoft.Owin.Security;
 using Microsoft.Owin.Security.DataProtection;
 
-namespace Kentor.AuthServices.Owin
+namespace Sustainsys.Saml2.Owin
 {
     /// <summary>
-    /// Options for Kentor AuthServices Saml2 Authentication.
+    /// Options for Sustainsys Saml2 Saml2 Authentication.
     /// </summary>
-    public class KentorAuthServicesAuthenticationOptions : AuthenticationOptions, IOptions
+    public class SustainsysSaml2AuthenticationOptions : AuthenticationOptions, IOptions
     {
         /// <summary>
         /// Set of callbacks that can be used as extension points for various
         /// events.
         /// </summary>
-        public KentorAuthServicesNotifications Notifications { get; set; }
+        public SustainsysSaml2Notifications Notifications { get; set; }
 
         /// <summary>
         /// Constructor
         /// <param name="loadConfiguration">Should the options be inited by loading app/web.config?</param>
         /// </summary>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "KentorAuthServices")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "SustainsysSaml2")]
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", "CA1303:Do not pass literals as localized parameters", MessageId = "Microsoft.Owin.Security.AuthenticationDescription.set_Caption(System.String)")]
-        public KentorAuthServicesAuthenticationOptions(bool loadConfiguration)
+        public SustainsysSaml2AuthenticationOptions(bool loadConfiguration)
             : base(Constants.DefaultAuthenticationType)
         {
             AuthenticationMode = AuthenticationMode.Passive;
             Description.Caption = Constants.DefaultCaption;
-            Notifications = new KentorAuthServicesNotifications();
+            Notifications = new SustainsysSaml2Notifications();
 
             if (loadConfiguration)
             {
-                SPOptions = new SPOptions(KentorAuthServicesSection.Current);
-                KentorAuthServicesSection.Current.IdentityProviders.RegisterIdentityProviders(this);
-                KentorAuthServicesSection.Current.Federations.RegisterFederations(this);
+                SPOptions = new SPOptions(SustainsysSaml2Section.Current);
+                SustainsysSaml2Section.Current.IdentityProviders.RegisterIdentityProviders(this);
+                SustainsysSaml2Section.Current.Federations.RegisterFederations(this);
             }
         }
 

@@ -5,9 +5,9 @@ using FluentAssertions;
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
-using Kentor.AuthServices.WebSso;
+using Sustainsys.Saml2.WebSso;
 
-namespace Kentor.AuthServices.Owin.Tests
+namespace Sustainsys.Saml2.Owin.Tests
 {
     [TestClass]
     public class OwinContextExtensionsTests
@@ -67,7 +67,7 @@ namespace Kentor.AuthServices.Owin.Tests
             var cookieData = HttpRequestData.ConvertBinaryData(
                     StubDataProtector.Protect(storedRequestState.Serialize()));
 
-            ctx.Request.Headers["Cookie"] = $"Kentor.SomeState={cookieData}";
+            ctx.Request.Headers["Cookie"] = $"Sustainsys.SomeState={cookieData}";
 
             var actual = await ctx.ToHttpRequestData(StubDataProtector.Unprotect);
 

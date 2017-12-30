@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Configuration;
 
-namespace Kentor.AuthServices.Configuration
+namespace Sustainsys.Saml2.Configuration
 {
     /// <summary>
     /// Configuration of an artifact resolution service endpoint on an idp.

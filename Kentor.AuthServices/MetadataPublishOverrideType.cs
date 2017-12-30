@@ -1,4 +1,4 @@
-﻿namespace Kentor.AuthServices
+﻿namespace Sustainsys.Saml2
 {
     /// <summary>
     /// How should we override the metadata publishing rules

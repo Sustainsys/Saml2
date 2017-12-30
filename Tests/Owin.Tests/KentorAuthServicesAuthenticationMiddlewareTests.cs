@@ -9,21 +9,21 @@ using System.Linq;
 using System.IO;
 using System.Text;
 using System.Security.Claims;
-using Kentor.AuthServices.Configuration;
+using Sustainsys.Saml2.Configuration;
 using System.Xml.Linq;
 using System.Threading.Tasks;
 using System.IdentityModel.Tokens;
 using System.IdentityModel.Metadata;
 using System.Reflection;
 using System.Threading;
-using Kentor.AuthServices.Saml2P;
-using Kentor.AuthServices.WebSso;
+using Sustainsys.Saml2.Saml2P;
+using Sustainsys.Saml2.WebSso;
 using System.Security.Principal;
 
-namespace Kentor.AuthServices.Owin.Tests
+namespace Sustainsys.Saml2.Owin.Tests
 {
-    using AuthServices.Exceptions;
-    using Kentor.AuthServices.TestHelpers;
+    using Saml2.Exceptions;
+    using Sustainsys.Saml2.TestHelpers;
     using Microsoft.Owin.Security.DataProtection;
     using NSubstitute;
     using System.Configuration;
@@ -33,7 +33,7 @@ namespace Kentor.AuthServices.Owin.Tests
     using AuthenticateDelegate = Func<string[], Action<IIdentity, IDictionary<string, string>, IDictionary<string, object>, object>, object, Task>;
 
     [TestClass]
-    public class KentorAuthServicesAuthenticationMiddlewareTests
+    public class SustainsysSaml2AuthenticationMiddlewareTests
     {
         ClaimsPrincipal originalPrincipal;
 
@@ -50,9 +50,9 @@ namespace Kentor.AuthServices.Owin.Tests
         }
 
         [TestMethod]
-        public void KentorAuthServicesAuthenticationMiddleware_CtorNullChecksOptions()
+        public void SustainsysSaml2AuthenticationMiddleware_CtorNullChecksOptions()
         {
-            Action a = () => new KentorAuthServicesAuthenticationMiddleware(
+            Action a = () => new SustainsysSaml2AuthenticationMiddleware(
                 new StubOwinMiddleware(0, null), CreateAppBuilder(),
                 null);
 
@@ -60,10 +60,10 @@ namespace Kentor.AuthServices.Owin.Tests
         }
 
         [TestMethod]
-        public void KentorAuthServicesAuthenticationMiddleware_CtorNullChecksApp()
+        public void SustainsysSaml2AuthenticationMiddleware_CtorNullChecksApp()
         {
-            Action a = () => new KentorAuthServicesAuthenticationMiddleware(
-                new StubOwinMiddleware(0, null), null, new KentorAuthServicesAuthenticationOptions(true));
+            Action a = () => new SustainsysSaml2AuthenticationMiddleware(
+                new StubOwinMiddleware(0, null), null, new SustainsysSaml2AuthenticationOptions(true));
 
             a.ShouldThrow<ArgumentNullException>("app");
         }
@@ -82,25 +82,25 @@ namespace Kentor.AuthServices.Owin.Tests
         }
 
         [TestMethod]
-        public void KentorAuthServicesAuthenticationMiddleware_CtorSetsDefaultAuthOption()
+        public void SustainsysSaml2AuthenticationMiddleware_CtorSetsDefaultAuthOption()
         {
-            var options = new KentorAuthServicesAuthenticationOptions(true);
+            var options = new SustainsysSaml2AuthenticationOptions(true);
 
             options.SignInAsAuthenticationType.Should().BeNull();
 
-            var middleware = new KentorAuthServicesAuthenticationMiddleware(new StubOwinMiddleware(0, null),
+            var middleware = new SustainsysSaml2AuthenticationMiddleware(new StubOwinMiddleware(0, null),
                 CreateAppBuilder(), options);
 
             options.SignInAsAuthenticationType.Should().Be(DefaultSignInAsAuthenticationType);
         }
 
         [TestMethod]
-        public async Task KentorAuthServicesAuthenticationMiddleware_RedirectsOnSpecificAuthChallenge_WhenPassive()
+        public async Task SustainsysSaml2AuthenticationMiddleware_RedirectsOnSpecificAuthChallenge_WhenPassive()
         {
-            var middleware = new KentorAuthServicesAuthenticationMiddleware(
+            var middleware = new SustainsysSaml2AuthenticationMiddleware(
                 new StubOwinMiddleware(401, new AuthenticationResponseChallenge(
-                    new string[] { "KentorAuthServices" }, null)), CreateAppBuilder(),
-                new KentorAuthServicesAuthenticationOptions(true)
+                    new string[] { "SustainsysSaml2" }, null)), CreateAppBuilder(),
+                new SustainsysSaml2AuthenticationOptions(true)
                 { AuthenticationMode = AuthenticationMode.Passive });
 
             var context = OwinTestHelpers.CreateOwinContext();
@@ -112,12 +112,12 @@ namespace Kentor.AuthServices.Owin.Tests
         }
 
         [TestMethod]
-        public async Task KentorAuthServicesAuthenticationMiddleware_DoesntRedirectOnUnSpecificAuthChallenge_WhenPassive()
+        public async Task SustainsysSaml2AuthenticationMiddleware_DoesntRedirectOnUnSpecificAuthChallenge_WhenPassive()
         {
-            var middleware = new KentorAuthServicesAuthenticationMiddleware(
+            var middleware = new SustainsysSaml2AuthenticationMiddleware(
                 new StubOwinMiddleware(401, new AuthenticationResponseChallenge(
                     new string[0], null)), CreateAppBuilder(),
-                new KentorAuthServicesAuthenticationOptions(true)
+                new SustainsysSaml2AuthenticationOptions(true)
                 { AuthenticationMode = AuthenticationMode.Passive });
 
             var context = OwinTestHelpers.CreateOwinContext();
@@ -128,12 +128,12 @@ namespace Kentor.AuthServices.Owin.Tests
         }
 
         [TestMethod]
-        public async Task KentorAuthServicesAuthenticationMiddleware_RedirectsOnAuthChallenge_WhenActive()
+        public async Task SustainsysSaml2AuthenticationMiddleware_RedirectsOnAuthChallenge_WhenActive()
         {
-            var middleware = new KentorAuthServicesAuthenticationMiddleware(
+            var middleware = new SustainsysSaml2AuthenticationMiddleware(
                 new StubOwinMiddleware(401, new AuthenticationResponseChallenge(
                     new string[0], null)), CreateAppBuilder(),
-                new KentorAuthServicesAuthenticationOptions(true)
+                new SustainsysSaml2AuthenticationOptions(true)
                 { AuthenticationMode = AuthenticationMode.Active });
 
             var context = OwinTestHelpers.CreateOwinContext();
@@ -145,12 +145,12 @@ namespace Kentor.AuthServices.Owin.Tests
         }
 
         [TestMethod]
-        public async Task KentorAuthServicesAuthenticationMiddleware_RedirectToIdp_HonorsCommandResultHandled()
+        public async Task SustainsysSaml2AuthenticationMiddleware_RedirectToIdp_HonorsCommandResultHandled()
         {
-            var options = new KentorAuthServicesAuthenticationOptions(true)
+            var options = new SustainsysSaml2AuthenticationOptions(true)
             {
                 AuthenticationMode = AuthenticationMode.Active,
-                Notifications = new KentorAuthServicesNotifications
+                Notifications = new SustainsysSaml2Notifications
                 {
                     SignInCommandResultCreated = (cr, r) =>
                     {
@@ -159,7 +159,7 @@ namespace Kentor.AuthServices.Owin.Tests
                 }
             };
 
-            var middleware = new KentorAuthServicesAuthenticationMiddleware(
+            var middleware = new SustainsysSaml2AuthenticationMiddleware(
                 new StubOwinMiddleware(401, new AuthenticationResponseChallenge(
                     new string[0], null)), CreateAppBuilder(),
                 options);
@@ -172,17 +172,17 @@ namespace Kentor.AuthServices.Owin.Tests
         }
 
         [TestMethod]
-        public async Task KentorAuthServicesAuthenticationMiddleware_CreatesPostOnAuthChallenge()
+        public async Task SustainsysSaml2AuthenticationMiddleware_CreatesPostOnAuthChallenge()
         {
-            var middleware = new KentorAuthServicesAuthenticationMiddleware(
+            var middleware = new SustainsysSaml2AuthenticationMiddleware(
                 new StubOwinMiddleware(401, new AuthenticationResponseChallenge(
-                    new string[] { "KentorAuthServices" }, new AuthenticationProperties(
+                    new string[] { "SustainsysSaml2" }, new AuthenticationProperties(
                         new Dictionary<string, string>()
                         {
                             { "idp", "https://idp4.example.com" }
                         }))),
                 CreateAppBuilder(),
-                new KentorAuthServicesAuthenticationOptions(true));
+                new SustainsysSaml2AuthenticationOptions(true));
 
             var context = OwinTestHelpers.CreateOwinContext();
 
@@ -208,17 +208,17 @@ namespace Kentor.AuthServices.Owin.Tests
 
 
         [TestMethod]
-        public async Task KentorAuthServicesAuthenticationMiddleware_CreatesSignedPostOnAuthChallenge()
+        public async Task SustainsysSaml2AuthenticationMiddleware_CreatesSignedPostOnAuthChallenge()
         {
-            var middleware = new KentorAuthServicesAuthenticationMiddleware(
+            var middleware = new SustainsysSaml2AuthenticationMiddleware(
                 new StubOwinMiddleware(401, new AuthenticationResponseChallenge(
-                    new string[] { "KentorAuthServices" }, new AuthenticationProperties(
+                    new string[] { "SustainsysSaml2" }, new AuthenticationProperties(
                         new Dictionary<string, string>()
                         {
                             { "idp", "https://idp4.example.com" }
                         }))),
                 CreateAppBuilder(),
-                new KentorAuthServicesAuthenticationOptions(true)
+                new SustainsysSaml2AuthenticationOptions(true)
                 );
 
             var context = OwinTestHelpers.CreateOwinContext();
@@ -244,15 +244,15 @@ namespace Kentor.AuthServices.Owin.Tests
         }
 
         [TestMethod]
-        public async Task KentorAuthServicesAuthenticationMiddleware_CreatesRedirectOnAuthRevoke()
+        public async Task SustainsysSaml2AuthenticationMiddleware_CreatesRedirectOnAuthRevoke()
         {
             var revoke = new AuthenticationResponseRevoke(new string[0]);
 
-            var options = new KentorAuthServicesAuthenticationOptions(true);
+            var options = new SustainsysSaml2AuthenticationOptions(true);
             options.SPOptions.PublicOrigin = new Uri("https://sp.example.com/ExternalPath/");
             options.SPOptions.Compatibility.StrictOwinAuthenticationMode = false;
 
-            var subject = new KentorAuthServicesAuthenticationMiddleware(
+            var subject = new SustainsysSaml2AuthenticationMiddleware(
                 new StubOwinMiddleware(200, revoke: revoke),
                 CreateAppBuilder(),
                 options);
@@ -265,8 +265,8 @@ namespace Kentor.AuthServices.Owin.Tests
             context.Request.User = new ClaimsPrincipal(
                 new ClaimsIdentity(new Claim[]
                 {
-                    new Claim(AuthServicesClaimTypes.LogoutNameIdentifier, ",,,,NameId", null, "https://idp.example.com"),
-                    new Claim(AuthServicesClaimTypes.SessionIndex, "SessionId", null, "https://idp.example.com")
+                    new Claim(Saml2ClaimTypes.LogoutNameIdentifier, ",,,,NameId", null, "https://idp.example.com"),
+                    new Claim(Saml2ClaimTypes.SessionIndex, "SessionId", null, "https://idp.example.com")
                 }, "Federation"));
 
             await subject.Invoke(context);
@@ -279,13 +279,13 @@ namespace Kentor.AuthServices.Owin.Tests
         }
 
         [TestMethod]
-        public async Task KentorAuthServicesAuthenticationMiddleware_AuthRevoke_HonorsCommandResultHandled()
+        public async Task SustainsysSaml2AuthenticationMiddleware_AuthRevoke_HonorsCommandResultHandled()
         {
             var revoke = new AuthenticationResponseRevoke(new string[0]);
 
-            var options = new KentorAuthServicesAuthenticationOptions(true)
+            var options = new SustainsysSaml2AuthenticationOptions(true)
             {
-                Notifications = new KentorAuthServicesNotifications
+                Notifications = new SustainsysSaml2Notifications
                 {
                     LogoutCommandResultCreated = cr =>
                     {
@@ -294,7 +294,7 @@ namespace Kentor.AuthServices.Owin.Tests
                 }
             };
 
-            var subject = new KentorAuthServicesAuthenticationMiddleware(
+            var subject = new SustainsysSaml2AuthenticationMiddleware(
                 new StubOwinMiddleware(200, revoke: revoke),
                 CreateAppBuilder(),
                 options);
@@ -308,7 +308,7 @@ namespace Kentor.AuthServices.Owin.Tests
                 new ClaimsIdentity(new Claim[]
                 {
                     new Claim(ClaimTypes.NameIdentifier, "NameId", null, "https://idp.example.com"),
-                    new Claim(AuthServicesClaimTypes.SessionIndex, "SessionId", null, "https://idp.example.com")
+                    new Claim(Saml2ClaimTypes.SessionIndex, "SessionId", null, "https://idp.example.com")
                 }, "Federation"));
 
             await subject.Invoke(context);
@@ -326,7 +326,7 @@ namespace Kentor.AuthServices.Owin.Tests
         }
 
         [TestMethod]
-        public async Task KentorAuthServicesAuthenticationMiddleware_CreatesRedirectOnAuthRevoke_UsesAuthPropsReturnUrl()
+        public async Task SustainsysSaml2AuthenticationMiddleware_CreatesRedirectOnAuthRevoke_UsesAuthPropsReturnUrl()
         {
             var authPropsReturnUrl = "http://sp.exmample.com/AuthPropsLogout";
 
@@ -334,10 +334,10 @@ namespace Kentor.AuthServices.Owin.Tests
                 new string[0],
                 new AuthenticationProperties { RedirectUri = authPropsReturnUrl });
 
-            var options = new KentorAuthServicesAuthenticationOptions(true);
+            var options = new SustainsysSaml2AuthenticationOptions(true);
             options.SPOptions.PublicOrigin = new Uri("https://sp.example.com/ExternalPath/");
 
-            var subject = new KentorAuthServicesAuthenticationMiddleware(
+            var subject = new SustainsysSaml2AuthenticationMiddleware(
                 new StubOwinMiddleware(303, revoke: revoke),
                 CreateAppBuilder(),
                 options);
@@ -347,8 +347,8 @@ namespace Kentor.AuthServices.Owin.Tests
             context.Request.User = new ClaimsPrincipal(
                 new ClaimsIdentity(new Claim[]
                 {
-                    new Claim(AuthServicesClaimTypes.LogoutNameIdentifier, ",,,,NameId", null, "https://idp.example.com"),
-                    new Claim(AuthServicesClaimTypes.SessionIndex, "SessionId", null, "https://idp.example.com")
+                    new Claim(Saml2ClaimTypes.LogoutNameIdentifier, ",,,,NameId", null, "https://idp.example.com"),
+                    new Claim(Saml2ClaimTypes.SessionIndex, "SessionId", null, "https://idp.example.com")
                 }, "Federation"));
 
             await subject.Invoke(context);
@@ -362,15 +362,15 @@ namespace Kentor.AuthServices.Owin.Tests
         }
 
         [TestMethod]
-        public async Task KentorAuthServicesAuthenticationMiddleware_DoesntRedirectOnUnspecifiedAuthRevoke_WhenPassiveAndStrictCompatibility()
+        public async Task SustainsysSaml2AuthenticationMiddleware_DoesntRedirectOnUnspecifiedAuthRevoke_WhenPassiveAndStrictCompatibility()
         {
-            var options = new KentorAuthServicesAuthenticationOptions(true)
+            var options = new SustainsysSaml2AuthenticationOptions(true)
             {
                 AuthenticationMode = AuthenticationMode.Passive,
             };
             options.SPOptions.Compatibility.StrictOwinAuthenticationMode = true;
 
-            var subject = new KentorAuthServicesAuthenticationMiddleware(
+            var subject = new SustainsysSaml2AuthenticationMiddleware(
                 new StubOwinMiddleware(200, revoke: new AuthenticationResponseRevoke(new string[0])),
                 CreateAppBuilder(),
                 options);
@@ -381,7 +381,7 @@ namespace Kentor.AuthServices.Owin.Tests
                 new ClaimsIdentity(new Claim[]
                 {
                     new Claim(ClaimTypes.NameIdentifier, "NameId", null, "https://idp.example.com"),
-                    new Claim(AuthServicesClaimTypes.SessionIndex, "SessionId", null, "https://idp.example.com")
+                    new Claim(Saml2ClaimTypes.SessionIndex, "SessionId", null, "https://idp.example.com")
                 }, "Federation"));
 
             await subject.Invoke(context);
@@ -390,13 +390,13 @@ namespace Kentor.AuthServices.Owin.Tests
         }
 
         [TestMethod]
-        public async Task KentorAuthServicesAuthenticationMiddleware_CreatesRedirectOnSpecifiedAuthRevoke_WhenPassive()
+        public async Task SustainsysSaml2AuthenticationMiddleware_CreatesRedirectOnSpecifiedAuthRevoke_WhenPassive()
         {
-            var subject = new KentorAuthServicesAuthenticationMiddleware(
+            var subject = new SustainsysSaml2AuthenticationMiddleware(
                 new StubOwinMiddleware(200, revoke: new AuthenticationResponseRevoke(
-                    new string[] { "KentorAuthServices" })),
+                    new string[] { "SustainsysSaml2" })),
                 CreateAppBuilder(),
-                new KentorAuthServicesAuthenticationOptions(true)
+                new SustainsysSaml2AuthenticationOptions(true)
                 {
                     AuthenticationMode = AuthenticationMode.Passive
                 });
@@ -406,8 +406,8 @@ namespace Kentor.AuthServices.Owin.Tests
             context.Request.User = new ClaimsPrincipal(
                 new ClaimsIdentity(new Claim[]
                 {
-                    new Claim(AuthServicesClaimTypes.LogoutNameIdentifier, ",,,,NameId", null, "https://idp.example.com"),
-                    new Claim(AuthServicesClaimTypes.SessionIndex, "SessionId", null, "https://idp.example.com")
+                    new Claim(Saml2ClaimTypes.LogoutNameIdentifier, ",,,,NameId", null, "https://idp.example.com"),
+                    new Claim(Saml2ClaimTypes.SessionIndex, "SessionId", null, "https://idp.example.com")
                 }, "Federation"));
 
             await subject.Invoke(context);
@@ -417,11 +417,11 @@ namespace Kentor.AuthServices.Owin.Tests
         }
 
         [TestMethod]
-        public async Task KentorAuthServicesAuthenticationMiddleware_HandlesLogoutResponse()
+        public async Task SustainsysSaml2AuthenticationMiddleware_HandlesLogoutResponse()
         {
             var app = CreateAppBuilder();
-            var options = new KentorAuthServicesAuthenticationOptions(true);
-            var subject = new KentorAuthServicesAuthenticationMiddleware(
+            var options = new SustainsysSaml2AuthenticationOptions(true);
+            var subject = new SustainsysSaml2AuthenticationMiddleware(
                 null,
                 app,
                 options);
@@ -431,7 +431,7 @@ namespace Kentor.AuthServices.Owin.Tests
             var relayState = "MyRelayState";
             var response = new Saml2LogoutResponse(Saml2StatusCode.Success)
             {
-                DestinationUrl = new Uri("https://sp.example.com/AuthServices/Logout"),
+                DestinationUrl = new Uri("https://sp.example.com/Saml2/Logout"),
                 RelayState = relayState,
                 SigningCertificate = SignedXmlHelper.TestCert,
                 SigningAlgorithm = SignedXml.XmlDsigRSASHA256Url,
@@ -443,7 +443,7 @@ namespace Kentor.AuthServices.Owin.Tests
                     options.DataProtector.Protect(
                         new StoredRequestState(null, new Uri("http://loggedout.example.com/"), null, null)
                             .Serialize()));
-            context.Request.Headers["Cookie"] = $"Kentor.{relayState}={cookieData}";
+            context.Request.Headers["Cookie"] = $"Sustainsys.{relayState}={cookieData}";
             context.Request.Path = new PathString(requestUri.AbsolutePath);
             context.Request.QueryString = new QueryString(requestUri.Query.TrimStart('?'));
             
@@ -451,7 +451,7 @@ namespace Kentor.AuthServices.Owin.Tests
                 new ClaimsIdentity(new Claim[]
                 {
                     new Claim(ClaimTypes.NameIdentifier, "NameId", null, "https://idp.example.com"),
-                    new Claim(AuthServicesClaimTypes.SessionIndex, "SessionId", null, "https://idp.example.com")
+                    new Claim(Saml2ClaimTypes.SessionIndex, "SessionId", null, "https://idp.example.com")
                 }, "Federation"));
 
             await subject.Invoke(context);
@@ -461,17 +461,17 @@ namespace Kentor.AuthServices.Owin.Tests
         }
 
         [TestMethod]
-        public async Task KentorAuthServicesAuthenticationMiddleware_LogoutsOnLogoutRequest()
+        public async Task SustainsysSaml2AuthenticationMiddleware_LogoutsOnLogoutRequest()
         {
-            var options = new KentorAuthServicesAuthenticationOptions(true);
-            var subject = new KentorAuthServicesAuthenticationMiddleware(null, CreateAppBuilder(), options);
+            var options = new SustainsysSaml2AuthenticationOptions(true);
+            var subject = new SustainsysSaml2AuthenticationMiddleware(null, CreateAppBuilder(), options);
 
             var context = OwinTestHelpers.CreateOwinContext();
 
             var request = new Saml2LogoutRequest()
             {
                 SessionIndex = "SessionId",
-                DestinationUrl = new Uri("http://sp.example.com/AuthServices/Logout"),
+                DestinationUrl = new Uri("http://sp.example.com/Saml2/Logout"),
                 NameId = new Saml2NameIdentifier("NameId"),
                 Issuer = new EntityId("https://idp.example.com"),
                 SigningCertificate = SignedXmlHelper.TestCert,
@@ -495,11 +495,11 @@ namespace Kentor.AuthServices.Owin.Tests
         }
 
         [TestMethod]
-        public async Task KentorAuthServicesAuthenticationMiddleware_LogoutRequest_HonorsCommandResultHandled()
+        public async Task SustainsysSaml2AuthenticationMiddleware_LogoutRequest_HonorsCommandResultHandled()
         {
-            var options = new KentorAuthServicesAuthenticationOptions(true)
+            var options = new SustainsysSaml2AuthenticationOptions(true)
             {
-                Notifications = new KentorAuthServicesNotifications
+                Notifications = new SustainsysSaml2Notifications
                 {
                     LogoutCommandResultCreated = cr =>
                     {
@@ -508,14 +508,14 @@ namespace Kentor.AuthServices.Owin.Tests
                 }
             };
 
-            var subject = new KentorAuthServicesAuthenticationMiddleware(null, CreateAppBuilder(), options);
+            var subject = new SustainsysSaml2AuthenticationMiddleware(null, CreateAppBuilder(), options);
 
             var context = OwinTestHelpers.CreateOwinContext();
 
             var request = new Saml2LogoutRequest()
             {
                 SessionIndex = "SessionId",
-                DestinationUrl = new Uri("http://sp.example.com/AuthServices/Logout"),
+                DestinationUrl = new Uri("http://sp.example.com/Saml2/Logout"),
                 NameId = new Saml2NameIdentifier("NameId"),
                 Issuer = new EntityId("https://idp.example.com"),
                 SigningCertificate = SignedXmlHelper.TestCert,
@@ -534,13 +534,13 @@ namespace Kentor.AuthServices.Owin.Tests
         }
 
         [TestMethod]
-        public async Task KentorAuthServicesAuthenticationMiddleware_NoRedirectOnNon401()
+        public async Task SustainsysSaml2AuthenticationMiddleware_NoRedirectOnNon401()
         {
-            var middleware = new KentorAuthServicesAuthenticationMiddleware(
+            var middleware = new SustainsysSaml2AuthenticationMiddleware(
                 new StubOwinMiddleware(200, new AuthenticationResponseChallenge(
-                    new string[] { "KentorAuthServices" }, null)),
+                    new string[] { "SustainsysSaml2" }, null)),
                 CreateAppBuilder(),
-                new KentorAuthServicesAuthenticationOptions(true));
+                new SustainsysSaml2AuthenticationOptions(true));
 
             var context = OwinTestHelpers.CreateOwinContext();
 
@@ -551,13 +551,13 @@ namespace Kentor.AuthServices.Owin.Tests
         }
 
         [TestMethod]
-        public async Task KentorAuthServicesAuthenticationMiddleware_NoRedirectWithChallengeOfDifferentType()
+        public async Task SustainsysSaml2AuthenticationMiddleware_NoRedirectWithChallengeOfDifferentType()
         {
-            var middleware = new KentorAuthServicesAuthenticationMiddleware(
+            var middleware = new SustainsysSaml2AuthenticationMiddleware(
                 new StubOwinMiddleware(401, new AuthenticationResponseChallenge(
                         new string[] { "SomeThingElse" }, null)),
                     CreateAppBuilder(),
-                    new KentorAuthServicesAuthenticationOptions(true));
+                    new SustainsysSaml2AuthenticationOptions(true));
 
             var context = OwinTestHelpers.CreateOwinContext();
 
@@ -567,20 +567,20 @@ namespace Kentor.AuthServices.Owin.Tests
         }
 
         [TestMethod]
-        public async Task KentorAuthServicesAuthenticationMiddleware_RedirectToSecondIdp_AuthenticationProperties()
+        public async Task SustainsysSaml2AuthenticationMiddleware_RedirectToSecondIdp_AuthenticationProperties()
         {
             var secondIdp = Options.FromConfiguration.IdentityProviders[1];
             var secondDestination = secondIdp.SingleSignOnServiceUrl;
             var secondEntityId = secondIdp.EntityId;
 
-            var middleware = new KentorAuthServicesAuthenticationMiddleware(
+            var middleware = new SustainsysSaml2AuthenticationMiddleware(
                 new StubOwinMiddleware(401, new AuthenticationResponseChallenge(
-                    new string[] { "KentorAuthServices" }, new AuthenticationProperties(
+                    new string[] { "SustainsysSaml2" }, new AuthenticationProperties(
                         new Dictionary<string, string>()
                         {
                             { "idp", secondEntityId.Id }
                         }))),
-                        CreateAppBuilder(), new KentorAuthServicesAuthenticationOptions(true));
+                        CreateAppBuilder(), new SustainsysSaml2AuthenticationOptions(true));
 
             var context = OwinTestHelpers.CreateOwinContext();
             await middleware.Invoke(context);
@@ -590,19 +590,19 @@ namespace Kentor.AuthServices.Owin.Tests
         }
 
         [TestMethod]
-        public async Task KentorAuthServicesAuthenticationMiddleware_RedirectToSecondIdp_OwinEnvironment()
+        public async Task SustainsysSaml2AuthenticationMiddleware_RedirectToSecondIdp_OwinEnvironment()
         {
             var secondIdp = Options.FromConfiguration.IdentityProviders[1];
             var secondDestination = secondIdp.SingleSignOnServiceUrl;
             var secondEntityId = secondIdp.EntityId;
 
-            var middleware = new KentorAuthServicesAuthenticationMiddleware(
+            var middleware = new SustainsysSaml2AuthenticationMiddleware(
                 new StubOwinMiddleware(401, new AuthenticationResponseChallenge(
-                    new string[] { "KentorAuthServices" }, new AuthenticationProperties())),
-                        CreateAppBuilder(), new KentorAuthServicesAuthenticationOptions(true));
+                    new string[] { "SustainsysSaml2" }, new AuthenticationProperties())),
+                        CreateAppBuilder(), new SustainsysSaml2AuthenticationOptions(true));
 
             var context = OwinTestHelpers.CreateOwinContext();
-            context.Environment["KentorAuthServices.idp"] = secondEntityId;
+            context.Environment["SustainsysSaml2.idp"] = secondEntityId;
             await middleware.Invoke(context);
 
             context.Response.StatusCode.Should().Be(303);
@@ -610,15 +610,15 @@ namespace Kentor.AuthServices.Owin.Tests
         }
 
         [TestMethod]
-        public async Task KentorAuthServicesAuthenticationMiddleware_RedirectOnChallengeForAuthTypeInOptions()
+        public async Task SustainsysSaml2AuthenticationMiddleware_RedirectOnChallengeForAuthTypeInOptions()
         {
             var authenticationType = "someAuthName";
 
-            var middleware = new KentorAuthServicesAuthenticationMiddleware(
+            var middleware = new SustainsysSaml2AuthenticationMiddleware(
                 new StubOwinMiddleware(401, new AuthenticationResponseChallenge(
                     new string[] { authenticationType }, null)),
                 CreateAppBuilder(),
-                new KentorAuthServicesAuthenticationOptions(true)
+                new SustainsysSaml2AuthenticationOptions(true)
                 {
                     AuthenticationType = authenticationType
                 });
@@ -639,14 +639,14 @@ namespace Kentor.AuthServices.Owin.Tests
         }
 
         [TestMethod]
-        public async Task KentorAuthServicesAuthenticationMiddleware_RedirectRemembersReturnPath()
+        public async Task SustainsysSaml2AuthenticationMiddleware_RedirectRemembersReturnPath()
         {
             var returnUrl = "http://sp.example.com/returnurl";
 
-            var options = new KentorAuthServicesAuthenticationOptions(true);
-            var subject = new KentorAuthServicesAuthenticationMiddleware(
+            var options = new SustainsysSaml2AuthenticationOptions(true);
+            var subject = new SustainsysSaml2AuthenticationMiddleware(
                 new StubOwinMiddleware(401, new AuthenticationResponseChallenge(
-                    new string[] { "KentorAuthServices" }, new AuthenticationProperties()
+                    new string[] { "SustainsysSaml2" }, new AuthenticationProperties()
                     {
                         RedirectUri = returnUrl
                     })),
@@ -662,7 +662,7 @@ namespace Kentor.AuthServices.Owin.Tests
         }
 
         [TestMethod]
-        public async Task KentorAuthServicesAuthenticationMiddleware_StoresAuthenticationProperties()
+        public async Task SustainsysSaml2AuthenticationMiddleware_StoresAuthenticationProperties()
         {
             var returnUrl = "http://sp.example.com/returnurl";
 
@@ -672,11 +672,11 @@ namespace Kentor.AuthServices.Owin.Tests
             };
             prop.Dictionary["test"] = "SomeValue";
 
-            var options = new KentorAuthServicesAuthenticationOptions(true);
-            var middleware = new KentorAuthServicesAuthenticationMiddleware(
+            var options = new SustainsysSaml2AuthenticationOptions(true);
+            var middleware = new SustainsysSaml2AuthenticationMiddleware(
                 new StubOwinMiddleware(401,
                     new AuthenticationResponseChallenge(
-                        new string[] { "KentorAuthServices" }, prop)),
+                        new string[] { "SustainsysSaml2" }, prop)),
                 CreateAppBuilder(),
                 options);
 
@@ -690,14 +690,14 @@ namespace Kentor.AuthServices.Owin.Tests
         }
 
         [TestMethod]
-        public async Task KentorAuthServicesAuthenticationMiddleware_UsesReturnUrl_WhenActive()
+        public async Task SustainsysSaml2AuthenticationMiddleware_UsesReturnUrl_WhenActive()
         {
-            var options = new KentorAuthServicesAuthenticationOptions(true);
+            var options = new SustainsysSaml2AuthenticationOptions(true);
             options.AuthenticationMode = AuthenticationMode.Active;
-            var middleware = new KentorAuthServicesAuthenticationMiddleware(
+            var middleware = new SustainsysSaml2AuthenticationMiddleware(
                 new StubOwinMiddleware(401,
                     new AuthenticationResponseChallenge(
-                        new string[] { "KentorAuthServices" }, new AuthenticationProperties() ) ),
+                        new string[] { "SustainsysSaml2" }, new AuthenticationProperties() ) ),
                 CreateAppBuilder(),
                 options);
 
@@ -712,14 +712,14 @@ namespace Kentor.AuthServices.Owin.Tests
         }
 
         [TestMethod]
-        public async Task KentorAuthServicesAuthenticationMiddleware_UsesChallenge_WhenPassive()
+        public async Task SustainsysSaml2AuthenticationMiddleware_UsesChallenge_WhenPassive()
         {
-            var options = new KentorAuthServicesAuthenticationOptions(true);
+            var options = new SustainsysSaml2AuthenticationOptions(true);
             options.AuthenticationMode = AuthenticationMode.Passive;
-            var middleware = new KentorAuthServicesAuthenticationMiddleware(
+            var middleware = new SustainsysSaml2AuthenticationMiddleware(
                 new StubOwinMiddleware(401,
                     new AuthenticationResponseChallenge(
-                        new string[] { "KentorAuthServices" }, new AuthenticationProperties() ) ),
+                        new string[] { "SustainsysSaml2" }, new AuthenticationProperties() ) ),
                 CreateAppBuilder(),
                 options);
 
@@ -730,7 +730,7 @@ namespace Kentor.AuthServices.Owin.Tests
         }
 
         [TestMethod]
-        public async Task KentorAuthServicesAuthenticationMiddleware_AcsUsesCommandResultLocation()
+        public async Task SustainsysSaml2AuthenticationMiddleware_AcsUsesCommandResultLocation()
         {
             // For Owin middleware, the redirect uri is part of the
             // authentication properties, but we don't want to use it as it
@@ -774,10 +774,10 @@ namespace Kentor.AuthServices.Owin.Tests
             context.Request.Body = encodedBodyData.ReadAsStreamAsync().Result;
             context.Request.ContentType = encodedBodyData.Headers.ContentType.ToString();
             context.Request.Host = new HostString("localhost");
-            context.Request.Path = new PathString("/AuthServices/Acs");
+            context.Request.Path = new PathString("/Saml2/Acs");
 
-            var middleware = new KentorAuthServicesAuthenticationMiddleware(null, CreateAppBuilder(),
-                new KentorAuthServicesAuthenticationOptions(true)
+            var middleware = new SustainsysSaml2AuthenticationMiddleware(null, CreateAppBuilder(),
+                new SustainsysSaml2AuthenticationOptions(true)
                 {
                     SignInAsAuthenticationType = "AuthType"
                 });
@@ -789,7 +789,7 @@ namespace Kentor.AuthServices.Owin.Tests
         }
 
         [TestMethod]
-        public async Task KentorAuthServicesAuthenticationMiddleware_AcsRedirectsToDefaultWithoutSignInOnUnsolicitedError()
+        public async Task SustainsysSaml2AuthenticationMiddleware_AcsRedirectsToDefaultWithoutSignInOnUnsolicitedError()
         {
             var context = OwinTestHelpers.CreateOwinContext();
             context.Request.Method = "POST";
@@ -828,10 +828,10 @@ namespace Kentor.AuthServices.Owin.Tests
             context.Request.Body = encodedBodyData.ReadAsStreamAsync().Result;
             context.Request.ContentType = encodedBodyData.Headers.ContentType.ToString();
             context.Request.Host = new HostString("localhost");
-            context.Request.Path = new PathString("/AuthServices/Acs");
+            context.Request.Path = new PathString("/Saml2/Acs");
 
-            var middleware = new KentorAuthServicesAuthenticationMiddleware(null, CreateAppBuilder(),
-                new KentorAuthServicesAuthenticationOptions(true)
+            var middleware = new SustainsysSaml2AuthenticationMiddleware(null, CreateAppBuilder(),
+                new SustainsysSaml2AuthenticationOptions(true)
                 {
                     SignInAsAuthenticationType = "AuthType"
                 });
@@ -844,7 +844,7 @@ namespace Kentor.AuthServices.Owin.Tests
         }
 
         [TestMethod]
-        public async Task KentorAuthServicesAuthenticationMiddleware_AcsLogsAndRedirectsToApplicationRootOnNoReturnUrlAndNoStoredRequestState()
+        public async Task SustainsysSaml2AuthenticationMiddleware_AcsLogsAndRedirectsToApplicationRootOnNoReturnUrlAndNoStoredRequestState()
         {
             var context = OwinTestHelpers.CreateOwinContext();
             context.Request.Method = "POST";
@@ -882,10 +882,10 @@ namespace Kentor.AuthServices.Owin.Tests
             context.Request.Body = encodedBodyData.ReadAsStreamAsync().Result;
             context.Request.ContentType = encodedBodyData.Headers.ContentType.ToString();
             context.Request.Host = new HostString("localhost");
-            context.Request.Path = new PathString("/AuthServices/Acs");
+            context.Request.Path = new PathString("/Saml2/Acs");
             context.Request.PathBase = new PathString("/ApplicationPath");
 
-            var options = new KentorAuthServicesAuthenticationOptions(true)
+            var options = new SustainsysSaml2AuthenticationOptions(true)
             {
                 SignInAsAuthenticationType = "AuthType"
             };
@@ -893,7 +893,7 @@ namespace Kentor.AuthServices.Owin.Tests
 
             options.SPOptions.Logger = Substitute.For<ILoggerAdapter>();
 
-            var subject = new KentorAuthServicesAuthenticationMiddleware(
+            var subject = new SustainsysSaml2AuthenticationMiddleware(
                 null,
                 CreateAppBuilder(),
                 options);
@@ -907,7 +907,7 @@ namespace Kentor.AuthServices.Owin.Tests
         }
 
         [TestMethod]
-        public async Task KentorAuthServicesAuthenticationMiddleware_AcsRedirectsToAuthPropsReturnUriWithoutSignInOnError()
+        public async Task SustainsysSaml2AuthenticationMiddleware_AcsRedirectsToAuthPropsReturnUriWithoutSignInOnError()
         {
             var context = OwinTestHelpers.CreateOwinContext();
             context.Request.Method = "POST";
@@ -923,10 +923,10 @@ namespace Kentor.AuthServices.Owin.Tests
 
             var cookieData = HttpRequestData.ConvertBinaryData(
                 CreateAppBuilder().CreateDataProtector(
-                    typeof(KentorAuthServicesAuthenticationMiddleware).FullName)
+                    typeof(SustainsysSaml2AuthenticationMiddleware).FullName)
                     .Protect(state.Serialize()));
 
-            context.Request.Headers["Cookie"] = $"Kentor.{relayState}={cookieData}";
+            context.Request.Headers["Cookie"] = $"Sustainsys.{relayState}={cookieData}";
 
             var response =
                 @"<saml2p:Response xmlns:saml2p=""urn:oasis:names:tc:SAML:2.0:protocol""
@@ -963,10 +963,10 @@ namespace Kentor.AuthServices.Owin.Tests
             context.Request.Body = encodedBodyData.ReadAsStreamAsync().Result;
             context.Request.ContentType = encodedBodyData.Headers.ContentType.ToString();
             context.Request.Host = new HostString("localhost");
-            context.Request.Path = new PathString("/AuthServices/Acs");
+            context.Request.Path = new PathString("/Saml2/Acs");
 
-            var middleware = new KentorAuthServicesAuthenticationMiddleware(null, CreateAppBuilder(),
-                new KentorAuthServicesAuthenticationOptions(true)
+            var middleware = new SustainsysSaml2AuthenticationMiddleware(null, CreateAppBuilder(),
+                new SustainsysSaml2AuthenticationOptions(true)
                 {
                     SignInAsAuthenticationType = "AuthType"
                 });
@@ -979,7 +979,7 @@ namespace Kentor.AuthServices.Owin.Tests
         }
 
         [TestMethod]
-        public async Task KentorAuthServicesAuthenticationMiddleware_AcsWorks()
+        public async Task SustainsysSaml2AuthenticationMiddleware_AcsWorks()
         {
             var context = OwinTestHelpers.CreateOwinContext();
             context.Request.Method = "POST";
@@ -999,10 +999,10 @@ namespace Kentor.AuthServices.Owin.Tests
 
             var cookieData = HttpRequestData.ConvertBinaryData(
                 CreateAppBuilder().CreateDataProtector(
-                    typeof(KentorAuthServicesAuthenticationMiddleware).FullName)
+                    typeof(SustainsysSaml2AuthenticationMiddleware).FullName)
                     .Protect(state.Serialize()));
 
-            context.Request.Headers["Cookie"] = $"Kentor.{relayState}={cookieData}";
+            context.Request.Headers["Cookie"] = $"Sustainsys.{relayState}={cookieData}";
 
             var response =
             @"<saml2p:Response xmlns:saml2p=""urn:oasis:names:tc:SAML:2.0:protocol""
@@ -1038,7 +1038,7 @@ namespace Kentor.AuthServices.Owin.Tests
             context.Request.Body = encodedBodyData.ReadAsStreamAsync().Result;
             context.Request.ContentType = encodedBodyData.Headers.ContentType.ToString();
             context.Request.Host = new HostString("localhost");
-            context.Request.Path = new PathString("/AuthServices/Acs");
+            context.Request.Path = new PathString("/Saml2/Acs");
 
             var signInAsAuthenticationType = "AuthType";
             var ids = new ClaimsIdentity[] { new ClaimsIdentity(signInAsAuthenticationType),
@@ -1047,14 +1047,14 @@ namespace Kentor.AuthServices.Owin.Tests
             ids[1].AddClaim(new Claim(ClaimTypes.Role, "RoleFromClaimsAuthManager", 
                 null, "ClaimsAuthenticationManagerStub"));
 
-            var subject = new KentorAuthServicesAuthenticationMiddleware(null, CreateAppBuilder(),
+            var subject = new SustainsysSaml2AuthenticationMiddleware(null, CreateAppBuilder(),
                 OwinStubFactory.CreateOwinOptions());
 
             await subject.Invoke(context);
 
             context.Response.StatusCode.Should().Be(303);
             context.Response.Headers["Location"].Should().Be("http://localhost/LoggedIn");
-            context.Response.Headers["Set-Cookie"].Should().Be($"Kentor.{relayState}=; path=/; expires=Thu, 01-Jan-1970 00:00:00 GMT");
+            context.Response.Headers["Set-Cookie"].Should().Be($"Sustainsys.{relayState}=; path=/; expires=Thu, 01-Jan-1970 00:00:00 GMT");
 
             context.Authentication.AuthenticationResponseGrant.Principal.Identities
                 .ShouldBeEquivalentTo(ids, opt => opt.IgnoringCyclicReferences());
@@ -1074,7 +1074,7 @@ namespace Kentor.AuthServices.Owin.Tests
         }
 
         [TestMethod]
-        public async Task KentorAuthServicesAuthenticationMiddleware_Acs_HonorsCommandResultHandled()
+        public async Task SustainsysSaml2AuthenticationMiddleware_Acs_HonorsCommandResultHandled()
         {
             var context = OwinTestHelpers.CreateOwinContext();
             context.Request.Method = "POST";
@@ -1112,7 +1112,7 @@ namespace Kentor.AuthServices.Owin.Tests
             context.Request.Body = encodedBodyData.ReadAsStreamAsync().Result;
             context.Request.ContentType = encodedBodyData.Headers.ContentType.ToString();
             context.Request.Host = new HostString("localhost");
-            context.Request.Path = new PathString("/AuthServices/Acs");
+            context.Request.Path = new PathString("/Saml2/Acs");
 
             var options = OwinStubFactory.CreateOwinOptions();
             options.Notifications.AcsCommandResultCreated = (cr, r) =>
@@ -1120,7 +1120,7 @@ namespace Kentor.AuthServices.Owin.Tests
                 cr.HandledResult = true;
             };
 
-            var subject = new KentorAuthServicesAuthenticationMiddleware(
+            var subject = new SustainsysSaml2AuthenticationMiddleware(
                 null, CreateAppBuilder(), options);
 
             await subject.Invoke(context);
@@ -1129,7 +1129,7 @@ namespace Kentor.AuthServices.Owin.Tests
         }
 
         [TestMethod]
-        public async Task KentorAuthServicesAuthenticationMiddleware_Acs_HonorsSessionNotOnOrAfter()
+        public async Task SustainsysSaml2AuthenticationMiddleware_Acs_HonorsSessionNotOnOrAfter()
         {
             var context = OwinTestHelpers.CreateOwinContext();
             context.Request.Method = "POST";
@@ -1172,11 +1172,11 @@ namespace Kentor.AuthServices.Owin.Tests
             context.Request.Body = encodedBodyData.ReadAsStreamAsync().Result;
             context.Request.ContentType = encodedBodyData.Headers.ContentType.ToString();
             context.Request.Host = new HostString("localhost");
-            context.Request.Path = new PathString("/AuthServices/Acs");
+            context.Request.Path = new PathString("/Saml2/Acs");
 
             var options = OwinStubFactory.CreateOwinOptions();
 
-            var subject = new KentorAuthServicesAuthenticationMiddleware(
+            var subject = new SustainsysSaml2AuthenticationMiddleware(
                 null, CreateAppBuilder(), options);
 
             await subject.Invoke(context);
@@ -1190,16 +1190,16 @@ namespace Kentor.AuthServices.Owin.Tests
         }
 
         [TestMethod]
-        public async Task KentorAuthServicesAuthenticationMiddleware_MetadataWorks()
+        public async Task SustainsysSaml2AuthenticationMiddleware_MetadataWorks()
         {
             var context = OwinTestHelpers.CreateOwinContext();
             context.Request.Host = new HostString("localhost");
-            context.Request.Path = new PathString("/AuthServices");
+            context.Request.Path = new PathString("/Saml2");
 
-            var middleware = new KentorAuthServicesAuthenticationMiddleware(
+            var middleware = new SustainsysSaml2AuthenticationMiddleware(
                 null,
                 CreateAppBuilder(),
-                new KentorAuthServicesAuthenticationOptions(true));
+                new SustainsysSaml2AuthenticationOptions(true));
 
             await middleware.Invoke(context);
             context.Response.Body.Seek(0, SeekOrigin.Begin);
@@ -1212,16 +1212,16 @@ namespace Kentor.AuthServices.Owin.Tests
         }
 
         [TestMethod]
-        public async Task KentorAuthServicesAuthenticationMiddleware_SignInUrlRedirectsToIdp()
+        public async Task SustainsysSaml2AuthenticationMiddleware_SignInUrlRedirectsToIdp()
         {
             var context = OwinTestHelpers.CreateOwinContext();
             context.Request.Host = new HostString("localhost");
-            var signinPath = "/AuthServices/SignIn";
+            var signinPath = "/Saml2/SignIn";
             context.Request.Path = new PathString(signinPath);
             context.Request.QueryString = new QueryString("ReturnUrl=%2FHome&idp=https%3A%2F%2Fidp2.example.com");
 
-            var options = new KentorAuthServicesAuthenticationOptions(true);
-            var middleware = new KentorAuthServicesAuthenticationMiddleware(
+            var options = new SustainsysSaml2AuthenticationOptions(true);
+            var middleware = new SustainsysSaml2AuthenticationMiddleware(
                 null, CreateAppBuilder(), options);
 
             await middleware.Invoke(context);
@@ -1237,14 +1237,14 @@ namespace Kentor.AuthServices.Owin.Tests
         }
 
         [TestMethod]
-        public void KentorAuthServicesAuthenticationMiddleware_WorksOnNullDiscoveryResponseUrl()
+        public void SustainsysSaml2AuthenticationMiddleware_WorksOnNullDiscoveryResponseUrl()
         {
             var context = OwinTestHelpers.CreateOwinContext();
 
-            var subject = new KentorAuthServicesAuthenticationMiddleware(
+            var subject = new SustainsysSaml2AuthenticationMiddleware(
                 new StubOwinMiddleware(200, null),
                 CreateAppBuilder(),
-                new KentorAuthServicesAuthenticationOptions(false)
+                new SustainsysSaml2AuthenticationOptions(false)
                 {
                     SPOptions = new SPOptions()
                     {
@@ -1256,7 +1256,7 @@ namespace Kentor.AuthServices.Owin.Tests
         }
 
         [TestMethod]
-        public async Task KentorAuthServicesAuthenticationMiddleware_AugmentsGeneratedClaimsWithLogoutInfo()
+        public async Task SustainsysSaml2AuthenticationMiddleware_AugmentsGeneratedClaimsWithLogoutInfo()
         {
             var context = OwinTestHelpers.CreateOwinContext();
 
@@ -1270,7 +1270,7 @@ namespace Kentor.AuthServices.Owin.Tests
                 {
                     specifiedAuthTypes = authTypes;
                     var logoutInfoClaim = new Claim(
-                        AuthServicesClaimTypes.LogoutNameIdentifier,
+                        Saml2ClaimTypes.LogoutNameIdentifier,
                         logoutInfoClaimValue,
                         null,
                         "http://idp.example.com");
@@ -1278,7 +1278,7 @@ namespace Kentor.AuthServices.Owin.Tests
                     callback(new ClaimsIdentity(new Claim[]
                         {
                             logoutInfoClaim,
-                            new Claim(AuthServicesClaimTypes.SessionIndex, "SessionId", null, "http://idp.example.com"),
+                            new Claim(Saml2ClaimTypes.SessionIndex, "SessionId", null, "http://idp.example.com"),
                             new Claim(ClaimTypes.Role, "SomeRole", null, "http://idp.example.com")
                         }, "Federation"),
                         new Dictionary<string, string>(),
@@ -1287,9 +1287,9 @@ namespace Kentor.AuthServices.Owin.Tests
                     return Task.FromResult(0);
                 });
 
-            var options = new KentorAuthServicesAuthenticationOptions(true);
+            var options = new SustainsysSaml2AuthenticationOptions(true);
 
-            var subject = new KentorAuthServicesAuthenticationMiddleware(
+            var subject = new SustainsysSaml2AuthenticationMiddleware(
                 new StubOwinMiddleware(303, grant: new AuthenticationResponseGrant(
                     new ClaimsIdentity(new Claim[]
                     {
@@ -1306,8 +1306,8 @@ namespace Kentor.AuthServices.Owin.Tests
             var expected = new ClaimsIdentity(new Claim[]
             {
                 new Claim(ClaimTypes.NameIdentifier, "ApplicationNameId"),
-                new Claim(AuthServicesClaimTypes.SessionIndex, "SessionId", null, "http://idp.example.com"),
-                new Claim(AuthServicesClaimTypes.LogoutNameIdentifier, logoutInfoClaimValue, null, "http://idp.example.com")
+                new Claim(Saml2ClaimTypes.SessionIndex, "SessionId", null, "http://idp.example.com"),
+                new Claim(Saml2ClaimTypes.LogoutNameIdentifier, logoutInfoClaimValue, null, "http://idp.example.com")
         }, "ApplicationIdentity");
 
             context.Authentication.AuthenticationResponseGrant.Identity
@@ -1315,7 +1315,7 @@ namespace Kentor.AuthServices.Owin.Tests
         }
 
         [TestMethod]
-        public async Task KentorAuthServicesAuthenticationMiddleware_DoesntAugmentsGeneratedClaimsWhenSessionIndexIsMissing()
+        public async Task SustainsysSaml2AuthenticationMiddleware_DoesntAugmentsGeneratedClaimsWhenSessionIndexIsMissing()
         {
             var context = OwinTestHelpers.CreateOwinContext();
 
@@ -1336,9 +1336,9 @@ namespace Kentor.AuthServices.Owin.Tests
                     return Task.FromResult(0);
                 });
 
-            var options = new KentorAuthServicesAuthenticationOptions(true);
+            var options = new SustainsysSaml2AuthenticationOptions(true);
 
-            var subject = new KentorAuthServicesAuthenticationMiddleware(
+            var subject = new SustainsysSaml2AuthenticationMiddleware(
                 new StubOwinMiddleware(303, grant: new AuthenticationResponseGrant(
                     new ClaimsIdentity(new Claim[]
                     {
@@ -1362,7 +1362,7 @@ namespace Kentor.AuthServices.Owin.Tests
         }
 
         [TestMethod]
-        public async Task KentorAuthServicesAuthenticationMiddleware_DoesntAugmentsGeneratedClaimsWhenNameIdIsMissing()
+        public async Task SustainsysSaml2AuthenticationMiddleware_DoesntAugmentsGeneratedClaimsWhenNameIdIsMissing()
         {
             var context = OwinTestHelpers.CreateOwinContext();
 
@@ -1374,7 +1374,7 @@ namespace Kentor.AuthServices.Owin.Tests
                     specifiedAuthTypes = authTypes;
                     callback(new ClaimsIdentity(new Claim[]
                         {
-                            new Claim(AuthServicesClaimTypes.SessionIndex, "SessionId", null, "http://idp.example.com"),
+                            new Claim(Saml2ClaimTypes.SessionIndex, "SessionId", null, "http://idp.example.com"),
                             new Claim(ClaimTypes.Role, "SomeRole", null, "http://idp.example.com")
                         }, "Federation"),
                         new Dictionary<string, string>(),
@@ -1383,9 +1383,9 @@ namespace Kentor.AuthServices.Owin.Tests
                     return Task.FromResult(0);
                 });
 
-            var options = new KentorAuthServicesAuthenticationOptions(true);
+            var options = new SustainsysSaml2AuthenticationOptions(true);
 
-            var subject = new KentorAuthServicesAuthenticationMiddleware(
+            var subject = new SustainsysSaml2AuthenticationMiddleware(
                 new StubOwinMiddleware(303, grant: new AuthenticationResponseGrant(
                     new ClaimsIdentity(new Claim[]
                     {
@@ -1409,16 +1409,16 @@ namespace Kentor.AuthServices.Owin.Tests
         }
 
         [TestMethod]
-        public void KentorAuthServicesAuthenticationMiddleware_LogsCommandExceptions()
+        public void SustainsysSaml2AuthenticationMiddleware_LogsCommandExceptions()
         {
             var context = OwinTestHelpers.CreateOwinContext();
-            context.Request.Path = new PathString("/AuthServices/SignIn");
+            context.Request.Path = new PathString("/Saml2/SignIn");
             context.Request.QueryString = new QueryString("idp=incorrect");
 
-            var options = new KentorAuthServicesAuthenticationOptions(true);
+            var options = new SustainsysSaml2AuthenticationOptions(true);
             options.SPOptions.Logger = Substitute.For<ILoggerAdapter>();
 
-            var subject = new KentorAuthServicesAuthenticationMiddleware(
+            var subject = new SustainsysSaml2AuthenticationMiddleware(
                 null,
                 CreateAppBuilder(),
                 options);
@@ -1426,32 +1426,32 @@ namespace Kentor.AuthServices.Owin.Tests
             subject.Awaiting(async s => await s.Invoke(context)).ShouldThrow<InvalidOperationException>();
             
             options.SPOptions.Logger.Received().WriteError(
-                "Error in AuthServices for /AuthServices/SignIn", Arg.Any<Exception>());
+                "Error in Saml2 for /Saml2/SignIn", Arg.Any<Exception>());
         }
 
         [TestMethod]
-        public void KentorAuthServicesAuthenticationMiddleware_Ctor_NullCheckOptionsSpOptions()
+        public void SustainsysSaml2AuthenticationMiddleware_Ctor_NullCheckOptionsSpOptions()
         {
-            var options = new KentorAuthServicesAuthenticationOptions(false);
+            var options = new SustainsysSaml2AuthenticationOptions(false);
 
-            Action a = () => new KentorAuthServicesAuthenticationMiddleware(
+            Action a = () => new SustainsysSaml2AuthenticationMiddleware(
                 new StubOwinMiddleware(404),
                 CreateAppBuilder(),
                 options);
 
             a.ShouldThrow<ConfigurationErrorsException>()
-                .WithMessage("The options.SPOptions property cannot be null. There is an implementation class Kentor.AuthServices.Configuration.SPOptions that you can instantiate. The EntityId property of that class is mandatory. It must be set to the EntityId used to represent this system.");
+                .WithMessage("The options.SPOptions property cannot be null. There is an implementation class Sustainsys.Saml2.Configuration.SPOptions that you can instantiate. The EntityId property of that class is mandatory. It must be set to the EntityId used to represent this system.");
         }
 
         [TestMethod]
-        public void KentorAuthServicesAuthenticationMiddleware_Ctor_NullCheckOptionsSpOptionsEntityId()
+        public void SustainsysSaml2AuthenticationMiddleware_Ctor_NullCheckOptionsSpOptionsEntityId()
         {
-            var options = new KentorAuthServicesAuthenticationOptions(false)
+            var options = new SustainsysSaml2AuthenticationOptions(false)
             {
                 SPOptions = new SPOptions()
             };
 
-            Action a = () => new KentorAuthServicesAuthenticationMiddleware(
+            Action a = () => new SustainsysSaml2AuthenticationMiddleware(
                 new StubOwinMiddleware(404),
                 CreateAppBuilder(),
                 options);
@@ -1462,11 +1462,11 @@ namespace Kentor.AuthServices.Owin.Tests
         }
 
         [TestMethod]
-        public async Task KentorAuthServicesAuthenticationMiddleware_IncludesSamlResponseInLoggedError()
+        public async Task SustainsysSaml2AuthenticationMiddleware_IncludesSamlResponseInLoggedError()
         {
             var context = OwinTestHelpers.CreateOwinContext();
 
-            context.Request.Path = new PathString("/AuthServices/Acs");
+            context.Request.Path = new PathString("/Saml2/Acs");
             context.Request.Method = "POST";
 
             var response = "<DummyXml />";
@@ -1481,10 +1481,10 @@ namespace Kentor.AuthServices.Owin.Tests
             context.Request.Body = encodedBodyData.ReadAsStreamAsync().Result;
             context.Request.ContentType = encodedBodyData.Headers.ContentType.ToString();
 
-            var options = new KentorAuthServicesAuthenticationOptions(true);
+            var options = new SustainsysSaml2AuthenticationOptions(true);
             options.SPOptions.Logger = Substitute.For<ILoggerAdapter>();
 
-            var subject = new KentorAuthServicesAuthenticationMiddleware(
+            var subject = new SustainsysSaml2AuthenticationMiddleware(
                 null,
                 CreateAppBuilder(),
                 options);
@@ -1497,17 +1497,17 @@ namespace Kentor.AuthServices.Owin.Tests
         }
 
         [TestMethod]
-        public async Task KentorAuthServicesAuthenticationMiddleware_LogsErrorWhenNoSamlResponseIsAvailable()
+        public async Task SustainsysSaml2AuthenticationMiddleware_LogsErrorWhenNoSamlResponseIsAvailable()
         {
             var context = OwinTestHelpers.CreateOwinContext();
 
-            context.Request.Path = new PathString("/AuthServices/Acs");
+            context.Request.Path = new PathString("/Saml2/Acs");
             context.Request.Method = "POST";
 
-            var options = new KentorAuthServicesAuthenticationOptions(true);
+            var options = new SustainsysSaml2AuthenticationOptions(true);
             options.SPOptions.Logger = Substitute.For<ILoggerAdapter>();
 
-            var subject = new KentorAuthServicesAuthenticationMiddleware(
+            var subject = new SustainsysSaml2AuthenticationMiddleware(
                 null,
                 CreateAppBuilder(),
                 options);

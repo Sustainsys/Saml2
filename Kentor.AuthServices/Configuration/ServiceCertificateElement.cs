@@ -1,6 +1,6 @@
 ﻿using System.Configuration;
 
-namespace Kentor.AuthServices.Configuration
+namespace Sustainsys.Saml2.Configuration
 {
     /// <summary>
     /// Config element for the service certificate element.

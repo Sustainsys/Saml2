@@ -1,4 +1,4 @@
-﻿using Kentor.AuthServices.Saml2P;
+﻿using Sustainsys.Saml2.Saml2P;
 using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens;
@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 using System.Xml;
 using System.Xml.Linq;
 
-namespace Kentor.AuthServices.Saml2P
+namespace Sustainsys.Saml2.Saml2P
 {
     /// <summary>
     /// A Saml2 LogoutRequest message (SAML core spec 3.7.1)

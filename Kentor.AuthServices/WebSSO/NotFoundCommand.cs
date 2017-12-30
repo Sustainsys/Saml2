@@ -1,11 +1,11 @@
-﻿using Kentor.AuthServices.Configuration;
+﻿using Sustainsys.Saml2.Configuration;
 using System;
 using System.Collections.Specialized;
 using System.Linq;
 using System.Net;
 using System.Web;
 
-namespace Kentor.AuthServices.WebSso
+namespace Sustainsys.Saml2.WebSso
 {
     /// <summary>
     /// Represents a missing command.

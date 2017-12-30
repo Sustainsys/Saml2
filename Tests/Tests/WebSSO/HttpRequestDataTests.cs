@@ -1,11 +1,11 @@
 ﻿using FluentAssertions;
-using Kentor.AuthServices.WebSso;
+using Sustainsys.Saml2.WebSso;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Kentor.AuthServices.Tests.WebSSO
+namespace Sustainsys.Saml2.Tests.WebSSO
 {
     [TestClass]
     public class HttpRequestDataTests

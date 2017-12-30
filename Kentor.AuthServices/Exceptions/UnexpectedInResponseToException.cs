@@ -5,7 +5,7 @@ using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Kentor.AuthServices.Exceptions
+namespace Sustainsys.Saml2.Exceptions
 {
     /// <summary>
     /// A SAML2 Response failed InResponseTo validation because RelayState is lost, or an unsolicited response contains an InResponseTo

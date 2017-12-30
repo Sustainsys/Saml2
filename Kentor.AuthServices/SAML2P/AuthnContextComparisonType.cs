@@ -1,4 +1,4 @@
-﻿namespace Kentor.AuthServices.Saml2P
+﻿namespace Sustainsys.Saml2.Saml2P
 {
     /// <summary>
     /// Comparison setting for RequestedAuthnContext, see SAML2 Core spec 3.3.2.2.1.

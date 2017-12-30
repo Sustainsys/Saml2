@@ -1,23 +1,23 @@
 ﻿using System.Linq;
 using FluentAssertions;
-using Kentor.AuthServices.Configuration;
-using Kentor.AuthServices.Tests.Helpers;
+using Sustainsys.Saml2.Configuration;
+using Sustainsys.Saml2.Tests.Helpers;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Configuration;
 using System.IdentityModel.Metadata;
-using Kentor.AuthServices.Saml2P;
-using Kentor.AuthServices.WebSso;
-using Kentor.AuthServices.Metadata;
+using Sustainsys.Saml2.Saml2P;
+using Sustainsys.Saml2.WebSso;
+using Sustainsys.Saml2.Metadata;
 using System.Threading;
 using System.Security.Cryptography;
 using System.IdentityModel.Tokens;
 using System.Security.Cryptography.X509Certificates;
 using System.Security.Claims;
 using System.Security.Principal;
-using Kentor.AuthServices.TestHelpers;
+using Sustainsys.Saml2.TestHelpers;
 
-namespace Kentor.AuthServices.Tests
+namespace Sustainsys.Saml2.Tests
 {
     [TestClass]
     public class IdentityProviderTests
@@ -55,7 +55,7 @@ namespace Kentor.AuthServices.Tests
                     SingleSignOnServiceUrl = new Uri(idpUri)
                 };
 
-            var r = subject.CreateAuthenticateRequest(StubFactory.CreateAuthServicesUrls());
+            var r = subject.CreateAuthenticateRequest(StubFactory.CreateSaml2Urls());
 
             r.ToXElement().Attribute("Destination").Should().NotBeNull()
                 .And.Subject.Value.Should().Be(idpUri);
@@ -68,7 +68,7 @@ namespace Kentor.AuthServices.Tests
 
             var idp = options.IdentityProviders.Default;
 
-            var urls = StubFactory.CreateAuthServicesUrls();
+            var urls = StubFactory.CreateSaml2Urls();
             var subject = idp.CreateAuthenticateRequest(urls);
 
             var expected = new Saml2AuthenticationRequest()
@@ -99,7 +99,7 @@ namespace Kentor.AuthServices.Tests
 
             var idp = options.IdentityProviders.Default;
 
-            var urls = StubFactory.CreateAuthServicesUrlsPublicOrigin(origin);
+            var urls = StubFactory.CreateSaml2UrlsPublicOrigin(origin);
             var subject = idp.CreateAuthenticateRequest(urls);
 
             var expected = new Saml2AuthenticationRequest()
@@ -121,7 +121,7 @@ namespace Kentor.AuthServices.Tests
         {
             var options = StubFactory.CreateOptions();
             var idp = options.IdentityProviders.Default;
-            var urls = StubFactory.CreateAuthServicesUrls();
+            var urls = StubFactory.CreateSaml2Urls();
 
             options.SPOptions.AttributeConsumingServices.Clear();
 
@@ -142,13 +142,13 @@ namespace Kentor.AuthServices.Tests
         }
 
         [TestMethod]
-        public void IdentityProvider_CreateAuthenticateRequest_NullcheckAuthServicesUrls()
+        public void IdentityProvider_CreateAuthenticateRequest_NullcheckSaml2Urls()
         {
             var idp = Options.FromConfiguration.IdentityProviders.Default;
 
             Action a = () => idp.CreateAuthenticateRequest(null);
 
-            a.ShouldThrow<ArgumentNullException>().And.ParamName.Should().Be("authServicesUrls");
+            a.ShouldThrow<ArgumentNullException>().And.ParamName.Should().Be("saml2Urls");
         }
 
         [TestMethod]
@@ -163,7 +163,7 @@ namespace Kentor.AuthServices.Tests
             });
 
             var idp = options.IdentityProviders.Default;
-            var urls = StubFactory.CreateAuthServicesUrls();
+            var urls = StubFactory.CreateSaml2Urls();
 
             var subject = idp.CreateAuthenticateRequest(urls);
 
@@ -177,7 +177,7 @@ namespace Kentor.AuthServices.Tests
             var spOptions = options.SPOptions;
 
             var subject = options.IdentityProviders[new EntityId("https://idp2.example.com")];
-            var urls = StubFactory.CreateAuthServicesUrls();
+            var urls = StubFactory.CreateSaml2Urls();
 
             var actual = subject.CreateAuthenticateRequest(urls).SigningCertificate;
 
@@ -199,7 +199,7 @@ namespace Kentor.AuthServices.Tests
             {
                 WantAuthnRequestsSigned = true
             };
-            var urls = StubFactory.CreateAuthServicesUrls();
+            var urls = StubFactory.CreateSaml2Urls();
 
             var actual = subject.CreateAuthenticateRequest(urls).SigningCertificate;
 
@@ -214,7 +214,7 @@ namespace Kentor.AuthServices.Tests
             spOptions.AuthenticateRequestSigningBehavior = SigningBehavior.Always;
 
             var idp = options.IdentityProviders.Default;
-            var urls = StubFactory.CreateAuthServicesUrls();
+            var urls = StubFactory.CreateSaml2Urls();
 
             idp.Invoking(i => i.CreateAuthenticateRequest(urls))
                 .ShouldThrow<ConfigurationErrorsException>()
@@ -292,7 +292,7 @@ namespace Kentor.AuthServices.Tests
             config.Binding = Saml2BindingType.HttpPost;
             config.SigningCertificate = new CertificateElement();
             config.SigningCertificate.AllowConfigEdit(true);
-            config.SigningCertificate.FileName = "Kentor.AuthServices.Tests.pfx";
+            config.SigningCertificate.FileName = "Sustainsys.Saml2.Tests.pfx";
             config.SignOnUrl = new Uri("http://idp.example.com/acs");
             config.EntityId = "http://idp.example.com";
 
@@ -786,7 +786,7 @@ namespace Kentor.AuthServices.Tests
             subject.SingleSignOnServiceUrl.Should().Be("http://wrong.entityid.example.com/acs");
             subject.WantAuthnRequestsSigned.Should().Be(true, "WantAuthnRequestsSigned should have been loaded from metadata");
 
-            Action a = () => subject.CreateAuthenticateRequest(StubFactory.CreateAuthServicesUrls());
+            Action a = () => subject.CreateAuthenticateRequest(StubFactory.CreateSaml2Urls());
             a.ShouldNotThrow();
         }
 
@@ -878,13 +878,13 @@ namespace Kentor.AuthServices.Tests
             var subject = options.IdentityProviders[0];
 
             var logoutNameIdClaim = new Claim(
-                AuthServicesClaimTypes.LogoutNameIdentifier, ",,urn:nameIdFormat,,NameId", null, subject.EntityId.Id);
+                Saml2ClaimTypes.LogoutNameIdentifier, ",,urn:nameIdFormat,,NameId", null, subject.EntityId.Id);
 
             var user = new ClaimsPrincipal(new ClaimsIdentity(
                 new Claim[]
                 {
                     logoutNameIdClaim,
-                    new Claim(AuthServicesClaimTypes.SessionIndex, "SessionId", null, subject.EntityId.Id)
+                    new Claim(Saml2ClaimTypes.SessionIndex, "SessionId", null, subject.EntityId.Id)
                 }, "Federation"));
 
             // Grab a datetime both before and after creation to handle case
@@ -923,15 +923,15 @@ namespace Kentor.AuthServices.Tests
                 new Claim[]
                 {
                     new Claim(ClaimTypes.NameIdentifier, "ThreadNameId"),
-                    new Claim(AuthServicesClaimTypes.LogoutNameIdentifier, "ThreadLogoutNameId", null, subject.EntityId.Id),
-                    new Claim(AuthServicesClaimTypes.SessionIndex, "ThreadSessionId", null, subject.EntityId.Id)
+                    new Claim(Saml2ClaimTypes.LogoutNameIdentifier, "ThreadLogoutNameId", null, subject.EntityId.Id),
+                    new Claim(Saml2ClaimTypes.SessionIndex, "ThreadSessionId", null, subject.EntityId.Id)
                 }, "Federation"));
 
             var user = new ClaimsPrincipal(new ClaimsIdentity(
                 new Claim[]
                 {
-                    new Claim(AuthServicesClaimTypes.LogoutNameIdentifier, ",,,,Saml2NameId", null, subject.EntityId.Id),
-                    new Claim(AuthServicesClaimTypes.SessionIndex, "SessionId", null, subject.EntityId.Id)
+                    new Claim(Saml2ClaimTypes.LogoutNameIdentifier, ",,,,Saml2NameId", null, subject.EntityId.Id),
+                    new Claim(Saml2ClaimTypes.SessionIndex, "SessionId", null, subject.EntityId.Id)
                 }, "Federation"));
 
             var actual = subject.CreateLogoutRequest(user);
@@ -950,7 +950,7 @@ namespace Kentor.AuthServices.Tests
                 new Claim[]
                 {
                     new Claim(ClaimTypes.NameIdentifier, "NameId", null, subject.EntityId.Id),
-                    new Claim(AuthServicesClaimTypes.SessionIndex, "SessionId", null, subject.EntityId.Id)
+                    new Claim(Saml2ClaimTypes.SessionIndex, "SessionId", null, subject.EntityId.Id)
                 }, "Federation"));
 
             subject.Invoking(s => s.CreateLogoutRequest(user))

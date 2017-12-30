@@ -3,7 +3,7 @@ using System.Security.Cryptography;
 using System.Security.Cryptography.Xml;
 using System.Xml;
 
-namespace Kentor.AuthServices.Internal
+namespace Sustainsys.Saml2.Internal
 {
     internal class RSAEncryptedXml : EncryptedXml
     {

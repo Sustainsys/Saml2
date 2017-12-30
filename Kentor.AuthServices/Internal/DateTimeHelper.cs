@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Kentor.AuthServices.Internal
+namespace Sustainsys.Saml2.Internal
 {
     static class DateTimeHelper
     {

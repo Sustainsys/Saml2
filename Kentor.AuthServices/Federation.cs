@@ -1,5 +1,5 @@
-﻿using Kentor.AuthServices.Configuration;
-using Kentor.AuthServices.Metadata;
+﻿using Sustainsys.Saml2.Configuration;
+using Sustainsys.Saml2.Metadata;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 using System.Security.Cryptography.X509Certificates;
 using System.IdentityModel.Tokens;
 
-namespace Kentor.AuthServices
+namespace Sustainsys.Saml2
 {
     /// <summary>
     /// Represents a federation known to this service provider.

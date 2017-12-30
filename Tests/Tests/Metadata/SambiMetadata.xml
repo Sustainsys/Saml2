@@ -358,15 +358,15 @@ gosrSG6sO3IPeL4BncKqqZO2FokfZbaqPBv6xmoKsVTUTQRfNEks84dRiG0MjqBncR+B6CIrCv2a
 		<md:EmailAddress>peter.granroth@sll.se</md:EmailAddress>
 	</md:ContactPerson>
 </md:EntityDescriptor>
-  <EntityDescriptor entityID="https://test.bestallningsportalen.sll.se/BPSysTest/AuthServices">
+  <EntityDescriptor entityID="https://test.bestallningsportalen.sll.se/BPSysTest/Saml2">
   <SPSSODescriptor protocolSupportEnumeration="urn:oasis:names:tc:SAML:2.0:protocol">
     <Extensions>
-      <idpdisc:DiscoveryResponse xmlns:idpdisc="urn:oasis:names:tc:SAML:profiles:SSO:idp-discovery-protocol" Binding="urn:oasis:names:tc:SAML:profiles:SSO:idp-discovery-protocol" Location="https://test.bestallningsportalen.sll.se/BPSysTest/AuthServices/SignIn" index="0" isDefault="true"/>
+      <idpdisc:DiscoveryResponse xmlns:idpdisc="urn:oasis:names:tc:SAML:profiles:SSO:idp-discovery-protocol" Binding="urn:oasis:names:tc:SAML:profiles:SSO:idp-discovery-protocol" Location="https://test.bestallningsportalen.sll.se/BPSysTest/Saml2/SignIn" index="0" isDefault="true"/>
     </Extensions>
-    <AssertionConsumerService isDefault="true" index="0" Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST" Location="https://test.bestallningsportalen.sll.se/BPSysTest/AuthServices/Acs"/>
+    <AssertionConsumerService isDefault="true" index="0" Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST" Location="https://test.bestallningsportalen.sll.se/BPSysTest/Saml2/Acs"/>
   </SPSSODescriptor>
   <ContactPerson contactType="support">
-    <EmailAddress>support-sll@kentor.se</EmailAddress>
+    <EmailAddress>support-sll@Sustainsys.se</EmailAddress>
   </ContactPerson>
 </EntityDescriptor>
   <EntityDescriptor entityID="login004.test.stockholm.se">

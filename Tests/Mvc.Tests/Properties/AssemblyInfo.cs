@@ -2,11 +2,11 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
-[assembly: AssemblyTitle("Kentor.AuthServices.Mvc.Tests")]
+[assembly: AssemblyTitle("Sustainsys.Saml2.Mvc.Tests")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("Kentor.AuthServices.Mvc.Tests")]
+[assembly: AssemblyProduct("Sustainsys.Saml2.Mvc.Tests")]
 [assembly: AssemblyCopyright("Copyright ©  2017")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]

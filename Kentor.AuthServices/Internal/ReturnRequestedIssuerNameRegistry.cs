@@ -2,7 +2,7 @@
 using System.IdentityModel.Tokens;
 using System.Linq;
 
-namespace Kentor.AuthServices.Internal
+namespace Sustainsys.Saml2.Internal
 {
     /// <summary>
     /// A dummy IssuerNameRegistry implementation that just returns whatever issuer name

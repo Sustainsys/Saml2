@@ -1,5 +1,5 @@
-﻿using Kentor.AuthServices.Configuration;
-using Kentor.AuthServices.Internal;
+﻿using Sustainsys.Saml2.Configuration;
+using Sustainsys.Saml2.Internal;
 using System;
 using System.IdentityModel.Metadata;
 using System.IdentityModel.Selectors;
@@ -8,7 +8,7 @@ using System.IdentityModel.Services.Configuration;
 using System.IdentityModel.Tokens;
 using System.Security.Claims;
 
-namespace Kentor.AuthServices.Saml2P
+namespace Sustainsys.Saml2.Saml2P
 {
     using System.Linq;
 
@@ -124,7 +124,7 @@ namespace Kentor.AuthServices.Saml2P
                 {
                     subject.AddClaim(
                         new Claim(
-                            AuthServicesClaimTypes.LogoutNameIdentifier,
+                            Saml2ClaimTypes.LogoutNameIdentifier,
                             DelimitedString.Join(
                                 nameIdClaim.Properties.GetValueOrEmpty(ClaimProperties.SamlNameIdentifierNameQualifier),
                                 nameIdClaim.Properties.GetValueOrEmpty(ClaimProperties.SamlNameIdentifierSPNameQualifier),
@@ -136,7 +136,7 @@ namespace Kentor.AuthServices.Saml2P
                 }
 
                 subject.AddClaim(
-                    new Claim(AuthServicesClaimTypes.SessionIndex, statement.SessionIndex, null, issuer));
+                    new Claim(Saml2ClaimTypes.SessionIndex, statement.SessionIndex, null, issuer));
             }
         }
 

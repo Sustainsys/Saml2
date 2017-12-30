@@ -1,4 +1,4 @@
-﻿using Kentor.AuthServices.Internal;
+﻿using Sustainsys.Saml2.Internal;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -10,10 +10,10 @@ using System.Threading.Tasks;
 using System.Web;
 using System.Security.Claims;
 
-namespace Kentor.AuthServices.WebSso
+namespace Sustainsys.Saml2.WebSso
 {
     /// <summary>
-    /// The data of a http request that AuthServices needs to handle. A separate DTO is used
+    /// The data of a http request that Saml2 needs to handle. A separate DTO is used
     /// to make the core library totally independent of the hosting environment.
     /// </summary>
     public class HttpRequestData
@@ -105,7 +105,7 @@ namespace Kentor.AuthServices.WebSso
 
             if (relayState != null)
             {
-                var cookieName = "Kentor." + relayState;
+                var cookieName = "Sustainsys." + relayState;
                 if (cookies.Any(c => c.Key == cookieName))
                 {
                     var cookieData = cookies.SingleOrDefault(c => c.Key == cookieName).Value;

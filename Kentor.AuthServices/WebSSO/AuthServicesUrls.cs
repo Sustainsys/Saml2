@@ -1,29 +1,29 @@
-﻿using Kentor.AuthServices.Configuration;
+﻿using Sustainsys.Saml2.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Kentor.AuthServices.WebSso
+namespace Sustainsys.Saml2.WebSso
 {
     /// <summary>
-    /// The urls of AuthServices that are used in various messages.
+    /// The urls of Saml2 that are used in various messages.
     /// </summary>
-    public class AuthServicesUrls
+    public class Saml2Urls
     {
         /// <summary>
-        /// Resolve the urls for AuthServices from an http request and options.
+        /// Resolve the urls for Saml2 from an http request and options.
         /// </summary>
         /// <param name="request">Request to get application root url from.</param>
         /// <param name="options">Options to get module path and (optional) notification hooks from.</param>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "SignInUrl")]
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "LogoutUrl")]
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "AuthServicesUrl")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "Saml2Url")]
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "AssertionConsumerServiceUrl")]
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "ApplicationUrl")]
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2208:InstantiateArgumentExceptionsCorrectly"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "sp")]
-        public AuthServicesUrls(HttpRequestData request, IOptions options)
+        public Saml2Urls(HttpRequestData request, IOptions options)
         {
             if (request == null)
             {
@@ -38,7 +38,7 @@ namespace Kentor.AuthServices.WebSso
             var publicOrigin = options.Notifications.GetPublicOrigin(request) ?? options.SPOptions.PublicOrigin ?? request.ApplicationUrl;
             Init(publicOrigin, options.SPOptions.ModulePath);
 
-            options.SPOptions.Logger.WriteVerbose("Expanded AuthServicesUrl"
+            options.SPOptions.Logger.WriteVerbose("Expanded Saml2Url"
                 + "\n  AssertionConsumerServiceUrl: " + AssertionConsumerServiceUrl
                 + "\n  SignInUrl: " + SignInUrl
                 + "\n  LogoutUrl: " + LogoutUrl
@@ -46,14 +46,14 @@ namespace Kentor.AuthServices.WebSso
         }
 
         /// <summary>
-        /// Creates the urls for AuthServices based on the complete base Url
-        /// the application and the AuthServices base module path.
+        /// Creates the urls for Saml2 based on the complete base Url
+        /// the application and the Saml2 base module path.
         /// </summary>
         /// <param name="applicationUrl">The full Url to the root of the application.</param>
         /// <param name="modulePath">Path of module, starting with / and ending without.</param>
         [System.Diagnostics.CodeAnalysis.SuppressMessage( "Microsoft.Design", "CA1057:StringUriOverloadsCallSystemUriOverloads"
             , Justification = "Incorrect warning. modulePath isn't a string representation of a Uri" )]
-        public AuthServicesUrls(Uri applicationUrl, string modulePath)
+        public Saml2Urls(Uri applicationUrl, string modulePath)
         {
             if (applicationUrl == null)
             {
@@ -69,13 +69,13 @@ namespace Kentor.AuthServices.WebSso
         }
 
         /// <summary>
-        /// Creates the urls for AuthServices based on the given full urls
+        /// Creates the urls for Saml2 based on the given full urls
         /// for assertion consumer service and sign-in
         /// </summary>
         /// <param name="assertionConsumerServiceUrl">The full Url for the Assertion Consumer Service.</param>
         /// <param name="signInUrl">The full Url for sign-in.</param>
         /// <param name="applicationUrl">The full Url for the application root.</param>
-        public AuthServicesUrls(Uri assertionConsumerServiceUrl, Uri signInUrl, Uri applicationUrl)
+        public Saml2Urls(Uri assertionConsumerServiceUrl, Uri signInUrl, Uri applicationUrl)
         {
             if (signInUrl == null)
             {
@@ -99,12 +99,12 @@ namespace Kentor.AuthServices.WebSso
                 publicOrigin = new Uri(publicOrigin.AbsoluteUri + "/");
             }
 
-            var authServicesRoot = publicOrigin.AbsoluteUri.TrimEnd('/') + modulePath + "/";
+            var Saml2Root = publicOrigin.AbsoluteUri.TrimEnd('/') + modulePath + "/";
 
-            AssertionConsumerServiceUrl = new Uri(authServicesRoot + CommandFactory.AcsCommandName);
-            SignInUrl = new Uri(authServicesRoot + CommandFactory.SignInCommandName);
+            AssertionConsumerServiceUrl = new Uri(Saml2Root + CommandFactory.AcsCommandName);
+            SignInUrl = new Uri(Saml2Root + CommandFactory.SignInCommandName);
             ApplicationUrl = publicOrigin;
-            LogoutUrl = new Uri(authServicesRoot + CommandFactory.LogoutCommandName);
+            LogoutUrl = new Uri(Saml2Root + CommandFactory.LogoutCommandName);
         }
 
         /// <summary>

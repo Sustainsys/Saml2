@@ -1,4 +1,4 @@
-﻿using Kentor.AuthServices.Saml2P;
+﻿using Sustainsys.Saml2.Saml2P;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -10,7 +10,7 @@ using System.Security.Cryptography.Xml;
 using System.Web;
 using System.Xml;
 
-namespace Kentor.AuthServices.StubIdp.Models
+namespace Sustainsys.Saml2.StubIdp.Models
 {
     public class InitiateLogoutModel
     {

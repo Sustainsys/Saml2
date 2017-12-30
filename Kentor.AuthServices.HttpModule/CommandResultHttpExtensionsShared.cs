@@ -1,4 +1,4 @@
-﻿using Kentor.AuthServices.WebSso;
+﻿using Sustainsys.Saml2.WebSso;
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.IdentityModel.Services;
@@ -7,7 +7,7 @@ using System.Net;
 using System.Web;
 using System.Web.Security;
 
-namespace Kentor.AuthServices.HttpModule
+namespace Sustainsys.Saml2.HttpModule
 {
     /// <summary>
     /// Extension methods to CommandResult to update a HttpResponseBase.
@@ -107,7 +107,7 @@ namespace Kentor.AuthServices.HttpModule
             {
                 throw new InvalidOperationException(
                     "FederatedAuthentication.SessionAuthenticationModule is null, make sure you have loaded the SessionAuthenticationModule in web.config. " +
-                    "See https://github.com/KentorIT/authservices/blob/master/doc/Configuration.md#loading-modules");
+                    "See https://github.com/SustainsysIT/Saml2/blob/master/doc/Configuration.md#loading-modules");
             }
         }
     }

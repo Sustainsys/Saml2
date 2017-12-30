@@ -3,9 +3,9 @@ using System.Globalization;
 using System.IdentityModel.Tokens;
 using System.Linq;
 using System.Xml.Linq;
-using Kentor.AuthServices.Internal;
+using Sustainsys.Saml2.Internal;
 
-namespace Kentor.AuthServices
+namespace Sustainsys.Saml2
 {
     /// <summary>
     /// Extension methods for Saml2Assertion

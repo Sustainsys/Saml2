@@ -11,7 +11,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
 
-namespace Kentor.AuthServices.Metadata
+namespace Sustainsys.Saml2.Metadata
 {
     // The default KeyInfoSerializer can't handle X509Data elements with
     // multiple child elements. It will only read the first child element and if

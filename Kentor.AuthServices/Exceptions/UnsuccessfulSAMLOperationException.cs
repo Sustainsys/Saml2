@@ -1,4 +1,4 @@
-﻿using Kentor.AuthServices.Saml2P;
+﻿using Sustainsys.Saml2.Saml2P;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -6,13 +6,13 @@ using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Kentor.AuthServices.Exceptions
+namespace Sustainsys.Saml2.Exceptions
 {
     /// <summary>
     /// Extended exception containing information about the status and status message SAML response.  
     /// </summary>
     [Serializable]
-    public class UnsuccessfulSamlOperationException : AuthServicesException
+    public class UnsuccessfulSamlOperationException : Saml2Exception
     {
         /// <summary>
         /// Status of the SAML2Response

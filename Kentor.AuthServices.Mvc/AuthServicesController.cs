@@ -2,18 +2,18 @@
 using System.Net;
 using System.Web.Mvc;
 using System.IdentityModel.Services;
-using Kentor.AuthServices.HttpModule;
-using Kentor.AuthServices.Configuration;
-using Kentor.AuthServices.WebSso;
+using Sustainsys.Saml2.HttpModule;
+using Sustainsys.Saml2.Configuration;
+using Sustainsys.Saml2.WebSso;
 using System.Diagnostics.CodeAnalysis;
 
-namespace Kentor.AuthServices.Mvc
+namespace Sustainsys.Saml2.Mvc
 {
     /// <summary>
     /// Mvc Controller that provides the authentication functionality.
     /// </summary>
     [AllowAnonymous]
-    public class AuthServicesController : Controller
+    public class Saml2Controller : Controller
     {
         private static IOptions options = null;
 

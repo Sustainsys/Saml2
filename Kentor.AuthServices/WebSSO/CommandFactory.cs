@@ -1,11 +1,11 @@
-﻿using Kentor.AuthServices.WebSso;
+﻿using Sustainsys.Saml2.WebSso;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Kentor.AuthServices.WebSso
+namespace Sustainsys.Saml2.WebSso
 {
     /// <summary>
     /// Factory to create the command objects thand handles the incoming http requests.
@@ -32,7 +32,7 @@ namespace Kentor.AuthServices.WebSso
 
         /// <summary>
         /// The metadata command has no name - it is triggered at base url for
-        /// AuthServices.
+        /// Saml2.
         /// </summary>
         public const string MetadataCommand = "";
 

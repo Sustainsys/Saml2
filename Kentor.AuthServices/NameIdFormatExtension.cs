@@ -1,9 +1,9 @@
 ﻿using System;
-using Kentor.AuthServices.Saml2P;
+using Sustainsys.Saml2.Saml2P;
 using System.Diagnostics.CodeAnalysis;
 using System.Collections.Generic;
 
-namespace Kentor.AuthServices
+namespace Sustainsys.Saml2
 {
     /// <summary>
     /// Extensions for NameIdFormat enum.

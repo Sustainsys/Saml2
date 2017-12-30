@@ -6,7 +6,7 @@ using System.Security.Cryptography.X509Certificates;
 using System.Security.Cryptography.Xml;
 using System.Xml;
 
-namespace Kentor.AuthServices.Internal
+namespace Sustainsys.Saml2.Internal
 {
     internal static class CryptographyExtensions
     {

@@ -1,15 +1,15 @@
-﻿using Kentor.AuthServices.HttpModule;
-using Kentor.AuthServices.Mvc;
-using Kentor.AuthServices.Saml2P;
-using Kentor.AuthServices.StubIdp.Models;
-using Kentor.AuthServices.WebSso;
+﻿using Sustainsys.Saml2.HttpModule;
+using Sustainsys.Saml2.Mvc;
+using Sustainsys.Saml2.Saml2P;
+using Sustainsys.Saml2.StubIdp.Models;
+using Sustainsys.Saml2.WebSso;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 
-namespace Kentor.AuthServices.StubIdp.Controllers
+namespace Sustainsys.Saml2.StubIdp.Controllers
 {
     public class LogoutController : Controller
     {

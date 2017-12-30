@@ -4,9 +4,9 @@ using System.Configuration;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Kentor.AuthServices.Internal;
+using Sustainsys.Saml2.Internal;
 
-namespace Kentor.AuthServices.Configuration
+namespace Sustainsys.Saml2.Configuration
 {
     /// <summary>
     /// Config collection of federations.
@@ -45,7 +45,7 @@ namespace Kentor.AuthServices.Configuration
         /// Registers the identity providers from the configured federations in the identity provider dictionary.
         /// </summary>
         /// <param name="options">Current options.</param>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1806:DoNotIgnoreMethodResults", MessageId = "Kentor.AuthServices.Federation", Justification="The federation will register its identity providers in the options")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1806:DoNotIgnoreMethodResults", MessageId = "Sustainsys.Saml2.Federation", Justification="The federation will register its identity providers in the options")]
         public void RegisterFederations(IOptions options)
         {
             if(options == null)

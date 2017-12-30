@@ -1,4 +1,4 @@
-﻿using Kentor.AuthServices;
+﻿using Sustainsys.Saml2;
 using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;

@@ -1,4 +1,4 @@
-﻿namespace Kentor.AuthServices
+﻿namespace Sustainsys.Saml2
 {
     /// <summary>
     /// How is the certificate used?

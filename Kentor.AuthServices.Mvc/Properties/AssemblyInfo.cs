@@ -5,10 +5,10 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("Kentor.AuthServices.Mvc")]
+[assembly: AssemblyTitle("Sustainsys.Saml2.Mvc")]
 [assembly: AssemblyDescription("SAML2 Authentication for ASP.NET MVC")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyProduct("Kentor.AuthServices.Mvc")]
+[assembly: AssemblyProduct("Sustainsys.Saml2.Mvc")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

@@ -7,11 +7,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Kentor.AuthServices.Configuration
+namespace Sustainsys.Saml2.Configuration
 {
     /// <summary>
     /// Root interface for the options objects, handling all configuration of
-    /// AuthServices.
+    /// Saml2.
     /// </summary>
     public interface IOptions
     {
@@ -30,6 +30,6 @@ namespace Kentor.AuthServices.Configuration
         /// Set of callbacks that can be used as extension points for various
         /// events.
         /// </summary>
-        KentorAuthServicesNotifications Notifications { get; }
+        SustainsysSaml2Notifications Notifications { get; }
     }
 }

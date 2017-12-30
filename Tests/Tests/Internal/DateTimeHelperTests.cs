@@ -1,5 +1,5 @@
 ﻿using FluentAssertions;
-using Kentor.AuthServices.Internal;
+using Sustainsys.Saml2.Internal;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Kentor.AuthServices.Tests.Internal
+namespace Sustainsys.Saml2.Tests.Internal
 {
     [TestClass]
     public class DateTimeHelperTests

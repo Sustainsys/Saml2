@@ -5,13 +5,13 @@ using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Kentor.AuthServices.Exceptions
+namespace Sustainsys.Saml2.Exceptions
 {
     /// <summary>
     /// A SAML2 Response failed validation.
     /// </summary>
     [Serializable]
-    public class Saml2ResponseFailedValidationException : AuthServicesException
+    public class Saml2ResponseFailedValidationException : Saml2Exception
     {
         /// <summary>
         /// Ctor

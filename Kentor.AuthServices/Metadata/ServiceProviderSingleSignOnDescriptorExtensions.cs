@@ -4,7 +4,7 @@ using System.IdentityModel.Metadata;
 using System.Linq;
 using System.Text;
 
-namespace Kentor.AuthServices.Metadata
+namespace Sustainsys.Saml2.Metadata
 {
     /// <summary>
     /// Metadata extensions

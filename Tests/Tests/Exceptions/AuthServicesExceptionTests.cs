@@ -1,35 +1,35 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Runtime.Serialization;
-using Kentor.AuthServices.Exceptions;
+using Sustainsys.Saml2.Exceptions;
 
-namespace Kentor.AuthServices.Tests.Exceptions
+namespace Sustainsys.Saml2.Tests.Exceptions
 {
     [TestClass]
-    public class AuthServicesExceptionTests
+    public class Saml2ExceptionTests
     {
         [Serializable]
-        private class ConcreteAuthServicesException : AuthServicesException
+        private class ConcreteSaml2Exception : Saml2Exception
         {
-            public ConcreteAuthServicesException()
+            public ConcreteSaml2Exception()
                 : base()
             { }
 
-            public ConcreteAuthServicesException(SerializationInfo info, StreamingContext context)
+            public ConcreteSaml2Exception(SerializationInfo info, StreamingContext context)
                 : base(info, context)
             { }
         }
 
         [TestMethod]
-        public void AuthServicesException_DefaultCtor()
+        public void Saml2Exception_DefaultCtor()
         {
-            ExceptionTestHelpers.TestDefaultCtor<ConcreteAuthServicesException>();
+            ExceptionTestHelpers.TestDefaultCtor<ConcreteSaml2Exception>();
         }
 
         [TestMethod]
-        public void AuthServicesException_SerializationCtor()
+        public void Saml2Exception_SerializationCtor()
         {
-            ExceptionTestHelpers.TestSerializationCtor<ConcreteAuthServicesException>();
+            ExceptionTestHelpers.TestSerializationCtor<ConcreteSaml2Exception>();
         }
     }
 }

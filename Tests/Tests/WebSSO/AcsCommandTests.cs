@@ -7,17 +7,17 @@ using System.Text;
 using System.Xml;
 using System.Linq;
 using System.Collections.Generic;
-using Kentor.AuthServices.Configuration;
-using Kentor.AuthServices.WebSso;
+using Sustainsys.Saml2.Configuration;
+using Sustainsys.Saml2.WebSso;
 using System.Reflection;
 using System.Configuration;
-using Kentor.AuthServices.Exceptions;
+using Sustainsys.Saml2.Exceptions;
 using System.IdentityModel.Metadata;
 using System.IdentityModel.Tokens;
-using Kentor.AuthServices.Tests.WebSSO;
-using Kentor.AuthServices.TestHelpers;
+using Sustainsys.Saml2.Tests.WebSSO;
+using Sustainsys.Saml2.TestHelpers;
 
-namespace Kentor.AuthServices.Tests.WebSso
+namespace Sustainsys.Saml2.Tests.WebSso
 {
     [TestClass]
     public class AcsCommandTests
@@ -284,7 +284,7 @@ namespace Kentor.AuthServices.Tests.WebSso
                 Principal = new ClaimsPrincipal(ids),
                 HttpStatusCode = HttpStatusCode.SeeOther,
                 Location = new Uri("http://localhost/testUrl.aspx"),
-                ClearCookieName = "Kentor." + relayStateFormValue
+                ClearCookieName = "Sustainsys." + relayStateFormValue
             };
 
             new AcsCommand().Run(r, StubFactory.CreateOptions())

@@ -5,14 +5,14 @@ using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Kentor.AuthServices.Exceptions
+namespace Sustainsys.Saml2.Exceptions
 {
     /// <summary>
     /// Exception thrown when an signature is not valid according to the
     /// SAML standard.
     /// </summary>
     [Serializable]
-    public class InvalidSignatureException : AuthServicesException
+    public class InvalidSignatureException : Saml2Exception
     {
         /// <summary>
         /// Default ctor

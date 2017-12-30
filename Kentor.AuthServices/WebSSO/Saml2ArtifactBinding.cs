@@ -1,16 +1,16 @@
 ﻿using System;
 using System.Globalization;
 using System.Linq;
-using Kentor.AuthServices.Saml2P;
+using Sustainsys.Saml2.Saml2P;
 using System.Security.Cryptography;
 using System.Text;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IdentityModel.Metadata;
-using Kentor.AuthServices.Configuration;
+using Sustainsys.Saml2.Configuration;
 using System.Xml;
 
-namespace Kentor.AuthServices.WebSso
+namespace Sustainsys.Saml2.WebSso
 {
     /// <summary>
     /// Saml2 Artifact binding.

@@ -1,7 +1,7 @@
 ﻿using Microsoft.Owin.Security.DataProtection;
 using System.Linq;
 
-namespace Kentor.AuthServices.Owin.Tests
+namespace Sustainsys.Saml2.Owin.Tests
 {
     class StubDataProtector : IDataProtector
     {

@@ -12,7 +12,7 @@ using Microsoft.Extensions.DependencyInjection;
 using SampleAspNetCore2ApplicationNETFramework.Data;
 using SampleAspNetCore2ApplicationNETFramework.Services;
 using System.IdentityModel.Metadata;
-using Kentor.AuthServices;
+using Sustainsys.Saml2;
 using System.Security.Cryptography.X509Certificates;
 
 namespace SampleAspNetCore2ApplicationNETFramework

@@ -1,4 +1,4 @@
-﻿using Kentor.AuthServices.WebSso;
+﻿using Sustainsys.Saml2.WebSso;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
 
-namespace Kentor.AuthServices.Mvc
+namespace Sustainsys.Saml2.Mvc
 {
     /// <summary>
     /// Extension methods for CommandResult for integrating CommandResults in

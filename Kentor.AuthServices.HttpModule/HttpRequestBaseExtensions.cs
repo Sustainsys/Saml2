@@ -1,4 +1,4 @@
-﻿using Kentor.AuthServices.WebSso;
+﻿using Sustainsys.Saml2.WebSso;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 using System.Web;
 using System.Web.Security;
 
-namespace Kentor.AuthServices.HttpModule
+namespace Sustainsys.Saml2.HttpModule
 {
     /// <summary>
     /// Static class that hold extension methods for <see cref="HttpRequestBase"/>.
@@ -18,7 +18,7 @@ namespace Kentor.AuthServices.HttpModule
         /// <summary>
         /// Purpose string used with data protection.
         /// </summary>
-        public const string ProtectionPurpose = "Kentor.AuthServices";
+        public const string ProtectionPurpose = "Sustainsys.Saml2";
 
         /// <summary>
         /// Extension method to convert a HttpRequestBase to a HttpRequestData.

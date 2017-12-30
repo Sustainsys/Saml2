@@ -1,5 +1,5 @@
-﻿using Kentor.AuthServices.Configuration;
-using Kentor.AuthServices.WebSso;
+﻿using Sustainsys.Saml2.Configuration;
+using Sustainsys.Saml2.WebSso;
 using Microsoft.Owin;
 using Microsoft.Owin.Infrastructure;
 using Microsoft.Owin.Security;
@@ -12,9 +12,9 @@ using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Kentor.AuthServices.Owin
+namespace Sustainsys.Saml2.Owin
 {
-    class KentorAuthServicesAuthenticationHandler : AuthenticationHandler<KentorAuthServicesAuthenticationOptions>
+    class SustainsysSaml2AuthenticationHandler : AuthenticationHandler<SustainsysSaml2AuthenticationOptions>
     {
         protected async override Task<AuthenticationTicket> AuthenticateCoreAsync()
         {
@@ -120,7 +120,7 @@ namespace Kentor.AuthServices.Owin
                     else
                     {
                         object objIdp = null;
-                        Context.Environment.TryGetValue("KentorAuthServices.idp", out objIdp);
+                        Context.Environment.TryGetValue("SustainsysSaml2.idp", out objIdp);
                         idp = objIdp as EntityId;
                     }
                     var redirectUri = challenge.Properties.RedirectUri;
@@ -159,7 +159,7 @@ namespace Kentor.AuthServices.Owin
             if (revoke != null)
             {
                 var request = await Context.ToHttpRequestData(Options.DataProtector.Unprotect);
-                var urls = new AuthServicesUrls(request, Options);
+                var urls = new Saml2Urls(request, Options);
 
                 string redirectUrl = revoke.Properties.RedirectUri;
                 if (string.IsNullOrEmpty(redirectUrl))
@@ -187,10 +187,10 @@ namespace Kentor.AuthServices.Owin
 
         public override async Task<bool> InvokeAsync()
         {
-            var authServicesPath = new PathString(Options.SPOptions.ModulePath);
+            var Saml2Path = new PathString(Options.SPOptions.ModulePath);
             PathString remainingPath;
 
-            if (Request.Path.StartsWithSegments(authServicesPath, out remainingPath))
+            if (Request.Path.StartsWithSegments(Saml2Path, out remainingPath))
             {
                 if (remainingPath == new PathString("/" + CommandFactory.AcsCommandName))
                 {
@@ -221,7 +221,7 @@ namespace Kentor.AuthServices.Owin
                 }
                 catch(Exception ex)
                 {
-                    Options.SPOptions.Logger.WriteError("Error in AuthServices for " + Request.Path, ex);
+                    Options.SPOptions.Logger.WriteError("Error in Saml2 for " + Request.Path, ex);
                     throw;
                 }
             }
@@ -233,8 +233,8 @@ namespace Kentor.AuthServices.Owin
         {
             var grant = context.Authentication.AuthenticationResponseGrant;
             var externalIdentity = await context.Authentication.AuthenticateAsync(Options.SignInAsAuthenticationType);
-            var sessionIdClaim = externalIdentity?.Identity.FindFirst(AuthServicesClaimTypes.SessionIndex);
-            var externalLogutNameIdClaim = externalIdentity?.Identity.FindFirst(AuthServicesClaimTypes.LogoutNameIdentifier);
+            var sessionIdClaim = externalIdentity?.Identity.FindFirst(Saml2ClaimTypes.SessionIndex);
+            var externalLogutNameIdClaim = externalIdentity?.Identity.FindFirst(Saml2ClaimTypes.LogoutNameIdentifier);
 
             if (grant == null || externalIdentity == null || sessionIdClaim == null || externalLogutNameIdClaim == null)
             {

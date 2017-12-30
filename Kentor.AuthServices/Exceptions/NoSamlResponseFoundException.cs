@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Runtime.Serialization;
 
-namespace Kentor.AuthServices.Exceptions
+namespace Sustainsys.Saml2.Exceptions
 {
     /// <summary>
     /// No saml response was found in the http request.
     /// </summary>
     [Serializable]
-    public class NoSamlResponseFoundException : AuthServicesException
+    public class NoSamlResponseFoundException : Saml2Exception
     {
         /// <summary>
         /// Default Ctor, setting message to a default.

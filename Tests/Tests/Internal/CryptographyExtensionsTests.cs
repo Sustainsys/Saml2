@@ -1,11 +1,11 @@
 ﻿using FluentAssertions;
-using Kentor.AuthServices.Internal;
-using Kentor.AuthServices.TestHelpers;
+using Sustainsys.Saml2.Internal;
+using Sustainsys.Saml2.TestHelpers;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Xml;
 
-namespace Kentor.AuthServices.Tests.Internal
+namespace Sustainsys.Saml2.Tests.Internal
 {
     [TestClass]
     public class CryptographyExtensionsTests

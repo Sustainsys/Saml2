@@ -5,21 +5,21 @@ using System.Configuration;
 using System.Globalization;
 using System.IdentityModel.Metadata;
 using System.Linq;
-using Kentor.AuthServices.Internal;
-using Kentor.AuthServices.Metadata;
-using Kentor.AuthServices.Saml2P;
+using Sustainsys.Saml2.Internal;
+using Sustainsys.Saml2.Metadata;
+using Sustainsys.Saml2.Saml2P;
 using System.Diagnostics.CodeAnalysis;
 using System.Collections.ObjectModel;
 
-namespace Kentor.AuthServices.Configuration
+namespace Sustainsys.Saml2.Configuration
 {
     /// <summary>
     /// Config section for the module.
     /// </summary>
-    public class KentorAuthServicesSection : ConfigurationSection
+    public class SustainsysSaml2Section : ConfigurationSection
     {
-        private static readonly KentorAuthServicesSection current =
-            (KentorAuthServicesSection)ConfigurationManager.GetSection("kentor.authServices");
+        private static readonly SustainsysSaml2Section current =
+            (SustainsysSaml2Section)ConfigurationManager.GetSection("Sustainsys.Saml2");
 
         internal bool AllowChange { get; set; }
 
@@ -35,7 +35,7 @@ namespace Kentor.AuthServices.Configuration
         /// <summary>
         /// Current config as read from app/web.config.
         /// </summary>
-        public static KentorAuthServicesSection Current
+        public static SustainsysSaml2Section Current
         {
             get
             {
@@ -125,10 +125,10 @@ namespace Kentor.AuthServices.Configuration
 
         const string modulePath = "modulePath";
         /// <summary>
-        /// Application root relative path for AuthServices endpoints. The 
-        /// default is "AuthServices".
+        /// Application root relative path for Saml2 endpoints. The 
+        /// default is "Saml2".
         /// </summary>
-        [ConfigurationProperty(modulePath, IsRequired = false, DefaultValue = "/AuthServices")]
+        [ConfigurationProperty(modulePath, IsRequired = false, DefaultValue = "/Saml2")]
         [RegexStringValidator("/.*")]
         public string ModulePath
         {
@@ -366,7 +366,7 @@ namespace Kentor.AuthServices.Configuration
         const string compatibility = nameof(compatibility);
 
         /// <summary>
-        /// Compatibility settings. Can be used to make AuthServices accept
+        /// Compatibility settings. Can be used to make Saml2 accept
         /// certain non-standard behaviour.
         /// </summary>
         [ConfigurationProperty(compatibility)]

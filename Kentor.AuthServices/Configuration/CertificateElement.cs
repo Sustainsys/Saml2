@@ -1,4 +1,4 @@
-﻿using Kentor.AuthServices.Internal;
+﻿using Sustainsys.Saml2.Internal;
 using System;
 using System.Configuration;
 using System.Diagnostics.CodeAnalysis;
@@ -7,7 +7,7 @@ using System.Linq;
 using System.Security.Cryptography.X509Certificates;
 using System.Web;
 
-namespace Kentor.AuthServices.Configuration
+namespace Sustainsys.Saml2.Configuration
 {
     /// <summary>
     /// Config element for the signing certificate.

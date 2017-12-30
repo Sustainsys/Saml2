@@ -1,12 +1,12 @@
-﻿using Kentor.AuthServices.Metadata;
-using Kentor.AuthServices.WebSso;
+﻿using Sustainsys.Saml2.Metadata;
+using Sustainsys.Saml2.WebSso;
 using System;
 using System.Collections.Generic;
 using System.IdentityModel.Metadata;
 using System.Linq;
 using System.Web;
 
-namespace Kentor.AuthServices.StubIdp.Models
+namespace Sustainsys.Saml2.StubIdp.Models
 {
     public static class MetadataModel
     {
@@ -67,7 +67,7 @@ namespace Kentor.AuthServices.StubIdp.Models
         {
             var metadata = new ExtendedEntitiesDescriptor
             {
-                Name = "Kentor.AuthServices.StubIdp Federation",
+                Name = "Sustainsys.Saml2.StubIdp Federation",
                 CacheDuration = new TimeSpan(0, 15, 0),
                 ValidUntil = DateTime.UtcNow.AddDays(1)
             };

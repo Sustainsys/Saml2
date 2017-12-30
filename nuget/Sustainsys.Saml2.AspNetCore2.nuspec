@@ -18,7 +18,7 @@
     <releaseNotes />
     <dependencies>
       <group>
-        <dependency id="Kentor.AuthServices" version="[$version$]" />
+        <dependency id="Sustainsys.Saml2" version="[$version$]" />
       </group>
     </dependencies>
   </metadata>

@@ -1,7 +1,7 @@
-﻿using Kentor.AuthServices.Configuration;
-using Kentor.AuthServices.Exceptions;
-using Kentor.AuthServices.Saml2P;
-using Kentor.AuthServices.Internal;
+﻿using Sustainsys.Saml2.Configuration;
+using Sustainsys.Saml2.Exceptions;
+using Sustainsys.Saml2.Saml2P;
+using Sustainsys.Saml2.Internal;
 using System;
 using System.Globalization;
 using System.IdentityModel.Metadata;
@@ -14,7 +14,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Xml;
 
-namespace Kentor.AuthServices.WebSso
+namespace Sustainsys.Saml2.WebSso
 {
     class Saml2RedirectBinding : Saml2Binding
     {

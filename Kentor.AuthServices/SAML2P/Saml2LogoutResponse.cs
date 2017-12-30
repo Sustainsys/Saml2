@@ -1,4 +1,4 @@
-﻿using Kentor.AuthServices.Internal;
+﻿using Sustainsys.Saml2.Internal;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
 
-namespace Kentor.AuthServices.Saml2P
+namespace Sustainsys.Saml2.Saml2P
 {
     /// <summary>
     /// A Saml2 Logout Response.

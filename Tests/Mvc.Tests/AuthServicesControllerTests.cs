@@ -7,22 +7,22 @@ using System.Security.Claims;
 using System.Xml.Linq;
 using System.Reflection;
 using System.Threading;
-using Kentor.AuthServices.HttpModule;
-using Kentor.AuthServices.TestHelpers;
+using Sustainsys.Saml2.HttpModule;
+using Sustainsys.Saml2.TestHelpers;
 using NSubstitute;
 using System.Web.Mvc;
 using System.Web;
-using Kentor.AuthServices.Configuration;
+using Sustainsys.Saml2.Configuration;
 using System.IdentityModel.Metadata;
-using Kentor.AuthServices.WebSso;
+using Sustainsys.Saml2.WebSso;
 using System.Web.Security;
 using System.IdentityModel.Tokens;
 using System.Web.Routing;
 
-namespace Kentor.AuthServices.Mvc.Tests
+namespace Sustainsys.Saml2.Mvc.Tests
 {
     [TestClass]
-    public class AuthServicesControllerTests
+    public class Saml2ControllerTests
     {
         ClaimsPrincipal originalPrincipal;
 
@@ -30,9 +30,9 @@ namespace Kentor.AuthServices.Mvc.Tests
         public void Initialize()
         {
             originalPrincipal = ClaimsPrincipal.Current;
-            AuthServicesController.Options = StubFactory.CreateOptions();
-            AuthServicesController.Options.SPOptions.DiscoveryServiceUrl = null;
-            AuthServicesController.Options.SPOptions.ServiceCertificates.Add(SignedXmlHelper.TestCert);
+            Saml2Controller.Options = StubFactory.CreateOptions();
+            Saml2Controller.Options.SPOptions.DiscoveryServiceUrl = null;
+            Saml2Controller.Options.SPOptions.ServiceCertificates.Add(SignedXmlHelper.TestCert);
         }
 
         [TestCleanup]
@@ -41,7 +41,7 @@ namespace Kentor.AuthServices.Mvc.Tests
             Thread.CurrentPrincipal = originalPrincipal;
         }
 
-        private AuthServicesController CreateInstanceWithContext()
+        private Saml2Controller CreateInstanceWithContext()
         {
             var controllerContext = Substitute.For<ControllerContext>();
 
@@ -54,14 +54,14 @@ namespace Kentor.AuthServices.Mvc.Tests
 
             var response = Substitute.For<HttpResponseBase>();
 
-            return new AuthServicesController()
+            return new Saml2Controller()
             {
                 ControllerContext = controllerContext
             };
         }
 
         [TestMethod]
-        public void AuthServicesController_SignIn_Returns_SignIn()
+        public void Saml2Controller_SignIn_Returns_SignIn()
         {
             var subject = CreateInstanceWithContext();
             
@@ -72,14 +72,14 @@ namespace Kentor.AuthServices.Mvc.Tests
             actual.Url.Should().Contain("?SAMLRequest");
 
             subject.Response.Received().SetCookie(
-                Arg.Is<HttpCookie>(c => c.Name == "Kentor." + relayState));
+                Arg.Is<HttpCookie>(c => c.Name == "Sustainsys." + relayState));
         }
 
         [TestMethod]
-        public void AuthServicesController_SignIn_Throws_On_CommandResultHandled()
+        public void Saml2Controller_SignIn_Throws_On_CommandResultHandled()
         {
             var subject = CreateInstanceWithContext();
-            AuthServicesController.Options.Notifications.SignInCommandResultCreated = (cr, r) =>
+            Saml2Controller.Options.Notifications.SignInCommandResultCreated = (cr, r) =>
             {
                 cr.HandledResult = true;
             };
@@ -89,12 +89,12 @@ namespace Kentor.AuthServices.Mvc.Tests
         }
 
         [TestMethod]
-        public void AuthServicesController_SignIn_Returns_DiscoveryService()
+        public void Saml2Controller_SignIn_Returns_DiscoveryService()
         {
-            AuthServicesController.Options = new Options(new SPOptions
+            Saml2Controller.Options = new Options(new SPOptions
             {
                 DiscoveryServiceUrl = new Uri("http://ds.example.com"),
-                EntityId = new EntityId("https://github.com/KentorIT/authservices")
+                EntityId = new EntityId("https://github.com/SustainsysIT/Saml2")
             });
 
             var subject = CreateInstanceWithContext();
@@ -103,11 +103,11 @@ namespace Kentor.AuthServices.Mvc.Tests
 
             result.Should().BeOfType<RedirectResult>().And
                 .Subject.As<RedirectResult>().Url
-                    .Should().StartWith("http://ds.example.com/?entityID=https%3A%2F%2Fgithub.com%2FKentorIT%2Fauthservices");
+                    .Should().StartWith("http://ds.example.com/?entityID=https%3A%2F%2Fgithub.com%2FSustainsysIT%2FSaml2");
         }
 
         [TestMethod]
-        public void AuthServicesController_Acs_Works()
+        public void Saml2Controller_Acs_Works()
         {
             var request = Substitute.For<HttpRequestBase>();
             request.HttpMethod.Returns("POST");
@@ -147,7 +147,7 @@ namespace Kentor.AuthServices.Mvc.Tests
             });
             request.Url.Returns(new Uri("http://url.example.com/url"));
             request.Cookies.Returns(new HttpCookieCollection());
-            request.Cookies.Add(new HttpCookie("Kentor." + relayState,
+            request.Cookies.Add(new HttpCookie("Sustainsys." + relayState,
                 HttpRequestData.ConvertBinaryData(
                     MachineKey.Protect(
                         new StoredRequestState(null, null, new Saml2Id("InResponseToId"), null).Serialize(),
@@ -156,13 +156,13 @@ namespace Kentor.AuthServices.Mvc.Tests
             var httpContext = Substitute.For<HttpContextBase>();
             httpContext.Request.Returns(request);
 
-            var controller = new AuthServicesController();
+            var controller = new Saml2Controller();
             controller.ControllerContext = new ControllerContext(httpContext, new RouteData(), controller);
 
             var expected = new
             {
                 Permanent = false,
-                Url = AuthServicesController.Options.SPOptions.ReturnUrl.OriginalString
+                Url = Saml2Controller.Options.SPOptions.ReturnUrl.OriginalString
             };
 
             controller.Acs().As<RedirectResult>().ShouldBeEquivalentTo(expected);
@@ -172,7 +172,7 @@ namespace Kentor.AuthServices.Mvc.Tests
         }
 
         [TestMethod]
-        public void AuthServicesController_Acs_Throws_On_CommandResultHandled()
+        public void Saml2Controller_Acs_Throws_On_CommandResultHandled()
         {
             var request = Substitute.For<HttpRequestBase>();
             request.HttpMethod.Returns("POST");
@@ -211,10 +211,10 @@ namespace Kentor.AuthServices.Mvc.Tests
             var httpContext = Substitute.For<HttpContextBase>();
             httpContext.Request.Returns(request);
 
-            var subject = new AuthServicesController();
+            var subject = new Saml2Controller();
             subject.ControllerContext = new ControllerContext(httpContext, new RouteData(), subject);
 
-            AuthServicesController.Options.Notifications.AcsCommandResultCreated = (cr, r) =>
+            Saml2Controller.Options.Notifications.AcsCommandResultCreated = (cr, r) =>
             {
                 cr.HandledResult = true;
             };
@@ -224,7 +224,7 @@ namespace Kentor.AuthServices.Mvc.Tests
         }
 
         [TestMethod]
-        public void AuthServicesController_Metadata()
+        public void Saml2Controller_Metadata()
         {
             var subject = ((ContentResult)CreateInstanceWithContext().Index());
 
@@ -236,10 +236,10 @@ namespace Kentor.AuthServices.Mvc.Tests
         }
 
         [TestMethod]
-        public void AuthServicesController_Metadata_Throws_On_CommandResultHandled()
+        public void Saml2Controller_Metadata_Throws_On_CommandResultHandled()
         {
             var subject = CreateInstanceWithContext();
-            AuthServicesController.Options.Notifications.MetadataCommandResultCreated = cr =>
+            Saml2Controller.Options.Notifications.MetadataCommandResultCreated = cr =>
             {
                 cr.HandledResult = true;
             };
@@ -249,13 +249,13 @@ namespace Kentor.AuthServices.Mvc.Tests
         }
 
         [TestMethod]
-        public void AuthServicesController_SignIn_Returns_Public_Origin()
+        public void Saml2Controller_SignIn_Returns_Public_Origin()
         {
-            AuthServicesController.Options = new Options(new SPOptions
+            Saml2Controller.Options = new Options(new SPOptions
             {
                 DiscoveryServiceUrl = new Uri("http://ds.example.com"),
                 PublicOrigin = new Uri("https://my.public.origin:8443"),
-                EntityId = new EntityId("https://github.com/KentorIT/authservices")
+                EntityId = new EntityId("https://github.com/SustainsysIT/Saml2")
             });
 
             var subject = CreateInstanceWithContext();
@@ -264,19 +264,19 @@ namespace Kentor.AuthServices.Mvc.Tests
 
             result.Should().BeOfType<RedirectResult>().And
                 .Subject.As<RedirectResult>().Url
-                    .Should().StartWith("http://ds.example.com/?entityID=https%3A%2F%2Fgithub.com%2FKentorIT%2Fauthservices&return=https%3A%2F%2Fmy.public.origin%3A8443%2F");
+                    .Should().StartWith("http://ds.example.com/?entityID=https%3A%2F%2Fgithub.com%2FSustainsysIT%2FSaml2&return=https%3A%2F%2Fmy.public.origin%3A8443%2F");
         }
 
         [TestMethod]
-        public void AuthServicesController_Logout_Returns_LogoutRequest()
+        public void Saml2Controller_Logout_Returns_LogoutRequest()
         {
             var subject = CreateInstanceWithContext();
 
             Thread.CurrentPrincipal = new ClaimsPrincipal(
                 new ClaimsIdentity(new Claim[]
                 {
-                    new Claim(AuthServicesClaimTypes.LogoutNameIdentifier, ",,,,NameId", null, "https://idp.example.com"),
-                    new Claim(AuthServicesClaimTypes.SessionIndex, "SessionId", null, "https://idp.example.com")
+                    new Claim(Saml2ClaimTypes.LogoutNameIdentifier, ",,,,NameId", null, "https://idp.example.com"),
+                    new Claim(Saml2ClaimTypes.SessionIndex, "SessionId", null, "https://idp.example.com")
                 }, "Federation"));
 
             var actual = subject.Logout().As<RedirectResult>();
@@ -286,15 +286,15 @@ namespace Kentor.AuthServices.Mvc.Tests
             var relayState = HttpUtility.ParseQueryString(new Uri(actual.Url).Query)["RelayState"];
 
             subject.Response.Received().SetCookie(
-                Arg.Is<HttpCookie>(c => c.Name == "Kentor." + relayState));
+                Arg.Is<HttpCookie>(c => c.Name == "Sustainsys." + relayState));
         }
 
         [TestMethod]
-        public void AuthServicesController_Logout_Throws_On_CommandResultHandled()
+        public void Saml2Controller_Logout_Throws_On_CommandResultHandled()
         {
             var subject = CreateInstanceWithContext();
 
-            AuthServicesController.Options.Notifications.LogoutCommandResultCreated = cr =>
+            Saml2Controller.Options.Notifications.LogoutCommandResultCreated = cr =>
             {
                 cr.HandledResult = true;
             };
@@ -304,10 +304,10 @@ namespace Kentor.AuthServices.Mvc.Tests
         }
 
         [TestMethod]
-        public void AuthServicesController_Options_LoadedIfNotSet()
+        public void Saml2Controller_Options_LoadedIfNotSet()
         {
-            AuthServicesController.Options = null;
-            AuthServicesController.Options.Should().NotBeNull();
+            Saml2Controller.Options = null;
+            Saml2Controller.Options.Should().NotBeNull();
         }
     }
 }

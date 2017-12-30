@@ -4,18 +4,18 @@ using System.Security.Cryptography.X509Certificates;
 using System.Security.Cryptography.Xml;
 using System.Xml;
 using System.Linq;
-using Kentor.AuthServices.Exceptions;
+using Sustainsys.Saml2.Exceptions;
 using System.Collections.Generic;
-using Kentor.AuthServices.Configuration;
+using Sustainsys.Saml2.Configuration;
 using System.Reflection;
 using System.IdentityModel.Tokens;
 using System.Globalization;
 using System.Diagnostics.CodeAnalysis;
 using System.Xml.Linq;
 using System.IO;
-using Kentor.AuthServices.Internal;
+using Sustainsys.Saml2.Internal;
 
-namespace Kentor.AuthServices
+namespace Sustainsys.Saml2
 {
     /// <summary>
     /// Extension methods and helpers for XmlDocument/XmlElement etc.
@@ -302,7 +302,7 @@ namespace Kentor.AuthServices
             if (signatureMethod == Options.RsaSha256Uri
                 && rsaSha256Algorithm.Value == null)
             {
-                throw new InvalidSignatureException("SHA256 signatures require the algorithm to be registered at the process level. Upgrade to .Net 4.6.2 or call Kentor.AuthServices.Configuration.Options.GlobalEnableSha256XmlSignatures() on startup to register.");
+                throw new InvalidSignatureException("SHA256 signatures require the algorithm to be registered at the process level. Upgrade to .Net 4.6.2 or call Sustainsys.Saml2.Configuration.Options.GlobalEnableSha256XmlSignatures() on startup to register.");
             }
         }
 

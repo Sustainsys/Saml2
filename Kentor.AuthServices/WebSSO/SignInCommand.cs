@@ -1,13 +1,13 @@
-﻿using Kentor.AuthServices.Configuration;
+﻿using Sustainsys.Saml2.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IdentityModel.Metadata;
 using System.Linq;
 using System.Net;
-using Kentor.AuthServices.Internal;
+using Sustainsys.Saml2.Internal;
 
-namespace Kentor.AuthServices.WebSso
+namespace Sustainsys.Saml2.WebSso
 {
     /// <summary>
     /// Represents the sign in command behaviour.
@@ -45,7 +45,7 @@ namespace Kentor.AuthServices.WebSso
 
             if (request.RelayState != null)
             {
-                result.ClearCookieName = "Kentor." + request.RelayState;
+                result.ClearCookieName = "Sustainsys." + request.RelayState;
             }
 
             return result;
@@ -110,7 +110,7 @@ namespace Kentor.AuthServices.WebSso
                 throw new ArgumentNullException(nameof(options));
             }
 
-            var urls = new AuthServicesUrls(request, options);
+            var urls = new Saml2Urls(request, options);
 
             IdentityProvider idp = options.Notifications.SelectIdentityProvider(idpEntityId, relayData);
             if (idp == null)
@@ -147,7 +147,7 @@ namespace Kentor.AuthServices.WebSso
             return InitiateLoginToIdp(options, relayData, urls, idp, returnUrl);
         }
 
-        private static CommandResult InitiateLoginToIdp(IOptions options, IDictionary<string, string> relayData, AuthServicesUrls urls, IdentityProvider idp, Uri returnUrl)
+        private static CommandResult InitiateLoginToIdp(IOptions options, IDictionary<string, string> relayData, Saml2Urls urls, IdentityProvider idp, Uri returnUrl)
         {
             var authnRequest = idp.CreateAuthenticateRequest(urls);
 
@@ -157,7 +157,7 @@ namespace Kentor.AuthServices.WebSso
 
             commandResult.RequestState = new StoredRequestState(
                 idp.EntityId, returnUrl, authnRequest.Id, relayData);
-            commandResult.SetCookieName = "Kentor." + authnRequest.RelayState;
+            commandResult.SetCookieName = "Sustainsys." + authnRequest.RelayState;
 
             options.Notifications.SignInCommandResultCreated(commandResult, relayData);
 
@@ -167,10 +167,10 @@ namespace Kentor.AuthServices.WebSso
         private static CommandResult RedirectToDiscoveryService(
             string returnPath,
             SPOptions spOptions,
-            AuthServicesUrls authServicesUrls,
+            Saml2Urls saml2Urls,
             IDictionary<string, string> relayData)
         {
-            string returnUrl = authServicesUrls.SignInUrl.OriginalString;
+            string returnUrl = saml2Urls.SignInUrl.OriginalString;
 
             var relayState = SecureKeyGenerator.CreateRelayState();
 
@@ -194,7 +194,7 @@ namespace Kentor.AuthServices.WebSso
                 HttpStatusCode = HttpStatusCode.SeeOther,
                 Location = new Uri(redirectLocation),
                 RequestState = requestState,
-                SetCookieName = "Kentor." + relayState
+                SetCookieName = "Sustainsys." + relayState
             };
         }
     }

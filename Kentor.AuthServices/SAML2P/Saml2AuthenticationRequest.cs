@@ -6,11 +6,11 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
 using System.Xml.Linq;
-using Kentor.AuthServices.Configuration;
-using Kentor.AuthServices.Internal;
-using Kentor.AuthServices.WebSso;
+using Sustainsys.Saml2.Configuration;
+using Sustainsys.Saml2.Internal;
+using Sustainsys.Saml2.WebSso;
 
-namespace Kentor.AuthServices.Saml2P
+namespace Sustainsys.Saml2.Saml2P
 {
     /// <summary>
     /// An authentication request corresponding to section 3.4.1 in SAML Core specification.
@@ -142,7 +142,7 @@ namespace Kentor.AuthServices.Saml2P
         /// </summary>
         /// <param name="xml">Xml data</param>
         /// <param name="relayState">RelayState associateed with the message.</param>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1806:DoNotIgnoreMethodResults", MessageId = "System.Enum.TryParse<Kentor.AuthServices.Saml2P.NameIdFormat>(System.String,System.Boolean,Kentor.AuthServices.Saml2P.NameIdFormat@)")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1806:DoNotIgnoreMethodResults", MessageId = "System.Enum.TryParse<Sustainsys.Saml2.Saml2P.NameIdFormat>(System.String,System.Boolean,Sustainsys.Saml2.Saml2P.NameIdFormat@)")]
         public Saml2AuthenticationRequest(XmlElement xml, string relayState)
         {
             ReadBaseProperties(xml);

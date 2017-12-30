@@ -1,12 +1,12 @@
-﻿using Kentor.AuthServices.Configuration;
-using Kentor.AuthServices.Saml2P;
+﻿using Sustainsys.Saml2.Configuration;
+using Sustainsys.Saml2.Saml2P;
 using System;
 using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Xml;
 
-namespace Kentor.AuthServices.WebSso
+namespace Sustainsys.Saml2.WebSso
 {
     class Saml2PostBinding : Saml2Binding
     {

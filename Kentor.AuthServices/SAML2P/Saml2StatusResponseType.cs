@@ -3,7 +3,7 @@ using System.IdentityModel.Metadata;
 using System.IdentityModel.Tokens;
 using System.Security.Cryptography.X509Certificates;
 
-namespace Kentor.AuthServices.Saml2P
+namespace Sustainsys.Saml2.Saml2P
 {
     /// <summary>
     /// Abstract Saml2 StatusResponseType class.

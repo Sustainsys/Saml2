@@ -1,10 +1,10 @@
 ﻿using FluentAssertions;
-using Kentor.AuthServices.Configuration;
-using Kentor.AuthServices.Saml2P;
+using Sustainsys.Saml2.Configuration;
+using Sustainsys.Saml2.Saml2P;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 
-namespace Kentor.AuthServices.Tests.Configuration
+namespace Sustainsys.Saml2.Tests.Configuration
 {
     [TestClass]
     public class Saml2RequestedAuthnContextTests

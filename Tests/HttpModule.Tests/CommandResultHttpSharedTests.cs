@@ -1,12 +1,12 @@
 ﻿using FluentAssertions;
-using Kentor.AuthServices.HttpModule;
-using Kentor.AuthServices.WebSso;
+using Sustainsys.Saml2.HttpModule;
+using Sustainsys.Saml2.WebSso;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NSubstitute;
 using System;
 using System.Web;
 
-namespace Kentor.AuthServices.HttpModule.Tests
+namespace Sustainsys.Saml2.HttpModule.Tests
 {
     [TestClass]
     public partial class CommandResultHttpTests

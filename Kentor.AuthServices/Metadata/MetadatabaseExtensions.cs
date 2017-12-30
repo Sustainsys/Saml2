@@ -1,4 +1,4 @@
-﻿using Kentor.AuthServices.Configuration;
+﻿using Sustainsys.Saml2.Configuration;
 using System;
 using System.Collections.Generic;
 using System.IdentityModel.Metadata;
@@ -8,7 +8,7 @@ using System.Security.Cryptography.X509Certificates;
 using System.Web;
 using System.Xml;
 
-namespace Kentor.AuthServices.Metadata
+namespace Sustainsys.Saml2.Metadata
 {
     /// <summary>
     /// Extensions for Metadatabase.

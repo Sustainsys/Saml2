@@ -1,4 +1,4 @@
-﻿namespace Kentor.AuthServices.Saml2P
+﻿namespace Sustainsys.Saml2.Saml2P
 {
     /// <summary>
     /// The NameId Format.

@@ -1,10 +1,10 @@
-﻿using Kentor.AuthServices.WebSso;
+﻿using Sustainsys.Saml2.WebSso;
 using System;
 using System.Configuration;
 using System.Data.Odbc;
-using Kentor.AuthServices.Saml2P;
+using Sustainsys.Saml2.Saml2P;
 
-namespace Kentor.AuthServices.Configuration
+namespace Sustainsys.Saml2.Configuration
 {
     /// <summary>
     /// Config element for the identity provider element.
@@ -202,7 +202,7 @@ namespace Kentor.AuthServices.Configuration
 
         /// <summary>
         /// Disable outbound logout requests to this idp, even though
-        /// AuthServices is configured for single logout and the idp supports
+        /// Saml2 is configured for single logout and the idp supports
         /// it. This setting might be usable when adding SLO to an existing
         /// setup, to ensure that everyone is ready for SLO before activating.
         /// </summary>

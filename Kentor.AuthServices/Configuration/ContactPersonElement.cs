@@ -6,7 +6,7 @@ using System.IdentityModel.Metadata;
 using System.Linq;
 using System.Text;
 
-namespace Kentor.AuthServices.Configuration
+namespace Sustainsys.Saml2.Configuration
 {
     /// <summary>
     /// Contact person for a SAML2 entity.

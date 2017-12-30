@@ -1,5 +1,5 @@
-﻿using Kentor.AuthServices.Configuration;
-using Kentor.AuthServices.Saml2P;
+﻿using Sustainsys.Saml2.Configuration;
+using Sustainsys.Saml2.Saml2P;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 using System.Web;
 using System.Xml;
 
-namespace Kentor.AuthServices.WebSso
+namespace Sustainsys.Saml2.WebSso
 {
     /// <summary>
     /// The result of a Saml2Binding.UnBind.

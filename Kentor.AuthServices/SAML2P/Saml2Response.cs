@@ -7,15 +7,15 @@ using System.Security.Claims;
 using System.Security.Cryptography.X509Certificates;
 using System.Security.Cryptography.Xml;
 using System.Xml;
-using Kentor.AuthServices.Configuration;
+using Sustainsys.Saml2.Configuration;
 using System.IdentityModel.Metadata;
 using System.Security.Cryptography;
 using System.IdentityModel.Services;
-using Kentor.AuthServices.Internal;
-using Kentor.AuthServices.Exceptions;
+using Sustainsys.Saml2.Internal;
+using Sustainsys.Saml2.Exceptions;
 using System.Diagnostics.CodeAnalysis;
 
-namespace Kentor.AuthServices.Saml2P
+namespace Sustainsys.Saml2.Saml2P
 {
     /// <summary>
     /// Represents a SAML2 response according to 3.3.3. The class is immutable (to an

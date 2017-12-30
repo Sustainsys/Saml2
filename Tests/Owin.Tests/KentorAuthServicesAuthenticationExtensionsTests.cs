@@ -2,30 +2,30 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NSubstitute;
 using Owin;
-using Kentor.AuthServices.Owin;
+using Sustainsys.Saml2.Owin;
 using FluentAssertions;
 
-namespace Kentor.AuthServices.Owin.Tests
+namespace Sustainsys.Saml2.Owin.Tests
 {
     [TestClass]
-    public class KentorAuthServicesAuthenticationExtensionsTests
+    public class SustainsysSaml2AuthenticationExtensionsTests
     {
         [TestMethod]
-        public void KentorAuthServicesAuthenticationExtensions_UseKentorAuthServicesAuthentication()
+        public void SustainsysSaml2AuthenticationExtensions_UseSustainsysSaml2Authentication()
         {
             var app = Substitute.For<IAppBuilder>();
 
-            var options = new KentorAuthServicesAuthenticationOptions(true);
+            var options = new SustainsysSaml2AuthenticationOptions(true);
 
-            app.UseKentorAuthServicesAuthentication(options);
+            app.UseSustainsysSaml2Authentication(options);
 
-            app.Received().Use(typeof(KentorAuthServicesAuthenticationMiddleware), app, options);
+            app.Received().Use(typeof(SustainsysSaml2AuthenticationMiddleware), app, options);
         }
 
         [TestMethod]
-        public void KentorAuthServicesAuthenticationExtensions_UseKentorAuthServicesAuthentication_Nullcheck()
+        public void SustainsysSaml2AuthenticationExtensions_UseSustainsysSaml2Authentication_Nullcheck()
         {
-            Action a = () => ((IAppBuilder)null).UseKentorAuthServicesAuthentication(null);
+            Action a = () => ((IAppBuilder)null).UseSustainsysSaml2Authentication(null);
 
             a.ShouldThrow<ArgumentNullException>("app");
         }

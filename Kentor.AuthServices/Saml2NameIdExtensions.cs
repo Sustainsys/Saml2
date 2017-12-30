@@ -2,7 +2,7 @@
 using System.IdentityModel.Tokens;
 using System.Xml.Linq;
 
-namespace Kentor.AuthServices
+namespace Sustainsys.Saml2
 {
     /// <summary>
     /// Extension methods for Saml2NameId

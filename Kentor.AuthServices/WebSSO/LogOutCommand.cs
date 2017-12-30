@@ -1,17 +1,17 @@
 ﻿using System;
-using Kentor.AuthServices.Configuration;
+using Sustainsys.Saml2.Configuration;
 using System.IdentityModel.Metadata;
 using System.Security.Claims;
 using System.Net;
-using Kentor.AuthServices.Saml2P;
-using Kentor.AuthServices.Exceptions;
+using Sustainsys.Saml2.Saml2P;
+using Sustainsys.Saml2.Exceptions;
 using System.Globalization;
 using System.Configuration;
 using System.Linq;
 using System.Security.Cryptography.Xml;
-using Kentor.AuthServices.Internal;
+using Sustainsys.Saml2.Internal;
 
-namespace Kentor.AuthServices.WebSso
+namespace Sustainsys.Saml2.WebSso
 {
     /// <summary>
     /// Represents the logout command behaviour.
@@ -160,8 +160,8 @@ namespace Kentor.AuthServices.WebSso
             Claim sessionIndexClaim = null;
             if (request.User != null)
             {
-                idpEntityId = request.User.FindFirst(AuthServicesClaimTypes.LogoutNameIdentifier)?.Issuer;
-                sessionIndexClaim = request.User.FindFirst(AuthServicesClaimTypes.SessionIndex);
+                idpEntityId = request.User.FindFirst(Saml2ClaimTypes.LogoutNameIdentifier)?.Issuer;
+                sessionIndexClaim = request.User.FindFirst(Saml2ClaimTypes.SessionIndex);
             }
 
             IdentityProvider idp;
@@ -197,7 +197,7 @@ namespace Kentor.AuthServices.WebSso
 
                 if (!options.SPOptions.Compatibility.DisableLogoutStateCookie)
                 {
-                    commandResult.SetCookieName = "Kentor." + logoutRequest.RelayState;
+                    commandResult.SetCookieName = "Sustainsys." + logoutRequest.RelayState;
                 }
 
                 commandResult.TerminateLocalSession = terminateLocalSession;
@@ -229,7 +229,7 @@ namespace Kentor.AuthServices.WebSso
             }
             else
             {
-                return new AuthServicesUrls(request, options).ApplicationUrl;
+                return new Saml2Urls(request, options).ApplicationUrl;
             }
         }
 
@@ -247,7 +247,7 @@ namespace Kentor.AuthServices.WebSso
                 throw new ConfigurationErrorsException(string.Format(CultureInfo.InvariantCulture,
                     "Received a LogoutRequest from \"{0}\" but cannot reply because single logout responses " +
                     "must be signed and there is no signing certificate configured. Looks like the idp is " +
-                    "configured for Single Logout despite AuthServices not exposing that functionality in the metadata.",
+                    "configured for Single Logout despite Saml2 not exposing that functionality in the metadata.",
                     request.Issuer.Id));
             }
 
@@ -298,7 +298,7 @@ namespace Kentor.AuthServices.WebSso
             };
             if (!options.SPOptions.Compatibility.DisableLogoutStateCookie)
             {
-                commandResult.ClearCookieName = "Kentor." + unbindResult.RelayState;
+                commandResult.ClearCookieName = "Sustainsys." + unbindResult.RelayState;
             }
             commandResult.Location = storedRequestState?.ReturnUrl ?? returnUrl;
 

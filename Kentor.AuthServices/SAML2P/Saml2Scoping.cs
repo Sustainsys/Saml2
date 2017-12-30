@@ -5,7 +5,7 @@ using System.IdentityModel.Metadata;
 using System.Linq;
 using System.Xml.Linq;
 
-namespace Kentor.AuthServices.Saml2P
+namespace Sustainsys.Saml2.Saml2P
 {
     /// <summary>
     /// Saml2Scoping specifies a set of identity providers trusted by the
