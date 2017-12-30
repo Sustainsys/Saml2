@@ -25,7 +25,7 @@ logic. For example:
     app.UseKentorAuthServicesAuthentication(myAuthServicesOptions);
     
 You can see a full example of this in the **SampleOwinApplication** project included in the
-source code. See the [Startup.Auth.cs file](https://github.com/KentorIT/authservices/blob/master/SampleOwinApplication/App_Start/Startup.Auth.cs)
+source code. See the [Startup.Auth.cs file](https://github.com/Sustainsys/Saml2/blob/master/Samples/SampleOwinApplication/App_Start/Startup.Auth.cs)
 
 ## Selecting Idp
 
