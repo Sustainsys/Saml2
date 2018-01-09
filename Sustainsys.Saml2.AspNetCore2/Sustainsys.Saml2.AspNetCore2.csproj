@@ -1,6 +1,20 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFrameworks>netcoreapp2.0;net461</TargetFrameworks>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <Version>2.0.0-preview01</Version>
+    <Authors>Sustainsys</Authors>
+    <Company>Sustainsys AB</Company>
+    <Product>Sustainsys.Saml2</Product>
+    <Description>Asp.NET Core 2 Authentication handler for the SAML2 protocol, supports .NET Core and Full Framework.</Description>
+    <Copyright>Sustainsys and contributors, 2017-2018</Copyright>
+    <PackageLicenseUrl>https://github.com/Sustainsys/Saml2/blob/master/LICENSE</PackageLicenseUrl>
+    <PackageProjectUrl>https://github.com/Sustainsys/Saml2</PackageProjectUrl>
+    <PackageIconUrl>https://raw.github.com/Sustainsys/Saml2/master/nuget/Sustainsys.png</PackageIconUrl>
+    <PackageReleaseNotes>Very much a preview, don't use in production.</PackageReleaseNotes>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|netcoreapp2.0|AnyCPU'">
+    <DocumentationFile>bin\Debug\netcoreapp2.0\Sustainsys.Saml2.AspNetCore2.xml</DocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>
