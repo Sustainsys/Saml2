@@ -59,11 +59,11 @@ namespace SampleOwinApplication
                 SPOptions = spOptions
             };
 
-            var idp = new IdentityProvider(new EntityId("http://stubidp.Kentor.se/Metadata"), spOptions)
+            var idp = new IdentityProvider(new EntityId("https://stubidp.sustainsys.com/Metadata"), spOptions)
                 {
                     AllowUnsolicitedAuthnResponse = true,
                     Binding = Saml2BindingType.HttpRedirect,
-                    SingleSignOnServiceUrl = new Uri("http://stubidp.Kentor.se")
+                    SingleSignOnServiceUrl = new Uri("https://stubidp.sustainsys.com")
                 };
 
             idp.SigningKeys.AddConfiguredKey(

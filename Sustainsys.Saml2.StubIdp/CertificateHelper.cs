@@ -17,7 +17,7 @@ namespace Sustainsys.Saml2.StubIdp
             {
                 // If accessing on the legacy stubidp.Kentor.se host name, use old certificate
                 // to not break existing configured clients.
-                if(HttpContext.Current.Request.Url.Host == "stubidp.Kentor.se")
+                if(HttpContext.Current.Request.Url.Host == "stubidp.kentor.se")
                 {
                     return signingCertificateSustainsys;
                 }
@@ -45,7 +45,7 @@ namespace Sustainsys.Saml2.StubIdp
             {
                 // If accessing on the legacy stubidp.Kentor.se host name, use old certificate
                 // to not break existing configured clients.
-                if (HttpContext.Current.Request.Url.Host == "stubidp.Kentor.se")
+                if (HttpContext.Current.Request.Url.Host == "stubidp.kentor.se")
                 {
                     return signingKeySustainsys;
                 }

@@ -8,7 +8,7 @@ namespace Sustainsys.Saml2.StubIdp.Controllers
     {
         public ActionResult Index()
         {
-            var path = Request.Url.Host == "stubidp.Kentor.se"
+            var path = Request.Url.Host == "stubidp.kentor.se"
                 ? HttpContext.Server.MapPath("~\\App_Data\\Kentor.AuthServices.StubIdp.cer")
                 : HttpContext.Server.MapPath("~\\App_Data\\stubidp.sustainsys.com.cer");
 

@@ -58,8 +58,8 @@ read web.config, but can also be configured from code (see [Owin middleware](Owi
     </requestedAttributes>
   </metadata>
   <identityProviders>
-    <add entityId="http://stubidp.Kentor.se/Metadata" 
-         signOnUrl="http://stubidp.Kentor.se" 
+    <add entityId="https://stubidp.sustainsys.com/Metadata" 
+         signOnUrl="https://stubidp.sustainsys.com" 
          allowUnsolicitedAuthnResponse="true"
 		 binding="HttpRedirect"
 		 wantAuthnRequestsSigned="true">
