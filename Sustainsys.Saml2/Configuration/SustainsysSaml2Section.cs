@@ -19,7 +19,7 @@ namespace Sustainsys.Saml2.Configuration
     public class SustainsysSaml2Section : ConfigurationSection
     {
         private static readonly SustainsysSaml2Section current =
-            (SustainsysSaml2Section)ConfigurationManager.GetSection("Sustainsys.Saml2");
+            (SustainsysSaml2Section)ConfigurationManager.GetSection("sustainsys.saml2");
 
         internal bool AllowChange { get; set; }
 
