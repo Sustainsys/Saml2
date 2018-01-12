@@ -63,7 +63,7 @@ for keeping application specific user and role information. See the
 
 ## Stub Idp
 The solution also contains a stub (i.e. dummy) identity provider that can be used for testing.
-Download the solution, or use the instance that's provided for free at http://stubidp.Sustainsys.se.
+Download the solution, or use the instance that's provided for free at http://stubidp.Kentor.se.
 
 ## Protocol Classes
 The protocol handling classes are available as a public API as well, making it possible to 

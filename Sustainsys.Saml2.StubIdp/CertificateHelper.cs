@@ -15,9 +15,9 @@ namespace Sustainsys.Saml2.StubIdp
         {
             get
             {
-                // If accessing on the legacy stubidp.Sustainsys.se host name, use old certificate
+                // If accessing on the legacy stubidp.Kentor.se host name, use old certificate
                 // to not break existing configured clients.
-                if(HttpContext.Current.Request.Url.Host == "stubidp.Sustainsys.se")
+                if(HttpContext.Current.Request.Url.Host == "stubidp.Kentor.se")
                 {
                     return signingCertificateSustainsys;
                 }
@@ -30,7 +30,7 @@ namespace Sustainsys.Saml2.StubIdp
         private static readonly X509Certificate2 signingCertificateSustainsys
             = new X509Certificate2(
                 HttpContext.Current.Server.MapPath(
-                "~\\App_Data\\Sustainsys.Saml2.StubIdp.pfx"), "",
+                "~\\App_Data\\Kentor.AuthServices.StubIdp.pfx"), "",
                 X509KeyStorageFlags.MachineKeySet);
 
         private static readonly X509Certificate2 signingCertificate
@@ -43,9 +43,9 @@ namespace Sustainsys.Saml2.StubIdp
         {
             get
             {
-                // If accessing on the legacy stubidp.Sustainsys.se host name, use old certificate
+                // If accessing on the legacy stubidp.Kentor.se host name, use old certificate
                 // to not break existing configured clients.
-                if (HttpContext.Current.Request.Url.Host == "stubidp.Sustainsys.se")
+                if (HttpContext.Current.Request.Url.Host == "stubidp.Kentor.se")
                 {
                     return signingKeySustainsys;
                 }

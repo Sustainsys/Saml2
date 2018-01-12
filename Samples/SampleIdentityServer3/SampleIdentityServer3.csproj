@@ -133,12 +133,12 @@
     <Reference Include="System.EnterpriseServices" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="App_Data\Kentor.AuthServices.SampleIdentityServer3.pfx" />
+    <Content Include="App_Data\Sustainsys.Saml2.SampleIdentityServer3.pfx" />
     <None Include="index.cshtml" />
     <Content Include="check_session.html" />
     <Content Include="oidc-token-manager.js" />
     <Content Include="packages.config" />
-    <Content Include="App_Data\Kentor.AuthServices.Tests.pfx">
+    <Content Include="App_Data\Sustainsys.Saml2.Tests.pfx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <None Include="Web.Debug.config">
@@ -161,13 +161,13 @@
     <Compile Include="Users.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Kentor.AuthServices.Owin\Kentor.AuthServices.Owin.csproj">
+    <ProjectReference Include="..\..\Sustainsys.Saml2.Owin\Sustainsys.Saml2.Owin.csproj">
       <Project>{fa1e7723-124c-4d2d-a731-e16400b0073b}</Project>
-      <Name>Kentor.AuthServices.Owin</Name>
+      <Name>Sustainsys.Saml2.Owin</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Kentor.AuthServices\Kentor.AuthServices.csproj">
+    <ProjectReference Include="..\..\Sustainsys.Saml2\Sustainsys.Saml2.csproj">
       <Project>{93ba675e-a159-4701-b68b-c4b81015c556}</Project>
-      <Name>Kentor.AuthServices</Name>
+      <Name>Sustainsys.Saml2</Name>
     </ProjectReference>
   </ItemGroup>
   <PropertyGroup>

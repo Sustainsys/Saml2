@@ -8,8 +8,8 @@ namespace Sustainsys.Saml2.StubIdp.Controllers
     {
         public ActionResult Index()
         {
-            var path = Request.Url.Host == "stubidp.Sustainsys.se"
-                ? HttpContext.Server.MapPath("~\\App_Data\\Sustainsys.Saml2.StubIdp.cer")
+            var path = Request.Url.Host == "stubidp.Kentor.se"
+                ? HttpContext.Server.MapPath("~\\App_Data\\Kentor.AuthServices.StubIdp.cer")
                 : HttpContext.Server.MapPath("~\\App_Data\\stubidp.sustainsys.com.cer");
 
             var disposition = new ContentDisposition { Inline = false, FileName = Path.GetFileName(path) };

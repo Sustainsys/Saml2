@@ -59,17 +59,17 @@ namespace SampleOwinApplication
                 SPOptions = spOptions
             };
 
-            var idp = new IdentityProvider(new EntityId("http://stubidp.Sustainsys.se/Metadata"), spOptions)
+            var idp = new IdentityProvider(new EntityId("http://stubidp.Kentor.se/Metadata"), spOptions)
                 {
                     AllowUnsolicitedAuthnResponse = true,
                     Binding = Saml2BindingType.HttpRedirect,
-                    SingleSignOnServiceUrl = new Uri("http://stubidp.Sustainsys.se")
+                    SingleSignOnServiceUrl = new Uri("http://stubidp.Kentor.se")
                 };
 
             idp.SigningKeys.AddConfiguredKey(
                 new X509Certificate2(
                     HostingEnvironment.MapPath(
-                        "~/App_Data/Sustainsys.Saml2.StubIdp.cer")));
+                        "~/App_Data/Kentor.AuthServices.StubIdp.cer")));
 
             Saml2Options.IdentityProviders.Add(idp);
 

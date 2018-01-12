@@ -2,7 +2,7 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using FluentAutomation;
 
-namespace Kentor.AuthServices.IntegrationTests
+namespace Sustainsys.Saml2.IntegrationTests
 {
     [TestClass]
     public class SignInTests : FluentTest
@@ -18,8 +18,8 @@ namespace Kentor.AuthServices.IntegrationTests
         public void SignInAndOut_IdpInitiated_MVC()
         {
             I.Open("http://localhost:52071/")
-                .Enter("http://localhost:2181/AuthServices/Acs").In("#AssertionModel_AssertionConsumerServiceUrl")
-                .Enter("http://localhost:2181/AuthServices").In("#AssertionModel_Audience")
+                .Enter("http://localhost:2181/Saml2/Acs").In("#AssertionModel_AssertionConsumerServiceUrl")
+                .Enter("http://localhost:2181/Saml2").In("#AssertionModel_Audience")
                 .Click("#binding_artifact")
                 .Click("#submit");
 
@@ -29,7 +29,7 @@ namespace Kentor.AuthServices.IntegrationTests
 
             I.Open("http://localhost:52071/Logout")
                 .Enter("JohnDoe").In("#NameId")
-                .Enter("http://localhost:2181/AuthServices/Logout").In("#DestinationUrl")
+                .Enter("http://localhost:2181/Saml2/Logout").In("#DestinationUrl")
                 .Click("#submit")
                 .Assert.Text("urn:oasis:names:tc:SAML:2.0:status:Success").In("#status");
 
@@ -41,14 +41,14 @@ namespace Kentor.AuthServices.IntegrationTests
         public void SignInAndOut_IdpInitiated_HttpModule()
         {
             I.Open("http://localhost:52071/")
-                .Enter("http://localhost:17009/SamplePath/AuthServices/Acs").In("#AssertionModel_AssertionConsumerServiceUrl")
-                .Enter("http://localhost:17009/SamplePath/AuthServices").In("#AssertionModel_Audience")
+                .Enter("http://localhost:17009/SamplePath/Saml2/Acs").In("#AssertionModel_AssertionConsumerServiceUrl")
+                .Enter("http://localhost:17009/SamplePath/Saml2").In("#AssertionModel_Audience")
                 .Click("#submit")
                 .Assert.Text("JohnDoe").In("tbody tr td:nth-child(2)");
 
             I.Open("http://localhost:52071/Logout")
                 .Enter("JohnDoe").In("#NameId")
-                .Enter("http://localhost:17009/SamplePath/AuthServices/Logout").In("#DestinationUrl")
+                .Enter("http://localhost:17009/SamplePath/Saml2/Logout").In("#DestinationUrl")
                 .Click("#submit")
                 .Assert.Text("urn:oasis:names:tc:SAML:2.0:status:Success").In("#status");
 
@@ -61,10 +61,10 @@ namespace Kentor.AuthServices.IntegrationTests
         {
             I.Open("http://localhost:2181")
                 .Click("a[href=\"/Home/Secure\"]")
-                .Assert.Text(s => s.StartsWith("http://localhost:2181/AuthServices/SignIn?ReturnUrl=%2FHome%2FSecure&RelayState=")).In("#return");
+                .Assert.Text(s => s.StartsWith("http://localhost:2181/Saml2/SignIn?ReturnUrl=%2FHome%2FSecure&RelayState=")).In("#return");
 
             I.Click("#submit")
-                .Assert.Text("http://localhost:2181/AuthServices/Acs").In("#AssertionModel_AssertionConsumerServiceUrl");
+                .Assert.Text("http://localhost:2181/Saml2/Acs").In("#AssertionModel_AssertionConsumerServiceUrl");
 
             I.Assert.False(() => string.IsNullOrEmpty(I.Find("#AssertionModel_InResponseTo").Element.Value));
 
@@ -73,10 +73,10 @@ namespace Kentor.AuthServices.IntegrationTests
 
             I.Assert.Text("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier - JohnDoe").In(".body-content ul li:first-child");
 
-            I.Click("a[href=\"/AuthServices/Logout\"")
+            I.Click("a[href=\"/Saml2/Logout\"")
                 .Wait(2);
 
-            I.Enter("http://localhost:2181/AuthServices/Logout").In("#DestinationUrl")
+            I.Enter("http://localhost:2181/Saml2/Logout").In("#DestinationUrl")
                 .Click("#submit")
                 .Wait(2);
 
@@ -87,11 +87,11 @@ namespace Kentor.AuthServices.IntegrationTests
         public void SignInAndOut_SPInitiated_HttpModule_via_DiscoveryService()
         {
             I.Open("http://localhost:17009/SamplePath")
-                .Click("a[href=\"/SamplePath/AuthServices/SignIn\"]")
-                .Assert.Text(s => s.StartsWith("http://localhost:17009/SamplePath/AuthServices/SignIn?RelayState=")).In("#return");
+                .Click("a[href=\"/SamplePath/Saml2/SignIn\"]")
+                .Assert.Text(s => s.StartsWith("http://localhost:17009/SamplePath/Saml2/SignIn?RelayState=")).In("#return");
 
             I.Click("#submit")
-                .Assert.Text("http://localhost:17009/SamplePath/AuthServices/Acs").In("#AssertionModel_AssertionConsumerServiceUrl");
+                .Assert.Text("http://localhost:17009/SamplePath/Saml2/Acs").In("#AssertionModel_AssertionConsumerServiceUrl");
 
             I.Assert.False(() => string.IsNullOrEmpty(I.Find("#AssertionModel_InResponseTo").Element.Value));
 
@@ -100,7 +100,7 @@ namespace Kentor.AuthServices.IntegrationTests
 
             I.Click("#logout");
 
-            I.Enter("http://localhost:17009/SamplePath/AuthServices/Logout").In("#DestinationUrl")
+            I.Enter("http://localhost:17009/SamplePath/Saml2/Logout").In("#DestinationUrl")
                 .Click("#submit");
 
             I.Assert.Text("not signed in").In("#status");
@@ -110,17 +110,17 @@ namespace Kentor.AuthServices.IntegrationTests
         [TestMethod]
         public void SignIn_AuthnRequest_MVC_SpecificIdp()
         {
-            I.Open("http://localhost:2181/AuthServices/SignIn?idp=http%3a%2f%2fstubidp.kentor.se%2fMetadata")
-                .Assert.Url(u => u.Host == "stubidp.kentor.se");
+            I.Open("http://localhost:2181/Saml2/SignIn?idp=http%3a%2f%2fstubidp.Sustainsys.se%2fMetadata")
+                .Assert.Url(u => u.Host == "stubidp.Sustainsys.se");
         }
 
         [TestMethod]
         public void SignInAndOut_IdpInitiated_Owin()
         {
             I.Open("http://localhost:52071/")
-                .Enter("http://localhost:57294/AuthServices/Acs").In("#AssertionModel_AssertionConsumerServiceUrl")
+                .Enter("http://localhost:57294/Saml2/Acs").In("#AssertionModel_AssertionConsumerServiceUrl")
                 .Enter("IntegrationTestNameId").In("#AssertionModel_NameId")
-                .Enter("http://localhost:57294/AuthServices").In("#AssertionModel_Audience");
+                .Enter("http://localhost:57294/Saml2").In("#AssertionModel_Audience");
 
             I.Click("#submit")
                 .Wait(1);
@@ -135,7 +135,7 @@ namespace Kentor.AuthServices.IntegrationTests
 
             I.Open("http://localhost:52071/Logout")
                 .Enter("IntegrationTestNameId").In("#NameId")
-                .Enter("http://localhost:57294/AuthServices/Logout").In("#DestinationUrl")
+                .Enter("http://localhost:57294/Saml2/Logout").In("#DestinationUrl")
                 .Click("#submit")
                 .Assert.Text("urn:oasis:names:tc:SAML:2.0:status:Success").In("#status");
 
@@ -147,11 +147,11 @@ namespace Kentor.AuthServices.IntegrationTests
         public void SignInAndOut_SPInitiated_Owin_via_DiscoveryService()
         {
             I.Open("http://localhost:57294/Account/Login")
-                .Click("#KentorAuthServices")
-                .Assert.Text(s => s.StartsWith("http://localhost:57294/AuthServices/SignIn?ReturnUrl=%2FAccount%2FExternalLoginCallback&RelayState=")).In("#return");
+                .Click("#SustainsysSaml2")
+                .Assert.Text(s => s.StartsWith("http://localhost:57294/Saml2/SignIn?ReturnUrl=%2FAccount%2FExternalLoginCallback&RelayState=")).In("#return");
 
             I.Click("#submit")
-                .Assert.Text("http://localhost:57294/AuthServices/Acs").In("#AssertionModel_AssertionConsumerServiceUrl");
+                .Assert.Text("http://localhost:57294/Saml2/Acs").In("#AssertionModel_AssertionConsumerServiceUrl");
 
             I.Assert.False(() => string.IsNullOrEmpty(I.Find("#AssertionModel_InResponseTo").Element.Value));
 
@@ -169,7 +169,7 @@ namespace Kentor.AuthServices.IntegrationTests
 
             I.Click("#logout").Wait(1);
 
-            I.Enter("http://localhost:57294/AuthServices/Logout").In("#DestinationUrl")
+            I.Enter("http://localhost:57294/Saml2/Logout").In("#DestinationUrl")
                 .Click("#submit");
 
             I.Assert.Text("not signed in").In("#status");
