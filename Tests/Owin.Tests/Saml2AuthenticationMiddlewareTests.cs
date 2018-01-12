@@ -598,11 +598,11 @@ namespace Sustainsys.Saml2.Owin.Tests
 
             var middleware = new SustainsysSaml2AuthenticationMiddleware(
                 new StubOwinMiddleware(401, new AuthenticationResponseChallenge(
-                    new string[] { "SustainsysSaml2" }, new AuthenticationProperties())),
+                    new string[] { "saml2" }, new AuthenticationProperties())),
                         CreateAppBuilder(), new SustainsysSaml2AuthenticationOptions(true));
 
             var context = OwinTestHelpers.CreateOwinContext();
-            context.Environment["SustainsysSaml2.idp"] = secondEntityId;
+            context.Environment["saml2.idp"] = secondEntityId;
             await middleware.Invoke(context);
 
             context.Response.StatusCode.Should().Be(303);
