@@ -65,7 +65,7 @@ public class Startup
 
         public static void ConfigureIdentityProviders(IAppBuilder app, string signInAsType)
         {                  
-            var Saml2Options = new SustainsysSaml2AuthenticationOptions(false)
+            var saml2Options = new Saml2AuthenticationOptions(false)
             {
                 SPOptions = new SPOptions
                 {
@@ -77,14 +77,14 @@ public class Startup
                 Caption = "Okta",  // this is the caption for the button or option that a user might see to prompt them for this login option             
             };
             
-            Saml2Options.IdentityProviders.Add(new IdentityProvider(
-                new EntityId("<OktaIssuerUri>"), Saml2Options.SPOptions)  // from (F) above
+            saml2Options.IdentityProviders.Add(new IdentityProvider(
+                new EntityId("<OktaIssuerUri>"), saml2Options.SPOptions)  // from (F) above
             {
                 LoadMetadata = true,
                 MetadataUrl = new Uri("https://<OktaInstance>/app/<OktaAppId>/sso/saml/metadata") // see Metadata note above
             });
             
-            app.UseSustainsysSaml2Authentication(Saml2Options);            
+            app.UseSaml2Authentication(saml2Options);            
         }
     }
 ```	
@@ -94,7 +94,7 @@ NOTE regarding the "AuthenticateRequestSigningBehavior" above:  Okta sets a valu
 does work -- the "Want" doesn't imply "Require".  To actually honor the request, though and enable signing, you need to
 go a step further:
 
-To enable signing, call `Saml2Options.ServiceCertificates.Add(new ServiceCertificate { ... })` to configure the 
+To enable signing, call `saml2Options.ServiceCertificates.Add(new ServiceCertificate { ... })` to configure the 
 certificate Saml2 should use for signing. That certificate should be something that you have generated on your 
 end, where you have a private key. If you don't have that already, I'd suggest going with the `SigningBehavior.Never` 
 option.
@@ -115,8 +115,8 @@ To do this, modify the code snippet where you are adding IdentityProviders to in
 AllowUnsolictedAuthnResponse = true line shown below.
 
 ```csharp
-			Saml2Options.IdentityProviders.Add(new IdentityProvider(
-                new EntityId(oktaEntityId), Saml2Options.SPOptions)
+			saml2Options.IdentityProviders.Add(new IdentityProvider(
+                new EntityId(oktaEntityId), Ssml2Options.SPOptions)
             {
                 LoadMetadata = true,
                 MetadataUrl = new Uri(oktaMetadataUrl),
@@ -131,7 +131,7 @@ I set up a new page in my webforms site call "IdP_InitiatedRedirect" and require
 string value in case I want to use other SAML IdP's. Then in the SPOptions setup, you add the URL 
 for the "ReturnUrl" property as shown below:
 
-```chsarp
+```csharp
 				SPOptions = new SPOptions
                 {
                     EntityId = new EntityId(serviceProviderEntityId),
@@ -140,7 +140,7 @@ for the "ReturnUrl" property as shown below:
 ```
 
 The only thing left is to code the logic on your redirect page to make an authorize request
-to your identity server.  You should already have a reference to the IdentityModel.Client package,
+to your identity server. You should already have a reference to the IdentityModel.Client package,
 so then you can write some code that looks like this:
 
 ```csharp
@@ -195,13 +195,12 @@ to support their "Okta Application Network" testing instance.  To set up an IdP 
 chose "okta-oan" for the idp name, and "Okta-OAN" for the description.  It could be anything -- it just needs to be unique 
 to that instance within your setup.  We'll see in both the Okta and middleware configuration how this is important.
 
-#### 2. Configure the app within Okta with the single-sign-on URL based on the instance name and 
-the other Okta config options laid out in step 2 above
+#### 2. Configure the app within Okta with the single-sign-on URL based on the instance name and the other Okta config options laid out in step 2 above
 All of the Okta configuration options in Step 2 above are still valid - with the one exception being the Single Sign On URL.
-This is because there is no longer a single "Sustainsys" endpoint within your identity server -- there will be multiple: one
+This is because there is no longer a single "Saml2" endpoint within your identity server -- there will be multiple: one
 for each Okta instance you have.
 
-So this value will use the idpName you came up with in the previous step.  The idpname replaces "Sustainsys" from version 1 of this configruation:
+So this value will use the idpName you came up with in the previous step.  The idpname replaces "Saml2" from version 1 of this configruation:
 https://id.local/identity/{idpName}/Acs.
 If we continue our example of "okta-oan" as an idp name, we would have:
 https://id.local/identity/okta-oan/Acs.
@@ -224,25 +223,25 @@ The 4 basic code components in the approach are (feel free to edit -- but at lea
 * a `GetOkta{instance}Options` method for each instance (where you place the configuration unique to each instance)
 * a single `GetOktaIdentityProvider` method (configures entity id and metadata url based on inputs)
 * a single `GetCoreOktaOptions` method  (sets up the options common to each instance, and sets the module path based on input param)
-* an `app.UseSustainsysSaml2Authentication()` call for each of your supported Okta instances (make sure you actually add the instance to the pipeline)
+* an `app.UseSaml2Authentication()` call for each of your supported Okta instances (make sure you actually add the instance to the pipeline)
 
 
 The following code I put in a static class called Helpers-Okta and shows the first three code components above:
 ```csharp
-internal static SustainsysSaml2AuthenticationOptions GetOktaOanOptions(string signInAsType)
+internal static Saml2AuthenticationOptions GetOktaOanOptions(string signInAsType)
 {
-	var Saml2Options = GetCoreOktaOptions(signInAsType, "okta-oan", "Okta-OAN");
+	var saml2Options = GetCoreOktaOptions(signInAsType, "okta-oan", "Okta-OAN");
 
 	const string oktaEntityId = "http://www.okta.com/exk16268xbsV0A213sa23";  // got this from an Okta OAN support / admin
 	const string oktaMetadataUrl = "https://okta-coe-test.okta.com/app/exk16268xbsV0A213sa23/sso/saml/metadata";  // got this from an Okta OAN support / admin
 
-	var oanInstance = GetOktaIdentityProvider(Saml2Options.SPOptions, oktaEntityId, oktaMetadataUrl);
-	Saml2Options.IdentityProviders.Add(oanInstance);
+	var oanInstance = GetOktaIdentityProvider(saml2Options.SPOptions, oktaEntityId, oktaMetadataUrl);
+	saml2Options.IdentityProviders.Add(oanInstance);
 
-	return Saml2Options;
+	return saml2Options;
 }
 
-private static SustainsysSaml2AuthenticationOptions GetCoreOktaOptions(string signInAsType, string idpName, string idpLabel)
+private static Saml2AuthenticationOptions GetCoreOktaOptions(string signInAsType, string idpName, string idpLabel)
 {
 	string serviceProviderEntityId;
 	string oktaRelyingPartyRedirectUrl;
@@ -263,7 +262,7 @@ private static SustainsysSaml2AuthenticationOptions GetCoreOktaOptions(string si
 			break;
 	}
 
-	var Saml2Options = new SustainsysSaml2AuthenticationOptions(false)
+	var saml2Options = new SustainsysSaml2AuthenticationOptions(false)
 	{
 		SPOptions = new SPOptions
 		{
@@ -276,7 +275,7 @@ private static SustainsysSaml2AuthenticationOptions GetCoreOktaOptions(string si
 		Caption = idpLabel,
 	};            
 
-	return Saml2Options;
+	return saml2Options;
 }
 
 private static IdentityProvider GetOktaIdentityProvider(ISPOptions options, string oktaEntityId, string oktaMetadataUrl)
@@ -294,7 +293,7 @@ private static IdentityProvider GetOktaIdentityProvider(ISPOptions options, stri
 For the Startup code, it becomes pretty simple to add the instances:
 ```csharp
 // Okta Application Network (OAN) instance            
-app.UseSustainsysSaml2Authentication(Helpers.GetOktaOanOptions(signInAsType));
+app.UseSaml2Authentication(Helpers.GetOktaOanOptions(signInAsType));
 ```
 The code above just calls our new method for the instance we have configured.  
 

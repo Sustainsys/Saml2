@@ -9,7 +9,7 @@ Google, Facebook and Twitter providers.
 To use the Sustainsys Saml2 middleware, it needs to be configured in
 `Startup.Auth.Cs`.
 
-    app.UseSustainsysSaml2Authentication(new SustainsysSaml2AuthenticationOptions());
+    app.UseSaml2Authentication(new Saml2AuthenticationOptions());
 
 The options class only contains the Owin-specific configuration (such as the 
 name used to identify the login provider). The rest of the configuration is
@@ -20,12 +20,12 @@ If you would like to provide the Saml2-related configuration in code, specify `f
 the `loadConfiguration` constructor parameter and then build the options based on your own
 logic. For example:
 
-    var mySaml2Options = new SustainsysSaml2AuthenticationOptions(false)
+    var mySaml2Options = new Saml2AuthenticationOptions(false)
     // more logic to set SPOptions, etc.
-    app.UseSustainsysSaml2Authentication(mySaml2Options);
+    app.UseSaml2Authentication(mySaml2Options);
     
 You can see a full example of this in the **SampleOwinApplication** project included in the
-source code. See the [Startup.Auth.cs file](https://github.com/SustainsysIT/Saml2/blob/master/SampleOwinApplication/App_Start/Startup.Auth.cs)
+source code. See the [Startup.Auth.cs file](https://github.com/Sustainsys/Saml2/blob/master/Samples/SampleOwinApplication/App_Start/Startup.Auth.cs)
 
 ## Selecting Idp
 
@@ -38,10 +38,10 @@ In a typical MVC application that requires some changes to the generated code
 to enable passing a property to the `AuthenticationProperties` dictionary.
 
 Another, more simple way to pass a value is to put it directly in the Owin
-environment dictionary under the key "SustainsysSaml2.idp".
+environment dictionary under the key "saml2.idp".
 
 Here's an example of how to set the Owin environment value through ASP.NET MVC
 
     var context = HttpContext.GetOwinContext();
-    context.Environment.Add("SustainsysSaml2.idp", new EntityId(YOUR_IDP_ENTITY_ID));
+    context.Environment.Add("saml2.idp", new EntityId(YOUR_IDP_ENTITY_ID));
 
