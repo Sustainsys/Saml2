@@ -21,7 +21,7 @@ Three new config sections are required. Add these under `configuration/configSec
 </configSections>
 ```
 ## Loading modules
-When using the http module and the MVC controller, the `SessionAuthenticationModule` needs
+When using the http module or the MVC controller, the `SessionAuthenticationModule` needs
 to be loaded and if using the http module that needs to be loaded as well. The owin package
 does not need any http modules, please see the separate info on the [Owin middleware](OwinMiddleware.md).
 
@@ -44,27 +44,27 @@ library. It is required for the http module and the mvc controller. The Owin mid
 read web.config, but can also be configured from code (see [Owin middleware](OwinMiddleware.md)).
 
 ```
-<Sustainsys.Saml2 entityId="http://localhost:17009"
+<sustainsys.saml2 entityId="http://localhost:17009"
                      returnUrl="http://localhost:17009/SamplePath/"
                      discoveryServiceUrl="http://localhost:52071/DiscoveryService" 
 					 authenticateRequestSigningBehavior="Always">
   <nameIdPolicy allowCreate="true" format="Persistent"/>
   <metadata cacheDuration="0:0:42" validDuration="7.12:00:00" wantAssertionsSigned="true">
-    <organization name="Sustainsys IT AB" displayName="Sustainsys" url="http://www.Sustainsys.se" language="sv" />
-    <contactPerson type="Other" email="info@Sustainsys.se" />
+    <organization name="Sustainsys AB" displayName="Sustainsys" url="http://www.sustainsys.com" language="sv" />
+    <contactPerson type="Other" email="info@sustainsys.com" />
     <requestedAttributes>
       <add friendlyName ="Some Name" name="urn:someName" nameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri" isRequired="true" />
       <add name="Minimal" />
     </requestedAttributes>
   </metadata>
   <identityProviders>
-    <add entityId="http://stubidp.Kentor.se/Metadata" 
-         signOnUrl="http://stubidp.Kentor.se" 
+    <add entityId="https://stubidp.sustainsys.com/Metadata" 
+         signOnUrl="https://stubidp.sustainsys.com" 
          allowUnsolicitedAuthnResponse="true"
 		 binding="HttpRedirect"
 		 wantAuthnRequestsSigned="true">
       <signingCertificate storeName="AddressBook" storeLocation="CurrentUser" 
-                          findValue="Sustainsys.Saml2.StubIdp" x509FindType="FindBySubjectName" />
+                          findValue="stubidp.sustainsys.com" x509FindType="FindBySubjectName" />
     </add>
     <add entityId="example-idp"
          metadataLocation="https://idp.example.com/Metadata"
@@ -82,7 +82,7 @@ read web.config, but can also be configured from code (see [Owin middleware](Owi
 </Sustainsys.Saml2>
 ```
 
-### `<Sustainsys.Saml2>` Element
+### `<sustainsys.saml2>` Element
 *Child element of `<configuration>` element.*
 
 Root element of the config section.
