@@ -1,10 +1,10 @@
 using System.Reflection;
 
 [assembly: AssemblyCompany("Sustainsys")]
-[assembly: AssemblyCopyright("Copyright © Sustainsys and contributors 2013-2017")]
+[assembly: AssemblyCopyright("Copyright © Sustainsys and contributors 2013-2018")]
 
 
-// Sustainsys.Saml2 uses semantic versioning in three parts
+// Sustainsys.Saml2 uses semantic versioning
 //
 //      Major Version
 //      Minor Version 
