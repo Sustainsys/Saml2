@@ -171,9 +171,9 @@ namespace Sustainsys.Saml2.Tests.WebSso
 
             result.HttpStatusCode.Should().Be(HttpStatusCode.SeeOther);
 
-            result.SetCookieName.Should().StartWith("Sustainsys.");
+            result.SetCookieName.Should().StartWith(StoredRequestState.CookieNameBase);
 
-            var relayState = result.SetCookieName.Substring("Sustainsys.".Length);
+            var relayState = result.SetCookieName.Substring(StoredRequestState.CookieNameBase.Length);
 
             var queryString = string.Format("?entityID={0}&return={1}&returnIDParam=idp",
                 Uri.EscapeDataString(options.SPOptions.EntityId.Id),
@@ -337,7 +337,7 @@ namespace Sustainsys.Saml2.Tests.WebSso
 
             var actual = subject.Run(request, options);
 
-            actual.ClearCookieName.Should().Be("Sustainsys." + relayState, "cookie should be cleared");
+            actual.ClearCookieName.Should().Be(StoredRequestState.CookieNameBase + relayState, "cookie should be cleared");
             actual.RequestState.ReturnUrl.Should().Be(returnUrl);
             actual.RequestState.Idp.Id.Should().Be(idp.EntityId.Id);
             actual.RequestState.RelayData.ShouldBeEquivalentTo(relayData);
@@ -378,7 +378,7 @@ namespace Sustainsys.Saml2.Tests.WebSso
 
             var actual = subject.Run(request, options);
 
-            actual.ClearCookieName.Should().Be("Sustainsys." + relayState, "cookie should be cleared");
+            actual.ClearCookieName.Should().Be(StoredRequestState.CookieNameBase + relayState, "cookie should be cleared");
             actual.RequestState.ReturnUrl.Should().BeNull();
             actual.RequestState.Idp.Id.Should().Be(idp.EntityId.Id);
             actual.RequestState.RelayData.ShouldBeEquivalentTo(relayData);

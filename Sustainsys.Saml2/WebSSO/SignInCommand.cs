@@ -45,7 +45,7 @@ namespace Sustainsys.Saml2.WebSso
 
             if (request.RelayState != null)
             {
-                result.ClearCookieName = "Sustainsys." + request.RelayState;
+                result.ClearCookieName = StoredRequestState.CookieNameBase + request.RelayState;
             }
 
             return result;
@@ -157,7 +157,7 @@ namespace Sustainsys.Saml2.WebSso
 
             commandResult.RequestState = new StoredRequestState(
                 idp.EntityId, returnUrl, authnRequest.Id, relayData);
-            commandResult.SetCookieName = "Sustainsys." + authnRequest.RelayState;
+            commandResult.SetCookieName = StoredRequestState.CookieNameBase + authnRequest.RelayState;
 
             options.Notifications.SignInCommandResultCreated(commandResult, relayData);
 
@@ -194,7 +194,7 @@ namespace Sustainsys.Saml2.WebSso
                 HttpStatusCode = HttpStatusCode.SeeOther,
                 Location = new Uri(redirectLocation),
                 RequestState = requestState,
-                SetCookieName = "Sustainsys." + relayState
+                SetCookieName = StoredRequestState.CookieNameBase + relayState
             };
         }
     }

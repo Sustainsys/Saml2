@@ -197,7 +197,7 @@ namespace Sustainsys.Saml2.WebSso
 
                 if (!options.SPOptions.Compatibility.DisableLogoutStateCookie)
                 {
-                    commandResult.SetCookieName = "Sustainsys." + logoutRequest.RelayState;
+                    commandResult.SetCookieName = StoredRequestState.CookieNameBase + logoutRequest.RelayState;
                 }
 
                 commandResult.TerminateLocalSession = terminateLocalSession;
@@ -298,7 +298,7 @@ namespace Sustainsys.Saml2.WebSso
             };
             if (!options.SPOptions.Compatibility.DisableLogoutStateCookie)
             {
-                commandResult.ClearCookieName = "Sustainsys." + unbindResult.RelayState;
+                commandResult.ClearCookieName = StoredRequestState.CookieNameBase + unbindResult.RelayState;
             }
             commandResult.Location = storedRequestState?.ReturnUrl ?? returnUrl;
 

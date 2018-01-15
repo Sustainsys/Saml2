@@ -284,7 +284,7 @@ namespace Sustainsys.Saml2.Tests.WebSso
                 Principal = new ClaimsPrincipal(ids),
                 HttpStatusCode = HttpStatusCode.SeeOther,
                 Location = new Uri("http://localhost/testUrl.aspx"),
-                ClearCookieName = "Sustainsys." + relayStateFormValue
+                ClearCookieName = StoredRequestState.CookieNameBase + relayStateFormValue
             };
 
             new AcsCommand().Run(r, StubFactory.CreateOptions())

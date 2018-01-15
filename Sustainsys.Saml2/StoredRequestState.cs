@@ -15,6 +15,11 @@ namespace Sustainsys.Saml2
     public class StoredRequestState
     {
         /// <summary>
+        /// Start of the cookie name for state preservation.
+        /// </summary>
+        public const string CookieNameBase = "Saml2.";
+
+        /// <summary>
         /// Ctor
         /// </summary>
         /// <param name="idp">The EntityId of the IDP the request was sent to</param>

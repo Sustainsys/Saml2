@@ -122,7 +122,7 @@ namespace Sustainsys.Saml2.Tests.WebSSO
                 .Excluding(cr => cr.RequestState.MessageId));
 
             var relayState = HttpUtility.ParseQueryString(actual.Location.Query)["RelayState"];
-            actual.SetCookieName.Should().Be("Sustainsys." + relayState);
+            actual.SetCookieName.Should().Be(StoredRequestState.CookieNameBase + relayState);
             actual.RelayState.Should().Be( relayState );
             actual.Location.GetLeftPart(UriPartial.Path).Should().Be("https://idp.example.com/logout");
         }
@@ -358,7 +358,7 @@ namespace Sustainsys.Saml2.Tests.WebSSO
             {
                 Location = new Uri("http://loggedout.example.com"),
                 HttpStatusCode = HttpStatusCode.SeeOther,
-                ClearCookieName = "Sustainsys." + relayState
+                ClearCookieName = StoredRequestState.CookieNameBase + relayState
             };
 
             actual.ShouldBeEquivalentTo(expected);
@@ -405,7 +405,7 @@ namespace Sustainsys.Saml2.Tests.WebSSO
             {
                 Location = new Uri("http://loggedout.example.com"),
                 HttpStatusCode = HttpStatusCode.SeeOther,
-                ClearCookieName = "Sustainsys." + relayState
+                ClearCookieName = StoredRequestState.CookieNameBase + relayState
             };
 
             actual.ShouldBeEquivalentTo(expected);

@@ -72,7 +72,7 @@ namespace Sustainsys.Saml2.Mvc.Tests
             actual.Url.Should().Contain("?SAMLRequest");
 
             subject.Response.Received().SetCookie(
-                Arg.Is<HttpCookie>(c => c.Name == "Sustainsys." + relayState));
+                Arg.Is<HttpCookie>(c => c.Name == StoredRequestState.CookieNameBase + relayState));
         }
 
         [TestMethod]
@@ -147,7 +147,7 @@ namespace Sustainsys.Saml2.Mvc.Tests
             });
             request.Url.Returns(new Uri("http://url.example.com/url"));
             request.Cookies.Returns(new HttpCookieCollection());
-            request.Cookies.Add(new HttpCookie("Sustainsys." + relayState,
+            request.Cookies.Add(new HttpCookie(StoredRequestState.CookieNameBase + relayState,
                 HttpRequestData.ConvertBinaryData(
                     MachineKey.Protect(
                         new StoredRequestState(null, null, new Saml2Id("InResponseToId"), null).Serialize(),
@@ -286,7 +286,7 @@ namespace Sustainsys.Saml2.Mvc.Tests
             var relayState = HttpUtility.ParseQueryString(new Uri(actual.Url).Query)["RelayState"];
 
             subject.Response.Received().SetCookie(
-                Arg.Is<HttpCookie>(c => c.Name == "Sustainsys." + relayState));
+                Arg.Is<HttpCookie>(c => c.Name == StoredRequestState.CookieNameBase + relayState));
         }
 
         [TestMethod]

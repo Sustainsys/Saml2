@@ -105,7 +105,7 @@ namespace Sustainsys.Saml2.WebSso
 
             if (relayState != null)
             {
-                var cookieName = "Sustainsys." + relayState;
+                var cookieName = StoredRequestState.CookieNameBase + relayState;
                 if (cookies.Any(c => c.Key == cookieName))
                 {
                     var cookieData = cookies.SingleOrDefault(c => c.Key == cookieName).Value;

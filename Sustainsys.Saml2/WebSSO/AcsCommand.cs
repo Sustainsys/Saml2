@@ -55,7 +55,7 @@ namespace Sustainsys.Saml2.WebSso
                     var result = ProcessResponse(options, samlResponse, request.StoredRequestState);
                     if(unbindResult.RelayState != null)
                     {
-                        result.ClearCookieName = "Sustainsys." + unbindResult.RelayState;
+                        result.ClearCookieName = StoredRequestState.CookieNameBase + unbindResult.RelayState;
                     }
                     options.Notifications.AcsCommandResultCreated(result, samlResponse);
                     return result;

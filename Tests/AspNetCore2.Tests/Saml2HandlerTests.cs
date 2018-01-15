@@ -325,7 +325,7 @@ namespace Sustainsys.Saml2.AspNetCore2.Tests
                 "location should be set for outbound redirect binding");
 
             context.HttpContext.Response.Cookies.Received().Append(
-                Arg.Is<string>(s => s.StartsWith("Sustainsys.")),
+                Arg.Is<string>(s => s.StartsWith(StoredRequestState.CookieNameBase)),
                 Arg.Is<string>(s => new StoredRequestState(StubDataProtector.Unprotect(HttpRequestData.GetBinaryData(s)))
                     .ReturnUrl.OriginalString == "/loggedout"),
                 Arg.Any<CookieOptions>());
