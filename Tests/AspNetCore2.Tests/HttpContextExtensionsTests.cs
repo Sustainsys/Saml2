@@ -73,7 +73,7 @@ namespace Sustainsys.Saml2.AspNetCore2.Tests
 
             context.Request.Cookies = new StubCookieCollection(
                 Enumerable.Repeat(new KeyValuePair<string, string>(
-                    $"Sustainsys.SomeState", cookieData), 1));
+                    StoredRequestState.CookieNameBase + "SomeState", cookieData), 1));
 
             var actual = context.ToHttpRequestData(StubDataProtector.Unprotect);
 

@@ -43,7 +43,7 @@ namespace Sustainsys.Saml2.HttpModule.Tests
                     new StoredRequestState(null, new Uri("urn:someUri"), null, null).Serialize(),
                     HttpRequestBaseExtensions.ProtectionPurpose));
             request.Cookies.Returns(new HttpCookieCollection());
-            request.Cookies.Add(new HttpCookie("Sustainsys.SomeState", cookieValue));
+            request.Cookies.Add(new HttpCookie(StoredRequestState.CookieNameBase + "SomeState", cookieValue));
 
             var actual = request.ToHttpRequestData();
 

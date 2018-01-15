@@ -67,7 +67,7 @@ namespace Sustainsys.Saml2.Owin.Tests
             var cookieData = HttpRequestData.ConvertBinaryData(
                     StubDataProtector.Protect(storedRequestState.Serialize()));
 
-            ctx.Request.Headers["Cookie"] = $"Sustainsys.SomeState={cookieData}";
+            ctx.Request.Headers["Cookie"] = $"{StoredRequestState.CookieNameBase}SomeState={cookieData}";
 
             var actual = await ctx.ToHttpRequestData(StubDataProtector.Unprotect);
 

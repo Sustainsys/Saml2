@@ -137,7 +137,7 @@ namespace Sustainsys.Saml2.AspNetCore2.Tests
             var cookieData = HttpRequestData.ConvertBinaryData(
                 StubDataProtector.Protect(state.Serialize()));
 
-            var cookieName = $"Sustainsys.{relayState}";
+            var cookieName = $"{StoredRequestState.CookieNameBase}{relayState}";
 
             context.HttpContext.Request.Cookies = new StubCookieCollection(
                 Enumerable.Repeat(new KeyValuePair<string, string>(

@@ -443,7 +443,7 @@ namespace Sustainsys.Saml2.Owin.Tests
                     options.DataProtector.Protect(
                         new StoredRequestState(null, new Uri("http://loggedout.example.com/"), null, null)
                             .Serialize()));
-            context.Request.Headers["Cookie"] = $"Sustainsys.{relayState}={cookieData}";
+            context.Request.Headers["Cookie"] = $"{StoredRequestState.CookieNameBase}{relayState}={cookieData}";
             context.Request.Path = new PathString(requestUri.AbsolutePath);
             context.Request.QueryString = new QueryString(requestUri.Query.TrimStart('?'));
             
@@ -926,7 +926,7 @@ namespace Sustainsys.Saml2.Owin.Tests
                     typeof(Saml2AuthenticationMiddleware).FullName)
                     .Protect(state.Serialize()));
 
-            context.Request.Headers["Cookie"] = $"Sustainsys.{relayState}={cookieData}";
+            context.Request.Headers["Cookie"] = $"{StoredRequestState.CookieNameBase}{relayState}={cookieData}";
 
             var response =
                 @"<saml2p:Response xmlns:saml2p=""urn:oasis:names:tc:SAML:2.0:protocol""
@@ -1002,7 +1002,7 @@ namespace Sustainsys.Saml2.Owin.Tests
                     typeof(Saml2AuthenticationMiddleware).FullName)
                     .Protect(state.Serialize()));
 
-            context.Request.Headers["Cookie"] = $"Sustainsys.{relayState}={cookieData}";
+            context.Request.Headers["Cookie"] = $"{StoredRequestState.CookieNameBase}{relayState}={cookieData}";
 
             var response =
             @"<saml2p:Response xmlns:saml2p=""urn:oasis:names:tc:SAML:2.0:protocol""
@@ -1054,7 +1054,7 @@ namespace Sustainsys.Saml2.Owin.Tests
 
             context.Response.StatusCode.Should().Be(303);
             context.Response.Headers["Location"].Should().Be("http://localhost/LoggedIn");
-            context.Response.Headers["Set-Cookie"].Should().Be($"Sustainsys.{relayState}=; path=/; expires=Thu, 01-Jan-1970 00:00:00 GMT");
+            context.Response.Headers["Set-Cookie"].Should().Be($"{StoredRequestState.CookieNameBase}{relayState}=; path=/; expires=Thu, 01-Jan-1970 00:00:00 GMT");
 
             context.Authentication.AuthenticationResponseGrant.Principal.Identities
                 .ShouldBeEquivalentTo(ids, opt => opt.IgnoringCyclicReferences());

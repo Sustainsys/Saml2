@@ -31,7 +31,7 @@ namespace Sustainsys.Saml2.Owin.Tests
             var cookies = new KeyValuePair<string, string>[]
             {
                 new KeyValuePair<string, string>(
-                    "Sustainsys.Foo",
+                    StoredRequestState.CookieNameBase +"Foo",
                     HttpRequestData.ConvertBinaryData(
                             StubDataProtector.Protect(storedRequestData.Serialize())))
             };
