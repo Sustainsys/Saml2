@@ -33,7 +33,7 @@ namespace Sustainsys.Saml2.Owin.Tests
     using AuthenticateDelegate = Func<string[], Action<IIdentity, IDictionary<string, string>, IDictionary<string, object>, object>, object, Task>;
 
     [TestClass]
-    public class SustainsysSaml2AuthenticationMiddlewareTests
+    public class Saml2AuthenticationMiddlewareTests
     {
         ClaimsPrincipal originalPrincipal;
 
@@ -50,9 +50,9 @@ namespace Sustainsys.Saml2.Owin.Tests
         }
 
         [TestMethod]
-        public void SustainsysSaml2AuthenticationMiddleware_CtorNullChecksOptions()
+        public void Saml2AuthenticationMiddleware_CtorNullChecksOptions()
         {
-            Action a = () => new SustainsysSaml2AuthenticationMiddleware(
+            Action a = () => new Saml2AuthenticationMiddleware(
                 new StubOwinMiddleware(0, null), CreateAppBuilder(),
                 null);
 
@@ -60,10 +60,10 @@ namespace Sustainsys.Saml2.Owin.Tests
         }
 
         [TestMethod]
-        public void SustainsysSaml2AuthenticationMiddleware_CtorNullChecksApp()
+        public void Saml2AuthenticationMiddleware_CtorNullChecksApp()
         {
-            Action a = () => new SustainsysSaml2AuthenticationMiddleware(
-                new StubOwinMiddleware(0, null), null, new SustainsysSaml2AuthenticationOptions(true));
+            Action a = () => new Saml2AuthenticationMiddleware(
+                new StubOwinMiddleware(0, null), null, new Saml2AuthenticationOptions(true));
 
             a.ShouldThrow<ArgumentNullException>("app");
         }
@@ -82,25 +82,25 @@ namespace Sustainsys.Saml2.Owin.Tests
         }
 
         [TestMethod]
-        public void SustainsysSaml2AuthenticationMiddleware_CtorSetsDefaultAuthOption()
+        public void Saml2AuthenticationMiddleware_CtorSetsDefaultAuthOption()
         {
-            var options = new SustainsysSaml2AuthenticationOptions(true);
+            var options = new Saml2AuthenticationOptions(true);
 
             options.SignInAsAuthenticationType.Should().BeNull();
 
-            var middleware = new SustainsysSaml2AuthenticationMiddleware(new StubOwinMiddleware(0, null),
+            var middleware = new Saml2AuthenticationMiddleware(new StubOwinMiddleware(0, null),
                 CreateAppBuilder(), options);
 
             options.SignInAsAuthenticationType.Should().Be(DefaultSignInAsAuthenticationType);
         }
 
         [TestMethod]
-        public async Task SustainsysSaml2AuthenticationMiddleware_RedirectsOnSpecificAuthChallenge_WhenPassive()
+        public async Task Saml2AuthenticationMiddleware_RedirectsOnSpecificAuthChallenge_WhenPassive()
         {
-            var middleware = new SustainsysSaml2AuthenticationMiddleware(
+            var middleware = new Saml2AuthenticationMiddleware(
                 new StubOwinMiddleware(401, new AuthenticationResponseChallenge(
-                    new string[] { "SustainsysSaml2" }, null)), CreateAppBuilder(),
-                new SustainsysSaml2AuthenticationOptions(true)
+                    new string[] { "Saml2" }, null)), CreateAppBuilder(),
+                new Saml2AuthenticationOptions(true)
                 { AuthenticationMode = AuthenticationMode.Passive });
 
             var context = OwinTestHelpers.CreateOwinContext();
@@ -112,12 +112,12 @@ namespace Sustainsys.Saml2.Owin.Tests
         }
 
         [TestMethod]
-        public async Task SustainsysSaml2AuthenticationMiddleware_DoesntRedirectOnUnSpecificAuthChallenge_WhenPassive()
+        public async Task Saml2AuthenticationMiddleware_DoesntRedirectOnUnSpecificAuthChallenge_WhenPassive()
         {
-            var middleware = new SustainsysSaml2AuthenticationMiddleware(
+            var middleware = new Saml2AuthenticationMiddleware(
                 new StubOwinMiddleware(401, new AuthenticationResponseChallenge(
                     new string[0], null)), CreateAppBuilder(),
-                new SustainsysSaml2AuthenticationOptions(true)
+                new Saml2AuthenticationOptions(true)
                 { AuthenticationMode = AuthenticationMode.Passive });
 
             var context = OwinTestHelpers.CreateOwinContext();
@@ -128,12 +128,12 @@ namespace Sustainsys.Saml2.Owin.Tests
         }
 
         [TestMethod]
-        public async Task SustainsysSaml2AuthenticationMiddleware_RedirectsOnAuthChallenge_WhenActive()
+        public async Task Saml2AuthenticationMiddleware_RedirectsOnAuthChallenge_WhenActive()
         {
-            var middleware = new SustainsysSaml2AuthenticationMiddleware(
+            var middleware = new Saml2AuthenticationMiddleware(
                 new StubOwinMiddleware(401, new AuthenticationResponseChallenge(
                     new string[0], null)), CreateAppBuilder(),
-                new SustainsysSaml2AuthenticationOptions(true)
+                new Saml2AuthenticationOptions(true)
                 { AuthenticationMode = AuthenticationMode.Active });
 
             var context = OwinTestHelpers.CreateOwinContext();
@@ -145,12 +145,12 @@ namespace Sustainsys.Saml2.Owin.Tests
         }
 
         [TestMethod]
-        public async Task SustainsysSaml2AuthenticationMiddleware_RedirectToIdp_HonorsCommandResultHandled()
+        public async Task Saml2AuthenticationMiddleware_RedirectToIdp_HonorsCommandResultHandled()
         {
-            var options = new SustainsysSaml2AuthenticationOptions(true)
+            var options = new Saml2AuthenticationOptions(true)
             {
                 AuthenticationMode = AuthenticationMode.Active,
-                Notifications = new SustainsysSaml2Notifications
+                Notifications = new Saml2Notifications
                 {
                     SignInCommandResultCreated = (cr, r) =>
                     {
@@ -159,7 +159,7 @@ namespace Sustainsys.Saml2.Owin.Tests
                 }
             };
 
-            var middleware = new SustainsysSaml2AuthenticationMiddleware(
+            var middleware = new Saml2AuthenticationMiddleware(
                 new StubOwinMiddleware(401, new AuthenticationResponseChallenge(
                     new string[0], null)), CreateAppBuilder(),
                 options);
@@ -172,17 +172,17 @@ namespace Sustainsys.Saml2.Owin.Tests
         }
 
         [TestMethod]
-        public async Task SustainsysSaml2AuthenticationMiddleware_CreatesPostOnAuthChallenge()
+        public async Task Saml2AuthenticationMiddleware_CreatesPostOnAuthChallenge()
         {
-            var middleware = new SustainsysSaml2AuthenticationMiddleware(
+            var middleware = new Saml2AuthenticationMiddleware(
                 new StubOwinMiddleware(401, new AuthenticationResponseChallenge(
-                    new string[] { "SustainsysSaml2" }, new AuthenticationProperties(
+                    new string[] { "Saml2" }, new AuthenticationProperties(
                         new Dictionary<string, string>()
                         {
                             { "idp", "https://idp4.example.com" }
                         }))),
                 CreateAppBuilder(),
-                new SustainsysSaml2AuthenticationOptions(true));
+                new Saml2AuthenticationOptions(true));
 
             var context = OwinTestHelpers.CreateOwinContext();
 
@@ -208,17 +208,17 @@ namespace Sustainsys.Saml2.Owin.Tests
 
 
         [TestMethod]
-        public async Task SustainsysSaml2AuthenticationMiddleware_CreatesSignedPostOnAuthChallenge()
+        public async Task Saml2AuthenticationMiddleware_CreatesSignedPostOnAuthChallenge()
         {
-            var middleware = new SustainsysSaml2AuthenticationMiddleware(
+            var middleware = new Saml2AuthenticationMiddleware(
                 new StubOwinMiddleware(401, new AuthenticationResponseChallenge(
-                    new string[] { "SustainsysSaml2" }, new AuthenticationProperties(
+                    new string[] { "Saml2" }, new AuthenticationProperties(
                         new Dictionary<string, string>()
                         {
                             { "idp", "https://idp4.example.com" }
                         }))),
                 CreateAppBuilder(),
-                new SustainsysSaml2AuthenticationOptions(true)
+                new Saml2AuthenticationOptions(true)
                 );
 
             var context = OwinTestHelpers.CreateOwinContext();
@@ -244,15 +244,15 @@ namespace Sustainsys.Saml2.Owin.Tests
         }
 
         [TestMethod]
-        public async Task SustainsysSaml2AuthenticationMiddleware_CreatesRedirectOnAuthRevoke()
+        public async Task Saml2AuthenticationMiddleware_CreatesRedirectOnAuthRevoke()
         {
             var revoke = new AuthenticationResponseRevoke(new string[0]);
 
-            var options = new SustainsysSaml2AuthenticationOptions(true);
+            var options = new Saml2AuthenticationOptions(true);
             options.SPOptions.PublicOrigin = new Uri("https://sp.example.com/ExternalPath/");
             options.SPOptions.Compatibility.StrictOwinAuthenticationMode = false;
 
-            var subject = new SustainsysSaml2AuthenticationMiddleware(
+            var subject = new Saml2AuthenticationMiddleware(
                 new StubOwinMiddleware(200, revoke: revoke),
                 CreateAppBuilder(),
                 options);
@@ -279,13 +279,13 @@ namespace Sustainsys.Saml2.Owin.Tests
         }
 
         [TestMethod]
-        public async Task SustainsysSaml2AuthenticationMiddleware_AuthRevoke_HonorsCommandResultHandled()
+        public async Task Saml2AuthenticationMiddleware_AuthRevoke_HonorsCommandResultHandled()
         {
             var revoke = new AuthenticationResponseRevoke(new string[0]);
 
-            var options = new SustainsysSaml2AuthenticationOptions(true)
+            var options = new Saml2AuthenticationOptions(true)
             {
-                Notifications = new SustainsysSaml2Notifications
+                Notifications = new Saml2Notifications
                 {
                     LogoutCommandResultCreated = cr =>
                     {
@@ -294,7 +294,7 @@ namespace Sustainsys.Saml2.Owin.Tests
                 }
             };
 
-            var subject = new SustainsysSaml2AuthenticationMiddleware(
+            var subject = new Saml2AuthenticationMiddleware(
                 new StubOwinMiddleware(200, revoke: revoke),
                 CreateAppBuilder(),
                 options);
@@ -326,7 +326,7 @@ namespace Sustainsys.Saml2.Owin.Tests
         }
 
         [TestMethod]
-        public async Task SustainsysSaml2AuthenticationMiddleware_CreatesRedirectOnAuthRevoke_UsesAuthPropsReturnUrl()
+        public async Task Saml2AuthenticationMiddleware_CreatesRedirectOnAuthRevoke_UsesAuthPropsReturnUrl()
         {
             var authPropsReturnUrl = "http://sp.exmample.com/AuthPropsLogout";
 
@@ -334,10 +334,10 @@ namespace Sustainsys.Saml2.Owin.Tests
                 new string[0],
                 new AuthenticationProperties { RedirectUri = authPropsReturnUrl });
 
-            var options = new SustainsysSaml2AuthenticationOptions(true);
+            var options = new Saml2AuthenticationOptions(true);
             options.SPOptions.PublicOrigin = new Uri("https://sp.example.com/ExternalPath/");
 
-            var subject = new SustainsysSaml2AuthenticationMiddleware(
+            var subject = new Saml2AuthenticationMiddleware(
                 new StubOwinMiddleware(303, revoke: revoke),
                 CreateAppBuilder(),
                 options);
@@ -362,15 +362,15 @@ namespace Sustainsys.Saml2.Owin.Tests
         }
 
         [TestMethod]
-        public async Task SustainsysSaml2AuthenticationMiddleware_DoesntRedirectOnUnspecifiedAuthRevoke_WhenPassiveAndStrictCompatibility()
+        public async Task Saml2AuthenticationMiddleware_DoesntRedirectOnUnspecifiedAuthRevoke_WhenPassiveAndStrictCompatibility()
         {
-            var options = new SustainsysSaml2AuthenticationOptions(true)
+            var options = new Saml2AuthenticationOptions(true)
             {
                 AuthenticationMode = AuthenticationMode.Passive,
             };
             options.SPOptions.Compatibility.StrictOwinAuthenticationMode = true;
 
-            var subject = new SustainsysSaml2AuthenticationMiddleware(
+            var subject = new Saml2AuthenticationMiddleware(
                 new StubOwinMiddleware(200, revoke: new AuthenticationResponseRevoke(new string[0])),
                 CreateAppBuilder(),
                 options);
@@ -390,13 +390,13 @@ namespace Sustainsys.Saml2.Owin.Tests
         }
 
         [TestMethod]
-        public async Task SustainsysSaml2AuthenticationMiddleware_CreatesRedirectOnSpecifiedAuthRevoke_WhenPassive()
+        public async Task Saml2AuthenticationMiddleware_CreatesRedirectOnSpecifiedAuthRevoke_WhenPassive()
         {
-            var subject = new SustainsysSaml2AuthenticationMiddleware(
+            var subject = new Saml2AuthenticationMiddleware(
                 new StubOwinMiddleware(200, revoke: new AuthenticationResponseRevoke(
-                    new string[] { "SustainsysSaml2" })),
+                    new string[] { "Saml2" })),
                 CreateAppBuilder(),
-                new SustainsysSaml2AuthenticationOptions(true)
+                new Saml2AuthenticationOptions(true)
                 {
                     AuthenticationMode = AuthenticationMode.Passive
                 });
@@ -417,11 +417,11 @@ namespace Sustainsys.Saml2.Owin.Tests
         }
 
         [TestMethod]
-        public async Task SustainsysSaml2AuthenticationMiddleware_HandlesLogoutResponse()
+        public async Task Saml2AuthenticationMiddleware_HandlesLogoutResponse()
         {
             var app = CreateAppBuilder();
-            var options = new SustainsysSaml2AuthenticationOptions(true);
-            var subject = new SustainsysSaml2AuthenticationMiddleware(
+            var options = new Saml2AuthenticationOptions(true);
+            var subject = new Saml2AuthenticationMiddleware(
                 null,
                 app,
                 options);
@@ -461,10 +461,10 @@ namespace Sustainsys.Saml2.Owin.Tests
         }
 
         [TestMethod]
-        public async Task SustainsysSaml2AuthenticationMiddleware_LogoutsOnLogoutRequest()
+        public async Task Saml2AuthenticationMiddleware_LogoutsOnLogoutRequest()
         {
-            var options = new SustainsysSaml2AuthenticationOptions(true);
-            var subject = new SustainsysSaml2AuthenticationMiddleware(null, CreateAppBuilder(), options);
+            var options = new Saml2AuthenticationOptions(true);
+            var subject = new Saml2AuthenticationMiddleware(null, CreateAppBuilder(), options);
 
             var context = OwinTestHelpers.CreateOwinContext();
 
@@ -495,11 +495,11 @@ namespace Sustainsys.Saml2.Owin.Tests
         }
 
         [TestMethod]
-        public async Task SustainsysSaml2AuthenticationMiddleware_LogoutRequest_HonorsCommandResultHandled()
+        public async Task Saml2AuthenticationMiddleware_LogoutRequest_HonorsCommandResultHandled()
         {
-            var options = new SustainsysSaml2AuthenticationOptions(true)
+            var options = new Saml2AuthenticationOptions(true)
             {
-                Notifications = new SustainsysSaml2Notifications
+                Notifications = new Saml2Notifications
                 {
                     LogoutCommandResultCreated = cr =>
                     {
@@ -508,7 +508,7 @@ namespace Sustainsys.Saml2.Owin.Tests
                 }
             };
 
-            var subject = new SustainsysSaml2AuthenticationMiddleware(null, CreateAppBuilder(), options);
+            var subject = new Saml2AuthenticationMiddleware(null, CreateAppBuilder(), options);
 
             var context = OwinTestHelpers.CreateOwinContext();
 
@@ -534,13 +534,13 @@ namespace Sustainsys.Saml2.Owin.Tests
         }
 
         [TestMethod]
-        public async Task SustainsysSaml2AuthenticationMiddleware_NoRedirectOnNon401()
+        public async Task Saml2AuthenticationMiddleware_NoRedirectOnNon401()
         {
-            var middleware = new SustainsysSaml2AuthenticationMiddleware(
+            var middleware = new Saml2AuthenticationMiddleware(
                 new StubOwinMiddleware(200, new AuthenticationResponseChallenge(
                     new string[] { "SustainsysSaml2" }, null)),
                 CreateAppBuilder(),
-                new SustainsysSaml2AuthenticationOptions(true));
+                new Saml2AuthenticationOptions(true));
 
             var context = OwinTestHelpers.CreateOwinContext();
 
@@ -551,13 +551,13 @@ namespace Sustainsys.Saml2.Owin.Tests
         }
 
         [TestMethod]
-        public async Task SustainsysSaml2AuthenticationMiddleware_NoRedirectWithChallengeOfDifferentType()
+        public async Task Saml2AuthenticationMiddleware_NoRedirectWithChallengeOfDifferentType()
         {
-            var middleware = new SustainsysSaml2AuthenticationMiddleware(
+            var middleware = new Saml2AuthenticationMiddleware(
                 new StubOwinMiddleware(401, new AuthenticationResponseChallenge(
                         new string[] { "SomeThingElse" }, null)),
                     CreateAppBuilder(),
-                    new SustainsysSaml2AuthenticationOptions(true));
+                    new Saml2AuthenticationOptions(true));
 
             var context = OwinTestHelpers.CreateOwinContext();
 
@@ -567,20 +567,20 @@ namespace Sustainsys.Saml2.Owin.Tests
         }
 
         [TestMethod]
-        public async Task SustainsysSaml2AuthenticationMiddleware_RedirectToSecondIdp_AuthenticationProperties()
+        public async Task Saml2AuthenticationMiddleware_RedirectToSecondIdp_AuthenticationProperties()
         {
             var secondIdp = Options.FromConfiguration.IdentityProviders[1];
             var secondDestination = secondIdp.SingleSignOnServiceUrl;
             var secondEntityId = secondIdp.EntityId;
 
-            var middleware = new SustainsysSaml2AuthenticationMiddleware(
+            var middleware = new Saml2AuthenticationMiddleware(
                 new StubOwinMiddleware(401, new AuthenticationResponseChallenge(
-                    new string[] { "SustainsysSaml2" }, new AuthenticationProperties(
+                    new string[] { "Saml2" }, new AuthenticationProperties(
                         new Dictionary<string, string>()
                         {
                             { "idp", secondEntityId.Id }
                         }))),
-                        CreateAppBuilder(), new SustainsysSaml2AuthenticationOptions(true));
+                        CreateAppBuilder(), new Saml2AuthenticationOptions(true));
 
             var context = OwinTestHelpers.CreateOwinContext();
             await middleware.Invoke(context);
@@ -590,16 +590,16 @@ namespace Sustainsys.Saml2.Owin.Tests
         }
 
         [TestMethod]
-        public async Task SustainsysSaml2AuthenticationMiddleware_RedirectToSecondIdp_OwinEnvironment()
+        public async Task Saml2AuthenticationMiddleware_RedirectToSecondIdp_OwinEnvironment()
         {
             var secondIdp = Options.FromConfiguration.IdentityProviders[1];
             var secondDestination = secondIdp.SingleSignOnServiceUrl;
             var secondEntityId = secondIdp.EntityId;
 
-            var middleware = new SustainsysSaml2AuthenticationMiddleware(
+            var middleware = new Saml2AuthenticationMiddleware(
                 new StubOwinMiddleware(401, new AuthenticationResponseChallenge(
-                    new string[] { "saml2" }, new AuthenticationProperties())),
-                        CreateAppBuilder(), new SustainsysSaml2AuthenticationOptions(true));
+                    new string[] { "Saml2" }, new AuthenticationProperties())),
+                        CreateAppBuilder(), new Saml2AuthenticationOptions(true));
 
             var context = OwinTestHelpers.CreateOwinContext();
             context.Environment["saml2.idp"] = secondEntityId;
@@ -610,15 +610,15 @@ namespace Sustainsys.Saml2.Owin.Tests
         }
 
         [TestMethod]
-        public async Task SustainsysSaml2AuthenticationMiddleware_RedirectOnChallengeForAuthTypeInOptions()
+        public async Task Saml2AuthenticationMiddleware_RedirectOnChallengeForAuthTypeInOptions()
         {
             var authenticationType = "someAuthName";
 
-            var middleware = new SustainsysSaml2AuthenticationMiddleware(
+            var middleware = new Saml2AuthenticationMiddleware(
                 new StubOwinMiddleware(401, new AuthenticationResponseChallenge(
                     new string[] { authenticationType }, null)),
                 CreateAppBuilder(),
-                new SustainsysSaml2AuthenticationOptions(true)
+                new Saml2AuthenticationOptions(true)
                 {
                     AuthenticationType = authenticationType
                 });
@@ -639,14 +639,14 @@ namespace Sustainsys.Saml2.Owin.Tests
         }
 
         [TestMethod]
-        public async Task SustainsysSaml2AuthenticationMiddleware_RedirectRemembersReturnPath()
+        public async Task Saml2AuthenticationMiddleware_RedirectRemembersReturnPath()
         {
             var returnUrl = "http://sp.example.com/returnurl";
 
-            var options = new SustainsysSaml2AuthenticationOptions(true);
-            var subject = new SustainsysSaml2AuthenticationMiddleware(
+            var options = new Saml2AuthenticationOptions(true);
+            var subject = new Saml2AuthenticationMiddleware(
                 new StubOwinMiddleware(401, new AuthenticationResponseChallenge(
-                    new string[] { "SustainsysSaml2" }, new AuthenticationProperties()
+                    new string[] { "Saml2" }, new AuthenticationProperties()
                     {
                         RedirectUri = returnUrl
                     })),
@@ -662,7 +662,7 @@ namespace Sustainsys.Saml2.Owin.Tests
         }
 
         [TestMethod]
-        public async Task SustainsysSaml2AuthenticationMiddleware_StoresAuthenticationProperties()
+        public async Task Saml2AuthenticationMiddleware_StoresAuthenticationProperties()
         {
             var returnUrl = "http://sp.example.com/returnurl";
 
@@ -672,11 +672,11 @@ namespace Sustainsys.Saml2.Owin.Tests
             };
             prop.Dictionary["test"] = "SomeValue";
 
-            var options = new SustainsysSaml2AuthenticationOptions(true);
-            var middleware = new SustainsysSaml2AuthenticationMiddleware(
+            var options = new Saml2AuthenticationOptions(true);
+            var middleware = new Saml2AuthenticationMiddleware(
                 new StubOwinMiddleware(401,
                     new AuthenticationResponseChallenge(
-                        new string[] { "SustainsysSaml2" }, prop)),
+                        new string[] { "Saml2" }, prop)),
                 CreateAppBuilder(),
                 options);
 
@@ -690,14 +690,14 @@ namespace Sustainsys.Saml2.Owin.Tests
         }
 
         [TestMethod]
-        public async Task SustainsysSaml2AuthenticationMiddleware_UsesReturnUrl_WhenActive()
+        public async Task Saml2AuthenticationMiddleware_UsesReturnUrl_WhenActive()
         {
-            var options = new SustainsysSaml2AuthenticationOptions(true);
+            var options = new Saml2AuthenticationOptions(true);
             options.AuthenticationMode = AuthenticationMode.Active;
-            var middleware = new SustainsysSaml2AuthenticationMiddleware(
+            var middleware = new Saml2AuthenticationMiddleware(
                 new StubOwinMiddleware(401,
                     new AuthenticationResponseChallenge(
-                        new string[] { "SustainsysSaml2" }, new AuthenticationProperties() ) ),
+                        new string[] { "Saml2" }, new AuthenticationProperties() ) ),
                 CreateAppBuilder(),
                 options);
 
@@ -712,14 +712,14 @@ namespace Sustainsys.Saml2.Owin.Tests
         }
 
         [TestMethod]
-        public async Task SustainsysSaml2AuthenticationMiddleware_UsesChallenge_WhenPassive()
+        public async Task Saml2AuthenticationMiddleware_UsesChallenge_WhenPassive()
         {
-            var options = new SustainsysSaml2AuthenticationOptions(true);
+            var options = new Saml2AuthenticationOptions(true);
             options.AuthenticationMode = AuthenticationMode.Passive;
-            var middleware = new SustainsysSaml2AuthenticationMiddleware(
+            var middleware = new Saml2AuthenticationMiddleware(
                 new StubOwinMiddleware(401,
                     new AuthenticationResponseChallenge(
-                        new string[] { "SustainsysSaml2" }, new AuthenticationProperties() ) ),
+                        new string[] { "Saml2" }, new AuthenticationProperties() ) ),
                 CreateAppBuilder(),
                 options);
 
@@ -730,7 +730,7 @@ namespace Sustainsys.Saml2.Owin.Tests
         }
 
         [TestMethod]
-        public async Task SustainsysSaml2AuthenticationMiddleware_AcsUsesCommandResultLocation()
+        public async Task Saml2AuthenticationMiddleware_AcsUsesCommandResultLocation()
         {
             // For Owin middleware, the redirect uri is part of the
             // authentication properties, but we don't want to use it as it
@@ -776,8 +776,8 @@ namespace Sustainsys.Saml2.Owin.Tests
             context.Request.Host = new HostString("localhost");
             context.Request.Path = new PathString("/Saml2/Acs");
 
-            var middleware = new SustainsysSaml2AuthenticationMiddleware(null, CreateAppBuilder(),
-                new SustainsysSaml2AuthenticationOptions(true)
+            var middleware = new Saml2AuthenticationMiddleware(null, CreateAppBuilder(),
+                new Saml2AuthenticationOptions(true)
                 {
                     SignInAsAuthenticationType = "AuthType"
                 });
@@ -789,7 +789,7 @@ namespace Sustainsys.Saml2.Owin.Tests
         }
 
         [TestMethod]
-        public async Task SustainsysSaml2AuthenticationMiddleware_AcsRedirectsToDefaultWithoutSignInOnUnsolicitedError()
+        public async Task Saml2AuthenticationMiddleware_AcsRedirectsToDefaultWithoutSignInOnUnsolicitedError()
         {
             var context = OwinTestHelpers.CreateOwinContext();
             context.Request.Method = "POST";
@@ -830,8 +830,8 @@ namespace Sustainsys.Saml2.Owin.Tests
             context.Request.Host = new HostString("localhost");
             context.Request.Path = new PathString("/Saml2/Acs");
 
-            var middleware = new SustainsysSaml2AuthenticationMiddleware(null, CreateAppBuilder(),
-                new SustainsysSaml2AuthenticationOptions(true)
+            var middleware = new Saml2AuthenticationMiddleware(null, CreateAppBuilder(),
+                new Saml2AuthenticationOptions(true)
                 {
                     SignInAsAuthenticationType = "AuthType"
                 });
@@ -844,7 +844,7 @@ namespace Sustainsys.Saml2.Owin.Tests
         }
 
         [TestMethod]
-        public async Task SustainsysSaml2AuthenticationMiddleware_AcsLogsAndRedirectsToApplicationRootOnNoReturnUrlAndNoStoredRequestState()
+        public async Task Saml2AuthenticationMiddleware_AcsLogsAndRedirectsToApplicationRootOnNoReturnUrlAndNoStoredRequestState()
         {
             var context = OwinTestHelpers.CreateOwinContext();
             context.Request.Method = "POST";
@@ -885,7 +885,7 @@ namespace Sustainsys.Saml2.Owin.Tests
             context.Request.Path = new PathString("/Saml2/Acs");
             context.Request.PathBase = new PathString("/ApplicationPath");
 
-            var options = new SustainsysSaml2AuthenticationOptions(true)
+            var options = new Saml2AuthenticationOptions(true)
             {
                 SignInAsAuthenticationType = "AuthType"
             };
@@ -893,7 +893,7 @@ namespace Sustainsys.Saml2.Owin.Tests
 
             options.SPOptions.Logger = Substitute.For<ILoggerAdapter>();
 
-            var subject = new SustainsysSaml2AuthenticationMiddleware(
+            var subject = new Saml2AuthenticationMiddleware(
                 null,
                 CreateAppBuilder(),
                 options);
@@ -907,7 +907,7 @@ namespace Sustainsys.Saml2.Owin.Tests
         }
 
         [TestMethod]
-        public async Task SustainsysSaml2AuthenticationMiddleware_AcsRedirectsToAuthPropsReturnUriWithoutSignInOnError()
+        public async Task Saml2AuthenticationMiddleware_AcsRedirectsToAuthPropsReturnUriWithoutSignInOnError()
         {
             var context = OwinTestHelpers.CreateOwinContext();
             context.Request.Method = "POST";
@@ -923,7 +923,7 @@ namespace Sustainsys.Saml2.Owin.Tests
 
             var cookieData = HttpRequestData.ConvertBinaryData(
                 CreateAppBuilder().CreateDataProtector(
-                    typeof(SustainsysSaml2AuthenticationMiddleware).FullName)
+                    typeof(Saml2AuthenticationMiddleware).FullName)
                     .Protect(state.Serialize()));
 
             context.Request.Headers["Cookie"] = $"Sustainsys.{relayState}={cookieData}";
@@ -965,8 +965,8 @@ namespace Sustainsys.Saml2.Owin.Tests
             context.Request.Host = new HostString("localhost");
             context.Request.Path = new PathString("/Saml2/Acs");
 
-            var middleware = new SustainsysSaml2AuthenticationMiddleware(null, CreateAppBuilder(),
-                new SustainsysSaml2AuthenticationOptions(true)
+            var middleware = new Saml2AuthenticationMiddleware(null, CreateAppBuilder(),
+                new Saml2AuthenticationOptions(true)
                 {
                     SignInAsAuthenticationType = "AuthType"
                 });
@@ -979,7 +979,7 @@ namespace Sustainsys.Saml2.Owin.Tests
         }
 
         [TestMethod]
-        public async Task SustainsysSaml2AuthenticationMiddleware_AcsWorks()
+        public async Task Saml2AuthenticationMiddleware_AcsWorks()
         {
             var context = OwinTestHelpers.CreateOwinContext();
             context.Request.Method = "POST";
@@ -999,7 +999,7 @@ namespace Sustainsys.Saml2.Owin.Tests
 
             var cookieData = HttpRequestData.ConvertBinaryData(
                 CreateAppBuilder().CreateDataProtector(
-                    typeof(SustainsysSaml2AuthenticationMiddleware).FullName)
+                    typeof(Saml2AuthenticationMiddleware).FullName)
                     .Protect(state.Serialize()));
 
             context.Request.Headers["Cookie"] = $"Sustainsys.{relayState}={cookieData}";
@@ -1047,7 +1047,7 @@ namespace Sustainsys.Saml2.Owin.Tests
             ids[1].AddClaim(new Claim(ClaimTypes.Role, "RoleFromClaimsAuthManager", 
                 null, "ClaimsAuthenticationManagerStub"));
 
-            var subject = new SustainsysSaml2AuthenticationMiddleware(null, CreateAppBuilder(),
+            var subject = new Saml2AuthenticationMiddleware(null, CreateAppBuilder(),
                 OwinStubFactory.CreateOwinOptions());
 
             await subject.Invoke(context);
@@ -1074,7 +1074,7 @@ namespace Sustainsys.Saml2.Owin.Tests
         }
 
         [TestMethod]
-        public async Task SustainsysSaml2AuthenticationMiddleware_Acs_HonorsCommandResultHandled()
+        public async Task Saml2AuthenticationMiddleware_Acs_HonorsCommandResultHandled()
         {
             var context = OwinTestHelpers.CreateOwinContext();
             context.Request.Method = "POST";
@@ -1120,7 +1120,7 @@ namespace Sustainsys.Saml2.Owin.Tests
                 cr.HandledResult = true;
             };
 
-            var subject = new SustainsysSaml2AuthenticationMiddleware(
+            var subject = new Saml2AuthenticationMiddleware(
                 null, CreateAppBuilder(), options);
 
             await subject.Invoke(context);
@@ -1129,7 +1129,7 @@ namespace Sustainsys.Saml2.Owin.Tests
         }
 
         [TestMethod]
-        public async Task SustainsysSaml2AuthenticationMiddleware_Acs_HonorsSessionNotOnOrAfter()
+        public async Task Saml2AuthenticationMiddleware_Acs_HonorsSessionNotOnOrAfter()
         {
             var context = OwinTestHelpers.CreateOwinContext();
             context.Request.Method = "POST";
@@ -1176,7 +1176,7 @@ namespace Sustainsys.Saml2.Owin.Tests
 
             var options = OwinStubFactory.CreateOwinOptions();
 
-            var subject = new SustainsysSaml2AuthenticationMiddleware(
+            var subject = new Saml2AuthenticationMiddleware(
                 null, CreateAppBuilder(), options);
 
             await subject.Invoke(context);
@@ -1190,16 +1190,16 @@ namespace Sustainsys.Saml2.Owin.Tests
         }
 
         [TestMethod]
-        public async Task SustainsysSaml2AuthenticationMiddleware_MetadataWorks()
+        public async Task Saml2AuthenticationMiddleware_MetadataWorks()
         {
             var context = OwinTestHelpers.CreateOwinContext();
             context.Request.Host = new HostString("localhost");
             context.Request.Path = new PathString("/Saml2");
 
-            var middleware = new SustainsysSaml2AuthenticationMiddleware(
+            var middleware = new Saml2AuthenticationMiddleware(
                 null,
                 CreateAppBuilder(),
-                new SustainsysSaml2AuthenticationOptions(true));
+                new Saml2AuthenticationOptions(true));
 
             await middleware.Invoke(context);
             context.Response.Body.Seek(0, SeekOrigin.Begin);
@@ -1212,7 +1212,7 @@ namespace Sustainsys.Saml2.Owin.Tests
         }
 
         [TestMethod]
-        public async Task SustainsysSaml2AuthenticationMiddleware_SignInUrlRedirectsToIdp()
+        public async Task Saml2AuthenticationMiddleware_SignInUrlRedirectsToIdp()
         {
             var context = OwinTestHelpers.CreateOwinContext();
             context.Request.Host = new HostString("localhost");
@@ -1220,8 +1220,8 @@ namespace Sustainsys.Saml2.Owin.Tests
             context.Request.Path = new PathString(signinPath);
             context.Request.QueryString = new QueryString("ReturnUrl=%2FHome&idp=https%3A%2F%2Fidp2.example.com");
 
-            var options = new SustainsysSaml2AuthenticationOptions(true);
-            var middleware = new SustainsysSaml2AuthenticationMiddleware(
+            var options = new Saml2AuthenticationOptions(true);
+            var middleware = new Saml2AuthenticationMiddleware(
                 null, CreateAppBuilder(), options);
 
             await middleware.Invoke(context);
@@ -1237,14 +1237,14 @@ namespace Sustainsys.Saml2.Owin.Tests
         }
 
         [TestMethod]
-        public void SustainsysSaml2AuthenticationMiddleware_WorksOnNullDiscoveryResponseUrl()
+        public void Saml2AuthenticationMiddleware_WorksOnNullDiscoveryResponseUrl()
         {
             var context = OwinTestHelpers.CreateOwinContext();
 
-            var subject = new SustainsysSaml2AuthenticationMiddleware(
+            var subject = new Saml2AuthenticationMiddleware(
                 new StubOwinMiddleware(200, null),
                 CreateAppBuilder(),
-                new SustainsysSaml2AuthenticationOptions(false)
+                new Saml2AuthenticationOptions(false)
                 {
                     SPOptions = new SPOptions()
                     {
@@ -1256,7 +1256,7 @@ namespace Sustainsys.Saml2.Owin.Tests
         }
 
         [TestMethod]
-        public async Task SustainsysSaml2AuthenticationMiddleware_AugmentsGeneratedClaimsWithLogoutInfo()
+        public async Task Saml2AuthenticationMiddleware_AugmentsGeneratedClaimsWithLogoutInfo()
         {
             var context = OwinTestHelpers.CreateOwinContext();
 
@@ -1287,9 +1287,9 @@ namespace Sustainsys.Saml2.Owin.Tests
                     return Task.FromResult(0);
                 });
 
-            var options = new SustainsysSaml2AuthenticationOptions(true);
+            var options = new Saml2AuthenticationOptions(true);
 
-            var subject = new SustainsysSaml2AuthenticationMiddleware(
+            var subject = new Saml2AuthenticationMiddleware(
                 new StubOwinMiddleware(303, grant: new AuthenticationResponseGrant(
                     new ClaimsIdentity(new Claim[]
                     {
@@ -1315,7 +1315,7 @@ namespace Sustainsys.Saml2.Owin.Tests
         }
 
         [TestMethod]
-        public async Task SustainsysSaml2AuthenticationMiddleware_DoesntAugmentsGeneratedClaimsWhenSessionIndexIsMissing()
+        public async Task Saml2AuthenticationMiddleware_DoesntAugmentsGeneratedClaimsWhenSessionIndexIsMissing()
         {
             var context = OwinTestHelpers.CreateOwinContext();
 
@@ -1336,9 +1336,9 @@ namespace Sustainsys.Saml2.Owin.Tests
                     return Task.FromResult(0);
                 });
 
-            var options = new SustainsysSaml2AuthenticationOptions(true);
+            var options = new Saml2AuthenticationOptions(true);
 
-            var subject = new SustainsysSaml2AuthenticationMiddleware(
+            var subject = new Saml2AuthenticationMiddleware(
                 new StubOwinMiddleware(303, grant: new AuthenticationResponseGrant(
                     new ClaimsIdentity(new Claim[]
                     {
@@ -1362,7 +1362,7 @@ namespace Sustainsys.Saml2.Owin.Tests
         }
 
         [TestMethod]
-        public async Task SustainsysSaml2AuthenticationMiddleware_DoesntAugmentsGeneratedClaimsWhenNameIdIsMissing()
+        public async Task Saml2AuthenticationMiddleware_DoesntAugmentsGeneratedClaimsWhenNameIdIsMissing()
         {
             var context = OwinTestHelpers.CreateOwinContext();
 
@@ -1383,9 +1383,9 @@ namespace Sustainsys.Saml2.Owin.Tests
                     return Task.FromResult(0);
                 });
 
-            var options = new SustainsysSaml2AuthenticationOptions(true);
+            var options = new Saml2AuthenticationOptions(true);
 
-            var subject = new SustainsysSaml2AuthenticationMiddleware(
+            var subject = new Saml2AuthenticationMiddleware(
                 new StubOwinMiddleware(303, grant: new AuthenticationResponseGrant(
                     new ClaimsIdentity(new Claim[]
                     {
@@ -1409,16 +1409,16 @@ namespace Sustainsys.Saml2.Owin.Tests
         }
 
         [TestMethod]
-        public void SustainsysSaml2AuthenticationMiddleware_LogsCommandExceptions()
+        public void Saml2AuthenticationMiddleware_LogsCommandExceptions()
         {
             var context = OwinTestHelpers.CreateOwinContext();
             context.Request.Path = new PathString("/Saml2/SignIn");
             context.Request.QueryString = new QueryString("idp=incorrect");
 
-            var options = new SustainsysSaml2AuthenticationOptions(true);
+            var options = new Saml2AuthenticationOptions(true);
             options.SPOptions.Logger = Substitute.For<ILoggerAdapter>();
 
-            var subject = new SustainsysSaml2AuthenticationMiddleware(
+            var subject = new Saml2AuthenticationMiddleware(
                 null,
                 CreateAppBuilder(),
                 options);
@@ -1430,11 +1430,11 @@ namespace Sustainsys.Saml2.Owin.Tests
         }
 
         [TestMethod]
-        public void SustainsysSaml2AuthenticationMiddleware_Ctor_NullCheckOptionsSpOptions()
+        public void Saml2AuthenticationMiddleware_Ctor_NullCheckOptionsSpOptions()
         {
-            var options = new SustainsysSaml2AuthenticationOptions(false);
+            var options = new Saml2AuthenticationOptions(false);
 
-            Action a = () => new SustainsysSaml2AuthenticationMiddleware(
+            Action a = () => new Saml2AuthenticationMiddleware(
                 new StubOwinMiddleware(404),
                 CreateAppBuilder(),
                 options);
@@ -1444,14 +1444,14 @@ namespace Sustainsys.Saml2.Owin.Tests
         }
 
         [TestMethod]
-        public void SustainsysSaml2AuthenticationMiddleware_Ctor_NullCheckOptionsSpOptionsEntityId()
+        public void Saml2AuthenticationMiddleware_Ctor_NullCheckOptionsSpOptionsEntityId()
         {
-            var options = new SustainsysSaml2AuthenticationOptions(false)
+            var options = new Saml2AuthenticationOptions(false)
             {
                 SPOptions = new SPOptions()
             };
 
-            Action a = () => new SustainsysSaml2AuthenticationMiddleware(
+            Action a = () => new Saml2AuthenticationMiddleware(
                 new StubOwinMiddleware(404),
                 CreateAppBuilder(),
                 options);
@@ -1462,7 +1462,7 @@ namespace Sustainsys.Saml2.Owin.Tests
         }
 
         [TestMethod]
-        public async Task SustainsysSaml2AuthenticationMiddleware_IncludesSamlResponseInLoggedError()
+        public async Task Saml2AuthenticationMiddleware_IncludesSamlResponseInLoggedError()
         {
             var context = OwinTestHelpers.CreateOwinContext();
 
@@ -1481,10 +1481,10 @@ namespace Sustainsys.Saml2.Owin.Tests
             context.Request.Body = encodedBodyData.ReadAsStreamAsync().Result;
             context.Request.ContentType = encodedBodyData.Headers.ContentType.ToString();
 
-            var options = new SustainsysSaml2AuthenticationOptions(true);
+            var options = new Saml2AuthenticationOptions(true);
             options.SPOptions.Logger = Substitute.For<ILoggerAdapter>();
 
-            var subject = new SustainsysSaml2AuthenticationMiddleware(
+            var subject = new Saml2AuthenticationMiddleware(
                 null,
                 CreateAppBuilder(),
                 options);
@@ -1497,17 +1497,17 @@ namespace Sustainsys.Saml2.Owin.Tests
         }
 
         [TestMethod]
-        public async Task SustainsysSaml2AuthenticationMiddleware_LogsErrorWhenNoSamlResponseIsAvailable()
+        public async Task Saml2AuthenticationMiddleware_LogsErrorWhenNoSamlResponseIsAvailable()
         {
             var context = OwinTestHelpers.CreateOwinContext();
 
             context.Request.Path = new PathString("/Saml2/Acs");
             context.Request.Method = "POST";
 
-            var options = new SustainsysSaml2AuthenticationOptions(true);
+            var options = new Saml2AuthenticationOptions(true);
             options.SPOptions.Logger = Substitute.For<ILoggerAdapter>();
 
-            var subject = new SustainsysSaml2AuthenticationMiddleware(
+            var subject = new Saml2AuthenticationMiddleware(
                 null,
                 CreateAppBuilder(),
                 options);

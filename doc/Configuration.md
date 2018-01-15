@@ -7,7 +7,7 @@ working [`web.config`](../Samples/SampleApplication/Web.config) examples. For
 ASP.NET MVC applications see [`this working web.config`](../Samples/SampleMvcApplication/Web.config)
 example. Applications using the owin library usually make their configuration
 in code and in that case no web.config changes are needed. If an owin library
-is set up to use web.config (by passing `true` to the `SustainsysSaml2AuthenticationOptions` 
+is set up to use web.config (by passing `true` to the `Saml2AuthenticationOptions` 
 constructor) the information here applies.
 
 ## Config Sections
@@ -17,7 +17,7 @@ Three new config sections are required. Add these under `configuration/configSec
   <!-- Add these sections below any existing. -->
   <section name="system.identityModel" type="System.IdentityModel.Configuration.SystemIdentityModelSection, System.IdentityModel, Version=4.0.0.0, Culture=neutral, PublicKeyToken=B77A5C561934E089" />
   <section name="system.identityModel.services" type="System.IdentityModel.Services.Configuration.SystemIdentityModelServicesSection, System.IdentityModel.Services, Version=4.0.0.0, Culture=neutral, PublicKeyToken=B77A5C561934E089" />   
-  <section name="Sustainsys.Saml2" type="Sustainsys.Saml2.Configuration.SustainsysSaml2Section, Sustainsys.Saml2"/>
+  <section name="sustainsys.saml2" type="Sustainsys.Saml2.Configuration.SustainsysSaml2Section, Sustainsys.Saml2"/>
 </configSections>
 ```
 ## Loading modules
@@ -38,13 +38,13 @@ does not need any http modules, please see the separate info on the [Owin middle
 </system.webServer>
 ```
 
-## Sustainsys.Saml2 Section
-The saml2AuthenticationModule section contains the configuration of the Sustainsys.Saml2
+## sustainsys.saml2 Section
+The sustainsys.saml2 section contains the configuration of the Sustainsys.Saml2
 library. It is required for the http module and the mvc controller. The Owin middleware can
 read web.config, but can also be configured from code (see [Owin middleware](OwinMiddleware.md)).
 
 ```
-<Sustainsys.Saml2 entityId="http://localhost:17009"
+<sustainsys.saml2 entityId="http://localhost:17009"
                      returnUrl="http://localhost:17009/SamplePath/"
                      discoveryServiceUrl="http://localhost:52071/DiscoveryService" 
 					 authenticateRequestSigningBehavior="Always">
@@ -79,10 +79,10 @@ read web.config, but can also be configured from code (see [Owin middleware](Owi
   <federations>
     <add metadataLocation="https://federation.example.com/metadata.xml" allowUnsolicitedAuthnResponse = "false" />
   </federations>
-</Sustainsys.Saml2>
+</sustainsys.saml2>
 ```
 
-### `<Sustainsys.Saml2>` Element
+### `<sustainsys.saml2>` Element
 *Child element of `<configuration>` element.*
 
 Root element of the config section.
@@ -108,7 +108,7 @@ Root element of the config section.
 * [`<compatibility>`](#compatibility-element)
 
 #### `entityId` Attribute
-*Attribute of the [`<Sustainsys.Saml2>`](#Sustainsys-Saml2-section) element.*
+*Attribute of the [`<sustainsys.saml2>`](#sustainsys-saml2-section) element.*
 
 The name that this service provider will use for itself when sending
 messages. The name will end up in the `Issuer` field in outcoing authnRequests.
@@ -118,21 +118,21 @@ be the URL where the metadata is presented. E.g.
 `http://sp.example.com/Saml2/`.
 
 #### `returnUrl` Attribute
-*Attribute of the [`<Sustainsys.Saml2>`](#Sustainsys-Saml2-section) element.*
+*Attribute of the [`<sustainsys.saml2>`](#sustainsys-saml2-section) element.*
 
 The Url that you want users to be redirected to once the authentication is
 complete. This is typically the start page of the application, or a special
 signed in start page.
 
 #### `discoveryServiceUrl` Attribute
-*Optional Attribute of the [`<Sustainsys.Saml2>`](#Sustainsys-Saml2-section) element.*
+*Optional Attribute of the [`<sustainsys.saml2>`](#Sustainsys-Saml2-section) element.*
 
 Optional attribute that specifies an idp discovery service to use if no idp
 is specified when calling sign in. Without this attribute, the first idp known
 will be used if none is specified.
 
 #### `modulePath` Attribute
-*Optional Attribute of the [`<Sustainsys.Saml2>`](#Sustainsys-Saml2-section) element.*
+*Optional Attribute of the [`<sustainsys.saml2>`](#Sustainsys-Saml2-section) element.*
 
 Optional attribute that indicates the base path of the Saml2 endpoints.
 Defaults to `/Saml2` if not specified. This can usually be left as the
@@ -140,7 +140,7 @@ default, but if several instances of Saml2 are loaded into the
 same process they must each get a separate base path.
 
 #### `authenticateRequestSigningBehavior` Attribute
-*Optional Attribute of the [`<Sustainsys.Saml2>`](#Sustainsys-Saml2-section) element.*
+*Optional Attribute of the [`<sustainsys.saml2>`](#Sustainsys-Saml2-section) element.*
 
 Optional attribute that sets the signing behavior for generated AuthnRequests.
 Two values are supported:
@@ -153,7 +153,7 @@ Two values are supported:
   config or listed in idp metadata).
 
 #### `validateCertificates` Attribute
-*Optional Attribute of the [`<Sustainsys.Saml2>`](#Sustainsys-Saml2-section) element.*
+*Optional Attribute of the [`<sustainsys.saml2>`](#Sustainsys-Saml2-section) element.*
 
 Normally certificates for the IDPs signing use is communicated through metadata
 and in case of a breach, the metadata is updated with new data. If you want
@@ -162,7 +162,7 @@ SAML metadata specification explicitly places no requirements on certificate
 validation, so don't be surprised if an Idp certificate doesn't pass validation.
 
 #### `publicOrigin` Attribute
-*Optional Attribute of the [`<Sustainsys.Saml2>`](#Sustainsys-Saml2-section) element.*
+*Optional Attribute of the [`<sustainsys.saml2>`](#Sustainsys-Saml2-section) element.*
 
 Optional attribute that indicates the base url of the Saml2 endpoints.
 It should be the root path of the application. E.g. The SignIn url is built
@@ -180,7 +180,7 @@ If you need to set this value on a per-request basis, provide a GetPublicOrigin
 Notification function instead.
 
 #### `outboundSigningAlgorithm` Attribute
-*Optional Attribute of the [`<Sustainsys.Saml2>`](#Sustainsys-Saml2-section) element.*
+*Optional Attribute of the [`<sustainsys.saml2>`](#Sustainsys-Saml2-section) element.*
 
 By default Saml2 uses SHA256 signatures if running on .NET 4.6.2 or later or when you
 have called `GlobalEnableSha256XmlSignatures()`. Otherwise, it uses SHA1 signatures. 
@@ -196,7 +196,7 @@ The full url identifying the algorithm can also be provided. The algorithm can b
 each IdentityProvider too.
 
 #### `minIncomingSigningAlgorithm` Attribute
-*Optional Attribute of the [`<Sustainsys.Saml2>`](#Sustainsys-Saml2-section) element.*
+*Optional Attribute of the [`<sustainsys.saml2>`](#Sustainsys-Saml2-section) element.*
 
 The minimum strength required on signatures on incoming messages. Messages with a too weak
 signing algorithm will be rejected.
@@ -214,7 +214,7 @@ Possible values:
 The full url identifying the algorithm can also be provided.
 
 ### `<nameIdPolicy>` Element
-*Optional child element of the [`<Sustainsys.Saml2>`](#Sustainsys-Saml2-section) element.*
+*Optional child element of the [`<sustainsys.saml2>`](#Sustainsys-Saml2-section) element.*
 
 Controls the generation of NameIDPolicy element in AuthnRequests. The element Is
 only created if either `allowCreate` or `format` are set to a non-default value.
@@ -254,7 +254,7 @@ If `Transient` is specified, it is not permitted to specify `allowCreate`
 (see 3.4.1.1 in the SAML2 Core spec).
 
 ### `<requestedAuthnContext>` element
-*Optional child element of the [`<Sustainsys.Saml2>`](#Sustainsys-Saml2-section) element.*
+*Optional child element of the [`<sustainsys.saml2>`](#Sustainsys-Saml2-section) element.*
 
 #### Attributes
 * [`classRef`](#classref-attribute)
@@ -309,7 +309,7 @@ better is accepted. `Better` is exclusive, meaning that the specified classRef
 is not accepted.
 
 ### `<metadata>` Element
-*Optional child element of the [`<Sustainsys.Saml2>`](#Sustainsys-Saml2-section) element.*
+*Optional child element of the [`<sustainsys.saml2>`](#Sustainsys-Saml2-section) element.*
 
 The metadata part of the configuration can be used to tweak the generated
 metadata. These configuration options only affects how the metadata is
@@ -491,7 +491,7 @@ Is this attribute required by the service provider or is it just a request that
 it would be nice if the Idp includes it?
 
 ### `<identityProviders>` Element
-*Optional child element of the [`<Sustainsys.Saml2>`](#Sustainsys-Saml2-section) element.*
+*Optional child element of the [`<sustainsys.saml2>`](#Sustainsys-Saml2-section) element.*
 
 A list of identity providers known to the service provider.
 
@@ -676,7 +676,7 @@ Valid values are those from the
 enumeration.
 
 ### `<federations>` Element
-*Optional child element of the `<Sustainsys.Saml2>`(#Sustainsys-Saml2-section) element.*
+*Optional child element of the `<sustainsys.saml2>`(#Sustainsys-Saml2-section) element.*
 
 Contains a list of federations that the service provider knows and trusts.
 
@@ -708,7 +708,7 @@ Decided whether unsolicited authn responses should be allowed from the identity 
 in the federation.
 
 ### `<serviceCertificates>` Element
-*Optional child element of the [`<Sustainsys.Saml2>`](#SustainsysSaml2-section) element.*
+*Optional child element of the [`<sustainsys.saml2>`](#SustainsysSaml2-section) element.*
 
 Specifies the certificate(s) that the service provider uses for encrypted assertions
 (and for signed requests, once that feature is added).
@@ -772,7 +772,7 @@ Encryption | Current | Encryption _unless Future key exists_ then not published 
 Encryption | Future | Encryption | Yes 
 
 ### `<compatibility>` Element
-*Optional child element of the [`<Sustainsys.Saml2>`](#SustainsysSaml2-section) element.*
+*Optional child element of the [`<sustainsys.saml2>`](#SustainsysSaml2-section) element.*
 
 Enables overrides of default behaviour to increase compatibility with identity
 providers.

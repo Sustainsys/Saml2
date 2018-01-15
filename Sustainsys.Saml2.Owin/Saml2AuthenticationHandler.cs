@@ -14,7 +14,7 @@ using System.Threading.Tasks;
 
 namespace Sustainsys.Saml2.Owin
 {
-    class SustainsysSaml2AuthenticationHandler : AuthenticationHandler<SustainsysSaml2AuthenticationOptions>
+    class Saml2AuthenticationHandler : AuthenticationHandler<Saml2AuthenticationOptions>
     {
         protected async override Task<AuthenticationTicket> AuthenticateCoreAsync()
         {
@@ -120,7 +120,7 @@ namespace Sustainsys.Saml2.Owin
                     else
                     {
                         object objIdp = null;
-                        Context.Environment.TryGetValue("SustainsysSaml2.idp", out objIdp);
+                        Context.Environment.TryGetValue("saml2.idp", out objIdp);
                         idp = objIdp as EntityId;
                     }
                     var redirectUri = challenge.Properties.RedirectUri;

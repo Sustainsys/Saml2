@@ -11,12 +11,12 @@ namespace Sustainsys.Saml2.Configuration
     /// Set of callbacks that can be used as extension points for various
     /// events.
     /// </summary>
-    public class SustainsysSaml2Notifications
+    public class Saml2Notifications
     {
         /// <summary>
         /// Ctor, setting all callbacks to do-nothing versions.
         /// </summary>
-        public SustainsysSaml2Notifications()
+        public Saml2Notifications()
         {
             AuthenticationRequestCreated = (request, provider, dictionary) => { };
             SignInCommandResultCreated = (cr, r) => { };

@@ -17,8 +17,8 @@ namespace Sustainsys.Saml2.Owin
     /// <summary>
     /// Owin middleware for SAML2 authentication.
     /// </summary>
-    public class SustainsysSaml2AuthenticationMiddleware 
-        : AuthenticationMiddleware<SustainsysSaml2AuthenticationOptions>
+    public class Saml2AuthenticationMiddleware 
+        : AuthenticationMiddleware<Saml2AuthenticationOptions>
     {
         /// <summary>
         /// Constructor
@@ -29,10 +29,10 @@ namespace Sustainsys.Saml2.Owin
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1062:Validate arguments of public methods", MessageId = "2", Justification = "options is validated by base ctor. Test case for null options giving ArgumentNullException works.")]
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "SPOptions")]
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "EntityId")]
-        public SustainsysSaml2AuthenticationMiddleware(
+        public Saml2AuthenticationMiddleware(
             OwinMiddleware next,
             IAppBuilder app,
-            SustainsysSaml2AuthenticationOptions options)
+            Saml2AuthenticationOptions options)
             :base (next, options)
         {
             if(app == null)
@@ -56,11 +56,11 @@ namespace Sustainsys.Saml2.Owin
             }
 
             options.DataProtector = app.CreateDataProtector(
-                typeof(SustainsysSaml2AuthenticationMiddleware).FullName);
+                typeof(Saml2AuthenticationMiddleware).FullName);
 
             if(options.SPOptions.Logger == null)
             {
-                options.SPOptions.Logger = new OwinLoggerAdapter(app.CreateLogger<SustainsysSaml2AuthenticationMiddleware>());
+                options.SPOptions.Logger = new OwinLoggerAdapter(app.CreateLogger<Saml2AuthenticationMiddleware>());
             }
         }
 
@@ -68,9 +68,9 @@ namespace Sustainsys.Saml2.Owin
         /// Creates a handler instance for use when processing a request.
         /// </summary>
         /// <returns>Handler instance.</returns>
-        protected override AuthenticationHandler<SustainsysSaml2AuthenticationOptions> CreateHandler()
+        protected override AuthenticationHandler<Saml2AuthenticationOptions> CreateHandler()
         {
-            return new SustainsysSaml2AuthenticationHandler();
+            return new Saml2AuthenticationHandler();
         }
     }
 }

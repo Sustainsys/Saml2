@@ -262,7 +262,7 @@ private static Saml2AuthenticationOptions GetCoreOktaOptions(string signInAsType
 			break;
 	}
 
-	var saml2Options = new SustainsysSaml2AuthenticationOptions(false)
+	var saml2Options = new Saml2AuthenticationOptions(false)
 	{
 		SPOptions = new SPOptions
 		{

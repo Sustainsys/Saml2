@@ -48,13 +48,13 @@ namespace SampleOwinApplication
             });
             app.UseExternalSignInCookie(DefaultAuthenticationTypes.ExternalCookie);
 
-            app.UseSustainsysSaml2Authentication(CreateSaml2Options());
+            app.UseSaml2Authentication(CreateSaml2Options());
         }
 
-        private static SustainsysSaml2AuthenticationOptions CreateSaml2Options()
+        private static Saml2AuthenticationOptions CreateSaml2Options()
         {
             var spOptions = CreateSPOptions();
-            var Saml2Options = new SustainsysSaml2AuthenticationOptions(false)
+            var Saml2Options = new Saml2AuthenticationOptions(false)
             {
                 SPOptions = spOptions
             };

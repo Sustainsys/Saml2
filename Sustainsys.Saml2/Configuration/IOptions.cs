@@ -30,6 +30,6 @@ namespace Sustainsys.Saml2.Configuration
         /// Set of callbacks that can be used as extension points for various
         /// events.
         /// </summary>
-        SustainsysSaml2Notifications Notifications { get; }
+        Saml2Notifications Notifications { get; }
     }
 }

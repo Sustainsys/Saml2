@@ -7,13 +7,13 @@ namespace Sustainsys.Saml2.Owin
     /// <summary>
     /// Options for Sustainsys Saml2 Saml2 Authentication.
     /// </summary>
-    public class SustainsysSaml2AuthenticationOptions : AuthenticationOptions, IOptions
+    public class Saml2AuthenticationOptions : AuthenticationOptions, IOptions
     {
         /// <summary>
         /// Set of callbacks that can be used as extension points for various
         /// events.
         /// </summary>
-        public SustainsysSaml2Notifications Notifications { get; set; }
+        public Saml2Notifications Notifications { get; set; }
 
         /// <summary>
         /// Constructor
@@ -21,12 +21,12 @@ namespace Sustainsys.Saml2.Owin
         /// </summary>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "SustainsysSaml2")]
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", "CA1303:Do not pass literals as localized parameters", MessageId = "Microsoft.Owin.Security.AuthenticationDescription.set_Caption(System.String)")]
-        public SustainsysSaml2AuthenticationOptions(bool loadConfiguration)
+        public Saml2AuthenticationOptions(bool loadConfiguration)
             : base(Constants.DefaultAuthenticationType)
         {
             AuthenticationMode = AuthenticationMode.Passive;
             Description.Caption = Constants.DefaultCaption;
-            Notifications = new SustainsysSaml2Notifications();
+            Notifications = new Saml2Notifications();
 
             if (loadConfiguration)
             {

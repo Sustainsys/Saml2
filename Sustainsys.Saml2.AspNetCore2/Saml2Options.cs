@@ -51,7 +51,7 @@ namespace Sustainsys.Saml2.AspNetCore2
         /// Set of callbacks that can be used as extension points for various
         /// events.
         /// </summary>
-        public SustainsysSaml2Notifications Notifications { get; }
-            = new SustainsysSaml2Notifications();
+        public Saml2Notifications Notifications { get; }
+            = new Saml2Notifications();
     }
 }

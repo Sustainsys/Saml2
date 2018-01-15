@@ -8,24 +8,24 @@ using FluentAssertions;
 namespace Sustainsys.Saml2.Owin.Tests
 {
     [TestClass]
-    public class SustainsysSaml2AuthenticationExtensionsTests
+    public class Saml2AuthenticationExtensionsTests
     {
         [TestMethod]
-        public void SustainsysSaml2AuthenticationExtensions_UseSustainsysSaml2Authentication()
+        public void Saml2AuthenticationExtensions_UseSaml2Authentication()
         {
             var app = Substitute.For<IAppBuilder>();
 
-            var options = new SustainsysSaml2AuthenticationOptions(true);
+            var options = new Saml2AuthenticationOptions(true);
 
-            app.UseSustainsysSaml2Authentication(options);
+            app.UseSaml2Authentication(options);
 
-            app.Received().Use(typeof(SustainsysSaml2AuthenticationMiddleware), app, options);
+            app.Received().Use(typeof(Saml2AuthenticationMiddleware), app, options);
         }
 
         [TestMethod]
-        public void SustainsysSaml2AuthenticationExtensions_UseSustainsysSaml2Authentication_Nullcheck()
+        public void Saml2AuthenticationExtensions_UseSaml2Authentication_Nullcheck()
         {
-            Action a = () => ((IAppBuilder)null).UseSustainsysSaml2Authentication(null);
+            Action a = () => ((IAppBuilder)null).UseSaml2Authentication(null);
 
             a.ShouldThrow<ArgumentNullException>("app");
         }

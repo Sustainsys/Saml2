@@ -140,7 +140,7 @@ successful authentication, but it is not configured.
 
 In code-based config, add a ReturnUrl by setting the
 options.SpOptions.ReturnUrl property. In the config file, set the returnUrl
-attribute of the <Sustainsys.Saml2> element.";
+attribute of the <sustainsys.saml2> element.";
 
         internal const string SpInitiatedMissingReturnUrl =
 @"Successfully received and validated response from Idp, but don't know

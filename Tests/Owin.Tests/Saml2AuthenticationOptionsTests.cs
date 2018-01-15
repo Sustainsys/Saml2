@@ -8,21 +8,21 @@ using System.IdentityModel.Metadata;
 namespace Sustainsys.Saml2.Owin.Tests
 {
     [TestClass]
-    public class SustainsysSaml2AuthenticationOptionsTests
+    public class Saml2AuthenticationOptionsTests
     {
         [TestMethod]
-        public void SustainsysSaml2AuthenticationOptions_Ctor_SetsDefault()
+        public void Saml2AuthenticationOptions_Ctor_SetsDefault()
         {
-            var subject = new SustainsysSaml2AuthenticationOptions(true);
+            var subject = new Saml2AuthenticationOptions(true);
 
             subject.Description.Caption.Should().Be(Constants.DefaultCaption);
             subject.AuthenticationMode.Should().Be(AuthenticationMode.Passive);
         }
 
         [TestMethod]
-        public void SustainsysSaml2AuthenticationOptions_Ctor_LoadsConfiguration()
+        public void Saml2AuthenticationOptions_Ctor_LoadsConfiguration()
         {
-            var subject = new SustainsysSaml2AuthenticationOptions(true);
+            var subject = new Saml2AuthenticationOptions(true);
 
             subject.SPOptions.EntityId.Id.Should().Be("https://github.com/SustainsysIT/Saml2");
 
@@ -32,26 +32,26 @@ namespace Sustainsys.Saml2.Owin.Tests
         }
 
         [TestMethod]
-        public void SustainsysSaml2AuthenticationOptions_Ctor_IgnoresConfiguration()
+        public void Saml2AuthenticationOptions_Ctor_IgnoresConfiguration()
         {
-            var subject = new SustainsysSaml2AuthenticationOptions(false);
+            var subject = new Saml2AuthenticationOptions(false);
 
             subject.SPOptions.Should().BeNull();
             subject.IdentityProviders.IsEmpty.Should().BeTrue();
         }
 
         [TestMethod]
-        public void SustainsysSaml2AuthenticationOptions_Ctor_LoadsIdpFromConfiguration()
+        public void Saml2AuthenticationOptions_Ctor_LoadsIdpFromConfiguration()
         {
-            var subject = new SustainsysSaml2AuthenticationOptions(true);
+            var subject = new Saml2AuthenticationOptions(true);
 
             subject.IdentityProviders.Default.EntityId.Id.Should().Be("https://idp.example.com");
         }
 
         [TestMethod]
-        public void SustainsysSaml2AuthenticationOptions_Ctor_LoadsFederationFromConfigurationAndRegistersIdp()
+        public void Saml2AuthenticationOptions_Ctor_LoadsFederationFromConfigurationAndRegistersIdp()
         {
-            var subject = new SustainsysSaml2AuthenticationOptions(true);
+            var subject = new Saml2AuthenticationOptions(true);
 
             Action a = () =>
             {
@@ -62,9 +62,9 @@ namespace Sustainsys.Saml2.Owin.Tests
         }
 
         [TestMethod]
-        public void SustainsysSaml2AuthenticationOptions_Caption()
+        public void Saml2AuthenticationOptions_Caption()
         {
-            var subject = new SustainsysSaml2AuthenticationOptions(false)
+            var subject = new Saml2AuthenticationOptions(false)
             {
                 Caption = "MyCaption"
             };

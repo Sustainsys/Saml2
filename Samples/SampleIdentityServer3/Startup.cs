@@ -128,7 +128,7 @@ namespace SampleIdentityServer3
         private void ConfigureSaml2(IAppBuilder app, string signInAsType)
         {
 
-            var options = new SustainsysSaml2AuthenticationOptions(false)
+            var options = new Saml2AuthenticationOptions(false)
             {
                 SPOptions = new SPOptions
                 {
@@ -150,10 +150,10 @@ namespace SampleIdentityServer3
                 LoadMetadata = true
             });
 
-            app.UseSustainsysSaml2Authentication(options);
+            app.UseSaml2Authentication(options);
         }
 
-        private void UseIdSrv3LogoutOnFederatedLogout(IAppBuilder app, SustainsysSaml2AuthenticationOptions options)
+        private void UseIdSrv3LogoutOnFederatedLogout(IAppBuilder app, Saml2AuthenticationOptions options)
         {
             app.Map("/signoutcleanup", cleanup =>
             {

@@ -14,7 +14,7 @@ namespace Sustainsys.Saml2.Configuration
         /// Set of callbacks that can be used as extension points for various
         /// events.
         /// </summary>
-        public SustainsysSaml2Notifications Notifications { get; set; }
+        public Saml2Notifications Notifications { get; set; }
 
         /// <summary>
         /// Reads the options from the current config file.
@@ -48,7 +48,7 @@ namespace Sustainsys.Saml2.Configuration
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "sp")]
         public Options(SPOptions spOptions)
         {
-            Notifications = new SustainsysSaml2Notifications();
+            Notifications = new Saml2Notifications();
             SPOptions = spOptions;
             if(SPOptions.Logger == null)
             {
