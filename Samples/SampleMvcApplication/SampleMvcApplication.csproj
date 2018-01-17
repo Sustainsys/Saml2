@@ -131,8 +131,8 @@
     <Content Include="fonts\glyphicons-halflings-regular.eot" />
     <Content Include="Content\bootstrap-theme.css.map" />
     <Content Include="Content\bootstrap.css.map" />
-    <Content Include="App_Data\Sustainsys.Saml2.StubIdp.cer" />
     <Content Include="App_Data\Sustainsys.Saml2.Tests.pfx" />
+    <Content Include="App_Data\stubidp.sustainsys.com.cer" />
     <None Include="Scripts\jquery-1.10.2.intellisense.js" />
     <None Include="Scripts\jquery-2.1.1.intellisense.js" />
     <Content Include="Scripts\jquery-2.1.1.js" />
