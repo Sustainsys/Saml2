@@ -1,3 +1,7 @@
+Version 0.23.0
+* Project renamed to Sustainsys.Saml2
+* No other changes since 0.22.0
+
 Version 0.22.0
 
 * Asp.NET Core 2 Handler
