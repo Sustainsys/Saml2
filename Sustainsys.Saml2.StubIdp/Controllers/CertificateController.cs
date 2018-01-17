@@ -2,7 +2,7 @@
 using System.Net.Mime;
 using System.Web.Mvc;
 
-namespace Kentor.AuthServices.StubIdp.Controllers
+namespace Sustainsys.Saml2.StubIdp.Controllers
 {
     public class CertificateController : Controller
     {

@@ -115,13 +115,13 @@
                     <div class="radio-group col-md-8">
                         <label for="binding_post">
                             <input type="radio" name="AssertionModel.ResponseBinding" id="binding_post"
-                                   checked="@(Model.AssertionModel.ResponseBinding == Kentor.AuthServices.WebSso.Saml2BindingType.HttpPost)"
+                                   checked="@(Model.AssertionModel.ResponseBinding == Sustainsys.Saml2.WebSso.Saml2BindingType.HttpPost)"
                                    value="HttpPost" />
                             Http POST Binding
                         </label>
                         <label for="binding_artifact">
                             <input type="radio" name="AssertionModel.ResponseBinding" id="binding_artifact"
-                                   checked="@(Model.AssertionModel.ResponseBinding == Kentor.AuthServices.WebSso.Saml2BindingType.Artifact)"
+                                   checked="@(Model.AssertionModel.ResponseBinding == Sustainsys.Saml2.WebSso.Saml2BindingType.Artifact)"
                                    value="Artifact" />
                             Artifact Binding over Http Redirect
                         </label>

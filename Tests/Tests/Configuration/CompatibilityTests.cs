@@ -1,9 +1,9 @@
 ﻿using FluentAssertions;
-using Kentor.AuthServices.Configuration;
+using Sustainsys.Saml2.Configuration;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 
-namespace Kentor.AuthServices.Tests.Configuration
+namespace Sustainsys.Saml2.Tests.Configuration
 {
     [TestClass]
     public class CompatibilityTests

@@ -13,12 +13,12 @@
     <description>
       A SAML2 ASP.NET Core 2 handler, compatible with ASP.NET Identity for external logins.
     </description>
-    <copyright>Copyright Sustainsys and contributors 2017</copyright>
+    <copyright>Copyright Sustainsys and contributors 2017-2018</copyright>
     <tags>SAML2 authentication AspNet SAML SSO</tags>
     <releaseNotes />
     <dependencies>
       <group>
-        <dependency id="Kentor.AuthServices" version="[$version$]" />
+        <dependency id="Sustainsys.Saml2" version="[$version$]" />
       </group>
     </dependencies>
   </metadata>

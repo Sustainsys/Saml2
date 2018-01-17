@@ -1,0 +1,192 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Release</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{93BA675E-A159-4701-B68B-C4B81015C556}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Sustainsys.Saml2</RootNamespace>
+    <AssemblyName>Sustainsys.Saml2</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <RunCodeAnalysis>true</RunCodeAnalysis>
+    <CodeAnalysisRuleSet>..\Sustainsys.Saml2.ruleset</CodeAnalysisRuleSet>
+    <DocumentationFile>bin\Debug\Sustainsys.Saml2.XML</DocumentationFile>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>full</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <DocumentationFile>bin\Release\Sustainsys.Saml2.XML</DocumentationFile>
+    <DebugSymbols>true</DebugSymbols>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.IdentityModel" />
+    <Reference Include="System.identitymodel.services" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Security" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\VersionInfo.cs">
+      <Link>VersionInfo.cs</Link>
+    </Compile>
+    <Compile Include="Configuration\Saml2Notifications.cs" />
+    <Compile Include="Saml2ClaimTypes.cs" />
+    <Compile Include="ClaimsExtensions.cs" />
+    <Compile Include="Configuration\ArtifactResolutionServiceCollection.cs" />
+    <Compile Include="Configuration\ArtifactResolutionServiceElement.cs" />
+    <Compile Include="Configuration\CertificateCollection.cs" />
+    <Compile Include="Configuration\Compatibility.cs" />
+    <Compile Include="Configuration\CompatibilityElement.cs" />
+    <Compile Include="ILoggerAdapter.cs" />
+    <Compile Include="Internal\DateTimeHelper.cs" />
+    <Compile Include="Exceptions\UnexpectedInResponseToException.cs" />
+    <Compile Include="Internal\DelimitedString.cs" />
+    <Compile Include="Internal\DictionaryExtensions.cs" />
+    <Compile Include="ManagedSha256SignatureDescription.cs" />
+    <Compile Include="NullLoggerAdapter.cs" />
+    <Compile Include="Saml2NameIdExtensions.cs" />
+    <Compile Include="Configuration\ServiceCertificateCollection.cs" />
+    <Compile Include="Saml2P\AuthnContextComparisonType.cs" />
+    <Compile Include="Configuration\NameIdPolicyElement.cs" />
+    <Compile Include="Saml2P\Saml2IdpEntry.cs" />
+    <Compile Include="Saml2P\Saml2LogoutResponse.cs" />
+    <Compile Include="Saml2P\Saml2RequestedAuthnContext.cs" />
+    <Compile Include="Configuration\RequestedAuthnContextElement.cs" />
+    <Compile Include="Configuration\SigningBehavior.cs" />
+    <Compile Include="Exceptions\InvalidSignatureException.cs" />
+    <Compile Include="NameIdFormatExtension.cs" />
+    <Compile Include="MetadataPublishOverrideType.cs" />
+    <Compile Include="CertificateStatus.cs" />
+    <Compile Include="CertificateUse.cs" />
+    <Compile Include="Configuration\ServiceCertificateElementCollection.cs" />
+    <Compile Include="Configuration\ServiceCertificateElement.cs" />
+    <Compile Include="Saml2P\NameIdFormat.cs" />
+    <Compile Include="Saml2P\Saml2ArtifactResolve.cs" />
+    <Compile Include="Saml2P\Saml2ArtifactResponse.cs" />
+    <Compile Include="Saml2P\Saml2NameIdPolicy.cs" />
+    <Compile Include="Saml2P\Saml2Scoping.cs" />
+    <Compile Include="Saml2P\Saml2SoapBinding.cs" />
+    <Compile Include="Saml2P\Saml2StatusResponseType.cs" />
+    <Compile Include="ServiceCertificate.cs" />
+    <Compile Include="Configuration\ConfiguredAndLoadedSigningKeysCollection.cs" />
+    <Compile Include="Internal\PathHelper.cs" />
+    <Compile Include="Internal\QueryStringHelper.cs" />
+    <Compile Include="Exceptions\UnsuccessfulSamlOperationException.cs" />
+    <Compile Include="Metadata\KeyInfoSerializer.cs" />
+    <Compile Include="Saml2P\FilteringXmlNodeReader.cs" />
+    <Compile Include="Exceptions\Saml2ResponseFailedValidationException.cs" />
+    <Compile Include="Internal\CryptographyExtensions.cs" />
+    <Compile Include="Internal\RSAEncryptedXml.cs" />
+    <Compile Include="TrustLevel.cs" />
+    <Compile Include="WebSso\AcsCommand.cs" />
+    <Compile Include="Metadata\AttributeConsumingService.cs" />
+    <Compile Include="Configuration\RequestedAttributeElement.cs" />
+    <Compile Include="Configuration\RequestedAttributesCollection.cs" />
+    <Compile Include="Metadata\RequestedAttribute.cs" />
+    <Compile Include="Metadata\ExtendedEntitiesDescriptor.cs" />
+    <Compile Include="ICachedMetadata.cs" />
+    <Compile Include="Metadata\MetadataRefreshScheduler.cs" />
+    <Compile Include="Metadata\ServiceProviderSingleSignOnDescriptorExtensions.cs" />
+    <Compile Include="Metadata\ExtendedEntityDescriptor.cs" />
+    <Compile Include="Exceptions\Saml2Exception.cs" />
+    <Compile Include="WebSso\Saml2Urls.cs" />
+    <Compile Include="Exceptions\BadFormatSamlResponseException.cs" />
+    <Compile Include="Metadata\ExtendedMetadataSerializer.cs" />
+    <Compile Include="ClaimsIdentityExtensions.cs" />
+    <Compile Include="WebSso\Cacheability.cs" />
+    <Compile Include="WebSso\CommandResult.cs" />
+    <Compile Include="Configuration\ContactPersonElement.cs" />
+    <Compile Include="Configuration\ContactPersonsCollection.cs" />
+    <Compile Include="Configuration\IdentityProviderDictionary.cs" />
+    <Compile Include="Configuration\MetadataElement.cs" />
+    <Compile Include="Configuration\OrganizationElement.cs" />
+    <Compile Include="Configuration\SPOptions.cs" />
+    <Compile Include="Configuration\EntityIdConverter.cs" />
+    <Compile Include="Configuration\FederationCollection.cs" />
+    <Compile Include="Configuration\IdentityProviderCollection.cs" />
+    <Compile Include="Configuration\IdentityProviderElement.cs" />
+    <Compile Include="Configuration\CertificateElement.cs" />
+    <Compile Include="Configuration\IOptions.cs" />
+    <Compile Include="Configuration\Options.cs" />
+    <Compile Include="DateTimeExtensions.cs" />
+    <Compile Include="Internal\EntityIdEqualityComparer.cs" />
+    <Compile Include="Internal\Enumerator.cs" />
+    <Compile Include="Metadata\ExtendedServiceProviderSingleSignOnDescriptor.cs" />
+    <Compile Include="Federation.cs" />
+    <Compile Include="Configuration\FederationElement.cs" />
+    <Compile Include="WebSso\HttpRequestData.cs" />
+    <Compile Include="IdentityProvider.cs" />
+    <Compile Include="Saml2P\ISaml2Message.cs" />
+    <Compile Include="Metadata\MetadatabaseExtensions.cs" />
+    <Compile Include="WebSso\MetadataCommand.cs" />
+    <Compile Include="Metadata\MetadataLoader.cs" />
+    <Compile Include="Saml2P\Saml2PSecurityTokenHandler.cs" />
+    <Compile Include="Exceptions\NoSamlResponseFoundException.cs" />
+    <Compile Include="WebSso\NotFoundCommand.cs" />
+    <Compile Include="WebSso\ICommand.cs" />
+    <Compile Include="WebSso\CommandFactory.cs" />
+    <Compile Include="StoredRequestState.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Internal\ReturnRequestedIssuerNameRegistry.cs" />
+    <Compile Include="Saml2AssertionExtensions.cs" />
+    <Compile Include="Saml2StatementExtension.cs" />
+    <Compile Include="Configuration\SustainsysSaml2Section.cs" />
+    <Compile Include="Saml2P\Saml2AuthenticationRequest.cs" />
+    <Compile Include="RelayStateGenerator.cs" />
+    <Compile Include="WebSso\Saml2ArtifactBinding.cs" />
+    <Compile Include="WebSso\Saml2Binding.cs" />
+    <Compile Include="WebSso\Saml2BindingType.cs" />
+    <Compile Include="Saml2ConditionsExtensions.cs" />
+    <Compile Include="Saml2Namespaces.cs" />
+    <Compile Include="WebSso\Saml2PostBinding.cs" />
+    <Compile Include="WebSso\Saml2RedirectBinding.cs" />
+    <Compile Include="Saml2P\Saml2RequestBase.cs" />
+    <Compile Include="Saml2P\Saml2Response.cs" />
+    <Compile Include="Saml2P\Saml2StatusCode.cs" />
+    <Compile Include="Saml2SubjectExtensions.cs" />
+    <Compile Include="Metadata\SPOptionsExtensions.cs" />
+    <Compile Include="WebSso\SignInCommand.cs" />
+    <Compile Include="Internal\StatusCodeHelper.cs" />
+    <Compile Include="Internal\StringHelpers.cs" />
+    <Compile Include="WebSso\LogoutCommand.cs" />
+    <Compile Include="Saml2P\Saml2LogoutRequest.cs" />
+    <Compile Include="XmlHelpers.cs" />
+    <Compile Include="Metadata\FilteringXmlDictionaryReader.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <CodeAnalysisDictionary Include="..\CustomDictionary.xml">
+      <link>CustomDictionary.xml</link>
+    </CodeAnalysisDictionary>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

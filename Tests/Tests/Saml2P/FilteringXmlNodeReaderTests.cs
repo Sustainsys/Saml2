@@ -1,10 +1,10 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Xml;
-using Kentor.AuthServices.Saml2P;
+using Sustainsys.Saml2.Saml2P;
 using FluentAssertions;
 
-namespace Kentor.AuthServices.Tests.Saml2P
+namespace Sustainsys.Saml2.Tests.Saml2P
 {
     [TestClass]
     public class FilteringXmlNodeReaderTests

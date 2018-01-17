@@ -7,10 +7,10 @@ using System.Web;
 using IdentityServer3.Core.Services.InMemory;
 using Microsoft.Owin;
 using IdentityServer3.Core.Models;
-using Kentor.AuthServices.Owin;
-using Kentor.AuthServices.Configuration;
+using Sustainsys.Saml2.Owin;
+using Sustainsys.Saml2.Configuration;
 using System.IdentityModel.Metadata;
-using Kentor.AuthServices;
+using Sustainsys.Saml2;
 using System.IdentityModel.Selectors;
 using System.Security.Cryptography.X509Certificates;
 using Microsoft.Owin.Security.Cookies;
@@ -53,7 +53,7 @@ namespace SampleIdentityServer3
                     },
 
                     SigningCertificate =
-                        new X509Certificate2(AppDomain.CurrentDomain.BaseDirectory + "\\App_Data\\Kentor.AuthServices.SampleIdentityServer3.pfx"),
+                        new X509Certificate2(AppDomain.CurrentDomain.BaseDirectory + "\\App_Data\\Sustainsys.Saml2.SampleIdentityServer3.pfx"),
 
                     LoggingOptions = new LoggingOptions
                     {
@@ -128,11 +128,11 @@ namespace SampleIdentityServer3
         private void ConfigureSaml2(IAppBuilder app, string signInAsType)
         {
 
-            var options = new KentorAuthServicesAuthenticationOptions(false)
+            var options = new Saml2AuthenticationOptions(false)
             {
                 SPOptions = new SPOptions
                 {
-                    EntityId = new EntityId("http://localhost:4589/IdSrv3/AuthServices"),
+                    EntityId = new EntityId("http://localhost:4589/IdSrv3/Saml2"),
                 },
                 SignInAsAuthenticationType = signInAsType,
                 Caption = "SAML2p"
@@ -141,7 +141,7 @@ namespace SampleIdentityServer3
             UseIdSrv3LogoutOnFederatedLogout(app, options);
 
             options.SPOptions.ServiceCertificates.Add(new X509Certificate2(
-                AppDomain.CurrentDomain.SetupInformation.ApplicationBase + "/App_Data/Kentor.AuthServices.Tests.pfx"));
+                AppDomain.CurrentDomain.SetupInformation.ApplicationBase + "/App_Data/Sustainsys.Saml2.Tests.pfx"));
 
             options.IdentityProviders.Add(new IdentityProvider(
                 new EntityId("http://localhost:52071/Metadata"),
@@ -150,10 +150,10 @@ namespace SampleIdentityServer3
                 LoadMetadata = true
             });
 
-            app.UseKentorAuthServicesAuthentication(options);
+            app.UseSaml2Authentication(options);
         }
 
-        private void UseIdSrv3LogoutOnFederatedLogout(IAppBuilder app, KentorAuthServicesAuthenticationOptions options)
+        private void UseIdSrv3LogoutOnFederatedLogout(IAppBuilder app, Saml2AuthenticationOptions options)
         {
             app.Map("/signoutcleanup", cleanup =>
             {

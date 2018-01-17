@@ -14,7 +14,7 @@
 <body>
     <h1>IdentityServer3 Sample Application</h1>
     <p>
-        This is a sample setup of IdentityServer3 with Kentor.AuthServices. The
+        This is a sample setup of IdentityServer3 with Sustainsys.Saml2. The
         IdentityServer3 is running in the same application at <a href="/IdSrv3">
             /IdSrv3
         </a>.
@@ -262,7 +262,7 @@
             var iframe = document.getElementById("idp-initiated-logout-frame");
             iframe.style = "";
 
-            iframe.src = "http://localhost:52071/Logout?NameId=JohnDoe&DestinationUrl=http://localhost:4589/IdSrv3/AuthServices/Logout&AutoPost=true";
+            iframe.src = "http://localhost:52071/Logout?NameId=JohnDoe&DestinationUrl=http://localhost:4589/IdSrv3/Saml2/Logout&AutoPost=true";
         }
 
         document.getElementById("idp-initiated-logout").addEventListener("click", idpLogout);

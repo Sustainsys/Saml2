@@ -2,9 +2,9 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Collections;
 using FluentAssertions;
-using Kentor.AuthServices.Internal;
+using Sustainsys.Saml2.Internal;
 
-namespace Kentor.AuthServices.Tests.Internal
+namespace Sustainsys.Saml2.Tests.Internal
 {
     [TestClass]
     public class EnumeratorTests

@@ -1,9 +1,9 @@
 ﻿using FluentAssertions;
-using Kentor.AuthServices;
-using Kentor.AuthServices.Configuration;
-using Kentor.AuthServices.Saml2P;
-using Kentor.AuthServices.TestHelpers;
-using Kentor.AuthServices.WebSso;
+using Sustainsys.Saml2;
+using Sustainsys.Saml2.Configuration;
+using Sustainsys.Saml2.Saml2P;
+using Sustainsys.Saml2.TestHelpers;
+using Sustainsys.Saml2.WebSso;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
@@ -137,7 +137,7 @@ namespace Sustainsys.Saml2.AspNetCore2.Tests
             var cookieData = HttpRequestData.ConvertBinaryData(
                 StubDataProtector.Protect(state.Serialize()));
 
-            var cookieName = $"Kentor.{relayState}";
+            var cookieName = $"{StoredRequestState.CookieNameBase}{relayState}";
 
             context.HttpContext.Request.Cookies = new StubCookieCollection(
                 Enumerable.Repeat(new KeyValuePair<string, string>(
@@ -306,8 +306,8 @@ namespace Sustainsys.Saml2.AspNetCore2.Tests
             context.HttpContext.User = new ClaimsPrincipal(
                 new ClaimsIdentity(new Claim[]
                 {
-                    new Claim(AuthServicesClaimTypes.LogoutNameIdentifier, ",,,,NameId", null, "https://idp.example.com"),
-                    new Claim(AuthServicesClaimTypes.SessionIndex, "SessionId", null, "https://idp.example.com")
+                    new Claim(Saml2ClaimTypes.LogoutNameIdentifier, ",,,,NameId", null, "https://idp.example.com"),
+                    new Claim(Saml2ClaimTypes.SessionIndex, "SessionId", null, "https://idp.example.com")
                 }, "Federation"));
 
             IAuthenticationSignOutHandler subject = context.Subject;
@@ -325,7 +325,7 @@ namespace Sustainsys.Saml2.AspNetCore2.Tests
                 "location should be set for outbound redirect binding");
 
             context.HttpContext.Response.Cookies.Received().Append(
-                Arg.Is<string>(s => s.StartsWith("Kentor.")),
+                Arg.Is<string>(s => s.StartsWith(StoredRequestState.CookieNameBase)),
                 Arg.Is<string>(s => new StoredRequestState(StubDataProtector.Unprotect(HttpRequestData.GetBinaryData(s)))
                     .ReturnUrl.OriginalString == "/loggedout"),
                 Arg.Any<CookieOptions>());

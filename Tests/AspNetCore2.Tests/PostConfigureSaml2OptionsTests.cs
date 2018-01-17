@@ -3,7 +3,7 @@ using FluentAssertions;
 using System;
 using NSubstitute;
 using Microsoft.Extensions.Logging;
-using Kentor.AuthServices;
+using Sustainsys.Saml2;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.Options;
 

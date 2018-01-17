@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using Kentor.AuthServices;
+using Sustainsys.Saml2;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -76,8 +76,8 @@ namespace SampleAspNetCore2ApplicationNETFramework.Pages.Account
             {
                 var principal = await _inner.CreateAsync(user);
 
-                var logoutInfo = _externalLoginInfo.Principal.FindFirst(AuthServicesClaimTypes.LogoutNameIdentifier);
-                var sessionIndex = _externalLoginInfo.Principal.FindFirst(AuthServicesClaimTypes.SessionIndex);
+                var logoutInfo = _externalLoginInfo.Principal.FindFirst(Saml2ClaimTypes.LogoutNameIdentifier);
+                var sessionIndex = _externalLoginInfo.Principal.FindFirst(Saml2ClaimTypes.SessionIndex);
 
                 var identity = principal.Identities.Single();
                 identity.AddClaim(logoutInfo);

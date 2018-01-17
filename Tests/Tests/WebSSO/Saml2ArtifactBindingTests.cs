@@ -1,4 +1,4 @@
-﻿using Kentor.AuthServices.WebSso;
+﻿using Sustainsys.Saml2.WebSso;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using FluentAssertions;
 using System;
@@ -9,12 +9,12 @@ using System.IdentityModel.Metadata;
 using System.Security.Cryptography;
 using System.Text;
 using System.Linq;
-using Kentor.AuthServices.Saml2P;
+using Sustainsys.Saml2.Saml2P;
 using System.Reflection;
-using Kentor.AuthServices.Tests.Helpers;
-using Kentor.AuthServices.TestHelpers;
+using Sustainsys.Saml2.Tests.Helpers;
+using Sustainsys.Saml2.TestHelpers;
 
-namespace Kentor.AuthServices.Tests.WebSSO
+namespace Sustainsys.Saml2.Tests.WebSSO
 {
     [TestClass]
     public class Saml2ArtifactBindingTests

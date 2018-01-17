@@ -1,5 +1,5 @@
-﻿using Kentor.AuthServices.Configuration;
-using Kentor.AuthServices.WebSso;
+﻿using Sustainsys.Saml2.Configuration;
+using Sustainsys.Saml2.WebSso;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
 using System;
@@ -51,7 +51,7 @@ namespace Sustainsys.Saml2.AspNetCore2
         /// Set of callbacks that can be used as extension points for various
         /// events.
         /// </summary>
-        public KentorAuthServicesNotifications Notifications { get; }
-            = new KentorAuthServicesNotifications();
+        public Saml2Notifications Notifications { get; }
+            = new Saml2Notifications();
     }
 }

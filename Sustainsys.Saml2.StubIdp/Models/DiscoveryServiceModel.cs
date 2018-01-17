@@ -5,7 +5,7 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 
-namespace Kentor.AuthServices.StubIdp.Models
+namespace Sustainsys.Saml2.StubIdp.Models
 {
     public class DiscoveryServiceModel
     {

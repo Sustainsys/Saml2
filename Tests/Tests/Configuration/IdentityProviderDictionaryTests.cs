@@ -1,11 +1,11 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Kentor.AuthServices.Configuration;
+using Sustainsys.Saml2.Configuration;
 using FluentAssertions;
 using System.IdentityModel.Metadata;
-using Kentor.AuthServices.TestHelpers;
+using Sustainsys.Saml2.TestHelpers;
 
-namespace Kentor.AuthServices.Tests.Configuration
+namespace Sustainsys.Saml2.Tests.Configuration
 {
     [TestClass]
     public class IdentityProviderDictionaryTests

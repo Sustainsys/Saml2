@@ -1,5 +1,5 @@
 ﻿using FluentAssertions;
-using Kentor.AuthServices.WebSso;
+using Sustainsys.Saml2.WebSso;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Primitives;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -11,7 +11,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Collections;
-using Kentor.AuthServices;
+using Sustainsys.Saml2;
 using System.Security.Claims;
 
 namespace Sustainsys.Saml2.AspNetCore2.Tests
@@ -73,7 +73,7 @@ namespace Sustainsys.Saml2.AspNetCore2.Tests
 
             context.Request.Cookies = new StubCookieCollection(
                 Enumerable.Repeat(new KeyValuePair<string, string>(
-                    $"Kentor.SomeState", cookieData), 1));
+                    StoredRequestState.CookieNameBase + "SomeState", cookieData), 1));
 
             var actual = context.ToHttpRequestData(StubDataProtector.Unprotect);
 

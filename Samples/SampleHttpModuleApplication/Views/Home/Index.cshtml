@@ -13,20 +13,20 @@
         You are currently <span id="status">not signed in</span>.
     </p>
     <p>
-        <a href="@Url.Content("~/AuthServices/SignIn")">Sign in</a> - default IDP
-        @foreach (var idp in Kentor.AuthServices.Configuration.KentorAuthServicesSection.Current.IdentityProviders)
+        <a href="@Url.Content("~/Saml2/SignIn")">Sign in</a> - default IDP
+        @foreach (var idp in Sustainsys.Saml2.Configuration.SustainsysSaml2Section.Current.IdentityProviders)
         {
             var entityId = idp.EntityId;
             var destinationUrl = idp.SignOnUrl;
             <br />
-            <a href="@Url.Content("~/AuthServices/SignIn?idp=" + HttpUtility.UrlEncode(entityId))">Sign in</a>@: - @entityId - @destinationUrl
+            <a href="@Url.Content("~/Saml2/SignIn?idp=" + HttpUtility.UrlEncode(entityId))">Sign in</a>@: - @entityId - @destinationUrl
         }
     </p>
 }
 else
 {
     <p>
-        You are signed in. <a id="logout" href="@Url.Content("~/AuthServices/Logout?ReturnUrl=" + Uri.EscapeDataString(Url.Content("~/?Status=LoggedOut")))">Logout</a>.
+        You are signed in. <a id="logout" href="@Url.Content("~/Saml2/Logout?ReturnUrl=" + Uri.EscapeDataString(Url.Content("~/?Status=LoggedOut")))">Logout</a>.
     </p>
     <table>
         <thead>
@@ -50,5 +50,5 @@ else
 }
 
 <p>
-<a href="@Url.Content("~/AuthServices/")">Service Provider Metadata.</a>
+<a href="@Url.Content("~/Saml2/")">Service Provider Metadata.</a>
 </p>

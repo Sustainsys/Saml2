@@ -1,12 +1,12 @@
 ﻿using FluentAssertions;
-using Kentor.AuthServices.Configuration;
-using Kentor.AuthServices.TestHelpers;
+using Sustainsys.Saml2.Configuration;
+using Sustainsys.Saml2.TestHelpers;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.IdentityModel.Tokens;
 using System.Linq;
 using System.Security.Cryptography.X509Certificates;
 
-namespace Kentor.AuthServices.Tests.Configuration
+namespace Sustainsys.Saml2.Tests.Configuration
 {
     [TestClass]
     public class ConfiguredAndLoadedSigningKeysCollectionTests

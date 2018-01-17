@@ -4,7 +4,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using FluentAssertions;
 using System.Xml.Linq;
 
-namespace Kentor.AuthServices.IntegrationTests
+namespace Sustainsys.Saml2.IntegrationTests
 {
     [TestClass]
     public class MetadataTests
@@ -12,7 +12,7 @@ namespace Kentor.AuthServices.IntegrationTests
         [TestMethod]
         public void Metadata_GetMetadata_Saml2AuthenticationModule()
         {
-            var url = "http://localhost:17009/SamplePath/AuthServices/";
+            var url = "http://localhost:17009/SamplePath/Saml2/";
 
             TestMetadata(url);
         }
@@ -32,7 +32,7 @@ namespace Kentor.AuthServices.IntegrationTests
         [TestMethod]
         public void Metadata_GetMetadata_Mvc()
         {
-            var url = "http://localhost:2181/AuthServices/";
+            var url = "http://localhost:2181/Saml2/";
 
             TestMetadata(url);
         }
@@ -40,7 +40,7 @@ namespace Kentor.AuthServices.IntegrationTests
         [TestMethod]
         public void Metadata_GetMetadata_Owin()
         {
-            var url = "http://localhost:57294/AuthServices";
+            var url = "http://localhost:57294/Saml2";
 
             TestMetadata(url);
         }

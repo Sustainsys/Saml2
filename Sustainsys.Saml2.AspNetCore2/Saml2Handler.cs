@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System;
-using Kentor.AuthServices.WebSso;
+using Sustainsys.Saml2.WebSso;
 using Microsoft.AspNetCore.DataProtection;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Http;

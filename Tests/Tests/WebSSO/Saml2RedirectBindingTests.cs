@@ -3,15 +3,15 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using FluentAssertions;
 using NSubstitute;
 using System.Web;
-using Kentor.AuthServices.WebSso;
-using Kentor.AuthServices.Tests.WebSSO;
+using Sustainsys.Saml2.WebSso;
+using Sustainsys.Saml2.Tests.WebSSO;
 using System.Security.Cryptography;
 using System.Text;
-using Kentor.AuthServices.Exceptions;
+using Sustainsys.Saml2.Exceptions;
 using System.Security.Cryptography.Xml;
-using Kentor.AuthServices.TestHelpers;
+using Sustainsys.Saml2.TestHelpers;
 
-namespace Kentor.AuthServices.Tests.WebSso
+namespace Sustainsys.Saml2.Tests.WebSso
 {
     [TestClass]
     public class Saml2RedirectBindingTests

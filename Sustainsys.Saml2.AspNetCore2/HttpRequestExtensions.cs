@@ -1,4 +1,4 @@
-﻿using Kentor.AuthServices.WebSso;
+﻿using Sustainsys.Saml2.WebSso;
 using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;

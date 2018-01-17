@@ -1,6 +1,6 @@
 ﻿using FluentAssertions;
-using Kentor.AuthServices;
-using Kentor.AuthServices.WebSso;
+using Sustainsys.Saml2;
+using Sustainsys.Saml2.WebSso;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
 using Microsoft.VisualStudio.TestTools.UnitTesting;

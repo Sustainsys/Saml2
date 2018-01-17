@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
 
-namespace Kentor.AuthServices.Tests.Helpers
+namespace Sustainsys.Saml2.Tests.Helpers
 {
     static class XmlElementExtensions
     {

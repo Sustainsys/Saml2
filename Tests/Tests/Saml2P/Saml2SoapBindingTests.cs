@@ -1,12 +1,12 @@
 ﻿using FluentAssertions;
-using Kentor.AuthServices.Saml2P;
+using Sustainsys.Saml2.Saml2P;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.IO;
 using System.Net;
 using System.Xml.Linq;
 
-namespace Kentor.AuthServices.Tests.Saml2P
+namespace Sustainsys.Saml2.Tests.Saml2P
 {
     [TestClass]
     public class Saml2SoapBindingTests
@@ -68,11 +68,11 @@ namespace Kentor.AuthServices.Tests.Saml2P
         [TestMethod]
         public void Saml2SoapBinding_SendSoapRequest_VerifiesUriIsRemote()
         {
-            File.Exists("c:\\Kentor-Unit-Test.txt").Should().BeFalse(
-                "a file c:\\Kentor-Unit-Test.txt already exists, preventing test from running");
+            File.Exists("c:\\Sustainsys-Unit-Test.txt").Should().BeFalse(
+                "a file c:\\Sustainsys-Unit-Test.txt already exists, preventing test from running");
 
             var payload = "Doesn't matter";
-            var destination = new Uri("file://c:/Kentor-Unit-Test.txt");
+            var destination = new Uri("file://c:/Sustainsys-Unit-Test.txt");
 
             Action a = () => Saml2SoapBinding.SendSoapRequest(payload, destination);
 

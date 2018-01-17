@@ -1,24 +1,24 @@
 ﻿using System.IO;
 using System.Net.Mime;
-using Kentor.AuthServices.StubIdp.Models;
+using Sustainsys.Saml2.StubIdp.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Collections.Concurrent;
 using System.Web;
 using System.Web.Mvc;
-using Kentor.AuthServices.Mvc;
+using Sustainsys.Saml2.Mvc;
 using System.IdentityModel.Metadata;
-using Kentor.AuthServices.Configuration;
+using Sustainsys.Saml2.Configuration;
 using System.IdentityModel.Tokens;
 using System.Configuration;
-using Kentor.AuthServices.Saml2P;
-using Kentor.AuthServices.WebSso;
-using Kentor.AuthServices.HttpModule;
+using Sustainsys.Saml2.Saml2P;
+using Sustainsys.Saml2.WebSso;
+using Sustainsys.Saml2.HttpModule;
 using Newtonsoft.Json.Schema;
 using Newtonsoft.Json.Linq;
 
-namespace Kentor.AuthServices.StubIdp.Controllers
+namespace Sustainsys.Saml2.StubIdp.Controllers
 {
     public class ManageController : BaseController
     {
@@ -34,8 +34,8 @@ namespace Kentor.AuthServices.StubIdp.Controllers
             {
                 var defaultData = System.IO.File.ReadAllText(GetIdpFileNamePath(defaultIdpGuid));
                 var defaultJson = JObject.Parse(defaultData);
-                defaultJson["DefaultAssertionConsumerServiceUrl"] = "http://www.example.com/AuthServices/Acs (optional, you may remove this line)";
-                defaultJson["DefaultAudience"] = "http://www.example.com/AuthServices (optional, but usually a good idea to set to Entity ID of SP)";
+                defaultJson["DefaultAssertionConsumerServiceUrl"] = "http://www.example.com/Saml2/Acs (optional, you may remove this line)";
+                defaultJson["DefaultAudience"] = "http://www.example.com/Saml2 (optional, but usually a good idea to set to Entity ID of SP)";
                 defaultJson["IdpDescription"] = "This is my custom IDP description";
                 model.JsonData = defaultJson.ToString(Newtonsoft.Json.Formatting.Indented);
             }

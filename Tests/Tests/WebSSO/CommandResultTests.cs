@@ -6,9 +6,9 @@ using NSubstitute;
 using System.Web;
 using System.Security.Claims;
 using System.Security.Principal;
-using Kentor.AuthServices.WebSso;
+using Sustainsys.Saml2.WebSso;
 
-namespace Kentor.AuthServices.Tests.WebSso
+namespace Sustainsys.Saml2.Tests.WebSso
 {
     [TestClass]
     public class CommandResultTests

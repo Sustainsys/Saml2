@@ -152,7 +152,7 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Kentor.AuthServices\Kentor.AuthServices.csproj">
+    <ProjectReference Include="..\Sustainsys.Saml2\Sustainsys.Saml2.csproj">
       <Project>{93BA675E-A159-4701-B68B-C4B81015C556}</Project>
       <Name>Kentor.AuthServices</Name>
     </ProjectReference>

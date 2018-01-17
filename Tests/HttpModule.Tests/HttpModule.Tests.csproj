@@ -7,7 +7,7 @@
     <ProjectGuid>{4D3EADFB-93E9-4F66-BD61-FBAC9E30A294}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Kentor.AuthServices.HttpModule.Tests</RootNamespace>
+    <RootNamespace>Sustainsys.Saml2.HttpModule.Tests</RootNamespace>
     <AssemblyName>HttpModule.Tests</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
@@ -61,7 +61,7 @@
     <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AuthServicesUrlsTests.cs" />
+    <Compile Include="Saml2UrlsTests.cs" />
     <Compile Include="CommandResultHttpSharedTests.cs" />
     <Compile Include="CommandResultHttpTests.cs" />
     <Compile Include="HttpRequestBaseExtensionsTests.cs" />
@@ -72,17 +72,17 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Kentor.AuthServices.HttpModule\Kentor.AuthServices.HttpModule.csproj">
+    <ProjectReference Include="..\..\Sustainsys.Saml2.HttpModule\Sustainsys.Saml2.HttpModule.csproj">
       <Project>{86a588e8-2e2d-4394-9545-24d8ea939cf2}</Project>
-      <Name>Kentor.AuthServices.HttpModule</Name>
+      <Name>Sustainsys.Saml2.HttpModule</Name>
     </ProjectReference>
     <ProjectReference Include="..\TestHelpers\TestHelpers.csproj">
       <Project>{CF1E517E-B2FE-48E1-8BB9-4D9981695C47}</Project>
       <Name>TestHelpers</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Kentor.AuthServices\Kentor.AuthServices.csproj">
+    <ProjectReference Include="..\..\Sustainsys.Saml2\Sustainsys.Saml2.csproj">
       <Project>{93BA675E-A159-4701-B68B-C4B81015C556}</Project>
-      <Name>Kentor.AuthServices</Name>
+      <Name>Sustainsys.Saml2</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets" Condition="Exists('$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets')" />

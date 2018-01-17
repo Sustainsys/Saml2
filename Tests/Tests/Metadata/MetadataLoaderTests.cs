@@ -4,9 +4,9 @@ using System.IdentityModel.Metadata;
 using FluentAssertions;
 using System.Xml.Linq;
 using System.Linq;
-using Kentor.AuthServices.Metadata;
+using Sustainsys.Saml2.Metadata;
 
-namespace Kentor.AuthServices.Tests.Metadata
+namespace Sustainsys.Saml2.Tests.Metadata
 {
     [TestClass]
     public class MetadataLoaderTests

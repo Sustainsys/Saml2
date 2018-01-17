@@ -7,7 +7,7 @@ using System.Security.Cryptography.X509Certificates;
 using System.Security.Cryptography.Xml;
 using System.Web;
 
-namespace Kentor.AuthServices.StubIdp
+namespace Sustainsys.Saml2.StubIdp
 {
     public class CertificateHelper
     {
@@ -15,11 +15,11 @@ namespace Kentor.AuthServices.StubIdp
         {
             get
             {
-                // If accessing on the legacy stubidp.kentor.se host name, use old certificate
+                // If accessing on the legacy stubidp.Kentor.se host name, use old certificate
                 // to not break existing configured clients.
                 if(HttpContext.Current.Request.Url.Host == "stubidp.kentor.se")
                 {
-                    return signingCertificateKentor;
+                    return signingCertificateSustainsys;
                 }
                 return signingCertificate;
             }
@@ -27,7 +27,7 @@ namespace Kentor.AuthServices.StubIdp
 
         // The X509KeyStorageFlags.MachineKeySet flag is required when loading a
         // certificate from file on a shared hosting solution such as Azure.
-        private static readonly X509Certificate2 signingCertificateKentor
+        private static readonly X509Certificate2 signingCertificateSustainsys
             = new X509Certificate2(
                 HttpContext.Current.Server.MapPath(
                 "~\\App_Data\\Kentor.AuthServices.StubIdp.pfx"), "",
@@ -43,21 +43,21 @@ namespace Kentor.AuthServices.StubIdp
         {
             get
             {
-                // If accessing on the legacy stubidp.kentor.se host name, use old certificate
+                // If accessing on the legacy stubidp.Kentor.se host name, use old certificate
                 // to not break existing configured clients.
                 if (HttpContext.Current.Request.Url.Host == "stubidp.kentor.se")
                 {
-                    return signingKeyKentor;
+                    return signingKeySustainsys;
                 }
                 return signingKey;
 
             }
         }
 
-        private static readonly KeyDescriptor signingKeyKentor = 
+        private static readonly KeyDescriptor signingKeySustainsys = 
             new KeyDescriptor(
             new SecurityKeyIdentifier(
-                (new X509SecurityToken(signingCertificateKentor)).CreateKeyIdentifierClause<X509RawDataKeyIdentifierClause>()));
+                (new X509SecurityToken(signingCertificateSustainsys)).CreateKeyIdentifierClause<X509RawDataKeyIdentifierClause>()));
 
         private static readonly KeyDescriptor signingKey =
             new KeyDescriptor(

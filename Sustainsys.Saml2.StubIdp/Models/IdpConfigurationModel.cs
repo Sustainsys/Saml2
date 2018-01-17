@@ -7,7 +7,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Web;
 
-namespace Kentor.AuthServices.StubIdp.Models
+namespace Sustainsys.Saml2.StubIdp.Models
 {
     public class IdpConfigurationModel
     {

@@ -1,5 +1,5 @@
 ﻿using FluentAssertions;
-using Kentor.AuthServices.Configuration;
+using Sustainsys.Saml2.Configuration;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.IdentityModel.Metadata;
@@ -9,13 +9,13 @@ using System.Security.Claims;
 using System.Security.Cryptography.Xml;
 using System.Xml;
 using System.IO;
-using Kentor.AuthServices.Saml2P;
+using Sustainsys.Saml2.Saml2P;
 using System.Reflection;
 using System.IdentityModel.Selectors;
-using Kentor.AuthServices.Exceptions;
-using Kentor.AuthServices.TestHelpers;
+using Sustainsys.Saml2.Exceptions;
+using Sustainsys.Saml2.TestHelpers;
 
-namespace Kentor.AuthServices.Tests.Saml2P
+namespace Sustainsys.Saml2.Tests.Saml2P
 {
     [TestClass]
     public class Saml2ResponseTests
@@ -293,7 +293,7 @@ namespace Kentor.AuthServices.Tests.Saml2P
 
             var result = Saml2Response.Read(signedResponse).GetClaims(Options.FromConfiguration);
 
-            var logoutInfoClaim = result.Single().Claims.SingleOrDefault(c => c.Type == AuthServicesClaimTypes.LogoutNameIdentifier);
+            var logoutInfoClaim = result.Single().Claims.SingleOrDefault(c => c.Type == Saml2ClaimTypes.LogoutNameIdentifier);
             logoutInfoClaim.Should().NotBeNull("the LogoutInfo claim should be generated");
             logoutInfoClaim.Value.Should().Be("NameQualifier,SPNameQualifier,urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress,SPProvidedID,someone@example.com");
         }
@@ -332,11 +332,11 @@ namespace Kentor.AuthServices.Tests.Saml2P
 
             var result = Saml2Response.Read(signedResponse).GetClaims(Options.FromConfiguration);
 
-            var logoutInfoClaim = result.Single().Claims.SingleOrDefault(c => c.Type == AuthServicesClaimTypes.LogoutNameIdentifier);
+            var logoutInfoClaim = result.Single().Claims.SingleOrDefault(c => c.Type == Saml2ClaimTypes.LogoutNameIdentifier);
             logoutInfoClaim.Should().NotBeNull("the Logout name identifier claim should be generated");
             logoutInfoClaim.Value.Should().Be(",,,,SomeOne");
 
-            var sessionIdClaim = result.Single().Claims.SingleOrDefault(c => c.Type == AuthServicesClaimTypes.SessionIndex);
+            var sessionIdClaim = result.Single().Claims.SingleOrDefault(c => c.Type == Saml2ClaimTypes.SessionIndex);
             sessionIdClaim.Should().NotBeNull("the Session ID claim should be generated");
             sessionIdClaim.Value.Should().Be("17");
         }
@@ -414,7 +414,7 @@ namespace Kentor.AuthServices.Tests.Saml2P
 
             result.First().FindFirst(ClaimTypes.NameIdentifier).Should().BeNull();
 
-            var sessionIdClaim = result.Single().Claims.SingleOrDefault(c => c.Type == AuthServicesClaimTypes.SessionIndex);
+            var sessionIdClaim = result.Single().Claims.SingleOrDefault(c => c.Type == Saml2ClaimTypes.SessionIndex);
             sessionIdClaim.Should().NotBeNull("the Session ID claim should be generated");
             sessionIdClaim.Value.Should().Be("17");
         }
@@ -1379,7 +1379,7 @@ namespace Kentor.AuthServices.Tests.Saml2P
         {
             var idp = Options.FromConfiguration.IdentityProviders.Default;
 
-            var request = idp.CreateAuthenticateRequest(StubFactory.CreateAuthServicesUrls());
+            var request = idp.CreateAuthenticateRequest(StubFactory.CreateSaml2Urls());
 
             var responseXML =
             @"<?xml version=""1.0"" encoding=""UTF-8""?>

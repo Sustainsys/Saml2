@@ -1,13 +1,13 @@
-﻿using Kentor.AuthServices.TestHelpers;
+﻿using Sustainsys.Saml2.TestHelpers;
 
-namespace Kentor.AuthServices.Owin.Tests
+namespace Sustainsys.Saml2.Owin.Tests
 {
     class OwinStubFactory
     {
-        internal static KentorAuthServicesAuthenticationOptions CreateOwinOptions()
+        internal static Saml2AuthenticationOptions CreateOwinOptions()
         {
-            return (KentorAuthServicesAuthenticationOptions)StubFactory.CreateOptions(
-                sp => new KentorAuthServicesAuthenticationOptions(false)
+            return (Saml2AuthenticationOptions)StubFactory.CreateOptions(
+                sp => new Saml2AuthenticationOptions(false)
                 {
                     SPOptions = sp,
                     SignInAsAuthenticationType = "AuthType",

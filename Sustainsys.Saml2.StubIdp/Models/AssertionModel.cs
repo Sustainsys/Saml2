@@ -1,5 +1,5 @@
-﻿using Kentor.AuthServices.Saml2P;
-using Kentor.AuthServices.WebSso;
+﻿using Sustainsys.Saml2.Saml2P;
+using Sustainsys.Saml2.WebSso;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -9,7 +9,7 @@ using System.IdentityModel.Tokens;
 using System.Linq;
 using System.Security.Claims;
 
-namespace Kentor.AuthServices.StubIdp.Models
+namespace Sustainsys.Saml2.StubIdp.Models
 {
     public class AssertionModel
     {
@@ -65,7 +65,7 @@ namespace Kentor.AuthServices.StubIdp.Models
             var claims =
                 new Claim[] { nameIdClaim }
                 .Concat(YieldIfNotNullOrEmpty(SessionIndex).Select(
-                    s => new Claim(AuthServicesClaimTypes.SessionIndex, SessionIndex)))
+                    s => new Claim(Saml2ClaimTypes.SessionIndex, SessionIndex)))
                 .Concat((AttributeStatements ?? Enumerable.Empty<AttributeStatementModel>())
                     .Select(att => new Claim(att.Type, att.Value)));
             var identity = new ClaimsIdentity(claims);
