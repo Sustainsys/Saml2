@@ -107,7 +107,7 @@ namespace Sustainsys.Saml2.HttpModule
             {
                 throw new InvalidOperationException(
                     "FederatedAuthentication.SessionAuthenticationModule is null, make sure you have loaded the SessionAuthenticationModule in web.config. " +
-                    "See https://github.com/SustainsysIT/Saml2/blob/master/doc/Configuration.md#loading-modules");
+                    "See https://github.com/SustainsysIT/Saml2/blob/master/docs/Configuration.md#loading-modules");
             }
         }
     }

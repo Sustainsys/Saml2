@@ -22,7 +22,7 @@ forms sites.
 Note that the Owin & ASP.NET Core2 modules enables SAML identity providers to be integrated within
 [IdentityServer3](https://github.com/IdentityServer/IdentityServer3) and
 [IdentityServer4](https://github.com/IdentityServer/IdentityServer3) packages.  Review 
-[this document](doc/IdentityServer3Okta.md) to see how to configure Saml2
+[this document](docs/IdentityServer3Okta.md) to see how to configure Saml2
 with IdentityServer3 and Okta to add Okta as an identity provider to an IdentityServer3 project.
 There is also a SampleIdentityServer3 project in the Saml2 repository.
 
@@ -37,7 +37,7 @@ contains a Saml2 authentication handler for ASP.NET Core 2.x.
 
 Once the nuget packages are installed you must provide configuration either through code
 or through `web.config` sections.
-See [configuration](doc/Configuration.md) for details.
+See [configuration](docs/Configuration.md) for details.
 
 ## Troubleshooting
 
@@ -49,8 +49,8 @@ See [configuration](doc/Configuration.md) for details.
 
 ## Saml2AuthenticationModule
 The Saml2AuthenticationModule provides Saml2 authentication to IIS web sites. In many cases it should just be
-[configured](doc/Configuration.md) in and work without any code written in the application 
-at all (even though [providing an own ClaimsAuthenticationManager](doc/ClaimsAuthenticationManager.md)
+[configured](docs/Configuration.md) in and work without any code written in the application 
+at all (even though [providing an own ClaimsAuthenticationManager](docs/ClaimsAuthenticationManager.md)
 for claims translation is highly recommended).
 
 ## Mvc Controller
@@ -62,7 +62,7 @@ over using the authentication module as it integrates with MVC's error handling.
 The Owin middleware is modeled after the external authentication modules for social login
 (such as Google, Facebook, Twitter). This allows easy integration with ASP.NET Identity 
 for keeping application specific user and role information. See the 
-[Owin Middleware](doc/OwinMiddleware.md) page for information on how to set up and use the middleware.
+[Owin Middleware](docs/OwinMiddleware.md) page for information on how to set up and use the middleware.
 
 ## ASP.NET Core 2 Handler
 The ASP.NET Core 2 Handler is compatbile with the ASP.NET Core 2.0 authentication model.

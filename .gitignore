@@ -120,3 +120,6 @@ Sustainsys.Saml2.StubIdp/App_Data/*.json
 *.ndproj
 NDependOut
 *.coveragexml
+
+#ReadTheDocs output
+docs/_build
