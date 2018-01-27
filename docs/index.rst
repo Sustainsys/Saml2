@@ -30,4 +30,6 @@ See :doc:`getting-started` for all the details.
    getting-started
    configuration
    owin-middleware
+   troubleshooting
+   
 

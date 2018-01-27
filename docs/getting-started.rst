@@ -3,6 +3,13 @@ Getting Started
 See the sections below which contain information that will help you get started adding SAML2P support into 
 your flavor of ASP.NET.
 
+If you have gotten the appropriate Nuget package installed and then completed the configuration 
+described below and are having any trouble, make sure to check out the :doc:`Troubleshooting <troubleshooting>` for assistance.
+
+A sample SAML identity provider is available to further assist you in getting started if you don't already 
+have a SAML identity provider that you can test with.  You can access it directly at https://stubidp.sustainsys.com, 
+or you can download the solution to run it locally yourself (it's a project within the `Sustainsys.Saml2 github repository <https://github.com/Sustainsys/Saml2>`_).
+
 ASP.NET Web Forms
 -----------------
 The ``Saml2AuthenticationModule`` provides Saml2 authentication to IIS web sites. In many cases it should just be 
