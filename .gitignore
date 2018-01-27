@@ -13,6 +13,7 @@ TestResults
 *.user
 *.sln.docstates
 .vs
+.vscode
 
 # Build results
 [Dd]ebug/
@@ -121,5 +122,6 @@ Sustainsys.Saml2.StubIdp/App_Data/*.json
 NDependOut
 *.coveragexml
 
-#ReadTheDocs output
+#ReadTheDocs 
 docs/_build
+docs/.vscode
