@@ -114,7 +114,7 @@ The ``<system.identityModel.services>`` element configures the built in servies.
 requirement for ssl for the session authentication cookie must be disabled.
 
 .. danger::  
-    It is a severe security risk to leave the requireSsl setting as false in a production environment.
+    It is a severe security risk to leave the ``requireSsl`` setting as false in a production environment.
 
 .. code-block:: xml
 
