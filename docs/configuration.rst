@@ -12,7 +12,8 @@ constructor) the information here applies.
 
 Config Sections
 ---------------
-Three new config sections are required. Add these under ``configuration/configSections``:
+Three new config sections are required. Add these under ``configuration/configSections``.  Each of the sections
+will be a child element of the main ``configuration`` section and each is described below.
 
 .. code-block:: xml
 
@@ -43,11 +44,14 @@ does not need any http modules, please see the separate info on the :doc:`owin-m
     </system.webServer>
 
 
-sustainsys.saml2 Section
+Sustainsys.Saml2 Section
 ------------------------
 The ``sustainsys.saml2`` section contains the configuration of the Sustainsys.Saml2
 library. It is required for the http module and the mvc controller. The Owin middleware can
 read web.config, but can also be configured from code (see [Owin middleware](OwinMiddleware.md)).
+
+A sample section is shown below.  For full details and all avaialble options, see  
+:doc:`sustainsys.saml2 <config-elements/sustainsys-saml2>`.
 
 .. code-block:: xml
 
@@ -88,14 +92,34 @@ read web.config, but can also be configured from code (see [Owin middleware](Owi
         </federations>
     </sustainsys.saml2>
 
+System.IdentityModel Section
+----------------------------
+There must be a ``<system.identityModel>`` section in the config file or there will be a runtime error. The section can be 
+empty (use ``<system.identityModel />``).
 
-``<sustainsys.saml2>`` Element
-++++++++++++++++++++++++++++++
-*Child element of `<configuration>` element.*
+The reason you might want this to be non-empty is to provide a custom ``ClaimsAuthenticationManager`` as shown in the 
+sample below (you would obviously provide your own type in place of the Stub shown in the sample).
 
-Root element of the config section.
+.. code-block:: xml
 
-Attributes
-__________
-* [``returnUrl``]
-* [``entityId``]
+    <system.identityModel>
+        <identityConfiguration>
+            <claimsAuthenticationManager type="Sustainsys.Saml2.Tests.ClaimsAuthenticationManagerStub, Sustainsys.Saml2.Tests"/>
+        </identityConfiguration>
+    </system.identityModel>
+
+System.IdentityModel.Services Section
+-------------------------------------
+The ``<system.identityModel.services>`` element configures the built in servies. For testing on non ssl sites, the 
+requirement for ssl for the session authentication cookie must be disabled.
+
+.. danger::  
+    It is a severe security risk to leave the requireSsl setting as false in a production environment.
+
+.. code-block:: xml
+
+    <system.identityModel.services>
+        <federationConfiguration>
+            <cookieHandler requireSsl ="false"/>
+        </federationConfiguration>
+    </system.identityModel.services>

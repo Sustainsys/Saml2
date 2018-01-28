@@ -8,7 +8,8 @@ described below and are having any trouble, make sure to check out the :doc:`Tro
 
 A sample SAML identity provider is available to further assist you in getting started if you don't already 
 have a SAML identity provider that you can test with.  You can access it directly at https://stubidp.sustainsys.com, 
-or you can download the solution to run it locally yourself (it's a project within the `Sustainsys.Saml2 github repository <https://github.com/Sustainsys/Saml2>`_).
+or you can download the solution to run it locally yourself (it's a project within the 
+`Sustainsys.Saml2 github repository <https://github.com/Sustainsys/Saml2>`_).
 
 ASP.NET Web Forms
 -----------------
@@ -59,9 +60,9 @@ If you're using ``IdentityServer`` (v3 or later), you may want to
 configure SAML identity providers like Okta or Ping as external
 identity providers within your IdentityServer implementation.
 
-The ``Owin`` & ``ASP.NET Core2`` modules enables SAML identity 
-providers to be integrated within IdentityServer3 and 
-IdentityServer4 packages. 
+The ``Owin`` & ``ASP.NET Core2`` modules enable SAML identity 
+providers to be integrated within `IdentityServer3 <https://github.com/IdentityServer/IdentityServer3>`_ and 
+`IdentityServer4 <https://github.com/IdentityServer/IdentityServer4>`_ packages. 
 
 Nuget Package to use for IdentityServer3: `Sustainsys.Saml2.Owin <https://www.nuget.org/packages/Sustainsys.Saml2.Owin/>`_
 Nuget Package for IdentityServer4: `Sustainsys.Saml2.AspNetCore2 <https://www.nuget.org/packages/Sustainsys.Saml2.AspNetCore2/>`_
@@ -71,9 +72,12 @@ IdentityServer3 and Okta to add Okta as an
 identity provider to an IdentityServer3 project. There is 
 also a SampleIdentityServer3 project in the Saml2 repository.
 
-
-
 .. note:: 
 
     There is also a Sustainsys.Saml2 Nuget package, but this only contains functionality shared 
     across the packages above and is not meant to be referenced directly in other projects.
+
+.. note:: 
+
+    The protocol handling classes are available as a public API as well, making it possible to reuse some of the 
+    internals for writing your own service provider or identity provider.

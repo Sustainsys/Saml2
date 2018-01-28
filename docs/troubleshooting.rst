@@ -9,4 +9,3 @@ The items below may point you in the right direction.
 * Log your actual SAML2 conversation with `SAML Chrome Panel <https://chrome.google.com/webstore/detail/saml-chrome-panel/paijfdbeoenhembfhkhllainmocckace>`_ or `SAML Tracer for Firefox <https://addons.mozilla.org/en-US/firefox/addon/saml-tracer/>`_.
 * Connect an ``ILoggerAdapter`` to your ``SPOptions.Logger``. If you are using the ``OWIN`` middleware this is done for you automatically and you can see the output in the OWIN/Katana logging.
 * Last but not least, download the Saml2 source and check out what's really happening.
-

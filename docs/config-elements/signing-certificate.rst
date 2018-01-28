@@ -1,0 +1,2 @@
+``<signingCertificate>`` Element
+================================
