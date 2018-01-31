@@ -87,7 +87,7 @@ namespace SampleOwinApplication
 
             var organization = new Organization();
             organization.Names.Add(new LocalizedName("Sustainsys", swedish));
-            organization.DisplayNames.Add(new LocalizedName("Sustainsys IT AB", swedish));
+            organization.DisplayNames.Add(new LocalizedName("Sustainsys AB", swedish));
             organization.Urls.Add(new LocalizedUri(new Uri("http://www.Sustainsys.se"), swedish));
 
             var spOptions = new SPOptions
