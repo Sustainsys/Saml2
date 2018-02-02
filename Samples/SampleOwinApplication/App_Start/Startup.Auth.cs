@@ -69,7 +69,7 @@ namespace SampleOwinApplication
             idp.SigningKeys.AddConfiguredKey(
                 new X509Certificate2(
                     HostingEnvironment.MapPath(
-                        "~/App_Data/Kentor.AuthServices.StubIdp.cer")));
+                        "~/App_Data/stubidp.sustainsys.com.cer")));
 
             Saml2Options.IdentityProviders.Add(idp);
 
