@@ -42,13 +42,13 @@ The library is licensed under the `GNU Lesser General Public License (LPGL) <htt
 
    config-elements/sustainsys-saml2
    config-elements/name-id-policy
-   config-elements/identity-providers
-   config-elements/signing-certificate
+   config-elements/requested-authn-context
    config-elements/metadata
    config-elements/organization
    config-elements/contact-person
-   config-elements/requested-attributes
-   config-elements/requested-authn-context
+   config-elements/requested-attributes   
+   config-elements/identity-providers
+   config-elements/signing-certificate   
    config-elements/federations
    config-elements/service-certificates
    config-elements/compatibility
