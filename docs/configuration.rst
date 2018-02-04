@@ -52,7 +52,7 @@ Sustainsys.Saml2 Section
 ------------------------
 The ``sustainsys.saml2`` section contains the configuration of the Sustainsys.Saml2
 library. It is required for the http module and the mvc controller. The Owin middleware can
-read web.config, but can also be configured from code (see [Owin middleware](OwinMiddleware.md)).
+read web.config, but can also be configured from code (see :doc:`Owin middleware <owin-middleware>`).
 
 A sample section is shown below.  For full details and all avaialble options, see  
 :doc:`sustainsys.saml2 <config-elements/sustainsys-saml2>`.
@@ -101,7 +101,7 @@ System.IdentityModel Section
 There must be a ``<system.identityModel>`` section in the config file or there will be a runtime error. The section can be 
 empty (use ``<system.identityModel />``).
 
-The reason you might want this to be non-empty is to provide a custom ``ClaimsAuthenticationManager`` as shown in the 
+The reason you might want this to be non-empty is to provide a custom :doc:`ClaimsAuthenticationManager <claims-authentication-manager>` as shown in the 
 sample below (you would obviously provide your own type in place of the Stub shown in the sample).
 
 .. code-block:: xml
