@@ -40,7 +40,6 @@ namespace Sustainsys.Saml2.TestHelpers
                 EntityId = new EntityId("https://github.com/SustainsysIT/Saml2"),
                 MetadataCacheDuration = new TimeSpan(0, 0, 42),
                 MetadataValidDuration = TimeSpan.FromDays(24),
-                NameIdPolicy = new Saml2P.Saml2NameIdPolicy(true, Saml2P.NameIdFormat.EmailAddress),
                 WantAssertionsSigned = true,
                 Organization = org,
                 DiscoveryServiceUrl = new Uri("https://ds.example.com"),
