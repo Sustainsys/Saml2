@@ -140,21 +140,5 @@ namespace Sustainsys.Saml2.Tests.Configuration
 
             subject.AttributeConsumingServices.First().Should().BeSameAs(attributeConsumingService);
         }
-
-        [TestMethod]
-        public void SPOptionsExtensions_CreateMetadata_IncludeNameIdPolicy()
-        {
-            var spOptions = StubFactory.CreateSPOptions();
-            var urls = StubFactory.CreateSaml2Urls();
-            
-            var subject = spOptions
-                .CreateMetadata(urls)
-                .RoleDescriptors
-                .Cast<ExtendedServiceProviderSingleSignOnDescriptor>()
-                .First(); ;
-
-            subject.Should().NotBeNull();
-            subject.NameIdentifierFormats.Should().NotBeNull();
-        }
     }
 }
