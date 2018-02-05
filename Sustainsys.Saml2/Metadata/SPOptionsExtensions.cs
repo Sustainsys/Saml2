@@ -100,7 +100,8 @@ namespace Sustainsys.Saml2.Metadata
                 };
             }
 
-            if (spOptions.NameIdPolicy != null)
+            if (spOptions.NameIdPolicy != null
+                && spOptions.NameIdPolicy.AllowCreate.GetValueOrDefault())
             {
                 spsso.NameIdentifierFormats.Add(spOptions.NameIdPolicy.Format.GetUri());
             }

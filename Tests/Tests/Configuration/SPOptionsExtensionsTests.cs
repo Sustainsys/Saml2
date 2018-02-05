@@ -6,6 +6,7 @@ using System.IdentityModel.Metadata;
 using Sustainsys.Saml2.Metadata;
 using Sustainsys.Saml2.WebSso;
 using Sustainsys.Saml2.TestHelpers;
+using Sustainsys.Saml2.Saml2P;
 
 namespace Sustainsys.Saml2.Tests.Configuration
 {
@@ -138,6 +139,22 @@ namespace Sustainsys.Saml2.Tests.Configuration
                 .First();
 
             subject.AttributeConsumingServices.First().Should().BeSameAs(attributeConsumingService);
+        }
+
+        [TestMethod]
+        public void SPOptionsExtensions_CreateMetadata_IncludeNameIdPolicy()
+        {
+            var spOptions = StubFactory.CreateSPOptions();
+            var urls = StubFactory.CreateSaml2Urls();
+            
+            var subject = spOptions
+                .CreateMetadata(urls)
+                .RoleDescriptors
+                .Cast<ExtendedServiceProviderSingleSignOnDescriptor>()
+                .First(); ;
+
+            subject.Should().NotBeNull();
+            subject.NameIdentifierFormats.Should().NotBeNull();
         }
     }
 }
