@@ -9,6 +9,7 @@
     <Import_RootNamespace>Tests.Shared</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)Saml2P\Saml2ResponseTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)WebSSO\AcsCommandTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)WebSSO\HttpRequestDataTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)WebSSO\SignInCommandTests.cs" />
