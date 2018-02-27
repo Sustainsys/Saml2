@@ -21,7 +21,7 @@ forms sites.
 
 Note that the Owin & ASP.NET Core2 modules enables SAML identity providers to be integrated within
 [IdentityServer3](https://github.com/IdentityServer/IdentityServer3) and
-[IdentityServer4](https://github.com/IdentityServer/IdentityServer3) packages.  Review 
+[IdentityServer4](https://github.com/IdentityServer/IdentityServer4) packages.  Review 
 [this document](docs/IdentityServer3Okta.md) to see how to configure Saml2
 with IdentityServer3 and Okta to add Okta as an identity provider to an IdentityServer3 project.
 There is also a SampleIdentityServer3 project in the Saml2 repository.
