@@ -137,6 +137,36 @@ namespace Sustainsys.Saml2.Configuration
         }
 
         /// <summary>
+        /// Allow log out response without signature
+        /// If true log out response without signature is still accepted
+        /// If false log out response without signature is not accepted
+        /// </summary>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1726:UsePreferredTerms", MessageId = "LogOut")]
+        [ConfigurationProperty("allowUnsignedLogOutResponse", IsRequired = false, DefaultValue = false)]
+        public bool AllowUnsignedLogOutResponse
+        {
+            get
+            {
+                return (bool)base["allowUnsignedLogOutResponse"];
+            }
+        }
+
+        /// <summary>
+        /// Allow log out request without signature
+        /// If true log out request without signature is still accepted
+        /// If false log out request without signature is not accepted
+        /// </summary>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1726:UsePreferredTerms", MessageId = "LogOut")]
+        [ConfigurationProperty("allowUnsignedLogOutRequest", IsRequired = false, DefaultValue = false)]
+        public bool AllowUnsignedLogOutRequest
+        {
+            get
+            {
+                return (bool)base["allowUnsignedLogOutRequest"];
+            }
+        }
+
+        /// <summary>
         /// Enable automatic downloading of metadata form the well-known uri (i.e. interpret
         /// the EntityID as an uri and download metadata from it).
         /// </summary>
