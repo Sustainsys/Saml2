@@ -1,8 +1,8 @@
 ﻿using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
-using System.IdentityModel.Tokens;
 using System.Security.Claims;
+using Microsoft.IdentityModel.Tokens.Saml2;
 
 namespace Sustainsys.Saml2.Tests
 {
@@ -13,8 +13,7 @@ namespace Sustainsys.Saml2.Tests
         public void ClaimsExtensions_ToSaml2NameIdentifier_NullCheck()
         {
             Action a = () => ((Claim)null).ToSaml2NameIdentifier();
-
-            a.ShouldThrow<ArgumentNullException>()
+            a.Should().Throw<ArgumentNullException>()
                 .And.ParamName.Should().Be("claim");
         }
 
@@ -24,7 +23,7 @@ namespace Sustainsys.Saml2.Tests
             Action a = () => new Claim(ClaimTypes.CookiePath, "foo")
             .ToSaml2NameIdentifier();
 
-            a.ShouldThrow<ArgumentException>()
+            a.Should().Throw<ArgumentException>()
                 .And.ParamName.Should().Be("claim");
         }
 
@@ -37,7 +36,7 @@ namespace Sustainsys.Saml2.Tests
 
             var expected = new Saml2NameIdentifier("NameId");
 
-            actual.ShouldBeEquivalentTo(expected);
+            actual.Should().BeEquivalentTo(expected);
         }
 
         [TestMethod]
@@ -52,7 +51,7 @@ namespace Sustainsys.Saml2.Tests
                 Format = new Uri("urn:foo")
             };
 
-            actual.ShouldBeEquivalentTo(expected);
+            actual.Should().BeEquivalentTo(expected);
         }
 
         [TestMethod]
@@ -67,7 +66,7 @@ namespace Sustainsys.Saml2.Tests
                 NameQualifier = "qualifier"
             };
 
-            actual.ShouldBeEquivalentTo(expected);
+            actual.Should().BeEquivalentTo(expected);
         }
 
         [TestMethod]
@@ -82,7 +81,7 @@ namespace Sustainsys.Saml2.Tests
                 SPNameQualifier = "qualifier"
             };
 
-            actual.ShouldBeEquivalentTo(expected);
+            actual.Should().BeEquivalentTo(expected);
         }
 
         [TestMethod]
@@ -97,7 +96,7 @@ namespace Sustainsys.Saml2.Tests
                 SPProvidedId = "spId"
             };
 
-            actual.ShouldBeEquivalentTo(expected);
+            actual.Should().BeEquivalentTo(expected);
         }
 
         [TestMethod]
@@ -109,7 +108,7 @@ namespace Sustainsys.Saml2.Tests
 
             var expected = new Saml2NameIdentifier("NameId");
 
-            actual.ShouldBeEquivalentTo(expected);
+            actual.Should().BeEquivalentTo(expected);
         }
 
         [TestMethod]
@@ -125,7 +124,7 @@ namespace Sustainsys.Saml2.Tests
                 Format = new Uri("urn:foo")
             };
 
-            actual.ShouldBeEquivalentTo(expected);
+            actual.Should().BeEquivalentTo(expected);
         }
 
         [TestMethod]
@@ -141,7 +140,7 @@ namespace Sustainsys.Saml2.Tests
                 NameQualifier = "qualifier"
             };
 
-            actual.ShouldBeEquivalentTo(expected);
+            actual.Should().BeEquivalentTo(expected);
         }
 
         [TestMethod]
@@ -157,7 +156,7 @@ namespace Sustainsys.Saml2.Tests
                 SPNameQualifier = "qualifier"
             };
 
-            actual.ShouldBeEquivalentTo(expected);
+            actual.Should().BeEquivalentTo(expected);
         }
 
         [TestMethod]
@@ -173,7 +172,7 @@ namespace Sustainsys.Saml2.Tests
                 SPProvidedId = "spId"
             };
 
-            actual.ShouldBeEquivalentTo(expected);
+            actual.Should().BeEquivalentTo(expected);
         }
     }
 }

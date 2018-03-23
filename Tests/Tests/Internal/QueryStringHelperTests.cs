@@ -15,7 +15,7 @@ namespace Sustainsys.Saml2.Tests.Internal
         public void QueryStringHelper_ParseQueryString_ThrowsOnNull()
         {
             Action a = () => QueryStringHelper.ParseQueryString(null);
-            a.ShouldThrow<ArgumentNullException>();
+            a.Should().Throw<ArgumentNullException>();
         }
 
         [TestMethod]
@@ -28,7 +28,7 @@ namespace Sustainsys.Saml2.Tests.Internal
             }.ToLookup(x => x.key, y => y.value);
 
             var collection = QueryStringHelper.ParseQueryString("fname=john&lname=doe");
-            collection.ShouldBeEquivalentTo(expected);
+            collection.Should().BeEquivalentTo(expected);
         }
 
         [TestMethod]
@@ -41,7 +41,7 @@ namespace Sustainsys.Saml2.Tests.Internal
             }.ToLookup(x => x.key, y => y.value);
 
             var collection = QueryStringHelper.ParseQueryString("?fname=john&lname=doe");
-            collection.ShouldBeEquivalentTo(expected);
+            collection.Should().BeEquivalentTo(expected);
         }
 
         [TestMethod]
@@ -62,7 +62,7 @@ namespace Sustainsys.Saml2.Tests.Internal
                 new { key = "lname", value="doe" }
             }.ToLookup(x => x.key, x => x.value);
 
-            subject.ShouldBeEquivalentTo(expected);
+            subject.Should().BeEquivalentTo(expected);
         }
     }
 }

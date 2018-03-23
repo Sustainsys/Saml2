@@ -11,9 +11,9 @@ using System.Reflection;
 using Sustainsys.Saml2.Configuration;
 using System.Linq;
 using System.Xml.Linq;
-using System.IdentityModel.Tokens;
 using Sustainsys.Saml2.Internal;
 using Sustainsys.Saml2.TestHelpers;
+using Sustainsys.Saml2.Tokens;
 
 namespace Sustainsys.Saml2.Tests
 {
@@ -34,7 +34,7 @@ namespace Sustainsys.Saml2.Tests
             XmlDocument xd = null;
             Action a = () => xd.Sign(TestCert);
 
-            a.ShouldThrow<ArgumentNullException>().And.ParamName.Should().Be("xmlDocument");
+            a.Should().Throw<ArgumentNullException>().And.ParamName.Should().Be("xmlDocument");
         }
 
         [TestMethod]
@@ -43,7 +43,7 @@ namespace Sustainsys.Saml2.Tests
             XmlDocument xd = null;
             Action a = () => xd.Sign(TestCert, false, "");
 
-            a.ShouldThrow<ArgumentNullException>().And.ParamName.Should().Be("xmlDocument");
+            a.Should().Throw<ArgumentNullException>().And.ParamName.Should().Be("xmlDocument");
         }
 
         [TestMethod]
@@ -51,7 +51,7 @@ namespace Sustainsys.Saml2.Tests
         {
             ((XmlElement)null).Invoking(
                 x => x.Sign(SignedXmlHelper.TestCert, true))
-                .ShouldThrow<ArgumentNullException>()
+                .Should().Throw<ArgumentNullException>()
                 .And.ParamName.Should().Be("xmlElement");
         }
 
@@ -60,7 +60,7 @@ namespace Sustainsys.Saml2.Tests
         {
             xmlDocument.DocumentElement.Invoking(
                 x => x.Sign(null, false))
-                .ShouldThrow<ArgumentNullException>()
+                .Should().Throw<ArgumentNullException>()
                 .And.ParamName.Should().Be("cert");
         }
 
@@ -82,9 +82,9 @@ namespace Sustainsys.Saml2.Tests
             // in Saml2 are rsa-sha256 and sha256. Ensure Saml2
             // defaults are used and not SignedXml/.NET defaults.
             signature["SignedInfo"]["SignatureMethod"].GetAttribute("Algorithm")
-                .Should().Be(SignedXml.XmlDsigRSASHA256Url);
+                .Should().Be(SecurityAlgorithms.RsaSha256Signature);
             signature["SignedInfo"]["Reference"]["DigestMethod"].GetAttribute("Algorithm")
-                .Should().Be(SignedXml.XmlDsigSHA256Url);
+                .Should().Be(SecurityAlgorithms.Sha256Digest);
 
             var signedXml = new SignedXml(xmlDoc);
             signedXml.LoadXml(signature);
@@ -105,7 +105,7 @@ namespace Sustainsys.Saml2.Tests
         {
             ((XmlAttributeCollection)null).Invoking(
                 a => a.Remove("attributeName"))
-                .ShouldThrow<ArgumentNullException>()
+                .Should().Throw<ArgumentNullException>()
                 .And.ParamName.Should().Be("attributes");
         }
 
@@ -114,7 +114,7 @@ namespace Sustainsys.Saml2.Tests
         {
             xmlDocument.DocumentElement.Attributes.Invoking(
                 a => a.Remove(attributeName: null))
-                .ShouldThrow<ArgumentNullException>()
+                .Should().Throw<ArgumentNullException>()
                 .And.ParamName.Should().Be("attributeName");
         }
 
@@ -123,7 +123,7 @@ namespace Sustainsys.Saml2.Tests
         {
             XmlHelpers.CreateSafeXmlDocument().DocumentElement.Invoking(
                 e => e.RemoveChild("name", "ns"))
-                .ShouldThrow<ArgumentNullException>()
+                .Should().Throw<ArgumentNullException>()
                 .And.ParamName.Should().Be("xmlElement");
         }
 
@@ -132,7 +132,7 @@ namespace Sustainsys.Saml2.Tests
         {
             xmlDocument.DocumentElement.Invoking(
                 e => e.RemoveChild(null, "ns"))
-                .ShouldThrow<ArgumentNullException>()
+                .Should().Throw<ArgumentNullException>()
                 .And.ParamName.Should().Be("name");
         }
 
@@ -141,7 +141,7 @@ namespace Sustainsys.Saml2.Tests
         {
             xmlDocument.DocumentElement.Invoking(
                 e => e.RemoveChild("name", null))
-                .ShouldThrow<ArgumentNullException>()
+                .Should().Throw<ArgumentNullException>()
                 .And.ParamName.Should().Be("ns");
         }
 
@@ -150,7 +150,7 @@ namespace Sustainsys.Saml2.Tests
         {
             ((XmlElement)null).Invoking(
                 x => x.IsSignedBy(SignedXmlHelper.TestCert))
-                .ShouldThrow<ArgumentNullException>("xmlElement");
+                .Should().Throw<ArgumentNullException>("xmlElement");
         }
 
         [TestMethod]
@@ -158,7 +158,7 @@ namespace Sustainsys.Saml2.Tests
         {
             xmlDocument.DocumentElement.Invoking(
                 x => x.IsSignedBy(null))
-                .ShouldThrow<ArgumentNullException>("certificate");
+                .Should().Throw<ArgumentNullException>("certificate");
         }
 
         [TestMethod]
@@ -180,7 +180,7 @@ namespace Sustainsys.Saml2.Tests
 
             xmlDoc.DocumentElement.Invoking(
                 x => x.IsSignedBy(SignedXmlHelper.TestCert))
-                .ShouldThrow<InvalidSignatureException>()
+                .Should().Throw<InvalidSignatureException>()
                 .And.Message.Should().Be("The signature verified correctly with the key contained in the signature, but that key is not trusted.");
         }
 
@@ -195,7 +195,7 @@ namespace Sustainsys.Saml2.Tests
 
             xmlDoc.DocumentElement.Invoking(
                 x => x.IsSignedBy(SignedXmlHelper.TestCert))
-                .ShouldThrow<InvalidSignatureException>()
+                .Should().Throw<InvalidSignatureException>()
                 .And.Message.Should().Be("Signature didn't verify. Have the contents been tampered with?");
         }
 
@@ -218,7 +218,7 @@ namespace Sustainsys.Saml2.Tests
 
             xmlDoc.DocumentElement["injected"].Invoking(
                 x => x.IsSignedBy(SignedXmlHelper.TestCert))
-                .ShouldThrow<InvalidSignatureException>()
+                .Should().Throw<InvalidSignatureException>()
                 .And.Message.Should().Be("Incorrect reference on Xml signature. The reference must be to the root element of the element containing the signature.");
         }
 
@@ -240,7 +240,7 @@ namespace Sustainsys.Saml2.Tests
 
             xmlDoc.DocumentElement.Invoking(
                 x => x.IsSignedBy(SignedXmlHelper.TestCert))
-                .ShouldThrow<InvalidSignatureException>()
+                .Should().Throw<InvalidSignatureException>()
                 .And.Message.Should().Be("No reference found in Xml signature, it doesn't validate the Xml data.");
         }
 
@@ -252,7 +252,7 @@ namespace Sustainsys.Saml2.Tests
             var xmlDoc = XmlHelpers.XmlDocumentFromString(xml);
 
             var signedXml = new SignedXml(xmlDoc);
-            signedXml.SigningKey = (RSACryptoServiceProvider)SignedXmlHelper.TestCert.PrivateKey;
+            signedXml.SigningKey = SignedXmlHelper.TestCert.PrivateKey;
             signedXml.SignedInfo.CanonicalizationMethod = SignedXml.XmlDsigExcC14NTransformUrl;
 
             var ref1 = new Reference { Uri = "#myxml" };
@@ -270,7 +270,7 @@ namespace Sustainsys.Saml2.Tests
 
             xmlDoc.DocumentElement.Invoking(
                 x => x.IsSignedBy(SignedXmlHelper.TestCert))
-                .ShouldThrow<InvalidSignatureException>()
+                .Should().Throw<InvalidSignatureException>()
                 .And.Message.Should().Be("Multiple references for Xml signatures are not allowed.");
         }
 
@@ -286,7 +286,7 @@ namespace Sustainsys.Saml2.Tests
 
             xmlDoc.DocumentElement.Invoking(
                 x => x.IsSignedBy(SignedXmlHelper.TestCertSignOnly))
-                .ShouldThrow<InvalidSignatureException>()
+                .Should().Throw<InvalidSignatureException>()
                 .And.Message.Should().Be("SHA256 signatures require the algorithm to be registered at the process level. Upgrade to .Net 4.6.2 or call Sustainsys.Saml2.Configuration.Options.GlobalEnableSha256XmlSignatures() on startup to register.");
         }
 
@@ -302,7 +302,7 @@ namespace Sustainsys.Saml2.Tests
 
             xmlDoc.DocumentElement.Invoking(
                 x => x.IsSignedBy(SignedXmlHelper.TestCert))
-                .ShouldThrow<InvalidSignatureException>()
+                .Should().Throw<InvalidSignatureException>()
                 .WithMessage("Signature didn't verify. Have the contents been tampered with?");
         }
 
@@ -319,7 +319,7 @@ namespace Sustainsys.Saml2.Tests
             var xmlDoc = XmlHelpers.XmlDocumentFromString(xml);
 
             var signedXml = new SignedXml(xmlDoc);
-            signedXml.SigningKey = (RSACryptoServiceProvider)SignedXmlHelper.TestCert.PrivateKey;
+            signedXml.SigningKey = SignedXmlHelper.TestCert.PrivateKey;
             signedXml.SignedInfo.CanonicalizationMethod = SignedXml.XmlDsigExcC14NTransformUrl;
 
             var reference = new Reference { Uri = "#MyXml" };
@@ -332,7 +332,7 @@ namespace Sustainsys.Saml2.Tests
 
             xmlDoc.DocumentElement.Invoking(
                 x => x.IsSignedBy(SignedXmlHelper.TestCert))
-                .ShouldThrow<InvalidSignatureException>()
+                .Should().Throw<InvalidSignatureException>()
                 .And.Message.Should().Be("Transform \"http://www.w3.org/TR/2001/REC-xml-c14n-20010315\" found in Xml signature SHOULD NOT be used with SAML2.");
         }
 
@@ -384,7 +384,7 @@ $@"<xml>
 
             xmlDoc.DocumentElement.Invoking(x => x.IsSignedByAny(
                 Enumerable.Repeat(new StubKeyIdentifier(), 1), false, SignedXml.XmlDsigRSASHA1Url))
-                .ShouldThrow<CryptographicException>()
+                .Should().Throw<CryptographicException>()
                 .WithMessage("Stub*");
         }
 
@@ -399,12 +399,13 @@ $@"<xml>
             var reference = new Reference
             {
                 Uri = "#MyXml",
-                DigestMethod = SignedXml.XmlDsigSHA256Url
-            };
+                DigestMethod = SecurityAlgorithms.Sha256Digest
+			};
             reference.AddTransform(new XmlDsigExcC14NTransform());
             reference.AddTransform(new XmlDsigEnvelopedSignatureTransform());
             sx.AddReference(reference);
-            sx.SigningKey = ((RSACryptoServiceProvider)SignedXmlHelper.TestCert.PrivateKey)
+            sx.SigningKey = EnvironmentHelpers.IsNetCore ? SignedXmlHelper.TestCert.PrivateKey :
+				((RSACryptoServiceProvider)SignedXmlHelper.TestCert.PrivateKey)
                 .GetSha256EnabledRSACryptoServiceProvider();
 
             sx.SignedInfo.SignatureMethod = SignedXml.XmlDsigRSASHA1Url;
@@ -414,8 +415,8 @@ $@"<xml>
             var keyClause = new X509RawDataKeyIdentifierClause(SignedXmlHelper.TestCert);
             
             xmlDoc.DocumentElement.Invoking(x =>
-            x.IsSignedByAny(Enumerable.Repeat(keyClause, 1), false, SignedXml.XmlDsigRSASHA256Url))
-            .ShouldThrow<InvalidSignatureException>()
+            x.IsSignedByAny(Enumerable.Repeat(keyClause, 1), false, SecurityAlgorithms.RsaSha256Signature))
+            .Should().Throw<InvalidSignatureException>()
             .WithMessage("*signing*weak*");
         }
 
@@ -435,18 +436,19 @@ $@"<xml>
             reference.AddTransform(new XmlDsigExcC14NTransform());
             reference.AddTransform(new XmlDsigEnvelopedSignatureTransform());
             sx.AddReference(reference);
-            sx.SigningKey = ((RSACryptoServiceProvider)SignedXmlHelper.TestCert.PrivateKey)
+            sx.SigningKey = EnvironmentHelpers.IsNetCore ? SignedXmlHelper.TestCert.PrivateKey :
+				((RSACryptoServiceProvider)SignedXmlHelper.TestCert.PrivateKey)
                 .GetSha256EnabledRSACryptoServiceProvider();
 
-            sx.SignedInfo.SignatureMethod = SignedXml.XmlDsigRSASHA256Url;
+            sx.SignedInfo.SignatureMethod = SecurityAlgorithms.RsaSha256Signature;
             sx.ComputeSignature();
             xmlDoc.DocumentElement.AppendChild(sx.GetXml());
 
             var keyClause = new X509RawDataKeyIdentifierClause(SignedXmlHelper.TestCert);
 
             xmlDoc.DocumentElement.Invoking(x =>
-            x.IsSignedByAny(Enumerable.Repeat(keyClause, 1), false, SignedXml.XmlDsigRSASHA256Url))
-            .ShouldThrow<InvalidSignatureException>()
+            x.IsSignedByAny(Enumerable.Repeat(keyClause, 1), false, SecurityAlgorithms.RsaSha256Signature))
+            .Should().Throw<InvalidSignatureException>()
             .WithMessage("*digest*weak*");
         }
 
@@ -461,7 +463,7 @@ $@"<xml>
             var signingKeys = Enumerable.Repeat(SignedXmlHelper.TestKey, 1);
 
             xmlDoc.DocumentElement.Invoking(x => x.IsSignedByAny(signingKeys, true, SignedXml.XmlDsigRSASHA1Url))
-                .ShouldThrow<InvalidOperationException>()
+                .Should().Throw<InvalidOperationException>()
                 .And.Message.Should().Be("Certificate validation enabled, but the signing key identifier is of type RsaKeyIdentifierClause which cannot be validated as a certificate.");
         }
 
@@ -586,7 +588,7 @@ $@"<xml>
         {
             Action a = () => ((XmlElement)null).PrettyPrint();
 
-            a.ShouldThrow<ArgumentNullException>()
+            a.Should().Throw<ArgumentNullException>()
                 .And.ParamName.Should().Be("xml");
         }
 
@@ -612,7 +614,7 @@ $@"<xml>
         {
             var shortName = "sha256";
 
-            var expected = SignedXml.XmlDsigRSASHA256Url;
+            var expected = SecurityAlgorithms.RsaSha256Signature;
 
             XmlHelpers.GetFullSigningAlgorithmName(shortName)
                 .Should().Be(expected);
@@ -623,7 +625,7 @@ $@"<xml>
         {
             var shortName = "SHA256";
 
-            var expected = SignedXml.XmlDsigRSASHA256Url;
+            var expected = SecurityAlgorithms.RsaSha256Signature;
 
             XmlHelpers.GetFullSigningAlgorithmName(shortName)
                 .Should().Be(expected);
@@ -632,7 +634,7 @@ $@"<xml>
         [TestMethod]
         public void XmlHelpers_GetFullSigningAlgorithmName_DefaultsToSha256IfAvailable()
         {
-            var expected = SignedXml.XmlDsigRSASHA256Url;
+            var expected = SecurityAlgorithms.RsaSha256Signature;
 
             XmlHelpers.GetFullSigningAlgorithmName("")
                 .Should().Be(expected);
@@ -641,8 +643,8 @@ $@"<xml>
         [TestMethod]
         public void XmlHelpers_GetCorrespondingDigestAlgorithmName_Sha256()
         {
-            XmlHelpers.GetCorrespondingDigestAlgorithm(SignedXml.XmlDsigRSASHA256Url)
-                .Should().Be(SignedXml.XmlDsigSHA256Url);
+            XmlHelpers.GetCorrespondingDigestAlgorithm(SecurityAlgorithms.RsaSha256Signature)
+                .Should().Be(SecurityAlgorithms.Sha256Digest);
         }
 
         [TestMethod]
@@ -650,7 +652,8 @@ $@"<xml>
         {
             var actual = XmlHelpers.CreateSafeXmlDocument();
 
-            typeof(XmlDocument).GetField("resolver", BindingFlags.NonPublic | BindingFlags.Instance)
+			string fieldName = (EnvironmentHelpers.IsNetCore ? "_": "") +"resolver";
+            typeof(XmlDocument).GetField(fieldName, BindingFlags.NonPublic | BindingFlags.Instance)
                 .GetValue(actual).Should().BeNull();
 
             actual.PreserveWhitespace.Should().BeTrue();

@@ -41,7 +41,7 @@ namespace Sustainsys.Saml2.Tests.Internal
         {
             XmlHelpers.CreateSafeXmlDocument().DocumentElement.Invoking(
                 e => e.Encrypt(false, null))
-                .ShouldThrow<ArgumentNullException>()
+                .Should().Throw<ArgumentNullException>()
                 .And.ParamName.Should().Be("certificate");
         }
     }

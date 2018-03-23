@@ -2,7 +2,8 @@
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Sustainsys.Saml2.Configuration;
-using System.IdentityModel.Metadata;
+using Sustainsys.Saml2.Metadata;
+using Sustainsys.Saml2.Tokens;
 using FluentAssertions;
 using Sustainsys.Saml2.Saml2P;
 using System.Security.Cryptography.Xml;
@@ -50,7 +51,7 @@ namespace Sustainsys.Saml2.Tests.Configuration
         {
             Action a = () => new SPOptions(null);
 
-            a.ShouldThrow<ArgumentNullException>().And.ParamName.Should().Be("configSection");
+            a.Should().Throw<ArgumentNullException>().And.ParamName.Should().Be("configSection");
         }
 
         [TestMethod]
@@ -79,7 +80,7 @@ namespace Sustainsys.Saml2.Tests.Configuration
             subject.NameIdPolicy.Format.Should().Be(config.NameIdPolicyElement.Format);
             subject.Organization.Should().Be(config.organization);
             subject.AuthenticateRequestSigningBehavior.Should().Be(config.AuthenticateRequestSigningBehavior);
-            subject.OutboundSigningAlgorithm.Should().Be(SignedXml.XmlDsigRSASHA256Url);
+            subject.OutboundSigningAlgorithm.Should().Be(SecurityAlgorithms.RsaSha256Signature);
             subject.MinIncomingSigningAlgorithm.Should().Be(SignedXml.XmlDsigRSASHA1Url);
             subject.RequestedAuthnContext.ClassRef.OriginalString.Should().Be("urn:oasis:names:tc:SAML:2.0:ac:classes:PasswordProtectedTransport");
             subject.RequestedAuthnContext.Comparison.Should().Be(AuthnContextComparisonType.Minimum);
@@ -99,7 +100,7 @@ namespace Sustainsys.Saml2.Tests.Configuration
 
             Action a = () => subject.EntityId = new EntityId(otherEntityId);
 
-            a.ShouldThrow<InvalidOperationException>("Can't change entity id when a token handler has been instantiated.");
+            a.Should().Throw<InvalidOperationException>("Can't change entity id when a token handler has been instantiated.");
         }
 
         [TestMethod]
@@ -131,7 +132,7 @@ namespace Sustainsys.Saml2.Tests.Configuration
             var subject = new SPOptions();
             Action a = () => subject.ModulePath = null;
 
-            a.ShouldThrow<ArgumentNullException>().And.ParamName.Should().Be("value");
+            a.Should().Throw<ArgumentNullException>().And.ParamName.Should().Be("value");
         }
 
         [TestMethod]
@@ -156,7 +157,7 @@ namespace Sustainsys.Saml2.Tests.Configuration
         {
             var subject = new SPOptions();
 
-            subject.OutboundSigningAlgorithm.Should().Be(SignedXml.XmlDsigRSASHA256Url);
+            subject.OutboundSigningAlgorithm.Should().Be(SecurityAlgorithms.RsaSha256Signature);
         }
 
         [TestMethod]
@@ -164,7 +165,7 @@ namespace Sustainsys.Saml2.Tests.Configuration
         {
             var subject = new SPOptions();
 
-            subject.MinIncomingSigningAlgorithm.Should().Be(SignedXml.XmlDsigRSASHA256Url);
+            subject.MinIncomingSigningAlgorithm.Should().Be(SecurityAlgorithms.RsaSha256Signature);
         }
 
         [TestMethod]
@@ -173,7 +174,7 @@ namespace Sustainsys.Saml2.Tests.Configuration
             var subject = new SPOptions();
 
             subject.Invoking(s => s.MinIncomingSigningAlgorithm = "InvalidName")
-                .ShouldThrow<ArgumentException>()
+                .Should().Throw<ArgumentException>()
                 .WithMessage("*unknown*not supported*");
         }
 

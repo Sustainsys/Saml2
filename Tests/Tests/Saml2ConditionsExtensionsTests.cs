@@ -1,9 +1,9 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System.IdentityModel.Tokens;
 using FluentAssertions;
 using System.Linq;
 using System.Xml.Linq;
+using Microsoft.IdentityModel.Tokens.Saml2;
 
 namespace Sustainsys.Saml2.Tests
 {
@@ -15,7 +15,7 @@ namespace Sustainsys.Saml2.Tests
         {
             Action a = () => ((Saml2Conditions)null).ToXElement();
 
-            a.ShouldThrow<ArgumentNullException>().And.ParamName.Should().Be("conditions");
+            a.Should().Throw<ArgumentNullException>().And.ParamName.Should().Be("conditions");
         }
 
         [TestMethod]
@@ -39,11 +39,11 @@ namespace Sustainsys.Saml2.Tests
             var conditions = new Saml2Conditions();
             conditions.AudienceRestrictions.Add(new Saml2AudienceRestriction(new[]
             {
-                new Uri("http://foo1"),
-                new Uri("http://foo2")
+                "http://foo1",
+                "http://foo2"
             }));
 
-            conditions.AudienceRestrictions.Add(new Saml2AudienceRestriction(new Uri("http://bar")));
+            conditions.AudienceRestrictions.Add(new Saml2AudienceRestriction("http://bar"));
 
             var actual = conditions.ToXElement();
 

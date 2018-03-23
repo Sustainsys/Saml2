@@ -1,6 +1,6 @@
-﻿using Sustainsys.Saml2.Internal;
+﻿using Microsoft.IdentityModel.Tokens.Saml2;
+using Sustainsys.Saml2.Internal;
 using System;
-using System.IdentityModel.Tokens;
 using System.Security.Claims;
 
 namespace Sustainsys.Saml2

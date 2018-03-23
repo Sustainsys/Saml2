@@ -1,11 +1,11 @@
-﻿using System;
+﻿using Microsoft.IdentityModel.Tokens.Saml2;
+using System;
 using System.Collections.Generic;
-using System.IdentityModel.Metadata;
-using System.IdentityModel.Tokens;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Sustainsys.Saml2.Metadata;
 
 namespace Sustainsys.Saml2
 {

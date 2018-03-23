@@ -26,7 +26,7 @@ namespace Sustainsys.Saml2.Tests.Saml2P
 
             var actual = XElement.Parse(Saml2SoapBinding.CreateSoapBody(message));
 
-            actual.ShouldBeEquivalentTo(expected, opt => opt.IgnoringCyclicReferences());
+			actual.Should().BeEquivalentTo(expected);
         }
 
         [TestMethod]
@@ -61,7 +61,7 @@ namespace Sustainsys.Saml2.Tests.Saml2P
 
             Action a = () => Saml2SoapBinding.SendSoapRequest(payload, null);
 
-            a.ShouldThrow<ArgumentNullException>()
+            a.Should().Throw<ArgumentNullException>()
                 .And.ParamName.Should().Be("destination");
         }
 
@@ -76,7 +76,7 @@ namespace Sustainsys.Saml2.Tests.Saml2P
 
             Action a = () => Saml2SoapBinding.SendSoapRequest(payload, destination);
 
-            a.ShouldThrow<ArgumentException>()
+            a.Should().Throw<ArgumentException>()
                 .WithMessage("*file*");
         }
 
@@ -90,7 +90,7 @@ namespace Sustainsys.Saml2.Tests.Saml2P
 
             // Destination is not listening, but we should get an exception that shows it
             // at least tried to connect there.
-            a.ShouldThrow<WebException>();
+            a.Should().Throw<WebException>();
         }
 
         [TestMethod]
@@ -103,7 +103,7 @@ namespace Sustainsys.Saml2.Tests.Saml2P
 
             // Destination is not listening, but we should get an exception that shows it
             // at least tried to connect there.
-            a.ShouldThrow<WebException>();
+            a.Should().Throw<WebException>();
         }
     }
 }

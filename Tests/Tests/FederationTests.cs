@@ -2,10 +2,10 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.IO;
 using FluentAssertions;
-using System.IdentityModel.Metadata;
 using System.Linq;
 using Sustainsys.Saml2.Configuration;
 using Sustainsys.Saml2.Metadata;
+using Sustainsys.Saml2.Tokens;
 using Sustainsys.Saml2.Tests.Helpers;
 using Sustainsys.Saml2.Tests.Metadata;
 using System.Threading;
@@ -13,9 +13,9 @@ using System.Security.Cryptography.X509Certificates;
 using System.Collections.Generic;
 using Sustainsys.Saml2.Exceptions;
 using System.Security.Cryptography.Xml;
-using System.IdentityModel.Tokens;
 using Sustainsys.Saml2.TestHelpers;
 
+#if TODO
 namespace Sustainsys.Saml2.Tests
 {
     [TestClass]
@@ -37,7 +37,7 @@ namespace Sustainsys.Saml2.Tests
         {
             Action a = () => new Federation(null, Options.FromConfiguration);
 
-            a.ShouldThrow<ArgumentNullException>().And.ParamName.Should().Be("config");
+            a.Should().Throw<ArgumentNullException>().And.ParamName.Should().Be("config");
         }
 
         [TestMethod]
@@ -83,7 +83,7 @@ namespace Sustainsys.Saml2.Tests
 
             Action a = () => new Federation(path, true, options);
 
-            a.ShouldNotThrow();
+            a.Should().NotThrow();
 
             IdentityProvider idp;
             options.IdentityProviders.TryGetValue(idpInFederation, out idp)
@@ -104,7 +104,7 @@ namespace Sustainsys.Saml2.Tests
 
             Action a = () => new Federation(path, true, options);
 
-            a.ShouldNotThrow();
+            a.Should().NotThrow();
 
             IdentityProvider idp;
             options.IdentityProviders.TryGetValue(idpInFederation, out idp)
@@ -125,7 +125,7 @@ namespace Sustainsys.Saml2.Tests
 
             Action a = () => new Federation(path, true, options);
 
-            a.ShouldNotThrow();
+            a.Should().NotThrow();
 
             IdentityProvider idp;
             options.IdentityProviders.TryGetValue(idpInFederation, out idp)
@@ -375,7 +375,7 @@ namespace Sustainsys.Saml2.Tests
         public void Federation_RejectsTooWeakMetadataSignatureAlgorithmWhenConfiguredWithKeys()
         {
             var options = StubFactory.CreateOptions();
-            options.SPOptions.MinIncomingSigningAlgorithm = SignedXml.XmlDsigRSASHA512Url;
+            options.SPOptions.MinIncomingSigningAlgorithm = SecurityAlgorithms.RsaSha512Signature;
 
             var metadataLocation = "http://localhost:13428/federationMetadataSigned";
 
@@ -414,3 +414,4 @@ namespace Sustainsys.Saml2.Tests
         }
     }
 }
+#endif

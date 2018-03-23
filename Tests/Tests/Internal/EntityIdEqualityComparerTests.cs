@@ -1,8 +1,8 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System.IdentityModel.Metadata;
 using FluentAssertions;
 using Sustainsys.Saml2.Internal;
+using Sustainsys.Saml2.Metadata;
 
 namespace Sustainsys.Saml2.Tests.Internal
 {
@@ -56,7 +56,7 @@ namespace Sustainsys.Saml2.Tests.Internal
 
             Action a = () => EntityIdEqualityComparer.Instance.Equals(null, eid);
 
-            a.ShouldThrow<ArgumentNullException>("x");
+            a.Should().Throw<ArgumentNullException>("x");
         }
 
         [TestMethod]
@@ -66,7 +66,7 @@ namespace Sustainsys.Saml2.Tests.Internal
 
             Action a = () => EntityIdEqualityComparer.Instance.Equals(eid, null);
 
-            a.ShouldThrow<ArgumentNullException>("y");
+            a.Should().Throw<ArgumentNullException>("y");
         }
 
         [TestMethod]
@@ -74,7 +74,7 @@ namespace Sustainsys.Saml2.Tests.Internal
         {
             Action a = () => EntityIdEqualityComparer.Instance.GetHashCode(null);
 
-            a.ShouldThrow<ArgumentNullException>("obj");
+            a.Should().Throw<ArgumentNullException>("obj");
         }
 
         [TestMethod]
@@ -85,7 +85,7 @@ namespace Sustainsys.Saml2.Tests.Internal
 
             Action a = () => EntityIdEqualityComparer.Instance.GetHashCode(entityId);
 
-            a.ShouldNotThrow();
+            a.Should().NotThrow();
         }
     }
 }

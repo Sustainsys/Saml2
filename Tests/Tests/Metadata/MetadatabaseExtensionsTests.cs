@@ -1,7 +1,6 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Sustainsys.Saml2.Metadata;
-using System.IdentityModel.Metadata;
 using System.Xml.Linq;
 using System.Security.Cryptography.Xml;
 using Sustainsys.Saml2.WebSso;
@@ -16,17 +15,17 @@ namespace Sustainsys.Saml2.Tests.Metadata
         [TestMethod]
         public void MetadatabaseExtensions_ToXmlString_IncludesKeyInfo()
         {
-            var metadata = new ExtendedEntityDescriptor
+            var metadata = new EntityDescriptor
             {
                 EntityId = new EntityId("http://idp.example.com/metadata"),
                 CacheDuration = new TimeSpan(1, 0, 0)
             };
 
-            var idpSsoDescriptor = new IdentityProviderSingleSignOnDescriptor();
+            var idpSsoDescriptor = new IdpSsoDescriptor();
             idpSsoDescriptor.ProtocolsSupported.Add(new Uri("urn:oasis:names:tc:SAML:2.0:protocol"));
             metadata.RoleDescriptors.Add(idpSsoDescriptor);
 
-            idpSsoDescriptor.SingleSignOnServices.Add(new ProtocolEndpoint
+            idpSsoDescriptor.SingleSignOnServices.Add(new SingleSignOnService
             {
                 Binding = Saml2Binding.HttpRedirectUri,
                 Location = new Uri("http://idp.example.com/sso")

@@ -1,6 +1,5 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System.IdentityModel.Metadata;
 using FluentAssertions;
 using System.Xml.Linq;
 using System.Linq;
@@ -25,7 +24,7 @@ namespace Sustainsys.Saml2.Tests.Metadata
         {
             Action a = () => MetadataLoader.LoadIdp(null);
 
-            a.ShouldThrow<ArgumentNullException>().And.ParamName.Should().Be("metadataLocation");
+            a.Should().Throw<ArgumentNullException>().And.ParamName.Should().Be("metadataLocation");
         }
 
         [TestMethod]
@@ -35,7 +34,7 @@ namespace Sustainsys.Saml2.Tests.Metadata
 
             Action a = () => MetadataLoader.LoadIdp(metadataLocation);
 
-            a.ShouldThrow<InvalidOperationException>().
+            a.Should().Throw<InvalidOperationException>().
                 WithMessage(MetadataLoader.LoadIdpFoundEntitiesDescriptor);
         }
 
@@ -44,7 +43,7 @@ namespace Sustainsys.Saml2.Tests.Metadata
         {
             Action a = () => MetadataLoader.LoadFederation(null);
 
-            a.ShouldThrow<ArgumentNullException>().And.ParamName.Should().Be("metadataLocation");
+            a.Should().Throw<ArgumentNullException>().And.ParamName.Should().Be("metadataLocation");
         }
 
         [TestMethod]
@@ -74,7 +73,7 @@ namespace Sustainsys.Saml2.Tests.Metadata
 
             Action a = () => MetadataLoader.LoadFederation(entityId);
 
-            a.ShouldThrow<InvalidOperationException>().
+            a.Should().Throw<InvalidOperationException>().
                 WithMessage(MetadataLoader.LoadFederationFoundEntityDescriptor);
         }
 
@@ -85,7 +84,7 @@ namespace Sustainsys.Saml2.Tests.Metadata
 
             var actual = MetadataLoader.LoadIdp(metadataLocation, true);
 
-            actual.Should().BeOfType<ExtendedEntityDescriptor>();
+            actual.Should().BeOfType<EntityDescriptor>();
         }
 
         [TestMethod]
@@ -95,7 +94,7 @@ namespace Sustainsys.Saml2.Tests.Metadata
 
             Action a = () => MetadataLoader.LoadIdp(metadataLocation, true);
 
-            a.ShouldThrow<InvalidOperationException>()
+            a.Should().Throw<InvalidOperationException>()
                 .WithMessage(MetadataLoader.LoadIdpUnpackingFoundMultipleEntityDescriptors);
         }
     }

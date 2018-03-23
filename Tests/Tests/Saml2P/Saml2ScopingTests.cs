@@ -13,7 +13,7 @@ namespace Sustainsys.Saml2.Tests.Saml2P
         {
             Action a = () => new Saml2Scoping().ProxyCount = -1;
 
-            a.ShouldThrow<ArgumentException>()
+            a.Should().Throw<ArgumentException>()
                 .WithMessage("*negative*");
         }
     }

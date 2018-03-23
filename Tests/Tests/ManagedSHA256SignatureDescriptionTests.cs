@@ -14,18 +14,18 @@ namespace Sustainsys.Saml2.Tests
         [TestMethod]
         public void ManagedSha256SignatureDescription_CreateDeformatter_NullCheck()
         {
-            new ManagedSHA256SignatureDescription()
+            new ManagedRSASHA256SignatureDescription()
                 .Invoking(d => d.CreateDeformatter(null))
-                .ShouldThrow<ArgumentNullException>()
+                .Should().Throw<ArgumentNullException>()
                 .And.ParamName.Should().Be("key");
         }
 
         [TestMethod]
         public void ManagedSha256SignatureDescription_CreateFormatter_NullCheck()
         {
-            new ManagedSHA256SignatureDescription()
+            new ManagedRSASHA256SignatureDescription()
                 .Invoking(d => d.CreateFormatter(null))
-                .ShouldThrow<ArgumentNullException>()
+                .Should().Throw<ArgumentNullException>()
                 .And.ParamName.Should().Be("key");
         }
     }

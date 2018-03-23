@@ -3,12 +3,11 @@ using System.Collections.Generic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using FluentAssertions;
 using System.Xml.Linq;
-using System.IdentityModel.Tokens;
 using System.Xml;
+using Sustainsys.Saml2.Metadata;
 using Sustainsys.Saml2.Saml2P;
 using System.Linq;
-using System.IdentityModel.Metadata;
-
+using Microsoft.IdentityModel.Tokens.Saml2;
 namespace Sustainsys.Saml2.Tests.Saml2P
 {
     [TestClass]
@@ -103,7 +102,7 @@ namespace Sustainsys.Saml2.Tests.Saml2P
             var forceAuthn = true;
             var subject = Saml2AuthenticationRequest.Read(xmlData, relayState);
 
-            subject.Id.Should().Be(new Saml2Id("Saml2AuthenticationRequest_AssertionConsumerServiceUrl"));
+            subject.Id.Value.Should().Be("Saml2AuthenticationRequest_AssertionConsumerServiceUrl");
             subject.AssertionConsumerServiceUrl.Should().Be(new Uri("https://sp.example.com/SAML2/Acs"));
             subject.RelayState.Should().Be(relayState);
             subject.ForceAuthentication.Should().Be(forceAuthn);
@@ -127,7 +126,7 @@ namespace Sustainsys.Saml2.Tests.Saml2P
 
             var subject = Saml2AuthenticationRequest.Read(xmlData, null);
 
-            subject.Id.Should().Be(new Saml2Id("Saml2AuthenticationRequest_Read_NoACS"));
+            subject.Id.Value.Should().Be("Saml2AuthenticationRequest_Read_NoACS");
             subject.AssertionConsumerServiceUrl.Should().Be(null);
         }
 
@@ -138,7 +137,7 @@ namespace Sustainsys.Saml2.Tests.Saml2P
 <samlp:AuthnRequest
   xmlns:samlp=""urn:oasis:names:tc:SAML:2.0:protocol""
   xmlns:saml=""urn:oasis:names:tc:SAML:2.0:assertion""
-  ID=""Saml2AuthenticationRequest_Read_ShouldThrowOnInvalidVersion""
+  ID=""Saml2AuthenticationRequest_Read_Should().ThrowOnInvalidVersion""
   Version=""123456789.0""
   Destination=""http://destination.example.com""
   AssertionConsumerServiceURL=""https://sp.example.com/SAML2/Acs""
@@ -151,7 +150,7 @@ namespace Sustainsys.Saml2.Tests.Saml2P
 
             Action a = () => Saml2AuthenticationRequest.Read(xmlData, null);
 
-            a.ShouldThrow<XmlException>().WithMessage("Wrong or unsupported SAML2 version");
+            a.Should().Throw<XmlException>().WithMessage("Wrong or unsupported SAML2 version");
         }
 
         [TestMethod]
@@ -161,7 +160,7 @@ namespace Sustainsys.Saml2.Tests.Saml2P
 <samlp:NotAuthnRequest
   xmlns:samlp=""urn:oasis:names:tc:SAML:2.0:protocol""
   xmlns:saml=""urn:oasis:names:tc:SAML:2.0:assertion""
-  ID=""Saml2AuthenticationRequest_Read_ShouldThrowOnInvalidMessageName""
+  ID=""Saml2AuthenticationRequest_Read_Should().ThrowOnInvalidMessageName""
   Version=""2.0""
   Destination=""http://destination.example.com""
   AssertionConsumerServiceURL=""https://sp.example.com/SAML2/Acs""
@@ -174,7 +173,7 @@ namespace Sustainsys.Saml2.Tests.Saml2P
 
             Action a = () => Saml2AuthenticationRequest.Read(xmlData, null);
 
-            a.ShouldThrow<XmlException>().WithMessage("Expected a SAML2 authentication request document");
+            a.Should().Throw<XmlException>().WithMessage("Expected a SAML2 authentication request document");
         }
 
         [TestMethod]
@@ -393,7 +392,7 @@ namespace Sustainsys.Saml2.Tests.Saml2P
             };
 
             subject.Invoking(s => s.ToXElement())
-                .ShouldThrow<InvalidOperationException>()
+                .Should().Throw<InvalidOperationException>()
                 .And.Message.Should().Be("When NameIdPolicy/Format is set to Transient, it is not permitted to specify AllowCreate. Change Format or leave AllowCreate as null.");
         }
 

@@ -120,7 +120,7 @@ namespace Sustainsys.Saml2.Tests.WebSso
         {
             Action a = () => Saml2Binding.Get((Saml2BindingType)1473);
 
-            a.ShouldThrow<ArgumentException>()
+            a.Should().Throw<ArgumentException>()
                 .WithMessage("1473 is not a valid value for the Saml2BindingType enum. Have you forgotten to configure a binding for your identity provider?")
                 .WithInnerException<KeyNotFoundException>();
         }
@@ -132,14 +132,14 @@ namespace Sustainsys.Saml2.Tests.WebSso
 
             Action a = () => new StubSaml2Binding().Bind(message);
 
-            a.ShouldThrow<NotImplementedException>();
+            a.Should().Throw<NotImplementedException>();
         }
 
         [TestMethod]
         public void Saml2Binding_Bind_ThrowsNotImplementedException()
         {
             new StubSaml2Binding().Invoking(b => b.Bind(null))
-                .ShouldThrow<NotImplementedException>();
+                .Should().Throw<NotImplementedException>();
         }
 
         class ConcreteSaml2Binding : Saml2Binding
@@ -155,7 +155,7 @@ namespace Sustainsys.Saml2.Tests.WebSso
         {
             Action a = () => new ConcreteSaml2Binding().Unbind(null, null);
 
-            a.ShouldThrow<NotImplementedException>();
+            a.Should().Throw<NotImplementedException>();
         }
 
         [TestMethod]
@@ -177,7 +177,7 @@ namespace Sustainsys.Saml2.Tests.WebSso
         {
             Action a = () => Saml2Binding.UriToSaml2BindingType(new Uri("urn:SomeUnknownUri"));
 
-            a.ShouldThrow<ArgumentException>().And.Message.Should().Be("Unknown Saml2 Binding Uri \"urn:SomeUnknownUri\".");
+            a.Should().Throw<ArgumentException>().And.Message.Should().Be("Unknown Saml2 Binding Uri \"urn:SomeUnknownUri\".");
         }
 
         [TestMethod]
@@ -185,7 +185,7 @@ namespace Sustainsys.Saml2.Tests.WebSso
         {
             Action a = () => Saml2Binding.UriToSaml2BindingType(null);
 
-            a.ShouldThrow<ArgumentNullException>().And.ParamName.Should().Be("uri");
+            a.Should().Throw<ArgumentNullException>().And.ParamName.Should().Be("uri");
         }
 
         [TestMethod]
@@ -207,7 +207,7 @@ namespace Sustainsys.Saml2.Tests.WebSso
         {
             Action a = () => Saml2Binding.Saml2BindingTypeToUri(Saml2BindingType.HttpRedirect);
 
-            a.ShouldThrow<ArgumentException>().And.Message.Should().Be("Unknown Saml2 Binding Type \"HttpRedirect\".");
+            a.Should().Throw<ArgumentException>().And.Message.Should().Be("Unknown Saml2 Binding Type \"HttpRedirect\".");
         }
     }
 }

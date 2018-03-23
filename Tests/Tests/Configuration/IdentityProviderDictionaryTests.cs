@@ -2,7 +2,7 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Sustainsys.Saml2.Configuration;
 using FluentAssertions;
-using System.IdentityModel.Metadata;
+using Sustainsys.Saml2.Metadata;
 using Sustainsys.Saml2.TestHelpers;
 
 namespace Sustainsys.Saml2.Tests.Configuration
@@ -17,7 +17,7 @@ namespace Sustainsys.Saml2.Tests.Configuration
 
             Action a = () => { var i = subject[null]; };
 
-            a.ShouldThrow<ArgumentNullException>().And.ParamName.Should().Be("entityId");
+            a.Should().Throw<ArgumentNullException>().And.ParamName.Should().Be("entityId");
         }
 
         [TestMethod]
@@ -40,7 +40,7 @@ namespace Sustainsys.Saml2.Tests.Configuration
 
             Action a = () => subject.Add(null);
 
-            a.ShouldThrow<ArgumentNullException>().And.ParamName.Should().Be("idp");
+            a.Should().Throw<ArgumentNullException>().And.ParamName.Should().Be("idp");
         }
     }
 }

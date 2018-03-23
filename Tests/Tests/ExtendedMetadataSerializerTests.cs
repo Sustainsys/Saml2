@@ -5,12 +5,10 @@ using System.IO;
 using System.Text;
 using FluentAssertions;
 using Sustainsys.Saml2.Metadata;
-using System.IdentityModel.Metadata;
 using System.Xml.Linq;
 using Sustainsys.Saml2.WebSso;
 using System.Linq;
-using System.IdentityModel.Tokens;
-using System.ServiceModel.Security;
+using Sustainsys.Saml2.Tokens;
 
 namespace Sustainsys.Saml2.Tests
 {
@@ -27,7 +25,7 @@ namespace Sustainsys.Saml2.Tests
             var entityDescriptor = ExtendedMetadataSerializer.ReaderInstance.ReadMetadata(
                 new MemoryStream(Encoding.UTF8.GetBytes(data)));
 
-            var subject = entityDescriptor as ExtendedEntityDescriptor;
+            var subject = entityDescriptor as EntityDescriptor;
 
             subject.Should().NotBeNull();
             subject.ValidUntil.Should().Be(new DateTime(2100, 01, 02, 14, 42, 43, DateTimeKind.Utc));
@@ -44,7 +42,7 @@ namespace Sustainsys.Saml2.Tests
             var entityDescriptor = ExtendedMetadataSerializer.ReaderInstance.ReadMetadata(
                 new MemoryStream(Encoding.UTF8.GetBytes(data)));
 
-            var subject = entityDescriptor as ExtendedEntityDescriptor;
+            var subject = entityDescriptor as EntityDescriptor;
 
             subject.Should().NotBeNull();
             subject.ValidUntil.Should().NotHaveValue();
@@ -64,7 +62,7 @@ namespace Sustainsys.Saml2.Tests
             var entitiesDescriptor = ExtendedMetadataSerializer.ReaderInstance.ReadMetadata(
                 new MemoryStream(Encoding.UTF8.GetBytes(data)));
 
-            var subject = entitiesDescriptor as ExtendedEntitiesDescriptor;
+            var subject = entitiesDescriptor as EntitiesDescriptor;
 
             subject.Should().NotBeNull();
             subject.ValidUntil.Should().Be(new DateTime(2100, 01, 02, 14, 42, 43, DateTimeKind.Utc));
@@ -84,7 +82,7 @@ namespace Sustainsys.Saml2.Tests
             var entitiesDescriptor = ExtendedMetadataSerializer.ReaderInstance.ReadMetadata(
                 new MemoryStream(Encoding.UTF8.GetBytes(data)));
 
-            var subject = entitiesDescriptor as ExtendedEntitiesDescriptor;
+            var subject = entitiesDescriptor as EntitiesDescriptor;
 
             subject.Should().NotBeNull();
             subject.ValidUntil.Should().NotHaveValue();
@@ -94,21 +92,21 @@ namespace Sustainsys.Saml2.Tests
         [TestMethod]
         public void ExtendedMetadataSerializer_Write_EntitiesDescriptorCacheDuration()
         {
-            var metadata = new ExtendedEntitiesDescriptor
+            var metadata = new EntitiesDescriptor
             {
                 Name = "Federation Name",
                 CacheDuration = new TimeSpan(0, 42, 0)
             };
 
-            var entity = new ExtendedEntityDescriptor
+            var entity = new EntityDescriptor
                 {
                     EntityId = new EntityId("http://some.entity.example.com")
                 };
 
-            var idpSsoDescriptor = new IdentityProviderSingleSignOnDescriptor();
+            var idpSsoDescriptor = new IdpSsoDescriptor();
             idpSsoDescriptor.ProtocolsSupported.Add(new Uri("urn:oasis:names:tc:SAML:2.0:protocol"));
 
-            idpSsoDescriptor.SingleSignOnServices.Add(new ProtocolEndpoint
+            idpSsoDescriptor.SingleSignOnServices.Add(new SingleSignOnService
                 {
                     Binding = Saml2Binding.HttpRedirectUri,
                     Location = new Uri("http://some.entity.example.com/sso")
@@ -151,21 +149,27 @@ namespace Sustainsys.Saml2.Tests
     </KeyDescriptor>
   </IDPSSODescriptor>
 </EntityDescriptor>";
-            var entityDescriptor = (ExtendedEntityDescriptor)ExtendedMetadataSerializer.ReaderInstance.ReadMetadata(
+            var entityDescriptor = (EntityDescriptor)ExtendedMetadataSerializer.ReaderInstance.ReadMetadata(
                 new MemoryStream(Encoding.UTF8.GetBytes(data)));
 
-            var keyInfo = entityDescriptor.RoleDescriptors.Cast<IdentityProviderSingleSignOnDescriptor>()
+            var keyInfo = entityDescriptor.RoleDescriptors.Cast<IdpSsoDescriptor>()
                .Single().Keys.Single().KeyInfo;
 
-            keyInfo.Count.Should().Be(2);
+            keyInfo.Data.Count.Should().Be(1);
+			keyInfo.Data.First().Should().BeOfType<X509Data>();
+			var x509Data = keyInfo.Data.First().As<X509Data>();
+			
+			x509Data.IssuerSerial.Should().NotBeNull();
+			x509Data.IssuerSerial.Name.Should().Be("E=arende@servicecentrum.stockholm.se,CN=Stockholm CA idPortal Internal Use,OU=idPortal Tieto,O=Stockholms Stad,ST=Stockholm,C=SE");
+			x509Data.IssuerSerial.Serial.Should().Be("12364142347751398823");
 
-            keyInfo[0].As<X509IssuerSerialKeyIdentifierClause>().IssuerName.Should().Be("E=arende@servicecentrum.stockholm.se,CN=Stockholm CA idPortal Internal Use,OU=idPortal Tieto,O=Stockholms Stad,ST=Stockholm,C=SE");
-            keyInfo[0].As<X509IssuerSerialKeyIdentifierClause>().IssuerSerialNumber.Should().Be("12364142347751398823");
+			x509Data.Certificates.Count.Should().Be(1);
+			
+			x509Data.SubjectName.Should().NotBeNull();
+			x509Data.SubjectName.Should().Be("E=arende@servicecentrum.stockholm.se,CN=login004.test.stockholm.se,OU=idPortalen,O=City Of Stockholm,L=Stockholm,ST=Stockholm,C=SE");
+		}
 
-            keyInfo[1].Should().BeOfType<X509RawDataKeyIdentifierClause>();
-        }
-
-        [TestMethod]
+		[TestMethod]
         public void ExtendedMetadataSerializer_Read_KeyName()
         {
             var data =
@@ -199,19 +203,24 @@ gosrSG6sO3IPeL4BncKqqZO2FokfZbaqPBv6xmoKsVTUTQRfNEks84dRiG0MjqBncR+B6CIrCv2a
   </md:IDPSSODescriptor>
 </md:EntityDescriptor>";
 
-            var entityDescriptor = (ExtendedEntityDescriptor)ExtendedMetadataSerializer.ReaderInstance.ReadMetadata(
+            var entityDescriptor = (EntityDescriptor)ExtendedMetadataSerializer.ReaderInstance.ReadMetadata(
                 new MemoryStream(Encoding.UTF8.GetBytes(data)));
 
-            var keyInfo = entityDescriptor.RoleDescriptors.Cast<IdentityProviderSingleSignOnDescriptor>()
+            var keyInfo = entityDescriptor.RoleDescriptors.Cast<IdpSsoDescriptor>()
                .Single().Keys.Single().KeyInfo;
 
-            keyInfo.Count.Should().Be(2);
+			keyInfo.Data.Count.Should().Be(1);
+			keyInfo.Data.First().Should().BeOfType<X509Data>();
+			var x509Data = keyInfo.Data.First().As<X509Data>();
+			x509Data.Certificates.Count.Should().Be(1);
+			Convert.ToBase64String(x509Data.Certificates.First().GetRawCertData()).Should().StartWith(
+				"MIIDYDCCAkgCCQDdrvhAIZlF8zANBgkqhkiG9w0BAQUFADByMQswCQYDVQQGEwJTRTEXMBUGA1UE");
 
-            keyInfo[0].Should().BeOfType<X509RawDataKeyIdentifierClause>();
-            keyInfo[1].As<KeyNameIdentifierClause>().KeyName.Should().Be("6b66c9b9e6612b7d5d9f4078daeca7a8e0d9815e");
-        }
+			keyInfo.KeyNames.Count.Should().Be(1);
+			keyInfo.KeyNames.First().Should().Be("6b66c9b9e6612b7d5d9f4078daeca7a8e0d9815e");
+		}
 
-        [TestMethod]
+		[TestMethod]
         public void ExtendedMetadataSerializer_Read_ExtraElementInKeyInfoIgnored()
         {
             var data =
@@ -225,14 +234,17 @@ gosrSG6sO3IPeL4BncKqqZO2FokfZbaqPBv6xmoKsVTUTQRfNEks84dRiG0MjqBncR+B6CIrCv2a
   </md:IDPSSODescriptor>
 </md:EntityDescriptor>";
 
-            var entityDescriptor = (ExtendedEntityDescriptor)ExtendedMetadataSerializer.ReaderInstance.ReadMetadata(
+            var entityDescriptor = (EntityDescriptor)ExtendedMetadataSerializer.ReaderInstance.ReadMetadata(
                 new MemoryStream(Encoding.UTF8.GetBytes(data)));
 
-            var keyInfo = entityDescriptor.RoleDescriptors.Cast<IdentityProviderSingleSignOnDescriptor>()
-               .Single().Keys.Single().KeyInfo;
+			var keyInfo = entityDescriptor.RoleDescriptors.Cast<IdpSsoDescriptor>()
+			   .Single().Keys.Single().KeyInfo;
 
-            keyInfo.Count.Should().Be(0);
-        }
+			keyInfo.KeyNames.Count.Should().Be(0);
+			keyInfo.KeyValues.Count.Should().Be(0);
+			keyInfo.RetrievalMethods.Count.Should().Be(0);
+			keyInfo.Data.Count.Should().Be(0);
+		}
 
         [TestMethod]
         public void ExtendedMetadataSerializer_Read_RsaKey()
@@ -253,34 +265,37 @@ gosrSG6sO3IPeL4BncKqqZO2FokfZbaqPBv6xmoKsVTUTQRfNEks84dRiG0MjqBncR+B6CIrCv2a
   </md:IDPSSODescriptor>
 </md:EntityDescriptor>";
 
-            var entityDescriptor = (ExtendedEntityDescriptor)ExtendedMetadataSerializer.ReaderInstance.ReadMetadata(
+            var entityDescriptor = (EntityDescriptor)ExtendedMetadataSerializer.ReaderInstance.ReadMetadata(
                 new MemoryStream(Encoding.UTF8.GetBytes(data)));
 
-            var keyInfo = entityDescriptor.RoleDescriptors.Cast<IdentityProviderSingleSignOnDescriptor>()
-               .Single().Keys.Single().KeyInfo;
+			var keyInfo = entityDescriptor.RoleDescriptors.Cast<IdpSsoDescriptor>()
+			   .Single().Keys.Single().KeyInfo;
 
-            keyInfo.Count.Should().Be(1);
-            keyInfo[0].Should().BeOfType<RsaKeyIdentifierClause>();
+            keyInfo.KeyValues.Count.Should().Be(1);
+            keyInfo.KeyValues.First().Should().BeOfType<RsaKeyValue>();
         }
 
         [TestMethod]
         public void ExtendedMetadataSerializer_Read_ServiceProviderSingleSignOnDescriptor()
         {
+			// TODO: I don't understand what this test was doing originally -- it was checking that there 
+			// were zero AssertionConsumerServices results from adding two with identical indexes (
+			// which is illegal as far as I can tell from the specification)
             var data =
 @"<md:EntityDescriptor xmlns:md=""urn:oasis:names:tc:SAML:2.0:metadata"" entityID=""http://idp-acc.test.ek.sll.se/neas"">
     <md:SPSSODescriptor AuthnRequestsSigned=""false"" WantAssertionsSigned=""true"" protocolSupportEnumeration=""urn:oasis:names:tc:SAML:2.0:protocol"">
       <md:SingleLogoutService Binding=""urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST"" Location=""https://maggie.bif.ost.se:9443/sp/saml/slo/HTTP-POST""/>
       <md:AssertionConsumerService Binding=""urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST"" Location=""https://maggie.bif.ost.se:9443/sp/saml/sso/HTTP-POST"" index=""1"" isDefault=""true""/>
-      <md:AssertionConsumerService Binding=""urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST"" Location=""https://maggie.bif.ost.se:9443/sp/saml/sso/POST"" index=""1"" isDefault=""true""/>
+      <md:AssertionConsumerService Binding=""urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST"" Location=""https://maggie.bif.ost.se:9443/sp/saml/sso/POST"" index=""2"" isDefault=""true""/>
 	</md:SPSSODescriptor>
  </md:EntityDescriptor>";
 
-            var entityDescriptor = (ExtendedEntityDescriptor)ExtendedMetadataSerializer.ReaderInstance.ReadMetadata(
+            var entityDescriptor = (EntityDescriptor)ExtendedMetadataSerializer.ReaderInstance.ReadMetadata(
                 new MemoryStream(Encoding.UTF8.GetBytes(data)));
 
-            var spssoInfo = entityDescriptor.RoleDescriptors.Cast<ServiceProviderSingleSignOnDescriptor>().Single();
+            var spssoInfo = entityDescriptor.RoleDescriptors.Cast<SpSsoDescriptor>().Single();
 
-            spssoInfo.AssertionConsumerServices.Count.Should().Be(0);
+            spssoInfo.AssertionConsumerServices.Count.Should().Be(2);
         }
 
         [TestMethod]
@@ -296,14 +311,15 @@ gosrSG6sO3IPeL4BncKqqZO2FokfZbaqPBv6xmoKsVTUTQRfNEks84dRiG0MjqBncR+B6CIrCv2a
     </md:Organization>
   </md:EntityDescriptor>";
 
-            var entityDescriptor = (ExtendedEntityDescriptor)ExtendedMetadataSerializer.ReaderInstance.ReadMetadata(
+            var entityDescriptor = (EntityDescriptor)ExtendedMetadataSerializer.ReaderInstance.ReadMetadata(
                 new MemoryStream(Encoding.UTF8.GetBytes(data)));
 
             var organizationInfo = entityDescriptor.Organization;
 
-            organizationInfo.Names.Count.Should().Be(0);
-            organizationInfo.DisplayNames.Count.Should().Be(0);
-            organizationInfo.Urls.Count.Should().Be(0);
+			// TODO: I don't follow this either -- the test was asserting there were 0, 0 and 0 results
+			organizationInfo.Names.Count.Should().Be(1);
+            organizationInfo.DisplayNames.Count.Should().Be(1);
+            organizationInfo.Urls.Count.Should().Be(2);
         }
     }
 }

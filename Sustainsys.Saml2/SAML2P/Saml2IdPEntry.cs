@@ -1,6 +1,6 @@
 ﻿using System;
-using System.IdentityModel.Metadata;
 using System.Xml.Linq;
+using Sustainsys.Saml2.Metadata;
 
 namespace Sustainsys.Saml2.Saml2P
 {

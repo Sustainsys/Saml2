@@ -2,7 +2,6 @@
 using Sustainsys.Saml2.Saml2P;
 using System;
 using Sustainsys.Saml2.WebSso;
-using System.IdentityModel.Metadata;
 using Sustainsys.Saml2.Metadata;
 
 namespace Sustainsys.Saml2.Configuration
@@ -129,7 +128,7 @@ namespace Sustainsys.Saml2.Configuration
         /// signing. At this point the contents of the metadata can be
         /// altered before presented.
         /// </summary>
-        public Action<ExtendedEntityDescriptor, Saml2Urls>
+        public Action<EntityDescriptor, Saml2Urls>
             MetadataCreated { get; set; }
 
         /// <summary>

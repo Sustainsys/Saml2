@@ -1,7 +1,6 @@
 ﻿using Sustainsys.Saml2.WebSso;
 using System;
 using System.Configuration;
-using System.Data.Odbc;
 using Sustainsys.Saml2.Saml2P;
 
 namespace Sustainsys.Saml2.Configuration

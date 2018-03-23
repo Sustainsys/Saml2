@@ -3,8 +3,9 @@ using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Security.Claims;
 using FluentAssertions;
-using System.IdentityModel.Metadata;
-using System.IdentityModel.Tokens;
+using Sustainsys.Saml2.Metadata;
+using Sustainsys.Saml2.Tokens;
+using Microsoft.IdentityModel.Tokens.Saml2;
 
 namespace Sustainsys.Saml2.Tests
 {
@@ -18,7 +19,7 @@ namespace Sustainsys.Saml2.Tests
 
             Action a = () => identity.ToSaml2Assertion(new EntityId("foo"));
 
-            a.ShouldThrow<ArgumentNullException>().And.ParamName.Should().Be("identity");
+            a.Should().Throw<ArgumentNullException>().And.ParamName.Should().Be("identity");
         }
 
         [TestMethod]
@@ -28,7 +29,7 @@ namespace Sustainsys.Saml2.Tests
 
             Action a = () => subject.ToSaml2Assertion(null);
 
-            a.ShouldThrow<ArgumentNullException>().And.ParamName.Should().Be("issuer");
+            a.Should().Throw<ArgumentNullException>().And.ParamName.Should().Be("issuer");
         }
 
         [TestMethod]
@@ -65,7 +66,7 @@ namespace Sustainsys.Saml2.Tests
 
             attributes.Should().HaveCount(1);
 
-            attributes.Single().ShouldBeEquivalentTo(
+            attributes.Single().Should().BeEquivalentTo(
                 new Saml2Attribute(ClaimTypes.Email, "me@example.com"));
         }
 
@@ -81,8 +82,8 @@ namespace Sustainsys.Saml2.Tests
             var actual = ci.ToSaml2Assertion(new EntityId("http://idp.example.com"));
 
             actual.Statements.OfType<Saml2AttributeStatement>().Should().HaveCount(1);
-            actual.Statements.OfType<Saml2AttributeStatement>().Single().Attributes[0].Values[0].Should().Be("Test");
-            actual.Statements.OfType<Saml2AttributeStatement>().Single().Attributes[1].Values[0].Should().Be("me@example.com");
+            actual.Statements.OfType<Saml2AttributeStatement>().Single().Attributes.First().Values.First().Should().Be("Test");
+            actual.Statements.OfType<Saml2AttributeStatement>().Single().Attributes.ElementAt(1).Values.First().Should().Be("me@example.com");
         }
 
         [TestMethod]
@@ -102,7 +103,7 @@ namespace Sustainsys.Saml2.Tests
             var expected = new Saml2AttributeStatement(
                 new Saml2Attribute(ClaimTypes.Role, new[] { "Test1", "Test2" }));
 
-            actual.ShouldBeEquivalentTo(expected);
+            actual.Should().BeEquivalentTo(expected);
         }
 
         [TestMethod]
@@ -133,7 +134,7 @@ namespace Sustainsys.Saml2.Tests
 
             a.Conditions.AudienceRestrictions.Should().HaveCount(1, "there should be one set of audience restrictions")
                 .And.Subject.Single().Audiences.Should().HaveCount(1, "there should be one allowed audience")
-                .And.Subject.Single().AbsoluteUri.Should()
+                .And.Subject.Single().Should()
                 .Be("http://sp.example.com/");
         }
 
@@ -142,7 +143,7 @@ namespace Sustainsys.Saml2.Tests
         {
             Action a = () => ((ClaimsIdentity)null).ToSaml2NameIdentifier();
 
-            a.ShouldThrow<ArgumentNullException>()
+            a.Should().Throw<ArgumentNullException>()
                 .And.ParamName.Should().Be("identity");
         }
     }

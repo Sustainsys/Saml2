@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Configuration;
 using System.Globalization;
-using System.IdentityModel.Metadata;
 using System.Linq;
 using Sustainsys.Saml2.Internal;
 using Sustainsys.Saml2.Metadata;
@@ -18,7 +17,24 @@ namespace Sustainsys.Saml2.Configuration
     /// </summary>
     public class SustainsysSaml2Section : ConfigurationSection
     {
-        private static readonly SustainsysSaml2Section current =
+		private static System.Configuration.Configuration configuration;
+
+		public static System.Configuration.Configuration Configuration
+		{
+			get
+			{
+				return configuration;
+			}
+			set
+			{
+				configuration = value;
+				current = (SustainsysSaml2Section)(configuration != null ? 
+					configuration.GetSection("sustainsys.saml2") :
+					ConfigurationManager.GetSection("sustainsys.saml2"));
+			}
+		}
+
+		private static SustainsysSaml2Section current =
             (SustainsysSaml2Section)ConfigurationManager.GetSection("sustainsys.saml2");
 
         internal bool AllowChange { get; set; }
@@ -178,16 +194,16 @@ namespace Sustainsys.Saml2.Configuration
                 // Metadata.Organization will still be instantiated, but the Url will be null.
                 if (organization == null && Metadata.Organization.Url != null)
                 {
-                    var culture = CultureInfo.InvariantCulture;
-                    if (!string.IsNullOrEmpty(Metadata.Organization.Language))
+					var lang = "en";
+                    if (!String.IsNullOrEmpty(Metadata.Organization.Language))
                     {
-                        culture = CultureInfo.GetCultureInfo(Metadata.Organization.Language);
-                    }
+						lang = Metadata.Organization.Language;
+					}
 
                     var org = new Organization();
-                    org.Names.Add(new LocalizedName(Metadata.Organization.Name, culture));
-                    org.DisplayNames.Add(new LocalizedName(Metadata.Organization.DisplayName, culture));
-                    org.Urls.Add(new LocalizedUri(Metadata.Organization.Url, culture));
+                    org.Names.Add(new LocalizedName(Metadata.Organization.Name, lang));
+                    org.DisplayNames.Add(new LocalizedName(Metadata.Organization.DisplayName, lang));
+                    org.Urls.Add(new LocalizedUri(Metadata.Organization.Url, lang));
 
                     organization = org;
                 }
@@ -259,16 +275,17 @@ namespace Sustainsys.Saml2.Configuration
         /// <summary>
         /// Attribute consuming services.
         /// </summary>
-        public IEnumerable<AttributeConsumingService> AttributeConsumingServices
+        public IEnumerable<AttributeConsumingService2> AttributeConsumingServices
         {
             get
             {
                 if (Metadata.RequestedAttributes.Any())
                 {
-                    var acs = new AttributeConsumingService("SP")
+                    var acs = new AttributeConsumingService2
                     {
                         IsDefault = true
                     };
+					acs.ServiceNames.Add(new LocalizedName("SP", "en"));
 
                     foreach (var confAttribute in Metadata.RequestedAttributes)
                     {

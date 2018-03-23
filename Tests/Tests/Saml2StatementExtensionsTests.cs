@@ -1,9 +1,9 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System.IdentityModel.Tokens;
 using FluentAssertions;
 using System.Collections.Generic;
 using System.Security.Claims;
+using Microsoft.IdentityModel.Tokens.Saml2;
 
 namespace Sustainsys.Saml2.Tests
 {
@@ -17,7 +17,7 @@ namespace Sustainsys.Saml2.Tests
 
             Action a = () => assertion.ToXElement();
 
-            a.ShouldThrow<ArgumentNullException>().And.ParamName.Should().Be("statement");
+            a.Should().Throw<ArgumentNullException>().And.ParamName.Should().Be("statement");
         }
 
         [TestMethod]
@@ -27,7 +27,7 @@ namespace Sustainsys.Saml2.Tests
 
             Action a = () => assertion.ToXElement();
 
-            a.ShouldThrow<NotImplementedException>()
+            a.Should().Throw<NotImplementedException>()
                 .And.Message.Should().Be("Statement of type StubSaml2Statement is not supported.");
         }
 

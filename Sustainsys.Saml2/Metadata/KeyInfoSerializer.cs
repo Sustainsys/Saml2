@@ -1,18 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using System.IdentityModel.Selectors;
-using System.IdentityModel.Tokens;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Security.Cryptography.Xml;
-using System.ServiceModel.Security;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
+using Sustainsys.Saml2.Selectors;
+using Sustainsys.Saml2.Tokens;
+
+using SecurityToken = Microsoft.IdentityModel.Tokens.SecurityToken;
 
 namespace Sustainsys.Saml2.Metadata
 {
+#if FALSE
     // The default KeyInfoSerializer can't handle X509Data elements with
     // multiple child elements. It will only read the first child element and if
     // that doesn't contain the info required to create the key, we're stuck.
@@ -150,52 +152,53 @@ namespace Sustainsys.Saml2.Metadata
         }
 
         [ExcludeFromCodeCoverage]
-        protected override bool CanWriteKeyIdentifierClauseCore(System.IdentityModel.Tokens.SecurityKeyIdentifierClause keyIdentifierClause)
+        protected override bool CanWriteKeyIdentifierClauseCore(SecurityKeyIdentifierClause keyIdentifierClause)
         {
             throw new NotImplementedException();
         }
 
         [ExcludeFromCodeCoverage]
-        protected override bool CanWriteKeyIdentifierCore(System.IdentityModel.Tokens.SecurityKeyIdentifier keyIdentifier)
+        protected override bool CanWriteKeyIdentifierCore(SecurityKeyIdentifier keyIdentifier)
         {
             throw new NotImplementedException();
         }
 
         [ExcludeFromCodeCoverage]
-        protected override bool CanWriteTokenCore(System.IdentityModel.Tokens.SecurityToken token)
+        protected override bool CanWriteTokenCore(SecurityToken token)
         {
             throw new NotImplementedException();
         }
 
         [ExcludeFromCodeCoverage]
-        protected override System.IdentityModel.Tokens.SecurityKeyIdentifierClause ReadKeyIdentifierClauseCore(System.Xml.XmlReader reader)
+        protected override SecurityKeyIdentifierClause ReadKeyIdentifierClauseCore(System.Xml.XmlReader reader)
         {
             throw new NotImplementedException();
         }
 
         [ExcludeFromCodeCoverage]
-        protected override System.IdentityModel.Tokens.SecurityToken ReadTokenCore(System.Xml.XmlReader reader, SecurityTokenResolver tokenResolver)
+        protected override SecurityToken ReadTokenCore(System.Xml.XmlReader reader, SecurityTokenResolver tokenResolver)
         {
             throw new NotImplementedException();
         }
 
         [ExcludeFromCodeCoverage]
-        protected override void WriteKeyIdentifierClauseCore(System.Xml.XmlWriter writer, System.IdentityModel.Tokens.SecurityKeyIdentifierClause keyIdentifierClause)
+        protected override void WriteKeyIdentifierClauseCore(System.Xml.XmlWriter writer, SecurityKeyIdentifierClause keyIdentifierClause)
         {
             throw new NotImplementedException();
         }
 
         [ExcludeFromCodeCoverage]
-        protected override void WriteKeyIdentifierCore(System.Xml.XmlWriter writer, System.IdentityModel.Tokens.SecurityKeyIdentifier keyIdentifier)
+        protected override void WriteKeyIdentifierCore(System.Xml.XmlWriter writer, SecurityKeyIdentifier keyIdentifier)
         {
             throw new NotImplementedException();
         }
 
         [ExcludeFromCodeCoverage]
-        protected override void WriteTokenCore(System.Xml.XmlWriter writer, System.IdentityModel.Tokens.SecurityToken token)
+        protected override void WriteTokenCore(System.Xml.XmlWriter writer, SecurityToken token)
         {
             throw new NotImplementedException();
         }
         #endregion
     }
+#endif
 }

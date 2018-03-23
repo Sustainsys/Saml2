@@ -1,16 +1,16 @@
 ﻿using FluentAssertions;
 using Sustainsys.Saml2.Internal;
+using Sustainsys.Saml2.Metadata;
 using Sustainsys.Saml2.Saml2P;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
-using System.IdentityModel.Metadata;
-using System.IdentityModel.Tokens;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 using Sustainsys.Saml2.Tests.Helpers;
+using Microsoft.IdentityModel.Tokens.Saml2;
 
 namespace Sustainsys.Saml2.Tests.Saml2P
 {
@@ -85,7 +85,7 @@ xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
                 SessionIndex = "SessionId",
             };
 
-            subject.ShouldBeEquivalentTo(expected);
+            subject.Should().BeEquivalentTo(expected);
         }
 
         [TestMethod]
@@ -107,7 +107,7 @@ xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
                 NameId = new Saml2NameIdentifier("005a06e0-ad82-110d-a556-004005b13a2b"),
             };
 
-            subject.ShouldBeEquivalentTo(expected);
+            subject.Should().BeEquivalentTo(expected);
         }
 
         [TestMethod]
@@ -115,7 +115,7 @@ xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
         {
             Action a = () => Saml2LogoutRequest.FromXml(null);
 
-            a.ShouldThrow<ArgumentNullException>()
+            a.Should().Throw<ArgumentNullException>()
                 .And.ParamName.Should().Be("xml");
         }
     }

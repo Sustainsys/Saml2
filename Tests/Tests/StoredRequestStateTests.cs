@@ -2,11 +2,11 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
-using System.IdentityModel.Metadata;
-using System.IdentityModel.Tokens;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Sustainsys.Saml2.Metadata;
+using Microsoft.IdentityModel.Tokens.Saml2;
 
 namespace Sustainsys.Saml2.Tests
 {
@@ -17,7 +17,7 @@ namespace Sustainsys.Saml2.Tests
         {
             var actual = new StoredRequestState(subject.Serialize());
 
-            actual.ShouldBeEquivalentTo(subject);
+            actual.Should().BeEquivalentTo(subject);
         }
 
         [TestMethod]

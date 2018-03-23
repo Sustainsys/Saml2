@@ -1,21 +1,24 @@
-﻿using Microsoft.Owin;
-using Microsoft.Owin.Hosting;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Microsoft.AspNetCore;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
-using Owin;
 using Sustainsys.Saml2.WebSso;
 using System.IO;
 using System.Xml.Linq;
 using System.Security.Cryptography.Xml;
+using System.Threading.Tasks;
 using Sustainsys.Saml2.TestHelpers;
 
 namespace Sustainsys.Saml2.Tests.Helpers
 {
-    [TestClass]
     public class StubServer
     {
-        private static IDisposable host;
+        private static IWebHost host;
 
         static IDictionary<string, string> GetContent()
         {
@@ -351,35 +354,36 @@ entityID=""http://localhost:13428/idpMetadataVeryShortCacheDuration"" cacheDurat
         public static bool IdpAndFederationShortCacheDurationAvailable { get; set; } = true;
         public static bool FederationVeryShortCacheDurationSecondAlternativeEnabled { get; set; } = false;
 
-        [AssemblyInitialize]
         public static void Start(TestContext testContext)
         {
-            host = WebApp.Start("http://localhost:13428", app =>
-            {
-                app.Use(async (ctx, next) =>
-                {
-                    string data;
+			host = new WebHostBuilder()
+				.UseUrls("http://localhost:13428")
+				.Configure(builder => builder.Use(async (ctx, next) =>
+				{
+					string data;
 
-                    switch (ctx.Request.Path.ToString())
-                    {
-                        case "/ars":
-                            ArtifactResolutionService(ctx);
-                            return;
-                        default:
-                            var content = GetContent();
-                            if (content.TryGetValue(ctx.Request.Path.ToString(), out data))
-                            {
-                                await ctx.Response.WriteAsync(data);
-                                return;
-                            }
-                            break;
-                    }
-                    await next.Invoke();
-                });
-            });
+					switch (ctx.Request.Path.ToString())
+					{
+						case "/ars":
+							await ArtifactResolutionService(ctx);
+							return;
+						default:
+							var content = GetContent();
+							if (content.TryGetValue(ctx.Request.Path.ToString(), out data))
+							{
+								await ctx.Response.WriteAsync(data);
+								return;
+							}
+							break;
+					}
+					await next.Invoke();
+				}))
+				.UseKestrel()
+				.Build();
+			host.Start();
         }
 
-        private static void ArtifactResolutionService(IOwinContext ctx)
+        private static async Task ArtifactResolutionService(HttpContext ctx)
         {
             LastArtifactResolutionSoapActionHeader = ctx.Request.Headers["SOAPAction"];
 
@@ -420,7 +424,7 @@ entityID=""http://localhost:13428/idpMetadataVeryShortCacheDuration"" cacheDurat
 </SOAP-ENV:Envelope>",
                 requestId, DateTime.UtcNow.ToSaml2DateTimeString());
 
-                ctx.Response.Write(response);
+				await ctx.Response.WriteAsync(response);
             }
         }
 

@@ -2,12 +2,13 @@
 using System.Xml.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using FluentAssertions;
-using System.IdentityModel.Metadata;
 using Sustainsys.Saml2.Configuration;
+using Sustainsys.Saml2.Metadata;
 using Sustainsys.Saml2.WebSso;
 using Sustainsys.Saml2.Tests.Helpers;
 using System.Security.Cryptography.Xml;
 using Sustainsys.Saml2.TestHelpers;
+using Sustainsys.Saml2.Tokens;
 
 namespace Sustainsys.Saml2.Tests.WebSso
 {
@@ -21,7 +22,7 @@ namespace Sustainsys.Saml2.Tests.WebSso
                 new HttpRequestData("GET", new Uri("http://localhost")), 
                 null);
 
-            a.ShouldThrow<ArgumentNullException>().And.ParamName.Should().Be("options");
+            a.Should().Throw<ArgumentNullException>().And.ParamName.Should().Be("options");
         }
 
         HttpRequestData request = new HttpRequestData("GET", new Uri("http://localhost"));
@@ -32,7 +33,7 @@ namespace Sustainsys.Saml2.Tests.WebSso
             var options = StubFactory.CreateOptions();
             options.SPOptions.DiscoveryServiceUrl = new Uri("http://ds.example.com");
             options.SPOptions.AuthenticateRequestSigningBehavior = SigningBehavior.Always;
-            options.SPOptions.OutboundSigningAlgorithm = SignedXml.XmlDsigRSASHA384Url;
+            options.SPOptions.OutboundSigningAlgorithm = SecurityAlgorithms.RsaSha384Signature;
             options.SPOptions.ServiceCertificates.Add(new ServiceCertificate()
             {
                 Certificate = SignedXmlHelper.TestCertSignOnly,
@@ -50,15 +51,15 @@ namespace Sustainsys.Saml2.Tests.WebSso
             payloadXml.DocumentElement.FirstChild.LocalName.Should().Be("Signature");
             payloadXml.DocumentElement.FirstChild["KeyInfo"].Should().NotBeNull();
             payloadXml.DocumentElement.FirstChild["SignedInfo"]["SignatureMethod"].GetAttribute("Algorithm")
-                .Should().Be(SignedXml.XmlDsigRSASHA384Url);
+                .Should().Be(SecurityAlgorithms.RsaSha384Signature);
             payloadXml.DocumentElement.RemoveChild("Signature", SignedXml.XmlDsigNamespaceUrl);
 
             // Ignore the ID attribute, it is just filled with a GUID that can't be easily tested.
             payloadXml.DocumentElement.Attributes.Remove("ID");
 
             // Test and then drop validUntil, can't be text compared.
-            DateTime.Parse(payloadXml.DocumentElement.Attributes["validUntil"].Value)
-                .Should().BeCloseTo(DateTime.UtcNow.AddDays(24).ToLocalTime(), 2000);
+            DateTime.Parse(payloadXml.DocumentElement.Attributes["validUntil"].Value).ToUniversalTime()
+                .Should().BeCloseTo(DateTime.UtcNow.AddDays(24), 2000);
             payloadXml.DocumentElement.Attributes.Remove("validUntil");
 
             var expectedXml =
@@ -153,7 +154,7 @@ namespace Sustainsys.Saml2.Tests.WebSso
 
             Action a = () => new MetadataCommand().Run(request, options);
 
-            a.ShouldThrow<MetadataSerializationException>().And.Message.Should().StartWith("ID3203");
+            a.Should().Throw<MetadataSerializationException>().And.Message.Should().StartWith("ID3203");
         }
 
         [TestMethod]

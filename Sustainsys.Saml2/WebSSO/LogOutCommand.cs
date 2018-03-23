@@ -1,6 +1,5 @@
 ﻿using System;
 using Sustainsys.Saml2.Configuration;
-using System.IdentityModel.Metadata;
 using System.Security.Claims;
 using System.Net;
 using Sustainsys.Saml2.Saml2P;
@@ -10,6 +9,7 @@ using System.Configuration;
 using System.Linq;
 using System.Security.Cryptography.Xml;
 using Sustainsys.Saml2.Internal;
+using Sustainsys.Saml2.Metadata;
 
 namespace Sustainsys.Saml2.WebSso
 {

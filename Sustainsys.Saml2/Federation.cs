@@ -4,13 +4,12 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
-using System.IdentityModel.Metadata;
 using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using System.Security.Cryptography.X509Certificates;
-using System.IdentityModel.Tokens;
+using Sustainsys.Saml2.Tokens;
 
 namespace Sustainsys.Saml2
 {
@@ -135,8 +134,8 @@ namespace Sustainsys.Saml2
                         options.SPOptions.ValidateCertificates,
                         options.SPOptions.MinIncomingSigningAlgorithm);
 
-                    var identityProvidersMetadata = metadata.ChildEntities.Cast<ExtendedEntityDescriptor>()
-                        .Where(ed => ed.RoleDescriptors.OfType<IdentityProviderSingleSignOnDescriptor>().Any());
+                    var identityProvidersMetadata = metadata.ChildEntities.Cast<EntityDescriptor>()
+                        .Where(ed => ed.RoleDescriptors.OfType<IdpSsoDescriptor>().Any());
 
                     var identityProviders = new List<IdentityProvider>();
 

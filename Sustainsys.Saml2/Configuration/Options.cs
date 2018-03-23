@@ -84,10 +84,12 @@ namespace Sustainsys.Saml2.Configuration
         [System.Diagnostics.CodeAnalysis.SuppressMessage( "Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Sha" )]
         public static void GlobalEnableSha256XmlSignatures()
         {
-            CryptoConfig.AddAlgorithm(typeof(ManagedSHA256SignatureDescription), RsaSha256Uri);
+/*
+			CryptoConfig.AddAlgorithm(typeof(ManagedSHA256SignatureDescription), RsaSha256Uri);
 
             AddAlgorithmIfMissing((IList<string>)XmlHelpers.KnownSigningAlgorithms, RsaSha256Uri);
             AddAlgorithmIfMissing((IList<string>)XmlHelpers.DigestAlgorithms, Sha256Uri);
+			*/
         }
 
         internal static void AddAlgorithmIfMissing(IList<string> knownAlgorithms, string newAlgorithm)

@@ -17,7 +17,7 @@ namespace Sustainsys.Saml2.Tests.Configuration
 
             Action a = () => subject.Add((ServiceCertificate)null);
 
-            a.ShouldThrow<ArgumentNullException>().And.ParamName.Should().Be("item");
+            a.Should().Throw<ArgumentNullException>().And.ParamName.Should().Be("item");
         }
 
         [TestMethod]
@@ -27,7 +27,7 @@ namespace Sustainsys.Saml2.Tests.Configuration
 
             Action a = () => subject.Add((X509Certificate2)null);
 
-            a.ShouldThrow<ArgumentNullException>().And.ParamName.Should().Be("certificate");
+            a.Should().Throw<ArgumentNullException>().And.ParamName.Should().Be("certificate");
         }
 
         [TestMethod]
@@ -39,7 +39,7 @@ namespace Sustainsys.Saml2.Tests.Configuration
             var subject = new ServiceCertificateCollection();
             Action a = () => subject.Add(new ServiceCertificate { Use = CertificateUse.Encryption, Certificate = certWithNoPrivate });
 
-            a.ShouldThrow<ArgumentException>()
+            a.Should().Throw<ArgumentException>()
                 .WithMessage(@"Provided certificate is not valid because it does not contain a private key.");
         }
 
@@ -52,7 +52,7 @@ namespace Sustainsys.Saml2.Tests.Configuration
             var subject = new ServiceCertificateCollection();
             Action a = () => subject.Add(new ServiceCertificate { Use = CertificateUse.Signing, Certificate = certWithNoPrivate });
 
-            a.ShouldThrow<ArgumentException>()
+            a.Should().Throw<ArgumentException>()
                 .WithMessage(@"Provided certificate is not valid because it does not contain a private key.");
         }
 
@@ -65,7 +65,7 @@ namespace Sustainsys.Saml2.Tests.Configuration
             var subject = new ServiceCertificateCollection();
             Action a = () => subject.Add(certWithNoPrivate);
 
-            a.ShouldThrow<ArgumentException>()
+            a.Should().Throw<ArgumentException>()
                 .WithMessage(@"Provided certificate is not valid because it does not contain a private key.");
         }
 
@@ -75,7 +75,7 @@ namespace Sustainsys.Saml2.Tests.Configuration
             var subject = new ServiceCertificateCollection();
             Action a = () => subject.Add(new ServiceCertificate { Use = CertificateUse.Encryption, Certificate = SignedXmlHelper.TestCertSignOnly });
 
-            a.ShouldThrow<ArgumentException>()
+            a.Should().Throw<ArgumentException>()
                 .WithMessage( @"Provided certificate is not valid for encryption/decryption. There may be insufficient permissions to its private key in the windows certificate store or the certificate itself may not have the correct purposes. If you only want to use it for signing, set the Use property to Signing (CertificateUse.Signing)." );
         }
 

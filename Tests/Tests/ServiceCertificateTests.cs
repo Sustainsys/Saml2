@@ -20,7 +20,7 @@ namespace Sustainsys.Saml2.Tests
         public void ServiceCertificate_ConfigCtor()
         {
             Action a = () => new ServiceCertificate(serviceCertElement: null);
-            a.ShouldThrow<ArgumentNullException>();
+            a.Should().Throw<ArgumentNullException>();
         }
     }
 }

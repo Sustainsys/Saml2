@@ -13,7 +13,7 @@ namespace Sustainsys.Saml2.Tests.Configuration
         {
             Action a = () => new Compatibility(null);
 
-            a.ShouldThrow<ArgumentNullException>()
+            a.Should().Throw<ArgumentNullException>()
                 .And.ParamName.Should().Be("configElement");
         }
     }

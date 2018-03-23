@@ -15,7 +15,7 @@ namespace Sustainsys.Saml2.Tests.Saml2P
         {
             Action a = () => new Saml2ArtifactResponse(null);
 
-            a.ShouldThrow<ArgumentNullException>()
+            a.Should().Throw<ArgumentNullException>()
                 .And.ParamName.Should().Be("xml");
         }
 
@@ -118,7 +118,7 @@ namespace Sustainsys.Saml2.Tests.Saml2P
 
             subject.Status.Should().Be(Saml2StatusCode.Responder);
             subject.Invoking(s => s.GetMessage())
-                .ShouldThrow<UnsuccessfulSamlOperationException>()
+                .Should().Throw<UnsuccessfulSamlOperationException>()
                 .And.Message.Should().Be("Artifact resolution returned status Responder, can't extract message.");
         }
 

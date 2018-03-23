@@ -34,7 +34,7 @@ namespace Sustainsys.Saml2.Tests.WebSso
                 SessionNotOnOrAfter = (DateTime?)null
             };
 
-            new CommandResult().ShouldBeEquivalentTo(expected);
+            new CommandResult().Should().BeEquivalentTo(expected);
         }
     }
 }

@@ -12,10 +12,10 @@ using Sustainsys.Saml2.WebSso;
 using System.Reflection;
 using System.Configuration;
 using Sustainsys.Saml2.Exceptions;
-using System.IdentityModel.Metadata;
-using System.IdentityModel.Tokens;
+using Sustainsys.Saml2.Metadata;
 using Sustainsys.Saml2.Tests.WebSSO;
 using Sustainsys.Saml2.TestHelpers;
+using Microsoft.IdentityModel.Tokens.Saml2;
 
 namespace Sustainsys.Saml2.Tests.WebSso
 {
@@ -29,7 +29,7 @@ namespace Sustainsys.Saml2.Tests.WebSso
 
             // Verify exception is thrown and that it is thrown directly by the Run()
             // method and not by some method being called by Run().
-            a.ShouldThrow<ArgumentNullException>()
+            a.Should().Throw<ArgumentNullException>()
                 .Where(e => e.ParamName == "request")
                 .Where(e => e.TargetSite.Name == "Run");
         }
@@ -39,7 +39,7 @@ namespace Sustainsys.Saml2.Tests.WebSso
         {
             Action a = () => new AcsCommand().Run(new HttpRequestData("GET", new Uri("http://localhost")), null);
 
-            a.ShouldThrow<ArgumentNullException>().And.ParamName.Should().Be("options");
+            a.Should().Throw<ArgumentNullException>().And.ParamName.Should().Be("options");
         }
 
         [TestMethod]
@@ -49,7 +49,7 @@ namespace Sustainsys.Saml2.Tests.WebSso
                 new HttpRequestData("GET", new Uri("http://localhost")),
                 Options.FromConfiguration);
 
-            a.ShouldThrow<NoSamlResponseFoundException>()
+            a.Should().Throw<NoSamlResponseFoundException>()
                 .WithMessage("No Saml2 Response found in the http request.");
         }
 
@@ -69,7 +69,7 @@ namespace Sustainsys.Saml2.Tests.WebSso
 
             Action a = () => new AcsCommand().Run(r, Options.FromConfiguration);
 
-            a.ShouldThrow<BadFormatSamlResponseException>()
+            a.Should().Throw<BadFormatSamlResponseException>()
                 .WithMessage("The SAML Response did not contain valid BASE64 encoded data.")
                 .WithInnerException<FormatException>();
         }
@@ -91,7 +91,7 @@ namespace Sustainsys.Saml2.Tests.WebSso
 
             Action a = () => new AcsCommand().Run(r, Options.FromConfiguration);
 
-            a.ShouldThrow<BadFormatSamlResponseException>()
+            a.Should().Throw<BadFormatSamlResponseException>()
                 .WithMessage("The SAML response contains incorrect XML")
                 .WithInnerException<XmlException>()
                 .Where(ex => ex.Data["Saml2Response"] as string == "<foo />");
@@ -118,7 +118,7 @@ namespace Sustainsys.Saml2.Tests.WebSso
 
             Action a = () => new AcsCommand().Run(r, Options.FromConfiguration);
 
-            a.ShouldThrow<Exception>()
+            a.Should().Throw<Exception>()
                 .And.Data["Saml2Response"].Should().Be(payload);
         }
 
@@ -140,7 +140,7 @@ namespace Sustainsys.Saml2.Tests.WebSso
 
             Action a = () => new AcsCommand().Run(r, Options.FromConfiguration);
 
-            a.ShouldThrow<BadFormatSamlResponseException>();
+            a.Should().Throw<BadFormatSamlResponseException>();
         }
 
         [TestMethod]
@@ -169,7 +169,7 @@ namespace Sustainsys.Saml2.Tests.WebSso
 
             // The real exception was masked by a NullRef in the exception
             // handler in AcsCommand.Run
-            a.ShouldThrow<InvalidOperationException>();
+            a.Should().Throw<InvalidOperationException>();
         }
 
         [TestMethod]
@@ -225,7 +225,7 @@ namespace Sustainsys.Saml2.Tests.WebSso
             var options = StubFactory.CreateOptions();
 
             new AcsCommand().Run(r, options)
-                .ShouldBeEquivalentTo(expected, opt => opt.IgnoringCyclicReferences());
+                .Should().BeEquivalentTo(expected, opt => opt.IgnoringCyclicReferences());
         }
 
         [TestMethod]
@@ -288,7 +288,7 @@ namespace Sustainsys.Saml2.Tests.WebSso
             };
 
             new AcsCommand().Run(r, StubFactory.CreateOptions())
-                .ShouldBeEquivalentTo(expected, opt => opt.IgnoringCyclicReferences());
+                .Should().BeEquivalentTo(expected, opt => opt.IgnoringCyclicReferences());
         }
 
         [TestMethod]
@@ -341,7 +341,7 @@ namespace Sustainsys.Saml2.Tests.WebSso
                 .ClearNameIdentifier = true;
 
             new AcsCommand().Invoking(c => c.Run(r, options))
-                .ShouldNotThrow();
+                .Should().NotThrow();
         }
 
         [TestMethod]
@@ -395,7 +395,7 @@ namespace Sustainsys.Saml2.Tests.WebSso
             options.SPOptions.ReturnUrl = null;
 
             new AcsCommand().Invoking(c => c.Run(r, options))
-                .ShouldNotThrow();
+                .Should().NotThrow();
         }
 
         [TestMethod]
@@ -441,7 +441,7 @@ namespace Sustainsys.Saml2.Tests.WebSso
             options.SPOptions.ReturnUrl = null;
 
             new AcsCommand().Invoking(a => a.Run(r, options))
-                .ShouldThrow<ConfigurationErrorsException>().WithMessage(AcsCommand.UnsolicitedMissingReturnUrlMessage);
+                .Should().Throw<ConfigurationErrorsException>().WithMessage(AcsCommand.UnsolicitedMissingReturnUrlMessage);
         }
 
         [TestMethod]
@@ -487,7 +487,7 @@ namespace Sustainsys.Saml2.Tests.WebSso
             options.SPOptions.ReturnUrl = null;
 
             new AcsCommand().Invoking(a => a.Run(r, options))
-                .ShouldThrow<ConfigurationErrorsException>().WithMessage(AcsCommand.SpInitiatedMissingReturnUrl);
+                .Should().Throw<ConfigurationErrorsException>().WithMessage(AcsCommand.SpInitiatedMissingReturnUrl);
         }
 
         [TestMethod]
@@ -498,7 +498,7 @@ namespace Sustainsys.Saml2.Tests.WebSso
 
             var subject = new AcsCommand();
             subject.Invoking(s => s.Run(new HttpRequestData("GET", new Uri("http://host")), options))
-                .ShouldThrow<NotImplementedException>()
+                .Should().Throw<NotImplementedException>()
                 .WithMessage("StubSaml2Binding.*");
         }
 

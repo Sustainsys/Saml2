@@ -15,7 +15,7 @@ namespace Sustainsys.Saml2.Tests.Configuration
 
             Action a = () => subject.RegisterIdentityProviders(null);
 
-            a.ShouldThrow<ArgumentNullException>().And.ParamName.Should().Be("options");
+            a.Should().Throw<ArgumentNullException>().And.ParamName.Should().Be("options");
         }
     }
 }

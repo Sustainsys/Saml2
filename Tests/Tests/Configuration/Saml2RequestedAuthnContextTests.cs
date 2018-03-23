@@ -14,7 +14,7 @@ namespace Sustainsys.Saml2.Tests.Configuration
         {
             Action a = () => new Saml2RequestedAuthnContext(null);
 
-            a.ShouldThrow<ArgumentNullException>()
+            a.Should().Throw<ArgumentNullException>()
                 .And.ParamName.Should().Be("requestedAuthnContextElement");
         }
 

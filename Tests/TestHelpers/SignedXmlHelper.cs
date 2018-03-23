@@ -1,10 +1,11 @@
 ﻿using System.Security.Cryptography.X509Certificates;
+using System.IO;
 using System.Xml;
 using System.Security.Cryptography.Xml;
 using System.Security.Cryptography;
-using System.IdentityModel.Metadata;
-using System.IdentityModel.Tokens;
 using Sustainsys.Saml2.Internal;
+using Sustainsys.Saml2.Metadata;
+using Sustainsys.Saml2.Tokens;
 using System.Reflection;
 using System.Collections.Generic;
 using System;
@@ -28,10 +29,24 @@ namespace Sustainsys.Saml2.TestHelpers
         public static readonly RsaKeyIdentifierClause TestKeySignOnly =
             new RsaKeyIdentifierClause((RSA)TestCertSignOnly.PublicKey.Key);
 
+#if TRUE
+		static KeyDescriptor CreateKeyDescriptor()
+		{
+			var keyDescriptor = new KeyDescriptor();
+			keyDescriptor.KeyInfo = new DSigKeyInfo();
+			var x509Data = new X509Data();
+			x509Data.Certificates.Add(TestCertSignOnly);
+			keyDescriptor.KeyInfo.Data.Add(x509Data);
+			return keyDescriptor;
+		}
+
+		public static readonly KeyDescriptor TestKeyDescriptor = CreateKeyDescriptor();
+#else
         public static readonly KeyDescriptor TestKeyDescriptor = new KeyDescriptor(
             new SecurityKeyIdentifier(
                 (new X509SecurityToken(TestCertSignOnly))
                 .CreateKeyIdentifierClause<X509RawDataKeyIdentifierClause>()));
+		#endif
 
         public static string SignXml(
             string xml,
@@ -89,6 +104,11 @@ namespace Sustainsys.Saml2.TestHelpers
 
         public static void RemoveGlobalSha256XmlSignatureSupport()
         {
+			if (EnvironmentHelpers.IsNetCore)
+			{
+				return;
+			}
+
             // Clean up after tests that globally activate SHA256 support. There
             // is no official API for removing signature algorithms, so let's
             // do some reflection.

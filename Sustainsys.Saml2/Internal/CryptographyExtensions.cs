@@ -5,6 +5,7 @@ using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 using System.Security.Cryptography.Xml;
 using System.Xml;
+using Sustainsys.Saml2.Tokens;
 
 namespace Sustainsys.Saml2.Internal
 {
@@ -93,5 +94,28 @@ namespace Sustainsys.Saml2.Internal
                 cspParams.Flags = CspProviderFlags.UseMachineKeyStore;
             }
         }
+
+		static Dictionary<string, Type> s_extraAlgorithms = new Dictionary<string, Type>(StringComparer.OrdinalIgnoreCase)
+		{
+			{  SecurityAlgorithms.RsaSha256Signature, typeof(ManagedRSASHA256SignatureDescription) },
+			{  SecurityAlgorithms.RsaSha384Signature, typeof(ManagedRSASHA384SignatureDescription) },
+			{  SecurityAlgorithms.RsaSha512Signature, typeof(ManagedRSASHA512SignatureDescription) }
+		};
+
+		public static object CreateAlgorithmFromName(string name, params object[] args)
+		{
+			var result = CryptoConfig.CreateFromName(name);
+			if (result != null)
+			{
+				return result;
+			}
+
+			Type type;
+			if (!s_extraAlgorithms.TryGetValue(name, out type))
+			{
+				throw new CryptographicException($"Unknown crypto algorithm '{name}'");
+			}
+			return Activator.CreateInstance(type, args);
+		}
     }
 }

@@ -6,9 +6,9 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.IdentityModel.Metadata;
 using Sustainsys.Saml2.Configuration;
 using System.Xml;
+using Sustainsys.Saml2.Metadata;
 
 namespace Sustainsys.Saml2.WebSso
 {

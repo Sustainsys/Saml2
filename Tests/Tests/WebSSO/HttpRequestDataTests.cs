@@ -35,7 +35,7 @@ namespace Sustainsys.Saml2.Tests.WebSSO
         {
             Action a = () => HttpRequestData.ConvertBinaryData(null);
 
-            a.ShouldThrow<ArgumentNullException>()
+            a.Should().Throw<ArgumentNullException>()
                 .And.ParamName.Should().Be("data");
         }
 
@@ -56,7 +56,7 @@ namespace Sustainsys.Saml2.Tests.WebSSO
                  Enumerable.Empty<KeyValuePair<string, string>>(),
                  null);
 
-            a.ShouldNotThrow();
+            a.Should().NotThrow();
         }
     }
 }

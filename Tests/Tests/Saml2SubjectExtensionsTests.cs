@@ -1,6 +1,6 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System.IdentityModel.Tokens;
+using Microsoft.IdentityModel.Tokens.Saml2;
 using FluentAssertions;
 
 namespace Sustainsys.Saml2.Tests
@@ -15,7 +15,7 @@ namespace Sustainsys.Saml2.Tests
 
             Action a = () => subject.ToXElement();
 
-            a.ShouldThrow<ArgumentNullException>().And.ParamName.Should().Be("subject");
+            a.Should().Throw<ArgumentNullException>().And.ParamName.Should().Be("subject");
         }
 
         [TestMethod]
@@ -41,7 +41,7 @@ namespace Sustainsys.Saml2.Tests
 
             Action a = () => saml2SubjectConfirmation.ToXElement();
 
-            a.ShouldThrow<ArgumentNullException>().And.ParamName.Should().Be("subjectConfirmation");
+            a.Should().Throw<ArgumentNullException>().And.ParamName.Should().Be("subjectConfirmation");
         }
 
         [TestMethod]
@@ -61,7 +61,7 @@ namespace Sustainsys.Saml2.Tests
 
             Action a = () => saml2SubjectConfirmationData.ToXElement();
 
-            a.ShouldThrow<ArgumentNullException>().And.ParamName.Should().Be("subjectConfirmationData");
+            a.Should().Throw<ArgumentNullException>().And.ParamName.Should().Be("subjectConfirmationData");
         }
 
         [TestMethod]

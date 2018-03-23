@@ -45,7 +45,7 @@ namespace Sustainsys.Saml2.Tests
                 var deserialized = (TException)formatter.Deserialize(ms);
 
                 deserialized.Message.Should().Be(msg);
-                deserialized.ShouldBeEquivalentTo(original);
+                deserialized.Should().BeEquivalentTo(original);
             }
 
         }

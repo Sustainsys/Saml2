@@ -3,7 +3,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using FluentAssertions;
 using System.Text.RegularExpressions;
 using System.Xml.Linq;
-using System.IdentityModel.Metadata;
+using Sustainsys.Saml2.Metadata;
 using Sustainsys.Saml2.Saml2P;
 
 namespace Sustainsys.Saml2.Tests.Saml2P
@@ -150,7 +150,7 @@ namespace Sustainsys.Saml2.Tests.Saml2P
         {
             var subject = new ConcreteSaml2Request();
             Action a = () => subject.TestReadBasePropertiesWithNull();
-            a.ShouldThrow<ArgumentNullException>().And.ParamName.Should().Be("xml");
+            a.Should().Throw<ArgumentNullException>().And.ParamName.Should().Be("xml");
         }
     }
 }

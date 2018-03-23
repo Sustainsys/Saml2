@@ -18,7 +18,7 @@ namespace Sustainsys.Saml2.Tests.WebSso
         {
             Action a = () => new Saml2Urls(null, new Options(new SPOptions()));
 
-            a.ShouldThrow<ArgumentNullException>().And.ParamName.Should().Be("request"); ;
+            a.Should().Throw<ArgumentNullException>().And.ParamName.Should().Be("request"); ;
         }
 
         [TestMethod]
@@ -28,7 +28,7 @@ namespace Sustainsys.Saml2.Tests.WebSso
                 new HttpRequestData("GET", new Uri("http://localhost")),
                 null);
 
-            a.ShouldThrow<ArgumentNullException>().And.ParamName.Should().Be("options");
+            a.Should().Throw<ArgumentNullException>().And.ParamName.Should().Be("options");
         }
 
         [TestMethod]
@@ -36,7 +36,7 @@ namespace Sustainsys.Saml2.Tests.WebSso
         {
             Action a = () => new Saml2Urls(null, "modulePath");
 
-            a.ShouldThrow<ArgumentNullException>().And.ParamName.Should().Be("applicationUrl");
+            a.Should().Throw<ArgumentNullException>().And.ParamName.Should().Be("applicationUrl");
         }
 
         [TestMethod]
@@ -44,7 +44,7 @@ namespace Sustainsys.Saml2.Tests.WebSso
         {
             Action a = () => new Saml2Urls(new Uri("http://localhost"), modulePath: null);
 
-            a.ShouldThrow<ArgumentNullException>("modulePath");
+            a.Should().Throw<ArgumentNullException>("modulePath");
         }
 
         [TestMethod]
@@ -79,7 +79,7 @@ namespace Sustainsys.Saml2.Tests.WebSso
 
             Action a = () => new Saml2Urls(appUrl, modulePath);
 
-            a.ShouldThrow<ArgumentException>("modulePath should start with /.");
+            a.Should().Throw<ArgumentException>("modulePath should start with /.");
         }
 
         [TestMethod]
@@ -130,7 +130,7 @@ namespace Sustainsys.Saml2.Tests.WebSso
                 signInUrl: null,
                 applicationUrl: new Uri("http://localhost"));
 
-            a.ShouldThrow<ArgumentNullException>("signInUrl");
+            a.Should().Throw<ArgumentNullException>("signInUrl");
         }
 
         [TestMethod]
@@ -142,8 +142,8 @@ namespace Sustainsys.Saml2.Tests.WebSso
                 return new Uri("https://special.public.origin/");
             };
             var urls = new Saml2Urls(new HttpRequestData("get", new Uri("http://servername/")), options);
-            urls.AssertionConsumerServiceUrl.ShouldBeEquivalentTo("https://special.public.origin/Saml2/Acs");
-            urls.SignInUrl.ShouldBeEquivalentTo("https://special.public.origin/Saml2/SignIn");
+            urls.AssertionConsumerServiceUrl.Should().BeEquivalentTo("https://special.public.origin/Saml2/Acs");
+            urls.SignInUrl.Should().BeEquivalentTo("https://special.public.origin/Saml2/SignIn");
         }
     }
 }

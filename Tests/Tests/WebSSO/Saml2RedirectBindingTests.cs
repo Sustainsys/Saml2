@@ -1,14 +1,20 @@
 ﻿using System;
+using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using FluentAssertions;
 using NSubstitute;
 using System.Web;
 using Sustainsys.Saml2.WebSso;
 using Sustainsys.Saml2.Tests.WebSSO;
+using System.IO;
+using System.IO.Compression;
+using System.Net;
 using System.Security.Cryptography;
 using System.Text;
 using Sustainsys.Saml2.Exceptions;
 using System.Security.Cryptography.Xml;
+using Sustainsys.Saml2.Configuration;
+using Sustainsys.Saml2.Tokens;
 using Sustainsys.Saml2.TestHelpers;
 
 namespace Sustainsys.Saml2.Tests.WebSso
@@ -21,7 +27,7 @@ namespace Sustainsys.Saml2.Tests.WebSso
         {
             Saml2Binding.Get(Saml2BindingType.HttpRedirect)
                 .Invoking(b => b.Bind(null))
-                .ShouldThrow<ArgumentNullException>().And.ParamName.Should().Be("message");
+                .Should().Throw<ArgumentNullException>().And.ParamName.Should().Be("message");
         }
 
         [TestMethod]
@@ -29,7 +35,7 @@ namespace Sustainsys.Saml2.Tests.WebSso
         {
             Saml2Binding.Get(Saml2BindingType.HttpRedirect)
                 .Invoking(b => b.Unbind(null, null))
-                .ShouldThrow<ArgumentNullException>().And.ParamName.Should().Be("request");
+                .Should().Throw<ArgumentNullException>().And.ParamName.Should().Be("request");
         }
 
         // Example from http://en.wikipedia.org/wiki/SAML_2.0#HTTP_Redirect_Binding
@@ -48,9 +54,83 @@ namespace Sustainsys.Saml2.Tests.WebSso
                 + "    Format=\"urn:oasis:names:tc:SAML:2.0:nameid-format:transient\"/>\r\n"
                 + "</samlp:AuthnRequest>\r\n";
 
-        private const string ExampleSerializedData = "fZFfa8IwFMXfBb9DyXvaJtZ1BqsURRC2Mabbw95ivc5Am3TJrXPffmmLY3%2FA15Pzuyf33On8XJXBCaxTRmeEhTEJQBdmr%2FRbRp63K3pL5rPhYOpkVdYib%2FCon%2BC9AYfDQRB4WDvRvWWksVoY6ZQTWlbgBBZik9%2FfCR7GorYGTWFK8pu6DknnwKL%2FWEetlxmR8sBHbHJDWZqOKGdsRJM0kfQAjCUJ43KX8s78ctnIz%2Blp5xpYa4dSo1fjOKGM03i8jSeCMzGevHa2%2FBK5MNo1FdgN2JMqPLmHc0b6WTmiVbsGoTf5qv66Zq2t60x0wXZ2RKydiCJXh3CWVV1CWJgqanfl0%2Bin8xutxYOvZL18NKUqPlvZR5el%2BVhYkAgZQdsA6fWVsZXE63W2itrTQ2cVaKV2CjSSqL1v9P%2FAXv4C";
+		private const string ExampleSerializedData = "fZFfa8IwFMXfBb9DyXvaJtZ1BqsURRC2Mabbw95ivc5Am3TJrXPffmmLY3%2FA15Pzuyf33On8XJXBCaxTRmeEhTEJQBdmr%2FRbRp63K3pL5rPhYOpkVdYib%2FCon%2BC9AYfDQRB4WDvRvWWksVoY6ZQTWlbgBBZik9%2FfCR7GorYGTWFK8pu6DknnwKL%2FWEetlxmR8sBHbHJDWZqOKGdsRJM0kfQAjCUJ43KX8s78ctnIz%2Blp5xpYa4dSo1fjOKGM03i8jSeCMzGevHa2%2FBK5MNo1FdgN2JMqPLmHc0b6WTmiVbsGoTf5qv66Zq2t60x0wXZ2RKydiCJXh3CWVV1CWJgqanfl0%2Bin8xutxYOvZL18NKUqPlvZR5el%2BVhYkAgZQdsA6fWVsZXE63W2itrTQ2cVaKV2CjSSqL1v9P%2FAXv4C";
 
-        [TestMethod]
+		private static string DeflateBase64EncodedData(string input)
+		{
+			byte[] data = Convert.FromBase64String(input);
+			using (MemoryStream ms = new MemoryStream(data, false))
+			using (DeflateStream ds = new DeflateStream(ms, CompressionMode.Decompress))
+			using (StreamReader sr = new StreamReader(ds))
+			{
+				return sr.ReadToEnd();
+			}
+		}
+
+		private static void CompareCommandResults(CommandResult result, CommandResult expected)
+		{
+			result.HttpStatusCode.Should().Be(expected.HttpStatusCode);
+			result.Cacheability.Should().Be(expected.Cacheability);
+			result.Principal.Should().Be(expected.Principal);
+			result.SessionNotOnOrAfter.Should().Be(expected.SessionNotOnOrAfter);
+			result.Content.Should().Be(expected.Content);
+			result.ContentType.Should().Be(expected.ContentType);
+			result.RelayData.Should().BeEquivalentTo(expected.RelayData);
+			result.TerminateLocalSession.Should().Be(expected.TerminateLocalSession);
+			result.SetCookieName.Should().Be(expected.SetCookieName);
+			result.RelayState.Should().Be(expected.RelayState);
+			result.RequestState.Should().Be(expected.RequestState);
+			result.ClearCookieName.Should().Be(expected.ClearCookieName);
+			result.HandledResult.Should().Be(expected.HandledResult);
+
+			if (result.Location == null)
+			{
+				if (expected.Location != null)
+				{
+					throw new Exception(
+						$"Expected member Location to be {expected.Location} but found null");
+				}
+			}
+			else
+			{
+				if (expected.Location == null)
+				{
+					throw new Exception(
+						$"Expected member Location to be null but found but found {result.Location}");
+				}
+
+				var components = UriComponents.Scheme | UriComponents.Host | UriComponents.Port 
+					| UriComponents.Path;
+				result.Location.GetComponents(components, UriFormat.UriEscaped).Should().Be(
+					expected.Location.GetComponents(components, UriFormat.UriEscaped));
+
+				var resultQuery = QueryHelpers.ParseQuery(result.Location.Query);
+				var expectedQuery = QueryHelpers.ParseQuery(expected.Location.Query);
+				resultQuery.Keys.Should().BeEquivalentTo(expectedQuery.Keys);
+
+				foreach (var kv in resultQuery)
+				{
+					var resultValues = kv.Value;
+					var expectedValues = expectedQuery[kv.Key];
+					resultValues.Count.Should().Be(expectedValues.Count);
+
+					for (int i = 0; i < resultValues.Count; ++i)
+					{
+						var resultValue = resultValues[0];
+						var expectedValue = expectedValues[0];
+
+						if (kv.Key == "SAMLRequest")
+						{
+							resultValue = DeflateBase64EncodedData(resultValue);
+							expectedValue = DeflateBase64EncodedData(expectedValue);
+						}
+						resultValue.Should().Be(expectedValue);
+					}
+				}
+			}
+		}
+
+		[TestMethod]
         public void Saml2RedirectBinding_Bind()
         {
             var message = new Saml2MessageImplementation
@@ -62,13 +142,13 @@ namespace Sustainsys.Saml2.Tests.WebSso
 
             var result = Saml2Binding.Get(Saml2BindingType.HttpRedirect).Bind(message);
 
-            var expected = new CommandResult()
-            {
-                Location = new Uri("http://www.example.com/sso?SAMLRequest=" + ExampleSerializedData),
-                HttpStatusCode = System.Net.HttpStatusCode.SeeOther,
-            };
+			var expected = new CommandResult()
+			{
+				Location = new Uri("http://www.example.com/sso?SAMLRequest=" + ExampleSerializedData),
+				HttpStatusCode = System.Net.HttpStatusCode.SeeOther,
+			};
 
-            result.ShouldBeEquivalentTo(expected);
+			CompareCommandResults(result, expected);
         }
 
         [TestMethod]
@@ -111,6 +191,7 @@ namespace Sustainsys.Saml2.Tests.WebSso
 
             var result = Saml2Binding.Get(Saml2BindingType.HttpRedirect).Bind(message);
 
+
             var expected = new CommandResult()
             {
                 Location = new Uri("http://www.example.com/acs?aQueryParam=QueryParamValue&SAMLRequest=" 
@@ -118,7 +199,7 @@ namespace Sustainsys.Saml2.Tests.WebSso
                 HttpStatusCode = System.Net.HttpStatusCode.SeeOther,
             };
 
-            result.ShouldBeEquivalentTo(expected);
+			CompareCommandResults(result, expected);
         }
 
         [TestMethod]
@@ -141,7 +222,7 @@ namespace Sustainsys.Saml2.Tests.WebSso
 
             var result = Saml2Binding.Get(Saml2BindingType.HttpRedirect).Bind(message);
 
-            result.ShouldBeEquivalentTo(expected);
+			CompareCommandResults(result, expected);
         }
 
         [TestMethod]
@@ -173,14 +254,14 @@ namespace Sustainsys.Saml2.Tests.WebSso
             bool includeRelayState = true
             )
         {
-            var message = new Saml2MessageImplementation
+			var message = new Saml2MessageImplementation
             {
                 XmlData = "<Data/>",
                 RelayState = includeRelayState ? "SomeState that needs escaping #%=3" : null,
                 DestinationUrl = new Uri("http://host"),
                 MessageName = messageName,
                 SigningCertificate = SignedXmlHelper.TestCert,
-                SigningAlgorithm = SignedXml.XmlDsigRSASHA256Url
+                SigningAlgorithm = SecurityAlgorithms.RsaSha256Signature
             };
 
             if(!string.IsNullOrEmpty(issuer))
@@ -197,7 +278,7 @@ namespace Sustainsys.Saml2.Tests.WebSso
         {
             Saml2Binding.Get(Saml2BindingType.HttpRedirect)
                 .Invoking(b => b.CanUnbind(null))
-                .ShouldThrow<ArgumentNullException>()
+                .Should().Throw<ArgumentNullException>()
                 .And.ParamName.Should().Be("request");
         }
 
@@ -262,7 +343,7 @@ namespace Sustainsys.Saml2.Tests.WebSso
 
             var actual = Saml2Binding.Get(request)
                 .Invoking(b => b.Unbind(request, StubFactory.CreateOptions()))
-                .ShouldThrow<InvalidSignatureException>()
+                .Should().Throw<InvalidSignatureException>()
                 .WithMessage("Cannot verify signature of message from unknown sender http://unknown.idp.example.com.");
         }
 
@@ -274,14 +355,14 @@ namespace Sustainsys.Saml2.Tests.WebSso
             var request = new HttpRequestData("GET", url);
 
             var options = StubFactory.CreateOptions();
-            options.SPOptions.MinIncomingSigningAlgorithm = SignedXml.XmlDsigRSASHA384Url;
+            options.SPOptions.MinIncomingSigningAlgorithm = SecurityAlgorithms.RsaSha384Signature;
 
             // Check that the created url indeed is signed with SHA256.
             url.OriginalString.Should().Contain("sha256");
 
             var actual = Saml2Binding.Get(request)
                 .Invoking(b => b.Unbind(request, options))
-                .ShouldThrow<InvalidSignatureException>()
+                .Should().Throw<InvalidSignatureException>()
                 .WithMessage("*weak*");
         }
 
@@ -296,7 +377,7 @@ namespace Sustainsys.Saml2.Tests.WebSso
 
             Saml2Binding.Get(request)
                 .Invoking(b => b.Unbind(request, StubFactory.CreateOptions()))
-                .ShouldThrow<InvalidSignatureException>()
+                .Should().Throw<InvalidSignatureException>()
                 .WithMessage("Message from https://idp.example.com failed signature verification");
         }
 
@@ -311,7 +392,7 @@ namespace Sustainsys.Saml2.Tests.WebSso
 
             Saml2Binding.Get(request)
                 .Invoking(b => b.Unbind(request, StubFactory.CreateOptions()))
-                .ShouldThrow<InvalidSignatureException>()
+                .Should().Throw<InvalidSignatureException>()
                 .WithMessage("Message from https://idp.example.com failed signature verification");
         }
 

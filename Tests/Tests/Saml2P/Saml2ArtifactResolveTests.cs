@@ -1,4 +1,5 @@
-﻿using Sustainsys.Saml2.Saml2P;
+﻿using Sustainsys.Saml2.Metadata;
+using Sustainsys.Saml2.Saml2P;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
@@ -7,7 +8,6 @@ using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Sustainsys.Saml2.WebSso;
-using System.IdentityModel.Metadata;
 using System.Xml.Linq;
 
 namespace Sustainsys.Saml2.Tests.Saml2P
@@ -41,7 +41,7 @@ namespace Sustainsys.Saml2.Tests.Saml2P
             expected.Attribute("ID").Value = actual.Attribute("ID").Value;
             expected.Attribute("IssueInstant").Value = actual.Attribute("IssueInstant").Value;
 
-            actual.ShouldBeEquivalentTo(expected, opt => opt.IgnoringCyclicReferences());
+			actual.Should().BeEquivalentTo(expected);
         }
     }
 }

@@ -1,8 +1,8 @@
 ﻿using FluentAssertions;
+using Sustainsys.Saml2.Metadata;
 using Sustainsys.Saml2.Saml2P;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
-using System.IdentityModel.Metadata;
 using System.Xml.Linq;
 
 namespace Sustainsys.Saml2.Tests.Saml2P
@@ -16,7 +16,7 @@ namespace Sustainsys.Saml2.Tests.Saml2P
             var subject = new Saml2IdpEntry(new EntityId("urn:foo"));
 
             subject.Invoking(s => s.ProviderId = null)
-                .ShouldThrow<ArgumentNullException>();
+                .Should().Throw<ArgumentNullException>();
         }
 
         [TestMethod]

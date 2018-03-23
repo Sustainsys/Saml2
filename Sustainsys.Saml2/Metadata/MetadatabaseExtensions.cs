@@ -1,7 +1,6 @@
 ﻿using Sustainsys.Saml2.Configuration;
 using System;
 using System.Collections.Generic;
-using System.IdentityModel.Metadata;
 using System.IO;
 using System.Linq;
 using System.Security.Cryptography.X509Certificates;

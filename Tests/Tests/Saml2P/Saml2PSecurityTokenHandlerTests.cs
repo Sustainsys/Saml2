@@ -2,13 +2,12 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using FluentAssertions;
 using Sustainsys.Saml2.Saml2P;
+using Sustainsys.Saml2.Tokens;
 using Sustainsys.Saml2.Configuration;
 
 namespace Sustainsys.Saml2.Tests.Saml2P
 {
     using Sustainsys.Saml2.TestHelpers;
-    using System.IdentityModel.Selectors;
-    using System.IdentityModel.Tokens;
     using System.Linq;
 
     [TestClass]
@@ -19,7 +18,7 @@ namespace Sustainsys.Saml2.Tests.Saml2P
         {
             Action a = () => new Saml2PSecurityTokenHandler(null);
 
-            a.ShouldThrow<ArgumentNullException>().And.ParamName.Should().Be("spOptions");
+            a.Should().Throw<ArgumentNullException>().And.ParamName.Should().Be("spOptions");
         }
 
         [TestMethod]

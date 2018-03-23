@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IdentityModel.Tokens;
 using System.Linq;
 using System.Security.Cryptography.X509Certificates;
 using System.Security.Cryptography.Xml;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
+using Sustainsys.Saml2.Metadata;
+using Sustainsys.Saml2.Tokens;
 
 namespace Sustainsys.Saml2.Tests.Helpers
 {

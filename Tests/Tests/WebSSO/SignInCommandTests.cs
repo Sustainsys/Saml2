@@ -4,7 +4,7 @@ using FluentAssertions;
 using System.Net;
 using System.Web;
 using Sustainsys.Saml2.Configuration;
-using System.IdentityModel.Metadata;
+using Sustainsys.Saml2.Metadata;
 using Sustainsys.Saml2.WebSso;
 using System.Collections.Generic;
 using Sustainsys.Saml2.TestHelpers;
@@ -25,7 +25,7 @@ namespace Sustainsys.Saml2.Tests.WebSso
                 Options.FromConfiguration);
 
             result.HttpStatusCode.Should().Be(HttpStatusCode.SeeOther);
-            result.Cacheability.Should().Be((Cacheability)HttpCacheability.NoCache);
+            result.Cacheability.Should().Be(Cacheability.NoCache);
             result.Location.Host.Should().Be(defaultDestination.Host);
 
             var queries = HttpUtility.ParseQueryString(result.Location.Query);
@@ -56,7 +56,7 @@ namespace Sustainsys.Saml2.Tests.WebSso
 
             Action a = () => new SignInCommand().Run(httpRequest, Options.FromConfiguration);
 
-            a.ShouldThrow<InvalidOperationException>().WithMessage("Return Url must be a relative Url.");
+            a.Should().Throw<InvalidOperationException>().WithMessage("Return Url must be a relative Url.");
         }
 
         [TestMethod]
@@ -68,7 +68,7 @@ namespace Sustainsys.Saml2.Tests.WebSso
 
             Action a = () => new SignInCommand().Run(httpRequest, Options.FromConfiguration);
 
-            a.ShouldThrow<InvalidOperationException>().WithMessage("Return Url must be a relative Url.");
+            a.Should().Throw<InvalidOperationException>().WithMessage("Return Url must be a relative Url.");
         }
 
         [TestMethod]
@@ -88,7 +88,7 @@ namespace Sustainsys.Saml2.Tests.WebSso
             
             Action a = () => new SignInCommand().Run(httpRequest, Options.FromConfiguration);
 
-            a.ShouldNotThrow<InvalidOperationException>("the ValidateAbsoluteReturnUrl notification returns true");
+            a.Should().NotThrow<InvalidOperationException>("the ValidateAbsoluteReturnUrl notification returns true");
             validateAbsoluteReturnUrlCalled.Should().BeTrue("the ValidateAbsoluteReturnUrl notification should have been called");
         }
 
@@ -109,7 +109,7 @@ namespace Sustainsys.Saml2.Tests.WebSso
 
             Action a = () => new SignInCommand().Run(httpRequest, Options.FromConfiguration);
 
-            a.ShouldNotThrow<InvalidOperationException>("the ReturnUrl is relative");
+            a.Should().NotThrow<InvalidOperationException>("the ReturnUrl is relative");
             validateAbsoluteReturnUrlCalled.Should().BeFalse("the ValidateAbsoluteReturnUrl notification should not have been called");
         }
 
@@ -135,7 +135,7 @@ namespace Sustainsys.Saml2.Tests.WebSso
 
             Action a = () => new SignInCommand().Run(request, Options.FromConfiguration);
 
-            a.ShouldThrow<InvalidOperationException>().WithMessage("Unknown idp no-such-idp-in-config");
+            a.Should().Throw<InvalidOperationException>().WithMessage("Unknown idp no-such-idp-in-config");
         }
 
         [TestMethod]
@@ -143,7 +143,7 @@ namespace Sustainsys.Saml2.Tests.WebSso
         {
             Action a = () => new SignInCommand().Run(null, Options.FromConfiguration);
 
-            a.ShouldThrow<ArgumentNullException>().And.ParamName.Should().Be("request");
+            a.Should().Throw<ArgumentNullException>().And.ParamName.Should().Be("request");
         }
 
         [TestMethod]
@@ -151,7 +151,7 @@ namespace Sustainsys.Saml2.Tests.WebSso
         {
             Action a = () => new SignInCommand().Run(new HttpRequestData("GET", new Uri("http://localhost")), null);
 
-            a.ShouldThrow<ArgumentNullException>().And.ParamName.Should().Be("options");
+            a.Should().Throw<ArgumentNullException>().And.ParamName.Should().Be("options");
         }
 
         [TestMethod]
@@ -205,7 +205,7 @@ namespace Sustainsys.Saml2.Tests.WebSso
         {
             Action a = () => SignInCommand.Run(null, null, null, null, null);
 
-            a.ShouldThrow<ArgumentNullException>()
+            a.Should().Throw<ArgumentNullException>()
                 .And.ParamName.Should().Be("options");
         }
 
@@ -340,7 +340,7 @@ namespace Sustainsys.Saml2.Tests.WebSso
             actual.ClearCookieName.Should().Be(StoredRequestState.CookieNameBase + relayState, "cookie should be cleared");
             actual.RequestState.ReturnUrl.Should().Be(returnUrl);
             actual.RequestState.Idp.Id.Should().Be(idp.EntityId.Id);
-            actual.RequestState.RelayData.ShouldBeEquivalentTo(relayData);
+            actual.RequestState.RelayData.Should().BeEquivalentTo(relayData);
         }
 
         [TestMethod]
@@ -381,7 +381,7 @@ namespace Sustainsys.Saml2.Tests.WebSso
             actual.ClearCookieName.Should().Be(StoredRequestState.CookieNameBase + relayState, "cookie should be cleared");
             actual.RequestState.ReturnUrl.Should().BeNull();
             actual.RequestState.Idp.Id.Should().Be(idp.EntityId.Id);
-            actual.RequestState.RelayData.ShouldBeEquivalentTo(relayData);
+            actual.RequestState.RelayData.Should().BeEquivalentTo(relayData);
         }
 
         [TestMethod]
@@ -394,7 +394,7 @@ namespace Sustainsys.Saml2.Tests.WebSso
             var subject = CommandFactory.GetCommand(CommandFactory.SignInCommandName);
 
             subject.Invoking(s => s.Run(request, StubFactory.CreateOptions()))
-                .ShouldThrow<InvalidOperationException>().
+                .Should().Throw<InvalidOperationException>().
                 WithMessage("*Both*ReturnUrl*RelayState*");
         }
 
@@ -408,7 +408,7 @@ namespace Sustainsys.Saml2.Tests.WebSso
 
             Action a = () => SignInCommand.Run(null, null, request, options, null);
 
-            a.ShouldNotThrow();
+            a.Should().NotThrow();
         }
     }
 }

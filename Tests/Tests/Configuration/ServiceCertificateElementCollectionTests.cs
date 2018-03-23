@@ -5,6 +5,7 @@ using FluentAssertions;
 
 namespace Sustainsys.Saml2.Tests.Configuration
 {
+#if FALSE
     [TestClass]
     public class ServiceCertificateElementCollectionTests
     {
@@ -15,7 +16,8 @@ namespace Sustainsys.Saml2.Tests.Configuration
 
             Action a = () => subject.RegisterServiceCertificates(null);
 
-            a.ShouldThrow<ArgumentNullException>().And.ParamName.Should().Be("options");
+            a.Should().Throw<ArgumentNullException>().And.ParamName.Should().Be("options");
         }
     }
+#endif
 }

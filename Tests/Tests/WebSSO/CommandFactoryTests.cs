@@ -55,7 +55,7 @@ namespace Sustainsys.Saml2.Tests.WebSso
         {
             Action a = () => CommandFactory.GetCommand(null);
 
-            a.ShouldThrow<ArgumentNullException>().And.ParamName.Should().Be("commandName");
+            a.Should().Throw<ArgumentNullException>().And.ParamName.Should().Be("commandName");
         }
     }
 }

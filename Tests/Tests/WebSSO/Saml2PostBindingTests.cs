@@ -3,6 +3,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using FluentAssertions;
 using System.Text;
 using System.Collections.Generic;
+using Sustainsys.Saml2.Tokens;
 using Sustainsys.Saml2.WebSso;
 using Sustainsys.Saml2.Tests.WebSSO;
 using System.Security.Cryptography.Xml;
@@ -39,7 +40,7 @@ namespace Sustainsys.Saml2.Tests.WebSso
         {
             Saml2Binding.Get(Saml2BindingType.HttpPost)
                 .Invoking(b => b.Unbind(null, null))
-                .ShouldThrow<ArgumentNullException>().And.ParamName.Should().Be("request");
+                .Should().Throw<ArgumentNullException>().And.ParamName.Should().Be("request");
         }
 
         [TestMethod]
@@ -54,7 +55,7 @@ namespace Sustainsys.Saml2.Tests.WebSso
 
             Saml2Binding.Get(Saml2BindingType.HttpPost)
                 .Invoking(b => b.Unbind(request, null))
-                .ShouldNotThrow();
+                .Should().NotThrow();
         }
 
         [TestMethod]
@@ -62,7 +63,7 @@ namespace Sustainsys.Saml2.Tests.WebSso
         {
             Saml2Binding.Get(Saml2BindingType.HttpPost)
                 .Invoking(b => b.Unbind(CreateRequest("foo"), StubFactory.CreateOptions()))
-                .ShouldThrow<FormatException>();
+                .Should().Throw<FormatException>();
         }
 
         [TestMethod]
@@ -95,7 +96,7 @@ namespace Sustainsys.Saml2.Tests.WebSso
         {
             Saml2Binding.Get(Saml2BindingType.HttpPost)
                 .Invoking(b => b.Bind(null))
-                .ShouldThrow<ArgumentNullException>().And.ParamName.Should().Be("message");
+                .Should().Throw<ArgumentNullException>().And.ParamName.Should().Be("message");
         }
 
         [TestMethod]
@@ -154,7 +155,7 @@ value=""PHJvb3Q+PGNvbnRlbnQ+ZGF0YTwvY29udGVudD48L3Jvb3Q+""/>
 </html>"
             };
 
-            result.ShouldBeEquivalentTo(expected);
+            result.Should().BeEquivalentTo(expected);
         }
 
         [TestMethod]
@@ -200,7 +201,7 @@ value=""PHJvb3Q+PGNvbnRlbnQ+ZGF0YTwvY29udGVudD48L3Jvb3Q+""/>
 </html>"
             };
 
-            result.ShouldBeEquivalentTo(expected);
+            result.Should().BeEquivalentTo(expected);
         }
 
         [TestMethod]
@@ -213,7 +214,7 @@ value=""PHJvb3Q+PGNvbnRlbnQ+ZGF0YTwvY29udGVudD48L3Jvb3Q+""/>
                 MessageName = "SAMLMessageName",
                 RelayState = "ABC1234",
                 SigningCertificate = SignedXmlHelper.TestCert,
-                SigningAlgorithm = SignedXml.XmlDsigRSASHA256Url
+                SigningAlgorithm = SecurityAlgorithms.RsaSha256Signature
             };
 
             var signedXml = SignedXmlHelper.SignXml(message.XmlData, true);
@@ -251,7 +252,7 @@ value=""" + expectedValue + @"""/>
 </html>"
             };
 
-            result.ShouldBeEquivalentTo(expected);
+            result.Should().BeEquivalentTo(expected);
         }
 
         [TestMethod]
@@ -259,7 +260,7 @@ value=""" + expectedValue + @"""/>
         {
             Saml2Binding.Get(Saml2BindingType.HttpPost)
                 .Invoking(b => b.CanUnbind(null))
-                .ShouldThrow<ArgumentNullException>().And.ParamName.Should().Be("request");
+                .Should().Throw<ArgumentNullException>().And.ParamName.Should().Be("request");
         }
 
         [TestMethod]

@@ -1,11 +1,11 @@
 ﻿using FluentAssertions;
+using Sustainsys.Saml2.Metadata;
 using Sustainsys.Saml2.Saml2P;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Sustainsys.Saml2.Tests.Helpers;
 using System.Xml;
-using System.IdentityModel.Metadata;
 using System;
-using System.IdentityModel.Tokens;
+using Microsoft.IdentityModel.Tokens.Saml2;
 
 namespace Sustainsys.Saml2.Tests.Saml2P
 {
@@ -91,7 +91,7 @@ namespace Sustainsys.Saml2.Tests.Saml2P
         {
             Action a = () => Saml2LogoutResponse.FromXml(null);
 
-            a.ShouldThrow<ArgumentNullException>()
+            a.Should().Throw<ArgumentNullException>()
                 .And.ParamName.Should().Be("xml");
         }
     }

@@ -1,19 +1,19 @@
-﻿using System;
+﻿using Microsoft.IdentityModel.Tokens.Saml2;
+using Microsoft.IdentityModel.Tokens;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
-using System.IdentityModel.Tokens;
 using System.Linq;
 using System.Security.Claims;
 using System.Security.Cryptography.X509Certificates;
 using System.Security.Cryptography.Xml;
 using System.Xml;
 using Sustainsys.Saml2.Configuration;
-using System.IdentityModel.Metadata;
 using System.Security.Cryptography;
-using System.IdentityModel.Services;
 using Sustainsys.Saml2.Internal;
 using Sustainsys.Saml2.Exceptions;
 using System.Diagnostics.CodeAnalysis;
+using Sustainsys.Saml2.Metadata;
 
 namespace Sustainsys.Saml2.Saml2P
 {
@@ -518,15 +518,20 @@ namespace Sustainsys.Saml2.Saml2P
                     status, statusMessage, secondLevelStatus);
             }
 
-            foreach (XmlElement assertionNode in GetAllAssertionElementNodes(options))
+			TokenValidationParameters validationParameters = new TokenValidationParameters();
+			//validationParameters.
+			// TODO: cofnigure
+
+			foreach (XmlElement assertionNode in GetAllAssertionElementNodes(options))
             {
                 using (var reader = new FilteringXmlNodeReader(SignedXml.XmlDsigNamespaceUrl, "Signature", assertionNode))
                 {
                     var handler = options.SPOptions.Saml2PSecurityTokenHandler;
 
-                    var token = (Saml2SecurityToken)handler.ReadToken(reader);
+                    var token = (Saml2SecurityToken)handler.ReadToken(reader, validationParameters);
                     options.SPOptions.Logger.WriteVerbose("Extracted SAML assertion " + token.Id);
 
+					#if FALSE
                     handler.DetectReplayedToken(token);
 
                     var validateAudience = options.SPOptions
@@ -537,6 +542,7 @@ namespace Sustainsys.Saml2.Saml2P
                         .AudienceRestriction.AudienceMode, token);
 
                     handler.ValidateConditions(token.Assertion.Conditions, validateAudience);
+					#endif
 
                     options.SPOptions.Logger.WriteVerbose("Validated conditions for SAML2 Response " + Id);
 
@@ -544,7 +550,8 @@ namespace Sustainsys.Saml2.Saml2P
                     token.Assertion.Statements.OfType<Saml2AuthenticationStatement>()
                         .SingleOrDefault()?.SessionNotOnOrAfter);
 
-                    yield return handler.CreateClaims(token);
+                    yield return handler.CreateClaimsIdentity2(token,
+						ClaimsIdentity.DefaultIssuer, validationParameters);
                 }
             }
         }

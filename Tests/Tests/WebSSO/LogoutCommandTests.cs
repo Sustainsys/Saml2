@@ -1,15 +1,15 @@
 ﻿using FluentAssertions;
 using Sustainsys.Saml2.Configuration;
 using Sustainsys.Saml2.Exceptions;
+using Sustainsys.Saml2.Metadata;
 using Sustainsys.Saml2.Saml2P;
+using Sustainsys.Saml2.Tokens;
 using Sustainsys.Saml2.TestHelpers;
 using Sustainsys.Saml2.WebSso;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
-using System.IdentityModel.Metadata;
-using System.IdentityModel.Tokens;
 using System.Linq;
 using System.Net;
 using System.Security.Claims;
@@ -18,6 +18,7 @@ using System.Security.Principal;
 using System.Text;
 using System.Threading;
 using System.Web;
+using Microsoft.IdentityModel.Tokens.Saml2;
 
 namespace Sustainsys.Saml2.Tests.WebSSO
 {
@@ -43,7 +44,7 @@ namespace Sustainsys.Saml2.Tests.WebSSO
         {
             CommandFactory.GetCommand(CommandFactory.LogoutCommandName)
                 .Invoking(c => c.Run(null, StubFactory.CreateOptions()))
-                .ShouldThrow<ArgumentNullException>()
+                .Should().Throw<ArgumentNullException>()
                 .And.ParamName.Should().Be("request");
         }
 
@@ -52,7 +53,7 @@ namespace Sustainsys.Saml2.Tests.WebSSO
         {
             Action a = () => LogoutCommand.Run(null, null, StubFactory.CreateOptions());
 
-            a.ShouldThrow<ArgumentNullException>()
+            a.Should().Throw<ArgumentNullException>()
                 .And.ParamName.Should().Be("request");
         }
 
@@ -61,7 +62,7 @@ namespace Sustainsys.Saml2.Tests.WebSSO
         {
             Action a = () => LogoutCommand.Run(new HttpRequestData("GET", new Uri("http://localhost")), null, null);
 
-            a.ShouldThrow<ArgumentNullException>()
+            a.Should().Throw<ArgumentNullException>()
                 .And.ParamName.Should().Be("options");
         }
 
@@ -70,7 +71,7 @@ namespace Sustainsys.Saml2.Tests.WebSSO
         {
             CommandFactory.GetCommand(CommandFactory.LogoutCommandName)
                 .Invoking(c => c.Run(new HttpRequestData("GET", new Uri("http://localhost")), null))
-                .ShouldThrow<ArgumentNullException>()
+                .Should().Throw<ArgumentNullException>()
                 .And.ParamName.Should().Be("options");
         }
 
@@ -115,7 +116,7 @@ namespace Sustainsys.Saml2.Tests.WebSSO
                     null)
             };
 
-            actual.ShouldBeEquivalentTo(expected, opt => opt
+            actual.Should().BeEquivalentTo(expected, opt => opt
                 .Excluding(cr => cr.Location)
                 .Excluding(cr => cr.SetCookieName)
                 .Excluding(cr => cr.RelayState)
@@ -208,7 +209,7 @@ namespace Sustainsys.Saml2.Tests.WebSSO
             var options = StubFactory.CreateOptions();
 
             Action a = () => CommandFactory.GetCommand(CommandFactory.LogoutCommandName).Run(request, options);
-            a.ShouldThrow<InvalidOperationException>().WithMessage("Return Url must be a relative Url.");
+            a.Should().Throw<InvalidOperationException>().WithMessage("Return Url must be a relative Url.");
         }
 
         [TestMethod]
@@ -219,7 +220,7 @@ namespace Sustainsys.Saml2.Tests.WebSSO
             var options = StubFactory.CreateOptions();
 
             Action a = () => CommandFactory.GetCommand(CommandFactory.LogoutCommandName).Run(request, options);
-            a.ShouldThrow<InvalidOperationException>().WithMessage("Return Url must be a relative Url.");
+            a.Should().Throw<InvalidOperationException>().WithMessage("Return Url must be a relative Url.");
         }
 
         [TestMethod]
@@ -239,7 +240,7 @@ namespace Sustainsys.Saml2.Tests.WebSSO
                 };
 
             Action a = () => CommandFactory.GetCommand(CommandFactory.LogoutCommandName).Run(request, options);
-            a.ShouldNotThrow<InvalidOperationException>("the ValidateAbsoluteReturnUrl notification returns true");
+            a.Should().NotThrow<InvalidOperationException>("the ValidateAbsoluteReturnUrl notification returns true");
             validateAbsoluteReturnUrlCalled.Should().BeTrue("the ValidateAbsoluteReturnUrl notification should have been called");
         }
 
@@ -260,7 +261,7 @@ namespace Sustainsys.Saml2.Tests.WebSSO
                 };
 
             Action a = () => CommandFactory.GetCommand(CommandFactory.LogoutCommandName).Run(request, options);
-            a.ShouldNotThrow<InvalidOperationException>("the ReturnUrl is relative");
+            a.Should().NotThrow<InvalidOperationException>("the ReturnUrl is relative");
             validateAbsoluteReturnUrlCalled.Should().BeFalse("the ValidateAbsoluteReturnUrl notification should not have been called");
         }
 
@@ -302,7 +303,7 @@ namespace Sustainsys.Saml2.Tests.WebSSO
                     null)
             };
 
-            actual.ShouldBeEquivalentTo(expected, opt => opt
+            actual.Should().BeEquivalentTo(expected, opt => opt
                 .Excluding(cr => cr.Location)
                 .Excluding(cr => cr.SetCookieName)
                 .Excluding(cr => cr.RelayState)
@@ -320,7 +321,7 @@ namespace Sustainsys.Saml2.Tests.WebSSO
                 Issuer = new EntityId("https://idp.example.com"),
                 InResponseTo = new Saml2Id(),
                 SigningCertificate = SignedXmlHelper.TestCert,
-                SigningAlgorithm = SignedXml.XmlDsigRSASHA256Url,
+                SigningAlgorithm = SecurityAlgorithms.RsaSha256Signature,
                 RelayState = relayState
             };
 
@@ -361,7 +362,7 @@ namespace Sustainsys.Saml2.Tests.WebSSO
                 ClearCookieName = StoredRequestState.CookieNameBase + relayState
             };
 
-            actual.ShouldBeEquivalentTo(expected);
+            actual.Should().BeEquivalentTo(expected);
         }
 
         [TestMethod]
@@ -408,7 +409,7 @@ namespace Sustainsys.Saml2.Tests.WebSSO
                 ClearCookieName = StoredRequestState.CookieNameBase + relayState
             };
 
-            actual.ShouldBeEquivalentTo(expected);
+            actual.Should().BeEquivalentTo(expected);
         }
 
         [TestMethod]
@@ -421,7 +422,7 @@ namespace Sustainsys.Saml2.Tests.WebSSO
                 SigningCertificate = SignedXmlHelper.TestCert,
                 NameId = new Saml2NameIdentifier("NameId"),
                 SessionIndex = "SessionID",
-                SigningAlgorithm = SignedXml.XmlDsigRSASHA256Url
+                SigningAlgorithm = SecurityAlgorithms.RsaSha256Signature
             };
 
             var bindResult = Saml2Binding.Get(Saml2BindingType.HttpRedirect)
@@ -458,7 +459,7 @@ namespace Sustainsys.Saml2.Tests.WebSSO
             HttpUtility.ParseQueryString(actual.Location.Query)["Signature"]
                 .Should().NotBeNull("LogoutResponse should be signed");
 
-            actual.ShouldBeEquivalentTo(expected, opt => opt.Excluding(cr => cr.Location));
+            actual.Should().BeEquivalentTo(expected, opt => opt.Excluding(cr => cr.Location));
             actual.Should().BeSameAs(notifiedCommandResult);
 
             var actualUnbindResult = Saml2Binding.Get(Saml2BindingType.HttpRedirect)
@@ -498,7 +499,7 @@ namespace Sustainsys.Saml2.Tests.WebSSO
                 SigningCertificate = SignedXmlHelper.TestCert,
                 NameId = new Saml2NameIdentifier("NameId"),
                 SessionIndex = "SessionID",
-                SigningAlgorithm = SignedXml.XmlDsigRSASHA256Url
+                SigningAlgorithm = SecurityAlgorithms.RsaSha256Signature
             };
 
             var xml = XmlHelpers.XmlDocumentFromString(request.ToXml());
@@ -535,7 +536,7 @@ namespace Sustainsys.Saml2.Tests.WebSSO
                 DestinationUrl = new Uri("http://sp.example.com/path/Saml2/logout"),
                 Issuer = new EntityId("https://idp.example.com"),
                 SigningCertificate = SignedXmlHelper.TestCert,
-                SigningAlgorithm = SignedXml.XmlDsigRSASHA256Url, // Ignored
+                SigningAlgorithm = SecurityAlgorithms.RsaSha256Signature, // Ignored
                 NameId = new Saml2NameIdentifier("NameId"),
                 SessionIndex = "SessionID"
             };
@@ -557,12 +558,12 @@ namespace Sustainsys.Saml2.Tests.WebSSO
                 null);
 
             var options = StubFactory.CreateOptions();
-            options.SPOptions.MinIncomingSigningAlgorithm = SignedXml.XmlDsigRSASHA384Url;
+            options.SPOptions.MinIncomingSigningAlgorithm = SecurityAlgorithms.RsaSha384Signature;
             options.SPOptions.ServiceCertificates.Add(SignedXmlHelper.TestCert);
 
             CommandFactory.GetCommand(CommandFactory.LogoutCommandName)
                 .Invoking(c => c.Run(httpRequest, options))
-                .ShouldThrow<InvalidSignatureException>()
+                .Should().Throw<InvalidSignatureException>()
                 .WithMessage("*weak*");
         }
 
@@ -600,7 +601,7 @@ namespace Sustainsys.Saml2.Tests.WebSSO
 
             var actual = CommandFactory.GetCommand(CommandFactory.LogoutCommandName)
                 .Invoking(c => c.Run(httpRequest, options))
-                .ShouldThrow<InvalidSignatureException>()
+                .Should().Throw<InvalidSignatureException>()
                 .WithMessage("The signature was valid, but the verification of the certificate failed. Is it expired or revoked? Are you sure you really want to enable ValidateCertificates (it's normally not needed)?");
         }
 
@@ -612,7 +613,7 @@ namespace Sustainsys.Saml2.Tests.WebSSO
                 DestinationUrl = new Uri("http://sp.example.com/path/Saml2/logout"),
                 Issuer = new EntityId("https://idp.example.com"),
                 SigningCertificate = SignedXmlHelper.TestCert,
-                SigningAlgorithm = SignedXml.XmlDsigRSASHA256Url,
+                SigningAlgorithm = SecurityAlgorithms.RsaSha256Signature,
                 NameId = new Saml2NameIdentifier("NameId"),
                 SessionIndex = "SessionID"
             };
@@ -626,7 +627,7 @@ namespace Sustainsys.Saml2.Tests.WebSSO
 
             CommandFactory.GetCommand(CommandFactory.LogoutCommandName)
                 .Invoking(c => c.Run(httpRequest, options))
-                .ShouldThrow<ConfigurationErrorsException>()
+                .Should().Throw<ConfigurationErrorsException>()
                 .WithMessage("Received a LogoutRequest from \"https://idp.example.com\" but cannot reply because single logout responses must be signed and there is no signing certificate configured. Looks like the idp is configured for Single Logout despite Saml2 not exposing that functionality in the metadata.");
         }
 
@@ -638,7 +639,7 @@ namespace Sustainsys.Saml2.Tests.WebSSO
                 DestinationUrl = new Uri("http://sp.example.com/path/Saml2/logout"),
                 Issuer = new EntityId("https://idp2.example.com"),
                 SigningCertificate = SignedXmlHelper.TestCert,
-                SigningAlgorithm = SignedXml.XmlDsigRSASHA256Url,
+                SigningAlgorithm = SecurityAlgorithms.RsaSha256Signature,
                 NameId = new Saml2NameIdentifier("NameId"),
                 SessionIndex = "SessionID"
             };
@@ -653,7 +654,7 @@ namespace Sustainsys.Saml2.Tests.WebSSO
 
             CommandFactory.GetCommand(CommandFactory.LogoutCommandName)
                 .Invoking(c => c.Run(httpRequest, options))
-                .ShouldThrow<InvalidOperationException>()
+                .Should().Throw<InvalidOperationException>()
                 .WithMessage("*LogoutRequest*\"https://idp2.example.com\"*cannot reply*logout endpoint*idp*");
         }
 
@@ -678,7 +679,7 @@ namespace Sustainsys.Saml2.Tests.WebSSO
 
             CommandFactory.GetCommand(CommandFactory.LogoutCommandName)
                 .Invoking(c => c.Run(httpRequest, options))
-                .ShouldThrow<UnsuccessfulSamlOperationException>()
+                .Should().Throw<UnsuccessfulSamlOperationException>()
                 .WithMessage("Received a LogoutRequest from https://idp.example.com that cannot be processed because it is not signed.");
         }
 
@@ -692,7 +693,7 @@ namespace Sustainsys.Saml2.Tests.WebSSO
                 Issuer = new EntityId("https://idp.example.com"),
                 InResponseTo = new Saml2Id(),
                 SigningCertificate = SignedXmlHelper.TestCert,
-                SigningAlgorithm = SignedXml.XmlDsigRSASHA256Url
+                SigningAlgorithm = SecurityAlgorithms.RsaSha256Signature
             };
 
             var bindResult = Saml2Binding.Get(Saml2BindingType.HttpRedirect)
@@ -706,7 +707,7 @@ namespace Sustainsys.Saml2.Tests.WebSSO
 
             CommandFactory.GetCommand(CommandFactory.LogoutCommandName)
                 .Invoking(c => c.Run(request, options))
-                .ShouldThrow<UnsuccessfulSamlOperationException>()
+                .Should().Throw<UnsuccessfulSamlOperationException>()
                 .And.Message.Should().Be("Idp returned status \"Requester\", indicating that the single logout failed. The local session has been successfully terminated.");
         }
 
@@ -719,7 +720,7 @@ namespace Sustainsys.Saml2.Tests.WebSSO
                 Issuer = new EntityId("https://idp.example.com"),
                 InResponseTo = new Saml2Id(),
                 SigningCertificate = SignedXmlHelper.TestCert,
-                SigningAlgorithm = SignedXml.XmlDsigRSASHA256Url,
+                SigningAlgorithm = SecurityAlgorithms.RsaSha256Signature,
             };
 
             var bindResult = Saml2Binding.Get(Saml2BindingType.HttpRedirect)
@@ -733,7 +734,7 @@ namespace Sustainsys.Saml2.Tests.WebSSO
             options.Notifications.ProcessSingleLogoutResponseStatus = (logoutResponse, requestState) => true;
 
             var actual = CommandFactory.GetCommand(CommandFactory.LogoutCommandName).Run(request, options);
-            actual.Location.ShouldBeEquivalentTo(options.SPOptions.PublicOrigin);
+            actual.Location.Should().BeEquivalentTo(options.SPOptions.PublicOrigin);
         }
 
         [TestMethod]
@@ -779,7 +780,7 @@ namespace Sustainsys.Saml2.Tests.WebSSO
                 TerminateLocalSession = true
             };
 
-            actual.ShouldBeEquivalentTo(expected);
+            actual.Should().BeEquivalentTo(expected);
         }
 
         // Meta test to ensure that the test helper does logout if enabled.
@@ -798,13 +799,14 @@ namespace Sustainsys.Saml2.Tests.WebSSO
 
             Action a = () => LogoutCommand_Run_LocalLogout(options, user);
 
-            a.ShouldThrow<AssertFailedException>();
+            a.Should().Throw<AssertFailedException>();
         }
 
         [TestMethod]
         public void LogoutCommand_Run_LocalLogoutIfNoLogoutNameId()
         {
-            var user = ClaimsPrincipal.Current;
+			var user = new ClaimsPrincipal(
+				new ClaimsIdentity());
             user.FindFirst(Saml2ClaimTypes.LogoutNameIdentifier)
                 .Should().BeNull("this is a test for the case where there is no NameIdentifier");
 
@@ -898,7 +900,7 @@ namespace Sustainsys.Saml2.Tests.WebSSO
 
             CommandFactory.GetCommand(CommandFactory.LogoutCommandName)
                 .Invoking(c => c.Run(request, StubFactory.CreateOptions()))
-                .ShouldThrow<NotImplementedException>();
+                .Should().Throw<NotImplementedException>();
         }
 
         [TestMethod]
@@ -919,7 +921,7 @@ namespace Sustainsys.Saml2.Tests.WebSSO
 
             CommandFactory.GetCommand(CommandFactory.LogoutCommandName)
                 .Invoking(c => c.Run(request, StubFactory.CreateOptions()))
-                .ShouldThrow<InvalidSignatureException>()
+                .Should().Throw<InvalidSignatureException>()
                 .WithMessage("There is no Issuer element in the message, so there is no way to know what certificate to use to validate the signature.");
         }
 
@@ -933,7 +935,7 @@ namespace Sustainsys.Saml2.Tests.WebSSO
             var request = new HttpRequestData("GET", new Uri("http://host"));
 
             subject.Invoking(s => s.Run(request, options))
-                .ShouldThrow<NotImplementedException>()
+                .Should().Throw<NotImplementedException>()
                 .WithMessage("StubSaml2Binding.*");
         }
 
@@ -946,7 +948,7 @@ namespace Sustainsys.Saml2.Tests.WebSSO
                 Issuer = new EntityId("https://idp.example.com"),
                 InResponseTo = new Saml2Id(),
                 SigningCertificate = SignedXmlHelper.TestCert,
-                SigningAlgorithm = SignedXml.XmlDsigRSASHA256Url,
+                SigningAlgorithm = SecurityAlgorithms.RsaSha256Signature,
                 RelayState = null
             };
 
@@ -969,7 +971,7 @@ namespace Sustainsys.Saml2.Tests.WebSSO
                 ClearCookieName = null
             };
 
-            actual.ShouldBeEquivalentTo(expected);
+            actual.Should().BeEquivalentTo(expected);
         }
 
         [TestMethod]
@@ -981,7 +983,7 @@ namespace Sustainsys.Saml2.Tests.WebSSO
                 Issuer = new EntityId("https://idp.example.com"),
                 InResponseTo = new Saml2Id(),
                 SigningCertificate = SignedXmlHelper.TestCert,
-                SigningAlgorithm = SignedXml.XmlDsigRSASHA256Url,
+                SigningAlgorithm = SecurityAlgorithms.RsaSha256Signature,
                 RelayState = null
             };
 
@@ -1004,7 +1006,7 @@ namespace Sustainsys.Saml2.Tests.WebSSO
                 ClearCookieName = null
             };
 
-            actual.ShouldBeEquivalentTo(expected);
+            actual.Should().BeEquivalentTo(expected);
         }
 
         [TestMethod]
@@ -1012,7 +1014,7 @@ namespace Sustainsys.Saml2.Tests.WebSSO
         {
             Action a = () => LogoutCommand.InitiateLogout(null, null, null, false);
 
-            a.ShouldThrow<ArgumentNullException>().And.ParamName.Should().Be("request");
+            a.Should().Throw<ArgumentNullException>().And.ParamName.Should().Be("request");
         }
 
         [TestMethod]
@@ -1024,7 +1026,7 @@ namespace Sustainsys.Saml2.Tests.WebSSO
                 null,
                 false);
 
-            a.ShouldThrow<ArgumentNullException>().And.ParamName.Should().Be("options");
+            a.Should().Throw<ArgumentNullException>().And.ParamName.Should().Be("options");
         }
     }
 }

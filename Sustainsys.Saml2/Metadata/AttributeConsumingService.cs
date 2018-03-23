@@ -44,4 +44,16 @@ namespace Sustainsys.Saml2.Metadata
         /// </summary>
         public bool IsDefault { get; set; }
     }
+
+	public class AttributeConsumingService2 : IIndexedEntryWithDefault
+	{
+		public int Index { get; set; }
+		public bool? IsDefault { get; set; }
+		public ICollection<LocalizedName> ServiceNames { get; private set; }
+			= new Collection<LocalizedName>();
+		public ICollection<LocalizedName> ServiceDescriptions { get; private set; }
+			= new Collection<LocalizedName>();
+		public ICollection<RequestedAttribute> RequestedAttributes { get; private set; }
+			= new Collection<RequestedAttribute>();
+	}
 }

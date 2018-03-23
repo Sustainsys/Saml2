@@ -44,7 +44,7 @@ namespace Sustainsys.Saml2.Saml2P
                 .AddAttribute("ID", Id.Value)
                 .AddAttribute("Version", "2.0")
                 .AddAttribute("IssueInstant", IssueInstant.ToSaml2DateTimeString())
-                .AddAttributeIfNotNull("InResponseTo", InResponseTo)
+                .AddAttributeIfNotNull("InResponseTo", InResponseTo?.Value)
                 .AddAttributeIfNotNull("Destination", DestinationUrl?.OriginalString)
                 .If(Issuer != null, x => x.AddElement("Issuer", Saml2Namespaces.Saml2Uri, Issuer.Id))
                 .StartElement("Status", Saml2Namespaces.Saml2PUri)

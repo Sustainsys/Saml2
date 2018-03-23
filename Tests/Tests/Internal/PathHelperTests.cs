@@ -28,7 +28,7 @@ namespace Sustainsys.Saml2.Tests.Internal
         public void PathHelper_MapPath_ShouldThrowOnNull()
         {
             Action a = () => PathHelper.MapPath(null);
-            a.ShouldThrow<ArgumentNullException>().And.ParamName.Should().Be("virtualPath");
+            a.Should().Throw<ArgumentNullException>().And.ParamName.Should().Be("virtualPath");
         }
 
         [TestMethod]
@@ -58,7 +58,7 @@ namespace Sustainsys.Saml2.Tests.Internal
         public void PathHelper_IsRelative_ShouldThrowOnNull()
         {
             Action a = () => PathHelper.IsWebRootRelative(null);
-            a.ShouldThrow<ArgumentNullException>().And.ParamName.Should().Be("virtualPath");
+            a.Should().Throw<ArgumentNullException>().And.ParamName.Should().Be("virtualPath");
         }
 
         [TestMethod]
@@ -72,7 +72,7 @@ namespace Sustainsys.Saml2.Tests.Internal
         public void PathHelper_IsLocal_ShouldThrowOnNull()
         {
             Action a = () => PathHelper.IsLocalWebUrl(null);
-            a.ShouldThrow<ArgumentNullException>().And.ParamName.Should().Be("url");
+            a.Should().Throw<ArgumentNullException>().And.ParamName.Should().Be("url");
         }
 
         [TestMethod]

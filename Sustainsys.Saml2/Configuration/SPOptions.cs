@@ -4,9 +4,6 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.IdentityModel.Configuration;
-using System.IdentityModel.Metadata;
-using System.IdentityModel.Services.Configuration;
 using System.Linq;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
@@ -216,12 +213,12 @@ namespace Sustainsys.Saml2.Configuration
             }
         }
 
-        readonly ICollection<AttributeConsumingService> attributeConsumingServices = new List<AttributeConsumingService>();
+        readonly ICollection<AttributeConsumingService2> attributeConsumingServices = new List<AttributeConsumingService2>();
 
         /// <summary>
         /// Collection of attribute consuming services for the service provider.
         /// </summary>
-        public ICollection<AttributeConsumingService> AttributeConsumingServices
+        public ICollection<AttributeConsumingService2> AttributeConsumingServices
         {
             get
             {

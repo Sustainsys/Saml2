@@ -267,8 +267,8 @@ namespace Sustainsys.Saml2.AspNetCore2.Tests
 
             context.HttpContext.Response.StatusCode.Should().Be(200);
 
-            Encoding.UTF8.GetString(
-                context.HttpContext.Response.Body.As<MemoryStream>().GetBuffer())
+			var ms = context.HttpContext.Response.Body.As<MemoryStream>();
+			Encoding.UTF8.GetString(ms.GetBuffer(), 0, (int)ms.Length)
                 .Should().StartWith("<EntityDescriptor");
         }
 

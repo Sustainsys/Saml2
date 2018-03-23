@@ -1,6 +1,6 @@
-﻿using System;
+﻿using Microsoft.IdentityModel.Tokens.Saml2;
+using System;
 using System.Collections.Generic;
-using System.IdentityModel.Tokens;
 using System.Linq;
 using System.Text;
 
@@ -20,10 +20,19 @@ namespace Sustainsys.Saml2.Metadata
             : base(name)
         { }
 
-        /// <summary>
-        /// Is this attribute required by the service provider?
-        /// </summary>
-        public bool IsRequired { get; set; }
+		/// <summary>
+		/// Ctor
+		/// </summary>
+		/// <param name="name">Name of the attribute.</param>
+		/// <param name="value">Value of the attribute.</param>
+		public RequestedAttribute(string name, string value)
+			: base(name, value)
+		{ }
+
+		/// <summary>
+		/// Is this attribute required by the service provider?
+		/// </summary>
+		public bool? IsRequired { get; set; }
 
         /// <summary>
         /// Uri used for NameFormat to specify that the Name is a Uri.

@@ -1,8 +1,8 @@
 ﻿using System;
+using System.Globalization;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using FluentAssertions;
-using System.IdentityModel.Metadata;
 using Sustainsys.Saml2.Metadata;
 using Sustainsys.Saml2.WebSso;
 using Sustainsys.Saml2.TestHelpers;
@@ -20,7 +20,7 @@ namespace Sustainsys.Saml2.Tests.Configuration
             metadata.CacheDuration.Should().Be(new TimeSpan(0, 0, 42));
             metadata.EntityId.Id.Should().Be("https://github.com/SustainsysIT/Saml2");
 
-            var spMetadata = metadata.RoleDescriptors.OfType<ServiceProviderSingleSignOnDescriptor>().Single();
+            var spMetadata = metadata.RoleDescriptors.OfType<SpSsoDescriptor>().Single();
             spMetadata.Should().NotBeNull();
             spMetadata.Keys.Count.Should().Be(0);
 
@@ -43,7 +43,7 @@ namespace Sustainsys.Saml2.Tests.Configuration
             options.SPOptions.ServiceCertificates.Add(new ServiceCertificate { Certificate = SignedXmlHelper.TestCert2 });
             var metadata = options.SPOptions.CreateMetadata(StubFactory.CreateSaml2Urls());
 
-            var spMetadata = metadata.RoleDescriptors.OfType<ServiceProviderSingleSignOnDescriptor>().Single();
+            var spMetadata = metadata.RoleDescriptors.OfType<SpSsoDescriptor>().Single();
             spMetadata.Should().NotBeNull();
             spMetadata.Keys.Count.Should().Be(1);
             spMetadata.Keys.Single().Use.Should().Be(KeyType.Unspecified);
@@ -67,7 +67,7 @@ namespace Sustainsys.Saml2.Tests.Configuration
             options.SPOptions.ServiceCertificates.Add(new ServiceCertificate { Certificate = SignedXmlHelper.TestCert2, Use = CertificateUse.Signing });
             var metadata = options.SPOptions.CreateMetadata(StubFactory.CreateSaml2Urls());
 
-            var spMetadata = metadata.RoleDescriptors.OfType<ServiceProviderSingleSignOnDescriptor>().Single();
+            var spMetadata = metadata.RoleDescriptors.OfType<SpSsoDescriptor>().Single();
             spMetadata.Should().NotBeNull();
             spMetadata.Keys.Count.Should().Be(2);
             spMetadata.Keys.Where(k => k.Use == KeyType.Encryption).Count().Should().Be(1);
@@ -104,11 +104,11 @@ namespace Sustainsys.Saml2.Tests.Configuration
 
             spOptions.DiscoveryServiceUrl = new Uri("http://ds.example.com");
 
-            var subject = spOptions.CreateMetadata(urls).RoleDescriptors
-                .Single().As<ExtendedServiceProviderSingleSignOnDescriptor>()
-                .Extensions.DiscoveryResponse;
+			var subject = spOptions.CreateMetadata(urls).RoleDescriptors
+				.Single().As<SpSsoDescriptor>()
+				.DiscoveryResponses.Single();
 
-            var expected = new IndexedProtocolEndpoint
+            var expected = new DiscoveryResponse
             {
                 Binding = Saml2Binding.DiscoveryResponseUri,
                 Index = 0,
@@ -116,7 +116,7 @@ namespace Sustainsys.Saml2.Tests.Configuration
                 Location = urls.SignInUrl
             };
 
-            subject.ShouldBeEquivalentTo(expected);
+            subject.Should().BeEquivalentTo(expected);
         }
 
         [TestMethod]
@@ -125,7 +125,9 @@ namespace Sustainsys.Saml2.Tests.Configuration
             var spOptions = StubFactory.CreateSPOptions();
             var urls = StubFactory.CreateSaml2Urls();
 
-            var attributeConsumingService = new AttributeConsumingService("Name");
+			var attributeConsumingService = new AttributeConsumingService2();
+			attributeConsumingService.ServiceNames.Add(
+				new LocalizedName("Name", "en"));
 
             spOptions.AttributeConsumingServices.Clear();
             spOptions.AttributeConsumingServices.Add(attributeConsumingService);
@@ -134,7 +136,7 @@ namespace Sustainsys.Saml2.Tests.Configuration
             var subject = spOptions
                 .CreateMetadata(urls)
                 .RoleDescriptors
-                .Cast<ExtendedServiceProviderSingleSignOnDescriptor>()
+                .Cast<SpSsoDescriptor>()
                 .First();
 
             subject.AttributeConsumingServices.First().Should().BeSameAs(attributeConsumingService);

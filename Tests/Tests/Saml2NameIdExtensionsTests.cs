@@ -1,7 +1,7 @@
 ﻿using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
-using System.IdentityModel.Tokens;
+using Microsoft.IdentityModel.Tokens.Saml2;
 
 namespace Sustainsys.Saml2.Tests
 {
@@ -13,7 +13,7 @@ namespace Sustainsys.Saml2.Tests
         {
             Action a = () => ((Saml2NameIdentifier)null).ToXElement();
 
-            a.ShouldThrow<ArgumentNullException>()
+            a.Should().Throw<ArgumentNullException>()
                 .And.ParamName.Should().Be("nameIdentifier");
         }
     }
