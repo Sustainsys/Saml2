@@ -405,7 +405,7 @@ namespace Sustainsys.Saml2.Tests.WebSSO
             {
                 Location = new Uri("http://loggedout.example.com"),
                 HttpStatusCode = HttpStatusCode.SeeOther,
-                ClearCookieName = "Kentor." + relayState
+                ClearCookieName = "Saml2." + relayState
             };
 
             actual.ShouldBeEquivalentTo(expected);
