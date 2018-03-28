@@ -127,14 +127,14 @@ namespace Sustainsys.Saml2.Saml2P
                         "Received message contains unexpected InResponseTo \"{0}\". No cookie preserving state " +
                         "from the request was found so the message was not expected to have an InResponseTo attribute. " +
                         "This error typically occurs if the cookie set when doing SP-initiated sign on have been lost.",
-                        InResponseTo));
+                        InResponseTo.Value));
                 }
-                if (!expectedInResponseTo.Equals(InResponseTo))
+                if (expectedInResponseTo.Value != InResponseTo.Value)
                 {
                     throw new Saml2ResponseFailedValidationException(
                         string.Format(CultureInfo.InvariantCulture,
                         "InResponseTo Id \"{0}\" in received response does not match Id \"{1}\" of the sent request.",
-                        InResponseTo, expectedInResponseTo));
+                        InResponseTo.Value, expectedInResponseTo.Value));
                 }
             }
             else
@@ -144,7 +144,7 @@ namespace Sustainsys.Saml2.Saml2P
                     throw new Saml2ResponseFailedValidationException(
                         string.Format(CultureInfo.InvariantCulture,
                         "Expected message to contain InResponseTo \"{0}\", but found none.",
-                        expectedInResponseTo));
+                        expectedInResponseTo.Value));
                 }
             }
         }
@@ -519,16 +519,39 @@ namespace Sustainsys.Saml2.Saml2P
             }
 
 			TokenValidationParameters validationParameters = new TokenValidationParameters();
-			//validationParameters.
-			// TODO: cofnigure
+			validationParameters.AuthenticationType = "Federation";
+			validationParameters.RequireSignedTokens = false;
+			validationParameters.ValidateIssuer = false;
+
+			var handler = options.SPOptions.Saml2PSecurityTokenHandler;
+			var audienceRestriction = handler.Configuration.AudienceRestriction;
+			var allowedAudiences = audienceRestriction.AllowedAudienceUris
+				.ToLookup(x => x.ToString(), StringComparer.Ordinal);
+			validationParameters.AudienceValidator = (audiences, token, validationParameters_) =>
+			{
+				if ((audienceRestriction.AudienceMode == Tokens.AudienceUriMode.BearerKeyOnly &&
+						token.SecurityKey == null) ||
+					audienceRestriction.AudienceMode == Tokens.AudienceUriMode.Always)
+				{
+					return audiences.Any(x => allowedAudiences.Contains(x));
+				}
+				return true;
+			};
+			validationParameters.ClockSkew = options.SPOptions
+				.SystemIdentityModelIdentityConfiguration.MaxClockSkew;
+			// validationParameters.ValidateLifetime?
+			// TODO: validationParameters.TokenReplayValidator
+
+			// TODO: configure validationParameters
 
 			foreach (XmlElement assertionNode in GetAllAssertionElementNodes(options))
             {
-                using (var reader = new FilteringXmlNodeReader(SignedXml.XmlDsigNamespaceUrl, "Signature", assertionNode))
-                {
-                    var handler = options.SPOptions.Saml2PSecurityTokenHandler;
+//                using (var reader = new FilteringXmlNodeReader(SignedXml.XmlDsigNamespaceUrl, "Signature", assertionNode))
+ //               {
 
-                    var token = (Saml2SecurityToken)handler.ReadToken(reader, validationParameters);
+					SecurityToken baseToken;
+                    var principal = handler.ValidateToken(assertionNode.OuterXml, validationParameters, out baseToken);
+					var token = (Saml2SecurityToken)baseToken;
                     options.SPOptions.Logger.WriteVerbose("Extracted SAML assertion " + token.Id);
 
 					#if FALSE
@@ -550,9 +573,11 @@ namespace Sustainsys.Saml2.Saml2P
                     token.Assertion.Statements.OfType<Saml2AuthenticationStatement>()
                         .SingleOrDefault()?.SessionNotOnOrAfter);
 
-                    yield return handler.CreateClaimsIdentity2(token,
-						ClaimsIdentity.DefaultIssuer, validationParameters);
-                }
+				foreach (var identity in principal.Identities)
+					yield return identity;
+                    //yield return handler.CreateClaimsIdentity2(token,
+					//	ClaimsIdentity.DefaultIssuer, validationParameters);
+//                }
             }
         }
         

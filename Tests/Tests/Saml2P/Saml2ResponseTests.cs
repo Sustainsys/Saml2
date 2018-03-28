@@ -15,6 +15,9 @@ using System.Reflection;
 using Sustainsys.Saml2.Exceptions;
 using Sustainsys.Saml2.TestHelpers;
 
+using SecurityTokenInvalidAudienceException = Microsoft.IdentityModel.Tokens.SecurityTokenInvalidAudienceException;
+using SecurityTokenExpiredException = Microsoft.IdentityModel.Tokens.SecurityTokenExpiredException;
+using SecurityTokenReplayDetectedException = Microsoft.IdentityModel.Tokens.SecurityTokenReplayDetectedException;
 using SigningCredentials = Microsoft.IdentityModel.Tokens.SigningCredentials;
 using X509SecurityKey = Microsoft.IdentityModel.Tokens.X509SecurityKey;
 
@@ -32,7 +35,7 @@ namespace Sustainsys.Saml2.Tests.Saml2P
         [TestMethod]
         public void Saml2Response_Read_BasicParams()
         {
-            string response =
+            string responseText =
             @"<?xml version=""1.0"" encoding=""UTF-8""?>
                 <saml2p:Response xmlns:saml2p=""urn:oasis:names:tc:SAML:2.0:protocol""
             ID = """ + MethodBase.GetCurrentMethod().Name + @""" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z""
@@ -58,15 +61,14 @@ namespace Sustainsys.Saml2.Tests.Saml2P
                 SecondLevelStatus = (string)null,
                 RelayState = (string)null,
             };
-			
-			#if TODO
-            Saml2Response.Read(response, expected.InResponseTo).Should().BeEquivalentTo(
-                expected, opt => opt
+
+			var response = Saml2Response.Read(responseText, expected.InResponseTo);
+			expected.Should().BeEquivalentTo(
+				response, opt => opt
                     .Excluding(s => s.XmlElement)
                     .Excluding(s => s.SigningCertificate)
                     .Excluding(s => s.SigningAlgorithm)
                     .Excluding(s => s.SessionNotOnOrAfter));
-			#endif
         }
 
         [TestMethod]
@@ -243,9 +245,10 @@ namespace Sustainsys.Saml2.Tests.Saml2P
             </saml2p:Response>";
 
             var signedResponse = SignedXmlHelper.SignXml(response);
-
-            Action a = () => Saml2Response.Read(signedResponse).GetClaims(StubFactory.CreateOptions());
-            a.Should().Throw<XmlException>();
+			var claims = Saml2Response.Read(signedResponse).GetClaims(StubFactory.CreateOptions());
+			claims.Single().FindFirst(
+				"http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier")
+				.Value.Should().Be("SomeUser");
         }
 
         /// This is a specific test for the vulnerabilities found by Duo in February 2018
@@ -1075,7 +1078,6 @@ namespace Sustainsys.Saml2.Tests.Saml2P
 			var creds = new SigningCredentials(key, SecurityAlgorithms.RsaSha1Signature,
 				SecurityAlgorithms.Sha1Digest);
 			assertion.SigningCredentials = creds;
-
 #if TODO
 			assertion.SigningCredentials = new X509SigningCredentials(SignedXmlHelper.TestCert,
                 signatureAlgorithm: SecurityAlgorithms.RsaSha1Signature, 
@@ -1335,13 +1337,11 @@ namespace Sustainsys.Saml2.Tests.Saml2P
             options.SPOptions.SystemIdentityModelIdentityConfiguration.AudienceRestriction.AudienceMode
                 = AudienceUriMode.Always;
 
-			#if TODO
             subject.Invoking(s => s.GetClaims(options))
-                .Should().Throw<AudienceUriValidationFailedException>();
-			#endif
-        }
+                .Should().Throw<SecurityTokenInvalidAudienceException>();
+		}
 
-        [TestMethod]
+		[TestMethod]
         public void Saml2Response_GetClaims_IgnoresAudienceIfConfiguredWithNever()
         {
             var response =
@@ -1409,9 +1409,7 @@ namespace Sustainsys.Saml2.Tests.Saml2P
 
             Action a = () => r.GetClaims(Options.FromConfiguration);
 
-			#if TODO
             a.Should().Throw<SecurityTokenExpiredException>();
-			#endif
         }
 
         [TestMethod]
@@ -1666,9 +1664,7 @@ namespace Sustainsys.Saml2.Tests.Saml2P
 
             Action a = () => r2.GetClaims(Options.FromConfiguration);
 
-			#if TODO
             a.Should().Throw<SecurityTokenReplayDetectedException>();
-			#endif
         }
 
         [TestMethod]
@@ -1704,9 +1700,7 @@ namespace Sustainsys.Saml2.Tests.Saml2P
 
             Action a = () => r2.GetClaims(options);
 
-			#if TODO
             a.Should().Throw<SecurityTokenReplayDetectedException>();
-			#endif
         }
 
         [TestMethod]
@@ -1983,7 +1977,7 @@ namespace Sustainsys.Saml2.Tests.Saml2P
                 new Claim(ClaimTypes.NameIdentifier, "JohnDoe")
             });
 
-            var audience = "http://sp.example.com";
+            var audience = "http://sp.example.com/";
 
             var subject = new Saml2Response(
                 new EntityId("issuer"),

@@ -85,8 +85,8 @@ namespace Sustainsys.Saml2.Metadata
 		protected virtual AttributeAuthorityDescriptor CreateAttributeAuthorityDescriptorInstance() =>
 			new AttributeAuthorityDescriptor();
 
-		protected virtual AttributeConsumingService2 CreateAttributeConsumingServiceInstance() =>
-			new AttributeConsumingService2();
+		protected virtual AttributeConsumingService CreateAttributeConsumingServiceInstance() =>
+			new AttributeConsumingService();
 
 		protected virtual AttributeService CreateAttributeServiceInstance() =>
 			new AttributeService();
@@ -1894,7 +1894,7 @@ namespace Sustainsys.Saml2.Metadata
 		protected virtual IdpSsoDescriptor ReadIdpSsoDescriptor(XmlReader reader)
 		{
 			var descriptor = CreateIdpSsoDescriptorInstance();
-			descriptor.WantAuthnRequestsSigned = GetBooleanAttribute(reader, "WantAuthnRequestsSigned", false);
+			descriptor.WantAuthnRequestsSigned = GetOptionalBooleanAttribute(reader, "WantAuthnRequestsSigned");
 			ReadSsoDescriptorAttributes(reader, descriptor);
 			ReadCustomAttributes(reader, descriptor);
 
@@ -2116,17 +2116,23 @@ namespace Sustainsys.Saml2.Metadata
 			return org;
 		}
 
-		bool ParseBooleanValue(string v)
+		static bool ParseBooleanValue(string v)
 		{
 			if (String.Equals(v, "true", StringComparison.Ordinal))
 			{
 				return true;
 			}			if (String.Equals(v, "false", StringComparison.Ordinal))			{				return false;			}			throw new MetadataSerializationException($"Invalid boolean value '{v}'");		}
 
-		bool GetBooleanAttribute(XmlReader reader, string att, bool def)		{			string sv = reader.GetAttribute("WantAuthnRequestsSigned");
+		static bool? GetOptionalBooleanAttribute(XmlReader reader, string att)
+		{
+			string sv = reader.GetAttribute(att);
+			return String.IsNullOrEmpty(sv) ? (bool?)null : ParseBooleanValue(sv);
+		}
+
+		static bool GetBooleanAttribute(XmlReader reader, string att, bool def)		{			string sv = reader.GetAttribute(att);
 			return String.IsNullOrEmpty(sv) ? def : ParseBooleanValue(sv);
 		}
-		void ReadOptionalDateAttribute(XmlReader reader, string attribute, Action<DateTime> dateAction)
+		static void ReadOptionalDateAttribute(XmlReader reader, string attribute, Action<DateTime> dateAction)
 		{
 			string sv = reader.GetAttribute(attribute);
 			if (!String.IsNullOrEmpty(sv))
@@ -2141,7 +2147,7 @@ namespace Sustainsys.Saml2.Metadata
 			}
 		}
 
-		void ReadOptionalTimespanAttribute(XmlReader reader, 
+		static void ReadOptionalTimespanAttribute(XmlReader reader, 
 			string attribute, Action<TimeSpan> durationAction)
 		{
 			string sv = reader.GetAttribute(attribute);
@@ -2334,7 +2340,7 @@ namespace Sustainsys.Saml2.Metadata
 		//   </extension>
 		// </complexContent>
 		// </complexType>
-		protected virtual RequestedAttribute ReadRequestedAttribute(XmlReader reader)		{			var attribute = ReadSamlAttributeType(reader, CreateRequestedAttributeInstance);			attribute.IsRequired = GetBooleanAttribute(reader, "isRequired", false);
+		protected virtual RequestedAttribute ReadRequestedAttribute(XmlReader reader)		{			var attribute = ReadSamlAttributeType(reader, CreateRequestedAttributeInstance);			attribute.IsRequired = GetOptionalBooleanAttribute(reader, "isRequired");
 			ReadCustomAttributes(reader, attribute);
 			return attribute;
 		}
@@ -2352,28 +2358,11 @@ namespace Sustainsys.Saml2.Metadata
 		// </complexType>
 		// <element name="ServiceName" type="md:localizedNameType"/>
 		// <element name="ServiceDescription" type="md:localizedNameType"/>
-		protected virtual AttributeConsumingService2 ReadAttributeConsumingService(XmlReader reader)
+		protected virtual AttributeConsumingService ReadAttributeConsumingService(XmlReader reader)
 		{
 			var acs = CreateAttributeConsumingServiceInstance();
 
-			string sv = reader.GetAttribute("index");
-			if (String.IsNullOrEmpty(sv))
-			{
-				throw new MetadataSerializationException("AttributeConsumingService element missing index attribute");
-			}
-
-			int index;
-			if (!Int32.TryParse(sv, out index))
-			{
-				throw new MetadataSerializationException($"AttributeConsumingService element with invalid index attribute '{index}'");
-			}
-			acs.Index = index;
-
-			sv = reader.GetAttribute("isDefault");
-			if (!String.IsNullOrEmpty(sv))
-			{
-				acs.IsDefault = ParseBooleanValue(sv);
-			}
+			ReadIndexedEndpointAttributes(reader, acs);
 
 			ReadCustomAttributes(reader, acs);
 
@@ -2516,8 +2505,8 @@ namespace Sustainsys.Saml2.Metadata
 		{
 			if (reader.IsStartElement("ArtifactResolutionService", Saml2MetadataNs))
 			{
-				descriptor.ArtifactResolutionServices.Add(
-					ReadArtifactResolutionService(reader));
+				AddIndexedEntry(descriptor.ArtifactResolutionServices,
+					ReadArtifactResolutionService(reader), "ArtifactResolutionService");
 			}
 			else if (reader.IsStartElement("SingleLogoutService", Saml2MetadataNs))
 			{
@@ -2641,12 +2630,7 @@ namespace Sustainsys.Saml2.Metadata
 				throw new MetadataSerializationException($"IndexedEndpoint element with invalid index attribute '{index}'");
 			}
 			endpoint.Index = index;
-
-			sv = reader.GetAttribute("isDefault");
-			if (!String.IsNullOrEmpty(sv))
-			{
-				endpoint.IsDefault = ParseBooleanValue(sv);
-			}
+			endpoint.IsDefault = GetOptionalBooleanAttribute(reader, "isDefault");
 		}
 
 		// <complexType name="IndexedEndpoint">
@@ -2662,7 +2646,6 @@ namespace Sustainsys.Saml2.Metadata
 			var endpoint = createInstance();
 			ReadIndexedEndpointAttributes(reader, endpoint);
 			ReadCustomAttributes(reader, endpoint);
-			//SkipElement(reader);
 			ReadChildren(reader, () => false);
 			return endpoint;
 		}
@@ -3259,7 +3242,7 @@ namespace Sustainsys.Saml2.Metadata
 		{
 			foreach (string value in values)
 			{
-				writer.WriteElementString(elName, elName, value);
+				writer.WriteElementString(elName, elNs, value);
 			}
 		}
 
@@ -3352,7 +3335,7 @@ namespace Sustainsys.Saml2.Metadata
 			writer.WriteStartElement(name, ns);
 			WriteEndpointAttributes(writer, endpoint);
 			WriteBooleanAttribute(writer, "isDefault", null, endpoint.IsDefault);
-			writer.WriteAttributeString("Index", endpoint.Index.ToString());
+			writer.WriteAttributeString("index", endpoint.Index.ToString());
 			WriteCustomAttributes(writer, endpoint);
 			WriteCustomElements(writer, endpoint);
 			writer.WriteEndElement();
@@ -4556,6 +4539,21 @@ namespace Sustainsys.Saml2.Metadata
 			{
 				throw new ArgumentNullException(nameof(organization));
 			}
+			if (organization.Names.Count == 0)
+			{
+				throw new MetadataSerializationException(
+					"An organisation must have at least one Name property");
+			}
+			if (organization.DisplayNames.Count == 0)
+			{
+				throw new MetadataSerializationException(
+					"An organisation must have at least one DisplayName property");
+			}
+			if (organization.Urls.Count == 0)
+			{
+				throw new MetadataSerializationException(
+					"An organisation must have at least one Url property");
+			}
 
 			writer.WriteStartElement("Organization", Saml2MetadataNs);
 			WriteCustomAttributes(writer, organization);
@@ -4693,7 +4691,7 @@ namespace Sustainsys.Saml2.Metadata
 			writer.WriteEndElement();
 		}
 
-		protected virtual void WriteAttributeConsumingService(XmlWriter writer, AttributeConsumingService2 service)
+		protected virtual void WriteAttributeConsumingService(XmlWriter writer, AttributeConsumingService service)
 		{
 			if (writer == null)
 			{
@@ -4774,15 +4772,13 @@ namespace Sustainsys.Saml2.Metadata
 		void WriteSsoDescriptorElements(XmlWriter writer, SsoDescriptor descriptor, bool writeExtensions)
 		{
 			WriteRoleDescriptorElements(writer, descriptor, writeExtensions);
-			WriteIndexedEndpoints(writer, descriptor.ArtifactResolutionServices,
+			WriteIndexedEndpoints(writer, descriptor.ArtifactResolutionServices.Values,
 				"ArtifactResolutionService", Saml2MetadataNs);
 			WriteEndpoints(writer, descriptor.SingleLogoutServices,
 				"SingleLogoutService", Saml2MetadataNs);
 			WriteEndpoints(writer, descriptor.ManageNameIDServices,
 				"ManageNameIDService", Saml2MetadataNs);
 			WriteCollection(writer, descriptor.NameIdentifierFormats, WriteNameIDFormat);
-			WriteEndpoints(writer, descriptor.ArtifactResolutionServices,
-				"ArtifactResolutionService", Saml2MetadataNs);
 			WriteCustomElements(writer, descriptor);
 		}
 

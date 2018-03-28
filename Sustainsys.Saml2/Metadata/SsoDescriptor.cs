@@ -5,8 +5,8 @@ namespace Sustainsys.Saml2.Metadata
 {
 	public class SsoDescriptor : RoleDescriptor
     {
-		public ICollection<ArtifactResolutionService> ArtifactResolutionServices { get; private set; } =
-			new Collection<ArtifactResolutionService>();
+		public IndexedCollectionWithDefault<ArtifactResolutionService> ArtifactResolutionServices
+			{ get; private set; } = new IndexedCollectionWithDefault<ArtifactResolutionService>();
 		public ICollection<SingleLogoutService> SingleLogoutServices { get; private set; } =
 			new Collection<SingleLogoutService>();
 		public ICollection<ManageNameIDService> ManageNameIDServices { get; private set; } =

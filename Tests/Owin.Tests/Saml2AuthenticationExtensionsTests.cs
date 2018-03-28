@@ -27,7 +27,7 @@ namespace Sustainsys.Saml2.Owin.Tests
         {
             Action a = () => ((IAppBuilder)null).UseSaml2Authentication(null);
 
-            a.ShouldThrow<ArgumentNullException>("app");
+            a.Should().Throw<ArgumentNullException>("app");
         }
     }
 }

@@ -100,10 +100,8 @@ namespace Sustainsys.Saml2.WebSso
         {
             var principal = new ClaimsPrincipal(samlResponse.GetClaims(options));
 
-			#if TODO
             principal = options.SPOptions.SystemIdentityModelIdentityConfiguration
                 .ClaimsAuthenticationManager.Authenticate(null, principal);
-			#endif
 
             if(options.SPOptions.ReturnUrl == null)
             {

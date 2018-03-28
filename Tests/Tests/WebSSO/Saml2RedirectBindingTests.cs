@@ -14,6 +14,7 @@ using System.Text;
 using Sustainsys.Saml2.Exceptions;
 using System.Security.Cryptography.Xml;
 using Sustainsys.Saml2.Configuration;
+using Sustainsys.Saml2.Internal;
 using Sustainsys.Saml2.Tokens;
 using Sustainsys.Saml2.TestHelpers;
 
@@ -236,7 +237,8 @@ namespace Sustainsys.Saml2.Tests.WebSso
             var signedData = query.Split(new[] { "&Signature=" }, StringSplitOptions.None)[0];
 
             var sigalg = queryParams["SigAlg"];
-            var signatureDescription = (SignatureDescription)CryptoConfig.CreateFromName(sigalg);
+            var signatureDescription = (SignatureDescription)CryptographyExtensions
+				.CreateAlgorithmFromName(sigalg);
 
             var hashAlg = signatureDescription.CreateDigest();
             hashAlg.ComputeHash(Encoding.UTF8.GetBytes(signedData));

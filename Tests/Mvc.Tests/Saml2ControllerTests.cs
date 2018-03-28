@@ -1,4 +1,5 @@
 ﻿using System;
+using Microsoft.IdentityModel.Tokens.Saml2;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using FluentAssertions;
 using System.Text;
@@ -13,10 +14,9 @@ using NSubstitute;
 using System.Web.Mvc;
 using System.Web;
 using Sustainsys.Saml2.Configuration;
-using System.IdentityModel.Metadata;
+using Sustainsys.Saml2.Metadata;
 using Sustainsys.Saml2.WebSso;
 using System.Web.Security;
-using System.IdentityModel.Tokens;
 using System.Web.Routing;
 
 namespace Sustainsys.Saml2.Mvc.Tests
@@ -85,7 +85,7 @@ namespace Sustainsys.Saml2.Mvc.Tests
             };
 
             var actual = subject.Invoking(s => s.SignIn())
-                .ShouldThrow<NotSupportedException>();
+                .Should().Throw<NotSupportedException>();
         }
 
         [TestMethod]
@@ -165,7 +165,7 @@ namespace Sustainsys.Saml2.Mvc.Tests
                 Url = Saml2Controller.Options.SPOptions.ReturnUrl.OriginalString
             };
 
-            controller.Acs().As<RedirectResult>().ShouldBeEquivalentTo(expected);
+            controller.Acs().As<RedirectResult>().Should().BeEquivalentTo(expected);
 
             controller.Response.Received().SetCookie(
                 Arg.Is<HttpCookie>(c => c.Expires.Year == 1970));
@@ -220,7 +220,7 @@ namespace Sustainsys.Saml2.Mvc.Tests
             };
 
             subject.Invoking(s => s.Acs())
-                .ShouldThrow<NotSupportedException>();
+                .Should().Throw<NotSupportedException>();
         }
 
         [TestMethod]
@@ -245,7 +245,7 @@ namespace Sustainsys.Saml2.Mvc.Tests
             };
 
             subject.Invoking(s => s.Index())
-                .ShouldThrow<NotSupportedException>();
+                .Should().Throw<NotSupportedException>();
         }
 
         [TestMethod]
@@ -300,7 +300,7 @@ namespace Sustainsys.Saml2.Mvc.Tests
             };
 
             subject.Invoking(s => s.Logout())
-                .ShouldThrow<NotSupportedException>();
+                .Should().Throw<NotSupportedException>();
         }
 
         [TestMethod]

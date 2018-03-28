@@ -12,10 +12,10 @@ namespace Sustainsys.Saml2.Metadata
 	{
 		public IndexedCollectionWithDefault<AssertionConsumerService> AssertionConsumerServices { get; private set; } =
 			new IndexedCollectionWithDefault<AssertionConsumerService>();
-		public IndexedCollectionWithDefault<AttributeConsumingService2> AttributeConsumingServices { get; private set; } =
-			new IndexedCollectionWithDefault<AttributeConsumingService2>();
-		public bool AuthnRequestsSigned { get; set; }
-		public bool WantAssertionsSigned { get; set; }
+		public IndexedCollectionWithDefault<AttributeConsumingService> AttributeConsumingServices { get; private set; } =
+			new IndexedCollectionWithDefault<AttributeConsumingService>();
+		public bool? AuthnRequestsSigned { get; set; }
+		public bool? WantAssertionsSigned { get; set; }
 		public IndexedCollectionWithDefault<DiscoveryResponse> DiscoveryResponses { get; private set; } =
 			new IndexedCollectionWithDefault<DiscoveryResponse>();
 	}

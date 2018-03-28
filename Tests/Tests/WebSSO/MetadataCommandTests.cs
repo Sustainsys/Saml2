@@ -83,9 +83,9 @@ namespace Sustainsys.Saml2.Tests.WebSso
             + "</AttributeConsumingService>"
             + "</SPSSODescriptor>"
             + "<Organization>"
-            + "<OrganizationName xml:lang=\"\">Sustainsys.Saml2</OrganizationName>"
-            + "<OrganizationDisplayName xml:lang=\"\">Sustainsys Saml2</OrganizationDisplayName>"
-            + "<OrganizationURL xml:lang=\"\">http://github.com/SustainsysIT/Saml2</OrganizationURL>"
+            + "<OrganizationName xml:lang=\"en\">Sustainsys.Saml2</OrganizationName>"
+            + "<OrganizationDisplayName xml:lang=\"en\">Sustainsys Saml2</OrganizationDisplayName>"
+            + "<OrganizationURL xml:lang=\"en\">http://github.com/SustainsysIT/Saml2</OrganizationURL>"
             + "</Organization>"
             + "<ContactPerson contactType=\"support\">"
             + "<Company>Sustainsys</Company>"
@@ -116,22 +116,28 @@ namespace Sustainsys.Saml2.Tests.WebSso
 
             XDocument subject = XDocument.Parse(result.Content);
 
-            // Ignore the ID attribute, it is just filled with a GUID that can't be easily tested.
-            subject.Root.Attribute("ID").Remove();
+			// Ignore the ID attribute, it is just filled with a GUID that can't be easily tested.
+			var att = subject.Root.Attribute("ID");
+			if (att != null)
+			{
+				att.Remove();
+			}
 
-            var expectedXml = new XDocument(new XElement(Saml2Namespaces.Saml2Metadata + "EntityDescriptor",
-                new XAttribute("entityID", "http://localhost/Saml2"),
-                new XAttribute("cacheDuration", "PT1H"),
-                // Have to manually add the xmlns attribute here, as it will be present in the subject
-                // data and the xml tree comparison will fail if it is not present in both. Just setting the 
-                // namespace of the elements does not inject the xmlns attribute into the node tree. It is
-                // only done when outputting a string.
-                // See http://stackoverflow.com/questions/24156689/xnode-deepequals-unexpectedly-returns-false
-                new XAttribute(XNamespace.Xmlns + "saml2", Saml2Namespaces.Saml2),
-                new XAttribute("xmlns", Saml2Namespaces.Saml2MetadataName),
-                new XElement(Saml2Namespaces.Saml2Metadata + "SPSSODescriptor",
-                    new XAttribute("protocolSupportEnumeration", "urn:oasis:names:tc:SAML:2.0:protocol"),
-                    new XElement(Saml2Namespaces.Saml2Metadata + "AssertionConsumerService",
+			var expectedXml = new XDocument(new XElement(Saml2Namespaces.Saml2Metadata + "EntityDescriptor",
+				new XAttribute("entityID", "http://localhost/Saml2"),
+				new XAttribute("cacheDuration", "PT1H"),
+				// Have to manually add the xmlns attribute here, as it will be present in the subject
+				// data and the xml tree comparison will fail if it is not present in both. Just setting the 
+				// namespace of the elements does not inject the xmlns attribute into the node tree. It is
+				// only done when outputting a string.
+				// See http://stackoverflow.com/questions/24156689/xnode-deepequals-unexpectedly-returns-false
+				new XAttribute(XNamespace.Xmlns + "saml2", Saml2Namespaces.Saml2),
+				new XAttribute("xmlns", Saml2Namespaces.Saml2MetadataName),
+				new XElement(Saml2Namespaces.Saml2Metadata + "SPSSODescriptor",
+					new XAttribute("protocolSupportEnumeration", "urn:oasis:names:tc:SAML:2.0:protocol"),
+					new XAttribute("AuthnRequestsSigned", false),
+					new XAttribute("WantAssertionsSigned", false),
+					new XElement(Saml2Namespaces.Saml2Metadata + "AssertionConsumerService",
                         new XAttribute("Binding", Saml2Binding.HttpPostUri),
                         new XAttribute("Location", "http://localhost/Saml2/Acs"),
                         new XAttribute("index", 0),
@@ -154,7 +160,8 @@ namespace Sustainsys.Saml2.Tests.WebSso
 
             Action a = () => new MetadataCommand().Run(request, options);
 
-            a.Should().Throw<MetadataSerializationException>().And.Message.Should().StartWith("ID3203");
+            a.Should().Throw<MetadataSerializationException>().And.Message.Should().StartWith(
+				"An organisation");
         }
 
         [TestMethod]

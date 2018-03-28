@@ -1,17 +1,14 @@
-﻿using Microsoft.IdentityModel.Tokens.Saml2;
+﻿using Microsoft.IdentityModel.Tokens;
+using Microsoft.IdentityModel.Tokens.Saml2;
 using Sustainsys.Saml2.Configuration;
 using Sustainsys.Saml2.Internal;
-using System;
-using System.Collections.Generic;
-using System.Security.Claims;
 using Sustainsys.Saml2.Tokens;
+using System;
+using System.Linq;
+using System.Security.Claims;
 
 namespace Sustainsys.Saml2.Saml2P
 {
-	using System.Linq;
-	using System.Xml;
-	using Microsoft.IdentityModel.Tokens;
-
 	/// <summary>
 	/// Somewhat ugly subclassing to be able to access some methods that are protected
 	/// on Saml2SecurityTokenHandler. The public interface of Saml2SecurityTokenHandler
@@ -40,35 +37,22 @@ namespace Sustainsys.Saml2.Saml2P
 	        Configuration = new SecurityTokenHandlerConfiguration
             {
                 IssuerNameRegistry = new ReturnRequestedIssuerNameRegistry(),
-//                AudienceRestriction = GetAudienceRestriction(spOptions),
+                AudienceRestriction = GetAudienceRestriction(spOptions),
                 SaveBootstrapContext = spOptions.SystemIdentityModelIdentityConfiguration.SaveBootstrapContext
             };
 	        this.spOptions = spOptions;
+
+			Serializer = new Saml2PSerializer(spOptions);
         }
 
 		protected override Saml2Conditions CreateConditions(SecurityTokenDescriptor tokenDescriptor)
 		{
 			var conditions = base.CreateConditions(tokenDescriptor);
 			conditions.AudienceRestrictions.Clear();
-
-			/// Check if an audience restriction from configuration should be
-			/// applied or if we should revert to the default behaviour of
-			/// restricting the audience to the entity id.
-			var audienceRestriction = spOptions.SystemIdentityModelIdentityConfiguration.AudienceRestriction;
-
-			if (audienceRestriction.AudienceMode != AudienceUriMode.Never
-				&& !audienceRestriction.AllowedAudienceUris.Any())
-			{
-				// Create a new instance instead of modifying the one from the
-				// configuration.
-				audienceRestriction = new AudienceRestriction(audienceRestriction.AudienceMode);
-				audienceRestriction.AllowedAudienceUris.Add(new Uri(spOptions.EntityId.Id));
-			}
 			conditions.AudienceRestrictions.Add(
-				new Saml2AudienceRestriction(audienceRestriction.AllowedAudienceUris.Select(x => x.ToString())));
-
+				new Saml2AudienceRestriction(Configuration.AudienceRestriction
+					.AllowedAudienceUris.Select(x => x.ToString())));
 			return conditions;
-
 		}
 
 		/// <summary>
@@ -112,23 +96,6 @@ namespace Sustainsys.Saml2.Saml2P
 #endif
 
 #if TODO
-        /// <summary>
-        /// Read the authentication context section from the underlying xml
-        /// </summary>
-        /// <param name="reader">Conditions to check</param>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1062:Validate arguments of public methods", MessageId = "0")]
-        protected override Saml2AuthenticationContext ReadAuthenticationContext(System.Xml.XmlReader reader)
-        {
-            if (spOptions.Compatibility.IgnoreAuthenticationContextInResponse)
-            {
-                reader.Skip();
-                return new Saml2AuthenticationContext();
-            }
-            return base.ReadAuthenticationContext(reader);
-        }
-		// ?? protected virtual Saml2AuthenticationStatement CreateAuthenticationStatement(AuthenticationInformation authenticationInformation)
-#endif
-
 		public override SecurityToken ReadToken(XmlReader reader, TokenValidationParameters validationParameters)
 		{
 			var token = new Saml2SecurityToken(Serializer.ReadAssertion(reader));
@@ -152,6 +119,7 @@ namespace Sustainsys.Saml2.Saml2P
 		{
 			return base.CreateClaimsIdentity(samlToken, issuer, validationParameters);
 		}
+#endif
 
 		/// <summary>
 		/// Process authentication statement from SAML assertion. WIF chokes if the authentication statement 
@@ -195,7 +163,12 @@ namespace Sustainsys.Saml2.Saml2P
             }
         }
 
-		#if FALSE
+		protected override Saml2SecurityToken ValidateSignature(string token, TokenValidationParameters validationParameters)
+		{
+			// Just skip signature validation -- we do this elsewhere
+			return ReadSaml2Token(token);
+		}
+
         /// <summary>
         /// Check if an audience restriction from configuration should be
         /// applied or if we should revert to the default behaviour of
@@ -208,7 +181,7 @@ namespace Sustainsys.Saml2.Saml2P
             var audienceRestriction = spOptions.SystemIdentityModelIdentityConfiguration.AudienceRestriction;
 
             if (audienceRestriction.AudienceMode != AudienceUriMode.Never
-                && ! audienceRestriction.AllowedAudienceUris.Any())
+                && !audienceRestriction.AllowedAudienceUris.Any())
             {
                 // Create a new instance instead of modifying the one from the
                 // configuration.
@@ -218,6 +191,5 @@ namespace Sustainsys.Saml2.Saml2P
 
             return audienceRestriction;
         }
-		#endif
     }
 }

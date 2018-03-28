@@ -77,7 +77,7 @@ namespace Sustainsys.Saml2.AspNetCore2.Tests
 
             var actual = context.ToHttpRequestData(StubDataProtector.Unprotect);
 
-            actual.StoredRequestState.ShouldBeEquivalentTo(storedRequestState);
+            actual.StoredRequestState.Should().BeEquivalentTo(storedRequestState);
         }
 
         [TestMethod]
@@ -87,7 +87,7 @@ namespace Sustainsys.Saml2.AspNetCore2.Tests
             context.Request.QueryString = new QueryString("?RelayState=SomeState");
 
             context.Invoking(c => c.ToHttpRequestData(null))
-                .ShouldNotThrow();
+                .Should().NotThrow();
         }
 
         [TestMethod]

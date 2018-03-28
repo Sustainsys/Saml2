@@ -106,7 +106,7 @@ namespace Sustainsys.Saml2.Tests.Configuration
 
 			var subject = spOptions.CreateMetadata(urls).RoleDescriptors
 				.Single().As<SpSsoDescriptor>()
-				.DiscoveryResponses.Single();
+				.DiscoveryResponses.Values.Single();
 
             var expected = new DiscoveryResponse
             {
@@ -125,7 +125,7 @@ namespace Sustainsys.Saml2.Tests.Configuration
             var spOptions = StubFactory.CreateSPOptions();
             var urls = StubFactory.CreateSaml2Urls();
 
-			var attributeConsumingService = new AttributeConsumingService2();
+			var attributeConsumingService = new AttributeConsumingService();
 			attributeConsumingService.ServiceNames.Add(
 				new LocalizedName("Name", "en"));
 
@@ -139,7 +139,7 @@ namespace Sustainsys.Saml2.Tests.Configuration
                 .Cast<SpSsoDescriptor>()
                 .First();
 
-            subject.AttributeConsumingServices.First().Should().BeSameAs(attributeConsumingService);
+            subject.AttributeConsumingServices.Values.First().Should().BeSameAs(attributeConsumingService);
         }
     }
 }

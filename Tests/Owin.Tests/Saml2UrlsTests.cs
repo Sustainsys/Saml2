@@ -17,8 +17,10 @@ namespace Sustainsys.Saml2.Owin.Tests
             var options = StubFactory.CreateOptionsPublicOrigin(new Uri("https://my.public.origin:8443/"));
             var subject = await ctx.ToHttpRequestData(null);
             var urls = new Saml2Urls(subject, options);
-            urls.AssertionConsumerServiceUrl.ShouldBeEquivalentTo("https://my.public.origin:8443/Saml2/Acs");
-            urls.SignInUrl.ShouldBeEquivalentTo("https://my.public.origin:8443/Saml2/SignIn");
+            urls.AssertionConsumerServiceUrl.Should().BeEquivalentTo(
+				new Uri("https://my.public.origin:8443/Saml2/Acs"));
+            urls.SignInUrl.Should().BeEquivalentTo(
+				new Uri("https://my.public.origin:8443/Saml2/SignIn"));
         }
     }
 }

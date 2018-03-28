@@ -275,13 +275,13 @@ namespace Sustainsys.Saml2.Configuration
         /// <summary>
         /// Attribute consuming services.
         /// </summary>
-        public IEnumerable<AttributeConsumingService2> AttributeConsumingServices
+        public IEnumerable<AttributeConsumingService> AttributeConsumingServices
         {
             get
             {
                 if (Metadata.RequestedAttributes.Any())
                 {
-                    var acs = new AttributeConsumingService2
+                    var acs = new AttributeConsumingService
                     {
                         IsDefault = true
                     };
@@ -394,5 +394,17 @@ namespace Sustainsys.Saml2.Configuration
                 return (CompatibilityElement)base[compatibility];
             }
         }
-    }
+
+		/// <summary>
+		/// Set of identity configurations known to the service provider.
+		/// </summary>
+		[ConfigurationProperty("identityConfigurations")]
+		public IdentityConfigurationsElement IdentityConfigurations
+		{
+			get
+			{
+				return (IdentityConfigurationsElement)base["identityConfigurations"];
+			}
+		}
+	}
 }

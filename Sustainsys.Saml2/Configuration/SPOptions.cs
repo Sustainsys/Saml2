@@ -213,12 +213,13 @@ namespace Sustainsys.Saml2.Configuration
             }
         }
 
-        readonly ICollection<AttributeConsumingService2> attributeConsumingServices = new List<AttributeConsumingService2>();
+        readonly ICollection<AttributeConsumingService> attributeConsumingServices
+			= new List<AttributeConsumingService>();
 
         /// <summary>
         /// Collection of attribute consuming services for the service provider.
         /// </summary>
-        public ICollection<AttributeConsumingService2> AttributeConsumingServices
+        public ICollection<AttributeConsumingService> AttributeConsumingServices
         {
             get
             {

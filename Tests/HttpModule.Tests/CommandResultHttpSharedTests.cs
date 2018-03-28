@@ -16,7 +16,7 @@ namespace Sustainsys.Saml2.HttpModule.Tests
         {
             ((CommandResult)null)
                 .Invoking(cr => cr.ApplyCookies(Substitute.For<HttpResponseBase>()))
-                .ShouldThrow<ArgumentNullException>()
+                .Should().Throw<ArgumentNullException>()
                 .And.ParamName.Should().Be("commandResult");
         }
 
@@ -25,7 +25,7 @@ namespace Sustainsys.Saml2.HttpModule.Tests
         {
             new CommandResult()
                 .Invoking(cr => cr.ApplyCookies(null))
-                .ShouldThrow<ArgumentNullException>()
+                .Should().Throw<ArgumentNullException>()
                 .And.ParamName.Should().Be("response");
         }
     }

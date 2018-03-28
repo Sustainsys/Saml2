@@ -1,0 +1,182 @@
+﻿using static Microsoft.IdentityModel.Logging.LogHelper;
+using Microsoft.IdentityModel.Tokens.Saml2;
+using Microsoft.IdentityModel.Xml;
+using Sustainsys.Saml2.Configuration;
+using System;
+using System.Globalization;
+using System.Xml;
+
+namespace Sustainsys.Saml2.Saml2P
+{
+	/// <summary>
+	/// Log messages and codes for Saml2Processing
+	/// </summary>
+	internal static class LogMessages
+	{
+#pragma warning disable 1591
+		// SamlSerializing reading
+		internal const string IDX13102 = "IDX13102: Exception thrown while reading '{0}' for Saml2SecurityToken. Inner exception: '{1}'.";
+		internal const string IDX13106 = "IDX13106: Unable to read for Saml2SecurityToken. Element: '{0}' as missing Attribute: '{1}'.";
+		internal const string IDX13108 = "IDX13108: When reading '{0}', Assertion.Subject is null and no Statements were found. [Saml2Core, line 585].";
+		internal const string IDX13109 = "IDX13109: When reading '{0}', Assertion.Subject is null and an Authentication, Attribute or AuthorizationDecision Statement was found. and no Statements were found. [Saml2Core, lines 1050, 1168, 1280].";
+		internal const string IDX13137 = "IDX13137: Unable to read for Saml2SecurityToken. Version must be '2.0' was: '{0}'.";
+		internal const string IDX13141 = "IDX13141: EncryptedAssertion is not supported. You will need to override ReadAssertion and provide support.";
+#pragma warning restore 1591
+	}
+
+	class Saml2PSerializer : Saml2Serializer
+	{
+		SPOptions spOptions;
+
+		public Saml2PSerializer(SPOptions spOptions)
+		{
+			this.spOptions = spOptions;
+		}
+
+		/// <summary>
+		/// Reads a &lt;saml:Assertion> element.
+		/// </summary>
+		/// <param name="reader">A <see cref="XmlReader"/> positioned at a <see cref="Saml2Assertion"/> element.</param>
+		/// <exception cref="ArgumentNullException">if <paramref name="reader"/> is null.</exception>
+		/// <exception cref="NotSupportedException">if assertion is encrypted.</exception>
+		/// <exception cref="Saml2SecurityTokenReadException">If <paramref name="reader"/> is not positioned at a Saml2Assertion.</exception>
+		/// <exception cref="Saml2SecurityTokenReadException">If Version is not '2.0'.</exception>
+		/// <exception cref="Saml2SecurityTokenReadException">If 'Id' is missing.</exception>>
+		/// <exception cref="Saml2SecurityTokenReadException">If 'IssueInstant' is missing.</exception>>
+		/// <exception cref="Saml2SecurityTokenReadException">If no statements are found.</exception>>
+		/// <returns>A <see cref="Saml2Assertion"/> instance.</returns>
+		public override Saml2Assertion ReadAssertion(XmlReader reader)
+		{
+			if (reader.IsStartElement(Saml2Constants.Elements.EncryptedAssertion, Saml2Constants.Namespace))
+				throw LogExceptionMessage(new NotSupportedException(LogMessages.IDX13141));
+
+			XmlUtil.CheckReaderOnEntry(reader, Saml2Constants.Elements.Assertion, Saml2Constants.Namespace);
+
+			var envelopeReader = new EnvelopedSignatureReader(reader);
+			var assertion = new Saml2Assertion(new Saml2NameIdentifier("__TemporaryIssuer__"));
+			try
+			{
+				// @xsi:type
+				XmlUtil.ValidateXsiType(envelopeReader, Saml2Constants.Types.AssertionType, Saml2Constants.Namespace);
+
+				// @Version - required - must be "2.0"
+				string version = envelopeReader.GetAttribute(Saml2Constants.Attributes.Version);
+				if (string.IsNullOrEmpty(version))
+					throw LogReadException(LogMessages.IDX13106, Saml2Constants.Elements.Assertion, Saml2Constants.Attributes.Version);
+
+				if (!StringComparer.Ordinal.Equals(Saml2Constants.Version, version))
+					throw LogReadException(LogMessages.IDX13137, version);
+
+				// @ID - required
+				string value = envelopeReader.GetAttribute(Saml2Constants.Attributes.ID);
+				if (string.IsNullOrEmpty(value))
+					throw LogReadException(LogMessages.IDX13106, Saml2Constants.Elements.Assertion, Saml2Constants.Attributes.ID);
+
+				assertion.Id = new Saml2Id(value);
+
+				// @IssueInstant - required
+				value = envelopeReader.GetAttribute(Saml2Constants.Attributes.IssueInstant);
+				if (string.IsNullOrEmpty(value))
+					throw LogReadException(LogMessages.IDX13106, Saml2Constants.Elements.Assertion, Saml2Constants.Attributes.IssueInstant);
+
+				assertion.IssueInstant = DateTime.ParseExact(value, Saml2Constants.AcceptedDateTimeFormats, DateTimeFormatInfo.InvariantInfo, DateTimeStyles.None).ToUniversalTime();
+
+				// will move to next element
+				// <ds:Signature> 0-1 read by EnvelopedSignatureReader
+				envelopeReader.Read();
+
+				// <Issuer> 1
+				assertion.Issuer = ReadIssuer(envelopeReader);
+
+				// <Subject> 0-1
+				if (envelopeReader.IsStartElement(Saml2Constants.Elements.Subject, Saml2Constants.Namespace))
+					assertion.Subject = ReadSubject(envelopeReader);
+
+				// <Conditions> 0-1
+				if (envelopeReader.IsStartElement(Saml2Constants.Elements.Conditions, Saml2Constants.Namespace))
+					assertion.Conditions = ReadConditions(envelopeReader);
+
+				// <Advice> 0-1
+				if (envelopeReader.IsStartElement(Saml2Constants.Elements.Advice, Saml2Constants.Namespace))
+					assertion.Advice = ReadAdvice(envelopeReader);
+
+				// <Statement|AuthnStatement|AuthzDecisionStatement|AttributeStatement>, 0-OO
+				while (envelopeReader.IsStartElement())
+				{
+					Saml2Statement statement;
+
+					if (envelopeReader.IsStartElement(Saml2Constants.Elements.Statement, Saml2Constants.Namespace))
+						statement = ReadStatement(envelopeReader);
+					else if (envelopeReader.IsStartElement(Saml2Constants.Elements.AttributeStatement, Saml2Constants.Namespace))
+						statement = ReadAttributeStatement(envelopeReader);
+					else if (envelopeReader.IsStartElement(Saml2Constants.Elements.AuthnStatement, Saml2Constants.Namespace))
+					{
+						if (spOptions.Compatibility.IgnoreAuthenticationContextInResponse)
+						{
+							envelopeReader.Skip();
+							continue;
+						}
+						statement = ReadAuthenticationStatement(envelopeReader);
+					}
+					else if (envelopeReader.IsStartElement(Saml2Constants.Elements.AuthzDecisionStatement, Saml2Constants.Namespace))
+						statement = ReadAuthorizationDecisionStatement(envelopeReader);
+					else
+						break;
+
+					assertion.Statements.Add(statement);
+				}
+
+				envelopeReader.ReadEndElement();
+				if (assertion.Subject == null)
+				{
+					// An assertion with no statements MUST contain a <Subject> element. [Saml2Core, line 585]
+					if (0 == assertion.Statements.Count)
+						throw LogReadException(LogMessages.IDX13108, Saml2Constants.Elements.Assertion);
+
+					// Furthermore, the built-in statement types all require the presence of a subject.
+					// [Saml2Core, lines 1050, 1168, 1280]
+					foreach (Saml2Statement statement in assertion.Statements)
+					{
+						if (statement is Saml2AuthenticationStatement
+							|| statement is Saml2AttributeStatement
+							|| statement is Saml2AuthorizationDecisionStatement)
+						{
+							throw LogReadException(LogMessages.IDX13109, Saml2Constants.Elements.Assertion);
+						}
+					}
+				}
+
+				// attach signedXml for validation of signature
+				assertion.Signature = envelopeReader.Signature;
+				return assertion;
+			}
+			catch (Exception ex)
+			{
+				if (ex is Saml2SecurityTokenReadException)
+					throw;
+
+				throw LogReadException(LogMessages.IDX13102, ex, Saml2Constants.Elements.Assertion, ex);
+			}
+		}
+
+		internal static Exception LogReadException(string message)
+		{
+			return LogExceptionMessage(new Saml2SecurityTokenReadException(message));
+		}
+
+		internal static Exception LogReadException(string message, Exception ex)
+		{
+			return LogExceptionMessage(new Saml2SecurityTokenReadException(message, ex));
+		}
+
+		internal static Exception LogReadException(string format, params object[] args)
+		{
+			return LogExceptionMessage(new Saml2SecurityTokenReadException(FormatInvariant(format, args)));
+		}
+
+		internal static Exception LogReadException(string format, Exception inner, params object[] args)
+		{
+			return LogExceptionMessage(new Saml2SecurityTokenReadException(FormatInvariant(format, args), inner));
+		}
+	}
+}

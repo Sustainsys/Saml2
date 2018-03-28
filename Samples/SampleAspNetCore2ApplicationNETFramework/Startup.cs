@@ -11,8 +11,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using SampleAspNetCore2ApplicationNETFramework.Data;
 using SampleAspNetCore2ApplicationNETFramework.Services;
-using System.IdentityModel.Metadata;
 using Sustainsys.Saml2;
+using Sustainsys.Saml2.Metadata;
 using System.Security.Cryptography.X509Certificates;
 
 namespace SampleAspNetCore2ApplicationNETFramework

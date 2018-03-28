@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Security.Claims;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
@@ -58,23 +59,25 @@ namespace Sustainsys.Saml2.Configuration
 		/// &lt;System.IdentityModel> configuration element</exception>
 		public IdentityConfiguration(bool loadConfig)
 		{
-
-			/*if (loadConfig)
+			if (loadConfig)
 			{
-				SystemIdentityModelSection section = SystemIdentityModelSection.Current;
-
+				var section = SustainsysSaml2Section.Current;
 				if (section == null)
 				{
-					throw DiagnosticUtility.ThrowHelperInvalidOperation(SR.GetString(SR.ID7027));
+					throw new InvalidOperationException("No sustainsys.saml2 configuration element was found");
 				}
 
-				IdentityConfigurationElement element = section.IdentityConfigurationElements.GetElement(DefaultServiceName);
+				IdentityConfigurationElement element = section
+					.IdentityConfigurations
+					.IdentityConfigurationsCollection
+					.GetElement(DefaultServiceName);
 				LoadConfiguration(element);
 			}
 			else
 			{
 				LoadConfiguration(null);
-			}*/
+			}
+
 			//
 			// We start with a token handler collection manager that contains a single collection that includes the default
 			// handlers for the system.
@@ -83,9 +86,11 @@ namespace Sustainsys.Saml2.Configuration
 			//
 			// Ensure that the default usage collection always exists
 			//
-			serviceHandlerConfiguration = new SecurityTokenHandlerConfiguration();
-
-			serviceHandlerConfiguration.MaxClockSkew = DefaultMaxClockSkew;
+			if (serviceHandlerConfiguration == null)
+			{
+				serviceHandlerConfiguration = new SecurityTokenHandlerConfiguration();
+				serviceHandlerConfiguration.MaxClockSkew = DefaultMaxClockSkew;
+			}
 
 
 			/*if (!manager.ContainsKey(SecurityTokenHandlerCollectionManager.Usage.Default))
@@ -385,46 +390,24 @@ namespace Sustainsys.Saml2.Configuration
 
 			this.IsInitialized = true;
 		}
-
-		/// <summary>
-		/// Loads the settings for the IdentityConfiguration from the application or web configuration file.
-		/// </summary>
-		/// <remarks>
-		/// If there is no configuration file, or the named section does not exist, then no exception is thrown,
-		/// instead the class is loaded with a set of default values.
-		/// </remarks>
+		#endif
 		protected void LoadConfiguration(IdentityConfigurationElement element)
 		{
-
-			if (element != null)
+			if (element == null)
 			{
-				//
-				// Load the claims authentication manager
-				//
-				if (element.ClaimsAuthenticationManager.IsConfigured)
-				{
-					_claimsAuthenticationManager = GetClaimsAuthenticationManager(element);
-				}
-
-				//
-				// Load the claims authorization manager.
-				//
-				if (element.ClaimsAuthorizationManager.IsConfigured)
-				{
-					_claimsAuthorizationManager = CustomTypeElement.Resolve<ClaimsAuthorizationManager>(element.ClaimsAuthorizationManager);
-				}
-
-				//
-				// Load the service level Security Token Handler configuration
-				//
-				_serviceHandlerConfiguration = LoadHandlerConfiguration(element);
+				return;
 			}
 
-			//
-			// Reads handler configuration via LoadConfiguredHandlers. Do this last.
-			//
-			_securityTokenHandlerCollectionManager = LoadHandlers(element);
+			if (element.ClaimsAuthenticationManager.Type != null)
+			{
+				claimsAuthenticationManager = (ClaimsAuthenticationManager)Activator.CreateInstance(
+					element.ClaimsAuthenticationManager.Type);
+			}
+
+			serviceHandlerConfiguration = LoadHandlerConfiguration(element);
+			// ??? _securityTokenHandlerCollectionManager = LoadHandlers(element);
 		}
+		#if FALSE
 
 		/// <summary>
 		/// Loads the <see cref="SecurityTokenHandlerCollectionManager"/> defined for a given service.
@@ -536,40 +519,25 @@ namespace Sustainsys.Saml2.Configuration
 
 			return manager;
 		}
-
-		/// <summary>
-		/// Loads a SecurityTokenHandlerConfiguration using the elements directly under the ServiceElement.
-		/// </summary>
+		#endif
 		protected SecurityTokenHandlerConfiguration LoadHandlerConfiguration(IdentityConfigurationElement element)
 		{
-
-			SecurityTokenHandlerConfiguration handlerConfiguration = new SecurityTokenHandlerConfiguration();
-
-			try
+			SecurityTokenHandlerConfiguration handlerConfiguration = new SecurityTokenHandlerConfiguration()
 			{
-				if (element.ElementInformation.Properties[ConfigurationStrings.MaximumClockSkew].ValueOrigin != PropertyValueOrigin.Default)
-				{
-					handlerConfiguration.MaxClockSkew = element.MaximumClockSkew;
-				}
-				else
-				{
-					handlerConfiguration.MaxClockSkew = _serviceMaxClockSkew;
-				}
-			}
-			catch (ArgumentException inner)
-			{
-				throw DiagnosticUtility.ThrowHelperConfigurationError(element, ConfigurationStrings.MaximumClockSkew, inner);
-			}
+				MaxClockSkew = element.MaximumClockSkew,
+				SaveBootstrapContext = element.SaveBootstrapContext
+			};
 
-			if (element.AudienceUris.IsConfigured)
+			if (element.AudienceUris != null)
 			{
 				handlerConfiguration.AudienceRestriction.AudienceMode = element.AudienceUris.Mode;
-
 				foreach (AudienceUriElement audienceUriElement in element.AudienceUris)
 				{
-					handlerConfiguration.AudienceRestriction.AllowedAudienceUris.Add(new Uri(audienceUriElement.Value, UriKind.RelativeOrAbsolute));
+					handlerConfiguration.AudienceRestriction.AllowedAudienceUris.Add(
+						new Uri(audienceUriElement.Value, UriKind.RelativeOrAbsolute));
 				}
 			}
+			#if FALSE
 			if (element.Caches.IsConfigured)
 			{
 				if (element.Caches.TokenReplayCache.IsConfigured)
@@ -641,9 +609,10 @@ namespace Sustainsys.Saml2.Configuration
 				//
 				handlerConfiguration.TokenReplayCacheExpirationPeriod = element.TokenReplayDetection.ExpirationPeriod;
 			}
-
+			#endif
 			return handlerConfiguration;
 		}
+		#if FALSE
 
 		/// <summary>
 		/// Loads configuration elements pertaining to the <see cref="SecurityTokenHandlerCollection"/>
@@ -767,16 +736,17 @@ namespace Sustainsys.Saml2.Configuration
 
 			return handlerConfiguration;
 		}
-
+		#endif
 		/// <summary>
 		/// Gets or sets the maximum allowable time difference between the 
 		/// system clocks of the two parties that are communicating.
 		/// </summary>
 		public TimeSpan MaxClockSkew
 		{
-			get { return _serviceHandlerConfiguration.MaxClockSkew; }
-			set { _serviceHandlerConfiguration.MaxClockSkew = value; }
+			get { return serviceHandlerConfiguration.MaxClockSkew; }
+			set { serviceHandlerConfiguration.MaxClockSkew = value; }
 		}
+		#if FALSE
 
 		/// <summary>
 		/// Gets or sets the service name of this configuration.

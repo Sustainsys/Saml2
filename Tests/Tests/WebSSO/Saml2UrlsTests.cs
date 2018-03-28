@@ -142,8 +142,8 @@ namespace Sustainsys.Saml2.Tests.WebSso
                 return new Uri("https://special.public.origin/");
             };
             var urls = new Saml2Urls(new HttpRequestData("get", new Uri("http://servername/")), options);
-            urls.AssertionConsumerServiceUrl.Should().BeEquivalentTo("https://special.public.origin/Saml2/Acs");
-            urls.SignInUrl.Should().BeEquivalentTo("https://special.public.origin/Saml2/SignIn");
+            urls.AssertionConsumerServiceUrl.Should().BeEquivalentTo(new Uri("https://special.public.origin/Saml2/Acs"));
+            urls.SignInUrl.Should().BeEquivalentTo(new Uri("https://special.public.origin/Saml2/SignIn"));
         }
     }
 }

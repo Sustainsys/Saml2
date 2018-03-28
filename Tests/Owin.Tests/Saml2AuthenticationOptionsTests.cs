@@ -1,9 +1,9 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Sustainsys.Saml2.Metadata;
 using Sustainsys.Saml2.Owin;
 using FluentAssertions;
 using Microsoft.Owin.Security;
-using System.IdentityModel.Metadata;
 
 namespace Sustainsys.Saml2.Owin.Tests
 {
@@ -58,7 +58,7 @@ namespace Sustainsys.Saml2.Owin.Tests
                 var i = subject.IdentityProviders[new EntityId("http://idp.federation.example.com/metadata")];
             };
 
-            a.ShouldNotThrow();
+            a.Should().NotThrow();
         }
 
         [TestMethod]

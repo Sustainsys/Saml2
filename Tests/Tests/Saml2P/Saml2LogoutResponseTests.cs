@@ -21,7 +21,7 @@ namespace Sustainsys.Saml2.Tests.Saml2P
                 $@"<samlp:LogoutResponse 
                         xmlns:samlp=""urn:oasis:names:tc:SAML:2.0:protocol""
                         xmlns=""urn:oasis:names:tc:SAML:2.0:assertion""
-                        ID=""{subject.Id}""
+                        ID=""{subject.Id.Value}""
                         Version=""2.0""
                         IssueInstant=""{subject.IssueInstant.ToSaml2DateTimeString()}"">
                         <samlp:Status>
@@ -51,7 +51,7 @@ namespace Sustainsys.Saml2.Tests.Saml2P
             var expectedXml =
                 $@"<samlp:LogoutResponse xmlns:samlp=""urn:oasis:names:tc:SAML:2.0:protocol""
                     xmlns=""urn:oasis:names:tc:SAML:2.0:assertion""
-                    ID=""{subject.Id}""
+                    ID=""{subject.Id.Value}""
                     InResponseTo=""{subject.InResponseTo.Value}""
                     IssueInstant=""{subject.IssueInstant.ToSaml2DateTimeString()}"" Version=""2.0""
                     Destination=""https://IdentityProvider.com/Logout"">

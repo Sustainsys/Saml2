@@ -91,10 +91,10 @@ namespace Sustainsys.Saml2.Tests.WebSso
 
             Action a = () => new AcsCommand().Run(r, Options.FromConfiguration);
 
-            a.Should().Throw<BadFormatSamlResponseException>()
-                .WithMessage("The SAML response contains incorrect XML")
-                .WithInnerException<XmlException>()
-                .Where(ex => ex.Data["Saml2Response"] as string == "<foo />");
+			a.Should().Throw<BadFormatSamlResponseException>()
+				.WithMessage("The SAML response contains incorrect XML")
+				.Where(ex => ex.Data["Saml2Response"] as string == "<foo />")
+				.WithInnerException<XmlException>();
         }
 
         [TestMethod]

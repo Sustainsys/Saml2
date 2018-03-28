@@ -2,7 +2,6 @@
 using Sustainsys.Saml2.WebSso;
 using System;
 using System.Collections.Generic;
-using System.IdentityModel.Metadata;
 using System.Linq;
 using System.Web;
 
@@ -10,9 +9,9 @@ namespace Sustainsys.Saml2.StubIdp.Models
 {
     public static class MetadataModel
     {
-        public static ExtendedEntityDescriptor CreateIdpMetadata(bool includeCacheDuration = true)
+        public static EntityDescriptor CreateIdpMetadata(bool includeCacheDuration = true)
         {
-            var metadata = new ExtendedEntityDescriptor()
+            var metadata = new EntityDescriptor()
             {
                 EntityId = new EntityId(UrlResolver.MetadataUrl.ToString())
             };
@@ -23,22 +22,22 @@ namespace Sustainsys.Saml2.StubIdp.Models
                 metadata.ValidUntil = DateTime.UtcNow.AddDays(1);
             }
 
-            var idpSsoDescriptor = new IdentityProviderSingleSignOnDescriptor();
+            var idpSsoDescriptor = new IdpSsoDescriptor();
             idpSsoDescriptor.ProtocolsSupported.Add(new Uri("urn:oasis:names:tc:SAML:2.0:protocol"));
             metadata.RoleDescriptors.Add(idpSsoDescriptor);
 
-            idpSsoDescriptor.SingleSignOnServices.Add(new ProtocolEndpoint()
+            idpSsoDescriptor.SingleSignOnServices.Add(new SingleSignOnService()
             {
                 Binding = Saml2Binding.HttpRedirectUri,
                 Location = UrlResolver.SsoServiceUrl
             });
-            idpSsoDescriptor.SingleSignOnServices.Add(new ProtocolEndpoint()
+            idpSsoDescriptor.SingleSignOnServices.Add(new SingleSignOnService()
             {
                 Binding = Saml2Binding.HttpPostUri,
                 Location = UrlResolver.SsoServiceUrl
             });
 
-            idpSsoDescriptor.ArtifactResolutionServices.Add(0, new IndexedProtocolEndpoint()
+            idpSsoDescriptor.ArtifactResolutionServices.Add(0, new ArtifactResolutionService()
             {
                 Index = 0,
                 IsDefault = true,
@@ -46,13 +45,13 @@ namespace Sustainsys.Saml2.StubIdp.Models
                 Location = UrlResolver.ArtifactServiceUrl
             });
 
-            idpSsoDescriptor.SingleLogoutServices.Add(new ProtocolEndpoint()
+            idpSsoDescriptor.SingleLogoutServices.Add(new SingleLogoutService()
             {
                 Binding = Saml2Binding.HttpRedirectUri,
                 Location = UrlResolver.LogoutServiceUrl
             });
 
-            idpSsoDescriptor.SingleLogoutServices.Add(new ProtocolEndpoint()
+            idpSsoDescriptor.SingleLogoutServices.Add(new SingleLogoutService()
             {
                 Binding = Saml2Binding.HttpPostUri,
                 Location = UrlResolver.LogoutServiceUrl
@@ -63,9 +62,9 @@ namespace Sustainsys.Saml2.StubIdp.Models
             return metadata;
         }
 
-        public static ExtendedEntitiesDescriptor CreateFederationMetadata()
+        public static EntitiesDescriptor CreateFederationMetadata()
         {
-            var metadata = new ExtendedEntitiesDescriptor
+            var metadata = new EntitiesDescriptor
             {
                 Name = "Sustainsys.Saml2.StubIdp Federation",
                 CacheDuration = new TimeSpan(0, 15, 0),

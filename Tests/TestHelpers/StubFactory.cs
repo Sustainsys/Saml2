@@ -76,9 +76,12 @@ namespace Sustainsys.Saml2.TestHelpers
             a1.Values.Add("value1");
             a1.Values.Add("value2");
 
-            var a2 = new RequestedAttribute("someName");
+			var a2 = new RequestedAttribute("someName")
+			{
+				IsRequired = false
+			};
 
-            var acs = new AttributeConsumingService2
+            var acs = new AttributeConsumingService
             {
                 IsDefault = true
             };

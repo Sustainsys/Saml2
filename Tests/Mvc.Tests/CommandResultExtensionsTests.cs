@@ -14,7 +14,7 @@ namespace Sustainsys.Saml2.Mvc.Tests
         {
             Action a = () => ((CommandResult)null).ToActionResult();
 
-            a.ShouldThrow<ArgumentNullException>().And.ParamName.Should().Be("commandResult");
+            a.Should().Throw<ArgumentNullException>().And.ParamName.Should().Be("commandResult");
         }
 
         [TestMethod]
@@ -61,7 +61,7 @@ namespace Sustainsys.Saml2.Mvc.Tests
 
             Action a = () => cr.ToActionResult();
 
-            a.ShouldThrow<NotImplementedException>();
+            a.Should().Throw<NotImplementedException>();
         }
     }
 }

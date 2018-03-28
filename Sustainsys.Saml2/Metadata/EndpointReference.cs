@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Text;
 using System.Xml;
 
 namespace Sustainsys.Saml2.Metadata
@@ -22,22 +20,5 @@ namespace Sustainsys.Saml2.Metadata
 		{
 			Uri = new Uri(uri);
 		}
-
-		#if FALSE
-		public static EndpointReference ReadFrom(XmlDictionaryReader reader)
-		{
-			throw new NotImplementedException();
-		}
-
-		public static EndpointReference ReadFrom(XmlReader reader)
-		{
-			throw new NotImplementedException();
-		}
-
-		public static void WriteTo(XmlWriter writer)
-		{
-			throw new NotImplementedException();
-		}
-		#endif
 	}
 }

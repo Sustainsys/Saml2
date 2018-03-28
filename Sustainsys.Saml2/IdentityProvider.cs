@@ -431,12 +431,13 @@ namespace Sustainsys.Saml2
                 singleLogoutServiceResponseUrl = sloService.ResponseLocation;
             }
 
-            foreach (var ars in idpDescriptor.ArtifactResolutionServices)
+            foreach (var kv in idpDescriptor.ArtifactResolutionServices)
             {
+				var ars = kv.Value;
                 artifactResolutionServiceUrls[ars.Index] = ars.Location;
             }
 
-			var arsKeys = idpDescriptor.ArtifactResolutionServices.ToLookup(x => x.Index);
+			var arsKeys = idpDescriptor.ArtifactResolutionServices.ToLookup(x => x.Value.Index);
             foreach (var ars in artifactResolutionServiceUrls.Keys
                 .Where(k => !arsKeys.Contains(k)))
             {
