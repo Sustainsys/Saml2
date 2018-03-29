@@ -72,6 +72,7 @@ namespace Sustainsys.Saml2.Saml2P
         /// <param name="xml">Root xml element.</param>
         /// <param name="expectedInResponseTo">The expected value of the
         /// InReplyTo parameter in the message.</param>
+        [ExcludeFromCodeCoverage] // Just a wrapper o keep backward compatibility
         public Saml2Response(XmlElement xml, Saml2Id expectedInResponseTo): this(xml, expectedInResponseTo, null)
         {
         }
