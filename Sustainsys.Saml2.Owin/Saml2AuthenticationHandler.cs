@@ -60,12 +60,10 @@ namespace Sustainsys.Saml2.Owin
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "ReturnUrl")]
         private AuthenticationTicket CreateErrorAuthenticationTicket(HttpRequestData httpRequestData, Exception ex)
         {
-            AuthenticationProperties authProperties = null;
-            if (httpRequestData.StoredRequestState != null)
-            {
-                authProperties = new AuthenticationProperties(
-                    httpRequestData.StoredRequestState.RelayData);
+            var authProperties = new AuthenticationProperties();
 
+            if (httpRequestData.StoredRequestState?.ReturnUrl != null)
+            {
                 // ReturnUrl is removed from AuthProps dictionary to save space, need to put it back.
                 authProperties.RedirectUri = httpRequestData.StoredRequestState.ReturnUrl.OriginalString;
             }
@@ -83,10 +81,7 @@ namespace Sustainsys.Saml2.Owin
 
                     redirectUrl = httpRequestData.ApplicationUrl;
                 }
-                authProperties = new AuthenticationProperties
-                {
-                    RedirectUri = redirectUrl.OriginalString
-                };
+                authProperties.RedirectUri = redirectUrl.OriginalString;
             }
 
             // The Google middleware adds this, so let's follow that example.
