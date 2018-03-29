@@ -60,16 +60,7 @@ namespace Sustainsys.Saml2.Owin
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "ReturnUrl")]
         private AuthenticationTicket CreateErrorAuthenticationTicket(HttpRequestData httpRequestData, Exception ex)
         {
-            AuthenticationProperties authProperties = null;
-            if (httpRequestData.StoredRequestState?.RelayData != null)
-            {
-                authProperties = new AuthenticationProperties(
-                    httpRequestData.StoredRequestState.RelayData);
-            }
-            else
-            {
-                authProperties = new AuthenticationProperties();
-            }
+            var authProperties = new AuthenticationProperties();
 
             if (httpRequestData.StoredRequestState?.ReturnUrl != null)
             {
