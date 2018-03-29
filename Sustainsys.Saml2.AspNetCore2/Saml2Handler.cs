@@ -65,6 +65,15 @@ namespace Sustainsys.Saml2.AspNetCore2
             throw new NotImplementedException();
         }
 
+        private string CurrentUri
+        {
+            get => context.Request.Scheme + "://" 
+                + context.Request.Host 
+                + context.Request.PathBase 
+                + context.Request.Path 
+                + context.Request.QueryString;
+        }
+
         /// <InheritDoc />
         public async Task ChallengeAsync(AuthenticationProperties properties)
         {
@@ -74,7 +83,7 @@ namespace Sustainsys.Saml2.AspNetCore2
             }
 
             // Don't serialize the return url twice, move it to our location.
-            var redirectUri = properties.RedirectUri;
+            var redirectUri = properties.RedirectUri ?? CurrentUri;
             properties.RedirectUri = null;
 
             var requestData = context.ToHttpRequestData(null);
