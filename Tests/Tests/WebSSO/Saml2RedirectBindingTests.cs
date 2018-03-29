@@ -1,5 +1,4 @@
 ﻿using System;
-using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using FluentAssertions;
 using NSubstitute;
@@ -105,22 +104,22 @@ namespace Sustainsys.Saml2.Tests.WebSso
 				result.Location.GetComponents(components, UriFormat.UriEscaped).Should().Be(
 					expected.Location.GetComponents(components, UriFormat.UriEscaped));
 
-				var resultQuery = QueryHelpers.ParseQuery(result.Location.Query);
-				var expectedQuery = QueryHelpers.ParseQuery(expected.Location.Query);
+				var resultQuery = HttpUtility.ParseQueryString(result.Location.Query);
+				var expectedQuery = HttpUtility.ParseQueryString(expected.Location.Query);
 				resultQuery.Keys.Should().BeEquivalentTo(expectedQuery.Keys);
 
-				foreach (var kv in resultQuery)
+				foreach (string key in resultQuery)
 				{
-					var resultValues = kv.Value;
-					var expectedValues = expectedQuery[kv.Key];
-					resultValues.Count.Should().Be(expectedValues.Count);
+					var resultValues = resultQuery.GetValues(key);
+					var expectedValues = expectedQuery.GetValues(key);
+					resultValues.Length.Should().Be(expectedValues.Length);
 
-					for (int i = 0; i < resultValues.Count; ++i)
+					for (int i = 0; i < resultValues.Length; ++i)
 					{
 						var resultValue = resultValues[0];
 						var expectedValue = expectedValues[0];
 
-						if (kv.Key == "SAMLRequest")
+						if (key == "SAMLRequest")
 						{
 							resultValue = DeflateBase64EncodedData(resultValue);
 							expectedValue = DeflateBase64EncodedData(expectedValue);

@@ -1,17 +1,10 @@
-﻿#if NETCOREAPP2_0
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-#else
-using Owin;
-using Microsoft.Owin;
-using Microsoft.Owin.Hosting;
-using HttpContext = Microsoft.Owin.IOwinContext;
-#endif
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
 using Sustainsys.Saml2.WebSso;
@@ -25,11 +18,8 @@ namespace Sustainsys.Saml2.Tests.Helpers
 {
     public class StubServer
     {
-#if NETCOREAPP2_0
-		private static IWebHost host;
-#else
-        private static IDisposable host;
-#endif
+        private static IWebHost host;
+
         static IDictionary<string, string> GetContent()
         {
             var content = new Dictionary<string, string>();
@@ -364,48 +354,36 @@ entityID=""http://localhost:13428/idpMetadataVeryShortCacheDuration"" cacheDurat
         public static bool IdpAndFederationShortCacheDurationAvailable { get; set; } = true;
         public static bool FederationVeryShortCacheDurationSecondAlternativeEnabled { get; set; } = false;
 
-		static async Task HandleRequestAsync(HttpContext ctx, Func<Task> next)
-		{
-			string data;
-
-			switch (ctx.Request.Path.ToString())
-			{
-				case "/ars":
-					await ArtifactResolutionService(ctx);
-					return;
-				default:
-					var content = GetContent();
-					if (content.TryGetValue(ctx.Request.Path.ToString(), out data))
-					{
-						await ctx.Response.WriteAsync(data);
-						return;
-					}
-					break;
-			}
-			await next.Invoke();
-		}
-
-#if NETCOREAPP2_0
-		public static void Start(TestContext testContext)
+        public static void Start(TestContext testContext)
         {
 			host = new WebHostBuilder()
 				.UseUrls("http://localhost:13428")
-				.Configure(builder => builder.Use(HandleRequestAsync))
+				.Configure(builder => builder.Use(async (ctx, next) =>
+				{
+					string data;
+
+					switch (ctx.Request.Path.ToString())
+					{
+						case "/ars":
+							await ArtifactResolutionService(ctx);
+							return;
+						default:
+							var content = GetContent();
+							if (content.TryGetValue(ctx.Request.Path.ToString(), out data))
+							{
+								await ctx.Response.WriteAsync(data);
+								return;
+							}
+							break;
+					}
+					await next.Invoke();
+				}))
 				.UseKestrel()
 				.Build();
 			host.Start();
         }
-#else
-		public static void Start(TestContext testContext)
-		{
-			host = WebApp.Start("http://localhost:13428", app =>
-			{
-				app.Use(HandleRequestAsync);
-			});
-		}
-#endif
 
-		private static async Task ArtifactResolutionService(HttpContext ctx)
+        private static async Task ArtifactResolutionService(HttpContext ctx)
         {
             LastArtifactResolutionSoapActionHeader = ctx.Request.Headers["SOAPAction"];
 

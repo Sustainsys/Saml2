@@ -4,6 +4,8 @@ using System;
 using System.Security.Claims;
 using Microsoft.IdentityModel.Tokens.Saml2;
 
+using ClaimProperties = Microsoft.IdentityModel.Tokens.Saml2.ClaimProperties;
+
 namespace Sustainsys.Saml2.Tests
 {
     [TestClass]
@@ -12,7 +14,7 @@ namespace Sustainsys.Saml2.Tests
         [TestMethod]
         public void ClaimsExtensions_ToSaml2NameIdentifier_NullCheck()
         {
-            Action a = () => ((Claim)null).ToSaml2NameIdentifier();
+			Action a = () => ((Claim)null).ToSaml2NameIdentifier();
             a.Should().Throw<ArgumentNullException>()
                 .And.ParamName.Should().Be("claim");
         }
