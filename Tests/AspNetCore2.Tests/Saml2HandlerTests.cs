@@ -140,6 +140,33 @@ namespace Sustainsys.Saml2.AspNetCore2.Tests
             state.RelayData.Values.Should().NotContain("https://sp.example.com/somePath?param=value");
         }
 
+        [TestMethod]
+        public async Task Saml2Handler_ChallengeAsync_UsesCurrentUrlAsReturnUrlIfAuthPropsAreMissing()
+        {
+            var context = new Saml2HandlerTestContext();
+
+            var response = context.HttpContext.Response;
+
+            string cookieData = null;
+            response.Cookies.Append(
+                Arg.Any<string>(),
+                Arg.Do<string>(v => cookieData = v),
+                Arg.Any<CookieOptions>());
+
+            await context.Subject.ChallengeAsync(null);
+
+            response.StatusCode.Should().Be(303);
+            response.Headers["Location"].Single()
+                .Should().StartWith("https://idp.example.com/sso?SAMLRequest=");
+
+            var state = new StoredRequestState(StubDataProtector.Unprotect(
+                HttpRequestData.GetBinaryData(cookieData)));
+
+            state.ReturnUrl.OriginalString.Should().Be("https://sp.example.com/somePath?param=value");
+
+            // Don't dual-store the return-url.
+            state.RelayData.Values.Should().NotContain("https://sp.example.com/somePath?param=value");
+        }
 
         [TestMethod]
         public async Task Saml2Handler_Acs_Works()

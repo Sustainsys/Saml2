@@ -77,10 +77,7 @@ namespace Sustainsys.Saml2.AspNetCore2
         /// <InheritDoc />
         public async Task ChallengeAsync(AuthenticationProperties properties)
         {
-            if (properties == null)
-            {
-                throw new ArgumentNullException(nameof(properties));
-            }
+            properties = properties ?? new AuthenticationProperties();
 
             // Don't serialize the return url twice, move it to our location.
             var redirectUri = properties.RedirectUri ?? CurrentUri;
