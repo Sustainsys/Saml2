@@ -1,7 +1,4 @@
-﻿// using Microsoft.IdentityModel.Tokens;
-using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 using System.Security.Cryptography.Xml;
@@ -46,6 +43,8 @@ namespace Sustainsys.Saml2.Tokens
 				case EncryptedXml.XmlEncRSA15Url:
 				case EncryptedXml.XmlEncRSAOAEPUrl:
 				case SecurityAlgorithms.RsaSha256Signature:
+				case SecurityAlgorithms.RsaSha384Signature:
+				case SecurityAlgorithms.RsaSha512Signature:
 					if (aa is RSA)
 						return aa;
 					throw new NotSupportedException("The certificate does not support RSA signing");
@@ -67,6 +66,10 @@ namespace Sustainsys.Saml2.Tokens
 					return new SHA1Managed();
 				case SecurityAlgorithms.RsaSha256Signature:
 					return new SHA256Managed();
+				case SecurityAlgorithms.RsaSha384Signature:
+					return new SHA384Managed();
+				case SecurityAlgorithms.RsaSha512Signature:
+					return new SHA512Managed();
 			}
 			throw new NotSupportedException($"The hash algorithm '{algorithm}' is not supported");
 		}
@@ -90,6 +93,8 @@ namespace Sustainsys.Saml2.Tokens
 					}
 				case SignedXml.XmlDsigRSASHA1Url:
 				case SecurityAlgorithms.RsaSha256Signature:
+				case SecurityAlgorithms.RsaSha384Signature:
+				case SecurityAlgorithms.RsaSha512Signature:
 					{
 						RSA rsa = certificate.PublicKey.Key as RSA;
 						if (rsa == null)
@@ -121,6 +126,8 @@ namespace Sustainsys.Saml2.Tokens
 					}
 				case SignedXml.XmlDsigRSASHA1Url:
 				case SecurityAlgorithms.RsaSha256Signature:
+				case SecurityAlgorithms.RsaSha384Signature:
+				case SecurityAlgorithms.RsaSha512Signature:
 					{
 						RSA rsa = certificate.PrivateKey as RSA;
 						if (rsa == null)
@@ -209,6 +216,8 @@ namespace Sustainsys.Saml2.Tokens
 				case SecurityAlgorithms.RsaOaepKeyWrap:
 				case SecurityAlgorithms.RsaSha1Signature:
 				case SecurityAlgorithms.RsaSha256Signature:
+				case SecurityAlgorithms.RsaSha384Signature:
+				case SecurityAlgorithms.RsaSha512Signature:
 					return true;
 			}
 			return false;
@@ -226,6 +235,8 @@ namespace Sustainsys.Saml2.Tokens
 				case SecurityAlgorithms.RsaOaepKeyWrap:
 				case SecurityAlgorithms.RsaSha1Signature:
 				case SecurityAlgorithms.RsaSha256Signature:
+				case SecurityAlgorithms.RsaSha384Signature:
+				case SecurityAlgorithms.RsaSha512Signature:
 					return true;
 			}
 			return false;

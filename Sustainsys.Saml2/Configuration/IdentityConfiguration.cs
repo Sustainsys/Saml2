@@ -1,12 +1,7 @@
-﻿//using Microsoft.IdentityModel.Protocols;
-
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Claims;
-using System.Security.Cryptography.X509Certificates;
-using System.Text;
+﻿using Microsoft.IdentityModel.Tokens;
 using Sustainsys.Saml2.Tokens;
+using System;
+using System.Security.Cryptography.X509Certificates;
 
 namespace Sustainsys.Saml2.Configuration
 {
@@ -51,12 +46,6 @@ namespace Sustainsys.Saml2.Configuration
 #endif
 		private SecurityTokenHandlerConfiguration serviceHandlerConfiguration;
 
-		/// <summary>
-		/// Initializes an instance of <see cref="IdentityConfiguration"/>
-		/// </summary>
-		/// <param name="loadConfig">Whether or not config should be loaded.</param>
-		/// <exception cref="InvalidOperationException">Thrown if loadConfig is set to true but there is no 
-		/// &lt;System.IdentityModel> configuration element</exception>
 		public IdentityConfiguration(bool loadConfig)
 		{
 			if (loadConfig)
@@ -78,40 +67,20 @@ namespace Sustainsys.Saml2.Configuration
 				LoadConfiguration(null);
 			}
 
-			//
-			// We start with a token handler collection manager that contains a single collection that includes the default
-			// handlers for the system.
-			//
-			// SecurityTokenHandlerCollectionManager manager = SecurityTokenHandlerCollectionManager.CreateEmptySecurityTokenHandlerCollectionManager();
-			//
-			// Ensure that the default usage collection always exists
-			//
 			if (serviceHandlerConfiguration == null)
 			{
 				serviceHandlerConfiguration = new SecurityTokenHandlerConfiguration();
 				serviceHandlerConfiguration.MaxClockSkew = DefaultMaxClockSkew;
 			}
-
-
-			/*if (!manager.ContainsKey(SecurityTokenHandlerCollectionManager.Usage.Default))
-			{
-				manager[SecurityTokenHandlerCollectionManager.Usage.Default] = SecurityTokenHandlerCollection.CreateDefaultSecurityTokenHandlerCollection(_serviceHandlerConfiguration);
-			}*/
-
 		}
 
-		/// <summary>
-		/// Initializes an instance of <see cref="IdentityConfiguration"/>
-		/// </summary>
-		/// <param name="loadConfig">Whether or not config should be loaded.</param>
-		/// <param name="serviceCertificate">The service certificate to be used in ServiceTokenResolver and SessionSecurityTokenHandler.</param>
-		/// <exception cref="InvalidOperationException">Thrown if loadConfig is set to true but there is no 
-		/// &lt;System.IdentityModel> configuration element</exception>
+		#if FALSE
 		public IdentityConfiguration(bool loadConfig, X509Certificate2 serviceCertificate)
 			: this(loadConfig)
 		{
 			this.ServiceCertificate = serviceCertificate;
 		}
+		#endif
 
 		public AudienceRestriction AudienceRestriction
 		{
@@ -537,19 +506,35 @@ namespace Sustainsys.Saml2.Configuration
 						new Uri(audienceUriElement.Value, UriKind.RelativeOrAbsolute));
 				}
 			}
-			#if FALSE
-			if (element.Caches.IsConfigured)
+			if (element.Caches != null)
 			{
-				if (element.Caches.TokenReplayCache.IsConfigured)
+				if (element.Caches.TokenReplayCache != null &&
+					element.Caches.TokenReplayCache.Type != null)
 				{
-					handlerConfiguration.Caches.TokenReplayCache = CustomTypeElement.Resolve<TokenReplayCache>(element.Caches.TokenReplayCache);
-				}
-
-				if (element.Caches.SessionSecurityTokenCache.IsConfigured)
-				{
-					handlerConfiguration.Caches.SessionSecurityTokenCache = CustomTypeElement.Resolve<SessionSecurityTokenCache>(element.Caches.SessionSecurityTokenCache);
+					handlerConfiguration.TokenReplayCache = (ITokenReplayCache)
+						Activator.CreateInstance(element.Caches.TokenReplayCache.Type);
 				}
 			}
+			if (element.TokenReplayDetection != null)
+			{
+				handlerConfiguration.TokenReplayCacheExpirationPeriod =
+					element.TokenReplayDetection.ExpirationPeriod;
+				handlerConfiguration.DetectReplayedTokens =
+					element.TokenReplayDetection.Enabled;
+
+				if (handlerConfiguration.TokenReplayCache == null)
+				{
+					TimeSpan? expiryTime = null;
+					if (handlerConfiguration.TokenReplayCacheExpirationPeriod > TimeSpan.Zero &&
+						handlerConfiguration.TokenReplayCacheExpirationPeriod < TimeSpan.MaxValue)
+					{
+						expiryTime = handlerConfiguration.TokenReplayCacheExpirationPeriod;
+					}
+					handlerConfiguration.TokenReplayCache = new TokenReplayCache(expiryTime);
+				}
+			}
+
+			#if FALSE
 
 			if (element.CertificateValidation.IsConfigured)
 			{
@@ -580,11 +565,6 @@ namespace Sustainsys.Saml2.Configuration
 			}
 
 			//
-			// SaveBootstrapContext
-			//
-			handlerConfiguration.SaveBootstrapContext = element.SaveBootstrapContext;
-
-			//
 			// Load the service token resolver
 			//
 			if (element.ServiceTokenResolver.IsConfigured)
@@ -592,23 +572,6 @@ namespace Sustainsys.Saml2.Configuration
 				handlerConfiguration.ServiceTokenResolver = GetServiceTokenResolver(element);
 			}
 
-			//
-			// TokenReplayCache related items
-			//
-			if (element.TokenReplayDetection.IsConfigured)
-			{
-				//
-				// Set on SecurityTokenHandlerConfiguration
-				//
-
-				// DetectReplayedTokens set - { true | false }
-				//
-				handlerConfiguration.DetectReplayedTokens = element.TokenReplayDetection.Enabled;
-
-				// ExpirationPeriod { TimeSpan }
-				//
-				handlerConfiguration.TokenReplayCacheExpirationPeriod = element.TokenReplayDetection.ExpirationPeriod;
-			}
 			#endif
 			return handlerConfiguration;
 		}
@@ -831,20 +794,14 @@ namespace Sustainsys.Saml2.Configuration
 			}
 		}
 #endif
-		public X509Certificate2 ServiceCertificate { get; set; }
+		// public X509Certificate2 ServiceCertificate { get; set; }
 
-		/// <summary>
-		/// Gets or sets the revocation mode used by handlers to validate issuer certificates
-		/// </summary>
 		public X509RevocationMode RevocationMode
 		{
 			get { return serviceHandlerConfiguration.RevocationMode; }
 			set { serviceHandlerConfiguration.RevocationMode = value; }
 		}
 
-		/// <summary>
-		/// Gets or sets if BootstrapContext is saved in the ClaimsIdentity and Sessions after token validation.
-		/// </summary>
 		public bool SaveBootstrapContext
 		{
 			get { return serviceHandlerConfiguration.SaveBootstrapContext; }
@@ -878,13 +835,22 @@ namespace Sustainsys.Saml2.Configuration
 			}
 		}
 #endif
-		/// <summary>
-		/// Gets or Sets the expiration period for items placed in the TokenReplayCache.
-		/// </summary>
+		public bool DetectReplayedTokens
+		{
+			get { return serviceHandlerConfiguration.DetectReplayedTokens; }
+			set { serviceHandlerConfiguration.DetectReplayedTokens = value; }
+		}
+
 		public TimeSpan TokenReplayCacheExpirationPeriod
 		{
 			get { return serviceHandlerConfiguration.TokenReplayCacheExpirationPeriod; }
 			set { serviceHandlerConfiguration.TokenReplayCacheExpirationPeriod = value; }
+		}
+
+		public ITokenReplayCache TokenReplayCache
+		{
+			get { return serviceHandlerConfiguration.TokenReplayCache; }
+			set { serviceHandlerConfiguration.TokenReplayCache = value; }
 		}
 
 		#if FALSE

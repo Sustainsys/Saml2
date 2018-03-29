@@ -82,6 +82,33 @@ namespace Sustainsys.Saml2.Configuration
 		}
 	}
 
+	public class IdentityModelCachesElement : ConfigurationElement
+	{
+		[ConfigurationProperty("tokenReplayCache")]
+		public CustomTypeElement TokenReplayCache
+		{
+			get { return (CustomTypeElement)this["tokenReplayCache"]; }
+			set { this["tokenReplayCache"] = value; }
+		}
+	}
+
+	public class TokenReplayDetectionElement : ConfigurationElement
+	{
+		[ConfigurationProperty("enabled", DefaultValue = true)]
+		public bool Enabled
+		{
+			get { return (bool)this["enabled"]; }
+			set { this["enabled"] = value; }
+		}
+
+		[ConfigurationProperty("expirationPeriod", DefaultValue = "10675199.02:48:05.4775807")]
+		public TimeSpan ExpirationPeriod
+		{
+			get { return (TimeSpan)this["expirationPeriod"]; }
+			set { this["expirationPeriod"] = value; }
+		}
+	}
+
 	public class IdentityConfigurationElement : ConfigurationElement
 	{
 		[ConfigurationProperty("Name", IsKey = true)]
@@ -111,14 +138,13 @@ namespace Sustainsys.Saml2.Configuration
 			set { this["maximumClockSkew"] = value; }
 		}
 
-#if FALSE
-		[ConfigurationProperty(ConfigurationStrings.Caches, IsRequired = false)]
+		[ConfigurationProperty("caches")]
 		public IdentityModelCachesElement Caches
 		{
-			get { return (IdentityModelCachesElement)this[ConfigurationStrings.Caches]; }
-			set { this[ConfigurationStrings.Caches] = value; }
+			get { return (IdentityModelCachesElement)this["caches"]; }
+			set { this["caches"] = value; }
 		}
-
+#if FALSE
 		[ConfigurationProperty(ConfigurationStrings.X509CertificateValidation, IsRequired = false)]
 		public X509CertificateValidationElement CertificateValidation
 		{
@@ -160,14 +186,13 @@ namespace Sustainsys.Saml2.Configuration
 			get { return (CustomTypeElement)this[ConfigurationStrings.ServiceTokenResolver]; }
 			set { this[ConfigurationStrings.ServiceTokenResolver] = value; }
 		}
-
-		[ConfigurationProperty(ConfigurationStrings.TokenReplayDetection, IsRequired = false)]
+		#endif
+		[ConfigurationProperty("tokenReplayDetection")]
 		public TokenReplayDetectionElement TokenReplayDetection
 		{
-			get { return (TokenReplayDetectionElement)this[ConfigurationStrings.TokenReplayDetection]; }
-			set { this[ConfigurationStrings.TokenReplayDetection] = value; }
+			get { return (TokenReplayDetectionElement)this["tokenReplayDetection"]; }
+			set { this["tokenReplayDetection"] = value; }
 		}
-		#endif
 
 		[ConfigurationProperty("securityTokenHandlers")]
 		public SecurityTokenHandlersConfigurationElement SecurityTokenHandlers

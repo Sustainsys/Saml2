@@ -2,11 +2,13 @@
 using System.Security.Cryptography.X509Certificates;
 using Sustainsys.Saml2.Tokens;
 
+using Microsoft.IdentityModel.Tokens;
+
 namespace Sustainsys.Saml2.Configuration
 {
     public class SecurityTokenHandlerConfiguration
     {
-		public static readonly bool DefaultDetectReplayedTokens = false;
+		public static readonly bool DefaultDetectReplayedTokens = true;
 		public static readonly IssuerNameRegistry DefaultIssuerNameRegistry = new ConfigurationBasedIssuerNameRegistry();
 		// TODO
 		// public static readonly SecurityTokenResolver DefaultIssuerTokenResolver
@@ -19,7 +21,7 @@ namespace Sustainsys.Saml2.Configuration
 		// public static readonly StoreLocation DefaultTrustedStoreLocation = IdentityConfiguration.DefaultTrustedStoreLocation;
 		// public static readonly X509CertificateValidator DefaultCertificateValidator = X509Util.CreateCertificateValidator(DefaultCertificateValidationMode, DefaultRevocationMode, DefaultTrustedStoreLocation);
 
-		public bool DetectReplayedTokens { get; private set; } = DefaultDetectReplayedTokens;
+		public bool DetectReplayedTokens { get; set; } = DefaultDetectReplayedTokens;
 
 		private IssuerNameRegistry issuerNameRegistry = DefaultIssuerNameRegistry;
 
@@ -59,9 +61,9 @@ namespace Sustainsys.Saml2.Configuration
 		public bool SaveBootstrapContext { get; set; } = DefaultSaveBootstrapContext;
 		public X509RevocationMode RevocationMode { get; set; } = DefaultRevocationMode;
 
-	// TODO:
-	// private SecurityTokenResolver serviceTokenResolver = EmptySecurityTokenResolver.Instance;
-	private TimeSpan tokenReplayCacheExpirationPeriod = DefaultTokenReplayCacheExpirationPeriod;
+		// TODO:
+		// private SecurityTokenResolver serviceTokenResolver = EmptySecurityTokenResolver.Instance;
+		private TimeSpan tokenReplayCacheExpirationPeriod = DefaultTokenReplayCacheExpirationPeriod;
 
 		public TimeSpan TokenReplayCacheExpirationPeriod
 		{
@@ -75,8 +77,8 @@ namespace Sustainsys.Saml2.Configuration
 				tokenReplayCacheExpirationPeriod = value;
 			}
 		}
-		
-		// TODO: private IdentityModelCaches caches = new IdentityModelCaches();
+
+		public ITokenReplayCache TokenReplayCache { get; set; } = new TokenReplayCache();
 
 		/// <summary>
 		/// Creates an instance of <see cref="SecurityTokenHandlerConfiguration"/>

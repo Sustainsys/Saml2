@@ -18,6 +18,8 @@ using Sustainsys.Saml2.TestHelpers;
 using SecurityTokenInvalidAudienceException = Microsoft.IdentityModel.Tokens.SecurityTokenInvalidAudienceException;
 using SecurityTokenExpiredException = Microsoft.IdentityModel.Tokens.SecurityTokenExpiredException;
 using SecurityTokenReplayDetectedException = Microsoft.IdentityModel.Tokens.SecurityTokenReplayDetectedException;
+using EncryptingCredentials = Microsoft.IdentityModel.Tokens.EncryptingCredentials;
+using SecurityAlgorithms = Microsoft.IdentityModel.Tokens.SecurityAlgorithms;
 using SigningCredentials = Microsoft.IdentityModel.Tokens.SigningCredentials;
 using X509SecurityKey = Microsoft.IdentityModel.Tokens.X509SecurityKey;
 
@@ -1055,7 +1057,7 @@ namespace Sustainsys.Saml2.Tests.Saml2P
         [TestMethod]
         public void Saml2Response_GetClaims_CorrectEncryptedSingleAssertion_UsingWIF()
         {
-            var response =
+			var response =
             @"<saml2p:Response xmlns:saml2p=""urn:oasis:names:tc:SAML:2.0:protocol""
             xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
             ID = """ + MethodBase.GetCurrentMethod().Name + @""" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z"">
@@ -1066,29 +1068,23 @@ namespace Sustainsys.Saml2.Tests.Saml2P
                 {0}
             </saml2p:Response>";
 
-            var assertion = new Saml2Assertion(new Saml2NameIdentifier("https://idp.example.com"));
+            var assertion = new Saml2EncryptedAssertion(new Saml2NameIdentifier("https://idp.example.com"));
             assertion.Subject = new Saml2Subject(new Saml2NameIdentifier("WIFUser"));
             assertion.Subject.SubjectConfirmations.Add(new Saml2SubjectConfirmation(new Uri("urn:oasis:names:tc:SAML:2.0:cm:bearer")));
             assertion.Conditions = new Saml2Conditions { NotOnOrAfter = new DateTime(2100, 1, 1) };
 
             var token = new Saml2SecurityToken(assertion);
-            var handler = new Saml2SecurityTokenHandler();
+            var handler = new Saml2PSecurityTokenHandler();
 
-			var key = new X509SecurityKey(SignedXmlHelper.TestCert);
-			var creds = new SigningCredentials(key, SecurityAlgorithms.RsaSha1Signature,
-				SecurityAlgorithms.Sha1Digest);
-			assertion.SigningCredentials = creds;
-#if TODO
-			assertion.SigningCredentials = new X509SigningCredentials(SignedXmlHelper.TestCert,
-                signatureAlgorithm: SecurityAlgorithms.RsaSha1Signature, 
-                digestAlgorithm: SecurityAlgorithms.Sha1Digest);
+			var signingKey = new X509SecurityKey(SignedXmlHelper.TestCert);
+			var signingCreds = new SigningCredentials(signingKey,
+				SecurityAlgorithms.RsaSha256Signature, SecurityAlgorithms.Sha256Digest);
+			assertion.SigningCredentials = signingCreds;
 
-            assertion.EncryptingCredentials = new EncryptedKeyEncryptingCredentials(
-                SignedXmlHelper.TestCert2,
-                keyWrappingAlgorithm: SecurityAlgorithms.RsaOaepKeyWrap,
-                keySizeInBits: 256,
-                encryptionAlgorithm: SecurityAlgorithms.Aes192Encryption);
-#endif
+			var encryptionKey = new X509SecurityKey(SignedXmlHelper.TestCert2);
+			var encryptionCreds = new EncryptingCredentials(encryptionKey,
+				SecurityAlgorithms.RsaOAEP, SecurityAlgorithms.Aes192CbcHmacSha384);
+			assertion.EncryptingCredentials = encryptionCreds;
 
 			string assertionXml = String.Empty;
             using (var sw = new StringWriter())
@@ -1101,7 +1097,15 @@ namespace Sustainsys.Saml2.Tests.Saml2P
             }
             var responseWithAssertion = string.Format(response, assertionXml);
 
-            var claims = Saml2Response.Read(responseWithAssertion).GetClaims(Options.FromConfiguration);
+			// TODO:
+			// This doesn't work because the signature on the assertion doesn't validate
+			// using System.Security.Cryptography.SignedXml.  It doesn't like the "Id"
+			// attribute on the ds:Reference element.  In fact if you tell it to produce
+			// a signature with an Id attribute on the Reference element then it can't
+			// validate that either!
+			// Microsoft.IdentityModel.Xml.EnvelopedSignatureReader can validate either form.
+			// Shelved for now.
+			var claims = Saml2Response.Read(responseWithAssertion).GetClaims(Options.FromConfiguration);
             claims.Count().Should().Be(1);
             claims.First().FindFirst(ClaimTypes.NameIdentifier).Value.Should().Be("WIFUser");
         }
@@ -1290,15 +1294,13 @@ namespace Sustainsys.Saml2.Tests.Saml2P
 
             options.SPOptions.Saml2PSecurityTokenHandler.Configuration.SaveBootstrapContext = true;
 
-            var expected = options.SPOptions.Saml2PSecurityTokenHandler.ReadToken(XmlReader.Create(new StringReader(assertion)));
+            var expected = options.SPOptions.Saml2PSecurityTokenHandler.ReadToken(assertion);
 
             var r = Saml2Response.Read(SignedXmlHelper.SignXml(response));
 
             var subject = r.GetClaims(options).Single().BootstrapContext;
 
-			#if TODO
             subject.As<BootstrapContext>().SecurityToken.Should().BeEquivalentTo(expected);
-			#endif
         }
 
         [TestMethod]

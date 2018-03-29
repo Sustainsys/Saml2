@@ -2,12 +2,18 @@
 using Microsoft.IdentityModel.Tokens.Saml2;
 using Microsoft.IdentityModel.Xml;
 using Sustainsys.Saml2.Configuration;
+using Sustainsys.Saml2.Internal;
 using System;
+using System.Collections.Generic;
 using System.Globalization;
+using System.Security.Cryptography;
+using System.Security.Cryptography.X509Certificates;
 using System.Xml;
+using EncryptingCredentials = Microsoft.IdentityModel.Tokens.EncryptingCredentials;
 
 namespace Sustainsys.Saml2.Saml2P
 {
+
 	/// <summary>
 	/// Log messages and codes for Saml2Processing
 	/// </summary>
@@ -21,17 +27,26 @@ namespace Sustainsys.Saml2.Saml2P
 		internal const string IDX13109 = "IDX13109: When reading '{0}', Assertion.Subject is null and an Authentication, Attribute or AuthorizationDecision Statement was found. and no Statements were found. [Saml2Core, lines 1050, 1168, 1280].";
 		internal const string IDX13137 = "IDX13137: Unable to read for Saml2SecurityToken. Version must be '2.0' was: '{0}'.";
 		internal const string IDX13141 = "IDX13141: EncryptedAssertion is not supported. You will need to override ReadAssertion and provide support.";
+		internal const string IDX13302 = "IDX13302: An assertion with no statements must contain a 'Subject' element.";
+		internal const string IDX13303 = "IDX13303: 'Subject' is required in Saml2Assertion for built-in statement type.";
+		internal const string IDX30213 = "IDX30213: The CryptoProviderFactory: '{0}', CreateForSigning returned null for key: '{1}', SignatureMethod: '{2}'.";
 #pragma warning restore 1591
+	}
+
+	public class Saml2EncryptedAssertion : Saml2Assertion
+	{
+		public Saml2EncryptedAssertion(Saml2NameIdentifier issuer) :
+			base(issuer)
+		{
+		}
+
+		public EncryptingCredentials EncryptingCredentials { get; set; }
 	}
 
 	class Saml2PSerializer : Saml2Serializer
 	{
-		SPOptions spOptions;
-
-		public Saml2PSerializer(SPOptions spOptions)
-		{
-			this.spOptions = spOptions;
-		}
+		public bool IgnoreAuthenticationContext { get; set; }
+		public ICollection<X509Certificate2> DecryptionCertificates { get; set; }
 
 		/// <summary>
 		/// Reads a &lt;saml:Assertion> element.
@@ -47,10 +62,34 @@ namespace Sustainsys.Saml2.Saml2P
 		/// <returns>A <see cref="Saml2Assertion"/> instance.</returns>
 		public override Saml2Assertion ReadAssertion(XmlReader reader)
 		{
-			if (reader.IsStartElement(Saml2Constants.Elements.EncryptedAssertion, Saml2Constants.Namespace))
-				throw LogExceptionMessage(new NotSupportedException(LogMessages.IDX13141));
-
 			XmlUtil.CheckReaderOnEntry(reader, Saml2Constants.Elements.Assertion, Saml2Constants.Namespace);
+
+			if (reader.IsStartElement(Saml2Constants.Elements.EncryptedAssertion, Saml2Constants.Namespace))
+			{
+				var encrypted = new XmlDocument();
+				encrypted.PreserveWhitespace = true;
+				encrypted.Load(reader);
+				XmlElement decrypted = null;
+				foreach (var cert in DecryptionCertificates)
+				{
+					try
+					{
+						decrypted = encrypted.DocumentElement.Decrypt(cert.PrivateKey);
+						break;
+					}
+					catch (CryptographicException)
+					{
+					}
+				}
+
+				if (decrypted == null)
+				{
+					throw new InvalidOperationException(
+						"Encrypted assertion could not be decrypted using any available decryption certificate");
+				}
+
+				reader = new XmlNodeReader(decrypted);
+			}
 
 			var envelopeReader = new EnvelopedSignatureReader(reader);
 			var assertion = new Saml2Assertion(new Saml2NameIdentifier("__TemporaryIssuer__"));
@@ -111,7 +150,7 @@ namespace Sustainsys.Saml2.Saml2P
 						statement = ReadAttributeStatement(envelopeReader);
 					else if (envelopeReader.IsStartElement(Saml2Constants.Elements.AuthnStatement, Saml2Constants.Namespace))
 					{
-						if (spOptions.Compatibility.IgnoreAuthenticationContextInResponse)
+						if (IgnoreAuthenticationContext)
 						{
 							envelopeReader.Skip();
 							continue;
@@ -159,6 +198,101 @@ namespace Sustainsys.Saml2.Saml2P
 			}
 		}
 
+		public virtual void WriteEncryptedAssertion(XmlWriter writer, Saml2EncryptedAssertion assertion)
+		{
+			var doc = new XmlDocument();
+			doc.PreserveWhitespace = true;
+			using (var xw = doc.CreateNavigator().AppendChild())
+			{
+				base.WriteAssertion(xw, assertion);
+			}
+
+			doc.DocumentElement.Encrypt(assertion.EncryptingCredentials);
+			writer.WriteStartElement("EncryptedAssertion", "urn:oasis:names:tc:SAML:2.0:assertion");
+			doc.DocumentElement.WriteTo(writer);
+			writer.WriteEndElement();
+		}
+
+		public override void WriteAssertion(XmlWriter writer, Saml2Assertion assertion)
+		{
+			if (writer == null)
+				throw LogArgumentNullException(nameof(writer));
+
+			if (assertion == null)
+				throw LogArgumentNullException(nameof(assertion));
+
+			if (assertion is Saml2EncryptedAssertion encryptedAssertion &&
+				encryptedAssertion.EncryptingCredentials != null)
+			{
+				WriteEncryptedAssertion(writer, encryptedAssertion);
+				return;
+			}
+
+			// Wrap the writer if necessary for a signature
+			// We do not dispose this writer, since as a delegating writer it would
+			// dispose the inner writer, which we don't properly own.
+			EnvelopedSignatureWriterWithReferenceIdFix signatureWriter = null;
+			if (assertion.SigningCredentials != null)
+				writer = signatureWriter = new EnvelopedSignatureWriterWithReferenceIdFix(writer, assertion.SigningCredentials, assertion.Id.Value, assertion.InclusiveNamespacesPrefixList) { DSigSerializer = DSigSerializer };
+
+			if (assertion.Subject == null)
+			{
+				// An assertion with no statements MUST contain a <Subject> element. [Saml2Core, line 585]
+				if (assertion.Statements.Count == 0)
+					throw LogExceptionMessage(new Saml2SecurityTokenException(LogMessages.IDX13302));
+
+				// Furthermore, the built-in statement types all require the presence of a subject.
+				// [Saml2Core, lines 1050, 1168, 1280]
+				foreach (Saml2Statement statement in assertion.Statements)
+				{
+					if (statement is Saml2AuthenticationStatement
+						|| statement is Saml2AttributeStatement
+						|| statement is Saml2AuthorizationDecisionStatement)
+					{
+						throw LogExceptionMessage(new Saml2SecurityTokenException(LogMessages.IDX13303));
+					}
+				}
+			}
+
+			// <Assertion>
+			writer.WriteStartElement(Prefix, Saml2Constants.Elements.Assertion, Saml2Constants.Namespace);
+
+			// @ID - required
+			writer.WriteAttributeString(Saml2Constants.Attributes.ID, assertion.Id.Value);
+
+			// @IssueInstant - required
+			writer.WriteAttributeString(Saml2Constants.Attributes.IssueInstant, assertion.IssueInstant.ToString(
+				"yyyy-MM-ddTHH:mm:ss.fffZ", CultureInfo.InvariantCulture));
+
+			// @Version - required
+			writer.WriteAttributeString(Saml2Constants.Attributes.Version, assertion.Version);
+
+			// <Issuer> 1
+			WriteIssuer(writer, assertion.Issuer);
+
+			// <Signature> 0-1
+			if (null != signatureWriter)
+				signatureWriter.WriteSignature();
+
+			// <Subject> 0-1
+			if (null != assertion.Subject)
+				WriteSubject(writer, assertion.Subject);
+
+			// <Conditions> 0-1
+			if (null != assertion.Conditions)
+				WriteConditions(writer, assertion.Conditions);
+
+			// <Advice> 0-1
+			if (null != assertion.Advice)
+				WriteAdvice(writer, assertion.Advice);
+
+			// <Statement|AuthnStatement|AuthzDecisionStatement|AttributeStatement>, 0-OO
+			foreach (Saml2Statement statement in assertion.Statements)
+				WriteStatement(writer, statement);
+
+			writer.WriteEndElement();
+		}
+	
 		internal static Exception LogReadException(string message)
 		{
 			return LogExceptionMessage(new Saml2SecurityTokenReadException(message));

@@ -17,10 +17,38 @@ using Sustainsys.Saml2.Tokens;
 
 namespace Sustainsys.Saml2
 {
-    /// <summary>
-    /// Extension methods and helpers for XmlDocument/XmlElement etc.
-    /// </summary>
-    public static class XmlHelpers
+	public class SignedXmlWithIdFix : SignedXml
+	{
+		public SignedXmlWithIdFix(XmlElement element) :
+			base(element)
+		{
+		}
+
+		public SignedXmlWithIdFix(XmlDocument doc) :
+			base(doc)
+		{
+		}
+
+		public override XmlElement GetIdElement(XmlDocument document, string id)
+		{
+			var nodes = document.SelectNodes(
+				$"//*[name() != 'Reference' and (@id='{id}' or @iD='{id}' or @Id='{id}' or @ID='{id}')]");
+			if (nodes.Count == 0)
+			{
+				throw new CryptographicException($"The reference id '{id}' does not match any nodes");
+			}
+			if (nodes.Count > 1)
+			{
+				throw new CryptographicException($"The reference id '{id}' matches multiple nodes");
+			}
+			return (XmlElement)nodes[0];
+		}
+	}
+
+	/// <summary>
+	/// Extension methods and helpers for XmlDocument/XmlElement etc.
+	/// </summary>
+	public static class XmlHelpers
     {
         /// <summary>
         /// Sign an xml document with the supplied cert.
@@ -187,7 +215,7 @@ namespace Sustainsys.Saml2
                 throw new ArgumentNullException(nameof(cert));
             }
 
-            var signedXml = new SignedXml(xmlElement.OwnerDocument);
+            var signedXml = new SignedXmlWithIdFix(xmlElement.OwnerDocument);
 
 			// The transform XmlDsigExcC14NTransform and canonicalization method XmlDsigExcC14NTransformUrl is important for partially signed XML files
 			// see: http://msdn.microsoft.com/en-us/library/system.security.cryptography.xml.signedxml.xmldsigexcc14ntransformurl(v=vs.110).aspx
@@ -254,7 +282,7 @@ namespace Sustainsys.Saml2
                 throw new ArgumentNullException(nameof(xmlElement));
             }
 
-            var signedXml = new SignedXml(xmlElement);
+            var signedXml = new SignedXmlWithIdFix(xmlElement);
 
             var signatureElement = xmlElement["Signature", SignedXml.XmlDsigNamespaceUrl];
 
@@ -281,7 +309,7 @@ namespace Sustainsys.Saml2
             foreach (var keyIdentifier in signingKeys)
             {
                 var key = ((AsymmetricSecurityKey)keyIdentifier.CreateKey())
-                .GetAsymmetricAlgorithm(SignedXml.XmlDsigRSASHA1Url, false);
+                .GetAsymmetricAlgorithm(signedXml.SignatureMethod, false);
 
                 if (signedXml.CheckSignature(key))
                 {
@@ -353,7 +381,7 @@ namespace Sustainsys.Saml2
         /// <param name="signatureElement">Signature element.</param>
         private static void FixSignatureIndex(SignedXml signedXml, XmlElement signatureElement)
         {
-            Transform transform = null;
+			Transform transform = null;
             foreach(var t in ((Reference)signedXml.SignedInfo.References[0]).TransformChain)
             {
                 var envelopeTransform = t as XmlDsigEnvelopedSignatureTransform;
@@ -441,7 +469,30 @@ namespace Sustainsys.Saml2
             var reference = (Reference)signedXml.SignedInfo.References[0];
             var id = reference.Uri.Substring(1);
 
-            var idElement = signedXml.GetIdElement(xmlElement.OwnerDocument, id);
+			// GetIdElement is broken -- it will find a <Reference Id="..."/> node in preference to 
+			// a <saml:Assertion ID="..."/> node.  We'll find everything with an [Ii][Dd] on it,
+			// then check there's just one element with the relevant ID plus possibly the reference
+			// node itself
+			try
+			{
+				XmlConvert.VerifyNCName(id);
+			}
+			catch (XmlException)
+			{
+				throw new InvalidSignatureException($"Invalid reference id '{id}'");
+			}
+
+			var nodes = xmlElement.OwnerDocument.SelectNodes(
+				$"//*[name() != 'Reference' and (@id='{id}' or @iD='{id}' or @Id='{id}' or @ID='{id}')]");
+			if (nodes.Count == 0)
+			{
+				throw new InvalidSignatureException($"The reference id '{id}' does not match any nodes");
+			}
+			if (nodes.Count > 1)
+			{
+				throw new InvalidSignatureException($"The reference id '{id}' matches multiple nodes");
+			}
+			var idElement = nodes[0];
 
             if (idElement != xmlElement)
             {

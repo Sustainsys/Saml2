@@ -18,7 +18,6 @@ namespace Sustainsys.Saml2.Saml2P
 	/// </summary>
 	public class Saml2PSecurityTokenHandler : Saml2SecurityTokenHandler
     {
-        private SPOptions spOptions;
 		public SecurityTokenHandlerConfiguration Configuration { get; private set; }
 
 		/// <summary>
@@ -40,10 +39,17 @@ namespace Sustainsys.Saml2.Saml2P
                 AudienceRestriction = GetAudienceRestriction(spOptions),
                 SaveBootstrapContext = spOptions.SystemIdentityModelIdentityConfiguration.SaveBootstrapContext
             };
-	        this.spOptions = spOptions;
 
-			Serializer = new Saml2PSerializer(spOptions);
+			Serializer = new Saml2PSerializer()
+			{
+				IgnoreAuthenticationContext = spOptions.Compatibility.IgnoreAuthenticationContextInResponse
+			};
         }
+
+		public Saml2PSecurityTokenHandler()
+		{
+			Serializer = new Saml2PSerializer();
+		}
 
 		protected override Saml2Conditions CreateConditions(SecurityTokenDescriptor tokenDescriptor)
 		{
@@ -61,66 +67,31 @@ namespace Sustainsys.Saml2.Saml2P
 		/// <param name="samlToken">The token to translate to claims.</param>
 		/// <returns>An identity with the created claims.</returns>
 		protected override ClaimsIdentity CreateClaimsIdentity(Saml2SecurityToken samlToken, string issuer, TokenValidationParameters validationParameters)
-		// ?? public new ClaimsIdentity CreateClaims(Saml2SecurityToken samlToken)
         {
             var identity = base.CreateClaimsIdentity(samlToken, issuer, validationParameters);
 
-            if (spOptions.SystemIdentityModelIdentityConfiguration.SaveBootstrapContext)
+            if (Configuration.SaveBootstrapContext)
             {
-                // TODO: identity.BootstrapContext = new BootstrapContext(samlToken, this);
+                identity.BootstrapContext = new BootstrapContext(samlToken, this);
             }
 
             return identity;
         }
 
-#if TODO
-        /// <summary>
-        /// Detect if a token is replayed (i.e. reused). The token is added to the
-        /// list of used tokens, so this method should only be called once for each token.
-        /// </summary>
-        /// <param name="token">The token to check.</param>
-        public new void DetectReplayedToken(SecurityToken token)
-        {
-            base.DetectReplayedToken(token);
-        }
-
-        /// <summary>
-        /// Validate the conditions of the token.
-        /// </summary>
-        /// <param name="conditions">Conditions to check</param>
-        /// <param name="enforceAudienceRestriction">Should the audience restriction be enforced?</param>
-        public new void ValidateConditions(Saml2Conditions conditions, bool enforceAudienceRestriction)
-        {
-            base.ValidateConditions(conditions, enforceAudienceRestriction);
-        }
-#endif
-
-#if TODO
-		public override SecurityToken ReadToken(XmlReader reader, TokenValidationParameters validationParameters)
+		// Overridden to fix the fact that the base class version uses NotBefore as the token replay expiry time
+		// Due to the fact that we can't override the ValidateToken function (it's overridden in the base class!)
+		// we have to parse the token again.
+		// This can be removed when:
+		// https://github.com/AzureAD/azure-activedirectory-identitymodel-extensions-for-dotnet/issues/898
+		// is fixed.
+		protected override void ValidateTokenReplay(DateTime? expirationTime, string securityToken, TokenValidationParameters validationParameters)
 		{
-			var token = new Saml2SecurityToken(Serializer.ReadAssertion(reader));
-			// TODO: I don't think token text matters here?
-			var samlToken = ValidateSignature(token.ToString(), validationParameters);
-			ValidateConditions(token, validationParameters);
-			ValidateSubject(token, validationParameters);
-			var issuer = ValidateIssuer(token.Issuer, token, validationParameters);
-			// TODO: check token again.  I don't think this check is implemented
-			ValidateTokenReplay(token.Assertion.Conditions.NotBefore, token.ToString(), validationParameters);
-			ValidateIssuerSecurityKey(token.SigningKey, token, validationParameters);
-			//validatedToken = samlToken;
-			//var identity = CreateClaimsIdentity(samlToken, issuer, validationParameters);
-			//if (validationParameters.SaveSigninToken)
-				//identity.BootstrapContext = token;
-
-			return token;
+			var saml2Token = ReadSaml2Token(securityToken);
+			base.ValidateTokenReplay(saml2Token.Assertion.Conditions.NotOnOrAfter,
+				securityToken, validationParameters);
 		}
 
-		public ClaimsIdentity CreateClaimsIdentity2(Saml2SecurityToken samlToken, string issuer, TokenValidationParameters validationParameters)
-		{
-			return base.CreateClaimsIdentity(samlToken, issuer, validationParameters);
-		}
-#endif
-
+		// TODO: needed with Microsoft.identitymodel?
 		/// <summary>
 		/// Process authentication statement from SAML assertion. WIF chokes if the authentication statement 
 		/// contains a DeclarationReference, so we clear this out before calling the base method

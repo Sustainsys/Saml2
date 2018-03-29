@@ -539,45 +539,29 @@ namespace Sustainsys.Saml2.Saml2P
 			};
 			validationParameters.ClockSkew = options.SPOptions
 				.SystemIdentityModelIdentityConfiguration.MaxClockSkew;
-			// validationParameters.ValidateLifetime?
-			// TODO: validationParameters.TokenReplayValidator
-
+			var idConfig = options.SPOptions.SystemIdentityModelIdentityConfiguration;
+			if (idConfig.DetectReplayedTokens)
+			{
+				validationParameters.ValidateTokenReplay = true;
+				validationParameters.TokenReplayCache = idConfig.TokenReplayCache;
+			}
 			// TODO: configure validationParameters
 
 			foreach (XmlElement assertionNode in GetAllAssertionElementNodes(options))
             {
-//                using (var reader = new FilteringXmlNodeReader(SignedXml.XmlDsigNamespaceUrl, "Signature", assertionNode))
- //               {
+				SecurityToken baseToken;
+                var principal = handler.ValidateToken(assertionNode.OuterXml, validationParameters, out baseToken);
+				var token = (Saml2SecurityToken)baseToken;
+                options.SPOptions.Logger.WriteVerbose("Extracted SAML assertion " + token.Id);
 
-					SecurityToken baseToken;
-                    var principal = handler.ValidateToken(assertionNode.OuterXml, validationParameters, out baseToken);
-					var token = (Saml2SecurityToken)baseToken;
-                    options.SPOptions.Logger.WriteVerbose("Extracted SAML assertion " + token.Id);
-
-					#if FALSE
-                    handler.DetectReplayedToken(token);
-
-                    var validateAudience = options.SPOptions
-                        .Saml2PSecurityTokenHandler
-                        .SamlSecurityTokenRequirement
-                        .ShouldEnforceAudienceRestriction(options.SPOptions
-                        .SystemIdentityModelIdentityConfiguration
-                        .AudienceRestriction.AudienceMode, token);
-
-                    handler.ValidateConditions(token.Assertion.Conditions, validateAudience);
-					#endif
-
-                    options.SPOptions.Logger.WriteVerbose("Validated conditions for SAML2 Response " + Id);
-
-                    sessionNotOnOrAfter = DateTimeHelper.EarliestTime(sessionNotOnOrAfter,
-                    token.Assertion.Statements.OfType<Saml2AuthenticationStatement>()
-                        .SingleOrDefault()?.SessionNotOnOrAfter);
+				sessionNotOnOrAfter = DateTimeHelper.EarliestTime(sessionNotOnOrAfter,
+					token.Assertion.Statements.OfType<Saml2AuthenticationStatement>()
+						.SingleOrDefault()?.SessionNotOnOrAfter);
 
 				foreach (var identity in principal.Identities)
+				{
 					yield return identity;
-                    //yield return handler.CreateClaimsIdentity2(token,
-					//	ClaimsIdentity.DefaultIssuer, validationParameters);
-//                }
+				}
             }
         }
         
