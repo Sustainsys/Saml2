@@ -30,6 +30,8 @@ namespace Sustainsys.Saml2.Tokens
 				case EncryptedXml.XmlEncRSA15Url:
 				case EncryptedXml.XmlEncRSAOAEPUrl:
 				case SecurityAlgorithms.RsaSha256Signature:
+				case SecurityAlgorithms.RsaSha384Signature:
+				case SecurityAlgorithms.RsaSha512Signature:
 					return rsa;
 			}
 
@@ -49,6 +51,10 @@ namespace Sustainsys.Saml2.Tokens
 					return new SHA1Managed();
 				case SecurityAlgorithms.RsaSha256Signature:
 					return new SHA256Managed();
+				case SecurityAlgorithms.RsaSha384Signature:
+					return new SHA384Managed();
+				case SecurityAlgorithms.RsaSha512Signature:
+					return new SHA512Managed();
 			}
 			throw new NotSupportedException($"The hash algorithm '{algorithm}' is not supported");
 		}
@@ -63,6 +69,8 @@ namespace Sustainsys.Saml2.Tokens
 			{
 				case SignedXml.XmlDsigRSASHA1Url:
 				case SecurityAlgorithms.RsaSha256Signature:
+				case SecurityAlgorithms.RsaSha384Signature:
+				case SecurityAlgorithms.RsaSha512Signature:
 					return new RSAPKCS1SignatureDeformatter(rsa);
 			}
 			throw new NotSupportedException($"RsaSecurityKey does not support the signature algorithm '{algorithm}'");
@@ -78,6 +86,8 @@ namespace Sustainsys.Saml2.Tokens
 			{
 				case SignedXml.XmlDsigRSASHA1Url:
 				case SecurityAlgorithms.RsaSha256Signature:
+				case SecurityAlgorithms.RsaSha384Signature:
+				case SecurityAlgorithms.RsaSha512Signature:
 					return new RSAPKCS1SignatureFormatter(rsa);
 			}
 			throw new NotSupportedException($"RsaSecurityKey does not support the signature algorithm '{algorithm}'");
@@ -155,6 +165,8 @@ namespace Sustainsys.Saml2.Tokens
 				case SecurityAlgorithms.RsaOaepKeyWrap:
 				case SecurityAlgorithms.RsaSha1Signature:
 				case SecurityAlgorithms.RsaSha256Signature:
+				case SecurityAlgorithms.RsaSha384Signature:
+				case SecurityAlgorithms.RsaSha512Signature:
 					return true;
 			}
 			return false;
@@ -172,6 +184,8 @@ namespace Sustainsys.Saml2.Tokens
 				case SecurityAlgorithms.RsaOaepKeyWrap:
 				case SecurityAlgorithms.RsaSha1Signature:
 				case SecurityAlgorithms.RsaSha256Signature:
+				case SecurityAlgorithms.RsaSha384Signature:
+				case SecurityAlgorithms.RsaSha512Signature:
 					return true;
 			}
 			return false;

@@ -177,6 +177,7 @@ namespace Sustainsys.Saml2.Internal
             }
         }
 
+		// CryptoConfig.CreateFromName doesn't know about these
 		static Dictionary<string, Type> s_extraAlgorithms = new Dictionary<string, Type>(StringComparer.OrdinalIgnoreCase)
 		{
 			{  SecurityAlgorithms.RsaSha256Signature, typeof(ManagedRSASHA256SignatureDescription) },

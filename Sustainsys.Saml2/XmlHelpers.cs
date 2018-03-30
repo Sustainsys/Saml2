@@ -6,7 +6,6 @@ using System.Xml;
 using System.Linq;
 using Sustainsys.Saml2.Exceptions;
 using System.Collections.Generic;
-using Sustainsys.Saml2.Configuration;
 using System.Reflection;
 using System.Globalization;
 using System.Diagnostics.CodeAnalysis;
@@ -329,19 +328,6 @@ namespace Sustainsys.Saml2
             throw new InvalidSignatureException("Signature didn't verify. Have the contents been tampered with?");
         }
 
-        private static readonly Lazy<object> rsaSha256Algorithm = 
-            new Lazy<object>(() => CryptoConfig.CreateFromName(Options.Sha256Uri));
-
-        [ExcludeFromCodeCoverage]
-        private static void CheckSha256Support(string signatureMethod)
-        {
-            if (signatureMethod == Options.RsaSha256Uri
-                && rsaSha256Algorithm.Value == null)
-            {
-                throw new InvalidSignatureException("SHA256 signatures require the algorithm to be registered at the process level. Upgrade to .Net 4.6.2 or call Sustainsys.Saml2.Configuration.Options.GlobalEnableSha256XmlSignatures() on startup to register.");
-            }
-        }
-
         // Splitting up in several methods to set ExcludeFromCodeCoverage on
         // as small part of the code as possible. To actually have a test
         // case that passes with a valid cert would require a signature
@@ -424,9 +410,7 @@ namespace Sustainsys.Saml2
             string minIncomingSignatureAlgorithm)
         {
             var signatureMethod = signedXml.SignedInfo.SignatureMethod;
-            CheckSha256Support(signatureMethod);
             ValidateSignatureMethodStrength(minIncomingSignatureAlgorithm, signatureMethod);
-
             ValidateReference(signedXml, xmlElement, GetCorrespondingDigestAlgorithm(minIncomingSignatureAlgorithm));
         }
 
@@ -469,32 +453,9 @@ namespace Sustainsys.Saml2
             var reference = (Reference)signedXml.SignedInfo.References[0];
             var id = reference.Uri.Substring(1);
 
-			// GetIdElement is broken -- it will find a <Reference Id="..."/> node in preference to 
-			// a <saml:Assertion ID="..."/> node.  We'll find everything with an [Ii][Dd] on it,
-			// then check there's just one element with the relevant ID plus possibly the reference
-			// node itself
-			try
-			{
-				XmlConvert.VerifyNCName(id);
-			}
-			catch (XmlException)
-			{
-				throw new InvalidSignatureException($"Invalid reference id '{id}'");
-			}
+			var idElement = signedXml.GetIdElement(xmlElement.OwnerDocument, id);
 
-			var nodes = xmlElement.OwnerDocument.SelectNodes(
-				$"//*[name() != 'Reference' and (@id='{id}' or @iD='{id}' or @Id='{id}' or @ID='{id}')]");
-			if (nodes.Count == 0)
-			{
-				throw new InvalidSignatureException($"The reference id '{id}' does not match any nodes");
-			}
-			if (nodes.Count > 1)
-			{
-				throw new InvalidSignatureException($"The reference id '{id}' matches multiple nodes");
-			}
-			var idElement = nodes[0];
-
-            if (idElement != xmlElement)
+			if (idElement != xmlElement)
             {
                 throw new InvalidSignatureException("Incorrect reference on Xml signature. The reference must be to the root element of the element containing the signature.");
             }

@@ -10,8 +10,18 @@ namespace Sustainsys.Saml2.Metadata
 	/// <summary>
 	/// Metadata for an attribute consuming service.
 	/// </summary>
-	public class AttributeConsumingService : IndexedEndpoint
+	public class AttributeConsumingService : IIndexedEntryWithDefault
 	{
+		/// <summary>
+		/// Index of the endpoint
+		/// </summary>
+		public int Index { get; set; }
+
+		/// <summary>
+		/// Is this the default endpoint?
+		/// </summary>
+		public bool? IsDefault { get; set; }
+
 		/// <summary>
 		/// Is the service required?
 		/// </summary>

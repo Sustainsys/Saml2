@@ -66,22 +66,16 @@ namespace Sustainsys.Saml2
 
 	public class ManagedRSASHA256SignatureDescription : ManagedRSASignatureDescription
 	{
-		// TODO: .NET framework difference? works on both?
-		// typeof(SHA256Managed).FullName);
 		public override string HashAlgorithm => "sha256";
 	}
 
 	public class ManagedRSASHA384SignatureDescription : ManagedRSASignatureDescription
 	{
-		// TODO: .NET framework difference? works on both?
-		// typeof(SHA384Managed).FullName);
 		public override string HashAlgorithm => "sha384";
 	}
 
 	public class ManagedRSASHA512SignatureDescription : ManagedRSASignatureDescription
 	{
-		// TODO: .NET framework difference? works on both?
-		// typeof(SHA512Managed).FullName);
 		public override string HashAlgorithm => "sha512";
 	}
 }

@@ -19,8 +19,6 @@ namespace Sustainsys.Saml2.Internal
         {
             get
             {
-				//TODO: check it
-				//return Path.GetDirectoryName(AppDomain.CurrentDomain.SetupInformation.ConfigurationFile);
 				return AppDomain.CurrentDomain.BaseDirectory;
 			}
         }

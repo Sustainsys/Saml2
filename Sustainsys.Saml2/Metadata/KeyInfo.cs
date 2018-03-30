@@ -131,7 +131,6 @@ namespace Sustainsys.Saml2.Metadata
 						ski.Add(new X509IssuerSerialKeyIdentifierClause(
 							x509Data.IssuerSerial.Name, x509Data.IssuerSerial.Serial));
 					}
-					// TODO: others?
 				}
 			}
 			return ski;

@@ -2,6 +2,9 @@
 {
     public class IndexedEndpoint : Endpoint, IIndexedEntryWithDefault
     {
+		/// <summary>
+		/// Index of the endpoint
+		/// </summary>
 		public int Index { get; set; }
 
 		/// <summary>

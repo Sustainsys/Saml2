@@ -17,7 +17,6 @@ using System.Security.Claims;
 using System.Security.Principal;
 using Sustainsys.Saml2.TestHelpers;
 
-#if TODO
 namespace Sustainsys.Saml2.Tests
 {
     [TestClass]
@@ -694,17 +693,17 @@ namespace Sustainsys.Saml2.Tests
         [TestMethod]
         public void IdentityProvider_ConstructedFromEntityDescriptor_DoesntReloadMetadataWhenDisabled()
         {
-            var ed = new ExtendedEntityDescriptor
+            var ed = new EntityDescriptor
             {
                 ValidUntil = DateTime.UtcNow.AddYears(-1),
                 EntityId = new EntityId("someEntityId")
             };
 
-            var idpSsoDescriptor = new IdentityProviderSingleSignOnDescriptor();
+            var idpSsoDescriptor = new IdpSsoDescriptor();
             idpSsoDescriptor.ProtocolsSupported.Add(new Uri("urn:oasis:names:tc:SAML:2.0:protocol"));
             ed.RoleDescriptors.Add(idpSsoDescriptor);
 
-            idpSsoDescriptor.SingleSignOnServices.Add(new ProtocolEndpoint()
+            idpSsoDescriptor.SingleSignOnServices.Add(new SingleSignOnService()
             {
                 Binding = Saml2Binding.HttpRedirectUri,
                 Location = new Uri("http://idp.example.com/sso")
@@ -727,17 +726,17 @@ namespace Sustainsys.Saml2.Tests
         {
             MetadataRefreshScheduler.minInterval = new TimeSpan(0, 0, 0, 0, 1);
 
-            var ed = new ExtendedEntityDescriptor
+            var ed = new EntityDescriptor
             {
                 ValidUntil = DateTime.UtcNow.AddYears(-1),
                 EntityId = new EntityId("http://localhost:13428/idpMetadata")
             };
 
-            var idpSsoDescriptor = new IdentityProviderSingleSignOnDescriptor();
+            var idpSsoDescriptor = new IdpSsoDescriptor();
             idpSsoDescriptor.ProtocolsSupported.Add(new Uri("urn:oasis:names:tc:SAML:2.0:protocol"));
             ed.RoleDescriptors.Add(idpSsoDescriptor);
 
-            var pe = new ProtocolEndpoint()
+            var pe = new SingleSignOnService()
             {
                 Binding = Saml2Binding.HttpRedirectUri,
                 Location = new Uri("http://idp.example.com/sso")
@@ -984,4 +983,3 @@ namespace Sustainsys.Saml2.Tests
         }
     }
 }
-#endif

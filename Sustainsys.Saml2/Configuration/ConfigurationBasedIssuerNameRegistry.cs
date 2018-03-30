@@ -86,9 +86,6 @@ namespace Sustainsys.Saml2.Configuration
 			{
 				throw new ArgumentNullException(nameof(securityToken));
 			}
-			// TODO
-			//if (securityToken is X509SecurityKey
-
 			throw new NotImplementedException();
 		}
 

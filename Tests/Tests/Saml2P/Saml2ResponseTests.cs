@@ -28,12 +28,6 @@ namespace Sustainsys.Saml2.Tests.Saml2P
     [TestClass]
     public class Saml2ResponseTests
     {
-        [TestCleanup]
-        public void Cleanup()
-        {
-            SignedXmlHelper.RemoveGlobalSha256XmlSignatureSupport();
-        }
-
         [TestMethod]
         public void Saml2Response_Read_BasicParams()
         {
@@ -1097,14 +1091,6 @@ namespace Sustainsys.Saml2.Tests.Saml2P
             }
             var responseWithAssertion = string.Format(response, assertionXml);
 
-			// TODO:
-			// This doesn't work because the signature on the assertion doesn't validate
-			// using System.Security.Cryptography.SignedXml.  It doesn't like the "Id"
-			// attribute on the ds:Reference element.  In fact if you tell it to produce
-			// a signature with an Id attribute on the Reference element then it can't
-			// validate that either!
-			// Microsoft.IdentityModel.Xml.EnvelopedSignatureReader can validate either form.
-			// Shelved for now.
 			var claims = Saml2Response.Read(responseWithAssertion).GetClaims(Options.FromConfiguration);
             claims.Count().Should().Be(1);
             claims.First().FindFirst(ClaimTypes.NameIdentifier).Value.Should().Be("WIFUser");
@@ -2036,8 +2022,6 @@ namespace Sustainsys.Saml2.Tests.Saml2P
         [TestMethod]
         public void Saml2Response_GetClaims_ChecksSha256WhenEnabled()
         {
-            Options.GlobalEnableSha256XmlSignatures();
-
             var signedResponse =
                 @"<saml2p:Response xmlns:saml2p=""urn:oasis:names:tc:SAML:2.0:protocol""
                     xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""

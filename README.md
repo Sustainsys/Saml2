@@ -65,7 +65,7 @@ for keeping application specific user and role information. See the
 [Owin Middleware](docs/OwinMiddleware.md) page for information on how to set up and use the middleware.
 
 ## ASP.NET Core 2 Handler
-The ASP.NET Core 2 Handler is compatbile with the ASP.NET Core 2.0 authentication model.
+The ASP.NET Core 2 Handler is compatible with the ASP.NET Core 2.0 authentication model.
 
 ## Stub Idp
 The solution also contains a stub (i.e. dummy) identity provider that can be used for testing.

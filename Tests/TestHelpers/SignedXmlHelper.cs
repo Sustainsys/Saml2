@@ -29,7 +29,6 @@ namespace Sustainsys.Saml2.TestHelpers
         public static readonly RsaKeyIdentifierClause TestKeySignOnly =
             new RsaKeyIdentifierClause((RSA)TestCertSignOnly.PublicKey.Key);
 
-#if TRUE
 		static KeyDescriptor CreateKeyDescriptor()
 		{
 			var keyDescriptor = new KeyDescriptor();
@@ -41,12 +40,6 @@ namespace Sustainsys.Saml2.TestHelpers
 		}
 
 		public static readonly KeyDescriptor TestKeyDescriptor = CreateKeyDescriptor();
-#else
-        public static readonly KeyDescriptor TestKeyDescriptor = new KeyDescriptor(
-            new SecurityKeyIdentifier(
-                (new X509SecurityToken(TestCertSignOnly))
-                .CreateKeyIdentifierClause<X509RawDataKeyIdentifierClause>()));
-		#endif
 
         public static string SignXml(
             string xml,
@@ -100,31 +93,6 @@ namespace Sustainsys.Saml2.TestHelpers
             var keyInfo2 = new KeyInfo();
             keyInfo2.AddClause(new KeyInfoX509Data(TestCert2));
             KeyInfoXml2 = keyInfo2.GetXml().OuterXml;
-        }
-
-        public static void RemoveGlobalSha256XmlSignatureSupport()
-        {
-			if (EnvironmentHelpers.IsNetCore)
-			{
-				return;
-			}
-
-            // Clean up after tests that globally activate SHA256 support. There
-            // is no official API for removing signature algorithms, so let's
-            // do some reflection.
-
-            var internalSyncObject = typeof(CryptoConfig)
-                .GetProperty("InternalSyncObject", BindingFlags.Static | BindingFlags.NonPublic)
-                .GetValue(null);
-
-            lock (internalSyncObject)
-            {
-                var appNameHT = (IDictionary<string, Type>)typeof(CryptoConfig)
-                    .GetField("appNameHT", BindingFlags.Static | BindingFlags.NonPublic)
-                    .GetValue(null);
-
-                appNameHT.Remove("http://www.w3.org/2001/04/xmldsig-more#rsa-sha256");
-            }
         }
     }
 }

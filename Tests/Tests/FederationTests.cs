@@ -15,7 +15,6 @@ using Sustainsys.Saml2.Exceptions;
 using System.Security.Cryptography.Xml;
 using Sustainsys.Saml2.TestHelpers;
 
-#if TODO
 namespace Sustainsys.Saml2.Tests
 {
     [TestClass]
@@ -414,4 +413,3 @@ namespace Sustainsys.Saml2.Tests
         }
     }
 }
-#endif

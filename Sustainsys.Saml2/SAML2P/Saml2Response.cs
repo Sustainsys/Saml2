@@ -545,7 +545,8 @@ namespace Sustainsys.Saml2.Saml2P
 				validationParameters.ValidateTokenReplay = true;
 				validationParameters.TokenReplayCache = idConfig.TokenReplayCache;
 			}
-			// TODO: configure validationParameters
+			validationParameters.IssuerSigningKeys = options.SPOptions
+				.ServiceCertificates.Select(x => new X509SecurityKey(x.Certificate));
 
 			foreach (XmlElement assertionNode in GetAllAssertionElementNodes(options))
             {

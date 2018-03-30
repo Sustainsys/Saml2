@@ -1556,20 +1556,20 @@ namespace Sustainsys.Saml2.Metadata
 			return entities;
 		}
 
-		//public X509CertificateValidationMode CertificateValidationMode { get; set; }
 		public X509RevocationMode RevocationMode { get; set; }
-		//public X509CertificateValidator CertificateValidator { get; set; }
 		public List<string> TrustedIssuers { get; } = new List<string>();
 
+		// TODO: call this?
 		protected virtual void ValidateSigningCredential(SigningCredentials signingCredentials)
 		{
+			if (signingCredentials == null)
+			{
+				throw new ArgumentNullException(nameof(signingCredentials));
+			}
+
 			throw new NotImplementedException();
 
-			/*if (signingCredentials == null)
-            {
-                throw DiagnosticUtility.ExceptionUtility.ThrowHelperArgumentNull("signingCredentials");
-            }
-
+			/*
             if (CertificateValidationMode != X509CertificateValidationMode.Custom)
             {
                 CertificateValidator = X509Util.CreateCertificateValidator(CertificateValidationMode, RevocationMode, TrustedStoreLocation);
@@ -2118,10 +2118,14 @@ namespace Sustainsys.Saml2.Metadata
 
 		static bool ParseBooleanValue(string v)
 		{
-			if (String.Equals(v, "true", StringComparison.Ordinal))
+			try
 			{
-				return true;
-			}			if (String.Equals(v, "false", StringComparison.Ordinal))			{				return false;			}			throw new MetadataSerializationException($"Invalid boolean value '{v}'");		}
+				return XmlConvert.ToBoolean(v);
+			}
+			catch (FormatException e)
+			{
+				throw new MetadataSerializationException($"Invalid boolean value '{v}'", e);
+			}		}
 
 		static bool? GetOptionalBooleanAttribute(XmlReader reader, string att)
 		{
@@ -2362,7 +2366,7 @@ namespace Sustainsys.Saml2.Metadata
 		{
 			var acs = CreateAttributeConsumingServiceInstance();
 
-			ReadIndexedEndpointAttributes(reader, acs);
+			ReadIndexedEntryWithDefaultAttributes(reader, acs);
 
 			ReadCustomAttributes(reader, acs);
 
@@ -2584,6 +2588,9 @@ namespace Sustainsys.Saml2.Metadata
 		protected virtual Endpoint ReadEndpoint(XmlReader reader) =>
 			ReadWrappedEndpoint(reader, CreateEndpointInstance);
 
+		protected virtual AttributeService ReadAttributeService(XmlReader reader) =>
+			ReadWrappedEndpoint(reader, CreateAttributeServiceInstance);
+
 		protected virtual AuthnQueryService ReadAuthnQueryService(XmlReader reader) =>
 			ReadWrappedEndpoint(reader, CreateAuthnQueryServiceInstance);
 
@@ -2614,10 +2621,8 @@ namespace Sustainsys.Saml2.Metadata
 		protected virtual NameIDMappingService ReadNameIDMappingService(XmlReader reader) =>
 			ReadWrappedEndpoint(reader, CreateNameIDMappingServiceInstance);
 
-		void ReadIndexedEndpointAttributes(XmlReader reader, IndexedEndpoint endpoint)
+		void ReadIndexedEntryWithDefaultAttributes(XmlReader reader, IIndexedEntryWithDefault entry)
 		{
-			ReadEndpointAttributes(reader, endpoint);
-
 			string sv = reader.GetAttribute("index");
 			if (String.IsNullOrEmpty(sv))
 			{
@@ -2629,8 +2634,14 @@ namespace Sustainsys.Saml2.Metadata
 			{
 				throw new MetadataSerializationException($"IndexedEndpoint element with invalid index attribute '{index}'");
 			}
-			endpoint.Index = index;
-			endpoint.IsDefault = GetOptionalBooleanAttribute(reader, "isDefault");
+			entry.Index = index;
+			entry.IsDefault = GetOptionalBooleanAttribute(reader, "isDefault");
+		}
+
+		void ReadIndexedEndpointAttributes(XmlReader reader, IndexedEndpoint endpoint)
+		{
+			ReadIndexedEntryWithDefaultAttributes(reader, endpoint);
+			ReadEndpointAttributes(reader, endpoint);
 		}
 
 		// <complexType name="IndexedEndpoint">
@@ -2774,14 +2785,6 @@ namespace Sustainsys.Saml2.Metadata
 			ReadCustomAttributes(reader, profile);
 			profile.Uri = MakeUri(reader.ReadElementContentAsString());
 			return profile;
-		}
-
-		protected virtual AttributeService ReadAttributeService(XmlReader reader)
-		{
-			var service = CreateAttributeServiceInstance();
-			ReadEndpointAttributes(reader, service);
-			ReadCustomAttributes(reader, service);
-			return service;
 		}
 
 		// <element name="AttributeAuthorityDescriptor"

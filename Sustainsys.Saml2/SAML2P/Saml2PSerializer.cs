@@ -1,7 +1,5 @@
-﻿using static Microsoft.IdentityModel.Logging.LogHelper;
-using Microsoft.IdentityModel.Tokens.Saml2;
+﻿using Microsoft.IdentityModel.Tokens.Saml2;
 using Microsoft.IdentityModel.Xml;
-using Sustainsys.Saml2.Configuration;
 using Sustainsys.Saml2.Internal;
 using System;
 using System.Collections.Generic;
@@ -9,14 +7,11 @@ using System.Globalization;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 using System.Xml;
+using static Microsoft.IdentityModel.Logging.LogHelper;
 using EncryptingCredentials = Microsoft.IdentityModel.Tokens.EncryptingCredentials;
 
 namespace Sustainsys.Saml2.Saml2P
 {
-
-	/// <summary>
-	/// Log messages and codes for Saml2Processing
-	/// </summary>
 	internal static class LogMessages
 	{
 #pragma warning disable 1591
@@ -43,6 +38,11 @@ namespace Sustainsys.Saml2.Saml2P
 		public EncryptingCredentials EncryptingCredentials { get; set; }
 	}
 
+	// Contains overrides to:
+	// - add support for encrypted assertions
+	// - use a fixed version of EnvelopedSignatureWriter that does not write duplicate Id attributes
+	// (reported as a bug in Microsoft.IdentityModel.*)
+	// - ignore authentication context if configured to do so
 	class Saml2PSerializer : Saml2Serializer
 	{
 		public bool IgnoreAuthenticationContext { get; set; }

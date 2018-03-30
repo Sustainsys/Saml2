@@ -14,7 +14,6 @@ using System.Reflection;
 using Sustainsys.Saml2.Tests.Helpers;
 using Sustainsys.Saml2.TestHelpers;
 
-#if TODO
 namespace Sustainsys.Saml2.Tests.WebSSO
 {
     [TestClass]
@@ -355,4 +354,3 @@ namespace Sustainsys.Saml2.Tests.WebSSO
 
     }
 }
-#endif
