@@ -26,6 +26,7 @@ namespace Sustainsys.Saml2.Tests.Configuration
                 SustainsysSaml2Section.Current.Metadata.AllowChange = false;
                 SustainsysSaml2Section.Current.Compatibility.UnpackEntitiesDescriptorInIdentityProviderMetadata = false;
                 SustainsysSaml2Section.Current.Compatibility.DisableLogoutStateCookie = false;
+                SustainsysSaml2Section.Current.Compatibility.IgnoreMissingInResponseTo = false;
                 SustainsysSaml2Section.Current.Compatibility.AllowChange = false;
             }
         }
@@ -66,6 +67,7 @@ namespace Sustainsys.Saml2.Tests.Configuration
             config.Compatibility.AllowChange = true;
             config.Compatibility.UnpackEntitiesDescriptorInIdentityProviderMetadata = true;
             config.Compatibility.DisableLogoutStateCookie = true;
+            config.Compatibility.IgnoreMissingInResponseTo = true;
 
             SPOptions subject = new SPOptions(SustainsysSaml2Section.Current);
             subject.ReturnUrl.Should().Be(config.ReturnUrl);
@@ -86,6 +88,7 @@ namespace Sustainsys.Saml2.Tests.Configuration
             subject.RequestedAuthnContext.Comparison.Should().Be(AuthnContextComparisonType.Minimum);
             subject.Compatibility.UnpackEntitiesDescriptorInIdentityProviderMetadata.Should().BeTrue();
             subject.Compatibility.DisableLogoutStateCookie.Should().BeTrue();
+            subject.Compatibility.IgnoreMissingInResponseTo.Should().BeTrue();
         }
 
         [TestMethod]

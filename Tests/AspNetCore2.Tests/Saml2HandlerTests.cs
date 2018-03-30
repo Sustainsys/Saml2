@@ -79,13 +79,12 @@ namespace Sustainsys.Saml2.AspNetCore2.Tests
         }
 
         [TestMethod]
-        public async Task Saml2Handler_RedirectsToDefaultIdpOnChallenge()
+        public async Task Saml2Handler_ChallengeAsync_RedirectsToDefaultIdp()
         {
             var context = new Saml2HandlerTestContext();
 
             var authProps = new AuthenticationProperties()
             {
-                IssuedUtc = new DateTimeOffset(new DateTime(2017, 09, 30)),
                 RedirectUri = "https://sp.example.com/LoggedIn"
             };
 
@@ -110,6 +109,64 @@ namespace Sustainsys.Saml2.AspNetCore2.Tests
 
             // Don't dual-store the return-url.
             state.RelayData.Values.Should().NotContain("https://sp.example.com/LoggedIn");
+        }
+
+        [TestMethod]
+        public async Task Saml2Handler_ChallengeAsync_UsesCurrentUrlAsReturnUrlIfAuthPropsAreEmpty()
+        {
+            var context = new Saml2HandlerTestContext();
+
+            var authProps = new AuthenticationProperties();
+
+            var response = context.HttpContext.Response;
+
+            string cookieData = null;
+            response.Cookies.Append(
+                Arg.Any<string>(),
+                Arg.Do<string>(v => cookieData = v),
+                Arg.Any<CookieOptions>());
+
+            await context.Subject.ChallengeAsync(authProps);
+
+            response.StatusCode.Should().Be(303);
+            response.Headers["Location"].Single()
+                .Should().StartWith("https://idp.example.com/sso?SAMLRequest=");
+
+            var state = new StoredRequestState(StubDataProtector.Unprotect(
+                HttpRequestData.GetBinaryData(cookieData)));
+
+            state.ReturnUrl.OriginalString.Should().Be("https://sp.example.com/somePath?param=value");
+
+            // Don't dual-store the return-url.
+            state.RelayData.Values.Should().NotContain("https://sp.example.com/somePath?param=value");
+        }
+
+        [TestMethod]
+        public async Task Saml2Handler_ChallengeAsync_UsesCurrentUrlAsReturnUrlIfAuthPropsAreMissing()
+        {
+            var context = new Saml2HandlerTestContext();
+
+            var response = context.HttpContext.Response;
+
+            string cookieData = null;
+            response.Cookies.Append(
+                Arg.Any<string>(),
+                Arg.Do<string>(v => cookieData = v),
+                Arg.Any<CookieOptions>());
+
+            await context.Subject.ChallengeAsync(null);
+
+            response.StatusCode.Should().Be(303);
+            response.Headers["Location"].Single()
+                .Should().StartWith("https://idp.example.com/sso?SAMLRequest=");
+
+            var state = new StoredRequestState(StubDataProtector.Unprotect(
+                HttpRequestData.GetBinaryData(cookieData)));
+
+            state.ReturnUrl.OriginalString.Should().Be("https://sp.example.com/somePath?param=value");
+
+            // Don't dual-store the return-url.
+            state.RelayData.Values.Should().NotContain("https://sp.example.com/somePath?param=value");
         }
 
         [TestMethod]
@@ -238,14 +295,13 @@ namespace Sustainsys.Saml2.AspNetCore2.Tests
         }
 
         [TestMethod]
-        public void Saml2Handler_ChallengeAsync_NullchecksProperties()
+        public void Saml2Handler_ChallengeAsync_NoExceptionWithNullProperties()
         {
             var context = new Saml2HandlerTestContext();
 
             Func<Task> f = async () => await context.Subject.ChallengeAsync(null);
 
-            f.Should().Throw<ArgumentNullException>()
-                .And.ParamName.Should().Be("properties");
+			f.Should().NotThrow();
         }
 
         [TestMethod]

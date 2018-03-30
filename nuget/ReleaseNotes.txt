@@ -1,3 +1,8 @@
+Version 0.24.0
+* Bug fix: Asp.Net Core2 handler with null AuthenticationProperties now works.
+* Bug fix: Error handling in Owin middleware with null/missing return url.
+* Compatibility setting to ignore missing InResponseTo
+
 Version 0.23.0
 * Project renamed to Sustainsys.Saml2
 * No other changes since 0.22.0

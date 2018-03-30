@@ -34,7 +34,7 @@ namespace Sustainsys.Saml2.Saml2P
         /// <exception cref="XmlException">On xml errors or unexpected xml structure.</exception>
         public static Saml2Response Read(string xml)
         {
-            return Read(xml, null);
+            return Read(xml, null, null);
         }
 
         /// <summary>
@@ -47,9 +47,23 @@ namespace Sustainsys.Saml2.Saml2P
         /// <exception cref="XmlException">On xml errors or unexpected xml structure.</exception>
         public static Saml2Response Read(string xml, Saml2Id expectedInResponseTo)
         {
+            return Read(xml, expectedInResponseTo, null);
+        }
+
+        /// <summary>
+        /// Read the supplied Xml and parse it into a response.
+        /// </summary>
+        /// <param name="xml">xml data.</param>
+        /// <param name="expectedInResponseTo">The expected value of the
+        /// InReplyTo parameter in the message.</param>
+        /// <param name="options">Service provider settings used when validating Saml response</param>
+        /// <returns>Saml2Response</returns>
+        /// <exception cref="XmlException">On xml errors or unexpected xml structure.</exception>
+        public static Saml2Response Read(string xml, Saml2Id expectedInResponseTo, IOptions options)
+        {
             var x = XmlHelpers.XmlDocumentFromString(xml);
 
-            return new Saml2Response(x.DocumentElement, expectedInResponseTo);
+            return new Saml2Response(x.DocumentElement, expectedInResponseTo, options);
         }
 
         /// <summary>
@@ -58,7 +72,19 @@ namespace Sustainsys.Saml2.Saml2P
         /// <param name="xml">Root xml element.</param>
         /// <param name="expectedInResponseTo">The expected value of the
         /// InReplyTo parameter in the message.</param>
-        public Saml2Response(XmlElement xml, Saml2Id expectedInResponseTo)
+        [ExcludeFromCodeCoverage] // Just a wrapper o keep backward compatibility
+        public Saml2Response(XmlElement xml, Saml2Id expectedInResponseTo): this(xml, expectedInResponseTo, null)
+        {
+        }
+
+        /// <summary>
+        /// Ctor
+        /// </summary>
+        /// <param name="xml">Root xml element.</param>
+        /// <param name="expectedInResponseTo">The expected value of the
+        /// InReplyTo parameter in the message.</param>
+        /// <param name="options">Service provider settings used when validating Saml response</param>
+        public Saml2Response(XmlElement xml, Saml2Id expectedInResponseTo, IOptions options)
         {
             if (xml == null)
             {
@@ -80,7 +106,7 @@ namespace Sustainsys.Saml2.Saml2P
 
             id = new Saml2Id(xml.Attributes["ID"].Value);
 
-            ReadAndValidateInResponseTo(xml, expectedInResponseTo);
+            ReadAndValidateInResponseTo(xml, expectedInResponseTo, options);
 
             issueInstant = DateTime.Parse(xml.Attributes["IssueInstant"].Value,
                 CultureInfo.InvariantCulture, DateTimeStyles.AdjustToUniversal);
@@ -112,9 +138,10 @@ namespace Sustainsys.Saml2.Saml2P
             }
         }
 
+        [SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "IgnoreMissingInResponseTo")]
         [SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "InResponseTo")]
         [SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "RelayState")]
-        private void ReadAndValidateInResponseTo(XmlElement xml, Saml2Id expectedInResponseTo)
+        private void ReadAndValidateInResponseTo(XmlElement xml, Saml2Id expectedInResponseTo, IOptions options)
         {
             var parsedInResponseTo = xml.Attributes["InResponseTo"].GetValueIfNotNull();
             if (parsedInResponseTo != null)
@@ -139,11 +166,18 @@ namespace Sustainsys.Saml2.Saml2P
             }
             else
             {
+                if (options?.SPOptions.Compatibility.IgnoreMissingInResponseTo ?? false)
+                {
+                    return;
+                };
+
                 if (expectedInResponseTo != null)
                 {
                     throw new Saml2ResponseFailedValidationException(
                         string.Format(CultureInfo.InvariantCulture,
-                        "Expected message to contain InResponseTo \"{0}\", but found none.",
+                        "Expected message to contain InResponseTo \"{0}\", but found none. If this error occurs " +
+                        "due to the Idp not setting InResponseTo according to the SAML2 specification, this check " +
+                        "can be disabled by setting the IgnoreMissingInResponseTo compatibility flag to true.",
                         expectedInResponseTo.Value));
                 }
             }
