@@ -2,7 +2,17 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp2.0</TargetFramework>
+	<GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <PackageLicenseUrl>https://github.com/Sustainsys/Saml2/blob/master/LICENSE</PackageLicenseUrl>
+    <PackageProjectUrl>https://github.com/Sustainsys/Saml2</PackageProjectUrl>
+    <PackageIconUrl>https://raw.github.com/Sustainsys/Saml2/master/nuget/Sustainsys.png</PackageIconUrl>
+    <Copyright>Copyright © Sustainsys and contributors 2017-2018</Copyright>
+    <PackageTags>SAML2 authentication AspNet SAML SSO</PackageTags>
   </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="..\VersionInfo.cs" Link="VersionInfo.cs" />
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Authentication" Version="2.0.3" />
