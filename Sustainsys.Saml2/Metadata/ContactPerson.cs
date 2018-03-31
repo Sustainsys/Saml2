@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Xml;
 
 namespace Sustainsys.Saml2.Metadata
 {
@@ -13,6 +14,8 @@ namespace Sustainsys.Saml2.Metadata
 		public ICollection<string> TelephoneNumbers { get; private set; } =
 			new Collection<string>();
 		public ContactType Type { get; set; }
+		public ICollection<XmlElement> Extensions { get; private set; } =
+			new Collection<XmlElement>();
 
 		public ContactPerson()
 		{

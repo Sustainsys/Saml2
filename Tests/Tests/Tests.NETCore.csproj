@@ -5,6 +5,7 @@
     <ApplicationIcon />
     <OutputType>Library</OutputType>
     <StartupObject />
+    <RootNamespace>Sustainsys.Saml2.Tests</RootNamespace>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">

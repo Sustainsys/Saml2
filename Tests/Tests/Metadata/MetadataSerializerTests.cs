@@ -1,379 +1,476 @@
-﻿using Microsoft.IdentityModel.Tokens.Saml2;
-using Microsoft.IdentityModel.Xml;
-using Sustainsys.Saml2.Selectors;
-using Sustainsys.Saml2.Tokens;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using FluentAssertions;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Security.Cryptography;
-using System.Security.Cryptography.X509Certificates;
+using System.Collections.Generic;
+using System.Text;
 using System.Xml;
-using SigningCredentials = Microsoft.IdentityModel.Tokens.SigningCredentials;
+using Sustainsys.Saml2.Metadata;
+using Microsoft.IdentityModel.Tokens.Saml2;
 
-namespace Sustainsys.Saml2.Metadata
+namespace Sustainsys.Saml2.Tests.Metadata
 {
-	public class MetadataSerializationException : Exception
+	class TestMetadataSerializer : MetadataSerializer
 	{
-		public MetadataSerializationException(string message) :
-			base(message)
-		{
-		}
+		public AdditionalMetadataLocation TestCreateAdditionalMetadataLocationInstance() =>
+			base.CreateAdditionalMetadataLocationInstance();
 
-		public MetadataSerializationException(string message, Exception innerException) :
-			base(message, innerException)
-		{
-		}
+		public AffiliationDescriptor TestCreateAffiliationDescriptorInstance() =>
+			base.CreateAffiliationDescriptorInstance();
+
+		public ApplicationServiceEndpoint TestCreateApplicationServiceEndpointInstance() =>
+			base.CreateApplicationServiceEndpointInstance();
+
+		public ApplicationServiceDescriptor TestCreateApplicationServiceInstance() =>
+			base.CreateApplicationServiceInstance();
+
+		public ArtifactResolutionService TestCreateArtifactResolutionServiceInstance() =>
+			base.CreateArtifactResolutionServiceInstance();
+
+		public AssertionConsumerService TestCreateAssertionConsumerServiceInstance() =>
+			base.CreateAssertionConsumerServiceInstance();
+
+		public AssertionIdRequestService TestCreateAssertionIdRequestServiceInstance() =>
+			base.CreateAssertionIdRequestServiceInstance();
+
+		public AttributeAuthorityDescriptor TestCreateAttributeAuthorityDescriptorInstance() =>
+			base.CreateAttributeAuthorityDescriptorInstance();
+
+		public AttributeConsumingService TestCreateAttributeConsumingServiceInstance() =>
+			base.CreateAttributeConsumingServiceInstance();
+
+		public AttributeService TestCreateAttributeServiceInstance() =>
+			base.CreateAttributeServiceInstance();
+
+		public AttributeProfile TestCreateAttributeProfileInstance() =>
+			base.CreateAttributeProfileInstance();
+
+		public AuthnAuthorityDescriptor TestCreateAuthnAuthorityDescriptorInstance() =>
+			base.CreateAuthnAuthorityDescriptorInstance();
+
+		public AuthnQueryService TestCreateAuthnQueryServiceInstance() =>
+			base.CreateAuthnQueryServiceInstance();
+
+		public AuthzService TestCreateAuthzServiceInstance() =>
+			base.CreateAuthzServiceInstance();
+
+		public CipherData TestCreateCipherDataInstance() =>
+			base.CreateCipherDataInstance();
+
+		public ClaimValue TestCreateClaimValueInstance() =>
+			base.CreateClaimValueInstance();
+
+		public CipherReference TestCreateCipherReferenceInstance() =>
+			base.CreateCipherReferenceInstance();
+
+		public ConstrainedValue TestCreateConstrainedValueInstance() =>
+			base.CreateConstrainedValueInstance();
+
+		public ContactPerson TestCreateContactPersonInstance() =>
+			base.CreateContactPersonInstance();
+
+		public DiscoveryResponse TestCreateDiscoveryResponseInstance() =>
+			base.CreateDiscoveryResponseInstance();
+
+		public DSigKeyInfo TestCreateDSigKeyInfoInstance() =>
+			base.CreateDSigKeyInfoInstance();
+
+		public PDPDescriptor TestCreatePDPDescriptorInstance() =>
+			base.CreatePDPDescriptorInstance();
+
+		public EncryptedData TestCreateEncryptedDataInstance() =>
+			base.CreateEncryptedDataInstance();
+
+		public EncryptionProperty TestCreateEncryptionPropertyInstance() =>
+			base.CreateEncryptionPropertyInstance();
+
+		public EncryptionProperties TestCreateEncryptionPropertiesInstance() =>
+			base.CreateEncryptionPropertiesInstance();
+
+		public EncryptedValue TestCreateEncryptedValueInstance() =>
+			base.CreateEncryptedValueInstance();
+
+		public EncryptionMethod TestCreateEncryptionMethodInstance() =>
+			base.CreateEncryptionMethodInstance();
+
+		public Endpoint TestCreateEndpointInstance() =>
+			base.CreateEndpointInstance();
+
+		public EntitiesDescriptor TestCreateEntitiesDescriptorInstance() =>
+			base.CreateEntitiesDescriptorInstance();
+
+		public EntityDescriptor TestCreateEntityDescriptorInstance() =>
+			base.CreateEntityDescriptorInstance();
+
+		public IdpSsoDescriptor TestCreateIdpSsoDescriptorInstance() =>
+			base.CreateIdpSsoDescriptorInstance();
+
+		public KeyDescriptor TestCreateKeyDescriptorInstance() =>
+			base.CreateKeyDescriptorInstance();
+
+		public LocalizedName TestCreateLocalizedNameInstance() =>
+			base.CreateLocalizedNameInstance();
+
+		public LocalizedUri TestCreateLocalizedUriInstance() =>
+			base.CreateLocalizedUriInstance();
+
+		public ManageNameIDService TestCreateManageNameIDServiceInstance() =>
+			base.CreateManageNameIDServiceInstance();
+
+		public NameIDFormat TestCreateNameIDFormatInstance() =>
+			base.CreateNameIDFormatInstance();
+
+		public NameIDMappingService TestCreateNameIDMappingServiceInstance() =>
+			base.CreateNameIDMappingServiceInstance();
+
+		public Organization TestCreateOrganizationInstance() =>
+			base.CreateOrganizationInstance();
+
+		public PassiveRequestorEndpoint TestCreatePassiveRequestorEndpointInstance() =>
+			base.CreatePassiveRequestorEndpointInstance();
+
+		public RequestedAttribute TestCreateRequestedAttributeInstance(string name) =>
+			base.CreateRequestedAttributeInstance(name);
+
+		public Saml2Attribute TestCreateSaml2AttributeInstance(string name) =>
+			base.CreateSaml2AttributeInstance(name);
+
+		public SingleLogoutService TestCreateSingleLogoutServiceInstance() =>
+			base.CreateSingleLogoutServiceInstance();
+
+		public SingleSignOutNotificationEndpoint TestCreateSingleSignOutNotificationEndpointInstance() =>
+			base.CreateSingleSignOutNotificationEndpointInstance();
+
+		public SecurityTokenServiceDescriptor TestCreateSecurityTokenServiceDescriptorInstance() =>
+			base.CreateSecurityTokenServiceDescriptorInstance();
+
+		public SingleSignOnService TestCreateSingleSignOnServiceInstance() =>
+			base.CreateSingleSignOnServiceInstance();
+
+		public SpSsoDescriptor TestCreateSpSsoDescriptorInstance() =>
+			base.CreateSpSsoDescriptorInstance();
+
+		public EndpointReference TestReadEndpointReference(XmlReader reader) =>
+			base.ReadEndpointReference(reader);
+
+		public ApplicationServiceDescriptor TestReadApplicationServiceDescriptor(XmlReader reader) =>
+			base.ReadApplicationServiceDescriptor(reader);
+
+		public ContactPerson TestReadContactPerson(XmlReader reader) =>
+			base.ReadContactPerson(reader);
+
+		public byte[] TestReadBase64(XmlReader reader) =>
+			base.ReadBase64(reader);
 	}
 
-	public class MetadataSerializer
+	[TestClass]
+	public class MetadataSerializerTests
 	{
-		const string XmlNs = "http://www.w3.org/XML/1998/namespace";
-		const string FedNs = "http://docs.oasis-open.org/wsfed/federation/200706";
-		const string WsaNs = "http://www.w3.org/2005/08/addressing";
-		const string WspNs = "http://schemas.xmlsoap.org/ws/2002/12/policy";
-		const string Saml2MetadataNs = "urn:oasis:names:tc:SAML:2.0:metadata";
-		const string Saml2AssertionNs = "urn:oasis:names:tc:SAML:2.0:assertion";
-		const string XsiNs = "http://www.w3.org/2001/XMLSchema-instance";
-		const string AuthNs = "http://docs.oasis-open.org/wsfed/authorization/200706/authclaims";
-		const string XEncNs = "http://www.w3.org/2001/04/xmlenc#";
-		const string DSigNs = "http://www.w3.org/2000/09/xmldsig#";
-		const string DSig11Ns = "http://www.w3.org/2009/xmldsig11#";
-		const string IdpDiscNs = "urn:oasis:names:tc:SAML:profiles:SSO:idp-discovery-protocol";
-
-		public SecurityTokenSerializer SecurityTokenSerializer { get; private set; }
-
-		public MetadataSerializer(SecurityTokenSerializer serializer)
+		private XmlNamespaceManager CreateNamespaceManager(XmlDocument doc)
 		{
-			if (serializer == null)
+			var nsmgr = new XmlNamespaceManager(doc.NameTable);
+			// const string XmlNs = "http://www.w3.org/XML/1998/namespace";
+			nsmgr.AddNamespace("auth", "http://docs.oasis-open.org/wsfed/authorization/200706/authclaims");
+			nsmgr.AddNamespace("ds", "http://www.w3.org/2000/09/xmldsig#");
+			nsmgr.AddNamespace("ds11", "http://www.w3.org/2009/xmldsig11#");
+			nsmgr.AddNamespace("md", "urn:oasis:names:tc:SAML:2.0:metadata");
+			nsmgr.AddNamespace("fed", "http://docs.oasis-open.org/wsfed/federation/200706");
+			nsmgr.AddNamespace("idp", "urn:oasis:names:tc:SAML:profiles:SSO:idp-discovery-protocol");
+			nsmgr.AddNamespace("saml2", "urn:oasis:names:tc:SAML:2.0:assertion");
+			nsmgr.AddNamespace("wsa", "http://www.w3.org/2005/08/addressing");
+			nsmgr.AddNamespace("wsp", "http://schemas.xmlsoap.org/ws/2002/12/policy");
+			nsmgr.AddNamespace("xenc", "http://www.w3.org/2001/04/xmlenc#");
+			nsmgr.AddNamespace("xsi", "http://www.w3.org/2001/XMLSchema-instance");
+			return nsmgr;
+		}
+
+		void ReadTest<T>(string xml, T expected, Func<TestMetadataSerializer, XmlReader, T> readFn)
+		{
+			using (var stringReader = new StringReader(xml))
+			using (var xmlReader = XmlReader.Create(stringReader))
 			{
-				throw new ArgumentNullException(nameof(serializer));
+				xmlReader.MoveToContent();
+
+				var serializer = new TestMetadataSerializer();
+				var result = readFn(serializer, xmlReader);
+				result.Should().BeEquivalentTo(expected);
 			}
-			SecurityTokenSerializer = serializer;
 		}
 
-		public MetadataSerializer()
+		[TestMethod]
+		public void MetadataSerializerTests_TestCreateInstance()
 		{
+			var serializer = new TestMetadataSerializer();
+			serializer.TestCreateAdditionalMetadataLocationInstance()
+				.Should().BeOfType<AdditionalMetadataLocation>();
+			serializer.TestCreateAffiliationDescriptorInstance()
+				.Should().BeOfType<AffiliationDescriptor>();
+			serializer.TestCreateApplicationServiceEndpointInstance()
+				.Should().BeOfType<ApplicationServiceEndpoint>();
+			serializer.TestCreateApplicationServiceInstance()
+				.Should().BeOfType<ApplicationServiceDescriptor>();
+			serializer.TestCreateArtifactResolutionServiceInstance()
+				.Should().BeOfType<ArtifactResolutionService>();
+			serializer.TestCreateAssertionConsumerServiceInstance()
+				.Should().BeOfType<AssertionConsumerService>();
+			serializer.TestCreateAssertionIdRequestServiceInstance()
+				.Should().BeOfType<AssertionIdRequestService>();
+			serializer.TestCreateAttributeAuthorityDescriptorInstance()
+				.Should().BeOfType<AttributeAuthorityDescriptor>();
+			serializer.TestCreateAttributeConsumingServiceInstance()
+				.Should().BeOfType<AttributeConsumingService>();
+			serializer.TestCreateAttributeServiceInstance()
+				.Should().BeOfType<AttributeService>();
+			serializer.TestCreateAttributeProfileInstance()
+				.Should().BeOfType<AttributeProfile>();
+			serializer.TestCreateAuthnAuthorityDescriptorInstance()
+				.Should().BeOfType<AuthnAuthorityDescriptor>();
+			serializer.TestCreateAuthnQueryServiceInstance()
+				.Should().BeOfType<AuthnQueryService>();
+			serializer.TestCreateAuthzServiceInstance()
+				.Should().BeOfType<AuthzService>();
+			serializer.TestCreateCipherDataInstance()
+				.Should().BeOfType<CipherData>();
+			serializer.TestCreateClaimValueInstance()
+				.Should().BeOfType<ClaimValue>();
+			serializer.TestCreateCipherReferenceInstance()
+				.Should().BeOfType<CipherReference>();
+			serializer.TestCreateConstrainedValueInstance()
+				.Should().BeOfType<ConstrainedValue>();
+			serializer.TestCreateContactPersonInstance()
+				.Should().BeOfType<ContactPerson>();
+			serializer.TestCreateDiscoveryResponseInstance()
+				.Should().BeOfType<DiscoveryResponse>();
+			serializer.TestCreateDSigKeyInfoInstance()
+				.Should().BeOfType<DSigKeyInfo>();
+			serializer.TestCreatePDPDescriptorInstance()
+				.Should().BeOfType<PDPDescriptor>();
+			serializer.TestCreateEncryptedDataInstance()
+				.Should().BeOfType<EncryptedData>();
+			serializer.TestCreateEncryptionPropertyInstance()
+				.Should().BeOfType<EncryptionProperty>();
+			serializer.TestCreateEncryptionPropertiesInstance()
+				.Should().BeOfType<EncryptionProperties>();
+			serializer.TestCreateEncryptedValueInstance()
+				.Should().BeOfType<EncryptedValue>();
+			serializer.TestCreateEncryptionMethodInstance()
+				.Should().BeOfType<EncryptionMethod>();
+			serializer.TestCreateEndpointInstance()
+				.Should().BeOfType<Endpoint>();
+			serializer.TestCreateEntitiesDescriptorInstance()
+				.Should().BeOfType<EntitiesDescriptor>();
+			serializer.TestCreateEntityDescriptorInstance()
+				.Should().BeOfType<EntityDescriptor>();
+			serializer.TestCreateIdpSsoDescriptorInstance()
+				.Should().BeOfType<IdpSsoDescriptor>();
+			serializer.TestCreateKeyDescriptorInstance()
+				.Should().BeOfType<KeyDescriptor>();
+			serializer.TestCreateLocalizedNameInstance()
+				.Should().BeOfType<LocalizedName>();
+			serializer.TestCreateLocalizedUriInstance()
+				.Should().BeOfType<LocalizedUri>();
+			serializer.TestCreateManageNameIDServiceInstance()
+				.Should().BeOfType<ManageNameIDService>();
+			serializer.TestCreateNameIDFormatInstance()
+				.Should().BeOfType<NameIDFormat>();
+			serializer.TestCreateNameIDMappingServiceInstance()
+				.Should().BeOfType<NameIDMappingService>();
+			serializer.TestCreateOrganizationInstance()
+				.Should().BeOfType<Organization>();
+			serializer.TestCreatePassiveRequestorEndpointInstance()
+				.Should().BeOfType<PassiveRequestorEndpoint>();
+			serializer.TestCreateSingleLogoutServiceInstance()
+				.Should().BeOfType<SingleLogoutService>();
+			serializer.TestCreateSingleSignOutNotificationEndpointInstance()
+				.Should().BeOfType<SingleSignOutNotificationEndpoint>();
+			serializer.TestCreateSecurityTokenServiceDescriptorInstance()
+				.Should().BeOfType<SecurityTokenServiceDescriptor>();
+			serializer.TestCreateSingleSignOnServiceInstance()
+				.Should().BeOfType<SingleSignOnService>();
+			serializer.TestCreateSpSsoDescriptorInstance()
+				.Should().BeOfType<SpSsoDescriptor>();
+
+			var reqAtt = serializer.TestCreateRequestedAttributeInstance("testAttribute");
+			reqAtt.Should().BeOfType<RequestedAttribute>();
+			reqAtt.Name.Should().Be("testAttribute");
+
+			var saml2Att = serializer.TestCreateSaml2AttributeInstance("saml2Attribute");
+			saml2Att.Should().BeOfType<Saml2Attribute>();
+			saml2Att.Name.Should().Be("saml2Attribute");
 		}
 
-		string GetAttribute(XmlReader reader, string att, string def)
+		[TestMethod]
+		public void MetadataSerializerTests_ReadEndpointReference()
 		{
-			string value = reader.GetAttribute(att);
-			return String.IsNullOrEmpty(value) ? def : value;
-		}
+			string xml =
+			@"<?xml version='1.0' encoding='UTF-8'?>
+			<wsa:EndpointReference
+				xmlns:wsa='http://www.w3.org/2005/08/addressing'
+				xmlns:wsp='http://schemas.xmlsoap.org/ws/2002/12/policy'>
+				<wsa:Address>http://dummy.idp.com/EndpointReference/</wsa:Address>
+				<wsa:ReferenceProperties><ref>Some reference props</ref></wsa:ReferenceProperties>
+				<wsa:ReferenceParameters><ref>Some reference params</ref></wsa:ReferenceParameters>
+				<wsa:Metadata><any>Anything at all</any></wsa:Metadata>
+				<wsa:PortType>test:porttype</wsa:PortType>
+				<wsp:Policy><some-policy-element/></wsp:Policy>
+			</wsa:EndpointReference>";
 
-		protected virtual AdditionalMetadataLocation CreateAdditionalMetadataLocationInstance() =>
-			new AdditionalMetadataLocation();
+			var doc = new XmlDocument();
+			doc.LoadXml(xml);
+			var nsmgr = CreateNamespaceManager(doc);
 
-		protected virtual AffiliationDescriptor CreateAffiliationDescriptorInstance() =>
-			new AffiliationDescriptor();
-
-		protected virtual ApplicationServiceEndpoint CreateApplicationServiceEndpointInstance() =>
-			new ApplicationServiceEndpoint();
-
-		protected virtual ApplicationServiceDescriptor CreateApplicationServiceInstance() =>
-			new ApplicationServiceDescriptor();
-
-		protected virtual ArtifactResolutionService CreateArtifactResolutionServiceInstance() =>
-			new ArtifactResolutionService();
-
-		protected virtual AssertionConsumerService CreateAssertionConsumerServiceInstance() =>
-			new AssertionConsumerService();
-
-		protected virtual AssertionIdRequestService CreateAssertionIdRequestServiceInstance() =>
-			new AssertionIdRequestService();
-
-		protected virtual AttributeAuthorityDescriptor CreateAttributeAuthorityDescriptorInstance() =>
-			new AttributeAuthorityDescriptor();
-
-		protected virtual AttributeConsumingService CreateAttributeConsumingServiceInstance() =>
-			new AttributeConsumingService();
-
-		protected virtual AttributeService CreateAttributeServiceInstance() =>
-			new AttributeService();
-
-		protected virtual AttributeProfile CreateAttributeProfileInstance() =>
-			new AttributeProfile();
-
-		protected virtual AuthnAuthorityDescriptor CreateAuthnAuthorityDescriptorInstance() =>
-			new AuthnAuthorityDescriptor();
-
-		protected virtual AuthnQueryService CreateAuthnQueryServiceInstance() =>
-			new AuthnQueryService();
-
-		protected virtual AuthzService CreateAuthzServiceInstance() =>
-			new AuthzService();
-
-		protected virtual CipherData CreateCipherDataInstance() =>
-			new CipherData();
-
-		protected virtual ClaimValue CreateClaimValueInstance() =>
-			new ClaimValue();
-
-		protected virtual CipherReference CreateCipherReferenceInstance() =>
-			new CipherReference();
-
-		protected virtual ConstrainedValue CreateConstrainedValueInstance() =>
-			new ConstrainedValue();
-
-		protected virtual ContactPerson CreateContactPersonInstance() =>
-			new ContactPerson();
-
-		protected DiscoveryResponse CreateDiscoveryResponseInstance() =>
-			new DiscoveryResponse();
-
-		protected virtual DSigKeyInfo CreateDSigKeyInfoInstance() =>
-			new DSigKeyInfo();
-
-		protected virtual EndpointReference CreateEndpointReferenceInstance() =>
-			new EndpointReference();
-
-		protected virtual PDPDescriptor CreatePDPDescriptorInstance() =>
-			new PDPDescriptor();
-
-		protected virtual EncryptedData CreateEncryptedDataInstance() =>
-			new EncryptedData();
-
-		protected virtual EncryptionProperty CreateEncryptionPropertyInstance() =>
-			new EncryptionProperty();
-
-		protected virtual EncryptionProperties CreateEncryptionPropertiesInstance() =>
-			new EncryptionProperties();
-
-		protected virtual EncryptedValue CreateEncryptedValueInstance() =>
-			new EncryptedValue();
-
-		protected virtual EncryptionMethod CreateEncryptionMethodInstance() =>
-			new EncryptionMethod();
-
-		protected virtual Endpoint CreateEndpointInstance() =>
-			new Endpoint();
-
-		protected virtual EntitiesDescriptor CreateEntitiesDescriptorInstance() =>
-			new EntitiesDescriptor();
-
-		protected virtual EntityDescriptor CreateEntityDescriptorInstance() =>
-			new EntityDescriptor();
-
-		protected virtual IdpSsoDescriptor CreateIdpSsoDescriptorInstance() =>
-			new IdpSsoDescriptor();
-
-		protected virtual KeyDescriptor CreateKeyDescriptorInstance() =>
-			new KeyDescriptor();
-
-		protected virtual LocalizedName CreateLocalizedNameInstance() =>
-			new LocalizedName();
-
-		protected virtual LocalizedUri CreateLocalizedUriInstance() =>
-			new LocalizedUri();
-
-		protected virtual ManageNameIDService CreateManageNameIDServiceInstance() =>
-			new ManageNameIDService();
-
-		protected virtual NameIDFormat CreateNameIDFormatInstance() =>
-			new NameIDFormat();
-
-		protected virtual NameIDMappingService CreateNameIDMappingServiceInstance() =>
-			new NameIDMappingService();
-
-		protected virtual Organization CreateOrganizationInstance() =>
-			new Organization();
-
-		protected virtual PassiveRequestorEndpoint CreatePassiveRequestorEndpointInstance() =>
-			new PassiveRequestorEndpoint();
-
-		protected virtual RequestedAttribute CreateRequestedAttributeInstance(string name) =>
-			new RequestedAttribute(name);
-
-		protected virtual Saml2Attribute CreateSaml2AttributeInstance(string name) =>
-			new Saml2Attribute(name);
-
-		protected virtual ServiceName CreateServiceNameInstance() =>
-			new ServiceName();
-
-		protected virtual SingleLogoutService CreateSingleLogoutServiceInstance() =>
-			new SingleLogoutService();
-
-		protected virtual SingleSignOutNotificationEndpoint CreateSingleSignOutNotificationEndpointInstance() =>
-			new SingleSignOutNotificationEndpoint();
-
-		protected virtual SecurityTokenServiceDescriptor CreateSecurityTokenServiceDescriptorInstance() =>
-			new SecurityTokenServiceDescriptor();
-
-		protected virtual SingleSignOnService CreateSingleSignOnServiceInstance() =>
-			new SingleSignOnService();
-
-		protected virtual SpSsoDescriptor CreateSpSsoDescriptorInstance() =>
-			new SpSsoDescriptor();
-
-		// <complexType name="ApplicationServiceType">
-		//   <extension base="fed:WebServiceDescriptorType">
-		// 	   <sequence>
-		//       <element ref="fed:ApplicationServiceEndpoint" minOccurs="1" maxOccurs="unbounded"/>
-		//       <element ref="fed:SingleSignOutNotificationEndpoint" minOccurs="0" maxOccurs="unbounded"/>
-		//       <element ref="fed:PassiveRequestorEndpoint" minOccurs="0" maxOccurs="unbounded"/>
-		//     </sequence>
-		//   </extension>
-		// </complexType>
-		// 
-		// <element name="fed:ApplicationServiceEndpoint" type="tns:EndpointType"/>
-		// <element name="fed:SingleSignOutNotificationEndpoint" type="tns:EndpointType"/>
-		// <element name="fed:PassiveRequestorEndpoint" type="tns:EndpointType"/>
-		protected virtual ApplicationServiceDescriptor ReadApplicationServiceDescriptor(XmlReader reader)
-		{
-			if (reader == null)
+			var expected = new EndpointReference()
 			{
-				throw new ArgumentNullException(nameof(reader));
-			}
-
-			var descriptor = CreateApplicationServiceInstance();
-			ReadWebServiceDescriptorAttributes(reader, descriptor);
-			ReadCustomAttributes(reader, descriptor);
-
-			ReadChildren(reader, () =>
-			{
-				if (reader.IsStartElement("ApplicationServiceEndpoint", FedNs))
-				{
-					descriptor.Endpoints.Add(ReadEndpointReference(reader));
-				}
-				else if (reader.IsStartElement("SingleSignOutNotificationEndpoint", FedNs))
-				{
-					descriptor.SingleSignOutEndpoints.Add(ReadEndpointReference(reader));
-				}
-				else if (reader.IsStartElement("PassiveRequestorEndpoint", FedNs))
-				{
-					descriptor.PassiveRequestorEndpoints.Add(ReadEndpointReference(reader));
-				}
-				else if (ReadWebServiceDescriptorElement(reader, descriptor))
-				{
-				}
-				else
-				{
-					return ReadCustomElement(reader, descriptor);
-				}
-				return true; // handled above
-			});
-
-			if (descriptor.Endpoints.Count == 0)
-			{
-				throw new MetadataSerializationException("ApplicationServiceType extension with no ApplicationServiceEndpoints");
-			}
-			return descriptor;
+				Uri = new Uri("http://dummy.idp.com/EndpointReference/"),
+				ReferenceProperties = {
+					doc.SelectSingleNode("/wsa:EndpointReference/wsa:ReferenceProperties/*",
+						nsmgr).As<XmlElement>() },
+				ReferenceParameters = {
+					doc.SelectSingleNode("/wsa:EndpointReference/wsa:ReferenceParameters/*",
+						nsmgr).As<XmlElement>() },
+				Metadata = {
+					doc.SelectSingleNode("/wsa:EndpointReference/wsa:Metadata/*",
+						nsmgr).As<XmlElement>() },
+				PortType = "test:porttype",
+				Policies = {
+					doc.SelectSingleNode("/wsa:EndpointReference/wsp:Policy/*",
+						nsmgr).As<XmlElement>() }
+			};
+			ReadTest(xml, expected, (serializer, reader) =>
+				serializer.TestReadEndpointReference(reader));
 		}
 
-		// <element name="ContactPerson" type="md:ContactType"/>
-		//   <complexType name="ContactType">
-		//     <sequence>
-		//       <element ref="md:Extensions" minOccurs="0"/>
-		//       <element ref="md:Company" minOccurs="0"/>
-		//       <element ref="md:GivenName" minOccurs="0"/>
-		//       <element ref="md:SurName" minOccurs="0"/>
-		//       <element ref="md:EmailAddress" minOccurs="0" maxOccurs="unbounded"/>
-		//       <element ref="md:TelephoneNumber" minOccurs="0" maxOccurs="unbounded"/>
-		//     </sequence>
-		//     <attribute name="contactType" type="md:ContactTypeType" use="required"/>
-		//     <anyAttribute namespace="##other" processContents="lax"/>
-		//   </complexType>
-		//   <element name="Company" type="string"/>
-		//   <element name="GivenName" type="string"/>
-		//   <element name="SurName" type="string"/>
-		//   <element name="EmailAddress" type="anyURI"/>
-		//   <element name="TelephoneNumber" type="string"/>
-		//   <simpleType name="ContactTypeType">
-		//     <restriction base="string">
-		//       <enumeration value="technical"/>
-		//       <enumeration value="support"/>
-		//       <enumeration value="administrative"/>
-		//       <enumeration value="billing"/>
-		//       <enumeration value="other"/>
-		//     </restriction>
-		//   </simpleType>
-		protected virtual ContactPerson ReadContactPerson(XmlReader reader)
+		[TestMethod]
+		public void MetadataSerializerTests_ReadApplicationServiceDescriptor()
 		{
-			ContactPerson person = CreateContactPersonInstance();
-			string contactType = reader.GetAttribute("contactType");
-			try
+			string xml =
+			@"<?xml version='1.0' encoding='UTF-8'?>
+			<md:RoleDescriptor
+				protocolSupportEnumeration='http://docs.oasis-open.org/wsfed/federation/200706'
+				xsi:type='fed:ApplicationServiceType'
+				xmlns:md='urn:oasis:names:tc:SAML:2.0:metadata'
+				xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'
+				xmlns:fed='http://docs.oasis-open.org/wsfed/federation/200706'
+				xmlns:wsa='http://www.w3.org/2005/08/addressing'>
+				<fed:ApplicationServiceEndpoint>
+					<wsa:Address>http://dummy.idp.com/ApplicationServiceEndpoint/</wsa:Address>
+					<wsa:ReferenceParameters><ref>Some reference</ref></wsa:ReferenceParameters>
+					<wsa:Metadata><any>Anything at all</any></wsa:Metadata>
+				</fed:ApplicationServiceEndpoint>
+				<fed:SingleSignOutNotificationEndpoint>
+					<wsa:Address>http://dummy.idp.com/SingleSignOutNotificationEndpoint/</wsa:Address>
+					<wsa:ReferenceParameters><ref>Some reference 2</ref></wsa:ReferenceParameters>
+					<wsa:Metadata><any>Anything at all 2</any></wsa:Metadata>
+				</fed:SingleSignOutNotificationEndpoint>
+				<fed:PassiveRequestorEndpoint>
+					<wsa:Address>http://dummy.idp.com/PassiveRequestorEndpoint/</wsa:Address>
+					<wsa:ReferenceParameters><ref>Some reference 3</ref></wsa:ReferenceParameters>
+					<wsa:Metadata><any>Anything at all 3</any></wsa:Metadata>
+				</fed:PassiveRequestorEndpoint>
+			</md:RoleDescriptor>";
+
+			var doc = new XmlDocument();
+			doc.LoadXml(xml);
+			var nsmgr = CreateNamespaceManager(doc);
+
+			var expected = new ApplicationServiceDescriptor()
 			{
-				person.Type = ContactTypeHelpers.ParseContactType(contactType);
-			}
-			catch (FormatException)
-			{
-				throw new MetadataSerializationException(
-					$"ContactPerson with unknown contactType attribute '{contactType}'");
-			}
-			ReadCustomAttributes(reader, person);
-
-			ReadChildren(reader, () =>
-			{
-				if (reader.IsStartElement("Company", Saml2MetadataNs))
-				{
-					person.Company = reader.ReadElementContentAsString();
-				}
-				else if (reader.IsStartElement("GivenName", Saml2MetadataNs))
-				{
-					person.GivenName = reader.ReadElementContentAsString();
-				}
-				else if (reader.IsStartElement("SurName", Saml2MetadataNs))
-				{
-					person.Surname = reader.ReadElementContentAsString();
-				}
-				else if (reader.IsStartElement("EmailAddress", Saml2MetadataNs))
-				{
-					person.EmailAddresses.Add(reader.ReadElementContentAsString());
-				}
-				else if (reader.IsStartElement("TelephoneNumber", Saml2MetadataNs))
-				{
-					person.TelephoneNumbers.Add(reader.ReadElementContentAsString());
-				}
-				else if (reader.IsStartElement("Extensions", Saml2MetadataNs))
-				{
-					ReadChildrenAsXmlElements(reader, person.Extensions.Add);
-				}
-				else
-				{
-					return ReadCustomElement(reader, person);
-				}
-				return true; // handled above
-			});
-
-			return person;
-		}
-
-		protected virtual void ReadCustomAttributes<T>(XmlReader reader, T target)
-		{
-		}
-
-		protected virtual bool ReadCustomElement<T>(XmlReader reader, T target)
-		{
-			return false;
-		}
-
-		protected virtual KeyValue ReadCustomKeyValue(XmlReader reader) => null;
-
-
-		protected virtual void ReadCustomRoleDescriptor(string xsiType, XmlReader reader, EntityDescriptor entityDescriptor)
-		{
-			reader.Skip();
-		}
-
-		protected byte[] ReadBase64(XmlReader reader)
-		{
-			/* ReadElementContentAsBase64 throws a NotSupportedException
-			byte[] buf = new byte[65536];
-			using (var ms = new MemoryStream())
-			{
-				for (; ; )
-				{
-					int read = reader.ReadElementContentAsBase64(buf, 0, buf.Length);
-					if (read == 0)
+				ProtocolsSupported = { new Uri("http://docs.oasis-open.org/wsfed/federation/200706") },
+				Endpoints = {
+					new EndpointReference()
 					{
-						return ms.ToArray();
+						Uri = new Uri("http://dummy.idp.com/ApplicationServiceEndpoint/"),
+						ReferenceParameters = { doc.SelectSingleNode(
+							"md:RoleDescriptor/fed:ApplicationServiceEndpoint/wsa:ReferenceParameters/*",
+							nsmgr).As<XmlElement>() },
+						Metadata = { doc.SelectSingleNode(
+							"md:RoleDescriptor/fed:ApplicationServiceEndpoint/wsa:Metadata/*",
+							nsmgr).As<XmlElement>() }
 					}
-					ms.Write(buf, 0, read);
+				},
+				SingleSignOutEndpoints = {
+					new EndpointReference()
+					{
+						Uri = new Uri("http://dummy.idp.com/SingleSignOutNotificationEndpoint/"),
+						ReferenceParameters = { doc.SelectSingleNode(
+							"md:RoleDescriptor/fed:SingleSignOutNotificationEndpoint/wsa:ReferenceParameters/*",
+							nsmgr).As<XmlElement>() },
+						Metadata = { doc.SelectSingleNode(
+							"md:RoleDescriptor/fed:SingleSignOutNotificationEndpoint/wsa:Metadata/*",
+							nsmgr).As<XmlElement>() }
+					}
+				},
+				PassiveRequestorEndpoints = {
+					new EndpointReference()
+					{
+						Uri = new Uri("http://dummy.idp.com/PassiveRequestorEndpoint/"),
+						ReferenceParameters = { doc.SelectSingleNode(
+							"md:RoleDescriptor/fed:PassiveRequestorEndpoint/wsa:ReferenceParameters/*",
+							nsmgr).As<XmlElement>() },
+						Metadata = { doc.SelectSingleNode(
+							"md:RoleDescriptor/fed:PassiveRequestorEndpoint/wsa:Metadata/*",
+							nsmgr).As<XmlElement>() }
+					}
 				}
-			}*/
-			return Convert.FromBase64String(reader.ReadElementContentAsString());
+			};
+
+			ReadTest(xml, expected, (serializer, reader) =>
+				serializer.TestReadApplicationServiceDescriptor(reader));
 		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_ReadContactPerson()
+		{
+			string xml =
+			@"<?xml version='1.0' encoding='UTF-8'?>
+			<md:ContactPerson contactType='technical' xmlns:md='urn:oasis:names:tc:SAML:2.0:metadata'>
+				<md:Company>Test Company</md:Company>
+				<md:GivenName>David</md:GivenName>
+				<md:SurName>Test</md:SurName>
+				<md:EmailAddress>david.test@test.company</md:EmailAddress>
+				<md:EmailAddress>david.test2@test.company</md:EmailAddress>
+				<md:TelephoneNumber>0123456789</md:TelephoneNumber>
+				<md:TelephoneNumber>9876543210</md:TelephoneNumber>
+				<md:Extensions>
+					<any-extension-element/>
+					<any-other-element/>
+				</md:Extensions>
+			</md:ContactPerson>";
+
+			var doc = new XmlDocument();
+			doc.LoadXml(xml);
+			var nsmgr = CreateNamespaceManager(doc);
+
+			var expected = new ContactPerson()
+			{
+				Type = ContactType.Technical,
+				Company = "Test Company",
+				GivenName = "David",
+				Surname = "Test",
+				EmailAddresses = { "david.test@test.company", "david.test2@test.company" },
+				TelephoneNumbers = { "0123456789", "9876543210" },
+				Extensions = {
+					doc.SelectSingleNode("/md:ContactPerson/md:Extensions/*[1]", nsmgr).As<XmlElement>(),
+					doc.SelectSingleNode("/md:ContactPerson/md:Extensions/*[2]", nsmgr).As<XmlElement>()
+				}
+			};
+
+			ReadTest(xml, expected, (serializer, reader) =>
+				serializer.TestReadContactPerson(reader));
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_ReadBase64()
+		{
+			string xml =
+			@"<?xml version='1.0' encoding='UTF-8'?><b64>dGhpcyBpcyBzb21lIHRlc3QgdGV4dA==</b64>";
+			byte[] expected = System.Text.Encoding.UTF8.GetBytes("this is some test text");
+			ReadTest(xml, expected, (serializer, reader) =>
+				serializer.TestReadBase64(reader));
+		}
+
+#if FALSE
 
 		// <element name="DSAKeyValue" type="ds:DSAKeyValueType" /> 
 		// 
@@ -2975,56 +3072,15 @@ namespace Sustainsys.Saml2.Metadata
 			});
 		}
 
-		//  <xs:complexType name="ServiceNameType">
-		//    <xs:simpleContent>
-		//      <xs:extension base="xs:QName">
-		//        <xs:attribute name="PortName" type="xs:NCName"/>
-		//        <xs:anyAttribute namespace="##other" processContents="lax"/>
-		//      </xs:extension>
-		//    </xs:simpleContent>
-		//  </xs:complexType>
-		protected virtual ServiceName ReadServiceName(XmlReader reader)
+		EndpointReference ReadEndpointReference(XmlReader reader)
 		{
-			var serviceName = CreateServiceNameInstance();
-			serviceName.PortName = GetAttribute(reader, "PortName", serviceName.PortName);
-			ReadCustomAttributes(reader, serviceName);
-			serviceName.Name = reader.ReadElementContentAsString();
-			return serviceName;
-		}
+			var endpointReference = new EndpointReference();
 
-		//  <xs:element name="EndpointReference" type="wsa:EndpointReferenceType"/>
-		//  <xs:complexType name="EndpointReferenceType">
-		//    <xs:sequence>
-		//      <xs:element name="Address" type="wsa:AttributedURI"/>
-		//      <xs:element name="ReferenceProperties" type="wsa:ReferencePropertiesType" minOccurs="0"/>
-		//      <xs:element name="ReferenceParameters" type="wsa:ReferenceParametersType" minOccurs="0"/>
-		//      <xs:element name="PortType" type="wsa:AttributedQName" minOccurs="0"/>
-		//      <xs:element name="ServiceName" type="wsa:ServiceNameType" minOccurs="0"/>
-		//      <xs:any namespace="##other" processContents="lax" minOccurs="0" maxOccurs="unbounded">
-		//        <xs:annotation>
-		//          <xs:documentation>
-		// 				 If "Policy" elements from namespace "http://schemas.xmlsoap.org/ws/2002/12/policy#policy" are used, they must appear first (before any extensibility elements).
-		// 				</xs:documentation>
-		//        </xs:annotation>
-		//      </xs:any>
-		//    </xs:sequence>
-		//    <xs:anyAttribute namespace="##other" processContents="lax"/>
-		//  </xs:complexType>
-		//  <xs:complexType name="ReferencePropertiesType">
-		//    <xs:sequence>
-		//      <xs:any processContents="lax" minOccurs="0" maxOccurs="unbounded"/>
-		//    </xs:sequence>
-		//  </xs:complexType>
-		//  <xs:complexType name="ReferenceParametersType">
-		//    <xs:sequence>
-		//      <xs:any processContents="lax" minOccurs="0" maxOccurs="unbounded"/>
-		//    </xs:sequence>
-		//  </xs:complexType>
-		protected virtual EndpointReference ReadEndpointReference(XmlReader reader)
-		{
-			var endpointReference = CreateEndpointReferenceInstance();
-			ReadCustomAttributes(reader, endpointReference);
-
+			// <wsa:EndpointReference>
+			//     <wsa:Address>xs:anyURI</wsa:Address>
+			//     <wsa:ReferenceParameters>xs:any*</wsa:ReferenceParameters> ?
+			//     <wsa:Metadata>xs:any*</wsa:Metadata>?
+			// </wsa:EndpointReference>
 			ReadChildren(reader, () =>
 			{
 				if (reader.IsStartElement("Address", WsaNs))
@@ -3035,10 +3091,6 @@ namespace Sustainsys.Saml2.Metadata
 					}
 					endpointReference.Uri = MakeUri(reader.ReadElementContentAsString());
 				}
-				else if (reader.IsStartElement("ReferenceProperties", WsaNs))
-				{
-					ReadChildrenAsXmlElements(reader, endpointReference.ReferenceProperties.Add);
-				}
 				else if (reader.IsStartElement("ReferenceParameters", WsaNs))
 				{
 					ReadChildrenAsXmlElements(reader, endpointReference.ReferenceParameters.Add);
@@ -3046,18 +3098,6 @@ namespace Sustainsys.Saml2.Metadata
 				else if (reader.IsStartElement("Metadata", WsaNs))
 				{
 					ReadChildrenAsXmlElements(reader, endpointReference.Metadata.Add);
-				}
-				else if (reader.IsStartElement("PortType", WsaNs))
-				{
-					endpointReference.PortType = reader.ReadElementContentAsString();
-				}
-				else if (reader.IsStartElement("ServiceName", WsaNs))
-				{
-					endpointReference.ServiceName = ReadServiceName(reader);
-				}
-				else if (reader.IsStartElement("Policy", WspNs))
-				{
-					ReadChildrenAsXmlElements(reader, endpointReference.Policies.Add);
 				}
 				else
 				{
@@ -3176,54 +3216,17 @@ namespace Sustainsys.Saml2.Metadata
 			}
 		}
 
-		protected virtual void WriteServiceName(XmlWriter writer, ServiceName serviceName)
-		{
-			writer.WriteStartElement("wsa", "ServiceName", WsaNs);
-			WriteCustomAttributes(writer, serviceName);
-			if (!String.IsNullOrEmpty(serviceName.PortName))
-			{
-				writer.WriteAttributeString("PortName", serviceName.PortName);
-			}
-			if (!String.IsNullOrEmpty(serviceName.Name))
-			{
-				writer.WriteString(serviceName.Name);
-			}
-			writer.WriteEndElement();
-		}
-
-		protected virtual void WriteEndpointReference(XmlWriter writer, EndpointReference endpointReference)
+		void WriteEndpointReference(XmlWriter writer, EndpointReference endpointReference)
 		{
 			writer.WriteStartElement("wsa", "EndpointReference", WsaNs);
-			WriteCustomAttributes(writer, endpointReference);
 			writer.WriteStartElement("wsa", "Address", WsaNs);
 			writer.WriteStartElement(endpointReference.Uri.ToString());
 			writer.WriteEndElement();
 
-			WriteWrappedElements(writer, "wsa", "Metadata", WsaNs,
-				endpointReference.Metadata);
-			WriteWrappedElements(writer, "wsa", "ReferenceProperties", WsaNs,
-				endpointReference.ReferenceProperties);
 			WriteWrappedElements(writer, "wsa", "ReferenceParameters", WsaNs,
 				endpointReference.ReferenceParameters);
-			if (endpointReference.Policies.Count > 0)
-			{
-				foreach (var polElt in endpointReference.Policies)
-				{
-					writer.WriteStartElement("wsp", "Policy", WspNs);
-					polElt.WriteTo(writer);
-					writer.WriteEndElement();
-				}
-			}
-			WriteWrappedElements(writer, "wsp", "Policy", WspNs,
-				endpointReference.Policies);
-			if (!String.IsNullOrEmpty(endpointReference.PortType))
-			{
-				writer.WriteStartElement("wsa", "PortType", WsaNs);
-				writer.WriteString(endpointReference.PortType);
-				writer.WriteEndElement();
-			}
-			WriteServiceName(writer, endpointReference.ServiceName);
-			WriteCustomElements(writer, endpointReference);
+			WriteWrappedElements(writer, "wsa", "Metadata", WsaNs,
+				endpointReference.Metadata);
 
 			writer.WriteEndElement();
 		}
@@ -3237,6 +3240,7 @@ namespace Sustainsys.Saml2.Metadata
 				WriteEndpointReference(writer, endpointReference);
 				writer.WriteEndElement();
 			}
+
 		}
 
 		protected virtual void WriteApplicationServiceDescriptor(XmlWriter writer, ApplicationServiceDescriptor appService)
@@ -5030,5 +5034,8 @@ namespace Sustainsys.Saml2.Metadata
 			WriteAttributeElements(writer, attribute);
 			writer.WriteEndElement();
 		}
+	}
+}
+#endif
 	}
 }
