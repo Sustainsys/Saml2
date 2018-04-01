@@ -162,6 +162,9 @@ namespace Sustainsys.Saml2.Tests.Metadata
 
 		public byte[] TestReadBase64(XmlReader reader) =>
 			base.ReadBase64(reader);
+
+		public IdpSsoDescriptor TestReadIdpSsoDescriptor(XmlReader reader) =>
+			base.ReadIdpSsoDescriptor(reader);
 	}
 
 	[TestClass]
@@ -468,6 +471,91 @@ namespace Sustainsys.Saml2.Tests.Metadata
 			byte[] expected = System.Text.Encoding.UTF8.GetBytes("this is some test text");
 			ReadTest(xml, expected, (serializer, reader) =>
 				serializer.TestReadBase64(reader));
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_ReadIdpSsoDescriptor()
+		{
+			string xml =
+			@"<?xml version='1.0' encoding='UTF-8'?>
+			  <md:IDPSSODescriptor
+				xmlns:md='urn:oasis:names:tc:SAML:2.0:metadata'
+				xmlns:saml='urn:oasis:names:tc:SAML:2.0:assertion'
+				WantAuthnRequestsSigned='true'
+				protocolSupportEnumeration='urn:oasis:names:tc:SAML:2.0:protocol'>
+			    <md:KeyDescriptor use='signing'>
+			      <ds:KeyInfo xmlns:ds='http://www.w3.org/2000/09/xmldsig#'>
+			        <MyCustomElement xmlns='urn:MyNamespace' />
+			      </ds:KeyInfo>
+			    </md:KeyDescriptor>
+				<md:SingleSignOnService
+					Binding='http://idp.example.com/ssobinding'
+					Location='http://idp.example.com/ssolocation'
+					ResponseLocation='http://idp.example.com/ssoresponselocation' />
+				<md:NameIDMappingService
+					Binding='http://idp.example.com/ssobinding'
+					Location='http://idp.example.com/ssolocation'
+					ResponseLocation='http://idp.example.com/ssoresponselocation' />
+				<md:AssertionIDRequestService
+					Binding='http://idp.example.com/ssobinding'
+					Location='http://idp.example.com/ssolocation'
+					ResponseLocation='http://idp.example.com/ssoresponselocation' />
+				<md:AttributeProfile>http://idp.example.com/attributeprofile</md:AttributeProfile>
+				<saml:Attribute Name='testAtt' NameFormat='http://idp.example.com/nameformat' FriendlyName='friendlyAtt'>
+					<saml:AttributeValue>attValue</saml:AttributeValue>
+				</saml:Attribute>
+			  </md:IDPSSODescriptor>";
+
+			var doc = new XmlDocument();
+			doc.LoadXml(xml);
+			var nsmgr = CreateNamespaceManager(doc);
+
+			var expected = new IdpSsoDescriptor()
+			{
+				WantAuthnRequestsSigned = true,
+				ProtocolsSupported = { new Uri("urn:oasis:names:tc:SAML:2.0:protocol") },
+				Keys = {
+					new KeyDescriptor() {
+						Use = KeyType.Signing,
+						KeyInfo = new DSigKeyInfo()
+					}
+				},
+				SingleSignOnServices = {
+					new SingleSignOnService() {
+						Binding = new Uri("http://idp.example.com/ssobinding"),
+						Location = new Uri("http://idp.example.com/ssolocation"),
+						ResponseLocation = new Uri("http://idp.example.com/ssoresponselocation")
+					}
+				},
+				NameIDMappingServices = {
+					new NameIDMappingService() {
+						Binding = new Uri("http://idp.example.com/ssobinding"),
+						Location = new Uri("http://idp.example.com/ssolocation"),
+						ResponseLocation = new Uri("http://idp.example.com/ssoresponselocation")
+					}
+				},
+				AssertionIDRequestServices = {
+					new AssertionIdRequestService() {
+						Binding = new Uri("http://idp.example.com/ssobinding"),
+						Location = new Uri("http://idp.example.com/ssolocation"),
+						ResponseLocation = new Uri("http://idp.example.com/ssoresponselocation")
+					}
+				},
+				AttributeProfiles = {
+					new AttributeProfile() {
+						Uri = new Uri("http://idp.example.com/attributeprofile")
+					}
+				},
+				SupportedAttributes = {
+					new Saml2Attribute("testAtt", "attValue") {
+						NameFormat = new Uri("http://idp.example.com/nameformat"),
+						FriendlyName = "friendlyAtt"
+					}
+				}
+			};
+
+			ReadTest(xml, expected, (serializer, reader) =>
+				serializer.TestReadIdpSsoDescriptor(reader));
 		}
 
 #if FALSE
@@ -1960,71 +2048,6 @@ namespace Sustainsys.Saml2.Tests.Metadata
 			});
 
 			// TODO: something with the signature
-			return descriptor;
-		}
-
-		// <element name="IDPSSODescriptor" type="md:IDPSSODescriptorType"/>
-		// <complexType name="IDPSSODescriptorType">
-		//   <complexContent>
-		//     <extension base="md:SSODescriptorType">
-		//     <sequence>
-		//       <element ref="md:SingleSignOnService" maxOccurs="unbounded"/>
-		//       <element ref="md:NameIDMappingService" minOccurs="0"
-		//         maxOccurs="unbounded"/>
-		//       <element ref="md:AssertionIDRequestService" minOccurs="0"
-		//         maxOccurs="unbounded"/>
-		//       <element ref="md:AttributeProfile" minOccurs="0"
-		//         maxOccurs="unbounded"/>
-		//       <element ref="saml:Attribute" minOccurs="0"
-		//         maxOccurs="unbounded"/>
-		//       </sequence>
-		//       <attribute name="WantAuthnRequestsSigned" type="boolean"
-		//         use="optional"/>
-		//     </extension>
-		//   </complexContent>
-		// </complexType>
-		// <element name="SingleSignOnService" type="md:EndpointType"/>
-		// <element name="NameIDMappingService" type="md:EndpointType"/>
-		// <element name="AssertionIDRequestService" type="md:EndpointType"/>
-		// <element name="AttributeProfile" type="anyURI"/>
-		protected virtual IdpSsoDescriptor ReadIdpSsoDescriptor(XmlReader reader)
-		{
-			var descriptor = CreateIdpSsoDescriptorInstance();
-			descriptor.WantAuthnRequestsSigned = GetOptionalBooleanAttribute(reader, "WantAuthnRequestsSigned");
-			ReadSsoDescriptorAttributes(reader, descriptor);
-			ReadCustomAttributes(reader, descriptor);
-
-			ReadChildren(reader, () =>
-			{
-				if (reader.IsStartElement("SingleSignOnService", Saml2MetadataNs))
-				{
-					descriptor.SingleSignOnServices.Add(ReadSingleSignOnService(reader));
-				}
-				else if (reader.IsStartElement("NameIDMappingService", Saml2MetadataNs))
-				{
-					descriptor.NameIDMappingServices.Add(ReadNameIDMappingService(reader));
-				}
-				else if (reader.IsStartElement("AssertionIDRequestService", Saml2MetadataNs))
-				{
-					descriptor.AssertionIDRequestServices.Add(ReadAssertionIdRequestService(reader));
-				}
-				else if (reader.IsStartElement("AttributeProfile", Saml2MetadataNs))
-				{
-					descriptor.AttributeProfiles.Add(ReadAttributeProfile(reader));
-				}
-				else if (reader.IsStartElement("Attribute", Saml2AssertionNs))
-				{
-					descriptor.SupportedAttributes.Add(ReadSaml2Attribute(reader));
-				}
-				else if (ReadSsoDescriptorElement(reader, descriptor))
-				{
-				}
-				else
-				{
-					return ReadCustomElement(reader, descriptor);
-				}
-				return true; // handled above
-			});
 			return descriptor;
 		}
 
