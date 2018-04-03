@@ -1,10 +1,14 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using FluentAssertions;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Collections.Generic;
+using System.Numerics;
+using System.Security.Cryptography;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Xml;
 using Sustainsys.Saml2.Metadata;
 using Microsoft.IdentityModel.Tokens.Saml2;
@@ -165,12 +169,62 @@ namespace Sustainsys.Saml2.Tests.Metadata
 
 		public IdpSsoDescriptor TestReadIdpSsoDescriptor(XmlReader reader) =>
 			base.ReadIdpSsoDescriptor(reader);
+
+		public DsaKeyValue TestReadDsaKeyValue(XmlReader reader) =>
+			base.ReadDSAKeyValue(reader);
+
+		public RsaKeyValue TestReadRsaKeyValue(XmlReader reader) =>
+			base.ReadRSAKeyValue(reader);
+
+		public EcKeyValue TestReadEcKeyValue(XmlReader reader) =>
+			base.ReadECKeyValue(reader);
+
+		public EcKeyValue TestReadEcDsaKeyValue(XmlReader reader) =>
+			base.ReadECDSAKeyValue(reader);
+
+		public KeyValue TestReadKeyValue(XmlReader reader) =>
+			base.ReadKeyValue(reader);
+
+		public RetrievalMethod TestReadRetrievalMethod(XmlReader reader) =>
+			base.ReadRetrievalMethod(reader);
+
+		public X509IssuerSerial TestReadX509IssuerSerial(XmlReader reader) =>
+			base.ReadX509IssuerSerial(reader);
+
+		public X509Digest TestReadX509Digest(XmlReader reader) =>
+			base.ReadX509Digest(reader);
+
+		public X509Data TestReadX509Data(XmlReader reader) =>
+			base.ReadX509Data(reader);
+
+		public DSigKeyInfo TestReadDSigKeyInfo(XmlReader reader) =>
+			base.ReadDSigKeyInfo(reader);
+
+		public EncryptionMethod TestReadEncryptionMethod(XmlReader reader) =>
+			base.ReadEncryptionMethod(reader);
+
+		public CipherReference TestReadCipherReference(XmlReader reader) =>
+			base.ReadCipherReference(reader);
+
+		public CipherData TestReadCipherData(XmlReader reader) =>
+			base.ReadCipherData(reader);
+
+		public EncryptionProperty TestReadEncryptionProperty(XmlReader reader) =>
+			base.ReadEncryptionProperty(reader);
+
+		public EncryptionProperties TestReadEncryptionProperties(XmlReader reader) =>
+			base.ReadEncryptionProperties(reader);
+
+		public AssertionConsumerService TestReadAssertionConsumerService(XmlReader reader) =>
+			base.ReadAssertionConsumerService(reader);
 	}
 
 	[TestClass]
 	public class MetadataSerializerTests
 	{
-		private XmlNamespaceManager CreateNamespaceManager(XmlDocument doc)
+		static Regex whitespaceRe = new Regex("[ \t\r\n]");
+
+		XmlNamespaceManager CreateNamespaceManager(XmlDocument doc)
 		{
 			var nsmgr = new XmlNamespaceManager(doc.NameTable);
 			// const string XmlNs = "http://www.w3.org/XML/1998/namespace";
@@ -188,7 +242,17 @@ namespace Sustainsys.Saml2.Tests.Metadata
 			return nsmgr;
 		}
 
-		void ReadTest<T>(string xml, T expected, Func<TestMetadataSerializer, XmlReader, T> readFn)
+		(XmlDocument doc, XmlNamespaceManager nsmgr) LoadXml(string xml)
+		{
+			var doc = new XmlDocument();
+			doc.LoadXml(xml);
+			var nsmgr = CreateNamespaceManager(doc);
+			return (doc, nsmgr);
+		}
+
+		void ReadTest<T>(string xml, T expected, Func<TestMetadataSerializer, XmlReader, T> readFn,
+			Func<FluentAssertions.Equivalency.EquivalencyAssertionOptions<T>,
+				 FluentAssertions.Equivalency.EquivalencyAssertionOptions<T>> config = null)
 		{
 			using (var stringReader = new StringReader(xml))
 			using (var xmlReader = XmlReader.Create(stringReader))
@@ -197,7 +261,14 @@ namespace Sustainsys.Saml2.Tests.Metadata
 
 				var serializer = new TestMetadataSerializer();
 				var result = readFn(serializer, xmlReader);
-				result.Should().BeEquivalentTo(expected);
+				if (config != null)
+				{
+					result.Should().BeEquivalentTo(expected, config);
+				}
+				else
+				{
+					result.Should().BeEquivalentTo(expected);
+				}
 			}
 		}
 
@@ -318,10 +389,7 @@ namespace Sustainsys.Saml2.Tests.Metadata
 				<wsa:PortType>test:porttype</wsa:PortType>
 				<wsp:Policy><some-policy-element/></wsp:Policy>
 			</wsa:EndpointReference>";
-
-			var doc = new XmlDocument();
-			doc.LoadXml(xml);
-			var nsmgr = CreateNamespaceManager(doc);
+			(XmlDocument doc, XmlNamespaceManager nsmgr) = LoadXml(xml);
 
 			var expected = new EndpointReference()
 			{
@@ -372,10 +440,7 @@ namespace Sustainsys.Saml2.Tests.Metadata
 					<wsa:Metadata><any>Anything at all 3</any></wsa:Metadata>
 				</fed:PassiveRequestorEndpoint>
 			</md:RoleDescriptor>";
-
-			var doc = new XmlDocument();
-			doc.LoadXml(xml);
-			var nsmgr = CreateNamespaceManager(doc);
+			(XmlDocument doc, XmlNamespaceManager nsmgr) = LoadXml(xml);
 
 			var expected = new ApplicationServiceDescriptor()
 			{
@@ -440,10 +505,7 @@ namespace Sustainsys.Saml2.Tests.Metadata
 					<any-other-element/>
 				</md:Extensions>
 			</md:ContactPerson>";
-
-			var doc = new XmlDocument();
-			doc.LoadXml(xml);
-			var nsmgr = CreateNamespaceManager(doc);
+			(XmlDocument doc, XmlNamespaceManager nsmgr) = LoadXml(xml);
 
 			var expected = new ContactPerson()
 			{
@@ -482,12 +544,59 @@ namespace Sustainsys.Saml2.Tests.Metadata
 				xmlns:md='urn:oasis:names:tc:SAML:2.0:metadata'
 				xmlns:saml='urn:oasis:names:tc:SAML:2.0:assertion'
 				WantAuthnRequestsSigned='true'
-				protocolSupportEnumeration='urn:oasis:names:tc:SAML:2.0:protocol'>
+				protocolSupportEnumeration='urn:oasis:names:tc:SAML:2.0:protocol'
+				cacheDuration='P2Y6M5DT12H35M30S'
+				validUntil='2020-01-01T14:32:31'
+				errorURL='http://idp.example.com/something/went/wrong'
+				ID='yourGUIDhere'>
 			    <md:KeyDescriptor use='signing'>
 			      <ds:KeyInfo xmlns:ds='http://www.w3.org/2000/09/xmldsig#'>
 			        <MyCustomElement xmlns='urn:MyNamespace' />
 			      </ds:KeyInfo>
 			    </md:KeyDescriptor>
+				<md:Extensions>
+					<extra-idp-sso-stuff/>
+				</md:Extensions>
+				<md:Organization>
+					<md:Extensions>
+						<ext-elt/>
+					</md:Extensions>
+					<md:OrganizationName xml:lang='en'>Acme Ltd</md:OrganizationName>
+					<md:OrganizationDisplayName xml:lang='en'>Acme Ltd (display)</md:OrganizationDisplayName>
+					<md:OrganizationURL xml:lang='en'>http://acme.co/</md:OrganizationURL>
+				</md:Organization>
+				<md:ContactPerson contactType='administrative' xmlns:md='urn:oasis:names:tc:SAML:2.0:metadata'>
+					<md:Company>Acme Ltd</md:Company>
+					<md:GivenName>Wile E</md:GivenName>
+					<md:SurName>Coyote</md:SurName>
+					<md:EmailAddress>wile.e.coyto@acme.co</md:EmailAddress>
+					<md:TelephoneNumber>11223344</md:TelephoneNumber>
+					<md:Extensions>
+						<time-for-tea/>
+						<and-biscuits/>
+					</md:Extensions>
+				</md:ContactPerson>
+				<md:ArtifactResolutionService
+					index='1'
+					isDefault='false'
+					Binding='http://idp.example.com/ars1'
+					Location='http://idp.example.com/arsloc1'
+					ResponseLocation='http://idp.example.com/arsresp1' />
+				<md:ArtifactResolutionService
+					index='2'
+					isDefault='false'
+					Binding='http://idp.example.com/ars2'
+					Location='http://idp.example.com/arsloc2'
+					ResponseLocation='http://idp.example.com/arsresp2' />
+				<md:SingleLogoutService
+					Binding='http://idp.example.com/slsbinding'
+					Location='http://idp.example.com/slslocation'
+					ResponseLocation='http://idp.example.com/slsresponselocation' />
+				<md:ManageNameIDService
+					Binding='http://idp.example.com/mnibinding'
+					Location='http://idp.example.com/mnilocation'
+					ResponseLocation='http://idp.example.com/mniresponselocation' />
+				<md:NameIDFormat>http://idp.example.com/nameidformat</md:NameIDFormat>
 				<md:SingleSignOnService
 					Binding='http://idp.example.com/ssobinding'
 					Location='http://idp.example.com/ssolocation'
@@ -505,19 +614,90 @@ namespace Sustainsys.Saml2.Tests.Metadata
 					<saml:AttributeValue>attValue</saml:AttributeValue>
 				</saml:Attribute>
 			  </md:IDPSSODescriptor>";
-
-			var doc = new XmlDocument();
-			doc.LoadXml(xml);
-			var nsmgr = CreateNamespaceManager(doc);
+			(XmlDocument doc, XmlNamespaceManager nsmgr) = LoadXml(xml);
 
 			var expected = new IdpSsoDescriptor()
 			{
 				WantAuthnRequestsSigned = true,
 				ProtocolsSupported = { new Uri("urn:oasis:names:tc:SAML:2.0:protocol") },
+				CacheDuration = new TimeSpan(365 * 2 + 30 * 6 + 5, 12, 35, 30),
+				ValidUntil = new DateTime(2020, 01, 01, 14, 32, 31),
+				ErrorUrl = new Uri("http://idp.example.com/something/went/wrong"),
+				Id = "yourGUIDhere",
+				Extensions = {
+					doc.SelectSingleNode("/md:IDPSSODescriptor/md:Extensions/*[1]",
+						nsmgr).As<XmlElement>()
+				},
+				Organization = new Organization() {
+					Extensions = {
+						doc.SelectSingleNode("/md:IDPSSODescriptor/md:Organization/md:Extensions/*[1]",
+							nsmgr).As<XmlElement>()
+					},
+					Names = {
+						new LocalizedName("Acme Ltd", "en")
+					},
+					DisplayNames = {
+						new LocalizedName("Acme Ltd (display)", "en")
+					},
+					Urls = {
+						new LocalizedUri(new Uri("http://acme.co/"), "en")
+					}
+				},
+				Contacts = {
+					new ContactPerson() {
+						Type = ContactType.Administrative,
+						Company = "Acme Ltd",
+						GivenName = "Wile E",
+						Surname = "Coyote",
+						EmailAddresses = { "wile.e.coyto@acme.co" },
+						TelephoneNumbers = { "11223344" },
+						Extensions = {
+							doc.SelectSingleNode("/md:IDPSSODescriptor/md:ContactPerson/md:Extensions/*[1]",
+								nsmgr).As<XmlElement>(),
+							doc.SelectSingleNode("/md:IDPSSODescriptor/md:ContactPerson/md:Extensions/*[2]",
+								nsmgr).As<XmlElement>()
+						}
+					}
+				},
 				Keys = {
 					new KeyDescriptor() {
 						Use = KeyType.Signing,
 						KeyInfo = new DSigKeyInfo()
+					}
+				},
+				ArtifactResolutionServices = {
+					{ 1,  new ArtifactResolutionService() {
+						Index = 1,
+						IsDefault = false,
+						Binding = new Uri("http://idp.example.com/ars1"),
+						Location = new Uri("http://idp.example.com/arsloc1"),
+						ResponseLocation = new Uri("http://idp.example.com/arsresp1")
+					} },
+					{ 2, new ArtifactResolutionService() {
+						Index = 2,
+						IsDefault = false,
+						Binding = new Uri("http://idp.example.com/ars2"),
+						Location = new Uri("http://idp.example.com/arsloc2"),
+						ResponseLocation = new Uri("http://idp.example.com/arsresp2")
+					} }
+				},
+				SingleLogoutServices = {
+					new SingleLogoutService() {
+						Binding = new Uri("http://idp.example.com/slsbinding"),
+						Location = new Uri("http://idp.example.com/slslocation"),
+						ResponseLocation = new Uri("http://idp.example.com/slsresponselocation")
+					},
+				},
+				ManageNameIDServices = {
+					new ManageNameIDService() {
+						Binding = new Uri("http://idp.example.com/mnibinding"),
+						Location = new Uri("http://idp.example.com/mnilocation"),
+						ResponseLocation = new Uri("http://idp.example.com/mniresponselocation")
+					}
+				},
+				NameIdentifierFormats = {
+					new NameIDFormat() {
+						Uri = new Uri("http://idp.example.com/nameidformat")
 					}
 				},
 				SingleSignOnServices = {
@@ -557,814 +737,519 @@ namespace Sustainsys.Saml2.Tests.Metadata
 			ReadTest(xml, expected, (serializer, reader) =>
 				serializer.TestReadIdpSsoDescriptor(reader));
 		}
+		// 
+
+		[TestMethod]
+		public void MetadataSerializerTests_ReadAssertionConsumerService()
+		{
+			string xml =
+			@"<?xml version='1.0' encoding='UTF-8'?>
+				<md:AssertionConsumerService xmlns:md='urn:oasis:names:tc:SAML:2.0:metadata'
+					index='150'
+					isDefault='false'
+					Binding='http://idp.example.com/acs1'
+					Location='http://idp.example.com/acsloc1'
+					ResponseLocation='http://idp.example.com/acsresp1'>
+				</md:AssertionConsumerService>";
+			(XmlDocument doc, XmlNamespaceManager nsmgr) = LoadXml(xml);
+
+			var expected = new AssertionConsumerService()
+			{
+				Index = 150,
+				IsDefault = false,
+				Binding = new Uri("http://idp.example.com/acs1"),
+				Location = new Uri("http://idp.example.com/acsloc1"),
+				ResponseLocation = new Uri("http://idp.example.com/acsresp1")
+			};
+
+			ReadTest(xml, expected, (serializer, reader) =>
+				serializer.TestReadAssertionConsumerService(reader));
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_ReadDSAKeyValue()
+		{
+			string xml =
+			@"<?xml version='1.0' encoding='UTF-8'?>
+			<DSAKeyValue xmlns='http://www.w3.org/2000/09/xmldsig#'>
+				<P>/KaCzo4Syrom78z3EQ5SbbB4sF7ey80etKII864WF64B81uRpH5t9jQTxeEu0ImbzRMqzVDZkVG9xD7nN1kuFw==</P>
+				<Q>li7dzDacuo67Jg7mtqEm2TRuOMU=</Q>
+				<G>Z4Rxsnqc9E7pGknFFH2xqaryRPBaQ01khpMdLRQnG541Awtx/XPaF5Bpsy4pNWMOHCBiNU0NogpsQW5QvnlMpA==</G>
+				<Y>qV38IqrWJG0V/mZQvRVi1OHw9Zj84nDC4jO8P0axi1gb6d+475yhMjSc/BrIVC58W3ydbkK+Ri4OKbaRZlYeRA==</Y>
+				<J>qV38IqrWJG0V/mZQvRVi1OHw9Zj84nDC4jO8P0axi1gb6d+475yhMjSc/BrIVC58W3ydbkK+Ri4OKbaRZlYeRA==</J>
+				<Seed>qV38IqrWJG0V/mZQvRVi1OHw9Zj84nDC4jO8P0axi1gb6d+475yhMjSc/BrIVC58W3ydbkK+Ri4OKbaRZlYeRA==</Seed>
+				<PgenCounter>pxXTng==</PgenCounter>
+			</DSAKeyValue>";
+			(XmlDocument doc, XmlNamespaceManager nsmgr) = LoadXml(xml);
+
+			var expected = new DsaKeyValue(
+				new DSAParameters {
+					P = Convert.FromBase64String("/KaCzo4Syrom78z3EQ5SbbB4sF7ey80etKII864WF64B81uRpH5t9jQTxeEu0ImbzRMqzVDZkVG9xD7nN1kuFw=="),
+					Q = Convert.FromBase64String("li7dzDacuo67Jg7mtqEm2TRuOMU="),
+					G = Convert.FromBase64String("Z4Rxsnqc9E7pGknFFH2xqaryRPBaQ01khpMdLRQnG541Awtx/XPaF5Bpsy4pNWMOHCBiNU0NogpsQW5QvnlMpA=="),
+					Y = Convert.FromBase64String("qV38IqrWJG0V/mZQvRVi1OHw9Zj84nDC4jO8P0axi1gb6d+475yhMjSc/BrIVC58W3ydbkK+Ri4OKbaRZlYeRA=="),
+					// (rubbish, but will do for a test)
+					J = Convert.FromBase64String("qV38IqrWJG0V/mZQvRVi1OHw9Zj84nDC4jO8P0axi1gb6d+475yhMjSc/BrIVC58W3ydbkK+Ri4OKbaRZlYeRA=="),
+					Seed = Convert.FromBase64String("qV38IqrWJG0V/mZQvRVi1OHw9Zj84nDC4jO8P0axi1gb6d+475yhMjSc/BrIVC58W3ydbkK+Ri4OKbaRZlYeRA=="),
+					Counter = -1491741794
+				}
+			);
+
+			ReadTest(xml, expected, (serializer, reader) =>
+				serializer.TestReadDsaKeyValue(reader),
+				opts => opts.ComparingByMembers<DSAParameters>());
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_ReadRSAKeyValue()
+		{
+			string xml =
+			@"<?xml version='1.0' encoding='UTF-8'?>
+				<RSAKeyValue xmlns='http://www.w3.org/2000/09/xmldsig#'>
+				  <Modulus>xA7SEU+e0yQH5rm9kbCDN9o3aPIo7HbP7tX6WOocLZAtNfyxSZDU16ksL6WjubafOqNEpcwR3RdFsT7bCqnXPBe5ELh5u4VEy19MzxkXRgrMvavzyBpVRgBUwUlV5foK5hhmbktQhyNdy/6LpQRhDUDsTvK+g9Ucj47es9AQJ3U=</Modulus>
+				  <Exponent>AQAB</Exponent>
+				</RSAKeyValue>";
+			(XmlDocument doc, XmlNamespaceManager nsmgr) = LoadXml(xml);
+
+			var expected = new RsaKeyValue(
+				new RSAParameters
+				{
+					Modulus = Convert.FromBase64String("xA7SEU+e0yQH5rm9kbCDN9o3aPIo7HbP7tX6WOocLZAtNfyxSZDU16ksL6WjubafOqNEpcwR3RdFsT7bCqnXPBe5ELh5u4VEy19MzxkXRgrMvavzyBpVRgBUwUlV5foK5hhmbktQhyNdy/6LpQRhDUDsTvK+g9Ucj47es9AQJ3U="),
+					Exponent = Convert.FromBase64String("AQAB")
+				}
+			);
+
+			ReadTest(xml, expected, (serializer, reader) =>
+				serializer.TestReadRsaKeyValue(reader),
+				opts => opts.ComparingByMembers<RSAParameters>());
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_ReadECKeyValue()
+		{
+			string xml =
+			@"<?xml version='1.0' encoding='UTF-8'?>
+				<ECKeyValue xmlns='http://www.w3.org/2009/xmldsig11#'>
+				  <NamedCurve URI='urn:oid:1.2.840.10045.3.1.7' />
+				  <PublicKey>BOVKaiLPKEDChhkA64UEBOXTv/VFHnhrUPN+bXqCvEl7rroAYpH5tKzbiGTtMSlp4JO9Pxg44zeX7EoWDvOrpD0=</PublicKey>
+				</ECKeyValue>";
+			(XmlDocument doc, XmlNamespaceManager nsmgr) = LoadXml(xml);
+
+			var expected = new EcKeyValue(
+				new ECParameters {
+					Curve = ECCurve.CreateFromOid(new Oid("1.2.840.10045.3.1.7")),
+					Q = new ECPoint {
+						X = new byte[] {
+							0xe5, 0x4a, 0x6a, 0x22, 0xcf, 0x28, 0x40, 0xc2, 0x86, 0x19, 0x00,
+							0xeb, 0x85, 0x04, 0x04, 0xe5, 0xd3, 0xbf, 0xf5, 0x45, 0x1e, 0x78,
+							0x6b, 0x50, 0xf3, 0x7e, 0x6d, 0x7a, 0x82, 0xbc, 0x49, 0x7b },
+						Y = new byte[] {
+								0xae, 0xba, 0x00, 0x62, 0x91, 0xf9, 0xb4, 0xac, 0xdb, 0x88, 0x64,
+								0xed, 0x31, 0x29, 0x69, 0xe0, 0x93, 0xbd, 0x3f, 0x18, 0x38, 0xe3,
+								0x37, 0x97, 0xec, 0x4a, 0x16, 0x0e, 0xf3, 0xab, 0xa4, 0x3d }
+					}
+				}
+			);
+
+			ReadTest(xml, expected, (serializer, reader) =>
+				serializer.TestReadEcKeyValue(reader),
+				opts => opts.ComparingByMembers<ECParameters>()
+							.ComparingByMembers<ECCurve>()
+							.ComparingByMembers<ECPoint>()
+							.ComparingByMembers<Oid>()
+							.WithTracing());
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_ReadECDSAKeyValue()
+		{
+			string xml =
+			@"<?xml version='1.0' encoding='UTF-8'?>
+				<ECDSAKeyValue xmlns='http://www.w3.org/2001/04/xmldsig-more#'>
+				  <DomainParameters>
+					<NamedCurve URN='urn:oid:1.2.840.10045.3.1.7' />
+				  </DomainParameters>
+				  <PublicKey>
+					<X Value='58511060653801744393249179046482833320204931884267326155134056258624064349885' />
+					<Y Value='102403352136827775240910267217779508359028642524881540878079119895764161434936' />
+				  </PublicKey>
+				</ECDSAKeyValue>";
+			(XmlDocument doc, XmlNamespaceManager nsmgr) = LoadXml(xml);
+
+			var expected = new EcKeyValue(
+				new ECParameters {
+					Curve = ECCurve.CreateFromOid(new Oid("1.2.840.10045.3.1.7")),
+					Q = new ECPoint
+					{
+						X = BigInteger.Parse("58511060653801744393249179046482833320204931884267326155134056258624064349885").ToByteArray(),
+						Y = BigInteger.Parse("102403352136827775240910267217779508359028642524881540878079119895764161434936").ToByteArray()
+					}
+				}
+			);
+
+			ReadTest(xml, expected, (serializer, reader) =>
+				serializer.TestReadEcDsaKeyValue(reader),
+				opts => opts.ComparingByMembers<ECParameters>()
+							.ComparingByMembers<ECCurve>()
+							.ComparingByMembers<ECPoint>()
+							.ComparingByMembers<Oid>()
+							.WithTracing());
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_ReadKeyValue()
+		{
+			string xml =
+			@"<?xml version='1.0' encoding='UTF-8'?>
+				<KeyValue xmlns='http://www.w3.org/2000/09/xmldsig#'>
+					<RSAKeyValue>
+					  <Modulus>xA7SEU+e0yQH5rm9kbCDN9o3aPIo7HbP7tX6WOocLZAtNfyxSZDU16ksL6WjubafOqNEpcwR3RdFsT7bCqnXPBe5ELh5u4VEy19MzxkXRgrMvavzyBpVRgBUwUlV5foK5hhmbktQhyNdy/6LpQRhDUDsTvK+g9Ucj47es9AQJ3U=</Modulus>
+					  <Exponent>AQAB</Exponent>
+					</RSAKeyValue>
+				</KeyValue>";
+			(XmlDocument doc, XmlNamespaceManager nsmgr) = LoadXml(xml);
+
+			var expected = new RsaKeyValue(
+				new RSAParameters
+				{
+					Modulus = Convert.FromBase64String("xA7SEU+e0yQH5rm9kbCDN9o3aPIo7HbP7tX6WOocLZAtNfyxSZDU16ksL6WjubafOqNEpcwR3RdFsT7bCqnXPBe5ELh5u4VEy19MzxkXRgrMvavzyBpVRgBUwUlV5foK5hhmbktQhyNdy/6LpQRhDUDsTvK+g9Ucj47es9AQJ3U="),
+					Exponent = Convert.FromBase64String("AQAB")
+				}
+			);
+
+			ReadTest(xml, expected, (serializer, reader) =>
+				serializer.TestReadKeyValue(reader),
+				opts => opts.ComparingByMembers<RSAParameters>().RespectingRuntimeTypes());
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_ReadRetrievalMethod()
+		{
+			string xml =
+			@"<?xml version='1.0' encoding='UTF-8'?>
+				<RetrievalMethod xmlns='http://www.w3.org/2000/09/xmldsig#'
+					URI='http://idp.example.com/signingCert.cer'
+					Type='http://idp.example.com/x509certtype'>
+					<Transforms>
+						<unparsed-extra-elements/>
+						<of-any-kind/>
+					</Transforms>
+				</RetrievalMethod>";
+			(XmlDocument doc, XmlNamespaceManager nsmgr) = LoadXml(xml);
+
+			var expected = new RetrievalMethod {
+				Uri = new Uri("http://idp.example.com/signingCert.cer"),
+				Type = new Uri("http://idp.example.com/x509certtype"),
+				Transforms = {
+					doc.SelectSingleNode("/ds:RetrievalMethod/ds:Transforms/*[1]",
+						nsmgr).As<XmlElement>(),
+					doc.SelectSingleNode("/ds:RetrievalMethod/ds:Transforms/*[2]",
+						nsmgr).As<XmlElement>()
+				}
+			};
+
+			ReadTest(xml, expected, (serializer, reader) =>
+				serializer.TestReadRetrievalMethod(reader));
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_ReadX509IssuerSerial()
+		{
+			string xml =
+			@"<?xml version='1.0' encoding='UTF-8'?>
+				<X509IssuerSerial xmlns='http://www.w3.org/2000/09/xmldsig#'>
+					<X509IssuerName>Test Issuer</X509IssuerName>
+					<X509SerialNumber>128976</X509SerialNumber>
+				</X509IssuerSerial>";
+			(XmlDocument doc, XmlNamespaceManager nsmgr) = LoadXml(xml);
+
+			var expected = new X509IssuerSerial("Test Issuer", "128976");
+
+			ReadTest(xml, expected, (serializer, reader) =>
+				serializer.TestReadX509IssuerSerial(reader));
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_ReadX509Digest()
+		{
+			string xml =
+			@"<?xml version='1.0' encoding='UTF-8'?>
+				<X509Digest xmlns='http://www.w3.org/2009/xmldsig11#' Algorithm='http://w3c.org/madeUpAlgorithm'>BOVKaiLPKEDChhkA64UEBOXTv/VFHnhrUPN+bXqCvEl7rroAYpH5tKzbiGTtMSlp4JO9Pxg44zeX7EoWDvOrpD0=</X509Digest>";
+			(XmlDocument doc, XmlNamespaceManager nsmgr) = LoadXml(xml);
+
+			var expected = new X509Digest
+			{
+				Algorithm = new Uri("http://w3c.org/madeUpAlgorithm"),
+				Value = Convert.FromBase64String("BOVKaiLPKEDChhkA64UEBOXTv/VFHnhrUPN+bXqCvEl7rroAYpH5tKzbiGTtMSlp4JO9Pxg44zeX7EoWDvOrpD0=")
+			};
+
+			ReadTest(xml, expected, (serializer, reader) =>
+				serializer.TestReadX509Digest(reader));
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_ReadX509Data()
+		{
+			string certData = whitespaceRe.Replace(@"
+				MIIC2jCCAkMCAg38MA0GCSqGSIb3DQEBBQUAMIGbMQswCQYDVQQGEwJKUDEOMAwG
+				A1UECBMFVG9reW8xEDAOBgNVBAcTB0NodW8ta3UxETAPBgNVBAoTCEZyYW5rNERE
+				MRgwFgYDVQQLEw9XZWJDZXJ0IFN1cHBvcnQxGDAWBgNVBAMTD0ZyYW5rNEREIFdl
+				YiBDQTEjMCEGCSqGSIb3DQEJARYUc3VwcG9ydEBmcmFuazRkZC5jb20wHhcNMTIw
+				ODIyMDUyNzQxWhcNMTcwODIxMDUyNzQxWjBKMQswCQYDVQQGEwJKUDEOMAwGA1UE
+				CAwFVG9reW8xETAPBgNVBAoMCEZyYW5rNEREMRgwFgYDVQQDDA93d3cuZXhhbXBs
+				ZS5jb20wggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQC0z9FeMynsC8+u
+				dvX+LciZxnh5uRj4C9S6tNeeAlIGCfQYk0zUcNFCoCkTknNQd/YEiawDLNbxBqut
+				bMDZ1aarys1a0lYmUeVLCIqvzBkPJTSQsCopQQ9V8WuT252zzNzs68dVGNdCJd5J
+				NRQykpwexmnjPPv0mvj7i8XgG379TyW6P+WWV5okeUkXJ9eJS2ouDYdR2SM9BoVW
+				+FgxDu6BmXhozW5EfsnajFp7HL8kQClI0QOc79yuKl3492rH6bzFsFn2lfwWy9ic
+				7cP8EpCTeFp1tFaD+vxBhPZkeTQ1HKx6hQ5zeHIB5ySJJZ7af2W8r4eTGYzbdRW2
+				4DDHCPhZAgMBAAEwDQYJKoZIhvcNAQEFBQADgYEAQMv+BFvGdMVzkQaQ3/+2noVz
+				/uAKbzpEL8xTcxYyP3lkOeh4FoxiSWqy5pGFALdPONoDuYFpLhjJSZaEwuvjI/Tr
+				rGhLV1pRG9frwDFshqD2Vaj4ENBCBh6UpeBop5+285zQ4SI7q4U9oSebUDJiuOx6
+				+tZ9KynmrbJpTSi0+BMK", "");
+
+			string crlData = whitespaceRe.Replace(@"
+				MIIBYDCBygIBATANBgkqhkiG9w0BAQUFADBDMRMwEQYKCZImiZPyLGQBGRYDY29t
+				MRcwFQYKCZImiZPyLGQBGRYHZXhhbXBsZTETMBEGA1UEAxMKRXhhbXBsZSBDQRcN
+				MDUwMjA1MTIwMDAwWhcNMDUwMjA2MTIwMDAwWjAiMCACARIXDTA0MTExOTE1NTcw
+				M1owDDAKBgNVHRUEAwoBAaAvMC0wHwYDVR0jBBgwFoAUCGivhTPIOUp6+IKTjnBq
+				SiCELDIwCgYDVR0UBAMCAQwwDQYJKoZIhvcNAQEFBQADgYEAItwYffcIzsx10NBq
+				m60Q9HYjtIFutW2+DvsVFGzIF20f7pAXom9g5L2qjFXejoRvkvifEBInr0rUL4Xi
+				NkR9qqNMJTgV/wD9Pn7uPSYS69jnK2LiK8NGgO94gtEVxtCccmrLznrtZ5mLbnCB
+				fUNCdMGmr8FVF6IzTNYGmCuk/C4=", "");
+
+			string xml =
+			@"<?xml version='1.0' encoding='UTF-8'?>
+			  <X509Data xmlns='http://www.w3.org/2000/09/xmldsig#'>
+				<X509IssuerSerial> 
+				  <X509IssuerName>
+					C=JP, ST=Tokyo, L=Chuo-ku, O=Frank4DD, OU=WebCert Support, CN=Frank4DD Web CA/emailAddress=support@frank4dd.com
+				  </X509IssuerName>
+				  <X509SerialNumber>3580</X509SerialNumber>
+				</X509IssuerSerial>
+				<X509SKI>31d97bd7</X509SKI> 
+				<X509SubjectName>C=JP, ST=Tokyo, O=Frank4DD, CN=www.example.com</X509SubjectName>
+				<X509Certificate>" + certData + @"</X509Certificate>
+			    <X509CRL>" + crlData + @"</X509CRL>
+			  </X509Data>";
+			(XmlDocument doc, XmlNamespaceManager nsmgr) = LoadXml(xml);
+
+			var expected = new X509Data {
+				IssuerSerial = new X509IssuerSerial(
+					"C=JP, ST=Tokyo, L=Chuo-ku, O=Frank4DD, OU=WebCert Support, CN=Frank4DD Web CA/emailAddress=support@frank4dd.com",
+					"3580"
+				),
+				SKI = Convert.FromBase64String("31d97bd7"),
+				SubjectName = "C=JP, ST=Tokyo, O=Frank4DD, CN=www.example.com",
+				Certificates = {
+					new X509Certificate2(Convert.FromBase64String(certData))
+				},
+				CRL = Convert.FromBase64String(crlData)
+			};
+
+			ReadTest(xml, expected, (serializer, reader) =>
+				serializer.TestReadX509Data(reader));
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_ReadDSigKeyInfo()
+		{
+			string xml =
+			@"<?xml version='1.0' encoding='UTF-8'?>
+			<KeyInfo xmlns='http://www.w3.org/2000/09/xmldsig#' Id='testId'>
+				<X509Data>
+					<X509IssuerSerial> 
+					  <X509IssuerName>
+						C=JP, ST=Tokyo, L=Chuo-ku, O=Frank4DD, OU=WebCert Support, CN=Frank4DD Web CA/emailAddress=support@frank4dd.com
+					  </X509IssuerName>
+					  <X509SerialNumber>3580</X509SerialNumber>
+					</X509IssuerSerial>
+				</X509Data>
+				<KeyName>NameOfKey</KeyName>
+				<KeyValue>
+					<RSAKeyValue>
+					  <Modulus>xA7SEU+e0yQH5rm9kbCDN9o3aPIo7HbP7tX6WOocLZAtNfyxSZDU16ksL6WjubafOqNEpcwR3RdFsT7bCqnXPBe5ELh5u4VEy19MzxkXRgrMvavzyBpVRgBUwUlV5foK5hhmbktQhyNdy/6LpQRhDUDsTvK+g9Ucj47es9AQJ3U=</Modulus>
+					  <Exponent>AQAB</Exponent>
+					</RSAKeyValue>
+				</KeyValue>
+				<RetrievalMethod
+					URI='http://idp.example.com/signingCert.cer'
+					Type='http://idp.example.com/x509certtype'>
+				</RetrievalMethod>
+			</KeyInfo>";
+			(XmlDocument doc, XmlNamespaceManager nsmgr) = LoadXml(xml);
+
+			var expected = new DSigKeyInfo {
+				Id = "testId",
+				RetrievalMethods = {
+					new RetrievalMethod {
+						Uri = new Uri("http://idp.example.com/signingCert.cer"),
+						Type = new Uri("http://idp.example.com/x509certtype")
+					}
+				},
+				Data = {
+					new X509Data {
+						IssuerSerial = new X509IssuerSerial(
+							"C=JP, ST=Tokyo, L=Chuo-ku, O=Frank4DD, OU=WebCert Support, CN=Frank4DD Web CA/emailAddress=support@frank4dd.com",
+							"3580"
+						)
+					}
+				},
+				KeyNames = {
+					"NameOfKey"
+				},
+				KeyValues = {
+					new RsaKeyValue(
+						new RSAParameters
+						{
+							Modulus = Convert.FromBase64String("xA7SEU+e0yQH5rm9kbCDN9o3aPIo7HbP7tX6WOocLZAtNfyxSZDU16ksL6WjubafOqNEpcwR3RdFsT7bCqnXPBe5ELh5u4VEy19MzxkXRgrMvavzyBpVRgBUwUlV5foK5hhmbktQhyNdy/6LpQRhDUDsTvK+g9Ucj47es9AQJ3U="),
+							Exponent = Convert.FromBase64String("AQAB")
+						}
+					)
+				}
+			};
+
+			ReadTest(xml, expected, (serializer, reader) =>
+				serializer.TestReadDSigKeyInfo(reader),
+				opts => opts.ComparingByMembers<RSAParameters>());
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_ReadEncryptionMethod()
+		{
+			string xml =
+			@"<?xml version='1.0' encoding='UTF-8'?>
+			<EncryptionMethod xmlns='http://www.w3.org/2001/04/xmlenc#'
+				xmlns:ds='http://www.w3.org/2000/09/xmldsig#'
+				Algorithm='http://www.w3.org/2001/04/xmlenc#rsa-oaep-mgf1p'>
+				<KeySize> 2048</KeySize>
+				<OAEPparams> 9lWu3Q== </OAEPparams>
+				<ds:DigestMethod Algorithm='http://www.w3.org/2000/09/xmldsig#sha1'/>
+			</EncryptionMethod>";
+			(XmlDocument doc, XmlNamespaceManager nsmgr) = LoadXml(xml);
+
+			var expected = new EncryptionMethod
+			{
+				OAEPparams = Convert.FromBase64String("9lWu3Q=="),
+				Algorithm = new Uri("http://www.w3.org/2001/04/xmlenc#rsa-oaep-mgf1p"),
+				KeySize = 2048
+			};
+
+			ReadTest(xml, expected, (serializer, reader) =>
+				serializer.TestReadEncryptionMethod(reader));
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_ReadCipherReference()
+		{
+			string xml =
+			@"<?xml version='1.0' encoding='UTF-8'?>
+			  <CipherReference xmlns='http://www.w3.org/2001/04/xmlenc#'
+				xmlns:ds='http://www.w3.org/2000/09/xmldsig#'
+				URI='http://www.example.com/CipherValues.xml'>
+				<Transforms>
+				  <ds:Transform 
+				   Algorithm='http://www.w3.org/TR/1999/REC-xpath-19991116'>
+					  <ds:XPath xmlns:rep='http://www.example.org/repository'>
+						self::text()[parent::rep:CipherValue[@Id='example1']]
+					  </ds:XPath>
+				  </ds:Transform>
+				  <ds:Transform Algorithm='http://www.w3.org/2000/09/xmldsig#base64'/>
+				</Transforms>
+			  </CipherReference>";
+			(XmlDocument doc, XmlNamespaceManager nsmgr) = LoadXml(xml);
+
+			var expected = new CipherReference
+			{
+				Uri = new Uri("http://www.example.com/CipherValues.xml"),
+				Transforms = {
+					doc.SelectSingleNode("/xenc:CipherReference/xenc:Transforms/*[1]",
+						nsmgr).As<XmlElement>(),
+					doc.SelectSingleNode("/xenc:CipherReference/xenc:Transforms/*[2]",
+						nsmgr).As<XmlElement>()
+				}
+			};
+
+			ReadTest(xml, expected, (serializer, reader) =>
+				serializer.TestReadCipherReference(reader));
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_ReadCipherData()
+		{
+			string xml =
+			@"<?xml version='1.0' encoding='UTF-8'?>
+			  <CipherData xmlns='http://www.w3.org/2001/04/xmlenc#'>
+				<CipherValue>DEADBEEF</CipherValue>
+			    <CipherReference URI='http://www.example.com/CipherValues.xml'/>
+			  </CipherData>";
+			(XmlDocument doc, XmlNamespaceManager nsmgr) = LoadXml(xml);
+
+			var expected = new CipherData
+			{
+				CipherValue = "DEADBEEF",
+				CipherReference = new CipherReference() {
+					Uri = new Uri("http://www.example.com/CipherValues.xml"),
+				}
+			};
+
+			ReadTest(xml, expected, (serializer, reader) =>
+				serializer.TestReadCipherData(reader));
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_ReadEncryptionProperty()
+		{
+			string xml =
+			@"<?xml version='1.0' encoding='UTF-8'?>
+			  <EncryptionProperty xmlns='http://www.w3.org/2001/04/xmlenc#'
+				Target='http://enc.org/target'
+				Id='someId'>
+				<AnythingYouLike/>
+			  </EncryptionProperty>";
+			(XmlDocument doc, XmlNamespaceManager nsmgr) = LoadXml(xml);
+
+			var expected = new EncryptionProperty
+			{
+				Target = new Uri("http://enc.org/target"),
+				Id = "someId"
+			};
+
+			ReadTest(xml, expected, (serializer, reader) =>
+				serializer.TestReadEncryptionProperty(reader));
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_ReadEncryptionProperties()
+		{
+			string xml =
+			@"<?xml version='1.0' encoding='UTF-8'?>
+			<EncryptionProperties Id='anId'>
+				  <EncryptionProperty xmlns='http://www.w3.org/2001/04/xmlenc#'
+					Target='http://enc.org/target'
+					Id='someId'>
+					<AnythingYouLike/>
+				  </EncryptionProperty>
+			</EncryptionProperties>";
+			(XmlDocument doc, XmlNamespaceManager nsmgr) = LoadXml(xml);
+
+			var expected = new EncryptionProperties
+			{
+				Properties = {
+					new EncryptionProperty
+					{
+						Target = new Uri("http://enc.org/target"),
+						Id = "someId"
+					}
+				},
+				Id = "anId"
+			};
+
+			ReadTest(xml, expected, (serializer, reader) =>
+				serializer.TestReadEncryptionProperties(reader));
+		}
 
 #if FALSE
-
-		// <element name="DSAKeyValue" type="ds:DSAKeyValueType" /> 
-		// 
-		// <complexType name="DSAKeyValueType"> 
-		//   <sequence>
-		//     <sequence minOccurs="0">
-		//       <element name="P" type="ds:CryptoBinary"/> 
-		//       <element name="Q" type="ds:CryptoBinary"/>
-		//     </sequence>
-		//     <element name="G" type="ds:CryptoBinary" minOccurs="0"/> 
-		//     <element name="Y" type="ds:CryptoBinary"/> 
-		//     <element name="J" type="ds:CryptoBinary" minOccurs="0"/>
-		//     <sequence minOccurs="0">
-		//       <element name="Seed" type="ds:CryptoBinary"/> 
-		//       <element name="PgenCounter" type="ds:CryptoBinary"/> 
-		//     </sequence>
-		//   </sequence>
-		// </complexType>
-		protected virtual DsaKeyValue ReadDSAKeyValue(XmlReader reader)
-		{
-			var parameters = new DSAParameters();
-			ReadChildren(reader, () =>
-			{
-				if (reader.IsStartElement("P", DSigNs))
-				{
-					parameters.P = ReadBase64(reader);
-				}
-				else if (reader.IsStartElement("Q", DSigNs))
-				{
-					parameters.Q = ReadBase64(reader);
-				}
-				else if (reader.IsStartElement("G", DSigNs))
-				{
-					parameters.G = ReadBase64(reader);
-				}
-				else if (reader.IsStartElement("Y", DSigNs))
-				{
-					parameters.Y = ReadBase64(reader);
-				}
-				else if (reader.IsStartElement("J", DSigNs))
-				{
-					parameters.J = ReadBase64(reader);
-				}
-				else if (reader.IsStartElement("Seed", DSigNs))
-				{
-					parameters.Seed = ReadBase64(reader);
-				}
-				else if (reader.IsStartElement("PgenCounter", DSigNs))
-				{
-					byte[] counter = ReadBase64(reader);
-					// big endian
-					parameters.Counter = (counter[0] << 24) | (counter[1] << 16) | (counter[2] << 8) | counter[3];
-				}
-				else
-				{
-					throw new MetadataSerializationException(
-						$"Unknown DSAKeyValue parameter {reader.Name}");
-				}
-				return true;
-			});
-			if (parameters.P == null || parameters.Q == null || parameters.Y == null)
-			{
-				throw new MetadataSerializationException(
-					"DSAKeyValue is missing one of the mandatory parameters (P, Q, Y)");
-			}
-			return new DsaKeyValue(parameters);
-		}
-
-		// <element name="RSAKeyValue" type="ds:RSAKeyValueType" />
-		// 
-		// <complexType name="RSAKeyValueType">
-		//   <sequence>
-		//     <element name="Modulus" type="ds:CryptoBinary" /> 
-		//     <element name="Exponent" type="ds:CryptoBinary" />
-		//   </sequence>
-		// </complexType>
-		protected virtual RsaKeyValue ReadRSAKeyValue(XmlReader reader)
-		{
-			var parameters = new RSAParameters();
-			ReadChildren(reader, () =>
-			{
-				if (reader.IsStartElement("Modulus", DSigNs))
-				{
-					parameters.Modulus = ReadBase64(reader);
-				}
-				else if (reader.IsStartElement("Exponent", DSigNs))
-				{
-					parameters.Exponent = ReadBase64(reader);
-				}
-				else
-				{
-					throw new MetadataSerializationException(
-						$"Unknown DSAKeyValue parameter {reader.Name}");
-				}
-				return true;
-			});
-			if (parameters.Modulus == null || parameters.Exponent == null)
-			{
-				throw new MetadataSerializationException(
-					"RSAKeyValue is missing one of the mandatory parameters (Modulus, Exponent)");
-			}
-			return new RsaKeyValue(parameters);
-		}
-
-#if FALSE
-		// <element name="Prime" type="dsig11:PrimeFieldParamsType" />
-		// 
-		// <complexType name="PrimeFieldParamsType">
-		//   <sequence>
-		//     <element name="P" type="ds:CryptoBinary" />
-		//   </sequence>
-		// </complexType>
-		byte[] ReadECPrime(XmlReader reader)
-		{
-			byte[] value = null;
-			ReadChildren(reader, () =>
-			{
-				if (reader.IsStartElement("P", DSig11Ns))
-				{
-					value = ReadBase64(reader);
-					return true;
-				}
-				throw new MetadataSerializationException(
-					$"Unknown element '{reader.Name}' in EC Prime Value type");
-			});
-			if (value == null)
-			{
-				throw new MetadataSerializationException("Missing P child in EC Prime Value type");
-			}
-			return value;
-		}
-
-		// <element name="GnB" type="dsig11:CharTwoFieldParamsType" />
-		// 
-		// <complexType name="CharTwoFieldParamsType">
-		//   <sequence>
-		//     <element name="M" type="positiveInteger" />
-		//   </sequence>
-		// </complexType>
-		// 
-		void ReadECGnBParameters(XmlReader reader, ECCurve curve)
-		{
-			ReadChildren(reader, () =>
-			{
-				if (reader.IsStartElement("M", DSig11Ns))
-				{
-					string sv = reader.ReadElementContentAsString();
-					// curve.CurveType = ECCurve.ECCurveType.Characteristic2;
-					curve.
-			});
-		}
-
-		// <element name="TnB" type="dsig11:TnBFieldParamsType" />
-		// 
-		// <complexType name="TnBFieldParamsType">
-		//   <complexContent>
-		//     <extension base="dsig11:CharTwoFieldParamsType">
-		//       <sequence>
-		//         <element name="K" type="positiveInteger" />
-		//       </sequence>
-		//     </extension>
-		//   </complexContent>
-		// </complexType>
-		// 
-		// <element name="PnB" type="dsig11:PnBFieldParamsType" />
-		// 
-		// <complexType name="PnBFieldParamsType">
-		//   <complexContent>
-		//     <extension base="dsig11:CharTwoFieldParamsType">
-		//       <sequence>
-		//         <element name="K1" type="positiveInteger" />
-		//         <element name="K2" type="positiveInteger" />
-		//         <element name="K3" type="positiveInteger" />
-		//       </sequence>
-		//     </extension>
-		//   </complexContent>
-		// </complexType>
-
-		void ReadECFieldId(XmlReader reader, ECCurve curve)
-		{
-			ReadChildren(reader, () =>
-			{
-				if (reader.IsStartElement("Prime"))
-				{
-					curve.Prime = ReadECPrime(reader);
-					//curve.CurveType = ECCurve.ECCurveType.
-							//     <element ref="dsig11:Prime" />
-							//     <element ref="dsig11:TnB" />
-							//     <element ref="dsig11:PnB" />
-							//     <element ref="dsig11:GnB" />
-
-				});
-		}
-
-		// <complexType name="ECParametersType">
-		//   <sequence>
-		//     <element name="FieldID" type="dsig11:FieldIDType" />
-		//     <element name="Curve" type="dsig11:CurveType" />
-		//     <element name="Base" type="dsig11:ECPointType" />
-		//     <element name="Order" type="ds:CryptoBinary" />
-		//     <element name="CoFactor" type="integer" minOccurs="0" />
-		//     <element name="ValidationData" 
-		//              type="dsig11:ECValidationDataType" minOccurs="0" />
-		//   </sequence>
-		// </complexType>
-		// 
-		// <complexType name="FieldIDType">
-		//   <choice>
-		//     <element ref="dsig11:Prime" />
-		//     <element ref="dsig11:TnB" />
-		//     <element ref="dsig11:PnB" />
-		//     <element ref="dsig11:GnB" />
-		//     <any namespace="##other" processContents="lax" />
-		//   </choice>
-		// </complexType>
-		// 
-		// <complexType name="CurveType">
-		//   <sequence>
-		//     <element name="A" type="ds:CryptoBinary" />
-		//     <element name="B" type="ds:CryptoBinary" />
-		//   </sequence>
-		// </complexType>
-		// 
-		// <complexType name="ECValidationDataType">
-		//   <sequence>
-		//     <element name="seed" type="ds:CryptoBinary" />
-		//   </sequence>
-		//   <attribute name="hashAlgorithm" type="anyURI" use="required" />
-		// </complexType>
-		protected virtual void ReadECParameters(XmlReader reader)
-		{
-			ECParameters p;
-			var curve = new ECCurve();
-			ReadChildren(reader, () =>
-			{
-				if (reader.IsStartElement("FieldID", DSig11Ns))
-				{
-					ReadECFieldId(reader, curve);
-				}
-				else if (reader.IsStartElement("Curve", DSig11Ns))
-				{
-					ReadChildren(reader, () =>
-					{
-						if (reader.IsStartElement("A"))
-						{
-							curve.A = ReadBase64(reader);
-						}
-						else if (reader.IsStartElement("B"))
-						{
-							curve.B = ReadBase64(reader);
-						}
-						else
-						{
-							throw new Exception($"Unknown ECParameters/Curve element {reader.Name}");
-						}
-						return true;
-					});
-				}
-				else if (reader.IsStartElement("Base", DSig11Ns))
-				{
-				}
-				else if (reader.IsStartElement("Order", DSig11Ns))
-				{
-				}
-				else if (reader.IsStartElement("CoFactor", DSig11Ns))
-				{
-				}
-				else if (reader.IsStartElement("ValidationData", DSig11Ns))
-				{
-				}
-				return true;
-			});
-		}
-#endif
-
-		// <element name="ECKeyValue" type="dsig11:ECKeyValueType" />
-		// 
-		// <complexType name="ECKeyValueType">
-		//   <sequence>
-		//     <choice>
-		//       <element name="ECParameters" type="dsig11:ECParametersType" />
-		//       <element name="NamedCurve" type="dsig11:NamedCurveType" />
-		//     </choice>
-		//     <element name="PublicKey" type="dsig11:ECPointType" />
-		//   </sequence>
-		//   <attribute name="Id" type="ID" use="optional" />
-		// </complexType>
-		// 
-		// <complexType name="NamedCurveType">
-		//   <attribute name="URI" type="anyURI" use="required" />
-		// </complexType>
-		// 
-		// <simpleType name="ECPointType">
-		//   <restriction base="ds:CryptoBinary" />
-		// </simpleType>
-		protected virtual EcKeyValue ReadECDSAKeyValue(XmlReader reader)
-		{
-			ECParameters parameters = new ECParameters();
-			ReadChildren(reader, () =>
-			{
-				if (reader.IsStartElement("NamedCurve", DSig11Ns))
-				{
-					string oid = reader.ReadElementContentAsString();
-					if (!oid.StartsWith("urn:oid:", StringComparison.Ordinal))
-					{
-						throw new Exception($"Unknown EC curve type {oid}");
-					}
-					oid = oid.Substring("urn:oid:".Length);
-					parameters.Curve = ECCurve.CreateFromValue(oid);
-				}
-				else if (reader.IsStartElement("PublicKey", DSig11Ns))
-				{
-					ReadChildren(reader, () =>
-					{
-						if (reader.IsStartElement("X", DSig11Ns))
-						{
-							parameters.Q.X = ReadBase64(reader);
-						}
-						else if (reader.IsStartElement("Y", DSig11Ns))
-						{
-							parameters.Q.Y = ReadBase64(reader);
-						}
-						else
-						{
-							throw new Exception($"Invalid child element '{reader.Name}' in ECDSAKeyValue/PublicKey");
-						}
-						return true;
-					});
-				}
-				// I can't see this is used in the wild.  Also I can't figure out
-				// how to map the parameters to the .NET ECParameters object.
-				// else if (reader.IsStartElement("ECParameters", DSig11Ns))
-				// {
-				// }
-				else
-				{
-					throw new MetadataSerializationException(
-						$"Unknown ECKeyValue parameter {reader.Name}");
-				}
-				return true;
-			});
-			parameters.Validate();
-			return new EcKeyValue(parameters);
-		}
-
-		protected virtual EcKeyValue ReadECKeyValue(XmlReader reader)
-		{
-			ECParameters parameters = new ECParameters();
-			ReadChildren(reader, () =>
-			{
-				if (reader.IsStartElement("NamedCurve", DSig11Ns))
-				{
-					string oid = reader.ReadElementContentAsString();
-					if (!oid.StartsWith("urn:oid:", StringComparison.Ordinal))
-					{
-						throw new Exception($"Unknown EC curve type {oid}");
-					}
-					oid = oid.Substring("urn:oid:".Length);
-					parameters.Curve = ECCurve.CreateFromValue(oid);
-				}
-				else if (reader.IsStartElement("PublicKey", DSig11Ns))
-				{
-					string pkData = reader.ReadElementContentAsString();
-					byte[] pkBytes = Convert.FromBase64String(pkData);
-					if (pkBytes[0] != 4)
-					{
-						throw new Exception("Missing magic number in EC PublicKey data");
-					}
-					int numLen = (pkBytes.Length - 1) / 2;
-					parameters.Q.X = new ArraySegment<byte>(
-						pkBytes, 1, (pkBytes.Length - 1) / 2).ToArray();
-					parameters.Q.Y = new ArraySegment<byte>(
-						pkBytes, 1 + numLen, numLen).ToArray();
-				}
-				// I can't see this is used in the wild.  Also I can't figure out
-				// how to map the parameters to the .NET ECParameters object.
-				// else if (reader.IsStartElement("ECParameters", DSig11Ns))
-				// {
-				// }
-				else
-				{
-					throw new MetadataSerializationException(
-						$"Unknown ECKeyValue parameter {reader.Name}");
-				}
-				return true;
-
-			});
-			return new EcKeyValue(parameters);
-		}
-
-		// <element name = "KeyValue" type="ds:KeyValueType" /> 
-		// <complexType name = "KeyValueType" mixed="true">
-		//   <choice>
-		//     <element ref="ds:DSAKeyValue"/>
-		//     <element ref="ds:RSAKeyValue"/>
-		//     <!-- <element ref="dsig11:ECKeyValue"/> -->
-		//     <!-- ECC keys(XMLDsig 1.1) will use the any element -->
-		//     <any namespace="##other" processContents="lax"/>
-		//   </choice>
-		// </complexType>
-		protected virtual KeyValue ReadKeyValue(XmlReader reader)
-		{
-			KeyValue value;
-			if (reader.IsEmptyElement)
-			{
-				throw new MetadataSerializationException("KeyValue missing child key element");
-			}
-			reader.ReadStartElement();
-			if (reader.IsStartElement("DSAKeyValue", DSigNs))
-			{
-				value = ReadDSAKeyValue(reader);
-			}
-			else if (reader.IsStartElement("RSAKeyValue", DSigNs))
-			{
-				value = ReadRSAKeyValue(reader);
-			}
-			else if (reader.IsStartElement("ECKeyValue", DSig11Ns))
-			{
-				value = ReadECKeyValue(reader);
-			}
-			else if (reader.IsStartElement("ECDSAKeyValue", DSigNs))
-			{
-				value = ReadECDSAKeyValue(reader);
-			}
-			else
-			{
-				value = ReadCustomKeyValue(reader);
-			}
-			if (value == null)
-			{
-				throw new MetadataSerializationException(
-					$"KeyValue with unknown child key element {reader.Name}");
-			}
-			SkipToElementEnd(reader);
-			return value;
-		}
-
-		// <element name="RetrievalMethod" type="ds:RetrievalMethodType" /> 
-		// 
-		// <complexType name="RetrievalMethodType">
-		//   <sequence>
-		//     <element ref="ds:Transforms" minOccurs="0" /> 
-		//   </sequence>  
-		//   <attribute name="URI" type="anyURI" />
-		//   <attribute name="Type" type="anyURI" use="optional" />
-		// </complexType>
-		protected virtual RetrievalMethod ReadRetrievalMethod(XmlReader reader)
-		{
-			var method = new RetrievalMethod();
-			method.Type = GetUriAttribute(reader, "Type", method.Type);
-			method.Uri = GetUriAttribute(reader, "URI", method.Uri);
-			ReadCustomAttributes(reader, method);
-			ReadChildren(reader, () =>
-			{
-				if (reader.IsStartElement("Transforms", DSigNs))
-				{
-					ReadChildrenAsXmlElements(reader, method.Transforms.Add);
-				}
-				else
-				{
-					return ReadCustomElement(reader, method);
-				}
-				return true; // handled above
-			});
-			return method;
-		}
-
-		// <complexType name="X509IssuerSerialType"> 
-		//   <sequence> 
-		//     <element name="X509IssuerName" type="string"/> 
-		//     <element name="X509SerialNumber" type="integer"/> 
-		//   </sequence>
-		// </complexType>
-		protected virtual X509IssuerSerial ReadX509IssuerSerial(XmlReader reader)
-		{
-			string issuerName = null, serialNumber = null;
-			ReadChildren(reader, () =>
-			{
-				if (reader.IsStartElement("X509IssuerName", DSigNs))
-				{
-					issuerName = reader.ReadElementContentAsString();
-				}
-				else if (reader.IsStartElement("X509SerialNumber", DSigNs))
-				{
-					serialNumber = reader.ReadElementContentAsString();
-				}
-				else
-				{
-					throw new MetadataSerializationException(
-						$"Unexpected '{reader.Name}' element in X509IssuerSerial");
-				}
-				return true;
-			});
-			if (issuerName == null || serialNumber == null)
-			{
-				throw new MetadataSerializationException(
-					"X509IssuerSerial with missing issuer name or serial number");
-			}
-			return new X509IssuerSerial(issuerName, serialNumber);
-		}
-
-		// 
-		// <!-- targetNameSpace="http://www.w3.org/2009/xmldsig11#" -->
-		// <element name="X509Digest" type="dsig11:X509DigestType"/>
-		// 
-		// <complexType name="X509DigestType">
-		//   <simpleContent>
-		//     <extension base="base64Binary">
-		//       <attribute name="Algorithm" type="anyURI" use="required"/>
-		//     </extension>
-		//   </simpleContent>
-		// </complexType>
-		protected virtual X509Digest ReadX509Digest(XmlReader reader)
-		{
-			var digest = new X509Digest();
-			string sv = reader.GetAttribute("Algorithm");
-			if (String.IsNullOrEmpty(sv))
-			{
-				throw new MetadataSerializationException("X509Digest with missing Algorithm attribute");
-			}
-			digest.Algorithm = MakeUri(sv);
-			digest.Value = ReadBase64(reader);
-			return digest;
-		}
-
-		// <element name="X509Data" type="ds:X509DataType"/> 
-		// 
-		// <complexType name="X509DataType">
-		//   <sequence maxOccurs="unbounded">
-		//     <choice>
-		//       <element name="X509IssuerSerial" type="ds:X509IssuerSerialType"/>
-		//       <element name="X509SKI" type="base64Binary"/>
-		//       <element name="X509SubjectName" type="string"/>
-		//       <element name="X509Certificate" type="base64Binary"/>
-		//       <element name="X509CRL" type="base64Binary"/>
-		//       <!-- <element ref="dsig11:X509Digest"/> -->
-		//       <!-- The X509Digest element (XMLDSig 1.1) will use the any element -->
-		//       <any namespace="##other" processContents="lax"/>
-		//     </choice>
-		//   </sequence>
-		// </complexType>
-		// 
-		// <!-- Note, this schema permits X509Data to be empty; this is 
-		//      precluded by the text in 
-		//      <a href="#sec-KeyInfo" class="sectionRef"></a> which states 
-		//      that at least one element from the dsig namespace should be present 
-		//      in the PGP, SPKI, and X509 structures. This is easily expressed for 
-		//      the other key types, but not for X509Data because of its rich 
-		//      structure. -->
-		protected virtual X509Data ReadX509Data(XmlReader reader)
-		{
-			var data = new X509Data();
-			ReadChildren(reader, () =>
-			{
-				if (reader.IsStartElement("X509IssuerSerial", DSigNs))
-				{
-					data.IssuerSerial = ReadX509IssuerSerial(reader);
-				}
-				else if (reader.IsStartElement("X509SKI", DSigNs))
-				{
-					data.SKI = ReadBase64(reader);
-				}
-				else if (reader.IsStartElement("X509SubjectName", DSigNs))
-				{
-					data.SubjectName = reader.ReadElementContentAsString();
-				}
-				else if (reader.IsStartElement("X509Certificate", DSigNs))
-				{
-					data.Certificates.Add(new X509Certificate2(ReadBase64(reader)));
-				}
-				else if (reader.IsStartElement("X509CRL", DSigNs))
-				{
-					data.CRL = ReadBase64(reader);
-				}
-				else if (reader.IsStartElement("X509Digest", DSig11Ns))
-				{
-					data.Digest = ReadX509Digest(reader);
-				}
-				return true;
-			});
-			return data;
-		}
-
-		// <element name="KeyInfo" type="ds:KeyInfoType"/> 
-		// 
-		// <complexType name="KeyInfoType" mixed="true">
-		//   <choice maxOccurs="unbounded">     
-		//     <element ref="ds:KeyName"/> 
-		//     <element ref="ds:KeyValue"/> 
-		//     <element ref="ds:RetrievalMethod"/> 
-		//     <element ref="ds:X509Data"/> 
-		//     <element ref="ds:PGPData"/> 
-		//     <element ref="ds:SPKIData"/>
-		//     <element ref="ds:MgmtData"/>
-		//     <!-- <element ref="dsig11:DEREncodedKeyValue"/> -->
-		//     <!-- DEREncodedKeyValue (XMLDsig 1.1) will use the any element -->
-		//     <!-- <element ref="dsig11:KeyInfoReference"/> -->
-		//     <!-- KeyInfoReference (XMLDsig 1.1) will use the any element -->
-		//     <!-- <element ref="xenc:EncryptedKey"/> -->
-		//     <!-- EncryptedKey (XMLEnc) will use the any element -->
-		//     <!-- <element ref="xenc:Agreement"/> -->
-		//     <!-- Agreement (XMLEnc) will use the any element -->
-		//     <any processContents="lax" namespace="##other"/>
-		//     <!-- (1,1) elements from (0,unbounded) namespaces -->
-		//   </choice>
-		//   <attribute name="Id" type="ID" use="optional"/>
-		// </complexType>
-		//
-		// <element name="KeyName" type="string" />
-		protected virtual DSigKeyInfo ReadDSigKeyInfo(XmlReader reader)
-		{
-			var info = CreateDSigKeyInfoInstance();
-			info.Id = GetAttribute(reader, "Id", info.Id);
-			ReadCustomAttributes(reader, info);
-
-			ReadChildren(reader, () =>
-			{
-				if (reader.IsStartElement("KeyName", DSigNs))
-				{
-					info.KeyNames.Add(reader.ReadElementContentAsString());
-				}
-				else if (reader.IsStartElement("KeyValue", DSigNs))
-				{
-					info.KeyValues.Add(ReadKeyValue(reader));
-				}
-				else if (reader.IsStartElement("RetrievalMethod", DSigNs))
-				{
-					info.RetrievalMethods.Add(ReadRetrievalMethod(reader));
-				}
-				else if (reader.IsStartElement("X509Data", DSigNs))
-				{
-					info.Data.Add(ReadX509Data(reader));
-				}
-				else
-				{
-					return ReadCustomElement(reader, info);
-				}
-				return true; // handled above
-			});
-
-			return info;
-		}
-
-		// <complexType name="EncryptionMethodType" mixed="true">
-		//   <sequence>
-		//     <element name="KeySize" minOccurs="0" type="xenc:KeySizeType"/>
-		//     <element name="OAEPparams" minOccurs="0" type="base64Binary"/>
-		//     <any namespace="##other" minOccurs="0" maxOccurs="unbounded"/>
-		//   </sequence>
-		//   <attribute name="Algorithm" type="anyURI" use="required"/>
-		// </complexType>
-		//
-		// <simpleType name="KeySizeType">
-		//   <restriction base="integer"/>
-		// </simpleType>
-		protected virtual EncryptionMethod ReadEncryptionMethod(XmlReader reader)
-		{
-			var methodType = CreateEncryptionMethodInstance();
-			string sv = reader.GetAttribute("Algorithm");
-			if (String.IsNullOrEmpty(sv))
-			{
-				throw new MetadataSerializationException("EncryptionMethodType element is missing the required Algorithm attribute");
-			}
-
-			ReadCustomAttributes(reader, methodType);
-
-			ReadChildren(reader, () =>
-			{
-				if (reader.IsStartElement("KeySize", XEncNs))
-				{
-					try
-					{
-						methodType.KeySize = reader.ReadElementContentAsInt();
-					}
-					catch (System.Xml.XmlException e)
-					{
-						throw new MetadataSerializationException("EncryptedMethodType element with invalid KeySize element", e);
-					}
-				}
-				else if (reader.IsStartElement("OAEPparams", XEncNs))
-				{
-					methodType.OAEPparams = reader.ReadElementContentAsString();
-				}
-				else
-				{
-					return ReadCustomElement(reader, methodType);
-				}
-				return true; // handled above
-			});
-
-			return methodType;
-		}
-
-
-		// <element name="CipherReference" type="xenc:CipherReferenceType"/>
-		// 
-		// <complexType name="CipherReferenceType">
-		//   <sequence>
-		//     <element name="Transforms" type="xenc:TransformsType" minOccurs="0"/>
-		//   </sequence>
-		//   <attribute name="URI" type="anyURI" use="required"/>
-		// </complexType>
-		// 
-		// <complexType name="TransformsType">
-		//   <sequence>
-		//     <element ref="ds:Transform" maxOccurs="unbounded"/> 
-		//   </sequence>
-		// </complexType>
-		protected virtual CipherReference ReadCipherReference(XmlReader reader)
-		{
-			var reference = CreateCipherReferenceInstance();
-			reference.Uri = GetUriAttribute(reader, "URI", reference.Uri);
-			ReadCustomAttributes(reader, reference);
-			ReadChildren(reader, () =>
-			{
-				if (reader.IsStartElement("Transforms", XEncNs))
-				{
-					ReadChildrenAsXmlElements(reader, reference.Transforms.Add);
-				}
-				else
-				{
-					return ReadCustomElement(reader, reference);
-				}
-				return true;
-			});
-			return reference;
-		}
-
-		// <element name="CipherData" type="xenc:CipherDataType"/>
-		// 
-		// <complexType name="CipherDataType">
-		//   <choice>
-		//     <element name="CipherValue" type="base64Binary"/>
-		//     <element ref="xenc:CipherReference"/>
-		//   </choice>
-		// </complexType>
-		protected virtual CipherData ReadCipherData(XmlReader reader)
-		{
-			var data = CreateCipherDataInstance();
-			ReadCustomAttributes(reader, data);
-			ReadChildren(reader, () =>
-			{
-				if (reader.IsStartElement("CipherReference", XEncNs))
-				{
-					data.CipherReference = ReadCipherReference(reader);
-				}
-				else if (reader.IsStartElement("CipherValue", XEncNs))
-				{
-					data.CipherValue = reader.ReadContentAsString();
-				}
-				else
-				{
-					return ReadCustomElement(reader, data);
-				}
-				return true; // handled above
-			});
-			return data;
-		}
-
-		// <element name="EncryptionProperty" type="xenc:EncryptionPropertyType"/> 
-		// 
-		// <complexType name="EncryptionPropertyType" mixed="true">
-		//   <choice maxOccurs="unbounded">
-		//     <any namespace="##other" processContents="lax"/>
-		//   </choice>
-		//   <attribute name="Target" type="anyURI" use="optional"/> 
-		//   <attribute name="Id" type="ID" use="optional"/> 
-		//   <anyAttribute namespace="http://www.w3.org/XML/1998/namespace"/>
-		// </complexType>
-		protected virtual EncryptionProperty ReadEncryptionProperty(XmlReader reader)
-		{
-			var prop = CreateEncryptionPropertyInstance();
-			prop.Target = GetUriAttribute(reader, "Target", prop.Target);
-			prop.Id = GetAttribute(reader, "Id", prop.Id);
-			ReadChildren(reader, () => ReadCustomElement(reader, prop));
-			return prop;
-		}
-
-		// <element name="EncryptionProperties" type="xenc:EncryptionPropertiesType"/> 
-		// 
-		// <complexType name="EncryptionPropertiesType">
-		//   <sequence>
-		//     <element ref="xenc:EncryptionProperty" maxOccurs="unbounded"/> 
-		//   </sequence>
-		//   <attribute name="Id" type="ID" use="optional"/> 
-		// </complexType>
-		protected virtual EncryptionProperties ReadEncryptionProperties(XmlReader reader)
-		{
-			var properties = CreateEncryptionPropertiesInstance();
-			properties.Id = GetAttribute(reader, "Id", properties.Id);
-			ReadChildren(reader, () =>
-			{
-				if (reader.IsStartElement("EncryptionProperty", XEncNs))
-				{
-					properties.Properties.Add(
-						ReadEncryptionProperty(reader));
-				}
-				else
-				{
-					return ReadCustomElement(reader, properties);
-				}
-				return true; // handled above
-			});
-
-			return properties;
-		}
 
 		// <complexType name="EncryptedType" abstract="true">
 		//   <sequence>

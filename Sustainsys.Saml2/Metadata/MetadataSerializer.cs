@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Numerics;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 using System.Xml;
@@ -38,6 +39,7 @@ namespace Sustainsys.Saml2.Metadata
 		const string AuthNs = "http://docs.oasis-open.org/wsfed/authorization/200706/authclaims";
 		const string XEncNs = "http://www.w3.org/2001/04/xmlenc#";
 		const string DSigNs = "http://www.w3.org/2000/09/xmldsig#";
+		const string EcDsaNs = "http://www.w3.org/2001/04/xmldsig-more#";
 		const string DSig11Ns = "http://www.w3.org/2009/xmldsig11#";
 		const string IdpDiscNs = "urn:oasis:names:tc:SAML:profiles:SSO:idp-discovery-protocol";
 
@@ -430,7 +432,7 @@ namespace Sustainsys.Saml2.Metadata
 				else
 				{
 					throw new MetadataSerializationException(
-						$"Unknown DSAKeyValue parameter {reader.Name}");
+						$"Unknown DSAKeyValue parameter <{reader.Name} xmlns='{reader.NamespaceURI}'>");
 				}
 				return true;
 			});
@@ -648,6 +650,94 @@ namespace Sustainsys.Saml2.Metadata
 			});
 		}
 #endif
+		byte[] ParseBigIntValue(string value, string parameterName)
+		{
+			if (String.IsNullOrEmpty(value))
+			{
+				throw new MetadataSerializationException(
+					$"{parameterName} parameter is missing");
+			}
+			BigInteger intValue;
+			if (!BigInteger.TryParse(value, out intValue))
+			{
+				throw new MetadataSerializationException(
+					$"{parameterName} parameter is not a valid number");
+			}
+			return intValue.ToByteArray();
+		}
+
+		protected virtual EcKeyValue ReadECDSAKeyValue(XmlReader reader)
+		{
+			ECParameters parameters = new ECParameters();
+			ReadChildren(reader, () =>
+			{
+				if (reader.IsStartElement("DomainParameters", EcDsaNs))
+				{
+					ReadChildren(reader, () =>
+					{
+						if (reader.IsStartElement("NamedCurve", EcDsaNs))
+						{
+							string oid = reader.GetAttribute("URN");
+							if (String.IsNullOrEmpty(oid))
+							{
+								throw new MetadataSerializationException(
+									$"ECDSAKeyValue/NamedCurve is missing a URN attribute");
+							}
+							if (!oid.StartsWith("urn:oid:", StringComparison.Ordinal))
+							{
+								throw new MetadataSerializationException(
+									$"Unknown EC curve type {oid}");
+							}
+							oid = oid.Substring("urn:oid:".Length);
+							parameters.Curve = ECCurve.CreateFromValue(oid);
+							reader.Skip();
+						}
+						else
+						{
+							throw new MetadataSerializationException(
+								$"Invalid child element '{reader.Name}' in ECDSAKeyValue/DomainParameters");
+						}
+						return true;
+					});
+				}
+				else if (reader.IsStartElement("PublicKey", EcDsaNs))
+				{
+					ReadChildren(reader, () =>
+					{
+						if (reader.IsStartElement("X", EcDsaNs))
+						{
+							parameters.Q.X = ParseBigIntValue(reader.GetAttribute("Value"),
+								"ECDSAKeyValue/X/@Value");
+						}
+						else if (reader.IsStartElement("Y", EcDsaNs))
+						{
+							parameters.Q.Y = ParseBigIntValue(reader.GetAttribute("Value"),
+								"ECDSAKeyValue/Y/@Value");
+						}
+						else
+						{
+							throw new MetadataSerializationException(
+								$"Invalid child element '{reader.Name}' in ECDSAKeyValue/PublicKey");
+						}
+						reader.Skip();
+						return true;
+					});
+				}
+				// I can't see this is used in the wild.  Also I can't figure out
+				// how to map the parameters to the .NET ECParameters object.
+				// else if (reader.IsStartElement("ECParameters", EcDsaNs))
+				// {
+				// }
+				else
+				{
+					throw new MetadataSerializationException(
+						$"Unknown ECKeyValue parameter {reader.Name}");
+				}
+				return true;
+			});
+			parameters.Validate();
+			return new EcKeyValue(parameters);
+		}
 
 		// <element name="ECKeyValue" type="dsig11:ECKeyValueType" />
 		// 
@@ -669,56 +759,6 @@ namespace Sustainsys.Saml2.Metadata
 		// <simpleType name="ECPointType">
 		//   <restriction base="ds:CryptoBinary" />
 		// </simpleType>
-		protected virtual EcKeyValue ReadECDSAKeyValue(XmlReader reader)
-		{
-			ECParameters parameters = new ECParameters();
-			ReadChildren(reader, () =>
-			{
-				if (reader.IsStartElement("NamedCurve", DSig11Ns))
-				{
-					string oid = reader.ReadElementContentAsString();
-					if (!oid.StartsWith("urn:oid:", StringComparison.Ordinal))
-					{
-						throw new Exception($"Unknown EC curve type {oid}");
-					}
-					oid = oid.Substring("urn:oid:".Length);
-					parameters.Curve = ECCurve.CreateFromValue(oid);
-				}
-				else if (reader.IsStartElement("PublicKey", DSig11Ns))
-				{
-					ReadChildren(reader, () =>
-					{
-						if (reader.IsStartElement("X", DSig11Ns))
-						{
-							parameters.Q.X = ReadBase64(reader);
-						}
-						else if (reader.IsStartElement("Y", DSig11Ns))
-						{
-							parameters.Q.Y = ReadBase64(reader);
-						}
-						else
-						{
-							throw new Exception($"Invalid child element '{reader.Name}' in ECDSAKeyValue/PublicKey");
-						}
-						return true;
-					});
-				}
-				// I can't see this is used in the wild.  Also I can't figure out
-				// how to map the parameters to the .NET ECParameters object.
-				// else if (reader.IsStartElement("ECParameters", DSig11Ns))
-				// {
-				// }
-				else
-				{
-					throw new MetadataSerializationException(
-						$"Unknown ECKeyValue parameter {reader.Name}");
-				}
-				return true;
-			});
-			parameters.Validate();
-			return new EcKeyValue(parameters);
-		}
-
 		protected virtual EcKeyValue ReadECKeyValue(XmlReader reader)
 		{
 			ECParameters parameters = new ECParameters();
@@ -726,13 +766,20 @@ namespace Sustainsys.Saml2.Metadata
 			{
 				if (reader.IsStartElement("NamedCurve", DSig11Ns))
 				{
-					string oid = reader.ReadElementContentAsString();
+					string oid = reader.GetAttribute("URI");
+					if (String.IsNullOrEmpty(oid))
+					{
+						throw new MetadataSerializationException(
+							$"NamedCurve element missing URI attribute");
+					}
 					if (!oid.StartsWith("urn:oid:", StringComparison.Ordinal))
 					{
-						throw new Exception($"Unknown EC curve type {oid}");
+						throw new MetadataSerializationException(
+							$"Unknown EC curve type {oid}");
 					}
 					oid = oid.Substring("urn:oid:".Length);
 					parameters.Curve = ECCurve.CreateFromValue(oid);
+					reader.Skip();
 				}
 				else if (reader.IsStartElement("PublicKey", DSig11Ns))
 				{
@@ -740,7 +787,8 @@ namespace Sustainsys.Saml2.Metadata
 					byte[] pkBytes = Convert.FromBase64String(pkData);
 					if (pkBytes[0] != 4)
 					{
-						throw new Exception("Missing magic number in EC PublicKey data");
+						throw new MetadataSerializationException(
+							"Missing magic number in EC PublicKey data");
 					}
 					int numLen = (pkBytes.Length - 1) / 2;
 					parameters.Q.X = new ArraySegment<byte>(
@@ -854,11 +902,11 @@ namespace Sustainsys.Saml2.Metadata
 			{
 				if (reader.IsStartElement("X509IssuerName", DSigNs))
 				{
-					issuerName = reader.ReadElementContentAsString();
+					issuerName = reader.ReadElementContentAsString().Trim();
 				}
 				else if (reader.IsStartElement("X509SerialNumber", DSigNs))
 				{
-					serialNumber = reader.ReadElementContentAsString();
+					serialNumber = reader.ReadElementContentAsString().Trim();
 				}
 				else
 				{
@@ -1037,6 +1085,7 @@ namespace Sustainsys.Saml2.Metadata
 			{
 				throw new MetadataSerializationException("EncryptionMethodType element is missing the required Algorithm attribute");
 			}
+			methodType.Algorithm = new Uri(sv);
 
 			ReadCustomAttributes(reader, methodType);
 
@@ -1055,7 +1104,7 @@ namespace Sustainsys.Saml2.Metadata
 				}
 				else if (reader.IsStartElement("OAEPparams", XEncNs))
 				{
-					methodType.OAEPparams = reader.ReadElementContentAsString();
+					methodType.OAEPparams = ReadBase64(reader);
 				}
 				else
 				{
@@ -1122,7 +1171,7 @@ namespace Sustainsys.Saml2.Metadata
 				}
 				else if (reader.IsStartElement("CipherValue", XEncNs))
 				{
-					data.CipherValue = reader.ReadContentAsString();
+					data.CipherValue = reader.ReadElementContentAsString();
 				}
 				else
 				{
@@ -2502,6 +2551,7 @@ namespace Sustainsys.Saml2.Metadata
 		protected virtual void ReadSsoDescriptorAttributes(XmlReader reader, SsoDescriptor descriptor)
 		{
 			ReadRoleDescriptorAttributes(reader, descriptor);
+			ReadCustomAttributes(reader, descriptor);
 		}
 
 		protected virtual bool ReadSsoDescriptorElement(XmlReader reader, SsoDescriptor descriptor)
@@ -3477,7 +3527,7 @@ namespace Sustainsys.Saml2.Metadata
 				writer.WriteString(method.KeySize.ToString());
 				writer.WriteEndElement();
 			}
-			WriteStringElement(writer, "OAEPparams", XEncNs, method.OAEPparams);
+			WriteBase64Element(writer, "OAEPparams", XEncNs, method.OAEPparams);
 
 			WriteCustomElements(writer, method);
 			writer.WriteEndElement();
