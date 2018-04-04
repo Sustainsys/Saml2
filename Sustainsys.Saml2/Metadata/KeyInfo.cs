@@ -56,7 +56,7 @@ namespace Sustainsys.Saml2.Metadata
 
 	public class DsaKeyValue : KeyValue
 	{
-		public DSAParameters Parameters { get; private set; }
+		public DSAParameters Parameters { get; set; }
 
 		public DsaKeyValue(DSAParameters parameters)
 		{
@@ -66,7 +66,7 @@ namespace Sustainsys.Saml2.Metadata
 
 	public class RsaKeyValue : KeyValue
 	{
-		public RSAParameters Parameters { get; private set; }
+		public RSAParameters Parameters { get; set; }
 
 		public RsaKeyValue(RSAParameters parameters)
 		{
@@ -76,7 +76,7 @@ namespace Sustainsys.Saml2.Metadata
 
 	public class EcKeyValue : KeyValue
 	{
-		public ECParameters Parameters { get; private set; }
+		public ECParameters Parameters { get; set; }
 
 		public EcKeyValue(ECParameters parameters)
 		{

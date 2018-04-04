@@ -636,7 +636,7 @@ namespace Sustainsys.Saml2.Tests
                 }
             };
 
-            a.Should().Throw<System.Xml.XmlException>();
+            a.Should().Throw<MetadataSerializationException>();
         }
 
         [TestMethod]

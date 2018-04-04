@@ -12,6 +12,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Xml;
 using Sustainsys.Saml2.Metadata;
+using Sustainsys.Saml2.Selectors;
 using Microsoft.IdentityModel.Tokens.Saml2;
 
 namespace Sustainsys.Saml2.Tests.Metadata
@@ -275,6 +276,18 @@ namespace Sustainsys.Saml2.Tests.Metadata
 
 		public Organization TestReadOrganization(XmlReader reader) =>
 			base.ReadOrganization(reader);
+
+		public SecurityTokenServiceDescriptor TestReadSecurityTokenServiceDescriptor(XmlReader reader) =>
+			base.ReadSecurityTokenServiceDescriptor(reader);
+
+		public AttributeConsumingService TestReadAttributeConsumingService(XmlReader reader) =>
+			base.ReadAttributeConsumingService(reader);
+
+		public RequestedAttribute TestReadRequestedAttribute(XmlReader reader) =>
+			base.ReadRequestedAttribute(reader);
+
+		public SpSsoDescriptor TestReadSpSsoDescriptor(XmlReader reader) =>
+			base.ReadSpSsoDescriptor(reader);
 	}
 
 	[TestClass]
@@ -303,7 +316,7 @@ namespace Sustainsys.Saml2.Tests.Metadata
 		{
 			var nsmgr = new XmlNamespaceManager(doc.NameTable);
 			// const string XmlNs = "http://www.w3.org/XML/1998/namespace";
-			nsmgr.AddNamespace("auth", "http://docs.oasis-open.org/wsfed/authorization/200706/authclaims");
+			nsmgr.AddNamespace("auth", "http://docs.oasis-open.org/wsfed/authorization/200706");
 			nsmgr.AddNamespace("ds", "http://www.w3.org/2000/09/xmldsig#");
 			nsmgr.AddNamespace("ds11", "http://www.w3.org/2009/xmldsig11#");
 			nsmgr.AddNamespace("md", "urn:oasis:names:tc:SAML:2.0:metadata");
@@ -500,19 +513,25 @@ namespace Sustainsys.Saml2.Tests.Metadata
 				xmlns:fed='http://docs.oasis-open.org/wsfed/federation/200706'
 				xmlns:wsa='http://www.w3.org/2005/08/addressing'>
 				<fed:ApplicationServiceEndpoint>
-					<wsa:Address>http://dummy.idp.com/ApplicationServiceEndpoint/</wsa:Address>
-					<wsa:ReferenceParameters><ref>Some reference</ref></wsa:ReferenceParameters>
-					<wsa:Metadata><any>Anything at all</any></wsa:Metadata>
+					<wsa:EndpointReference>
+						<wsa:Address>http://dummy.idp.com/ApplicationServiceEndpoint/</wsa:Address>
+						<wsa:ReferenceParameters><ref>Some reference</ref></wsa:ReferenceParameters>
+						<wsa:Metadata><any>Anything at all</any></wsa:Metadata>
+					</wsa:EndpointReference>
 				</fed:ApplicationServiceEndpoint>
 				<fed:SingleSignOutNotificationEndpoint>
-					<wsa:Address>http://dummy.idp.com/SingleSignOutNotificationEndpoint/</wsa:Address>
-					<wsa:ReferenceParameters><ref>Some reference 2</ref></wsa:ReferenceParameters>
-					<wsa:Metadata><any>Anything at all 2</any></wsa:Metadata>
+					<wsa:EndpointReference>
+						<wsa:Address>http://dummy.idp.com/SingleSignOutNotificationEndpoint/</wsa:Address>
+						<wsa:ReferenceParameters><ref>Some reference 2</ref></wsa:ReferenceParameters>
+						<wsa:Metadata><any>Anything at all 2</any></wsa:Metadata>
+					</wsa:EndpointReference>
 				</fed:SingleSignOutNotificationEndpoint>
 				<fed:PassiveRequestorEndpoint>
-					<wsa:Address>http://dummy.idp.com/PassiveRequestorEndpoint/</wsa:Address>
-					<wsa:ReferenceParameters><ref>Some reference 3</ref></wsa:ReferenceParameters>
-					<wsa:Metadata><any>Anything at all 3</any></wsa:Metadata>
+					<wsa:EndpointReference>
+						<wsa:Address>http://dummy.idp.com/PassiveRequestorEndpoint/</wsa:Address>
+						<wsa:ReferenceParameters><ref>Some reference 3</ref></wsa:ReferenceParameters>
+						<wsa:Metadata><any>Anything at all 3</any></wsa:Metadata>
+					</wsa:EndpointReference>
 				</fed:PassiveRequestorEndpoint>
 			</md:RoleDescriptor>";
 			(XmlDocument doc, XmlNamespaceManager nsmgr) = LoadXml(xml);
@@ -525,10 +544,10 @@ namespace Sustainsys.Saml2.Tests.Metadata
 					{
 						Uri = new Uri("http://dummy.idp.com/ApplicationServiceEndpoint/"),
 						ReferenceParameters = { doc.SelectSingleNode(
-							"md:RoleDescriptor/fed:ApplicationServiceEndpoint/wsa:ReferenceParameters/*",
+							"md:RoleDescriptor/fed:ApplicationServiceEndpoint/wsa:EndpointReference/wsa:ReferenceParameters/*",
 							nsmgr).As<XmlElement>() },
 						Metadata = { doc.SelectSingleNode(
-							"md:RoleDescriptor/fed:ApplicationServiceEndpoint/wsa:Metadata/*",
+							"md:RoleDescriptor/fed:ApplicationServiceEndpoint/wsa:EndpointReference/wsa:Metadata/*",
 							nsmgr).As<XmlElement>() }
 					}
 				},
@@ -537,10 +556,10 @@ namespace Sustainsys.Saml2.Tests.Metadata
 					{
 						Uri = new Uri("http://dummy.idp.com/SingleSignOutNotificationEndpoint/"),
 						ReferenceParameters = { doc.SelectSingleNode(
-							"md:RoleDescriptor/fed:SingleSignOutNotificationEndpoint/wsa:ReferenceParameters/*",
+							"md:RoleDescriptor/fed:SingleSignOutNotificationEndpoint/wsa:EndpointReference/wsa:ReferenceParameters/*",
 							nsmgr).As<XmlElement>() },
 						Metadata = { doc.SelectSingleNode(
-							"md:RoleDescriptor/fed:SingleSignOutNotificationEndpoint/wsa:Metadata/*",
+							"md:RoleDescriptor/fed:SingleSignOutNotificationEndpoint/wsa:EndpointReference/wsa:Metadata/*",
 							nsmgr).As<XmlElement>() }
 					}
 				},
@@ -549,10 +568,10 @@ namespace Sustainsys.Saml2.Tests.Metadata
 					{
 						Uri = new Uri("http://dummy.idp.com/PassiveRequestorEndpoint/"),
 						ReferenceParameters = { doc.SelectSingleNode(
-							"md:RoleDescriptor/fed:PassiveRequestorEndpoint/wsa:ReferenceParameters/*",
+							"md:RoleDescriptor/fed:PassiveRequestorEndpoint/wsa:EndpointReference/wsa:ReferenceParameters/*",
 							nsmgr).As<XmlElement>() },
 						Metadata = { doc.SelectSingleNode(
-							"md:RoleDescriptor/fed:PassiveRequestorEndpoint/wsa:Metadata/*",
+							"md:RoleDescriptor/fed:PassiveRequestorEndpoint/wsa:EndpointReference/wsa:Metadata/*",
 							nsmgr).As<XmlElement>() }
 					}
 				}
@@ -1378,7 +1397,7 @@ namespace Sustainsys.Saml2.Tests.Metadata
 			<auth:EncryptedValue
 				xmlns:xenc='http://www.w3.org/2001/04/xmlenc#'
 				xmlns:ds='http://www.w3.org/2000/09/xmldsig#'
-				xmlns:auth='http://docs.oasis-open.org/wsfed/authorization/200706/authclaims'>
+				xmlns:auth='http://docs.oasis-open.org/wsfed/authorization/200706'>
 				<xenc:EncryptedData>
 					<xenc:EncryptionMethod
 						Algorithm='http://www.w3.org/2001/04/xmlenc#tripledes-cbc'/>
@@ -1421,7 +1440,7 @@ namespace Sustainsys.Saml2.Tests.Metadata
 			string xml =
 			@"<?xml version='1.0' encoding='UTF-8'?>
 			<auth:ValueLessThan
-				xmlns:auth='http://docs.oasis-open.org/wsfed/authorization/200706/authclaims'>
+				xmlns:auth='http://docs.oasis-open.org/wsfed/authorization/200706'>
 				<auth:Value>Some Value</auth:Value>
 			</auth:ValueLessThan>";
 			(XmlDocument doc, XmlNamespaceManager nsmgr) = LoadXml(xml);
@@ -1441,7 +1460,7 @@ namespace Sustainsys.Saml2.Tests.Metadata
 			string xml =
 			@"<?xml version='1.0' encoding='UTF-8'?>
 			<auth:ValueLessThan
-				xmlns:auth='http://docs.oasis-open.org/wsfed/authorization/200706/authclaims'>
+				xmlns:auth='http://docs.oasis-open.org/wsfed/authorization/200706'>
 				<auth:StructuredValue>
 					<xml-element-1/>
 				</auth:StructuredValue>
@@ -1466,7 +1485,7 @@ namespace Sustainsys.Saml2.Tests.Metadata
 			string xml =
 			@"<?xml version='1.0' encoding='UTF-8'?>
 			<auth:ConstrainedValue
-				xmlns:auth='http://docs.oasis-open.org/wsfed/authorization/200706/authclaims'
+				xmlns:auth='http://docs.oasis-open.org/wsfed/authorization/200706'
 				AssertConstraint='true'>
 				<auth:ValueLessThan><auth:Value>10</auth:Value></auth:ValueLessThan>
 				<auth:ValueLessThanOrEqual><auth:Value>11</auth:Value></auth:ValueLessThanOrEqual>
@@ -1537,7 +1556,7 @@ namespace Sustainsys.Saml2.Tests.Metadata
 			string xml =
 			@"<?xml version='1.0' encoding='UTF-8'?>
 			<auth:ClaimType Uri='https://saml.claim.type/' Optional='false'
-				xmlns:auth='http://docs.oasis-open.org/wsfed/authorization/200706/authclaims'
+				xmlns:auth='http://docs.oasis-open.org/wsfed/authorization/200706'
 				xmlns:xenc='http://www.w3.org/2001/04/xmlenc#'
 				xmlns:ds='http://www.w3.org/2000/09/xmldsig#'>
 				<auth:DisplayName>The claim name</auth:DisplayName>
@@ -2918,702 +2937,636 @@ namespace Sustainsys.Saml2.Tests.Metadata
 			ReadTest(xml, expected, (serializer, reader) =>
 				serializer.TestReadOrganization(reader));
 		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_ReadMetadata()
+		{
+			string xml =
+			@"<?xml version='1.0' encoding='UTF-8'?>
+			<EntitiesDescriptor Name='https://your-federation.org/metadata/federation-name.xml'
+				xmlns='urn:oasis:names:tc:SAML:2.0:metadata'
+				xmlns:ds='http://www.w3.org/2000/09/xmldsig#'
+				xmlns:shibmd='urn:mace:shibboleth:metadata:1.0'
+				xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'>
+ 
+				<EntityDescriptor entityID='https://idp.example.org/idp/shibboleth'>
+				   <IDPSSODescriptor protocolSupportEnumeration='urn:mace:shibboleth:1.0 urn:oasis:names:tc:SAML:2.0:protocol'>
+					   <SingleSignOnService Binding='urn:mace:shibboleth:1.0:profiles:AuthnRequest'
+								Location='https://idp.example.org/idp/profile/Shibboleth/SSO' />
+				   </IDPSSODescriptor>
+				</EntityDescriptor>
+				<EntityDescriptor entityID='https://sp.example.org/shibboleth-sp'>
+					<SPSSODescriptor protocolSupportEnumeration='urn:oasis:names:tc:SAML:2.0:protocol urn:oasis:names:tc:SAML:1.1:protocol'>
+						<Extensions>
+							<idpdisc:DiscoveryResponse xmlns:idpdisc='urn:oasis:names:tc:SAML:profiles:SSO:idp-discovery-protocol'
+									index='1' Binding='urn:oasis:names:tc:SAML:profiles:SSO:idp-discovery-protocol'
+									Location='http://sp.example.org/Shibboleth.sso/DS'/>
+						</Extensions>
+					</SPSSODescriptor>
+				</EntityDescriptor>
+			</EntitiesDescriptor>";
+			(XmlDocument doc, XmlNamespaceManager nsmgr) = LoadXml(xml);
+
+			var expected = new EntitiesDescriptor
+			{
+				Name = "https://your-federation.org/metadata/federation-name.xml",
+				ChildEntities = {
+					new EntityDescriptor(new EntityId("https://idp.example.org/idp/shibboleth")) {
+						RoleDescriptors = {
+							new IdpSsoDescriptor
+							{
+								ProtocolsSupported = {
+									new Uri("urn:mace:shibboleth:1.0"),
+									new Uri("urn:oasis:names:tc:SAML:2.0:protocol")
+								},
+								SingleSignOnServices = {
+									new SingleSignOnService {
+										Binding = new Uri("urn:mace:shibboleth:1.0:profiles:AuthnRequest"),
+										Location = new Uri("https://idp.example.org/idp/profile/Shibboleth/SSO")
+									}
+								}
+							}
+						}
+					},
+					new EntityDescriptor(new EntityId("https://sp.example.org/shibboleth-sp"))
+					{
+						RoleDescriptors = {
+							new SpSsoDescriptor
+							{
+								ProtocolsSupported = {
+									new Uri("urn:oasis:names:tc:SAML:2.0:protocol"),
+									new Uri("urn:oasis:names:tc:SAML:1.1:protocol")
+								},
+								DiscoveryResponses = {
+									{ 1,
+										new DiscoveryResponse {
+											Index = 1,
+											Binding = new Uri("urn:oasis:names:tc:SAML:profiles:SSO:idp-discovery-protocol"),
+											Location = new Uri("http://sp.example.org/Shibboleth.sso/DS"),
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			};
+
+			ReadTest(xml, expected, (serializer, reader) =>
+			{
+				using (var ms = new MemoryStream(Encoding.UTF8.GetBytes(xml)))
+				{
+					return serializer.ReadMetadata(ms);
+				}
+			});
+			ReadTest(xml, expected, (serializer, reader) =>
+			{
+				using (var ms = new MemoryStream(Encoding.UTF8.GetBytes(xml)))
+				using (var xr = XmlReader.Create(ms))
+				{
+					return serializer.ReadMetadata(xr);
+				}
+			});
+			ReadTest(xml, expected, (serializer, readeR) =>
+			{
+				using (var ms = new MemoryStream(Encoding.UTF8.GetBytes(xml)))
+				using (var xr = XmlReader.Create(ms))
+				{
+					return serializer.ReadMetadata(xr, NullSecurityTokenResolver.Instance);
+				}
+			});
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_ReadSecurityTokenServiceDescriptor()
+		{
+			string xml =
+				@"<?xml version='1.0' encoding='UTF-8' ?>
+				<RoleDescriptor 
+					xsi:type='fed:SecurityTokenServiceType'
+					protocolSupportEnumeration='http://docs.oasis-open.org/ws-sx/ws-trust/200512 http://schemas.xmlsoap.org/ws/2005/02/trust http://docs.oasis-open.org/wsfed/federation/200706'
+					ServiceDisplayName='www.netiq.com' 
+					ServiceDescription='test'
+					xmlns='urn:oasis:names:tc:SAML:2.0:metadata'
+					xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance' 
+					xmlns:fed='http://docs.oasis-open.org/wsfed/federation/200706'
+					xmlns:wsa='http://www.w3.org/2005/08/addressing'>
+					<KeyDescriptor use='signing'>
+						<KeyInfo 
+							xmlns='http://www.w3.org/2000/09/xmldsig#'>
+							<X509Data>
+								<X509Certificate>" + certData + @"</X509Certificate>
+							</X509Data>
+						</KeyInfo>
+					</KeyDescriptor>
+					<fed:TokenTypesOffered>
+						<fed:TokenType Uri='urn:oasis:names:tc:SAML:2.0:assertion'/>
+						<fed:TokenType Uri='urn:oasis:names:tc:SAML:1.0:assertion'/>
+					</fed:TokenTypesOffered>
+					<fed:ClaimTypesOffered>
+						<auth:ClaimType Uri='http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress' 
+							xmlns:auth='http://docs.oasis-open.org/wsfed/authorization/200706'>
+							<auth:DisplayName>E-Mail Address</auth:DisplayName>
+							<auth:Description>The e-mail address of the user</auth:Description>
+						</auth:ClaimType>
+						<auth:ClaimType Uri='http://schemas.xmlsoap.org/ws/2005/05/identity/claims/givenname' 
+							xmlns:auth='http://docs.oasis-open.org/wsfed/authorization/200706'>
+							<auth:DisplayName>Given Name</auth:DisplayName>
+							<auth:Description>The given name of the user</auth:Description>
+						</auth:ClaimType>
+						<auth:ClaimType Uri='http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name' 
+							xmlns:auth='http://docs.oasis-open.org/wsfed/authorization/200706'>
+							<auth:DisplayName>Name</auth:DisplayName>
+							<auth:Description>The unique name of the user</auth:Description>
+						</auth:ClaimType>
+						<auth:ClaimType Uri='http://schemas.xmlsoap.org/ws/2005/05/identity/claims/upn' 
+							xmlns:auth='http://docs.oasis-open.org/wsfed/authorization/200706'>
+							<auth:DisplayName>UPN</auth:DisplayName>
+							<auth:Description>The user principal name (UPN) of the user</auth:Description>
+						</auth:ClaimType>
+						<auth:ClaimType Uri='http://schemas.xmlsoap.org/claims/CommonName' 
+							xmlns:auth='http://docs.oasis-open.org/wsfed/authorization/200706'>
+							<auth:DisplayName>Common Name</auth:DisplayName>
+							<auth:Description>The common name of the user</auth:Description>
+						</auth:ClaimType>
+						<auth:ClaimType Uri='http://schemas.xmlsoap.org/claims/EmailAddress' 
+							xmlns:auth='http://docs.oasis-open.org/wsfed/authorization/200706'>
+							<auth:DisplayName>AD FS 1.x E-Mail Address</auth:DisplayName>
+							<auth:Description>The e-mail address of the user when interoperating with AD FS 1.1 or ADFS 1.0</auth:Description>
+						</auth:ClaimType>
+						<auth:ClaimType Uri='http://schemas.xmlsoap.org/claims/Group' 
+							xmlns:auth='http://docs.oasis-open.org/wsfed/authorization/200706'>
+							<auth:DisplayName>Group</auth:DisplayName>
+							<auth:Description>A group that the user is a member of</auth:Description>
+						</auth:ClaimType>
+						<auth:ClaimType Uri='http://schemas.xmlsoap.org/claims/UPN' 
+							xmlns:auth='http://docs.oasis-open.org/wsfed/authorization/200706'>
+							<auth:DisplayName>AD FS 1.x UPN</auth:DisplayName>
+							<auth:Description>The UPN of the user when interoperating with AD FS 1.1 or ADFS 1.0</auth:Description>
+						</auth:ClaimType>
+						<auth:ClaimType Uri='http://schemas.microsoft.com/ws/2008/06/identity/claims/role' 
+							xmlns:auth='http://docs.oasis-open.org/wsfed/authorization/200706'>
+							<auth:DisplayName>Role</auth:DisplayName>
+							<auth:Description>A role that the user has</auth:Description>
+						</auth:ClaimType>
+						<auth:ClaimType Uri='http://schemas.xmlsoap.org/ws/2005/05/identity/claims/surname' 
+							xmlns:auth='http://docs.oasis-open.org/wsfed/authorization/200706'>
+							<auth:DisplayName>Surname</auth:DisplayName>
+							<auth:Description>The surname of the user</auth:Description>
+						</auth:ClaimType>
+						<auth:ClaimType Uri='http://schemas.xmlsoap.org/ws/2005/05/identity/claims/privatepersonalidentifier' 
+							xmlns:auth='http://docs.oasis-open.org/wsfed/authorization/200706'>
+							<auth:DisplayName>PPID</auth:DisplayName>
+							<auth:Description>The private identifier of the user</auth:Description>
+						</auth:ClaimType>
+						<auth:ClaimType Uri='http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier' 
+							xmlns:auth='http://docs.oasis-open.org/wsfed/authorization/200706'>
+							<auth:DisplayName>Name ID</auth:DisplayName>
+							<auth:Description>The SAML name identifier of the user</auth:Description>
+						</auth:ClaimType>
+						<auth:ClaimType Uri='http://schemas.microsoft.com/ws/2008/06/identity/claims/authenticationinstant' 
+							xmlns:auth='http://docs.oasis-open.org/wsfed/authorization/200706'>
+							<auth:DisplayName>Authentication time stamp</auth:DisplayName>
+							<auth:Description>Used to display the time and date that the user was authenticated</auth:Description>
+						</auth:ClaimType>
+						<auth:ClaimType Uri='http://schemas.microsoft.com/ws/2008/06/identity/claims/authenticationmethod' 
+							xmlns:auth='http://docs.oasis-open.org/wsfed/authorization/200706'>
+							<auth:DisplayName>Authentication method</auth:DisplayName>
+							<auth:Description>The method used to authenticate the user</auth:Description>
+						</auth:ClaimType>
+						<auth:ClaimType Uri='http://schemas.xmlsoap.org/ws/2005/05/identity/claims/denyonlysid' 
+							xmlns:auth='http://docs.oasis-open.org/wsfed/authorization/200706'>
+							<auth:DisplayName>Deny only group SID</auth:DisplayName>
+							<auth:Description>The deny-only group SID of the user</auth:Description>
+						</auth:ClaimType>
+						<auth:ClaimType Uri='http://schemas.microsoft.com/ws/2008/06/identity/claims/denyonlyprimarysid' 
+							xmlns:auth='http://docs.oasis-open.org/wsfed/authorization/200706'>
+							<auth:DisplayName>Deny only primary SID</auth:DisplayName>
+							<auth:Description>The deny-only primary SID of the user</auth:Description>
+						</auth:ClaimType>
+						<auth:ClaimType Uri='http://schemas.microsoft.com/ws/2008/06/identity/claims/denyonlyprimarygroupsid' 
+							xmlns:auth='http://docs.oasis-open.org/wsfed/authorization/200706'>
+							<auth:DisplayName>Deny only primary group SID</auth:DisplayName>
+							<auth:Description>The deny-only primary group SID of the user</auth:Description>
+						</auth:ClaimType>
+						<auth:ClaimType Uri='http://schemas.microsoft.com/ws/2008/06/identity/claims/groupsid' 
+							xmlns:auth='http://docs.oasis-open.org/wsfed/authorization/200706'>
+							<auth:DisplayName>Group SID</auth:DisplayName>
+							<auth:Description>The group SID of the user</auth:Description>
+						</auth:ClaimType>
+						<auth:ClaimType Uri='http://schemas.microsoft.com/ws/2008/06/identity/claims/primarygroupsid' 
+							xmlns:auth='http://docs.oasis-open.org/wsfed/authorization/200706'>
+							<auth:DisplayName>Primary group SID</auth:DisplayName>
+							<auth:Description>The primary group SID of the user</auth:Description>
+						</auth:ClaimType>
+						<auth:ClaimType Uri='http://schemas.microsoft.com/ws/2008/06/identity/claims/primarysid' 
+							xmlns:auth='http://docs.oasis-open.org/wsfed/authorization/200706'>
+							<auth:DisplayName>Primary SID</auth:DisplayName>
+							<auth:Description>The primary SID of the user</auth:Description>
+						</auth:ClaimType>
+						<auth:ClaimType Uri='http://schemas.microsoft.com/ws/2008/06/identity/claims/windowsaccountname' 
+							xmlns:auth='http://docs.oasis-open.org/wsfed/authorization/200706'>
+							<auth:DisplayName>Windows account name</auth:DisplayName>
+							<auth:Description>The domain account name of the user in the form of &lt;domain&gt;\&lt;user&gt;</auth:Description>
+						</auth:ClaimType>
+					</fed:ClaimTypesOffered>
+					<fed:SecurityTokenServiceEndpoint>
+						<wsa:EndpointReference>
+							<wsa:Address>https://www.netiq.com/nidp/wsfed/ep</wsa:Address>
+						</wsa:EndpointReference>
+					</fed:SecurityTokenServiceEndpoint>
+					<fed:PassiveRequestorEndpoint>
+						<wsa:EndpointReference>
+							<wsa:Address>https://www.netiq.com/nidp/wsfed/ep</wsa:Address>
+						</wsa:EndpointReference>
+					</fed:PassiveRequestorEndpoint>
+					<fed:SingleSignOutSubscriptionEndpoint>
+						<wsa:EndpointReference>
+							<wsa:Address>https://www.netiq.com/nidp/wsfed/ep-ssos</wsa:Address>
+						</wsa:EndpointReference>
+					</fed:SingleSignOutSubscriptionEndpoint>
+					<fed:SingleSignOutNotificationEndpoint>
+						<wsa:EndpointReference>
+							<wsa:Address>https://www.netiq.com/nidp/wsfed/ep-sson</wsa:Address>
+						</wsa:EndpointReference>
+					</fed:SingleSignOutNotificationEndpoint>
+				</RoleDescriptor>";
+			(XmlDocument doc, XmlNamespaceManager nsmgr) = LoadXml(xml);
+
+			var expected = new SecurityTokenServiceDescriptor
+			{
+				ProtocolsSupported = {
+					new Uri("http://docs.oasis-open.org/ws-sx/ws-trust/200512"),
+					new Uri("http://schemas.xmlsoap.org/ws/2005/02/trust"),
+					new Uri("http://docs.oasis-open.org/wsfed/federation/200706"),
+				},
+				ServiceDisplayName = "www.netiq.com",
+				ServiceDescription = "test",
+				Keys = {
+					new KeyDescriptor {
+						Use = KeyType.Signing,
+						KeyInfo = new DSigKeyInfo {
+							Data = {
+								new X509Data {
+									Certificates = {
+										new X509Certificate2(Convert.FromBase64String(certData))
+									}
+								}
+							}
+						}
+					}
+				},
+				TokenTypesOffered = {
+					new Uri("urn:oasis:names:tc:SAML:2.0:assertion"),
+					new Uri("urn:oasis:names:tc:SAML:1.0:assertion")
+				},
+				ClaimTypesOffered = {
+					new DisplayClaim("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress")
+					{
+						DisplayName = "E-Mail Address",
+						Description = "The e-mail address of the user"
+					},
+					new DisplayClaim("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/givenname")
+					{
+						DisplayName = "Given Name",
+						Description = "The given name of the user"
+					},
+					new DisplayClaim("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name")
+					{
+						DisplayName = "Name",
+						Description = "The unique name of the user"
+					},
+					new DisplayClaim("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/upn")
+					{
+						DisplayName = "UPN",
+						Description = "The user principal name (UPN) of the user"
+					},
+					new DisplayClaim("http://schemas.xmlsoap.org/claims/CommonName")
+					{
+						DisplayName = "Common Name",
+						Description = "The common name of the user"
+					},
+					new DisplayClaim("http://schemas.xmlsoap.org/claims/EmailAddress")
+					{
+						DisplayName = "AD FS 1.x E-Mail Address",
+						Description = "The e-mail address of the user when interoperating with AD FS 1.1 or ADFS 1.0"
+					},
+					new DisplayClaim("http://schemas.xmlsoap.org/claims/Group")
+					{
+						DisplayName = "Group",
+						Description = "A group that the user is a member of"
+					},
+					new DisplayClaim("http://schemas.xmlsoap.org/claims/UPN")
+					{
+						DisplayName = "AD FS 1.x UPN",
+						Description = "The UPN of the user when interoperating with AD FS 1.1 or ADFS 1.0"
+					},
+					new DisplayClaim("http://schemas.microsoft.com/ws/2008/06/identity/claims/role")
+					{
+						DisplayName = "Role",
+						Description = "A role that the user has"
+					},
+					new DisplayClaim("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/surname")
+					{
+						DisplayName = "Surname",
+						Description = "The surname of the user"
+					},
+					new DisplayClaim("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/privatepersonalidentifier")
+					{
+						DisplayName = "PPID",
+						Description = "The private identifier of the user"
+					},
+					new DisplayClaim("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier")
+					{
+						DisplayName = "Name ID",
+						Description = "The SAML name identifier of the user"
+					},
+					new DisplayClaim("http://schemas.microsoft.com/ws/2008/06/identity/claims/authenticationinstant")
+					{
+						DisplayName = "Authentication time stamp",
+						Description = "Used to display the time and date that the user was authenticated"
+					},
+					new DisplayClaim("http://schemas.microsoft.com/ws/2008/06/identity/claims/authenticationmethod")
+					{
+						DisplayName = "Authentication method",
+						Description = "The method used to authenticate the user"
+					},
+					new DisplayClaim("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/denyonlysid")
+					{
+						DisplayName = "Deny only group SID",
+						Description = "The deny-only group SID of the user"
+					},
+					new DisplayClaim("http://schemas.microsoft.com/ws/2008/06/identity/claims/denyonlyprimarysid")
+					{
+						DisplayName = "Deny only primary SID",
+						Description = "The deny-only primary SID of the user"
+					},
+					new DisplayClaim("http://schemas.microsoft.com/ws/2008/06/identity/claims/denyonlyprimarygroupsid")
+					{
+						DisplayName = "Deny only primary group SID",
+						Description = "The deny-only primary group SID of the user"
+					},
+					new DisplayClaim("http://schemas.microsoft.com/ws/2008/06/identity/claims/groupsid")
+					{
+						DisplayName = "Group SID",
+						Description = "The group SID of the user"
+					},
+					new DisplayClaim("http://schemas.microsoft.com/ws/2008/06/identity/claims/primarygroupsid")
+					{
+						DisplayName = "Primary group SID",
+						Description = "The primary group SID of the user"
+					},
+					new DisplayClaim("http://schemas.microsoft.com/ws/2008/06/identity/claims/primarysid")
+					{
+						DisplayName = "Primary SID",
+						Description = "The primary SID of the user"
+					},
+					new DisplayClaim("http://schemas.microsoft.com/ws/2008/06/identity/claims/windowsaccountname")
+					{
+						DisplayName = "Windows account name",
+						Description = "The domain account name of the user in the form of <domain>\\<user>"
+					}
+				},
+				SecurityTokenServiceEndpoints = {
+					new EndpointReference("https://www.netiq.com/nidp/wsfed/ep")
+				},
+				PassiveRequestorEndpoints = {
+					new EndpointReference("https://www.netiq.com/nidp/wsfed/ep")
+				},
+				SingleSignOutNotificationEndpoints = {
+					new EndpointReference("https://www.netiq.com/nidp/wsfed/ep-sson")
+				},
+				SingleSignOutSubscriptionEndpoints = {
+					new EndpointReference("https://www.netiq.com/nidp/wsfed/ep-ssos")
+				},
+			};
+			ReadTest(xml, expected, (serializer, reader) =>
+				serializer.TestReadSecurityTokenServiceDescriptor(reader));
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_ReadAttributeConsumingService()
+		{
+			string xml =
+				@"<?xml version='1.0' encoding='UTF-8' ?>
+				<md:AttributeConsumingService index='1'
+					xmlns:md='urn:oasis:names:tc:SAML:2.0:metadata'>
+					<md:ServiceName xml:lang='en'>Sample Service</md:ServiceName>
+					<md:ServiceDescription xml:lang='en'>An example service that requires a human-readable identifier and optional name and e-mail address.</md:ServiceDescription>
+ 
+					<md:RequestedAttribute FriendlyName='eduPersonPrincipalName' Name='urn:mace:dir:attribute-def:eduPersonPrincipalName' NameFormat='urn:mace:shibboleth:1.0:attributeNamespace:uri'/>
+					<md:RequestedAttribute FriendlyName='mail' Name='urn:mace:dir:attribute-def:mail' NameFormat='urn:mace:shibboleth:1.0:attributeNamespace:uri'/>
+					<md:RequestedAttribute FriendlyName='displayName' Name='urn:mace:dir:attribute-def:displayName' NameFormat='urn:mace:shibboleth:1.0:attributeNamespace:uri'/>
+ 
+					<md:RequestedAttribute FriendlyName='eduPersonPrincipalName' Name='urn:oid:1.3.6.1.4.1.5923.1.1.1.6' NameFormat='urn:oasis:names:tc:SAML:2.0:attrname-format:uri'/>
+					<md:RequestedAttribute FriendlyName='mail' Name='urn:oid:0.9.2342.19200300.100.1.3' NameFormat='urn:oasis:names:tc:SAML:2.0:attrname-format:uri'/>
+					<md:RequestedAttribute FriendlyName='displayName' Name='urn:oid:2.16.840.1.113730.3.1.241' NameFormat='urn:oasis:names:tc:SAML:2.0:attrname-format:uri'/>
+				</md:AttributeConsumingService>";
+			(XmlDocument doc, XmlNamespaceManager nsmgr) = LoadXml(xml);
+
+			var expected = new AttributeConsumingService
+			{
+				Index = 1,
+
+				ServiceNames = {
+					new LocalizedName("Sample Service", "en")
+				},
+
+				ServiceDescriptions = {
+					new LocalizedName("An example service that requires a human-readable identifier and optional name and e-mail address.", "en")
+				},
+ 
+				RequestedAttributes = {
+					new RequestedAttribute("urn:mace:dir:attribute-def:eduPersonPrincipalName") {
+						FriendlyName = "eduPersonPrincipalName",
+						NameFormat = new Uri("urn:mace:shibboleth:1.0:attributeNamespace:uri")
+					},
+					new RequestedAttribute("urn:mace:dir:attribute-def:mail") {
+						FriendlyName = "mail",
+						NameFormat = new Uri("urn:mace:shibboleth:1.0:attributeNamespace:uri")
+					},
+					new RequestedAttribute("urn:mace:dir:attribute-def:displayName") {
+						FriendlyName = "displayName",
+						NameFormat = new Uri("urn:mace:shibboleth:1.0:attributeNamespace:uri")
+					},
+					new RequestedAttribute("urn:oid:1.3.6.1.4.1.5923.1.1.1.6") {
+						FriendlyName = "eduPersonPrincipalName",
+						NameFormat = new Uri("urn:oasis:names:tc:SAML:2.0:attrname-format:uri")
+					},
+					new RequestedAttribute("urn:oid:0.9.2342.19200300.100.1.3") {
+						FriendlyName = "mail",
+						NameFormat = new Uri("urn:oasis:names:tc:SAML:2.0:attrname-format:uri")
+					},
+					new RequestedAttribute("urn:oid:2.16.840.1.113730.3.1.241") {
+						FriendlyName = "displayName",
+						NameFormat = new Uri("urn:oasis:names:tc:SAML:2.0:attrname-format:uri")
+					}
+				}
+			};
+			ReadTest(xml, expected, (serializer, reader) =>
+				serializer.TestReadAttributeConsumingService(reader));
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_ReadRequestedAttribute()
+		{
+			string xml =
+				@"<?xml version='1.0' encoding='UTF-8' ?>
+				<md:RequestedAttribute 
+					xmlns:md='urn:oasis:names:tc:SAML:2.0:metadata'
+					isRequired='true'
+					FriendlyName='eduPersonPrincipalName' 
+					Name='urn:mace:dir:attribute-def:eduPersonPrincipalName'
+					NameFormat='urn:mace:shibboleth:1.0:attributeNamespace:uri'>
+				</md:RequestedAttribute>";
+			(XmlDocument doc, XmlNamespaceManager nsmgr) = LoadXml(xml);
+
+			var expected = new RequestedAttribute("urn:mace:dir:attribute-def:eduPersonPrincipalName") {
+				IsRequired = true,
+				FriendlyName = "eduPersonPrincipalName",
+				NameFormat = new Uri("urn:mace:shibboleth:1.0:attributeNamespace:uri")
+			};
+			ReadTest(xml, expected, (serializer, reader) =>
+				serializer.TestReadRequestedAttribute(reader));
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_ReadSpSsoDescriptor()
+		{
+			string xml =
+				@"<?xml version='1.0' encoding='UTF-8' ?>
+				<SPSSODescriptor
+					xmlns='urn:oasis:names:tc:SAML:2.0:metadata'
+					xmlns:ds='http://www.w3.org/2000/09/xmldsig#'
+					protocolSupportEnumeration='urn:oasis:names:tc:SAML:2.0:protocol urn:oasis:names:tc:SAML:1.1:protocol'
+					AuthnRequestsSigned='true'
+					WantAssertionsSigned='false'>
+					<Extensions>
+						<idpdisc:DiscoveryResponse xmlns:idpdisc='urn:oasis:names:tc:SAML:profiles:SSO:idp-discovery-protocol'
+								index='1' Binding='urn:oasis:names:tc:SAML:profiles:SSO:idp-discovery-protocol'
+								Location='http://sp.example.org/Shibboleth.sso/DS'/>
+						<idpdisc:DiscoveryResponse xmlns:idpdisc='urn:oasis:names:tc:SAML:profiles:SSO:idp-discovery-protocol'
+								index='2' Binding='urn:oasis:names:tc:SAML:profiles:SSO:idp-discovery-protocol'
+								Location='https://sp.example.org/Shibboleth.sso/DS'/>
+					</Extensions>
+ 
+					<KeyDescriptor>
+						<ds:KeyInfo>
+							<ds:X509Data>
+								<ds:X509Certificate>" + certData + @"
+								</ds:X509Certificate>
+							</ds:X509Data>
+						</ds:KeyInfo>
+					</KeyDescriptor>
+ 
+					<NameIDFormat>urn:oasis:names:tc:SAML:2.0:nameid-format:transient</NameIDFormat>
+					<NameIDFormat>urn:mace:shibboleth:1.0:nameIdentifier</NameIDFormat>
+ 
+					<AssertionConsumerService index='1' isDefault='true'
+							Binding='urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST'
+							Location='https://sp.example.org/Shibboleth.sso/SAML2/POST'/>
+					<AssertionConsumerService index='2'
+							Binding='urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST-SimpleSign'
+							Location='https://sp.example.org/Shibboleth.sso/SAML2/POST-SimpleSign'/>
+					<AssertionConsumerService index='3'
+							Binding='urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Artifact'
+							Location='https://sp.example.org/Shibboleth.sso/SAML2/Artifact'/>
+					<AssertionConsumerService index='4'
+							Binding='urn:oasis:names:tc:SAML:1.0:profiles:browser-post'
+							Location='https://sp.example.org/Shibboleth.sso/SAML/POST'/>
+					<AssertionConsumerService index='5'
+							Binding='urn:oasis:names:tc:SAML:1.0:profiles:artifact-01'
+							Location='https://sp.example.org/Shibboleth.sso/SAML/Artifact'/>
+ 
+				</SPSSODescriptor>";
+			(XmlDocument doc, XmlNamespaceManager nsmgr) = LoadXml(xml);
+
+			var expected = new SpSsoDescriptor
+			{
+				AuthnRequestsSigned = true,
+				WantAssertionsSigned = false,
+				ProtocolsSupported = {
+					new Uri("urn:oasis:names:tc:SAML:2.0:protocol"),
+					new Uri("urn:oasis:names:tc:SAML:1.1:protocol")
+				},
+				DiscoveryResponses = {
+					{ 1,
+						new DiscoveryResponse {
+							Index = 1,
+							Binding = new Uri("urn:oasis:names:tc:SAML:profiles:SSO:idp-discovery-protocol"),
+							Location = new Uri("http://sp.example.org/Shibboleth.sso/DS"),
+						}
+					},
+					{ 2,
+						new DiscoveryResponse {
+							Index = 2,
+							Binding = new Uri("urn:oasis:names:tc:SAML:profiles:SSO:idp-discovery-protocol"),
+							Location = new Uri("https://sp.example.org/Shibboleth.sso/DS")
+						}
+					}
+				},
+				Keys = {
+					new KeyDescriptor {
+						KeyInfo = new DSigKeyInfo {
+							Data = {
+								new X509Data {
+									Certificates = {
+										new X509Certificate2(Convert.FromBase64String(certData))
+									}
+								}
+							}
+						}
+					}
+				},
+				NameIdentifierFormats = {
+					new NameIDFormat {
+						Uri = new Uri("urn:oasis:names:tc:SAML:2.0:nameid-format:transient")
+					},
+					new NameIDFormat {
+						Uri = new Uri("urn:mace:shibboleth:1.0:nameIdentifier")
+					}
+				},
+				AssertionConsumerServices = {
+					{ 1,
+						new AssertionConsumerService {
+							Index = 1,
+							IsDefault = true,
+							Binding = new Uri("urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST"),
+							Location = new Uri("https://sp.example.org/Shibboleth.sso/SAML2/POST")
+						}
+					}, { 2,
+						new AssertionConsumerService {
+							Index = 2,
+							Binding = new Uri("urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST-SimpleSign"),
+							Location = new Uri("https://sp.example.org/Shibboleth.sso/SAML2/POST-SimpleSign")
+						}
+					}, { 3,
+						new AssertionConsumerService {
+							Index = 3,
+							Binding = new Uri("urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Artifact"),
+							Location = new Uri("https://sp.example.org/Shibboleth.sso/SAML2/Artifact")
+						}
+					}, { 4,
+						new AssertionConsumerService {
+							Index = 4,
+							Binding = new Uri("urn:oasis:names:tc:SAML:1.0:profiles:browser-post"),
+							Location = new Uri("https://sp.example.org/Shibboleth.sso/SAML/POST")
+						}
+					}, { 5,
+						new AssertionConsumerService {
+							Index = 5,
+							Binding = new Uri("urn:oasis:names:tc:SAML:1.0:profiles:artifact-01"),
+							Location = new Uri("https://sp.example.org/Shibboleth.sso/SAML/Artifact")
+						}
+					}
+				}
+			};
+
+			ReadTest(xml, expected, (serializer, reader) =>
+				serializer.TestReadSpSsoDescriptor(reader));
+		}
+
 #if FALSE
-
-		public MetadataBase ReadMetadata(Stream stream)
-		{
-			if (stream == null)
-			{
-				throw new ArgumentNullException(nameof(stream));
-			}
-			return ReadMetadata(XmlReader.Create(stream));
-		}
-
-		public MetadataBase ReadMetadata(XmlReader reader)
-		{
-			if (reader == null)
-			{
-				throw new ArgumentNullException(nameof(reader));
-			}
-			return ReadMetadata(reader, NullSecurityTokenResolver.Instance);
-		}
-
-		public MetadataBase ReadMetadata(XmlReader reader, SecurityTokenResolver tokenResolver)
-		{
-			if (reader == null)
-			{
-				throw new ArgumentNullException(nameof(reader));
-			}
-			if (tokenResolver == null)
-			{
-				throw new ArgumentNullException(nameof(tokenResolver));
-			}
-			return ReadMetadataCore(reader, tokenResolver);
-		}
-
-		protected virtual MetadataBase ReadMetadataCore(XmlReader reader, SecurityTokenResolver tokenResolver)
-		{
-			if (reader.IsStartElement("EntityDescriptor", Saml2MetadataNs))
-			{
-				return ReadEntityDescriptor(reader, tokenResolver);
-			}
-			if (reader.IsStartElement("EntitiesDescriptor", Saml2MetadataNs))
-			{
-				return ReadEntitiesDescriptor(reader, tokenResolver);
-			}
-			throw new MetadataSerializationException($"Unexpected root entity {reader.Name}");
-		}
-
-		// <complexType name="SecurityTokenServiceType">
-		//   <extension base="fed:WebServiceDescriptorType">
-		//     <sequence>
-		//       <element ref="fed:SecurityTokenServiceEndpoint"
-		//                minOccurs="1" maxOccurs="unbounded"/>
-		//       <element ref="fed:SingleSignOutSubscriptionEndpoint"
-		//                minOccurs="0" maxOccurs="unbounded"/>
-		//       <element ref="fed:SingleSignOutNotificationEndpoint"
-		//                minOccurs="0" maxOccurs="unbounded"/>
-		//       <element ref="fed:PassiveRequestorEndpoint"
-		//               minOccurs="0" maxOccurs="unbounded"/>
-		//      </sequence>
-		//   </extension>
-		// </complexType>
-		// 
-		// <element name="fed:SecurityTokenServiceEndpoint"
-		//          type="wsa:EndpointReferenceType"/>
-		// <element name="fed:SingleSignOutSubscriptionEndpoint"
-		//          type="wsa:EndpointReferenceType"/>
-		// <element name="fed:SingleSignOutNotificationEndpoint"  
-		//          type="wsa:EndpointReferenceType"/>
-		// <element name="fed:PassiveRequestorEndpoint"
-		//          type="wsa:EndpointReferenceType"/>
-		protected virtual SecurityTokenServiceDescriptor ReadSecurityTokenServiceDescriptor(XmlReader reader)
-		{
-			var descriptor = CreateSecurityTokenServiceDescriptorInstance();
-			ReadCustomAttributes(reader, descriptor);
-			ReadChildren(reader, () =>
-			{
-				if (reader.IsStartElement("SecurityTokenServiceEndpoint", FedNs))
-				{
-					descriptor.SecurityTokenServiceEndpoints.Add(
-						ReadEndpointReference(reader));
-				}
-				else if (reader.IsStartElement("SingleSignOutSubscriptionEndpoint", FedNs))
-				{
-					descriptor.SingleSignOutSubscriptionEndpoints.Add(
-						ReadEndpointReference(reader));
-				}
-				else if (reader.IsStartElement("SingleSignOutNotificationEndpoint", FedNs))
-				{
-					descriptor.SingleSignOutNotificationEndpoints.Add(
-						ReadEndpointReference(reader));
-				}
-				else if (reader.IsStartElement("PassiveRequestorEndpoint", FedNs))
-				{
-					descriptor.PassiveRequestorEndpoints.Add(
-						ReadEndpointReference(reader));
-				}
-				else
-				{
-					return ReadCustomElement(reader, descriptor);
-				}
-				return true;
-			});
-			return descriptor;
-		}
-
-		// <element name="RequestedAttribute" type="md:RequestedAttributeType"/>
-		// <complexType name="RequestedAttributeType">
-		// <complexContent>
-		//   <extension base="saml:AttributeType">
-		//     <attribute name="isRequired" type="boolean" use="optional"/>
-		//   </extension>
-		// </complexContent>
-		// </complexType>
-		protected virtual RequestedAttribute ReadRequestedAttribute(XmlReader reader)		{			var attribute = ReadSamlAttributeType(reader, CreateRequestedAttributeInstance);			attribute.IsRequired = GetOptionalBooleanAttribute(reader, "isRequired");
-			ReadCustomAttributes(reader, attribute);
-			return attribute;
-		}
-		// <element name="AttributeConsumingService"
-		//   type="md:AttributeConsumingServiceType"/>
-		// <complexType name="AttributeConsumingServiceType">
-		//   <sequence>
-		//     <element ref="md:ServiceName" maxOccurs="unbounded"/>
-		//     <element ref="md:ServiceDescription" minOccurs="0"
-		//       maxOccurs="unbounded"/>
-		//     <element ref="md:RequestedAttribute" maxOccurs="unbounded"/>
-		//   </sequence>
-		//   <attribute name="index" type="unsignedShort" use="required"/>
-		//   <attribute name="isDefault" type="boolean" use="optional"/>
-		// </complexType>
-		// <element name="ServiceName" type="md:localizedNameType"/>
-		// <element name="ServiceDescription" type="md:localizedNameType"/>
-		protected virtual AttributeConsumingService ReadAttributeConsumingService(XmlReader reader)
-		{
-			var acs = CreateAttributeConsumingServiceInstance();
-
-			ReadIndexedEntryWithDefaultAttributes(reader, acs);
-
-			ReadCustomAttributes(reader, acs);
-
-			ReadChildren(reader, () =>
-			{
-				if (reader.IsStartElement("ServiceName", Saml2MetadataNs))
-				{
-					acs.ServiceNames.Add(ReadLocalizedName(reader));
-				}
-				else if (reader.IsStartElement("ServiceDescription", Saml2MetadataNs))
-				{
-					acs.ServiceDescriptions.Add(ReadLocalizedName(reader));
-				}
-				else if (reader.IsStartElement("RequestedAttribute", Saml2MetadataNs))
-				{
-					acs.RequestedAttributes.Add(ReadRequestedAttribute(reader));
-				}
-				else
-				{
-					return ReadCustomElement(reader, acs);
-				}
-				return true; // handled above
-			});
-			return acs;
-		}
-
-		void AddIndexedEntry<T>(IndexedCollectionWithDefault<T> collection, T entry,
-			string elName) where T : class, IIndexedEntryWithDefault
-		{
-			try
-			{
-				collection.Add(entry.Index, entry);
-			}
-			catch (ArgumentException e)
-			{
-				throw new MetadataSerializationException(
-					$"Cannot add the {elName} with index '{entry.Index}' " +
-					"because it repeats an index already used", e);
-			}
-		}
-		
-		//  <element name="SPSSODescriptor" type="md:SPSSODescriptorType"/>
-		//  <complexType name="SPSSODescriptorType">
-		//    <complexContent>
-		//      <extension base="md:SSODescriptorType">
-		//        <sequence>
-		//        <element ref="md:AssertionConsumerService"
-		//          maxOccurs="unbounded"/>
-		//        <element ref="md:AttributeConsumingService" minOccurs="0"
-		//          maxOccurs="unbounded"/>
-		//        </sequence>
-		//        <attribute name="AuthnRequestsSigned" type="boolean"
-		//          use="optional"/>
-		//        <attribute name="WantAssertionsSigned" type="boolean"
-		//          use="optional"/>
-		//      </extension>
-		//    </complexContent>
-		//  </complexType>
-		//  <element name="AssertionConsumerService" type="md:IndexedEndpoint"/>
-		protected virtual SpSsoDescriptor ReadSpSsoDescriptor(XmlReader reader)
-		{
-			var descriptor = CreateSpSsoDescriptorInstance();
-			descriptor.AuthnRequestsSigned = GetBooleanAttribute(reader, "AuthnRequestsSigned", false);
-			descriptor.WantAssertionsSigned = GetBooleanAttribute(reader, "WantAssertionsSigned", false);
-			ReadSsoDescriptorAttributes(reader, descriptor);
-			ReadCustomAttributes(reader, descriptor);
-
-			ReadChildren(reader, () =>
-			{
-				if (reader.IsStartElement("AssertionConsumerService", Saml2MetadataNs))
-				{
-					var acs = ReadAssertionConsumerService(reader);
-					AddIndexedEntry(descriptor.AssertionConsumerServices,
-						acs, "AssertionConsumerService");
-				}
-				else if (reader.IsStartElement("AttributeConsumingService", Saml2MetadataNs))
-				{
-					var acs = ReadAttributeConsumingService(reader);
-					AddIndexedEntry(descriptor.AttributeConsumingServices,
-						acs, "AttributeConsumingService");
-				}
-				else if (reader.IsStartElement("Extensions", Saml2MetadataNs))
-				{
-					var doc = new XmlDocument();
-					XmlNode rootNode = doc.CreateElement("root");
-					doc.AppendChild(rootNode);
-
-					ReadChildren(reader, () =>
-					{
-						if (reader.IsStartElement("DiscoveryResponse", IdpDiscNs))
-						{
-							var disco = ReadDiscoveryResponse(reader);
-							descriptor.DiscoveryResponses.Add(disco.Index, disco);
-						}
-						else
-						{
-							descriptor.Extensions.Add(ReadCurrentNodeAsXmlElement(reader));
-						}
-						return true;
-					});
-				}
-				else if (ReadSsoDescriptorElement(reader, descriptor))
-				{
-				}
-				else
-				{
-					return ReadCustomElement(reader, descriptor);
-				}
-				return true; // handled above
-			});
-			return descriptor;
-		}
-
-		// <complexType name="SSODescriptorType" abstract="true">
-		//   <complexContent>
-		//     <extension base="md:RoleDescriptorType">
-		//       <sequence>
-		//         <element ref="md:ArtifactResolutionService" minOccurs="0"
-		//           maxOccurs="unbounded"/>
-		//         <element ref="md:SingleLogoutService" minOccurs="0"
-		//           maxOccurs="unbounded"/>
-		//         <element ref="md:ManageNameIDService" minOccurs="0"
-		//           maxOccurs="unbounded"/>
-		//         <element ref="md:NameIDFormat" minOccurs="0"
-		//           maxOccurs="unbounded"/>
-		//       </sequence>
-		//     </extension>
-		//   </complexContent>
-		// </complexType>
-		// <element name="ArtifactResolutionService" type="md:IndexedEndpoint"/>
-		// <element name="SingleLogoutService" type="md:EndpointType"/>
-		// <element name="ManageNameIDService" type="md:EndpointType"/>
-		// <element name="NameIDFormat" type="anyURI"/>
-		protected virtual void ReadSsoDescriptorAttributes(XmlReader reader, SsoDescriptor descriptor)
-		{
-			ReadRoleDescriptorAttributes(reader, descriptor);
-		}
-
-		protected virtual bool ReadSsoDescriptorElement(XmlReader reader, SsoDescriptor descriptor)
-		{
-			if (reader.IsStartElement("ArtifactResolutionService", Saml2MetadataNs))
-			{
-				AddIndexedEntry(descriptor.ArtifactResolutionServices,
-					ReadArtifactResolutionService(reader), "ArtifactResolutionService");
-			}
-			else if (reader.IsStartElement("SingleLogoutService", Saml2MetadataNs))
-			{
-				descriptor.SingleLogoutServices.Add(
-					ReadSingleLogoutService(reader));
-			}
-			else if (reader.IsStartElement("ManageNameIDService", Saml2MetadataNs))
-			{
-				descriptor.ManageNameIDServices.Add(
-					ReadManageNameIDService(reader));
-			}
-			else if (reader.IsStartElement("NameIDFormat", Saml2MetadataNs))
-			{
-				descriptor.NameIdentifierFormats.Add(
-					ReadNameIDFormat(reader));
-			}
-			else
-			{
-				return ReadRoleDescriptorElement(reader, descriptor);
-			}
-			return true; // handled above
-		}
-
-		Uri GetUriAttribute(XmlReader reader, string att, Uri def)
-		{
-			string sv = reader.GetAttribute(att);
-			return !String.IsNullOrEmpty(sv) ? MakeUri(sv) : def;
-		}
-
-		protected virtual void ReadEndpointAttributes(XmlReader reader, Endpoint endpoint)
-		{
-			endpoint.Binding = GetUriAttribute(reader, "Binding", endpoint.Binding);
-			if (endpoint.Binding == null)
-			{
-				throw new MetadataSerializationException("EndpointType with missing Binding Attribute");
-			}
-
-			endpoint.Location = GetUriAttribute(reader, "Location", endpoint.Location);
-			if (endpoint.Location == null)
-			{
-				throw new MetadataSerializationException("EndpointType with missing Location Attribute");
-			}
-
-			endpoint.ResponseLocation = GetUriAttribute(reader, "ResponseLocation", endpoint.ResponseLocation);
-		}
-
-		static void SkipToElementEnd(XmlReader reader)
-		{
-			while (reader.IsStartElement())
-			{
-				reader.Skip();
-			}
-			reader.ReadEndElement();
-		}
-
-		// <complexType name="EndpointType">
-		//  <sequence>
-		//   <any namespace="##other" processContents="lax" minOccurs="0"
-		//     maxOccurs="unbounded"/>
-		//  </sequence>
-		//  <attribute name="Binding" type="anyURI" use="required"/>
-		//  <attribute name="Location" type="anyURI" use="required"/>
-		//  <attribute name="ResponseLocation" type="anyURI" use="optional"/>
-		//  <anyAttribute namespace="##other" processContents="lax"/>
-		// </complexType>
-		T ReadWrappedEndpoint<T>(XmlReader reader, Func<T> createInstance) where T : Endpoint
-		{
-			var endpoint = createInstance();
-			ReadEndpointAttributes(reader, endpoint);
-			ReadCustomAttributes(reader, endpoint);
-			ReadChildren(reader, () => false);
-			return endpoint;
-		}
-
-		protected virtual Endpoint ReadEndpoint(XmlReader reader) =>
-			ReadWrappedEndpoint(reader, CreateEndpointInstance);
-
-		protected virtual AttributeService ReadAttributeService(XmlReader reader) =>
-			ReadWrappedEndpoint(reader, CreateAttributeServiceInstance);
-
-		protected virtual AuthnQueryService ReadAuthnQueryService(XmlReader reader) =>
-			ReadWrappedEndpoint(reader, CreateAuthnQueryServiceInstance);
-
-		protected virtual AssertionIdRequestService ReadAssertionIdRequestService(XmlReader reader) =>
-			ReadWrappedEndpoint(reader, CreateAssertionIdRequestServiceInstance);
-
-		protected virtual AuthzService ReadAuthzService(XmlReader reader) =>
-			ReadWrappedEndpoint(reader, CreateAuthzServiceInstance);
-
-		protected virtual SingleLogoutService ReadSingleLogoutService(XmlReader reader) =>
-			ReadWrappedEndpoint(reader, CreateSingleLogoutServiceInstance);
-
-		protected virtual ManageNameIDService ReadManageNameIDService(XmlReader reader) =>
-			ReadWrappedEndpoint(reader, CreateManageNameIDServiceInstance);
-
-		protected virtual SingleSignOutNotificationEndpoint ReadSingleSignOutNotificationEndpoint(XmlReader reader) =>
-			ReadWrappedEndpoint(reader, CreateSingleSignOutNotificationEndpointInstance);
-
-		protected virtual ApplicationServiceEndpoint ReadApplicationServiceEndpoint(XmlReader reader) =>
-			ReadWrappedEndpoint(reader, CreateApplicationServiceEndpointInstance);
-
-		protected virtual PassiveRequestorEndpoint ReadPassiveRequestorEndpoint(XmlReader reader) =>
-			ReadWrappedEndpoint(reader, CreatePassiveRequestorEndpointInstance);
-
-		protected virtual SingleSignOnService ReadSingleSignOnService(XmlReader reader) =>
-			ReadWrappedEndpoint(reader, CreateSingleSignOnServiceInstance);
-		
-		protected virtual NameIDMappingService ReadNameIDMappingService(XmlReader reader) =>
-			ReadWrappedEndpoint(reader, CreateNameIDMappingServiceInstance);
-
-		void ReadIndexedEntryWithDefaultAttributes(XmlReader reader, IIndexedEntryWithDefault entry)
-		{
-			string sv = reader.GetAttribute("index");
-			if (String.IsNullOrEmpty(sv))
-			{
-				throw new MetadataSerializationException("IndexedEndpoint element missing index attribute");
-			}
-
-			int index;
-			if (!Int32.TryParse(sv, out index))
-			{
-				throw new MetadataSerializationException($"IndexedEndpoint element with invalid index attribute '{index}'");
-			}
-			entry.Index = index;
-			entry.IsDefault = GetOptionalBooleanAttribute(reader, "isDefault");
-		}
-
-		void ReadIndexedEndpointAttributes(XmlReader reader, IndexedEndpoint endpoint)
-		{
-			ReadIndexedEntryWithDefaultAttributes(reader, endpoint);
-			ReadEndpointAttributes(reader, endpoint);
-		}
-
-		// <complexType name="IndexedEndpoint">
-		//   <complexContent>
-		//     <extension base="md:EndpointType">
-		//       <attribute name="index" type="unsignedShort" use="required"/>
-		//       <attribute name="isDefault" type="boolean" use="optional"/>
-		//     </extension>
-		//   </complexContent>
-		// </complexType>
-		T ReadWrappedIndexedEndpoint<T>(XmlReader reader, Func<T> createInstance) where T : IndexedEndpoint
-		{
-			var endpoint = createInstance();
-			ReadIndexedEndpointAttributes(reader, endpoint);
-			ReadCustomAttributes(reader, endpoint);
-			ReadChildren(reader, () => false);
-			return endpoint;
-		}
-
-		protected virtual AssertionConsumerService ReadAssertionConsumerService(XmlReader reader) =>
-			ReadWrappedIndexedEndpoint(reader, CreateAssertionConsumerServiceInstance);
-
-		protected virtual ArtifactResolutionService ReadArtifactResolutionService(XmlReader reader) =>
-			ReadWrappedIndexedEndpoint(reader, CreateArtifactResolutionServiceInstance);
-
-		protected virtual DiscoveryResponse ReadDiscoveryResponse(XmlReader reader) =>
-			ReadWrappedIndexedEndpoint(reader, CreateDiscoveryResponseInstance);
-
-
-		// <complexType name="WebServiceDescriptorType" abstract="true">
-		// 	<complexContent>
-		//	  <extension base="md:RoleDescriptorType">
-		// 	    <sequence>
-		// 	      <element ref="fed:LogicalServiceNamesOffered" minOccurs="0" maxOccurs="1" />
-		//        <element ref="fed:TokenTypesOffered" minOccurs="0" maxOccurs="1" />
-		// 	      <element ref="fed:ClaimDialectsOffered" minOccurs="0" maxOccurs="1" />
-		// 	      <element ref="fed:ClaimTypesOffered" minOccurs="0" maxOccurs="1" />
-		// 	      <element ref="fed:ClaimTypesRequested" minOccurs="0" maxOccurs="1"/>
-		// 	      <element ref="fed:AutomaticPseudonyms" minOccurs="0" maxOccurs="1"/>
-		// 	      <element ref="fed:TargetScopes" minOccurs="0" maxOccurs="1"/>
-		// 	    </sequence>
-		// 	    <attribute name="ServiceDisplayName" type="xs:String" use="optional"/>
-		// 	    <attribute name="ServiceDescription" type="xs:String" use="optional"/>
-		// 	  </extension>
-		// 	</complexContent>
-		// </complexType>
-		// <element name='LogicalServiceNamesOffered' type=fed:LogicalServiceNamesOfferedType' />
-		// <element name="fed:TokenTypeOffered" type="fed:TokenType"/>
-		// <element name="fed:ClaimDialectsOffered" type="fed:ClaimDialectsOfferedType"/>
-		// <element name="fed:ClaimTypesOffered" type="fed:ClaimTypesOfferedType"/>
-		// <element name="ClaimTypesRequested" type="tns:ClaimTypesRequestedType"/>
-		// <element name="fed:AutomaticPseudonyms" type="xs:boolean"/>
-		// <element name="fed:TargetScope" type="tns:EndpointType"/>
-		protected virtual void ReadWebServiceDescriptorAttributes(XmlReader reader, WebServiceDescriptor descriptor)
-		{
-			if (reader == null)
-			{
-				throw new ArgumentNullException(nameof(reader));
-			}
-			if (descriptor == null)
-			{
-				throw new ArgumentNullException(nameof(descriptor));
-			}
-
-			ReadRoleDescriptorAttributes(reader, descriptor);
-			descriptor.ServiceDisplayName = GetAttribute(reader,
-				"ServiceDisplayName", descriptor.ServiceDisplayName);
-			descriptor.ServiceDescription = GetAttribute(reader,
-				"ServiceDescription", descriptor.ServiceDescription);
-			ReadCustomAttributes(reader, descriptor);
-		}
-
-		void ReadUris(XmlReader reader, string parentElementName,
-			string childElementName, ICollection<Uri> uris)
-		{
-			bool empty = reader.IsEmptyElement;
-			reader.ReadStartElement();
-			if (!empty)
-			{
-				while (reader.IsStartElement())
-				{
-					if (!reader.IsStartElement(childElementName, FedNs))
-					{
-						throw new MetadataSerializationException(
-							$"<fed:{parentElementName}> element with unexpected child {reader.Name}");
-					}
-					string uri = reader.GetAttribute("Uri");
-					if (String.IsNullOrEmpty(uri))
-					{
-						throw new MetadataSerializationException(
-							$"<fed:{childElementName}> element without Uri attribute");
-					}
-					uris.Add(MakeUri(uri));
-					reader.Skip();
-				}
-				reader.ReadEndElement();
-			}
-		}
-
-		static void ReadChildren(XmlReader reader, Func<bool> childAction)
-		{
-			bool empty = reader.IsEmptyElement;
-			reader.ReadStartElement();
-			if (!empty)
-			{
-				while (reader.IsStartElement())
-				{
-					if (!childAction())
-					{
-						reader.Skip();
-					}
-				}
-				reader.ReadEndElement();
-			}
-		}
-
-		void ReadDisplayClaims(XmlReader reader, ICollection<DisplayClaim> claims)
-		{
-			ReadChildren(reader, () =>
-			{
-				if (reader.IsStartElement("ClaimType", AuthNs))
-				{
-					claims.Add(ReadDisplayClaim(reader));
-					return true;
-				}
-				return false;
-			});
-		}
-
-		XmlElement ReadCurrentNodeAsXmlElement(XmlReader reader)
-		{
-			bool empty = reader.IsEmptyElement;
-			var doc = new XmlDocument();
-			using (var subtreeReader = reader.ReadSubtree())
-			{
-				doc.Load(subtreeReader);
-			}
-			if (!empty)
-			{
-				reader.ReadEndElement();
-			}
-			else
-			{
-				reader.Skip();
-			}
-			return doc.DocumentElement;
-		}
-
-		void ReadChildrenAsXmlElements(XmlReader reader, Action<XmlElement> childAction)
-		{
-			ReadChildren(reader, () =>
-			{
-				childAction(ReadCurrentNodeAsXmlElement(reader));
-				return true;
-			});
-		}
-
-		EndpointReference ReadEndpointReference(XmlReader reader)
-		{
-			var endpointReference = new EndpointReference();
-
-			// <wsa:EndpointReference>
-			//     <wsa:Address>xs:anyURI</wsa:Address>
-			//     <wsa:ReferenceParameters>xs:any*</wsa:ReferenceParameters> ?
-			//     <wsa:Metadata>xs:any*</wsa:Metadata>?
-			// </wsa:EndpointReference>
-			ReadChildren(reader, () =>
-			{
-				if (reader.IsStartElement("Address", WsaNs))
-				{
-					if (endpointReference.Uri != null)
-					{
-						throw new MetadataSerializationException("<wsa:EndpointReference> has more than one <wsa:Address> child");
-					}
-					endpointReference.Uri = MakeUri(reader.ReadElementContentAsString());
-				}
-				else if (reader.IsStartElement("ReferenceParameters", WsaNs))
-				{
-					ReadChildrenAsXmlElements(reader, endpointReference.ReferenceParameters.Add);
-				}
-				else if (reader.IsStartElement("Metadata", WsaNs))
-				{
-					ReadChildrenAsXmlElements(reader, endpointReference.Metadata.Add);
-				}
-				else
-				{
-					return ReadCustomElement(reader, endpointReference);
-				}
-				return true; // handled above
-			});
-			return endpointReference;
-		}
-
-		public virtual bool ReadWebServiceDescriptorElement(XmlReader reader, WebServiceDescriptor descriptor)
-		{
-			if (reader == null)
-			{
-				throw new ArgumentNullException(nameof(reader));
-			}
-			if (descriptor == null)
-			{
-				throw new ArgumentNullException(nameof(descriptor));
-			}
-
-			if (ReadRoleDescriptorElement(reader, descriptor))
-			{
-				return true;
-			}
-			// <element ref="fed:LogicalServiceNamesOffered" minOccurs="0" maxOccurs="1" />
-			if (reader.IsStartElement("LogicalServiceNamesOffered", FedNs))
-			{
-				// <fed:LogicalServiceNamesOffered ...>
-				//	<fed:IssuerName Uri="xs:anyURI" .../> +
-				// </fed:LogicalServiceNamesOffered>
-				ReadUris(reader, "LogicalServiceNamesOffered",
-					"IssuerName", descriptor.LogicalServiceNamesOffered);
-			}
-			// <element ref="fed:TokenTypesOffered" minOccurs="0" maxOccurs="1" />
-			else if (reader.IsStartElement("TokenTypesOffered", FedNs))
-			{
-				// <fed:TokenTypesOffered ...>
-				//   <fed:TokenType Uri="xs:anyURI" ...>
-				//	   ...
-				//   </fed:TokenType> + 
-				//     ...
-				// </fed:TokenTypesOffered>
-				ReadUris(reader, "TokenTypesOffered",
-					"TokenType", descriptor.TokenTypesOffered);
-			}
-			// <element ref="fed:ClaimDialectsOffered" minOccurs="0" maxOccurs="1" />
-			else if (reader.IsStartElement("ClaimDialectsOffered", FedNs))
-			{
-				// <fed:ClaimDialectsOffered>
-				//   <fed:ClaimDialect Uri="xs:anyURI" /> +
-				// </fed:ClaimDialectsOffered>			
-				ReadUris(reader, "ClaimDialectsOffered",
-					"ClaimDialect", descriptor.ClaimDialectsOffered);
-			}
-			// <element ref="fed:ClaimTypesOffered" minOccurs="0" maxOccurs="1" />
-			else if (reader.IsStartElement("ClaimTypesOffered", FedNs))
-			{
-				// <fed:ClaimTypesOffered ...>
-				//   <auth:ClaimType ...> ... </auth:ClaimType> +
-				// </fed:ClaimTypesOffered>
-				ReadDisplayClaims(reader, descriptor.ClaimTypesOffered);
-			}
-			// <element ref="fed:ClaimTypesRequested" minOccurs="0" maxOccurs="1"/>
-			else if (reader.IsStartElement("ClaimTypesRequested", FedNs))
-			{
-				// <fed:ClaimTypesRequested ...>
-				//   <auth:ClaimType ...> ... </auth:ClaimType> +
-				// </fed:ClaimTypesRequested>
-				ReadDisplayClaims(reader, descriptor.ClaimTypesRequested);
-			}
-			// <element ref="fed:AutomaticPseudonyms" minOccurs="0" maxOccurs="1"/>
-			else if (reader.IsStartElement("AutomaticPseudonyms", FedNs))
-			{
-				// <fed:AutomaticPseudonyms>
-				//   xs:boolean
-				// </fed:AutomaticPseudonyms>
-				descriptor.AutomaticPseudonyms = reader.ReadContentAsBoolean();
-			}
-			// <element ref="fed:TargetScopes" minOccurs="0" maxOccurs="1"/>
-			else if (reader.IsStartElement("TargetScopes", FedNs))
-			{
-				// <fed:TargetScopes ...>
-				//   <wsa:EndpointReference>
-				//     ...
-				//   </wsa:EndpointReference> + 
-				// </fed:TargetScopes>
-				ReadChildren(reader, () =>
-				{
-					if (reader.IsStartElement("EndpointReference", WsaNs))
-					{
-						descriptor.TargetScopes.Add(ReadEndpointReference(reader));
-						return true;
-					}
-					return false;
-				});
-			}
-			else
-			{
-				return ReadCustomElement(reader, descriptor);
-			}
-			return true; // handled above
-		}
 
 		static void WriteWrappedElements(XmlWriter writer, string wrapPrefix,
 			string wrapName, string wrapNs, IEnumerable<XmlElement> elts)

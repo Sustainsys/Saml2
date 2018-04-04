@@ -37,7 +37,7 @@ namespace Sustainsys.Saml2.Metadata
 		const string Saml2MetadataNs = "urn:oasis:names:tc:SAML:2.0:metadata";
 		const string Saml2AssertionNs = "urn:oasis:names:tc:SAML:2.0:assertion";
 		const string XsiNs = "http://www.w3.org/2001/XMLSchema-instance";
-		const string AuthNs = "http://docs.oasis-open.org/wsfed/authorization/200706/authclaims";
+		const string AuthNs = "http://docs.oasis-open.org/wsfed/authorization/200706";
 		const string XEncNs = "http://www.w3.org/2001/04/xmlenc#";
 		const string DSigNs = "http://www.w3.org/2000/09/xmldsig#";
 		const string EcDsaNs = "http://www.w3.org/2001/04/xmldsig-more#";
@@ -237,15 +237,15 @@ namespace Sustainsys.Saml2.Metadata
 			{
 				if (reader.IsStartElement("ApplicationServiceEndpoint", FedNs))
 				{
-					descriptor.Endpoints.Add(ReadEndpointReference(reader));
+					descriptor.Endpoints.Add(ReadWrappedEndpointReference(reader));
 				}
 				else if (reader.IsStartElement("SingleSignOutNotificationEndpoint", FedNs))
 				{
-					descriptor.SingleSignOutEndpoints.Add(ReadEndpointReference(reader));
+					descriptor.SingleSignOutEndpoints.Add(ReadWrappedEndpointReference(reader));
 				}
 				else if (reader.IsStartElement("PassiveRequestorEndpoint", FedNs))
 				{
-					descriptor.PassiveRequestorEndpoints.Add(ReadEndpointReference(reader));
+					descriptor.PassiveRequestorEndpoints.Add(ReadWrappedEndpointReference(reader));
 				}
 				else if (ReadWebServiceDescriptorElement(reader, descriptor))
 				{
@@ -1491,7 +1491,7 @@ namespace Sustainsys.Saml2.Metadata
 				throw new MetadataSerializationException("auth:ClaimType is missing a Uri attribute");
 			}
 			DisplayClaim claim = new DisplayClaim(uri);
-			claim.Optional = GetBooleanAttribute(reader, "Optional", false);
+			claim.Optional = GetOptionalBooleanAttribute(reader, "Optional");
 			ReadCustomAttributes(reader, claim);
 
 			ReadChildren(reader, () =>
@@ -1668,7 +1668,7 @@ namespace Sustainsys.Saml2.Metadata
 		//   <attribute name="FriendlyName" type="string" use="optional"/>
 		//   <anyAttribute namespace="##other" processContents="lax"/>
 		// </complexType>
-		protected T ReadSamlAttributeType<T>(XmlReader reader, Func<string, T> createInstance)
+		protected T ReadSaml2AttributeAttributes<T>(XmlReader reader, Func<string, T> createInstance)
 			where T : Saml2Attribute		{			string name = GetAttribute(reader, "Name", null);
 			if (String.IsNullOrEmpty(name))
 			{
@@ -1677,26 +1677,38 @@ namespace Sustainsys.Saml2.Metadata
 			var attribute = createInstance(name);
 			attribute.NameFormat = GetUriAttribute(reader, "NameFormat", attribute.NameFormat);
 			attribute.FriendlyName = GetAttribute(reader, "FriendlyName", attribute.FriendlyName);
+			ReadCustomAttributes(reader, attribute);
+			return attribute;
+		}
 
+		protected bool ReadSaml2AttributeElement(XmlReader reader, Saml2Attribute attribute)
+		{
+			if (reader.IsStartElement("AttributeValue", Saml2AssertionNs))
+			{
+				attribute.Values.Add(reader.ReadElementContentAsString());
+				return true;
+			}
+			else
+			{
+				return ReadCustomElement(reader, attribute);
+			}
+		}
+
+		protected virtual Saml2Attribute ReadSaml2Attribute(XmlReader reader)
+		{
+			var attribute = ReadSaml2AttributeAttributes(reader, CreateSaml2AttributeInstance);
+			ReadCustomAttributes(reader, attribute);
 			ReadChildren(reader, () =>
 			{
-				if (reader.IsStartElement("AttributeValue", Saml2AssertionNs))
+				if (ReadSaml2AttributeElement(reader, attribute))
 				{
-					attribute.Values.Add(reader.ReadElementContentAsString());
 				}
 				else
 				{
 					return ReadCustomElement(reader, attribute);
 				}
-				return true; // handled above
+				return true;
 			});
-			return attribute;
-		}
-
-		protected virtual Saml2Attribute ReadSaml2Attribute(XmlReader reader)
-		{
-			var attribute = ReadSamlAttributeType(reader, CreateSaml2AttributeInstance);
-			ReadCustomAttributes(reader, attribute);
 			return attribute;
 		}
 
@@ -2041,6 +2053,11 @@ namespace Sustainsys.Saml2.Metadata
 				return true; // handled above
 			});
 
+			if (descriptor.KeyInfo == null)
+			{
+				throw new MetadataSerializationException("Invalid key descriptor with no KeyInfo element");
+			}
+
 			return descriptor;
 		}
 
@@ -2359,28 +2376,32 @@ namespace Sustainsys.Saml2.Metadata
 		protected virtual SecurityTokenServiceDescriptor ReadSecurityTokenServiceDescriptor(XmlReader reader)
 		{
 			var descriptor = CreateSecurityTokenServiceDescriptorInstance();
+			ReadWebServiceDescriptorAttributes(reader, descriptor);
 			ReadCustomAttributes(reader, descriptor);
 			ReadChildren(reader, () =>
 			{
 				if (reader.IsStartElement("SecurityTokenServiceEndpoint", FedNs))
 				{
 					descriptor.SecurityTokenServiceEndpoints.Add(
-						ReadEndpointReference(reader));
+						ReadWrappedEndpointReference(reader));
 				}
 				else if (reader.IsStartElement("SingleSignOutSubscriptionEndpoint", FedNs))
 				{
 					descriptor.SingleSignOutSubscriptionEndpoints.Add(
-						ReadEndpointReference(reader));
+						ReadWrappedEndpointReference(reader));
 				}
 				else if (reader.IsStartElement("SingleSignOutNotificationEndpoint", FedNs))
 				{
 					descriptor.SingleSignOutNotificationEndpoints.Add(
-						ReadEndpointReference(reader));
+						ReadWrappedEndpointReference(reader));
 				}
 				else if (reader.IsStartElement("PassiveRequestorEndpoint", FedNs))
 				{
 					descriptor.PassiveRequestorEndpoints.Add(
-						ReadEndpointReference(reader));
+						ReadWrappedEndpointReference(reader));
+				}
+				else if (ReadWebServiceDescriptorElement(reader, descriptor))
+				{
 				}
 				else
 				{
@@ -2399,7 +2420,18 @@ namespace Sustainsys.Saml2.Metadata
 		//   </extension>
 		// </complexContent>
 		// </complexType>
-		protected virtual RequestedAttribute ReadRequestedAttribute(XmlReader reader)		{			var attribute = ReadSamlAttributeType(reader, CreateRequestedAttributeInstance);			attribute.IsRequired = GetOptionalBooleanAttribute(reader, "isRequired");
+		protected virtual RequestedAttribute ReadRequestedAttribute(XmlReader reader)		{			var attribute = ReadSaml2AttributeAttributes(reader, CreateRequestedAttributeInstance);			attribute.IsRequired = GetOptionalBooleanAttribute(reader, "isRequired");
+			ReadChildren(reader, () =>
+			{
+				if (ReadSaml2AttributeElement(reader, attribute))
+				{
+				}
+				else
+				{
+					return ReadCustomElement(reader, attribute);
+				}
+				return true;
+			});
 			ReadCustomAttributes(reader, attribute);
 			return attribute;
 		}
@@ -3132,7 +3164,38 @@ namespace Sustainsys.Saml2.Metadata
 			return endpointReference;
 		}
 
-		public virtual bool ReadWebServiceDescriptorElement(XmlReader reader, WebServiceDescriptor descriptor)
+		protected virtual EndpointReference ReadWrappedEndpointReference(XmlReader reader)
+		{
+			(string wrapperName, string wrapperNs) = (reader.Name, reader.NamespaceURI);
+			while (reader.Read() && reader.NodeType != XmlNodeType.Element)
+			{
+				if (reader.NodeType == XmlNodeType.EndElement)
+				{
+					throw new MetadataSerializationException(
+						"Expected a wsa:EndpointReference node but encountered an empty element");
+				}
+			}
+			if (!reader.IsStartElement("EndpointReference", WsaNs))
+			{
+				throw new MetadataSerializationException(
+					$"Expected a wsa:EndpointReference node but encountered {reader.Name}");
+			}
+			var result = ReadEndpointReference(reader);
+			while (reader.NodeType != XmlNodeType.EndElement && reader.Read())
+			{
+			}
+			if (!reader.Name.Equals(wrapperName, StringComparison.Ordinal) ||
+				!reader.NamespaceURI.Equals(wrapperNs))
+			{
+				throw new MetadataSerializationException(
+					$"Expected end of element '{wrapperName}' in namespace '{wrapperNs}' " +
+					$"but encountered '{reader.Name}' in namespace '{reader.NamespaceURI}'");
+			}
+			reader.Read();
+			return result;
+		}
+
+		protected virtual bool ReadWebServiceDescriptorElement(XmlReader reader, WebServiceDescriptor descriptor)
 		{
 			if (reader == null)
 			{

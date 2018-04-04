@@ -91,9 +91,20 @@ namespace Sustainsys.Saml2.Metadata
 
             using (var client = new WebClient())
             using (var stream = client.OpenRead(metadataLocation))
-            {
+			using (var ms = new MemoryStream())
+			{
+				byte[] buf = new byte[65536];
+				for (; ;)
+				{
+					int read = stream.Read(buf, 0, buf.Length);
+					if (read == 0)
+						break;
+					ms.Write(buf, 0, read);
+				}
+				System.Diagnostics.Debug.WriteLine(Encoding.UTF8.GetString(ms.ToArray()));
+				ms.Position = 0;
                 var reader = XmlDictionaryReader.CreateTextReader(
-                    stream,
+                    ms,
                     XmlDictionaryReaderQuotas.Max);
 
                 if(signingKeys != null)
