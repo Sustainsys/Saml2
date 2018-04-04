@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Xml;
 
 namespace Sustainsys.Saml2.Metadata
@@ -12,7 +14,7 @@ namespace Sustainsys.Saml2.Metadata
 		public bool? Optional { get; set; }
 		public bool WriteOptionalAttribute { get; set; }
 		public string Value { get; set; }
-		public XmlElement StructuredValue { get; set; }
+		public ICollection<XmlElement> StructuredValue { get; set; }
 		public EncryptedValue EncryptedValue { get; set; }
 		public ConstrainedValue ConstrainedValue { get; set; }
 

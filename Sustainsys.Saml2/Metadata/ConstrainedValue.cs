@@ -7,7 +7,7 @@ namespace Sustainsys.Saml2.Metadata
 	public class ClaimValue
 	{
 		public string Value { get; set; }
-		public XmlElement StructuredValue { get; set; }
+		public ICollection<XmlElement> StructuredValue { get; set; }
 	}
 
 	public class ConstrainedValue

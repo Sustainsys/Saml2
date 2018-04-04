@@ -4,6 +4,7 @@ using Sustainsys.Saml2.Selectors;
 using Sustainsys.Saml2.Tokens;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Numerics;
@@ -1364,7 +1365,14 @@ namespace Sustainsys.Saml2.Metadata
 				}
 				else if (reader.IsStartElement("StructuredValue", AuthNs))
 				{
-					value.StructuredValue = ReadCurrentNodeAsXmlElement(reader);
+					ReadChildrenAsXmlElements(reader, (elt) =>
+					{
+						if (value.StructuredValue == null)
+						{
+							value.StructuredValue = new Collection<XmlElement>();
+						}
+						value.StructuredValue.Add(elt);
+					});
 				}
 				else
 				{
@@ -1449,6 +1457,7 @@ namespace Sustainsys.Saml2.Metadata
 					if (listConstraint == null)
 					{
 						listConstraint = new ConstrainedValue.ListConstraint();
+						constraint.Constraints.Add(listConstraint);
 					}
 					listConstraint.Values.Add(ReadClaimValue(reader));
 				}
@@ -1505,14 +1514,12 @@ namespace Sustainsys.Saml2.Metadata
 				}
 				else if (reader.IsStartElement("StructuredValue", AuthNs))
 				{
-					ReadChildrenAsXmlElements(reader, (elt) =>
-					{
-						if (claim.StructuredValue != null)
+					ReadChildrenAsXmlElements(reader, (elt) => {
+						if (claim.StructuredValue == null)
 						{
-							throw new MetadataSerializationException(
-								"Unexpected StructuredValue with multiple child elements");
+							claim.StructuredValue = new Collection<XmlElement>();
+							claim.StructuredValue.Add(elt);
 						}
-						claim.StructuredValue = elt;
 					});
 				}
 				else if (reader.IsStartElement("EncryptedValue", AuthNs))
@@ -2973,11 +2980,18 @@ namespace Sustainsys.Saml2.Metadata
 			reader.ReadStartElement();
 			if (!empty)
 			{
-				while (reader.IsStartElement())
+				while (reader.NodeType != XmlNodeType.EndElement)
 				{
-					if (!childAction())
+					if (reader.NodeType == XmlNodeType.Element)
 					{
-						reader.Skip();
+						if (!childAction())
+						{
+							reader.Skip();
+						}
+					}
+					else
+					{
+						reader.Read();
 					}
 				}
 				reader.ReadEndElement();
@@ -3973,7 +3987,10 @@ namespace Sustainsys.Saml2.Metadata
 			else
 			{
 				writer.WriteStartElement("StructuredValue", AuthNs);
-				value.StructuredValue.WriteTo(writer);
+				foreach (var elt in value.StructuredValue)
+				{
+					elt.WriteTo(writer);
+				}
 				writer.WriteEndElement();
 			}
 		}
@@ -4152,7 +4169,10 @@ namespace Sustainsys.Saml2.Metadata
 			if (claim.StructuredValue != null)
 			{
 				writer.WriteStartElement("StructuredValue", AuthNs);
-				claim.StructuredValue.WriteTo(writer);
+				foreach (var elt in claim.StructuredValue)
+				{
+					elt.WriteTo(writer);
+				}
 				writer.WriteEndElement();
 			}
 			WriteEncryptedValue(writer, claim.EncryptedValue);

@@ -2,6 +2,7 @@
 using FluentAssertions;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Numerics;
@@ -185,6 +186,9 @@ namespace Sustainsys.Saml2.Tests.Metadata
 		public KeyValue TestReadKeyValue(XmlReader reader) =>
 			base.ReadKeyValue(reader);
 
+		public KeyDescriptor TestReadKeyDescriptor(XmlReader reader) =>
+			base.ReadKeyDescriptor(reader);
+
 		public RetrievalMethod TestReadRetrievalMethod(XmlReader reader) =>
 			base.ReadRetrievalMethod(reader);
 
@@ -215,14 +219,85 @@ namespace Sustainsys.Saml2.Tests.Metadata
 		public EncryptionProperties TestReadEncryptionProperties(XmlReader reader) =>
 			base.ReadEncryptionProperties(reader);
 
+		public EncryptedData TestReadEncryptedData(XmlReader reader) =>
+			base.ReadEncryptedData(reader);
+
+		public EncryptedValue TestReadEncryptedValue(XmlReader reader) =>
+			base.ReadEncryptedValue(reader);
+
+		public ClaimValue TestReadClaimValue(XmlReader reader) =>
+			base.ReadClaimValue(reader);
+
+		public ConstrainedValue TestReadConstrainedValue(XmlReader reader) =>
+			base.ReadConstrainedValue(reader);
+
+		public DisplayClaim TestReadDisplayClaim(XmlReader reader) =>
+			base.ReadDisplayClaim(reader);
+
 		public AssertionConsumerService TestReadAssertionConsumerService(XmlReader reader) =>
 			base.ReadAssertionConsumerService(reader);
+
+		public EntitiesDescriptor TestReadEntitiesDescriptor(XmlReader reader) =>
+			base.ReadEntitiesDescriptor(reader, null);
+
+		public EntityDescriptor TestReadEntityDescriptor(XmlReader reader) =>
+			base.ReadEntityDescriptor(reader, null);
+
+		public Saml2Attribute TestReadSaml2Attribute(XmlReader reader) =>
+			base.ReadSaml2Attribute(reader);
+
+		public AffiliationDescriptor TestReadAffiliationDescriptor(XmlReader reader) =>
+			base.ReadAffiliationDescriptor(reader);
+
+		public AdditionalMetadataLocation TestReadAdditionalMetadataLocation(XmlReader reader) =>
+			base.ReadAdditionalMetadataLocation(reader);
+
+		public NameIDFormat TestReadNameIDFormat(XmlReader reader) =>
+			base.ReadNameIDFormat(reader);
+
+		public PDPDescriptor TestReadPDPDescriptor(XmlReader reader) =>
+			base.ReadPDPDescriptor(reader);
+
+		public AuthnAuthorityDescriptor TestReadAuthnAuthorityDescriptor(XmlReader reader) =>
+			base.ReadAuthnAuthorityDescriptor(reader);
+
+		public AttributeAuthorityDescriptor TestReadAttributeAuthorityDescriptor(XmlReader reader) =>
+			base.ReadAttributeAuthorityDescriptor(reader);
+
+		public AttributeProfile TestReadAttributeProfile(XmlReader reader) =>
+			base.ReadAttributeProfile(reader);
+
+		public LocalizedName TestReadLocalizedName(XmlReader reader) =>
+			base.ReadLocalizedName(reader);
+
+		public LocalizedUri TestReadLocalizedUri(XmlReader reader) =>
+			base.ReadLocalizedUri(reader);
+
+		public Organization TestReadOrganization(XmlReader reader) =>
+			base.ReadOrganization(reader);
 	}
 
 	[TestClass]
 	public class MetadataSerializerTests
 	{
-		static Regex whitespaceRe = new Regex("[ \t\r\n]");
+		static readonly Regex whitespaceRe = new Regex("[ \t\r\n]");
+		static readonly string certData = whitespaceRe.Replace(@"
+				MIIC2jCCAkMCAg38MA0GCSqGSIb3DQEBBQUAMIGbMQswCQYDVQQGEwJKUDEOMAwG
+				A1UECBMFVG9reW8xEDAOBgNVBAcTB0NodW8ta3UxETAPBgNVBAoTCEZyYW5rNERE
+				MRgwFgYDVQQLEw9XZWJDZXJ0IFN1cHBvcnQxGDAWBgNVBAMTD0ZyYW5rNEREIFdl
+				YiBDQTEjMCEGCSqGSIb3DQEJARYUc3VwcG9ydEBmcmFuazRkZC5jb20wHhcNMTIw
+				ODIyMDUyNzQxWhcNMTcwODIxMDUyNzQxWjBKMQswCQYDVQQGEwJKUDEOMAwGA1UE
+				CAwFVG9reW8xETAPBgNVBAoMCEZyYW5rNEREMRgwFgYDVQQDDA93d3cuZXhhbXBs
+				ZS5jb20wggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQC0z9FeMynsC8+u
+				dvX+LciZxnh5uRj4C9S6tNeeAlIGCfQYk0zUcNFCoCkTknNQd/YEiawDLNbxBqut
+				bMDZ1aarys1a0lYmUeVLCIqvzBkPJTSQsCopQQ9V8WuT252zzNzs68dVGNdCJd5J
+				NRQykpwexmnjPPv0mvj7i8XgG379TyW6P+WWV5okeUkXJ9eJS2ouDYdR2SM9BoVW
+				+FgxDu6BmXhozW5EfsnajFp7HL8kQClI0QOc79yuKl3492rH6bzFsFn2lfwWy9ic
+				7cP8EpCTeFp1tFaD+vxBhPZkeTQ1HKx6hQ5zeHIB5ySJJZ7af2W8r4eTGYzbdRW2
+				4DDHCPhZAgMBAAEwDQYJKoZIhvcNAQEFBQADgYEAQMv+BFvGdMVzkQaQ3/+2noVz
+				/uAKbzpEL8xTcxYyP3lkOeh4FoxiSWqy5pGFALdPONoDuYFpLhjJSZaEwuvjI/Tr
+				rGhLV1pRG9frwDFshqD2Vaj4ENBCBh6UpeBop5+285zQ4SI7q4U9oSebUDJiuOx6
+				+tZ9KynmrbJpTSi0+BMK", "");
 
 		XmlNamespaceManager CreateNamespaceManager(XmlDocument doc)
 		{
@@ -737,7 +812,6 @@ namespace Sustainsys.Saml2.Tests.Metadata
 			ReadTest(xml, expected, (serializer, reader) =>
 				serializer.TestReadIdpSsoDescriptor(reader));
 		}
-		// 
 
 		[TestMethod]
 		public void MetadataSerializerTests_ReadAssertionConsumerService()
@@ -990,24 +1064,6 @@ namespace Sustainsys.Saml2.Tests.Metadata
 		[TestMethod]
 		public void MetadataSerializerTests_ReadX509Data()
 		{
-			string certData = whitespaceRe.Replace(@"
-				MIIC2jCCAkMCAg38MA0GCSqGSIb3DQEBBQUAMIGbMQswCQYDVQQGEwJKUDEOMAwG
-				A1UECBMFVG9reW8xEDAOBgNVBAcTB0NodW8ta3UxETAPBgNVBAoTCEZyYW5rNERE
-				MRgwFgYDVQQLEw9XZWJDZXJ0IFN1cHBvcnQxGDAWBgNVBAMTD0ZyYW5rNEREIFdl
-				YiBDQTEjMCEGCSqGSIb3DQEJARYUc3VwcG9ydEBmcmFuazRkZC5jb20wHhcNMTIw
-				ODIyMDUyNzQxWhcNMTcwODIxMDUyNzQxWjBKMQswCQYDVQQGEwJKUDEOMAwGA1UE
-				CAwFVG9reW8xETAPBgNVBAoMCEZyYW5rNEREMRgwFgYDVQQDDA93d3cuZXhhbXBs
-				ZS5jb20wggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQC0z9FeMynsC8+u
-				dvX+LciZxnh5uRj4C9S6tNeeAlIGCfQYk0zUcNFCoCkTknNQd/YEiawDLNbxBqut
-				bMDZ1aarys1a0lYmUeVLCIqvzBkPJTSQsCopQQ9V8WuT252zzNzs68dVGNdCJd5J
-				NRQykpwexmnjPPv0mvj7i8XgG379TyW6P+WWV5okeUkXJ9eJS2ouDYdR2SM9BoVW
-				+FgxDu6BmXhozW5EfsnajFp7HL8kQClI0QOc79yuKl3492rH6bzFsFn2lfwWy9ic
-				7cP8EpCTeFp1tFaD+vxBhPZkeTQ1HKx6hQ5zeHIB5ySJJZ7af2W8r4eTGYzbdRW2
-				4DDHCPhZAgMBAAEwDQYJKoZIhvcNAQEFBQADgYEAQMv+BFvGdMVzkQaQ3/+2noVz
-				/uAKbzpEL8xTcxYyP3lkOeh4FoxiSWqy5pGFALdPONoDuYFpLhjJSZaEwuvjI/Tr
-				rGhLV1pRG9frwDFshqD2Vaj4ENBCBh6UpeBop5+285zQ4SI7q4U9oSebUDJiuOx6
-				+tZ9KynmrbJpTSi0+BMK", "");
-
 			string crlData = whitespaceRe.Replace(@"
 				MIIBYDCBygIBATANBgkqhkiG9w0BAQUFADBDMRMwEQYKCZImiZPyLGQBGRYDY29t
 				MRcwFQYKCZImiZPyLGQBGRYHZXhhbXBsZTETMBEGA1UEAxMKRXhhbXBsZSBDQRcN
@@ -1249,789 +1305,1620 @@ namespace Sustainsys.Saml2.Tests.Metadata
 				serializer.TestReadEncryptionProperties(reader));
 		}
 
+		[TestMethod]
+		public void MetadataSerializerTests_ReadEncryptedData()
+		{
+			string xml =
+			@"<?xml version='1.0' encoding='UTF-8'?>
+			<EncryptedData
+				xmlns='http://www.w3.org/2001/04/xmlenc#'
+				xmlns:ds='http://www.w3.org/2000/09/xmldsig#'
+				Id='ENCDATAID'
+				MimeType='text/plain'
+				Encoding='https://encoding.org'
+				Type='http://www.w3.org/2001/04/xmlenc#Element'>
+				<EncryptionMethod
+					Algorithm='http://www.w3.org/2001/04/xmlenc#tripledes-cbc'/>
+				<ds:KeyInfo xmlns:ds='http://www.w3.org/2000/09/xmldsig#'>
+					<ds:KeyName>John Smith</ds:KeyName>
+				</ds:KeyInfo>
+				<CipherData><CipherValue>DEADBEEF</CipherValue></CipherData>
+				<EncryptionProperties Id='anId2'>
+					  <EncryptionProperty xmlns='http://www.w3.org/2001/04/xmlenc#'
+						Target='http://enc.org/target2'
+						Id='someId2'>
+						<AnythingYouLike/>
+					  </EncryptionProperty>
+				</EncryptionProperties>
+			</EncryptedData>";
+			(XmlDocument doc, XmlNamespaceManager nsmgr) = LoadXml(xml);
+
+			var expected = new EncryptedData
+			{
+				CipherData = new CipherData
+				{
+					CipherValue = "DEADBEEF"
+				},
+				KeyInfo = new DSigKeyInfo
+				{
+					KeyNames = {
+						"John Smith"
+					}
+				},
+				EncryptionMethod = new EncryptionMethod
+				{
+					Algorithm = new Uri("http://www.w3.org/2001/04/xmlenc#tripledes-cbc")
+				},
+				EncryptionProperties = new EncryptionProperties
+				{
+					Properties = {
+						new EncryptionProperty
+						{
+							Target = new Uri("http://enc.org/target2"),
+							Id = "someId2"
+						}
+					},
+					Id = "anId2"
+				},
+				Id = "ENCDATAID",
+				Type = new Uri("http://www.w3.org/2001/04/xmlenc#Element"),
+				MimeType = "text/plain",
+				Encoding = new Uri("https://encoding.org")
+			};
+
+			ReadTest(xml, expected, (serializer, reader) =>
+				serializer.TestReadEncryptedData(reader));
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_ReadEncryptedValue()
+		{
+			string xml =
+			@"<?xml version='1.0' encoding='UTF-8'?>
+			<auth:EncryptedValue
+				xmlns:xenc='http://www.w3.org/2001/04/xmlenc#'
+				xmlns:ds='http://www.w3.org/2000/09/xmldsig#'
+				xmlns:auth='http://docs.oasis-open.org/wsfed/authorization/200706/authclaims'>
+				<xenc:EncryptedData>
+					<xenc:EncryptionMethod
+						Algorithm='http://www.w3.org/2001/04/xmlenc#tripledes-cbc'/>
+					<ds:KeyInfo xmlns:ds='http://www.w3.org/2000/09/xmldsig#'>
+						<ds:KeyName>John Smith</ds:KeyName>
+					</ds:KeyInfo>
+					<xenc:CipherData><xenc:CipherValue>DEADBEEF</xenc:CipherValue></xenc:CipherData>
+				</xenc:EncryptedData>
+			</auth:EncryptedValue>";
+			(XmlDocument doc, XmlNamespaceManager nsmgr) = LoadXml(xml);
+
+			var expected = new EncryptedValue
+			{
+				EncryptedData = new EncryptedData()
+				{
+					CipherData = new CipherData
+					{
+						CipherValue = "DEADBEEF"
+					},
+					KeyInfo = new DSigKeyInfo
+					{
+						KeyNames = {
+							"John Smith"
+						}
+					},
+					EncryptionMethod = new EncryptionMethod
+					{
+						Algorithm = new Uri("http://www.w3.org/2001/04/xmlenc#tripledes-cbc")
+					}
+				}
+			};
+
+			ReadTest(xml, expected, (serializer, reader) =>
+				serializer.TestReadEncryptedValue(reader));
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_ReadClaimValue_Value()
+		{
+			string xml =
+			@"<?xml version='1.0' encoding='UTF-8'?>
+			<auth:ValueLessThan
+				xmlns:auth='http://docs.oasis-open.org/wsfed/authorization/200706/authclaims'>
+				<auth:Value>Some Value</auth:Value>
+			</auth:ValueLessThan>";
+			(XmlDocument doc, XmlNamespaceManager nsmgr) = LoadXml(xml);
+
+			var expected = new ClaimValue
+			{
+				Value = "Some Value"
+			};
+
+			ReadTest(xml, expected, (serializer, reader) =>
+				serializer.TestReadClaimValue(reader));
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_ReadClaimValue_StructuredValue()
+		{
+			string xml =
+			@"<?xml version='1.0' encoding='UTF-8'?>
+			<auth:ValueLessThan
+				xmlns:auth='http://docs.oasis-open.org/wsfed/authorization/200706/authclaims'>
+				<auth:StructuredValue>
+					<xml-element-1/>
+				</auth:StructuredValue>
+			</auth:ValueLessThan>";
+			(XmlDocument doc, XmlNamespaceManager nsmgr) = LoadXml(xml);
+
+			var expected = new ClaimValue
+			{
+				StructuredValue = new Collection<XmlElement> {
+					doc.SelectSingleNode("/auth:ValueLessThan/auth:StructuredValue/*[1]",
+						nsmgr).As<XmlElement>()
+				}
+			};
+
+			ReadTest(xml, expected, (serializer, reader) =>
+				serializer.TestReadClaimValue(reader));
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_ReadConstainedValue()
+		{
+			string xml =
+			@"<?xml version='1.0' encoding='UTF-8'?>
+			<auth:ConstrainedValue
+				xmlns:auth='http://docs.oasis-open.org/wsfed/authorization/200706/authclaims'
+				AssertConstraint='true'>
+				<auth:ValueLessThan><auth:Value>10</auth:Value></auth:ValueLessThan>
+				<auth:ValueLessThanOrEqual><auth:Value>11</auth:Value></auth:ValueLessThanOrEqual>
+				<auth:ValueGreaterThan><auth:Value>-5</auth:Value></auth:ValueGreaterThan>
+				<auth:ValueGreaterThanOrEqual><auth:Value>-4</auth:Value></auth:ValueGreaterThanOrEqual>
+				<auth:ValueInRange>
+					<auth:ValueUpperBound><auth:Value>10000</auth:Value></auth:ValueUpperBound>
+					<auth:ValueLowerBound><auth:Value>0</auth:Value></auth:ValueLowerBound>
+				</auth:ValueInRange>
+				<auth:ValueOneOf>
+					<auth:Value>10</auth:Value>
+					<auth:StructuredValue>
+						<xml-element-1/>
+					</auth:StructuredValue>
+				</auth:ValueOneOf>
+			</auth:ConstrainedValue>";
+			(XmlDocument doc, XmlNamespaceManager nsmgr) = LoadXml(xml);
+
+			var expected = new ConstrainedValue
+			{
+				AssertConstraint = true,
+				Constraints = {
+					new ConstrainedValue.CompareConstraint(ConstrainedValue.CompareConstraint.CompareOperator.Lt)
+					{
+						Value = new ClaimValue { Value = "10" }
+					},
+					new ConstrainedValue.CompareConstraint(ConstrainedValue.CompareConstraint.CompareOperator.Lte)
+					{
+						Value = new ClaimValue { Value = "11" }
+					},
+					new ConstrainedValue.CompareConstraint(ConstrainedValue.CompareConstraint.CompareOperator.Gt)
+					{
+						Value = new ClaimValue { Value = "-5" }
+					},
+					new ConstrainedValue.CompareConstraint(ConstrainedValue.CompareConstraint.CompareOperator.Gte)
+					{
+						Value = new ClaimValue { Value = "-4" }
+					},
+					new ConstrainedValue.RangeConstraint
+					{
+						LowerBound = new ClaimValue { Value = "0" },
+						UpperBound = new ClaimValue { Value = "10000" },
+					},
+					new ConstrainedValue.ListConstraint
+					{
+						Values = {
+							new ClaimValue { Value = "10" },
+							new ClaimValue
+							{
+								StructuredValue = new Collection<XmlElement> {
+									doc.SelectSingleNode(
+										"/auth:ConstrainedValue/auth:ValueOneOf/auth:StructuredValue[1]/*[1]",
+										nsmgr).As<XmlElement>()
+								}
+							}
+						}
+					}
+				}
+			};
+
+			ReadTest(xml, expected, (serializer, reader) =>
+				serializer.TestReadConstrainedValue(reader));
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_ReadDisplayClaim()
+		{
+			string xml =
+			@"<?xml version='1.0' encoding='UTF-8'?>
+			<auth:ClaimType Uri='https://saml.claim.type/' Optional='false'
+				xmlns:auth='http://docs.oasis-open.org/wsfed/authorization/200706/authclaims'
+				xmlns:xenc='http://www.w3.org/2001/04/xmlenc#'
+				xmlns:ds='http://www.w3.org/2000/09/xmldsig#'>
+				<auth:DisplayName>The claim name</auth:DisplayName>
+				<auth:Description>The claim description</auth:Description>
+				<auth:DisplayValue>I claim the moon</auth:DisplayValue>
+				<auth:Value>moon</auth:Value>
+				<auth:StructuredValue><moon/></auth:StructuredValue>
+				<auth:EncryptedValue>
+					<xenc:EncryptedData>
+						<xenc:EncryptionMethod
+							Algorithm='http://www.w3.org/2001/04/xmlenc#tripledes-cbc'/>
+						<ds:KeyInfo xmlns:ds='http://www.w3.org/2000/09/xmldsig#'>
+							<ds:KeyName>John Smith</ds:KeyName>
+						</ds:KeyInfo>
+						<xenc:CipherData><xenc:CipherValue>DEADBEEF</xenc:CipherValue></xenc:CipherData>
+					</xenc:EncryptedData>
+				</auth:EncryptedValue>
+			</auth:ClaimType>";
+			(XmlDocument doc, XmlNamespaceManager nsmgr) = LoadXml(xml);
+
+			var expected = new DisplayClaim("https://saml.claim.type/")
+			{
+				Optional = false,
+				DisplayName = "The claim name",
+				Description = "The claim description",
+				DisplayValue = "I claim the moon",
+				Value = "moon",
+				StructuredValue = new Collection<XmlElement>
+				{
+					doc.SelectSingleNode("/auth:ClaimType/auth:StructuredValue/*[1]",
+						nsmgr).As<XmlElement>()
+				},
+				EncryptedValue = new EncryptedValue
+				{
+					EncryptedData = new EncryptedData()
+					{
+						CipherData = new CipherData
+						{
+							CipherValue = "DEADBEEF"
+						},
+						KeyInfo = new DSigKeyInfo
+						{
+							KeyNames = {
+								"John Smith"
+							}
+						},
+						EncryptionMethod = new EncryptionMethod
+						{
+							Algorithm = new Uri("http://www.w3.org/2001/04/xmlenc#tripledes-cbc")
+						}
+					}
+				}
+			};
+
+			ReadTest(xml, expected, (serializer, reader) =>
+				serializer.TestReadDisplayClaim(reader));
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_ReadEntitiesDescriptor()
+		{
+			string xml =
+			@"<?xml version='1.0' encoding='UTF-8'?>
+			<EntitiesDescriptor Name='https://your-federation.org/metadata/federation-name.xml'
+				xmlns='urn:oasis:names:tc:SAML:2.0:metadata'
+				xmlns:ds='http://www.w3.org/2000/09/xmldsig#'
+				xmlns:shibmd='urn:mace:shibboleth:metadata:1.0'
+				xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'>
+ 
+				<!-- Actual providers go here.  -->
+				<!-- An identity provider. -->
+				<EntityDescriptor entityID='https://idp.example.org/idp/shibboleth'>
+				   <IDPSSODescriptor protocolSupportEnumeration='urn:mace:shibboleth:1.0 urn:oasis:names:tc:SAML:2.0:protocol'>
+					  <Extensions>
+						 <shibmd:Scope regexp='false'>example.org</shibmd:Scope>
+					  </Extensions>
+					  <KeyDescriptor>
+						 <ds:KeyInfo>
+							<ds:X509Data>
+							   <ds:X509Certificate>" + certData + @"</ds:X509Certificate>
+							 </ds:X509Data>
+						  </ds:KeyInfo>
+					   </KeyDescriptor>
+ 
+					   <NameIDFormat>urn:mace:shibboleth:1.0:nameIdentifier</NameIDFormat>
+					   <NameIDFormat>urn:oasis:names:tc:SAML:2.0:nameid-format:transient</NameIDFormat>
+ 
+					   <SingleSignOnService Binding='urn:mace:shibboleth:1.0:profiles:AuthnRequest'
+								Location='https://idp.example.org/idp/profile/Shibboleth/SSO' />
+         
+					   <SingleSignOnService Binding='urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST'
+								Location='https://idp.example.org/idp/profile/SAML2/POST/SSO' />
+ 
+					   <SingleSignOnService Binding='urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect'
+								Location='https://idp.example.org/idp/profile/SAML2/Redirect/SSO' />
+				   </IDPSSODescriptor>
+     
+				   <AttributeAuthorityDescriptor protocolSupportEnumeration='urn:oasis:names:tc:SAML:1.1:protocol urn:oasis:names:tc:SAML:2.0:protocol'>
+					   <KeyDescriptor>
+						   <ds:KeyInfo>
+							   <ds:X509Data>
+								   <ds:X509Certificate>" + certData + @"
+								   </ds:X509Certificate>
+							   </ds:X509Data>
+						   </ds:KeyInfo>
+					   </KeyDescriptor>
+ 
+					   <AttributeService Binding='urn:oasis:names:tc:SAML:1.0:bindings:SOAP-binding'
+									  Location='https://idp.example.org:8443/idp/profile/SAML1/SOAP/AttributeQuery' />
+         
+					   <AttributeService Binding='urn:oasis:names:tc:SAML:2.0:bindings:SOAP'
+									  Location='https://idp.example.org:8443/idp/profile/SAML2/SOAP/AttributeQuery' />
+         
+					   <NameIDFormat>urn:mace:shibboleth:1.0:nameIdentifier</NameIDFormat>
+					   <NameIDFormat>urn:oasis:names:tc:SAML:2.0:nameid-format:transient</NameIDFormat>
+ 
+				   </AttributeAuthorityDescriptor>
+
+				   <Organization>
+							<OrganizationName xml:lang='en'>Your Identities</OrganizationName>
+							<OrganizationDisplayName xml:lang='en'>Your Identities</OrganizationDisplayName>
+							<OrganizationURL xml:lang='en'>http://www.example.org/</OrganizationURL>
+					</Organization>
+					<ContactPerson contactType='technical'>
+							<GivenName>Your</GivenName>
+							<SurName>Contact</SurName>
+							<EmailAddress>admin@example.org</EmailAddress>
+					</ContactPerson>
+				</EntityDescriptor>
+  
+				<!-- A service provider. -->
+				<EntityDescriptor entityID='https://sp.example.org/shibboleth-sp'>
+					<SPSSODescriptor protocolSupportEnumeration='urn:oasis:names:tc:SAML:2.0:protocol urn:oasis:names:tc:SAML:1.1:protocol'>
+						<Extensions>
+							<idpdisc:DiscoveryResponse xmlns:idpdisc='urn:oasis:names:tc:SAML:profiles:SSO:idp-discovery-protocol'
+									index='1' Binding='urn:oasis:names:tc:SAML:profiles:SSO:idp-discovery-protocol'
+									Location='http://sp.example.org/Shibboleth.sso/DS'/>
+							<idpdisc:DiscoveryResponse xmlns:idpdisc='urn:oasis:names:tc:SAML:profiles:SSO:idp-discovery-protocol'
+									index='2' Binding='urn:oasis:names:tc:SAML:profiles:SSO:idp-discovery-protocol'
+									Location='https://sp.example.org/Shibboleth.sso/DS'/>
+						</Extensions>
+ 
+					<KeyDescriptor>
+							<ds:KeyInfo>
+								<ds:X509Data>
+									<ds:X509Certificate>" + certData + @"
+									</ds:X509Certificate>
+								</ds:X509Data>
+							</ds:KeyInfo>
+						</KeyDescriptor>
+ 
+						<NameIDFormat>urn:oasis:names:tc:SAML:2.0:nameid-format:transient</NameIDFormat>
+						<NameIDFormat>urn:mace:shibboleth:1.0:nameIdentifier</NameIDFormat>
+ 
+						<AssertionConsumerService index='1' isDefault='true'
+								Binding='urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST'
+								Location='https://sp.example.org/Shibboleth.sso/SAML2/POST'/>
+						<AssertionConsumerService index='2'
+								Binding='urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST-SimpleSign'
+								Location='https://sp.example.org/Shibboleth.sso/SAML2/POST-SimpleSign'/>
+						<AssertionConsumerService index='3'
+								Binding='urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Artifact'
+								Location='https://sp.example.org/Shibboleth.sso/SAML2/Artifact'/>
+						<AssertionConsumerService index='4'
+								Binding='urn:oasis:names:tc:SAML:1.0:profiles:browser-post'
+								Location='https://sp.example.org/Shibboleth.sso/SAML/POST'/>
+						<AssertionConsumerService index='5'
+								Binding='urn:oasis:names:tc:SAML:1.0:profiles:artifact-01'
+								Location='https://sp.example.org/Shibboleth.sso/SAML/Artifact'/>
+ 
+					</SPSSODescriptor>
+ 
+				<Organization>
+					<OrganizationName xml:lang='en'>Your Service</OrganizationName>
+					<OrganizationDisplayName xml:lang='en'>Your Service</OrganizationDisplayName>
+					<OrganizationURL xml:lang='en'>http://sp.example.org/</OrganizationURL>
+				</Organization>
+				<ContactPerson contactType='technical'>
+					<GivenName>Your</GivenName>
+					<SurName>Admin</SurName>
+					<EmailAddress>admin@example.org</EmailAddress>
+				</ContactPerson>
+				</EntityDescriptor>
+			</EntitiesDescriptor>";
+			(XmlDocument doc, XmlNamespaceManager nsmgr) = LoadXml(xml);
+
+			var expected = new EntitiesDescriptor {
+				Name = "https://your-federation.org/metadata/federation-name.xml",
+				ChildEntities = {
+					new EntityDescriptor(new EntityId("https://idp.example.org/idp/shibboleth")) {
+						RoleDescriptors = {
+							new IdpSsoDescriptor
+							{
+								ProtocolsSupported = {
+									new Uri("urn:mace:shibboleth:1.0"),
+									new Uri("urn:oasis:names:tc:SAML:2.0:protocol")
+								},
+								Extensions = {
+									doc.SelectSingleNode(
+										"/md:EntitiesDescriptor/md:EntityDescriptor[1]/md:IDPSSODescriptor/md:Extensions/*[1]",
+										nsmgr).As<XmlElement>()
+								},
+								Keys = {
+									new KeyDescriptor {
+										KeyInfo = new DSigKeyInfo {
+											Data = {
+												new X509Data {
+													Certificates = {
+														new X509Certificate2(Convert.FromBase64String(certData))
+													}
+												}
+											}
+										}
+									}
+								},
+								NameIdentifierFormats = {
+									new NameIDFormat { Uri = new Uri("urn:mace:shibboleth:1.0:nameIdentifier") },
+									new NameIDFormat { Uri = new Uri("urn:oasis:names:tc:SAML:2.0:nameid-format:transient") },
+								},
+								SingleSignOnServices = {
+									new SingleSignOnService {
+										Binding = new Uri("urn:mace:shibboleth:1.0:profiles:AuthnRequest"),
+										Location = new Uri("https://idp.example.org/idp/profile/Shibboleth/SSO")
+									},
+									new SingleSignOnService {
+										Binding = new Uri("urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST"),
+										Location = new Uri("https://idp.example.org/idp/profile/SAML2/POST/SSO")
+									},
+									new SingleSignOnService {
+										Binding = new Uri("urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect"),
+										Location = new Uri("https://idp.example.org/idp/profile/SAML2/Redirect/SSO")
+									}
+								}
+							},
+							new AttributeAuthorityDescriptor() { 
+								ProtocolsSupported = {
+									new Uri("urn:oasis:names:tc:SAML:1.1:protocol"),
+									new Uri("urn:oasis:names:tc:SAML:2.0:protocol")
+								},
+								Keys = {
+									new KeyDescriptor {
+										KeyInfo = new DSigKeyInfo {
+											Data = {
+												new X509Data {
+													Certificates = {
+														new X509Certificate2(Convert.FromBase64String(certData))
+													}
+												}
+											}
+										}
+									}
+								},
+								AttributeServices = {
+									new AttributeService {
+										Binding = new Uri("urn:oasis:names:tc:SAML:1.0:bindings:SOAP-binding"),
+										Location = new Uri("https://idp.example.org:8443/idp/profile/SAML1/SOAP/AttributeQuery")
+									},
+									new AttributeService {
+										Binding = new Uri("urn:oasis:names:tc:SAML:2.0:bindings:SOAP"),
+										Location = new Uri("https://idp.example.org:8443/idp/profile/SAML2/SOAP/AttributeQuery")
+									}
+								},
+								NameIDFormats = {
+									new NameIDFormat {
+										Uri = new Uri("urn:mace:shibboleth:1.0:nameIdentifier")
+									},
+									new NameIDFormat {
+										Uri = new Uri("urn:oasis:names:tc:SAML:2.0:nameid-format:transient")
+									}
+								}
+							}
+						},
+						Organization = new Organization {
+							Names = {
+								new LocalizedName("Your Identities", "en")
+							},
+							DisplayNames = {
+								new LocalizedName("Your Identities", "en")
+							},
+							Urls = {
+								new LocalizedUri(new Uri("http://www.example.org/"), "en")
+							}
+						},
+						Contacts = {
+							new ContactPerson {
+								Type = ContactType.Technical,
+								GivenName = "Your",
+								Surname = "Contact",
+								EmailAddresses = { "admin@example.org" }
+							}
+						}
+					},
+					new EntityDescriptor(new EntityId("https://sp.example.org/shibboleth-sp"))
+					{
+						RoleDescriptors = {
+							new SpSsoDescriptor
+							{
+								ProtocolsSupported = {
+									new Uri("urn:oasis:names:tc:SAML:2.0:protocol"),
+									new Uri("urn:oasis:names:tc:SAML:1.1:protocol")
+								},
+								DiscoveryResponses = {
+									{ 1,
+										new DiscoveryResponse {
+											Index = 1,
+											Binding = new Uri("urn:oasis:names:tc:SAML:profiles:SSO:idp-discovery-protocol"),
+											Location = new Uri("http://sp.example.org/Shibboleth.sso/DS"),
+										}
+									},
+									{ 2,
+										new DiscoveryResponse {
+											Index = 2,
+											Binding = new Uri("urn:oasis:names:tc:SAML:profiles:SSO:idp-discovery-protocol"),
+											Location = new Uri("https://sp.example.org/Shibboleth.sso/DS")
+										}
+									}
+								},
+								Keys = {
+									new KeyDescriptor {
+										KeyInfo = new DSigKeyInfo {
+											Data = {
+												new X509Data {
+													Certificates = {
+														new X509Certificate2(Convert.FromBase64String(certData))
+													}
+												}
+											}
+										}
+									}
+								},
+								NameIdentifierFormats = {
+									new NameIDFormat {
+										Uri = new Uri("urn:oasis:names:tc:SAML:2.0:nameid-format:transient")
+									},
+									new NameIDFormat {
+										Uri = new Uri("urn:mace:shibboleth:1.0:nameIdentifier")
+									}
+								},
+								AssertionConsumerServices = {
+									{ 1,
+										new AssertionConsumerService {
+											Index = 1,
+											IsDefault = true,
+											Binding = new Uri("urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST"),
+											Location = new Uri("https://sp.example.org/Shibboleth.sso/SAML2/POST")
+										}
+									}, { 2,
+										new AssertionConsumerService {
+											Index = 2,
+											Binding = new Uri("urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST-SimpleSign"),
+											Location = new Uri("https://sp.example.org/Shibboleth.sso/SAML2/POST-SimpleSign")
+										}
+									}, { 3,
+										new AssertionConsumerService {
+											Index = 3,
+											Binding = new Uri("urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Artifact"),
+											Location = new Uri("https://sp.example.org/Shibboleth.sso/SAML2/Artifact")
+										}
+									}, { 4,
+										new AssertionConsumerService {
+											Index = 4,
+											Binding = new Uri("urn:oasis:names:tc:SAML:1.0:profiles:browser-post"),
+											Location = new Uri("https://sp.example.org/Shibboleth.sso/SAML/POST")
+										}
+									}, { 5,
+										new AssertionConsumerService {
+											Index = 5,
+											Binding = new Uri("urn:oasis:names:tc:SAML:1.0:profiles:artifact-01"),
+											Location = new Uri("https://sp.example.org/Shibboleth.sso/SAML/Artifact")
+										}
+									}
+								}
+							}
+						},
+						Organization = new Organization {
+							Names = {
+								new LocalizedName("Your Service", "en")
+							},
+							DisplayNames = {
+								new LocalizedName("Your Service", "en")
+							},
+							Urls = {
+								new LocalizedUri(new Uri("http://sp.example.org"), "en")
+							}
+						},
+						Contacts = {
+							new ContactPerson {
+								Type = ContactType.Technical,
+								GivenName = "Your",
+								Surname = "Admin",
+								EmailAddresses = { "admin@example.org" }
+							}
+						}
+					}
+				}
+			};
+
+			ReadTest(xml, expected, (serializer, reader) =>
+				serializer.TestReadEntitiesDescriptor(reader));
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_ReadSaml2Attribute()
+		{
+			string xml =
+			@"<?xml version='1.0' encoding='UTF-8'?>
+				<saml:Attribute 
+					xmlns:md='urn:oasis:names:tc:SAML:2.0:metadata'
+					xmlns:saml='urn:oasis:names:tc:SAML:2.0:assertion'
+					Name='testAtt'
+					NameFormat='http://idp.example.com/nameformat'
+					FriendlyName='friendlyAtt'>
+					<saml:AttributeValue>attValue</saml:AttributeValue>
+				</saml:Attribute>";
+			(XmlDocument doc, XmlNamespaceManager nsmgr) = LoadXml(xml);
+
+			var expected = new Saml2Attribute("testAtt", "attValue")
+			{
+				NameFormat = new Uri("http://idp.example.com/nameformat"),
+				FriendlyName = "friendlyAtt"
+			};
+				
+			ReadTest(xml, expected, (serializer, reader) =>
+				serializer.TestReadSaml2Attribute(reader));
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_ReadKeyDescriptor()
+		{
+			string xml =
+			@"<?xml version='1.0' encoding='UTF-8'?>
+				<md:KeyDescriptor
+					xmlns:md='urn:oasis:names:tc:SAML:2.0:metadata'
+					xmlns:ds='http://www.w3.org/2000/09/xmldsig#'
+					xmlns:xenc='http://www.w3.org/2001/04/xmlenc#'
+					use='encryption'>
+					<ds:KeyInfo>Any text, intermingled with:
+						<ds:KeyName>string</ds:KeyName>
+					</ds:KeyInfo>
+					<md:EncryptionMethod Algorithm='http://www.example.com/'>Any text, intermingled with:
+						<xenc:KeySize>1</xenc:KeySize>
+						<xenc:OAEPparams>GpM7</xenc:OAEPparams>
+						<!--any element-->
+					</md:EncryptionMethod>
+				</md:KeyDescriptor>";
+			(XmlDocument doc, XmlNamespaceManager nsmgr) = LoadXml(xml);
+
+			var expected = new KeyDescriptor
+			{
+				Use = KeyType.Encryption,
+				KeyInfo = new DSigKeyInfo
+				{
+					KeyNames = { "string" }
+				},
+				EncryptionMethods = {
+					new EncryptionMethod {
+						Algorithm = new Uri("http://www.example.com/"),
+						KeySize = 1,
+						OAEPparams = Convert.FromBase64String("GpM7")
+					}
+				}
+			};
+
+			ReadTest(xml, expected, (serializer, reader) =>
+				serializer.TestReadKeyDescriptor(reader));
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_ReadAffiliationDescriptor()
+		{
+			string xml =
+			@"<?xml version='1.0' encoding='UTF-8'?>
+				<md:AffiliationDescriptor 
+					xmlns:md='urn:oasis:names:tc:SAML:2.0:metadata'
+					xmlns:ds='http://www.w3.org/2000/09/xmldsig#'
+					xmlns:xenc='http://www.w3.org/2001/04/xmlenc#'
+					cacheDuration='P0Y3M2DT9H12M00S'
+					validUntil='2019-02-02T15:16:17'
+					affiliationOwnerID='mr owner'
+					ID='yourGUIDhere'>
+					<md:Extensions>
+						<ext-elt/>
+					</md:Extensions>
+					<md:AffiliateMember>http://idp.example.org</md:AffiliateMember>
+					<md:KeyDescriptor>
+						<ds:KeyInfo>Any text, intermingled with:
+							<ds:KeyName>string</ds:KeyName>
+						</ds:KeyInfo>
+						<md:EncryptionMethod Algorithm='http://www.example.com/'>Any text, intermingled with:
+							<xenc:KeySize>1</xenc:KeySize>
+							<xenc:OAEPparams>GpM7</xenc:OAEPparams>
+							<!--any element-->
+						</md:EncryptionMethod>
+					</md:KeyDescriptor>
+				</md:AffiliationDescriptor>";
+			(XmlDocument doc, XmlNamespaceManager nsmgr) = LoadXml(xml);
+
+			var expected = new AffiliationDescriptor
+			{
+				CacheDuration = new TimeSpan(3 * 30 + 2, 9, 12, 0),
+				ValidUntil = new DateTime(2019, 02, 02, 15, 16, 17),
+				AffiliationOwnerId = new EntityId("mr owner"),
+				Id = "yourGUIDhere",
+				AffiliateMembers = {
+					new EntityId("http://idp.example.org")
+				},
+				Extensions = {
+					doc.SelectSingleNode("/md:AffiliationDescriptor/md:Extensions/*[1]",
+						nsmgr).As<XmlElement>()
+				},
+				KeyDescriptors = {
+					new KeyDescriptor() {
+						KeyInfo = new DSigKeyInfo {
+							KeyNames = { "string" }
+						},
+						EncryptionMethods = {
+							new EncryptionMethod {
+								Algorithm = new Uri("http://www.example.com/"),
+								KeySize = 1,
+								OAEPparams = Convert.FromBase64String("GpM7")
+							}
+						}
+					}
+				}
+			};
+
+			ReadTest(xml, expected, (serializer, reader) =>
+				serializer.TestReadAffiliationDescriptor(reader));
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_AdditionalMetadataLocation()
+		{
+			string xml =
+			@"<?xml version='1.0' encoding='UTF-8'?>
+			<md:AdditionalMetadataLocation
+				xmlns:md='urn:oasis:names:tc:SAML:2.0:metadata'
+				namespace='http://oasis.org/saml-more#'>
+				http://www.example.com/
+			</md:AdditionalMetadataLocation>";
+			(XmlDocument doc, XmlNamespaceManager nsmgr) = LoadXml(xml);
+
+			var expected = new AdditionalMetadataLocation
+			{
+				Namespace = "http://oasis.org/saml-more#",
+				Uri = new Uri("http://www.example.com/")
+			};
+
+			ReadTest(xml, expected, (serializer, reader) =>
+				serializer.TestReadAdditionalMetadataLocation(reader));
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_ReadPDPDescriptor()
+		{
+			string xml =
+			@"<?xml version='1.0' encoding='UTF-8'?>
+				<md:PDPDescriptor
+					xmlns:ds='http://www.w3.org/2000/09/xmldsig#'
+					xmlns:md='urn:oasis:names:tc:SAML:2.0:metadata'
+					xmlns:xenc='http://www.w3.org/2001/04/xmlenc#'
+					ID='ID' 
+					protocolSupportEnumeration='http://www.example.com/ http://www.example.com/'>
+				   <ds:Signature>
+					  <ds:SignedInfo>
+						 <ds:CanonicalizationMethod Algorithm='http://www.example.com/'>Any text, intermingled with:
+							<!--any element-->
+						 </ds:CanonicalizationMethod>
+						 <ds:SignatureMethod Algorithm='http://www.example.com/'>Any text, intermingled with:...
+						 </ds:SignatureMethod>
+						 <ds:Reference URI='http://www.example.com/'>...
+						 </ds:Reference>
+					  </ds:SignedInfo>
+					  <ds:SignatureValue>GpM7</ds:SignatureValue>
+					  <ds:KeyInfo>Any text, intermingled with:
+						 <ds:KeyName>string</ds:KeyName>
+					  </ds:KeyInfo>
+					  <ds:Object>Any text, intermingled with:
+						 <!--any element-->
+					  </ds:Object>
+				   </ds:Signature>
+				   <md:Extensions>
+					  <!--any element-->
+				   </md:Extensions>
+				   <md:KeyDescriptor>
+					  <ds:KeyInfo>Any text, intermingled with:
+						 <ds:KeyName>string</ds:KeyName>
+					  </ds:KeyInfo>
+					  <md:EncryptionMethod Algorithm='http://www.example.com/'>Any text, intermingled with:
+						 <xenc:KeySize>1</xenc:KeySize>
+						 <xenc:OAEPparams>GpM7</xenc:OAEPparams>
+						 <!--any element-->
+					  </md:EncryptionMethod>
+				   </md:KeyDescriptor>
+				   <md:Organization>
+					  <md:Extensions>
+						 <!--any element-->
+					  </md:Extensions>
+					  <md:OrganizationName xml:lang='en-US'>string</md:OrganizationName>
+					  <md:OrganizationDisplayName xml:lang='en-US'>string</md:OrganizationDisplayName>
+					  <md:OrganizationURL xml:lang='en-US'>http://www.example.com/</md:OrganizationURL>
+				   </md:Organization>
+				   <md:ContactPerson contactType='technical'>
+					  <md:Extensions>
+						 <!--any element-->
+					  </md:Extensions>
+					  <md:Company>string</md:Company>
+					  <md:GivenName>string</md:GivenName>
+					  <md:SurName>string</md:SurName>
+					  <md:EmailAddress>http://www.example.com/</md:EmailAddress>
+					  <md:TelephoneNumber>string</md:TelephoneNumber>
+				   </md:ContactPerson>
+				   <md:AuthzService Binding='http://www.example.com/' Location='http://www.example.com/'>
+					  <!--any element-->
+				   </md:AuthzService>
+				   <md:AssertionIDRequestService Binding='http://www.example.com/' Location='http://www.example.com/'>
+					  <!--any element-->
+				   </md:AssertionIDRequestService>
+				   <md:NameIDFormat>http://www.example.com/</md:NameIDFormat>
+				</md:PDPDescriptor>";
+			(XmlDocument doc, XmlNamespaceManager nsmgr) = LoadXml(xml);
+
+			var expected = new PDPDescriptor {
+				Id = "ID",
+				ProtocolsSupported = {
+					new Uri("http://www.example.com/"),
+					new Uri("http://www.example.com/")
+				},
+				Extensions = { },
+				Keys = {
+					new KeyDescriptor() {
+						KeyInfo = new DSigKeyInfo {
+							KeyNames = { "string" },
+						},
+						EncryptionMethods = {
+							new EncryptionMethod {
+								Algorithm = new Uri("http://www.example.com/"),
+								KeySize = 1,
+								OAEPparams = Convert.FromBase64String("GpM7")
+							}
+						}
+					}
+				},
+				Organization = new Organization {
+					Extensions = { },
+					Names = {
+						new LocalizedName("string", "en-US")
+					},
+					DisplayNames = {
+						new LocalizedName("string", "en-US")
+					},
+					Urls = {
+						new LocalizedUri(new Uri("http://www.example.com/"), "en-US")
+					}
+				},
+				Contacts = {
+					new ContactPerson {
+						Type = ContactType.Technical,
+						Extensions = { },
+						Company = "string",
+						GivenName = "string",
+						Surname = "string",
+						EmailAddresses = { "http://www.example.com/" },
+						TelephoneNumbers = { "string" }
+					}
+				},
+				AuthzServices = {
+					new AuthzService {
+						Binding = new Uri("http://www.example.com/"),
+						Location = new Uri("http://www.example.com/")
+					}
+				},
+				AssertionIdRequestServices = {
+					new AssertionIdRequestService {
+						Binding = new Uri("http://www.example.com/"),
+						Location = new Uri("http://www.example.com/")
+					}
+				},
+				NameIDFormats = {
+					new NameIDFormat
+					{
+						Uri = new Uri("http://www.example.com/"),
+					}
+				}
+			};
+
+			ReadTest(xml, expected, (serializer, reader) =>
+				serializer.TestReadPDPDescriptor(reader));
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_ReadAuthnAuthorityDescriptor()
+		{
+			string xml =
+			@"<?xml version='1.0' encoding='UTF-8'?>
+				<md:AuthnAuthorityDescriptor 
+					xmlns:md='urn:oasis:names:tc:SAML:2.0:metadata'
+					xmlns:xenc='http://www.w3.org/2001/04/xmlenc#'
+					xmlns:ds='http://www.w3.org/2000/09/xmldsig#'
+					ID='ID' protocolSupportEnumeration='http://www.example.com/ http://www.example.com/'>
+				   <ds:Signature>
+					  <ds:SignedInfo>
+						 <ds:CanonicalizationMethod Algorithm='http://www.example.com/'>Any text, intermingled with:
+							<!--any element-->
+						 </ds:CanonicalizationMethod>
+						 <ds:SignatureMethod Algorithm='http://www.example.com/'>Any text, intermingled with:...
+						 </ds:SignatureMethod>
+						 <ds:Reference URI='http://www.example.com/'>...
+						 </ds:Reference>
+					  </ds:SignedInfo>
+					  <ds:SignatureValue>GpM7</ds:SignatureValue>
+					  <ds:KeyInfo>Any text, intermingled with:
+						 <ds:KeyName>string</ds:KeyName>
+					  </ds:KeyInfo>
+					  <ds:Object>Any text, intermingled with:
+						 <!--any element-->
+					  </ds:Object>
+				   </ds:Signature>
+				   <md:Extensions>
+					  <!--any element-->
+				   </md:Extensions>
+				   <md:KeyDescriptor>
+					  <ds:KeyInfo>Any text, intermingled with:
+						 <ds:KeyName>string</ds:KeyName>
+					  </ds:KeyInfo>
+					  <md:EncryptionMethod Algorithm='http://www.example.com/'>Any text, intermingled with:
+						 <xenc:KeySize>1</xenc:KeySize>
+						 <xenc:OAEPparams>GpM7</xenc:OAEPparams>
+						 <!--any element-->
+					  </md:EncryptionMethod>
+				   </md:KeyDescriptor>
+				   <md:Organization>
+					  <md:Extensions>
+						 <!--any element-->
+					  </md:Extensions>
+					  <md:OrganizationName xml:lang='en-US'>string</md:OrganizationName>
+					  <md:OrganizationDisplayName xml:lang='en-US'>string</md:OrganizationDisplayName>
+					  <md:OrganizationURL xml:lang='en-US'>http://www.example.com/</md:OrganizationURL>
+				   </md:Organization>
+				   <md:ContactPerson contactType='technical'>
+					  <md:Extensions>
+						 <!--any element-->
+					  </md:Extensions>
+					  <md:Company>string</md:Company>
+					  <md:GivenName>string</md:GivenName>
+					  <md:SurName>string</md:SurName>
+					  <md:EmailAddress>http://www.example.com/</md:EmailAddress>
+					  <md:TelephoneNumber>string</md:TelephoneNumber>
+				   </md:ContactPerson>
+				   <md:AuthnQueryService Binding='http://www.example.com/' Location='http://www.example.com/'>
+					  <!--any element-->
+				   </md:AuthnQueryService>
+				   <md:AssertionIDRequestService Binding='http://www.example.com/' Location='http://www.example.com/'>
+					  <!--any element-->
+				   </md:AssertionIDRequestService>
+				   <md:NameIDFormat>http://www.example.com/</md:NameIDFormat>
+				</md:AuthnAuthorityDescriptor>";
+			(XmlDocument doc, XmlNamespaceManager nsmgr) = LoadXml(xml);
+
+			var expected = new AuthnAuthorityDescriptor {
+				Id = "ID",
+				ProtocolsSupported = {
+					new Uri("http://www.example.com/"),
+					new Uri("http://www.example.com/")
+				},
+				Extensions = { },
+				Keys = {
+					new KeyDescriptor {
+						KeyInfo = new DSigKeyInfo {
+							KeyNames = { "string" }
+						},
+						EncryptionMethods = {
+							new EncryptionMethod {
+								Algorithm = new Uri("http://www.example.com/"),
+								KeySize = 1,
+								OAEPparams = Convert.FromBase64String("GpM7")
+							}
+						}
+					}
+				},
+				Organization = new Organization {
+					Extensions = { },
+					Names = {
+						new LocalizedName("string", "en-US")
+					},
+					DisplayNames = {
+						new LocalizedName("string", "en-US")
+					},
+					Urls = {
+						new LocalizedUri(new Uri("http://www.example.com/"), "en-US")
+					}
+				},
+				Contacts = {
+					new ContactPerson {
+						Type = ContactType.Technical,
+						Extensions = { },
+						Company = "string",
+						GivenName = "string",
+						Surname = "string",
+						EmailAddresses = { "http://www.example.com/" },
+						TelephoneNumbers = { "string" }
+					}
+				},
+				AuthnQueryServices = {
+					new AuthnQueryService {
+						Binding = new Uri("http://www.example.com/"),
+						Location = new Uri("http://www.example.com/")
+					}
+				},
+				AssertionIdRequestServices = {
+					new AssertionIdRequestService {
+						Binding = new Uri("http://www.example.com/"),
+						Location = new Uri("http://www.example.com/")
+					}
+				},
+				NameIDFormats = {
+					new NameIDFormat {
+						Uri = new Uri("http://www.example.com/")
+					}
+				}
+			};
+
+			ReadTest(xml, expected, (serializer, reader) =>
+				serializer.TestReadAuthnAuthorityDescriptor(reader));
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_ReadAttributeAuthorityDescriptor()
+		{
+			string xml =
+			@"<?xml version='1.0' encoding='UTF-8'?>
+				<md:AttributeAuthorityDescriptor 
+					xmlns:md='urn:oasis:names:tc:SAML:2.0:metadata'
+					xmlns:xenc='http://www.w3.org/2001/04/xmlenc#'
+					xmlns:ds='http://www.w3.org/2000/09/xmldsig#'
+					xmlns:saml='urn:oasis:names:tc:SAML:2.0:assertion'
+					ID='ID'
+					protocolSupportEnumeration='http://www.example.com/ http://www.example.com/'>
+				   <ds:Signature>
+					  <ds:SignedInfo>
+						 <ds:CanonicalizationMethod Algorithm='http://www.example.com/'>Any text, intermingled with:
+							<!--any element-->
+						 </ds:CanonicalizationMethod>
+						 <ds:SignatureMethod Algorithm='http://www.example.com/'>Any text, intermingled with:...
+						 </ds:SignatureMethod>
+						 <ds:Reference URI='http://www.example.com/'>...
+						 </ds:Reference>
+					  </ds:SignedInfo>
+					  <ds:SignatureValue>GpM7</ds:SignatureValue>
+					  <ds:KeyInfo>Any text, intermingled with:
+						 <ds:KeyName>string</ds:KeyName>
+					  </ds:KeyInfo>
+					  <ds:Object>Any text, intermingled with:
+						 <!--any element-->
+					  </ds:Object>
+				   </ds:Signature>
+				   <md:Extensions>
+					  <!--any element-->
+				   </md:Extensions>
+				   <md:KeyDescriptor>
+					  <ds:KeyInfo>Any text, intermingled with:
+						 <ds:KeyName>string</ds:KeyName>
+					  </ds:KeyInfo>
+					  <md:EncryptionMethod Algorithm='http://www.example.com/'>Any text, intermingled with:
+						 <xenc:KeySize>1</xenc:KeySize>
+						 <xenc:OAEPparams>GpM7</xenc:OAEPparams>
+						 <!--any element-->
+					  </md:EncryptionMethod>
+				   </md:KeyDescriptor>
+				   <md:Organization>
+					  <md:Extensions>
+						 <!--any element-->
+					  </md:Extensions>
+					  <md:OrganizationName xml:lang='en-US'>string</md:OrganizationName>
+					  <md:OrganizationDisplayName xml:lang='en-US'>string</md:OrganizationDisplayName>
+					  <md:OrganizationURL xml:lang='en-US'>http://www.example.com/</md:OrganizationURL>
+				   </md:Organization>
+				   <md:ContactPerson contactType='technical'>
+					  <md:Extensions>
+						 <!--any element-->
+					  </md:Extensions>
+					  <md:Company>string</md:Company>
+					  <md:GivenName>string</md:GivenName>
+					  <md:SurName>string</md:SurName>
+					  <md:EmailAddress>http://www.example.com/</md:EmailAddress>
+					  <md:TelephoneNumber>string</md:TelephoneNumber>
+				   </md:ContactPerson>
+				   <md:AttributeService Binding='http://www.example.com/' Location='http://www.example.com/'>
+					  <!--any element-->
+				   </md:AttributeService>
+				   <md:AssertionIDRequestService Binding='http://www.example.com/' Location='http://www.example.com/'>
+					  <!--any element-->
+				   </md:AssertionIDRequestService>
+				   <md:NameIDFormat>http://www.example.com/</md:NameIDFormat>
+				   <md:AttributeProfile>http://www.example.com/</md:AttributeProfile>
+				   <saml:Attribute Name='string'>
+					  <saml:AttributeValue>any content</saml:AttributeValue>
+				   </saml:Attribute>
+				</md:AttributeAuthorityDescriptor>";
+			(XmlDocument doc, XmlNamespaceManager nsmgr) = LoadXml(xml);
+
+			var expected = new AttributeAuthorityDescriptor
+			{
+				Id = "ID",
+				ProtocolsSupported = {
+					new Uri("http://www.example.com/"),
+					new Uri("http://www.example.com/")
+				},
+				Extensions = { },
+				Keys = {
+					new KeyDescriptor {
+						KeyInfo = new DSigKeyInfo {
+							KeyNames = { "string" }
+						},
+						EncryptionMethods = {
+							new EncryptionMethod {
+								Algorithm = new Uri("http://www.example.com/"),
+								KeySize = 1,
+								OAEPparams = Convert.FromBase64String("GpM7")
+							}
+						}
+					}
+				},
+				Organization = new Organization
+				{
+					Extensions = { },
+					Names = {
+						new LocalizedName("string", "en-US")
+					},
+					DisplayNames = {
+						new LocalizedName("string", "en-US")
+					},
+					Urls = {
+						new LocalizedUri(new Uri("http://www.example.com/"), "en-US")
+					}
+				},
+				Contacts = {
+					new ContactPerson {
+						Type = ContactType.Technical,
+						Extensions = { },
+						Company = "string",
+						GivenName = "string",
+						Surname = "string",
+						EmailAddresses = { "http://www.example.com/" },
+						TelephoneNumbers = { "string" }
+					}
+				},
+				AttributeServices = {
+					new AttributeService {
+						Binding = new Uri("http://www.example.com/"),
+						Location = new Uri("http://www.example.com/")
+					}
+				},
+				AssertionIdRequestServices = {
+					new AssertionIdRequestService {
+						Binding = new Uri("http://www.example.com/"),
+						Location = new Uri("http://www.example.com/")
+					}
+				},
+				NameIDFormats = {
+					new NameIDFormat {
+						Uri = new Uri("http://www.example.com/")
+					}
+				},
+				AttributeProfiles = {
+					new AttributeProfile {
+						Uri = new Uri("http://www.example.com/")
+					}
+				},
+				Attributes = {
+					new Saml2Attribute("string", "any content")
+				}
+			};
+
+			ReadTest(xml, expected, (serializer, reader) =>
+				serializer.TestReadAttributeAuthorityDescriptor(reader));
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_ReadNameIDFormat()
+		{
+			string xml =
+			@"<?xml version='1.0' encoding='UTF-8'?>
+				<md:NameIDFormat
+					xmlns:md='urn:oasis:names:tc:SAML:2.0:metadata'>
+					http://www.example.org/
+				</md:NameIDFormat>";
+			(XmlDocument doc, XmlNamespaceManager nsmgr) = LoadXml(xml);
+
+			var expected = new NameIDFormat
+			{
+				Uri = new Uri("http://www.example.org/"),
+			};
+
+			ReadTest(xml, expected, (serializer, reader) =>
+				serializer.TestReadNameIDFormat(reader));
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_ReadEntityDescriptor()
+		{
+			string xml =
+			@"<?xml version='1.0' encoding='UTF-8'?>
+			<EntityDescriptor
+				xmlns='urn:oasis:names:tc:SAML:2.0:metadata'
+				xmlns:ds='http://www.w3.org/2000/09/xmldsig#'
+				xmlns:shibmd='urn:mace:shibboleth:metadata:1.0'
+				xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'
+				xmlns:xenc='http://www.w3.org/2001/04/xmlenc#'
+				entityID='https://idp.example.org/idp/shibboleth'>
+				<IDPSSODescriptor protocolSupportEnumeration='urn:mace:shibboleth:1.0 urn:oasis:names:tc:SAML:2.0:protocol'>
+					<Extensions>
+						<shibmd:Scope regexp='false'>example.org</shibmd:Scope>
+					</Extensions>
+					<KeyDescriptor>
+						<ds:KeyInfo>
+						<ds:X509Data>
+							<ds:X509Certificate>" + certData + @"</ds:X509Certificate>
+							</ds:X509Data>
+						</ds:KeyInfo>
+					</KeyDescriptor>
+ 
+					<NameIDFormat>urn:mace:shibboleth:1.0:nameIdentifier</NameIDFormat>
+					<NameIDFormat>urn:oasis:names:tc:SAML:2.0:nameid-format:transient</NameIDFormat>
+ 
+					<SingleSignOnService Binding='urn:mace:shibboleth:1.0:profiles:AuthnRequest'
+							Location='https://idp.example.org/idp/profile/Shibboleth/SSO' />
+         
+					<SingleSignOnService Binding='urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST'
+							Location='https://idp.example.org/idp/profile/SAML2/POST/SSO' />
+ 
+					<SingleSignOnService Binding='urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect'
+							Location='https://idp.example.org/idp/profile/SAML2/Redirect/SSO' />
+				</IDPSSODescriptor>
+     
+				<AttributeAuthorityDescriptor protocolSupportEnumeration='urn:oasis:names:tc:SAML:1.1:protocol urn:oasis:names:tc:SAML:2.0:protocol'>
+					<KeyDescriptor>
+						<ds:KeyInfo>
+							<ds:X509Data>
+								<ds:X509Certificate>" + certData + @"
+								</ds:X509Certificate>
+							</ds:X509Data>
+						</ds:KeyInfo>
+					</KeyDescriptor>
+ 
+					<AttributeService Binding='urn:oasis:names:tc:SAML:1.0:bindings:SOAP-binding'
+									Location='https://idp.example.org:8443/idp/profile/SAML1/SOAP/AttributeQuery' />
+         
+					<AttributeService Binding='urn:oasis:names:tc:SAML:2.0:bindings:SOAP'
+									Location='https://idp.example.org:8443/idp/profile/SAML2/SOAP/AttributeQuery' />
+         
+					<NameIDFormat>urn:mace:shibboleth:1.0:nameIdentifier</NameIDFormat>
+					<NameIDFormat>urn:oasis:names:tc:SAML:2.0:nameid-format:transient</NameIDFormat>
+ 
+				</AttributeAuthorityDescriptor>
+ 
+				<AuthnAuthorityDescriptor ID='ID' protocolSupportEnumeration='http://www.example.com/ http://www.example.com/'>
+					<KeyDescriptor>
+						<ds:KeyInfo>Any text, intermingled with:
+							<ds:KeyName>string</ds:KeyName>
+						</ds:KeyInfo>
+						<EncryptionMethod Algorithm='http://www.example.com/'>Any text, intermingled with:
+							<xenc:KeySize>1</xenc:KeySize>
+							<xenc:OAEPparams>GpM7</xenc:OAEPparams>
+							<!--any element-->
+						</EncryptionMethod>
+					</KeyDescriptor>
+					<AuthnQueryService Binding='http://www.example.com/' Location='http://www.example.com/'>
+						<!--any element-->
+					</AuthnQueryService>
+					<AssertionIDRequestService Binding='http://www.example.com/' Location='http://www.example.com/'>
+						<!--any element-->
+					</AssertionIDRequestService>
+					<NameIDFormat>http://www.example.com/</NameIDFormat>
+				</AuthnAuthorityDescriptor>
+
+				<PDPDescriptor
+					ID='ID' 
+					protocolSupportEnumeration='http://www.example.com/ http://www.example.com/'>
+				   <ds:Signature>
+					  <ds:SignedInfo>
+						 <ds:CanonicalizationMethod Algorithm='http://www.example.com/'>Any text, intermingled with:
+							<!--any element-->
+						 </ds:CanonicalizationMethod>
+						 <ds:SignatureMethod Algorithm='http://www.example.com/'>Any text, intermingled with:...
+						 </ds:SignatureMethod>
+						 <ds:Reference URI='http://www.example.com/'>...
+						 </ds:Reference>
+					  </ds:SignedInfo>
+					  <ds:SignatureValue>GpM7</ds:SignatureValue>
+					  <ds:KeyInfo>Any text, intermingled with:
+						 <ds:KeyName>string</ds:KeyName>
+					  </ds:KeyInfo>
+					  <ds:Object>Any text, intermingled with:
+						 <!--any element-->
+					  </ds:Object>
+				   </ds:Signature>
+				   <Extensions>
+					  <!--any element-->
+				   </Extensions>
+				   <KeyDescriptor>
+					  <ds:KeyInfo>Any text, intermingled with:
+						 <ds:KeyName>string</ds:KeyName>
+					  </ds:KeyInfo>
+					  <EncryptionMethod Algorithm='http://www.example.com/'>Any text, intermingled with:
+						 <xenc:KeySize>1</xenc:KeySize>
+						 <xenc:OAEPparams>GpM7</xenc:OAEPparams>
+						 <!--any element-->
+					  </EncryptionMethod>
+				   </KeyDescriptor>
+				   <AuthzService Binding='http://www.example.com/' Location='http://www.example.com/'>
+					  <!--any element-->
+				   </AuthzService>
+				   <AssertionIDRequestService Binding='http://www.example.com/' Location='http://www.example.com/'>
+					  <!--any element-->
+				   </AssertionIDRequestService>
+				   <NameIDFormat>http://www.example.com/</NameIDFormat>
+				</PDPDescriptor>
+
+				<Organization>
+						<OrganizationName xml:lang='en'>Your Identities</OrganizationName>
+						<OrganizationDisplayName xml:lang='en'>Your Identities</OrganizationDisplayName>
+						<OrganizationURL xml:lang='en'>http://www.example.org/</OrganizationURL>
+				</Organization>
+				<ContactPerson contactType='technical'>
+						<GivenName>Your</GivenName>
+						<SurName>Contact</SurName>
+						<EmailAddress>admin@example.org</EmailAddress>
+				</ContactPerson>
+			</EntityDescriptor>";
+			(XmlDocument doc, XmlNamespaceManager nsmgr) = LoadXml(xml);
+
+			var expected = new EntityDescriptor(new EntityId("https://idp.example.org/idp/shibboleth")) {
+				RoleDescriptors = {
+					new IdpSsoDescriptor
+					{
+						ProtocolsSupported = {
+							new Uri("urn:mace:shibboleth:1.0"),
+							new Uri("urn:oasis:names:tc:SAML:2.0:protocol")
+						},
+						Extensions = {
+							doc.SelectSingleNode(
+								"md:EntityDescriptor[1]/md:IDPSSODescriptor/md:Extensions/*[1]",
+								nsmgr).As<XmlElement>()
+						},
+						Keys = {
+							new KeyDescriptor {
+								KeyInfo = new DSigKeyInfo {
+									Data = {
+										new X509Data {
+											Certificates = {
+												new X509Certificate2(Convert.FromBase64String(certData))
+											}
+										}
+									}
+								}
+							}
+						},
+						NameIdentifierFormats = {
+							new NameIDFormat { Uri = new Uri("urn:mace:shibboleth:1.0:nameIdentifier") },
+							new NameIDFormat { Uri = new Uri("urn:oasis:names:tc:SAML:2.0:nameid-format:transient") },
+						},
+						SingleSignOnServices = {
+							new SingleSignOnService {
+								Binding = new Uri("urn:mace:shibboleth:1.0:profiles:AuthnRequest"),
+								Location = new Uri("https://idp.example.org/idp/profile/Shibboleth/SSO")
+							},
+							new SingleSignOnService {
+								Binding = new Uri("urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST"),
+								Location = new Uri("https://idp.example.org/idp/profile/SAML2/POST/SSO")
+							},
+							new SingleSignOnService {
+								Binding = new Uri("urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect"),
+								Location = new Uri("https://idp.example.org/idp/profile/SAML2/Redirect/SSO")
+							}
+						}
+					},
+					new AttributeAuthorityDescriptor() {
+						ProtocolsSupported = {
+							new Uri("urn:oasis:names:tc:SAML:1.1:protocol"),
+							new Uri("urn:oasis:names:tc:SAML:2.0:protocol")
+						},
+						Keys = {
+							new KeyDescriptor {
+								KeyInfo = new DSigKeyInfo {
+									Data = {
+										new X509Data {
+											Certificates = {
+												new X509Certificate2(Convert.FromBase64String(certData))
+											}
+										}
+									}
+								}
+							}
+						},
+						AttributeServices = {
+							new AttributeService {
+								Binding = new Uri("urn:oasis:names:tc:SAML:1.0:bindings:SOAP-binding"),
+								Location = new Uri("https://idp.example.org:8443/idp/profile/SAML1/SOAP/AttributeQuery")
+							},
+							new AttributeService {
+								Binding = new Uri("urn:oasis:names:tc:SAML:2.0:bindings:SOAP"),
+								Location = new Uri("https://idp.example.org:8443/idp/profile/SAML2/SOAP/AttributeQuery")
+							}
+						},
+						NameIDFormats = {
+							new NameIDFormat {
+								Uri = new Uri("urn:mace:shibboleth:1.0:nameIdentifier")
+							},
+							new NameIDFormat {
+								Uri = new Uri("urn:oasis:names:tc:SAML:2.0:nameid-format:transient")
+							}
+						}
+					},
+					new AuthnAuthorityDescriptor {
+						Id = "ID",
+						ProtocolsSupported = {
+							new Uri("http://www.example.com/"),
+							new Uri("http://www.example.com/")
+						},
+						Extensions = { },
+						Keys = {
+							new KeyDescriptor {
+								KeyInfo = new DSigKeyInfo {
+									KeyNames = { "string" }
+								},
+								EncryptionMethods = {
+									new EncryptionMethod {
+										Algorithm = new Uri("http://www.example.com/"),
+										KeySize = 1,
+										OAEPparams = Convert.FromBase64String("GpM7")
+									}
+								}
+							}
+						},
+						AuthnQueryServices = {
+							new AuthnQueryService {
+								Binding = new Uri("http://www.example.com/"),
+								Location = new Uri("http://www.example.com/")
+							}
+						},
+						AssertionIdRequestServices = {
+							new AssertionIdRequestService {
+								Binding = new Uri("http://www.example.com/"),
+								Location = new Uri("http://www.example.com/")
+							}
+						},
+						NameIDFormats = {
+							new NameIDFormat {
+								Uri = new Uri("http://www.example.com/")
+							}
+						}
+					},
+					new PDPDescriptor {
+						Id = "ID",
+						ProtocolsSupported = {
+							new Uri("http://www.example.com/"),
+							new Uri("http://www.example.com/")
+						},
+						Extensions = { },
+						Keys = {
+							new KeyDescriptor() {
+								KeyInfo = new DSigKeyInfo {
+									KeyNames = { "string" },
+								},
+								EncryptionMethods = {
+									new EncryptionMethod {
+										Algorithm = new Uri("http://www.example.com/"),
+										KeySize = 1,
+										OAEPparams = Convert.FromBase64String("GpM7")
+									}
+								}
+							}
+						},
+						AuthzServices = {
+							new AuthzService {
+								Binding = new Uri("http://www.example.com/"),
+								Location = new Uri("http://www.example.com/")
+							}
+						},
+						AssertionIdRequestServices = {
+							new AssertionIdRequestService {
+								Binding = new Uri("http://www.example.com/"),
+								Location = new Uri("http://www.example.com/")
+							}
+						},
+						NameIDFormats = {
+							new NameIDFormat
+							{
+								Uri = new Uri("http://www.example.com/"),
+							}
+						}
+					}
+				},
+				Organization = new Organization {
+					Names = {
+						new LocalizedName("Your Identities", "en")
+					},
+					DisplayNames = {
+						new LocalizedName("Your Identities", "en")
+					},
+					Urls = {
+						new LocalizedUri(new Uri("http://www.example.org/"), "en")
+					}
+				},
+				Contacts = {
+					new ContactPerson {
+						Type = ContactType.Technical,
+						GivenName = "Your",
+						Surname = "Contact",
+						EmailAddresses = { "admin@example.org" }
+					}
+				}
+			};
+
+			ReadTest(xml, expected, (serializer, reader) =>
+				serializer.TestReadEntityDescriptor(reader));
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_ReadLocalizedName()
+		{
+			string xml =
+			@"<?xml version='1.0' encoding='UTF-8'?>
+				<LocalName xml:lang='en'>NameValue</LocalName>";
+			(XmlDocument doc, XmlNamespaceManager nsmgr) = LoadXml(xml);
+
+			var expected = new LocalizedName("NameValue", "en");
+			ReadTest(xml, expected, (serializer, reader) =>
+				serializer.TestReadLocalizedName(reader));
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_ReadLocalizedUri()
+		{
+			string xml =
+			@"<?xml version='1.0' encoding='UTF-8'?>
+				<LocalUri xml:lang='en'>http://www.foo.org/</LocalUri>";
+			(XmlDocument doc, XmlNamespaceManager nsmgr) = LoadXml(xml);
+
+			var expected = new LocalizedUri(new Uri("http://www.foo.org/"), "en");
+			ReadTest(xml, expected, (serializer, reader) =>
+				serializer.TestReadLocalizedUri(reader));
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_ReadOrganization()
+		{
+			string xml =
+			@"<?xml version='1.0' encoding='UTF-8'?>
+				<Organization xmlns='urn:oasis:names:tc:SAML:2.0:metadata'>
+					<Extensions>
+						<ext-elt/>
+					</Extensions>
+					<OrganizationName xml:lang='en'>Acme Ltd</OrganizationName>
+					<OrganizationDisplayName xml:lang='en'>Acme Ltd (display)</OrganizationDisplayName>
+					<OrganizationURL xml:lang='en'>http://acme.co/</OrganizationURL>
+				</Organization>";
+			(XmlDocument doc, XmlNamespaceManager nsmgr) = LoadXml(xml);
+
+			var expected = new Organization
+			{
+				Extensions = {
+					doc.SelectSingleNode("/md:Organization/md:Extensions/*[1]",
+						nsmgr).As<XmlElement>()
+				},
+				Names = {
+					new LocalizedName("Acme Ltd", "en")
+				},
+				DisplayNames = {
+					new LocalizedName("Acme Ltd (display)", "en")
+				},
+				Urls = {
+					new LocalizedUri(new Uri("http://acme.co/"), "en")
+				}
+			};
+
+			ReadTest(xml, expected, (serializer, reader) =>
+				serializer.TestReadOrganization(reader));
+		}
 #if FALSE
-
-		// <complexType name="EncryptedType" abstract="true">
-		//   <sequence>
-		//     <element name="EncryptionMethod" type="xenc:EncryptionMethodType" 
-		//              minOccurs="0"/>
-		//     <element ref="ds:KeyInfo" minOccurs="0"/>
-		//     <element ref="xenc:CipherData"/>
-		//     <element ref="xenc:EncryptionProperties" minOccurs="0"/>
-		//   </sequence>
-		//   <attribute name="Id" type="ID" use="optional"/>
-		//   <attribute name="Type" type="anyURI" use="optional"/>
-		//   <attribute name="MimeType" type="string" use="optional"/>
-		//   <attribute name="Encoding" type="anyURI" use="optional"/> 
-		// </complexType>
-		//
-		// <element name="EncryptedData" type="xenc:EncryptedDataType"/>
-		// <complexType name="EncryptedDataType">
-		//   <complexContent>
-		//     <extension base="xenc:EncryptedType">
-		//     </extension>
-		//   </complexContent>
-		// </complexType>
-		protected virtual EncryptedData ReadEncryptedData(XmlReader reader)
-		{
-			var data = CreateEncryptedDataInstance();
-			data.Id = GetAttribute(reader, "Id", data.Id);
-			data.Type = GetUriAttribute(reader, "Type", data.Type);
-			data.MimeType = GetAttribute(reader, "MimeType", data.MimeType);
-			data.Encoding = GetUriAttribute(reader, "Encoding", data.Encoding);
-			ReadCustomAttributes(reader, data);
-
-			ReadChildren(reader, () =>
-			{
-				if (reader.IsStartElement("EncryptionMethod", XEncNs))
-				{
-					data.EncryptionMethod = ReadEncryptionMethod(reader);
-				}
-				else if (reader.IsStartElement("KeyInfo", DSigNs))
-				{
-					data.KeyInfo = ReadDSigKeyInfo(reader);
-				}
-				else if (reader.IsStartElement("CipherData", XEncNs))
-				{
-					data.CipherData = ReadCipherData(reader);
-				}
-				else if (reader.IsStartElement("EncryptionProperties", XEncNs))
-				{
-					data.EncryptionProperties = ReadEncryptionProperties(reader);
-				}
-				else
-				{
-					return ReadCustomElement(reader, data);
-				}
-				return true; // handled above
-			});
-
-			if (data.CipherData == null)
-			{
-				throw new MetadataSerializationException("EncryptedData without required CipherData element");
-			}
-
-			return data;
-		}
-
-		// <auth:EncryptedValue @DecryptionCondition="xs:anyURI">
-		//   <xenc:EncryptedData>...</xenc:EncryptedData>
-		// <auth:EncryptedValue>)
-		protected virtual EncryptedValue ReadEncryptedValue(XmlReader reader)
-		{
-			var value = CreateEncryptedValueInstance();
-			value.DecryptionCondition = GetUriAttribute(reader, "DecryptionCondition",
-				value.DecryptionCondition);
-
-			ReadChildren(reader, () =>
-			{
-				if (reader.IsStartElement("EncryptedData", XEncNs))
-				{
-					value.EncryptedData = ReadEncryptedData(reader);
-				}
-				else
-				{
-					return ReadCustomElement(reader, value);
-				}
-				return true; // handled above
-			});
-
-			return value;
-		}
-
-		// <auth:ConstrainedValue AssertConstraint="xs:boolean">
-		//    ( <auth:ValueLessThan>
-		//        (<auth:Value> xs:string </auth:Value> |
-		//        <auth:StructuredValue> xs:any </auth:StructuredValue>)
-		//      </auth:ValueLessThan> |
-		//      <auth:ValueLessThanOrEqual>
-		//        (<auth:Value> xs:string </auth:Value> |
-		//        <auth:StructuredValue> xs:any </auth:StructuredValue>)
-		//      </auth:ValueLessThanOrEqual> |
-		//      <auth:ValueGreaterThan>
-		//        (<auth:Value> xs:string </auth:Value> |
-		//        <auth:StructuredValue> xs:any </auth:StructuredValue>)
-		//      </auth:ValueGreaterThan> |
-		//      <auth:ValueGreaterThanOrEqual>
-		//        (<auth:Value> xs:string </auth:Value> |
-		//        <auth:StructuredValue> xs:any </auth:StructuredValue>)
-		//      </auth:ValueGreaterThanOrEqual> |
-		//      <auth:ValueInRange>
-		//        <auth:ValueUpperBound>
-		//          (<auth:Value> xs:string </auth:Value> |
-		//          <auth:StructuredValue> xs:any </auth:StructuredValue>)
-		//        </auth:ValueUpperBound>
-		//        <auth:ValueLowerBound>
-		//          (<auth:Value> xs:string </auth:Value> |
-		//          <auth:StructuredValue> xs:any </auth:StructuredValue>)
-		//        </auth:ValueLowerBound>
-		//      </auth:ValueInRange> |
-		//      <auth:ValueOneOf>
-		//        (<auth:Value> xs:string </auth:Value> |
-		//         <auth:StructuredValue> xs:any </auth:StructuredValue>) +
-		//      </auth:ValueOneOf> ) ?
-		//     ...
-		//   </auth:ConstrainedValue> ?
-		protected virtual ClaimValue ReadClaimValue(XmlReader reader)
-		{
-			var value = CreateClaimValueInstance();
-			ReadCustomAttributes(reader, value);
-
-			ReadChildren(reader, () =>
-			{
-				if (reader.IsStartElement("Value", AuthNs))
-				{
-					value.Value = reader.ReadElementContentAsString();
-				}
-				else if (reader.IsStartElement("StructuredValue", AuthNs))
-				{
-					value.StructuredValue = ReadCurrentNodeAsXmlElement(reader);
-				}
-				else
-				{
-					return ReadCustomElement(reader, value);
-				}
-				return true;
-			});
-
-			return value;
-		}
-
-		protected virtual ConstrainedValue.CompareConstraint ReadCompareConstraint(
-			XmlReader reader, ConstrainedValue.CompareConstraint.CompareOperator op)
-		{
-			var cc = new ConstrainedValue.CompareConstraint(op);
-			cc.Value = ReadClaimValue(reader);
-			return cc;
-		}
-
-		protected virtual ConstrainedValue.RangeConstraint ReadRangeConstraint(XmlReader reader)
-		{
-			var range = new ConstrainedValue.RangeConstraint();
-			ReadChildren(reader, () =>
-			{
-				if (reader.IsStartElement("ValueUpperBound", AuthNs))
-				{
-					range.UpperBound = ReadClaimValue(reader);
-				}
-				else if (reader.IsStartElement("ValueLowerBound", AuthNs))
-				{
-					range.LowerBound = ReadClaimValue(reader);
-				}
-				else
-				{
-					reader.Skip();
-				}
-				return true;
-			});
-			return range;
-		}
-
-		protected virtual ConstrainedValue ReadConstrainedValue(XmlReader reader)
-		{
-			var constraint = CreateConstrainedValueInstance();
-			constraint.AssertConstraint = GetBooleanAttribute(reader,
-				"AssertConstraint", constraint.AssertConstraint);
-			ReadCustomAttributes(reader, constraint);
-
-			ConstrainedValue.ListConstraint listConstraint = null;
-			ReadChildren(reader, () =>
-			{
-				if (reader.IsStartElement("ValueLessThan", AuthNs))
-				{
-					constraint.Constraints.Add(
-						ReadCompareConstraint(reader,
-							ConstrainedValue.CompareConstraint.CompareOperator.Lt));
-				}
-				else if (reader.IsStartElement("ValueLessThanOrEqual", AuthNs))
-				{
-					constraint.Constraints.Add(
-						ReadCompareConstraint(reader,
-							ConstrainedValue.CompareConstraint.CompareOperator.Lte));
-				}
-				else if (reader.IsStartElement("ValueGreaterThan", AuthNs))
-				{
-					constraint.Constraints.Add(
-						ReadCompareConstraint(reader,
-							ConstrainedValue.CompareConstraint.CompareOperator.Gt));
-				}
-				else if (reader.IsStartElement("ValueGreaterThanOrEqual", AuthNs))
-				{
-					constraint.Constraints.Add(
-						ReadCompareConstraint(reader,
-							ConstrainedValue.CompareConstraint.CompareOperator.Gte));
-				}
-				else if (reader.IsStartElement("ValueInRange", AuthNs))
-				{
-					constraint.Constraints.Add(ReadRangeConstraint(reader));
-				}
-				else if (reader.IsStartElement("ValueOneOf", AuthNs))
-				{
-					if (listConstraint == null)
-					{
-						listConstraint = new ConstrainedValue.ListConstraint();
-					}
-					listConstraint.Values.Add(ReadClaimValue(reader));
-				}
-				else
-				{
-					return ReadCustomElement(reader, constraint);
-				}
-				return true; // hanlded above
-			});
-
-			return constraint;
-		}
-
-		// <auth:ClaimType Uri="xs:anyURI" Optional="xs:boolean">
-		//   <auth:DisplayName  ...> xs:string </auth:DisplayName> ?
-		//   <auth:Description  ...> xs:string </auth:Description> ?
-		//   <auth:DisplayValue ...> xs:string </auth:DisplayValue> ?
-		//   (<auth:Value>...</auth:Value> |
-		//    <auth:StructuredValue ...>...</auth:StructuredValue> |
-		//    (<auth:EncryptedValue @DecryptionCondition="xs:anyURI">
-		//       <xenc:EncryptedData>...</xenc:EncryptedData>
-		//     <auth:EncryptedValue>) |
-		//    <auth:ConstrainedValue>...</auth:ConstrainedValue>) ?
-		//    ...
-		// </auth:ClaimType>
-		protected virtual DisplayClaim ReadDisplayClaim(XmlReader reader)
-		{
-			string uri = reader.GetAttribute("Uri");
-			if (string.IsNullOrEmpty(uri))
-			{
-				throw new MetadataSerializationException("auth:ClaimType is missing a Uri attribute");
-			}
-			DisplayClaim claim = new DisplayClaim(uri);
-			claim.Optional = GetBooleanAttribute(reader, "Optional", false);
-			ReadCustomAttributes(reader, claim);
-
-			ReadChildren(reader, () =>
-			{
-				if (reader.IsStartElement("DisplayName", AuthNs))
-				{
-					claim.DisplayName = reader.ReadElementContentAsString();
-				}
-				else if (reader.IsStartElement("Description", AuthNs))
-				{
-					claim.Description = reader.ReadElementContentAsString();
-				}
-				else if (reader.IsStartElement("DisplayValue", AuthNs))
-				{
-					claim.DisplayValue = reader.ReadElementContentAsString();
-				}
-				else if (reader.IsStartElement("Value", AuthNs))
-				{
-					claim.Value = reader.ReadElementContentAsString();
-				}
-				else if (reader.IsStartElement("StructuredValue", AuthNs))
-				{
-					ReadChildrenAsXmlElements(reader, (elt) =>
-					{
-						if (claim.StructuredValue != null)
-						{
-							throw new MetadataSerializationException(
-								"Unexpected StructuredValue with multiple child elements");
-						}
-						claim.StructuredValue = elt;
-					});
-				}
-				else if (reader.IsStartElement("EncryptedValue", AuthNs))
-				{
-					claim.EncryptedValue = ReadEncryptedValue(reader);
-				}
-				else if (reader.IsStartElement("ConstrainedValue", AuthNs))
-				{
-					claim.ConstrainedValue = ReadConstrainedValue(reader);
-				}
-				else
-				{
-					return ReadCustomElement(reader, claim);
-				}
-				return true; // handled above
-			});
-			return claim;
-		}
-
-		void ReadCachedMetadataAttributes(XmlReader reader, ICachedMetadata obj)
-		{
-			ReadOptionalDateAttribute(reader, "validUntil",
-				v => obj.ValidUntil = v);
-			ReadOptionalTimespanAttribute(reader, "cacheDuration",
-				v => obj.CacheDuration = v);
-		}
-
-		// <element name="EntitiesDescriptor" type="md:EntitiesDescriptorType"/>
-		// <complexType name="EntitiesDescriptorType">
-		//   <sequence>
-		//     <element ref="ds:Signature" minOccurs="0"/>
-		//     <element ref="md:Extensions" minOccurs="0"/>
-		//     <choice minOccurs="1" maxOccurs="unbounded">
-		//     <element ref="md:EntityDescriptor"/>
-		//     <element ref="md:EntitiesDescriptor"/>
-		//     </choice>
-		//   </sequence>
-		//  <attribute name="validUntil" type="dateTime" use="optional"/>
-		//  <attribute name="cacheDuration" type="duration" use="optional"/>
-		//  <attribute name="ID" type="ID" use="optional"/>
-		//  <attribute name="Name" type="string" use="optional"/>
-		// </complexType>
-		// <element name="Extensions" type="md:ExtensionsType"/>
-		// <complexType final="#all" name="ExtensionsType">
-		//   <sequence>
-		//     <any namespace="##other" processContents="lax" maxOccurs="unbounded"/>
-		//   </sequence>
-		// </complexType>
-		protected virtual EntitiesDescriptor ReadEntitiesDescriptor(XmlReader reader, SecurityTokenResolver tokenResolver)
-		{
-			if (reader == null)
-			{
-				throw new ArgumentNullException(nameof(reader));
-			}
-			var entities = CreateEntitiesDescriptorInstance();
-
-			// This should pick up dsig: elements.  It can also validate the signature,
-			// (although I couldn't see where it's grabbing the original token stream
-			// from the code)
-			var sigReader = new EnvelopedSignatureReader(reader);
-
-			entities.Name = GetAttribute(reader, "Name", entities.Id);
-			entities.Id = GetAttribute(reader, "ID", entities.Id);
-			ReadCachedMetadataAttributes(reader, entities);
-			ReadCustomAttributes(reader, entities);
-
-			ReadChildren(reader, () =>
-			{
-				if (reader.IsStartElement("EntityDescriptor", Saml2MetadataNs))
-				{
-					entities.ChildEntities.Add(ReadEntityDescriptor(reader, tokenResolver));
-				}
-				else if (reader.IsStartElement("EntitiesDescriptor", Saml2MetadataNs))
-				{
-					entities.ChildEntityGroups.Add(ReadEntitiesDescriptor(reader, tokenResolver));
-				}
-				else if (reader.IsStartElement("Extensions", Saml2MetadataNs))
-				{
-					ReadChildrenAsXmlElements(reader, entities.Extensions.Add);
-				}
-				else
-				{
-					return ReadCustomElement(reader, entities);
-				}
-				return true; // handled above
-			});
-
-			// TODO: something with the signature
-			return entities;
-		}
-
-		public X509RevocationMode RevocationMode { get; set; }
-		public List<string> TrustedIssuers { get; } = new List<string>();
-
-		// TODO: call this?
-		protected virtual void ValidateSigningCredential(SigningCredentials signingCredentials)
-		{
-			if (signingCredentials == null)
-			{
-				throw new ArgumentNullException(nameof(signingCredentials));
-			}
-
-			throw new NotImplementedException();
-
-			/*
-            if (CertificateValidationMode != X509CertificateValidationMode.Custom)
-            {
-                CertificateValidator = X509Util.CreateCertificateValidator(CertificateValidationMode, RevocationMode, TrustedStoreLocation);
-            }
-            else if (CertificateValidationMode == X509CertificateValidationMode.Custom && CertificateValidator == null)
-            {
-                throw DiagnosticUtility.ExceptionUtility.ThrowHelperError(new InvalidOperationException(SR.GetString(SR.ID4280)));
-            }
-
-            X509Certificate2 certificate = GetMetadataSigningCertificate(signingCredentials.SigningKeyIdentifier);
-
-            ValidateIssuer(certificate);
-            CertificateValidator.Validate(certificate);*/
-		}
-
-		protected virtual void ValidateIssuer(X509Certificate2 signingCertificate)
-		{
-		}
-
-		protected virtual X509Certificate2 GetMetadataSigningCertificate(SecurityKeyIdentifier ski)
-		{
-			if (ski == null)
-			{
-				throw new ArgumentNullException(nameof(ski));
-			}
-			X509RawDataKeyIdentifierClause clause;
-			if (!ski.TryFind<X509RawDataKeyIdentifierClause>(out clause))
-			{
-				throw new InvalidOperationException("An x509 certificate is not assocaited with the given SecurityKeyIdentifier");
-			}
-			return new X509Certificate2(clause.GetX509RawData());
-		}
-
-		// <element name="Attribute" type="saml:AttributeType"/>
-		// <complexType name="AttributeType">
-		//   <sequence>
-		//     <element ref="saml:AttributeValue" minOccurs="0" maxOccurs="unbounded"/>
-		//   </sequence>
-		//   <attribute name="Name" type="string" use="required"/>
-		//   <attribute name="NameFormat" type="anyURI" use="optional"/>
-		//   <attribute name="FriendlyName" type="string" use="optional"/>
-		//   <anyAttribute namespace="##other" processContents="lax"/>
-		// </complexType>
-		protected T ReadSamlAttributeType<T>(XmlReader reader, Func<string, T> createInstance)
-			where T : Saml2Attribute		{			string name = GetAttribute(reader, "Name", null);
-			if (String.IsNullOrEmpty(name))
-			{
-				throw new MetadataSerializationException("saml:Attribute without Name attribute");
-			}
-			var attribute = createInstance(name);
-			attribute.NameFormat = GetUriAttribute(reader, "NameFormat", attribute.NameFormat);
-			attribute.FriendlyName = GetAttribute(reader, "FriendlyName", attribute.FriendlyName);
-
-			ReadChildren(reader, () =>
-			{
-				if (reader.IsStartElement("AttributeValue", Saml2AssertionNs))
-				{
-					attribute.Values.Add(reader.ReadElementContentAsString());
-				}
-				else
-				{
-					return ReadCustomElement(reader, attribute);
-				}
-				return true; // handled above
-			});
-			return attribute;
-		}
-
-		protected virtual Saml2Attribute ReadSaml2Attribute(XmlReader reader)
-		{
-			var attribute = ReadSamlAttributeType(reader, CreateSaml2AttributeInstance);
-			ReadCustomAttributes(reader, attribute);
-			return attribute;
-		}
-
-		// <element name="AffiliationDescriptor" type="md:AffiliationDescriptorType"/>
-		// <complexType name="AffiliationDescriptorType">
-		//   <sequence>
-		//     <element ref="ds:Signature" minOccurs="0"/>
-		//     <element ref="md:Extensions" minOccurs="0"/>
-		//     <element ref="md:AffiliateMember" maxOccurs="unbounded"/>
-		//     <element ref="md:KeyDescriptor" minOccurs="0" maxOccurs="unbounded"/>
-		//   </sequence>
-		//   <attribute name="affiliationOwnerID" type="md:entityIDType"
-		//     use="required"/>
-		//   <attribute name="validUntil" type="dateTime" use="optional"/>
-		//   <attribute name="cacheDuration" type="duration" use="optional"/>
-		//   <attribute name="ID" type="ID" use="optional"/>
-		//   <anyAttribute namespace="##other" processContents="lax"/>
-		// </complexType>
-		// <element name="AffiliateMember" type="md:entityIDType"/>
-		protected virtual AffiliationDescriptor ReadAffiliationDescriptor(XmlReader reader)
-		{
-			// TODO: this can be signed, need to validate the signature
-			var descriptor = CreateAffiliationDescriptorInstance();
-
-			string affiliationOwnerID = reader.GetAttribute("affiliationOwnerID");
-			if (String.IsNullOrEmpty(affiliationOwnerID))
-			{
-				throw new MetadataSerializationException("AffiliationDescriptor element without affiliationOwnerID attribute");
-			}
-			descriptor.AffiliationOwnerId = new EntityId(affiliationOwnerID);
-			ReadCachedMetadataAttributes(reader, descriptor);
-			descriptor.Id = GetAttribute(reader, "ID", descriptor.Id);
-			ReadCustomAttributes(reader, descriptor);
-
-			ReadChildren(reader, () =>
-			{
-				if (reader.IsStartElement("Extensions", Saml2MetadataNs))
-				{
-					ReadChildrenAsXmlElements(reader, descriptor.Extensions.Add);
-				}
-				else if (reader.IsStartElement("AffiliateMember", Saml2MetadataNs))
-				{
-					string member = reader.ReadElementContentAsString();
-					if (String.IsNullOrEmpty(member))
-					{
-						throw new MetadataSerializationException("AffiliateMember element without content");
-					}
-					descriptor.AffiliateMembers.Add(new EntityId(member));
-				}
-				else if (reader.IsStartElement("KeyDescriptor", Saml2MetadataNs))
-				{
-					descriptor.KeyDescriptors.Add(ReadKeyDescriptor(reader));
-				}
-				else
-				{
-					return ReadCustomElement(reader, descriptor);
-				}
-				return true; // handled above
-			});
-
-			return descriptor;
-		}
-
-		// <element name="AdditionalMetadataLocation"
-		//   type="md:AdditionalMetadataLocationType"/>
-		// <complexType name="AdditionalMetadataLocationType">
-		//   <simpleContent>
-		//     <extension base="anyURI">
-		//       <attribute name="namespace" type="anyURI" use="required"/>
-		//     </extension>
-		//   </simpleContent>
-		// </complexType>
-		protected virtual AdditionalMetadataLocation ReadAdditionalMetadataLocation(XmlReader reader)
-		{
-			var location = CreateAdditionalMetadataLocationInstance();
-			location.Namespace = GetAttribute(reader, "namespace", location.Namespace);
-			if (String.IsNullOrEmpty(location.Namespace))
-			{
-				throw new MetadataSerializationException("AdditionalMetadataLocation element without namespace attribute");
-			}
-			ReadCustomAttributes(reader, location);
-			location.Uri = MakeUri(reader.ReadElementContentAsString());
-			return location;
-		}
-
-		// <element name="EntityDescriptor" type="md:EntityDescriptorType"/>
-		//   <complexType name="EntityDescriptorType">
-		//     <sequence>
-		//       <element ref="ds:Signature" minOccurs="0"/>
-		//       <element ref="md:Extensions" minOccurs="0"/>
-		//       <choice>
-		//         <choice maxOccurs="unbounded">
-		//           <element ref="md:RoleDescriptor"/>
-		//           <element ref="md:IDPSSODescriptor"/>
-		//           <element ref="md:SPSSODescriptor"/>
-		//           <element ref="md:AuthnAuthorityDescriptor"/>
-		//           <element ref="md:AttributeAuthorityDescriptor"/>
-		//           <element ref="md:PDPDescriptor"/>
-		//         </choice>
-		//         <element ref="md:AffiliationDescriptor"/>
-		//       </choice>
-		//       <element ref="md:Organization" minOccurs="0"/>
-		//       <element ref="md:ContactPerson" minOccurs="0" maxOccurs="unbounded"/>
-		//       <element ref="md:AdditionalMetadataLocation" minOccurs="0"
-		//         maxOccurs="unbounded"/>
-		//     </sequence>
-		//     <attribute name="entityID" type="md:entityIDType" use="required"/>
-		//     <attribute name="validUntil" type="dateTime" use="optional"/>
-		//     <attribute name="cacheDuration" type="duration" use="optional"/>
-		//     <attribute name="ID" type="ID" use="optional"/>
-		//     <anyAttribute namespace="##other" processContents="lax"/>
-		//   </complexType>
-		protected virtual EntityDescriptor ReadEntityDescriptor(XmlReader reader, SecurityTokenResolver tokenResolver)
-		{
-			if (reader == null)
-			{
-				throw new ArgumentNullException(nameof(reader));
-			}
-			var descriptor = CreateEntityDescriptorInstance();
-			
-			// This should pick up dsig: elements.  It can also validate the signature,
-			// (although I couldn't see where it's grabbing the original token stream
-			// from the code)
-			var sigReader = new EnvelopedSignatureReader(reader);
-
-			string entityId = reader.GetAttribute("entityID");
-			if (String.IsNullOrEmpty(entityId))
-			{
-				throw new MetadataSerializationException("EntityDescriptor is missing required entityID attribute");
-			}
-			descriptor.EntityId = new EntityId(entityId);
-			ReadCachedMetadataAttributes(reader, descriptor);
-			descriptor.Id = GetAttribute(reader, "ID", descriptor.Id);
-
-			ReadCustomAttributes(reader, descriptor);
-
-			ReadChildren(reader, () =>
-			{
-				if (reader.IsStartElement("RoleDescriptor", Saml2MetadataNs))
-				{
-					string xsi = reader.GetAttribute("xsi", XsiNs);
-					int colonPos = xsi.IndexOf(':');
-					if (colonPos < 0)
-					{
-						throw new MetadataSerializationException($"Invalid RoleDescriptor extension type {xsi}");
-					}
-					string extensionNs = reader.LookupNamespace(xsi.Substring(0, colonPos));
-					string extensionType = xsi.Substring(colonPos + 1);
-
-					RoleDescriptor roleDescriptor = null;
-					if (String.Equals(extensionNs, FedNs, StringComparison.Ordinal))
-					{
-						if (String.Equals(extensionType, "ApplicationServiceType", StringComparison.Ordinal))
-						{
-							descriptor.RoleDescriptors.Add(
-								ReadApplicationServiceDescriptor(reader));
-						}
-						else if (String.Equals(extensionType, "SecurityTokenServiceType", StringComparison.Ordinal))
-						{
-							descriptor.RoleDescriptors.Add(
-								ReadSecurityTokenServiceDescriptor(reader));
-						}
-					}
-					if (roleDescriptor == null)
-					{
-						ReadCustomRoleDescriptor(xsi, reader, descriptor);
-					}
-				}
-				else if (reader.IsStartElement("IDPSSODescriptor", Saml2MetadataNs))
-				{
-					descriptor.RoleDescriptors.Add(
-						ReadIdpSsoDescriptor(reader));
-				}
-				else if (reader.IsStartElement("SPSSODescriptor", Saml2MetadataNs))
-				{
-					descriptor.RoleDescriptors.Add(ReadSpSsoDescriptor(reader));
-				}
-				else if (reader.IsStartElement("AuthnAuthorityDescriptor", Saml2MetadataNs))
-				{
-					descriptor.RoleDescriptors.Add(
-						ReadAuthnAuthorityDescriptor(reader));
-				}
-				else if (reader.IsStartElement("AttributeAuthorityDescriptor", Saml2MetadataNs))
-				{
-					descriptor.RoleDescriptors.Add(
-						ReadAttributeAuthorityDescriptor(reader));
-				}
-				else if (reader.IsStartElement("PDPDescriptor", Saml2MetadataNs))
-				{
-					descriptor.RoleDescriptors.Add(
-						ReadPDPDescriptor(reader));
-				}
-				else if (reader.IsStartElement("AffiliationDescriptor", Saml2MetadataNs))
-				{
-					descriptor.AffiliationDescriptors.Add(
-						ReadAffiliationDescriptor(reader));
-				}
-				else if (reader.IsStartElement("Organization", Saml2MetadataNs))
-				{
-					descriptor.Organization = ReadOrganization(reader);
-				}
-				else if (reader.IsStartElement("ContactPerson", Saml2MetadataNs))
-				{
-					descriptor.Contacts.Add(ReadContactPerson(reader));
-				}
-				else if (reader.IsStartElement("AdditionalMetadataLocation", Saml2MetadataNs))
-				{
-					descriptor.AdditionalMetadataLocations.Add(
-						ReadAdditionalMetadataLocation(reader));
-				}
-				else if (reader.IsStartElement("Extensions", Saml2MetadataNs))
-				{
-					ReadChildrenAsXmlElements(reader, descriptor.Extensions.Add);
-				}
-				else
-				{
-					return ReadCustomElement(reader, descriptor);
-				}
-				return true; // handled above
-			});
-
-			// TODO: something with the signature
-			return descriptor;
-		}
-
-		//  <element name="KeyDescriptor" type="md:KeyDescriptorType"/>
-		//  <complexType name="KeyDescriptorType">
-		//   <sequence>
-		//     <element ref="ds:KeyInfo"/>
-		//     <element ref="md:EncryptionMethod" minOccurs="0"
-		//      maxOccurs="unbounded"/>
-		//   </sequence>
-		//   <attribute name="use" type="md:KeyTypes" use="optional"/>
-		//  </complexType>
-		//  <simpleType name="KeyTypes">
-		//   <restriction base="string">
-		//     <enumeration value="encryption"/>
-		//     <enumeration value="signing"/>
-		//   </restriction>
-		//  </simpleType>
-		//  <element name="EncryptionMethod" type="xenc:EncryptionMethodType"/>
-		protected virtual KeyDescriptor ReadKeyDescriptor(XmlReader reader)
-		{
-			var descriptor = CreateKeyDescriptorInstance();
-			string use = reader.GetAttribute("use");
-			if (!String.IsNullOrEmpty(use))
-			{
-				switch (use)
-				{
-					case "encryption":
-						descriptor.Use = KeyType.Encryption;
-						break;
-					case "signing":
-						descriptor.Use = KeyType.Signing;
-						break;
-					default:
-						throw new MetadataSerializationException($"Unrecognised key use attribute {use}");
-				}
-			}
-			ReadCustomAttributes(reader, descriptor);
-
-			ReadChildren(reader, () =>
-			{
-				if (reader.IsStartElement("KeyInfo", DSigNs))
-				{
-					descriptor.KeyInfo = ReadDSigKeyInfo(reader);
-					// descriptor.KeyIdentifier = MakeSecurityKeyIdentifier(descriptor.KeyInfo);
-				}
-				else if (reader.IsStartElement("EncryptionMethod", Saml2MetadataNs))
-				{
-					descriptor.EncryptionMethods.Add(ReadEncryptionMethod(reader));
-				}
-				else
-				{
-					return ReadCustomElement(reader, descriptor);
-				}
-				return true; // handled above
-			});
-
-			return descriptor;
-		}
-
-		T ReadLocalizedEntry<T>(XmlReader reader, Func<T> createInstance,
-			Action<T, string> setContent) where T : LocalizedEntry
-		{
-			var entry = createInstance();
-			string lang = reader.GetAttribute("lang", XmlNs);
-			if (String.IsNullOrEmpty(lang))
-			{
-				throw new MetadataSerializationException("localized element without xml:lang attribute");
-			}
-			entry.Language = lang;
-			ReadCustomAttributes(reader, entry);
-
-			string value = reader.ReadElementContentAsString();
-			setContent(entry, value);
-			return entry;
-		}
-
-		// <complexType name="localizedNameType">
-		//   <simpleContent>
-		//     <extension base="string">
-		//       <attribute ref="xml:lang" use="required"/>
-		//     </extension>
-		//   </simpleContent>
-		// </complexType>
-		protected virtual LocalizedName ReadLocalizedName(XmlReader reader) =>
-			ReadLocalizedEntry(reader, CreateLocalizedNameInstance, (name, value) => name.Name = value);
-
-		// <complexType name="localizedURIType">
-		//   <simpleContent>
-		//     <extension base="anyURI">
-		//       <attribute ref="xml:lang" use="required"/>
-		//     </extension>
-		//   </simpleContent>
-		// </complexType>
-		protected virtual LocalizedUri ReadLocalizedUri(XmlReader reader) =>
-			ReadLocalizedEntry(reader, CreateLocalizedUriInstance, (uri, value) => uri.Uri = MakeUri(value));
-
-		// Be loose as sometimes the data is a bit lax (e.g. 'www.foo.com')
-		Uri MakeUri(string uri) => new Uri(uri, UriKind.RelativeOrAbsolute);
 
 		public MetadataBase ReadMetadata(Stream stream)
 		{
@@ -2075,211 +2962,6 @@ namespace Sustainsys.Saml2.Tests.Metadata
 				return ReadEntitiesDescriptor(reader, tokenResolver);
 			}
 			throw new MetadataSerializationException($"Unexpected root entity {reader.Name}");
-		}
-
-		// <element name="Organization" type="md:OrganizationType"/>
-		// <complexType name="OrganizationType">
-		//   <sequence>
-		//     <element ref="md:Extensions" minOccurs="0"/>
-		//     <element ref="md:OrganizationName" maxOccurs="unbounded"/>
-		//     <element ref="md:OrganizationDisplayName" maxOccurs="unbounded"/>
-		//     <element ref="md:OrganizationURL" maxOccurs="unbounded"/>
-		//   </sequence>
-		//   <anyAttribute namespace="##other" processContents="lax"/>
-		// </complexType>
-		// <element name="OrganizationName" type="md:localizedNameType"/>
-		// <element name="OrganizationDisplayName" type="md:localizedNameType"/>
-		// <element name="OrganizationURL" type="md:localizedURIType"/>		protected virtual Organization ReadOrganization(XmlReader reader)
-		{
-			var org = CreateOrganizationInstance();
-			ReadCustomAttributes(reader, org);
-			ReadChildren(reader, () =>
-			{
-				if (reader.IsStartElement("Extensions", Saml2MetadataNs))
-				{
-					ReadChildrenAsXmlElements(reader, org.Extensions.Add);
-				}
-				else if (reader.IsStartElement("OrganizationName", Saml2MetadataNs))
-				{
-					org.Names.Add(ReadLocalizedName(reader));
-				}
-				else if (reader.IsStartElement("OrganizationDisplayName", Saml2MetadataNs))
-				{
-					org.DisplayNames.Add(ReadLocalizedName(reader));
-				}
-				else if (reader.IsStartElement("OrganizationURL", Saml2MetadataNs))
-				{
-					org.Urls.Add(ReadLocalizedUri(reader));
-				}
-				else
-				{
-					return ReadCustomElement(reader, org);
-				}
-				return true; // handled above
-			});
-			return org;
-		}
-
-		static bool ParseBooleanValue(string v)
-		{
-			try
-			{
-				return XmlConvert.ToBoolean(v);
-			}
-			catch (FormatException e)
-			{
-				throw new MetadataSerializationException($"Invalid boolean value '{v}'", e);
-			}		}
-
-		static bool? GetOptionalBooleanAttribute(XmlReader reader, string att)
-		{
-			string sv = reader.GetAttribute(att);
-			return String.IsNullOrEmpty(sv) ? (bool?)null : ParseBooleanValue(sv);
-		}
-
-		static bool GetBooleanAttribute(XmlReader reader, string att, bool def)		{			string sv = reader.GetAttribute(att);
-			return String.IsNullOrEmpty(sv) ? def : ParseBooleanValue(sv);
-		}
-		static void ReadOptionalDateAttribute(XmlReader reader, string attribute, Action<DateTime> dateAction)
-		{
-			string sv = reader.GetAttribute(attribute);
-			if (!String.IsNullOrEmpty(sv))
-			{
-				DateTime v;
-				if (!DateTime.TryParse(sv, out v))
-				{
-					throw new MetadataSerializationException(
-						$"Invalid {attribute} attribute value '{sv}'");
-				}
-				dateAction(v);
-			}
-		}
-
-		static void ReadOptionalTimespanAttribute(XmlReader reader, 
-			string attribute, Action<TimeSpan> durationAction)
-		{
-			string sv = reader.GetAttribute(attribute);
-			if (!String.IsNullOrEmpty(sv))
-			{
-				TimeSpan v;
-				try
-				{
-					v = XmlConvert.ToTimeSpan(sv);
-				}
-				catch (FormatException)
-				{
-					throw new MetadataSerializationException(
-						$"Invalid {attribute} attribute value '{sv}'");
-				}
-				durationAction(v);
-			}
-		}
-
-		// <element name="RoleDescriptor" type="md:RoleDescriptorType"/>
-		//   <complexType name = "RoleDescriptorType" abstract="true">
-		//     <sequence>
-		//       <element ref="ds:Signature" minOccurs="0"/>
-		//       <element ref="md:Extensions" minOccurs="0"/>
-		//       <element ref="md:KeyDescriptor" minOccurs="0" maxOccurs="unbounded"/>
-		//       <element ref="md:Organization" minOccurs="0"/>
-		//       <element ref="md:ContactPerson" minOccurs="0" maxOccurs="unbounded"/>
-		//     </sequence>
-		//     <attribute name="ID" type="ID" use="optional"/>
-		//     <attribute name="validUntil" type="dateTime" use="optional"/>
-		//     <attribute name="cacheDuration" type="duration" use="optional"/>
-		//     <attribute name="protocolSupportEnumeration" type="md:anyURIListType"
-		//       use="required"/>
-		//     <attribute name="errorURL" type="anyURI" use="optional"/>
-		//     <anyAttribute namespace="##other" processContents="lax"/>
-		//   </complexType>
-		//   <simpleType name="anyURIListType">
-		//     <list itemType="anyURI"/>
-		//   </simpleType>
-		protected virtual void ReadRoleDescriptorAttributes(XmlReader reader, RoleDescriptor roleDescriptor)
-		{
-			if (reader == null)
-			{
-				throw new ArgumentNullException(nameof(reader));
-			}
-			if (roleDescriptor == null)
-			{
-				throw new ArgumentNullException(nameof(roleDescriptor));
-			}
-
-			// <attribute name="ID" type="ID" use="optional"/>
-			roleDescriptor.Id = GetAttribute(reader, "ID", roleDescriptor.Id);
-
-			// <attribute name="validUntil" type="dateTime" use="optional"/>
-			// <attribute name="cacheDuration" type="duration" use="optional"/>
-			ReadCachedMetadataAttributes(reader, roleDescriptor);
-
-			// <attribute name="protocolSupportEnumeration" type="md:anyURIListType"
-			//   use="required"/>
-			string protocols = reader.GetAttribute("protocolSupportEnumeration") ?? "";
-			foreach (string protocol in protocols.Split(
-				new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries))
-			{
-				roleDescriptor.ProtocolsSupported.Add(MakeUri(protocol));
-			}
-			if (roleDescriptor.ProtocolsSupported.Count == 0)
-			{
-				throw new MetadataSerializationException("RoleDescriptor element with no protocolSupportEnumeration attribute");
-			}
-
-			// <attribute name="errorURL" type="anyURI" use="optional"/>
-			string errorUrl = reader.GetAttribute("errorURL");
-			if (!String.IsNullOrEmpty(errorUrl))
-			{
-				roleDescriptor.ErrorUrl = MakeUri(errorUrl);
-			}
-
-			// <anyAttribute namespace="##other" processContents="lax"/>
-			ReadCustomAttributes(reader, roleDescriptor);
-		}
-
-		protected virtual bool ReadRoleDescriptorElement(XmlReader reader, RoleDescriptor roleDescriptor)
-		{
-			if (reader == null)
-			{
-				throw new ArgumentNullException(nameof(reader));
-			}
-			if (roleDescriptor == null)
-			{
-				throw new ArgumentNullException(nameof(roleDescriptor));
-			}
-
-			// TODO: what about signing??
-			// <element ref="ds:Signature" minOccurs="0"/>
-			if (reader.IsStartElement("Extensions", Saml2MetadataNs))
-			{
-				ReadChildrenAsXmlElements(reader, roleDescriptor.Extensions.Add);
-			}
-			// <element ref="md:ContactPerson" minOccurs="0" maxOccurs="unbounded"/>
-			else if (reader.IsStartElement("ContactPerson", Saml2MetadataNs))
-			{
-				roleDescriptor.Contacts.Add(ReadContactPerson(reader));
-			}
-			// <element ref="md:KeyDescriptor" minOccurs="0" maxOccurs="unbounded"/>
-			else if (reader.IsStartElement("KeyDescriptor", Saml2MetadataNs))
-			{
-				roleDescriptor.Keys.Add(ReadKeyDescriptor(reader));
-			}
-			// <element ref="md:Organization" minOccurs="0"/>
-			else if (reader.IsStartElement("Organization", Saml2MetadataNs))
-			{
-				if (roleDescriptor.Organization != null)
-				{
-					throw new MetadataSerializationException("RoleDescriptor element with more than one Organization child");
-				}
-				roleDescriptor.Organization = ReadOrganization(reader);
-			}
-			// <element ref="md:Extensions" minOccurs="0"/>
-			else
-			{
-				return ReadCustomElement(reader, roleDescriptor);
-			}
-
-			return true; // handled above
 		}
 
 		// <complexType name="SecurityTokenServiceType">
@@ -2674,183 +3356,6 @@ namespace Sustainsys.Saml2.Tests.Metadata
 		protected virtual DiscoveryResponse ReadDiscoveryResponse(XmlReader reader) =>
 			ReadWrappedIndexedEndpoint(reader, CreateDiscoveryResponseInstance);
 
-		// <element name="PDPDescriptor" type="md:PDPDescriptorType"/>
-		// <complexType name="PDPDescriptorType">
-		//   <complexContent>
-		//     <extension base="md:RoleDescriptorType">
-		//       <sequence>
-		//         <element ref="md:AuthzService" maxOccurs="unbounded"/>
-		//         <element ref="md:AssertionIDRequestService" minOccurs="0"
-		//           maxOccurs="unbounded"/>
-		//         <element ref="md:NameIDFormat" minOccurs="0"
-		//           maxOccurs="unbounded"/>
-		//       </sequence>
-		//     </extension>
-		//   </complexContent>
-		// </complexType>
-		// <element name="AuthzService" type="md:EndpointType"/>
-		protected virtual PDPDescriptor ReadPDPDescriptor(XmlReader reader)
-		{
-			var descriptor = CreatePDPDescriptorInstance();
-			ReadRoleDescriptorAttributes(reader, descriptor);
-			ReadCustomAttributes(reader, descriptor);
-
-			ReadChildren(reader, () =>
-			{
-				if (reader.IsStartElement("AuthzService", Saml2MetadataNs))
-				{
-					descriptor.AuthzServices.Add(ReadAuthzService(reader));
-				}
-				else if (reader.IsStartElement("AssertionIDRequestService", Saml2MetadataNs))
-				{
-					descriptor.AssertionIdRequestServices.Add(
-						ReadAssertionIdRequestService(reader));
-				}
-				else if (reader.IsStartElement("NameIDFormat", Saml2MetadataNs))
-				{
-					descriptor.NameIDFormats.Add(ReadNameIDFormat(reader));
-				}
-				else if (ReadRoleDescriptorElement(reader, descriptor))
-				{
-				}
-				else
-				{
-					return ReadCustomElement(reader, descriptor);
-				}
-				return true; // handled above
-			});
-			return descriptor;
-		}
-
-		protected virtual NameIDFormat ReadNameIDFormat(XmlReader reader)
-		{
-			var nameIDFormat = CreateNameIDFormatInstance();
-			string uri = reader.ReadElementContentAsString();
-			if (String.IsNullOrEmpty(uri))
-			{
-				throw new MetadataSerializationException("NameIDFormat element with no uri");
-			}
-			nameIDFormat.Uri = MakeUri(uri);
-			return nameIDFormat;
-		}
-
-
-		// <element name="AuthnAuthorityDescriptor"
-		//   type="md:AuthnAuthorityDescriptorType"/>
-		//   <complexType name="AuthnAuthorityDescriptorType">
-		//     <complexContent>
-		//       <extension base="md:RoleDescriptorType">
-		//         <sequence>
-		//           <element ref="md:AuthnQueryService" maxOccurs="unbounded"/>
-		//           <element ref="md:AssertionIDRequestService" minOccurs="0"
-		//             maxOccurs="unbounded"/>
-		//           <element ref="md:NameIDFormat" minOccurs="0"
-		//             maxOccurs="unbounded"/>
-		//         </sequence>
-		//       </extension>
-		//     </complexContent>
-		//   </complexType>
-		// <element name="AuthnQueryService" type="md:EndpointType"/>
-		protected virtual AuthnAuthorityDescriptor ReadAuthnAuthorityDescriptor(XmlReader reader)
-		{
-			var descriptor = CreateAuthnAuthorityDescriptorInstance();
-			ReadRoleDescriptorAttributes(reader, descriptor);
-			ReadCustomAttributes(reader, descriptor);
-
-			ReadChildren(reader, () =>
-			{
-				if (reader.IsStartElement("AuthnQueryService", Saml2MetadataNs))
-				{
-					descriptor.AuthnQueryServices.Add(ReadAuthnQueryService(reader));
-				}
-				else if (reader.IsStartElement("AssertionIDRequestService", Saml2MetadataNs))
-				{
-					descriptor.AssertionIdRequestServices.Add(ReadAssertionIdRequestService(reader));
-				}
-				else if (reader.IsStartElement("NameIDFormat", Saml2MetadataNs))
-				{
-					descriptor.NameIDFormats.Add(ReadNameIDFormat(reader));
-				}
-				else if (ReadRoleDescriptorElement(reader, descriptor))
-				{
-				}
-				else
-				{
-					return ReadCustomElement(reader, descriptor);
-				}
-				return true; // handled above
-			});
-			return descriptor;
-		}
-
-		protected virtual AttributeProfile ReadAttributeProfile(XmlReader reader)
-		{
-			var profile = CreateAttributeProfileInstance();
-			ReadCustomAttributes(reader, profile);
-			profile.Uri = MakeUri(reader.ReadElementContentAsString());
-			return profile;
-		}
-
-		// <element name="AttributeAuthorityDescriptor"
-		//   type="md:AttributeAuthorityDescriptorType"/>
-		//   <complexType name="AttributeAuthorityDescriptorType">
-		//     <complexContent>
-		//       <extension base="md:RoleDescriptorType">
-		//       <sequence>
-		//         <element ref="md:AttributeService" maxOccurs="unbounded"/>
-		//         <element ref="md:AssertionIDRequestService" minOccurs="0"
-		//           maxOccurs="unbounded"/>
-		//         <element ref="md:NameIDFormat" minOccurs="0"
-		//           maxOccurs="unbounded"/>
-		//         <element ref="md:AttributeProfile" minOccurs="0"
-		//           maxOccurs="unbounded"/>
-		//         <element ref="saml:Attribute" minOccurs="0"
-		//           maxOccurs="unbounded"/>
-		//         </sequence>
-		//       </extension>
-		//     </complexContent>
-		//   </complexType>
-		// <element name="AttributeService" type="md:EndpointType"/>
-		protected virtual AttributeAuthorityDescriptor ReadAttributeAuthorityDescriptor(XmlReader reader)
-		{
-			var descriptor = CreateAttributeAuthorityDescriptorInstance();
-			ReadRoleDescriptorAttributes(reader, descriptor);
-			ReadCustomAttributes(reader, descriptor);
-
-			ReadChildren(reader, () =>
-			{
-				if (reader.IsStartElement("AttributeService", Saml2MetadataNs))
-				{
-					descriptor.AttributeServices.Add(ReadAttributeService(reader));
-				}
-				else if (reader.IsStartElement("AssertionIDRequestService", Saml2MetadataNs))
-				{
-					descriptor.AssertionIdRequestServices.Add(ReadAssertionIdRequestService(reader));
-				}
-				else if (reader.IsStartElement("NameIDFormat", Saml2MetadataNs))
-				{
-					descriptor.NameIDFormats.Add(ReadNameIDFormat(reader));
-				}
-				else if (reader.IsStartElement("AttributeProfile", Saml2MetadataNs))
-				{
-					descriptor.AttributeProfiles.Add(ReadAttributeProfile(reader));
-				}
-				else if (reader.IsStartElement("Attribute", Saml2AssertionNs))
-				{
-					descriptor.Attributes.Add(ReadSaml2Attribute(reader));
-				}
-				else if (ReadRoleDescriptorElement(reader, descriptor))
-				{
-				}
-				else
-				{
-					return ReadCustomElement(reader, descriptor);
-				}
-				return true; // handled above
-			});
-
-			return descriptor;
-		}
 
 		// <complexType name="WebServiceDescriptorType" abstract="true">
 		// 	<complexContent>
