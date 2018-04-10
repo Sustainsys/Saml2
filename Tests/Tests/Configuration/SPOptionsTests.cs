@@ -151,7 +151,7 @@ namespace Sustainsys.Saml2.Tests.Configuration
         {
             var subject = new SPOptions();
 
-            subject.MetadataCacheDuration.Should().Be(new TimeSpan(1, 0, 0));
+            subject.MetadataCacheDuration.Should().Be(new XsdDuration(hours: 1));
             subject.MetadataValidDuration.Should().NotHaveValue();
         }
 

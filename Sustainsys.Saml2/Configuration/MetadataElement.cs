@@ -1,11 +1,36 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Configuration;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 
 namespace Sustainsys.Saml2.Configuration
 {
+	public class XsdDurationConverter : TypeConverter
+	{
+		public override bool CanConvertFrom(ITypeDescriptorContext context, Type sourceType)
+		{
+			return sourceType == typeof(string);
+		}
+
+		public override object ConvertFrom(ITypeDescriptorContext context, CultureInfo culture, object value)
+		{
+			return new XsdDuration((string)value);
+		}
+
+		public override bool CanConvertTo(ITypeDescriptorContext context, Type destinationType)
+		{
+			return destinationType == typeof(string);
+		}
+
+		public override object ConvertTo(ITypeDescriptorContext context, CultureInfo culture, object value, Type destinationType)
+		{
+			return ((XsdDuration)value).ToString();
+		}
+	}
+
     /// <summary>
     /// Metadata configuration.
     /// </summary>
@@ -44,12 +69,13 @@ namespace Sustainsys.Saml2.Configuration
         /// Optional attribute that describes for how long anyone may cache the metadata
         /// presented by the service provider. Defaults to 1 hour.
         /// </summary>
-        [ConfigurationProperty(cacheDuration, IsRequired = false, DefaultValue = "1:0:0")]
-        public TimeSpan CacheDuration
+        [ConfigurationProperty(cacheDuration, IsRequired = false, DefaultValue = "PT1H")]
+		[TypeConverter(typeof(XsdDurationConverter))]
+        public XsdDuration CacheDuration
         {
             get
             {
-                return (TimeSpan)base[cacheDuration];
+                return (XsdDuration)base[cacheDuration];
             }
         }
 

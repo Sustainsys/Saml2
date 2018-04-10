@@ -37,7 +37,7 @@ namespace Sustainsys.Saml2.TestHelpers
             var options = new SPOptions
             {
                 EntityId = new EntityId("https://github.com/SustainsysIT/Saml2"),
-                MetadataCacheDuration = new TimeSpan(0, 0, 42),
+                MetadataCacheDuration = new XsdDuration(seconds: 42),
                 MetadataValidDuration = TimeSpan.FromDays(24),
                 WantAssertionsSigned = true,
                 Organization = org,

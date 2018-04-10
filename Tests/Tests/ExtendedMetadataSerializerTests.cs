@@ -29,7 +29,7 @@ namespace Sustainsys.Saml2.Tests
 
             subject.Should().NotBeNull();
             subject.ValidUntil.Should().Be(new DateTime(2100, 01, 02, 14, 42, 43, DateTimeKind.Utc));
-            subject.CacheDuration.Should().NotHaveValue();
+			subject.CacheDuration.Should().BeNull();
         }
 
         [TestMethod]
@@ -46,7 +46,7 @@ namespace Sustainsys.Saml2.Tests
 
             subject.Should().NotBeNull();
             subject.ValidUntil.Should().NotHaveValue();
-            subject.CacheDuration.Should().Be(new TimeSpan(0, 42, 0));
+            subject.CacheDuration.Should().Be(new XsdDuration(minutes: 42));
         }
 
         [TestMethod]
@@ -66,7 +66,7 @@ namespace Sustainsys.Saml2.Tests
 
             subject.Should().NotBeNull();
             subject.ValidUntil.Should().Be(new DateTime(2100, 01, 02, 14, 42, 43, DateTimeKind.Utc));
-            subject.CacheDuration.Should().NotHaveValue();
+			subject.CacheDuration.Should().BeNull();
         }
 
         [TestMethod]
@@ -86,22 +86,22 @@ namespace Sustainsys.Saml2.Tests
 
             subject.Should().NotBeNull();
             subject.ValidUntil.Should().NotHaveValue();
-            subject.CacheDuration.Should().Be(new TimeSpan(0, 15, 0));
+            subject.CacheDuration.Should().Be(new XsdDuration(minutes: 15));
         }
 
         [TestMethod]
         public void ExtendedMetadataSerializer_Write_EntitiesDescriptorCacheDuration()
         {
-            var metadata = new EntitiesDescriptor
-            {
-                Name = "Federation Name",
-                CacheDuration = new TimeSpan(0, 42, 0)
+			var metadata = new EntitiesDescriptor
+			{
+				Name = "Federation Name",
+				CacheDuration = new XsdDuration(minutes: 42)
             };
 
-            var entity = new EntityDescriptor
-                {
-                    EntityId = new EntityId("http://some.entity.example.com")
-                };
+			var entity = new EntityDescriptor
+			{
+				EntityId = new EntityId("http://some.entity.example.com")
+			};
 
             var idpSsoDescriptor = new IdpSsoDescriptor();
             idpSsoDescriptor.ProtocolsSupported.Add(new Uri("urn:oasis:names:tc:SAML:2.0:protocol"));

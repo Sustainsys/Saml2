@@ -18,7 +18,7 @@ namespace Sustainsys.Saml2.Tests.Metadata
             var metadata = new EntityDescriptor
             {
                 EntityId = new EntityId("http://idp.example.com/metadata"),
-                CacheDuration = new TimeSpan(1, 0, 0)
+                CacheDuration = new XsdDuration(hours: 1)
             };
 
             var idpSsoDescriptor = new IdpSsoDescriptor();

@@ -6,7 +6,7 @@ namespace Sustainsys.Saml2.Metadata
 {
     public static class ContactTypeHelpers
     {
-		public static ContactType ParseContactType(string contactType)
+		public static ContactType Parse(string contactType)
 		{
 			if (contactType == null)
 			{
@@ -27,6 +27,26 @@ namespace Sustainsys.Saml2.Metadata
 					return ContactType.Other;
 				default:
 					throw new FormatException($"Unknown contactType value '{contactType}'");
+			}
+		}
+	
+		public static string ToString(ContactType contactType)
+		{
+			switch (contactType)
+			{
+				case ContactType.Technical:
+					return "technical";
+				case ContactType.Support:
+					return "support";
+				case ContactType.Administrative:
+					return "administrative";
+				case ContactType.Billing:
+					return "billing";
+				case ContactType.Other:
+					return "other";
+				default:
+					throw new InvalidOperationException(
+						$"Unknown ContactType enumeration value {contactType}");
 			}
 		}
 	}

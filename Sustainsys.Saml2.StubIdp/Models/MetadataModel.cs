@@ -18,7 +18,7 @@ namespace Sustainsys.Saml2.StubIdp.Models
 
             if (includeCacheDuration)
             {
-                metadata.CacheDuration = new TimeSpan(0, 15, 0);
+				metadata.CacheDuration = new XsdDuration(minutes: 15);
                 metadata.ValidUntil = DateTime.UtcNow.AddDays(1);
             }
 
@@ -64,10 +64,10 @@ namespace Sustainsys.Saml2.StubIdp.Models
 
         public static EntitiesDescriptor CreateFederationMetadata()
         {
-            var metadata = new EntitiesDescriptor
-            {
-                Name = "Sustainsys.Saml2.StubIdp Federation",
-                CacheDuration = new TimeSpan(0, 15, 0),
+			var metadata = new EntitiesDescriptor
+			{
+				Name = "Sustainsys.Saml2.StubIdp Federation",
+				CacheDuration = new XsdDuration(minutes: 15),
                 ValidUntil = DateTime.UtcNow.AddDays(1)
             };
 

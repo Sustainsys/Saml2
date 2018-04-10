@@ -15,7 +15,7 @@ namespace Sustainsys.Saml2.Metadata
 			new Collection<KeyDescriptor>();
 		public EntityId AffiliationOwnerId { get; set; }
 		public DateTime? ValidUntil { get; set; }
-		public TimeSpan? CacheDuration { get; set; }
+		public XsdDuration? CacheDuration { get; set; }
 		public string Id { get; set; }
     }
 }

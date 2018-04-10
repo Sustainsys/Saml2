@@ -15,7 +15,7 @@ namespace Sustainsys.Saml2.Metadata
 		public ICollection<KeyDescriptor> Keys { get; private set; }
 			= new Collection<KeyDescriptor>();
 		public Organization Organization { get; set; }
-		public TimeSpan? CacheDuration { get; set; }
+		public XsdDuration? CacheDuration { get; set; }
 		public DateTime? ValidUntil { get; set; }
 		public ICollection<XmlElement> Extensions { get; private set; } =
 			new Collection<XmlElement>();

@@ -15,7 +15,7 @@ namespace Sustainsys.Saml2.Metadata
 		public Organization Organization { get; set; }
 		public ICollection<RoleDescriptor> RoleDescriptors { get; private set; } =
 			new Collection<RoleDescriptor>();
-		public TimeSpan? CacheDuration { get; set; }
+		public XsdDuration? CacheDuration { get; set; }
 		public DateTime? ValidUntil { get; set; }
 		public ICollection<AffiliationDescriptor> AffiliationDescriptors { get; private set; } =
 			new Collection<AffiliationDescriptor>();

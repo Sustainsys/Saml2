@@ -31,12 +31,13 @@ namespace Sustainsys.Saml2.Metadata
             return delay;
         }
 
-        public static readonly TimeSpan DefaultMetadataCacheDuration = new TimeSpan(1, 0, 0);
+        public static readonly XsdDuration DefaultMetadataCacheDuration = new XsdDuration(hours: 1);
 
         internal static DateTime CalculateMetadataValidUntil(this ICachedMetadata metadata)
         {
             return metadata.ValidUntil ??
-                   DateTime.UtcNow.Add(metadata.CacheDuration ?? DefaultMetadataCacheDuration);
+                   DateTime.UtcNow.Add((metadata.CacheDuration ?? DefaultMetadataCacheDuration)
+					.ToTimeSpan());
         }
     }
 }

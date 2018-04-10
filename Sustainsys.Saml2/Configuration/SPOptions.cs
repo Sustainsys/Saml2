@@ -23,7 +23,7 @@ namespace Sustainsys.Saml2.Configuration
         public SPOptions()
         {
             systemIdentityModelIdentityConfiguration = new IdentityConfiguration(false);
-            MetadataCacheDuration = new TimeSpan(1, 0, 0);
+			MetadataCacheDuration = new XsdDuration(hours: 1);
             Compatibility = new Compatibility();
             OutboundSigningAlgorithm = XmlHelpers.GetDefaultSigningAlgorithmName();
             MinIncomingSigningAlgorithm = XmlHelpers.GetDefaultSigningAlgorithmName();
@@ -82,7 +82,7 @@ namespace Sustainsys.Saml2.Configuration
         /// Recommendation of cache refresh interval to those who reads our
         /// metadata.
         /// </summary>
-        public TimeSpan MetadataCacheDuration { get; set; }
+        public XsdDuration MetadataCacheDuration { get; set; }
 
         /// <summary>
         /// Maximum validity duration after fetch for those who reads our

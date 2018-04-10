@@ -209,6 +209,9 @@ namespace Sustainsys.Saml2.Metadata
 		protected virtual SpSsoDescriptor CreateSpSsoDescriptorInstance() =>
 			new SpSsoDescriptor();
 
+		protected virtual XEncEncryptionMethod CreateXEncEncryptionMethodInstance() =>
+			new XEncEncryptionMethod();
+
 		// <complexType name="ApplicationServiceType">
 		//   <extension base="fed:WebServiceDescriptorType">
 		// 	   <sequence>
@@ -297,7 +300,7 @@ namespace Sustainsys.Saml2.Metadata
 			string contactType = reader.GetAttribute("contactType");
 			try
 			{
-				person.Type = ContactTypeHelpers.ParseContactType(contactType);
+				person.Type = ContactTypeHelpers.Parse(contactType);
 			}
 			catch (FormatException)
 			{
@@ -1066,18 +1069,22 @@ namespace Sustainsys.Saml2.Metadata
 			return info;
 		}
 
-		// <complexType name="EncryptionMethodType" mixed="true">
-		//   <sequence>
-		//     <element name="KeySize" minOccurs="0" type="xenc:KeySizeType"/>
-		//     <element name="OAEPparams" minOccurs="0" type="base64Binary"/>
-		//     <any namespace="##other" minOccurs="0" maxOccurs="unbounded"/>
-		//   </sequence>
-		//   <attribute name="Algorithm" type="anyURI" use="required"/>
-		// </complexType>
-		//
-		// <simpleType name="KeySizeType">
-		//   <restriction base="integer"/>
-		// </simpleType>
+		int ReadXEncKeySize(XmlReader reader)
+		{
+			try
+			{
+				return reader.ReadElementContentAsInt();
+			}
+			catch (System.Xml.XmlException e)
+			{
+				throw new MetadataSerializationException(
+					"EncryptedMethodType element with invalid KeySize element", e);
+			}
+		}
+
+		// Loosely defined in
+		// http://docs.oasis-open.org/security/saml/Post2.0/sstc-saml-metadata-algsupport-v1.0-cs01.html
+		// 
 		protected virtual EncryptionMethod ReadEncryptionMethod(XmlReader reader)
 		{
 			var methodType = CreateEncryptionMethodInstance();
@@ -1094,14 +1101,7 @@ namespace Sustainsys.Saml2.Metadata
 			{
 				if (reader.IsStartElement("KeySize", XEncNs))
 				{
-					try
-					{
-						methodType.KeySize = reader.ReadElementContentAsInt();
-					}
-					catch (System.Xml.XmlException e)
-					{
-						throw new MetadataSerializationException("EncryptedMethodType element with invalid KeySize element", e);
-					}
+					methodType.KeySize = ReadXEncKeySize(reader);
 				}
 				else if (reader.IsStartElement("OAEPparams", XEncNs))
 				{
@@ -1117,6 +1117,50 @@ namespace Sustainsys.Saml2.Metadata
 			return methodType;
 		}
 
+		// <complexType name="EncryptionMethodType" mixed="true">
+		//   <sequence>
+		//     <element name="KeySize" minOccurs="0" type="xenc:KeySizeType"/>
+		//     <element name="OAEPparams" minOccurs="0" type="base64Binary"/>
+		//     <any namespace="##other" minOccurs="0" maxOccurs="unbounded"/>
+		//   </sequence>
+		//   <attribute name="Algorithm" type="anyURI" use="required"/>
+		// </complexType>
+		//
+		// <simpleType name="KeySizeType">
+		//   <restriction base="integer"/>
+		// </simpleType>
+		protected virtual XEncEncryptionMethod ReadXEncEncryptionMethod(XmlReader reader)
+		{
+			var methodType = CreateXEncEncryptionMethodInstance();
+			string sv = reader.GetAttribute("Algorithm");
+			if (String.IsNullOrEmpty(sv))
+			{
+				throw new MetadataSerializationException(
+					"xenc:EncryptionMethod element is missing the required Algorithm attribute");
+			}
+			methodType.Algorithm = new Uri(sv);
+
+			ReadCustomAttributes(reader, methodType);
+
+			ReadChildren(reader, () =>
+			{
+				if (reader.IsStartElement("KeySize", XEncNs))
+				{
+					methodType.KeySize = ReadXEncKeySize(reader);
+				}
+				else if (reader.IsStartElement("OAEPparams", XEncNs))
+				{
+					methodType.OAEPparams = ReadBase64(reader);
+				}
+				else
+				{
+					return ReadCustomElement(reader, methodType);
+				}
+				return true; // handled above
+			});
+
+			return methodType;
+		}
 
 		// <element name="CipherReference" type="xenc:CipherReferenceType"/>
 		// 
@@ -1265,7 +1309,7 @@ namespace Sustainsys.Saml2.Metadata
 			{
 				if (reader.IsStartElement("EncryptionMethod", XEncNs))
 				{
-					data.EncryptionMethod = ReadEncryptionMethod(reader);
+					data.EncryptionMethod = ReadXEncEncryptionMethod(reader);
 				}
 				else if (reader.IsStartElement("KeyInfo", DSigNs))
 				{
@@ -2224,17 +2268,13 @@ namespace Sustainsys.Saml2.Metadata
 		}
 
 		static void ReadOptionalTimespanAttribute(XmlReader reader, 
-			string attribute, Action<TimeSpan> durationAction)
+			string attribute, Action<XsdDuration> durationAction)
 		{
 			string sv = reader.GetAttribute(attribute);
 			if (!String.IsNullOrEmpty(sv))
 			{
-				TimeSpan v;
-				try
-				{
-					v = XmlConvert.ToTimeSpan(sv);
-				}
-				catch (FormatException)
+				XsdDuration v;
+				if (!XsdDuration.TryParse(sv, out v))
 				{
 					throw new MetadataSerializationException(
 						$"Invalid {attribute} attribute value '{sv}'");
@@ -3323,15 +3363,25 @@ namespace Sustainsys.Saml2.Metadata
 			writer.WriteStartElement("wsa", "EndpointReference", WsaNs);
 			WriteCustomAttributes(writer, endpointReference);
 			writer.WriteStartElement("wsa", "Address", WsaNs);
-			writer.WriteStartElement(endpointReference.Uri.ToString());
+			writer.WriteString(endpointReference.Uri.ToString());
 			writer.WriteEndElement();
 
-			WriteWrappedElements(writer, "wsa", "Metadata", WsaNs,
-				endpointReference.Metadata);
 			WriteWrappedElements(writer, "wsa", "ReferenceProperties", WsaNs,
 				endpointReference.ReferenceProperties);
 			WriteWrappedElements(writer, "wsa", "ReferenceParameters", WsaNs,
 				endpointReference.ReferenceParameters);
+			if (!String.IsNullOrEmpty(endpointReference.PortType))
+			{
+				writer.WriteStartElement("wsa", "PortType", WsaNs);
+				writer.WriteString(endpointReference.PortType);
+				writer.WriteEndElement();
+			}
+			if (endpointReference.ServiceName != null)
+			{
+				WriteServiceName(writer, endpointReference.ServiceName);
+			}
+			WriteWrappedElements(writer, "wsa", "Metadata", WsaNs,
+				endpointReference.Metadata);
 			if (endpointReference.Policies.Count > 0)
 			{
 				foreach (var polElt in endpointReference.Policies)
@@ -3343,13 +3393,6 @@ namespace Sustainsys.Saml2.Metadata
 			}
 			WriteWrappedElements(writer, "wsp", "Policy", WspNs,
 				endpointReference.Policies);
-			if (!String.IsNullOrEmpty(endpointReference.PortType))
-			{
-				writer.WriteStartElement("wsa", "PortType", WsaNs);
-				writer.WriteString(endpointReference.PortType);
-				writer.WriteEndElement();
-			}
-			WriteServiceName(writer, endpointReference.ServiceName);
 			WriteCustomElements(writer, endpointReference);
 
 			writer.WriteEndElement();
@@ -3388,30 +3431,10 @@ namespace Sustainsys.Saml2.Metadata
 			WriteEndpointReferences(writer, "ApplicationServiceEndpoint",
 				FedNs, appService.Endpoints);
 			WriteEndpointReferences(writer, "SingleSignOutNotificationEndpoint",
-				FedNs, appService.Endpoints);
+				FedNs, appService.SingleSignOutEndpoints);
 			WriteEndpointReferences(writer, "PassiveRequestorEndpoint",
-				FedNs, appService.Endpoints);
+				FedNs, appService.PassiveRequestorEndpoints);
 			writer.WriteEndElement();
-		}
-
-		static string GetContactTypeString(ContactType contactType)
-		{
-			switch (contactType)
-			{
-				case ContactType.Technical:
-					return "technical";
-				case ContactType.Support:
-					return "support";
-				case ContactType.Administrative:
-					return "administrative";
-				case ContactType.Billing:
-					return "billing";
-				case ContactType.Other:
-					return "other";
-				default:
-					throw new InvalidOperationException(
-						$"Unknown ContactType enumeration value {contactType}");
-			}
 		}
 
 		static void WriteStringElementIfPresent(XmlWriter writer, string elName,
@@ -3480,9 +3503,10 @@ namespace Sustainsys.Saml2.Metadata
 			}
 
 			writer.WriteStartElement("ContactPerson", Saml2MetadataNs);
-			writer.WriteAttributeString("contactType", GetContactTypeString(contactPerson.Type));
+			writer.WriteAttributeString("contactType", ContactTypeHelpers.ToString(contactPerson.Type));
 			WriteCustomAttributes(writer, contactPerson);
-
+			WriteWrappedElements(writer, null, "Extensions", Saml2MetadataNs,
+				contactPerson.Extensions);
 			WriteStringElementIfPresent(writer, "Company", Saml2MetadataNs, contactPerson.Company);
 			WriteStringElementIfPresent(writer, "GivenName", Saml2MetadataNs, contactPerson.GivenName);
 			WriteStringElementIfPresent(writer, "SurName", Saml2MetadataNs, contactPerson.Surname);
@@ -3583,7 +3607,16 @@ namespace Sustainsys.Saml2.Metadata
 			}
 		}
 
-		protected virtual void WriteEncryptionMethod(XmlWriter writer, EncryptionMethod method)
+		void WriteXEncKeySize(XmlWriter writer, int keySize)
+		{
+			writer.WriteStartElement("KeySize", XEncNs);
+			writer.WriteString(keySize.ToString());
+			writer.WriteEndElement();
+		}
+
+		// md:EncryptionMethod and xenc:EncryptionMethod are virtually identical, but have different namespaces
+		// md:EncryptionMethod is not well defined so I've kept it as a separate type for now
+		protected virtual void WriteXEncEncryptionMethod(XmlWriter writer, XEncEncryptionMethod method)
 		{
 			if (writer == null)
 			{
@@ -3600,9 +3633,32 @@ namespace Sustainsys.Saml2.Metadata
 
 			if (method.KeySize != 0)
 			{
-				writer.WriteStartElement("KeySize", XEncNs);
-				writer.WriteString(method.KeySize.ToString());
-				writer.WriteEndElement();
+				WriteXEncKeySize(writer, method.KeySize);
+			}
+			WriteBase64Element(writer, "OAEPparams", XEncNs, method.OAEPparams);
+
+			WriteCustomElements(writer, method);
+			writer.WriteEndElement();
+		}
+
+		protected virtual void WriteEncryptionMethod(XmlWriter writer, EncryptionMethod method)
+		{
+			if (writer == null)
+			{
+				throw new ArgumentNullException(nameof(writer));
+			}
+			if (method == null)
+			{
+				throw new ArgumentNullException(nameof(method));
+			}
+
+			writer.WriteStartElement("EncryptionMethod", Saml2MetadataNs);
+			writer.WriteAttributeString("Algorithm", method.Algorithm.ToString());
+			WriteCustomAttributes(writer, method);
+
+			if (method.KeySize != 0)
+			{
+				WriteXEncKeySize(writer, method.KeySize);
 			}
 			WriteBase64Element(writer, "OAEPparams", XEncNs, method.OAEPparams);
 
@@ -3666,8 +3722,8 @@ namespace Sustainsys.Saml2.Metadata
 			WriteBase64Element(writer, "P", DSigNs, dsa.Parameters.P);
 			WriteBase64Element(writer, "Q", DSigNs, dsa.Parameters.Q);
 			WriteBase64Element(writer, "G", DSigNs, dsa.Parameters.G);
-			WriteBase64Element(writer, "J", DSigNs, dsa.Parameters.J);
 			WriteBase64Element(writer, "Y", DSigNs, dsa.Parameters.Y);
+			WriteBase64Element(writer, "J", DSigNs, dsa.Parameters.J);
 			WriteBase64Element(writer, "Seed", DSigNs, dsa.Parameters.Seed);
 			WriteBase64Element(writer, "PgenCounter", DSigNs,
 				GetIntAsBigEndian(dsa.Parameters.Counter));
@@ -3690,13 +3746,16 @@ namespace Sustainsys.Saml2.Metadata
 			writer.WriteStartElement("ECKeyValue", DSig11Ns);
 			WriteCustomAttributes(writer, ec);
 
-			WriteStringElement(writer, "NamedCurve", DSig11Ns,
-				"urn:oid:" + ec.Parameters.Curve.Oid.ToString());
-
-			writer.WriteStartElement("PublicKey", DSig11Ns);
-			WriteBase64Element(writer, "X", DSig11Ns, ec.Parameters.Q.X);
-			WriteBase64Element(writer, "Y", DSig11Ns, ec.Parameters.Q.Y);
+			writer.WriteStartElement("NamedCurve", DSig11Ns);
+			writer.WriteAttributeString("URI", "urn:oid:" + ec.Parameters.Curve.Oid.Value);
 			writer.WriteEndElement();
+
+			byte[] data = new byte[ec.Parameters.Q.X.Length + ec.Parameters.Q.Y.Length + 1];
+			data[0] = 4;
+			Array.Copy(ec.Parameters.Q.X, 0, data, 1, ec.Parameters.Q.X.Length);
+			Array.Copy(ec.Parameters.Q.Y, 0, data, 1 + ec.Parameters.Q.X.Length,
+				ec.Parameters.Q.Y.Length);
+			WriteBase64Element(writer, "PublicKey", DSig11Ns, data);
 
 			WriteCustomElements(writer, ec);
 			writer.WriteEndElement();
@@ -3765,7 +3824,7 @@ namespace Sustainsys.Saml2.Metadata
 
 			writer.WriteStartElement("X509IssuerSerial", DSigNs);
 			WriteCustomAttributes(writer, issuerSerial);
-			WriteStringElement(writer, "X509IssuerSerial", DSigNs, issuerSerial.Name);
+			WriteStringElement(writer, "X509IssuerName", DSigNs, issuerSerial.Name);
 			WriteStringElement(writer, "X509SerialNumber", DSigNs, issuerSerial.Serial);
 			WriteCustomElements(writer, issuerSerial);
 			writer.WriteEndElement();
@@ -3937,7 +3996,7 @@ namespace Sustainsys.Saml2.Metadata
 
 			writer.WriteStartElement("EncryptionProperty", XEncNs);
 			WriteUriAttributeIfPresent(writer, "Target", null, property.Target);
-			WriteStringAttributeIfPresent(writer, "Target", null, property.Id);
+			WriteStringAttributeIfPresent(writer, "Id", null, property.Id);
 			WriteCustomAttributes(writer, property);
 			WriteCustomElements(writer, property);
 			writer.WriteEndElement();
@@ -3976,12 +4035,12 @@ namespace Sustainsys.Saml2.Metadata
 			WriteStringAttributeIfPresent(writer, "Id", null, data.Id);
 			WriteUriAttributeIfPresent(writer, "Type", null, data.Type);
 			WriteStringAttributeIfPresent(writer, "MimeType", null, data.MimeType);
-			WriteStringAttributeIfPresent(writer, "Encoding", null, data.MimeType);
+			WriteUriAttributeIfPresent(writer, "Encoding", null, data.Encoding);
 			WriteCustomAttributes(writer, data);
 
 			if (data.EncryptionMethod != null)
 			{
-				WriteEncryptionMethod(writer, data.EncryptionMethod);
+				WriteXEncEncryptionMethod(writer, data.EncryptionMethod);
 			}
 			if (data.KeyInfo != null)
 			{
@@ -4012,7 +4071,10 @@ namespace Sustainsys.Saml2.Metadata
 			}
 
 			writer.WriteStartElement("EncryptedValue", AuthNs);
-			writer.WriteAttributeString("DecryptionCondition", value.DecryptionCondition.ToString());
+			if (value.DecryptionCondition != null)
+			{
+				writer.WriteAttributeString("DecryptionCondition", value.DecryptionCondition.ToString());
+			}
 			WriteCustomAttributes(writer, value);
 
 			WriteEncryptedData(writer, value.EncryptedData);
@@ -4221,7 +4283,7 @@ namespace Sustainsys.Saml2.Metadata
 			}
 
 			writer.WriteStartElement("ClaimType", AuthNs);
-			writer.WriteAttributeString("@Uri", claim.ClaimType);
+			writer.WriteAttributeString("Uri", claim.ClaimType);
 			WriteBooleanAttribute(writer, "Optional", null, claim.Optional);
 			WriteCustomAttributes(writer, claim);
 
@@ -4238,8 +4300,14 @@ namespace Sustainsys.Saml2.Metadata
 				}
 				writer.WriteEndElement();
 			}
-			WriteEncryptedValue(writer, claim.EncryptedValue);
-			WriteConstrainedValue(writer, claim.ConstrainedValue);
+			if (claim.EncryptedValue != null)
+			{
+				WriteEncryptedValue(writer, claim.EncryptedValue);
+			}
+			if (claim.ConstrainedValue != null)
+			{
+				WriteConstrainedValue(writer, claim.ConstrainedValue);
+			}
 			WriteCustomElements(writer, claim);
 			writer.WriteEndElement();
 		}
@@ -4249,7 +4317,7 @@ namespace Sustainsys.Saml2.Metadata
 			if (cachedMetadata.CacheDuration.HasValue)
 			{
 				writer.WriteAttributeString("cacheDuration",
-					XmlConvert.ToString(cachedMetadata.CacheDuration.Value));
+					cachedMetadata.CacheDuration.Value.ToString());
 			}
 			if (cachedMetadata.ValidUntil.HasValue)
 			{
@@ -4280,8 +4348,8 @@ namespace Sustainsys.Saml2.Metadata
 
 			writer.WriteStartElement("EntitiesDescriptor", Saml2MetadataNs);
 			WriteCachedMetadataAttributes(writer, entitiesDescriptor);
-			WriteStringAttributeIfPresent(writer, "ID", Saml2MetadataNs, entitiesDescriptor.Id);
-			WriteStringAttributeIfPresent(writer, "Name", Saml2MetadataNs, entitiesDescriptor.Name);
+			WriteStringAttributeIfPresent(writer, "ID", null, entitiesDescriptor.Id);
+			WriteStringAttributeIfPresent(writer, "Name", null, entitiesDescriptor.Name);
 			WriteCustomAttributes(writer, entitiesDescriptor);
 
 			if (signatureWriter != null)
@@ -4385,7 +4453,7 @@ namespace Sustainsys.Saml2.Metadata
 				WriteEndpoint(writer, service, "AttributeService", Saml2MetadataNs);
 			}
 
-			foreach (var ars in descriptor.AttributeServices)
+			foreach (var ars in descriptor.AssertionIdRequestServices)
 			{
 				WriteEndpoint(writer, ars, "AssertionIDRequestService", Saml2MetadataNs);
 			}
@@ -4873,12 +4941,13 @@ namespace Sustainsys.Saml2.Metadata
 				throw new ArgumentNullException(nameof(descriptor));
 			}
 
-			writer.WriteStartElement("SecurityTokenServiceType", FedNs);
+			writer.WriteStartElement("RoleDescriptor", Saml2MetadataNs);
+			writer.WriteAttributeString("xsi", "type", XsiNs, "fed:SecurityTokenServiceType");
 			WriteWebServiceDescriptorAttributes(writer, descriptor);
 			WriteCustomAttributes(writer, descriptor);
 
 			WriteWebServiceDescriptorElements(writer, descriptor);
-			WriteEndpointReferences(writer, "SingleSignOutSubscriptionEndpoint",
+			WriteEndpointReferences(writer, "SecurityTokenServiceEndpoint",
 				FedNs, descriptor.SecurityTokenServiceEndpoints);
 			WriteEndpointReferences(writer, "SingleSignOutSubscriptionEndpoint",
 				FedNs, descriptor.SingleSignOutSubscriptionEndpoints);
@@ -5158,7 +5227,7 @@ namespace Sustainsys.Saml2.Metadata
 				throw new ArgumentNullException(nameof(attribute));
 			}
 
-			writer.WriteStartElement("attribute", Saml2AssertionNs);
+			writer.WriteStartElement("Attribute", Saml2AssertionNs);
 			WriteAttributeAttributes(writer, attribute);
 			WriteAttributeElements(writer, attribute);
 			writer.WriteEndElement();

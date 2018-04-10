@@ -16,6 +16,6 @@ namespace Sustainsys.Saml2.Metadata
 		public string Id { get; set; }
 		public string Name { get; set; }
 		public DateTime? ValidUntil { get; set; }
-		public TimeSpan? CacheDuration { get; set; }
+		public XsdDuration? CacheDuration { get; set; }
     }
 }

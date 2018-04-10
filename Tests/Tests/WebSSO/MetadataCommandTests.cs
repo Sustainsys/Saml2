@@ -173,7 +173,7 @@ namespace Sustainsys.Saml2.Tests.WebSso
 
             options.Notifications.MetadataCreated = (md, urls) =>
             {
-                md.CacheDuration = new TimeSpan(0, 0, 17);
+                md.CacheDuration = new XsdDuration(seconds: 17);
                 urls.ApplicationUrl.Host.Should().Be("localhost");
             };
 

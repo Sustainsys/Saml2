@@ -782,7 +782,7 @@ namespace Sustainsys.Saml2.Tests
             subject.LoadMetadata.Should().BeTrue();
             subject.MetadataLocation.Should().Be("http://localhost:13428/idpMetadataOtherEntityId");
             subject.MetadataValidUntil.Should().BeCloseTo(
-                DateTime.UtcNow.Add(MetadataRefreshScheduler.DefaultMetadataCacheDuration), precision: 100);
+                DateTime.UtcNow.Add(MetadataRefreshScheduler.DefaultMetadataCacheDuration.ToTimeSpan()), precision: 100);
             subject.SingleSignOnServiceUrl.Should().Be("http://wrong.entityid.example.com/acs");
             subject.WantAuthnRequestsSigned.Should().Be(true, "WantAuthnRequestsSigned should have been loaded from metadata");
 

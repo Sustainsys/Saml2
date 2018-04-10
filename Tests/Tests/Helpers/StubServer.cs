@@ -457,7 +457,11 @@ entityID=""http://localhost:13428/idpMetadataVeryShortCacheDuration"" cacheDurat
         [AssemblyCleanup]
         public static void Stop()
         {
-            host.Dispose();
+			if (host != null)
+			{
+				host.Dispose();
+				host = null;
+			}
         }
     }
 }

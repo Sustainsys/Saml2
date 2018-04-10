@@ -1,19 +1,20 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using FluentAssertions;
+﻿using FluentAssertions;
+using Microsoft.IdentityModel.Tokens.Saml2;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Sustainsys.Saml2.Metadata;
+using Sustainsys.Saml2.Selectors;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Numerics;
+using System.Reflection;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Xml;
-using Sustainsys.Saml2.Metadata;
-using Sustainsys.Saml2.Selectors;
-using Microsoft.IdentityModel.Tokens.Saml2;
 
 namespace Sustainsys.Saml2.Tests.Metadata
 {
@@ -99,6 +100,9 @@ namespace Sustainsys.Saml2.Tests.Metadata
 
 		public EncryptionMethod TestCreateEncryptionMethodInstance() =>
 			base.CreateEncryptionMethodInstance();
+
+		public XEncEncryptionMethod TestCreateXEncEncryptionMethodInstance() =>
+			base.CreateXEncEncryptionMethodInstance();
 
 		public Endpoint TestCreateEndpointInstance() =>
 			base.CreateEndpointInstance();
@@ -208,6 +212,9 @@ namespace Sustainsys.Saml2.Tests.Metadata
 		public EncryptionMethod TestReadEncryptionMethod(XmlReader reader) =>
 			base.ReadEncryptionMethod(reader);
 
+		public XEncEncryptionMethod TestReadXEncEncryptionMethod(XmlReader reader) =>
+			base.ReadXEncEncryptionMethod(reader);
+
 		public CipherReference TestReadCipherReference(XmlReader reader) =>
 			base.ReadCipherReference(reader);
 
@@ -288,6 +295,188 @@ namespace Sustainsys.Saml2.Tests.Metadata
 
 		public SpSsoDescriptor TestReadSpSsoDescriptor(XmlReader reader) =>
 			base.ReadSpSsoDescriptor(reader);
+
+		public void TestWriteApplicationServiceDescriptor(XmlWriter writer,
+			ApplicationServiceDescriptor appService) =>
+			base.WriteApplicationServiceDescriptor(writer, appService);
+
+		public void TestWriteContactPerson(XmlWriter writer, ContactPerson contactPerson) =>
+			base.WriteContactPerson(writer, contactPerson);
+
+		public void TestWriteEndpoint(XmlWriter writer, Endpoint endpoint,
+			string name, string ns) =>
+			base.WriteEndpoint(writer, endpoint, name, ns);
+
+		public void TestWriteIndexedEndpoint(XmlWriter writer, IndexedEndpoint endpoint,
+			string name, string ns) =>
+			base.WriteIndexedEndpoint(writer, endpoint, name, ns);
+
+		public void TestWriteEncryptionMethod(XmlWriter writer, EncryptionMethod method) =>
+			base.WriteEncryptionMethod(writer, method);
+
+		public void TestWriteXEncEncryptionMethod(XmlWriter writer, XEncEncryptionMethod method) =>
+			base.WriteXEncEncryptionMethod(writer, method);
+
+		public void TestWriteRSAKeyValue(XmlWriter writer, RsaKeyValue rsa) =>
+			base.WriteRSAKeyValue(writer, rsa);
+
+		public void TestWriteDSAKeyValue(XmlWriter writer, DsaKeyValue dsa) =>
+			base.WriteDSAKeyValue(writer, dsa);
+
+		public void TestWriteECKeyValue(XmlWriter writer, EcKeyValue ec) =>
+			base.WriteECKeyValue(writer, ec);
+
+		public void TestWriteKeyValue(XmlWriter writer, KeyValue keyValue) =>
+			base.WriteKeyValue(writer, keyValue);
+
+		public void TestWriteX509IssuerSerial(XmlWriter writer, X509IssuerSerial issuerSerial) =>
+			base.WriteX509IssuerSerial(writer, issuerSerial);
+
+		public void TestWriteX509Digest(XmlWriter writer, X509Digest digest) =>
+			base.WriteX509Digest(writer, digest);
+
+		public void TestWriteX509Data(XmlWriter writer, X509Data data) =>
+			base.WriteX509Data(writer, data);
+
+		public void TestWriteKeyData(XmlWriter writer, KeyData keyData) =>
+			base.WriteKeyData(writer, keyData);
+
+		public void TestWriteDSigKeyInfo(XmlWriter writer, DSigKeyInfo keyInfo) =>
+			base.WriteDSigKeyInfo(writer, keyInfo);
+
+		public void TestWriteCipherReference(XmlWriter writer, CipherReference reference) =>
+			base.WriteCipherReference(writer, reference);
+
+		public void TestWriteCipherData(XmlWriter writer, CipherData data) =>
+			base.WriteCipherData(writer, data);
+
+		public void TestWriteEncryptionProperty(XmlWriter writer, EncryptionProperty property) =>
+			base.WriteEncryptionProperty(writer, property);
+
+		public void TestWriteEncryptionProperties(XmlWriter writer, EncryptionProperties properties) =>
+			base.WriteEncryptionProperties(writer, properties);
+
+		public void TestWriteEncryptedData(XmlWriter writer, EncryptedData data) =>
+			base.WriteEncryptedData(writer, data);
+
+		public void TestWriteEncryptedValue(XmlWriter writer, EncryptedValue value) =>
+			base.WriteEncryptedValue(writer, value);
+
+		public void TestWriteClaimValue(XmlWriter writer, ClaimValue value) =>
+			base.WriteClaimValue(writer, value);
+
+		public void TestWriteConstrainedValue(XmlWriter writer, ConstrainedValue value) =>
+			base.WriteConstrainedValue(writer, value);
+
+		public void TestWriteDisplayClaim(XmlWriter writer, DisplayClaim claim) =>
+			base.WriteDisplayClaim(writer, claim);
+
+		public void TestWriteEntitiesDescriptor(XmlWriter writer, EntitiesDescriptor entitiesDescriptor) =>
+			base.WriteEntitiesDescriptor(writer, entitiesDescriptor);
+
+		public void TestWriteNameIDFormat(XmlWriter writer, NameIDFormat nameIDFormat) =>
+			base.WriteNameIDFormat(writer, nameIDFormat);
+
+		public void TestWriteAuthnAuthorityDescriptor(XmlWriter writer, AuthnAuthorityDescriptor descriptor) =>
+			base.WriteAuthnAuthorityDescriptor(writer, descriptor);
+
+		public void TestWriteAttributeProfile(XmlWriter writer, AttributeProfile profile) =>
+			base.WriteAttributeProfile(writer, profile);
+
+		public void TestWriteAttributeAuthorityDescriptor(XmlWriter writer, AttributeAuthorityDescriptor descriptor) =>
+			base.WriteAttributeAuthorityDescriptor(writer, descriptor);
+
+		public void TestWritePDPDescriptor(XmlWriter writer, PDPDescriptor descriptor) =>
+			base.WritePDPDescriptor(writer, descriptor);
+
+		public void TestWriteAffiliationDescriptor(XmlWriter writer, AffiliationDescriptor descriptor) =>
+			base.WriteAffiliationDescriptor(writer, descriptor);
+
+		public void TestWriteAdditionalMetadataLocation(XmlWriter writer, AdditionalMetadataLocation location) =>
+			base.WriteAdditionalMetadataLocation(writer, location);
+
+		public void TestWriteEntityDescriptor(XmlWriter writer, EntityDescriptor entityDescriptor) =>
+			base.WriteEntityDescriptor(writer, entityDescriptor);
+
+		public void TestWriteIdpSsoDescriptor(XmlWriter writer, IdpSsoDescriptor descriptor) =>
+			base.WriteIdpSsoDescriptor(writer, descriptor);
+
+		public void TestWriteKeyDescriptor(XmlWriter writer, KeyDescriptor keyDescriptor) =>
+			base.WriteKeyDescriptor(writer, keyDescriptor);
+
+		public void TestWriteLocalizedName(XmlWriter writer, LocalizedName name,
+			string elName, string ns) =>
+			base.WriteLocalizedName(writer, name, elName, ns);
+
+		public void TestWriteLocalizedUri(XmlWriter writer, LocalizedUri uri,
+			string name, string ns) =>
+			base.WriteLocalizedUri(writer, uri, name, ns);
+
+		public void TestWriteMetadataCore(XmlWriter writer, MetadataBase metadata) =>
+			base.WriteMetadataCore(writer, metadata);
+
+		public void TestWriteOrganization(XmlWriter writer, Organization organization) =>
+			base.WriteOrganization(writer, organization);
+
+		public void TestWriteRoleDescriptorAttributes(XmlWriter writer, RoleDescriptor descriptor) =>
+			base.WriteRoleDescriptorAttributes(writer, descriptor);
+
+		public void TestWriteRoleDescriptorElements(XmlWriter writer, RoleDescriptor descriptor) =>
+			base.WriteRoleDescriptorElements(writer, descriptor);
+
+		public void TestWriteSecurityTokenServiceDescriptor(XmlWriter writer,
+			SecurityTokenServiceDescriptor descriptor) =>
+			base.WriteSecurityTokenServiceDescriptor(writer, descriptor);
+
+		public void TestWriteRequestedAttribute(XmlWriter writer, RequestedAttribute attribute) =>
+			base.WriteRequestedAttribute(writer, attribute);
+
+		public void TestWriteAttributeConsumingService(XmlWriter writer, AttributeConsumingService service) =>
+			base.WriteAttributeConsumingService(writer, service);
+
+		public void TestWriteSpSsoDescriptor(XmlWriter writer, SpSsoDescriptor descriptor) =>
+			base.WriteSpSsoDescriptor(writer, descriptor);
+
+		public void TestWriteSsoDescriptorAttributes(XmlWriter writer, SsoDescriptor descriptor) =>
+			base.WriteSsoDescriptorAttributes(writer, descriptor);
+
+		public void TestWriteSsoDescriptorElements(XmlWriter writer, SsoDescriptor descriptor) =>
+			base.WriteSsoDescriptorElements(writer, descriptor);
+
+		public void TestWriteWebServiceDescriptorAttributes(XmlWriter writer, WebServiceDescriptor descriptor) =>
+			base.WriteWebServiceDescriptorAttributes(writer, descriptor);
+
+		public void TestWriteWebServiceDescriptorElements(XmlWriter writer, WebServiceDescriptor descriptor) =>
+			base.WriteWebServiceDescriptorElements(writer, descriptor);
+
+		public void TestWriteAttribute(XmlWriter writer, Saml2Attribute attribute) =>
+			base.WriteAttribute(writer, attribute);
+
+		public void TestWriteRetrievalMethod(XmlWriter writer, RetrievalMethod method) =>
+			base.WriteRetrievalMethod(writer, method);
+	}
+
+	class XmlTestData
+	{
+		public string Xml { get; private set; }
+		public string WrittenXml { get; private set; }
+		public object ObjectModel { get; private set; }
+
+		public XmlTestData(string xml, string writtenXml, object obj)
+		{
+			WrittenXml = writtenXml ?? xml;
+			Xml = xml;
+			ObjectModel = obj;
+		}
+
+		public XmlTestData(string xml, object obj) :
+			this(xml, null, obj)
+		{
+		}
+	}
+
+	sealed class TestData : Attribute
+	{
 	}
 
 	[TestClass]
@@ -310,9 +499,104 @@ namespace Sustainsys.Saml2.Tests.Metadata
 				4DDHCPhZAgMBAAEwDQYJKoZIhvcNAQEFBQADgYEAQMv+BFvGdMVzkQaQ3/+2noVz
 				/uAKbzpEL8xTcxYyP3lkOeh4FoxiSWqy5pGFALdPONoDuYFpLhjJSZaEwuvjI/Tr
 				rGhLV1pRG9frwDFshqD2Vaj4ENBCBh6UpeBop5+285zQ4SI7q4U9oSebUDJiuOx6
-				+tZ9KynmrbJpTSi0+BMK", "");
+				+tZ9KynmrbJpTSi0+BM=", "");
 
-		XmlNamespaceManager CreateNamespaceManager(XmlDocument doc)
+		static Dictionary<string, XmlTestData> s_testData
+			= new Dictionary<string, XmlTestData>();
+
+		static MetadataSerializerTests()
+		{
+			var methods = typeof(MetadataSerializerTests).GetMethods(
+				BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static)
+				.Where(x => x.CustomAttributes.Any(y => y.AttributeType == typeof(TestData)));
+			foreach (var method in methods)
+			{
+				method.Invoke(null, new object[] { });
+			}
+		}
+
+		static XmlTestData GetTestData(string testName)
+		{
+			XmlTestData testData;
+			if (!s_testData.TryGetValue(testName, out testData))
+			{
+				throw new KeyNotFoundException(
+					$"The test data named {testName} could not be found");
+			}
+			return testData;
+		}
+
+		static string TrimXml(string xml)
+		{
+			using (var stringReader = new StringReader(xml))
+			using (var reader = XmlReader.Create(stringReader))
+			using (var memoryStream = new MemoryStream())
+			using (var writer = XmlWriter.Create(memoryStream))
+			{
+				while (reader.Read())
+				{
+					switch (reader.NodeType)
+					{
+						case XmlNodeType.Element:
+							writer.WriteStartElement(reader.Prefix, reader.LocalName, reader.NamespaceURI);
+							writer.WriteAttributes(reader, true);
+							if (reader.IsEmptyElement)
+							{
+								writer.WriteEndElement();
+							}
+							break;
+						case XmlNodeType.Text:
+							writer.WriteString(reader.Value.Trim());
+							break;
+						case XmlNodeType.Comment:
+						case XmlNodeType.SignificantWhitespace:
+						case XmlNodeType.Whitespace:
+							// yum
+							break;
+						case XmlNodeType.CDATA:
+							writer.WriteCData(reader.Value);
+							break;
+						case XmlNodeType.EntityReference:
+							writer.WriteEntityRef(reader.Value);
+							break;
+						case XmlNodeType.XmlDeclaration:
+						case XmlNodeType.ProcessingInstruction:
+							writer.WriteProcessingInstruction(reader.Name, reader.Value);
+							break;
+						case XmlNodeType.DocumentType:
+							writer.WriteDocType(reader.Name, reader.GetAttribute("PUBLIC"),
+								reader.GetAttribute("SYSTEM"), reader.Value);
+							break;
+						case XmlNodeType.EndElement:
+							writer.WriteEndElement();
+							break;
+					}
+				}
+				writer.Close();
+				memoryStream.Position = 0;
+				using (var streamReader = new StreamReader(memoryStream))
+				{
+					return streamReader.ReadToEnd();
+				}
+			}
+		}
+
+		static void AddTestData(string name, string xml, object obj)
+		{
+			s_testData.Add(name, new XmlTestData(xml, obj));
+		}
+
+		static void AddTestData(string name, string xml, string writtenXml, object obj)
+		{
+			s_testData.Add(name, new XmlTestData(xml, writtenXml, obj));
+		}
+
+		static void AddTestData(string name, string xml, object obj, bool trimXml)
+		{
+			AddTestData(name, xml, TrimXml(xml), obj);
+		}
+
+		static XmlNamespaceManager CreateNamespaceManager(XmlDocument doc)
 		{
 			var nsmgr = new XmlNamespaceManager(doc.NameTable);
 			// const string XmlNs = "http://www.w3.org/XML/1998/namespace";
@@ -330,7 +614,7 @@ namespace Sustainsys.Saml2.Tests.Metadata
 			return nsmgr;
 		}
 
-		(XmlDocument doc, XmlNamespaceManager nsmgr) LoadXml(string xml)
+		static (XmlDocument doc, XmlNamespaceManager nsmgr) LoadXml(string xml)
 		{
 			var doc = new XmlDocument();
 			doc.LoadXml(xml);
@@ -358,6 +642,44 @@ namespace Sustainsys.Saml2.Tests.Metadata
 					result.Should().BeEquivalentTo(expected);
 				}
 			}
+		}
+
+		void ReadTest<T>(string testName, Func<TestMetadataSerializer, XmlReader, T> readFn,
+			Func<FluentAssertions.Equivalency.EquivalencyAssertionOptions<T>,
+				 FluentAssertions.Equivalency.EquivalencyAssertionOptions<T>> config = null)
+		{
+			var testData = GetTestData(testName);
+			T expected = testData.ObjectModel.As<T>();
+			ReadTest(testData.Xml, expected, readFn, config);
+		}
+
+		void WriteTest<T>(T obj, string expected, Action<TestMetadataSerializer, XmlWriter> writeFn)
+		{
+			using (var ms = new MemoryStream())
+			{
+				using (var xmlWriter = XmlWriter.Create(ms))
+				{
+					var serializer = new TestMetadataSerializer();
+					writeFn(serializer, xmlWriter);
+				}
+
+				ms.Position = 0;
+				XmlDocument resultDoc = new XmlDocument();
+				resultDoc.Load(ms);
+
+				XmlDocument expectedDoc = new XmlDocument();
+				expectedDoc.LoadXml(expected);
+
+				resultDoc.Should().BeEquivalentTo(expectedDoc);
+			}
+		}
+
+		void WriteTest<T>(string testName, Action<TestMetadataSerializer, XmlWriter, T> writeFn)
+		{
+			var testData = GetTestData(testName);
+			T obj = testData.ObjectModel.As<T>();
+			WriteTest(obj, testData.WrittenXml,
+				(serializer, writer) => writeFn(serializer, writer, obj));
 		}
 
 		[TestMethod]
@@ -418,6 +740,8 @@ namespace Sustainsys.Saml2.Tests.Metadata
 				.Should().BeOfType<EncryptedValue>();
 			serializer.TestCreateEncryptionMethodInstance()
 				.Should().BeOfType<EncryptionMethod>();
+			serializer.TestCreateXEncEncryptionMethodInstance()
+				.Should().BeOfType<XEncEncryptionMethod>();
 			serializer.TestCreateEndpointInstance()
 				.Should().BeOfType<Endpoint>();
 			serializer.TestCreateEntitiesDescriptorInstance()
@@ -500,8 +824,8 @@ namespace Sustainsys.Saml2.Tests.Metadata
 				serializer.TestReadEndpointReference(reader));
 		}
 
-		[TestMethod]
-		public void MetadataSerializerTests_ReadApplicationServiceDescriptor()
+		[TestData]
+		public static void AddApplicationServiceDescriptorTestData()
 		{
 			string xml =
 			@"<?xml version='1.0' encoding='UTF-8'?>
@@ -536,7 +860,7 @@ namespace Sustainsys.Saml2.Tests.Metadata
 			</md:RoleDescriptor>";
 			(XmlDocument doc, XmlNamespaceManager nsmgr) = LoadXml(xml);
 
-			var expected = new ApplicationServiceDescriptor()
+			var obj = new ApplicationServiceDescriptor()
 			{
 				ProtocolsSupported = { new Uri("http://docs.oasis-open.org/wsfed/federation/200706") },
 				Endpoints = {
@@ -577,16 +901,34 @@ namespace Sustainsys.Saml2.Tests.Metadata
 				}
 			};
 
-			ReadTest(xml, expected, (serializer, reader) =>
+			AddTestData("ApplicationServiceDescriptor1", xml, obj);
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_ReadApplicationServiceDescriptor()
+		{
+			ReadTest("ApplicationServiceDescriptor1", (serializer, reader) =>
 				serializer.TestReadApplicationServiceDescriptor(reader));
 		}
 
 		[TestMethod]
-		public void MetadataSerializerTests_ReadContactPerson()
+		public void MetadataSerializerTests_WriteApplicationServiceDescriptor()
+		{
+			WriteTest<ApplicationServiceDescriptor>("ApplicationServiceDescriptor1",
+				(serializer, writer, descriptor) =>
+					serializer.TestWriteApplicationServiceDescriptor(writer, descriptor));
+		}
+
+		[TestData]
+		public static void AddContactPersonTestData()
 		{
 			string xml =
 			@"<?xml version='1.0' encoding='UTF-8'?>
 			<md:ContactPerson contactType='technical' xmlns:md='urn:oasis:names:tc:SAML:2.0:metadata'>
+				<md:Extensions>
+					<any-extension-element/>
+					<any-other-element/>
+				</md:Extensions>
 				<md:Company>Test Company</md:Company>
 				<md:GivenName>David</md:GivenName>
 				<md:SurName>Test</md:SurName>
@@ -594,14 +936,10 @@ namespace Sustainsys.Saml2.Tests.Metadata
 				<md:EmailAddress>david.test2@test.company</md:EmailAddress>
 				<md:TelephoneNumber>0123456789</md:TelephoneNumber>
 				<md:TelephoneNumber>9876543210</md:TelephoneNumber>
-				<md:Extensions>
-					<any-extension-element/>
-					<any-other-element/>
-				</md:Extensions>
 			</md:ContactPerson>";
 			(XmlDocument doc, XmlNamespaceManager nsmgr) = LoadXml(xml);
 
-			var expected = new ContactPerson()
+			var obj = new ContactPerson()
 			{
 				Type = ContactType.Technical,
 				Company = "Test Company",
@@ -615,8 +953,21 @@ namespace Sustainsys.Saml2.Tests.Metadata
 				}
 			};
 
-			ReadTest(xml, expected, (serializer, reader) =>
+			AddTestData("ContactPerson1", xml, obj);
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_ReadContactPerson()
+		{
+			ReadTest("ContactPerson1", (serializer, reader) =>
 				serializer.TestReadContactPerson(reader));
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_WriteContactPerson()
+		{
+			WriteTest<ContactPerson>("ContactPerson1", (serializer, writer, expected) =>
+				serializer.TestWriteContactPerson(writer, expected));
 		}
 
 		[TestMethod]
@@ -629,8 +980,8 @@ namespace Sustainsys.Saml2.Tests.Metadata
 				serializer.TestReadBase64(reader));
 		}
 
-		[TestMethod]
-		public void MetadataSerializerTests_ReadIdpSsoDescriptor()
+		[TestData]
+		public static void AddIdpSsoDescriptorTestData()
 		{
 			string xml =
 			@"<?xml version='1.0' encoding='UTF-8'?>
@@ -640,17 +991,15 @@ namespace Sustainsys.Saml2.Tests.Metadata
 				WantAuthnRequestsSigned='true'
 				protocolSupportEnumeration='urn:oasis:names:tc:SAML:2.0:protocol'
 				cacheDuration='P2Y6M5DT12H35M30S'
-				validUntil='2020-01-01T14:32:31'
+				validUntil='2020-01-01T14:32:31Z'
 				errorURL='http://idp.example.com/something/went/wrong'
 				ID='yourGUIDhere'>
-			    <md:KeyDescriptor use='signing'>
-			      <ds:KeyInfo xmlns:ds='http://www.w3.org/2000/09/xmldsig#'>
-			        <MyCustomElement xmlns='urn:MyNamespace' />
-			      </ds:KeyInfo>
-			    </md:KeyDescriptor>
 				<md:Extensions>
 					<extra-idp-sso-stuff/>
 				</md:Extensions>
+			    <md:KeyDescriptor use='signing'>
+			      <ds:KeyInfo xmlns:ds='http://www.w3.org/2000/09/xmldsig#'/>
+			    </md:KeyDescriptor>
 				<md:Organization>
 					<md:Extensions>
 						<ext-elt/>
@@ -660,15 +1009,15 @@ namespace Sustainsys.Saml2.Tests.Metadata
 					<md:OrganizationURL xml:lang='en'>http://acme.co/</md:OrganizationURL>
 				</md:Organization>
 				<md:ContactPerson contactType='administrative' xmlns:md='urn:oasis:names:tc:SAML:2.0:metadata'>
+					<md:Extensions>
+						<time-for-tea/>
+						<and-biscuits/>
+					</md:Extensions>
 					<md:Company>Acme Ltd</md:Company>
 					<md:GivenName>Wile E</md:GivenName>
 					<md:SurName>Coyote</md:SurName>
 					<md:EmailAddress>wile.e.coyto@acme.co</md:EmailAddress>
 					<md:TelephoneNumber>11223344</md:TelephoneNumber>
-					<md:Extensions>
-						<time-for-tea/>
-						<and-biscuits/>
-					</md:Extensions>
 				</md:ContactPerson>
 				<md:ArtifactResolutionService
 					index='1'
@@ -710,11 +1059,11 @@ namespace Sustainsys.Saml2.Tests.Metadata
 			  </md:IDPSSODescriptor>";
 			(XmlDocument doc, XmlNamespaceManager nsmgr) = LoadXml(xml);
 
-			var expected = new IdpSsoDescriptor()
+			var obj = new IdpSsoDescriptor()
 			{
 				WantAuthnRequestsSigned = true,
 				ProtocolsSupported = { new Uri("urn:oasis:names:tc:SAML:2.0:protocol") },
-				CacheDuration = new TimeSpan(365 * 2 + 30 * 6 + 5, 12, 35, 30),
+				CacheDuration = new XsdDuration(years: 2, months: 6, days: 5, hours: 12, minutes: 35, seconds: 30),
 				ValidUntil = new DateTime(2020, 01, 01, 14, 32, 31),
 				ErrorUrl = new Uri("http://idp.example.com/something/went/wrong"),
 				Id = "yourGUIDhere",
@@ -722,7 +1071,8 @@ namespace Sustainsys.Saml2.Tests.Metadata
 					doc.SelectSingleNode("/md:IDPSSODescriptor/md:Extensions/*[1]",
 						nsmgr).As<XmlElement>()
 				},
-				Organization = new Organization() {
+				Organization = new Organization()
+				{
 					Extensions = {
 						doc.SelectSingleNode("/md:IDPSSODescriptor/md:Organization/md:Extensions/*[1]",
 							nsmgr).As<XmlElement>()
@@ -828,12 +1178,26 @@ namespace Sustainsys.Saml2.Tests.Metadata
 				}
 			};
 
-			ReadTest(xml, expected, (serializer, reader) =>
+			AddTestData("IdpSsoDescriptor1", xml, obj);
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_ReadIdpSsoDescriptor()
+		{
+			ReadTest("IdpSsoDescriptor1", (serializer, reader) =>
 				serializer.TestReadIdpSsoDescriptor(reader));
 		}
 
 		[TestMethod]
-		public void MetadataSerializerTests_ReadAssertionConsumerService()
+		public void MetadataSerializerTests_WriteIdpSsoDescriptor()
+		{
+			WriteTest<IdpSsoDescriptor>("IdpSsoDescriptor1",
+				(serializer, writer, obj) =>
+					serializer.TestWriteIdpSsoDescriptor(writer, obj));
+		}
+
+		[TestData]
+		public static void AddAssertionConsumerServiceTestData()
 		{
 			string xml =
 			@"<?xml version='1.0' encoding='UTF-8'?>
@@ -846,7 +1210,7 @@ namespace Sustainsys.Saml2.Tests.Metadata
 				</md:AssertionConsumerService>";
 			(XmlDocument doc, XmlNamespaceManager nsmgr) = LoadXml(xml);
 
-			var expected = new AssertionConsumerService()
+			var obj = new AssertionConsumerService()
 			{
 				Index = 150,
 				IsDefault = false,
@@ -855,12 +1219,27 @@ namespace Sustainsys.Saml2.Tests.Metadata
 				ResponseLocation = new Uri("http://idp.example.com/acsresp1")
 			};
 
-			ReadTest(xml, expected, (serializer, reader) =>
+			AddTestData("AssertionConsumerService1", xml, obj, true);
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_ReadAssertionConsumerService()
+		{
+			ReadTest("AssertionConsumerService1", (serializer, reader) =>
 				serializer.TestReadAssertionConsumerService(reader));
 		}
 
 		[TestMethod]
-		public void MetadataSerializerTests_ReadDSAKeyValue()
+		public void MetadataSerializerTests_WriteAssertionConsumerService()
+		{
+			WriteTest<AssertionConsumerService>("AssertionConsumerService1",
+				(serializer, writer, obj) =>
+					serializer.TestWriteIndexedEndpoint(writer, obj,
+						"AssertionConsumerService", "urn:oasis:names:tc:SAML:2.0:metadata"));
+		}
+
+		[TestData]
+		public static void AddDSAKeyValueTestData()
 		{
 			string xml =
 			@"<?xml version='1.0' encoding='UTF-8'?>
@@ -875,8 +1254,9 @@ namespace Sustainsys.Saml2.Tests.Metadata
 			</DSAKeyValue>";
 			(XmlDocument doc, XmlNamespaceManager nsmgr) = LoadXml(xml);
 
-			var expected = new DsaKeyValue(
-				new DSAParameters {
+			var obj = new DsaKeyValue(
+				new DSAParameters
+				{
 					P = Convert.FromBase64String("/KaCzo4Syrom78z3EQ5SbbB4sF7ey80etKII864WF64B81uRpH5t9jQTxeEu0ImbzRMqzVDZkVG9xD7nN1kuFw=="),
 					Q = Convert.FromBase64String("li7dzDacuo67Jg7mtqEm2TRuOMU="),
 					G = Convert.FromBase64String("Z4Rxsnqc9E7pGknFFH2xqaryRPBaQ01khpMdLRQnG541Awtx/XPaF5Bpsy4pNWMOHCBiNU0NogpsQW5QvnlMpA=="),
@@ -888,13 +1268,27 @@ namespace Sustainsys.Saml2.Tests.Metadata
 				}
 			);
 
-			ReadTest(xml, expected, (serializer, reader) =>
+			AddTestData("DSAKeyValue1", xml, obj);
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_ReadDSAKeyValue()
+		{
+			ReadTest("DSAKeyValue1", (serializer, reader) =>
 				serializer.TestReadDsaKeyValue(reader),
 				opts => opts.ComparingByMembers<DSAParameters>());
 		}
 
 		[TestMethod]
-		public void MetadataSerializerTests_ReadRSAKeyValue()
+		public void MetadataSerializerTests_WriteDSAKeyValue()
+		{
+			WriteTest<DsaKeyValue>("DSAKeyValue1",
+				(serializer, writer, obj) =>
+					serializer.TestWriteDSAKeyValue(writer, obj));
+		}
+
+		[TestData]
+		public static void AddRSAKeyValueTestData()
 		{
 			string xml =
 			@"<?xml version='1.0' encoding='UTF-8'?>
@@ -904,7 +1298,7 @@ namespace Sustainsys.Saml2.Tests.Metadata
 				</RSAKeyValue>";
 			(XmlDocument doc, XmlNamespaceManager nsmgr) = LoadXml(xml);
 
-			var expected = new RsaKeyValue(
+			var obj = new RsaKeyValue(
 				new RSAParameters
 				{
 					Modulus = Convert.FromBase64String("xA7SEU+e0yQH5rm9kbCDN9o3aPIo7HbP7tX6WOocLZAtNfyxSZDU16ksL6WjubafOqNEpcwR3RdFsT7bCqnXPBe5ELh5u4VEy19MzxkXRgrMvavzyBpVRgBUwUlV5foK5hhmbktQhyNdy/6LpQRhDUDsTvK+g9Ucj47es9AQJ3U="),
@@ -912,13 +1306,27 @@ namespace Sustainsys.Saml2.Tests.Metadata
 				}
 			);
 
-			ReadTest(xml, expected, (serializer, reader) =>
+			AddTestData("RSAKeyValue1", xml, obj);
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_ReadRSAKeyValue()
+		{
+			ReadTest("RSAKeyValue1", (serializer, reader) =>
 				serializer.TestReadRsaKeyValue(reader),
 				opts => opts.ComparingByMembers<RSAParameters>());
 		}
 
 		[TestMethod]
-		public void MetadataSerializerTests_ReadECKeyValue()
+		public void MetadataSerializerTests_WriteRSAKeyValue()
+		{
+			WriteTest<RsaKeyValue>("RSAKeyValue1",
+				(serializer, writer, obj) =>
+					serializer.TestWriteRSAKeyValue(writer, obj));
+		}
+
+		[TestData]
+		public static void AddECKeyValueTestData()
 		{
 			string xml =
 			@"<?xml version='1.0' encoding='UTF-8'?>
@@ -928,10 +1336,12 @@ namespace Sustainsys.Saml2.Tests.Metadata
 				</ECKeyValue>";
 			(XmlDocument doc, XmlNamespaceManager nsmgr) = LoadXml(xml);
 
-			var expected = new EcKeyValue(
-				new ECParameters {
+			var obj = new EcKeyValue(
+				new ECParameters
+				{
 					Curve = ECCurve.CreateFromOid(new Oid("1.2.840.10045.3.1.7")),
-					Q = new ECPoint {
+					Q = new ECPoint
+					{
 						X = new byte[] {
 							0xe5, 0x4a, 0x6a, 0x22, 0xcf, 0x28, 0x40, 0xc2, 0x86, 0x19, 0x00,
 							0xeb, 0x85, 0x04, 0x04, 0xe5, 0xd3, 0xbf, 0xf5, 0x45, 0x1e, 0x78,
@@ -944,7 +1354,13 @@ namespace Sustainsys.Saml2.Tests.Metadata
 				}
 			);
 
-			ReadTest(xml, expected, (serializer, reader) =>
+			AddTestData("ECKeyValue1", xml, obj);
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_ReadECKeyValue()
+		{
+			ReadTest("ECKeyValue1", (serializer, reader) =>
 				serializer.TestReadEcKeyValue(reader),
 				opts => opts.ComparingByMembers<ECParameters>()
 							.ComparingByMembers<ECCurve>()
@@ -954,7 +1370,15 @@ namespace Sustainsys.Saml2.Tests.Metadata
 		}
 
 		[TestMethod]
-		public void MetadataSerializerTests_ReadECDSAKeyValue()
+		public void MetadataSerializerTests_WriteECKeyValue()
+		{
+			WriteTest<EcKeyValue>("ECKeyValue1",
+				(serializer, writer, obj) =>
+					serializer.TestWriteECKeyValue(writer, obj));
+		}
+
+		[TestData]
+		public static void AddECDSAKeyValueTestData()
 		{
 			string xml =
 			@"<?xml version='1.0' encoding='UTF-8'?>
@@ -969,8 +1393,9 @@ namespace Sustainsys.Saml2.Tests.Metadata
 				</ECDSAKeyValue>";
 			(XmlDocument doc, XmlNamespaceManager nsmgr) = LoadXml(xml);
 
-			var expected = new EcKeyValue(
-				new ECParameters {
+			var obj = new EcKeyValue(
+				new ECParameters
+				{
 					Curve = ECCurve.CreateFromOid(new Oid("1.2.840.10045.3.1.7")),
 					Q = new ECPoint
 					{
@@ -980,7 +1405,13 @@ namespace Sustainsys.Saml2.Tests.Metadata
 				}
 			);
 
-			ReadTest(xml, expected, (serializer, reader) =>
+			AddTestData("ECDSAKeyValue1", xml, obj);
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_ReadECDSAKeyValue()
+		{
+			ReadTest("ECDSAKeyValue1", (serializer, reader) =>
 				serializer.TestReadEcDsaKeyValue(reader),
 				opts => opts.ComparingByMembers<ECParameters>()
 							.ComparingByMembers<ECCurve>()
@@ -989,8 +1420,8 @@ namespace Sustainsys.Saml2.Tests.Metadata
 							.WithTracing());
 		}
 
-		[TestMethod]
-		public void MetadataSerializerTests_ReadKeyValue()
+		[TestData]
+		public static void AddKeyValueTestData()
 		{
 			string xml =
 			@"<?xml version='1.0' encoding='UTF-8'?>
@@ -1002,7 +1433,7 @@ namespace Sustainsys.Saml2.Tests.Metadata
 				</KeyValue>";
 			(XmlDocument doc, XmlNamespaceManager nsmgr) = LoadXml(xml);
 
-			var expected = new RsaKeyValue(
+			var obj = new RsaKeyValue(
 				new RSAParameters
 				{
 					Modulus = Convert.FromBase64String("xA7SEU+e0yQH5rm9kbCDN9o3aPIo7HbP7tX6WOocLZAtNfyxSZDU16ksL6WjubafOqNEpcwR3RdFsT7bCqnXPBe5ELh5u4VEy19MzxkXRgrMvavzyBpVRgBUwUlV5foK5hhmbktQhyNdy/6LpQRhDUDsTvK+g9Ucj47es9AQJ3U="),
@@ -1010,13 +1441,27 @@ namespace Sustainsys.Saml2.Tests.Metadata
 				}
 			);
 
-			ReadTest(xml, expected, (serializer, reader) =>
+			AddTestData("KeyValueTestData1", xml, obj);
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_ReadKeyValue()
+		{
+			ReadTest("KeyValueTestData1", (serializer, reader) =>
 				serializer.TestReadKeyValue(reader),
 				opts => opts.ComparingByMembers<RSAParameters>().RespectingRuntimeTypes());
 		}
 
 		[TestMethod]
-		public void MetadataSerializerTests_ReadRetrievalMethod()
+		public void MetadataSerializerTests_WriteKeyValue()
+		{
+			WriteTest<KeyValue>("KeyValueTestData1",
+				(serializer, writer, obj) =>
+					serializer.TestWriteKeyValue(writer, obj));
+		}
+
+		[TestData]
+		public static void AddRetrievalMethodTestData()
 		{
 			string xml =
 			@"<?xml version='1.0' encoding='UTF-8'?>
@@ -1030,7 +1475,8 @@ namespace Sustainsys.Saml2.Tests.Metadata
 				</RetrievalMethod>";
 			(XmlDocument doc, XmlNamespaceManager nsmgr) = LoadXml(xml);
 
-			var expected = new RetrievalMethod {
+			var obj = new RetrievalMethod
+			{
 				Uri = new Uri("http://idp.example.com/signingCert.cer"),
 				Type = new Uri("http://idp.example.com/x509certtype"),
 				Transforms = {
@@ -1041,12 +1487,26 @@ namespace Sustainsys.Saml2.Tests.Metadata
 				}
 			};
 
-			ReadTest(xml, expected, (serializer, reader) =>
+			AddTestData("RetrievalMethod1", xml, obj);
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_ReadRetrievalMethod()
+		{
+			ReadTest("RetrievalMethod1", (serializer, reader) =>
 				serializer.TestReadRetrievalMethod(reader));
 		}
 
 		[TestMethod]
-		public void MetadataSerializerTests_ReadX509IssuerSerial()
+		public void MetadataSerializerTests_WriteRetrievalMethod()
+		{
+			WriteTest<RetrievalMethod>("RetrievalMethod1",
+				(serializer, writer, obj) =>
+					serializer.TestWriteRetrievalMethod(writer, obj));
+		}
+
+		[TestData]
+		public static void AddX509IssuerSerialTestData()
 		{
 			string xml =
 			@"<?xml version='1.0' encoding='UTF-8'?>
@@ -1056,32 +1516,60 @@ namespace Sustainsys.Saml2.Tests.Metadata
 				</X509IssuerSerial>";
 			(XmlDocument doc, XmlNamespaceManager nsmgr) = LoadXml(xml);
 
-			var expected = new X509IssuerSerial("Test Issuer", "128976");
+			var obj = new X509IssuerSerial("Test Issuer", "128976");
 
-			ReadTest(xml, expected, (serializer, reader) =>
+			AddTestData("X509IssuerSerial1", xml, obj);
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_ReadX509IssuerSerial()
+		{
+			ReadTest("X509IssuerSerial1", (serializer, reader) =>
 				serializer.TestReadX509IssuerSerial(reader));
 		}
 
 		[TestMethod]
-		public void MetadataSerializerTests_ReadX509Digest()
+		public void MetadataSerializerTests_WriteX509IssuerSerial()
+		{
+			WriteTest<X509IssuerSerial>("X509IssuerSerial1",
+				(serializer, writer, obj) =>
+					serializer.TestWriteX509IssuerSerial(writer, obj));
+		}
+
+		[TestData]
+		public static void AddX509DigestTestData()
 		{
 			string xml =
 			@"<?xml version='1.0' encoding='UTF-8'?>
-				<X509Digest xmlns='http://www.w3.org/2009/xmldsig11#' Algorithm='http://w3c.org/madeUpAlgorithm'>BOVKaiLPKEDChhkA64UEBOXTv/VFHnhrUPN+bXqCvEl7rroAYpH5tKzbiGTtMSlp4JO9Pxg44zeX7EoWDvOrpD0=</X509Digest>";
+				<X509Digest xmlns='http://www.w3.org/2000/09/xmldsig#' Algorithm='http://w3c.org/madeUpAlgorithm'>BOVKaiLPKEDChhkA64UEBOXTv/VFHnhrUPN+bXqCvEl7rroAYpH5tKzbiGTtMSlp4JO9Pxg44zeX7EoWDvOrpD0=</X509Digest>";
 			(XmlDocument doc, XmlNamespaceManager nsmgr) = LoadXml(xml);
 
-			var expected = new X509Digest
+			var obj = new X509Digest
 			{
 				Algorithm = new Uri("http://w3c.org/madeUpAlgorithm"),
 				Value = Convert.FromBase64String("BOVKaiLPKEDChhkA64UEBOXTv/VFHnhrUPN+bXqCvEl7rroAYpH5tKzbiGTtMSlp4JO9Pxg44zeX7EoWDvOrpD0=")
 			};
 
-			ReadTest(xml, expected, (serializer, reader) =>
+			AddTestData("X509Digest1", xml, obj);
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_ReadX509Digest()
+		{
+			ReadTest("X509Digest1", (serializer, reader) =>
 				serializer.TestReadX509Digest(reader));
 		}
 
 		[TestMethod]
-		public void MetadataSerializerTests_ReadX509Data()
+		public void MetadataSerializerTests_WriteX509Digest()
+		{
+			WriteTest<X509Digest>("X509Digest1",
+				(serializer, writer, obj) =>
+					serializer.TestWriteX509Digest(writer, obj));
+		}
+
+		[TestData]
+		public static void AddX509DataTestData()
 		{
 			string crlData = whitespaceRe.Replace(@"
 				MIIBYDCBygIBATANBgkqhkiG9w0BAQUFADBDMRMwEQYKCZImiZPyLGQBGRYDY29t
@@ -1109,7 +1597,8 @@ namespace Sustainsys.Saml2.Tests.Metadata
 			  </X509Data>";
 			(XmlDocument doc, XmlNamespaceManager nsmgr) = LoadXml(xml);
 
-			var expected = new X509Data {
+			var obj = new X509Data
+			{
 				IssuerSerial = new X509IssuerSerial(
 					"C=JP, ST=Tokyo, L=Chuo-ku, O=Frank4DD, OU=WebCert Support, CN=Frank4DD Web CA/emailAddress=support@frank4dd.com",
 					"3580"
@@ -1122,24 +1611,30 @@ namespace Sustainsys.Saml2.Tests.Metadata
 				CRL = Convert.FromBase64String(crlData)
 			};
 
-			ReadTest(xml, expected, (serializer, reader) =>
+			AddTestData("X509Data1", xml, obj, true);
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_ReadX509Data()
+		{
+			ReadTest("X509Data1", (serializer, reader) =>
 				serializer.TestReadX509Data(reader));
 		}
 
 		[TestMethod]
-		public void MetadataSerializerTests_ReadDSigKeyInfo()
+		public void MetadataSerializerTests_WriteX509Data()
+		{
+			WriteTest<X509Data>("X509Data1",
+				(serializer, writer, obj) =>
+					serializer.TestWriteX509Data(writer, obj));
+		}
+
+		[TestData]
+		public static void AddDSigKeyInfoTestData()
 		{
 			string xml =
 			@"<?xml version='1.0' encoding='UTF-8'?>
 			<KeyInfo xmlns='http://www.w3.org/2000/09/xmldsig#' Id='testId'>
-				<X509Data>
-					<X509IssuerSerial> 
-					  <X509IssuerName>
-						C=JP, ST=Tokyo, L=Chuo-ku, O=Frank4DD, OU=WebCert Support, CN=Frank4DD Web CA/emailAddress=support@frank4dd.com
-					  </X509IssuerName>
-					  <X509SerialNumber>3580</X509SerialNumber>
-					</X509IssuerSerial>
-				</X509Data>
 				<KeyName>NameOfKey</KeyName>
 				<KeyValue>
 					<RSAKeyValue>
@@ -1151,10 +1646,19 @@ namespace Sustainsys.Saml2.Tests.Metadata
 					URI='http://idp.example.com/signingCert.cer'
 					Type='http://idp.example.com/x509certtype'>
 				</RetrievalMethod>
+				<X509Data>
+					<X509IssuerSerial> 
+					  <X509IssuerName>
+						C=JP, ST=Tokyo, L=Chuo-ku, O=Frank4DD, OU=WebCert Support, CN=Frank4DD Web CA/emailAddress=support@frank4dd.com
+					  </X509IssuerName>
+					  <X509SerialNumber>3580</X509SerialNumber>
+					</X509IssuerSerial>
+				</X509Data>
 			</KeyInfo>";
 			(XmlDocument doc, XmlNamespaceManager nsmgr) = LoadXml(xml);
 
-			var expected = new DSigKeyInfo {
+			var obj = new DSigKeyInfo
+			{
 				Id = "testId",
 				RetrievalMethods = {
 					new RetrievalMethod {
@@ -1184,13 +1688,27 @@ namespace Sustainsys.Saml2.Tests.Metadata
 				}
 			};
 
-			ReadTest(xml, expected, (serializer, reader) =>
+			AddTestData("DSigKeyInfo1", xml, obj, true);
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_ReadDSigKeyInfo()
+		{
+			ReadTest("DSigKeyInfo1", (serializer, reader) =>
 				serializer.TestReadDSigKeyInfo(reader),
 				opts => opts.ComparingByMembers<RSAParameters>());
 		}
 
 		[TestMethod]
-		public void MetadataSerializerTests_ReadEncryptionMethod()
+		public void MetadataSerializerTests_WriteDSigKeyInfo()
+		{
+			WriteTest<DSigKeyInfo>("DSigKeyInfo1",
+				(serializer, writer, obj) =>
+					serializer.TestWriteDSigKeyInfo(writer, obj));
+		}
+
+		[TestData]
+		static void AddXEncEncryptionMethodTestData()
 		{
 			string xml =
 			@"<?xml version='1.0' encoding='UTF-8'?>
@@ -1201,21 +1719,82 @@ namespace Sustainsys.Saml2.Tests.Metadata
 				<OAEPparams> 9lWu3Q== </OAEPparams>
 				<ds:DigestMethod Algorithm='http://www.w3.org/2000/09/xmldsig#sha1'/>
 			</EncryptionMethod>";
-			(XmlDocument doc, XmlNamespaceManager nsmgr) = LoadXml(xml);
 
-			var expected = new EncryptionMethod
+			var obj = new XEncEncryptionMethod
 			{
 				OAEPparams = Convert.FromBase64String("9lWu3Q=="),
 				Algorithm = new Uri("http://www.w3.org/2001/04/xmlenc#rsa-oaep-mgf1p"),
 				KeySize = 2048
 			};
 
-			ReadTest(xml, expected, (serializer, reader) =>
+			string writtenXml =
+			@"<?xml version='1.0' encoding='UTF-8'?>
+			<EncryptionMethod xmlns='http://www.w3.org/2001/04/xmlenc#'
+				xmlns:ds='http://www.w3.org/2000/09/xmldsig#'
+				Algorithm='http://www.w3.org/2001/04/xmlenc#rsa-oaep-mgf1p'>
+				<KeySize>2048</KeySize>
+				<OAEPparams>9lWu3Q==</OAEPparams>
+			</EncryptionMethod>";
+
+			AddTestData("XEncEncryptionMethod1", xml, writtenXml, obj);
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_ReadXEncEncryptionMethod()
+		{
+			ReadTest("XEncEncryptionMethod1", (serializer, reader) =>
+				serializer.TestReadXEncEncryptionMethod(reader));
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_WriteXEncEncryptionMethod()
+		{
+			WriteTest<XEncEncryptionMethod>("XEncEncryptionMethod1",
+				(serializer, writer, obj) =>
+					serializer.TestWriteXEncEncryptionMethod(writer, obj));
+		}
+
+		[TestData]
+		static void AddEncryptionMethodTestData()
+		{
+			string xml =
+			@"<?xml version='1.0' encoding='UTF-8'?>
+			<md:EncryptionMethod
+				xmlns:xenc='http://www.w3.org/2001/04/xmlenc#'
+				xmlns:md='urn:oasis:names:tc:SAML:2.0:metadata'
+				xmlns:ds='http://www.w3.org/2000/09/xmldsig#'
+				Algorithm='http://www.w3.org/2001/04/xmlenc#rsa-oaep-mgf1p'>
+				<xenc:KeySize>4096</xenc:KeySize>
+				<xenc:OAEPparams>9lWu3Q==</xenc:OAEPparams>
+			</md:EncryptionMethod>";
+
+			var obj = new EncryptionMethod
+			{
+				OAEPparams = Convert.FromBase64String("9lWu3Q=="),
+				Algorithm = new Uri("http://www.w3.org/2001/04/xmlenc#rsa-oaep-mgf1p"),
+				KeySize = 4096
+			};
+
+			AddTestData("EncryptionMethod1", xml, obj, true);
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_ReadEncryptionMethod()
+		{
+			ReadTest("EncryptionMethod1", (serializer, reader) =>
 				serializer.TestReadEncryptionMethod(reader));
 		}
 
 		[TestMethod]
-		public void MetadataSerializerTests_ReadCipherReference()
+		public void MetadataSerializerTests_WriteEncryptionMethod()
+		{
+			WriteTest<EncryptionMethod>("EncryptionMethod1",
+				(serializer, writer, obj) =>
+					serializer.TestWriteEncryptionMethod(writer, obj));
+		}
+
+		[TestData]
+		static void AddReadCipherReferenceTestData()
 		{
 			string xml =
 			@"<?xml version='1.0' encoding='UTF-8'?>
@@ -1234,7 +1813,7 @@ namespace Sustainsys.Saml2.Tests.Metadata
 			  </CipherReference>";
 			(XmlDocument doc, XmlNamespaceManager nsmgr) = LoadXml(xml);
 
-			var expected = new CipherReference
+			var obj = new CipherReference
 			{
 				Uri = new Uri("http://www.example.com/CipherValues.xml"),
 				Transforms = {
@@ -1245,12 +1824,26 @@ namespace Sustainsys.Saml2.Tests.Metadata
 				}
 			};
 
-			ReadTest(xml, expected, (serializer, reader) =>
+			AddTestData("CipherReference1", xml, obj);
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_ReadCipherReference()
+		{
+			ReadTest("CipherReference1", (serializer, reader) =>
 				serializer.TestReadCipherReference(reader));
 		}
 
 		[TestMethod]
-		public void MetadataSerializerTests_ReadCipherData()
+		public void MetadataSerializerTests_WriteCipherReference()
+		{
+			WriteTest<CipherReference>("CipherReference1",
+				(serializer, writer, obj) =>
+					serializer.TestWriteCipherReference(writer, obj));
+		}
+
+		[TestData]
+		public static void AddCipherDataTestData()
 		{
 			string xml =
 			@"<?xml version='1.0' encoding='UTF-8'?>
@@ -1260,20 +1853,35 @@ namespace Sustainsys.Saml2.Tests.Metadata
 			  </CipherData>";
 			(XmlDocument doc, XmlNamespaceManager nsmgr) = LoadXml(xml);
 
-			var expected = new CipherData
+			var obj = new CipherData
 			{
 				CipherValue = "DEADBEEF",
-				CipherReference = new CipherReference() {
+				CipherReference = new CipherReference()
+				{
 					Uri = new Uri("http://www.example.com/CipherValues.xml"),
 				}
 			};
 
-			ReadTest(xml, expected, (serializer, reader) =>
+			AddTestData("CipherData1", xml, obj);
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_ReadCipherData()
+		{
+			ReadTest("CipherData1", (serializer, reader) =>
 				serializer.TestReadCipherData(reader));
 		}
 
 		[TestMethod]
-		public void MetadataSerializerTests_ReadEncryptionProperty()
+		public void MetadataSerializerTests_WriteCipherData()
+		{
+			WriteTest<CipherData>("CipherData1",
+				(serializer, writer, obj) =>
+					serializer.TestWriteCipherData(writer, obj));
+		}
+
+		[TestData]
+		public static void AddEncryptionPropertyTestData()
 		{
 			string xml =
 			@"<?xml version='1.0' encoding='UTF-8'?>
@@ -1284,23 +1892,43 @@ namespace Sustainsys.Saml2.Tests.Metadata
 			  </EncryptionProperty>";
 			(XmlDocument doc, XmlNamespaceManager nsmgr) = LoadXml(xml);
 
-			var expected = new EncryptionProperty
+			var obj = new EncryptionProperty
 			{
 				Target = new Uri("http://enc.org/target"),
 				Id = "someId"
 			};
 
-			ReadTest(xml, expected, (serializer, reader) =>
+			string writtenXml =
+			@"<?xml version='1.0' encoding='UTF-8'?>
+			  <EncryptionProperty xmlns='http://www.w3.org/2001/04/xmlenc#'
+				Target='http://enc.org/target'
+				Id='someId'/>";
+
+			AddTestData("EncryptionProperty1", xml, writtenXml, obj);
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_ReadEncryptionProperty()
+		{
+			ReadTest("EncryptionProperty1", (serializer, reader) =>
 				serializer.TestReadEncryptionProperty(reader));
 		}
 
 		[TestMethod]
-		public void MetadataSerializerTests_ReadEncryptionProperties()
+		public void MetadataSerializerTests_WriteEncryptionProperty()
+		{
+			WriteTest<EncryptionProperty>("EncryptionProperty1",
+				(serializer, writer, obj) =>
+					serializer.TestWriteEncryptionProperty(writer, obj));
+		}
+
+		[TestData]
+		public static void AddEncryptionPropertiesTestData()
 		{
 			string xml =
 			@"<?xml version='1.0' encoding='UTF-8'?>
-			<EncryptionProperties Id='anId'>
-				  <EncryptionProperty xmlns='http://www.w3.org/2001/04/xmlenc#'
+			<EncryptionProperties Id='anId' xmlns='http://www.w3.org/2001/04/xmlenc#'>
+				  <EncryptionProperty
 					Target='http://enc.org/target'
 					Id='someId'>
 					<AnythingYouLike/>
@@ -1308,7 +1936,7 @@ namespace Sustainsys.Saml2.Tests.Metadata
 			</EncryptionProperties>";
 			(XmlDocument doc, XmlNamespaceManager nsmgr) = LoadXml(xml);
 
-			var expected = new EncryptionProperties
+			var obj = new EncryptionProperties
 			{
 				Properties = {
 					new EncryptionProperty
@@ -1320,12 +1948,34 @@ namespace Sustainsys.Saml2.Tests.Metadata
 				Id = "anId"
 			};
 
-			ReadTest(xml, expected, (serializer, reader) =>
+			string writtenXml =
+			@"<?xml version='1.0' encoding='UTF-8'?>
+			<EncryptionProperties Id='anId' xmlns='http://www.w3.org/2001/04/xmlenc#'>
+				  <EncryptionProperty
+					Target='http://enc.org/target'
+					Id='someId' />
+			</EncryptionProperties>";
+
+			AddTestData("EncryptionProperties1", xml, writtenXml, obj);
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_ReadEncryptionProperties()
+		{
+			ReadTest("EncryptionProperties1", (serializer, reader) =>
 				serializer.TestReadEncryptionProperties(reader));
 		}
 
 		[TestMethod]
-		public void MetadataSerializerTests_ReadEncryptedData()
+		public void MetadataSerializerTests_WriteEncryptionProperties()
+		{
+			WriteTest<EncryptionProperties>("EncryptionProperties1",
+				(serializer, writer, obj) =>
+					serializer.TestWriteEncryptionProperties(writer, obj));
+		}
+
+		[TestData]
+		public static void AddEncryptedDataTestData()
 		{
 			string xml =
 			@"<?xml version='1.0' encoding='UTF-8'?>
@@ -1334,7 +1984,7 @@ namespace Sustainsys.Saml2.Tests.Metadata
 				xmlns:ds='http://www.w3.org/2000/09/xmldsig#'
 				Id='ENCDATAID'
 				MimeType='text/plain'
-				Encoding='https://encoding.org'
+				Encoding='https://encoding.org/'
 				Type='http://www.w3.org/2001/04/xmlenc#Element'>
 				<EncryptionMethod
 					Algorithm='http://www.w3.org/2001/04/xmlenc#tripledes-cbc'/>
@@ -1346,13 +1996,12 @@ namespace Sustainsys.Saml2.Tests.Metadata
 					  <EncryptionProperty xmlns='http://www.w3.org/2001/04/xmlenc#'
 						Target='http://enc.org/target2'
 						Id='someId2'>
-						<AnythingYouLike/>
 					  </EncryptionProperty>
 				</EncryptionProperties>
 			</EncryptedData>";
 			(XmlDocument doc, XmlNamespaceManager nsmgr) = LoadXml(xml);
 
-			var expected = new EncryptedData
+			var obj = new EncryptedData
 			{
 				CipherData = new CipherData
 				{
@@ -1364,7 +2013,7 @@ namespace Sustainsys.Saml2.Tests.Metadata
 						"John Smith"
 					}
 				},
-				EncryptionMethod = new EncryptionMethod
+				EncryptionMethod = new XEncEncryptionMethod
 				{
 					Algorithm = new Uri("http://www.w3.org/2001/04/xmlenc#tripledes-cbc")
 				},
@@ -1385,12 +2034,48 @@ namespace Sustainsys.Saml2.Tests.Metadata
 				Encoding = new Uri("https://encoding.org")
 			};
 
-			ReadTest(xml, expected, (serializer, reader) =>
+			string writtenXml =
+			@"<?xml version='1.0' encoding='UTF-8'?>
+			<EncryptedData
+				xmlns='http://www.w3.org/2001/04/xmlenc#'
+				xmlns:ds='http://www.w3.org/2000/09/xmldsig#'
+				Id='ENCDATAID'
+				MimeType='text/plain'
+				Encoding='https://encoding.org/'
+				Type='http://www.w3.org/2001/04/xmlenc#Element'>
+				<EncryptionMethod
+					Algorithm='http://www.w3.org/2001/04/xmlenc#tripledes-cbc'/>
+				<ds:KeyInfo xmlns:ds='http://www.w3.org/2000/09/xmldsig#'>
+					<ds:KeyName>John Smith</ds:KeyName>
+				</ds:KeyInfo>
+				<CipherData><CipherValue>DEADBEEF</CipherValue></CipherData>
+				<EncryptionProperties Id='anId2'>
+					  <EncryptionProperty xmlns='http://www.w3.org/2001/04/xmlenc#'
+						Target='http://enc.org/target2'
+						Id='someId2' />
+				</EncryptionProperties>
+			</EncryptedData>";
+
+			AddTestData("EncryptedData1", xml, writtenXml, obj);
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_ReadEncryptedData()
+		{
+			ReadTest("EncryptedData1", (serializer, reader) =>
 				serializer.TestReadEncryptedData(reader));
 		}
 
 		[TestMethod]
-		public void MetadataSerializerTests_ReadEncryptedValue()
+		public void MetadataSerializerTests_WriteEncryptedData()
+		{
+			WriteTest<EncryptedData>("EncryptedData1",
+				(serializer, writer, obj) =>
+					serializer.TestWriteEncryptedData(writer, obj));
+		}
+
+		[TestData]
+		public static void AddEncryptedValueTestData()
 		{
 			string xml =
 			@"<?xml version='1.0' encoding='UTF-8'?>
@@ -1409,7 +2094,7 @@ namespace Sustainsys.Saml2.Tests.Metadata
 			</auth:EncryptedValue>";
 			(XmlDocument doc, XmlNamespaceManager nsmgr) = LoadXml(xml);
 
-			var expected = new EncryptedValue
+			var obj = new EncryptedValue
 			{
 				EncryptedData = new EncryptedData()
 				{
@@ -1423,19 +2108,33 @@ namespace Sustainsys.Saml2.Tests.Metadata
 							"John Smith"
 						}
 					},
-					EncryptionMethod = new EncryptionMethod
+					EncryptionMethod = new XEncEncryptionMethod
 					{
 						Algorithm = new Uri("http://www.w3.org/2001/04/xmlenc#tripledes-cbc")
 					}
 				}
 			};
 
-			ReadTest(xml, expected, (serializer, reader) =>
+			AddTestData("EncryptedValue1", xml, obj);
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_ReadEncryptedValue()
+		{
+			ReadTest("EncryptedValue1", (serializer, reader) =>
 				serializer.TestReadEncryptedValue(reader));
 		}
 
 		[TestMethod]
-		public void MetadataSerializerTests_ReadClaimValue_Value()
+		public void MetadataSerializerTests_WriteEncryptedValue()
+		{
+			WriteTest<EncryptedValue>("EncryptedValue1",
+				(serializer, writer, obj) =>
+					serializer.TestWriteEncryptedValue(writer, obj));
+		}
+
+		[TestData]
+		public static void AddClaimValueTestData()
 		{
 			string xml =
 			@"<?xml version='1.0' encoding='UTF-8'?>
@@ -1445,13 +2144,31 @@ namespace Sustainsys.Saml2.Tests.Metadata
 			</auth:ValueLessThan>";
 			(XmlDocument doc, XmlNamespaceManager nsmgr) = LoadXml(xml);
 
-			var expected = new ClaimValue
+			var obj = new ClaimValue
 			{
 				Value = "Some Value"
 			};
 
-			ReadTest(xml, expected, (serializer, reader) =>
+			string writtenXml =
+			@"<?xml version='1.0' encoding='UTF-8'?>
+			<auth:Value xmlns:auth='http://docs.oasis-open.org/wsfed/authorization/200706'>Some Value</auth:Value>";
+
+			AddTestData("ClaimValue1", xml, writtenXml, obj);
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_ReadClaimValue_Value()
+		{
+			ReadTest("ClaimValue1", (serializer, reader) =>
 				serializer.TestReadClaimValue(reader));
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_WriteClaimValue()
+		{
+			WriteTest<ClaimValue>("ClaimValue1",
+				(serializer, writer, obj) =>
+					serializer.TestWriteClaimValue(writer, obj));
 		}
 
 		[TestMethod]
@@ -1479,8 +2196,8 @@ namespace Sustainsys.Saml2.Tests.Metadata
 				serializer.TestReadClaimValue(reader));
 		}
 
-		[TestMethod]
-		public void MetadataSerializerTests_ReadConstainedValue()
+		[TestData]
+		public static void AddConstrainedValueTestData()
 		{
 			string xml =
 			@"<?xml version='1.0' encoding='UTF-8'?>
@@ -1504,7 +2221,7 @@ namespace Sustainsys.Saml2.Tests.Metadata
 			</auth:ConstrainedValue>";
 			(XmlDocument doc, XmlNamespaceManager nsmgr) = LoadXml(xml);
 
-			var expected = new ConstrainedValue
+			var obj = new ConstrainedValue
 			{
 				AssertConstraint = true,
 				Constraints = {
@@ -1546,12 +2263,26 @@ namespace Sustainsys.Saml2.Tests.Metadata
 				}
 			};
 
-			ReadTest(xml, expected, (serializer, reader) =>
+			AddTestData("ConstrainedValue1", xml, obj);
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_ReadConstainedValue()
+		{
+			ReadTest("ConstrainedValue1", (serializer, reader) =>
 				serializer.TestReadConstrainedValue(reader));
 		}
 
 		[TestMethod]
-		public void MetadataSerializerTests_ReadDisplayClaim()
+		public void MetadataSerializerTests_WriteConstainedValue()
+		{
+			WriteTest<ConstrainedValue>("ConstrainedValue1",
+				(serializer, writer, obj) =>
+					serializer.TestWriteConstrainedValue(writer, obj));
+		}
+
+		[TestData]
+		public static void AddDisplayClaimTestData()
 		{
 			string xml =
 			@"<?xml version='1.0' encoding='UTF-8'?>
@@ -1577,7 +2308,7 @@ namespace Sustainsys.Saml2.Tests.Metadata
 			</auth:ClaimType>";
 			(XmlDocument doc, XmlNamespaceManager nsmgr) = LoadXml(xml);
 
-			var expected = new DisplayClaim("https://saml.claim.type/")
+			var obj = new DisplayClaim("https://saml.claim.type/")
 			{
 				Optional = false,
 				DisplayName = "The claim name",
@@ -1603,7 +2334,7 @@ namespace Sustainsys.Saml2.Tests.Metadata
 								"John Smith"
 							}
 						},
-						EncryptionMethod = new EncryptionMethod
+						EncryptionMethod = new XEncEncryptionMethod
 						{
 							Algorithm = new Uri("http://www.w3.org/2001/04/xmlenc#tripledes-cbc")
 						}
@@ -1611,12 +2342,26 @@ namespace Sustainsys.Saml2.Tests.Metadata
 				}
 			};
 
-			ReadTest(xml, expected, (serializer, reader) =>
+			AddTestData("DisplayClaim1", xml, obj);
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_ReadDisplayClaim()
+		{
+			ReadTest("DisplayClaim1", (serializer, reader) =>
 				serializer.TestReadDisplayClaim(reader));
 		}
 
 		[TestMethod]
-		public void MetadataSerializerTests_ReadEntitiesDescriptor()
+		public void MetadataSerializerTests_WriteDisplayClaim()
+		{
+			WriteTest<DisplayClaim>("DisplayClaim1",
+				(serializer, writer, obj) =>
+					serializer.TestWriteDisplayClaim(writer, obj));
+		}
+
+		[TestData]
+		public static void AddEntitiesDescriptorTestData()
 		{
 			string xml =
 			@"<?xml version='1.0' encoding='UTF-8'?>
@@ -1743,7 +2488,8 @@ namespace Sustainsys.Saml2.Tests.Metadata
 			</EntitiesDescriptor>";
 			(XmlDocument doc, XmlNamespaceManager nsmgr) = LoadXml(xml);
 
-			var expected = new EntitiesDescriptor {
+			var obj = new EntitiesDescriptor
+			{
 				Name = "https://your-federation.org/metadata/federation-name.xml",
 				ChildEntities = {
 					new EntityDescriptor(new EntityId("https://idp.example.org/idp/shibboleth")) {
@@ -1791,7 +2537,7 @@ namespace Sustainsys.Saml2.Tests.Metadata
 									}
 								}
 							},
-							new AttributeAuthorityDescriptor() { 
+							new AttributeAuthorityDescriptor() {
 								ProtocolsSupported = {
 									new Uri("urn:oasis:names:tc:SAML:1.1:protocol"),
 									new Uri("urn:oasis:names:tc:SAML:2.0:protocol")
@@ -1954,12 +2700,26 @@ namespace Sustainsys.Saml2.Tests.Metadata
 				}
 			};
 
-			ReadTest(xml, expected, (serializer, reader) =>
+			AddTestData("EntitiesDescriptor1", xml, obj, true);
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_ReadEntitiesDescriptor()
+		{
+			ReadTest("EntitiesDescriptor1", (serializer, reader) =>
 				serializer.TestReadEntitiesDescriptor(reader));
 		}
 
 		[TestMethod]
-		public void MetadataSerializerTests_ReadSaml2Attribute()
+		public void MetadataSerializerTests_WriteEntitiesDescriptor()
+		{
+			WriteTest<EntitiesDescriptor>("EntitiesDescriptor1",
+				(serializer, writer, obj) =>
+					serializer.TestWriteEntitiesDescriptor(writer, obj));
+		}
+
+		[TestData]
+		public static void AddSaml2AttributeTestData()
 		{
 			string xml =
 			@"<?xml version='1.0' encoding='UTF-8'?>
@@ -1973,18 +2733,32 @@ namespace Sustainsys.Saml2.Tests.Metadata
 				</saml:Attribute>";
 			(XmlDocument doc, XmlNamespaceManager nsmgr) = LoadXml(xml);
 
-			var expected = new Saml2Attribute("testAtt", "attValue")
+			var obj = new Saml2Attribute("testAtt", "attValue")
 			{
 				NameFormat = new Uri("http://idp.example.com/nameformat"),
 				FriendlyName = "friendlyAtt"
 			};
-				
-			ReadTest(xml, expected, (serializer, reader) =>
+
+			AddTestData("Saml2AttributeTest1", xml, obj);
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_ReadSaml2Attribute()
+		{
+			ReadTest("Saml2AttributeTest1", (serializer, reader) =>
 				serializer.TestReadSaml2Attribute(reader));
 		}
 
 		[TestMethod]
-		public void MetadataSerializerTests_ReadKeyDescriptor()
+		public void MetadataSerializerTests_WriteSaml2Attribute()
+		{
+			WriteTest<Saml2Attribute>("Saml2AttributeTest1",
+				(serializer, writer, obj) =>
+					serializer.TestWriteAttribute(writer, obj));
+		}
+
+		[TestData]
+		public static void AddKeyDescriptorTestData()
 		{
 			string xml =
 			@"<?xml version='1.0' encoding='UTF-8'?>
@@ -2004,7 +2778,7 @@ namespace Sustainsys.Saml2.Tests.Metadata
 				</md:KeyDescriptor>";
 			(XmlDocument doc, XmlNamespaceManager nsmgr) = LoadXml(xml);
 
-			var expected = new KeyDescriptor
+			var obj = new KeyDescriptor
 			{
 				Use = KeyType.Encryption,
 				KeyInfo = new DSigKeyInfo
@@ -2020,12 +2794,42 @@ namespace Sustainsys.Saml2.Tests.Metadata
 				}
 			};
 
-			ReadTest(xml, expected, (serializer, reader) =>
+			string writtenXml =
+			@"<?xml version='1.0' encoding='UTF-8'?>
+				<md:KeyDescriptor
+					xmlns:md='urn:oasis:names:tc:SAML:2.0:metadata'
+					xmlns:ds='http://www.w3.org/2000/09/xmldsig#'
+					xmlns:xenc='http://www.w3.org/2001/04/xmlenc#'
+					use='encryption'>
+					<ds:KeyInfo>
+						<ds:KeyName>string</ds:KeyName>
+					</ds:KeyInfo>
+					<md:EncryptionMethod Algorithm='http://www.example.com/'>
+						<xenc:KeySize>1</xenc:KeySize>
+						<xenc:OAEPparams>GpM7</xenc:OAEPparams>
+					</md:EncryptionMethod>
+				</md:KeyDescriptor>";
+
+			AddTestData("KeyDescriptor1", xml, writtenXml, obj);
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_ReadKeyDescriptor()
+		{
+			ReadTest("KeyDescriptor1", (serializer, reader) =>
 				serializer.TestReadKeyDescriptor(reader));
 		}
 
 		[TestMethod]
-		public void MetadataSerializerTests_ReadAffiliationDescriptor()
+		public void MetadataSerializerTests_WriteKeyDescriptor()
+		{
+			WriteTest<KeyDescriptor>("KeyDescriptor1",
+				(serializer, writer, obj) =>
+					serializer.TestWriteKeyDescriptor(writer, obj));
+		}
+
+		[TestData]
+		public static void AddAffiliationDescriptorTestData()
 		{
 			string xml =
 			@"<?xml version='1.0' encoding='UTF-8'?>
@@ -2033,8 +2837,8 @@ namespace Sustainsys.Saml2.Tests.Metadata
 					xmlns:md='urn:oasis:names:tc:SAML:2.0:metadata'
 					xmlns:ds='http://www.w3.org/2000/09/xmldsig#'
 					xmlns:xenc='http://www.w3.org/2001/04/xmlenc#'
-					cacheDuration='P0Y3M2DT9H12M00S'
-					validUntil='2019-02-02T15:16:17'
+					cacheDuration='P3M2DT9H12M'
+					validUntil='2019-02-02T15:16:17Z'
 					affiliationOwnerID='mr owner'
 					ID='yourGUIDhere'>
 					<md:Extensions>
@@ -2054,9 +2858,9 @@ namespace Sustainsys.Saml2.Tests.Metadata
 				</md:AffiliationDescriptor>";
 			(XmlDocument doc, XmlNamespaceManager nsmgr) = LoadXml(xml);
 
-			var expected = new AffiliationDescriptor
+			var obj = new AffiliationDescriptor
 			{
-				CacheDuration = new TimeSpan(3 * 30 + 2, 9, 12, 0),
+				CacheDuration = new XsdDuration(months: 3, days: 2, hours: 9, minutes: 12),
 				ValidUntil = new DateTime(2019, 02, 02, 15, 16, 17),
 				AffiliationOwnerId = new EntityId("mr owner"),
 				Id = "yourGUIDhere",
@@ -2083,12 +2887,52 @@ namespace Sustainsys.Saml2.Tests.Metadata
 				}
 			};
 
-			ReadTest(xml, expected, (serializer, reader) =>
+			string writtenXml =
+			@"<?xml version='1.0' encoding='UTF-8'?>
+				<md:AffiliationDescriptor 
+					xmlns:md='urn:oasis:names:tc:SAML:2.0:metadata'
+					xmlns:ds='http://www.w3.org/2000/09/xmldsig#'
+					xmlns:xenc='http://www.w3.org/2001/04/xmlenc#'
+					cacheDuration='P3M2DT9H12M'
+					validUntil='2019-02-02T15:16:17Z'
+					affiliationOwnerID='mr owner'
+					ID='yourGUIDhere'>
+					<md:Extensions>
+						<ext-elt/>
+					</md:Extensions>
+					<md:AffiliateMember>http://idp.example.org</md:AffiliateMember>
+					<md:KeyDescriptor>
+						<ds:KeyInfo>
+							<ds:KeyName>string</ds:KeyName>
+						</ds:KeyInfo>
+						<md:EncryptionMethod Algorithm='http://www.example.com/'>
+							<xenc:KeySize>1</xenc:KeySize>
+							<xenc:OAEPparams>GpM7</xenc:OAEPparams>
+							<!--any element-->
+						</md:EncryptionMethod>
+					</md:KeyDescriptor>
+				</md:AffiliationDescriptor>";
+
+			AddTestData("AffiliationDescriptor1", xml, writtenXml, obj);
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_ReadAffiliationDescriptor()
+		{
+			ReadTest("AffiliationDescriptor1", (serializer, reader) =>
 				serializer.TestReadAffiliationDescriptor(reader));
 		}
 
 		[TestMethod]
-		public void MetadataSerializerTests_AdditionalMetadataLocation()
+		public void MetadataSerializerTests_WriteAffiliationDescriptor()
+		{
+			WriteTest<AffiliationDescriptor>("AffiliationDescriptor1",
+				(serializer, writer, obj) =>
+					serializer.TestWriteAffiliationDescriptor(writer, obj));
+		}
+
+		[TestData]
+		public static void AddAdditionalMetadataLocationTestData()
 		{
 			string xml =
 			@"<?xml version='1.0' encoding='UTF-8'?>
@@ -2099,18 +2943,32 @@ namespace Sustainsys.Saml2.Tests.Metadata
 			</md:AdditionalMetadataLocation>";
 			(XmlDocument doc, XmlNamespaceManager nsmgr) = LoadXml(xml);
 
-			var expected = new AdditionalMetadataLocation
+			var obj = new AdditionalMetadataLocation
 			{
 				Namespace = "http://oasis.org/saml-more#",
 				Uri = new Uri("http://www.example.com/")
 			};
 
-			ReadTest(xml, expected, (serializer, reader) =>
+			AddTestData("AdditionalMetadataLocation", xml, obj, true);
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_ReadAdditionalMetadataLocation()
+		{
+			ReadTest("AdditionalMetadataLocation", (serializer, reader) =>
 				serializer.TestReadAdditionalMetadataLocation(reader));
 		}
 
 		[TestMethod]
-		public void MetadataSerializerTests_ReadPDPDescriptor()
+		public void MetadataSerializerTests_WriteAdditionalMetadataLocation()
+		{
+			WriteTest<AdditionalMetadataLocation>("AdditionalMetadataLocation",
+				(serializer, writer, obj) =>
+					serializer.TestWriteAdditionalMetadataLocation(writer, obj));
+		}
+
+		[TestData]
+		public static void AddPDPDescriptorTestData()
 		{
 			string xml =
 			@"<?xml version='1.0' encoding='UTF-8'?>
@@ -2179,7 +3037,8 @@ namespace Sustainsys.Saml2.Tests.Metadata
 				</md:PDPDescriptor>";
 			(XmlDocument doc, XmlNamespaceManager nsmgr) = LoadXml(xml);
 
-			var expected = new PDPDescriptor {
+			var obj = new PDPDescriptor
+			{
 				Id = "ID",
 				ProtocolsSupported = {
 					new Uri("http://www.example.com/"),
@@ -2200,7 +3059,8 @@ namespace Sustainsys.Saml2.Tests.Metadata
 						}
 					}
 				},
-				Organization = new Organization {
+				Organization = new Organization
+				{
 					Extensions = { },
 					Names = {
 						new LocalizedName("string", "en-US")
@@ -2243,12 +3103,60 @@ namespace Sustainsys.Saml2.Tests.Metadata
 				}
 			};
 
-			ReadTest(xml, expected, (serializer, reader) =>
+			string writtenXml =
+			@"<?xml version='1.0' encoding='UTF-8'?>
+				<md:PDPDescriptor
+					xmlns:ds='http://www.w3.org/2000/09/xmldsig#'
+					xmlns:md='urn:oasis:names:tc:SAML:2.0:metadata'
+					xmlns:xenc='http://www.w3.org/2001/04/xmlenc#'
+					ID='ID' 
+					protocolSupportEnumeration='http://www.example.com/ http://www.example.com/'>
+				   <md:KeyDescriptor>
+					  <ds:KeyInfo>
+						 <ds:KeyName>string</ds:KeyName>
+					  </ds:KeyInfo>
+					  <md:EncryptionMethod Algorithm='http://www.example.com/'>
+						 <xenc:KeySize>1</xenc:KeySize>
+						 <xenc:OAEPparams>GpM7</xenc:OAEPparams>
+					  </md:EncryptionMethod>
+				   </md:KeyDescriptor>
+				   <md:Organization>
+					  <md:OrganizationName xml:lang='en-US'>string</md:OrganizationName>
+					  <md:OrganizationDisplayName xml:lang='en-US'>string</md:OrganizationDisplayName>
+					  <md:OrganizationURL xml:lang='en-US'>http://www.example.com/</md:OrganizationURL>
+				   </md:Organization>
+				   <md:ContactPerson contactType='technical'>
+					  <md:Company>string</md:Company>
+					  <md:GivenName>string</md:GivenName>
+					  <md:SurName>string</md:SurName>
+					  <md:EmailAddress>http://www.example.com/</md:EmailAddress>
+					  <md:TelephoneNumber>string</md:TelephoneNumber>
+				   </md:ContactPerson>
+				   <md:AuthzService Binding='http://www.example.com/' Location='http://www.example.com/'/>
+				   <md:AssertionIDRequestService Binding='http://www.example.com/' Location='http://www.example.com/'/>
+				   <md:NameIDFormat>http://www.example.com/</md:NameIDFormat>
+				</md:PDPDescriptor>";
+
+			AddTestData("PDPDescriptor1", xml, writtenXml, obj);
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_ReadPDPDescriptor()
+		{
+			ReadTest("PDPDescriptor1", (serializer, reader) =>
 				serializer.TestReadPDPDescriptor(reader));
 		}
 
 		[TestMethod]
-		public void MetadataSerializerTests_ReadAuthnAuthorityDescriptor()
+		public void MetadataSerializerTests_WritePDPDescriptor()
+		{
+			WriteTest<PDPDescriptor>("PDPDescriptor1",
+				(serializer, writer, obj) =>
+					serializer.TestWritePDPDescriptor(writer, obj));
+		}
+
+		[TestData]
+		public static void AddAuthnAuthorityDescriptorTestData()
 		{
 			string xml =
 			@"<?xml version='1.0' encoding='UTF-8'?>
@@ -2316,7 +3224,8 @@ namespace Sustainsys.Saml2.Tests.Metadata
 				</md:AuthnAuthorityDescriptor>";
 			(XmlDocument doc, XmlNamespaceManager nsmgr) = LoadXml(xml);
 
-			var expected = new AuthnAuthorityDescriptor {
+			var obj = new AuthnAuthorityDescriptor
+			{
 				Id = "ID",
 				ProtocolsSupported = {
 					new Uri("http://www.example.com/"),
@@ -2337,7 +3246,8 @@ namespace Sustainsys.Saml2.Tests.Metadata
 						}
 					}
 				},
-				Organization = new Organization {
+				Organization = new Organization
+				{
 					Extensions = { },
 					Names = {
 						new LocalizedName("string", "en-US")
@@ -2379,12 +3289,60 @@ namespace Sustainsys.Saml2.Tests.Metadata
 				}
 			};
 
-			ReadTest(xml, expected, (serializer, reader) =>
+			string writtenXml =
+			@"<?xml version='1.0' encoding='UTF-8'?>
+				<md:AuthnAuthorityDescriptor 
+					xmlns:md='urn:oasis:names:tc:SAML:2.0:metadata'
+					xmlns:xenc='http://www.w3.org/2001/04/xmlenc#'
+					xmlns:ds='http://www.w3.org/2000/09/xmldsig#'
+					ID='ID' protocolSupportEnumeration='http://www.example.com/ http://www.example.com/'>
+				   <md:KeyDescriptor>
+					  <ds:KeyInfo>
+						 <ds:KeyName>string</ds:KeyName>
+					  </ds:KeyInfo>
+					  <md:EncryptionMethod Algorithm='http://www.example.com/'>
+						 <xenc:KeySize>1</xenc:KeySize>
+						 <xenc:OAEPparams>GpM7</xenc:OAEPparams>
+						 <!--any element-->
+					  </md:EncryptionMethod>
+				   </md:KeyDescriptor>
+				   <md:Organization>
+					  <md:OrganizationName xml:lang='en-US'>string</md:OrganizationName>
+					  <md:OrganizationDisplayName xml:lang='en-US'>string</md:OrganizationDisplayName>
+					  <md:OrganizationURL xml:lang='en-US'>http://www.example.com/</md:OrganizationURL>
+				   </md:Organization>
+				   <md:ContactPerson contactType='technical'>
+					  <md:Company>string</md:Company>
+					  <md:GivenName>string</md:GivenName>
+					  <md:SurName>string</md:SurName>
+					  <md:EmailAddress>http://www.example.com/</md:EmailAddress>
+					  <md:TelephoneNumber>string</md:TelephoneNumber>
+				   </md:ContactPerson>
+				   <md:AuthnQueryService Binding='http://www.example.com/' Location='http://www.example.com/' />
+				   <md:AssertionIDRequestService Binding='http://www.example.com/' Location='http://www.example.com/' />
+				   <md:NameIDFormat>http://www.example.com/</md:NameIDFormat>
+				</md:AuthnAuthorityDescriptor>";
+
+			AddTestData("AuthnAuthorityDescriptor1", xml, writtenXml, obj);
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_ReadAuthnAuthorityDescriptor()
+		{
+			ReadTest("AuthnAuthorityDescriptor1", (serializer, reader) =>
 				serializer.TestReadAuthnAuthorityDescriptor(reader));
 		}
 
 		[TestMethod]
-		public void MetadataSerializerTests_ReadAttributeAuthorityDescriptor()
+		public void MetadataSerializerTests_WriteAuthnAuthorityDescriptor()
+		{
+			WriteTest<AuthnAuthorityDescriptor>("AuthnAuthorityDescriptor1",
+				(serializer, writer, obj) =>
+					serializer.TestWriteAuthnAuthorityDescriptor(writer, obj));
+		}
+
+		[TestData]
+		public static void AddAttributeAuthorityDescriptorTestData()
 		{
 			string xml =
 			@"<?xml version='1.0' encoding='UTF-8'?>
@@ -2458,7 +3416,7 @@ namespace Sustainsys.Saml2.Tests.Metadata
 				</md:AttributeAuthorityDescriptor>";
 			(XmlDocument doc, XmlNamespaceManager nsmgr) = LoadXml(xml);
 
-			var expected = new AttributeAuthorityDescriptor
+			var obj = new AttributeAuthorityDescriptor
 			{
 				Id = "ID",
 				ProtocolsSupported = {
@@ -2531,12 +3489,66 @@ namespace Sustainsys.Saml2.Tests.Metadata
 				}
 			};
 
-			ReadTest(xml, expected, (serializer, reader) =>
+			string writtenXml =
+			@"<?xml version='1.0' encoding='UTF-8'?>
+				<md:AttributeAuthorityDescriptor 
+					xmlns:md='urn:oasis:names:tc:SAML:2.0:metadata'
+					xmlns:xenc='http://www.w3.org/2001/04/xmlenc#'
+					xmlns:ds='http://www.w3.org/2000/09/xmldsig#'
+					xmlns:saml='urn:oasis:names:tc:SAML:2.0:assertion'
+					ID='ID'
+					protocolSupportEnumeration='http://www.example.com/ http://www.example.com/'>
+				   <md:KeyDescriptor>
+					  <ds:KeyInfo>
+						 <ds:KeyName>string</ds:KeyName>
+					  </ds:KeyInfo>
+					  <md:EncryptionMethod Algorithm='http://www.example.com/'>
+						 <xenc:KeySize>1</xenc:KeySize>
+						 <xenc:OAEPparams>GpM7</xenc:OAEPparams>
+						 <!--any element-->
+					  </md:EncryptionMethod>
+				   </md:KeyDescriptor>
+				   <md:Organization>
+					  <md:OrganizationName xml:lang='en-US'>string</md:OrganizationName>
+					  <md:OrganizationDisplayName xml:lang='en-US'>string</md:OrganizationDisplayName>
+					  <md:OrganizationURL xml:lang='en-US'>http://www.example.com/</md:OrganizationURL>
+				   </md:Organization>
+				   <md:ContactPerson contactType='technical'>
+					  <md:Company>string</md:Company>
+					  <md:GivenName>string</md:GivenName>
+					  <md:SurName>string</md:SurName>
+					  <md:EmailAddress>http://www.example.com/</md:EmailAddress>
+					  <md:TelephoneNumber>string</md:TelephoneNumber>
+				   </md:ContactPerson>
+				   <md:AttributeService Binding='http://www.example.com/' Location='http://www.example.com/'/>
+				   <md:AssertionIDRequestService Binding='http://www.example.com/' Location='http://www.example.com/'/>
+				   <md:NameIDFormat>http://www.example.com/</md:NameIDFormat>
+				   <md:AttributeProfile>http://www.example.com/</md:AttributeProfile>
+				   <saml:Attribute Name='string'>
+					  <saml:AttributeValue>any content</saml:AttributeValue>
+				   </saml:Attribute>
+				</md:AttributeAuthorityDescriptor>";
+
+			AddTestData("AttributeAuthorityDescriptor1", xml, writtenXml, obj);
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_ReadAttributeAuthorityDescriptor()
+		{
+			ReadTest("AttributeAuthorityDescriptor1", (serializer, reader) =>
 				serializer.TestReadAttributeAuthorityDescriptor(reader));
 		}
 
 		[TestMethod]
-		public void MetadataSerializerTests_ReadNameIDFormat()
+		public void MetadataSerializerTests_WriteAttributeAuthorityDescriptor()
+		{
+			WriteTest<AttributeAuthorityDescriptor>("AttributeAuthorityDescriptor1",
+				(serializer, writer, obj) =>
+					serializer.TestWriteAttributeAuthorityDescriptor(writer, obj));
+		}
+
+		[TestData]
+		public static void AddNameIDFormatTestData()
 		{
 			string xml =
 			@"<?xml version='1.0' encoding='UTF-8'?>
@@ -2546,17 +3558,31 @@ namespace Sustainsys.Saml2.Tests.Metadata
 				</md:NameIDFormat>";
 			(XmlDocument doc, XmlNamespaceManager nsmgr) = LoadXml(xml);
 
-			var expected = new NameIDFormat
+			var obj = new NameIDFormat
 			{
 				Uri = new Uri("http://www.example.org/"),
 			};
 
-			ReadTest(xml, expected, (serializer, reader) =>
+			AddTestData("NameIDFormat1", xml, obj, true);
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_ReadNameIDFormat()
+		{
+			ReadTest("NameIDFormat1", (serializer, reader) =>
 				serializer.TestReadNameIDFormat(reader));
 		}
 
 		[TestMethod]
-		public void MetadataSerializerTests_ReadEntityDescriptor()
+		public void MetadataSerializerTests_WriteNameIDFormat()
+		{
+			WriteTest<NameIDFormat>("NameIDFormat1",
+				(serializer, writer, obj) =>
+					serializer.TestWriteNameIDFormat(writer, obj));
+		}
+
+		[TestData]
+		public static void AddEntityDescriptorTestData()
 		{
 			string xml =
 			@"<?xml version='1.0' encoding='UTF-8'?>
@@ -2689,7 +3715,8 @@ namespace Sustainsys.Saml2.Tests.Metadata
 			</EntityDescriptor>";
 			(XmlDocument doc, XmlNamespaceManager nsmgr) = LoadXml(xml);
 
-			var expected = new EntityDescriptor(new EntityId("https://idp.example.org/idp/shibboleth")) {
+			var obj = new EntityDescriptor(new EntityId("https://idp.example.org/idp/shibboleth"))
+			{
 				RoleDescriptors = {
 					new IdpSsoDescriptor
 					{
@@ -2851,7 +3878,8 @@ namespace Sustainsys.Saml2.Tests.Metadata
 						}
 					}
 				},
-				Organization = new Organization {
+				Organization = new Organization
+				{
 					Names = {
 						new LocalizedName("Your Identities", "en")
 					},
@@ -2872,38 +3900,185 @@ namespace Sustainsys.Saml2.Tests.Metadata
 				}
 			};
 
-			ReadTest(xml, expected, (serializer, reader) =>
+			string writtenXml =
+			@"<?xml version='1.0' encoding='UTF-8'?>
+			<EntityDescriptor
+				xmlns='urn:oasis:names:tc:SAML:2.0:metadata'
+				xmlns:ds='http://www.w3.org/2000/09/xmldsig#'
+				xmlns:shibmd='urn:mace:shibboleth:metadata:1.0'
+				xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'
+				xmlns:xenc='http://www.w3.org/2001/04/xmlenc#'
+				entityID='https://idp.example.org/idp/shibboleth'>
+				<IDPSSODescriptor protocolSupportEnumeration='urn:mace:shibboleth:1.0 urn:oasis:names:tc:SAML:2.0:protocol'>
+					<Extensions>
+						<shibmd:Scope regexp='false'>example.org</shibmd:Scope>
+					</Extensions>
+					<KeyDescriptor>
+						<ds:KeyInfo>
+						<ds:X509Data>
+							<ds:X509Certificate>" + certData + @"</ds:X509Certificate>
+							</ds:X509Data>
+						</ds:KeyInfo>
+					</KeyDescriptor>
+ 
+					<NameIDFormat>urn:mace:shibboleth:1.0:nameIdentifier</NameIDFormat>
+					<NameIDFormat>urn:oasis:names:tc:SAML:2.0:nameid-format:transient</NameIDFormat>
+ 
+					<SingleSignOnService Binding='urn:mace:shibboleth:1.0:profiles:AuthnRequest'
+							Location='https://idp.example.org/idp/profile/Shibboleth/SSO' />
+         
+					<SingleSignOnService Binding='urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST'
+							Location='https://idp.example.org/idp/profile/SAML2/POST/SSO' />
+ 
+					<SingleSignOnService Binding='urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect'
+							Location='https://idp.example.org/idp/profile/SAML2/Redirect/SSO' />
+				</IDPSSODescriptor>
+     
+				<AttributeAuthorityDescriptor protocolSupportEnumeration='urn:oasis:names:tc:SAML:1.1:protocol urn:oasis:names:tc:SAML:2.0:protocol'>
+					<KeyDescriptor>
+						<ds:KeyInfo>
+							<ds:X509Data>
+								<ds:X509Certificate>" + certData + @"</ds:X509Certificate>
+							</ds:X509Data>
+						</ds:KeyInfo>
+					</KeyDescriptor>
+ 
+					<AttributeService Binding='urn:oasis:names:tc:SAML:1.0:bindings:SOAP-binding'
+									Location='https://idp.example.org:8443/idp/profile/SAML1/SOAP/AttributeQuery' />
+         
+					<AttributeService Binding='urn:oasis:names:tc:SAML:2.0:bindings:SOAP'
+									Location='https://idp.example.org:8443/idp/profile/SAML2/SOAP/AttributeQuery' />
+         
+					<NameIDFormat>urn:mace:shibboleth:1.0:nameIdentifier</NameIDFormat>
+					<NameIDFormat>urn:oasis:names:tc:SAML:2.0:nameid-format:transient</NameIDFormat>
+ 
+				</AttributeAuthorityDescriptor>
+ 
+				<AuthnAuthorityDescriptor ID='ID' protocolSupportEnumeration='http://www.example.com/ http://www.example.com/'>
+					<KeyDescriptor>
+						<ds:KeyInfo>
+							<ds:KeyName>string</ds:KeyName>
+						</ds:KeyInfo>
+						<EncryptionMethod Algorithm='http://www.example.com/'>
+							<xenc:KeySize>1</xenc:KeySize>
+							<xenc:OAEPparams>GpM7</xenc:OAEPparams>
+						</EncryptionMethod>
+					</KeyDescriptor>
+					<AuthnQueryService Binding='http://www.example.com/' Location='http://www.example.com/'/>
+					<AssertionIDRequestService Binding='http://www.example.com/' Location='http://www.example.com/'/>
+					<NameIDFormat>http://www.example.com/</NameIDFormat>
+				</AuthnAuthorityDescriptor>
+
+				<PDPDescriptor
+					ID='ID' 
+					protocolSupportEnumeration='http://www.example.com/ http://www.example.com/'>
+				   <KeyDescriptor>
+					  <ds:KeyInfo>
+						 <ds:KeyName>string</ds:KeyName>
+					  </ds:KeyInfo>
+					  <EncryptionMethod Algorithm='http://www.example.com/'>
+						 <xenc:KeySize>1</xenc:KeySize>
+						 <xenc:OAEPparams>GpM7</xenc:OAEPparams>
+						 <!--any element-->
+					  </EncryptionMethod>
+				   </KeyDescriptor>
+				   <AuthzService Binding='http://www.example.com/' Location='http://www.example.com/'/>
+				   <AssertionIDRequestService Binding='http://www.example.com/' Location='http://www.example.com/'/>
+				   <NameIDFormat>http://www.example.com/</NameIDFormat>
+				</PDPDescriptor>
+
+				<Organization>
+						<OrganizationName xml:lang='en'>Your Identities</OrganizationName>
+						<OrganizationDisplayName xml:lang='en'>Your Identities</OrganizationDisplayName>
+						<OrganizationURL xml:lang='en'>http://www.example.org/</OrganizationURL>
+				</Organization>
+				<ContactPerson contactType='technical'>
+						<GivenName>Your</GivenName>
+						<SurName>Contact</SurName>
+						<EmailAddress>admin@example.org</EmailAddress>
+				</ContactPerson>
+			</EntityDescriptor>";
+
+			AddTestData("EntityDescriptor1", xml, writtenXml, obj);
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_ReadEntityDescriptor()
+		{
+			ReadTest("EntityDescriptor1", (serializer, reader) =>
 				serializer.TestReadEntityDescriptor(reader));
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_WriteEntityDescriptor()
+		{
+			WriteTest<EntityDescriptor>("EntityDescriptor1",
+				(serializer, writer, obj) =>
+					serializer.TestWriteEntityDescriptor(writer, obj));
+		}
+
+		[TestData]
+		public static void AddLocalizedNameTestData()
+		{
+			string xml =
+			@"<?xml version='1.0' encoding='UTF-8'?>
+				<LocalName xmlns='urn:oasis:names:tc:SAML:2.0:metadata'
+					xml:lang='en'>NameValue</LocalName>";
+			(XmlDocument doc, XmlNamespaceManager nsmgr) = LoadXml(xml);
+
+			var obj = new LocalizedName("NameValue", "en");
+
+			AddTestData("LocalizedName1", xml, obj);
 		}
 
 		[TestMethod]
 		public void MetadataSerializerTests_ReadLocalizedName()
 		{
+			ReadTest("LocalizedName1", (serializer, reader) =>
+				serializer.TestReadLocalizedName(reader));
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_WriteLocalizedName()
+		{
+			WriteTest<LocalizedName>("LocalizedName1",
+				(serializer, writer, obj) =>
+					serializer.TestWriteLocalizedName(writer, obj, "LocalName",
+						"urn:oasis:names:tc:SAML:2.0:metadata"));
+		}
+
+		[TestData]
+		public static void AddLocalizedUriTestData()
+		{
 			string xml =
 			@"<?xml version='1.0' encoding='UTF-8'?>
-				<LocalName xml:lang='en'>NameValue</LocalName>";
+				<LocalUri xmlns='urn:oasis:names:tc:SAML:2.0:metadata'
+					xml:lang='en'>http://www.foo.org/</LocalUri>";
 			(XmlDocument doc, XmlNamespaceManager nsmgr) = LoadXml(xml);
 
-			var expected = new LocalizedName("NameValue", "en");
-			ReadTest(xml, expected, (serializer, reader) =>
-				serializer.TestReadLocalizedName(reader));
+			var obj = new LocalizedUri(new Uri("http://www.foo.org/"), "en");
+
+			AddTestData("LocalizedUri1", xml, obj);
 		}
 
 		[TestMethod]
 		public void MetadataSerializerTests_ReadLocalizedUri()
 		{
-			string xml =
-			@"<?xml version='1.0' encoding='UTF-8'?>
-				<LocalUri xml:lang='en'>http://www.foo.org/</LocalUri>";
-			(XmlDocument doc, XmlNamespaceManager nsmgr) = LoadXml(xml);
-
-			var expected = new LocalizedUri(new Uri("http://www.foo.org/"), "en");
-			ReadTest(xml, expected, (serializer, reader) =>
+			ReadTest("LocalizedUri1", (serializer, reader) =>
 				serializer.TestReadLocalizedUri(reader));
 		}
 
 		[TestMethod]
-		public void MetadataSerializerTests_ReadOrganization()
+		public void MetadataSerializerTests_WriteLocalizedUri()
+		{
+			WriteTest<LocalizedUri>("LocalizedUri1",
+				(serializer, writer, obj) =>
+					serializer.TestWriteLocalizedUri(writer, obj, "LocalUri",
+						"urn:oasis:names:tc:SAML:2.0:metadata"));
+		}
+
+		[TestData]
+		public static void AddOrganizationTestData()
 		{
 			string xml =
 			@"<?xml version='1.0' encoding='UTF-8'?>
@@ -2917,7 +4092,7 @@ namespace Sustainsys.Saml2.Tests.Metadata
 				</Organization>";
 			(XmlDocument doc, XmlNamespaceManager nsmgr) = LoadXml(xml);
 
-			var expected = new Organization
+			var obj = new Organization
 			{
 				Extensions = {
 					doc.SelectSingleNode("/md:Organization/md:Extensions/*[1]",
@@ -2934,12 +4109,26 @@ namespace Sustainsys.Saml2.Tests.Metadata
 				}
 			};
 
-			ReadTest(xml, expected, (serializer, reader) =>
+			AddTestData("Organization1", xml, obj);
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_ReadOrganization()
+		{
+			ReadTest("Organization1", (serializer, reader) =>
 				serializer.TestReadOrganization(reader));
 		}
 
 		[TestMethod]
-		public void MetadataSerializerTests_ReadMetadata()
+		public void MetadataSerializerTests_WriteOrganization()
+		{
+			WriteTest<Organization>("Organization1",
+				(serializer, writer, obj) =>
+					serializer.TestWriteOrganization(writer, obj));
+		}
+
+		[TestData]
+		public static void AddMetadataTestData()
 		{
 			string xml =
 			@"<?xml version='1.0' encoding='UTF-8'?>
@@ -2967,7 +4156,7 @@ namespace Sustainsys.Saml2.Tests.Metadata
 			</EntitiesDescriptor>";
 			(XmlDocument doc, XmlNamespaceManager nsmgr) = LoadXml(xml);
 
-			var expected = new EntitiesDescriptor
+			var obj = new EntitiesDescriptor
 			{
 				Name = "https://your-federation.org/metadata/federation-name.xml",
 				ChildEntities = {
@@ -3012,33 +4201,72 @@ namespace Sustainsys.Saml2.Tests.Metadata
 				}
 			};
 
-			ReadTest(xml, expected, (serializer, reader) =>
-			{
-				using (var ms = new MemoryStream(Encoding.UTF8.GetBytes(xml)))
-				{
-					return serializer.ReadMetadata(ms);
-				}
-			});
-			ReadTest(xml, expected, (serializer, reader) =>
-			{
-				using (var ms = new MemoryStream(Encoding.UTF8.GetBytes(xml)))
-				using (var xr = XmlReader.Create(ms))
-				{
-					return serializer.ReadMetadata(xr);
-				}
-			});
-			ReadTest(xml, expected, (serializer, readeR) =>
-			{
-				using (var ms = new MemoryStream(Encoding.UTF8.GetBytes(xml)))
-				using (var xr = XmlReader.Create(ms))
-				{
-					return serializer.ReadMetadata(xr, NullSecurityTokenResolver.Instance);
-				}
-			});
+			AddTestData("Metadata1", xml, obj, true);
 		}
 
 		[TestMethod]
-		public void MetadataSerializerTests_ReadSecurityTokenServiceDescriptor()
+		public void MetadataSerializerTests_ReadMetadata()
+		{
+			var testData = GetTestData("Metadata1");
+			byte[] xmlBytes = Encoding.UTF8.GetBytes(testData.Xml);
+			var expected = testData.ObjectModel.As<MetadataBase>();
+			var serializer = new TestMetadataSerializer();
+
+			using (var ms = new MemoryStream(xmlBytes))
+			{
+				var result = serializer.ReadMetadata(ms);
+				result.Should().BeEquivalentTo(expected);
+			}
+			using (var ms = new MemoryStream(xmlBytes))
+			using (var xr = XmlReader.Create(ms))
+			{
+				var result = serializer.ReadMetadata(xr);
+				result.Should().BeEquivalentTo(expected);
+			}
+			using (var ms = new MemoryStream(xmlBytes))
+			using (var xr = XmlReader.Create(ms))
+			{
+				var result = serializer.ReadMetadata(xr, NullSecurityTokenResolver.Instance);
+				result.Should().BeEquivalentTo(expected);
+			}
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_WriteMetadata()
+		{
+			var testData = GetTestData("Metadata1");
+			XmlDocument expectedDoc = new XmlDocument();
+			expectedDoc.LoadXml(testData.WrittenXml);
+
+			var obj = testData.ObjectModel.As<MetadataBase>();
+			var serializer = new TestMetadataSerializer();
+
+			Action<MemoryStream> checkStream = (MemoryStream ms) =>
+			{
+				ms.Position = 0;
+				XmlDocument resultDoc = new XmlDocument();
+				resultDoc.Load(ms);
+				resultDoc.Should().BeEquivalentTo(expectedDoc);
+			};
+
+			using (var ms = new MemoryStream())
+			{
+				serializer.WriteMetadata(ms, obj);
+				checkStream(ms);
+			}
+
+			using (var ms = new MemoryStream())
+			{
+				using (var xw = XmlWriter.Create(ms))
+				{
+					serializer.WriteMetadata(xw, obj);
+				}
+				checkStream(ms);
+			}
+		}
+
+		[TestData]
+		public static void AddSecurityTokenServiceDescriptorTestData()
 		{
 			string xml =
 				@"<?xml version='1.0' encoding='UTF-8' ?>
@@ -3175,11 +4403,6 @@ namespace Sustainsys.Saml2.Tests.Metadata
 							<wsa:Address>https://www.netiq.com/nidp/wsfed/ep</wsa:Address>
 						</wsa:EndpointReference>
 					</fed:SecurityTokenServiceEndpoint>
-					<fed:PassiveRequestorEndpoint>
-						<wsa:EndpointReference>
-							<wsa:Address>https://www.netiq.com/nidp/wsfed/ep</wsa:Address>
-						</wsa:EndpointReference>
-					</fed:PassiveRequestorEndpoint>
 					<fed:SingleSignOutSubscriptionEndpoint>
 						<wsa:EndpointReference>
 							<wsa:Address>https://www.netiq.com/nidp/wsfed/ep-ssos</wsa:Address>
@@ -3190,10 +4413,15 @@ namespace Sustainsys.Saml2.Tests.Metadata
 							<wsa:Address>https://www.netiq.com/nidp/wsfed/ep-sson</wsa:Address>
 						</wsa:EndpointReference>
 					</fed:SingleSignOutNotificationEndpoint>
+					<fed:PassiveRequestorEndpoint>
+						<wsa:EndpointReference>
+							<wsa:Address>https://www.netiq.com/nidp/wsfed/ep</wsa:Address>
+						</wsa:EndpointReference>
+					</fed:PassiveRequestorEndpoint>
 				</RoleDescriptor>";
 			(XmlDocument doc, XmlNamespaceManager nsmgr) = LoadXml(xml);
 
-			var expected = new SecurityTokenServiceDescriptor
+			var obj= new SecurityTokenServiceDescriptor
 			{
 				ProtocolsSupported = {
 					new Uri("http://docs.oasis-open.org/ws-sx/ws-trust/200512"),
@@ -3340,12 +4568,27 @@ namespace Sustainsys.Saml2.Tests.Metadata
 					new EndpointReference("https://www.netiq.com/nidp/wsfed/ep-ssos")
 				},
 			};
-			ReadTest(xml, expected, (serializer, reader) =>
+
+			AddTestData("SecurityTokenServiceDescriptor1", xml, obj);
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_ReadSecurityTokenServiceDescriptor()
+		{
+			ReadTest("SecurityTokenServiceDescriptor1", (serializer, reader) =>
 				serializer.TestReadSecurityTokenServiceDescriptor(reader));
 		}
 
 		[TestMethod]
-		public void MetadataSerializerTests_ReadAttributeConsumingService()
+		public void MetadataSerializerTests_WriteSecurityTokenServiceDescriptor()
+		{
+			WriteTest<SecurityTokenServiceDescriptor>("SecurityTokenServiceDescriptor1",
+				(serializer, writer, obj) =>
+					serializer.TestWriteSecurityTokenServiceDescriptor(writer, obj));
+		}
+
+		[TestData]
+		public static void AddAttributeConsumingServiceTestData()
 		{
 			string xml =
 				@"<?xml version='1.0' encoding='UTF-8' ?>
@@ -3364,7 +4607,7 @@ namespace Sustainsys.Saml2.Tests.Metadata
 				</md:AttributeConsumingService>";
 			(XmlDocument doc, XmlNamespaceManager nsmgr) = LoadXml(xml);
 
-			var expected = new AttributeConsumingService
+			var obj = new AttributeConsumingService
 			{
 				Index = 1,
 
@@ -3375,7 +4618,7 @@ namespace Sustainsys.Saml2.Tests.Metadata
 				ServiceDescriptions = {
 					new LocalizedName("An example service that requires a human-readable identifier and optional name and e-mail address.", "en")
 				},
- 
+
 				RequestedAttributes = {
 					new RequestedAttribute("urn:mace:dir:attribute-def:eduPersonPrincipalName") {
 						FriendlyName = "eduPersonPrincipalName",
@@ -3403,35 +4646,69 @@ namespace Sustainsys.Saml2.Tests.Metadata
 					}
 				}
 			};
-			ReadTest(xml, expected, (serializer, reader) =>
+
+			AddTestData("AttributeConsumingService1", xml, obj);
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_ReadAttributeConsumingService()
+		{
+			ReadTest("AttributeConsumingService1", (serializer, reader) =>
 				serializer.TestReadAttributeConsumingService(reader));
 		}
 
 		[TestMethod]
-		public void MetadataSerializerTests_ReadRequestedAttribute()
+		public void MetadataSerializerTests_WriteAttributeConsumingService()
+		{
+			WriteTest<AttributeConsumingService>("AttributeConsumingService1",
+				(serializer, writer, obj) =>
+					serializer.TestWriteAttributeConsumingService(writer, obj));
+		}
+
+		[TestData]
+		public static void AddRequestedAttributeTestData()
 		{
 			string xml =
 				@"<?xml version='1.0' encoding='UTF-8' ?>
 				<md:RequestedAttribute 
 					xmlns:md='urn:oasis:names:tc:SAML:2.0:metadata'
+					xmlns:saml='urn:oasis:names:tc:SAML:2.0:assertion'
 					isRequired='true'
 					FriendlyName='eduPersonPrincipalName' 
 					Name='urn:mace:dir:attribute-def:eduPersonPrincipalName'
 					NameFormat='urn:mace:shibboleth:1.0:attributeNamespace:uri'>
+					<saml:AttributeValue>VALUE</saml:AttributeValue>
 				</md:RequestedAttribute>";
 			(XmlDocument doc, XmlNamespaceManager nsmgr) = LoadXml(xml);
 
-			var expected = new RequestedAttribute("urn:mace:dir:attribute-def:eduPersonPrincipalName") {
+			var obj = new RequestedAttribute("urn:mace:dir:attribute-def:eduPersonPrincipalName")
+			{
 				IsRequired = true,
 				FriendlyName = "eduPersonPrincipalName",
-				NameFormat = new Uri("urn:mace:shibboleth:1.0:attributeNamespace:uri")
+				NameFormat = new Uri("urn:mace:shibboleth:1.0:attributeNamespace:uri"),
+				Values = { "VALUE" }
 			};
-			ReadTest(xml, expected, (serializer, reader) =>
+
+			AddTestData("RequestedAttribute1", xml, obj);
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_ReadRequestedAttribute()
+		{
+			ReadTest("RequestedAttribute1", (serializer, reader) =>
 				serializer.TestReadRequestedAttribute(reader));
 		}
 
 		[TestMethod]
-		public void MetadataSerializerTests_ReadSpSsoDescriptor()
+		public void MetadataSerializerTests_WriteRequestedAttribute()
+		{
+			WriteTest<RequestedAttribute>("RequestedAttribute1",
+				(serializer, writer, obj) =>
+					serializer.TestWriteRequestedAttribute(writer, obj));
+		}
+
+		[TestData]
+		public static void AddSpSsoDescriptorTestData()
 		{
 			string xml =
 				@"<?xml version='1.0' encoding='UTF-8' ?>
@@ -3481,7 +4758,7 @@ namespace Sustainsys.Saml2.Tests.Metadata
 				</SPSSODescriptor>";
 			(XmlDocument doc, XmlNamespaceManager nsmgr) = LoadXml(xml);
 
-			var expected = new SpSsoDescriptor
+			var obj = new SpSsoDescriptor
 			{
 				AuthnRequestsSigned = true,
 				WantAssertionsSigned = false,
@@ -3562,1846 +4839,69 @@ namespace Sustainsys.Saml2.Tests.Metadata
 				}
 			};
 
-			ReadTest(xml, expected, (serializer, reader) =>
+			AddTestData("SpSsoDescriptor1", xml, obj, true);
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_ReadSpSsoDescriptor()
+		{
+			ReadTest("SpSsoDescriptor1", (serializer, reader) =>
 				serializer.TestReadSpSsoDescriptor(reader));
 		}
 
-#if FALSE
-
-		static void WriteWrappedElements(XmlWriter writer, string wrapPrefix,
-			string wrapName, string wrapNs, IEnumerable<XmlElement> elts)
-		{
-			if (elts.Any())
-			{
-				writer.WriteStartElement(wrapPrefix, wrapName, wrapNs);
-				foreach (var elt in elts)
-				{
-					elt.WriteTo(writer);
-				}
-				writer.WriteEndElement();
-			}
-		}
-
-		void WriteEndpointReference(XmlWriter writer, EndpointReference endpointReference)
-		{
-			writer.WriteStartElement("wsa", "EndpointReference", WsaNs);
-			writer.WriteStartElement("wsa", "Address", WsaNs);
-			writer.WriteStartElement(endpointReference.Uri.ToString());
-			writer.WriteEndElement();
-
-			WriteWrappedElements(writer, "wsa", "ReferenceParameters", WsaNs,
-				endpointReference.ReferenceParameters);
-			WriteWrappedElements(writer, "wsa", "Metadata", WsaNs,
-				endpointReference.Metadata);
-
-			writer.WriteEndElement();
-		}
-
-		void WriteEndpointReferences(XmlWriter writer, string elName, string elNs,
-			ICollection<EndpointReference> endpointReferences)
-		{
-			foreach (var endpointReference in endpointReferences)
-			{
-				writer.WriteStartElement(elName, elNs);
-				WriteEndpointReference(writer, endpointReference);
-				writer.WriteEndElement();
-			}
-
-		}
-
-		protected virtual void WriteApplicationServiceDescriptor(XmlWriter writer, ApplicationServiceDescriptor appService)
-		{
-			if (writer == null)
-			{
-				throw new ArgumentNullException(nameof(writer));
-			}
-			if (appService == null)
-			{
-				throw new ArgumentNullException(nameof(appService));
-			}
-			writer.WriteStartElement("RoleDescriptor", Saml2MetadataNs);
-			writer.WriteAttributeString("xsi", "type", XsiNs, "fed:ApplicationServiceType");
-			writer.WriteAttributeString("xmlns", "fed", null, FedNs);
-
-			WriteWebServiceDescriptorAttributes(writer, appService);
-			WriteCustomAttributes(writer, appService);
-
-			WriteWebServiceDescriptorElements(writer, appService);
-
-			WriteEndpointReferences(writer, "ApplicationServiceEndpoint",
-				FedNs, appService.Endpoints);
-			WriteEndpointReferences(writer, "SingleSignOutNotificationEndpoint",
-				FedNs, appService.Endpoints);
-			WriteEndpointReferences(writer, "PassiveRequestorEndpoint",
-				FedNs, appService.Endpoints);
-			writer.WriteEndElement();
-		}
-
-		static string GetContactTypeString(ContactType contactType)
-		{
-			switch (contactType)
-			{
-				case ContactType.Technical:
-					return "technical";
-				case ContactType.Support:
-					return "support";
-				case ContactType.Administrative:
-					return "administrative";
-				case ContactType.Billing:
-					return "billing";
-				case ContactType.Other:
-					return "other";
-				default:
-					throw new InvalidOperationException(
-						$"Unknown ContactType enumeration value {contactType}");
-			}
-		}
-
-		static void WriteStringElementIfPresent(XmlWriter writer, string elName,
-			string elNs, string value)
-		{
-			if (!String.IsNullOrEmpty(value))
-			{
-				writer.WriteElementString(elName, elNs, value);
-			}
-		}
-
-		static void WriteBase64Element(XmlWriter writer, string elName,
-			string elNs, byte[] value)
-		{
-			if (value != null)
-			{
-				writer.WriteElementString(elName, elNs, Convert.ToBase64String(value));
-			}
-		}
-
-		static void WriteStringAttributeIfPresent(XmlWriter writer, string attName,
-			string attNs, string value)
-		{
-			if (!String.IsNullOrEmpty(value))
-			{
-				writer.WriteAttributeString(attName, attNs, value);
-			}
-		}
-
-		static void WriteUriAttributeIfPresent(XmlWriter writer, string attName,
-			string attNs, Uri value)
-		{
-			if (value != null)
-			{
-				writer.WriteAttributeString(attName, attNs, value.ToString());
-			}
-		}
-
-		static void WriteBooleanAttribute(XmlWriter writer, string attName,
-			string attNs, bool? value)
-		{
-			if (value.HasValue)
-			{
-				writer.WriteAttributeString(attName, attNs, value.Value ? "true" : "false");
-			}
-		}
-
-		static void WriteStringElements(XmlWriter writer, string elName, string elNs,
-			IEnumerable<string> values)
-		{
-			foreach (string value in values)
-			{
-				writer.WriteElementString(elName, elNs, value);
-			}
-		}
-
-		protected virtual void WriteContactPerson(XmlWriter writer, ContactPerson contactPerson)
-		{
-			if (writer == null)
-			{
-				throw new ArgumentNullException(nameof(writer));
-			}
-			if (contactPerson == null)
-			{
-				throw new ArgumentNullException(nameof(contactPerson));
-			}
-
-			writer.WriteStartElement("ContactPerson", Saml2MetadataNs);
-			writer.WriteAttributeString("contactType", GetContactTypeString(contactPerson.Type));
-			WriteCustomAttributes(writer, contactPerson);
-
-			WriteStringElementIfPresent(writer, "Company", Saml2MetadataNs, contactPerson.Company);
-			WriteStringElementIfPresent(writer, "GivenName", Saml2MetadataNs, contactPerson.GivenName);
-			WriteStringElementIfPresent(writer, "SurName", Saml2MetadataNs, contactPerson.Surname);
-			WriteStringElements(writer, "EmailAddress", Saml2MetadataNs, contactPerson.EmailAddresses);
-			WriteStringElements(writer, "TelephoneNumber", Saml2MetadataNs, contactPerson.TelephoneNumbers);
-			WriteCustomElements(writer, contactPerson);
-
-			writer.WriteEndElement();
-		}
-
-		protected virtual void WriteCustomAttributes<T>(XmlWriter writer, T source)
-		{
-		}
-
-		protected virtual void WriteCustomElements<T>(XmlWriter writer, T source)
-		{
-		}
-
-		protected virtual void WriteEndpointAttributes(XmlWriter writer, Endpoint endpoint)
-		{
-			writer.WriteAttributeString("Binding", endpoint.Binding.ToString());
-			writer.WriteAttributeString("Location", endpoint.Location.ToString());
-			WriteUriAttributeIfPresent(writer, "ResponseLocation", null, endpoint.ResponseLocation);
-			WriteCustomAttributes(writer, endpoint);
-		}
-
-		protected virtual void WriteEndpoint(XmlWriter writer, Endpoint endpoint,
-			string name, string ns)
-		{
-			if (writer == null)
-			{
-				throw new ArgumentNullException(nameof(writer));
-			}
-			if (endpoint == null)
-			{
-				throw new ArgumentNullException(nameof(endpoint));
-			}
-			if (name == null)
-			{
-				throw new ArgumentNullException(nameof(name));
-			}
-			if (ns == null)
-			{
-				throw new ArgumentNullException(nameof(ns));
-			}
-			writer.WriteStartElement(name, ns);
-			WriteEndpointAttributes(writer, endpoint);
-			WriteCustomAttributes(writer, endpoint);
-			WriteCustomElements(writer, endpoint);
-			writer.WriteEndElement();
-		}
-
-		protected virtual void WriteIndexedEndpoint(XmlWriter writer, IndexedEndpoint endpoint,
-			string name, string ns)
-		{
-			if (writer == null)
-			{
-				throw new ArgumentNullException(nameof(writer));
-			}
-			if (endpoint == null)
-			{
-				throw new ArgumentNullException(nameof(endpoint));
-			}
-			if (name == null)
-			{
-				throw new ArgumentNullException(nameof(name));
-			}
-			if (ns == null)
-			{
-				throw new ArgumentNullException(nameof(ns));
-			}
-			writer.WriteStartElement(name, ns);
-			WriteEndpointAttributes(writer, endpoint);
-			WriteBooleanAttribute(writer, "isDefault", null, endpoint.IsDefault);
-			writer.WriteAttributeString("index", endpoint.Index.ToString());
-			WriteCustomAttributes(writer, endpoint);
-			WriteCustomElements(writer, endpoint);
-			writer.WriteEndElement();
-		}
-
-		protected virtual void WriteEndpoints(XmlWriter writer,
-			IEnumerable<Endpoint> endpoints, string name, string ns) =>
-				WriteCollection(writer, endpoints, (writer_, endpoint) =>
-					WriteEndpoint(writer_, endpoint, name, ns));
-
-		protected virtual void WriteIndexedEndpoints(XmlWriter writer,
-			IEnumerable<IndexedEndpoint> endpoints, string name, string ns) =>
-				WriteCollection(writer, endpoints, (writer_, endpoint) =>
-					WriteIndexedEndpoint(writer_, endpoint, name, ns));
-
-		static void WriteStringElement(XmlWriter writer, string elName, string elNs, string value)
-		{
-			if (!String.IsNullOrEmpty(value))
-			{
-				writer.WriteStartElement(elName, elNs);
-				writer.WriteString(value);
-				writer.WriteEndElement();
-			}
-		}
-
-		protected virtual void WriteEncryptionMethod(XmlWriter writer, EncryptionMethod method)
-		{
-			if (writer == null)
-			{
-				throw new ArgumentNullException(nameof(writer));
-			}
-			if (method == null)
-			{
-				throw new ArgumentNullException(nameof(method));
-			}
-
-			writer.WriteStartElement("EncryptionMethod", XEncNs);
-			writer.WriteAttributeString("Algorithm", method.Algorithm.ToString());
-			WriteCustomAttributes(writer, method);
-
-			if (method.KeySize != 0)
-			{
-				writer.WriteStartElement("KeySize", XEncNs);
-				writer.WriteString(method.KeySize.ToString());
-				writer.WriteEndElement();
-			}
-			WriteStringElement(writer, "OAEPparams", XEncNs, method.OAEPparams);
-
-			WriteCustomElements(writer, method);
-			writer.WriteEndElement();
-		}
-
-		void WriteCollection<T>(XmlWriter writer, IEnumerable<T> elts, Action<XmlWriter, T> writeHandler)
-		{
-			foreach (var elt in elts)
-			{
-				writeHandler(writer, elt);
-			}
-		}
-
-		protected virtual void WriteRSAKeyValue(XmlWriter writer, RsaKeyValue rsa)
-		{
-			if (writer == null)
-			{
-				throw new ArgumentNullException(nameof(writer));
-			}
-			if (rsa == null)
-			{
-				throw new ArgumentNullException(nameof(rsa));
-			}
-
-			writer.WriteStartElement("RSAKeyValue", DSigNs);
-			WriteCustomAttributes(writer, rsa);
-
-			WriteBase64Element(writer, "Modulus", DSigNs, rsa.Parameters.Modulus);
-			WriteBase64Element(writer, "Exponent", DSigNs, rsa.Parameters.Exponent);
-
-			WriteCustomElements(writer, rsa);
-			writer.WriteEndElement();
-		}
-
-		static byte[] GetIntAsBigEndian(int value)
-		{
-			byte[] data = new byte[4];
-			data[0] = (byte)(((uint)value >> 24) & 0xff);
-			data[1] = (byte)(((uint)value >> 16) & 0xff);
-			data[2] = (byte)(((uint)value >> 8) & 0xff);
-			data[3] = (byte)((uint)value & 0xff);
-			return data;
-		}
-
-		protected virtual void WriteDSAKeyValue(XmlWriter writer, DsaKeyValue dsa)
-		{
-			if (writer == null)
-			{
-				throw new ArgumentNullException(nameof(writer));
-			}
-			if (dsa == null)
-			{
-				throw new ArgumentNullException(nameof(dsa));
-			}
-
-			writer.WriteStartElement("DSAKeyValue", DSigNs);
-			WriteCustomAttributes(writer, dsa);
-
-			WriteBase64Element(writer, "P", DSigNs, dsa.Parameters.P);
-			WriteBase64Element(writer, "Q", DSigNs, dsa.Parameters.Q);
-			WriteBase64Element(writer, "G", DSigNs, dsa.Parameters.G);
-			WriteBase64Element(writer, "J", DSigNs, dsa.Parameters.J);
-			WriteBase64Element(writer, "Y", DSigNs, dsa.Parameters.Y);
-			WriteBase64Element(writer, "Seed", DSigNs, dsa.Parameters.Seed);
-			WriteBase64Element(writer, "PgenCounter", DSigNs,
-				GetIntAsBigEndian(dsa.Parameters.Counter));
-
-			WriteCustomElements(writer, dsa);
-			writer.WriteEndElement();
-		}
-
-		protected virtual void WriteECKeyValue(XmlWriter writer, EcKeyValue ec)
-		{
-			if (writer == null)
-			{
-				throw new ArgumentNullException(nameof(writer));
-			}
-			if (ec == null)
-			{
-				throw new ArgumentNullException(nameof(ec));
-			}
-
-			writer.WriteStartElement("ECKeyValue", DSig11Ns);
-			WriteCustomAttributes(writer, ec);
-
-			WriteStringElement(writer, "NamedCurve", DSig11Ns,
-				"urn:oid:" + ec.Parameters.Curve.Oid.ToString());
-
-			writer.WriteStartElement("PublicKey", DSig11Ns);
-			WriteBase64Element(writer, "X", DSig11Ns, ec.Parameters.Q.X);
-			WriteBase64Element(writer, "Y", DSig11Ns, ec.Parameters.Q.Y);
-			writer.WriteEndElement();
-
-			WriteCustomElements(writer, ec);
-			writer.WriteEndElement();
-		}
-
-		protected virtual void WriteKeyValue(XmlWriter writer, KeyValue keyValue)
-		{
-			if (writer == null)
-			{
-				throw new ArgumentNullException(nameof(writer));
-			}
-			if (keyValue == null)
-			{
-				throw new ArgumentNullException(nameof(keyValue));
-			}
-			writer.WriteStartElement("KeyValue", DSigNs);
-			WriteCustomAttributes(writer, keyValue);
-			if (keyValue is RsaKeyValue rsa)
-			{
-				WriteRSAKeyValue(writer, rsa);
-			}
-			else if (keyValue is DsaKeyValue dsa)
-			{
-				WriteDSAKeyValue(writer, dsa);
-			}
-			else if (keyValue is EcKeyValue ec)
-			{
-				WriteECKeyValue(writer, ec);
-			}
-			WriteCustomElements(writer, keyValue);
-			writer.WriteEndElement();
-		}
-
-		protected virtual void WriteRetrievalMethod(XmlWriter writer, RetrievalMethod method)
-		{
-			if (writer == null)
-			{
-				throw new ArgumentNullException(nameof(writer));
-			}
-			if (method == null)
-			{
-				throw new ArgumentNullException(nameof(method));
-			}
-
-			writer.WriteStartElement("RetrievalMethod", DSigNs);
-			WriteUriAttributeIfPresent(writer, "URI", null, method.Uri);
-			WriteUriAttributeIfPresent(writer, "Type", null, method.Type);
-			WriteCustomAttributes(writer, method);
-
-			WriteWrappedElements(writer, "ds", "Transforms", DSigNs, method.Transforms); 
-
-			WriteCustomElements(writer, method);
-			writer.WriteEndElement();
-		}
-
-		protected virtual void WriteX509IssuerSerial(XmlWriter writer, X509IssuerSerial issuerSerial)
-		{
-			if (writer == null)
-			{
-				throw new ArgumentNullException(nameof(writer));
-			}
-			if (issuerSerial == null)
-			{
-				throw new ArgumentNullException(nameof(issuerSerial));
-			}
-
-			writer.WriteStartElement("X509IssuerSerial", DSigNs);
-			WriteCustomAttributes(writer, issuerSerial);
-			WriteStringElement(writer, "X509IssuerSerial", DSigNs, issuerSerial.Name);
-			WriteStringElement(writer, "X509SerialNumber", DSigNs, issuerSerial.Serial);
-			WriteCustomElements(writer, issuerSerial);
-			writer.WriteEndElement();
-		}
-
-		protected virtual void WriteX509Digest(XmlWriter writer, X509Digest digest)
-		{
-			if (writer == null)
-			{
-				throw new ArgumentNullException(nameof(writer));
-			}
-			if (digest == null)
-			{
-				throw new ArgumentNullException(nameof(digest));
-			}
-
-			writer.WriteStartElement("X509Digest", DSigNs);
-			writer.WriteAttributeString("Algorithm", digest.Algorithm.ToString());
-			WriteCustomAttributes(writer, digest);
-			writer.WriteBase64(digest.Value, 0, digest.Value.Length);
-			WriteCustomElements(writer, digest);
-			writer.WriteEndElement();
-		}
-
-		protected virtual void WriteX509Data(XmlWriter writer, X509Data data)
-		{
-			if (writer == null)
-			{
-				throw new ArgumentNullException(nameof(writer));
-			}
-			if (data == null)
-			{
-				throw new ArgumentNullException(nameof(data));
-			}
-
-			writer.WriteStartElement("X509Data", DSigNs);
-			WriteCustomAttributes(writer, data);
-			if (data.IssuerSerial != null)
-			{
-				WriteX509IssuerSerial(writer, data.IssuerSerial);
-			}
-			if (data.SKI != null)
-			{
-				WriteBase64Element(writer, "X509SKI", DSigNs, data.SKI);
-			}
-			WriteStringElementIfPresent(writer, "X509SubjectName", DSigNs, data.SubjectName);
-			foreach (var cert in data.Certificates)
-			{
-				WriteBase64Element(writer, "X509Certificate", DSigNs, cert.GetRawCertData());
-			}
-			if (data.CRL != null)
-			{
-				WriteBase64Element(writer, "X509CRL", DSigNs, data.CRL);
-			}
-			if (data.Digest != null)
-			{
-				WriteX509Digest(writer, data.Digest);
-			}
-
-			WriteCustomElements(writer, data);
-			writer.WriteEndElement();
-		}
-
-		protected virtual void WriteKeyData(XmlWriter writer, KeyData keyData)
-		{
-			if (writer == null)
-			{
-				throw new ArgumentNullException(nameof(writer));
-			}
-			if (keyData == null)
-			{
-				throw new ArgumentNullException(nameof(keyData));
-			}
-			if (keyData is X509Data x509Data)
-			{
-				WriteX509Data(writer, x509Data);
-			}
-		}
-
-		protected virtual void WriteDSigKeyInfo(XmlWriter writer, DSigKeyInfo keyInfo)
-		{
-			if (writer == null)
-			{
-				throw new ArgumentNullException(nameof(writer));
-			}
-			if (keyInfo == null)
-			{
-				throw new ArgumentNullException(nameof(keyInfo));
-			}
-
-			writer.WriteStartElement("KeyInfo", DSigNs);
-			WriteStringAttributeIfPresent(writer, "Id", null, keyInfo.Id);
-			WriteCustomAttributes(writer, keyInfo);
-
-			WriteStringElements(writer, "KeyName", DSigNs, keyInfo.KeyNames);
-			WriteCollection(writer, keyInfo.KeyValues, WriteKeyValue);
-			WriteCollection(writer, keyInfo.RetrievalMethods, WriteRetrievalMethod);
-			WriteCollection(writer, keyInfo.Data, WriteKeyData);
-			
-			WriteCustomElements(writer, keyInfo);
-			writer.WriteEndElement();
-		}
-
-		protected virtual void WriteCipherReference(XmlWriter writer, CipherReference reference)
-		{
-			if (writer == null)
-			{
-				throw new ArgumentNullException(nameof(writer));
-			}
-			if (reference == null)
-			{
-				throw new ArgumentNullException(nameof(reference));
-			}
-
-			writer.WriteStartElement("CipherReference", XEncNs);
-			WriteUriAttributeIfPresent(writer, "URI", null, reference.Uri);
-			WriteCustomAttributes(writer, reference);
-
-			WriteWrappedElements(writer, "xenc", "Transforms", XEncNs, reference.Transforms);
-			WriteCustomElements(writer, reference);
-			writer.WriteEndElement();
-		}
-
-		protected virtual void WriteCipherData(XmlWriter writer, CipherData data)
-		{
-			if (writer == null)
-			{
-				throw new ArgumentNullException(nameof(writer));
-			}
-			if (data == null)
-			{
-				throw new ArgumentNullException(nameof(data));
-			}
-
-			writer.WriteStartElement("CipherData", XEncNs);
-			WriteCustomAttributes(writer, data);
-			if (data.CipherValue != null)
-			{
-				WriteStringElement(writer, "CipherValue", XEncNs, data.CipherValue);
-			}
-			if (data.CipherReference != null)
-			{
-				WriteCipherReference(writer, data.CipherReference);
-			}
-			WriteCustomElements(writer, data);
-			writer.WriteEndElement();
-		}
-
-		// <element name="EncryptionProperty" type="xenc:EncryptionPropertyType"/> 
-		// 
-		// <complexType name="EncryptionPropertyType" mixed="true">
-		//   <choice maxOccurs="unbounded">
-		//     <any namespace="##other" processContents="lax"/>
-		//   </choice>
-		//   <attribute name="Target" type="anyURI" use="optional"/> 
-		//   <attribute name="Id" type="ID" use="optional"/> 
-		//   <anyAttribute namespace="http://www.w3.org/XML/1998/namespace"/>
-		// </complexType>
-		protected virtual void WriteEncryptionProperty(XmlWriter writer, EncryptionProperty property)
-		{
-			if (writer == null)
-			{
-				throw new ArgumentNullException(nameof(writer));
-			}
-			if (property == null)
-			{
-				throw new ArgumentNullException(nameof(property));
-			}
-
-			writer.WriteStartElement("EncryptionProperty", XEncNs);
-			WriteUriAttributeIfPresent(writer, "Target", null, property.Target);
-			WriteStringAttributeIfPresent(writer, "Target", null, property.Id);
-			WriteCustomAttributes(writer, property);
-			WriteCustomElements(writer, property);
-			writer.WriteEndElement();
-		}
-
-		protected virtual void WriteEncryptionProperties(XmlWriter writer, EncryptionProperties properties)
-		{
-			if (writer == null)
-			{
-				throw new ArgumentNullException(nameof(writer));
-			}
-			if (properties == null)
-			{
-				throw new ArgumentNullException(nameof(properties));
-			}
-			writer.WriteStartElement("EncryptionProperties", XEncNs);
-			WriteStringAttributeIfPresent(writer, "Id", null, properties.Id);
-			WriteCustomAttributes(writer, properties);
-			WriteCollection(writer, properties.Properties, WriteEncryptionProperty);
-			WriteCustomElements(writer, properties);
-			writer.WriteEndElement();
-		}
-
-		protected virtual void WriteEncryptedData(XmlWriter writer, EncryptedData data)
-		{
-			if (writer == null)
-			{
-				throw new ArgumentNullException(nameof(writer));
-			}
-			if (data == null)
-			{
-				throw new ArgumentNullException(nameof(data));
-			}
-
-			writer.WriteStartElement("EncryptedData", XEncNs);
-			WriteStringAttributeIfPresent(writer, "Id", null, data.Id);
-			WriteUriAttributeIfPresent(writer, "Type", null, data.Type);
-			WriteStringAttributeIfPresent(writer, "MimeType", null, data.MimeType);
-			WriteStringAttributeIfPresent(writer, "Encoding", null, data.MimeType);
-			WriteCustomAttributes(writer, data);
-
-			if (data.EncryptionMethod != null)
-			{
-				WriteEncryptionMethod(writer, data.EncryptionMethod);
-			}
-			if (data.KeyInfo != null)
-			{
-				WriteDSigKeyInfo(writer, data.KeyInfo);
-			}
-			if (data.CipherData != null)
-			{
-				WriteCipherData(writer, data.CipherData);
-			}
-			if (data.EncryptionProperties != null)
-			{
-				WriteEncryptionProperties(writer, data.EncryptionProperties);
-			}
-
-			WriteCustomElements(writer, data);
-			writer.WriteEndElement();
-		}
-
-		protected virtual void WriteEncryptedValue(XmlWriter writer, EncryptedValue value)
-		{
-			if (writer == null)
-			{
-				throw new ArgumentNullException(nameof(writer));
-			}
-			if (value == null)
-			{
-				throw new ArgumentNullException(nameof(value));
-			}
-
-			writer.WriteStartElement("EncryptedValue", AuthNs);
-			writer.WriteAttributeString("DecryptionCondition", value.DecryptionCondition.ToString());
-			WriteCustomAttributes(writer, value);
-
-			WriteEncryptedData(writer, value.EncryptedData);
-
-			WriteCustomElements(writer, value);
-			writer.WriteEndElement();
-		}
-
-		protected virtual void WriteClaimValue(XmlWriter writer, ClaimValue value)
-		{
-			if (writer == null)
-			{
-				throw new ArgumentNullException(nameof(writer));
-			}
-			if (value == null)
-			{
-				throw new ArgumentNullException(nameof(value));
-			}
-
-			if (!String.IsNullOrEmpty(value.Value) && value.StructuredValue != null)
-			{
-				throw new MetadataSerializationException(
-					"Invalid claim value that has both Value and StructuredValue properties set");
-			}
-			if (value.Value == null && value.StructuredValue == null)
-			{
-				throw new MetadataSerializationException(
-					"Invalid claim value that has neither Value nor StructuredValue properties set");
-			}
-
-			if (value.Value != null)
-			{
-				WriteStringElement(writer, "Value", AuthNs, value.Value);
-			}
-			else
-			{
-				writer.WriteStartElement("StructuredValue", AuthNs);
-				value.StructuredValue.WriteTo(writer);
-				writer.WriteEndElement();
-			}
-		}
-
-		protected virtual void WriteCompareConstraint(XmlWriter writer,
-			ConstrainedValue.CompareConstraint constraint)
-		{
-			if (writer == null)
-			{
-				throw new ArgumentNullException(nameof(writer));
-			}
-			if (constraint == null)
-			{
-				throw new ArgumentNullException(nameof(constraint));
-			}
-
-			string elName;
-			switch (constraint.CompareOp)
-			{
-				case ConstrainedValue.CompareConstraint.CompareOperator.Lt:
-					elName = "ValueLessThan";
-					break;
-				case ConstrainedValue.CompareConstraint.CompareOperator.Lte:
-					elName = "ValueLessThanOrEqual";
-					break;
-				case ConstrainedValue.CompareConstraint.CompareOperator.Gt:
-					elName = "ValueGreaterThan";
-					break;
-				case ConstrainedValue.CompareConstraint.CompareOperator.Gte:
-					elName = "ValueGreaterThanOrEqual";
-					break;
-				default:
-					throw new MetadataSerializationException(
-						$"Unknown constrained value compare operator '{constraint.CompareOp}'");
-			}
-
-			writer.WriteStartElement(elName, AuthNs);
-			WriteCustomAttributes(writer, constraint);
-			WriteClaimValue(writer, constraint.Value);
-			WriteCustomElements(writer, constraint);
-			writer.WriteEndElement();
-		}
-
-		protected virtual void WriteListContraint(XmlWriter writer,
-			ConstrainedValue.ListConstraint constraint)
-		{
-			if (writer == null)
-			{
-				throw new ArgumentNullException(nameof(writer));
-			}
-			if (constraint == null)
-			{
-				throw new ArgumentNullException(nameof(constraint));
-			}
-
-			writer.WriteStartElement("ValueOneOf", AuthNs);
-			WriteCustomAttributes(writer, constraint);
-			foreach (var value in constraint.Values)
-			{
-				WriteClaimValue(writer, value);
-			}
-			WriteCustomElements(writer, constraint);
-			writer.WriteEndElement();
-		}
-
-		protected virtual void WriteRangeConstraint(XmlWriter writer,
-			ConstrainedValue.RangeConstraint constraint)
-		{
-			if (writer == null)
-			{
-				throw new ArgumentNullException(nameof(writer));
-			}
-			if (constraint == null)
-			{
-				throw new ArgumentNullException(nameof(constraint));
-			}
-
-			writer.WriteStartElement("ValueInRange", AuthNs);
-			WriteCustomAttributes(writer, constraint);
-			if (constraint.UpperBound != null)
-			{
-				writer.WriteStartElement("ValueUpperBound", AuthNs);
-				WriteClaimValue(writer, constraint.UpperBound);
-				writer.WriteEndElement();
-			}
-			if (constraint.LowerBound != null)
-			{
-				writer.WriteStartElement("ValueLowerBound", AuthNs);
-				WriteClaimValue(writer, constraint.LowerBound);
-				writer.WriteEndElement();
-			}
-			WriteCustomElements(writer, constraint);
-			writer.WriteEndElement();
-		}
-
-		protected virtual void WriteListConstraint(XmlWriter writer,
-			ConstrainedValue.ListConstraint constraint)
-		{
-			if (writer == null)
-			{
-				throw new ArgumentNullException(nameof(writer));
-			}
-			if (constraint == null)
-			{
-				throw new ArgumentNullException(nameof(constraint));
-			}
-
-			writer.WriteStartElement("ValueOneOf", AuthNs);
-			WriteCustomAttributes(writer, constraint);
-			foreach (var value in constraint.Values)
-			{
-				WriteClaimValue(writer, value);
-			}
-			WriteCustomElements(writer, constraint);
-			writer.WriteEndElement();
-		}
-
-		protected virtual void WriteConstrainedValue(XmlWriter writer, ConstrainedValue value)
-		{
-			if (writer == null)
-			{
-				throw new ArgumentNullException(nameof(writer));
-			}
-			if (value == null)
-			{
-				throw new ArgumentNullException(nameof(value));
-			}
-
-			writer.WriteStartElement("ConstrainedValue", AuthNs);
-			WriteBooleanAttribute(writer, "AssertConstraint", null, value.AssertConstraint);
-			WriteCustomAttributes(writer, value);
-			foreach (var constraint in value.Constraints)
-			{
-				if (constraint is ConstrainedValue.CompareConstraint cc)
-				{
-					WriteCompareConstraint(writer, cc);
-				}
-				else if (constraint is ConstrainedValue.ListConstraint lc)
-				{
-					WriteListConstraint(writer, lc);
-				}
-				else if (constraint is ConstrainedValue.RangeConstraint rc)
-				{
-					WriteRangeConstraint(writer, rc);
-				}
-				else
-				{
-					throw new MetadataSerializationException(
-						$"Unknown constraint type '{constraint.GetType()}'");
-				}
-			}
-			WriteCustomElements(writer, value);
-			writer.WriteEndElement();
-		}
-
-		protected virtual void WriteDisplayClaim(XmlWriter writer, DisplayClaim claim)
-		{
-			if (writer == null)
-			{
-				throw new ArgumentNullException(nameof(writer));
-			}
-			if (claim == null)
-			{
-				throw new ArgumentNullException(nameof(claim));
-			}
-
-			writer.WriteStartElement("ClaimType", AuthNs);
-			writer.WriteAttributeString("@Uri", claim.ClaimType);
-			WriteBooleanAttribute(writer, "Optional", null, claim.Optional);
-			WriteCustomAttributes(writer, claim);
-
-			WriteStringElement(writer, "DisplayName", AuthNs, claim.DisplayName);
-			WriteStringElement(writer, "Description", AuthNs, claim.Description);
-			WriteStringElement(writer, "DisplayValue", AuthNs, claim.DisplayValue);
-			WriteStringElement(writer, "Value", AuthNs, claim.Value);
-			if (claim.StructuredValue != null)
-			{
-				writer.WriteStartElement("StructuredValue", AuthNs);
-				claim.StructuredValue.WriteTo(writer);
-				writer.WriteEndElement();
-			}
-			WriteEncryptedValue(writer, claim.EncryptedValue);
-			WriteConstrainedValue(writer, claim.ConstrainedValue);
-			WriteCustomElements(writer, claim);
-			writer.WriteEndElement();
-		}
-
-		static void WriteCachedMetadataAttributes(XmlWriter writer, ICachedMetadata cachedMetadata)
-		{
-			if (cachedMetadata.CacheDuration.HasValue)
-			{
-				writer.WriteAttributeString("cacheDuration",
-					XmlConvert.ToString(cachedMetadata.CacheDuration.Value));
-			}
-			if (cachedMetadata.ValidUntil.HasValue)
-			{
-				writer.WriteAttributeString("validUntil",
-					XmlConvert.ToString(cachedMetadata.ValidUntil.Value, XmlDateTimeSerializationMode.Utc));
-			}
-		}
-
-		protected virtual void WriteEntitiesDescriptor(XmlWriter writer, EntitiesDescriptor entitiesDescriptor)
-		{
-			if (writer == null)
-			{
-				throw new ArgumentNullException(nameof(writer));
-			}
-			if (entitiesDescriptor == null)
-			{
-				throw new ArgumentNullException(nameof(entitiesDescriptor));
-			}
-
-			EnvelopedSignatureWriter signatureWriter = null;
-			if (entitiesDescriptor.SigningCredentials != null)
-			{
-				string referenceId = Guid.NewGuid().ToString("N");
-				signatureWriter = new EnvelopedSignatureWriter(writer,
-					entitiesDescriptor.SigningCredentials, referenceId);
-				writer = signatureWriter;
-			}
-
-			writer.WriteStartElement("EntitiesDescriptor", Saml2MetadataNs);
-			WriteCachedMetadataAttributes(writer, entitiesDescriptor);
-			WriteStringAttributeIfPresent(writer, "ID", Saml2MetadataNs, entitiesDescriptor.Id);
-			WriteStringAttributeIfPresent(writer, "Name", Saml2MetadataNs, entitiesDescriptor.Name);
-			WriteCustomAttributes(writer, entitiesDescriptor);
-
-			if (signatureWriter != null)
-			{
-				signatureWriter.WriteSignature();
-			}
-
-			WriteWrappedElements(writer, null, "Extensions", Saml2MetadataNs,
-				entitiesDescriptor.Extensions);
-
-			foreach (var childEntity in entitiesDescriptor.ChildEntities)
-			{
-				WriteEntityDescriptor(writer, childEntity);
-			}
-
-			foreach (var childEntityDescriptor in entitiesDescriptor.ChildEntityGroups)
-			{
-				WriteEntitiesDescriptor(writer, childEntityDescriptor);
-			}
-			
-			WriteCustomElements(writer, entitiesDescriptor);
-			writer.WriteEndElement();
-		}
-
-		protected virtual void WriteNameIDFormat(XmlWriter writer, NameIDFormat nameIDFormat)
-		{
-			if (writer == null)
-			{
-				throw new ArgumentNullException(nameof(writer));
-			}
-			if (nameIDFormat == null)
-			{
-				throw new ArgumentNullException(nameof(nameIDFormat));
-			}
-			writer.WriteStartElement("NameIDFormat", Saml2MetadataNs);
-			WriteCustomAttributes(writer, nameIDFormat);
-			writer.WriteString(nameIDFormat.Uri.ToString());
-			WriteCustomElements(writer, nameIDFormat);
-			writer.WriteEndElement();
-		}
-
-		protected virtual void WriteAuthnAuthorityDescriptor(XmlWriter writer, AuthnAuthorityDescriptor descriptor)
-		{
-			if (writer == null)
-			{
-				throw new ArgumentNullException(nameof(writer));
-			}
-			if (descriptor == null)
-			{
-				throw new ArgumentNullException(nameof(descriptor));
-			}
-			writer.WriteStartElement("AuthnAuthorityDescriptor", Saml2MetadataNs);
-			WriteRoleDescriptorAttributes(writer, descriptor);
-			WriteCustomAttributes(writer, descriptor);
-			WriteRoleDescriptorElements(writer, descriptor);
-
-			WriteEndpoints(writer, descriptor.AuthnQueryServices,
-				"AuthnQueryService", Saml2MetadataNs);
-			WriteEndpoints(writer, descriptor.AssertionIdRequestServices, 
-				"AssertionIDRequestService", Saml2MetadataNs);
-			WriteCollection(writer, descriptor.NameIDFormats, WriteNameIDFormat);
-
-			WriteCustomElements(writer, descriptor);
-			writer.WriteEndElement();
-		}
-
-		protected virtual void WriteAttributeProfile(XmlWriter writer, AttributeProfile profile)
-		{
-			if (writer == null)
-			{
-				throw new ArgumentNullException(nameof(writer));
-			}
-			if (profile == null)
-			{
-				throw new ArgumentNullException(nameof(profile));
-			}
-			writer.WriteStartElement("AttributeProfile", Saml2MetadataNs);
-			WriteCustomAttributes(writer, profile);
-			writer.WriteString(profile.Uri.ToString());
-			WriteCustomElements(writer, profile);
-			writer.WriteEndElement();
-		}
-
-		protected virtual void WriteAttributeAuthorityDescriptor(XmlWriter writer, AttributeAuthorityDescriptor descriptor)
-		{
-			if (writer == null)
-			{
-				throw new ArgumentNullException(nameof(writer));
-			}
-			if (descriptor == null)
-			{
-				throw new ArgumentNullException(nameof(descriptor));
-			}
-			writer.WriteStartElement("AttributeAuthorityDescriptor", Saml2MetadataNs);
-			WriteRoleDescriptorAttributes(writer, descriptor);
-			WriteCustomAttributes(writer, descriptor);
-			WriteRoleDescriptorElements(writer, descriptor);
-
-			foreach (var service in descriptor.AttributeServices)
-			{
-				WriteEndpoint(writer, service, "AttributeService", Saml2MetadataNs);
-			}
-
-			foreach (var ars in descriptor.AttributeServices)
-			{
-				WriteEndpoint(writer, ars, "AssertionIDRequestService", Saml2MetadataNs);
-			}
-
-			foreach (var nameIDFormat in descriptor.NameIDFormats)
-			{
-				WriteNameIDFormat(writer, nameIDFormat);
-			}
-
-			foreach (var attributeProfile in descriptor.AttributeProfiles)
-			{
-				WriteAttributeProfile(writer, attributeProfile);
-			}
-
-			foreach (var attribute in descriptor.Attributes)
-			{
-				WriteAttribute(writer, attribute);
-			}
-
-			WriteCustomElements(writer, descriptor);
-			writer.WriteEndElement();
-		}
-
-		protected virtual void WritePDPDescriptor(XmlWriter writer, PDPDescriptor descriptor)
-		{
-			if (writer == null)
-			{
-				throw new ArgumentNullException(nameof(writer));
-			}
-			if (descriptor == null)
-			{
-				throw new ArgumentNullException(nameof(descriptor));
-			}
-			writer.WriteStartElement("PDPDescriptor", Saml2MetadataNs);
-			WriteRoleDescriptorAttributes(writer, descriptor);
-			WriteCustomAttributes(writer, descriptor);
-
-			WriteRoleDescriptorElements(writer, descriptor);
-			WriteEndpoints(writer, descriptor.AuthzServices,
-				"AuthzService", Saml2MetadataNs);
-			WriteEndpoints(writer, descriptor.AssertionIdRequestServices,
-				"AssertionIDRequestService", Saml2MetadataNs);
-			foreach (var nameIdFormat in descriptor.NameIDFormats)
-			{
-				WriteNameIDFormat(writer, nameIdFormat);
-			}
-
-			WriteCustomElements(writer, descriptor);
-			writer.WriteEndElement();
-		}
-
-		protected virtual void WriteAffiliationDescriptor(XmlWriter writer, AffiliationDescriptor descriptor)
-		{
-			if (writer == null)
-			{
-				throw new ArgumentNullException(nameof(writer));
-			}
-			if (descriptor == null)
-			{
-				throw new ArgumentNullException(nameof(descriptor));
-			}
-
-			writer.WriteStartElement("AffiliationDescriptor", Saml2MetadataNs);
-			writer.WriteAttributeString("affiliationOwnerID", descriptor.AffiliationOwnerId.Id);
-			WriteCachedMetadataAttributes(writer, descriptor);
-			WriteStringAttributeIfPresent(writer, "ID", null, descriptor.Id);
-			WriteCustomAttributes(writer, descriptor);
-
-			WriteWrappedElements(writer, "md", "Extensions", Saml2MetadataNs, descriptor.Extensions);
-			WriteCollection(writer, descriptor.AffiliateMembers, (writer_, member) =>
-			{
-				WriteStringElement(writer_, "AffiliateMember", Saml2MetadataNs, member.Id);
-			});
-			WriteCollection(writer, descriptor.KeyDescriptors, WriteKeyDescriptor);
-
-			WriteCustomElements(writer, descriptor);
-			writer.WriteEndElement();
-		}
-
-		protected virtual void WriteAdditionalMetadataLocation(XmlWriter writer, AdditionalMetadataLocation location)
-		{
-			if (writer == null)
-			{
-				throw new ArgumentNullException(nameof(writer));
-			}
-			if (location == null)
-			{
-				throw new ArgumentNullException(nameof(location));
-			}
-
-			writer.WriteStartElement("AdditionalMetadataLocation", Saml2MetadataNs);
-			WriteCustomAttributes(writer, location);
-			writer.WriteAttributeString("namespace", location.Namespace);
-			writer.WriteString(location.Uri.ToString());
-			WriteCustomElements(writer, location);
-			writer.WriteEndElement();
-		}
-
-		protected virtual void WriteEntityDescriptor(XmlWriter writer, EntityDescriptor entityDescriptor)
-		{
-			if (writer == null)
-			{
-				throw new ArgumentNullException(nameof(writer));
-			}
-			if (entityDescriptor == null)
-			{
-				throw new ArgumentNullException(nameof(entityDescriptor));
-			}
-
-			EnvelopedSignatureWriter signatureWriter = null;
-			if (entityDescriptor.SigningCredentials != null)
-			{
-				string referenceId = Guid.NewGuid().ToString("N");
-				signatureWriter = new EnvelopedSignatureWriter(writer,
-					entityDescriptor.SigningCredentials, referenceId);
-			}
-
-			writer.WriteStartElement("EntityDescriptor", Saml2MetadataNs);
-			WriteCachedMetadataAttributes(writer, entityDescriptor);
-			WriteStringAttributeIfPresent(writer, "ID", null, entityDescriptor.Id);
-			writer.WriteAttributeString("entityID", entityDescriptor.EntityId.Id);
-			WriteCustomAttributes(writer, entityDescriptor);
-
-			if (signatureWriter != null)
-			{
-				signatureWriter.WriteSignature();
-			}
-
-			WriteWrappedElements(writer, null, "Extensions", Saml2MetadataNs,
-				entityDescriptor.Extensions);
-
-			foreach (var roleDescriptor in entityDescriptor.RoleDescriptors)
-			{
-				if (roleDescriptor is ApplicationServiceDescriptor appDescriptor)
-				{
-					WriteApplicationServiceDescriptor(writer, appDescriptor);
-				}
-				else if (roleDescriptor is SecurityTokenServiceDescriptor secDescriptor)
-				{
-					WriteSecurityTokenServiceDescriptor(writer, secDescriptor);
-				}
-				else if (roleDescriptor is IdpSsoDescriptor idpSsoDescriptor)
-				{
-					WriteIdpSsoDescriptor(writer, idpSsoDescriptor);
-				}
-				else if (roleDescriptor is SpSsoDescriptor spSsoDescriptor)
-				{
-					WriteSpSsoDescriptor(writer, spSsoDescriptor);
-				}
-				else if (roleDescriptor is AuthnAuthorityDescriptor authDescriptor)
-				{
-					WriteAuthnAuthorityDescriptor(writer, authDescriptor);
-				}
-				else if (roleDescriptor is AttributeAuthorityDescriptor attDescriptor)
-				{
-					WriteAttributeAuthorityDescriptor(writer, attDescriptor);
-				}
-				else if (roleDescriptor is PDPDescriptor pdpDescriptor)
-				{
-					WritePDPDescriptor(writer, pdpDescriptor);
-				}
-			}
-			foreach (AffiliationDescriptor affDescriptor in entityDescriptor.AffiliationDescriptors)
-			{
-				WriteAffiliationDescriptor(writer, affDescriptor);
-			}
-			if (entityDescriptor.Organization != null)
-			{
-				WriteOrganization(writer, entityDescriptor.Organization);
-			}
-			foreach (var person in entityDescriptor.Contacts)
-			{
-				WriteContactPerson(writer, person);
-			}
-			foreach (var meta in entityDescriptor.AdditionalMetadataLocations)
-			{
-				WriteAdditionalMetadataLocation(writer, meta);
-			}
-			WriteCustomElements(writer, entityDescriptor);
-			writer.WriteEndElement();
-		}
-
-		protected virtual void WriteIdpSsoDescriptor(XmlWriter writer, IdpSsoDescriptor descriptor)
-		{
-			if (writer == null)
-			{
-				throw new ArgumentNullException(nameof(writer));
-			}
-			if (descriptor == null)
-			{
-				throw new ArgumentNullException(nameof(descriptor));
-			}
-
-			writer.WriteStartElement("IDPSSODescriptor", Saml2MetadataNs);
-			WriteBooleanAttribute(writer, "WantAuthnRequestsSigned", null, descriptor.WantAuthnRequestsSigned);
-			WriteSsoDescriptorAttributes(writer, descriptor);
-			WriteCustomAttributes(writer, descriptor);
-
-			WriteSsoDescriptorElements(writer, descriptor);
-			WriteEndpoints(writer, descriptor.SingleSignOnServices,
-				"SingleSignOnService", Saml2MetadataNs);
-			WriteEndpoints(writer, descriptor.NameIDMappingServices,
-				"NameIDMappingService", Saml2MetadataNs);
-			WriteEndpoints(writer, descriptor.AssertionIDRequestServices,
-				"AssertionIDRequestService", Saml2MetadataNs);
-			foreach (var attProfile in descriptor.AttributeProfiles)
-			{
-				WriteAttributeProfile(writer, attProfile);
-			}
-			foreach (var attribute in descriptor.SupportedAttributes)
-			{
-				WriteAttribute(writer, attribute);
-			}
-
-			WriteCustomElements(writer, descriptor);
-			writer.WriteEndElement();
-		}
-
-		protected virtual void WriteKeyDescriptor(XmlWriter writer, KeyDescriptor keyDescriptor)
-		{
-			if (writer == null)
-			{
-				throw new ArgumentNullException(nameof(writer));
-			}
-			if (keyDescriptor == null)
-			{
-				throw new ArgumentNullException(nameof(keyDescriptor));
-			}
-
-			writer.WriteStartElement("KeyDescriptor", Saml2MetadataNs);
-			if (keyDescriptor.Use != KeyType.Unspecified)
-			{
-				string useValue;
-				switch (keyDescriptor.Use)
-				{
-					case KeyType.Signing:
-						useValue = "signing";
-						break;
-					case KeyType.Encryption:
-						useValue = "encryption";
-						break;
-					default:
-						throw new MetadataSerializationException(
-							$"Unknown KeyType enumeration entry '{keyDescriptor.Use}'");
-				}
-				writer.WriteAttributeString("use", useValue);
-			}
-			WriteCustomAttributes(writer, keyDescriptor);
-
-			if (keyDescriptor.KeyInfo != null)
-			{
-				WriteDSigKeyInfo(writer, keyDescriptor.KeyInfo);
-			}
-
-			WriteCollection(writer, keyDescriptor.EncryptionMethods, WriteEncryptionMethod);
-
-			WriteCustomElements(writer, keyDescriptor);
-			writer.WriteEndElement();
-		}
-
-		protected virtual void WriteLocalizedName(XmlWriter writer, LocalizedName name,
-			string elName, string ns)
-		{
-			if (writer == null)
-			{
-				throw new ArgumentNullException(nameof(writer));
-			}
-			if (name == null)
-			{
-				throw new ArgumentNullException(nameof(name));
-			}
-			if (elName == null)
-			{
-				throw new ArgumentNullException(nameof(elName));
-			}
-			if (ns == null)
-			{
-				throw new ArgumentNullException(nameof(ns));
-			}
-
-			writer.WriteStartElement(elName, ns);
-			writer.WriteAttributeString("xml", "lang", XmlNs, name.Language);
-			WriteCustomAttributes(writer, name);
-			writer.WriteString(name.Name);
-			WriteCustomElements(writer, name);
-			writer.WriteEndElement();
-		}
-
-		void WriteLocalizedNames(XmlWriter writer, IEnumerable<LocalizedName> names,
-			string elName, string ns) =>
-				WriteCollection(writer, names, (writer_, name) =>
-					WriteLocalizedName(writer_, name, elName, ns));
-
-		protected virtual void WriteLocalizedUri(XmlWriter writer, LocalizedUri uri,
-			string name, string ns)
-		{
-			if (writer == null)
-			{
-				throw new ArgumentNullException(nameof(writer));
-			}
-			if (uri == null)
-			{
-				throw new ArgumentNullException(nameof(uri));
-			}
-			if (name == null)
-			{
-				throw new ArgumentNullException(nameof(name));
-			}
-			if (ns == null)
-			{
-				throw new ArgumentNullException(nameof(ns));
-			}
-
-			writer.WriteStartElement(name, ns);
-			writer.WriteAttributeString("xml", "lang", XmlNs, uri.Language);
-			WriteCustomAttributes(writer, name);
-			writer.WriteString(uri.Uri.ToString());
-			WriteCustomElements(writer, name);
-			writer.WriteEndElement();
-		}
-
-		public void WriteMetadata(Stream stream, MetadataBase metadata)
-		{
-			if (stream == null)
-			{
-				throw new ArgumentNullException(nameof(stream));
-			}
-			if (metadata == null)
-			{
-				throw new ArgumentNullException(nameof(metadata));
-			}
-			using (var writer = XmlWriter.Create(stream))
-			{
-				WriteMetadata(writer, metadata);
-			}
-		}
-
-		public void WriteMetadata(XmlWriter writer, MetadataBase metadata)
-		{
-			if (writer == null)
-			{
-				throw new ArgumentNullException(nameof(writer));
-			}
-			if (metadata == null)
-			{
-				throw new ArgumentNullException(nameof(metadata));
-			}
-			WriteMetadataCore(writer, metadata);
-		}
-
-		protected virtual void WriteMetadataCore(XmlWriter writer, MetadataBase metadata)
-		{
-			if (writer == null)
-			{
-				throw new ArgumentNullException(nameof(writer));
-			}
-			if (metadata == null)
-			{
-				throw new ArgumentNullException(nameof(metadata));
-			}
-
-			if (metadata is EntitiesDescriptor entities)
-			{
-				WriteEntitiesDescriptor(writer, entities);
-			}
-			else if (metadata is EntityDescriptor entity)
-			{
-				WriteEntityDescriptor(writer, entity);
-			}
-		}
-
-		protected virtual void WriteOrganization(XmlWriter writer, Organization organization)
-		{
-			if (writer == null)
-			{
-				throw new ArgumentNullException(nameof(writer));
-			}
-			if (organization == null)
-			{
-				throw new ArgumentNullException(nameof(organization));
-			}
-			if (organization.Names.Count == 0)
-			{
-				throw new MetadataSerializationException(
-					"An organisation must have at least one Name property");
-			}
-			if (organization.DisplayNames.Count == 0)
-			{
-				throw new MetadataSerializationException(
-					"An organisation must have at least one DisplayName property");
-			}
-			if (organization.Urls.Count == 0)
-			{
-				throw new MetadataSerializationException(
-					"An organisation must have at least one Url property");
-			}
-
-			writer.WriteStartElement("Organization", Saml2MetadataNs);
-			WriteCustomAttributes(writer, organization);
-
-			if (organization.Extensions.Count > 0)
-			{
-				writer.WriteStartElement("Extensions", Saml2MetadataNs);
-				foreach (var extension in organization.Extensions)
-				{
-					extension.WriteTo(writer);
-				}
-				writer.WriteEndElement();
-			}
-			WriteLocalizedNames(writer, organization.Names,
-				"OrganizationName", Saml2MetadataNs);
-			WriteLocalizedNames(writer, organization.DisplayNames,
-				"OrganizationDisplayName", Saml2MetadataNs);
-			WriteCollection(writer, organization.Urls, (writer_, uri) =>
-				WriteLocalizedUri(writer_, uri, "OrganizationURL", Saml2MetadataNs));
-
-			WriteCustomElements(writer, organization);
-			writer.WriteEndElement();
-		}
-
-		protected virtual void WriteRoleDescriptorAttributes(XmlWriter writer, RoleDescriptor descriptor)
-		{
-			if (writer == null)
-			{
-				throw new ArgumentNullException(nameof(writer));
-			}
-			if (descriptor == null)
-			{
-				throw new ArgumentNullException(nameof(descriptor));
-			}
-
-			WriteStringAttributeIfPresent(writer, "ID", null, descriptor.Id);
-			WriteUriAttributeIfPresent(writer, "errorURL", null, descriptor.ErrorUrl);
-			WriteCachedMetadataAttributes(writer, descriptor);
-			string protocolsSupported = descriptor.ProtocolsSupported.Aggregate("",
-				(list, uri) => $"{list}{(list == "" ? "" : " ")}{uri}");
-			writer.WriteAttributeString("protocolSupportEnumeration", protocolsSupported);
-			WriteCustomAttributes(writer, descriptor);
-		}
-
-		void WriteRoleDescriptorElements(XmlWriter writer, RoleDescriptor descriptor, bool writeExtensions)
-		{
-			if (writeExtensions)
-			{
-				WriteWrappedElements(writer, null, "Extensions", Saml2MetadataNs,
-					descriptor.Extensions);
-			}
-			foreach (var kd in descriptor.Keys)
-			{
-				WriteKeyDescriptor(writer, kd);
-			}
-			if (descriptor.Organization != null)
-			{
-				WriteOrganization(writer, descriptor.Organization);
-			}
-			foreach (var contact in descriptor.Contacts)
-			{
-				WriteContactPerson(writer, contact);
-			}
-			WriteCustomElements(writer, descriptor);
-		}
-
-		protected virtual void WriteRoleDescriptorElements(XmlWriter writer, RoleDescriptor descriptor)
-		{
-			if (writer == null)
-			{
-				throw new ArgumentNullException(nameof(writer));
-			}
-			if (descriptor == null)
-			{
-				throw new ArgumentNullException(nameof(descriptor));
-			}
-			WriteRoleDescriptorElements(writer, descriptor, true);
-		}
-
-		protected virtual void WriteSecurityTokenServiceDescriptor(XmlWriter writer,
-			SecurityTokenServiceDescriptor descriptor)
-		{
-			if (writer == null)
-			{
-				throw new ArgumentNullException(nameof(writer));
-			}
-			if (descriptor == null)
-			{
-				throw new ArgumentNullException(nameof(descriptor));
-			}
-
-			writer.WriteStartElement("SecurityTokenServiceType", FedNs);
-			WriteWebServiceDescriptorAttributes(writer, descriptor);
-			WriteCustomAttributes(writer, descriptor);
-
-			WriteWebServiceDescriptorElements(writer, descriptor);
-			WriteEndpointReferences(writer, "SingleSignOutSubscriptionEndpoint",
-				FedNs, descriptor.SecurityTokenServiceEndpoints);
-			WriteEndpointReferences(writer, "SingleSignOutSubscriptionEndpoint",
-				FedNs, descriptor.SingleSignOutSubscriptionEndpoints);
-			WriteEndpointReferences(writer, "SingleSignOutNotificationEndpoint",
-				FedNs, descriptor.SingleSignOutNotificationEndpoints);
-			WriteEndpointReferences(writer, "PassiveRequestorEndpoint",
-				FedNs, descriptor.PassiveRequestorEndpoints);
-
-			WriteCustomElements(writer, descriptor);
-
-			writer.WriteEndElement();
-		}
-
-		protected virtual void WriteRequestedAttribute(XmlWriter writer, RequestedAttribute attribute)
-		{
-			if (writer == null)
-			{
-				throw new ArgumentNullException(nameof(writer));
-			}
-			if (attribute == null)
-			{
-				throw new ArgumentNullException(nameof(attribute));
-			}
-
-			if (writer == null)
-			{
-				throw new ArgumentNullException(nameof(writer));
-			}
-			if (attribute == null)
-			{
-				throw new ArgumentNullException(nameof(attribute));
-			}
-
-			writer.WriteStartElement("RequestedAttribute", Saml2MetadataNs);
-			WriteBooleanAttribute(writer, "isRequired", null, attribute.IsRequired);
-			WriteAttributeAttributes(writer, attribute);
-			WriteAttributeElements(writer, attribute);
-			writer.WriteEndElement();
-		}
-
-		protected virtual void WriteAttributeConsumingService(XmlWriter writer, AttributeConsumingService service)
-		{
-			if (writer == null)
-			{
-				throw new ArgumentNullException(nameof(writer));
-			}
-			if (service == null)
-			{
-				throw new ArgumentNullException(nameof(service));
-			}
-
-			writer.WriteStartElement("AttributeConsumingService", Saml2MetadataNs);
-			writer.WriteAttributeString("index", service.Index.ToString());
-			WriteBooleanAttribute(writer, "isDefault", null, service.IsDefault);
-			WriteCustomAttributes(writer, service);
-
-			WriteLocalizedNames(writer, service.ServiceNames,
-				"ServiceName", Saml2MetadataNs);
-			WriteLocalizedNames(writer, service.ServiceDescriptions,
-				"ServiceDescription", Saml2MetadataNs);
-			WriteCollection(writer, service.RequestedAttributes,
-				WriteRequestedAttribute);
-			WriteCustomElements(writer, service);
-			writer.WriteEndElement();
-		}
-
-		protected virtual void WriteSpSsoDescriptor(XmlWriter writer, SpSsoDescriptor descriptor)
-		{
-			if (writer == null)
-			{
-				throw new ArgumentNullException(nameof(writer));
-			}
-			if (descriptor == null)
-			{
-				throw new ArgumentNullException(nameof(descriptor));
-			}
-
-			writer.WriteStartElement("SPSSODescriptor", Saml2MetadataNs);
-			WriteBooleanAttribute(writer, "AuthnRequestsSigned", null, descriptor.AuthnRequestsSigned);
-			WriteBooleanAttribute(writer, "WantAssertionsSigned", null, descriptor.WantAssertionsSigned);
-			WriteSsoDescriptorAttributes(writer, descriptor);
-			WriteCustomAttributes(writer, descriptor);
-
-			if (descriptor.DiscoveryResponses.Count > 0 || descriptor.Extensions.Any())
-			{
-				writer.WriteStartElement("Extensions", Saml2MetadataNs);
-				WriteIndexedEndpoints(writer, descriptor.DiscoveryResponses.Values,
-					"DiscoveryResponse", IdpDiscNs);
-				foreach (var extension in descriptor.Extensions)
-				{
-					extension.WriteTo(writer);
-				}
-				writer.WriteEndElement();
-			}
-			WriteSsoDescriptorElements(writer, descriptor, false);
-			WriteIndexedEndpoints(writer, descriptor.AssertionConsumerServices.Values,
-				"AssertionConsumerService", Saml2MetadataNs);
-			WriteCollection(writer, descriptor.AttributeConsumingServices.Values,
-				WriteAttributeConsumingService);
-
-			WriteCustomElements(writer, descriptor);
-			writer.WriteEndElement();
-		}
-
-		protected virtual void WriteSsoDescriptorAttributes(XmlWriter writer, SsoDescriptor descriptor)
-		{
-			if (writer == null)
-			{
-				throw new ArgumentNullException(nameof(writer));
-			}
-			if (descriptor == null)
-			{
-				throw new ArgumentNullException(nameof(descriptor));
-			}
-			WriteRoleDescriptorAttributes(writer, descriptor);
-			WriteCustomAttributes(writer, descriptor);
-		}
-
-		void WriteSsoDescriptorElements(XmlWriter writer, SsoDescriptor descriptor, bool writeExtensions)
-		{
-			WriteRoleDescriptorElements(writer, descriptor, writeExtensions);
-			WriteIndexedEndpoints(writer, descriptor.ArtifactResolutionServices.Values,
-				"ArtifactResolutionService", Saml2MetadataNs);
-			WriteEndpoints(writer, descriptor.SingleLogoutServices,
-				"SingleLogoutService", Saml2MetadataNs);
-			WriteEndpoints(writer, descriptor.ManageNameIDServices,
-				"ManageNameIDService", Saml2MetadataNs);
-			WriteCollection(writer, descriptor.NameIdentifierFormats, WriteNameIDFormat);
-			WriteCustomElements(writer, descriptor);
-		}
-
-		protected virtual void WriteSsoDescriptorElements(XmlWriter writer, SsoDescriptor descriptor)
-		{
-			if (writer == null)
-			{
-				throw new ArgumentNullException(nameof(writer));
-			}
-			if (descriptor == null)
-			{
-				throw new ArgumentNullException(nameof(descriptor));
-			}
-
-			WriteSsoDescriptorElements(writer, descriptor, true);
-		}
-
-		void WriteUris(XmlWriter writer, string parentElementName,
-			string childElementName, string ns, IEnumerable<Uri> uris)
-		{
-			if (!uris.Any())
-			{
-				return;
-			}
-			writer.WriteStartElement(parentElementName, ns);
-			foreach (var uri in uris)
-			{
-				writer.WriteStartElement(childElementName, ns);
-				writer.WriteAttributeString("Uri", uri.ToString());
-				writer.WriteEndElement();
-			}
-			writer.WriteEndElement();
-		}
-
-		protected virtual void WriteWebServiceDescriptorAttributes(XmlWriter writer, WebServiceDescriptor descriptor)
-		{
-			if (writer == null)
-			{
-				throw new ArgumentNullException(nameof(writer));
-			}
-			if (descriptor == null)
-			{
-				throw new ArgumentNullException(nameof(descriptor));
-			}
-
-			WriteRoleDescriptorAttributes(writer, descriptor);
-			WriteStringAttributeIfPresent(writer, "ServiceDisplayName",
-				null, descriptor.ServiceDisplayName);
-			WriteStringAttributeIfPresent(writer, "ServiceDescription",
-				null, descriptor.ServiceDescription);
-		}
-
-		void WriteDisplayClaims(XmlWriter writer, string parentName, string parentNs,
-			IEnumerable<DisplayClaim> claims)
+		[TestMethod]
+		public void MetadataSerializerTests_WriteSpSsoDescriptor()
 		{
-			if (!claims.Any())
-			{
-				return;
-			}
-
-			writer.WriteStartElement(parentName, parentNs);
-			WriteCollection(writer, claims, WriteDisplayClaim);
-			writer.WriteEndElement();
+			WriteTest<SpSsoDescriptor>("SpSsoDescriptor1",
+				(serializer, writer, obj) =>
+					serializer.TestWriteSpSsoDescriptor(writer, obj));
 		}
 
-		protected virtual void WriteWebServiceDescriptorElements(XmlWriter writer, WebServiceDescriptor descriptor)
+		[TestMethod]
+		public void MetadataSerializerTests_WriteEndpoint()
 		{
-			if (writer == null)
-			{
-				throw new ArgumentNullException(nameof(writer));
-			}
-			if (descriptor == null)
-			{
-				throw new ArgumentNullException(nameof(descriptor));
-			}
-
-			WriteRoleDescriptorElements(writer, descriptor);
-
-			WriteUris(writer, "LogicalServiceNamesOffered",
-				"IssuerName", FedNs, descriptor.LogicalServiceNamesOffered);
-			WriteUris(writer, "TokenTypesOffered",
-				"TokenType", FedNs, descriptor.TokenTypesOffered);
-			WriteUris(writer, "ClaimDialectsOffered",
-				"ClaimDialect", FedNs, descriptor.ClaimDialectsOffered);
-
-			WriteDisplayClaims(writer, "ClaimTypesOffered", FedNs,
-				descriptor.ClaimTypesOffered);
-			WriteDisplayClaims(writer, "ClaimTypesRequested", FedNs,
-				descriptor.ClaimTypesRequested);
-
-			if (descriptor.AutomaticPseudonyms.HasValue)
-			{
-				writer.WriteStartElement("AutomaticPseudonyms", FedNs);
-				writer.WriteString(descriptor.AutomaticPseudonyms.Value ? "true" : "false");
-				writer.WriteEndElement();
-			}
-			if (descriptor.TargetScopes.Count > 0)
-			{
-				writer.WriteStartElement("TargetScopes", FedNs);
-				WriteCollection(writer, descriptor.TargetScopes, WriteEndpointReference);
-				writer.WriteEndElement();
-			}
-
-			WriteCustomElements(writer, descriptor);
-		}
+			string xml =
+			@"<?xml version='1.0' encoding='UTF-8'?>
+			<x:TestEndpoint xmlns:x='test:namespace:01'
+				Binding = 'https://idp.example.com/binding'
+				Location = 'https://idp.example.com/location'
+				ResponseLocation = 'https://idp.example.com/responseLocation'/>";
 
-		protected virtual void WriteAttributeAttributes(XmlWriter writer, Saml2Attribute attribute)
-		{
-			if (writer == null)
+			var obj = new Endpoint
 			{
-				throw new ArgumentNullException(nameof(writer));
-			}
-			if (attribute == null)
-			{
-				throw new ArgumentNullException(nameof(attribute));
-			}
+				Binding = new Uri("https://idp.example.com/binding"),
+				Location = new Uri("https://idp.example.com/location"),
+				ResponseLocation = new Uri("https://idp.example.com/responseLocation")
+			};
 
-			writer.WriteAttributeString("Name", attribute.Name);
-			WriteUriAttributeIfPresent(writer, "NameFormat", null, attribute.NameFormat);
-			WriteStringAttributeIfPresent(writer, "FriendlyName", null, attribute.FriendlyName);
-			WriteCustomAttributes(writer, attribute);
+			WriteTest(obj, xml, (serializer, writer) =>
+				serializer.TestWriteEndpoint(writer, obj, "TestEndpoint", "test:namespace:01"));
 		}
 
-		protected virtual void WriteAttributeElements(XmlWriter writer,
-			Saml2Attribute attribute)
+		[TestMethod]
+		public void MetadataSerializerTests_WriteIndexedEndpoint()
 		{
-			if (writer == null)
-			{
-				throw new ArgumentNullException(nameof(writer));
-			}
-			if (attribute == null)
-			{
-				throw new ArgumentNullException(nameof(attribute));
-			}
-
-			WriteCollection(writer, attribute.Values, (writer_, value) =>
-				WriteStringElement(writer, "AttributeValue", Saml2AssertionNs, value));
-			WriteCustomElements(writer, attribute);
-		}
+			string xml =
+			@"<?xml version='1.0' encoding='UTF-8'?>
+			<x:TestIndexedEndpoint xmlns:x='test:namespace:02'
+				isDefault = 'true'
+				index = '4'
+				Binding = 'https://idp.example.com/binding'
+				Location = 'https://idp.example.com/location'
+				ResponseLocation = 'https://idp.example.com/responseLocation'/>";
 
-		protected virtual void WriteAttribute(XmlWriter writer, Saml2Attribute attribute)
-		{
-			if (writer == null)
-			{
-				throw new ArgumentNullException(nameof(writer));
-			}
-			if (attribute == null)
+			var obj = new IndexedEndpoint
 			{
-				throw new ArgumentNullException(nameof(attribute));
-			}
+				Index = 4,
+				IsDefault = true,
+				Binding = new Uri("https://idp.example.com/binding"),
+				Location = new Uri("https://idp.example.com/location"),
+				ResponseLocation = new Uri("https://idp.example.com/responseLocation")
+			};
 
-			writer.WriteStartElement("attribute", Saml2AssertionNs);
-			WriteAttributeAttributes(writer, attribute);
-			WriteAttributeElements(writer, attribute);
-			writer.WriteEndElement();
+			WriteTest(obj, xml, (serializer, writer) =>
+				serializer.TestWriteIndexedEndpoint(
+					writer, obj, "TestIndexedEndpoint", "test:namespace:02"));
 		}
-	}
-}
-#endif
 	}
 }
