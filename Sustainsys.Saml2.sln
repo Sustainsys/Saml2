@@ -71,11 +71,17 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sustainsys.Saml2.AspNetCore
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AspNetCore2.Tests", "Tests\AspNetCore2.Tests\AspNetCore2.Tests.csproj", "{20359A9A-6435-4264-8B36-22CD76731432}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tests.NETCore", "Tests\Tests\Tests.NETCore.csproj", "{FF774B2E-51D4-4C64-BA0E-C061683A9B93}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tests.NETCore", "Tests\Tests.NETCore\Tests.NETCore.csproj", "{FF774B2E-51D4-4C64-BA0E-C061683A9B93}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests.NETFramework", "Tests\Tests.NETFramework\Tests.NETFramework.csproj", "{C5C43D57-3A9C-4EDF-97AF-EE55A950284C}"
 EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Tests.Shared", "Tests\Tests.Shared\Tests.Shared.shproj", "{82F84E61-1292-47CF-B0DC-59F26EC56C32}"
+EndProject
 Global
+	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		Tests\Tests.Shared\Tests.Shared.projitems*{82f84e61-1292-47cf-b0dc-59f26ec56c32}*SharedItemsImports = 13
+		Tests\Tests.Shared\Tests.Shared.projitems*{c5c43d57-3a9c-4edf-97af-ee55a950284c}*SharedItemsImports = 4
+	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
@@ -170,6 +176,7 @@ Global
 		{20359A9A-6435-4264-8B36-22CD76731432} = {F3C8CC66-4CE9-4683-BC31-B89AF47A5897}
 		{FF774B2E-51D4-4C64-BA0E-C061683A9B93} = {F3C8CC66-4CE9-4683-BC31-B89AF47A5897}
 		{C5C43D57-3A9C-4EDF-97AF-EE55A950284C} = {F3C8CC66-4CE9-4683-BC31-B89AF47A5897}
+		{82F84E61-1292-47CF-B0DC-59F26EC56C32} = {F3C8CC66-4CE9-4683-BC31-B89AF47A5897}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {A8812E38-A212-46DD-B51F-AB653F39E4ED}

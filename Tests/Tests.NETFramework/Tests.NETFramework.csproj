@@ -8,7 +8,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Sustainsys.Saml2.Tests</RootNamespace>
     <AssemblyName>Tests.NETFramework</AssemblyName>
-    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.7</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
@@ -106,6 +106,7 @@
       <HintPath>..\..\packages\System.IdentityModel.Tokens.Jwt.5.2.1\lib\net451\System.IdentityModel.Tokens.Jwt.dll</HintPath>
     </Reference>
     <Reference Include="System.Net.Http" />
+    <Reference Include="System.Numerics" />
     <Reference Include="System.Runtime.CompilerServices.Unsafe, Version=4.0.3.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\..\packages\System.Runtime.CompilerServices.Unsafe.4.4.0\lib\netstandard2.0\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
     </Reference>
@@ -156,85 +157,6 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
-    <Compile Include="..\Tests\ClaimsExtensionsTests.cs" />
-    <Compile Include="..\Tests\ClaimsIdentityExtensionsTests.cs" />
-    <Compile Include="..\Tests\Configuration\CompatibilityTests.cs" />
-    <Compile Include="..\Tests\Configuration\ConfiguredAndLoadedSigningKeysCollectionTests.cs" />
-    <Compile Include="..\Tests\Configuration\FederationCollectionTests.cs" />
-    <Compile Include="..\Tests\Configuration\IdentityProviderCollectionTests.cs" />
-    <Compile Include="..\Tests\Configuration\IdentityProviderDictionaryTests.cs" />
-    <Compile Include="..\Tests\Configuration\OptionsTests.cs" />
-    <Compile Include="..\Tests\Configuration\Saml2RequestedAuthnContextTests.cs" />
-    <Compile Include="..\Tests\Configuration\ServiceCertificateCollectionTests.cs" />
-    <Compile Include="..\Tests\Configuration\ServiceCertificateElementCollectionTests.cs" />
-    <Compile Include="..\Tests\Configuration\SPOptionsExtensionsTests.cs" />
-    <Compile Include="..\Tests\Configuration\SPOptionsTests.cs" />
-    <Compile Include="..\Tests\Configuration\SustainsysSaml2SectionTests.cs" />
-    <Compile Include="..\Tests\Configuration\TetClassAttribute.cs" />
-    <Compile Include="..\Tests\Exceptions\BadFormatSamlResponseExceptionTests.cs" />
-    <Compile Include="..\Tests\Exceptions\InvalidSignatureExceptionTests.cs" />
-    <Compile Include="..\Tests\Exceptions\NoSamlResponseFoundExceptionTests.cs" />
-    <Compile Include="..\Tests\Exceptions\Saml2ExceptionTests.cs" />
-    <Compile Include="..\Tests\Exceptions\Saml2ResponseFailedValidationExceptionTests.cs" />
-    <Compile Include="..\Tests\Exceptions\UnexpectedInResponseToExceptionTests.cs" />
-    <Compile Include="..\Tests\Exceptions\UnsuccessfulSamlOperationExceptionTest.cs" />
-    <Compile Include="..\Tests\ExceptionTestHelpers.cs" />
-    <Compile Include="..\Tests\ExtendedMetadataSerializerTests.cs" />
-    <Compile Include="..\Tests\FederationTests.cs" />
-    <Compile Include="..\Tests\Helpers\SpinWaiter.cs" />
-    <Compile Include="..\Tests\Helpers\StubServer.cs" />
-    <Compile Include="..\Tests\Helpers\XmlElementExtensions.cs" />
-    <Compile Include="..\Tests\IdentityProviderTests.cs" />
-    <Compile Include="..\Tests\Internal\CryptographyExtensionsTests.cs" />
-    <Compile Include="..\Tests\Internal\DateTimeExtensionsTests.cs" />
-    <Compile Include="..\Tests\Internal\DateTimeHelperTests.cs" />
-    <Compile Include="..\Tests\Internal\DelimitedStringTests.cs" />
-    <Compile Include="..\Tests\Internal\EntityIdEqualityComparerTests.cs" />
-    <Compile Include="..\Tests\Internal\EnumeratorTests.cs" />
-    <Compile Include="..\Tests\Internal\PathHelperTests.cs" />
-    <Compile Include="..\Tests\Internal\QueryStringHelperTests.cs" />
-    <Compile Include="..\Tests\Internal\ReturnRequestedIssuerNameRegistryTests.cs" />
-    <Compile Include="..\Tests\ManagedSHA256SignatureDescriptionTests.cs" />
-    <Compile Include="..\Tests\Metadata\MetadatabaseExtensionsTests.cs" />
-    <Compile Include="..\Tests\Metadata\MetadataLoaderTests.cs" />
-    <Compile Include="..\Tests\Metadata\MetadataRefreshSchedulerTests.cs" />
-    <Compile Include="..\Tests\RelayStateGeneratorTests.cs" />
-    <Compile Include="..\Tests\Saml2AssertionExtensionsTests.cs" />
-    <Compile Include="..\Tests\Saml2ConditionsExtensionsTests.cs" />
-    <Compile Include="..\Tests\Saml2NameIdExtensionsTests.cs" />
-    <Compile Include="..\Tests\Saml2P\FilteringXmlNodeReaderTests.cs" />
-    <Compile Include="..\Tests\Saml2P\Saml2ArtifactResolveTests.cs" />
-    <Compile Include="..\Tests\Saml2P\Saml2ArtifactResponseTests.cs" />
-    <Compile Include="..\Tests\Saml2P\Saml2AuthenticationRequestTests.cs" />
-    <Compile Include="..\Tests\Saml2P\Saml2IdpEntryTests.cs" />
-    <Compile Include="..\Tests\Saml2P\Saml2LogoutRequestTests.cs" />
-    <Compile Include="..\Tests\Saml2P\Saml2LogoutResponseTests.cs" />
-    <Compile Include="..\Tests\Saml2P\Saml2PSecurityTokenHandlerTests.cs" />
-    <Compile Include="..\Tests\Saml2P\Saml2RequestBaseTests.cs" />
-    <Compile Include="..\Tests\Saml2P\Saml2ResponseTests.cs" />
-    <Compile Include="..\Tests\Saml2P\Saml2ScopingTests.cs" />
-    <Compile Include="..\Tests\Saml2P\Saml2SoapBindingTests.cs" />
-    <Compile Include="..\Tests\Saml2StatementExtensionsTests.cs" />
-    <Compile Include="..\Tests\Saml2SubjectExtensionsTests.cs" />
-    <Compile Include="..\Tests\ServiceCertificateTests.cs" />
-    <Compile Include="..\Tests\Startup.cs" />
-    <Compile Include="..\Tests\StoredRequestStateTests.cs" />
-    <Compile Include="..\Tests\WebSSO\AcsCommandTests.cs" />
-    <Compile Include="..\Tests\WebSSO\CommandFactoryTests.cs" />
-    <Compile Include="..\Tests\WebSSO\CommandResultTests.cs" />
-    <Compile Include="..\Tests\WebSSO\HttpRequestDataTests.cs" />
-    <Compile Include="..\Tests\WebSSO\LogoutCommandTests.cs" />
-    <Compile Include="..\Tests\WebSSO\MetadataCommandTests.cs" />
-    <Compile Include="..\Tests\WebSSO\NotFoundCommandTests.cs" />
-    <Compile Include="..\Tests\WebSSO\Saml2ArtifactBindingTests.cs" />
-    <Compile Include="..\Tests\WebSSO\Saml2BindingTests.cs" />
-    <Compile Include="..\Tests\WebSSO\Saml2MessageImplementation.cs" />
-    <Compile Include="..\Tests\WebSSO\Saml2PostBindingTests.cs" />
-    <Compile Include="..\Tests\WebSSO\Saml2RedirectBindingTests.cs" />
-    <Compile Include="..\Tests\WebSSO\Saml2UrlsTests.cs" />
-    <Compile Include="..\Tests\WebSSO\SignInCommandTests.cs" />
-    <Compile Include="..\Tests\WebSSO\StubSaml2Binding.cs" />
-    <Compile Include="..\Tests\XmlHelpersTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -252,24 +174,6 @@
       <Project>{CF1E517E-B2FE-48E1-8BB9-4D9981695C47}</Project>
       <Name>TestHelpers</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <ContentWithTargetPath Include="..\Tests\Metadata\InCommonMetadata.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <TargetPath>Metadata\InCommonMetadata.xml</TargetPath>
-    </ContentWithTargetPath>
-    <ContentWithTargetPath Include="..\Tests\Metadata\SambiMetadata.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <TargetPath>Metadata\SambiMetadata.xml</TargetPath>
-    </ContentWithTargetPath>
-    <ContentWithTargetPath Include="..\Tests\Metadata\SingleIdpInEntitiesDescriptor.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <TargetPath>Metadata\SingleIdpInEntitiesDescriptor.xml</TargetPath>
-    </ContentWithTargetPath>
-    <ContentWithTargetPath Include="..\Tests\Metadata\SkolfederationMetadata.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <TargetPath>Metadata\SkolfederationMetadata.xml</TargetPath>
-    </ContentWithTargetPath>
   </ItemGroup>
   <ItemGroup />
   <Choose>
@@ -292,6 +196,7 @@
   </Choose>
   <Import Project="$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets" Condition="Exists('$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets')" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Import Project="..\Tests.Shared\Tests.Shared.projitems" Label="Shared" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

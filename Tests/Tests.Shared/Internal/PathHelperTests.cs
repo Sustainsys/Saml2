@@ -9,12 +9,18 @@ namespace Sustainsys.Saml2.Tests.Internal
     [TestClass]
     public class PathHelperTests
     {
-		const string AssemblyFolderName =
-#if NETCOREAPP2_0
-		"Tests";
-#else
-		"Tests.NETFramework";
-#endif
+		static string AssemblyFolderName { get; set; }
+
+		static PathHelperTests()
+		{
+			string name = Assembly.GetExecutingAssembly().FullName;
+			int commaPos = name.IndexOf(',');
+			if (commaPos >= 0)
+			{
+				name = name.Substring(0, commaPos).Trim();
+			}
+			AssemblyFolderName = name;
+		}
 
 		[TestMethod]
         public void PathHelper_BasePath_ShouldGivePath()
