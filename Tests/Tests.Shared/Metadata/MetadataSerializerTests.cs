@@ -146,6 +146,9 @@ namespace Sustainsys.Saml2.Tests.Metadata
 		public Saml2Attribute TestCreateSaml2AttributeInstance(string name) =>
 			base.CreateSaml2AttributeInstance(name);
 
+		public ServiceName TestCreateServiceNameInstance() =>
+			base.CreateServiceNameInstance();
+
 		public SingleLogoutService TestCreateSingleLogoutServiceInstance() =>
 			base.CreateSingleLogoutServiceInstance();
 
@@ -454,6 +457,21 @@ namespace Sustainsys.Saml2.Tests.Metadata
 
 		public void TestWriteRetrievalMethod(XmlWriter writer, RetrievalMethod method) =>
 			base.WriteRetrievalMethod(writer, method);
+
+		public ArtifactResolutionService TestReadArtifactResolutionService(XmlReader reader) =>
+			base.ReadArtifactResolutionService(reader);
+
+		public void TestReadWebServiceDescriptorAttributes(XmlReader reader, WebServiceDescriptor descriptor) =>
+			base.ReadWebServiceDescriptorAttributes(reader, descriptor);
+
+		public bool TestReadWebServiceDescriptorElement(XmlReader reader, WebServiceDescriptor descriptor) =>
+			base.ReadWebServiceDescriptorElement(reader, descriptor);
+		
+		public ServiceName TestReadServiceName(XmlReader reader) =>
+			base.ReadServiceName(reader);
+
+		public void TestWriteServiceName(XmlWriter writer, ServiceName serviceName) =>
+			base.WriteServiceName(writer, serviceName);
 	}
 
 	class XmlTestData
@@ -622,6 +640,19 @@ namespace Sustainsys.Saml2.Tests.Metadata
 			return (doc, nsmgr);
 		}
 
+		void ReadTestThrow<TException>(string xml, Action<TestMetadataSerializer, XmlReader> readFn)
+			where TException : Exception
+		{
+			using (var stringReader = new StringReader(xml))
+			using (var xmlReader = XmlReader.Create(stringReader))
+			{
+				xmlReader.MoveToContent();
+				var serializer = new TestMetadataSerializer();
+				Action a = () => readFn(serializer, xmlReader);
+				a.Should().Throw<TException>();
+			}
+		}
+
 		void ReadTest<T>(string xml, T expected, Func<TestMetadataSerializer, XmlReader, T> readFn,
 			Func<FluentAssertions.Equivalency.EquivalencyAssertionOptions<T>,
 				 FluentAssertions.Equivalency.EquivalencyAssertionOptions<T>> config = null)
@@ -680,6 +711,43 @@ namespace Sustainsys.Saml2.Tests.Metadata
 			T obj = testData.ObjectModel.As<T>();
 			WriteTest(obj, testData.WrittenXml,
 				(serializer, writer) => writeFn(serializer, writer, obj));
+		}
+
+		static void ReadNullTest(Action<TestMetadataSerializer> test)
+		{
+			Action a = () => test(new TestMetadataSerializer());
+			a.Should().Throw<ArgumentNullException>();
+		}
+
+		static void WriteNullTest(Action<TestMetadataSerializer, XmlWriter> test)
+		{
+			using (var ms = new MemoryStream())
+			using (XmlWriter xw = XmlWriter.Create(ms))
+			{
+				Action a = () => test(new TestMetadataSerializer(), xw);
+				a.Should().Throw<ArgumentNullException>();
+			}
+		}
+
+		static void WriteTestThrow<T, TException>(string testName, Action<TestMetadataSerializer, XmlWriter, T> writeFn)
+			where TException : Exception
+		{
+			var testData = GetTestData(testName);
+			T obj = testData.ObjectModel.As<T>();
+
+			using (var ms = new MemoryStream())
+			using (var xmlWriter = XmlWriter.Create(ms))
+			{
+				var serializer = new TestMetadataSerializer();
+				Action a = () => writeFn(serializer, xmlWriter, obj);
+				a.Should().Throw<TException>();
+			}
+		}
+
+		static void WriteNullWriterTest<T>(string testName, Action<TestMetadataSerializer, T> test)
+		{
+			WriteTestThrow<T, ArgumentNullException>(
+				testName, (serializer, writer, obj) => test(serializer, obj));
 		}
 
 		[TestMethod]
@@ -776,6 +844,8 @@ namespace Sustainsys.Saml2.Tests.Metadata
 				.Should().BeOfType<SingleSignOnService>();
 			serializer.TestCreateSpSsoDescriptorInstance()
 				.Should().BeOfType<SpSsoDescriptor>();
+			serializer.TestCreateServiceNameInstance()
+				.Should().BeOfType<ServiceName>();
 
 			var reqAtt = serializer.TestCreateRequestedAttributeInstance("testAttribute");
 			reqAtt.Should().BeOfType<RequestedAttribute>();
@@ -822,6 +892,12 @@ namespace Sustainsys.Saml2.Tests.Metadata
 			};
 			ReadTest(xml, expected, (serializer, reader) =>
 				serializer.TestReadEndpointReference(reader));
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_ReadEndpointReferenceNull()
+		{
+			ReadNullTest(serializer => serializer.TestReadEndpointReference(null));
 		}
 
 		[TestData]
@@ -912,11 +988,49 @@ namespace Sustainsys.Saml2.Tests.Metadata
 		}
 
 		[TestMethod]
+		public void MetadataSerializerTests_ReadApplicationServiceDescriptorNull()
+		{
+			ReadNullTest(serializer =>
+				serializer.TestReadApplicationServiceDescriptor(null));
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_WriteApplicationServiceDescriptorNull()
+		{
+			WriteNullTest((serializer, writer) =>
+				serializer.TestWriteApplicationServiceDescriptor(writer, null));
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_WriteApplicationServiceDescriptorNullWriter()
+		{
+			WriteNullWriterTest<ApplicationServiceDescriptor>("ApplicationServiceDescriptor1",
+				(serializer, obj) =>
+					serializer.TestWriteApplicationServiceDescriptor(null, obj));
+		}
+
+		[TestMethod]
 		public void MetadataSerializerTests_WriteApplicationServiceDescriptor()
 		{
 			WriteTest<ApplicationServiceDescriptor>("ApplicationServiceDescriptor1",
 				(serializer, writer, descriptor) =>
 					serializer.TestWriteApplicationServiceDescriptor(writer, descriptor));
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_ReadApplicationServiceDescriptorNoEndpoints()
+		{
+			string xml =
+			@"<?xml version='1.0' encoding='UTF-8'?>
+			<md:RoleDescriptor
+				protocolSupportEnumeration='http://docs.oasis-open.org/wsfed/federation/200706'
+				xsi:type='fed:ApplicationServiceType'
+				xmlns:md='urn:oasis:names:tc:SAML:2.0:metadata'
+				xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'
+				xmlns:fed='http://docs.oasis-open.org/wsfed/federation/200706'
+				xmlns:wsa='http://www.w3.org/2005/08/addressing'/>";
+			ReadTestThrow<MetadataSerializationException>(xml, (serializer, reader) =>
+				serializer.TestReadApplicationServiceDescriptor(reader));
 		}
 
 		[TestData]
@@ -971,13 +1085,44 @@ namespace Sustainsys.Saml2.Tests.Metadata
 		}
 
 		[TestMethod]
+		public void MetadataSerializerTests_ReadContactPersonNull()
+		{
+			ReadNullTest(serializer => serializer.TestReadContactPerson(null));
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_WriteContactPersonNull()
+		{
+			WriteNullTest((serializer, writer) =>
+				serializer.TestWriteContactPerson(writer, null));
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_WriteContactPersonWriterNull()
+		{
+			WriteNullWriterTest<ContactPerson>("ContactPerson1",
+				(serializer, obj) =>
+					serializer.TestWriteContactPerson(null, obj));
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_ReadContactPersonInvalidType()
+		{
+			string xml =
+			@"<?xml version='1.0' encoding='UTF-8'?>
+			<md:ContactPerson contactType='INVALID' xmlns:md='urn:oasis:names:tc:SAML:2.0:metadata'/>";
+			ReadTestThrow<MetadataSerializationException>(xml, (serializer, reader) =>
+				serializer.TestReadContactPerson(reader));
+		}
+
+		[TestMethod]
 		public void MetadataSerializerTests_ReadBase64()
 		{
 			string xml =
 			@"<?xml version='1.0' encoding='UTF-8'?><b64>dGhpcyBpcyBzb21lIHRlc3QgdGV4dA==</b64>";
 			byte[] expected = System.Text.Encoding.UTF8.GetBytes("this is some test text");
 			ReadTest(xml, expected, (serializer, reader) =>
-				serializer.TestReadBase64(reader));
+				serializer.TestReadBase64(reader));	
 		}
 
 		[TestData]
@@ -1196,6 +1341,121 @@ namespace Sustainsys.Saml2.Tests.Metadata
 					serializer.TestWriteIdpSsoDescriptor(writer, obj));
 		}
 
+		[TestMethod]
+		public void MetadataSerializerTests_ReadIdpSsoDescriptorNull()
+		{
+			ReadNullTest((serializer) => serializer.TestReadIdpSsoDescriptor(null));
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_WriteIdpSsoDescriptorNull()
+		{
+			WriteNullTest((serializer, writer) => 
+				serializer.TestWriteIdpSsoDescriptor(writer, null));
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_WriteIdpSsoDescriptorWriterNull()
+		{
+			WriteNullWriterTest<IdpSsoDescriptor>("IdpSsoDescriptor1",
+				(serializer, obj) =>
+					serializer.TestWriteIdpSsoDescriptor(null, obj));
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_ReadIdpSsoDescriptorTwoOrganizations()
+		{
+			string xml =
+			@"<?xml version='1.0' encoding='UTF-8'?>
+			  <md:IDPSSODescriptor
+				xmlns:md='urn:oasis:names:tc:SAML:2.0:metadata'
+				WantAuthnRequestsSigned='true'
+				protocolSupportEnumeration='urn:oasis:names:tc:SAML:2.0:protocol'>
+				<md:Organization>
+					<md:OrganizationName xml:lang='en'>Acme Ltd</md:OrganizationName>
+					<md:OrganizationDisplayName xml:lang='en'>Acme Ltd (display)</md:OrganizationDisplayName>
+					<md:OrganizationURL xml:lang='en'>http://acme.co/</md:OrganizationURL>
+				</md:Organization>
+				<md:Organization>
+					<md:OrganizationName xml:lang='en'>Acme Ltd2</md:OrganizationName>
+				</md:Organization>
+			  </md:IDPSSODescriptor>";
+			ReadTestThrow<MetadataSerializationException>(xml,
+				(serializer, reader) =>
+					serializer.TestReadIdpSsoDescriptor(reader));
+		}
+		
+		[TestMethod]
+		public void MetadataSerializerTests_ReadIdpSsoDescriptorDuplicateIndexes()
+		{
+			string xml =
+			@"<?xml version='1.0' encoding='UTF-8'?>
+			  <md:IDPSSODescriptor
+				xmlns:md='urn:oasis:names:tc:SAML:2.0:metadata'
+				protocolSupportEnumeration='urn:oasis:names:tc:SAML:2.0:protocol'>
+				<md:ArtifactResolutionService
+					index='1'
+					isDefault='false'
+					Binding='http://idp.example.com/ars1'
+					Location='http://idp.example.com/arsloc1'
+					ResponseLocation='http://idp.example.com/arsresp1' />
+				<md:ArtifactResolutionService
+					index='1'
+					isDefault='false'
+					Binding='http://idp.example.com/ars2'
+					Location='http://idp.example.com/arsloc2'
+					ResponseLocation='http://idp.example.com/arsresp2' />
+			  </md:IDPSSODescriptor>";
+			ReadTestThrow<MetadataSerializationException>(xml,
+				(serializer, reader) =>
+					serializer.TestReadIdpSsoDescriptor(reader));
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_ReadArtificatResolutionServiceInvalidIndex()
+		{
+			string xml =
+			@"<?xml version='1.0' encoding='UTF-8'?>
+				<md:ArtifactResolutionService
+					xmlns:md='urn:oasis:names:tc:SAML:2.0:metadata'
+					index='INVALID'
+					isDefault='false'
+					Binding='http://idp.example.com/ars1'
+					Location='http://idp.example.com/arsloc1'
+					ResponseLocation='http://idp.example.com/arsresp1' />";
+			ReadTestThrow<MetadataSerializationException>(xml,
+				(serializer, reader) =>
+					serializer.TestReadArtifactResolutionService(reader));
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_ReadAssertionIdRequestServiceMissingBinding()
+		{
+			string xml =
+			@"<?xml version='1.0' encoding='UTF-8'?>
+			<md:AssertionIDRequestService
+				xmlns:md='urn:oasis:names:tc:SAML:2.0:metadata'
+				Location='http://idp.example.com/ssolocation'
+				ResponseLocation='http://idp.example.com/ssoresponselocation' />";
+			ReadTestThrow<MetadataSerializationException>(xml,
+				(serializer, reader) =>
+					serializer.TestReadIdpSsoDescriptor(reader));
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_ReadAssertionIdRequestServiceMissingLocation()
+		{
+			string xml =
+			@"<?xml version='1.0' encoding='UTF-8'?>
+			<md:AssertionIDRequestService
+				xmlns:md='urn:oasis:names:tc:SAML:2.0:metadata'
+				Binding='http://idp.example.com/ssobinding'
+				ResponseLocation='http://idp.example.com/ssoresponselocation' />";
+			ReadTestThrow<MetadataSerializationException>(xml,
+				(serializer, reader) =>
+					serializer.TestReadIdpSsoDescriptor(reader));
+		}
+
 		[TestData]
 		public static void AddAssertionConsumerServiceTestData()
 		{
@@ -1238,6 +1498,48 @@ namespace Sustainsys.Saml2.Tests.Metadata
 						"AssertionConsumerService", "urn:oasis:names:tc:SAML:2.0:metadata"));
 		}
 
+		[TestMethod]
+		public void MetadataSerializerTests_ReadAssertionConsumerServiceNull()
+		{
+			ReadNullTest((serializer) =>
+				serializer.TestReadAssertionConsumerService(null));
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_WriteAssertionConsumerServiceNull()
+		{
+			WriteNullTest((serializer, writer) =>
+					serializer.TestWriteIndexedEndpoint(writer, null,
+						"AssertionConsumerService", "urn:oasis:names:tc:SAML:2.0:metadata"));
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_WriteAssertionConsumerServiceWriterNull()
+		{
+			WriteNullWriterTest<AssertionConsumerService>("AssertionConsumerService1",
+				(serializer, obj) =>
+					serializer.TestWriteIndexedEndpoint(null, obj,
+						"AssertionConsumerService", "urn:oasis:names:tc:SAML:2.0:metadata"));
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_WriteAssertionConsumerServiceNullName()
+		{
+			WriteTestThrow<AssertionConsumerService, ArgumentNullException>(
+				"AssertionConsumerService1", (serializer, writer, obj) =>
+					serializer.TestWriteIndexedEndpoint(writer, obj,
+						null, "urn:oasis:names:tc:SAML:2.0:metadata"));
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_WriteAssertionConsumerServiceNullNs()
+		{
+			WriteTestThrow<AssertionConsumerService, ArgumentNullException>(
+				"AssertionConsumerService1", (serializer, writer, obj) =>
+					serializer.TestWriteIndexedEndpoint(writer, obj,
+						"AssertionConsumerService", null));
+		}
+
 		[TestData]
 		public static void AddDSAKeyValueTestData()
 		{
@@ -1272,6 +1574,23 @@ namespace Sustainsys.Saml2.Tests.Metadata
 		}
 
 		[TestMethod]
+		public void MetadataSerializerTests_ReadDSAKeyValue_MissingP()
+		{
+			string xml =
+			@"<?xml version='1.0' encoding='UTF-8'?>
+			<DSAKeyValue xmlns='http://www.w3.org/2000/09/xmldsig#'>
+				<Q>li7dzDacuo67Jg7mtqEm2TRuOMU=</Q>
+				<G>Z4Rxsnqc9E7pGknFFH2xqaryRPBaQ01khpMdLRQnG541Awtx/XPaF5Bpsy4pNWMOHCBiNU0NogpsQW5QvnlMpA==</G>
+				<Y>qV38IqrWJG0V/mZQvRVi1OHw9Zj84nDC4jO8P0axi1gb6d+475yhMjSc/BrIVC58W3ydbkK+Ri4OKbaRZlYeRA==</Y>
+				<J>qV38IqrWJG0V/mZQvRVi1OHw9Zj84nDC4jO8P0axi1gb6d+475yhMjSc/BrIVC58W3ydbkK+Ri4OKbaRZlYeRA==</J>
+				<Seed>qV38IqrWJG0V/mZQvRVi1OHw9Zj84nDC4jO8P0axi1gb6d+475yhMjSc/BrIVC58W3ydbkK+Ri4OKbaRZlYeRA==</Seed>
+				<PgenCounter>pxXTng==</PgenCounter>
+			</DSAKeyValue>";
+			ReadTestThrow<MetadataSerializationException>(xml, (serializer, reader) =>
+				serializer.TestReadDsaKeyValue(reader));
+		}
+
+		[TestMethod]
 		public void MetadataSerializerTests_ReadDSAKeyValue()
 		{
 			ReadTest("DSAKeyValue1", (serializer, reader) =>
@@ -1285,6 +1604,27 @@ namespace Sustainsys.Saml2.Tests.Metadata
 			WriteTest<DsaKeyValue>("DSAKeyValue1",
 				(serializer, writer, obj) =>
 					serializer.TestWriteDSAKeyValue(writer, obj));
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_ReadDSAKeyValueNull()
+		{
+			ReadNullTest((serializer) => serializer.TestReadDsaKeyValue(null));
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_WriteDSAKeyValueNull()
+		{
+			WriteNullTest((serializer, writer) =>
+					serializer.TestWriteDSAKeyValue(writer, null));
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_WriteDSAKeyValueWriterNull()
+		{
+			WriteNullWriterTest<DsaKeyValue>("DSAKeyValue1",
+				(serializer, obj) =>
+					serializer.TestWriteDSAKeyValue(null, obj));
 		}
 
 		[TestData]
@@ -1323,6 +1663,39 @@ namespace Sustainsys.Saml2.Tests.Metadata
 			WriteTest<RsaKeyValue>("RSAKeyValue1",
 				(serializer, writer, obj) =>
 					serializer.TestWriteRSAKeyValue(writer, obj));
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_ReadRSAKeyValueNull()
+		{
+			ReadNullTest((serializer) => serializer.TestReadRsaKeyValue(null));
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_WriteRSAKeyValueNull()
+		{
+			WriteNullTest((serializer, writer) =>
+					serializer.TestWriteRSAKeyValue(writer, null));
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_WriteRSAKeyValueWriterNull()
+		{
+			WriteNullWriterTest<RsaKeyValue>("RSAKeyValue1",
+				(serializer, obj) =>
+					serializer.TestWriteRSAKeyValue(null, obj));
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_ReadRSAKeyValueMissingModulus()
+		{
+			string xml =
+			@"<?xml version='1.0' encoding='UTF-8'?>
+				<RSAKeyValue xmlns='http://www.w3.org/2000/09/xmldsig#'>
+				  <Exponent>AQAB</Exponent>
+				</RSAKeyValue>";
+			ReadTestThrow<MetadataSerializationException>(xml, (serializer, reader) =>
+				serializer.TestReadRsaKeyValue(reader));
 		}
 
 		[TestData]
@@ -1378,6 +1751,27 @@ namespace Sustainsys.Saml2.Tests.Metadata
 					serializer.TestWriteECKeyValue(writer, obj));
 		}
 
+		[TestMethod]
+		public void MetadataSerializerTests_ReadECKeyValueNull()
+		{
+			ReadNullTest((serializer) => serializer.TestReadEcKeyValue(null));
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_WriteECKeyValueNull()
+		{
+			WriteNullTest((serializer, writer) =>
+					serializer.TestWriteECKeyValue(writer, null));
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_WriteECKeyValueNullWriter()
+		{
+			WriteNullWriterTest<EcKeyValue>("ECKeyValue1",
+				(serializer, obj) =>
+					serializer.TestWriteECKeyValue(null, obj));
+		}
+
 		[TestData]
 		public static void AddECDSAKeyValueTestData()
 		{
@@ -1422,8 +1816,14 @@ namespace Sustainsys.Saml2.Tests.Metadata
 							.WithTracing());
 		}
 
+		[TestMethod]
+		public void MetadataSerializerTests_ReadECDSAKeyValueNull()
+		{
+			ReadNullTest((serializer) => serializer.TestReadEcDsaKeyValue(null));
+		}
+
 		[TestData]
-		public static void AddKeyValueTestData()
+		public static void AddKeyValueTestData1()
 		{
 			string xml =
 			@"<?xml version='1.0' encoding='UTF-8'?>
@@ -1446,12 +1846,150 @@ namespace Sustainsys.Saml2.Tests.Metadata
 			AddTestData("KeyValueTestData1", xml, obj);
 		}
 
+		[TestData]
+		public static void AddKeyValueTestData2()
+		{
+			string xml =
+			@"<?xml version='1.0' encoding='UTF-8'?>
+				<KeyValue xmlns='http://www.w3.org/2000/09/xmldsig#'>
+					<ECKeyValue xmlns='http://www.w3.org/2009/xmldsig11#'>
+					  <NamedCurve URI='urn:oid:1.2.840.10045.3.1.7' />
+					  <PublicKey>BOVKaiLPKEDChhkA64UEBOXTv/VFHnhrUPN+bXqCvEl7rroAYpH5tKzbiGTtMSlp4JO9Pxg44zeX7EoWDvOrpD0=</PublicKey>
+					</ECKeyValue>
+				</KeyValue>";
+			(XmlDocument doc, XmlNamespaceManager nsmgr) = LoadXml(xml);
+
+			var obj = new EcKeyValue(
+				new ECParameters
+				{
+					Curve = ECCurve.CreateFromOid(new Oid("1.2.840.10045.3.1.7")),
+					Q = new ECPoint
+					{
+						X = new byte[] {
+							0xe5, 0x4a, 0x6a, 0x22, 0xcf, 0x28, 0x40, 0xc2, 0x86, 0x19, 0x00,
+							0xeb, 0x85, 0x04, 0x04, 0xe5, 0xd3, 0xbf, 0xf5, 0x45, 0x1e, 0x78,
+							0x6b, 0x50, 0xf3, 0x7e, 0x6d, 0x7a, 0x82, 0xbc, 0x49, 0x7b },
+						Y = new byte[] {
+								0xae, 0xba, 0x00, 0x62, 0x91, 0xf9, 0xb4, 0xac, 0xdb, 0x88, 0x64,
+								0xed, 0x31, 0x29, 0x69, 0xe0, 0x93, 0xbd, 0x3f, 0x18, 0x38, 0xe3,
+								0x37, 0x97, 0xec, 0x4a, 0x16, 0x0e, 0xf3, 0xab, 0xa4, 0x3d }
+					}
+				}
+			);
+
+			AddTestData("KeyValueTestData2", xml, obj);
+		}
+
+		[TestData]
+		public static void AddKeyValueTestData3()
+		{
+			string xml =
+			@"<?xml version='1.0' encoding='UTF-8'?>
+				<KeyValue xmlns='http://www.w3.org/2000/09/xmldsig#'>
+					<ECDSAKeyValue xmlns='http://www.w3.org/2001/04/xmldsig-more#'>
+					  <DomainParameters>
+						<NamedCurve URN='urn:oid:1.2.840.10045.3.1.7' />
+					  </DomainParameters>
+					  <PublicKey>
+						<X Value='58511060653801744393249179046482833320204931884267326155134056258624064349885' />
+						<Y Value='102403352136827775240910267217779508359028642524881540878079119895764161434936' />
+					  </PublicKey>
+					</ECDSAKeyValue>
+				</KeyValue>";
+			(XmlDocument doc, XmlNamespaceManager nsmgr) = LoadXml(xml);
+
+			var obj = new EcKeyValue(
+				new ECParameters
+				{
+					Curve = ECCurve.CreateFromOid(new Oid("1.2.840.10045.3.1.7")),
+					Q = new ECPoint
+					{
+						X = BigInteger.Parse("58511060653801744393249179046482833320204931884267326155134056258624064349885").ToByteArray(),
+						Y = BigInteger.Parse("102403352136827775240910267217779508359028642524881540878079119895764161434936").ToByteArray()
+					}
+				}
+			);
+
+			AddTestData("KeyValueTestData3", xml, obj);
+		}
+
+		[TestData]
+		public static void AddKeyValueTestData4()
+		{
+			string xml =
+			@"<?xml version='1.0' encoding='UTF-8'?>
+				<KeyValue xmlns='http://www.w3.org/2000/09/xmldsig#'>
+					<DSAKeyValue xmlns='http://www.w3.org/2000/09/xmldsig#'>
+						<P>/KaCzo4Syrom78z3EQ5SbbB4sF7ey80etKII864WF64B81uRpH5t9jQTxeEu0ImbzRMqzVDZkVG9xD7nN1kuFw==</P>
+						<Q>li7dzDacuo67Jg7mtqEm2TRuOMU=</Q>
+						<G>Z4Rxsnqc9E7pGknFFH2xqaryRPBaQ01khpMdLRQnG541Awtx/XPaF5Bpsy4pNWMOHCBiNU0NogpsQW5QvnlMpA==</G>
+						<Y>qV38IqrWJG0V/mZQvRVi1OHw9Zj84nDC4jO8P0axi1gb6d+475yhMjSc/BrIVC58W3ydbkK+Ri4OKbaRZlYeRA==</Y>
+						<J>qV38IqrWJG0V/mZQvRVi1OHw9Zj84nDC4jO8P0axi1gb6d+475yhMjSc/BrIVC58W3ydbkK+Ri4OKbaRZlYeRA==</J>
+						<Seed>qV38IqrWJG0V/mZQvRVi1OHw9Zj84nDC4jO8P0axi1gb6d+475yhMjSc/BrIVC58W3ydbkK+Ri4OKbaRZlYeRA==</Seed>
+						<PgenCounter>pxXTng==</PgenCounter>
+					</DSAKeyValue>
+				</KeyValue>";
+			(XmlDocument doc, XmlNamespaceManager nsmgr) = LoadXml(xml);
+
+			var obj = new DsaKeyValue(
+				new DSAParameters
+				{
+					P = Convert.FromBase64String("/KaCzo4Syrom78z3EQ5SbbB4sF7ey80etKII864WF64B81uRpH5t9jQTxeEu0ImbzRMqzVDZkVG9xD7nN1kuFw=="),
+					Q = Convert.FromBase64String("li7dzDacuo67Jg7mtqEm2TRuOMU="),
+					G = Convert.FromBase64String("Z4Rxsnqc9E7pGknFFH2xqaryRPBaQ01khpMdLRQnG541Awtx/XPaF5Bpsy4pNWMOHCBiNU0NogpsQW5QvnlMpA=="),
+					Y = Convert.FromBase64String("qV38IqrWJG0V/mZQvRVi1OHw9Zj84nDC4jO8P0axi1gb6d+475yhMjSc/BrIVC58W3ydbkK+Ri4OKbaRZlYeRA=="),
+					// (rubbish, but will do for a test)
+					J = Convert.FromBase64String("qV38IqrWJG0V/mZQvRVi1OHw9Zj84nDC4jO8P0axi1gb6d+475yhMjSc/BrIVC58W3ydbkK+Ri4OKbaRZlYeRA=="),
+					Seed = Convert.FromBase64String("qV38IqrWJG0V/mZQvRVi1OHw9Zj84nDC4jO8P0axi1gb6d+475yhMjSc/BrIVC58W3ydbkK+Ri4OKbaRZlYeRA=="),
+					Counter = -1491741794
+				}
+			);
+
+			AddTestData("KeyValueTestData4", xml, obj);
+		}
+
 		[TestMethod]
-		public void MetadataSerializerTests_ReadKeyValue()
+		public void MetadataSerializerTests_ReadKeyValue1()
 		{
 			ReadTest("KeyValueTestData1", (serializer, reader) =>
 				serializer.TestReadKeyValue(reader),
-				opts => opts.ComparingByMembers<RSAParameters>().RespectingRuntimeTypes());
+				opts => opts.ComparingByMembers<RSAParameters>()
+							.RespectingRuntimeTypes());
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_ReadKeyValue2()
+		{
+			ReadTest("KeyValueTestData2", (serializer, reader) =>
+				serializer.TestReadKeyValue(reader),
+				opts => opts.ComparingByMembers<ECParameters>()
+							.ComparingByMembers<ECCurve>()
+							.ComparingByMembers<ECPoint>()
+							.ComparingByMembers<Oid>()
+							.Excluding(ctx => ((EcKeyValue)ctx).Parameters.Curve.Oid.FriendlyName)
+							.RespectingRuntimeTypes());
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_ReadKeyValue3()
+		{
+			ReadTest("KeyValueTestData3", (serializer, reader) =>
+				serializer.TestReadKeyValue(reader),
+				opts => opts.ComparingByMembers<ECParameters>()
+							.ComparingByMembers<ECCurve>()
+							.ComparingByMembers<ECPoint>()
+							.ComparingByMembers<Oid>()
+							.Excluding(ctx => ((EcKeyValue)ctx).Parameters.Curve.Oid.FriendlyName)
+							.RespectingRuntimeTypes());
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_ReadKeyValue4()
+		{
+			ReadTest("KeyValueTestData4", (serializer, reader) =>
+				serializer.TestReadKeyValue(reader),
+				opts => opts.ComparingByMembers<DSAParameters>()
+							.RespectingRuntimeTypes());
 		}
 
 		[TestMethod]
@@ -1460,6 +1998,47 @@ namespace Sustainsys.Saml2.Tests.Metadata
 			WriteTest<KeyValue>("KeyValueTestData1",
 				(serializer, writer, obj) =>
 					serializer.TestWriteKeyValue(writer, obj));
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_ReadKeyValueNull()
+		{
+			ReadNullTest((serializer) => serializer.TestReadKeyValue(null));
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_WriteKeyValueNull()
+		{
+			WriteNullTest((serializer, writer) =>
+					serializer.TestWriteKeyValue(writer, null));
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_WriteKeyValueWriter()
+		{
+			WriteNullWriterTest<KeyValue>("KeyValueTestData1",
+				(serializer, obj) =>
+					serializer.TestWriteKeyValue(null, obj));
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_ReadKeyValueNoChildren()
+		{
+			string xml =
+			@"<?xml version='1.0' encoding='UTF-8'?>
+				<KeyValue xmlns='http://www.w3.org/2000/09/xmldsig#'/>";
+			ReadTestThrow<MetadataSerializationException>(xml, (serializer, reader) =>
+				serializer.TestReadKeyValue(reader));
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_ReadKeyValueUnknownChild()
+		{
+			string xml =
+			@"<?xml version='1.0' encoding='UTF-8'?>
+				<KeyValue xmlns='http://www.w3.org/2000/09/xmldsig#'><WHAT/></KeyValue>";
+			ReadTestThrow<MetadataSerializationException>(xml, (serializer, reader) =>
+				serializer.TestReadKeyValue(reader));
 		}
 
 		[TestData]
@@ -1507,6 +2086,28 @@ namespace Sustainsys.Saml2.Tests.Metadata
 					serializer.TestWriteRetrievalMethod(writer, obj));
 		}
 
+		[TestMethod]
+		public void MetadataSerializerTests_ReadRetrievalMethodNull()
+		{
+			ReadNullTest((serializer) =>
+				serializer.TestReadRetrievalMethod(null));
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_WriteRetrievalMethodNull()
+		{
+			WriteNullTest((serializer, writer) =>
+				serializer.TestWriteRetrievalMethod(writer, null));
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_WriteRetrievalMethodWriterNull()
+		{
+			WriteNullWriterTest<RetrievalMethod>("RetrievalMethod1",
+				(serializer, obj) =>
+					serializer.TestWriteRetrievalMethod(null, obj));
+		}
+
 		[TestData]
 		public static void AddX509IssuerSerialTestData()
 		{
@@ -1538,6 +2139,19 @@ namespace Sustainsys.Saml2.Tests.Metadata
 					serializer.TestWriteX509IssuerSerial(writer, obj));
 		}
 
+		[TestMethod]
+		public void MetadataSerializerTests_ReadX509IssuerSerialMissingIssuerName()
+		{
+			string xml =
+			@"<?xml version='1.0' encoding='UTF-8'?>
+				<X509IssuerSerial xmlns='http://www.w3.org/2000/09/xmldsig#'>
+					<X509SerialNumber>128976</X509SerialNumber>
+				</X509IssuerSerial>";
+			ReadTestThrow<MetadataSerializationException>(xml,
+				(serializer, reader) =>
+					serializer.TestReadX509IssuerSerial(reader));
+		}
+
 		[TestData]
 		public static void AddX509DigestTestData()
 		{
@@ -1563,11 +2177,43 @@ namespace Sustainsys.Saml2.Tests.Metadata
 		}
 
 		[TestMethod]
+		public void MetadataSerializerTests_ReadX509DigestMissingAlgorithm()
+		{
+			string xml =
+				@"<?xml version='1.0' encoding='UTF-8'?>
+				<X509Digest xmlns='http://www.w3.org/2000/09/xmldsig#'>BOVKaiLPKEDChhkA64UEBOXTv/VFHnhrUPN+bXqCvEl7rroAYpH5tKzbiGTtMSlp4JO9Pxg44zeX7EoWDvOrpD0=</X509Digest>";
+			ReadTestThrow<MetadataSerializationException>(xml,
+				(serializer, reader) =>
+					serializer.TestReadX509Digest(reader));
+		}
+
+		[TestMethod]
 		public void MetadataSerializerTests_WriteX509Digest()
 		{
 			WriteTest<X509Digest>("X509Digest1",
 				(serializer, writer, obj) =>
 					serializer.TestWriteX509Digest(writer, obj));
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_ReadX509DigestNull()
+		{
+			ReadNullTest((serializer) => serializer.TestReadX509Digest(null));
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_WriteX509DigestNull()
+		{
+			WriteNullTest((serializer, writer) =>
+				serializer.TestWriteX509Digest(writer, null));
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_WriteX509DigestWriterNull()
+		{
+			WriteNullWriterTest<X509Digest>("X509Digest1",
+				(serializer, obj) =>
+					serializer.TestWriteX509Digest(null, obj));
 		}
 
 		[TestData]
@@ -1630,6 +2276,28 @@ namespace Sustainsys.Saml2.Tests.Metadata
 				(serializer, writer, obj) =>
 					serializer.TestWriteX509Data(writer, obj));
 		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_ReadX509DataNull()
+		{
+			ReadNullTest((serializer) => serializer.TestReadX509Data(null));
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_WriteX509DataNull()
+		{
+			WriteNullTest((serializer, writer) =>
+					serializer.TestWriteX509Data(writer, null));
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_WriteX509DataWriterNull()
+		{
+			WriteNullWriterTest<X509Data>("X509Data1",
+				(serializer, obj) =>
+					serializer.TestWriteX509Data(null, obj));
+		}
+
 
 		[TestData]
 		public static void AddDSigKeyInfoTestData()
@@ -1709,8 +2377,29 @@ namespace Sustainsys.Saml2.Tests.Metadata
 					serializer.TestWriteDSigKeyInfo(writer, obj));
 		}
 
+		[TestMethod]
+		public void MetadataSerializerTests_ReadDSigKeyInfoNull()
+		{
+			ReadNullTest((serializer) => serializer.TestReadDSigKeyInfo(null));
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_WriteDSigKeyInfoNull()
+		{
+			WriteNullTest((serializer, writer) =>
+				serializer.TestWriteDSigKeyInfo(writer, null));
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_WriteDSigKeyInfoWriterNull()
+		{
+			WriteNullWriterTest<DSigKeyInfo>("DSigKeyInfo1",
+				(serializer, obj) =>
+					serializer.TestWriteDSigKeyInfo(null, obj));
+		}
+
 		[TestData]
-		static void AddXEncEncryptionMethodTestData()
+		public static void AddXEncEncryptionMethodTestData()
 		{
 			string xml =
 			@"<?xml version='1.0' encoding='UTF-8'?>
@@ -1756,8 +2445,57 @@ namespace Sustainsys.Saml2.Tests.Metadata
 					serializer.TestWriteXEncEncryptionMethod(writer, obj));
 		}
 
+		[TestMethod]
+		public void MetadataSerializerTests_ReadXEncEncryptionMethodNull()
+		{
+			ReadNullTest((serializer) => serializer.TestReadXEncEncryptionMethod(null));
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_WriteXEncEncryptionMethodNull()
+		{
+			WriteNullTest((serializer, writer) =>
+				serializer.TestWriteXEncEncryptionMethod(writer, null));
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_WriteXEncEncryptionMethodWriterNull()
+		{
+			WriteNullWriterTest<XEncEncryptionMethod>("XEncEncryptionMethod1",
+				(serializer, obj) =>
+					serializer.TestWriteXEncEncryptionMethod(null, obj));
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_ReadXEncEncryptionMethodInvalidKeySize()
+		{
+			string xml =
+			@"<?xml version='1.0' encoding='UTF-8'?>
+			<EncryptionMethod xmlns='http://www.w3.org/2001/04/xmlenc#'
+				xmlns:ds='http://www.w3.org/2000/09/xmldsig#'
+				Algorithm='http://www.w3.org/2001/04/xmlenc#rsa-oaep-mgf1p'>
+				<KeySize>LARGE HORSE</KeySize>
+				<OAEPparams> 9lWu3Q== </OAEPparams>
+				<ds:DigestMethod Algorithm='http://www.w3.org/2000/09/xmldsig#sha1'/>
+			</EncryptionMethod>";
+			ReadTestThrow<MetadataSerializationException>(xml,
+				(serializer, reader) =>
+					serializer.TestReadXEncEncryptionMethod(reader));
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_ReadXEncEncryptionMethodMissingAlgorithm()
+		{
+			string xml =
+			@"<?xml version='1.0' encoding='UTF-8'?>
+			<EncryptionMethod xmlns='http://www.w3.org/2001/04/xmlenc#' />";
+			ReadTestThrow<MetadataSerializationException>(xml,
+				(serializer, reader) =>
+					serializer.TestReadXEncEncryptionMethod(reader));
+		}
+
 		[TestData]
-		static void AddEncryptionMethodTestData()
+		public static void AddEncryptionMethodTestData()
 		{
 			string xml =
 			@"<?xml version='1.0' encoding='UTF-8'?>
@@ -1795,8 +2533,42 @@ namespace Sustainsys.Saml2.Tests.Metadata
 					serializer.TestWriteEncryptionMethod(writer, obj));
 		}
 
+		[TestMethod]
+		public void MetadataSerializerTests_ReadEncryptionMethodNull()
+		{
+			ReadNullTest((serializer) =>
+				serializer.TestReadEncryptionMethod(null));
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_WriteEncryptionMethodNull()
+		{
+			WriteNullTest((serializer, writer) =>
+				serializer.TestWriteEncryptionMethod(writer, null));
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_WriteEncryptionMethodWriterNull()
+		{
+			WriteNullWriterTest<EncryptionMethod>("EncryptionMethod1",
+				(serializer, obj) =>
+					serializer.TestWriteEncryptionMethod(null, obj));
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_ReadEncryptionMethodMissingAlgorithm()
+		{
+			string xml =
+			@"<?xml version='1.0' encoding='UTF-8'?>
+			<md:EncryptionMethod xmlns:md='urn:oasis:names:tc:SAML:2.0:metadata'/>";
+
+			ReadTestThrow<MetadataSerializationException>(xml,
+				(serializer, reader) =>
+					serializer.TestReadEncryptionMethod(reader));
+		}
+
 		[TestData]
-		static void AddReadCipherReferenceTestData()
+		public static void AddReadCipherReferenceTestData()
 		{
 			string xml =
 			@"<?xml version='1.0' encoding='UTF-8'?>
@@ -1844,6 +2616,27 @@ namespace Sustainsys.Saml2.Tests.Metadata
 					serializer.TestWriteCipherReference(writer, obj));
 		}
 
+		[TestMethod]
+		public void MetadataSerializerTests_ReadCipherReferenceNull()
+		{
+			ReadNullTest((serializer) => serializer.TestReadCipherReference(null));
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_WriteCipherReferenceNull()
+		{
+			WriteNullTest((serializer, writer) =>
+				serializer.TestWriteCipherReference(writer, null));
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_WriteCipherReferenceWriterNull()
+		{
+			WriteNullWriterTest<CipherReference>("CipherReference1",
+				(serializer, obj) =>
+					serializer.TestWriteCipherReference(null, obj));
+		}
+
 		[TestData]
 		public static void AddCipherDataTestData()
 		{
@@ -1880,6 +2673,27 @@ namespace Sustainsys.Saml2.Tests.Metadata
 			WriteTest<CipherData>("CipherData1",
 				(serializer, writer, obj) =>
 					serializer.TestWriteCipherData(writer, obj));
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_ReadCipherDataNull()
+		{
+			ReadNullTest((serializer) => serializer.TestReadCipherData(null));
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_WriteCipherDataNull()
+		{
+			WriteNullTest((serializer, writer) =>
+				serializer.TestWriteCipherData(writer, null));
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_WriteCipherDataWriterNull()
+		{
+			WriteNullWriterTest<CipherData>("CipherData1",
+				(serializer, obj) =>
+					serializer.TestWriteCipherData(null, obj));
 		}
 
 		[TestData]
@@ -1922,6 +2736,28 @@ namespace Sustainsys.Saml2.Tests.Metadata
 			WriteTest<EncryptionProperty>("EncryptionProperty1",
 				(serializer, writer, obj) =>
 					serializer.TestWriteEncryptionProperty(writer, obj));
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_ReadEncryptionPropertyNull()
+		{
+			ReadNullTest((serializer) =>
+				serializer.TestReadEncryptionProperty(null));
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_WriteEncryptionPropertyNull()
+		{
+			WriteNullTest((serializer, writer) =>
+				serializer.TestWriteEncryptionProperty(writer, null));
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_WriteEncryptionPropertyWriterNull()
+		{
+			WriteNullWriterTest<EncryptionProperty>("EncryptionProperty1",
+				(serializer, obj) =>
+					serializer.TestWriteEncryptionProperty(null, obj));
 		}
 
 		[TestData]
@@ -1974,6 +2810,28 @@ namespace Sustainsys.Saml2.Tests.Metadata
 			WriteTest<EncryptionProperties>("EncryptionProperties1",
 				(serializer, writer, obj) =>
 					serializer.TestWriteEncryptionProperties(writer, obj));
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_ReadEncryptionPropertiesNull()
+		{
+			ReadNullTest((serializer) =>
+				serializer.TestReadEncryptionProperties(null));
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_WriteEncryptionPropertiesNull()
+		{
+			WriteNullTest((serializer, writer) =>
+				serializer.TestWriteEncryptionProperties(writer, null));
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_WriteEncryptionPropertiesWriterNull()
+		{
+			WriteNullWriterTest<EncryptionProperties>("EncryptionProperties1",
+				(serializer, obj) =>
+					serializer.TestWriteEncryptionProperties(null, obj));
 		}
 
 		[TestData]
@@ -2076,6 +2934,56 @@ namespace Sustainsys.Saml2.Tests.Metadata
 					serializer.TestWriteEncryptedData(writer, obj));
 		}
 
+		[TestMethod]
+		public void MetadataSerializerTests_ReadEncryptedDataNull()
+		{
+			ReadNullTest((serializer) => serializer.TestReadEncryptedData(null));
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_WriteEncryptedDataNull()
+		{
+			WriteNullTest((serializer, writer) =>
+				serializer.TestWriteEncryptedData(writer, null));
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_WriteEncryptedDataWriterNull()
+		{
+			WriteNullWriterTest<EncryptedData>("EncryptedData1",
+				(serializer, obj) =>
+					serializer.TestWriteEncryptedData(null, obj));
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_ReadEncryptedDataNoCipherData()
+		{
+			string xml =
+			@"<?xml version='1.0' encoding='UTF-8'?>
+			<EncryptedData
+				xmlns='http://www.w3.org/2001/04/xmlenc#'
+				xmlns:ds='http://www.w3.org/2000/09/xmldsig#'
+				Id='ENCDATAID'
+				MimeType='text/plain'
+				Encoding='https://encoding.org/'
+				Type='http://www.w3.org/2001/04/xmlenc#Element'>
+				<EncryptionMethod
+					Algorithm='http://www.w3.org/2001/04/xmlenc#tripledes-cbc'/>
+				<ds:KeyInfo xmlns:ds='http://www.w3.org/2000/09/xmldsig#'>
+					<ds:KeyName>John Smith</ds:KeyName>
+				</ds:KeyInfo>
+				<EncryptionProperties Id='anId2'>
+					  <EncryptionProperty xmlns='http://www.w3.org/2001/04/xmlenc#'
+						Target='http://enc.org/target2'
+						Id='someId2' />
+				</EncryptionProperties>
+			</EncryptedData>";
+
+			ReadTestThrow<MetadataSerializationException>(xml,
+				(serializer, reader) =>
+					serializer.TestReadEncryptedData(reader));
+		}
+
 		[TestData]
 		public static void AddEncryptedValueTestData()
 		{
@@ -2135,6 +3043,28 @@ namespace Sustainsys.Saml2.Tests.Metadata
 					serializer.TestWriteEncryptedValue(writer, obj));
 		}
 
+		[TestMethod]
+		public void MetadataSerializerTests_ReadEncryptedValueNull()
+		{
+			ReadNullTest((serializer) =>
+				serializer.TestReadEncryptedValue(null));
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_WriteEncryptedValueNull()
+		{
+			WriteNullTest((serializer, writer) =>
+				serializer.TestWriteEncryptedValue(writer, null));
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_WriteEncryptedValueWriterNull()
+		{
+			WriteNullWriterTest<EncryptedValue>("EncryptedValue1",
+				(serializer, obj) =>
+					serializer.TestWriteEncryptedValue(null, obj));
+		}
+
 		[TestData]
 		public static void AddClaimValueTestData()
 		{
@@ -2171,6 +3101,28 @@ namespace Sustainsys.Saml2.Tests.Metadata
 			WriteTest<ClaimValue>("ClaimValue1",
 				(serializer, writer, obj) =>
 					serializer.TestWriteClaimValue(writer, obj));
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_ReadClaimValueNull()
+		{
+			ReadNullTest((serializer) =>
+				serializer.TestReadClaimValue(null));
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_WriteClaimValueNull()
+		{
+			WriteNullTest((serializer, writer) =>
+				serializer.TestWriteClaimValue(writer, null));
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_WriteClaimValueWriterNull()
+		{
+			WriteNullWriterTest<ClaimValue>("ClaimValue1",
+				(serializer, obj) =>
+					serializer.TestWriteClaimValue(null, obj));
 		}
 
 		[TestMethod]
@@ -2283,6 +3235,28 @@ namespace Sustainsys.Saml2.Tests.Metadata
 					serializer.TestWriteConstrainedValue(writer, obj));
 		}
 
+		[TestMethod]
+		public void MetadataSerializerTests_ReadConstainedValueNull()
+		{
+			ReadNullTest((serializer) =>
+				serializer.TestReadConstrainedValue(null));
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_WriteConstainedValueNull()
+		{
+			WriteNullTest((serializer, writer) =>
+				serializer.TestWriteConstrainedValue(writer, null));
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_WriteConstainedValueWriterNull()
+		{
+			WriteNullWriterTest<ConstrainedValue>("ConstrainedValue1",
+				(serializer, obj) =>
+					serializer.TestWriteConstrainedValue(null, obj));
+		}
+
 		[TestData]
 		public static void AddDisplayClaimTestData()
 		{
@@ -2360,6 +3334,41 @@ namespace Sustainsys.Saml2.Tests.Metadata
 			WriteTest<DisplayClaim>("DisplayClaim1",
 				(serializer, writer, obj) =>
 					serializer.TestWriteDisplayClaim(writer, obj));
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_ReadDisplayClaimNull()
+		{
+			ReadNullTest((serializer) =>
+				serializer.TestReadDisplayClaim(null));
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_WriteDisplayClaimNull()
+		{
+			WriteNullTest((serializer, writer) =>
+				serializer.TestWriteDisplayClaim(writer, null));
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_WriteDisplayClaimWriterNull()
+		{
+			WriteNullWriterTest<DisplayClaim>("DisplayClaim1",
+				(serializer, obj) =>
+					serializer.TestWriteDisplayClaim(null, obj));
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_ReadDisplayClaimMissingUri()
+		{
+			string xml =
+			@"<?xml version='1.0' encoding='UTF-8'?>
+			<auth:ClaimType Optional='false'
+				xmlns:auth='http://docs.oasis-open.org/wsfed/authorization/200706' />";
+
+			ReadTestThrow<MetadataSerializationException>(xml,
+				(serializer, reader) =>
+					serializer.TestReadDisplayClaim(reader));
 		}
 
 		[TestData]
@@ -2720,6 +3729,28 @@ namespace Sustainsys.Saml2.Tests.Metadata
 					serializer.TestWriteEntitiesDescriptor(writer, obj));
 		}
 
+		[TestMethod]
+		public void MetadataSerializerTests_ReadEntitiesDescriptorNull()
+		{
+			ReadNullTest((serializer) =>
+				serializer.TestReadEntitiesDescriptor(null));
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_WriteEntitiesDescriptorNull()
+		{
+			WriteNullTest((serializer, writer) =>
+				serializer.TestWriteEntitiesDescriptor(writer, null));
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_WriteEntitiesDescriptorWriterNull()
+		{
+			WriteNullWriterTest<EntitiesDescriptor>("EntitiesDescriptor1",
+				(serializer, obj) =>
+					serializer.TestWriteEntitiesDescriptor(null, obj));
+		}
+
 		[TestData]
 		public static void AddSaml2AttributeTestData()
 		{
@@ -2757,6 +3788,46 @@ namespace Sustainsys.Saml2.Tests.Metadata
 			WriteTest<Saml2Attribute>("Saml2AttributeTest1",
 				(serializer, writer, obj) =>
 					serializer.TestWriteAttribute(writer, obj));
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_ReadSaml2AttributeNull()
+		{
+			ReadNullTest((serializer) =>
+				serializer.TestReadSaml2Attribute(null));
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_WriteSaml2AttributeNull()
+		{
+			WriteNullTest((serializer, writer) =>
+				serializer.TestWriteAttribute(writer, null));
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_WriteSaml2AttributeWriterNull()
+		{
+			WriteNullWriterTest<Saml2Attribute>("Saml2AttributeTest1",
+				(serializer, obj) =>
+					serializer.TestWriteAttribute(null, obj));
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_ReadSaml2AttributeNoName()
+		{
+			string xml =
+			@"<?xml version='1.0' encoding='UTF-8'?>
+				<saml:Attribute 
+					xmlns:saml='urn:oasis:names:tc:SAML:2.0:assertion'
+					NameFormat='http://idp.example.com/nameformat'
+					FriendlyName='friendlyAtt'>
+					<saml:AttributeValue>attValue</saml:AttributeValue>
+					<CustomValue />
+				</saml:Attribute>";
+
+			ReadTestThrow<MetadataSerializationException>(xml,
+				(serializer, reader) =>
+					serializer.TestReadSaml2Attribute(reader));
 		}
 
 		[TestData]
@@ -2828,6 +3899,41 @@ namespace Sustainsys.Saml2.Tests.Metadata
 			WriteTest<KeyDescriptor>("KeyDescriptor1",
 				(serializer, writer, obj) =>
 					serializer.TestWriteKeyDescriptor(writer, obj));
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_ReadKeyDescriptorNull()
+		{
+			ReadNullTest((serializer) =>
+				serializer.TestReadKeyDescriptor(null));
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_WriteKeyDescriptorNull()
+		{
+			WriteNullTest((serializer, writer) =>
+				serializer.TestWriteKeyDescriptor(writer, null));
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_WriteKeyDescriptorWriterNull()
+		{
+			WriteNullWriterTest<KeyDescriptor>("KeyDescriptor1",
+				(serializer, obj) =>
+					serializer.TestWriteKeyDescriptor(null, obj));
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_ReadKeyDescriptorInvalidUseAttribute()
+		{
+			string xml =
+				@"<?xml version='1.0' encoding='UTF-8'?>
+				<md:KeyDescriptor
+					xmlns:md='urn:oasis:names:tc:SAML:2.0:metadata'
+					use='INVALID'/>";
+			ReadTestThrow<MetadataSerializationException>(xml,
+				(serializer, reader) =>
+					serializer.TestReadKeyDescriptor(reader));
 		}
 
 		[TestData]
@@ -2933,6 +4039,73 @@ namespace Sustainsys.Saml2.Tests.Metadata
 					serializer.TestWriteAffiliationDescriptor(writer, obj));
 		}
 
+		[TestMethod]
+		public void MetadataSerializerTests_ReadAffiliationDescriptorNull()
+		{
+			ReadNullTest((serializer) =>
+				serializer.TestReadAffiliationDescriptor(null));
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_WriteAffiliationDescriptorNull()
+		{
+			WriteNullTest((serializer, writer) =>
+				serializer.TestWriteAffiliationDescriptor(writer, null));
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_WriteAffiliationDescriptorWriterNull()
+		{
+			WriteNullWriterTest<AffiliationDescriptor>("AffiliationDescriptor1",
+				(serializer, obj) =>
+					serializer.TestWriteAffiliationDescriptor(null, obj));
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_ReadAffiliationDescriptorNoOwnerId()
+		{
+			string xml =
+			@"<?xml version='1.0' encoding='UTF-8'?>
+				<md:AffiliationDescriptor 
+					xmlns:md='urn:oasis:names:tc:SAML:2.0:metadata'
+					ID='yourGUIDhere' />";
+			ReadTestThrow<MetadataSerializationException>(xml,
+				(serializer, reader) =>
+					serializer.TestReadAffiliationDescriptor(reader));
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_ReadAffiliationDescriptorInvalidDate()
+		{
+			string xml =
+			@"<?xml version='1.0' encoding='UTF-8'?>
+				<md:AffiliationDescriptor 
+					xmlns:md='urn:oasis:names:tc:SAML:2.0:metadata'
+					cacheDuration='P3M2DT9H12M'
+					validUntil='2019-13-02T15:16:17Z'
+					affiliationOwnerID='mr owner'
+					ID='yourGUIDhere'/>";
+			ReadTestThrow<MetadataSerializationException>(xml,
+				(serializer, reader) =>
+					serializer.TestReadAffiliationDescriptor(reader));
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_ReadAffiliationDescriptorInvalidDuration()
+		{
+			string xml =
+			@"<?xml version='1.0' encoding='UTF-8'?>
+				<md:AffiliationDescriptor 
+					xmlns:md='urn:oasis:names:tc:SAML:2.0:metadata'
+					cacheDuration='P3M2DT9H12'
+					validUntil='2019-13-02T15:16:17Z'
+					affiliationOwnerID='mr owner'
+					ID='yourGUIDhere'/>";
+			ReadTestThrow<MetadataSerializationException>(xml,
+				(serializer, reader) =>
+					serializer.TestReadAffiliationDescriptor(reader));
+		}
+
 		[TestData]
 		public static void AddAdditionalMetadataLocationTestData()
 		{
@@ -2967,6 +4140,42 @@ namespace Sustainsys.Saml2.Tests.Metadata
 			WriteTest<AdditionalMetadataLocation>("AdditionalMetadataLocation",
 				(serializer, writer, obj) =>
 					serializer.TestWriteAdditionalMetadataLocation(writer, obj));
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_ReadAdditionalMetadataLocationNull()
+		{
+			ReadNullTest((serializer) =>
+				serializer.TestReadAdditionalMetadataLocation(null));
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_WriteAdditionalMetadataLocationNull()
+		{
+			WriteNullTest((serializer, writer) =>
+				serializer.TestWriteAdditionalMetadataLocation(writer, null));
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_WriteAdditionalMetadataLocationWriterNull()
+		{
+			WriteNullWriterTest<AdditionalMetadataLocation>("AdditionalMetadataLocation",
+				(serializer, obj) =>
+					serializer.TestWriteAdditionalMetadataLocation(null, obj));
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_ReadAdditionalMetadataLocationNoNamespace()
+		{
+			string xml =
+			@"<?xml version='1.0' encoding='UTF-8'?>
+			<md:AdditionalMetadataLocation
+				xmlns:md='urn:oasis:names:tc:SAML:2.0:metadata'>
+				http://www.example.com/
+			</md:AdditionalMetadataLocation>";
+			ReadTestThrow<MetadataSerializationException>(xml,
+				(serializer, reader) =>
+					serializer.TestReadAdditionalMetadataLocation(reader));
 		}
 
 		[TestData]
@@ -3157,6 +4366,28 @@ namespace Sustainsys.Saml2.Tests.Metadata
 					serializer.TestWritePDPDescriptor(writer, obj));
 		}
 
+		[TestMethod]
+		public void MetadataSerializerTests_ReadPDPDescriptorNull()
+		{
+			ReadNullTest((serializer) =>
+				serializer.TestReadPDPDescriptor(null));
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_WritePDPDescriptorNull()
+		{
+			WriteNullTest((serializer, writer) =>
+				serializer.TestWritePDPDescriptor(writer, null));
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_WritePDPDescriptorWriterNull()
+		{
+			WriteNullWriterTest<PDPDescriptor>("PDPDescriptor1",
+				(serializer, obj) =>
+					serializer.TestWritePDPDescriptor(null, obj));
+		}
+
 		[TestData]
 		public static void AddAuthnAuthorityDescriptorTestData()
 		{
@@ -3341,6 +4572,28 @@ namespace Sustainsys.Saml2.Tests.Metadata
 			WriteTest<AuthnAuthorityDescriptor>("AuthnAuthorityDescriptor1",
 				(serializer, writer, obj) =>
 					serializer.TestWriteAuthnAuthorityDescriptor(writer, obj));
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_ReadAuthnAuthorityDescriptorNull()
+		{
+			ReadNullTest((serializer) =>
+				serializer.TestReadAuthnAuthorityDescriptor(null));
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_WriteAuthnAuthorityDescriptorNull()
+		{
+			WriteNullTest((serializer, writer) =>
+				serializer.TestWriteAuthnAuthorityDescriptor(writer, null));
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_WriteAuthnAuthorityDescriptorWriterNull()
+		{
+			WriteNullWriterTest<AuthnAuthorityDescriptor>("AuthnAuthorityDescriptor1",
+				(serializer, obj) =>
+					serializer.TestWriteAuthnAuthorityDescriptor(null, obj));
 		}
 
 		[TestData]
@@ -3549,6 +4802,28 @@ namespace Sustainsys.Saml2.Tests.Metadata
 					serializer.TestWriteAttributeAuthorityDescriptor(writer, obj));
 		}
 
+		[TestMethod]
+		public void MetadataSerializerTests_ReadAttributeAuthorityDescriptorNull()
+		{
+			ReadNullTest((serializer) =>
+				serializer.TestReadAttributeAuthorityDescriptor(null));
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_WriteAttributeAuthorityDescriptorNull()
+		{
+			WriteNullTest((serializer, writer) =>
+				serializer.TestWriteAttributeAuthorityDescriptor(writer, null));
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_WriteAttributeAuthorityDescriptorWriterNull()
+		{
+			WriteNullWriterTest<AttributeAuthorityDescriptor>("AttributeAuthorityDescriptor1",
+				(serializer, obj) =>
+					serializer.TestWriteAttributeAuthorityDescriptor(null, obj));
+		}
+
 		[TestData]
 		public static void AddNameIDFormatTestData()
 		{
@@ -3581,6 +4856,40 @@ namespace Sustainsys.Saml2.Tests.Metadata
 			WriteTest<NameIDFormat>("NameIDFormat1",
 				(serializer, writer, obj) =>
 					serializer.TestWriteNameIDFormat(writer, obj));
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_ReadNameIDFormatNull()
+		{
+			ReadNullTest((serializer) =>
+				serializer.TestReadNameIDFormat(null));
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_WriteNameIDFormatNull()
+		{
+			WriteNullTest((serializer, writer) =>
+					serializer.TestWriteNameIDFormat(writer, null));
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_WriteNameIDFormatWriterNull()
+		{
+			WriteNullWriterTest<NameIDFormat>("NameIDFormat1",
+				(serializer, obj) =>
+					serializer.TestWriteNameIDFormat(null, obj));
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_ReadNameIDFormatNoUrl()
+		{
+			string xml =
+			@"<?xml version='1.0' encoding='UTF-8'?>
+				<md:NameIDFormat
+					xmlns:md='urn:oasis:names:tc:SAML:2.0:metadata'>
+				</md:NameIDFormat>";
+			ReadTestThrow<MetadataSerializationException>(xml, (serializer, reader) =>
+				serializer.TestReadNameIDFormat(reader));
 		}
 
 		[TestData]
@@ -4019,6 +5328,39 @@ namespace Sustainsys.Saml2.Tests.Metadata
 					serializer.TestWriteEntityDescriptor(writer, obj));
 		}
 
+		[TestMethod]
+		public void MetadataSerializerTests_ReadEntityDescriptorNull()
+		{
+			ReadNullTest((serializer) =>
+				serializer.TestReadEntityDescriptor(null));
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_WriteEntityDescriptorNull()
+		{
+			WriteNullTest((serializer, writer) =>
+				serializer.TestWriteEntityDescriptor(writer, null));
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_WriteEntityDescriptorWriterNull()
+		{
+			WriteNullWriterTest<EntityDescriptor>("EntityDescriptor1",
+				(serializer, obj) =>
+					serializer.TestWriteEntityDescriptor(null, obj));
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_ReadEntityDescriptorNoEntityId()
+		{
+			string xml =
+			@"<?xml version='1.0' encoding='UTF-8'?>
+			<EntityDescriptor xmlns='urn:oasis:names:tc:SAML:2.0:metadata' />";
+			ReadTestThrow<MetadataSerializationException>(xml,
+				(serializer, reader) =>
+					serializer.TestReadEntityDescriptor(reader));
+		}
+
 		[TestData]
 		public static void AddLocalizedNameTestData()
 		{
@@ -4049,6 +5391,58 @@ namespace Sustainsys.Saml2.Tests.Metadata
 						"urn:oasis:names:tc:SAML:2.0:metadata"));
 		}
 
+		[TestMethod]
+		public void MetadataSerializerTests_ReadLocalizedNameNull()
+		{
+			ReadNullTest((serializer) =>
+				serializer.TestReadLocalizedName(null));
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_WriteLocalizedNameNull()
+		{
+			WriteNullTest((serializer, writer) =>
+				serializer.TestWriteLocalizedName(writer, null, "LocalName",
+					"urn:oasis:names:tc:SAML:2.0:metadata"));
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_WriteLocalizedNameWriterNull()
+		{
+			WriteNullWriterTest<LocalizedName>("LocalizedName1",
+				(serializer, obj) =>
+					serializer.TestWriteLocalizedName(null, obj, "LocalName",
+						"urn:oasis:names:tc:SAML:2.0:metadata"));
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_WriteLocalizedNameNameNull()
+		{
+			WriteTestThrow<LocalizedName, ArgumentNullException>("LocalizedName1",
+				(serializer, writer, obj) =>
+					serializer.TestWriteLocalizedName(writer, obj, null,
+						"urn:oasis:names:tc:SAML:2.0:metadata"));
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_WriteLocalizedNameNamespaceNull()
+		{
+			WriteTestThrow<LocalizedName, ArgumentNullException>("LocalizedName1",
+				(serializer, writer, obj) =>
+					serializer.TestWriteLocalizedName(writer, obj, "LocalName", null));
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_ReadLocalizedNameNoLang()
+		{
+			string xml =
+			@"<?xml version='1.0' encoding='UTF-8'?>
+				<LocalName xmlns='urn:oasis:names:tc:SAML:2.0:metadata'>NameValue</LocalName>";
+			ReadTestThrow<MetadataSerializationException>(xml,
+				(serializer, reader) =>
+					serializer.TestReadLocalizedName(reader));
+		}
+
 		[TestData]
 		public static void AddLocalizedUriTestData()
 		{
@@ -4077,6 +5471,48 @@ namespace Sustainsys.Saml2.Tests.Metadata
 				(serializer, writer, obj) =>
 					serializer.TestWriteLocalizedUri(writer, obj, "LocalUri",
 						"urn:oasis:names:tc:SAML:2.0:metadata"));
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_ReadLocalizedUriNull()
+		{
+			ReadNullTest((serializer) =>
+				serializer.TestReadLocalizedUri(null));
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_WriteLocalizedUriNull()
+		{
+			WriteNullTest((serializer, writer) =>
+				serializer.TestWriteLocalizedUri(writer, null, "LocalUri",
+					"urn:oasis:names:tc:SAML:2.0:metadata"));
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_WriteLocalizedUriWriterNull()
+		{
+			WriteNullWriterTest<LocalizedUri>("LocalizedUri1",
+				(serializer, obj) =>
+					serializer.TestWriteLocalizedUri(null, obj, "LocalUri",
+						"urn:oasis:names:tc:SAML:2.0:metadata"));
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_WriteLocalizedUriNameNull()
+		{
+			WriteTestThrow<LocalizedUri, ArgumentNullException>("LocalizedUri1",
+				(serializer, writer, obj) =>
+					serializer.TestWriteLocalizedUri(writer, obj, null,
+						"urn:oasis:names:tc:SAML:2.0:metadata"));
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_WriteLocalizedUriNamespaceNull()
+		{
+			WriteTestThrow<LocalizedUri, ArgumentNullException>("LocalizedUri1",
+				(serializer, writer, obj) =>
+					serializer.TestWriteLocalizedUri(writer, obj, "LocalUri",
+						null));
 		}
 
 		[TestData]
@@ -4127,6 +5563,28 @@ namespace Sustainsys.Saml2.Tests.Metadata
 			WriteTest<Organization>("Organization1",
 				(serializer, writer, obj) =>
 					serializer.TestWriteOrganization(writer, obj));
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_ReadOrganizationNull()
+		{
+			ReadNullTest((serializer) =>
+				serializer.TestReadOrganization(null));
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_WriteOrganizationNull()
+		{
+			WriteNullTest((serializer, writer) =>
+					serializer.TestWriteOrganization(writer, null));
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_WriteOrganizationWriterNull()
+		{
+			WriteNullWriterTest<Organization>("Organization1",
+				(serializer, obj) =>
+					serializer.TestWriteOrganization(null, obj));
 		}
 
 		[TestData]
@@ -4267,8 +5725,97 @@ namespace Sustainsys.Saml2.Tests.Metadata
 			}
 		}
 
+		[TestMethod]
+		public void MetadataSerializerTests_ReadMetadataStreamNull()
+		{
+			var serializer = new TestMetadataSerializer();
+			Action a = () => serializer.ReadMetadata((Stream)null);
+			a.Should().Throw<ArgumentNullException>();
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_ReadMetadataXmlReaderNull()
+		{
+			var serializer = new TestMetadataSerializer();
+			Action a = () => serializer.ReadMetadata((XmlReader)null);
+			a.Should().Throw<ArgumentNullException>();
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_ReadMetadataXmlReaderNullWithResolver()
+		{
+			var serializer = new TestMetadataSerializer();
+			Action a = () => serializer.ReadMetadata((XmlReader)null,
+				NullSecurityTokenResolver.Instance);
+			a.Should().Throw<ArgumentNullException>();
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_ReadMetadataStreamTokenResolverNull()
+		{
+			using (var ms = new MemoryStream())
+			using (var xr = XmlReader.Create(ms))
+			{
+				var serializer = new TestMetadataSerializer();
+				Action a = () => serializer.ReadMetadata(xr, null);
+				a.Should().Throw<ArgumentNullException>();
+			}
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_WriteMetadataStreamObjNull()
+		{
+			var serializer = new TestMetadataSerializer();
+			using (var ms = new MemoryStream())
+			{
+				Action a = () => serializer.WriteMetadata(ms, null);
+				a.Should().Throw<ArgumentNullException>();
+			}
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_WriteMetadataStreamNull()
+		{
+			var obj = GetTestData("Metadata1").ObjectModel.As<MetadataBase>();
+			var serializer = new TestMetadataSerializer();
+			Action a = () => serializer.WriteMetadata((Stream)null, obj);
+			a.Should().Throw<ArgumentNullException>();
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_WriteMetadataXmlWriterNull()
+		{
+			var obj = GetTestData("Metadata1").ObjectModel.As<MetadataBase>();
+			var serializer = new TestMetadataSerializer();
+			Action a = () => serializer.WriteMetadata((XmlWriter)null, obj);
+			a.Should().Throw<ArgumentNullException>();
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_WriteMetadataXmlWriterObjNull()
+		{
+			using (var ms = new MemoryStream())
+			using (var xw = XmlWriter.Create(ms))
+			{
+				var serializer = new TestMetadataSerializer();
+				Action a = () => serializer.WriteMetadata(xw, null);
+				a.Should().Throw<ArgumentNullException>();
+			}
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_ReadMetadataUnknownRoot()
+		{
+			string xml = @"<?xml version='1.0' encoding='UTF-8'?><INVALID/>";
+			using (var ms = new MemoryStream(Encoding.UTF8.GetBytes(xml), false))
+			{
+				Action a = () => new TestMetadataSerializer().ReadMetadata(ms);
+				a.Should().Throw<MetadataSerializationException>();
+			}
+		}
+
 		[TestData]
-		public static void AddSecurityTokenServiceDescriptorTestData()
+		public static void AddSecurityTokenServiceDescriptorTestData1()
 		{
 			string xml =
 				@"<?xml version='1.0' encoding='UTF-8' ?>
@@ -4289,10 +5836,18 @@ namespace Sustainsys.Saml2.Tests.Metadata
 							</X509Data>
 						</KeyInfo>
 					</KeyDescriptor>
+					<fed:LogicalServiceNamesOffered>
+						<fed:IssuerName Uri='https://idp.example.com/lsn1'/>
+						<fed:IssuerName Uri='https://idp.example.com/lsn2'/>
+					</fed:LogicalServiceNamesOffered>
 					<fed:TokenTypesOffered>
 						<fed:TokenType Uri='urn:oasis:names:tc:SAML:2.0:assertion'/>
 						<fed:TokenType Uri='urn:oasis:names:tc:SAML:1.0:assertion'/>
 					</fed:TokenTypesOffered>
+					<fed:ClaimDialectsOffered>
+						<fed:ClaimDialect Uri='http://idp.example.com/dialect1'/>
+						<fed:ClaimDialect Uri='http://idp.example.com/dialect2'/>
+					</fed:ClaimDialectsOffered>
 					<fed:ClaimTypesOffered>
 						<auth:ClaimType Uri='http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress' 
 							xmlns:auth='http://docs.oasis-open.org/wsfed/authorization/200706'>
@@ -4400,6 +5955,21 @@ namespace Sustainsys.Saml2.Tests.Metadata
 							<auth:Description>The domain account name of the user in the form of &lt;domain&gt;\&lt;user&gt;</auth:Description>
 						</auth:ClaimType>
 					</fed:ClaimTypesOffered>
+					<fed:ClaimTypesRequested>
+						<auth:ClaimType Uri='http://schemas.microsoft.com/ws/2008/06/identity/claims/windowsaccountname' 
+							xmlns:auth='http://docs.oasis-open.org/wsfed/authorization/200706'>
+							<auth:DisplayName>Windows account name</auth:DisplayName>
+							<auth:Description>The domain account name of the user in the form of &lt;domain&gt;\&lt;user&gt;</auth:Description>
+						</auth:ClaimType>
+					</fed:ClaimTypesRequested>
+					<fed:AutomaticPseudonyms>
+						false
+					</fed:AutomaticPseudonyms>
+					<fed:TargetScopes>
+						<wsa:EndpointReference>
+							<wsa:Address>https://www.netiq.com/nidp/wsfed/ep</wsa:Address>
+						</wsa:EndpointReference>
+					</fed:TargetScopes>
 					<fed:SecurityTokenServiceEndpoint>
 						<wsa:EndpointReference>
 							<wsa:Address>https://www.netiq.com/nidp/wsfed/ep</wsa:Address>
@@ -4449,6 +6019,25 @@ namespace Sustainsys.Saml2.Tests.Metadata
 				TokenTypesOffered = {
 					new Uri("urn:oasis:names:tc:SAML:2.0:assertion"),
 					new Uri("urn:oasis:names:tc:SAML:1.0:assertion")
+				},
+				LogicalServiceNamesOffered = {
+					new Uri("https://idp.example.com/lsn1"),
+					new Uri("https://idp.example.com/lsn2")
+				},
+				ClaimDialectsOffered = {
+					new Uri("http://idp.example.com/dialect1"),
+					new Uri("http://idp.example.com/dialect2")
+				},
+				ClaimTypesRequested = {
+					new DisplayClaim("http://schemas.microsoft.com/ws/2008/06/identity/claims/windowsaccountname")
+					{
+						DisplayName = "Windows account name",
+						Description = "The domain account name of the user in the form of <domain>\\<user>"
+					}
+				},
+				AutomaticPseudonyms = false,
+				TargetScopes = {
+					new EndpointReference("https://www.netiq.com/nidp/wsfed/ep")
 				},
 				ClaimTypesOffered = {
 					new DisplayClaim("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress")
@@ -4571,7 +6160,7 @@ namespace Sustainsys.Saml2.Tests.Metadata
 				},
 			};
 
-			AddTestData("SecurityTokenServiceDescriptor1", xml, obj);
+			AddTestData("SecurityTokenServiceDescriptor1", xml, obj, true);
 		}
 
 		[TestMethod]
@@ -4587,6 +6176,44 @@ namespace Sustainsys.Saml2.Tests.Metadata
 			WriteTest<SecurityTokenServiceDescriptor>("SecurityTokenServiceDescriptor1",
 				(serializer, writer, obj) =>
 					serializer.TestWriteSecurityTokenServiceDescriptor(writer, obj));
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_ReadSecurityTokenServiceDescriptorNull()
+		{
+			ReadNullTest((serializer) =>
+				serializer.TestReadSecurityTokenServiceDescriptor(null));
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_WriteSecurityTokenServiceDescriptorNull()
+		{
+			WriteNullTest((serializer, writer) =>
+				serializer.TestWriteSecurityTokenServiceDescriptor(writer, null));
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_WriteSecurityTokenServiceDescriptorWriterNull()
+		{
+			WriteNullWriterTest<SecurityTokenServiceDescriptor>("SecurityTokenServiceDescriptor1",
+				(serializer, obj) =>
+					serializer.TestWriteSecurityTokenServiceDescriptor(null, obj));
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_ReadSecurityTokenServiceDescriptorNoProtocolsSupported()
+		{
+			string xml =
+				@"<?xml version='1.0' encoding='UTF-8' ?>
+				<RoleDescriptor 
+					xsi:type='fed:SecurityTokenServiceType'
+					ServiceDisplayName='www.netiq.com' 
+					ServiceDescription='test'
+					xmlns='urn:oasis:names:tc:SAML:2.0:metadata'
+					xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance' />";
+			ReadTestThrow<MetadataSerializationException>(xml,
+				(serializer, reader) =>
+					serializer.TestReadSecurityTokenServiceDescriptor(reader));
 		}
 
 		[TestData]
@@ -4667,6 +6294,28 @@ namespace Sustainsys.Saml2.Tests.Metadata
 					serializer.TestWriteAttributeConsumingService(writer, obj));
 		}
 
+		[TestMethod]
+		public void MetadataSerializerTests_ReadAttributeConsumingServiceNull()
+		{
+			ReadNullTest((serializer) =>
+				serializer.TestReadAttributeConsumingService(null));
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_WriteAttributeConsumingServiceNull()
+		{
+			WriteNullTest((serializer, writer) =>
+				serializer.TestWriteAttributeConsumingService(writer, null));
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_WriteAttributeConsumingServiceWriterNull()
+		{
+			WriteNullWriterTest<AttributeConsumingService>("AttributeConsumingService1",
+				(serializer, obj) =>
+					serializer.TestWriteAttributeConsumingService(null, obj));
+		}
+
 		[TestData]
 		public static void AddRequestedAttributeTestData()
 		{
@@ -4707,6 +6356,47 @@ namespace Sustainsys.Saml2.Tests.Metadata
 			WriteTest<RequestedAttribute>("RequestedAttribute1",
 				(serializer, writer, obj) =>
 					serializer.TestWriteRequestedAttribute(writer, obj));
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_ReadRequestedAttributeNull()
+		{
+			ReadNullTest((serializer) =>
+				serializer.TestReadRequestedAttribute(null));
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_WriteRequestedAttributeNull()
+		{
+			WriteNullTest((serializer, writer) =>
+				serializer.TestWriteRequestedAttribute(writer, null));
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_WriteRequestedAttributeWriterNull()
+		{
+			WriteNullWriterTest<RequestedAttribute>("RequestedAttribute1",
+				(serializer, obj) =>
+					serializer.TestWriteRequestedAttribute(null, obj));
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_ReadRequestedAttributeInvalidBoolean()
+		{
+			string xml =
+				@"<?xml version='1.0' encoding='UTF-8' ?>
+				<md:RequestedAttribute 
+					xmlns:md='urn:oasis:names:tc:SAML:2.0:metadata'
+					xmlns:saml='urn:oasis:names:tc:SAML:2.0:assertion'
+					isRequired='WRONG'
+					FriendlyName='eduPersonPrincipalName' 
+					Name='urn:mace:dir:attribute-def:eduPersonPrincipalName'
+					NameFormat='urn:mace:shibboleth:1.0:attributeNamespace:uri'>
+					<saml:AttributeValue>VALUE</saml:AttributeValue>
+				</md:RequestedAttribute>";
+			ReadTestThrow<MetadataSerializationException>(xml,
+				(serializer, reader) =>
+						serializer.TestReadRequestedAttribute(reader));
 		}
 
 		[TestData]
@@ -4860,7 +6550,29 @@ namespace Sustainsys.Saml2.Tests.Metadata
 		}
 
 		[TestMethod]
-		public void MetadataSerializerTests_WriteEndpoint()
+		public void MetadataSerializerTests_ReadSpSsoDescriptorNull()
+		{
+			ReadNullTest((serializer) =>
+				serializer.TestReadSpSsoDescriptor(null));
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_WriteSpSsoDescriptorNull()
+		{
+			WriteNullTest((serializer, writer) =>
+				serializer.TestWriteSpSsoDescriptor(writer, null));
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_WriteSpSsoDescriptorWriterNull()
+		{
+			WriteNullWriterTest<SpSsoDescriptor>("SpSsoDescriptor1",
+				(serializer, obj) =>
+					serializer.TestWriteSpSsoDescriptor(null, obj));
+		}
+
+		[TestData]
+		public static void AddEndpointTestData()
 		{
 			string xml =
 			@"<?xml version='1.0' encoding='UTF-8'?>
@@ -4876,12 +6588,53 @@ namespace Sustainsys.Saml2.Tests.Metadata
 				ResponseLocation = new Uri("https://idp.example.com/responseLocation")
 			};
 
-			WriteTest(obj, xml, (serializer, writer) =>
-				serializer.TestWriteEndpoint(writer, obj, "TestEndpoint", "test:namespace:01"));
+			AddTestData("Endpoint1", xml, obj);
 		}
 
 		[TestMethod]
-		public void MetadataSerializerTests_WriteIndexedEndpoint()
+		public void MetadataSerializerTests_WriteEndpoint()
+		{
+			WriteTest<Endpoint>("Endpoint1", (serializer, writer, obj) =>
+				serializer.TestWriteEndpoint(writer, obj,
+					"TestEndpoint", "test:namespace:01"));
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_WriteEndpointNull()
+		{
+			WriteNullTest((serializer, writer) =>
+				serializer.TestWriteEndpoint(writer, null,
+					"TestEndpoint", "test:namespace:01"));
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_WriteEndpointWriterNull()
+		{
+			WriteNullWriterTest<Endpoint>("Endpoint1", (serializer, obj) =>
+				serializer.TestWriteEndpoint(null, obj,
+					"TestEndpoint", "test:namespace:01"));
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_WriteEndpointNameNull()
+		{
+			WriteTestThrow<Endpoint, ArgumentNullException>("Endpoint1",
+				(serializer, writer, obj) =>
+					serializer.TestWriteEndpoint(writer, obj,
+						null, "test:namespace:01"));
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_WriteEndpointNamespaceNull()
+		{
+			WriteTestThrow<Endpoint, ArgumentNullException>("Endpoint1",
+				(serializer, writer, obj) =>
+					serializer.TestWriteEndpoint(writer, obj,
+						"TestEndpoint", null));
+		}
+
+		[TestData]
+		public static void AddIndexedEndpointData()
 		{
 			string xml =
 			@"<?xml version='1.0' encoding='UTF-8'?>
@@ -4901,9 +6654,254 @@ namespace Sustainsys.Saml2.Tests.Metadata
 				ResponseLocation = new Uri("https://idp.example.com/responseLocation")
 			};
 
-			WriteTest(obj, xml, (serializer, writer) =>
+			AddTestData("IndexedEndpoint1", xml, obj);
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_WriteIndexedEndpoint()
+		{
+			WriteTest<IndexedEndpoint>("IndexedEndpoint1", (serializer, writer, obj) =>
 				serializer.TestWriteIndexedEndpoint(
 					writer, obj, "TestIndexedEndpoint", "test:namespace:02"));
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_WriteIndexedEndpointNull()
+		{
+			WriteNullTest((serializer, writer) =>
+				serializer.TestWriteIndexedEndpoint(
+					writer, null, "TestIndexedEndpoint", "test:namespace:02"));
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_WriteIndexedEndpointWriterNull()
+		{
+			WriteNullWriterTest<IndexedEndpoint>("IndexedEndpoint1",
+				(serializer, obj) =>
+					serializer.TestWriteIndexedEndpoint(
+						null, obj, "TestIndexedEndpoint", "test:namespace:02"));
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_WriteIndexedEndpointNameNull()
+		{
+			WriteTestThrow<IndexedEndpoint, ArgumentNullException>("IndexedEndpoint1",
+				(serializer, writer, obj) =>
+					serializer.TestWriteIndexedEndpoint(
+						writer, obj, null, "test:namespace:02"));
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_WriteIndexedEndpointNamespaceNull()
+		{
+			WriteTestThrow<IndexedEndpoint, ArgumentNullException>("IndexedEndpoint1",
+				(serializer, writer, obj) =>
+					serializer.TestWriteIndexedEndpoint(
+						writer, obj, "TestIndexedEndpoint", null));
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_ReadWebServiceDescriptorAttributesReaderNull()
+		{
+			var descriptor = new ApplicationServiceDescriptor();
+			Action a = () => new TestMetadataSerializer()
+				.TestReadWebServiceDescriptorAttributes(null, descriptor);
+			a.Should().Throw<ArgumentNullException>();
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_ReadWebServiceDescriptorAttributesDescriptorNull()
+		{
+			using (var sr = new StringReader("<root/>"))
+			using (var xr = XmlReader.Create(sr))
+			{
+				Action a = () => new TestMetadataSerializer()
+					.TestReadWebServiceDescriptorAttributes(xr, null);
+				a.Should().Throw<ArgumentNullException>();
+			}
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_ReadWebServiceDescriptorElementReaderNull()
+		{
+			var descriptor = new ApplicationServiceDescriptor();
+			Action a = () => new TestMetadataSerializer()
+				.TestReadWebServiceDescriptorElement(null, descriptor);
+			a.Should().Throw<ArgumentNullException>();
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_ReadWebServiceDescriptorElementDescriptorNull()
+		{
+			using (var sr = new StringReader("<root/>"))
+			using (var xr = XmlReader.Create(sr))
+			{
+				Action a = () => new TestMetadataSerializer()
+					.TestReadWebServiceDescriptorElement(xr, null);
+				a.Should().Throw<ArgumentNullException>();
+			}
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_WriteWebServiceDescriptorAttributesReaderNull()
+		{
+			var descriptor = new ApplicationServiceDescriptor();
+			Action a = () => new TestMetadataSerializer()
+				.TestWriteWebServiceDescriptorAttributes(null, descriptor);
+			a.Should().Throw<ArgumentNullException>();
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_WriteWebServiceDescriptorAttributesDescriptorNull()
+		{
+			using (var ms = new MemoryStream())
+			using (var xw = XmlWriter.Create(ms))
+			{
+				Action a = () => new TestMetadataSerializer()
+					.TestWriteWebServiceDescriptorAttributes(xw, null);
+				a.Should().Throw<ArgumentNullException>();
+			}
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_WriteWebServiceDescriptorElementReaderNull()
+		{
+			var descriptor = new ApplicationServiceDescriptor();
+			Action a = () => new TestMetadataSerializer()
+				.TestWriteWebServiceDescriptorElements(null, descriptor);
+			a.Should().Throw<ArgumentNullException>();
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_WriteWebServiceDescriptorElementDescriptorNull()
+		{
+			using (var ms = new MemoryStream())
+			using (var xw = XmlWriter.Create(ms))
+			{
+				Action a = () => new TestMetadataSerializer()
+					.TestWriteWebServiceDescriptorElements(xw, null);
+				a.Should().Throw<ArgumentNullException>();
+			}
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_WriteSsoDescriptorAttributesReaderNull()
+		{
+			var descriptor = new IdpSsoDescriptor();
+			Action a = () => new TestMetadataSerializer()
+				.TestWriteSsoDescriptorAttributes(null, descriptor);
+			a.Should().Throw<ArgumentNullException>();
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_WriteSsoDescriptorAttributesDescriptorNull()
+		{
+			using (var ms = new MemoryStream())
+			using (var xw = XmlWriter.Create(ms))
+			{
+				Action a = () => new TestMetadataSerializer()
+					.TestWriteSsoDescriptorAttributes(xw, null);
+				a.Should().Throw<ArgumentNullException>();
+			}
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_WriteSsoDescriptorElementReaderNull()
+		{
+			var descriptor = new IdpSsoDescriptor();
+			Action a = () => new TestMetadataSerializer()
+				.TestWriteSsoDescriptorElements(null, descriptor);
+			a.Should().Throw<ArgumentNullException>();
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_WriteSsoDescriptorElementDescriptorNull()
+		{
+			using (var ms = new MemoryStream())
+			using (var xw = XmlWriter.Create(ms))
+			{
+				Action a = () => new TestMetadataSerializer()
+					.TestWriteSsoDescriptorElements(xw, null);
+				a.Should().Throw<ArgumentNullException>();
+			}
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_WriteRoleDescriptorAttributesReaderNull()
+		{
+			var descriptor = new IdpSsoDescriptor();
+			Action a = () => new TestMetadataSerializer()
+				.TestWriteRoleDescriptorAttributes(null, descriptor);
+			a.Should().Throw<ArgumentNullException>();
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_WriteRoleDescriptorAttributesDescriptorNull()
+		{
+			using (var ms = new MemoryStream())
+			using (var xw = XmlWriter.Create(ms))
+			{
+				Action a = () => new TestMetadataSerializer()
+					.TestWriteRoleDescriptorAttributes(xw, null);
+				a.Should().Throw<ArgumentNullException>();
+			}
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_WriteRoleDescriptorElementReaderNull()
+		{
+			var descriptor = new IdpSsoDescriptor();
+			Action a = () => new TestMetadataSerializer()
+				.TestWriteRoleDescriptorElements(null, descriptor);
+			a.Should().Throw<ArgumentNullException>();
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_WriteRoleDescriptorElementDescriptorNull()
+		{
+			using (var ms = new MemoryStream())
+			using (var xw = XmlWriter.Create(ms))
+			{
+				Action a = () => new TestMetadataSerializer()
+					.TestWriteRoleDescriptorElements(xw, null);
+				a.Should().Throw<ArgumentNullException>();
+			}
+		}
+
+		[TestData]
+		public static void AddServiceNameTestData()
+		{
+			string xml =
+			@"<?xml version='1.0' encoding='UTF-8'?>
+			<wsa:ServiceName
+				xmlns:wsa='http://www.w3.org/2005/08/addressing'
+				PortName='MrPort'>
+				nameofservice
+			</wsa:ServiceName>";
+			(XmlDocument doc, XmlNamespaceManager nsmgr) = LoadXml(xml);
+
+			var obj = new ServiceName
+			{
+				Name = "nameofservice",
+				PortName = "MrPort"
+			};
+
+			AddTestData("ServiceName1", xml, obj, true);
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_ReadServiceName()
+		{
+			ReadTest("ServiceName1", (serializer, reader) =>
+				serializer.TestReadServiceName(reader));
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_WriteServiceName()
+		{
+			WriteTest<ServiceName>("ServiceName1",
+				(serializer, writer, obj) =>
+					serializer.TestWriteServiceName(writer, obj));
 		}
 	}
 }

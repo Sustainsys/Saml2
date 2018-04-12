@@ -33,12 +33,10 @@ namespace Sustainsys.Saml2
 			MissingP,
 			MissingComponent,
 			TrailingText,
-			NoComponents,
-			EmptyTimeComponent,
 			DuplicateTimeSeparator
 		};
 
-		static ParseResult ParseNumber(string value, ref int pos, out int result)
+		static ParseResult ParseNumber(string value, ref int pos, out int? result)
 		{
 			int startPos = pos;
 			result = 0;
@@ -54,18 +52,6 @@ namespace Sustainsys.Saml2
 				++pos;
 			}
 			return startPos != pos ? ParseResult.Ok : ParseResult.MissingNumber;
-		}
-
-		[Flags]
-		enum Components
-		{
-			None	= 0,
-			Years	= 1,
-			Months	= 2,
-			Days	= 4,
-			Hours	= 8,
-			Minutes	= 16,
-			Seconds	= 32
 		}
 
 		static ParseResult TryParseInternal(string value, out XsdDuration result)
@@ -116,20 +102,8 @@ namespace Sustainsys.Saml2
 				++pos;
 			}
 
-			int num = 0;
-			Func<ParseResult> getNumber = () =>
-			{
-				ParseResult pr = ParseNumber(value, ref pos, out num);
-				if (pr != ParseResult.Ok)
-				{
-					return pr;
-				}
-				if (pos >= length)
-				{
-					return ParseResult.MissingComponent;
-				}
-				return ParseResult.Ok;
-			};
+			int? num = null;
+			Func<ParseResult> getNumber = () => ParseNumber(value, ref pos, out num);
 
 			// get the first component
 			ParseResult parseResult = getNumber();
@@ -154,17 +128,18 @@ namespace Sustainsys.Saml2
 					}
 					return getNumber();
 				}
+				else
+				{
+					num = null;
+				}
 				return ParseResult.Ok;
 			};
-
-			Components components = Components.None;
 
 			if (!seenTime)
 			{
 				if (pos < length && value[pos] == 'Y')
 				{
-					result.Years = num;
-					components |= Components.Years;
+					result.Years = num.Value;
 					if ((parseResult = nextComponent()) != ParseResult.Ok)
 					{
 						return parseResult;
@@ -172,8 +147,7 @@ namespace Sustainsys.Saml2
 				}
 				if (!seenTime && (pos < length && value[pos] == 'M'))
 				{
-					result.Months = num;
-					components |= Components.Months;
+					result.Months = num.Value;
 					if ((parseResult = nextComponent()) != ParseResult.Ok)
 					{
 						return parseResult;
@@ -181,29 +155,22 @@ namespace Sustainsys.Saml2
 				}
 				if (!seenTime && (pos < length && value[pos] == 'D'))
 				{
-					result.Days = num;
-					components |= Components.Days;
+					result.Days = num.Value;
 					if ((parseResult = nextComponent()) != ParseResult.Ok)
 					{
 						return parseResult;
 					}
 				}
-				if (pos < length && value[pos] == 'T')
+				if (!seenTime && num.HasValue)
 				{
-					++pos;
-					seenTime = true;
-					if ((parseResult = nextComponent()) != ParseResult.Ok)
-					{
-						return parseResult;
-					}
+					return ParseResult.MissingComponent;
 				}
 			}
 			if (seenTime)
 			{
 				if (pos < length && value[pos] == 'H')
 				{
-					result.Hours = num;
-					components |= Components.Hours;
+					result.Hours = num.Value;
 					if ((parseResult = nextComponent()) != ParseResult.Ok)
 					{
 						return parseResult;
@@ -211,8 +178,7 @@ namespace Sustainsys.Saml2
 				}
 				if (pos < length && value[pos] == 'M')
 				{
-					result.Minutes = num;
-					components |= Components.Minutes;
+					result.Minutes = num.Value;
 					if ((parseResult = nextComponent()) != ParseResult.Ok)
 					{
 						return parseResult;
@@ -220,8 +186,7 @@ namespace Sustainsys.Saml2
 				}
 				if (pos < length && value[pos] == '.')
 				{
-					result.Seconds = num;
-					components |= Components.Seconds;
+					result.Seconds = num.Value;
 					++pos;
 
 					int fraction = 0;
@@ -229,9 +194,9 @@ namespace Sustainsys.Saml2
 					while (pos < length && IsDigit(value[pos]))
 					{
 						num = value[pos++] - '0';
-						if (fraction <= (Int32.MaxValue - num) / 10)
+						if (fraction <= (Int32.MaxValue - num.Value) / 10)
 						{
-							fraction = fraction * 10 + num;
+							fraction = fraction * 10 + num.Value;
 							++numDigits;
 						}
 					}
@@ -258,29 +223,23 @@ namespace Sustainsys.Saml2
 						return ParseResult.MissingComponent;
 					}
 					++pos;
+					num = null;
 				}
-				if (pos < length && value[pos] == 'S')
+				else if (pos < length && value[pos] == 'S')
 				{
-					result.Seconds = num;
-					components |= Components.Seconds;
+					result.Seconds = num.Value;
 					++pos;
+					num = null;
+				}
+				if (num.HasValue)
+				{
+					return ParseResult.MissingComponent;
 				}
 			}
 			if (pos != length)
 			{
 				return ParseResult.TrailingText;
 			}
-
-			if (components == Components.None)
-			{
-				return ParseResult.NoComponents;
-			}
-			if (seenTime && (components & (Components.Hours | 
-				Components.Minutes | Components.Seconds)) == Components.None)
-			{
-				return ParseResult.EmptyTimeComponent;
-			}
-
 			return ParseResult.Ok;
 		}
 
@@ -314,10 +273,6 @@ namespace Sustainsys.Saml2
 					throw new FormatException("the duration string is empty");
 				case ParseResult.TrailingText:
 					throw new FormatException("trailing text was found after the duration string");
-				case ParseResult.NoComponents:
-					throw new FormatException("no components were specified");
-				case ParseResult.EmptyTimeComponent:
-					throw new FormatException("empty time component");
 				case ParseResult.DuplicateTimeSeparator:
 					throw new FormatException("duplicate time separator");
 				default:

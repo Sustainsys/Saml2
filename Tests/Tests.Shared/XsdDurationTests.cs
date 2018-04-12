@@ -5,8 +5,8 @@ using System;
 namespace Sustainsys.Saml2.Tests
 {
 	[TestClass]
-    public class XsdDurationTests
-    {
+	public class XsdDurationTests
+	{
 		[TestMethod]
 		public void XsdDuration_TestComponentsCtor()
 		{
@@ -198,22 +198,22 @@ namespace Sustainsys.Saml2.Tests
 		[TestMethod]
 		public void XsdDuration_TestParseEmptyTimeComponent()
 		{
-			XsdDuration duration;
-			XsdDuration.TryParse("P1YT", out duration).Should().Be(false);
+			XsdDuration.TryParse("P1YT", out XsdDuration duration)
+				.Should().Be(false);
 		}
 
 		[TestMethod]
 		public void XsdDuration_TestParseInvalidNumber()
 		{
-			XsdDuration duration;
-			XsdDuration.TryParse("P-5YT", out duration).Should().Be(false);
+			XsdDuration.TryParse("P-5YT", out XsdDuration duration)
+				.Should().Be(false);
 		}
 
 		[TestMethod]
 		public void XsdDuration_TestParseDuplicateTimeSeparator()
 		{
-			XsdDuration duration;
-			XsdDuration.TryParse("P5YTT42M", out duration).Should().Be(false);
+			XsdDuration.TryParse("P5YT3T42M", out XsdDuration duration)
+				.Should().Be(false);
 		}
 
 		[TestMethod]
@@ -289,7 +289,7 @@ namespace Sustainsys.Saml2.Tests
 		[TestMethod]
 		public void XsdDuration_TestToStringYMDHMSNS()
 		{
-			new XsdDuration(years: 24, months: 6, days: 12, 
+			new XsdDuration(years: 24, months: 6, days: 12,
 				hours: 12, minutes: 22, seconds: 13, nanoseconds: 123456000).ToString()
 				.Should().Be("P24Y6M12DT12H22M13.123456S");
 		}
@@ -314,5 +314,129 @@ namespace Sustainsys.Saml2.Tests
 			var result = XsdDuration.Parse("   PT1M   ");
 			result.Should().Be(new XsdDuration(minutes: 1));
 		}
-    }
+
+		[TestMethod]
+		public void XsdDuration_TestTryParseNull()
+		{
+			XsdDuration.TryParse(null, out XsdDuration result)
+				.Should().Be(false);
+		}
+
+		[TestMethod]
+		public void XsdDuration_TestParseLargeNS()
+		{
+			var result = XsdDuration.Parse("PT0.1234567890123456789S");
+			result.Should().Be(new XsdDuration(nanoseconds: 123456789));
+		}
+
+		[TestMethod]
+		public void XsdDuration_TestTrailingText()
+		{
+			XsdDuration.TryParse("PT0.0Srubbish", out XsdDuration result)
+				.Should().Be(false);
+		}
+
+		[TestMethod]
+		public void XsdDuration_TestEmpty()
+		{
+			XsdDuration.TryParse("", out XsdDuration result)
+				.Should().Be(false);
+		}
+
+		[TestMethod]
+		public void XsdDuration_TestEmptyTime()
+		{
+			XsdDuration.TryParse("P14YT", out XsdDuration xsdDuration)
+				.Should().Be(false);
+		}
+
+		[TestMethod]
+		public void XsdDuration_TestEqualsOtherType()
+		{
+			var duration = new XsdDuration(hours: 1);
+			var notDuration = new DateTime(2001, 01, 01);
+			duration.Equals(notDuration).Should().Be(false);
+		}
+
+		[TestMethod]
+		public void XsdDuration_ToTimespan()
+		{
+			var duration = new XsdDuration(negative: false, years: 1, months: 2,
+				days: 3, hours: 4, minutes: 5, seconds: 6, nanoseconds: 1000000);
+			duration.ToTimeSpan().Should().Be(
+				new TimeSpan(365 * 1 + 2 * 30 + 3, 4, 5, 6, 1));
+		}
+
+		[TestMethod]
+		public void XsdDuration_ToTimespanNegative()
+		{
+			var duration = new XsdDuration(negative: true, years: 6, months: 5,
+				days: 4, hours: 3, minutes: 2, seconds: 1, nanoseconds: 100000000);
+			duration.ToTimeSpan().Should().Be(
+				new TimeSpan(365 * 6 + 5 * 30 + 4, 3, 2, 1, 100).Negate());
+		}
+
+		[TestMethod]
+		public void XsdDuration_ParseInvalidAfterMonth()
+		{
+			XsdDuration.TryParse("P6Minvalid", out XsdDuration xsdDuration)
+				.Should().Be(false);
+		}
+
+		[TestMethod]
+		public void XsdDuration_ParseInvalidAfterHour()
+		{
+			XsdDuration.TryParse("PT6Hinvalid", out XsdDuration xsdDuration)
+				.Should().Be(false);
+		}
+
+		[TestMethod]
+		public void XsdDuration_ParseInvalidAfterDay()
+		{
+			XsdDuration.TryParse("P6Dinvalid", out XsdDuration xsdDuration)
+				.Should().Be(false);
+		}
+
+		[TestMethod]
+		public void XsdDuration_ParseTrailingNumAfterY()
+		{
+			XsdDuration.TryParse("P30Y4", out XsdDuration xsdDuration)
+				.Should().Be(false);
+		}
+
+		[TestMethod]
+		public void XsdDuration_ParseTrailingNumAfterD()
+		{
+			XsdDuration.TryParse("P30D4", out XsdDuration xsdDuration)
+				.Should().Be(false);
+		}
+
+		[TestMethod]
+		public void XsdDuration_ParseMT()
+		{
+			XsdDuration.Parse("P30MT14M")
+				.Should().Be(new XsdDuration(months: 30, minutes: 14));
+		}
+
+		[TestMethod]
+		public void XsdDuration_ParseDT()
+		{
+			XsdDuration.Parse("P30DT14M")
+				.Should().Be(new XsdDuration(days: 30, minutes: 14));
+		}
+
+		[TestMethod]
+		public void XsdDuration_ParseTrailingNumAfterTM()
+		{
+			XsdDuration.TryParse("PT30M4", out XsdDuration xsdDuration)
+				.Should().Be(false);
+		}
+
+		[TestMethod]
+		public void XsdDuration_ParseNoComponents()
+		{
+			XsdDuration.TryParse("PT", out XsdDuration xsdDuration)
+				.Should().Be(false);
+		}
+	}
 }

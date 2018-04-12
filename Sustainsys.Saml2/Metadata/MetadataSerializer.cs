@@ -296,6 +296,11 @@ namespace Sustainsys.Saml2.Metadata
 		//   </simpleType>
 		protected virtual ContactPerson ReadContactPerson(XmlReader reader)
 		{
+			if (reader == null)
+			{
+				throw new ArgumentNullException(nameof(reader));
+			}
+
 			ContactPerson person = CreateContactPersonInstance();
 			string contactType = reader.GetAttribute("contactType");
 			try
@@ -313,23 +318,23 @@ namespace Sustainsys.Saml2.Metadata
 			{
 				if (reader.IsStartElement("Company", Saml2MetadataNs))
 				{
-					person.Company = reader.ReadElementContentAsString();
+					person.Company = ReadTrimmedString(reader);
 				}
 				else if (reader.IsStartElement("GivenName", Saml2MetadataNs))
 				{
-					person.GivenName = reader.ReadElementContentAsString();
+					person.GivenName = ReadTrimmedString(reader);
 				}
 				else if (reader.IsStartElement("SurName", Saml2MetadataNs))
 				{
-					person.Surname = reader.ReadElementContentAsString();
+					person.Surname = ReadTrimmedString(reader);
 				}
 				else if (reader.IsStartElement("EmailAddress", Saml2MetadataNs))
 				{
-					person.EmailAddresses.Add(reader.ReadElementContentAsString());
+					person.EmailAddresses.Add(ReadTrimmedString(reader));
 				}
 				else if (reader.IsStartElement("TelephoneNumber", Saml2MetadataNs))
 				{
-					person.TelephoneNumbers.Add(reader.ReadElementContentAsString());
+					person.TelephoneNumbers.Add(ReadTrimmedString(reader));
 				}
 				else if (reader.IsStartElement("Extensions", Saml2MetadataNs))
 				{
@@ -400,6 +405,10 @@ namespace Sustainsys.Saml2.Metadata
 		// </complexType>
 		protected virtual DsaKeyValue ReadDSAKeyValue(XmlReader reader)
 		{
+			if (reader == null)
+			{
+				throw new ArgumentNullException(nameof(reader));
+			}
 			var parameters = new DSAParameters();
 			ReadChildren(reader, () =>
 			{
@@ -458,6 +467,10 @@ namespace Sustainsys.Saml2.Metadata
 		// </complexType>
 		protected virtual RsaKeyValue ReadRSAKeyValue(XmlReader reader)
 		{
+			if (reader == null)
+			{
+				throw new ArgumentNullException(nameof(reader));
+			}
 			var parameters = new RSAParameters();
 			ReadChildren(reader, () =>
 			{
@@ -672,6 +685,10 @@ namespace Sustainsys.Saml2.Metadata
 
 		protected virtual EcKeyValue ReadECDSAKeyValue(XmlReader reader)
 		{
+			if (reader == null)
+			{
+				throw new ArgumentNullException(nameof(reader));
+			}
 			ECParameters parameters = new ECParameters();
 			ReadChildren(reader, () =>
 			{
@@ -765,6 +782,10 @@ namespace Sustainsys.Saml2.Metadata
 		// </simpleType>
 		protected virtual EcKeyValue ReadECKeyValue(XmlReader reader)
 		{
+			if (reader == null)
+			{
+				throw new ArgumentNullException(nameof(reader));
+			}
 			ECParameters parameters = new ECParameters();
 			ReadChildren(reader, () =>
 			{
@@ -828,6 +849,10 @@ namespace Sustainsys.Saml2.Metadata
 		// </complexType>
 		protected virtual KeyValue ReadKeyValue(XmlReader reader)
 		{
+			if (reader == null)
+			{
+				throw new ArgumentNullException(nameof(reader));
+			}
 			KeyValue value;
 			if (reader.IsEmptyElement)
 			{
@@ -846,7 +871,7 @@ namespace Sustainsys.Saml2.Metadata
 			{
 				value = ReadECKeyValue(reader);
 			}
-			else if (reader.IsStartElement("ECDSAKeyValue", DSigNs))
+			else if (reader.IsStartElement("ECDSAKeyValue", EcDsaNs))
 			{
 				value = ReadECDSAKeyValue(reader);
 			}
@@ -874,6 +899,10 @@ namespace Sustainsys.Saml2.Metadata
 		// </complexType>
 		protected virtual RetrievalMethod ReadRetrievalMethod(XmlReader reader)
 		{
+			if (reader == null)
+			{
+				throw new ArgumentNullException(nameof(reader));
+			}
 			var method = new RetrievalMethod();
 			method.Type = GetUriAttribute(reader, "Type", method.Type);
 			method.Uri = GetUriAttribute(reader, "URI", method.Uri);
@@ -906,11 +935,11 @@ namespace Sustainsys.Saml2.Metadata
 			{
 				if (reader.IsStartElement("X509IssuerName", DSigNs))
 				{
-					issuerName = reader.ReadElementContentAsString().Trim();
+					issuerName = ReadTrimmedString(reader);
 				}
 				else if (reader.IsStartElement("X509SerialNumber", DSigNs))
 				{
-					serialNumber = reader.ReadElementContentAsString().Trim();
+					serialNumber = ReadTrimmedString(reader);
 				}
 				else
 				{
@@ -940,6 +969,10 @@ namespace Sustainsys.Saml2.Metadata
 		// </complexType>
 		protected virtual X509Digest ReadX509Digest(XmlReader reader)
 		{
+			if (reader == null)
+			{
+				throw new ArgumentNullException(nameof(reader));
+			}
 			var digest = new X509Digest();
 			string sv = reader.GetAttribute("Algorithm");
 			if (String.IsNullOrEmpty(sv))
@@ -977,6 +1010,10 @@ namespace Sustainsys.Saml2.Metadata
 		//      structure. -->
 		protected virtual X509Data ReadX509Data(XmlReader reader)
 		{
+			if (reader == null)
+			{
+				throw new ArgumentNullException(nameof(reader));
+			}
 			var data = new X509Data();
 			ReadChildren(reader, () =>
 			{
@@ -990,7 +1027,7 @@ namespace Sustainsys.Saml2.Metadata
 				}
 				else if (reader.IsStartElement("X509SubjectName", DSigNs))
 				{
-					data.SubjectName = reader.ReadElementContentAsString();
+					data.SubjectName = ReadTrimmedString(reader);
 				}
 				else if (reader.IsStartElement("X509Certificate", DSigNs))
 				{
@@ -1037,6 +1074,10 @@ namespace Sustainsys.Saml2.Metadata
 		// <element name="KeyName" type="string" />
 		protected virtual DSigKeyInfo ReadDSigKeyInfo(XmlReader reader)
 		{
+			if (reader == null)
+			{
+				throw new ArgumentNullException(nameof(reader));
+			}
 			var info = CreateDSigKeyInfoInstance();
 			info.Id = GetAttribute(reader, "Id", info.Id);
 			ReadCustomAttributes(reader, info);
@@ -1045,7 +1086,7 @@ namespace Sustainsys.Saml2.Metadata
 			{
 				if (reader.IsStartElement("KeyName", DSigNs))
 				{
-					info.KeyNames.Add(reader.ReadElementContentAsString());
+					info.KeyNames.Add(ReadTrimmedString(reader));
 				}
 				else if (reader.IsStartElement("KeyValue", DSigNs))
 				{
@@ -1087,6 +1128,10 @@ namespace Sustainsys.Saml2.Metadata
 		// 
 		protected virtual EncryptionMethod ReadEncryptionMethod(XmlReader reader)
 		{
+			if (reader == null)
+			{
+				throw new ArgumentNullException(nameof(reader));
+			}
 			var methodType = CreateEncryptionMethodInstance();
 			string sv = reader.GetAttribute("Algorithm");
 			if (String.IsNullOrEmpty(sv))
@@ -1131,6 +1176,10 @@ namespace Sustainsys.Saml2.Metadata
 		// </simpleType>
 		protected virtual XEncEncryptionMethod ReadXEncEncryptionMethod(XmlReader reader)
 		{
+			if (reader == null)
+			{
+				throw new ArgumentNullException(nameof(reader));
+			}
 			var methodType = CreateXEncEncryptionMethodInstance();
 			string sv = reader.GetAttribute("Algorithm");
 			if (String.IsNullOrEmpty(sv))
@@ -1178,6 +1227,10 @@ namespace Sustainsys.Saml2.Metadata
 		// </complexType>
 		protected virtual CipherReference ReadCipherReference(XmlReader reader)
 		{
+			if (reader == null)
+			{
+				throw new ArgumentNullException(nameof(reader));
+			}
 			var reference = CreateCipherReferenceInstance();
 			reference.Uri = GetUriAttribute(reader, "URI", reference.Uri);
 			ReadCustomAttributes(reader, reference);
@@ -1206,6 +1259,10 @@ namespace Sustainsys.Saml2.Metadata
 		// </complexType>
 		protected virtual CipherData ReadCipherData(XmlReader reader)
 		{
+			if (reader == null)
+			{
+				throw new ArgumentNullException(nameof(reader));
+			}
 			var data = CreateCipherDataInstance();
 			ReadCustomAttributes(reader, data);
 			ReadChildren(reader, () =>
@@ -1216,7 +1273,7 @@ namespace Sustainsys.Saml2.Metadata
 				}
 				else if (reader.IsStartElement("CipherValue", XEncNs))
 				{
-					data.CipherValue = reader.ReadElementContentAsString();
+					data.CipherValue = ReadTrimmedString(reader);
 				}
 				else
 				{
@@ -1239,6 +1296,10 @@ namespace Sustainsys.Saml2.Metadata
 		// </complexType>
 		protected virtual EncryptionProperty ReadEncryptionProperty(XmlReader reader)
 		{
+			if (reader == null)
+			{
+				throw new ArgumentNullException(nameof(reader));
+			}
 			var prop = CreateEncryptionPropertyInstance();
 			prop.Target = GetUriAttribute(reader, "Target", prop.Target);
 			prop.Id = GetAttribute(reader, "Id", prop.Id);
@@ -1256,6 +1317,10 @@ namespace Sustainsys.Saml2.Metadata
 		// </complexType>
 		protected virtual EncryptionProperties ReadEncryptionProperties(XmlReader reader)
 		{
+			if (reader == null)
+			{
+				throw new ArgumentNullException(nameof(reader));
+			}
 			var properties = CreateEncryptionPropertiesInstance();
 			properties.Id = GetAttribute(reader, "Id", properties.Id);
 			ReadChildren(reader, () =>
@@ -1298,6 +1363,10 @@ namespace Sustainsys.Saml2.Metadata
 		// </complexType>
 		protected virtual EncryptedData ReadEncryptedData(XmlReader reader)
 		{
+			if (reader == null)
+			{
+				throw new ArgumentNullException(nameof(reader));
+			}
 			var data = CreateEncryptedDataInstance();
 			data.Id = GetAttribute(reader, "Id", data.Id);
 			data.Type = GetUriAttribute(reader, "Type", data.Type);
@@ -1343,6 +1412,10 @@ namespace Sustainsys.Saml2.Metadata
 		// <auth:EncryptedValue>)
 		protected virtual EncryptedValue ReadEncryptedValue(XmlReader reader)
 		{
+			if (reader == null)
+			{
+				throw new ArgumentNullException(nameof(reader));
+			}
 			var value = CreateEncryptedValueInstance();
 			value.DecryptionCondition = GetUriAttribute(reader, "DecryptionCondition",
 				value.DecryptionCondition);
@@ -1398,6 +1471,10 @@ namespace Sustainsys.Saml2.Metadata
 		//   </auth:ConstrainedValue> ?
 		protected virtual ClaimValue ReadClaimValue(XmlReader reader)
 		{
+			if (reader == null)
+			{
+				throw new ArgumentNullException(nameof(reader));
+			}
 			var value = CreateClaimValueInstance();
 			ReadCustomAttributes(reader, value);
 
@@ -1405,7 +1482,7 @@ namespace Sustainsys.Saml2.Metadata
 			{
 				if (reader.IsStartElement("Value", AuthNs))
 				{
-					value.Value = reader.ReadElementContentAsString();
+					value.Value = ReadTrimmedString(reader);
 				}
 				else if (reader.IsStartElement("StructuredValue", AuthNs))
 				{
@@ -1460,6 +1537,10 @@ namespace Sustainsys.Saml2.Metadata
 
 		protected virtual ConstrainedValue ReadConstrainedValue(XmlReader reader)
 		{
+			if (reader == null)
+			{
+				throw new ArgumentNullException(nameof(reader));
+			}
 			var constraint = CreateConstrainedValueInstance();
 			constraint.AssertConstraint = GetBooleanAttribute(reader,
 				"AssertConstraint", constraint.AssertConstraint);
@@ -1529,6 +1610,10 @@ namespace Sustainsys.Saml2.Metadata
 		// </auth:ClaimType>
 		protected virtual DisplayClaim ReadDisplayClaim(XmlReader reader)
 		{
+			if (reader == null)
+			{
+				throw new ArgumentNullException(nameof(reader));
+			}
 			string uri = reader.GetAttribute("Uri");
 			if (string.IsNullOrEmpty(uri))
 			{
@@ -1542,19 +1627,19 @@ namespace Sustainsys.Saml2.Metadata
 			{
 				if (reader.IsStartElement("DisplayName", AuthNs))
 				{
-					claim.DisplayName = reader.ReadElementContentAsString();
+					claim.DisplayName = ReadTrimmedString(reader);
 				}
 				else if (reader.IsStartElement("Description", AuthNs))
 				{
-					claim.Description = reader.ReadElementContentAsString();
+					claim.Description = ReadTrimmedString(reader);
 				}
 				else if (reader.IsStartElement("DisplayValue", AuthNs))
 				{
-					claim.DisplayValue = reader.ReadElementContentAsString();
+					claim.DisplayValue = ReadTrimmedString(reader);
 				}
 				else if (reader.IsStartElement("Value", AuthNs))
 				{
-					claim.Value = reader.ReadElementContentAsString();
+					claim.Value = ReadTrimmedString(reader);
 				}
 				else if (reader.IsStartElement("StructuredValue", AuthNs))
 				{
@@ -1729,7 +1814,7 @@ namespace Sustainsys.Saml2.Metadata
 		{
 			if (reader.IsStartElement("AttributeValue", Saml2AssertionNs))
 			{
-				attribute.Values.Add(reader.ReadElementContentAsString());
+				attribute.Values.Add(ReadTrimmedString(reader));
 				return true;
 			}
 			else
@@ -1740,6 +1825,10 @@ namespace Sustainsys.Saml2.Metadata
 
 		protected virtual Saml2Attribute ReadSaml2Attribute(XmlReader reader)
 		{
+			if (reader == null)
+			{
+				throw new ArgumentNullException(nameof(reader));
+			}
 			var attribute = ReadSaml2AttributeAttributes(reader, CreateSaml2AttributeInstance);
 			ReadCustomAttributes(reader, attribute);
 			ReadChildren(reader, () =>
@@ -1774,6 +1863,10 @@ namespace Sustainsys.Saml2.Metadata
 		// <element name="AffiliateMember" type="md:entityIDType"/>
 		protected virtual AffiliationDescriptor ReadAffiliationDescriptor(XmlReader reader)
 		{
+			if (reader == null)
+			{
+				throw new ArgumentNullException(nameof(reader));
+			}
 			// TODO: this can be signed, need to validate the signature
 			var descriptor = CreateAffiliationDescriptorInstance();
 
@@ -1795,7 +1888,7 @@ namespace Sustainsys.Saml2.Metadata
 				}
 				else if (reader.IsStartElement("AffiliateMember", Saml2MetadataNs))
 				{
-					string member = reader.ReadElementContentAsString();
+					string member = ReadTrimmedString(reader);
 					if (String.IsNullOrEmpty(member))
 					{
 						throw new MetadataSerializationException("AffiliateMember element without content");
@@ -1827,6 +1920,10 @@ namespace Sustainsys.Saml2.Metadata
 		// </complexType>
 		protected virtual AdditionalMetadataLocation ReadAdditionalMetadataLocation(XmlReader reader)
 		{
+			if (reader == null)
+			{
+				throw new ArgumentNullException(nameof(reader));
+			}
 			var location = CreateAdditionalMetadataLocationInstance();
 			location.Namespace = GetAttribute(reader, "namespace", location.Namespace);
 			if (String.IsNullOrEmpty(location.Namespace))
@@ -2004,6 +2101,10 @@ namespace Sustainsys.Saml2.Metadata
 		// <element name="AttributeProfile" type="anyURI"/>
 		protected virtual IdpSsoDescriptor ReadIdpSsoDescriptor(XmlReader reader)
 		{
+			if (reader == null)
+			{
+				throw new ArgumentNullException(nameof(reader));
+			}
 			var descriptor = CreateIdpSsoDescriptorInstance();
 			descriptor.WantAuthnRequestsSigned = GetOptionalBooleanAttribute(reader, "WantAuthnRequestsSigned");
 			ReadSsoDescriptorAttributes(reader, descriptor);
@@ -2061,6 +2162,10 @@ namespace Sustainsys.Saml2.Metadata
 		//  <element name="EncryptionMethod" type="xenc:EncryptionMethodType"/>
 		protected virtual KeyDescriptor ReadKeyDescriptor(XmlReader reader)
 		{
+			if (reader == null)
+			{
+				throw new ArgumentNullException(nameof(reader));
+			}
 			var descriptor = CreateKeyDescriptorInstance();
 			string use = reader.GetAttribute("use");
 			if (!String.IsNullOrEmpty(use))
@@ -2108,6 +2213,10 @@ namespace Sustainsys.Saml2.Metadata
 		T ReadLocalizedEntry<T>(XmlReader reader, Func<T> createInstance,
 			Action<T, string> setContent) where T : LocalizedEntry
 		{
+			if (reader == null)
+			{
+				throw new ArgumentNullException(nameof(reader));
+			}
 			var entry = createInstance();
 			string lang = reader.GetAttribute("lang", XmlNs);
 			if (String.IsNullOrEmpty(lang))
@@ -2117,7 +2226,7 @@ namespace Sustainsys.Saml2.Metadata
 			entry.Language = lang;
 			ReadCustomAttributes(reader, entry);
 
-			string value = reader.ReadElementContentAsString();
+			string value = ReadTrimmedString(reader);
 			setContent(entry, value);
 			return entry;
 		}
@@ -2203,6 +2312,10 @@ namespace Sustainsys.Saml2.Metadata
 		// <element name="OrganizationDisplayName" type="md:localizedNameType"/>
 		// <element name="OrganizationURL" type="md:localizedURIType"/>		protected virtual Organization ReadOrganization(XmlReader reader)
 		{
+			if (reader == null)
+			{
+				throw new ArgumentNullException(nameof(reader));
+			}
 			var org = CreateOrganizationInstance();
 			ReadCustomAttributes(reader, org);
 			ReadChildren(reader, () =>
@@ -2460,7 +2573,11 @@ namespace Sustainsys.Saml2.Metadata
 		//   </extension>
 		// </complexContent>
 		// </complexType>
-		protected virtual RequestedAttribute ReadRequestedAttribute(XmlReader reader)		{			var attribute = ReadSaml2AttributeAttributes(reader, CreateRequestedAttributeInstance);			attribute.IsRequired = GetOptionalBooleanAttribute(reader, "isRequired");
+		protected virtual RequestedAttribute ReadRequestedAttribute(XmlReader reader)		{			if (reader == null)
+			{
+				throw new ArgumentNullException(nameof(reader));
+			}
+			var attribute = ReadSaml2AttributeAttributes(reader, CreateRequestedAttributeInstance);			attribute.IsRequired = GetOptionalBooleanAttribute(reader, "isRequired");
 			ReadChildren(reader, () =>
 			{
 				if (ReadSaml2AttributeElement(reader, attribute))
@@ -2491,6 +2608,10 @@ namespace Sustainsys.Saml2.Metadata
 		// <element name="ServiceDescription" type="md:localizedNameType"/>
 		protected virtual AttributeConsumingService ReadAttributeConsumingService(XmlReader reader)
 		{
+			if (reader == null)
+			{
+				throw new ArgumentNullException(nameof(reader));
+			}
 			var acs = CreateAttributeConsumingServiceInstance();
 
 			ReadIndexedEntryWithDefaultAttributes(reader, acs);
@@ -2555,6 +2676,10 @@ namespace Sustainsys.Saml2.Metadata
 		//  <element name="AssertionConsumerService" type="md:IndexedEndpoint"/>
 		protected virtual SpSsoDescriptor ReadSpSsoDescriptor(XmlReader reader)
 		{
+			if (reader == null)
+			{
+				throw new ArgumentNullException(nameof(reader));
+			}
 			var descriptor = CreateSpSsoDescriptorInstance();
 			descriptor.AuthnRequestsSigned = GetBooleanAttribute(reader, "AuthnRequestsSigned", false);
 			descriptor.WantAssertionsSigned = GetBooleanAttribute(reader, "WantAssertionsSigned", false);
@@ -2782,6 +2907,10 @@ namespace Sustainsys.Saml2.Metadata
 		// </complexType>
 		T ReadWrappedIndexedEndpoint<T>(XmlReader reader, Func<T> createInstance) where T : IndexedEndpoint
 		{
+			if (reader == null)
+			{
+				throw new ArgumentNullException(nameof(reader));
+			}
 			var endpoint = createInstance();
 			ReadIndexedEndpointAttributes(reader, endpoint);
 			ReadCustomAttributes(reader, endpoint);
@@ -2848,8 +2977,12 @@ namespace Sustainsys.Saml2.Metadata
 
 		protected virtual NameIDFormat ReadNameIDFormat(XmlReader reader)
 		{
+			if (reader == null)
+			{
+				throw new ArgumentNullException(nameof(reader));
+			}
 			var nameIDFormat = CreateNameIDFormatInstance();
-			string uri = reader.ReadElementContentAsString();
+			string uri = ReadTrimmedString(reader);
 			if (String.IsNullOrEmpty(uri))
 			{
 				throw new MetadataSerializationException("NameIDFormat element with no uri");
@@ -3111,6 +3244,9 @@ namespace Sustainsys.Saml2.Metadata
 			});
 		}
 
+		string ReadTrimmedString(XmlReader reader) =>
+			(reader.ReadElementContentAsString() ?? "").Trim();
+
 		//  <xs:complexType name="ServiceNameType">
 		//    <xs:simpleContent>
 		//      <xs:extension base="xs:QName">
@@ -3124,7 +3260,7 @@ namespace Sustainsys.Saml2.Metadata
 			var serviceName = CreateServiceNameInstance();
 			serviceName.PortName = GetAttribute(reader, "PortName", serviceName.PortName);
 			ReadCustomAttributes(reader, serviceName);
-			serviceName.Name = reader.ReadElementContentAsString();
+			serviceName.Name = ReadTrimmedString(reader);
 			return serviceName;
 		}
 
@@ -3158,6 +3294,10 @@ namespace Sustainsys.Saml2.Metadata
 		//  </xs:complexType>
 		protected virtual EndpointReference ReadEndpointReference(XmlReader reader)
 		{
+			if (reader == null)
+			{
+				throw new ArgumentNullException(nameof(reader));
+			}
 			var endpointReference = CreateEndpointReferenceInstance();
 			ReadCustomAttributes(reader, endpointReference);
 
@@ -3169,7 +3309,7 @@ namespace Sustainsys.Saml2.Metadata
 					{
 						throw new MetadataSerializationException("<wsa:EndpointReference> has more than one <wsa:Address> child");
 					}
-					endpointReference.Uri = MakeUri(reader.ReadElementContentAsString());
+					endpointReference.Uri = MakeUri(ReadTrimmedString(reader));
 				}
 				else if (reader.IsStartElement("ReferenceProperties", WsaNs))
 				{
@@ -3185,7 +3325,7 @@ namespace Sustainsys.Saml2.Metadata
 				}
 				else if (reader.IsStartElement("PortType", WsaNs))
 				{
-					endpointReference.PortType = reader.ReadElementContentAsString();
+					endpointReference.PortType = ReadTrimmedString(reader);
 				}
 				else if (reader.IsStartElement("ServiceName", WsaNs))
 				{
@@ -3302,7 +3442,7 @@ namespace Sustainsys.Saml2.Metadata
 				// <fed:AutomaticPseudonyms>
 				//   xs:boolean
 				// </fed:AutomaticPseudonyms>
-				descriptor.AutomaticPseudonyms = reader.ReadContentAsBoolean();
+				descriptor.AutomaticPseudonyms = reader.ReadElementContentAsBoolean();
 			}
 			// <element ref="fed:TargetScopes" minOccurs="0" maxOccurs="1"/>
 			else if (reader.IsStartElement("TargetScopes", FedNs))

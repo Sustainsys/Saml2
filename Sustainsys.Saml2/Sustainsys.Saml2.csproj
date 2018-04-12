@@ -10,6 +10,11 @@
 	<PackageTags>SAML2 authentication AspNet SAML SSO</PackageTags>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DebugType>full</DebugType>
+    <DebugSymbols>true</DebugSymbols>
+  </PropertyGroup>
+
   <ItemGroup>
     <Compile Include="..\VersionInfo.cs" Link="VersionInfo.cs" />
   </ItemGroup>

@@ -101,7 +101,7 @@ namespace Sustainsys.Saml2.Metadata
 						break;
 					ms.Write(buf, 0, read);
 				}
-				System.Diagnostics.Debug.WriteLine(Encoding.UTF8.GetString(ms.ToArray()));
+				// System.Diagnostics.Debug.WriteLine(Encoding.UTF8.GetString(ms.ToArray()));
 				ms.Position = 0;
                 var reader = XmlDictionaryReader.CreateTextReader(
                     ms,
