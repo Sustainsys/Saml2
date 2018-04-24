@@ -2,9 +2,14 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
+using SampleIdentityServer4.Data;
+using SampleIdentityServer4.Models;
+using SampleIdentityServer4.Services;
 using Sustainsys.Saml2;
 using Sustainsys.Saml2.Metadata;
 using System.Security.Cryptography.X509Certificates;
@@ -25,19 +30,29 @@ namespace SampleIdentityServer4
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+			services.AddDbContext<ApplicationDbContext>(options =>
+				options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+
+			services.AddIdentity<ApplicationUser, IdentityRole>()
+				.AddEntityFrameworkStores<ApplicationDbContext>()
+				.AddDefaultTokenProviders();
+
+			// Add application services.
+			services.AddTransient<IEmailSender, EmailSender>();
 			services.AddMvc();
+
 			services.AddIdentityServer()
 				.AddDeveloperSigningCredential()
 				.AddInMemoryPersistedGrants()
 				.AddInMemoryIdentityResources(Config.GetIdentityResources())
 				.AddInMemoryApiResources(Config.GetApiResources())
 				.AddInMemoryClients(Config.GetClients())
-				.AddTestUsers(Config.GetUsers());
+				.AddTestUsers(Config.GetUsers())
+				.AddAspNetIdentity<ApplicationUser>();
 
 			services.AddAuthentication()
 				.AddSaml2(options =>
 				{
-					options.SignInScheme = IdentityServerConstants.ExternalCookieAuthenticationScheme;
 					options.SPOptions.EntityId = new EntityId("https://localhost:44342/Saml2");
 					options.IdentityProviders.Add(
 						new IdentityProvider(
@@ -47,12 +62,16 @@ namespace SampleIdentityServer4
 						});
 
 					options.SPOptions.ServiceCertificates.Add(new X509Certificate2("Sustainsys.Saml2.Tests.pfx"));
+					//options.SPOptions.ServiceCertificates.Add(new X509Certificate2(
+					//	HostingEnvironment.ContentRootPath + "\\App_Data\\Sustainsys.Saml2.SampleIdentityServer4.pfx"));
+				})
+				.AddGoogle("Google", options =>
+				{
+					options.ClientId = "708996912208-9m4dkjb5hscn7cjrn5u0r4tbgkbj1fko.apps.googleusercontent.com";
+					options.ClientSecret = "wdfPY6t8H8cecgjlxud__4Gh";
 				})
 				.AddOpenIdConnect("demoidsrv", "IdentityServer", options =>
 				{
-					options.SignInScheme = IdentityServerConstants.ExternalCookieAuthenticationScheme;
-					options.SignOutScheme = IdentityServerConstants.SignoutScheme;
-
 					options.Authority = "https://demo.identityserver.io/";
 					options.ClientId = "implicit";
 					options.ResponseType = "id_token";
@@ -70,7 +89,8 @@ namespace SampleIdentityServer4
 		}
 
 		// This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-		public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+		public void Configure(IApplicationBuilder app, IHostingEnvironment env,
+			ApplicationDbContext dbContext)
         {
             if (env.IsDevelopment())
             {
@@ -92,6 +112,8 @@ namespace SampleIdentityServer4
                     name: "default",
                     template: "{controller=Home}/{action=Index}/{id?}");
             });
+
+			dbContext.Database.EnsureCreated();
 		}
     }
 }

@@ -5,20 +5,22 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="App_Data\Sustainsys.Saml2.SampleIdentityServer4.pfx" />
-    <None Remove="App_Data\Sustainsys.Saml2.Tests.pfx" />
+    <Compile Remove="App_Data\**" />
+    <Content Remove="App_Data\**" />
+    <EmbeddedResource Remove="App_Data\**" />
+    <None Remove="App_Data\**" />
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="App_Data\Sustainsys.Saml2.SampleIdentityServer4.pfx" />
     <Content Include="Sustainsys.Saml2.Tests.pfx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="IdentityServer4" Version="2.2.0" />
+    <PackageReference Include="IdentityServer4.AspNetIdentity" Version="2.1.0" />
     <PackageReference Include="Microsoft.AspNetCore.All" Version="2.0.6" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="2.0.2" />
   </ItemGroup>
 
   <ItemGroup>
