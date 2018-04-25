@@ -7,14 +7,14 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
-using SampleIdentityServer4.Data;
-using SampleIdentityServer4.Models;
-using SampleIdentityServer4.Services;
+using SampleIdentityServer4AspNetIdentity.Data;
+using SampleIdentityServer4AspNetIdentity.Models;
+using SampleIdentityServer4AspNetIdentity.Services;
 using Sustainsys.Saml2;
 using Sustainsys.Saml2.Metadata;
 using System.Security.Cryptography.X509Certificates;
 
-namespace SampleIdentityServer4
+namespace SampleIdentityServer4AspNetIdentity
 {
 	public class Startup
     {
@@ -63,7 +63,7 @@ namespace SampleIdentityServer4
 
 					options.SPOptions.ServiceCertificates.Add(new X509Certificate2("Sustainsys.Saml2.Tests.pfx"));
 					//options.SPOptions.ServiceCertificates.Add(new X509Certificate2(
-					//	HostingEnvironment.ContentRootPath + "\\App_Data\\Sustainsys.Saml2.SampleIdentityServer4.pfx"));
+					//	HostingEnvironment.ContentRootPath + "\\App_Data\\Sustainsys.Saml2.SampleIdentityServer4AspNetIdentity.pfx"));
 				})
 				.AddGoogle("Google", options =>
 				{

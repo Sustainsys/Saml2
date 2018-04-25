@@ -10,11 +10,11 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using SampleIdentityServer4.Models;
-using SampleIdentityServer4.Models.ManageViewModels;
-using SampleIdentityServer4.Services;
+using SampleIdentityServer4AspNetIdentity.Models;
+using SampleIdentityServer4AspNetIdentity.Models.ManageViewModels;
+using SampleIdentityServer4AspNetIdentity.Services;
 
-namespace SampleIdentityServer4.Controllers
+namespace SampleIdentityServer4AspNetIdentity.Controllers
 {
     [Authorize]
     [Route("[controller]/[action]")]
@@ -495,7 +495,7 @@ namespace SampleIdentityServer4.Controllers
         {
             return string.Format(
                 AuthenicatorUriFormat,
-                _urlEncoder.Encode("SampleIdentityServer4"),
+                _urlEncoder.Encode("SampleIdentityServer4AspNetIdentity"),
                 _urlEncoder.Encode(email),
                 unformattedKey);
         }

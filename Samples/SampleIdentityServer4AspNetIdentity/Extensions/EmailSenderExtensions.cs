@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
-using SampleIdentityServer4.Services;
+using SampleIdentityServer4AspNetIdentity.Services;
 
-namespace SampleIdentityServer4.Services
+namespace SampleIdentityServer4AspNetIdentity.Services
 {
     public static class EmailSenderExtensions
     {

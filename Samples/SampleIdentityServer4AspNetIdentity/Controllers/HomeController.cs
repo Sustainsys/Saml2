@@ -4,11 +4,11 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using SampleIdentityServer4.Models;
+using SampleIdentityServer4AspNetIdentity.Models;
 using IdentityServer4.Services;
 using IdentityServer4.Quickstart.UI;
 
-namespace SampleIdentityServer4.Controllers
+namespace SampleIdentityServer4AspNetIdentity.Controllers
 {
     public class HomeController : Controller
     {

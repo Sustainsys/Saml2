@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 
-namespace SampleIdentityServer4.Views.Manage
+namespace SampleIdentityServer4AspNetIdentity.Views.Manage
 {
     public static class ManageNavPages
     {

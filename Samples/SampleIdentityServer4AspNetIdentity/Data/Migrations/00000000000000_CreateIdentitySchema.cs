@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 
-namespace SampleIdentityServer4.Data.Migrations
+namespace SampleIdentityServer4AspNetIdentity.Data.Migrations
 {
     public partial class CreateIdentitySchema : Migration
     {

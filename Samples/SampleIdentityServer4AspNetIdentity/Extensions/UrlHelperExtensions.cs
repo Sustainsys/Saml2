@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using SampleIdentityServer4.Controllers;
+using SampleIdentityServer4AspNetIdentity.Controllers;
 
 namespace Microsoft.AspNetCore.Mvc
 {

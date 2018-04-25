@@ -10,15 +10,15 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using SampleIdentityServer4.Models;
-using SampleIdentityServer4.Models.AccountViewModels;
-using SampleIdentityServer4.Services;
+using SampleIdentityServer4AspNetIdentity.Models;
+using SampleIdentityServer4AspNetIdentity.Models.AccountViewModels;
+using SampleIdentityServer4AspNetIdentity.Services;
 using IdentityServer4.Quickstart.UI;
 using IdentityServer4.Services;
 using IdentityServer4.Stores;
 using Microsoft.AspNetCore.Http;
 
-namespace SampleIdentityServer4.Controllers
+namespace SampleIdentityServer4AspNetIdentity.Controllers
 {
     [Authorize]
     [Route("[controller]/[action]")]

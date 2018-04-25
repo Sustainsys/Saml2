@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace SampleIdentityServer4.Models.AccountViewModels
+namespace SampleIdentityServer4AspNetIdentity.Models.AccountViewModels
 {
     public class LoginWith2faViewModel
     {

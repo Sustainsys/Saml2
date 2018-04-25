@@ -4,7 +4,7 @@ using IdentityServer4.Test;
 using System.Collections.Generic;
 using System.Security.Claims;
 
-namespace SampleIdentityServer4
+namespace SampleIdentityServer4AspNetIdentity
 {
 	public class Config
 	{
