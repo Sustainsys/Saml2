@@ -103,6 +103,8 @@ namespace Sustainsys.Saml2.Saml2P
             x.Add(new XElement(Saml2Namespaces.Saml2P + "SessionIndex",
                 SessionIndex));
 
+            OnXmlCreated(x);
+
             return x.ToString();
         }
     }

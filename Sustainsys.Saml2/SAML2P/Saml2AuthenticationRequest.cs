@@ -69,6 +69,8 @@ namespace Sustainsys.Saml2.Saml2P
 
             AddScoping(x);
 
+            OnXmlCreated(x);
+
             return x;
         }
 

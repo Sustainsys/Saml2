@@ -407,6 +407,20 @@ namespace Sustainsys.Saml2.Tests.Saml2P
             subject.Should().BeNull();
         }
 
+        [TestMethod]
+        public void Saml2AuthenticationRequest_ToXml_PreservesCustomChanges()
+        {
+            var subject = new Saml2AuthenticationRequest();
+            subject.XmlCreated += (s, e) =>
+            {
+                e.Add(new XAttribute("CustomAttribute", "CustomValue"));
+            };
+
+            var xml = subject.ToXml();
+
+            xml.Should().Contain("CustomAttribute=\"CustomValue\"");
+        }
+
         private void Saml2AuthenticationRequest_ToXElement_AddsRequestedAuthnContextUtil(AuthnContextComparisonType comparisonType, string expectedComparisonType)
         {
             var classRef = "http://www.Sustainsys.se";

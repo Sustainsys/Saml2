@@ -59,6 +59,32 @@ xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
         }
 
         [TestMethod]
+        public void Saml2LogoutRequest_ToXml_PreservesCustomChanges()
+        {
+            var subject = new Saml2LogoutRequest()
+            {
+                DestinationUrl = new Uri("http://idp.example.com/logout"),
+                Issuer = new EntityId("http://sp.example.com/"),
+                NameId = new Saml2NameIdentifier("005a06e0-ad82-110d-a556-004005b13a2b")
+                {
+                    Format = new Uri(NameIdFormat.Persistent.GetUri().AbsoluteUri),
+                    NameQualifier = "qualifier",
+                    SPNameQualifier = "spQualifier",
+                    SPProvidedId = "spId"
+                },
+                SessionIndex = "SessionId"
+            };
+            subject.XmlCreated += (s, e) =>
+            {
+                e.Add(new XAttribute("CustomAttribute", "CustomValue"));
+            };
+
+            var xml = subject.ToXml();
+
+            xml.Should().Contain("CustomAttribute=\"CustomValue\"");
+        }
+
+        [TestMethod]
         public void Saml2LogoutRequest_FromXml()
         {
             var xmlData =
@@ -118,5 +144,7 @@ xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
             a.ShouldThrow<ArgumentNullException>()
                 .And.ParamName.Should().Be("xml");
         }
+
+
     }
 }

@@ -138,6 +138,15 @@ namespace Sustainsys.Saml2.Saml2P
             }
         }
 
+        /// <summary>
+        /// Fire the XmlCreated event
+        /// </summary>
+        /// <param name="xElement"></param>
+        protected void OnXmlCreated(XElement xElement)
+        {
+            XmlCreated(this, xElement);
+        }
+
         private void ValidateCorrectDocument(XmlElement xml)
         {
             if (xml.LocalName != LocalName
@@ -151,6 +160,11 @@ namespace Sustainsys.Saml2.Saml2P
                 throw new XmlException("Wrong or unsupported SAML2 version");
             }
         }
+
+        /// <summary>
+        /// Event that fires just before ToXml returns. Allows manipulation of the raw XML
+        /// </summary>
+        public event EventHandler<XElement> XmlCreated = delegate { };
 
         /// <summary>
         /// Serializes the message into wellformed Xml.
@@ -168,6 +182,7 @@ namespace Sustainsys.Saml2.Saml2P
         /// to the signature processing rules of each binding.
         /// </summary>
         public X509Certificate2 SigningCertificate { get; set; }
+
         /// <summary>
         /// The signing algorithm to use when signing the message during binding, 
         /// according to the signature processing rules of each binding.
