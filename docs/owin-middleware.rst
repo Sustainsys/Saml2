@@ -43,3 +43,9 @@ Here's an example of how to set the Owin environment value through ASP.NET MVC:
 
     var context = HttpContext.GetOwinContext();
     context.Environment.Add("saml2.idp", new EntityId(YOUR_IDP_ENTITY_ID));
+    
+Module Path and Metadata
+-------------
+By default the module path is `/Saml2` but you can specify a different modulepath in your SPOptions object mentioned above.
+
+The metadata URL is the root of this module path.
