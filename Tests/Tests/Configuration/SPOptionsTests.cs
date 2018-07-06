@@ -90,7 +90,6 @@ namespace Sustainsys.Saml2.Tests.Configuration
             subject.Compatibility.UnpackEntitiesDescriptorInIdentityProviderMetadata.Should().BeTrue();
             subject.Compatibility.DisableLogoutStateCookie.Should().BeTrue();
             subject.Compatibility.IgnoreMissingInResponseTo.Should().BeTrue();
-            subject.Compatibility.AcceptOneTimeUseAssertions.Should().BeFalse();
             subject.Compatibility.AcceptOneTimeUseAssertions.Should().BeTrue();
         }
 
