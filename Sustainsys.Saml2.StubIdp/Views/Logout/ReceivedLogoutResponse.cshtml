@@ -1,13 +1,28 @@
 ﻿@model ResponseModel
-<div>
-    <label>Received Response</label>
-    <pre class="xml">@Model.ResponseXml</pre>
-</div>
-<div>
-    @Html.LabelFor(m => m.Status)
-    <span id="status">@Html.DisplayFor(m => m.Status)</span>
+@{ 
+    ViewBag.Title = "Single Logout";
+}
+<div class="container">
+    <div class="col-lg-8 card">
+        <h2>Received Single Logout Response</h2>
+        <div class="contents">
+            <div class="form-group row">
+                <label class="col-form-label col-md-4">@Html.DisplayNameFor(m => m.ResponseXml)</label>
+                <div class="col-md-8">
+                    <pre class="xml">@Model.ResponseXml</pre>
+                </div>
+            </div>
+            <div class="form-group row">
+                @Html.LabelFor(m => m.Status, new { @class = "col-form-label col-md-4" })
+                <div class="col-md-8">
+                    @Html.DisplayFor(m => m.Status)
+                </div>
+            </div>
+            <p>
+                @Html.ActionLink("Logout again", "Index")
+            </p>
+        </div>
+    </div>
+    @Html.Partial("_About")
 </div>
 
-<p>
-    @Html.ActionLink("Logout again", "Index")
-</p>

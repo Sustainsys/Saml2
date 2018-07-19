@@ -2,10 +2,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using SampleAspNetCore2ApplicationNETFramework.Data;
+using Sustainsys.Saml2.AspNetCore2;
 
 namespace SampleAspNetCore2ApplicationNETFramework.Controllers
 {
@@ -26,8 +28,14 @@ namespace SampleAspNetCore2ApplicationNETFramework.Controllers
         public async Task<IActionResult> Logout()
         {
             await _signInManager.SignOutAsync();
+
             _logger.LogInformation("User logged out.");
-            return RedirectToPage("/Index");
+
+            return SignOut(new AuthenticationProperties()
+            {
+                RedirectUri = "/Index"
+            },
+            Saml2Defaults.Scheme);
         }
     }
 }

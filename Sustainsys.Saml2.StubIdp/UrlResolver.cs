@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 
-namespace Kentor.AuthServices.StubIdp
+namespace Sustainsys.Saml2.StubIdp
 {
     public static class UrlResolver
     {

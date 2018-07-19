@@ -1,9 +1,9 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using FluentAssertions;
-using Kentor.AuthServices.WebSso;
+using Sustainsys.Saml2.WebSso;
 
-namespace Kentor.AuthServices.Tests.WebSso
+namespace Sustainsys.Saml2.Tests.WebSso
 {
     [TestClass]
     public class CommandFactoryTests

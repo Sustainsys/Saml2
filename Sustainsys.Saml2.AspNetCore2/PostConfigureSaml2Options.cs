@@ -1,4 +1,4 @@
-﻿using Kentor.AuthServices;
+﻿using Sustainsys.Saml2;
 using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
@@ -49,6 +49,10 @@ namespace Sustainsys.Saml2.AspNetCore2
             options.SignInScheme = options.SignInScheme 
                 ?? authOptions.Value.DefaultSignInScheme
                 ?? authOptions.Value.DefaultScheme;
+
+            options.SignOutScheme = options.SignOutScheme
+                ?? authOptions.Value.DefaultSignOutScheme
+                ?? authOptions.Value.DefaultAuthenticateScheme;
         }
     }
 }

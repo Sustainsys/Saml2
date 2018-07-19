@@ -4,10 +4,10 @@ using System.IdentityModel.Tokens;
 using FluentAssertions;
 using System.Collections.Generic;
 using System.Security.Claims;
-using Kentor.AuthServices.Internal;
+using Sustainsys.Saml2.Internal;
 using System.Xml.Linq;
 
-namespace Kentor.AuthServices.Tests
+namespace Sustainsys.Saml2.Tests
 {
     [TestClass]
     public class Saml2AssertionExtensionsTests

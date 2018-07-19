@@ -4,7 +4,7 @@ using System;
 using System.IdentityModel.Tokens;
 using System.Security.Claims;
 
-namespace Kentor.AuthServices.Tests
+namespace Sustainsys.Saml2.Tests
 {
     [TestClass]
     public class ClaimsExtensionsTests
@@ -31,7 +31,7 @@ namespace Kentor.AuthServices.Tests
         [TestMethod]
         public void ClaimsExtensions_ToSaml2NameIdentifier_LogoutNameIdentifier_NameOnly()
         {
-            var claim = new Claim(AuthServicesClaimTypes.LogoutNameIdentifier, ",,,,NameId");
+            var claim = new Claim(Saml2ClaimTypes.LogoutNameIdentifier, ",,,,NameId");
 
             var actual = claim.ToSaml2NameIdentifier();
 
@@ -43,7 +43,7 @@ namespace Kentor.AuthServices.Tests
         [TestMethod]
         public void ClaimsExtensions_ToSaml2NameIdentifier_LogoutNameIdentifier_NameIdFormat()
         {
-            var claim = new Claim(AuthServicesClaimTypes.LogoutNameIdentifier, ",,urn:foo,,NameId");
+            var claim = new Claim(Saml2ClaimTypes.LogoutNameIdentifier, ",,urn:foo,,NameId");
 
             var actual = claim.ToSaml2NameIdentifier();
 
@@ -58,7 +58,7 @@ namespace Kentor.AuthServices.Tests
         [TestMethod]
         public void ClaimsExtensions_ToSaml2NameIdentifier_LogoutNameIdentifier_NameQualifier()
         {
-            var claim = new Claim(AuthServicesClaimTypes.LogoutNameIdentifier, "qualifier,,,,NameId");
+            var claim = new Claim(Saml2ClaimTypes.LogoutNameIdentifier, "qualifier,,,,NameId");
 
             var actual = claim.ToSaml2NameIdentifier();
 
@@ -73,7 +73,7 @@ namespace Kentor.AuthServices.Tests
         [TestMethod]
         public void ClaimsExtensions_ToSaml2NameIdentifier_LogoutNameIdentifier_SPNameQualifier()
         {
-            var claim = new Claim(AuthServicesClaimTypes.LogoutNameIdentifier, ",qualifier,,,NameId");
+            var claim = new Claim(Saml2ClaimTypes.LogoutNameIdentifier, ",qualifier,,,NameId");
 
             var actual = claim.ToSaml2NameIdentifier();
 
@@ -88,7 +88,7 @@ namespace Kentor.AuthServices.Tests
         [TestMethod]
         public void ClaimsExtensions_ToSaml2NameIdentifier_LogoutNameIdentifier_SPProvidedId()
         {
-            var claim = new Claim(AuthServicesClaimTypes.LogoutNameIdentifier, ",,,spId,NameId");
+            var claim = new Claim(Saml2ClaimTypes.LogoutNameIdentifier, ",,,spId,NameId");
 
             var actual = claim.ToSaml2NameIdentifier();
 

@@ -1,9 +1,18 @@
-Version 0.21.2
-* Security fix: Flawed validation of Return URL causes Open Redirect
-* Security fix: XML External Entity Processing on .NET 4.5
-* Security fix: Malicious Idp can cause write to arbitrary files
-* Fix: Null Reference without NameIdentifier Claim.
+Version 0.24.0
+* Bug fix: Asp.Net Core2 handler with null AuthenticationProperties now works.
+* Bug fix: Error handling in Owin middleware with null/missing return url.
+* Compatibility setting to ignore missing InResponseTo
 
-Version 0.21.1
-* Fix Local logout broken in v0.21.0
-* Fixes to error handling: Various error conditions have got better messages, instead of hard to understand null reference exceptions.
+Version 0.23.0
+* Project renamed to Sustainsys.Saml2
+* No other changes since 0.22.0
+
+Version 0.22.0
+
+* Asp.NET Core 2 Handler
+* StubIdp renamed/updated to Sustainsys layout.
+* Improved error messages
+* Validate federation metadata signature
+* Preserve state across discovery service call
+
+See GitHub milestone issue list for details.

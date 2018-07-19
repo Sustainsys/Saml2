@@ -4,9 +4,9 @@ using FluentAssertions;
 using System.Net;
 using NSubstitute;
 using System.Web;
-using Kentor.AuthServices.WebSso;
+using Sustainsys.Saml2.WebSso;
 
-namespace Kentor.AuthServices.Tests.WebSso
+namespace Sustainsys.Saml2.Tests.WebSso
 {
     [TestClass]
     public class NotFoundCommandTests

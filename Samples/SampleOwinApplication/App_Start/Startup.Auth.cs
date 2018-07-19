@@ -6,13 +6,13 @@ using Microsoft.Owin.Security.Cookies;
 using Microsoft.Owin.Security.Google;
 using Owin;
 using SampleOwinApplication.Models;
-using Kentor.AuthServices.Owin;
-using Kentor.AuthServices.Configuration;
+using Sustainsys.Saml2.Owin;
+using Sustainsys.Saml2.Configuration;
 using System.IdentityModel.Metadata;
 using System.Globalization;
-using Kentor.AuthServices.Metadata;
-using Kentor.AuthServices;
-using Kentor.AuthServices.WebSso;
+using Sustainsys.Saml2.Metadata;
+using Sustainsys.Saml2;
+using Sustainsys.Saml2.WebSso;
 using System.Security.Cryptography.X509Certificates;
 using System.Web.Hosting;
 using System.IdentityModel.Selectors;
@@ -48,37 +48,37 @@ namespace SampleOwinApplication
             });
             app.UseExternalSignInCookie(DefaultAuthenticationTypes.ExternalCookie);
 
-            app.UseKentorAuthServicesAuthentication(CreateAuthServicesOptions());
+            app.UseSaml2Authentication(CreateSaml2Options());
         }
 
-        private static KentorAuthServicesAuthenticationOptions CreateAuthServicesOptions()
+        private static Saml2AuthenticationOptions CreateSaml2Options()
         {
             var spOptions = CreateSPOptions();
-            var authServicesOptions = new KentorAuthServicesAuthenticationOptions(false)
+            var Saml2Options = new Saml2AuthenticationOptions(false)
             {
                 SPOptions = spOptions
             };
 
-            var idp = new IdentityProvider(new EntityId("http://stubidp.kentor.se/Metadata"), spOptions)
+            var idp = new IdentityProvider(new EntityId("https://stubidp.sustainsys.com/Metadata"), spOptions)
                 {
                     AllowUnsolicitedAuthnResponse = true,
                     Binding = Saml2BindingType.HttpRedirect,
-                    SingleSignOnServiceUrl = new Uri("http://stubidp.kentor.se")
+                    SingleSignOnServiceUrl = new Uri("https://stubidp.sustainsys.com")
                 };
 
             idp.SigningKeys.AddConfiguredKey(
                 new X509Certificate2(
                     HostingEnvironment.MapPath(
-                        "~/App_Data/Kentor.AuthServices.StubIdp.cer")));
+                        "~/App_Data/stubidp.sustainsys.com.cer")));
 
-            authServicesOptions.IdentityProviders.Add(idp);
+            Saml2Options.IdentityProviders.Add(idp);
 
             // It's enough to just create the federation and associate it
             // with the options. The federation will load the metadata and
             // update the options with any identity providers found.
-            new Federation("http://localhost:52071/Federation", true, authServicesOptions);
+            new Federation("http://localhost:52071/Federation", true, Saml2Options);
 
-            return authServicesOptions;
+            return Saml2Options;
         }
 
         private static SPOptions CreateSPOptions()
@@ -86,13 +86,13 @@ namespace SampleOwinApplication
             var swedish = CultureInfo.GetCultureInfo("sv-se");
 
             var organization = new Organization();
-            organization.Names.Add(new LocalizedName("Kentor", swedish));
-            organization.DisplayNames.Add(new LocalizedName("Kentor IT AB", swedish));
-            organization.Urls.Add(new LocalizedUri(new Uri("http://www.kentor.se"), swedish));
+            organization.Names.Add(new LocalizedName("Sustainsys", swedish));
+            organization.DisplayNames.Add(new LocalizedName("Sustainsys AB", swedish));
+            organization.Urls.Add(new LocalizedUri(new Uri("http://www.Sustainsys.se"), swedish));
 
             var spOptions = new SPOptions
             {
-                EntityId = new EntityId("http://localhost:57294/AuthServices"),
+                EntityId = new EntityId("http://localhost:57294/Saml2"),
                 ReturnUrl = new Uri("http://localhost:57294/Account/ExternalLoginCallback"),
                 DiscoveryServiceUrl = new Uri("http://localhost:52071/DiscoveryService"),
                 Organization = organization
@@ -102,7 +102,7 @@ namespace SampleOwinApplication
             {
                 Type = ContactType.Technical
             };
-            techContact.EmailAddresses.Add("authservices@example.com");
+            techContact.EmailAddresses.Add("Saml2@example.com");
             spOptions.Contacts.Add(techContact);
 
             var supportContact = new ContactPerson
@@ -112,7 +112,7 @@ namespace SampleOwinApplication
             supportContact.EmailAddresses.Add("support@example.com");
             spOptions.Contacts.Add(supportContact);
 
-            var attributeConsumingService = new AttributeConsumingService("AuthServices")
+            var attributeConsumingService = new AttributeConsumingService("Saml2")
             {
                 IsDefault = true,
             };
@@ -131,7 +131,7 @@ namespace SampleOwinApplication
             spOptions.AttributeConsumingServices.Add(attributeConsumingService);
 
             spOptions.ServiceCertificates.Add(new X509Certificate2(
-                AppDomain.CurrentDomain.SetupInformation.ApplicationBase + "/App_Data/Kentor.AuthServices.Tests.pfx"));
+                AppDomain.CurrentDomain.SetupInformation.ApplicationBase + "/App_Data/Sustainsys.Saml2.Tests.pfx"));
 
             return spOptions;
         }

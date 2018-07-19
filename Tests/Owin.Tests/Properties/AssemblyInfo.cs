@@ -2,11 +2,11 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
-[assembly: AssemblyTitle("Kentor.AuthServices.Owin.Tests")]
+[assembly: AssemblyTitle("Sustainsys.Saml2.Owin.Tests")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("Kentor.AuthServices.Owin.Tests")]
+[assembly: AssemblyProduct("Sustainsys.Saml2.Owin.Tests")]
 [assembly: AssemblyCopyright("Copyright ©  2017")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]

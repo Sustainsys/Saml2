@@ -1,4 +1,4 @@
-﻿using Kentor.AuthServices.WebSso;
+﻿using Sustainsys.Saml2.WebSso;
 using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
@@ -37,7 +37,8 @@ namespace Sustainsys.Saml2.AspNetCore2
                 pathBase,
                 formData,
                 request.Cookies,
-                cookieDecryptor);
+                cookieDecryptor,
+                httpContext.User);
         }
     }
 }

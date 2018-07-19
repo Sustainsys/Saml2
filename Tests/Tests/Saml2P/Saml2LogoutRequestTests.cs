@@ -1,6 +1,6 @@
 ﻿using FluentAssertions;
-using Kentor.AuthServices.Internal;
-using Kentor.AuthServices.Saml2P;
+using Sustainsys.Saml2.Internal;
+using Sustainsys.Saml2.Saml2P;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
@@ -10,9 +10,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
-using Kentor.AuthServices.Tests.Helpers;
+using Sustainsys.Saml2.Tests.Helpers;
 
-namespace Kentor.AuthServices.Tests.Saml2P
+namespace Sustainsys.Saml2.Tests.Saml2P
 {
     [TestClass]
     public class Saml2LogoutRequestTests

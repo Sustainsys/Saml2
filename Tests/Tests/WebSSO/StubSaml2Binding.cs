@@ -1,12 +1,12 @@
-﻿using Kentor.AuthServices.Configuration;
-using Kentor.AuthServices.WebSso;
+﻿using Sustainsys.Saml2.Configuration;
+using Sustainsys.Saml2.WebSso;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Kentor.AuthServices.Tests.WebSSO
+namespace Sustainsys.Saml2.Tests.WebSSO
 {
     class StubSaml2Binding : Saml2Binding
     {

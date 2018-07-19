@@ -1,7 +1,3 @@
-param (
-	[string]$version = "auto"
-)
-
 $ErrorActionPreference = "Stop"
 
 $status = (git status)
@@ -22,43 +18,11 @@ if ("$master" -eq "")
 }
 
 pushd ..
-del Kentor.AuthServices\bin\Release\*.dll
-del Kentor.AuthServices.Mvc\bin\Release\*.dll
-del Kentor.AuthServices.Owin\bin\Release\*.dll
-del Kentor.AuthServices.HttpModule\bin\Release\*.dll
-
-function Increment-PatchNumber
-{
-	$assemblyVersionPattern = '^\[assembly: AssemblyVersion\("([0-9]+(\.([0-9]+|\*)){1,3})"\)'  
-	$rawVersionNumberGroup = get-content VersionInfo.cs| select-string -pattern $assemblyVersionPattern | % { $_.Matches }
-
-	$rawVersionNumber = $rawVersionNumberGroup.Groups[1].Value  
-	$versionParts = $rawVersionNumber.Split('.')  
-	$versionParts[2] = ([int]$versionParts[2]) + 1  
-	$updatedAssemblyVersion = "{0}.{1}.{2}" -f $versionParts[0], $versionParts[1], $versionParts[2]
-
-	return $updatedAssemblyVersion
-}
-
-function Set-Version($newVersion)
-{
-	$versionPattern = "[0-9]+(\.([0-9]+|\*)){1,3}"
-	(get-content VersionInfo.cs) | % { 
-		% { $_ -replace $versionPattern, $newVersion }
-	} | set-content VersionInfo.cs	
-}
-
-if("$version" -eq "auto")
-{
-	$version = Increment-PatchNumber
-}
-
-Set-Version($version)
-
-echo "Version updated to $version, commiting and tagging..."
-
-git commit -a -m "Updated version number to $version for release."
-git tag v$version
+del Sustainsys.Saml2\bin\Release\*.dll
+del Sustainsys.Saml2.Mvc\bin\Release\*.dll
+del Sustainsys.Saml2.Owin\bin\Release\*.dll
+del Sustainsys.Saml2.HttpModule\bin\Release\*.dll
+del Sustainsys.Saml2.AspNetCore2\bin\Release\*.dll
 
 echo "Creating nuspec files..."
 
@@ -70,16 +34,18 @@ function Create-Nuspec($projectName)
 		set-content $projectName\$projectName.nuspec
 }
 
-Create-Nuspec("Kentor.AuthServices")
-Create-Nuspec("Kentor.AuthServices.Mvc")
-Create-Nuspec("Kentor.AuthServices.Owin")
-Create-Nuspec("Kentor.AuthServices.HttpModule")
+Create-Nuspec("Sustainsys.Saml2")
+Create-Nuspec("Sustainsys.Saml2.Mvc")
+Create-Nuspec("Sustainsys.Saml2.Owin")
+Create-Nuspec("Sustainsys.Saml2.HttpModule")
+Create-Nuspec("Sustainsys.Saml2.AspNetCore2")
 
-echo "Building package..."
+echo "Building packages..."
 
-nuget pack -build -outputdirectory nuget Kentor.AuthServices\Kentor.AuthServices.csproj
-nuget pack -build -outputdirectory nuget Kentor.AuthServices.Mvc\Kentor.AuthServices.Mvc.csproj
-nuget pack -build -outputdirectory nuget Kentor.AuthServices.Owin\Kentor.AuthServices.Owin.csproj
-nuget pack -build -outputdirectory nuget Kentor.AuthServices.HttpModule\Kentor.AuthServices.HttpModule.csproj
+nuget pack -build -outputdirectory nuget Sustainsys.Saml2\Sustainsys.Saml2.csproj
+nuget pack -build -outputdirectory nuget Sustainsys.Saml2.Mvc\Sustainsys.Saml2.Mvc.csproj
+nuget pack -build -outputdirectory nuget Sustainsys.Saml2.Owin\Sustainsys.Saml2.Owin.csproj
+nuget pack -build -outputdirectory nuget Sustainsys.Saml2.HttpModule\Sustainsys.Saml2.HttpModule.csproj
+nuget pack -build -outputdirectory nuget Sustainsys.Saml2.AspNetCore2\Sustainsys.Saml2.AspNetCore2.csproj
 
 popd

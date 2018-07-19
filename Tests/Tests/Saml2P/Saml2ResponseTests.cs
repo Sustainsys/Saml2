@@ -1,5 +1,5 @@
 ﻿using FluentAssertions;
-using Kentor.AuthServices.Configuration;
+using Sustainsys.Saml2.Configuration;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.IdentityModel.Metadata;
@@ -9,13 +9,13 @@ using System.Security.Claims;
 using System.Security.Cryptography.Xml;
 using System.Xml;
 using System.IO;
-using Kentor.AuthServices.Saml2P;
+using Sustainsys.Saml2.Saml2P;
 using System.Reflection;
 using System.IdentityModel.Selectors;
-using Kentor.AuthServices.Exceptions;
-using Kentor.AuthServices.TestHelpers;
+using Sustainsys.Saml2.Exceptions;
+using Sustainsys.Saml2.TestHelpers;
 
-namespace Kentor.AuthServices.Tests.Saml2P
+namespace Sustainsys.Saml2.Tests.Saml2P
 {
     [TestClass]
     public class Saml2ResponseTests
@@ -211,6 +211,77 @@ namespace Kentor.AuthServices.Tests.Saml2P
             a.ShouldNotThrow();
         }
 
+        /// This is a specific test for the vulnerabilities found by Duo in February 2018
+        /// https://duo.com/blog/duo-finds-saml-vulnerabilities-affecting-multiple-implementations
+        [TestMethod]
+        public void Saml2Response_GetClaims_CorrectSignedResponseMessage_CommentInNameId()
+        {
+            var response =
+            @"<?xml version=""1.0"" encoding=""UTF-8""?>
+            <saml2p:Response xmlns:saml2p=""urn:oasis:names:tc:SAML:2.0:protocol""
+            xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
+            ID = """ + MethodBase.GetCurrentMethod().Name + @""" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z"">
+                <saml2:Issuer>https://idp.example.com</saml2:Issuer>
+                <saml2p:Status>
+                    <saml2p:StatusCode Value=""urn:oasis:names:tc:SAML:2.0:status:Success"" />
+                </saml2p:Status>
+                <saml2:Assertion xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
+                Version=""2.0"" ID=""" + MethodBase.GetCurrentMethod().Name + @"_Assertion1""
+                IssueInstant=""2013-09-25T00:00:00Z"">
+                    <saml2:Issuer>https://idp.example.com</saml2:Issuer>
+                    <saml2:Subject>
+                        <saml2:NameID>Some<!--Comment-->User</saml2:NameID>
+                        <saml2:SubjectConfirmation Method=""urn:oasis:names:tc:SAML:2.0:cm:bearer"" />
+                    </saml2:Subject>
+                    <saml2:Conditions NotOnOrAfter=""2100-01-01T00:00:00Z"" />
+                </saml2:Assertion>
+            </saml2p:Response>";
+
+            var signedResponse = SignedXmlHelper.SignXml(response);
+
+            Action a = () => Saml2Response.Read(signedResponse).GetClaims(StubFactory.CreateOptions());
+            a.ShouldThrow<XmlException>();
+        }
+
+        /// This is a specific test for the vulnerabilities found by Duo in February 2018
+        /// https://duo.com/blog/duo-finds-saml-vulnerabilities-affecting-multiple-implementations
+        [TestMethod]
+        public void Saml2Response_GetClaims_CorrectSignedResponseMessage_CommentInAttributeValue()
+        {
+            var response =
+            @"<?xml version=""1.0"" encoding=""UTF-8""?>
+            <saml2p:Response xmlns:saml2p=""urn:oasis:names:tc:SAML:2.0:protocol""
+            xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
+            ID = """ + MethodBase.GetCurrentMethod().Name + @""" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z"">
+                <saml2:Issuer>https://idp.example.com</saml2:Issuer>
+                <saml2p:Status>
+                    <saml2p:StatusCode Value=""urn:oasis:names:tc:SAML:2.0:status:Success"" />
+                </saml2p:Status>
+                <saml2:Assertion xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
+                Version=""2.0"" ID=""" + MethodBase.GetCurrentMethod().Name + @"_Assertion1""
+                IssueInstant=""2013-09-25T00:00:00Z"">
+                    <saml2:Issuer>https://idp.example.com</saml2:Issuer>
+                    <saml2:Subject>
+                        <saml2:NameID>SomeUser</saml2:NameID>
+                        <saml2:SubjectConfirmation Method=""urn:oasis:names:tc:SAML:2.0:cm:bearer"" />
+                    </saml2:Subject>
+                    <saml2:Conditions NotOnOrAfter=""2100-01-01T00:00:00Z"" />
+                    <saml2:AttributeStatement>
+                        <saml2:Attribute Name=""CommentTest"">
+                            <saml2:AttributeValue>Some<!--Comment-->Value</saml2:AttributeValue>
+                        </saml2:Attribute>
+                    </saml2:AttributeStatement>
+                </saml2:Assertion>
+            </saml2p:Response>";
+
+            var signedResponse = SignedXmlHelper.SignXml(response);
+
+            var claims = Saml2Response.Read(signedResponse).GetClaims(StubFactory.CreateOptions());
+
+            claims.Single().FindFirst("CommentTest").Value.Should().Be("SomeValue");
+        }
+
+
         [TestMethod]
         public void Saml2Response_GetClaims_CorrectSignedResponseMessageSecondaryKey()
         {
@@ -293,7 +364,7 @@ namespace Kentor.AuthServices.Tests.Saml2P
 
             var result = Saml2Response.Read(signedResponse).GetClaims(Options.FromConfiguration);
 
-            var logoutInfoClaim = result.Single().Claims.SingleOrDefault(c => c.Type == AuthServicesClaimTypes.LogoutNameIdentifier);
+            var logoutInfoClaim = result.Single().Claims.SingleOrDefault(c => c.Type == Saml2ClaimTypes.LogoutNameIdentifier);
             logoutInfoClaim.Should().NotBeNull("the LogoutInfo claim should be generated");
             logoutInfoClaim.Value.Should().Be("NameQualifier,SPNameQualifier,urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress,SPProvidedID,someone@example.com");
         }
@@ -332,11 +403,11 @@ namespace Kentor.AuthServices.Tests.Saml2P
 
             var result = Saml2Response.Read(signedResponse).GetClaims(Options.FromConfiguration);
 
-            var logoutInfoClaim = result.Single().Claims.SingleOrDefault(c => c.Type == AuthServicesClaimTypes.LogoutNameIdentifier);
+            var logoutInfoClaim = result.Single().Claims.SingleOrDefault(c => c.Type == Saml2ClaimTypes.LogoutNameIdentifier);
             logoutInfoClaim.Should().NotBeNull("the Logout name identifier claim should be generated");
             logoutInfoClaim.Value.Should().Be(",,,,SomeOne");
 
-            var sessionIdClaim = result.Single().Claims.SingleOrDefault(c => c.Type == AuthServicesClaimTypes.SessionIndex);
+            var sessionIdClaim = result.Single().Claims.SingleOrDefault(c => c.Type == Saml2ClaimTypes.SessionIndex);
             sessionIdClaim.Should().NotBeNull("the Session ID claim should be generated");
             sessionIdClaim.Value.Should().Be("17");
         }
@@ -377,6 +448,46 @@ namespace Kentor.AuthServices.Tests.Saml2P
             var authMethodClaim = result.Single().Claims.SingleOrDefault(c => c.Type == ClaimTypes.AuthenticationMethod);
             authMethodClaim.Should().NotBeNull("the authentication method claim should be generated");
             authMethodClaim.Value.Should().Be("urn:somespecialvalue");
+        }
+
+        [TestMethod]
+        public void Saml2Response_GetClaims_SessionIndexButNoNameId()
+        {
+            var response =
+            @"<?xml version=""1.0"" encoding=""UTF-8""?>
+            <saml2p:Response xmlns:saml2p=""urn:oasis:names:tc:SAML:2.0:protocol""
+            xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
+            ID = """ + MethodBase.GetCurrentMethod().Name + @""" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z"">
+                <saml2:Issuer>https://idp.example.com</saml2:Issuer>
+                <saml2p:Status>
+                    <saml2p:StatusCode Value=""urn:oasis:names:tc:SAML:2.0:status:Success"" />
+                </saml2p:Status>
+                <saml2:Assertion xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
+                Version=""2.0"" ID=""" + MethodBase.GetCurrentMethod().Name + @"_Assertion1""
+                IssueInstant=""2013-09-25T00:00:00Z"">
+                    <saml2:Issuer>https://idp.example.com</saml2:Issuer>
+                    <saml2:Subject>
+                        <saml2:SubjectConfirmation Method=""urn:oasis:names:tc:SAML:2.0:cm:bearer"" />
+                    </saml2:Subject>
+                    <saml2:Conditions NotOnOrAfter=""2100-01-01T00:00:00Z"" />
+                    <saml2:AuthnStatement AuthnInstant=""2013-09-25T00:00:00Z"" SessionIndex=""17"" >
+                        <saml2:AuthnContext>
+                            <saml2:AuthnContextClassRef>urn:oasis:names:tc:SAML:2.0:ac:classes:PasswordProtectedTransport</saml2:AuthnContextClassRef>
+                            <saml2:AuthnContextDeclRef>http://custom/password/form/consumer</saml2:AuthnContextDeclRef>
+                        </saml2:AuthnContext>
+                    </saml2:AuthnStatement>
+                </saml2:Assertion>
+            </saml2p:Response>";
+
+            var signedResponse = SignedXmlHelper.SignXml(response);
+
+            var result = Saml2Response.Read(signedResponse).GetClaims(Options.FromConfiguration);
+
+            result.First().FindFirst(ClaimTypes.NameIdentifier).Should().BeNull();
+
+            var sessionIdClaim = result.Single().Claims.SingleOrDefault(c => c.Type == Saml2ClaimTypes.SessionIndex);
+            sessionIdClaim.Should().NotBeNull("the Session ID claim should be generated");
+            sessionIdClaim.Value.Should().Be("17");
         }
 
         [TestMethod]
@@ -1339,7 +1450,7 @@ namespace Kentor.AuthServices.Tests.Saml2P
         {
             var idp = Options.FromConfiguration.IdentityProviders.Default;
 
-            var request = idp.CreateAuthenticateRequest(StubFactory.CreateAuthServicesUrls());
+            var request = idp.CreateAuthenticateRequest(StubFactory.CreateSaml2Urls());
 
             var responseXML =
             @"<?xml version=""1.0"" encoding=""UTF-8""?>
@@ -1431,7 +1542,56 @@ namespace Kentor.AuthServices.Tests.Saml2P
             Action a = () => Saml2Response.Read(responseXML, new Saml2Id("ExpectedId"));
 
             a.ShouldThrow<Saml2ResponseFailedValidationException>()
-                .WithMessage("Expected message to contain InResponseTo \"ExpectedId\", but found none.");
+                .WithMessage("Expected message to contain InResponseTo \"ExpectedId\", but found none*");
+        }
+
+        [TestMethod]
+        public void Saml2Response_Read_CorrectResponse_When_MissingInResponseTo_And_IgnoreMissingEnabled()
+        {
+            var options = Options.FromConfiguration;
+            options.SPOptions.Compatibility.IgnoreMissingInResponseTo = true;
+
+            var responseXML =
+                @"<?xml version=""1.0"" encoding=""UTF-8""?>
+            <saml2p:Response xmlns:saml2p=""urn:oasis:names:tc:SAML:2.0:protocol""
+            xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
+            ID = """ + MethodBase.GetCurrentMethod().Name + @""" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z"">
+                <saml2:Issuer>https://idp.example.com</saml2:Issuer>
+                <saml2p:Status>
+                    <saml2p:StatusCode Value=""urn:oasis:names:tc:SAML:2.0:status:Requester"" />
+                </saml2p:Status>
+            </saml2p:Response>";
+
+            responseXML = SignedXmlHelper.SignXml(responseXML);
+
+            Action a = () => Saml2Response.Read(responseXML, new Saml2Id("ExpectedId"), options);
+
+            a.ShouldNotThrow();
+        }
+
+        [TestMethod]
+        public void Saml2Response_Read_ThrowsOnNoInResponseTo_When_MissingInResponseTo_AndIgnoreMissingDisabled()
+        {
+            var options = Options.FromConfiguration;
+            options.SPOptions.Compatibility.IgnoreMissingInResponseTo = false;
+
+            var responseXML =
+                @"<?xml version=""1.0"" encoding=""UTF-8""?>
+            <saml2p:Response xmlns:saml2p=""urn:oasis:names:tc:SAML:2.0:protocol""
+            xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
+            ID = """ + MethodBase.GetCurrentMethod().Name + @""" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z"">
+                <saml2:Issuer>https://idp.example.com</saml2:Issuer>
+                <saml2p:Status>
+                    <saml2p:StatusCode Value=""urn:oasis:names:tc:SAML:2.0:status:Requester"" />
+                </saml2p:Status>
+            </saml2p:Response>";
+
+            responseXML = SignedXmlHelper.SignXml(responseXML);
+
+            Action a = () => Saml2Response.Read(responseXML, new Saml2Id("ExpectedId"), options);
+
+            a.ShouldThrow<Saml2ResponseFailedValidationException>()
+                .WithMessage("Expected message to contain InResponseTo \"ExpectedId\", but found none*");
         }
 
         [TestMethod]
@@ -1766,6 +1926,15 @@ namespace Kentor.AuthServices.Tests.Saml2P
         public void Saml2Response_Ctor_Nullcheck()
         {
             Action a = () => new Saml2Response(null, new Saml2Id("foo"));
+
+            a.ShouldThrow<ArgumentNullException>()
+                .And.ParamName.Should().Be("xml");
+        }
+
+        [TestMethod]
+        public void Saml2Response_Ctor_Options_Nullcheck()
+        {
+            Action a = () => new Saml2Response(null, new Saml2Id("foo"), null);
 
             a.ShouldThrow<ArgumentNullException>()
                 .And.ParamName.Should().Be("xml");

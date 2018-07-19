@@ -131,8 +131,8 @@
     <Content Include="fonts\glyphicons-halflings-regular.eot" />
     <Content Include="Content\bootstrap-theme.css.map" />
     <Content Include="Content\bootstrap.css.map" />
-    <Content Include="App_Data\Kentor.AuthServices.StubIdp.cer" />
-    <Content Include="App_Data\Kentor.AuthServices.Tests.pfx" />
+    <Content Include="App_Data\Sustainsys.Saml2.Tests.pfx" />
+    <Content Include="App_Data\stubidp.sustainsys.com.cer" />
     <None Include="Scripts\jquery-1.10.2.intellisense.js" />
     <None Include="Scripts\jquery-2.1.1.intellisense.js" />
     <Content Include="Scripts\jquery-2.1.1.js" />
@@ -156,9 +156,9 @@
     <Content Include="Scripts\jquery-2.1.1.min.map" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Kentor.AuthServices.Mvc\Kentor.AuthServices.Mvc.csproj">
+    <ProjectReference Include="..\..\Sustainsys.Saml2.Mvc\Sustainsys.Saml2.Mvc.csproj">
       <Project>{7d32f0a3-cec8-4dc6-a096-5905ea9c3770}</Project>
-      <Name>Kentor.AuthServices.Mvc</Name>
+      <Name>Sustainsys.Saml2.Mvc</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

@@ -87,10 +87,13 @@ namespace Sustainsys.Saml2.AspNetCore2.Tests
 
         public const string defaultSignInScheme = nameof(defaultSignInScheme);
 
+        public const string defaultSignOutScheme = nameof(defaultSignOutScheme);
+
         public static IOptions<AuthenticationOptions> GetAuthenticationOptions()
         {
             var authOptions = Substitute.For<AuthenticationOptions>();
             authOptions.DefaultSignInScheme = defaultSignInScheme;
+            authOptions.DefaultSignOutScheme = defaultSignOutScheme;
 
             var iOptions = Substitute.For<IOptions<AuthenticationOptions>>();
 

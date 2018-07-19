@@ -4,18 +4,18 @@ using System.Xml;
 using System.Security.Cryptography.X509Certificates;
 using System.Security.Cryptography.Xml;
 using FluentAssertions;
-using Kentor.AuthServices.Tests.Helpers;
-using Kentor.AuthServices.Exceptions;
+using Sustainsys.Saml2.Tests.Helpers;
+using Sustainsys.Saml2.Exceptions;
 using System.Security.Cryptography;
 using System.Reflection;
-using Kentor.AuthServices.Configuration;
+using Sustainsys.Saml2.Configuration;
 using System.Linq;
 using System.Xml.Linq;
 using System.IdentityModel.Tokens;
-using Kentor.AuthServices.Internal;
-using Kentor.AuthServices.TestHelpers;
+using Sustainsys.Saml2.Internal;
+using Sustainsys.Saml2.TestHelpers;
 
-namespace Kentor.AuthServices.Tests
+namespace Sustainsys.Saml2.Tests
 {
     [TestClass]
     public class XmlHelpersTests
@@ -26,7 +26,7 @@ namespace Kentor.AuthServices.Tests
             SignedXmlHelper.RemoveGlobalSha256XmlSignatureSupport();
         }
 
-        public static readonly X509Certificate2 TestCert = new X509Certificate2("Kentor.AuthServices.Tests.pfx");
+        public static readonly X509Certificate2 TestCert = new X509Certificate2("Sustainsys.Saml2.Tests.pfx");
 
         [TestMethod]
         public void XmlHelpers_Sign_Nullcheck_xmlDocument()
@@ -79,7 +79,7 @@ namespace Kentor.AuthServices.Tests
                 .Should().Be("#rootElementId");
 
             // Default algorithms in SignedXml are rsa-sha1 and sha1. Default
-            // in authservices are rsa-sha256 and sha256. Ensure AuthServices
+            // in Saml2 are rsa-sha256 and sha256. Ensure Saml2
             // defaults are used and not SignedXml/.NET defaults.
             signature["SignedInfo"]["SignatureMethod"].GetAttribute("Algorithm")
                 .Should().Be(SignedXml.XmlDsigRSASHA256Url);
@@ -287,7 +287,7 @@ namespace Kentor.AuthServices.Tests
             xmlDoc.DocumentElement.Invoking(
                 x => x.IsSignedBy(SignedXmlHelper.TestCertSignOnly))
                 .ShouldThrow<InvalidSignatureException>()
-                .And.Message.Should().Be("SHA256 signatures require the algorithm to be registered at the process level. Upgrade to .Net 4.6.2 or call Kentor.AuthServices.Configuration.Options.GlobalEnableSha256XmlSignatures() on startup to register.");
+                .And.Message.Should().Be("SHA256 signatures require the algorithm to be registered at the process level. Upgrade to .Net 4.6.2 or call Sustainsys.Saml2.Configuration.Options.GlobalEnableSha256XmlSignatures() on startup to register.");
         }
 
         [TestMethod]

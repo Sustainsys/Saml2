@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using Sustainsys.Saml2;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -58,6 +59,34 @@ namespace SampleAspNetCore2ApplicationNETFramework.Pages.Account
             return new ChallengeResult(provider, properties);
         }
 
+        class Saml2ClaimsFactory : IUserClaimsPrincipalFactory<ApplicationUser>
+        {
+            IUserClaimsPrincipalFactory<ApplicationUser> _inner;
+            ExternalLoginInfo _externalLoginInfo;
+
+            public Saml2ClaimsFactory(
+                IUserClaimsPrincipalFactory<ApplicationUser> inner,
+                ExternalLoginInfo externalLoginInfo)
+            {
+                _inner = inner;
+                _externalLoginInfo = externalLoginInfo;
+            }
+
+            public async Task<ClaimsPrincipal> CreateAsync(ApplicationUser user)
+            {
+                var principal = await _inner.CreateAsync(user);
+
+                var logoutInfo = _externalLoginInfo.Principal.FindFirst(Saml2ClaimTypes.LogoutNameIdentifier);
+                var sessionIndex = _externalLoginInfo.Principal.FindFirst(Saml2ClaimTypes.SessionIndex);
+
+                var identity = principal.Identities.Single();
+                identity.AddClaim(logoutInfo);
+                identity.AddClaim(sessionIndex);
+
+                return principal;
+            }
+        }
+
         public async Task<IActionResult> OnGetCallbackAsync(string returnUrl = null, string remoteError = null)
         {
             if (remoteError != null)
@@ -65,11 +94,14 @@ namespace SampleAspNetCore2ApplicationNETFramework.Pages.Account
                 ErrorMessage = $"Error from external provider: {remoteError}";
                 return RedirectToPage("./Login");
             }
+
             var info = await _signInManager.GetExternalLoginInfoAsync();
             if (info == null)
             {
                 return RedirectToPage("./Login");
             }
+
+            _signInManager.ClaimsFactory = new Saml2ClaimsFactory(_signInManager.ClaimsFactory, info);
 
             // Sign in the user with this external login provider if the user already has a login.
             var result = await _signInManager.ExternalLoginSignInAsync(info.LoginProvider, info.ProviderKey, isPersistent: false, bypassTwoFactor : true);

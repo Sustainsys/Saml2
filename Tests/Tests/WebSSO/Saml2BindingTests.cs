@@ -5,10 +5,10 @@ using System.Web;
 using System.Collections.Specialized;
 using FluentAssertions;
 using System.Collections.Generic;
-using Kentor.AuthServices.WebSso;
-using Kentor.AuthServices.Tests.WebSSO;
+using Sustainsys.Saml2.WebSso;
+using Sustainsys.Saml2.Tests.WebSSO;
 
-namespace Kentor.AuthServices.Tests.WebSso
+namespace Sustainsys.Saml2.Tests.WebSso
 {
     [TestClass]
     public class Saml2BindingTests

@@ -9,7 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
 
-namespace Kentor.AuthServices.Tests
+namespace Sustainsys.Saml2.Tests
 {
     /// <summary>
     /// Helper class for testing standard exception constructors.

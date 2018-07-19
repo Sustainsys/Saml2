@@ -1,6 +1,6 @@
 ﻿using System.Web.Optimization;
 
-namespace Kentor.AuthServices.StubIdp.App_Start
+namespace Sustainsys.Saml2.StubIdp.App_Start
 {
     class LessTransform : IBundleTransform
     {

@@ -13,6 +13,7 @@ TestResults
 *.user
 *.sln.docstates
 .vs
+.vscode
 
 # Build results
 [Dd]ebug/
@@ -109,14 +110,18 @@ Backup*/
 UpgradeLog*.XML
 
 nuget/*nupkg
-*/App_Data/*.mdf
-*/App_Data/*.ldf
+**/App_Data/*.mdf
+**/App_Data/*.ldf
 
 *.nuspec
 !/nuget/*.nuspec
-Kentor.AuthServices.StubIdp/App_Data/*.json
+Sustainsys.Saml2.StubIdp/App_Data/*.json
 
 #Ndepend Stuff
 *.ndproj
 NDependOut
 *.coveragexml
+
+#ReadTheDocs 
+docs/_build
+docs/.vscode

@@ -1,8 +1,8 @@
-﻿using Kentor.AuthServices;
+﻿using Sustainsys.Saml2;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using FluentAssertions;
 
-namespace Kentor.AuthServices.Tests
+namespace Sustainsys.Saml2.Tests
 {
     [TestClass]
     public class SecureKeyGeneratorTests

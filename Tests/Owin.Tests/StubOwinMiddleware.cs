@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Kentor.AuthServices.Owin.Tests
+namespace Sustainsys.Saml2.Owin.Tests
 {
     class StubOwinMiddleware : OwinMiddleware
     {

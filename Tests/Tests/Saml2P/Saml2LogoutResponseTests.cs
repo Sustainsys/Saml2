@@ -1,13 +1,13 @@
 ﻿using FluentAssertions;
-using Kentor.AuthServices.Saml2P;
+using Sustainsys.Saml2.Saml2P;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Kentor.AuthServices.Tests.Helpers;
+using Sustainsys.Saml2.Tests.Helpers;
 using System.Xml;
 using System.IdentityModel.Metadata;
 using System;
 using System.IdentityModel.Tokens;
 
-namespace Kentor.AuthServices.Tests.Saml2P
+namespace Sustainsys.Saml2.Tests.Saml2P
 {
     [TestClass]
     public class Saml2LogoutResponseTests

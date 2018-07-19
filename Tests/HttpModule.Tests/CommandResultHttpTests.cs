@@ -1,7 +1,7 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Kentor.AuthServices.WebSso;
-using Kentor.AuthServices.HttpModule;
+using Sustainsys.Saml2.WebSso;
+using Sustainsys.Saml2.HttpModule;
 using FluentAssertions;
 using NSubstitute;
 using System.Web;
@@ -12,7 +12,7 @@ using System.Linq;
 using System.IdentityModel.Tokens;
 using System.IdentityModel.Metadata;
 
-namespace Kentor.AuthServices.HttpModule.Tests
+namespace Sustainsys.Saml2.HttpModule.Tests
 {
     public partial class CommandResultHttpTests
     {
@@ -72,7 +72,7 @@ namespace Kentor.AuthServices.HttpModule.Tests
         {
             return MachineKey.Unprotect(
                 HttpRequestData.GetBinaryData(data),
-                "Kentor.AuthServices");
+                "Sustainsys.Saml2");
         }
 
         [TestMethod]

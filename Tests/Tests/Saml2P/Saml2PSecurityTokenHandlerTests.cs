@@ -1,12 +1,12 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using FluentAssertions;
-using Kentor.AuthServices.Saml2P;
-using Kentor.AuthServices.Configuration;
+using Sustainsys.Saml2.Saml2P;
+using Sustainsys.Saml2.Configuration;
 
-namespace Kentor.AuthServices.Tests.Saml2P
+namespace Sustainsys.Saml2.Tests.Saml2P
 {
-    using Kentor.AuthServices.TestHelpers;
+    using Sustainsys.Saml2.TestHelpers;
     using System.IdentityModel.Selectors;
     using System.IdentityModel.Tokens;
     using System.Linq;

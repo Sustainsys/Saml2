@@ -4,20 +4,20 @@ using System.Security.Cryptography.Xml;
 using System.Security.Cryptography;
 using System.IdentityModel.Metadata;
 using System.IdentityModel.Tokens;
-using Kentor.AuthServices.Internal;
+using Sustainsys.Saml2.Internal;
 using System.Reflection;
 using System.Collections.Generic;
 using System;
 
-namespace Kentor.AuthServices.TestHelpers
+namespace Sustainsys.Saml2.TestHelpers
 {
     public class SignedXmlHelper
     {
-        public static readonly X509Certificate2 TestCert = new X509Certificate2("Kentor.AuthServices.Tests.pfx");
+        public static readonly X509Certificate2 TestCert = new X509Certificate2("Sustainsys.Saml2.Tests.pfx");
 
-        public static readonly X509Certificate2 TestCert2 = new X509Certificate2("Kentor.AuthServices.Tests2.pfx");
+        public static readonly X509Certificate2 TestCert2 = new X509Certificate2("Sustainsys.Saml2.Tests2.pfx");
 
-        public static readonly X509Certificate2 TestCertSignOnly = new X509Certificate2("Kentor.AuthServices.TestsSignOnly.pfx");
+        public static readonly X509Certificate2 TestCertSignOnly = new X509Certificate2("Sustainsys.Saml2.TestsSignOnly.pfx");
 
         public static readonly RsaKeyIdentifierClause TestKey =
             new RsaKeyIdentifierClause((RSA)TestCert.PublicKey.Key);

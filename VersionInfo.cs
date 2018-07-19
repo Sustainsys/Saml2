@@ -1,18 +1,16 @@
 using System.Reflection;
 
-[assembly: AssemblyCompany("Kentor")]
-[assembly: AssemblyCopyright("Copyright © Kentor and contributors 2013-2017")]
+[assembly: AssemblyCompany("Sustainsys")]
+[assembly: AssemblyCopyright("Copyright © Sustainsys and contributors 2013-2018")]
 
 
-// Kentor.AuthServices uses semantic versioning in three parts
+// Sustainsys.Saml2 uses semantic versioning
 //
 //      Major Version
 //      Minor Version 
 //      Patch Number
 //
-// An odd patch number is a development version, an even patch number is
-// a relased version.
 
-[assembly: AssemblyVersion("0.21.2")]
-[assembly: AssemblyFileVersion("0.21.2")]
-[assembly: AssemblyInformationalVersion("0.21.2")]
+[assembly: AssemblyVersion("0.24.0")]
+[assembly: AssemblyFileVersion("0.24.0")]
+[assembly: AssemblyInformationalVersion("0.24.0")]

@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
 VisualStudioVersion = 12.0.31101.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kentor.AuthServices.IntegrationTests", "Kentor.AuthServices.IntegrationTests.csproj", "{6139CB5B-88C1-45F8-B151-07985920295A}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sustainsys.Saml2.IntegrationTests", "Sustainsys.Saml2.IntegrationTests.csproj", "{6139CB5B-88C1-45F8-B151-07985920295A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

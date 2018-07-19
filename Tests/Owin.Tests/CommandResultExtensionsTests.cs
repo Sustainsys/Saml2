@@ -2,12 +2,12 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.IO;
 using System.Net;
-using Kentor.AuthServices.WebSso;
+using Sustainsys.Saml2.WebSso;
 using FluentAssertions;
 using System.IdentityModel.Metadata;
 using System.IdentityModel.Tokens;
 
-namespace Kentor.AuthServices.Owin.Tests
+namespace Sustainsys.Saml2.Owin.Tests
 {
     [TestClass]
     public class CommandResultExtensionsTests

@@ -5,7 +5,7 @@ using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Kentor.AuthServices.TestHelpers
+namespace Sustainsys.Saml2.TestHelpers
 {
     public class ClaimsAuthenticationManagerStub : ClaimsAuthenticationManager
     {

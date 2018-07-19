@@ -2,7 +2,7 @@
 <Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Configuration Condition=" '$(Configuration)' == '' ">Release</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{0A1A7E8C-838C-4114-894B-564592417AFA}</ProjectGuid>
     <OutputType>Library</OutputType>
@@ -22,7 +22,7 @@
     <WarningLevel>4</WarningLevel>
     <DocumentationFile>bin\Debug\Sustainsys.Saml2.AspNetCore2.xml</DocumentationFile>
     <RunCodeAnalysis>true</RunCodeAnalysis>
-    <CodeAnalysisRuleSet>..\Kentor.AuthServices.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRuleSet>..\Sustainsys.Saml2.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -152,7 +152,7 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Kentor.AuthServices\Kentor.AuthServices.csproj">
+    <ProjectReference Include="..\Sustainsys.Saml2\Sustainsys.Saml2.csproj">
       <Project>{93BA675E-A159-4701-B68B-C4B81015C556}</Project>
       <Name>Kentor.AuthServices</Name>
     </ProjectReference>

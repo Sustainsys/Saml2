@@ -7,7 +7,7 @@
     <ProjectGuid>{CF1E517E-B2FE-48E1-8BB9-4D9981695C47}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Kentor.AuthServices.TestHelpers</RootNamespace>
+    <RootNamespace>Sustainsys.Saml2.TestHelpers</RootNamespace>
     <AssemblyName>TestHelpers</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
@@ -49,21 +49,24 @@
     <Compile Include="StubFactory.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Kentor.AuthServices.Tests.pfx">
+    <None Include="Sustainsys.Saml2.Tests.pfx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="Kentor.AuthServices.Tests2.pfx">
+    <None Include="Sustainsys.Saml2.Tests2.pfx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <Content Include="Kentor.AuthServices.TestsSignOnly.pfx">
+    <Content Include="Sustainsys.Saml2.TestsSignOnly.pfx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <None Include="packages.config" />
+    <None Include="Sustainsys.Saml2.Tests.pfx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Kentor.AuthServices\Kentor.AuthServices.csproj">
+    <ProjectReference Include="..\..\Sustainsys.Saml2\Sustainsys.Saml2.csproj">
       <Project>{93ba675e-a159-4701-b68b-c4b81015c556}</Project>
-      <Name>Kentor.AuthServices</Name>
+      <Name>Sustainsys.Saml2</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

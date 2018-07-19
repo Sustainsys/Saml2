@@ -1,14 +1,14 @@
 ﻿using System;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Kentor.AuthServices.Configuration;
+using Sustainsys.Saml2.Configuration;
 using System.IdentityModel.Metadata;
 using FluentAssertions;
-using Kentor.AuthServices.Saml2P;
+using Sustainsys.Saml2.Saml2P;
 using System.Security.Cryptography.Xml;
-using Kentor.AuthServices.TestHelpers;
+using Sustainsys.Saml2.TestHelpers;
 
-namespace Kentor.AuthServices.Tests.Configuration
+namespace Sustainsys.Saml2.Tests.Configuration
 {
     [TestClass]
     public class SPOptionsTests
@@ -16,16 +16,17 @@ namespace Kentor.AuthServices.Tests.Configuration
         [TestCleanup]
         public void TestCleanup()
         {
-            if(!KentorAuthServicesSection.Current.IsReadOnly())
+            if(!SustainsysSaml2Section.Current.IsReadOnly())
             {
-                KentorAuthServicesSection.Current.AuthenticateRequestSigningBehavior = SigningBehavior.Never;
-                KentorAuthServicesSection.Current.ValidateCertificates = false;
-                KentorAuthServicesSection.Current.AllowChange = false;
-                KentorAuthServicesSection.Current.Metadata.WantAssertionsSigned = false;
-                KentorAuthServicesSection.Current.Metadata.AllowChange = false;
-                KentorAuthServicesSection.Current.Compatibility.UnpackEntitiesDescriptorInIdentityProviderMetadata = false;
-                KentorAuthServicesSection.Current.Compatibility.DisableLogoutStateCookie = false;
-                KentorAuthServicesSection.Current.Compatibility.AllowChange = false;
+                SustainsysSaml2Section.Current.AuthenticateRequestSigningBehavior = SigningBehavior.Never;
+                SustainsysSaml2Section.Current.ValidateCertificates = false;
+                SustainsysSaml2Section.Current.AllowChange = false;
+                SustainsysSaml2Section.Current.Metadata.WantAssertionsSigned = false;
+                SustainsysSaml2Section.Current.Metadata.AllowChange = false;
+                SustainsysSaml2Section.Current.Compatibility.UnpackEntitiesDescriptorInIdentityProviderMetadata = false;
+                SustainsysSaml2Section.Current.Compatibility.DisableLogoutStateCookie = false;
+                SustainsysSaml2Section.Current.Compatibility.IgnoreMissingInResponseTo = false;
+                SustainsysSaml2Section.Current.Compatibility.AllowChange = false;
             }
         }
 
@@ -56,7 +57,7 @@ namespace Kentor.AuthServices.Tests.Configuration
         [TestMethod]
         public void SPOptions_Constructor_LoadsConfig()
         {
-            var config = KentorAuthServicesSection.Current;
+            var config = SustainsysSaml2Section.Current;
             config.AllowChange = true;
             config.AuthenticateRequestSigningBehavior = SigningBehavior.Always;
             config.Metadata.AllowChange = true;
@@ -65,8 +66,9 @@ namespace Kentor.AuthServices.Tests.Configuration
             config.Compatibility.AllowChange = true;
             config.Compatibility.UnpackEntitiesDescriptorInIdentityProviderMetadata = true;
             config.Compatibility.DisableLogoutStateCookie = true;
+            config.Compatibility.IgnoreMissingInResponseTo = true;
 
-            SPOptions subject = new SPOptions(KentorAuthServicesSection.Current);
+            SPOptions subject = new SPOptions(SustainsysSaml2Section.Current);
             subject.ReturnUrl.Should().Be(config.ReturnUrl);
             subject.MetadataCacheDuration.Should().Be(config.Metadata.CacheDuration);
             subject.MetadataValidDuration.Should().Be(config.Metadata.ValidUntil);
@@ -85,6 +87,7 @@ namespace Kentor.AuthServices.Tests.Configuration
             subject.RequestedAuthnContext.Comparison.Should().Be(AuthnContextComparisonType.Minimum);
             subject.Compatibility.UnpackEntitiesDescriptorInIdentityProviderMetadata.Should().BeTrue();
             subject.Compatibility.DisableLogoutStateCookie.Should().BeTrue();
+            subject.Compatibility.IgnoreMissingInResponseTo.Should().BeTrue();
         }
 
         [TestMethod]
@@ -106,7 +109,7 @@ namespace Kentor.AuthServices.Tests.Configuration
         public void SPOPtions_ModulePath_Default()
         {
             var subject = new SPOptions();
-            subject.ModulePath.Should().Be("/AuthServices");
+            subject.ModulePath.Should().Be("/Saml2");
         }
 
         [TestMethod]

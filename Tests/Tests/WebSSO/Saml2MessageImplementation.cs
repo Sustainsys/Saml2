@@ -1,4 +1,4 @@
-﻿using Kentor.AuthServices.Saml2P;
+﻿using Sustainsys.Saml2.Saml2P;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 using System.IdentityModel.Metadata;
 using System.Security.Cryptography.Xml;
 
-namespace Kentor.AuthServices.Tests.WebSSO
+namespace Sustainsys.Saml2.Tests.WebSSO
 {
     class Saml2MessageImplementation : ISaml2Message
     {

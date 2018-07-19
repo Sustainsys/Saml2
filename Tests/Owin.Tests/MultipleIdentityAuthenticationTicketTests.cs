@@ -4,9 +4,9 @@ using System.Security.Claims;
 using Microsoft.Owin.Security;
 using FluentAssertions;
 using System.Linq;
-using Kentor.AuthServices.Owin;
+using Sustainsys.Saml2.Owin;
 
-namespace Kentor.AuthServices.Owin.Tests
+namespace Sustainsys.Saml2.Owin.Tests
 {
     [TestClass]
     public class MultipleIdentityAuthenticationTicketTests

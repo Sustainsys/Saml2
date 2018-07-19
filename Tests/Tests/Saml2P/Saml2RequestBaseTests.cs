@@ -4,9 +4,9 @@ using FluentAssertions;
 using System.Text.RegularExpressions;
 using System.Xml.Linq;
 using System.IdentityModel.Metadata;
-using Kentor.AuthServices.Saml2P;
+using Sustainsys.Saml2.Saml2P;
 
-namespace Kentor.AuthServices.Tests.Saml2P
+namespace Sustainsys.Saml2.Tests.Saml2P
 {
     class ConcreteSaml2Request : Saml2RequestBase
     {

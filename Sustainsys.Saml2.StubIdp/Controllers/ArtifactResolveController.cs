@@ -1,5 +1,5 @@
-﻿using Kentor.AuthServices.Saml2P;
-using Kentor.AuthServices.WebSso;
+﻿using Sustainsys.Saml2.Saml2P;
+using Sustainsys.Saml2.WebSso;
 using System;
 using System.Globalization;
 using System.IdentityModel.Tokens;
@@ -7,7 +7,7 @@ using System.Web.Mvc;
 using System.Xml;
 using System.Xml.Linq;
 
-namespace Kentor.AuthServices.StubIdp.Controllers
+namespace Sustainsys.Saml2.StubIdp.Controllers
 {
     public class ArtifactResolveController : Controller
     {

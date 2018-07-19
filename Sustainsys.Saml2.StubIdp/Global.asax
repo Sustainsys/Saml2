@@ -1,1 +1,1 @@
-﻿<%@ Application Codebehind="Global.asax.cs" Inherits="Kentor.AuthServices.StubIdp.MvcApplication" Language="C#" %>
+﻿<%@ Application Codebehind="Global.asax.cs" Inherits="Sustainsys.Saml2.StubIdp.MvcApplication" Language="C#" %>

@@ -3,11 +3,11 @@ using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using FluentAssertions;
 using System.IdentityModel.Metadata;
-using Kentor.AuthServices.Metadata;
-using Kentor.AuthServices.WebSso;
-using Kentor.AuthServices.TestHelpers;
+using Sustainsys.Saml2.Metadata;
+using Sustainsys.Saml2.WebSso;
+using Sustainsys.Saml2.TestHelpers;
 
-namespace Kentor.AuthServices.Tests.Configuration
+namespace Sustainsys.Saml2.Tests.Configuration
 {
     [TestClass]
     public class SPOptionsExtensionsTests
@@ -15,10 +15,10 @@ namespace Kentor.AuthServices.Tests.Configuration
         [TestMethod]
         public void SPOPtionsExtensions_CreateMetadata_RequiredFields()
         {
-            var metadata = StubFactory.CreateSPOptions().CreateMetadata(StubFactory.CreateAuthServicesUrls());
+            var metadata = StubFactory.CreateSPOptions().CreateMetadata(StubFactory.CreateSaml2Urls());
 
             metadata.CacheDuration.Should().Be(new TimeSpan(0, 0, 42));
-            metadata.EntityId.Id.Should().Be("https://github.com/KentorIT/authservices");
+            metadata.EntityId.Id.Should().Be("https://github.com/SustainsysIT/Saml2");
 
             var spMetadata = metadata.RoleDescriptors.OfType<ServiceProviderSingleSignOnDescriptor>().Single();
             spMetadata.Should().NotBeNull();
@@ -29,7 +29,7 @@ namespace Kentor.AuthServices.Tests.Configuration
             acs.Index.Should().Be(0);
             acs.IsDefault.Should().HaveValue();
             acs.Binding.ToString().Should().Be("urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST");
-            acs.Location.ToString().Should().Be("http://localhost/AuthServices/Acs");
+            acs.Location.ToString().Should().Be("http://localhost/Saml2/Acs");
 
             // No service certificate configured, so no SLO endpoint should be
             // exposed in metadata.
@@ -41,7 +41,7 @@ namespace Kentor.AuthServices.Tests.Configuration
         {
             var options = StubFactory.CreateOptions();
             options.SPOptions.ServiceCertificates.Add(new ServiceCertificate { Certificate = SignedXmlHelper.TestCert2 });
-            var metadata = options.SPOptions.CreateMetadata(StubFactory.CreateAuthServicesUrls());
+            var metadata = options.SPOptions.CreateMetadata(StubFactory.CreateSaml2Urls());
 
             var spMetadata = metadata.RoleDescriptors.OfType<ServiceProviderSingleSignOnDescriptor>().Single();
             spMetadata.Should().NotBeNull();
@@ -51,11 +51,11 @@ namespace Kentor.AuthServices.Tests.Configuration
             // When there is a service certificate, expose SLO endpoints.
             var sloRedirect = spMetadata.SingleLogoutServices.Single(
                 slo => slo.Binding == Saml2Binding.HttpRedirectUri);
-            sloRedirect.Location.Should().Be("http://localhost/AuthServices/Logout");
+            sloRedirect.Location.Should().Be("http://localhost/Saml2/Logout");
             sloRedirect.ResponseLocation.Should().BeNull();
             var sloPost = spMetadata.SingleLogoutServices.Single(
                 slo => slo.Binding == Saml2Binding.HttpPostUri);
-            sloPost.Location.Should().Be("http://localhost/AuthServices/Logout");
+            sloPost.Location.Should().Be("http://localhost/Saml2/Logout");
             sloPost.ResponseLocation.Should().BeNull();
         }
 
@@ -65,7 +65,7 @@ namespace Kentor.AuthServices.Tests.Configuration
             var options = StubFactory.CreateOptions();
             options.SPOptions.ServiceCertificates.Add(new ServiceCertificate { Certificate = SignedXmlHelper.TestCert2, Use = CertificateUse.Encryption });
             options.SPOptions.ServiceCertificates.Add(new ServiceCertificate { Certificate = SignedXmlHelper.TestCert2, Use = CertificateUse.Signing });
-            var metadata = options.SPOptions.CreateMetadata(StubFactory.CreateAuthServicesUrls());
+            var metadata = options.SPOptions.CreateMetadata(StubFactory.CreateSaml2Urls());
 
             var spMetadata = metadata.RoleDescriptors.OfType<ServiceProviderSingleSignOnDescriptor>().Single();
             spMetadata.Should().NotBeNull();
@@ -79,11 +79,11 @@ namespace Kentor.AuthServices.Tests.Configuration
         {
             var subject = StubFactory
                 .CreateSPOptions()
-                .CreateMetadata(StubFactory.CreateAuthServicesUrls())
+                .CreateMetadata(StubFactory.CreateSaml2Urls())
                 .Organization;
 
             subject.Should().NotBeNull();
-            subject.Names.First().Name.Should().Be("Kentor.AuthServices");
+            subject.Names.First().Name.Should().Be("Sustainsys.Saml2");
         }
 
         [TestMethod]
@@ -91,7 +91,7 @@ namespace Kentor.AuthServices.Tests.Configuration
         {
             var spOptions = StubFactory.CreateSPOptions();
 
-            var subject = spOptions.CreateMetadata(StubFactory.CreateAuthServicesUrls()).Contacts;
+            var subject = spOptions.CreateMetadata(StubFactory.CreateSaml2Urls()).Contacts;
 
             subject.Should().Contain(spOptions.Contacts);
         }
@@ -100,7 +100,7 @@ namespace Kentor.AuthServices.Tests.Configuration
         public void SPOptionsExtensions_CreateMetadata_IncludeDiscoveryServiceResponse()
         {
             var spOptions = StubFactory.CreateSPOptions();
-            var urls = StubFactory.CreateAuthServicesUrls();
+            var urls = StubFactory.CreateSaml2Urls();
 
             spOptions.DiscoveryServiceUrl = new Uri("http://ds.example.com");
 
@@ -123,7 +123,7 @@ namespace Kentor.AuthServices.Tests.Configuration
         public void SPOptionsExtensions_CreateMetadata_IncludeAttributeConsumingService()
         {
             var spOptions = StubFactory.CreateSPOptions();
-            var urls = StubFactory.CreateAuthServicesUrls();
+            var urls = StubFactory.CreateSaml2Urls();
 
             var attributeConsumingService = new AttributeConsumingService("Name");
 

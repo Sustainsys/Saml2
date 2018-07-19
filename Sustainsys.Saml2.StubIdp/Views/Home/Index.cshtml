@@ -8,27 +8,60 @@
 }
 
 <div class="container-fluid tagline">
-@if (!string.IsNullOrEmpty(Model.CustomDescription))
-{
-    <div style="white-space:pre-wrap">@Model.CustomDescription</div>
-}
-else
-{
-    @:SAML2 stub: be whoever you want to be
+    @if (!string.IsNullOrEmpty(Model.CustomDescription))
+    {
+        <div style="white-space:pre-wrap">@Model.CustomDescription</div>
+    }
+    else
+    {
+        @:SAML2 stub: be whoever you want to be
 }
 </div>
+
+@if (Request.Url.Host == "stubidp.kentor.se")
+{
+    <div class="container">
+        <div class="col-md-12">
+            <div class="panel panel-warning">
+                <div class="panel-heading">
+                    Service moved to <a href="https://stubidp.sustainsys.com">https://stubidp.sustainsys.com</a>
+                </div>
+                <div class="panel-body">
+                    This service has moved to <a href="https://stubidp.sustainsys.com">https://stubidp.sustainsys.com</a>. The
+                    stubidp.kentor.se host name will be removed, please update your configuration. All custom tenant information
+                    is the same accross the domain names.
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@if (Request.Url.Host == "stubidp.sustainsys.com" && Request.Url.Scheme == "http")
+{
+    <div class="container">
+        <div class="col-md-12">
+            <div class="panel panel-info">
+                <div class="panel-heading">
+                    Consider using <a href="https://stubidp.sustainsys.com">https://stubidp.sustainsys.com</a> instead
+                </div>
+                <div class="panel-body">
+                    You are currently accessing this service unencrypted. Consider changing to use the https version instead.
+                </div>
+            </div>
+        </div>
+    </div>
+}
 
 <div class="container">
     <div class="col-lg-8 card">
         <h2>Send SAML2 Response</h2>
         <div class="contents">
             <p>
-                This form will allow you to send a SAML2 Response to a service provider.
-                If the In Response To ID field is empty, the Response is considered
-                unsolicited (IDP initiated).
+                This form will send a SAML2 Response to a service provider. If the In Response To ID
+                field is empty, the Response is considered unsolicited (IDP initiated).
             </p>
             <p>
-                The pre-filled values in the user selection box are just an example. If you 
+                The pre-filled values in the user selection box are just an example. If you
                 want to build your own user list you can
                 @Html.ActionLink("create your own IDP tenant", "Index", "Manage", new { idpId = Guid.NewGuid() }, null).
             </p>
@@ -46,7 +79,7 @@ else
                 if (Model.AssertionModel.AuthnRequestXml != null)
                 {
                     <div class="hide-details form-group row">
-                        @Html.LabelFor(m => m.AssertionModel.AuthnRequestXml, new { @class = "col-form-label col-md-4" })
+                        <label class="col-form-label col-md-4">@Html.DisplayNameFor(m => m.AssertionModel.AuthnRequestXml)</label>
                         <div class="col-md-8">
                             <pre class="xml">@Model.AssertionModel.AuthnRequestXml</pre>
                         </div>
@@ -79,17 +112,17 @@ else
 
                 <div class="hide-details form-group row">
                     <label class="col-form-label col-md-4">Send response via</label>
-                    <div class="radio-group col-lg-8">
+                    <div class="radio-group col-md-8">
                         <label for="binding_post">
                             <input type="radio" name="AssertionModel.ResponseBinding" id="binding_post"
-                                    checked="@(Model.AssertionModel.ResponseBinding == Kentor.AuthServices.WebSso.Saml2BindingType.HttpPost)"
-                                    value="HttpPost" />
+                                   checked="@(Model.AssertionModel.ResponseBinding == Sustainsys.Saml2.WebSso.Saml2BindingType.HttpPost)"
+                                   value="HttpPost" />
                             Http POST Binding
                         </label>
                         <label for="binding_artifact">
                             <input type="radio" name="AssertionModel.ResponseBinding" id="binding_artifact"
-                                    checked="@(Model.AssertionModel.ResponseBinding == Kentor.AuthServices.WebSso.Saml2BindingType.Artifact)"
-                                    value="Artifact" />
+                                   checked="@(Model.AssertionModel.ResponseBinding == Sustainsys.Saml2.WebSso.Saml2BindingType.Artifact)"
+                                   value="Artifact" />
                             Artifact Binding over Http Redirect
                         </label>
                     </div>
@@ -123,8 +156,8 @@ else
                     <div class="panel-heading">Attribute Statements</div>
                     <div class="panel-body">
                         <div id="attributes-placeholder" class="row" style="display:none">
-                            <label class="col-md-5">Type</label>
-                            <label class="col-md-5">Value</label>
+                            <label class="col-md-5 hidden-sm hidden-xs">Type</label>
+                            <label class="col-md-5 hidden-sm hidden-xs">Value</label>
                         </div>
                         <button class="btn glyphicon glyphicon-plus" id="add-attribute"></button>
                     </div>
@@ -136,38 +169,8 @@ else
 
         </div>
     </div>
-    <div class="col-lg-4 card">
-        <h2>About</h2>
-        <div class="contents">
-            <p>
-                The Stub Idp is part of the <a href="https://github.com/Sustainsys/Saml2">
-                    Sustainsys.Saml2
-                </a> open source package for ASP.NET.
-            </p>
-            <p>
-                The SAML messages sent by the Stub Idp will be signed with
-                @Html.ActionLink("this certificate", "Index", "Certificate").
-                To validate the responses you need to download it and configure your
-                service provider to trust it. 
-            </p>
-            <div class="panel panel-warning">
-                <div class="panel-heading">
-                    Warning
-                </div>
-                <div class="panel-body">
-                    Never trust the stub idp certificate in a production environment as it will
-                    allow anyone to sign in to your application as whatever user they choose.
-                </div>
-            </div>
-            @Html.Partial("_MetadataLink")
-            <p>
-                The stub idp also features
-                @Html.ActionLink("single logout support", "Index", "Logout").
-            </p>
-        </div>
-    </div>
+    @Html.Partial("_About")
 </div>
-
 
 
 <script id="attributeRowTemplate" type="text/html">
@@ -176,15 +179,19 @@ else
     <div class="attribute-row form-group">
         <input type="hidden" name="AssertionModel.AttributeStatements.Index" value="{{rowIndex}}" />
         <div class="col-md-5">
-            <input type="text" data-val="true" data-val-required="The Type field is required." class="form-control" name="AssertionModel.AttributeStatements[{{rowIndex}}].Type" value="{{type}}" />
+            <label class="hidden-md hidden-lg col-form-label">Type</label>
+            <input class="form-control" type="text" data-val="true" data-val-required="The Type field is required." name="AssertionModel.AttributeStatements[{{rowIndex}}].Type" value="{{type}}" />
         </div>
         <div class="col-md-5">
-            <input type="text" data-val="true" data-val-required="The Value field is required." class="form-control" name="AssertionModel.AttributeStatements[{{rowIndex}}].Value" value="{{value}}" />
+            <label class="hidden-md hidden-lg col-form-label">Value</label>
+            <input class="pull-right form-control" type="text" data-val="true" data-val-required="The Value field is required." name="AssertionModel.AttributeStatements[{{rowIndex}}].Value" value="{{value}}" />
         </div>
-        <span class="field-validation-valid" data-valmsg-for="AssertionModel.AttributeStatements[{{rowIndex}}].Type" data-valmsg-replace="true"></span>
-        <span class="field-validation-valid" data-valmsg-for="AssertionModel.AttributeStatements[{{rowIndex}}].Value" data-valmsg-replace="true"></span>
-        <div class="col-md-1">
+        <div class="col-md-1 col-xs-1">
             <button class="btn remove-attribute glyphicon glyphicon-trash"></button>
+        </div>
+        <div class="col-xs-11 col-md-12">
+            <span class="col-md-5 field-validation-valid" data-valmsg-for="AssertionModel.AttributeStatements[{{rowIndex}}].Type" data-valmsg-replace="true"></span>
+            <span class="col-md-5 field-validation-valid" data-valmsg-for="AssertionModel.AttributeStatements[{{rowIndex}}].Value" data-valmsg-replace="true"></span>
         </div>
     </div>
 </script>

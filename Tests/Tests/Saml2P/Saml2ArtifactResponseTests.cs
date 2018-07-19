@@ -1,11 +1,11 @@
-﻿using Kentor.AuthServices.Saml2P;
+﻿using Sustainsys.Saml2.Saml2P;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using FluentAssertions;
 using System.Xml;
-using Kentor.AuthServices.Exceptions;
+using Sustainsys.Saml2.Exceptions;
 
-namespace Kentor.AuthServices.Tests.Saml2P
+namespace Sustainsys.Saml2.Tests.Saml2P
 {
     [TestClass]
     public class Saml2ArtifactResponseTests

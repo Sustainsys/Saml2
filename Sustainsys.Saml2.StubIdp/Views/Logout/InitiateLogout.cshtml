@@ -1,27 +1,40 @@
 ﻿@model InitiateLogoutModel
-
-@using (Html.BeginForm("InitiateLogout", "Logout", FormMethod.Post))
-{
-    @Html.ValidationSummary()
-    <div>
-        @Html.LabelFor(m => m.NameId)
-        @Html.EditorFor(m => m.NameId)
-        @Html.ValidationMessageFor(m => m.NameId)
-    </div>
-    <div>
-        @Html.LabelFor(m => m.SessionIndex)
-        @Html.EditorFor(m => m.SessionIndex)
-        @Html.ValidationMessageFor(m => m.SessionIndex)
-    </div>
-    <div>
-        @Html.LabelFor(m => m.DestinationUrl)
-        @Html.EditorFor(m => m.DestinationUrl)
-        @Html.ValidationMessageFor(m => m.DestinationUrl)
-    </div>
-    <button id="submit">Log out</button>
-
-    if(Model.AutoPost)
-    {
-        <script>document.getElementById("submit").click();</script>
-    }
+@{
+    ViewBag.Title = "Single Logout";
 }
+
+<div class="container">
+    <div class="col-lg-8 card">
+        <h2>Initiate Single Logout</h2>
+        <div class="contents">
+            <p>Initiate a single logout request to a Service Provider.</p>
+            @using (Html.BeginForm("InitiateLogout", "Logout", FormMethod.Post))
+            {
+                <div class="form-group row">
+                    @Html.LabelFor(m => m.NameId, new {@class="col-form-label col-md-4"})
+                    <div class="col-md-8">
+                        @Html.TextBoxFor(m => m.NameId, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(m => m.NameId)
+                    </div>
+                </div>
+                <div class="form-group row">
+                    @Html.LabelFor(m => m.SessionIndex, new { @class = "col-form-label col-md-4"})
+                    <div class="col-md-8">
+                        @Html.TextBoxFor(m => m.SessionIndex, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(m => m.SessionIndex)
+                    </div>
+                </div>
+                <div class="form-group row">
+                    @Html.LabelFor(m => m.DestinationUrl, new { @class = "col-form-label col-md-4" })
+                    <div class="col-md-8">
+                        @Html.TextBoxFor(m => m.DestinationUrl, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(m => m.DestinationUrl)
+                    </div>
+                </div>
+                <button class="btn btn-primary" id="submit">Log out</button>
+            }
+        </div>
+    </div>
+    @Html.Partial("_About")
+</div>
+
