@@ -2,11 +2,11 @@
 using System.Net;
 using System.Security.Cryptography.X509Certificates;
 using FluentAssertions;
-using Kentor.AuthServices.Configuration;
-using Kentor.AuthServices.Internal;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Sustainsys.Saml2.Configuration;
+using Sustainsys.Saml2.Internal;
 
-namespace Kentor.AuthServices.Tests.Internal
+namespace Sustainsys.Saml2.Tests.Internal
 {
     [TestClass]
     public class ClientCertificateWebClientTests
@@ -34,7 +34,7 @@ namespace Kentor.AuthServices.Tests.Internal
         [TestMethod]
         public void Create_WithCertificate_ShouldAddCertificateToRequest()
         {
-            var config = KentorAuthServicesSection.Current;
+            var config = SustainsysSaml2Section.Current;
             var options = new SPOptions(config);
 
             var client = new TestableClientCertificateWebClient(options.ArtifactResolutionTlsCertificate);

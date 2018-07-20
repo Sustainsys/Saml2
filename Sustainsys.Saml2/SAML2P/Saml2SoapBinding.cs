@@ -3,7 +3,7 @@ using System.Globalization;
 using System.Linq;
 using System.Security.Cryptography.X509Certificates;
 using System.Xml;
-using Kentor.AuthServices.Internal;
+using Sustainsys.Saml2.Internal;
 
 namespace Sustainsys.Saml2.Saml2P
 {

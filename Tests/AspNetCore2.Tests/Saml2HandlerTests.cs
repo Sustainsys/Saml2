@@ -1,13 +1,9 @@
 ﻿using FluentAssertions;
-using Sustainsys.Saml2;
-using Sustainsys.Saml2.Configuration;
 using Sustainsys.Saml2.Saml2P;
 using Sustainsys.Saml2.TestHelpers;
 using Sustainsys.Saml2.WebSso;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Primitives;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -23,7 +19,6 @@ using System.Security.Claims;
 using System.Security.Cryptography.X509Certificates;
 using System.Security.Cryptography.Xml;
 using System.Text;
-using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 
 namespace Sustainsys.Saml2.AspNetCore2.Tests
@@ -291,17 +286,6 @@ namespace Sustainsys.Saml2.AspNetCore2.Tests
                 .Should().BeTrue();
 
             context.HttpContext.Response.StatusCode.Should().Be(404);
-        }
-
-        [TestMethod]
-        public void Saml2Handler_ChallengeAsync_NullchecksProperties()
-        {
-            var context = new Saml2HandlerTestContext();
-
-            Func<Task> f = async () => await context.Subject.ChallengeAsync(null);
-
-            f.ShouldThrow<ArgumentNullException>()
-                .And.ParamName.Should().Be("properties");
         }
 
         [TestMethod]

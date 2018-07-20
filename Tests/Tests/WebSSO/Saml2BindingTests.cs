@@ -1,14 +1,10 @@
 ﻿using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using NSubstitute;
-using System.Web;
-using System.Collections.Specialized;
-using FluentAssertions;
 using System.Collections.Generic;
+using FluentAssertions;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Sustainsys.Saml2.WebSso;
-using Sustainsys.Saml2.Tests.WebSSO;
 
-namespace Sustainsys.Saml2.Tests.WebSso
+namespace Sustainsys.Saml2.Tests.WebSSO
 {
     [TestClass]
     public class Saml2BindingTests

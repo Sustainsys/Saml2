@@ -1,15 +1,14 @@
 ﻿using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using FluentAssertions;
-using System.Text;
 using System.Collections.Generic;
-using Sustainsys.Saml2.WebSso;
-using Sustainsys.Saml2.Tests.WebSSO;
 using System.Security.Cryptography.Xml;
+using System.Text;
+using FluentAssertions;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NSubstitute;
 using Sustainsys.Saml2.TestHelpers;
+using Sustainsys.Saml2.WebSso;
 
-namespace Sustainsys.Saml2.Tests.WebSso
+namespace Sustainsys.Saml2.Tests.WebSSO
 {
     [TestClass]
     public class Saml2PostBindingTests

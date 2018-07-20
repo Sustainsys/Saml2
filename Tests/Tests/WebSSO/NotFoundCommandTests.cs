@@ -1,12 +1,10 @@
 ﻿using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using FluentAssertions;
 using System.Net;
-using NSubstitute;
-using System.Web;
+using FluentAssertions;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Sustainsys.Saml2.WebSso;
 
-namespace Sustainsys.Saml2.Tests.WebSso
+namespace Sustainsys.Saml2.Tests.WebSSO
 {
     [TestClass]
     public class NotFoundCommandTests

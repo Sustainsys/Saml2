@@ -1,23 +1,22 @@
-﻿using FluentAssertions;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
+﻿using System;
+using System.Collections.Generic;
+using System.Configuration;
+using System.IdentityModel.Metadata;
+using System.IdentityModel.Tokens;
+using System.Linq;
 using System.Net;
+using System.Reflection;
 using System.Security.Claims;
 using System.Text;
 using System.Xml;
-using System.Linq;
-using System.Collections.Generic;
+using FluentAssertions;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Sustainsys.Saml2.Configuration;
-using Sustainsys.Saml2.WebSso;
-using System.Reflection;
-using System.Configuration;
 using Sustainsys.Saml2.Exceptions;
-using System.IdentityModel.Metadata;
-using System.IdentityModel.Tokens;
-using Sustainsys.Saml2.Tests.WebSSO;
 using Sustainsys.Saml2.TestHelpers;
+using Sustainsys.Saml2.WebSso;
 
-namespace Sustainsys.Saml2.Tests.WebSso
+namespace Sustainsys.Saml2.Tests.WebSSO
 {
     [TestClass]
     public class AcsCommandTests

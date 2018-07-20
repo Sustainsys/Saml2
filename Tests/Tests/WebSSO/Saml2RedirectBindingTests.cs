@@ -1,17 +1,16 @@
 ﻿using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using FluentAssertions;
-using NSubstitute;
-using System.Web;
-using Sustainsys.Saml2.WebSso;
-using Sustainsys.Saml2.Tests.WebSSO;
 using System.Security.Cryptography;
-using System.Text;
-using Sustainsys.Saml2.Exceptions;
 using System.Security.Cryptography.Xml;
+using System.Text;
+using System.Web;
+using FluentAssertions;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using NSubstitute;
+using Sustainsys.Saml2.Exceptions;
 using Sustainsys.Saml2.TestHelpers;
+using Sustainsys.Saml2.WebSso;
 
-namespace Sustainsys.Saml2.Tests.WebSso
+namespace Sustainsys.Saml2.Tests.WebSSO
 {
     [TestClass]
     public class Saml2RedirectBindingTests

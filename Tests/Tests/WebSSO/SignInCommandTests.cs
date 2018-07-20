@@ -1,15 +1,15 @@
 ﻿using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using FluentAssertions;
+using System.Collections.Generic;
+using System.IdentityModel.Metadata;
 using System.Net;
 using System.Web;
+using FluentAssertions;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Sustainsys.Saml2.Configuration;
-using System.IdentityModel.Metadata;
-using Sustainsys.Saml2.WebSso;
-using System.Collections.Generic;
 using Sustainsys.Saml2.TestHelpers;
+using Sustainsys.Saml2.WebSso;
 
-namespace Sustainsys.Saml2.Tests.WebSso
+namespace Sustainsys.Saml2.Tests.WebSSO
 {
     [TestClass]
     public class SignInCommandTests

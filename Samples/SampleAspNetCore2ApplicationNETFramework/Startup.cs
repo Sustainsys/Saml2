@@ -9,6 +9,7 @@ using SampleAspNetCore2ApplicationNETFramework.Services;
 using System.IdentityModel.Metadata;
 using Sustainsys.Saml2;
 using System.Security.Cryptography.X509Certificates;
+using Sustainsys.Saml2.AspNetCore2;
 
 namespace SampleAspNetCore2ApplicationNETFramework
 {

@@ -242,7 +242,7 @@ namespace Sustainsys.Saml2.Tests.Configuration
         [TestMethod]
         public void SPOptions_ArtifactResolutionTlsCertificate_LoadsFromConfig()
         {
-            var config = KentorAuthServicesSection.Current;
+            var config = SustainsysSaml2Section.Current;
             var subject = new SPOptions(config);
 
             subject.ArtifactResolutionTlsCertificate.Should().NotBe(null);
