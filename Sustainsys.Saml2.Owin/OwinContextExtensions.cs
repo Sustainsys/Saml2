@@ -12,11 +12,14 @@ using System.Threading.Tasks;
 
 namespace Sustainsys.Saml2.Owin
 {
+    using Sustainsys.Saml2.Configuration;
+
     static class OwinContextExtensions
     {
         public async static Task<HttpRequestData> ToHttpRequestData(
             this IOwinContext context,
-            Func<byte[], byte[]> cookieDecryptor)
+            Func<byte[], byte[]> cookieDecryptor,
+            Func<string, string> relayStateExtractor)
         {
             if(context == null)
             {
@@ -42,7 +45,8 @@ namespace Sustainsys.Saml2.Owin
                 formData?.Select(f => new KeyValuePair<string, IEnumerable<string>>(f.Key, f.Value)),
                 context.Request.Cookies,
                 cookieDecryptor,
-                context.Request.User as ClaimsPrincipal);
+                context.Request.User as ClaimsPrincipal,
+                relayStateExtractor);
         }
     }
 }

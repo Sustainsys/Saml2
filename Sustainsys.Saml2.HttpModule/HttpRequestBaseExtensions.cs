@@ -59,7 +59,8 @@ namespace Sustainsys.Saml2.HttpModule
                     new KeyValuePair<string, IEnumerable<string>>(de, ((string)requestBase.Form[i]).Split(','))),
                 cookies,
                 v => MachineKey.Unprotect(v, ProtectionPurpose),
-                ClaimsPrincipal.Current);
+                ClaimsPrincipal.Current,
+                null);
         }
 
         private static IEnumerable<KeyValuePair<string, string>> GetCookies(HttpRequestBase requestBase)

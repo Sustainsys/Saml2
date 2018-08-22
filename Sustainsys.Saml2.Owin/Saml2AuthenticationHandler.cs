@@ -26,7 +26,7 @@ namespace Sustainsys.Saml2.Owin
                 return null;
             }
 
-            var httpRequestData = await Context.ToHttpRequestData(Options.DataProtector.Unprotect);
+            var httpRequestData = await Context.ToHttpRequestData(Options.DataProtector.Unprotect, Options.Notifications?.GetRelayState);
             try
             {
                 var result = CommandFactory.GetCommand(CommandFactory.AcsCommandName)
@@ -130,7 +130,7 @@ namespace Sustainsys.Saml2.Owin
                     var result = SignInCommand.Run(
                         idp,
                         redirectUri,
-                        await Context.ToHttpRequestData(Options.DataProtector.Unprotect),
+                        await Context.ToHttpRequestData(Options.DataProtector.Unprotect, Options.Notifications?.GetRelayState),
                         Options,
                         challenge.Properties.Dictionary);
 
@@ -153,7 +153,7 @@ namespace Sustainsys.Saml2.Owin
 
             if (revoke != null)
             {
-                var request = await Context.ToHttpRequestData(Options.DataProtector.Unprotect);
+                var request = await Context.ToHttpRequestData(Options.DataProtector.Unprotect, Options.Notifications?.GetRelayState);
                 var urls = new Saml2Urls(request, Options);
 
                 string redirectUrl = revoke.Properties.RedirectUri;
@@ -205,7 +205,7 @@ namespace Sustainsys.Saml2.Owin
                 try
                 {
                     var result = CommandFactory.GetCommand(remainingPath.Value)
-                        .Run(await Context.ToHttpRequestData(Options.DataProtector.Unprotect), Options);
+                        .Run(await Context.ToHttpRequestData(Options.DataProtector.Unprotect, Options.Notifications?.GetRelayState), Options);
 
                     if (!result.HandledResult)
                     {

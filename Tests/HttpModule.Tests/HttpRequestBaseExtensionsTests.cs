@@ -57,7 +57,8 @@ namespace Sustainsys.Saml2.HttpModule.Tests
                 },
                 Enumerable.Empty<KeyValuePair<string, string>>(),
                 null, 
-                ClaimsPrincipal.Current);
+                ClaimsPrincipal.Current,
+                null);
 
             actual.ShouldBeEquivalentTo(expected, opt => opt.Excluding(s => s.StoredRequestState));
             actual.StoredRequestState.ReturnUrl.AbsoluteUri.Should().Be("urn:someUri");
@@ -91,7 +92,8 @@ namespace Sustainsys.Saml2.HttpModule.Tests
                 },
                 Enumerable.Empty<KeyValuePair<string, string>>(),
                 null,
-                ClaimsPrincipal.Current);
+                ClaimsPrincipal.Current,
+                null);
 
             subject.ShouldBeEquivalentTo(expected);
         }

@@ -7,6 +7,8 @@ using System.Threading.Tasks;
 
 namespace Sustainsys.Saml2.Owin.Tests
 {
+    using Sustainsys.Saml2.Configuration;
+
     [TestClass]
     public class Saml2UrlsTests
     {
@@ -15,7 +17,7 @@ namespace Sustainsys.Saml2.Owin.Tests
         {
             var ctx = OwinTestHelpers.CreateOwinContext();
             var options = StubFactory.CreateOptionsPublicOrigin(new Uri("https://my.public.origin:8443/"));
-            var subject = await ctx.ToHttpRequestData(null);
+            var subject = await ctx.ToHttpRequestData(null, Options.FromConfiguration.Notifications?.GetRelayState);
             var urls = new Saml2Urls(subject, options);
             urls.AssertionConsumerServiceUrl.ShouldBeEquivalentTo("https://my.public.origin:8443/Saml2/Acs");
             urls.SignInUrl.ShouldBeEquivalentTo("https://my.public.origin:8443/Saml2/SignIn");
