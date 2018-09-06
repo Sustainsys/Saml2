@@ -9,6 +9,8 @@ using Sustainsys.Saml2.WebSso;
 
 namespace Sustainsys.Saml2.Owin.Tests
 {
+    using Sustainsys.Saml2.Configuration;
+
     [TestClass]
     public class OwinContextExtensionsTests
     {
@@ -17,7 +19,7 @@ namespace Sustainsys.Saml2.Owin.Tests
         {
             IOwinContext ctx = null;
 
-            var actual = await ctx.ToHttpRequestData(null);
+            var actual = await ctx.ToHttpRequestData(null, Options.FromConfiguration.Notifications?.GetRelayState);
 
             actual.Should().BeNull();
         }
@@ -33,7 +35,7 @@ namespace Sustainsys.Saml2.Owin.Tests
             ctx.Request.Path = new PathString("/somePath");
             ctx.Request.QueryString = new QueryString("param=value");
 
-            var actual = await ctx.ToHttpRequestData(StubDataProtector.Unprotect);
+            var actual = await ctx.ToHttpRequestData(StubDataProtector.Unprotect, Options.FromConfiguration.Notifications?.GetRelayState);
 
             actual.Url.Should().Be(ctx.Request.Uri);
             actual.Form.Count.Should().Be(2);
@@ -50,7 +52,7 @@ namespace Sustainsys.Saml2.Owin.Tests
 
             ctx.Request.PathBase = new PathString("/ApplicationPath");
 
-            var actual = await ctx.ToHttpRequestData(null);
+            var actual = await ctx.ToHttpRequestData(null, Options.FromConfiguration.Notifications?.GetRelayState);
 
             actual.ApplicationUrl.Should().Be(new Uri("http://sp.example.com/ApplicationPath"));
         }
@@ -69,7 +71,7 @@ namespace Sustainsys.Saml2.Owin.Tests
 
             ctx.Request.Headers["Cookie"] = $"{StoredRequestState.CookieNameBase}SomeState={cookieData}";
 
-            var actual = await ctx.ToHttpRequestData(StubDataProtector.Unprotect);
+            var actual = await ctx.ToHttpRequestData(StubDataProtector.Unprotect, Options.FromConfiguration.Notifications?.GetRelayState);
 
             actual.StoredRequestState.ShouldBeEquivalentTo(storedRequestState);
         }
@@ -80,7 +82,7 @@ namespace Sustainsys.Saml2.Owin.Tests
             var ctx = OwinTestHelpers.CreateOwinContext();
             ctx.Request.QueryString = new QueryString("RelayState", "SomeState");
 
-            ctx.Invoking(async c => await c.ToHttpRequestData(null))
+            ctx.Invoking(async c => await c.ToHttpRequestData(null, Options.FromConfiguration.Notifications?.GetRelayState))
                 .ShouldNotThrow();
         }
     }

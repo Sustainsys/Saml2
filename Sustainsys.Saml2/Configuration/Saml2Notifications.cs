@@ -31,6 +31,7 @@ namespace Sustainsys.Saml2.Configuration
             MetadataCreated = (md, urls) => { };
             MetadataCommandResultCreated = cr => { };
             ValidateAbsoluteReturnUrl = url => false;
+            GetRelayState = null;
         }
 
         /// <summary>
@@ -148,5 +149,10 @@ namespace Sustainsys.Saml2.Configuration
         /// When false is returned, the SignIn and Logout commands will throw an <see cref="InvalidOperationException"/>.
         /// </summary>
         public Func<string, bool> ValidateAbsoluteReturnUrl { get; set; }
+
+        /// <summary>
+        /// A custom function used to extra the relay state from the request.
+        /// </summary>
+        public Func<string, string> GetRelayState { get; set; }
     }
 }

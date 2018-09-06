@@ -12,6 +12,8 @@ using System.Security.Claims;
 
 namespace Sustainsys.Saml2.WebSso
 {
+    using Sustainsys.Saml2.Configuration;
+
     /// <summary>
     /// The data of a http request that Saml2 needs to handle. A separate DTO is used
     /// to make the core library totally independent of the hosting environment.
@@ -26,8 +28,7 @@ namespace Sustainsys.Saml2.WebSso
         /// <param name="formData">Form data, if present (only for POST requests)</param>
         /// <param name="applicationPath">Path to the application root</param>
         /// <param name="cookies">Cookies of request</param>
-        /// <param name="cookieDecryptor">Function that decrypts cookie
-        /// contents to clear text.</param>
+        /// <param name="cookieDecryptor">Function that decrypts cookie contents to clear text.</param>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Decryptor")]
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
         public HttpRequestData(
@@ -36,7 +37,7 @@ namespace Sustainsys.Saml2.WebSso
             string applicationPath,
             IEnumerable<KeyValuePair<string, IEnumerable<string>>> formData,
             IEnumerable<KeyValuePair<string, string>> cookies,
-            Func<byte[], byte[]> cookieDecryptor) : this(httpMethod, url, applicationPath, formData, cookies, cookieDecryptor, user: null)
+            Func<byte[], byte[]> cookieDecryptor) : this(httpMethod, url, applicationPath, formData, cookies, cookieDecryptor, user: null, relayStateExtractor: null)
         {
             // empty
         }
@@ -49,9 +50,9 @@ namespace Sustainsys.Saml2.WebSso
         /// <param name="formData">Form data, if present (only for POST requests)</param>
         /// <param name="applicationPath">Path to the application root</param>
         /// <param name="cookies">Cookies of request</param>
-        /// <param name="cookieDecryptor">Function that decrypts cookie
-        /// contents to clear text.</param>
+        /// <param name="cookieDecryptor">Function that decrypts cookie  contents to clear text.</param>
         /// <param name="user">Claims Principal associated with the request</param>
+        /// <param name="relayStateExtractor">Optional function to decode the relay state from the extracted value</param>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Decryptor")]
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
         public HttpRequestData(
@@ -61,15 +62,16 @@ namespace Sustainsys.Saml2.WebSso
             IEnumerable<KeyValuePair<string, IEnumerable<string>>> formData,
             IEnumerable<KeyValuePair<string, string>> cookies,
             Func<byte[], byte[]> cookieDecryptor,
-            ClaimsPrincipal user)
+            ClaimsPrincipal user,
+            Func<string, string> relayStateExtractor)
         {
-            Init(httpMethod, url, applicationPath, formData, cookies, cookieDecryptor, user);
+            Init(httpMethod, url, applicationPath, formData, cookies, cookieDecryptor, user, relayStateExtractor);
         }
 
         // Used by tests.
         internal HttpRequestData(string httpMethod, Uri url)
         {
-            Init(httpMethod, url, "/", null, Enumerable.Empty<KeyValuePair<string, string>>(), null, null);
+            Init(httpMethod, url, "/", null, Enumerable.Empty<KeyValuePair<string, string>>(), null, null, null);
         }
 
         // Used by tests.
@@ -91,7 +93,8 @@ namespace Sustainsys.Saml2.WebSso
             IEnumerable<KeyValuePair<string, IEnumerable<string>>> formData,
             IEnumerable<KeyValuePair<string, string>> cookies,
             Func<byte[], byte[]> cookieDecryptor,
-            ClaimsPrincipal user)
+            ClaimsPrincipal user,
+            Func<string, string> relayStateExtractor)
         {
             InitBasicFields(httpMethod, url, applicationPath, formData);
             User = user;
@@ -101,11 +104,11 @@ namespace Sustainsys.Saml2.WebSso
             {
                 Form.TryGetValue("RelayState", out relayState);
             }
-            RelayState = relayState;
+            RelayState = relayStateExtractor?.Invoke(relayState) ?? relayState;
 
-            if (relayState != null)
+            if (RelayState != null)
             {
-                var cookieName = StoredRequestState.CookieNameBase + relayState;
+                var cookieName = StoredRequestState.CookieNameBase + RelayState;
                 if (cookies.Any(c => c.Key == cookieName))
                 {
                     var cookieData = cookies.SingleOrDefault(c => c.Key == cookieName).Value;

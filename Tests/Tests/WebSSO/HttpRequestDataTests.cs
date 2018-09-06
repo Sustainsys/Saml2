@@ -58,6 +58,51 @@ namespace Sustainsys.Saml2.Tests.WebSSO
 
             a.ShouldNotThrow();
         }
+
+        [TestMethod]
+        public void HttpRequestData_Ctor_RelayStateExtractorOverride()
+        {
+            var state = Guid.NewGuid().ToString();
+            var url = new Uri("http://example.com:42/ApplicationPath/Path?RelayState=" + Uri.EscapeDataString("https://localhost?RelayState=" + state));
+            string appPath = "/ApplicationPath";
+
+            var request = new HttpRequestData(
+                "GET",
+                url,
+                appPath,
+                new KeyValuePair<string, IEnumerable<string>>[]
+                    {
+                        new KeyValuePair<string, IEnumerable<string>>("Saml." + state, new string[] { "Value" })
+                    },
+                Enumerable.Empty<KeyValuePair<string, string>>(),
+                null,
+                null,
+                relayStateExtractor: relayState => relayState.Replace("https://localhost?RelayState=", string.Empty));
+
+            Assert.AreEqual(request.RelayState, state);
+        }
+
+        [TestMethod]
+        public void HttpRequestData_Ctor_RelayStateExtractorNoOverride()
+        {
+            var state = Guid.NewGuid().ToString();
+            var url = new Uri("http://example.com:42/ApplicationPath/Path?RelayState=" + state);
+            string appPath = "/ApplicationPath";
+
+            var request = new HttpRequestData(
+                "GET",
+                url,
+                appPath,
+                new KeyValuePair<string, IEnumerable<string>>[]
+                    {
+                        new KeyValuePair<string, IEnumerable<string>>("Saml." + state, new string[] { "Value" })
+                    },
+                Enumerable.Empty<KeyValuePair<string, string>>(),
+                null,
+                null,
+                null);
+
+            Assert.AreEqual(request.RelayState, state);
+        }
     }
 }
-
