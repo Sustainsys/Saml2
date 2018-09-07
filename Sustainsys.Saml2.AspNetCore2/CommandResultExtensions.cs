@@ -21,7 +21,7 @@ namespace Sustainsys.Saml2.AspNetCore2
 
             if(commandResult.Location != null)
             {
-                httpContext.Response.Headers["Location"] = commandResult.Location.ToString();
+                httpContext.Response.Headers["Location"] = commandResult.Location.OriginalString;
             }
 
             if(!string.IsNullOrEmpty(commandResult.SetCookieName))

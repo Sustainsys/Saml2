@@ -35,7 +35,7 @@ namespace Sustainsys.Saml2.AspNetCore2.Tests
                     { "Key2", "value2" }
                 });
 
-            var redirectLocation = "https://destination.com";
+            var redirectLocation = "https://destination.com/?q=http%3A%2F%2Fexample.com";
             var commandResult = new CommandResult()
             {
                 HttpStatusCode = System.Net.HttpStatusCode.Redirect,
@@ -74,7 +74,7 @@ namespace Sustainsys.Saml2.AspNetCore2.Tests
 
             context.Response.StatusCode.Should().Be(302);
             context.Response.Headers["Location"].SingleOrDefault()
-                .Should().Be("https://destination.com/", "location header should be set");
+                .Should().Be(redirectLocation, "location header should be set");
             context.Response.Cookies.Received().Append(
                 "Saml2.123", expectedCookieData, Arg.Is<CookieOptions>(co => co.HttpOnly && co.SameSite == SameSiteMode.None));
 
