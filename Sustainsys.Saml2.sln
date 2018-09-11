@@ -15,15 +15,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		VersionInfo.cs = VersionInfo.cs
 	EndProjectSection
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "doc", "doc", "{DB9690FA-2519-4D70-A831-2D6705842721}"
-	ProjectSection(SolutionItems) = preProject
-		doc\ClaimsAuthenticationManager.md = doc\ClaimsAuthenticationManager.md
-		doc\Configuration.md = doc\Configuration.md
-		doc\IdentityServer3Okta.md = doc\IdentityServer3Okta.md
-		doc\OktaAppOptions.png = doc\OktaAppOptions.png
-		doc\OwinMiddleware.md = doc\OwinMiddleware.md
-	EndProjectSection
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "nuget", "nuget", "{8EE1C45E-A81F-4D3F-A645-4C20528E327F}"
 	ProjectSection(SolutionItems) = preProject
 		nuget\kentor.png = nuget\kentor.png
@@ -72,6 +63,42 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sustainsys.Saml2.AspNetCore2", "Sustainsys.Saml2.AspNetCore2\Sustainsys.Saml2.AspNetCore2.csproj", "{0A1A7E8C-838C-4114-894B-564592417AFA}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AspNetCore2.Tests", "Tests\AspNetCore2.Tests\AspNetCore2.Tests.csproj", "{20359A9A-6435-4264-8B36-22CD76731432}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{46971976-411C-4DD6-A45E-194E309BC94F}"
+	ProjectSection(SolutionItems) = preProject
+		docs\claims-authentication-manager.rst = docs\claims-authentication-manager.rst
+		docs\ClaimsAuthenticationManager.md = docs\ClaimsAuthenticationManager.md
+		docs\conf.py = docs\conf.py
+		docs\Configuration.md = docs\Configuration.md
+		docs\configuration.rst = docs\configuration.rst
+		docs\contributing.rst = docs\contributing.rst
+		docs\getting-started.rst = docs\getting-started.rst
+		docs\identity-server-3-okta.rst = docs\identity-server-3-okta.rst
+		docs\IdentityServer3Okta.md = docs\IdentityServer3Okta.md
+		docs\index.rst = docs\index.rst
+		docs\make.bat = docs\make.bat
+		docs\Makefile = docs\Makefile
+		docs\OktaAppOptions.png = docs\OktaAppOptions.png
+		docs\owin-middleware.rst = docs\owin-middleware.rst
+		docs\OwinMiddleware.md = docs\OwinMiddleware.md
+		docs\troubleshooting.rst = docs\troubleshooting.rst
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "config-elements", "config-elements", "{04FAC06E-5E04-4D87-96BE-254FEBAEA0DE}"
+	ProjectSection(SolutionItems) = preProject
+		docs\config-elements\compatibility.rst = docs\config-elements\compatibility.rst
+		docs\config-elements\contact-person.rst = docs\config-elements\contact-person.rst
+		docs\config-elements\federations.rst = docs\config-elements\federations.rst
+		docs\config-elements\identity-providers.rst = docs\config-elements\identity-providers.rst
+		docs\config-elements\metadata.rst = docs\config-elements\metadata.rst
+		docs\config-elements\name-id-policy.rst = docs\config-elements\name-id-policy.rst
+		docs\config-elements\organization.rst = docs\config-elements\organization.rst
+		docs\config-elements\requested-attributes.rst = docs\config-elements\requested-attributes.rst
+		docs\config-elements\requested-authn-context.rst = docs\config-elements\requested-authn-context.rst
+		docs\config-elements\service-certificates.rst = docs\config-elements\service-certificates.rst
+		docs\config-elements\signing-certificate.rst = docs\config-elements\signing-certificate.rst
+		docs\config-elements\sustainsys-saml2.rst = docs\config-elements\sustainsys-saml2.rst
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -163,6 +190,7 @@ Global
 		{4D3EADFB-93E9-4F66-BD61-FBAC9E30A294} = {F3C8CC66-4CE9-4683-BC31-B89AF47A5897}
 		{8EB3820A-4DB4-4875-A155-6C3D7458983E} = {09639770-8C2B-4D30-BBFC-4F6DD1A92C89}
 		{20359A9A-6435-4264-8B36-22CD76731432} = {F3C8CC66-4CE9-4683-BC31-B89AF47A5897}
+		{04FAC06E-5E04-4D87-96BE-254FEBAEA0DE} = {46971976-411C-4DD6-A45E-194E309BC94F}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {A8812E38-A212-46DD-B51F-AB653F39E4ED}
