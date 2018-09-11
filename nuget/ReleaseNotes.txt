@@ -1,3 +1,6 @@
+Version 1.0.0
+* Bug fix: Asp.Net Core2 handler, incorrect signed redirect messages.
+
 Version 0.24.0
 * Bug fix: Asp.Net Core2 handler with null AuthenticationProperties now works.
 * Bug fix: Error handling in Owin middleware with null/missing return url.
@@ -6,13 +9,5 @@ Version 0.24.0
 Version 0.23.0
 * Project renamed to Sustainsys.Saml2
 * No other changes since 0.22.0
-
-Version 0.22.0
-
-* Asp.NET Core 2 Handler
-* StubIdp renamed/updated to Sustainsys layout.
-* Improved error messages
-* Validate federation metadata signature
-* Preserve state across discovery service call
 
 See GitHub milestone issue list for details.
