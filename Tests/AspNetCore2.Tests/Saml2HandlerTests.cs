@@ -301,7 +301,7 @@ namespace Sustainsys.Saml2.AspNetCore2.Tests
 
             Func<Task> f = async () => await context.Subject.ChallengeAsync(null);
 
-            f.ShouldNotThrow();
+            f.Should().NotThrow();
         }
 
         [TestMethod]
