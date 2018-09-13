@@ -7,41 +7,42 @@ using System.Threading.Tasks;
 
 namespace Sustainsys.Saml2.Metadata
 {
-    /// <summary>
-    /// Metadata for an attribute consuming service.
-    /// </summary>
-    public class AttributeConsumingService
-    {
-        /// <summary>
-        /// Ctor
-        /// </summary>
-        /// <param name="name">Name of the attribute consuming service.</param>
-        public AttributeConsumingService(string name)
-        {
-            ServiceName = name;
-        }
+	/// <summary>
+	/// Metadata for an attribute consuming service.
+	/// </summary>
+	public class AttributeConsumingService : IIndexedEntryWithDefault
+	{
+		/// <summary>
+		/// Index of the endpoint
+		/// </summary>
+		public int Index { get; set; }
 
-        /// <summary>
-        /// The name of the attribute consuming service.
-        /// </summary>
-        public string ServiceName { get; set; }
+		/// <summary>
+		/// Is this the default endpoint?
+		/// </summary>
+		public bool? IsDefault { get; set; }
 
-        readonly ICollection<RequestedAttribute> requestedAttributes = new List<RequestedAttribute>();
+		/// <summary>
+		/// Is the service required?
+		/// </summary>
+		public bool? IsRequired { get; set; }
 
-        /// <summary>
-        /// Requested attributes.
-        /// </summary>
-        public ICollection<RequestedAttribute> RequestedAttributes
-        {
-            get
-            {
-                return requestedAttributes;
-            }
-        }
+		/// <summary>
+		/// The name of the attribute consuming service.
+		/// </summary>
+		public ICollection<LocalizedName> ServiceNames { get; private set; }
+			= new Collection<LocalizedName>();
 
-        /// <summary>
-        /// Is this the default AttributeConsumingService of the SP?
-        /// </summary>
-        public bool IsDefault { get; set; }
-    }
+		/// <summary>
+		/// Description of the attribute consuming service
+		/// </summary>
+		public ICollection<LocalizedName> ServiceDescriptions { get; private set; }
+			= new Collection<LocalizedName>();
+
+		/// <summary>
+		/// Requested attributes.
+		/// </summary>
+		public ICollection<RequestedAttribute> RequestedAttributes { get; private set; }
+			= new Collection<RequestedAttribute>();
+	}
 }

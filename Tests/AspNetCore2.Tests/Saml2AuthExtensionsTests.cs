@@ -96,7 +96,7 @@ namespace Sustainsys.Saml2.AspNetCore2.Tests
             AuthenticationBuilder builder = null;
 
             builder.Invoking(b => b.AddSaml2(opt => { }))
-                .ShouldThrow<ArgumentNullException>();
+                .Should().Throw<ArgumentNullException>();
         }
     }
 }

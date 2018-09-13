@@ -1,8 +1,8 @@
 ﻿using System;
-using System.IdentityModel.Tokens;
+using Microsoft.IdentityModel.Tokens.Saml2;
 using System.Security.Claims;
 using System.Linq;
-using System.IdentityModel.Metadata;
+using Sustainsys.Saml2.Metadata;
 
 namespace Sustainsys.Saml2
 {
@@ -90,18 +90,28 @@ namespace Sustainsys.Saml2
 
             var notOnOrAfter = DateTime.UtcNow.AddMinutes(2);
 
+			Saml2SubjectConfirmationData confirmationData =
+				new Saml2SubjectConfirmationData
+				{
+					NotOnOrAfter = notOnOrAfter,
+					InResponseTo = inResponseTo
+				};
+
+			// Work around a bug in Microsoft.IdentityModel.Tokens.Saml2.Saml2SubjectConfirmationData
+			// where the setter for Recipient throws an ArgumentNullException.  Recipient is optional
+			// as per [Saml2Core, 2.4.1.2]
+			if (destinationUri != null)
+			{
+				confirmationData.Recipient = destinationUri;
+			}
+
             assertion.Subject = new Saml2Subject(identity.ToSaml2NameIdentifier())
             {
                 SubjectConfirmations =
                 {
                     new Saml2SubjectConfirmation(
                         new Uri("urn:oasis:names:tc:SAML:2.0:cm:bearer"),
-                        new Saml2SubjectConfirmationData
-                        {
-                            NotOnOrAfter = notOnOrAfter,
-                            InResponseTo = inResponseTo,
-                            Recipient = destinationUri
-                        })
+						confirmationData)
                 }
             };
 
@@ -113,7 +123,7 @@ namespace Sustainsys.Saml2
             if (audience != null)
             {
                 assertion.Conditions.AudienceRestrictions.Add(
-                    new Saml2AudienceRestriction(audience));
+                    new Saml2AudienceRestriction(audience.ToString()));
             }
 
             return assertion;

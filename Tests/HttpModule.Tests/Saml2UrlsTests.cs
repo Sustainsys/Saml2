@@ -25,8 +25,10 @@ namespace Sustainsys.Saml2.HttpModule.Tests
             var options = StubFactory.CreateOptionsPublicOrigin(new Uri("https://my.public.origin:8443/OtherPath"));
             var subject = request.ToHttpRequestData();
             var urls = new Saml2Urls(subject, options);
-            urls.AssertionConsumerServiceUrl.ShouldBeEquivalentTo("https://my.public.origin:8443/OtherPath/Saml2/Acs");
-            urls.SignInUrl.ShouldBeEquivalentTo("https://my.public.origin:8443/OtherPath/Saml2/SignIn");
+            urls.AssertionConsumerServiceUrl.Should().BeEquivalentTo(
+				new Uri("https://my.public.origin:8443/OtherPath/Saml2/Acs"));
+            urls.SignInUrl.Should().BeEquivalentTo(
+				new Uri("https://my.public.origin:8443/OtherPath/Saml2/SignIn"));
         }
     }
 }

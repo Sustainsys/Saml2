@@ -1,34 +1,31 @@
-﻿using Sustainsys.Saml2.Configuration;
+﻿using Microsoft.IdentityModel.Tokens;
+using Microsoft.IdentityModel.Tokens.Saml2;
+using Sustainsys.Saml2.Configuration;
 using Sustainsys.Saml2.Internal;
+using Sustainsys.Saml2.Tokens;
 using System;
-using System.IdentityModel.Metadata;
-using System.IdentityModel.Selectors;
-using System.IdentityModel.Services;
-using System.IdentityModel.Services.Configuration;
-using System.IdentityModel.Tokens;
+using System.Linq;
 using System.Security.Claims;
 
 namespace Sustainsys.Saml2.Saml2P
 {
-    using System.Linq;
-
-    /// <summary>
-    /// Somewhat ugly subclassing to be able to access some methods that are protected
-    /// on Saml2SecurityTokenHandler. The public interface of Saml2SecurityTokenHandler
-    /// expects the actual assertion to be signed, which is not always the case when
-    /// using Saml2-P. The assertion can be embedded in a signed response. Or the signing
-    /// could be handled at transport level.
-    /// </summary>
-    public class Saml2PSecurityTokenHandler : Saml2SecurityTokenHandler
+	/// <summary>
+	/// Somewhat ugly subclassing to be able to access some methods that are protected
+	/// on Saml2SecurityTokenHandler. The public interface of Saml2SecurityTokenHandler
+	/// expects the actual assertion to be signed, which is not always the case when
+	/// using Saml2-P. The assertion can be embedded in a signed response. Or the signing
+	/// could be handled at transport level.
+	/// </summary>
+	public class Saml2PSecurityTokenHandler : Saml2SecurityTokenHandler
     {
-        private SPOptions spOptions;
+		public SecurityTokenHandlerConfiguration Configuration { get; private set; }
 
-        /// <summary>
-        /// Ctor
-        /// </summary>
-        /// <param name="spOptions">Options for the service provider that
-        /// this token handler should work with.</param>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "sp")]
+		/// <summary>
+		/// Ctor
+		/// </summary>
+		/// <param name="spOptions">Options for the service provider that
+		/// this token handler should work with.</param>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "sp")]
         public Saml2PSecurityTokenHandler(SPOptions spOptions)
         {
             if (spOptions == null)
@@ -36,24 +33,42 @@ namespace Sustainsys.Saml2.Saml2P
                 throw new ArgumentNullException(nameof(spOptions));
             }
 
-            Configuration = new SecurityTokenHandlerConfiguration
+	        Configuration = new SecurityTokenHandlerConfiguration
             {
                 IssuerNameRegistry = new ReturnRequestedIssuerNameRegistry(),
                 AudienceRestriction = GetAudienceRestriction(spOptions),
                 SaveBootstrapContext = spOptions.SystemIdentityModelIdentityConfiguration.SaveBootstrapContext
             };
 
-            this.spOptions = spOptions;
+			Serializer = new Saml2PSerializer()
+			{
+				IgnoreAuthenticationContext = spOptions.Compatibility.IgnoreAuthenticationContextInResponse
+			};
         }
 
-        /// <summary>
-        /// Create claims from the token.
-        /// </summary>
-        /// <param name="samlToken">The token to translate to claims.</param>
-        /// <returns>An identity with the created claims.</returns>
-        public new ClaimsIdentity CreateClaims(Saml2SecurityToken samlToken)
+		public Saml2PSecurityTokenHandler()
+		{
+			Serializer = new Saml2PSerializer();
+		}
+
+		protected override Saml2Conditions CreateConditions(SecurityTokenDescriptor tokenDescriptor)
+		{
+			var conditions = base.CreateConditions(tokenDescriptor);
+			conditions.AudienceRestrictions.Clear();
+			conditions.AudienceRestrictions.Add(
+				new Saml2AudienceRestriction(Configuration.AudienceRestriction
+					.AllowedAudienceUris.Select(x => x.ToString())));
+			return conditions;
+		}
+
+		/// <summary>
+		/// Create claims from the token.
+		/// </summary>
+		/// <param name="samlToken">The token to translate to claims.</param>
+		/// <returns>An identity with the created claims.</returns>
+		protected override ClaimsIdentity CreateClaimsIdentity(Saml2SecurityToken samlToken, string issuer, TokenValidationParameters validationParameters)
         {
-            var identity = base.CreateClaims(samlToken);
+            var identity = base.CreateClaimsIdentity(samlToken, issuer, validationParameters);
 
             if (Configuration.SaveBootstrapContext)
             {
@@ -63,50 +78,29 @@ namespace Sustainsys.Saml2.Saml2P
             return identity;
         }
 
-        /// <summary>
-        /// Detect if a token is replayed (i.e. reused). The token is added to the
-        /// list of used tokens, so this method should only be called once for each token.
-        /// </summary>
-        /// <param name="token">The token to check.</param>
-        public new void DetectReplayedToken(SecurityToken token)
-        {
-            base.DetectReplayedToken(token);
-        }
+		// Overridden to fix the fact that the base class version uses NotBefore as the token replay expiry time
+		// Due to the fact that we can't override the ValidateToken function (it's overridden in the base class!)
+		// we have to parse the token again.
+		// This can be removed when:
+		// https://github.com/AzureAD/azure-activedirectory-identitymodel-extensions-for-dotnet/issues/898
+		// is fixed.
+		protected override void ValidateTokenReplay(DateTime? expirationTime, string securityToken, TokenValidationParameters validationParameters)
+		{
+			var saml2Token = ReadSaml2Token(securityToken);
+			base.ValidateTokenReplay(saml2Token.Assertion.Conditions.NotOnOrAfter,
+				securityToken, validationParameters);
+		}
 
-        /// <summary>
-        /// Validate the conditions of the token.
-        /// </summary>
-        /// <param name="conditions">Conditions to check</param>
-        /// <param name="enforceAudienceRestriction">Should the audience restriction be enforced?</param>
-        public new void ValidateConditions(Saml2Conditions conditions, bool enforceAudienceRestriction)
-        {
-            base.ValidateConditions(conditions, enforceAudienceRestriction);
-        }
-
-        /// <summary>
-        /// Read the authentication context section from the underlying xml
-        /// </summary>
-        /// <param name="reader">Conditions to check</param>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1062:Validate arguments of public methods", MessageId = "0")]
-        protected override Saml2AuthenticationContext ReadAuthenticationContext(System.Xml.XmlReader reader)
-        {
-            if (spOptions.Compatibility.IgnoreAuthenticationContextInResponse)
-            {
-                reader.Skip();
-                return new Saml2AuthenticationContext();
-            }
-            return base.ReadAuthenticationContext(reader);
-        }
-
-        /// <summary>
-        /// Process authentication statement from SAML assertion. WIF chokes if the authentication statement 
-        /// contains a DeclarationReference, so we clear this out before calling the base method
-        /// http://referencesource.microsoft.com/#System.IdentityModel/System/IdentityModel/Tokens/Saml2SecurityTokenHandler.cs,1970
-        /// </summary>
-        /// <param name="statement">Authentication statement</param>
-        /// <param name="subject">Claim subject</param>
-        /// <param name="issuer">Assertion Issuer</param>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1062:Validate arguments of public methods", MessageId = "1")]
+		// TODO: needed with Microsoft.identitymodel?
+		/// <summary>
+		/// Process authentication statement from SAML assertion. WIF chokes if the authentication statement 
+		/// contains a DeclarationReference, so we clear this out before calling the base method
+		/// http://referencesource.microsoft.com/#System.IdentityModel/System/IdentityModel/Tokens/Saml2SecurityTokenHandler.cs,1970
+		/// </summary>
+		/// <param name="statement">Authentication statement</param>
+		/// <param name="subject">Claim subject</param>
+		/// <param name="issuer">Assertion Issuer</param>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1062:Validate arguments of public methods", MessageId = "1")]
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1062:Validate arguments of public methods", MessageId = "0")]
         protected override void ProcessAuthenticationStatement(Saml2AuthenticationStatement statement, ClaimsIdentity subject, string issuer)
         {
@@ -140,6 +134,12 @@ namespace Sustainsys.Saml2.Saml2P
             }
         }
 
+		protected override Saml2SecurityToken ValidateSignature(string token, TokenValidationParameters validationParameters)
+		{
+			// Just skip signature validation -- we do this elsewhere
+			return ReadSaml2Token(token);
+		}
+
         /// <summary>
         /// Check if an audience restriction from configuration should be
         /// applied or if we should revert to the default behaviour of
@@ -152,7 +152,7 @@ namespace Sustainsys.Saml2.Saml2P
             var audienceRestriction = spOptions.SystemIdentityModelIdentityConfiguration.AudienceRestriction;
 
             if (audienceRestriction.AudienceMode != AudienceUriMode.Never
-                && ! audienceRestriction.AllowedAudienceUris.Any())
+                && !audienceRestriction.AllowedAudienceUris.Any())
             {
                 // Create a new instance instead of modifying the one from the
                 // configuration.

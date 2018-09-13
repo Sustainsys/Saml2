@@ -1,10 +1,11 @@
 ﻿using System.Security.Cryptography.X509Certificates;
+using System.IO;
 using System.Xml;
 using System.Security.Cryptography.Xml;
 using System.Security.Cryptography;
-using System.IdentityModel.Metadata;
-using System.IdentityModel.Tokens;
 using Sustainsys.Saml2.Internal;
+using Sustainsys.Saml2.Metadata;
+using Sustainsys.Saml2.Tokens;
 using System.Reflection;
 using System.Collections.Generic;
 using System;
@@ -28,10 +29,17 @@ namespace Sustainsys.Saml2.TestHelpers
         public static readonly RsaKeyIdentifierClause TestKeySignOnly =
             new RsaKeyIdentifierClause((RSA)TestCertSignOnly.PublicKey.Key);
 
-        public static readonly KeyDescriptor TestKeyDescriptor = new KeyDescriptor(
-            new SecurityKeyIdentifier(
-                (new X509SecurityToken(TestCertSignOnly))
-                .CreateKeyIdentifierClause<X509RawDataKeyIdentifierClause>()));
+		static KeyDescriptor CreateKeyDescriptor()
+		{
+			var keyDescriptor = new KeyDescriptor();
+			keyDescriptor.KeyInfo = new DSigKeyInfo();
+			var x509Data = new X509Data();
+			x509Data.Certificates.Add(TestCertSignOnly);
+			keyDescriptor.KeyInfo.Data.Add(x509Data);
+			return keyDescriptor;
+		}
+
+		public static readonly KeyDescriptor TestKeyDescriptor = CreateKeyDescriptor();
 
         public static string SignXml(
             string xml,
@@ -85,26 +93,6 @@ namespace Sustainsys.Saml2.TestHelpers
             var keyInfo2 = new KeyInfo();
             keyInfo2.AddClause(new KeyInfoX509Data(TestCert2));
             KeyInfoXml2 = keyInfo2.GetXml().OuterXml;
-        }
-
-        public static void RemoveGlobalSha256XmlSignatureSupport()
-        {
-            // Clean up after tests that globally activate SHA256 support. There
-            // is no official API for removing signature algorithms, so let's
-            // do some reflection.
-
-            var internalSyncObject = typeof(CryptoConfig)
-                .GetProperty("InternalSyncObject", BindingFlags.Static | BindingFlags.NonPublic)
-                .GetValue(null);
-
-            lock (internalSyncObject)
-            {
-                var appNameHT = (IDictionary<string, Type>)typeof(CryptoConfig)
-                    .GetField("appNameHT", BindingFlags.Static | BindingFlags.NonPublic)
-                    .GetValue(null);
-
-                appNameHT.Remove("http://www.w3.org/2001/04/xmldsig-more#rsa-sha256");
-            }
         }
     }
 }

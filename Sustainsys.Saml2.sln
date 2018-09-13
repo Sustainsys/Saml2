@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.27130.2020
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sustainsys.Saml2", "Sustainsys.Saml2\Sustainsys.Saml2.csproj", "{93BA675E-A159-4701-B68B-C4B81015C556}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sustainsys.Saml2", "Sustainsys.Saml2\Sustainsys.Saml2.csproj", "{93BA675E-A159-4701-B68B-C4B81015C556}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{E0C4834E-A7A9-476F-8F46-B2D533190872}"
 	ProjectSection(SolutionItems) = preProject
@@ -48,11 +48,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SampleOwinApplication", "Sa
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{F3C8CC66-4CE9-4683-BC31-B89AF47A5897}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests", "Tests\Tests\Tests.csproj", "{D3334615-C970-464F-8F45-50CB53A5C0EE}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mvc.Tests", "Tests\Mvc.Tests\Mvc.Tests.csproj", "{F09D61F6-CA41-4B73-B59E-2A5C5626F058}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestHelpers", "Tests\TestHelpers\TestHelpers.csproj", "{CF1E517E-B2FE-48E1-8BB9-4D9981695C47}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestHelpers", "Tests\TestHelpers\TestHelpers.csproj", "{CF1E517E-B2FE-48E1-8BB9-4D9981695C47}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Owin.Tests", "Tests\Owin.Tests\Owin.Tests.csproj", "{0E01A985-54CC-4190-851F-6475C7BB1A5D}"
 EndProject
@@ -60,9 +58,19 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HttpModule.Tests", "Tests\H
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SampleAspNetCore2ApplicationNETFramework", "Samples\SampleAspNetCore2ApplicationNETFramework\SampleAspNetCore2ApplicationNETFramework.csproj", "{8EB3820A-4DB4-4875-A155-6C3D7458983E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sustainsys.Saml2.AspNetCore2", "Sustainsys.Saml2.AspNetCore2\Sustainsys.Saml2.AspNetCore2.csproj", "{0A1A7E8C-838C-4114-894B-564592417AFA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sustainsys.Saml2.AspNetCore2", "Sustainsys.Saml2.AspNetCore2\Sustainsys.Saml2.AspNetCore2.csproj", "{0A1A7E8C-838C-4114-894B-564592417AFA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AspNetCore2.Tests", "Tests\AspNetCore2.Tests\AspNetCore2.Tests.csproj", "{20359A9A-6435-4264-8B36-22CD76731432}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AspNetCore2.Tests", "Tests\AspNetCore2.Tests\AspNetCore2.Tests.csproj", "{20359A9A-6435-4264-8B36-22CD76731432}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tests.NETCore", "Tests\Tests.NETCore\Tests.NETCore.csproj", "{FF774B2E-51D4-4C64-BA0E-C061683A9B93}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests.NETFramework", "Tests\Tests.NETFramework\Tests.NETFramework.csproj", "{C5C43D57-3A9C-4EDF-97AF-EE55A950284C}"
+EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Tests.Shared", "Tests\Tests.Shared\Tests.Shared.shproj", "{82F84E61-1292-47CF-B0DC-59F26EC56C32}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SampleIdentityServer4", "Samples\SampleIdentityServer4\SampleIdentityServer4.csproj", "{19ED65C5-A184-4AA8-9CBB-464E7433075A}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SampleIdentityServer4AspNetIdentity", "Samples\SampleIdentityServer4AspNetIdentity\SampleIdentityServer4AspNetIdentity.csproj", "{A6DA495F-3AE8-482B-BC63-1F70BC752654}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{46971976-411C-4DD6-A45E-194E309BC94F}"
 	ProjectSection(SolutionItems) = preProject
@@ -101,6 +109,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "config-elements", "config-e
 	EndProjectSection
 EndProject
 Global
+	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		Tests\Tests.Shared\Tests.Shared.projitems*{82f84e61-1292-47cf-b0dc-59f26ec56c32}*SharedItemsImports = 13
+		Tests\Tests.Shared\Tests.Shared.projitems*{c5c43d57-3a9c-4edf-97af-ee55a950284c}*SharedItemsImports = 4
+	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
@@ -142,10 +154,6 @@ Global
 		{1C263C1A-3201-4A90-96BB-22CD3F074EC8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1C263C1A-3201-4A90-96BB-22CD3F074EC8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1C263C1A-3201-4A90-96BB-22CD3F074EC8}.Release|Any CPU.Build.0 = Release|Any CPU
-		{D3334615-C970-464F-8F45-50CB53A5C0EE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{D3334615-C970-464F-8F45-50CB53A5C0EE}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{D3334615-C970-464F-8F45-50CB53A5C0EE}.Release|Any CPU.ActiveCfg = Debug|Any CPU
-		{D3334615-C970-464F-8F45-50CB53A5C0EE}.Release|Any CPU.Build.0 = Debug|Any CPU
 		{F09D61F6-CA41-4B73-B59E-2A5C5626F058}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{F09D61F6-CA41-4B73-B59E-2A5C5626F058}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F09D61F6-CA41-4B73-B59E-2A5C5626F058}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -174,6 +182,22 @@ Global
 		{20359A9A-6435-4264-8B36-22CD76731432}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{20359A9A-6435-4264-8B36-22CD76731432}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{20359A9A-6435-4264-8B36-22CD76731432}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FF774B2E-51D4-4C64-BA0E-C061683A9B93}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FF774B2E-51D4-4C64-BA0E-C061683A9B93}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FF774B2E-51D4-4C64-BA0E-C061683A9B93}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FF774B2E-51D4-4C64-BA0E-C061683A9B93}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C5C43D57-3A9C-4EDF-97AF-EE55A950284C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C5C43D57-3A9C-4EDF-97AF-EE55A950284C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C5C43D57-3A9C-4EDF-97AF-EE55A950284C}.Release|Any CPU.ActiveCfg = Debug|Any CPU
+		{C5C43D57-3A9C-4EDF-97AF-EE55A950284C}.Release|Any CPU.Build.0 = Debug|Any CPU
+		{19ED65C5-A184-4AA8-9CBB-464E7433075A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{19ED65C5-A184-4AA8-9CBB-464E7433075A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{19ED65C5-A184-4AA8-9CBB-464E7433075A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{19ED65C5-A184-4AA8-9CBB-464E7433075A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A6DA495F-3AE8-482B-BC63-1F70BC752654}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A6DA495F-3AE8-482B-BC63-1F70BC752654}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A6DA495F-3AE8-482B-BC63-1F70BC752654}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A6DA495F-3AE8-482B-BC63-1F70BC752654}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -183,7 +207,6 @@ Global
 		{D4B36D49-D994-48AC-AC1F-7A2AA49BDF0B} = {09639770-8C2B-4D30-BBFC-4F6DD1A92C89}
 		{CE07482B-C6AB-4195-A1A7-3BB69176EFF2} = {09639770-8C2B-4D30-BBFC-4F6DD1A92C89}
 		{1C263C1A-3201-4A90-96BB-22CD3F074EC8} = {09639770-8C2B-4D30-BBFC-4F6DD1A92C89}
-		{D3334615-C970-464F-8F45-50CB53A5C0EE} = {F3C8CC66-4CE9-4683-BC31-B89AF47A5897}
 		{F09D61F6-CA41-4B73-B59E-2A5C5626F058} = {F3C8CC66-4CE9-4683-BC31-B89AF47A5897}
 		{CF1E517E-B2FE-48E1-8BB9-4D9981695C47} = {F3C8CC66-4CE9-4683-BC31-B89AF47A5897}
 		{0E01A985-54CC-4190-851F-6475C7BB1A5D} = {F3C8CC66-4CE9-4683-BC31-B89AF47A5897}
@@ -191,6 +214,11 @@ Global
 		{8EB3820A-4DB4-4875-A155-6C3D7458983E} = {09639770-8C2B-4D30-BBFC-4F6DD1A92C89}
 		{20359A9A-6435-4264-8B36-22CD76731432} = {F3C8CC66-4CE9-4683-BC31-B89AF47A5897}
 		{04FAC06E-5E04-4D87-96BE-254FEBAEA0DE} = {46971976-411C-4DD6-A45E-194E309BC94F}
+		{FF774B2E-51D4-4C64-BA0E-C061683A9B93} = {F3C8CC66-4CE9-4683-BC31-B89AF47A5897}
+		{C5C43D57-3A9C-4EDF-97AF-EE55A950284C} = {F3C8CC66-4CE9-4683-BC31-B89AF47A5897}
+		{82F84E61-1292-47CF-B0DC-59F26EC56C32} = {F3C8CC66-4CE9-4683-BC31-B89AF47A5897}
+		{19ED65C5-A184-4AA8-9CBB-464E7433075A} = {09639770-8C2B-4D30-BBFC-4F6DD1A92C89}
+		{A6DA495F-3AE8-482B-BC63-1F70BC752654} = {09639770-8C2B-4D30-BBFC-4F6DD1A92C89}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {A8812E38-A212-46DD-B51F-AB653F39E4ED}

@@ -71,7 +71,7 @@ namespace Sustainsys.Saml2.Owin.Tests
 
             var actual = await ctx.ToHttpRequestData(StubDataProtector.Unprotect);
 
-            actual.StoredRequestState.ShouldBeEquivalentTo(storedRequestState);
+            actual.StoredRequestState.Should().BeEquivalentTo(storedRequestState);
         }
 
         [TestMethod]
@@ -81,7 +81,7 @@ namespace Sustainsys.Saml2.Owin.Tests
             ctx.Request.QueryString = new QueryString("RelayState", "SomeState");
 
             ctx.Invoking(async c => await c.ToHttpRequestData(null))
-                .ShouldNotThrow();
+                .Should().NotThrow();
         }
     }
 }

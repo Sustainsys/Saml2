@@ -6,10 +6,7 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("Sustainsys.Saml2.AspNetCore2")]
-[assembly: AssemblyDescription("")]
-[assembly: AssemblyConfiguration("")]
-[assembly: AssemblyProduct("Sustainsys.Saml2.AspNetCore2")]
+[assembly: AssemblyDescription("A SAML2 ASP.NET Core 2 handler, compatible with ASP.NET Identity for external logins.")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

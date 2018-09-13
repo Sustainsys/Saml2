@@ -4,10 +4,11 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Configuration;
-using System.IdentityModel.Metadata;
-using System.IdentityModel.Tokens;
+using Sustainsys.Saml2.Metadata;
+using Microsoft.IdentityModel.Tokens.Saml2;
 using System.Linq;
 using System.Security.Claims;
+using ClaimProperties = Microsoft.IdentityModel.Tokens.Saml2.ClaimProperties;
 
 namespace Sustainsys.Saml2.StubIdp.Models
 {

@@ -6,21 +6,48 @@ using System.Xml;
 using System.Linq;
 using Sustainsys.Saml2.Exceptions;
 using System.Collections.Generic;
-using Sustainsys.Saml2.Configuration;
 using System.Reflection;
-using System.IdentityModel.Tokens;
 using System.Globalization;
 using System.Diagnostics.CodeAnalysis;
 using System.Xml.Linq;
 using System.IO;
 using Sustainsys.Saml2.Internal;
+using Sustainsys.Saml2.Tokens;
 
 namespace Sustainsys.Saml2
 {
-    /// <summary>
-    /// Extension methods and helpers for XmlDocument/XmlElement etc.
-    /// </summary>
-    public static class XmlHelpers
+	public class SignedXmlWithIdFix : SignedXml
+	{
+		public SignedXmlWithIdFix(XmlElement element) :
+			base(element)
+		{
+		}
+
+		public SignedXmlWithIdFix(XmlDocument doc) :
+			base(doc)
+		{
+		}
+
+		public override XmlElement GetIdElement(XmlDocument document, string id)
+		{
+			var nodes = document.SelectNodes(
+				$"//*[name() != 'Reference' and (@id='{id}' or @iD='{id}' or @Id='{id}' or @ID='{id}')]");
+			if (nodes.Count == 0)
+			{
+				throw new CryptographicException($"The reference id '{id}' does not match any nodes");
+			}
+			if (nodes.Count > 1)
+			{
+				throw new CryptographicException($"The reference id '{id}' matches multiple nodes");
+			}
+			return (XmlElement)nodes[0];
+		}
+	}
+
+	/// <summary>
+	/// Extension methods and helpers for XmlDocument/XmlElement etc.
+	/// </summary>
+	public static class XmlHelpers
     {
         /// <summary>
         /// Sign an xml document with the supplied cert.
@@ -187,22 +214,30 @@ namespace Sustainsys.Saml2
                 throw new ArgumentNullException(nameof(cert));
             }
 
-            var signedXml = new SignedXml(xmlElement.OwnerDocument);
+            var signedXml = new SignedXmlWithIdFix(xmlElement.OwnerDocument);
 
-            // The transform XmlDsigExcC14NTransform and canonicalization method XmlDsigExcC14NTransformUrl is important for partially signed XML files
-            // see: http://msdn.microsoft.com/en-us/library/system.security.cryptography.xml.signedxml.xmldsigexcc14ntransformurl(v=vs.110).aspx
-            // The reference URI has to be set correctly to avoid assertion injections
-            // For both, the ID/Reference and the Transform/Canonicalization see as well: 
-            // https://www.oasis-open.org/committees/download.php/35711/sstc-saml-core-errata-2.0-wd-06-diff.pdf section 5.4.2 and 5.4.3
+			// The transform XmlDsigExcC14NTransform and canonicalization method XmlDsigExcC14NTransformUrl is important for partially signed XML files
+			// see: http://msdn.microsoft.com/en-us/library/system.security.cryptography.xml.signedxml.xmldsigexcc14ntransformurl(v=vs.110).aspx
+			// The reference URI has to be set correctly to avoid assertion injections
+			// For both, the ID/Reference and the Transform/Canonicalization see as well: 
+			// https://www.oasis-open.org/committees/download.php/35711/sstc-saml-core-errata-2.0-wd-06-diff.pdf section 5.4.2 and 5.4.3
 
-            signedXml.SigningKey = ((RSACryptoServiceProvider)cert.PrivateKey)
-                .GetSha256EnabledRSACryptoServiceProvider();
+			signedXml.SigningKey = EnvironmentHelpers.IsNetCore ? cert.PrivateKey :
+				((RSACryptoServiceProvider)cert.PrivateKey)
+				.GetSha256EnabledRSACryptoServiceProvider();
             signedXml.SignedInfo.CanonicalizationMethod = SignedXml.XmlDsigExcC14NTransformUrl;
             signedXml.SignedInfo.SignatureMethod = signingAlgorithm;
 
+			// We need a document unique ID on the element to sign it -- make one up if it's missing
+			string id = xmlElement.GetAttribute("ID");
+			if (String.IsNullOrEmpty(id))
+			{
+				id = "_" + Guid.NewGuid().ToString("N");
+				xmlElement.SetAttribute("ID", id);
+			}
             var reference = new Reference
             {
-                Uri = "#" + xmlElement.GetAttribute("ID"),
+                Uri = "#" + id,
                 DigestMethod = GetCorrespondingDigestAlgorithm(signingAlgorithm)
             };
             reference.AddTransform(new XmlDsigEnvelopedSignatureTransform());
@@ -246,7 +281,7 @@ namespace Sustainsys.Saml2
                 throw new ArgumentNullException(nameof(xmlElement));
             }
 
-            var signedXml = new SignedXml(xmlElement);
+            var signedXml = new SignedXmlWithIdFix(xmlElement);
 
             var signatureElement = xmlElement["Signature", SignedXml.XmlDsigNamespaceUrl];
 
@@ -273,7 +308,7 @@ namespace Sustainsys.Saml2
             foreach (var keyIdentifier in signingKeys)
             {
                 var key = ((AsymmetricSecurityKey)keyIdentifier.CreateKey())
-                .GetAsymmetricAlgorithm(SignedXml.XmlDsigRSASHA1Url, false);
+                .GetAsymmetricAlgorithm(signedXml.SignatureMethod, false);
 
                 if (signedXml.CheckSignature(key))
                 {
@@ -291,19 +326,6 @@ namespace Sustainsys.Saml2
             }
 
             throw new InvalidSignatureException("Signature didn't verify. Have the contents been tampered with?");
-        }
-
-        private static readonly Lazy<object> rsaSha256Algorithm = 
-            new Lazy<object>(() => CryptoConfig.CreateFromName(Options.RsaSha256Uri));
-
-        [ExcludeFromCodeCoverage]
-        private static void CheckSha256Support(string signatureMethod)
-        {
-            if (signatureMethod == Options.RsaSha256Uri
-                && rsaSha256Algorithm.Value == null)
-            {
-                throw new InvalidSignatureException("SHA256 signatures require the algorithm to be registered at the process level. Upgrade to .Net 4.6.2 or call Sustainsys.Saml2.Configuration.Options.GlobalEnableSha256XmlSignatures() on startup to register.");
-            }
         }
 
         // Splitting up in several methods to set ExcludeFromCodeCoverage on
@@ -345,7 +367,7 @@ namespace Sustainsys.Saml2
         /// <param name="signatureElement">Signature element.</param>
         private static void FixSignatureIndex(SignedXml signedXml, XmlElement signatureElement)
         {
-            Transform transform = null;
+			Transform transform = null;
             foreach(var t in ((Reference)signedXml.SignedInfo.References[0]).TransformChain)
             {
                 var envelopeTransform = t as XmlDsigEnvelopedSignatureTransform;
@@ -388,9 +410,7 @@ namespace Sustainsys.Saml2
             string minIncomingSignatureAlgorithm)
         {
             var signatureMethod = signedXml.SignedInfo.SignatureMethod;
-            CheckSha256Support(signatureMethod);
             ValidateSignatureMethodStrength(minIncomingSignatureAlgorithm, signatureMethod);
-
             ValidateReference(signedXml, xmlElement, GetCorrespondingDigestAlgorithm(minIncomingSignatureAlgorithm));
         }
 
@@ -433,9 +453,9 @@ namespace Sustainsys.Saml2
             var reference = (Reference)signedXml.SignedInfo.References[0];
             var id = reference.Uri.Substring(1);
 
-            var idElement = signedXml.GetIdElement(xmlElement.OwnerDocument, id);
+			var idElement = signedXml.GetIdElement(xmlElement.OwnerDocument, id);
 
-            if (idElement != xmlElement)
+			if (idElement != xmlElement)
             {
                 throw new InvalidSignatureException("Incorrect reference on Xml signature. The reference must be to the root element of the element containing the signature.");
             }
@@ -565,21 +585,37 @@ namespace Sustainsys.Saml2
                 xmlWriter.Flush();
                 return strWriter.ToString();
             }
-        }
+		}
 
-        /// <summary>
-        /// Store a list of signing algorithms that are available in SignedXml.
-        /// This needs to be done through reflection, to keep the library
-        /// targetting lowest supported .NET version, while still getting
-        /// access to new algorithms if the hosting application targets a
-        /// later version.
-        /// </summary>
-        internal static readonly IEnumerable<string> KnownSigningAlgorithms =
-            typeof(SignedXml).GetFields()
-            .Where(f => f.Name.StartsWith("XmlDsigRSASHA", StringComparison.Ordinal))
-            .Select(f => (string)f.GetRawConstantValue())
-            .OrderBy(f => f)
-            .ToList();
+		/// <summary>
+		/// Store a list of signing algorithms that are available in SignedXml.
+		/// This needs to be done through reflection, to keep the library
+		/// targetting lowest supported .NET version, while still getting
+		/// access to new algorithms if the hosting application targets a
+		/// later version.
+		/// </summary>
+		private static string[] GetKnownSigningAlgorithms()
+		{
+			// The newer algorithms names are marked internal in .NET Core
+			// https://github.com/dotnet/corefx/issues/25123
+			if (EnvironmentHelpers.IsNetCore)
+			{
+				return new string[] {
+					"http://www.w3.org/2000/09/xmldsig#rsa-sha1",
+					"http://www.w3.org/2001/04/xmldsig-more#rsa-sha256",
+					"http://www.w3.org/2001/04/xmldsig-more#rsa-sha384",
+					"http://www.w3.org/2001/04/xmldsig-more#rsa-sha512",
+				};
+			}
+			return typeof(SignedXml).GetFields()
+				.Where(f => f.Name.StartsWith("XmlDsigRSASHA", StringComparison.Ordinal))
+				.Select(f => (string)f.GetRawConstantValue())
+				.OrderBy(f => f)
+				.ToArray();
+		}
+
+		internal static readonly string[] KnownSigningAlgorithms =
+			GetKnownSigningAlgorithms();
 
         internal static string GetFullSigningAlgorithmName(string shortName)
         {
@@ -589,33 +625,52 @@ namespace Sustainsys.Saml2
                 a => a.EndsWith(shortName, StringComparison.OrdinalIgnoreCase));
         }
 
-        // Can't test the fallback behaviour on a machine that has a modern
-        // framework installed.
-        [ExcludeFromCodeCoverage]
+		// Can't test the fallback behaviour on a machine that has a modern
+		// framework installed.
+		[ExcludeFromCodeCoverage]
         internal static string GetDefaultSigningAlgorithmName()
         {
             var rsaSha256Name = "http://www.w3.org/2001/04/xmldsig-more#rsa-sha256";
-            if (KnownSigningAlgorithms.Contains(rsaSha256Name))
+            if (EnvironmentHelpers.IsNetCore ||
+				KnownSigningAlgorithms.Contains(rsaSha256Name))
             {
                 return rsaSha256Name;
             }
             return SignedXml.XmlDsigRSASHA1Url;
         }
 
-        internal static readonly IEnumerable<string> DigestAlgorithms =
-            typeof(SignedXml).GetFields()
-            .Where(f => f.Name.StartsWith("XmlDsigSHA", StringComparison.Ordinal))
-            .Select(f => (string)f.GetRawConstantValue())
-            .OrderBy(f => f)
-            .ToList();
+		private static string[] GetKnownDigestAlgorithms()
+		{
+			if (EnvironmentHelpers.IsNetCore)
+			{
+				return new string[] {
+					"http://www.w3.org/2000/09/xmldsig#sha1",
+					"http://www.w3.org/2001/04/xmlenc#sha256",
+					"http://www.w3.org/2001/04/xmldsig-more#sha384",
+					"http://www.w3.org/2001/04/xmlenc#sha512"
+				};
+			}
+			return typeof(SignedXml).GetFields()
+				.Where(f => f.Name.StartsWith("XmlDsigSHA", StringComparison.Ordinal))
+				.Select(f => (string)f.GetRawConstantValue())
+				.OrderBy(f => f)
+				.ToArray();
+		}
+
+		internal static readonly string[] DigestAlgorithms = GetKnownDigestAlgorithms();
 
         internal static string GetCorrespondingDigestAlgorithm(string signingAlgorithm)
         {
-            var matchPattern = signingAlgorithm.Substring(signingAlgorithm.LastIndexOf('-') + 1);
-
-            return DigestAlgorithms.Single(a => a.EndsWith(
+			var matchPattern = signingAlgorithm.Substring(signingAlgorithm.LastIndexOf('-') + 1);
+            string match = DigestAlgorithms.FirstOrDefault(a => a.EndsWith(
                 matchPattern,
                 StringComparison.Ordinal));
-        }
-    }
+			if (match == null)
+			{
+				throw new InvalidOperationException(
+					$"Unable to find a digest algorithm for the signing algorithm {signingAlgorithm}");
+			}
+			return match;
+		}
+	}
 }

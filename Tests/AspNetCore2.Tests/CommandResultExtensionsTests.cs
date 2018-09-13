@@ -1,14 +1,14 @@
 ﻿using FluentAssertions;
 using Sustainsys.Saml2;
+using Sustainsys.Saml2.Metadata;
 using Sustainsys.Saml2.WebSso;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
+using Microsoft.IdentityModel.Tokens.Saml2;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NSubstitute;
 using System;
 using System.Collections.Generic;
-using System.IdentityModel.Metadata;
-using System.IdentityModel.Tokens;
 using System.IO;
 using System.Linq;
 using System.Security.Claims;

@@ -1,15 +1,15 @@
-﻿using System;
+﻿using Microsoft.IdentityModel.Tokens.Saml2;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
-using System.IdentityModel.Metadata;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
 using System.Xml.Linq;
 using Sustainsys.Saml2.Internal;
-using System.IdentityModel.Tokens;
 using System.Security.Cryptography.X509Certificates;
+using Sustainsys.Saml2.Metadata;
 
 namespace Sustainsys.Saml2.Saml2P
 {
@@ -96,7 +96,7 @@ namespace Sustainsys.Saml2.Saml2P
         {
             yield return new XAttribute(XNamespace.Xmlns + "saml2p", Saml2Namespaces.Saml2PName);
             yield return new XAttribute(XNamespace.Xmlns + "saml2", Saml2Namespaces.Saml2Name);
-            yield return new XAttribute("ID", Id);
+            yield return new XAttribute("ID", Id.Value);
             yield return new XAttribute("Version", Version);
             yield return new XAttribute("IssueInstant", IssueInstant);
 

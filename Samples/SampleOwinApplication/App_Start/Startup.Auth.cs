@@ -1,26 +1,22 @@
-﻿using System;
-using Microsoft.AspNet.Identity;
+﻿using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin;
 using Microsoft.Owin.Security.Cookies;
-using Microsoft.Owin.Security.Google;
 using Owin;
 using SampleOwinApplication.Models;
-using Sustainsys.Saml2.Owin;
-using Sustainsys.Saml2.Configuration;
-using System.IdentityModel.Metadata;
-using System.Globalization;
-using Sustainsys.Saml2.Metadata;
 using Sustainsys.Saml2;
+using Sustainsys.Saml2.Configuration;
+using Sustainsys.Saml2.Metadata;
+using Sustainsys.Saml2.Owin;
 using Sustainsys.Saml2.WebSso;
+using System;
+using System.Globalization;
 using System.Security.Cryptography.X509Certificates;
 using System.Web.Hosting;
-using System.IdentityModel.Selectors;
-using System.IdentityModel.Tokens;
 
 namespace SampleOwinApplication
 {
-    public partial class Startup
+	public partial class Startup
     {
         // For more information on configuring authentication, please visit http://go.microsoft.com/fwlink/?LinkId=301864
         public void ConfigureAuth(IAppBuilder app)
@@ -83,7 +79,7 @@ namespace SampleOwinApplication
 
         private static SPOptions CreateSPOptions()
         {
-            var swedish = CultureInfo.GetCultureInfo("sv-se");
+            var swedish = "sv-se";
 
             var organization = new Organization();
             organization.Names.Add(new LocalizedName("Sustainsys", swedish));
@@ -112,10 +108,11 @@ namespace SampleOwinApplication
             supportContact.EmailAddresses.Add("support@example.com");
             spOptions.Contacts.Add(supportContact);
 
-            var attributeConsumingService = new AttributeConsumingService("Saml2")
+            var attributeConsumingService = new AttributeConsumingService
             {
                 IsDefault = true,
-            };
+				ServiceNames = { new LocalizedName("Saml2", "en") }
+			};
 
             attributeConsumingService.RequestedAttributes.Add(
                 new RequestedAttribute("urn:someName")

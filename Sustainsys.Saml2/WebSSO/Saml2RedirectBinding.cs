@@ -4,8 +4,6 @@ using Sustainsys.Saml2.Saml2P;
 using Sustainsys.Saml2.Internal;
 using System;
 using System.Globalization;
-using System.IdentityModel.Metadata;
-using System.IdentityModel.Tokens;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
@@ -13,6 +11,8 @@ using System.Net;
 using System.Security.Cryptography;
 using System.Text;
 using System.Xml;
+using Sustainsys.Saml2.Metadata;
+using Sustainsys.Saml2.Tokens;
 
 namespace Sustainsys.Saml2.WebSso
 {
@@ -55,12 +55,13 @@ namespace Sustainsys.Saml2.WebSso
             string signingAlgorithmUrl = message.SigningAlgorithm;
 
             queryString += "&SigAlg=" + Uri.EscapeDataString(signingAlgorithmUrl);
-            var signatureDescription = (SignatureDescription)CryptoConfig.CreateFromName(signingAlgorithmUrl);
+            var signatureDescription = (SignatureDescription)CryptographyExtensions.CreateAlgorithmFromName(signingAlgorithmUrl);
             HashAlgorithm hashAlg = signatureDescription.CreateDigest();
             hashAlg.ComputeHash(Encoding.UTF8.GetBytes(queryString));
             AsymmetricSignatureFormatter asymmetricSignatureFormatter = 
                 signatureDescription.CreateFormatter(
-                    ((RSACryptoServiceProvider)message.SigningCertificate.PrivateKey)
+					EnvironmentHelpers.IsNetCore ? message.SigningCertificate.PrivateKey :
+					((RSACryptoServiceProvider)message.SigningCertificate.PrivateKey)
                     .GetSha256EnabledRSACryptoServiceProvider());
             byte[] signatureValue = asymmetricSignatureFormatter.CreateSignature(hashAlg);
             queryString += "&Signature=" + Uri.EscapeDataString(Convert.ToBase64String(signatureValue));
@@ -85,7 +86,7 @@ namespace Sustainsys.Saml2.WebSso
                         decompressedStream.CopyTo(deCompressed);
 
                         var xml = XmlHelpers.XmlDocumentFromString(
-                            Encoding.UTF8.GetString(deCompressed.GetBuffer()));
+                            Encoding.UTF8.GetString(deCompressed.GetBuffer(),0, (int)deCompressed.Length));
 
                         options?.SPOptions.Logger.WriteVerbose("Http Redirect binding extracted message\n" + xml.OuterXml);
 
@@ -156,7 +157,7 @@ namespace Sustainsys.Saml2.WebSso
 
             XmlHelpers.ValidateSignatureMethodStrength(options.SPOptions.MinIncomingSigningAlgorithm, sigAlg);
 
-            var signatureDescription = (SignatureDescription) CryptoConfig.CreateFromName(sigAlg);
+            var signatureDescription = (SignatureDescription)CryptographyExtensions.CreateAlgorithmFromName(sigAlg);
 
             var hashAlg = signatureDescription.CreateDigest();
             hashAlg.ComputeHash(Encoding.UTF8.GetBytes(signedString));
@@ -179,7 +180,7 @@ namespace Sustainsys.Saml2.WebSso
                     writer.Write(payload);
                 }
 
-                return System.Net.WebUtility.UrlEncode(Convert.ToBase64String(compressed.GetBuffer()));
+                return System.Net.WebUtility.UrlEncode(Convert.ToBase64String(compressed.GetBuffer(), 0, (int)compressed.Length));
             }
         }
 

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IdentityModel.Metadata;
-using System.IdentityModel.Tokens;
+using Sustainsys.Saml2.Metadata;
+using Sustainsys.Saml2.Tokens;
 using System.Linq;
 using System.Security.Cryptography.X509Certificates;
 using System.Security.Cryptography.Xml;
@@ -54,15 +54,21 @@ namespace Sustainsys.Saml2.StubIdp
             }
         }
 
-        private static readonly KeyDescriptor signingKeySustainsys = 
-            new KeyDescriptor(
-            new SecurityKeyIdentifier(
-                (new X509SecurityToken(signingCertificateSustainsys)).CreateKeyIdentifierClause<X509RawDataKeyIdentifierClause>()));
+		static KeyDescriptor CreateKeyDescriptor(X509Certificate2 cert)
+		{
+			var keyDescriptor = new KeyDescriptor();
+			keyDescriptor.KeyInfo = new DSigKeyInfo();
+			var x509Data = new X509Data();
+			x509Data.Certificates.Add(cert);
+			keyDescriptor.KeyInfo.Data.Add(x509Data);
+			return keyDescriptor;
+		}
 
-        private static readonly KeyDescriptor signingKey =
-            new KeyDescriptor(
-            new SecurityKeyIdentifier(
-                (new X509SecurityToken(signingCertificate)).CreateKeyIdentifierClause<X509RawDataKeyIdentifierClause>()));
+		private static readonly KeyDescriptor signingKeySustainsys =
+			CreateKeyDescriptor(signingCertificateSustainsys);
+
+		private static readonly KeyDescriptor signingKey =
+			CreateKeyDescriptor(signingCertificate);
 
     }
 }

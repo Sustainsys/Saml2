@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
-using System.IdentityModel.Metadata;
 using System.Linq;
 using System.Xml.Linq;
+using Sustainsys.Saml2.Metadata;
 
 namespace Sustainsys.Saml2.Saml2P
 {

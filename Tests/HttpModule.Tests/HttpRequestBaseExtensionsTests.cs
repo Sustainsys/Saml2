@@ -23,7 +23,7 @@ namespace Sustainsys.Saml2.HttpModule.Tests
             HttpRequestBase request = null;
             Action a = () => request.ToHttpRequestData();
 
-            a.ShouldThrow<ArgumentNullException>().And.ParamName.Should().Be("requestBase");
+            a.Should().Throw<ArgumentNullException>().And.ParamName.Should().Be("requestBase");
         }
 
         [TestMethod]
@@ -59,7 +59,7 @@ namespace Sustainsys.Saml2.HttpModule.Tests
                 null, 
                 ClaimsPrincipal.Current);
 
-            actual.ShouldBeEquivalentTo(expected, opt => opt.Excluding(s => s.StoredRequestState));
+            actual.Should().BeEquivalentTo(expected, opt => opt.Excluding(s => s.StoredRequestState));
             actual.StoredRequestState.ReturnUrl.AbsoluteUri.Should().Be("urn:someUri");
         }
 
@@ -93,7 +93,7 @@ namespace Sustainsys.Saml2.HttpModule.Tests
                 null,
                 ClaimsPrincipal.Current);
 
-            subject.ShouldBeEquivalentTo(expected);
+            subject.Should().BeEquivalentTo(expected);
         }
     }
 }

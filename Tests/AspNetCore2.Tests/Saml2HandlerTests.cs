@@ -3,6 +3,8 @@ using Sustainsys.Saml2;
 using Sustainsys.Saml2.Configuration;
 using Sustainsys.Saml2.Saml2P;
 using Sustainsys.Saml2.TestHelpers;
+using Sustainsys.Saml2.Metadata;
+using Sustainsys.Saml2.Tokens;
 using Sustainsys.Saml2.WebSso;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
@@ -10,12 +12,11 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Primitives;
+using Microsoft.IdentityModel.Tokens.Saml2;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NSubstitute;
 using System;
 using System.Collections.Generic;
-using System.IdentityModel.Metadata;
-using System.IdentityModel.Tokens;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -294,7 +295,7 @@ namespace Sustainsys.Saml2.AspNetCore2.Tests
         }
 
         [TestMethod]
-        public void Saml2Handler_ChallengeAsync_HandlesNullProperties()
+        public void Saml2Handler_ChallengeAsync_NoExceptionWithNullProperties()
         {
             var context = new Saml2HandlerTestContext();
 
@@ -308,7 +309,7 @@ namespace Sustainsys.Saml2.AspNetCore2.Tests
         {
             Action a = () => new Saml2Handler(null, null, null);
 
-            a.ShouldThrow<ArgumentNullException>()
+            a.Should().Throw<ArgumentNullException>()
                 .And.ParamName.Should().Be("dataProtectorProvider");
         }
 
@@ -323,8 +324,8 @@ namespace Sustainsys.Saml2.AspNetCore2.Tests
 
             context.HttpContext.Response.StatusCode.Should().Be(200);
 
-            Encoding.UTF8.GetString(
-                context.HttpContext.Response.Body.As<MemoryStream>().GetBuffer())
+			var ms = context.HttpContext.Response.Body.As<MemoryStream>();
+			Encoding.UTF8.GetString(ms.GetBuffer(), 0, (int)ms.Length)
                 .Should().StartWith("<EntityDescriptor");
         }
 
@@ -394,7 +395,7 @@ namespace Sustainsys.Saml2.AspNetCore2.Tests
             
             Func<Task> f = async () => await context.Subject.SignOutAsync(null);
 
-            f.ShouldThrow<ArgumentNullException>().And.ParamName.Should().Be("properties");
+            f.Should().Throw<ArgumentNullException>().And.ParamName.Should().Be("properties");
         }
 
         [TestMethod]
@@ -424,7 +425,7 @@ namespace Sustainsys.Saml2.AspNetCore2.Tests
                 NameId = new Saml2NameIdentifier("NameId"),
                 Issuer = new EntityId("https://idp.example.com"),
                 SigningCertificate = SignedXmlHelper.TestCert,
-                SigningAlgorithm = SignedXml.XmlDsigRSASHA256Url
+                SigningAlgorithm = SecurityAlgorithms.RsaSha256Signature
             };
 
             var url = Saml2Binding.Get(Saml2BindingType.HttpRedirect)

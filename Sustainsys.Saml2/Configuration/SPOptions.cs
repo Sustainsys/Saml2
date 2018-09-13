@@ -4,9 +4,6 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.IdentityModel.Configuration;
-using System.IdentityModel.Metadata;
-using System.IdentityModel.Services.Configuration;
 using System.Linq;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
@@ -26,7 +23,7 @@ namespace Sustainsys.Saml2.Configuration
         public SPOptions()
         {
             systemIdentityModelIdentityConfiguration = new IdentityConfiguration(false);
-            MetadataCacheDuration = new TimeSpan(1, 0, 0);
+			MetadataCacheDuration = new XsdDuration(hours: 1);
             Compatibility = new Compatibility();
             OutboundSigningAlgorithm = XmlHelpers.GetDefaultSigningAlgorithmName();
             MinIncomingSigningAlgorithm = XmlHelpers.GetDefaultSigningAlgorithmName();
@@ -85,7 +82,7 @@ namespace Sustainsys.Saml2.Configuration
         /// Recommendation of cache refresh interval to those who reads our
         /// metadata.
         /// </summary>
-        public TimeSpan MetadataCacheDuration { get; set; }
+        public XsdDuration MetadataCacheDuration { get; set; }
 
         /// <summary>
         /// Maximum validity duration after fetch for those who reads our
@@ -216,7 +213,8 @@ namespace Sustainsys.Saml2.Configuration
             }
         }
 
-        readonly ICollection<AttributeConsumingService> attributeConsumingServices = new List<AttributeConsumingService>();
+        readonly ICollection<AttributeConsumingService> attributeConsumingServices
+			= new List<AttributeConsumingService>();
 
         /// <summary>
         /// Collection of attribute consuming services for the service provider.

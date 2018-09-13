@@ -1,19 +1,19 @@
-﻿using System;
+﻿using Microsoft.IdentityModel.Tokens.Saml2;
+using Microsoft.IdentityModel.Tokens;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
-using System.IdentityModel.Tokens;
 using System.Linq;
 using System.Security.Claims;
 using System.Security.Cryptography.X509Certificates;
 using System.Security.Cryptography.Xml;
 using System.Xml;
 using Sustainsys.Saml2.Configuration;
-using System.IdentityModel.Metadata;
 using System.Security.Cryptography;
-using System.IdentityModel.Services;
 using Sustainsys.Saml2.Internal;
 using Sustainsys.Saml2.Exceptions;
 using System.Diagnostics.CodeAnalysis;
+using Sustainsys.Saml2.Metadata;
 
 namespace Sustainsys.Saml2.Saml2P
 {
@@ -154,14 +154,14 @@ namespace Sustainsys.Saml2.Saml2P
                         "Received message contains unexpected InResponseTo \"{0}\". No cookie preserving state " +
                         "from the request was found so the message was not expected to have an InResponseTo attribute. " +
                         "This error typically occurs if the cookie set when doing SP-initiated sign on have been lost.",
-                        InResponseTo));
+                        InResponseTo.Value));
                 }
-                if (!expectedInResponseTo.Equals(InResponseTo))
+                if (expectedInResponseTo.Value != InResponseTo.Value)
                 {
                     throw new Saml2ResponseFailedValidationException(
                         string.Format(CultureInfo.InvariantCulture,
                         "InResponseTo Id \"{0}\" in received response does not match Id \"{1}\" of the sent request.",
-                        InResponseTo, expectedInResponseTo));
+                        InResponseTo.Value, expectedInResponseTo.Value));
                 }
             }
             else
@@ -178,7 +178,7 @@ namespace Sustainsys.Saml2.Saml2P
                         "Expected message to contain InResponseTo \"{0}\", but found none. If this error occurs " +
                         "due to the Idp not setting InResponseTo according to the SAML2 specification, this check " +
                         "can be disabled by setting the IgnoreMissingInResponseTo compatibility flag to true.",
-                        expectedInResponseTo));
+                        expectedInResponseTo.Value));
                 }
             }
         }
@@ -552,34 +552,51 @@ namespace Sustainsys.Saml2.Saml2P
                     status, statusMessage, secondLevelStatus);
             }
 
-            foreach (XmlElement assertionNode in GetAllAssertionElementNodes(options))
+			TokenValidationParameters validationParameters = new TokenValidationParameters();
+			validationParameters.AuthenticationType = "Federation";
+			validationParameters.RequireSignedTokens = false;
+			validationParameters.ValidateIssuer = false;
+
+			var handler = options.SPOptions.Saml2PSecurityTokenHandler;
+			var audienceRestriction = handler.Configuration.AudienceRestriction;
+			var allowedAudiences = audienceRestriction.AllowedAudienceUris
+				.ToLookup(x => x.ToString(), StringComparer.Ordinal);
+			validationParameters.AudienceValidator = (audiences, token, validationParameters_) =>
+			{
+				if ((audienceRestriction.AudienceMode == Tokens.AudienceUriMode.BearerKeyOnly &&
+						token.SecurityKey == null) ||
+					audienceRestriction.AudienceMode == Tokens.AudienceUriMode.Always)
+				{
+					return audiences.Any(x => allowedAudiences.Contains(x));
+				}
+				return true;
+			};
+			validationParameters.ClockSkew = options.SPOptions
+				.SystemIdentityModelIdentityConfiguration.MaxClockSkew;
+			var idConfig = options.SPOptions.SystemIdentityModelIdentityConfiguration;
+			if (idConfig.DetectReplayedTokens)
+			{
+				validationParameters.ValidateTokenReplay = true;
+				validationParameters.TokenReplayCache = idConfig.TokenReplayCache;
+			}
+			validationParameters.IssuerSigningKeys = options.SPOptions
+				.ServiceCertificates.Select(x => new X509SecurityKey(x.Certificate));
+
+			foreach (XmlElement assertionNode in GetAllAssertionElementNodes(options))
             {
-                using (var reader = new FilteringXmlNodeReader(SignedXml.XmlDsigNamespaceUrl, "Signature", assertionNode))
-                {
-                    var handler = options.SPOptions.Saml2PSecurityTokenHandler;
+				SecurityToken baseToken;
+                var principal = handler.ValidateToken(assertionNode.OuterXml, validationParameters, out baseToken);
+				var token = (Saml2SecurityToken)baseToken;
+                options.SPOptions.Logger.WriteVerbose("Extracted SAML assertion " + token.Id);
 
-                    var token = (Saml2SecurityToken)handler.ReadToken(reader);
-                    options.SPOptions.Logger.WriteVerbose("Extracted SAML assertion " + token.Id);
+				sessionNotOnOrAfter = DateTimeHelper.EarliestTime(sessionNotOnOrAfter,
+					token.Assertion.Statements.OfType<Saml2AuthenticationStatement>()
+						.SingleOrDefault()?.SessionNotOnOrAfter);
 
-                    handler.DetectReplayedToken(token);
-
-                    var validateAudience = options.SPOptions
-                        .Saml2PSecurityTokenHandler
-                        .SamlSecurityTokenRequirement
-                        .ShouldEnforceAudienceRestriction(options.SPOptions
-                        .SystemIdentityModelIdentityConfiguration
-                        .AudienceRestriction.AudienceMode, token);
-
-                    handler.ValidateConditions(token.Assertion.Conditions, validateAudience);
-
-                    options.SPOptions.Logger.WriteVerbose("Validated conditions for SAML2 Response " + Id);
-
-                    sessionNotOnOrAfter = DateTimeHelper.EarliestTime(sessionNotOnOrAfter,
-                    token.Assertion.Statements.OfType<Saml2AuthenticationStatement>()
-                        .SingleOrDefault()?.SessionNotOnOrAfter);
-
-                    yield return handler.CreateClaims(token);
-                }
+				foreach (var identity in principal.Identities)
+				{
+					yield return identity;
+				}
             }
         }
         

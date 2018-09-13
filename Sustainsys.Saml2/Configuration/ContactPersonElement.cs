@@ -2,9 +2,10 @@
 using System.Collections.Generic;
 using System.Configuration;
 using System.Diagnostics;
-using System.IdentityModel.Metadata;
+using Microsoft.IdentityModel;
 using System.Linq;
 using System.Text;
+using Sustainsys.Saml2.Metadata;
 
 namespace Sustainsys.Saml2.Configuration
 {

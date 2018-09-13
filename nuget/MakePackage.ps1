@@ -18,15 +18,30 @@ if ("$master" -eq "")
 }
 
 pushd ..
-del Sustainsys.Saml2\bin\Release\*.dll
-del Sustainsys.Saml2.Mvc\bin\Release\*.dll
-del Sustainsys.Saml2.Owin\bin\Release\*.dll
-del Sustainsys.Saml2.HttpModule\bin\Release\*.dll
-del Sustainsys.Saml2.AspNetCore2\bin\Release\*.dll
-
+if (Test-Path "Sustainsys.Saml2\bin\Release")
+{
+	del Sustainsys.Saml2\bin\Release\*.dll
+}
+if (Test-Path "Sustainsys.Saml2.Mvc\bin\Release")
+{
+	del Sustainsys.Saml2.Mvc\bin\Release\*.dll
+}
+if (Test-Path "Sustainsys.Saml2.Owin\bin\Release")
+{
+	del Sustainsys.Saml2.Owin\bin\Release\*.dll
+}
+if (Test-Path "Sustainsys.Saml2.HttpModule\bin\Release")
+{
+	del Sustainsys.Saml2.HttpModule\bin\Release\*.dll
+}
+if (Test-Path "Sustainsys.Saml2.AspNetCore2\bin\Release")
+{
+	del Sustainsys.Saml2.AspNetCore2\bin\Release\*.dll
+}
 echo "Creating nuspec files..."
 
-$releaseNotes = "<releaseNotes>`n $((get-content nuget\ReleaseNotes.txt) -join "`n`")`n    </releaseNotes>"
+$releaseNotesContent="`n $((get-content nuget\ReleaseNotes.txt) -join "`n`")`n";
+$releaseNotes = "<releaseNotes>" + $releaseNotesContent + "</releaseNotes>";
 function Create-Nuspec($projectName)
 {
     (gc nuget\$projectName.nuspec) | 
@@ -34,18 +49,32 @@ function Create-Nuspec($projectName)
 		set-content $projectName\$projectName.nuspec
 }
 
-Create-Nuspec("Sustainsys.Saml2")
+function Update-Csproj($projectName)
+{
+    (gc $projectName\$projectName.csproj) | 
+		% { $_ -replace '\$releaseNotes\$', $releaseNotesContent } |
+		set-content $projectName\$projectName.csproj
+}
+
+copy Sustainsys.Saml2\Sustainsys.Saml2.csproj Sustainsys.Saml2\Sustainsys.Saml2.csproj.bak
+copy Sustainsys.Saml2.AspNetCore2\Sustainsys.Saml2.AspNetCore2.csproj Sustainsys.Saml2.AspNetCore2\Sustainsys.Saml2.AspNetCore2.csproj.bak
+Update-Csproj("Sustainsys.Saml2")
 Create-Nuspec("Sustainsys.Saml2.Mvc")
 Create-Nuspec("Sustainsys.Saml2.Owin")
 Create-Nuspec("Sustainsys.Saml2.HttpModule")
-Create-Nuspec("Sustainsys.Saml2.AspNetCore2")
+Update-Csproj("Sustainsys.Saml2.AspNetCore2")
 
 echo "Building packages..."
 
-nuget pack -build -outputdirectory nuget Sustainsys.Saml2\Sustainsys.Saml2.csproj
+dotnet pack -c Release -o ..\nuget Sustainsys.Saml2\Sustainsys.Saml2.csproj /p:Version=0.24
 nuget pack -build -outputdirectory nuget Sustainsys.Saml2.Mvc\Sustainsys.Saml2.Mvc.csproj
 nuget pack -build -outputdirectory nuget Sustainsys.Saml2.Owin\Sustainsys.Saml2.Owin.csproj
 nuget pack -build -outputdirectory nuget Sustainsys.Saml2.HttpModule\Sustainsys.Saml2.HttpModule.csproj
-nuget pack -build -outputdirectory nuget Sustainsys.Saml2.AspNetCore2\Sustainsys.Saml2.AspNetCore2.csproj
+dotnet pack -c Release -o ..\nuget Sustainsys.Saml2.AspNetCore2\Sustainsys.Saml2.AspNetCore2.csproj /p:Version=0.24
+
+copy Sustainsys.Saml2\Sustainsys.Saml2.csproj.bak Sustainsys.Saml2\Sustainsys.Saml2.csproj
+del Sustainsys.Saml2\Sustainsys.Saml2.csproj.bak 
+copy Sustainsys.Saml2.AspNetCore2\Sustainsys.Saml2.AspNetCore2.csproj.bak Sustainsys.Saml2.AspNetCore2\Sustainsys.Saml2.AspNetCore2.csproj
+del Sustainsys.Saml2.AspNetCore2\Sustainsys.Saml2.AspNetCore2.csproj.bak 
 
 popd

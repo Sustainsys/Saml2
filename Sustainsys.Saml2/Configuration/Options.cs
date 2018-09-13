@@ -74,28 +74,5 @@ namespace Sustainsys.Saml2.Configuration
                 return identityProviders;
             }
         }
-
-        internal const string RsaSha256Uri = "http://www.w3.org/2001/04/xmldsig-more#rsa-sha256";
-        internal const string Sha256Uri = "http://www.w3.org/2001/04/xmlenc#sha256";
-
-        /// <summary>
-        /// Make Sha256 signature algorithm available in this process (not just Sustainsys.Saml2)
-        /// </summary>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage( "Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Sha" )]
-        public static void GlobalEnableSha256XmlSignatures()
-        {
-            CryptoConfig.AddAlgorithm(typeof(ManagedSHA256SignatureDescription), RsaSha256Uri);
-
-            AddAlgorithmIfMissing((IList<string>)XmlHelpers.KnownSigningAlgorithms, RsaSha256Uri);
-            AddAlgorithmIfMissing((IList<string>)XmlHelpers.DigestAlgorithms, Sha256Uri);
-        }
-
-        internal static void AddAlgorithmIfMissing(IList<string> knownAlgorithms, string newAlgorithm)
-        {
-            if (knownAlgorithms.Count == 1)
-            {
-                knownAlgorithms.Add(newAlgorithm);
-            }
-        }
     }
 }

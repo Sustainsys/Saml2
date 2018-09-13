@@ -125,3 +125,5 @@ NDependOut
 #ReadTheDocs 
 docs/_build
 docs/.vscode
+/opencovertests.xml
+/GeneratedReports

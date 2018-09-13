@@ -3,8 +3,6 @@ using Sustainsys.Saml2.Internal;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
-using System.IdentityModel.Metadata;
-using System.IdentityModel.Tokens;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -14,6 +12,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
 using System.Xml.Linq;
+using Sustainsys.Saml2.Tokens;
 
 namespace Sustainsys.Saml2.Metadata
 {
@@ -28,7 +27,7 @@ namespace Sustainsys.Saml2.Metadata
         /// <param name="metadataLocation">Path to metadata. A Url, absolute
         /// path or an app relative path (e.g. ~/App_Data/metadata.xml)</param>
         /// <returns>EntityDescriptor containing metadata</returns>
-        public static ExtendedEntityDescriptor LoadIdp(string metadataLocation)
+        public static EntityDescriptor LoadIdp(string metadataLocation)
         {
             return LoadIdp(metadataLocation, false);
         }
@@ -51,7 +50,7 @@ namespace Sustainsys.Saml2.Metadata
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "EntitiesDescriptor")]
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "EntityDescriptor")]
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "IdentityProvider")]
-        public static ExtendedEntityDescriptor LoadIdp(string metadataLocation, bool unpackEntitiesDescriptor)
+        public static EntityDescriptor LoadIdp(string metadataLocation, bool unpackEntitiesDescriptor)
         {
             if (metadataLocation == null)
             {
@@ -60,7 +59,7 @@ namespace Sustainsys.Saml2.Metadata
 
             var result = Load(metadataLocation, null, false, null);
 
-            var entitiesDescriptor = result as ExtendedEntitiesDescriptor;
+            var entitiesDescriptor = result as EntitiesDescriptor;
             if(entitiesDescriptor != null)
             {
                 if(unpackEntitiesDescriptor)
@@ -70,13 +69,13 @@ namespace Sustainsys.Saml2.Metadata
                         throw new InvalidOperationException(LoadIdpUnpackingFoundMultipleEntityDescriptors);
                     }
 
-                    return (ExtendedEntityDescriptor)entitiesDescriptor.ChildEntities.Single();
+                    return (EntityDescriptor)entitiesDescriptor.ChildEntities.Single();
                 }
 
                 throw new InvalidOperationException(LoadIdpFoundEntitiesDescriptor);
             }
 
-            return (ExtendedEntityDescriptor)result;
+            return (EntityDescriptor)result;
         }
 
         private static MetadataBase Load(
@@ -92,9 +91,20 @@ namespace Sustainsys.Saml2.Metadata
 
             using (var client = new WebClient())
             using (var stream = client.OpenRead(metadataLocation))
-            {
+			using (var ms = new MemoryStream())
+			{
+				byte[] buf = new byte[65536];
+				for (; ;)
+				{
+					int read = stream.Read(buf, 0, buf.Length);
+					if (read == 0)
+						break;
+					ms.Write(buf, 0, read);
+				}
+				// System.Diagnostics.Debug.WriteLine(Encoding.UTF8.GetString(ms.ToArray()));
+				ms.Position = 0;
                 var reader = XmlDictionaryReader.CreateTextReader(
-                    stream,
+                    ms,
                     XmlDictionaryReaderQuotas.Max);
 
                 if(signingKeys != null)
@@ -152,7 +162,7 @@ namespace Sustainsys.Saml2.Metadata
         /// </summary>
         /// <param name="metadataLocation">Url to metadata</param>
         /// <returns>Extended entitiesdescriptor</returns>
-        public static ExtendedEntitiesDescriptor LoadFederation(string metadataLocation)
+        public static EntitiesDescriptor LoadFederation(string metadataLocation)
         {
             return LoadFederation(metadataLocation, null, false, null);
         }
@@ -172,7 +182,7 @@ namespace Sustainsys.Saml2.Metadata
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "EntitiesDescriptor")]
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "EntityDescriptor")]
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "IdentityProvider")]
-        public static ExtendedEntitiesDescriptor LoadFederation(
+        public static EntitiesDescriptor LoadFederation(
             string metadataLocation,
             IEnumerable<SecurityKeyIdentifierClause> signingKeys,
             bool validateCertificate,
@@ -189,12 +199,12 @@ namespace Sustainsys.Saml2.Metadata
                 validateCertificate,
                 minIncomingSigningAlgorithm);
 
-            if (result is ExtendedEntityDescriptor)
+            if (result is EntityDescriptor)
             {
                 throw new InvalidOperationException(LoadFederationFoundEntityDescriptor);
             }
 
-            return (ExtendedEntitiesDescriptor)result;
+            return (EntitiesDescriptor)result;
         }
 
     }

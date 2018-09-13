@@ -5,16 +5,19 @@ using System.Security.Cryptography;
 
 namespace Sustainsys.Saml2
 {
+
     /// <summary>
     /// Crypto description for a Managed implementation of SHA256 signatures.
     /// </summary>
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1709:IdentifiersShouldBeCasedCorrectly", MessageId = "SHA")]
-    public class ManagedSHA256SignatureDescription : SignatureDescription
-    {
+	public abstract class ManagedRSASignatureDescription : SignatureDescription
+	{
+		public abstract string HashAlgorithm { get; }
+
         /// <summary>
         /// Ctor
         /// </summary>
-        public ManagedSHA256SignatureDescription()
+        public ManagedRSASignatureDescription()
         {
             KeyAlgorithm = typeof(RSACryptoServiceProvider).FullName;
             DigestAlgorithm = typeof(SHA256Managed).FullName;
@@ -33,7 +36,7 @@ namespace Sustainsys.Saml2
             }
 
             var df = new RSAPKCS1SignatureDeformatter(key);
-            df.SetHashAlgorithm(typeof(SHA256Managed).FullName);
+			df.SetHashAlgorithm(HashAlgorithm);
             return df;
         }
 
@@ -51,12 +54,28 @@ namespace Sustainsys.Saml2
                 throw new ArgumentNullException(nameof(key));
             }
 
-            var provider = ((RSACryptoServiceProvider)key)
-                .GetSha256EnabledRSACryptoServiceProvider();
+            var provider = EnvironmentHelpers.IsNetCore ? key :
+				((RSACryptoServiceProvider)key)
+					.GetSha256EnabledRSACryptoServiceProvider();
 
             var formatter = new RSAPKCS1SignatureFormatter(provider);
-            formatter.SetHashAlgorithm(typeof(SHA256Managed).FullName);
+			formatter.SetHashAlgorithm(HashAlgorithm);
             return formatter;
         }
     }
+
+	public class ManagedRSASHA256SignatureDescription : ManagedRSASignatureDescription
+	{
+		public override string HashAlgorithm => "sha256";
+	}
+
+	public class ManagedRSASHA384SignatureDescription : ManagedRSASignatureDescription
+	{
+		public override string HashAlgorithm => "sha384";
+	}
+
+	public class ManagedRSASHA512SignatureDescription : ManagedRSASignatureDescription
+	{
+		public override string HashAlgorithm => "sha512";
+	}
 }

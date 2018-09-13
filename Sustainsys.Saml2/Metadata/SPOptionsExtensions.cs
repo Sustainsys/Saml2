@@ -1,22 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IdentityModel.Metadata;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 using Sustainsys.Saml2.Configuration;
+using Sustainsys.Saml2.Tokens;
 using Sustainsys.Saml2.WebSso;
-using System.IdentityModel.Tokens;
 
 namespace Sustainsys.Saml2.Metadata
 {
     static class SPOptionsExtensions
     {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1506:AvoidExcessiveClassCoupling")]
-        public static ExtendedEntityDescriptor CreateMetadata(this SPOptions spOptions, Saml2Urls urls)
+        public static EntityDescriptor CreateMetadata(this SPOptions spOptions, Saml2Urls urls)
         {
-            var ed = new ExtendedEntityDescriptor
+            var ed = new EntityDescriptor
             {
                 EntityId = spOptions.EntityId,
                 Organization = spOptions.Organization,
@@ -33,15 +32,15 @@ namespace Sustainsys.Saml2.Metadata
                 ed.Contacts.Add(contact);
             }
 
-            var spsso = new ExtendedServiceProviderSingleSignOnDescriptor()
+            var spsso = new SpSsoDescriptor()
             {
                 WantAssertionsSigned = spOptions.WantAssertionsSigned,
-                AuthenticationRequestsSigned = spOptions.AuthenticateRequestSigningBehavior == SigningBehavior.Always
+                AuthnRequestsSigned = spOptions.AuthenticateRequestSigningBehavior == SigningBehavior.Always
             };
 
             spsso.ProtocolsSupported.Add(new Uri("urn:oasis:names:tc:SAML:2.0:protocol"));
 
-            spsso.AssertionConsumerServices.Add(0, new IndexedProtocolEndpoint()
+            spsso.AssertionConsumerServices.Add(0, new AssertionConsumerService()
             {
                 Index = 0,
                 IsDefault = true,
@@ -49,7 +48,7 @@ namespace Sustainsys.Saml2.Metadata
                 Location = urls.AssertionConsumerServiceUrl
             });
 
-            spsso.AssertionConsumerServices.Add(1, new IndexedProtocolEndpoint()
+            spsso.AssertionConsumerServices.Add(1, new AssertionConsumerService()
             {
                 Index = 1,
                 IsDefault = false,
@@ -59,7 +58,7 @@ namespace Sustainsys.Saml2.Metadata
 
             foreach(var attributeService in spOptions.AttributeConsumingServices)
             {
-                spsso.AttributeConsumingServices.Add(attributeService);
+                spsso.AttributeConsumingServices.Add(attributeService.Index, attributeService);
             }
 
             if (spOptions.ServiceCertificates != null)
@@ -67,37 +66,39 @@ namespace Sustainsys.Saml2.Metadata
                 var publishCertificates = spOptions.MetadataCertificates;
                 foreach (var serviceCert in publishCertificates)
                 {
-                    using (var securityToken = new X509SecurityToken(serviceCert.Certificate))
-                    {
-                        spsso.Keys.Add(
-                            new KeyDescriptor
-                            {
-                                Use = (KeyType)(byte)serviceCert.Use,
-                                KeyInfo = new SecurityKeyIdentifier(securityToken.CreateKeyIdentifierClause<X509RawDataKeyIdentifierClause>())
-                            }
-                        );
-                    }
+					var x509Data = new X509Data();
+					x509Data.Certificates.Add(serviceCert.Certificate);
+					var keyInfo = new DSigKeyInfo();
+					keyInfo.Data.Add(x509Data);
+
+                    spsso.Keys.Add(
+                        new KeyDescriptor
+                        {
+                            Use = (KeyType)(byte)serviceCert.Use,
+                            KeyInfo = keyInfo
+                        }
+                    );
                 }
             }
 
             if(spOptions.SigningServiceCertificate != null)
             {
-                spsso.SingleLogoutServices.Add(new ProtocolEndpoint(
+                spsso.SingleLogoutServices.Add(new SingleLogoutService(
                     Saml2Binding.HttpRedirectUri, urls.LogoutUrl));
-                spsso.SingleLogoutServices.Add(new ProtocolEndpoint(
+                spsso.SingleLogoutServices.Add(new SingleLogoutService(
                     Saml2Binding.HttpPostUri, urls.LogoutUrl));
             }
 
             if (spOptions.DiscoveryServiceUrl != null
                 && !string.IsNullOrEmpty(spOptions.DiscoveryServiceUrl.OriginalString))
             {
-                spsso.Extensions.DiscoveryResponse = new IndexedProtocolEndpoint
+                spsso.DiscoveryResponses.Add(0, new DiscoveryResponse
                 {
                     Binding = Saml2Binding.DiscoveryResponseUri,
                     Index = 0,
                     IsDefault = true,
                     Location = urls.SignInUrl
-                };
+                });
             }
 
             ed.RoleDescriptors.Add(spsso);

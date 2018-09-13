@@ -19,7 +19,7 @@ namespace Sustainsys.Saml2.AspNetCore2.Tests
                 null, TestHelpers.GetAuthenticationOptions());
 
             subject.Invoking(s => s.PostConfigure(null, null))
-                .ShouldThrow<ArgumentNullException>().
+                .Should().Throw<ArgumentNullException>().
                 And.ParamName.Should().Be("options");
         }
 

@@ -6,10 +6,7 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("Sustainsys.Saml2")]
-[assembly: AssemblyDescription("Saml2 Authentication for ASP.NET")]
-[assembly: AssemblyConfiguration("")]
-[assembly: AssemblyProduct("Sustainsys.Saml2")]
+[assembly: AssemblyDescription("SAML2 Protocol library for ASP.NET. Don't reference this directly, use one of the API modules: Sustainsys.Saml2.HttpModule/Mvc/Owin/AspNetCore2.")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -23,7 +20,8 @@ using System.Runtime.InteropServices;
 
 [assembly: CLSCompliant(true)]
 
-[assembly: InternalsVisibleTo("Tests")]
+[assembly: InternalsVisibleTo("Tests.NETCore")]
+[assembly: InternalsVisibleTo("Tests.NETFramework")]
 [assembly: InternalsVisibleTo("TestHelpers")]
 [assembly: InternalsVisibleTo("Owin.Tests")]
 [assembly: InternalsVisibleTo("HttpModule.Tests")]

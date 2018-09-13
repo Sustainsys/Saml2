@@ -1,5 +1,5 @@
-﻿using System;
-using System.IdentityModel.Tokens;
+﻿using Microsoft.IdentityModel.Tokens.Saml2;
+using System;
 using System.Xml.Linq;
 
 namespace Sustainsys.Saml2
