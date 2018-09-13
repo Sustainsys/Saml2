@@ -1209,7 +1209,7 @@ namespace Sustainsys.Saml2.Tests.Metadata
 				WantAuthnRequestsSigned = true,
 				ProtocolsSupported = { new Uri("urn:oasis:names:tc:SAML:2.0:protocol") },
 				CacheDuration = new XsdDuration(years: 2, months: 6, days: 5, hours: 12, minutes: 35, seconds: 30),
-				ValidUntil = new DateTime(2020, 01, 01, 14, 32, 31),
+				ValidUntil = new DateTime(2020, 01, 01, 14, 32, 31, DateTimeKind.Utc),
 				ErrorUrl = new Uri("http://idp.example.com/something/went/wrong"),
 				Id = "yourGUIDhere",
 				Extensions = {

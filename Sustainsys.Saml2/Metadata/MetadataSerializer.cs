@@ -2376,6 +2376,7 @@ namespace Sustainsys.Saml2.Metadata
 					throw new MetadataSerializationException(
 						$"Invalid {attribute} attribute value '{sv}'");
 				}
+                v = v.ToUniversalTime();
 				dateAction(v);
 			}
 		}
