@@ -22,7 +22,7 @@ namespace Sustainsys.Saml2.Tests.Helpers
                 this.errorMessage = errorMessage;
             }
         }
-        public readonly static TimeSpan MaxWait = new TimeSpan(0, 0, 0, 0, 500);
+        public readonly static TimeSpan MaxWait = new TimeSpan(0, 0, 0, 5);
         public static void While(Func<bool> condition, string failMessage = "Timeout passed without condition becoming false.")
         {
             While(() => new TestResult(condition(), failMessage), true);

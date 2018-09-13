@@ -233,7 +233,7 @@ namespace Sustainsys.Saml2.Tests.Helpers
             if (IdpAndFederationShortCacheDurationAvailable)
             {
                 content["/federationMetadataShortCacheDuration"] = string.Format(
-@"<EntitiesDescriptor xmlns=""urn:oasis:names:tc:SAML:2.0:metadata"" cacheDuration=""PT0.200S"">
+@"<EntitiesDescriptor xmlns=""urn:oasis:names:tc:SAML:2.0:metadata"" cacheDuration=""PT0.500S"">
   <EntityDescriptor entityID=""http://idp1.federation.example.com/metadata"">
     <IDPSSODescriptor
       protocolSupportEnumeration=""urn:oasis:names:tc:SAML:2.0:protocol"">
