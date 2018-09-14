@@ -45,8 +45,6 @@ namespace Sustainsys.Saml2.TestHelpers
                 ReturnUrl = new Uri("https://localhost/returnUrl")
             };
 
-            options.SystemIdentityModelIdentityConfiguration.ClaimsAuthenticationManager
-                = new ClaimsAuthenticationManagerStub();
             options.SystemIdentityModelIdentityConfiguration.AudienceRestriction.AudienceMode
                 = AudienceUriMode.Never;
 

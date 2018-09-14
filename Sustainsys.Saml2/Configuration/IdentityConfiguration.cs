@@ -14,7 +14,6 @@ namespace Sustainsys.Saml2.Configuration
 		public static readonly StoreLocation DefaultTrustedStoreLocation = StoreLocation.LocalMachine;
 
 		string name;
-		ClaimsAuthenticationManager claimsAuthenticationManager = new ClaimsAuthenticationManager();
 		SecurityTokenHandlerConfiguration serviceHandlerConfiguration;
 
 		public IdentityConfiguration(bool loadConfig)
@@ -51,19 +50,6 @@ namespace Sustainsys.Saml2.Configuration
 			set { serviceHandlerConfiguration.AudienceRestriction = value; }
 		}
 
-		public ClaimsAuthenticationManager ClaimsAuthenticationManager
-		{
-			get { return claimsAuthenticationManager; }
-			set
-			{
-				if (value == null)
-				{
-					throw new ArgumentNullException(nameof(value));
-				}
-
-				claimsAuthenticationManager = value;
-			}
-		}
 		protected void LoadConfiguration(IdentityConfigurationElement element)
 		{
 			if (element == null)
@@ -71,11 +57,6 @@ namespace Sustainsys.Saml2.Configuration
 				return;
 			}
 
-			if (element.ClaimsAuthenticationManager.Type != null)
-			{
-				claimsAuthenticationManager = (ClaimsAuthenticationManager)Activator.CreateInstance(
-					element.ClaimsAuthenticationManager.Type);
-			}
 			name = element.Name;
 
 			serviceHandlerConfiguration = LoadHandlerConfiguration(element);

@@ -74,21 +74,16 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SampleIdentityServer4AspNet
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{46971976-411C-4DD6-A45E-194E309BC94F}"
 	ProjectSection(SolutionItems) = preProject
-		docs\claims-authentication-manager.rst = docs\claims-authentication-manager.rst
-		docs\ClaimsAuthenticationManager.md = docs\ClaimsAuthenticationManager.md
 		docs\conf.py = docs\conf.py
-		docs\Configuration.md = docs\Configuration.md
 		docs\configuration.rst = docs\configuration.rst
 		docs\contributing.rst = docs\contributing.rst
 		docs\getting-started.rst = docs\getting-started.rst
 		docs\identity-server-3-okta.rst = docs\identity-server-3-okta.rst
-		docs\IdentityServer3Okta.md = docs\IdentityServer3Okta.md
 		docs\index.rst = docs\index.rst
 		docs\make.bat = docs\make.bat
 		docs\Makefile = docs\Makefile
 		docs\OktaAppOptions.png = docs\OktaAppOptions.png
 		docs\owin-middleware.rst = docs\owin-middleware.rst
-		docs\OwinMiddleware.md = docs\OwinMiddleware.md
 		docs\troubleshooting.rst = docs\troubleshooting.rst
 	EndProjectSection
 EndProject
@@ -213,12 +208,12 @@ Global
 		{4D3EADFB-93E9-4F66-BD61-FBAC9E30A294} = {F3C8CC66-4CE9-4683-BC31-B89AF47A5897}
 		{8EB3820A-4DB4-4875-A155-6C3D7458983E} = {09639770-8C2B-4D30-BBFC-4F6DD1A92C89}
 		{20359A9A-6435-4264-8B36-22CD76731432} = {F3C8CC66-4CE9-4683-BC31-B89AF47A5897}
-		{04FAC06E-5E04-4D87-96BE-254FEBAEA0DE} = {46971976-411C-4DD6-A45E-194E309BC94F}
 		{FF774B2E-51D4-4C64-BA0E-C061683A9B93} = {F3C8CC66-4CE9-4683-BC31-B89AF47A5897}
 		{C5C43D57-3A9C-4EDF-97AF-EE55A950284C} = {F3C8CC66-4CE9-4683-BC31-B89AF47A5897}
 		{82F84E61-1292-47CF-B0DC-59F26EC56C32} = {F3C8CC66-4CE9-4683-BC31-B89AF47A5897}
 		{19ED65C5-A184-4AA8-9CBB-464E7433075A} = {09639770-8C2B-4D30-BBFC-4F6DD1A92C89}
 		{A6DA495F-3AE8-482B-BC63-1F70BC752654} = {09639770-8C2B-4D30-BBFC-4F6DD1A92C89}
+		{04FAC06E-5E04-4D87-96BE-254FEBAEA0DE} = {46971976-411C-4DD6-A45E-194E309BC94F}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {A8812E38-A212-46DD-B51F-AB653F39E4ED}

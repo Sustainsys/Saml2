@@ -1113,11 +1113,8 @@ namespace Sustainsys.Saml2.Owin.Tests
             context.Request.Path = new PathString("/Saml2/Acs");
 
             var signInAsAuthenticationType = "AuthType";
-            var ids = new ClaimsIdentity[] { new ClaimsIdentity(signInAsAuthenticationType),
-                new ClaimsIdentity(signInAsAuthenticationType) };
+            var ids = new ClaimsIdentity[] { new ClaimsIdentity(signInAsAuthenticationType) };
             ids[0].AddClaim(new Claim(ClaimTypes.NameIdentifier, "SomeUser", null, "https://idp.example.com"));
-            ids[1].AddClaim(new Claim(ClaimTypes.Role, "RoleFromClaimsAuthManager", 
-                null, "ClaimsAuthenticationManagerStub"));
 
             var subject = new Saml2AuthenticationMiddleware(null, CreateAppBuilder(),
                 OwinStubFactory.CreateOwinOptions());

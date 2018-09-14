@@ -32,7 +32,6 @@ The library is licensed under the `GNU Lesser General Public License (LPGL) <htt
    getting-started
    configuration
    owin-middleware
-   claims-authentication-manager
    identity-server-3-okta
    troubleshooting
    contributing

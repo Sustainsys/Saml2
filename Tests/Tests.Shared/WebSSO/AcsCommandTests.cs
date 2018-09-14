@@ -211,9 +211,8 @@ namespace Sustainsys.Saml2.Tests.WebSso
                 Enumerable.Empty<KeyValuePair<string, string>>(),
                 null);
 
-            var ids = new ClaimsIdentity[] { new ClaimsIdentity("Federation"), new ClaimsIdentity("ClaimsAuthenticationManager") };
+            var ids = new ClaimsIdentity[] { new ClaimsIdentity("Federation") };
             ids[0].AddClaim(new Claim(ClaimTypes.NameIdentifier, "SomeUser", null, "https://idp.example.com"));
-            ids[1].AddClaim(new Claim(ClaimTypes.Role, "RoleFromClaimsAuthManager", null, "ClaimsAuthenticationManagerStub"));
 
             var expected = new CommandResult()
             {
@@ -275,9 +274,8 @@ namespace Sustainsys.Saml2.Tests.WebSso
                     null)
                 );
 
-            var ids = new ClaimsIdentity[] { new ClaimsIdentity("Federation"), new ClaimsIdentity("ClaimsAuthenticationManager") };
+            var ids = new ClaimsIdentity[] { new ClaimsIdentity("Federation")};
             ids[0].AddClaim(new Claim(ClaimTypes.NameIdentifier, "SomeUser", null, "https://idp.example.com"));
-            ids[1].AddClaim(new Claim(ClaimTypes.Role, "RoleFromClaimsAuthManager", null, "ClaimsAuthenticationManagerStub"));
 
             var expected = new CommandResult()
             {
@@ -289,59 +287,6 @@ namespace Sustainsys.Saml2.Tests.WebSso
 
             new AcsCommand().Run(r, StubFactory.CreateOptions())
                 .Should().BeEquivalentTo(expected, opt => opt.IgnoringCyclicReferences());
-        }
-
-        [TestMethod]
-        public void AcsCommand_Run_ClaimsAuthenticationManager_RemovesNameIdentifierClaim()
-        {
-            var idp = Options.FromConfiguration.IdentityProviders.Default;
-
-            var response =
-            @"<saml2p:Response xmlns:saml2p=""urn:oasis:names:tc:SAML:2.0:protocol""
-                xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
-                ID = """ + MethodBase.GetCurrentMethod().Name + @""" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z"">
-                <saml2:Issuer>
-                    https://idp.example.com
-                </saml2:Issuer>
-                <saml2p:Status>
-                    <saml2p:StatusCode Value=""urn:oasis:names:tc:SAML:2.0:status:Success"" />
-                </saml2p:Status>
-                <saml2:Assertion
-                Version=""2.0"" ID=""" + MethodBase.GetCurrentMethod().Name + @"_Assertion2""
-                IssueInstant=""2013-09-25T00:00:00Z"">
-                    <saml2:Issuer>https://idp.example.com</saml2:Issuer>
-                    <saml2:Subject>
-                        <saml2:NameID>SomeUser</saml2:NameID>
-                        <saml2:SubjectConfirmation Method=""urn:oasis:names:tc:SAML:2.0:cm:bearer"" />
-                    </saml2:Subject>
-                    <saml2:Conditions NotOnOrAfter=""2100-01-01T00:00:00Z"" />
-                </saml2:Assertion>
-            </saml2p:Response>";
-
-            var responseFormValue = Convert.ToBase64String
-                (Encoding.UTF8.GetBytes(SignedXmlHelper.SignXml(response)));
-
-            var r = new HttpRequestData(
-                "POST",
-                new Uri("http://localhost"),
-                "/ModulePath",
-                new KeyValuePair<string, IEnumerable<string>>[]
-                {
-                    new KeyValuePair<string, IEnumerable<string>>("SAMLResponse", new string[] { responseFormValue }),
-                },
-                null);
-
-            var ids = new ClaimsIdentity[] { new ClaimsIdentity("Federation"), new ClaimsIdentity("ClaimsAuthenticationManager") };
-            ids[0].AddClaim(new Claim(ClaimTypes.NameIdentifier, "SomeUser", null, "https://idp.example.com"));
-            ids[1].AddClaim(new Claim(ClaimTypes.Role, "RoleFromClaimsAuthManager", null, "ClaimsAuthenticationManagerStub"));
-
-            var options = StubFactory.CreateOptions();
-            options.SPOptions.SystemIdentityModelIdentityConfiguration
-                .ClaimsAuthenticationManager.As<ClaimsAuthenticationManagerStub>()
-                .ClearNameIdentifier = true;
-
-            new AcsCommand().Invoking(c => c.Run(r, options))
-                .Should().NotThrow();
         }
 
         [TestMethod]

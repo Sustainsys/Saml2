@@ -65,7 +65,7 @@ A sample section is shown below.  For full details and all avaialble options, se
                         authenticateRequestSigningBehavior="Always">
         <nameIdPolicy allowCreate="true" format="Persistent"/>
         <metadata cacheDuration="0:0:42" validDuration="7.12:00:00" wantAssertionsSigned="true">
-            <organization name="Sustainsys IT AB" displayName="Sustainsys" url="http://www.Sustainsys.se" language="sv" />
+            <organization name="Sustainsys AB" displayName="Sustainsys" url="https://www.Sustainsys.com" language="sv" />
             <contactPerson type="Other" email="info@Sustainsys.se" />
             <requestedAttributes>
             <add friendlyName ="Some Name" name="urn:someName" nameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri" isRequired="true" />
@@ -101,16 +101,9 @@ System.IdentityModel Section
 There must be a ``<system.identityModel>`` section in the config file or there will be a runtime error. The section can be 
 empty (use ``<system.identityModel />``).
 
-The reason you might want this to be non-empty is to provide a custom :doc:`ClaimsAuthenticationManager <claims-authentication-manager>` as shown in the 
-sample below (you would obviously provide your own type in place of the Stub shown in the sample).
-
 .. code-block:: xml
 
-    <system.identityModel>
-        <identityConfiguration>
-            <claimsAuthenticationManager type="Sustainsys.Saml2.Tests.ClaimsAuthenticationManagerStub, Sustainsys.Saml2.Tests"/>
-        </identityConfiguration>
-    </system.identityModel>
+    <system.identityModel />
 
 System.IdentityModel.Services Section
 -------------------------------------

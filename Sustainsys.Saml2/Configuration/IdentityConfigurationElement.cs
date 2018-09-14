@@ -39,13 +39,6 @@ namespace Sustainsys.Saml2.Configuration
 			set { this["caches"] = value; }
 		}
 
-		[ConfigurationProperty("claimsAuthenticationManager")]
-		public CustomTypeElement ClaimsAuthenticationManager
-		{
-			get { return (CustomTypeElement)this["claimsAuthenticationManager"]; }
-			set { this["claimsAuthenticationManager"] = value; }
-		}
-
 		[ConfigurationProperty("tokenReplayDetection")]
 		public TokenReplayDetectionElement TokenReplayDetection
 		{

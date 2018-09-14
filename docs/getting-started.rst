@@ -15,7 +15,6 @@ ASP.NET Web Forms
 -----------------
 The ``Saml2AuthenticationModule`` provides Saml2 authentication to IIS web sites. In many cases it should just be 
 :doc:`configured <configuration>` in the ``web.config`` file and work without any code written in the application at all 
-(even though providing an owin ClaimsAuthenticationManager for claims translation is highly recommended).
 
 Nuget Package to use: `Sustainsys.Saml2.HttpModule <https://www.nuget.org/packages/Sustainsys.Saml2.HttpModule/>`_
 
