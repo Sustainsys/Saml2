@@ -8,28 +8,12 @@ namespace Sustainsys.Saml2.Configuration
 	public class SecurityTokenHandlerConfiguration
     {
 		public static readonly bool DefaultDetectReplayedTokens = true;
-		public static readonly IssuerNameRegistry DefaultIssuerNameRegistry = new ConfigurationBasedIssuerNameRegistry();
 		public static readonly TimeSpan DefaultMaxClockSkew = new TimeSpan(0, 5, 0);
 		public static readonly bool DefaultSaveBootstrapContext = false;
 		public static readonly TimeSpan DefaultTokenReplayCacheExpirationPeriod = TimeSpan.MaxValue;
 		public static readonly X509RevocationMode DefaultRevocationMode = IdentityConfiguration.DefaultRevocationMode;
 
 		public bool DetectReplayedTokens { get; set; } = DefaultDetectReplayedTokens;
-
-		private IssuerNameRegistry issuerNameRegistry = DefaultIssuerNameRegistry;
-
-		public IssuerNameRegistry IssuerNameRegistry
-		{
-			get { return issuerNameRegistry; }
-			set
-			{
-				if (value == null)
-				{
-					throw new ArgumentNullException(nameof(value));
-				}
-				issuerNameRegistry = value;
-			}
-		}
 
 		public AudienceRestriction AudienceRestriction { get; set; } = new AudienceRestriction();
 
@@ -66,9 +50,5 @@ namespace Sustainsys.Saml2.Configuration
 		}
 
 		public ITokenReplayCache TokenReplayCache { get; set; } = new TokenReplayCache();
-
-		public SecurityTokenHandlerConfiguration()
-		{
-		}
 	}
 }

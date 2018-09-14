@@ -46,7 +46,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)Internal\EnumeratorTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Internal\PathHelperTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Internal\QueryStringHelperTests.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Internal\ReturnRequestedIssuerNameRegistryTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ManagedSHA256SignatureDescriptionTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Metadata\ContactTypeHelpersTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Metadata\MetadatabaseExtensionsTests.cs" />

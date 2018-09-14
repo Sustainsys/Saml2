@@ -10,7 +10,6 @@ namespace Sustainsys.Saml2.Configuration
 		public const string DefaultServiceName = "";
 		public static readonly TimeSpan DefaultMaxClockSkew = new TimeSpan(0, 5, 0);
 		internal const string DefaultMaxClockSkewString = "00:05:00";
-		public static readonly Type DefaultIssuerNameRegistryType = typeof(ConfigurationBasedIssuerNameRegistry);
 		public static readonly X509RevocationMode DefaultRevocationMode = X509RevocationMode.Online;
 		public static readonly StoreLocation DefaultTrustedStoreLocation = StoreLocation.LocalMachine;
 

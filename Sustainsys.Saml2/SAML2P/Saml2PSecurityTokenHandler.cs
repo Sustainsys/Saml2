@@ -35,7 +35,6 @@ namespace Sustainsys.Saml2.Saml2P
 
 	        Configuration = new SecurityTokenHandlerConfiguration
             {
-                IssuerNameRegistry = new ReturnRequestedIssuerNameRegistry(),
                 AudienceRestriction = GetAudienceRestriction(spOptions),
                 SaveBootstrapContext = spOptions.SystemIdentityModelIdentityConfiguration.SaveBootstrapContext
             };
