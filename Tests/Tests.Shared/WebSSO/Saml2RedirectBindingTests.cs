@@ -378,7 +378,7 @@ namespace Sustainsys.Saml2.Tests.WebSso
 
             Saml2Binding.Get(request)
                 .Invoking(b => b.Unbind(request, StubFactory.CreateOptions()))
-                .Should().Throw<InvalidSignatureException>()
+                .Should().Throw<InvalidSignatureException>("contents has been tampered with. Tampered URL: " + url)
                 .WithMessage("Message from https://idp.example.com failed signature verification");
         }
 
