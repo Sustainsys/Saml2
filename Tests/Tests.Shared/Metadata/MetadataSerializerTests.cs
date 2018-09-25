@@ -2578,9 +2578,7 @@ namespace Sustainsys.Saml2.Tests.Metadata
 				<Transforms>
 				  <ds:Transform 
 				   Algorithm='http://www.w3.org/TR/1999/REC-xpath-19991116'>
-					  <ds:XPath xmlns:rep='http://www.example.org/repository'>
-						self::text()[parent::rep:CipherValue[@Id='example1']]
-					  </ds:XPath>
+					  <ds:XPath xmlns:rep='http://www.example.org/repository'>self::text()[parent::rep:CipherValue[@Id='example1']]</ds:XPath>
 				  </ds:Transform>
 				  <ds:Transform Algorithm='http://www.w3.org/2000/09/xmldsig#base64'/>
 				</Transforms>
