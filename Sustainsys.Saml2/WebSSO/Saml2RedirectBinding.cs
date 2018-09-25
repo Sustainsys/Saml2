@@ -101,9 +101,8 @@ namespace Sustainsys.Saml2.WebSso
             }
             catch(FormatException ex)
             {
-                throw new FormatException($"\"{encodedPayload}\" is not a valid Base64 encoded string: {ex.Message}", ex);
+                throw new FormatException($"\'{encodedPayload}\' is not a valid Base64 encoded string: {ex.Message}", ex);
             }
-
         }
 
         private static TrustLevel GetTrustLevel(XmlElement documentElement, HttpRequestData request, IOptions options)
@@ -190,7 +189,7 @@ namespace Sustainsys.Saml2.WebSso
                     writer.Write(payload);
                 }
 
-                return System.Net.WebUtility.UrlEncode(Convert.ToBase64String(compressed.GetBuffer(), 0, (int)compressed.Length));
+                return Uri.EscapeDataString(Convert.ToBase64String(compressed.GetBuffer(), 0, (int)compressed.Length));
             }
         }
 
