@@ -23,7 +23,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)Configuration\SPOptionsExtensionsTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Configuration\SPOptionsTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Configuration\SustainsysSaml2SectionTests.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Configuration\TetClassAttribute.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Exceptions\BadFormatSamlResponseExceptionTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Exceptions\InvalidSignatureExceptionTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Exceptions\NoSamlResponseFoundExceptionTests.cs" />
