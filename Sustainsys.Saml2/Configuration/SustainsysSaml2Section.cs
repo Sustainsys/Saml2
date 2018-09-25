@@ -394,17 +394,5 @@ namespace Sustainsys.Saml2.Configuration
                 return (CompatibilityElement)base[compatibility];
             }
         }
-
-		/// <summary>
-		/// Set of identity configurations known to the service provider.
-		/// </summary>
-		[ConfigurationProperty("identityConfigurations")]
-		public IdentityConfigurationsElement IdentityConfigurations
-		{
-			get
-			{
-				return (IdentityConfigurationsElement)base["identityConfigurations"];
-			}
-		}
 	}
 }

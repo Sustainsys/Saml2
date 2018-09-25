@@ -18,64 +18,10 @@ namespace Sustainsys.Saml2.Saml2P
 	/// </summary>
 	public class Saml2PSecurityTokenHandler : Saml2SecurityTokenHandler
     {
-		public SecurityTokenHandlerConfiguration Configuration { get; private set; }
-
-		/// <summary>
-		/// Ctor
-		/// </summary>
-		/// <param name="spOptions">Options for the service provider that
-		/// this token handler should work with.</param>
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "sp")]
-        public Saml2PSecurityTokenHandler(SPOptions spOptions)
-        {
-            if (spOptions == null)
-            {
-                throw new ArgumentNullException(nameof(spOptions));
-            }
-
-	        Configuration = new SecurityTokenHandlerConfiguration
-            {
-                AudienceRestriction = GetAudienceRestriction(spOptions),
-                SaveBootstrapContext = spOptions.SystemIdentityModelIdentityConfiguration.SaveBootstrapContext
-            };
-
-			Serializer = new Saml2PSerializer()
-			{
-				IgnoreAuthenticationContext = spOptions.Compatibility.IgnoreAuthenticationContextInResponse
-			};
-        }
-
 		public Saml2PSecurityTokenHandler()
 		{
 			Serializer = new Saml2PSerializer();
 		}
-
-		protected override Saml2Conditions CreateConditions(SecurityTokenDescriptor tokenDescriptor)
-		{
-			var conditions = base.CreateConditions(tokenDescriptor);
-			conditions.AudienceRestrictions.Clear();
-			conditions.AudienceRestrictions.Add(
-				new Saml2AudienceRestriction(Configuration.AudienceRestriction
-					.AllowedAudienceUris.Select(x => x.ToString())));
-			return conditions;
-		}
-
-		/// <summary>
-		/// Create claims from the token.
-		/// </summary>
-		/// <param name="samlToken">The token to translate to claims.</param>
-		/// <returns>An identity with the created claims.</returns>
-		protected override ClaimsIdentity CreateClaimsIdentity(Saml2SecurityToken samlToken, string issuer, TokenValidationParameters validationParameters)
-        {
-            var identity = base.CreateClaimsIdentity(samlToken, issuer, validationParameters);
-
-            if (Configuration.SaveBootstrapContext)
-            {
-                identity.BootstrapContext = new BootstrapContext(samlToken, this);
-            }
-
-            return identity;
-        }
 
 		// Overridden to fix the fact that the base class version uses NotBefore as the token replay expiry time
 		// Due to the fact that we can't override the ValidateToken function (it's overridden in the base class!)
@@ -138,28 +84,5 @@ namespace Sustainsys.Saml2.Saml2P
 			// Just skip signature validation -- we do this elsewhere
 			return ReadSaml2Token(token);
 		}
-
-        /// <summary>
-        /// Check if an audience restriction from configuration should be
-        /// applied or if we should revert to the default behaviour of
-        /// restricting the audience to the entity id.
-        /// </summary>
-        /// <param name="spOptions">Sp Options with configuration</param>
-        /// <returns>Configured or created audience restriction.</returns>
-        private static AudienceRestriction GetAudienceRestriction(SPOptions spOptions)
-        {
-            var audienceRestriction = spOptions.SystemIdentityModelIdentityConfiguration.AudienceRestriction;
-
-            if (audienceRestriction.AudienceMode != AudienceUriMode.Never
-                && !audienceRestriction.AllowedAudienceUris.Any())
-            {
-                // Create a new instance instead of modifying the one from the
-                // configuration.
-                audienceRestriction = new AudienceRestriction(audienceRestriction.AudienceMode);
-                audienceRestriction.AllowedAudienceUris.Add(new Uri(spOptions.EntityId.Id));
-            }
-
-            return audienceRestriction;
-        }
     }
 }

@@ -22,7 +22,6 @@ namespace Sustainsys.Saml2.Configuration
         /// </summary>
         public SPOptions()
         {
-            systemIdentityModelIdentityConfiguration = new IdentityConfiguration(false);
 			MetadataCacheDuration = new XsdDuration(hours: 1);
             Compatibility = new Compatibility();
             OutboundSigningAlgorithm = XmlHelpers.GetDefaultSigningAlgorithmName();
@@ -39,7 +38,6 @@ namespace Sustainsys.Saml2.Configuration
             {
                 throw new ArgumentNullException(nameof(configSection));
             }
-            systemIdentityModelIdentityConfiguration = new IdentityConfiguration(true);
 
             ReturnUrl = configSection.ReturnUrl;
             MetadataCacheDuration = configSection.Metadata.CacheDuration;
@@ -107,7 +105,7 @@ namespace Sustainsys.Saml2.Configuration
                 if(value == null)
                 {
                     // Set the saved value, but don't trust it - still use a local var for the return.
-                    saml2PSecurityTokenHandler = value = new Saml2PSecurityTokenHandler(this);
+                    saml2PSecurityTokenHandler = value = new Saml2PSecurityTokenHandler();
                 }
 
                 return value;
@@ -224,19 +222,6 @@ namespace Sustainsys.Saml2.Configuration
             get
             {
                 return attributeConsumingServices;
-            }
-        }
-
-        private IdentityConfiguration systemIdentityModelIdentityConfiguration;
-
-        /// <summary>
-        /// The System.IdentityModel configuration to use.
-        /// </summary>
-        public IdentityConfiguration SystemIdentityModelIdentityConfiguration
-        {
-            get
-            {
-                return systemIdentityModelIdentityConfiguration;
             }
         }
 

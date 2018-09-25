@@ -22,6 +22,7 @@ using EncryptingCredentials = Microsoft.IdentityModel.Tokens.EncryptingCredentia
 using SecurityAlgorithms = Microsoft.IdentityModel.Tokens.SecurityAlgorithms;
 using SigningCredentials = Microsoft.IdentityModel.Tokens.SigningCredentials;
 using X509SecurityKey = Microsoft.IdentityModel.Tokens.X509SecurityKey;
+using System.Collections.Generic;
 
 namespace Sustainsys.Saml2.Tests.Saml2P
 {
@@ -495,8 +496,14 @@ namespace Sustainsys.Saml2.Tests.Saml2P
         }
 
         [TestMethod]
-        public void Saml2Response_GetClaims_BadAuthnContext_IgnoredWhenConfigured()
+        public void Saml2Response_GetClaims_BadAuthnContextAccepted()
         {
+            // With System.IdentityModel the spec's requirement that all URIs are absolute
+            // was enforced. Some Idps send non-absolute URIs as the AuthnContextClassRef and
+            // thus a compatibility setting was added to work around it. With Microsoft.IdentityModel
+            // the absolute URI requirement is no longer enforced, so the compatibility is gone. But I
+            // keep the test to ensure that a non-absolute URI doesn't break things.
+
             var response =
             @"<?xml version=""1.0"" encoding=""UTF-8""?>
             <saml2p:Response xmlns:saml2p=""urn:oasis:names:tc:SAML:2.0:protocol""
@@ -526,11 +533,15 @@ namespace Sustainsys.Saml2.Tests.Saml2P
             var signedResponse = SignedXmlHelper.SignXml(response);
 
             var options = StubFactory.CreateOptions();
-            options.SPOptions.Compatibility.IgnoreAuthenticationContextInResponse = true;
-            var result = Saml2Response.Read(signedResponse).GetClaims(options);
+
+            IEnumerable<ClaimsIdentity> result = null;
+            
+            Action a = () => result = Saml2Response.Read(signedResponse).GetClaims(options);
+
+            a.Should().NotThrow();
 
             var authMethodClaim = result.Single().Claims.SingleOrDefault(c => c.Type == ClaimTypes.AuthenticationMethod);
-            authMethodClaim.Should().BeNull("the authentication method claim should not be generated");
+            authMethodClaim.Should().Be("whatever");
 
             var nameidClaim = result.Single().Claims.SingleOrDefault(c => c.Type == ClaimTypes.NameIdentifier);
             nameidClaim.Should().NotBeNull("the subject nameid claim should be generated");

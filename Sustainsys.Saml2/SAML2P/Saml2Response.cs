@@ -558,27 +558,12 @@ namespace Sustainsys.Saml2.Saml2P
 			validationParameters.ValidateIssuer = false;
 
 			var handler = options.SPOptions.Saml2PSecurityTokenHandler;
-			var audienceRestriction = handler.Configuration.AudienceRestriction;
-			var allowedAudiences = audienceRestriction.AllowedAudienceUris
+			var allowedAudiences = validationParameters.ValidAudiences
 				.ToLookup(x => x.ToString(), StringComparer.Ordinal);
 			validationParameters.AudienceValidator = (audiences, token, validationParameters_) =>
 			{
-				if ((audienceRestriction.AudienceMode == Tokens.AudienceUriMode.BearerKeyOnly &&
-						token.SecurityKey == null) ||
-					audienceRestriction.AudienceMode == Tokens.AudienceUriMode.Always)
-				{
-					return audiences.Any(x => allowedAudiences.Contains(x));
-				}
-				return true;
+				return audiences.Any(x => allowedAudiences.Contains(x));
 			};
-			validationParameters.ClockSkew = options.SPOptions
-				.SystemIdentityModelIdentityConfiguration.MaxClockSkew;
-			var idConfig = options.SPOptions.SystemIdentityModelIdentityConfiguration;
-			if (idConfig.DetectReplayedTokens)
-			{
-				validationParameters.ValidateTokenReplay = true;
-				validationParameters.TokenReplayCache = idConfig.TokenReplayCache;
-			}
 			validationParameters.IssuerSigningKeys = options.SPOptions
 				.ServiceCertificates.Select(x => new X509SecurityKey(x.Certificate));
 

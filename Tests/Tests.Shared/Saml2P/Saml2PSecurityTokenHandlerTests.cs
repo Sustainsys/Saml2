@@ -14,23 +14,13 @@ namespace Sustainsys.Saml2.Tests.Saml2P
     public class Saml2PSecurityTokenHandlerTests
     {
         [TestMethod]
-        public void Saml2PSecurityTokenHandler_Ctor_Nullcheck()
-        {
-            Action a = () => new Saml2PSecurityTokenHandler(null);
-
-            a.Should().Throw<ArgumentNullException>().And.ParamName.Should().Be("spOptions");
-        }
-
-        [TestMethod]
         public void Saml2PSecurityTokenHandler_ShouldHaveDefaultAudienceRestrictionOfEntityId()
         {
             var spOptions = StubFactory.CreateSPOptions();
-            spOptions.SystemIdentityModelIdentityConfiguration.AudienceRestriction.AudienceMode
-                 = AudienceUriMode.Always;
 
             spOptions.EntityId.Id = "http://testuri/";
 
-            var subject = new Saml2PSecurityTokenHandler(spOptions);
+            var subject = new Saml2PSecurityTokenHandler();
 
             subject.Configuration.AudienceRestriction.AllowedAudienceUris.First().AbsoluteUri.Should().Be("http://testuri/");
         }

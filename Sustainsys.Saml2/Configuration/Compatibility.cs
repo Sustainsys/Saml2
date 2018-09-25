@@ -57,14 +57,6 @@ namespace Sustainsys.Saml2.Configuration
         public bool StrictOwinAuthenticationMode { get; set; }
 
         /// <summary>
-        /// Do not read the AuthnContext element in Saml2Response.
-        /// If you do not need these values to be present as claims in the generated
-        /// identity, using this option can prevent XML format errors (ID0013)
-        /// e.g. when value cannot parse as absolute URI
-        /// </summary>
-        public bool IgnoreAuthenticationContextInResponse { get; set; }
-
-        /// <summary>
         /// Ignore the check for the missing InResponseTo attribute in the Saml response.
         /// This is different to setting the allowUnsolicitedAuthnResponse as it will only
         /// ignore the InResponseTo attribute if there is no relayState. Setting

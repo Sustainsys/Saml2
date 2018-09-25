@@ -45,7 +45,6 @@ namespace Sustainsys.Saml2.Saml2P
 	// - ignore authentication context if configured to do so
 	class Saml2PSerializer : Saml2Serializer
 	{
-		public bool IgnoreAuthenticationContext { get; set; }
 		public ICollection<X509Certificate2> DecryptionCertificates { get; set; }
 
 		/// <summary>
@@ -149,14 +148,7 @@ namespace Sustainsys.Saml2.Saml2P
 					else if (envelopeReader.IsStartElement(Saml2Constants.Elements.AttributeStatement, Saml2Constants.Namespace))
 						statement = ReadAttributeStatement(envelopeReader);
 					else if (envelopeReader.IsStartElement(Saml2Constants.Elements.AuthnStatement, Saml2Constants.Namespace))
-					{
-						if (IgnoreAuthenticationContext)
-						{
-							envelopeReader.Skip();
-							continue;
-						}
 						statement = ReadAuthenticationStatement(envelopeReader);
-					}
 					else if (envelopeReader.IsStartElement(Saml2Constants.Elements.AuthzDecisionStatement, Saml2Constants.Namespace))
 						statement = ReadAuthorizationDecisionStatement(envelopeReader);
 					else
