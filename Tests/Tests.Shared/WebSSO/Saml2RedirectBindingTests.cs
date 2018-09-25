@@ -370,7 +370,7 @@ namespace Sustainsys.Saml2.Tests.WebSso
         [TestMethod]
         public void Saml2RedirectBinding_Unbind_ThrowsOnSignatureWithTamperedData_SAMLRequest()
         {
-            var url = CreateAndBindMessageWithSignature(messageName: "SAMLRequest").Location.ToString();
+            var url = CreateAndBindMessageWithSignature(messageName: "SAMLRequest").Location.OriginalString;
 
             url = url.Replace("RelayState=", "RelayState=X");
 
@@ -385,7 +385,7 @@ namespace Sustainsys.Saml2.Tests.WebSso
         [TestMethod]
         public void Saml2RedirectBinding_Unbind_ThrowsOnSignatureWithTamperedData_SAMLResponse()
         {
-            var url = CreateAndBindMessageWithSignature(messageName: "SAMLResponse").Location.ToString();
+            var url = CreateAndBindMessageWithSignature(messageName: "SAMLResponse").Location.OriginalString;
 
             url = url.Replace("RelayState=", "RelayState=X");
 
@@ -403,7 +403,7 @@ namespace Sustainsys.Saml2.Tests.WebSso
             // The stub idp uses the binding, but doesn't provide an options
             // instance - enable it to do so by ignoring certificates.
 
-            var url = CreateAndBindMessageWithSignature(messageName: "SAMLResponse").Location.ToString();
+            var url = CreateAndBindMessageWithSignature(messageName: "SAMLResponse").Location.OriginalString;
 
             var request = new HttpRequestData("GET", new Uri(url));
 
