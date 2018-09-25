@@ -29,9 +29,10 @@ Included items must then not match any entries in the exclude list to remain inc
               <Include>
               </Include>
               <Exclude>
-                <ModulePath>.*tests\.dll</ModulePath>
+                <ModulePath>.*tests.*\.dll</ModulePath>
                 <ModulePath>.*testhelpers\.dll</ModulePath>
                 <ModulePath>.*fluentassertions.*\.dll</ModulePath>
+                <ModulePath>*Microsoft.IdentityModel.*</ModulePath>
               </Exclude>
             </ModulePaths>
 
