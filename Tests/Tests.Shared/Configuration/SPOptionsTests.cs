@@ -43,8 +43,6 @@ namespace Sustainsys.Saml2.Tests.Configuration
             };
 
             subject.Saml2PSecurityTokenHandler.Should().NotBeNull();
-            subject.Saml2PSecurityTokenHandler.Configuration.AudienceRestriction.AllowedAudienceUris
-                .Should().Contain(new Uri(entityId));
         }
 
         [TestMethod]
@@ -556,7 +554,7 @@ namespace Sustainsys.Saml2.Tests.Configuration
         {
             var subject = StubFactory.CreateSPOptions();
 
-            var handler = new Saml2PSecurityTokenHandler(subject);
+            var handler = new Saml2PSecurityTokenHandler();
 
             subject.Saml2PSecurityTokenHandler = handler;
 

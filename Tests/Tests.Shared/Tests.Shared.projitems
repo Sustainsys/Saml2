@@ -63,7 +63,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)Saml2P\Saml2IdpEntryTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Saml2P\Saml2LogoutRequestTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Saml2P\Saml2LogoutResponseTests.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Saml2P\Saml2PSecurityTokenHandlerTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Saml2P\Saml2RequestBaseTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Saml2P\Saml2ResponseTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Saml2P\Saml2ScopingTests.cs" />

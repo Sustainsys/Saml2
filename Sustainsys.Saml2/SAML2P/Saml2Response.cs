@@ -556,14 +556,9 @@ namespace Sustainsys.Saml2.Saml2P
 			validationParameters.AuthenticationType = "Federation";
 			validationParameters.RequireSignedTokens = false;
 			validationParameters.ValidateIssuer = false;
+            validationParameters.ValidAudience = options.SPOptions.EntityId.Id;
 
 			var handler = options.SPOptions.Saml2PSecurityTokenHandler;
-			var allowedAudiences = validationParameters.ValidAudiences
-				.ToLookup(x => x.ToString(), StringComparer.Ordinal);
-			validationParameters.AudienceValidator = (audiences, token, validationParameters_) =>
-			{
-				return audiences.Any(x => allowedAudiences.Contains(x));
-			};
 			validationParameters.IssuerSigningKeys = options.SPOptions
 				.ServiceCertificates.Select(x => new X509SecurityKey(x.Certificate));
 
