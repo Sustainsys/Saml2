@@ -46,7 +46,7 @@ namespace Sustainsys.Saml2.Tests
         [TestMethod]
         public void IdentityProvider_CreateAuthenticateRequest_DestinationInXml()
         {
-            string idpUri = "https://idp.example.com:443/";
+            string idpUri = "http://idp.example.com/";
 
             var subject = new IdentityProvider(
                 new EntityId(idpUri),
