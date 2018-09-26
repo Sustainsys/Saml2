@@ -46,7 +46,8 @@ namespace Sustainsys.Saml2.Tests
         [TestMethod]
         public void IdentityProvider_CreateAuthenticateRequest_DestinationInXml()
         {
-            string idpUri = "http://idp.example.com/";
+            // %41 is A, which doesn't need to be encoded. Ensure it is kept in original format.
+            string idpUri = "http://idp.example.com/x=%41";
 
             var subject = new IdentityProvider(
                 new EntityId(idpUri),
