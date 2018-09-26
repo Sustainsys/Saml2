@@ -1990,14 +1990,14 @@ namespace Sustainsys.Saml2.Metadata
 			{
 				if (reader.IsStartElement("RoleDescriptor", Saml2MetadataNs))
 				{
-					string xsi = reader.GetAttribute("xsi", XsiNs);
-					int colonPos = xsi.IndexOf(':');
+					string xsiType = reader.GetAttribute("type", XsiNs);
+					int colonPos = xsiType.IndexOf(':');
 					if (colonPos < 0)
 					{
-						throw new MetadataSerializationException($"Invalid RoleDescriptor extension type {xsi}");
+						throw new MetadataSerializationException($"Invalid RoleDescriptor extension type {xsiType}");
 					}
-					string extensionNs = reader.LookupNamespace(xsi.Substring(0, colonPos));
-					string extensionType = xsi.Substring(colonPos + 1);
+					string extensionNs = reader.LookupNamespace(xsiType.Substring(0, colonPos));
+					string extensionType = xsiType.Substring(colonPos + 1);
 
 					RoleDescriptor roleDescriptor = null;
 					if (String.Equals(extensionNs, FedNs, StringComparison.Ordinal))
@@ -2015,7 +2015,7 @@ namespace Sustainsys.Saml2.Metadata
 					}
 					if (roleDescriptor == null)
 					{
-						ReadCustomRoleDescriptor(xsi, reader, descriptor);
+						ReadCustomRoleDescriptor(xsiType, reader, descriptor);
 					}
 				}
 				else if (reader.IsStartElement("IDPSSODescriptor", Saml2MetadataNs))
