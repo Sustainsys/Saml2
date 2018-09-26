@@ -516,10 +516,6 @@ namespace Sustainsys.Saml2.Saml2P
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1024:UsePropertiesWhereAppropriate")]
         public IEnumerable<ClaimsIdentity> GetClaims(IOptions options)
         {
-            if (options == null)
-            {
-                throw new ArgumentNullException(nameof(options));
-            }
             if (createClaimsException != null)
             {
                 throw createClaimsException;
