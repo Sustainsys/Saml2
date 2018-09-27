@@ -1,13 +1,6 @@
-Version 1.0.0
-* Bug fix: Asp.Net Core2 handler, incorrect signed redirect messages.
-
-Version 0.24.0
-* Bug fix: Asp.Net Core2 handler with null AuthenticationProperties now works.
-* Bug fix: Error handling in Owin middleware with null/missing return url.
-* Compatibility setting to ignore missing InResponseTo
-
-Version 0.23.0
-* Project renamed to Sustainsys.Saml2
-* No other changes since 0.22.0
+Version 2.0.0
+* Core library is now .NET Standard. HttpModule, MVC and Owin works
+  on full .NET Framework. Asp.NET Core2 handler on both the full
+  .NET Framework and on .NET Core.
 
 See GitHub milestone issue list for details.
