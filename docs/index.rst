@@ -24,6 +24,9 @@ Licensing
 ---------
 The library is licensed under the `GNU Lesser General Public License (LPGL) <https://www.gnu.org/licenses/lgpl-3.0.en.html>`_.
 
+Starting with version 2.0.0, the license has been changed to the `MIT license <https://tldrlegal.com/license/mit-license>`_.
+
+
 .. toctree::
    :maxdepth: 2 
    :hidden:  
