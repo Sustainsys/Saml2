@@ -47,7 +47,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = 'Sustainsys.Saml2'
-copyright = '2018, Anders Abel'
+copyright = '2018, Sustainsys and Contributors'
 author = 'Anders Abel'
 
 # The version info for the project you're documenting, acts as replacement for
