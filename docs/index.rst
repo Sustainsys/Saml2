@@ -22,7 +22,11 @@ See :doc:`getting-started` for all the details.
 
 Licensing
 ---------
-The library is licensed under the `GNU Lesser General Public License (LPGL) <https://www.gnu.org/licenses/lgpl-3.0.en.html>`_.
+The library is licensed under the `MIT license <https://github.com/Sustainsys/Saml2/blob/master/LICENSE>`_.
+
+The library was previously (before version 2.0.0) licensed under the 
+`GNU Lesser General Public License (LPGL) <https://www.gnu.org/licenses/lgpl-3.0.en.html>`_. Please note that
+the license change only applies to the new versions, the old versions are still under the LGPL license.
 
 .. toctree::
    :maxdepth: 2 
