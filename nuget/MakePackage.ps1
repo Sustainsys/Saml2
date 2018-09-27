@@ -66,11 +66,13 @@ Update-Csproj("Sustainsys.Saml2.AspNetCore2")
 
 echo "Building packages..."
 
-dotnet pack -c Release -o ..\nuget Sustainsys.Saml2\Sustainsys.Saml2.csproj /p:Version=0.24
+$version = [regex]::match((sls -Pattern AssemblyVersion .\VersionInfo.cs), '.*Version\("(.*)\".*').Groups[1].Value
+
+dotnet pack -c Release -o ..\nuget Sustainsys.Saml2\Sustainsys.Saml2.csproj /p:Version=$version
 nuget pack -build -outputdirectory nuget Sustainsys.Saml2.Mvc\Sustainsys.Saml2.Mvc.csproj
 nuget pack -build -outputdirectory nuget Sustainsys.Saml2.Owin\Sustainsys.Saml2.Owin.csproj
 nuget pack -build -outputdirectory nuget Sustainsys.Saml2.HttpModule\Sustainsys.Saml2.HttpModule.csproj
-dotnet pack -c Release -o ..\nuget Sustainsys.Saml2.AspNetCore2\Sustainsys.Saml2.AspNetCore2.csproj /p:Version=0.24
+dotnet pack -c Release -o ..\nuget Sustainsys.Saml2.AspNetCore2\Sustainsys.Saml2.AspNetCore2.csproj /p:Version=$version
 
 copy Sustainsys.Saml2\Sustainsys.Saml2.csproj.bak Sustainsys.Saml2\Sustainsys.Saml2.csproj
 del Sustainsys.Saml2\Sustainsys.Saml2.csproj.bak 
