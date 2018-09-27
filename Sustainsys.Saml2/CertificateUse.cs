@@ -6,7 +6,7 @@
     public enum CertificateUse
     {
         /// <summary>
-        /// The certificate is used for either or encryption, or both
+        /// The certificate is used for either signing or encryption, or both
         /// </summary>
         Both = 0,
 
