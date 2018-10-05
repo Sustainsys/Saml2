@@ -27,13 +27,11 @@ Included items must then not match any entries in the exclude list to remain inc
             <!-- Match assembly file paths: -->
             <ModulePaths>
               <Include>
+                <!-- Matches full, lowercase path. First ensure we're in the test directory, to avoid
+                "sustainsys.saml2" matching the repo directory. Then select the right files.-->
+                <ModulePath>.*tests.*sustainsys.saml2.*</ModulePath>
               </Include>
-              <Exclude>
-                <ModulePath>.*tests.*\.dll</ModulePath>
-                <ModulePath>.*testhelpers\.dll</ModulePath>
-                <ModulePath>.*fluentassertions.*\.dll</ModulePath>
-                <ModulePath>*Microsoft.IdentityModel.*</ModulePath>
-              </Exclude>
+              <Exclude />
             </ModulePaths>
 
             <!-- Match attributes on any code element: -->
