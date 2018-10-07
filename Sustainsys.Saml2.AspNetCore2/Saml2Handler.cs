@@ -67,10 +67,10 @@ namespace Sustainsys.Saml2.AspNetCore2
 
         private string CurrentUri
         {
-            get => context.Request.Scheme + "://" 
-                + context.Request.Host 
-                + context.Request.PathBase 
-                + context.Request.Path 
+            get => context.Request.Scheme + "://"
+                + context.Request.Host
+                + context.Request.PathBase
+                + context.Request.Path
                 + context.Request.QueryString;
         }
 
@@ -85,8 +85,16 @@ namespace Sustainsys.Saml2.AspNetCore2
 
             var requestData = context.ToHttpRequestData(null);
 
+
+            Metadata.EntityId entityId = null;
+
+            if (properties.Items.TryGetValue("idp", out var entityIdString))
+            {
+                entityId = new Metadata.EntityId(entityIdString);
+            }
+
             var result = SignInCommand.Run(
-                null,
+                entityId,
                 redirectUri,
                 requestData,
                 options,
@@ -105,7 +113,7 @@ namespace Sustainsys.Saml2.AspNetCore2
         /// <InheritDoc />
         public async Task<bool> HandleRequestAsync()
         {
-            if(context.Request.Path.StartsWithSegments(options.SPOptions.ModulePath, StringComparison.Ordinal))
+            if (context.Request.Path.StartsWithSegments(options.SPOptions.ModulePath, StringComparison.Ordinal))
             {
                 var commandName = context.Request.Path.Value.Substring(
                     options.SPOptions.ModulePath.Length).TrimStart('/');
