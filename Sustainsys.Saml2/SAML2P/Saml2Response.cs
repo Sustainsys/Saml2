@@ -555,8 +555,6 @@ namespace Sustainsys.Saml2.Saml2P
             validationParameters.ValidAudience = options.SPOptions.EntityId.Id;
 
 			var handler = options.SPOptions.Saml2PSecurityTokenHandler;
-			validationParameters.IssuerSigningKeys = options.SPOptions
-				.ServiceCertificates.Select(x => new X509SecurityKey(x.Certificate));
 
 			foreach (XmlElement assertionNode in GetAllAssertionElementNodes(options))
             {
