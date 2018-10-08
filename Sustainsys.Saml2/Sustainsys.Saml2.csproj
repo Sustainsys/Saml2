@@ -8,11 +8,20 @@
     <PackageProjectUrl>https://github.com/Sustainsys/Saml2</PackageProjectUrl>
     <PackageIconUrl>https://raw.github.com/Sustainsys/Saml2/master/nuget/Sustainsys.png</PackageIconUrl>
     <PackageTags>SAML2 authentication AspNet SAML SSO</PackageTags>
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <DebugType>full</DebugType>
     <DebugSymbols>true</DebugSymbols>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <DocumentationFile>C:\git\Sustainsys.Saml2\Sustainsys.Saml2\bin\Sustainsys.Saml2.xml</DocumentationFile>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <NoWarn>1701;1702;1591</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>
