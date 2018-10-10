@@ -18,7 +18,7 @@ namespace Sustainsys.Saml2.Tests.Configuration
             var metadata = StubFactory.CreateSPOptions().CreateMetadata(StubFactory.CreateSaml2Urls());
 
             metadata.CacheDuration.Should().Be(new XsdDuration(seconds: 42));
-            metadata.EntityId.Id.Should().Be("https://github.com/SustainsysIT/Saml2");
+            metadata.EntityId.Id.Should().Be("https://github.com/Sustainsys/Saml2");
 
             var spMetadata = metadata.RoleDescriptors.OfType<SpSsoDescriptor>().Single();
             spMetadata.Should().NotBeNull();
