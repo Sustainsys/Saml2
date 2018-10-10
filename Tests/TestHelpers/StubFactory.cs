@@ -31,12 +31,12 @@ namespace Sustainsys.Saml2.TestHelpers
             org.Names.Add(new LocalizedName("Sustainsys.Saml2", "en"));
             org.DisplayNames.Add(new LocalizedName("Sustainsys Saml2", "en"));
             org.Urls.Add(new LocalizedUri(
-                new Uri("http://github.com/SustainsysIT/Saml2"),
+                new Uri("http://github.com/Sustainsys/Saml2"),
 				"en"));
 
             var options = new SPOptions
             {
-                EntityId = new EntityId("https://github.com/SustainsysIT/Saml2"),
+                EntityId = new EntityId("https://github.com/Sustainsys/Saml2"),
                 MetadataCacheDuration = new XsdDuration(seconds: 42),
                 MetadataValidDuration = TimeSpan.FromDays(24),
                 WantAssertionsSigned = true,

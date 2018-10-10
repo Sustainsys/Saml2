@@ -92,6 +92,8 @@ namespace Sustainsys.Saml2.Mvc
                 Request.ToHttpRequestData(),
                 Options);
 
+            result.ApplyHeaders(Response);
+
             if (result.HandledResult)
             {
                 throw new NotSupportedException("The MVC controller doesn't support setting CommandResult.HandledResult.");

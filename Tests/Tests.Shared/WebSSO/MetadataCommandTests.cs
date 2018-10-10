@@ -9,6 +9,7 @@ using Sustainsys.Saml2.Tests.Helpers;
 using System.Security.Cryptography.Xml;
 using Sustainsys.Saml2.TestHelpers;
 using Sustainsys.Saml2.Tokens;
+using System.Collections.Generic;
 
 namespace Sustainsys.Saml2.Tests.WebSso
 {
@@ -63,7 +64,7 @@ namespace Sustainsys.Saml2.Tests.WebSso
             payloadXml.DocumentElement.Attributes.Remove("validUntil");
 
             var expectedXml =
-            "<EntityDescriptor entityID=\"https://github.com/SustainsysIT/Saml2\" cacheDuration=\"PT42S\" xmlns:saml2=\"urn:oasis:names:tc:SAML:2.0:assertion\" xmlns=\"urn:oasis:names:tc:SAML:2.0:metadata\">"
+            "<EntityDescriptor entityID=\"https://github.com/Sustainsys/Saml2\" cacheDuration=\"PT42S\" xmlns:saml2=\"urn:oasis:names:tc:SAML:2.0:assertion\" xmlns=\"urn:oasis:names:tc:SAML:2.0:metadata\">"
             + "<SPSSODescriptor AuthnRequestsSigned=\"true\" WantAssertionsSigned=\"true\" protocolSupportEnumeration=\"urn:oasis:names:tc:SAML:2.0:protocol\">"
             + "<Extensions>"
             + "<DiscoveryResponse Binding=\"urn:oasis:names:tc:SAML:profiles:SSO:idp-discovery-protocol\" Location=\"http://localhost/Saml2/SignIn\" index=\"0\" isDefault=\"true\" xmlns=\"urn:oasis:names:tc:SAML:profiles:SSO:idp-discovery-protocol\" />"
@@ -85,7 +86,7 @@ namespace Sustainsys.Saml2.Tests.WebSso
             + "<Organization>"
             + "<OrganizationName xml:lang=\"en\">Sustainsys.Saml2</OrganizationName>"
             + "<OrganizationDisplayName xml:lang=\"en\">Sustainsys Saml2</OrganizationDisplayName>"
-            + "<OrganizationURL xml:lang=\"en\">http://github.com/SustainsysIT/Saml2</OrganizationURL>"
+            + "<OrganizationURL xml:lang=\"en\">http://github.com/Sustainsys/Saml2</OrganizationURL>"
             + "</Organization>"
             + "<ContactPerson contactType=\"support\">"
             + "<Company>Sustainsys</Company>"
@@ -101,6 +102,9 @@ namespace Sustainsys.Saml2.Tests.WebSso
 
             payloadXml.Should().BeEquivalentTo(XmlHelpers.XmlDocumentFromString(expectedXml));
             subject.ContentType.Should().Be("application/samlmetadata+xml");
+            subject.Headers.Should().BeEquivalentTo(new[] { new KeyValuePair<string, string> (
+                "Content-Disposition",
+                "attachment; filename=\"github.com_Sustainsys_Saml2.xml\"") });
         }
 
         [TestMethod]

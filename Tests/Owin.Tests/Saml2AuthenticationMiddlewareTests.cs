@@ -1252,10 +1252,12 @@ namespace Sustainsys.Saml2.Owin.Tests
                 new Saml2AuthenticationOptions(true));
 
             await middleware.Invoke(context);
-            context.Response.Body.Seek(0, SeekOrigin.Begin);
 
             context.Response.ContentType.Should().Contain("application/samlmetadata+xml");
+            context.Response.Headers["Content-Disposition"].Should().Be(
+                "attachment; filename=\"github.com_Sustainsys_Saml2.xml\"");
 
+            context.Response.Body.Seek(0, SeekOrigin.Begin);
             var xmlData = XDocument.Load(context.Response.Body);
 
             xmlData.Document.Root.Name.Should().Be(Saml2Namespaces.Saml2Metadata + "EntityDescriptor");

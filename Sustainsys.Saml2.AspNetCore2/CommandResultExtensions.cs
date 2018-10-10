@@ -41,6 +41,11 @@ namespace Sustainsys.Saml2.AspNetCore2
                     });
             }
 
+            foreach(var h in commandResult.Headers)
+            {
+                httpContext.Response.Headers.Add(h.Key, h.Value);
+            }
+
             if(!string.IsNullOrEmpty(commandResult.ClearCookieName))
             {
                 httpContext.Response.Cookies.Delete(commandResult.ClearCookieName);

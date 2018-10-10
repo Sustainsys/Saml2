@@ -5,6 +5,7 @@ using Sustainsys.Saml2.HttpModule;
 using Sustainsys.Saml2.Metadata;
 using Sustainsys.Saml2.WebSso;
 using System;
+using System.Collections.Specialized;
 using System.Linq;
 using System.Net;
 using System.Web;
@@ -164,5 +165,18 @@ namespace Sustainsys.Saml2.HttpModule.Tests
             response.Received().Write("Some Content!");
         }
 
+        [TestMethod]
+        public void CommandResultHttp_Apply_Headers()
+        {
+            var response = Substitute.For<HttpResponseBase>();
+
+            var commandResult = new CommandResult();
+
+            commandResult.Headers.Add("header", "value");
+
+            commandResult.Apply(response);
+
+            response.Received().AddHeader("header", "value");
+        }
     }
 }

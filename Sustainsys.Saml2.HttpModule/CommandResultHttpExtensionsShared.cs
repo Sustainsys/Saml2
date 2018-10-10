@@ -56,6 +56,29 @@ namespace Sustainsys.Saml2.HttpModule
         }
 
         /// <summary>
+        /// Apply headers of the command result to the response.
+        /// </summary>
+        /// <param name="commandResult">Command result containing headers.</param>
+        /// <param name="response">Response to set headers in.</param>
+        public static void ApplyHeaders(this CommandResult commandResult, HttpResponseBase response)
+        {
+            if(commandResult == null)
+            {
+                throw new ArgumentNullException(nameof(commandResult));
+            }
+
+            if(response == null)
+            {
+                throw new ArgumentNullException(nameof(response));
+            }
+
+            foreach (var h in commandResult.Headers)
+            {
+                response.AddHeader(h.Key, h.Value);
+            }
+        }
+
+        /// <summary>
         /// Establishes an application session by calling the session authentication module.
         /// </summary>
         [ExcludeFromCodeCoverage]
@@ -100,14 +123,13 @@ namespace Sustainsys.Saml2.HttpModule
         }
 
         [ExcludeFromCodeCoverage]
-        [SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", Justification = "Several words in the GitHub link")]
+        [SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", Justification = "Several words in the error message")]
         private static void EnsureSessionAuthenticationModuleAvailable()
         {
             if (FederatedAuthentication.SessionAuthenticationModule == null)
             {
                 throw new InvalidOperationException(
-                    "FederatedAuthentication.SessionAuthenticationModule is null, make sure you have loaded the SessionAuthenticationModule in web.config. " +
-                    "See https://github.com/SustainsysIT/Saml2/blob/master/docs/Configuration.md#loading-modules");
+                    "FederatedAuthentication.SessionAuthenticationModule is null, make sure you have loaded the SessionAuthenticationModule in web.config.");
             }
         }
     }

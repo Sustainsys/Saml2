@@ -24,7 +24,7 @@ namespace Sustainsys.Saml2.Owin.Tests
         {
             var subject = new Saml2AuthenticationOptions(true);
 
-            subject.SPOptions.EntityId.Id.Should().Be("https://github.com/SustainsysIT/Saml2");
+            subject.SPOptions.EntityId.Id.Should().Be("https://github.com/Sustainsys/Saml2");
 
             subject.IdentityProviders.IsEmpty.Should().BeFalse();
             subject.IdentityProviders[new EntityId("https://idp.example.com")]

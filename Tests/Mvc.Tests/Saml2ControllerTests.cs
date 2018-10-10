@@ -226,11 +226,15 @@ namespace Sustainsys.Saml2.Mvc.Tests
         [TestMethod]
         public void Saml2Controller_Metadata()
         {
-            var subject = ((ContentResult)CreateInstanceWithContext().Index());
+            var subject = CreateInstanceWithContext();
 
-            subject.ContentType.Should().Contain("application/samlmetadata+xml");
+            var result = (ContentResult)subject.Index();
 
-            var xmlData = XDocument.Parse(subject.Content);
+            result.ContentType.Should().Contain("application/samlmetadata+xml");
+
+            subject.Response.Received().AddHeader("Content-Disposition", "attachment; filename=\"github.com_Sustainsys_Saml2.xml\"");
+
+            var xmlData = XDocument.Parse(result.Content);
 
             xmlData.Root.Name.Should().Be(Saml2Namespaces.Saml2Metadata + "EntityDescriptor");
         }
