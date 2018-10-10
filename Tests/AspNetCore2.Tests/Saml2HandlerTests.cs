@@ -324,6 +324,10 @@ namespace Sustainsys.Saml2.AspNetCore2.Tests
 
             context.HttpContext.Response.StatusCode.Should().Be(200);
 
+            context.HttpContext.Response.Headers.Received().Add(
+                "Content-Disposition",
+                "attachment; filename=\"sp.example.com_saml2.xml\"");
+
 			var ms = context.HttpContext.Response.Body.As<MemoryStream>();
 			Encoding.UTF8.GetString(ms.GetBuffer(), 0, (int)ms.Length)
                 .Should().StartWith("<EntityDescriptor");

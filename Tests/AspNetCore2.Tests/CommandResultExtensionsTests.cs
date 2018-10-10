@@ -56,6 +56,8 @@ namespace Sustainsys.Saml2.AspNetCore2.Tests
                 }
             };
 
+            commandResult.Headers.Add("header", "value");
+
             ClaimsPrincipal principal = null;
             AuthenticationProperties authProps = null;
             var authService = Substitute.For<IAuthenticationService>();
@@ -79,6 +81,8 @@ namespace Sustainsys.Saml2.AspNetCore2.Tests
                 "Saml2.123", expectedCookieData, Arg.Is<CookieOptions>(co => co.HttpOnly && co.SameSite == SameSiteMode.None));
 
             context.Response.Cookies.Received().Delete("Clear-Cookie");
+
+            context.Response.Headers.Received().Add("header", "value");
 
             context.Response.ContentType
                 .Should().Be("application/json", "content type should be set");
