@@ -100,14 +100,13 @@ namespace Sustainsys.Saml2.HttpModule
         }
 
         [ExcludeFromCodeCoverage]
-        [SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", Justification = "Several words in the GitHub link")]
+        [SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", Justification = "Several words in the error message")]
         private static void EnsureSessionAuthenticationModuleAvailable()
         {
             if (FederatedAuthentication.SessionAuthenticationModule == null)
             {
                 throw new InvalidOperationException(
-                    "FederatedAuthentication.SessionAuthenticationModule is null, make sure you have loaded the SessionAuthenticationModule in web.config. " +
-                    "See https://github.com/SustainsysIT/Saml2/blob/master/docs/Configuration.md#loading-modules");
+                    "FederatedAuthentication.SessionAuthenticationModule is null, make sure you have loaded the SessionAuthenticationModule in web.config.");
             }
         }
     }
