@@ -142,5 +142,18 @@ namespace Sustainsys.Saml2.Owin.Tests
             context.Response.StatusCode.Should().Be(303);
             context.Response.Headers["Location"].Should().Be(redirectUrl);
         }
+
+        [TestMethod]
+        public void CommandResult_Apply_Headers()
+        {
+            var cr = new CommandResult();
+            cr.Headers.Add("header", "value");
+
+            var context = OwinTestHelpers.CreateOwinContext();
+
+            cr.Apply(context, null);
+
+            context.Response.Headers["header"].Should().Be("value");
+        }
     }
 }

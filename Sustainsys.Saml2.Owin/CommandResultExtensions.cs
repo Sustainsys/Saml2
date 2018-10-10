@@ -38,6 +38,11 @@ namespace Sustainsys.Saml2.Owin
                 context.Authentication.SignOut();
             }
 
+            foreach(var h in commandResult.Headers)
+            {
+                context.Response.Headers[h.Key] = h.Value;
+            }
+
             ApplyCookies(commandResult, context, dataProtector);
 
             // Write the content last, it causes the headers to be flushed
