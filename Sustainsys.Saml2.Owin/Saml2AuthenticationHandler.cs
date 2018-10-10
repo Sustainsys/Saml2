@@ -122,7 +122,7 @@ namespace Sustainsys.Saml2.Owin
                     // Don't serialize the RedirectUri twice.
                     challenge.Properties.RedirectUri = null;
 
-                    if (redirectUri == null && Options.AuthenticationMode == AuthenticationMode.Active)
+                    if (redirectUri == null)
                     {
                         redirectUri = Context.Request.Uri.ToString();
                     }

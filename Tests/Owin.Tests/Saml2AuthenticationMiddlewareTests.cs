@@ -690,10 +690,9 @@ namespace Sustainsys.Saml2.Owin.Tests
         }
 
         [TestMethod]
-        public async Task Saml2AuthenticationMiddleware_UsesReturnUrl_WhenActive()
+        public async Task Saml2AuthenticationMiddleware_StoresCurrentUrlIfNoneInAuthProps()
         {
             var options = new Saml2AuthenticationOptions(true);
-            options.AuthenticationMode = AuthenticationMode.Active;
             var middleware = new Saml2AuthenticationMiddleware(
                 new StubOwinMiddleware(401,
                     new AuthenticationResponseChallenge(
@@ -709,24 +708,6 @@ namespace Sustainsys.Saml2.Owin.Tests
             await middleware.Invoke(context);
             var storedAuthnData = ExtractRequestState(options.DataProtector, context);
             storedAuthnData.ReturnUrl.Should().Be( "http://host3/path3?p1=value1" );
-        }
-
-        [TestMethod]
-        public async Task Saml2AuthenticationMiddleware_UsesChallenge_WhenPassive()
-        {
-            var options = new Saml2AuthenticationOptions(true);
-            options.AuthenticationMode = AuthenticationMode.Passive;
-            var middleware = new Saml2AuthenticationMiddleware(
-                new StubOwinMiddleware(401,
-                    new AuthenticationResponseChallenge(
-                        new string[] { "Saml2" }, new AuthenticationProperties() ) ),
-                CreateAppBuilder(),
-                options);
-
-            var context = OwinTestHelpers.CreateOwinContext();
-            await middleware.Invoke(context);
-            var storedAuthnData = ExtractRequestState(options.DataProtector, context);
-            storedAuthnData.ReturnUrl.Should().BeNull();
         }
 
         [TestMethod]
