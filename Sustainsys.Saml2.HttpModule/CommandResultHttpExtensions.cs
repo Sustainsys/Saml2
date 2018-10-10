@@ -28,11 +28,7 @@ namespace Sustainsys.Saml2.HttpModule
             response.Cache.SetCacheability((HttpCacheability)commandResult.Cacheability);
 
             ApplyCookies(commandResult, response);
-
-            foreach(var h in commandResult.Headers)
-            {
-                response.Headers.Add(h.Key, h.Value);
-            }
+            ApplyHeaders(commandResult, response);
 
             if (commandResult.HttpStatusCode == HttpStatusCode.SeeOther || commandResult.Location != null)
             {

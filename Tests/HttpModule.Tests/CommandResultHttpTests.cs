@@ -169,7 +169,6 @@ namespace Sustainsys.Saml2.HttpModule.Tests
         public void CommandResultHttp_Apply_Headers()
         {
             var response = Substitute.For<HttpResponseBase>();
-            response.Headers.Returns(new NameValueCollection());
 
             var commandResult = new CommandResult();
 
@@ -177,9 +176,7 @@ namespace Sustainsys.Saml2.HttpModule.Tests
 
             commandResult.Apply(response);
 
-            response.Headers.Count.Should().Be(1);
-            response.Headers["header"].Should().Be("value");
+            response.Received().AddHeader("header", "value");
         }
-
     }
 }
