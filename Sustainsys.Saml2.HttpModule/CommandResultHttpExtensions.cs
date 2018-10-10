@@ -29,6 +29,11 @@ namespace Sustainsys.Saml2.HttpModule
 
             ApplyCookies(commandResult, response);
 
+            foreach(var h in commandResult.Headers)
+            {
+                response.Headers.Add(h.Key, h.Value);
+            }
+
             if (commandResult.HttpStatusCode == HttpStatusCode.SeeOther || commandResult.Location != null)
             {
                 if (commandResult.Location == null)
