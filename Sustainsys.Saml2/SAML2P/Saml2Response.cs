@@ -462,19 +462,18 @@ namespace Sustainsys.Saml2.Saml2P
             return decryptionCertificates;
         }
 
-        private void Validate(IOptions options)
+        private void Validate(IOptions options, IdentityProvider idp)
         {
-            CheckIfUnsolicitedIsAllowed(options);
-            ValidateSignature(options);
+            CheckIfUnsolicitedIsAllowed(options, idp);
+            ValidateSignature(options, idp);
         }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "RelayState")]
 
-        private void CheckIfUnsolicitedIsAllowed(IOptions options)
+        private void CheckIfUnsolicitedIsAllowed(IOptions options, IdentityProvider idp)
         {
             if (InResponseTo == null)
             {
-                var idp = options.IdentityProviders[Issuer];
                 if (idp.AllowUnsolicitedAuthnResponse)
                 {
                     options.SPOptions.Logger.WriteVerbose("Received unsolicited Saml Response " + Id 
@@ -487,9 +486,9 @@ namespace Sustainsys.Saml2.Saml2P
             }
         }
 
-        private void ValidateSignature(IOptions options)
+        private void ValidateSignature(IOptions options, IdentityProvider idp)
         {
-            var idpKeys = options.IdentityProviders[Issuer].SigningKeys;
+            var idpKeys = idp.SigningKeys;
 
             var minAlgorithm = options.SPOptions.MinIncomingSigningAlgorithm;
 
@@ -516,6 +515,20 @@ namespace Sustainsys.Saml2.Saml2P
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1024:UsePropertiesWhereAppropriate")]
         public IEnumerable<ClaimsIdentity> GetClaims(IOptions options)
         {
+            return GetClaims(options, null);
+        }
+        
+        /// <summary>
+        /// Extract claims from the assertions contained in the response.
+        /// </summary>
+        /// <param name="options">Service provider settings used when processing the response into claims.</param>
+        /// <param name="relayData">Relay data stored when creating AuthnRequest, to be passed on to
+        /// GetIdentityProvider notification.</param>
+        /// <returns>ClaimsIdentities</returns>
+        // Method might throw expections so make it a method and not a property.
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1024:UsePropertiesWhereAppropriate")]
+        public IEnumerable<ClaimsIdentity> GetClaims(IOptions options, IDictionary<string, string> relayData)
+        {
             if (createClaimsException != null)
             {
                 throw createClaimsException;
@@ -525,7 +538,8 @@ namespace Sustainsys.Saml2.Saml2P
             {
                 try
                 {
-                    claimsIdentities = CreateClaims(options).ToList();
+                    var idp = options.Notifications.GetIdentityProvider(Issuer, relayData, options);
+                    claimsIdentities = CreateClaims(options, idp).ToList();
                 }
                 catch (Exception ex)
                 {
@@ -537,9 +551,9 @@ namespace Sustainsys.Saml2.Saml2P
             return claimsIdentities;
         }
 
-        private IEnumerable<ClaimsIdentity> CreateClaims(IOptions options)
+        private IEnumerable<ClaimsIdentity> CreateClaims(IOptions options, IdentityProvider idp)
         {
-            Validate(options);
+            Validate(options, idp);
 
             if (status != Saml2StatusCode.Success)
             {
