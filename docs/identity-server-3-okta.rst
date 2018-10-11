@@ -20,9 +20,8 @@ Step 2: Configure an Application within Okta
 ---------------------------------------------
 If you don't already have an instance of Okta (or don't have access to one with admin / configuration privileges), you 
 can create a developer instance. Ultimately, you will want to add an "Application" to this instance. Add one, and 
-give it some kind of name, and you will get to the important part of configuring the application. I've included 
-a screenshot below with its "Show Advanced Settings" selected, and highlighted the 6 important parts of the 
-configuration. I'll explain each one in turn.
+give it some kind of name, and you will get to the important part of configuring the application. Below is the SAML
+settings screen and a description of how to specify these options.
 
 .. image:: OktaAppOptions.png
 
@@ -33,28 +32,20 @@ configuration. I'll explain each one in turn.
 
     * - Item
       - Explanation
-    * - Single Sign-On URL (A)
+    * - Single Sign-On URL
       - This is the *Assertion Consumer Service (ACS)* endpoint within the application. In our case, this is the core endpoint 
         of the app, plus ``/Saml2/Acs``. So if your Identity Server is at ``https://id.local/identity``, then your value here would 
         be ``https://id.local/identity/Saml2/Acs``.
-    * - Audience URI (B)
+    * - Audience URI
       - This should be the metadata URL of the audience (in this case, your identity server's SAML metadata), so use the 
         ACS endpoint minus the ACS. Carrying forward the example, this would be ``https://id.local/identity/Saml2``.
-    * - Name ID Format (C)
+    * - Name ID Format
       - This will be the Okta username for any of your users. I chose the ``X509SubjectName`` with Okta UserName. I’m 
         assuming that you’ve probably got some kind of custom user service within Identity Server to get your own 
         claims – or even if you don’t, you have the “Users” object defined with some hard coded users or something. What 
         you need to be able to do is determine YOUR username from something that Okta can pass back to you 
         for THEIR username. Choose from the available options, knowing that you may need to translate it a bit to get 
         to your username.
-    * - Request Compression (E)
-      - Change this to ``Compressed``. If you don't, you'll get a "Bad Request" error from within Okta. Working with 
-        their support team provided this resolution.
-    * - SAML Issuer ID (F)
-      - This has a default value of ``http://www.okta.com/${org.externalKey}`` and ``${org.externalKey}`` is the application 
-        id that Okta creates for you. I left this alone, which means that the Issuer ID will be in the form 
-        ``http://www.okta.com/``. You can see what your app id is by saving your configuration, and then choosing 
-        the “View Setup Instructions” option and reviewing the Identity Provider Issuer value. We will need that later.
 
 Step 3: Configure your identity server with the new identity provider
 ---------------------------------------------------------------------
@@ -64,6 +55,11 @@ that simply refer back to the Okta configuration points in Step 2.
 **Metadata**: You will need to provide the "metadata URL" in the code below. To get this, you can look at 
 the "Sign On" tab within the Okta application configuration area, and right-click the "Identity Provider metadata" link 
 and copy the URL.
+
+**Entity ID**: You can determine this by clicking the View Setup Instructions button and looking for 
+the "Identity Provider Issuer" value. 
+
+.. image:: OktaMetadata.png
 
 .. code-block:: csharp 
 
@@ -103,7 +99,7 @@ and copy the URL.
                 new EntityId("<OktaIssuerUri>"), saml2Options.SPOptions)  // from (F) above
                 {
                     LoadMetadata = true,
-                    MetadataUrl = new Uri("https://<OktaInstance>/app/<OktaAppId>/sso/saml/metadata") // see Metadata note above
+                    MetadataLocation = "https://<OktaInstance>/app/<OktaAppId>/sso/saml/metadata" // see Metadata note above
                 });
             
             app.UseSaml2Authentication(saml2Options);            
@@ -142,7 +138,7 @@ shown below.
         new EntityId(oktaEntityId), Ssml2Options.SPOptions)
         {
             LoadMetadata = true,
-            MetadataUrl = new Uri(oktaMetadataUrl),
+            MetadataLocation = oktaMetadataUrl,
             AllowUnsolicitedAuthnResponse = true
         });
 
@@ -309,7 +305,7 @@ The following code I put in a static class called ``Helpers-Okta`` and shows the
         var idp = new IdentityProvider(new EntityId(oktaEntityId), options)
         {
             LoadMetadata = true,
-            MetadataUrl = new Uri(oktaMetadataUrl),
+            MetadataLocation = oktaMetadataUrl,
             AllowUnsolicitedAuthnResponse = true
         };
         return idp;
