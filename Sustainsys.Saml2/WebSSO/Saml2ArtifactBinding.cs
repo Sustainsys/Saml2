@@ -119,7 +119,7 @@ namespace Sustainsys.Saml2.WebSso
         {
             if(storedRequestState != null)
             {
-                return options.IdentityProviders[storedRequestState.Idp];
+                return options.Notifications.GetIdentityProvider(storedRequestState.Idp, storedRequestState.RelayData, options);
             }
 
             // It is RECOMMENDED in the spec that the first part of the artifact
