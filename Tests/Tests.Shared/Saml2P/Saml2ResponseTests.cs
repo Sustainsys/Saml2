@@ -335,7 +335,7 @@ namespace Sustainsys.Saml2.Tests.Saml2P
                 IssueInstant=""2013-09-25T00:00:00Z"">
                     <saml2:Issuer>https://idp.example.com</saml2:Issuer>
                     <saml2:Subject>
-                        <saml2:NameID>Some<!--Comment-->User</saml2:NameID>
+                        <saml2:NameID>SomeUser</saml2:NameID>
                         <saml2:SubjectConfirmation Method=""urn:oasis:names:tc:SAML:2.0:cm:bearer"" />
                     </saml2:Subject>
                     <saml2:Conditions NotOnOrAfter=""2100-01-01T00:00:00Z"" />
@@ -343,7 +343,7 @@ namespace Sustainsys.Saml2.Tests.Saml2P
             </saml2p:Response>";
 
             var signedResponse = SignedXmlHelper.SignXml(response, false, true, XmlHelpers.GetDefaultSigningAlgorithmName(), SignedXml.XmlDsigC14NWithCommentsTransformUrl);
-            var modifiedSignedResponse = signedResponse.Replace("Some<!--Comment-->User", "Some<!--Comment2-->User");
+            var modifiedSignedResponse = signedResponse.Replace("SomeUser", "Some<!--Comment-->User");
 
             Action a = () => Saml2Response.Read(modifiedSignedResponse).GetClaims(StubFactory.CreateOptions());
             a.Should().Throw<InvalidSignatureException>()
