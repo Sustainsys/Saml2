@@ -80,6 +80,46 @@ namespace Sustainsys.Saml2.Tests.WebSSO
         }
 
         [TestMethod]
+        public void Saml2ArtifactBinding_Unbind_FromGetUsesIdpFromNotification()
+        {
+            var issuer = new EntityId("https://idp.example.com");
+            var artifact = Uri.EscapeDataString(
+                Convert.ToBase64String(
+                    Saml2ArtifactBinding.CreateArtifact(issuer, 0x1234)));
+
+            var relayState = "relayState";
+
+            var relayData = new Dictionary<string, string>
+            {
+                { "key", "value" }
+            };
+
+            var r = new HttpRequestData(
+                "GET",
+                new Uri($"http://example.com/path/acs?SAMLart={artifact}&RelayState={relayState}"),
+                null,
+                null,
+                new StoredRequestState(issuer, null, null, relayData));
+
+            var options = StubFactory.CreateOptions();
+
+            var idp = options.IdentityProviders.Default;
+            options.IdentityProviders.Remove(idp.EntityId);
+
+            var getIdentityProviderCalled = false;
+            options.Notifications.GetIdentityProvider = (ei, rd, opt) =>
+            {
+                getIdentityProviderCalled = true;
+                rd["key"].Should().Be("value");
+                return idp;
+            };
+
+            var result = Saml2Binding.Get(Saml2BindingType.Artifact).Unbind(r, options);
+
+            getIdentityProviderCalled.Should().BeTrue();
+        }
+
+        [TestMethod]
         public void Saml2ArtifactBinding_Unbind_FromGet_ArtifactIsntHashOfEntityId()
         {
             var issuer = new EntityId("https://idp.example.com");

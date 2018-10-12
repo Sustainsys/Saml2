@@ -98,7 +98,7 @@ namespace Sustainsys.Saml2.WebSso
             Saml2Response samlResponse,
             StoredRequestState storedRequestState)
         {
-            var principal = new ClaimsPrincipal(samlResponse.GetClaims(options));
+            var principal = new ClaimsPrincipal(samlResponse.GetClaims(options, storedRequestState?.RelayData));
 
             if(options.SPOptions.ReturnUrl == null)
             {

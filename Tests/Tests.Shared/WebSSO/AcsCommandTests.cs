@@ -502,10 +502,20 @@ namespace Sustainsys.Saml2.Tests.WebSso
                 r.Id.Value.Should().Be(messageId);
             };
 
+            var getIdentityProviderCalled = false;
+            options.Notifications.GetIdentityProvider = (idpEntityId, relayData, opt) =>
+            {
+                idpEntityId.Id.Should().Be("https://idp.example.com");
+                relayData.Should().BeNull();
+                getIdentityProviderCalled = true;
+                return opt.IdentityProviders[idpEntityId];
+            };
+
             new AcsCommand().Run(requestData, options)
                 .Should().BeSameAs(notifiedCommandResult);
 
             responseUnboundCalled.Should().BeTrue("the ResponseUnbound notification should have been called.");
+            getIdentityProviderCalled.Should().BeTrue("the GetIdentityProvider notification should have been called.");
         }
 
         [TestMethod]
@@ -610,6 +620,79 @@ namespace Sustainsys.Saml2.Tests.WebSso
             var actual = subject.Run(requestData, options);
 
             actual.SessionNotOnOrAfter.Should().NotHaveValue();
+        }
+
+        [TestMethod]
+        public void AcsCommand_Run_UsesIdpFromNotification()
+        {
+            var messageId = MethodBase.GetCurrentMethod().Name;
+            var response =
+             $@"<saml2p:Response xmlns:saml2p=""urn:oasis:names:tc:SAML:2.0:protocol""
+                xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
+                ID = ""{messageId}"" Version=""2.0"" InResponseTo=""InResponseToID"" IssueInstant=""2013-01-01T00:00:00Z"">
+                <saml2:Issuer>
+                    https://other.idp.example.com
+                </saml2:Issuer>
+                <saml2p:Status>
+                    <saml2p:StatusCode Value=""urn:oasis:names:tc:SAML:2.0:status:Success"" />
+                </saml2p:Status>
+                <saml2:Assertion
+                Version=""2.0"" ID=""{messageId}_Assertion""
+                IssueInstant=""2013-09-25T00:00:00Z"">
+                    <saml2:Issuer>https://other.idp.example.com</saml2:Issuer>
+                    <saml2:Subject>
+                        <saml2:NameID>SomeUser</saml2:NameID>
+                        <saml2:SubjectConfirmation Method=""urn:oasis:names:tc:SAML:2.0:cm:bearer"" />
+                    </saml2:Subject>
+                    <saml2:Conditions NotOnOrAfter=""2100-01-01T00:00:00Z"" />
+                    <saml2:AuthnStatement AuthnInstant=""{DateTime.UtcNow.ToSaml2DateTimeString()}"">
+                        <saml2:AuthnContext>
+                            <saml2:AuthnContextClassRef>urn:oasis:names:tc:SAML:2.0:ac:classes:PasswordProtectedTransport</saml2:AuthnContextClassRef>
+                        </saml2:AuthnContext>
+                    </saml2:AuthnStatement>
+                </saml2:Assertion>
+            </saml2p:Response>";
+
+            var formValue = Convert.ToBase64String(Encoding.UTF8.GetBytes(
+                SignedXmlHelper.SignXml(response)));
+
+            var relayData = new Dictionary<string, string>
+            {
+                { "key", "value" }
+            };
+
+            var requestData = new HttpRequestData(
+                "POST",
+                new Uri("http://localhost"),
+                "/ModulePath",
+                new KeyValuePair<string, IEnumerable<string>>[]
+                {
+                    new KeyValuePair<string, IEnumerable<string>>("SAMLResponse", new string[] { formValue })
+                },
+                new StoredRequestState(
+                    new EntityId("https://other.idp.example.com"),
+                    new Uri("http://localhost/testUrl.aspx"),
+                    new Saml2Id("InResponseToID"),
+                    relayData));
+
+            var options = StubFactory.CreateOptions();
+
+            options.Notifications.GetIdentityProvider = (idpEntityId, rd, opt) =>
+            {
+                idpEntityId.Id.Should().Be("https://other.idp.example.com");
+                rd["key"].Should().Be("value");
+
+                var idp = new IdentityProvider(new EntityId("https://other.idp.example.com"), options.SPOptions);
+
+                idp.SigningKeys.AddConfiguredKey(SignedXmlHelper.TestCert);
+
+                return idp;
+            };
+
+            var subject = new AcsCommand();
+            var actual = subject.Run(requestData, options);
+
+            actual.Principal.Claims.First().Issuer.Should().Be("https://other.idp.example.com");
         }
     }
 }

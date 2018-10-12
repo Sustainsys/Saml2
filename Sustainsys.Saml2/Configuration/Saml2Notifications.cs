@@ -1,8 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using Sustainsys.Saml2.Metadata;
 using Sustainsys.Saml2.Saml2P;
-using System;
 using Sustainsys.Saml2.WebSso;
-using Sustainsys.Saml2.Metadata;
+using System;
+using System.Collections.Generic;
 
 namespace Sustainsys.Saml2.Configuration
 {
@@ -13,33 +13,14 @@ namespace Sustainsys.Saml2.Configuration
     public class Saml2Notifications
     {
         /// <summary>
-        /// Ctor, setting all callbacks to do-nothing versions.
-        /// </summary>
-        public Saml2Notifications()
-        {
-            AuthenticationRequestCreated = (request, provider, dictionary) => { };
-            SignInCommandResultCreated = (cr, r) => { };
-            SelectIdentityProvider = (ei, r) => null;
-            GetLogoutResponseState = ( httpRequestData ) => httpRequestData.StoredRequestState;
-            GetPublicOrigin = ( httpRequestData ) => null;
-            ProcessSingleLogoutResponseStatus = ( response, state ) => false;
-            GetBinding = Saml2Binding.Get;
-            MessageUnbound = ur => { };
-            AcsCommandResultCreated = (cr, r) => { };
-            LogoutCommandResultCreated = cr => { };
-            MetadataCreated = (md, urls) => { };
-            MetadataCommandResultCreated = cr => { };
-            ValidateAbsoluteReturnUrl = url => false;
-        }
-
-        /// <summary>
         /// Notification called when a <see cref="Saml2AuthenticationRequest"/>
         /// has been created. The authenticationrequest can be amended and
         /// modified.
         /// </summary>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
         public Action<Saml2AuthenticationRequest, IdentityProvider, IDictionary<string, string>>
-            AuthenticationRequestCreated { get; set; }
+            AuthenticationRequestCreated
+        { get; set; } = (request, provider, dictionary) => { };
 
         /// <summary>
         /// Notification called when the SignIn command has produced a
@@ -50,7 +31,8 @@ namespace Sustainsys.Saml2.Configuration
         /// </summary>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
         public Action<CommandResult, IDictionary<string, string>>
-            SignInCommandResultCreated { get; set; }
+            SignInCommandResultCreated
+        { get; set; } = (cr, r) => { };
 
         /// <summary>
         /// Notification called when the SignIn command is about to select
@@ -61,7 +43,8 @@ namespace Sustainsys.Saml2.Configuration
         /// </summary>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
         public Func<EntityId, IDictionary<string, string>, IdentityProvider>
-            SelectIdentityProvider { get; set; }
+            SelectIdentityProvider
+        { get; set; } = (ei, r) => null;
 
         /// <summary>
         /// Notification called when the logout command is about to use the 
@@ -72,7 +55,8 @@ namespace Sustainsys.Saml2.Configuration
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1726:UsePreferredTerms", MessageId = "Logout")]
         public Func<HttpRequestData, StoredRequestState>
-            GetLogoutResponseState { get; set; }
+            GetLogoutResponseState
+        { get; set; } = (httpRequestData) => httpRequestData.StoredRequestState;
 
         /// <summary>
         /// Notification called when a command is about to construct a fully-qualified url
@@ -81,28 +65,30 @@ namespace Sustainsys.Saml2.Configuration
         /// and the SPOptions.PublicOrigin setting
         /// </summary>
         public Func<HttpRequestData, Uri>
-            GetPublicOrigin { get; set; }
+            GetPublicOrigin
+        { get; set; } = (httpRequestData) => null;
 
         /// <summary>
         /// Notification called when single logout status is returned from IDP.
         /// Return true to indicate that your notification has handled this status. Otherwise
         /// it will fall back to the normal status processing logic.
         /// </summary>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage( "Microsoft.Naming", "CA1726:UsePreferredTerms", MessageId = "Logout" )]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1726:UsePreferredTerms", MessageId = "Logout")]
         public Func<Saml2LogoutResponse, StoredRequestState, bool>
-            ProcessSingleLogoutResponseStatus { get; set; }
+            ProcessSingleLogoutResponseStatus
+        { get; set; } = (response, state) => false;
 
         /// <summary>
         /// Get a binding that can unbind data from the supplied request. The
         /// default is to use <see cref="Saml2Binding.Get(HttpRequestData)"/>
         /// </summary>
-        public Func<HttpRequestData, Saml2Binding> GetBinding { get; set; }
+        public Func<HttpRequestData, Saml2Binding> GetBinding { get; set; } = Saml2Binding.Get;
 
         /// <summary>
         /// Notification called when the command has extracted data from
         /// request (by using <see cref="Saml2Binding.Unbind(HttpRequestData, IOptions)"/>)
         /// </summary>
-        public Action<UnbindResult> MessageUnbound { get; set; }
+        public Action<UnbindResult> MessageUnbound { get; set; } = ur => { };
 
         /// <summary>
         /// Notification called when the ACS command has produced a
@@ -112,6 +98,7 @@ namespace Sustainsys.Saml2.Configuration
         /// outgoing response.
         /// </summary>
         public Action<CommandResult, Saml2Response> AcsCommandResultCreated { get; set; }
+         = (cr, r) => { };
 
         /// <summary>
         /// Notification called when the Logout command has produced a
@@ -121,7 +108,7 @@ namespace Sustainsys.Saml2.Configuration
         /// outgoing response.
         /// </summary>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1726:UsePreferredTerms", MessageId = "Logout")]
-        public Action<CommandResult> LogoutCommandResultCreated { get; set; }
+        public Action<CommandResult> LogoutCommandResultCreated { get; set; } = cr => { };
 
         /// <summary>
         /// Notification called when metadata has been created, but before
@@ -129,7 +116,8 @@ namespace Sustainsys.Saml2.Configuration
         /// altered before presented.
         /// </summary>
         public Action<EntityDescriptor, Saml2Urls>
-            MetadataCreated { get; set; }
+            MetadataCreated
+        { get; set; } = (md, urls) => { };
 
         /// <summary>
         /// Notification called when the Metadata command has produced a
@@ -138,7 +126,7 @@ namespace Sustainsys.Saml2.Configuration
         /// flag to suppress the library's built in apply functionality to the
         /// outgoing response.
         /// </summary>
-        public Action<CommandResult> MetadataCommandResultCreated {get;set;}
+        public Action<CommandResult> MetadataCommandResultCreated { get; set; } = cr => { };
 
         /// <summary>
         /// Notification called by the SignIn and Logout commands to validate a ReturnUrl that is not relative.
@@ -146,6 +134,13 @@ namespace Sustainsys.Saml2.Configuration
         /// Default validation do not accept any absolute URL.
         /// When false is returned, the SignIn and Logout commands will throw an <see cref="InvalidOperationException"/>.
         /// </summary>
-        public Func<string, bool> ValidateAbsoluteReturnUrl { get; set; }
+        public Func<string, bool> ValidateAbsoluteReturnUrl { get; set; } = url => false;
+
+        /// <summary>
+        /// Notification called when getting an identity provider. Default version is to return
+        /// the given idp from Options.IdentityProviders.
+        /// </summary>
+        public Func<EntityId, IDictionary<string, string>, IOptions, IdentityProvider> GetIdentityProvider { get; set; }
+            = (ei, rd, opt) => opt.IdentityProviders[ei];
     }
 }
