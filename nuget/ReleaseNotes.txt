@@ -1,3 +1,10 @@
+Version 2.1.0
+* Add back support for .NET 4.6.2 (without ECDSA support)
+* Idp selection through Asp.Net Core2 AuthProps
+* Proper file name on Metadata download
+* Notification to get Idp - allows Idp storage in database.
+* XML docs are back
+
 Version 2.0.0
 * Core library is now .NET Standard. HttpModule, MVC and Owin works
   on full .NET Framework. Asp.NET Core2 handler on both the full
