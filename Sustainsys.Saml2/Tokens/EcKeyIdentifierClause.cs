@@ -2,9 +2,11 @@
 using System.Security.Cryptography;
 using Sustainsys.Saml2.Internal;
 
+#if !NET461
+
 namespace Sustainsys.Saml2.Tokens
 {
-	static class EcUtils
+    static class EcUtils
 	{
 		public static bool ByteArraysEqual(byte[] a, byte[] b) =>
 			CompareHelper.ByteArraysEqual(a, b);
@@ -338,3 +340,5 @@ namespace Sustainsys.Saml2.Tokens
 		}
 	}
 }
+
+#endif

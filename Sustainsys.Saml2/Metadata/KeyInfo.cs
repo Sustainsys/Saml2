@@ -74,7 +74,9 @@ namespace Sustainsys.Saml2.Metadata
 		}
 	}
 
-	public class EcKeyValue : KeyValue
+#if !NET461
+
+    public class EcKeyValue : KeyValue
 	{
 		public ECParameters Parameters { get; set; }
 
@@ -84,7 +86,9 @@ namespace Sustainsys.Saml2.Metadata
 		}
 	}
 
-	public class DSigKeyInfo
+#endif
+
+    public class DSigKeyInfo
     {
 		public string Id { get; set; }
 		public ICollection<string> KeyNames { get; private set; } =
@@ -109,11 +113,13 @@ namespace Sustainsys.Saml2.Metadata
 				{
 					ski.Add(new DsaKeyIdentifierClause(dsaKeyValue.Parameters));
 				}
-				else if (keyValue is EcKeyValue ecKeyValue)
+#if !NET461
+                else if (keyValue is EcKeyValue ecKeyValue)
 				{
 					ski.Add(new EcKeyIdentifierClause(ecKeyValue.Parameters));
 				}
-			}
+#endif
+            }
 			foreach (string keyName in KeyNames)
 			{
 				ski.Add(new KeyNameIdentifierClause(keyName));
@@ -137,3 +143,4 @@ namespace Sustainsys.Saml2.Metadata
 		}
 	}
 }
+

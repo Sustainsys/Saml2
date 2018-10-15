@@ -683,7 +683,9 @@ namespace Sustainsys.Saml2.Metadata
 			return intValue.ToByteArray();
 		}
 
-		protected virtual EcKeyValue ReadECDSAKeyValue(XmlReader reader)
+#if !NET461
+
+        protected virtual EcKeyValue ReadECDSAKeyValue(XmlReader reader)
 		{
 			if (reader == null)
 			{
@@ -837,17 +839,19 @@ namespace Sustainsys.Saml2.Metadata
 			return new EcKeyValue(parameters);
 		}
 
-		// <element name = "KeyValue" type="ds:KeyValueType" /> 
-		// <complexType name = "KeyValueType" mixed="true">
-		//   <choice>
-		//     <element ref="ds:DSAKeyValue"/>
-		//     <element ref="ds:RSAKeyValue"/>
-		//     <!-- <element ref="dsig11:ECKeyValue"/> -->
-		//     <!-- ECC keys(XMLDsig 1.1) will use the any element -->
-		//     <any namespace="##other" processContents="lax"/>
-		//   </choice>
-		// </complexType>
-		protected virtual KeyValue ReadKeyValue(XmlReader reader)
+#endif
+
+        // <element name = "KeyValue" type="ds:KeyValueType" /> 
+        // <complexType name = "KeyValueType" mixed="true">
+        //   <choice>
+        //     <element ref="ds:DSAKeyValue"/>
+        //     <element ref="ds:RSAKeyValue"/>
+        //     <!-- <element ref="dsig11:ECKeyValue"/> -->
+        //     <!-- ECC keys(XMLDsig 1.1) will use the any element -->
+        //     <any namespace="##other" processContents="lax"/>
+        //   </choice>
+        // </complexType>
+        protected virtual KeyValue ReadKeyValue(XmlReader reader)
 		{
 			if (reader == null)
 			{
@@ -867,14 +871,16 @@ namespace Sustainsys.Saml2.Metadata
 			{
 				value = ReadRSAKeyValue(reader);
 			}
-			else if (reader.IsStartElement("ECKeyValue", DSig11Ns))
+#if !NET461
+            else if (reader.IsStartElement("ECKeyValue", DSig11Ns))
 			{
 				value = ReadECKeyValue(reader);
 			}
-			else if (reader.IsStartElement("ECDSAKeyValue", EcDsaNs))
+            else if (reader.IsStartElement("ECDSAKeyValue", EcDsaNs))
 			{
 				value = ReadECDSAKeyValue(reader);
 			}
+#endif
 			else
 			{
 				value = ReadCustomKeyValue(reader);
@@ -3873,7 +3879,9 @@ namespace Sustainsys.Saml2.Metadata
 			writer.WriteEndElement();
 		}
 
-		protected virtual void WriteECKeyValue(XmlWriter writer, EcKeyValue ec)
+#if !NET461
+
+        protected virtual void WriteECKeyValue(XmlWriter writer, EcKeyValue ec)
 		{
 			if (writer == null)
 			{
@@ -3902,7 +3910,9 @@ namespace Sustainsys.Saml2.Metadata
 			writer.WriteEndElement();
 		}
 
-		protected virtual void WriteKeyValue(XmlWriter writer, KeyValue keyValue)
+#endif
+
+        protected virtual void WriteKeyValue(XmlWriter writer, KeyValue keyValue)
 		{
 			if (writer == null)
 			{
@@ -3922,11 +3932,13 @@ namespace Sustainsys.Saml2.Metadata
 			{
 				WriteDSAKeyValue(writer, dsa);
 			}
-			else if (keyValue is EcKeyValue ec)
+#if !NET461
+            else if (keyValue is EcKeyValue ec)
 			{
 				WriteECKeyValue(writer, ec);
 			}
-			WriteCustomElements(writer, keyValue);
+#endif
+            WriteCustomElements(writer, keyValue);
 			writer.WriteEndElement();
 		}
 
