@@ -145,14 +145,6 @@ namespace Sustainsys.Saml2.AspNetCore2.Tests
             response.StatusCode.Should().Be(303);
             response.Headers["Location"].Single()
                 .Should().StartWith("https://idp2.example.com/sso?SAMLRequest=");
-
-            var state = new StoredRequestState(StubDataProtector.Unprotect(
-                HttpRequestData.GetBinaryData(cookieData)));
-
-            state.ReturnUrl.OriginalString.Should().Be("https://sp.example.com/LoggedIn");
-
-            // Don't dual-store the return-url.
-            state.RelayData.Values.Should().NotContain("https://sp.example.com/LoggedIn");
         }
 
         [TestMethod]

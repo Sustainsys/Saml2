@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.DataProtection;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Http;
 using System.Diagnostics.CodeAnalysis;
+using Sustainsys.Saml2.Metadata;
 
 namespace Sustainsys.Saml2.AspNetCore2
 {
@@ -85,12 +86,11 @@ namespace Sustainsys.Saml2.AspNetCore2
 
             var requestData = context.ToHttpRequestData(null);
 
-
-            Metadata.EntityId entityId = null;
+            EntityId entityId = null;
 
             if (properties.Items.TryGetValue("idp", out var entityIdString))
             {
-                entityId = new Metadata.EntityId(entityIdString);
+                entityId = new EntityId(entityIdString);
             }
 
             var result = SignInCommand.Run(
