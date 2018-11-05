@@ -1,5 +1,5 @@
 Version 2.1.0
-* Add back support for .NET 4.6.2 (without ECDSA support)
+* Add back support for .NET 4.6.1 (without ECDSA support)
 * Idp selection through Asp.Net Core2 AuthProps
 * Proper file name on Metadata download
 * Notification to get Idp - allows Idp storage in database.
