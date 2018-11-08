@@ -246,7 +246,7 @@ namespace Sustainsys.Saml2.Configuration
             get
             {
                 var decryptionCertificates = ServiceCertificates
-                    .Where(c => c.Use == CertificateUse.Encryption || c.Use == CertificateUse.Both)
+                    .Where(c => c.Use.HasFlag(CertificateUse.Encryption) || c.Use == CertificateUse.Both)
                     .Select(c => c.Certificate);
 
                 return decryptionCertificates.ToList().AsReadOnly();
@@ -262,7 +262,7 @@ namespace Sustainsys.Saml2.Configuration
             {
                 var signingCertificates = ServiceCertificates
                     .Where(c => c.Status == CertificateStatus.Current)
-                    .Where(c => c.Use == CertificateUse.Signing || c.Use == CertificateUse.Both)
+                    .Where(c => c.Use.HasFlag(CertificateUse.Signing) || c.Use == CertificateUse.Both)
                     .Select(c => c.Certificate);
 
                 return signingCertificates.FirstOrDefault();
@@ -276,10 +276,10 @@ namespace Sustainsys.Saml2.Configuration
         {
             get
             {
-                var futureEncryptionCertExists = publishableServiceCertificates
+                var futureEncryptionCertExists = PublishableServiceCertificates
                     .Any(c => c.Status == CertificateStatus.Future && (c.Use == CertificateUse.Encryption || c.Use == CertificateUse.Both));
 
-                var metaDataCertificates = publishableServiceCertificates
+                var metaDataCertificates = PublishableServiceCertificates
                     .Where(
                         // Signing & "Both" certs always get published because we want Idp's to be aware of upcoming keys
                         c => c.Status == CertificateStatus.Future || c.Use != CertificateUse.Encryption
@@ -327,7 +327,7 @@ namespace Sustainsys.Saml2.Configuration
             }
         }
 
-        private IEnumerable<ServiceCertificate> publishableServiceCertificates
+        private IEnumerable<ServiceCertificate> PublishableServiceCertificates
         {
             get
             {
