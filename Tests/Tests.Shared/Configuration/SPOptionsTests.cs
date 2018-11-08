@@ -370,6 +370,29 @@ namespace Sustainsys.Saml2.Tests.Configuration
             var result = subject.MetadataCertificates;
             result.Count.Should().Be(1);
             result[0].Status.Should().Be(CertificateStatus.Future);
+            result[0].Use.Should().Be(CertificateUse.Both);
+        }
+
+        [TestMethod]
+        public void SPOptions_MetadataCertificates_FutureTlsClientCertAndEncryptionDetectedAsFutureEncryption()
+        {
+            var subject = new SPOptions();
+            subject.ServiceCertificates.Add(new ServiceCertificate
+            {
+                Use = CertificateUse.Encryption,
+                Certificate = SignedXmlHelper.TestCert
+            });
+            subject.ServiceCertificates.Add(new ServiceCertificate
+            {
+                Use = CertificateUse.Encryption | CertificateUse.Signing | CertificateUse.TlsClient,
+                Status = CertificateStatus.Future,
+                Certificate = SignedXmlHelper.TestCert2
+            });
+
+            var result = subject.MetadataCertificates;
+            result.Count.Should().Be(1);
+            result[0].Status.Should().Be(CertificateStatus.Future);
+            result[0].Use.Should().Be(CertificateUse.Both);
         }
 
         [TestMethod]
@@ -547,6 +570,53 @@ namespace Sustainsys.Saml2.Tests.Configuration
             var result = subject.MetadataCertificates;
             result.Count.Should().Be(1);
             result[0].Status.Should().Be(CertificateStatus.Current);
+        }
+
+        [TestMethod]
+        public void SPOptions_MetadataCertificates_TlsClientCertIgnored()
+        {
+            var subject = new SPOptions();
+
+            subject.ServiceCertificates.Add(new ServiceCertificate
+            {
+                Use = CertificateUse.TlsClient,
+                Certificate = SignedXmlHelper.TestCert
+            });
+
+            var result = subject.MetadataCertificates;
+            result.Count.Should().Be(0);
+        }
+
+        [TestMethod]
+        public void SPOptions_MetadataCertificates_TlsAndSigningHandled()
+        {
+            var subject = new SPOptions();
+
+            subject.ServiceCertificates.Add(new ServiceCertificate
+            {
+                Use = CertificateUse.TlsClient | CertificateUse.Signing,
+                Certificate = SignedXmlHelper.TestCert
+            });
+
+            var result = subject.MetadataCertificates;
+            result.Count.Should().Be(1);
+            result[0].Use.Should().Be(CertificateUse.Signing);
+        }
+
+        [TestMethod]
+        public void SPOptions_MetadataCertificates_AllFlagsBecomesBoth()
+        {
+            var subject = new SPOptions();
+
+            subject.ServiceCertificates.Add(new ServiceCertificate
+            {
+                Use = CertificateUse.TlsClient | CertificateUse.Signing | CertificateUse.Encryption,
+                Certificate = SignedXmlHelper.TestCert
+            });
+
+            var result = subject.MetadataCertificates;
+            result.Count.Should().Be(1);
+            result[0].Use.Should().Be(CertificateUse.Both);
         }
 
         [TestMethod]

@@ -106,7 +106,7 @@ namespace Sustainsys.Saml2.WebSso
             options.SPOptions.Logger.WriteVerbose("Calling idp " + idp.EntityId.Id + " to resolve artifact\n" + artifact);
 
             var clientCertificates = options.SPOptions.ServiceCertificates
-                .Where(sc => sc.Use.HasFlag(CertificateUse.TlsClient))
+                .Where(sc => sc.Use.HasFlag(CertificateUse.TlsClient) && sc.Status == CertificateStatus.Current)
                 .Select(sc => sc.Certificate);
 
             var response = Saml2SoapBinding.SendSoapRequest(payload, arsUri, clientCertificates);
