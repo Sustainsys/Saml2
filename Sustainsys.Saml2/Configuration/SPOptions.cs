@@ -246,7 +246,7 @@ namespace Sustainsys.Saml2.Configuration
             get
             {
                 var decryptionCertificates = ServiceCertificates
-                    .Where(c => c.Use == CertificateUse.Encryption || c.Use == CertificateUse.Both)
+                    .Where(c => c.Use.HasFlag(CertificateUse.Encryption) || c.Use == CertificateUse.Both)
                     .Select(c => c.Certificate);
 
                 return decryptionCertificates.ToList().AsReadOnly();
@@ -262,7 +262,7 @@ namespace Sustainsys.Saml2.Configuration
             {
                 var signingCertificates = ServiceCertificates
                     .Where(c => c.Status == CertificateStatus.Current)
-                    .Where(c => c.Use == CertificateUse.Signing || c.Use == CertificateUse.Both)
+                    .Where(c => c.Use.HasFlag(CertificateUse.Signing) || c.Use == CertificateUse.Both)
                     .Select(c => c.Certificate);
 
                 return signingCertificates.FirstOrDefault();
@@ -276,10 +276,10 @@ namespace Sustainsys.Saml2.Configuration
         {
             get
             {
-                var futureEncryptionCertExists = publishableServiceCertificates
+                var futureEncryptionCertExists = PublishableServiceCertificates
                     .Any(c => c.Status == CertificateStatus.Future && (c.Use == CertificateUse.Encryption || c.Use == CertificateUse.Both));
 
-                var metaDataCertificates = publishableServiceCertificates
+                var metaDataCertificates = PublishableServiceCertificates
                     .Where(
                         // Signing & "Both" certs always get published because we want Idp's to be aware of upcoming keys
                         c => c.Status == CertificateStatus.Future || c.Use != CertificateUse.Encryption
@@ -287,14 +287,7 @@ namespace Sustainsys.Saml2.Configuration
                         // (of course we still decrypt with the current cert, but that's a different part of the code)
                         || (c.Status == CertificateStatus.Current && c.Use == CertificateUse.Encryption && !futureEncryptionCertExists)
                         || c.MetadataPublishOverride != MetadataPublishOverrideType.None
-                    )
-                    .Select(c => new ServiceCertificate
-                    {
-                        Use = c.Use,
-                        Status = c.Status,
-                        MetadataPublishOverride = c.MetadataPublishOverride,
-                        Certificate = c.Certificate
-                    }).ToList();
+                    ).ToList();
 
                 var futureBothCertExists = metaDataCertificates
                     .Any(c => c.Status == CertificateStatus.Future && c.Use == CertificateUse.Both);
@@ -327,12 +320,31 @@ namespace Sustainsys.Saml2.Configuration
             }
         }
 
-        private IEnumerable<ServiceCertificate> publishableServiceCertificates
+        private static CertificateUse ConvertUse(CertificateUse certificateUse)
+        {
+            var use = certificateUse & (CertificateUse.Signing | CertificateUse.Encryption);
+
+            if (use == (CertificateUse.Signing | CertificateUse.Encryption))
+            {
+                use = CertificateUse.Both;
+            }
+            return use;
+        }
+
+        private IEnumerable<ServiceCertificate> PublishableServiceCertificates
         {
             get
             {
                 return ServiceCertificates
-                    .Where(c => c.MetadataPublishOverride != MetadataPublishOverrideType.DoNotPublish);
+                    .Where(c => c.MetadataPublishOverride != MetadataPublishOverrideType.DoNotPublish
+                    && c.Use != CertificateUse.TlsClient) // Certs that are only Tls should not be published.
+                    .Select(c => new ServiceCertificate // Finally create new instances and convert use to ignore Tls.
+                    {
+                        Use = ConvertUse(c.Use),
+                        Status = c.Status,
+                        MetadataPublishOverride = c.MetadataPublishOverride,
+                        Certificate = c.Certificate
+                    });
             }
         }
 

@@ -1,8 +1,10 @@
-﻿using System;
+﻿using Sustainsys.Saml2.Internal;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Net;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
@@ -54,6 +56,21 @@ namespace Sustainsys.Saml2.Saml2P
         /// <returns>Response.</returns>
         public static XmlElement SendSoapRequest(string payload, Uri destination)
         {
+            return SendSoapRequest(payload, destination, null);
+        }
+
+        /// <summary>
+        /// Send a SOAP request to the specified endpoint and return the result.
+        /// </summary>
+        /// <param name="payload">Message payload</param>
+        /// <param name="destination">Destination endpoint</param>
+        /// <param name="clientCertificates">Client certificates to offer to the server.</param>
+        /// <returns>Response.</returns>
+        public static XmlElement SendSoapRequest(
+            string payload,
+            Uri destination,
+            IEnumerable<X509Certificate2> clientCertificates)
+        {
             if(destination == null)
             {
                 throw new ArgumentNullException(nameof(destination));
@@ -71,7 +88,7 @@ namespace Sustainsys.Saml2.Saml2P
 
             var message = CreateSoapBody(payload);
 
-            using (var client = new WebClient())
+            using (var client = new ClientCertificateWebClient(clientCertificates))
             {
                 client.Headers.Add("SOAPAction", "http://www.oasis-open.org/committees/security");
                 var response = client.UploadString(destination, message);
