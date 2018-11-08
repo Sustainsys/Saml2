@@ -37,6 +37,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Helpers\StubServer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Helpers\XmlElementExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)IdentityProviderTests.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Internal\ClientCertificateWebclientTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Internal\CryptographyExtensionsTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Internal\DateTimeExtensionsTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Internal\DateTimeHelperTests.cs" />

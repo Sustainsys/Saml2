@@ -9,7 +9,8 @@ using System.Xml;
 namespace Sustainsys.Saml2.Configuration
 {
     /// <summary>
-    /// Certificates used by the service provider for signing or decryption.
+    /// Certificates used by the service provider for signing, decryption and
+    /// TLS client certificates for artifact resolve.
     /// </summary>
     public class ServiceCertificateCollection: Collection<ServiceCertificate>
     {
@@ -21,7 +22,7 @@ namespace Sustainsys.Saml2.Configuration
         public void Add(X509Certificate2 certificate)
         {
             if (certificate == null) throw new ArgumentNullException(nameof(certificate));
-            InsertItem(base.Count, new ServiceCertificate
+            InsertItem(Count, new ServiceCertificate
             {
                 Certificate = certificate
             });
