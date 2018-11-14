@@ -44,7 +44,7 @@ namespace Sustainsys.Saml2.AspNetCore2
         /// <summary>
         /// Information about known identity providers.
         /// </summary>
-        public IdentityProviderDictionary IdentityProviders { get; }
+        public IIdentityProviderDictionary IdentityProviders { get; set; }
             = new IdentityProviderDictionary();
 
         /// <summary>

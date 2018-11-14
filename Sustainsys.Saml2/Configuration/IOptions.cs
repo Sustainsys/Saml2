@@ -22,7 +22,7 @@ namespace Sustainsys.Saml2.Configuration
         /// <summary>
         /// Information about known identity providers.
         /// </summary>
-        IdentityProviderDictionary IdentityProviders { get; }
+        IIdentityProviderDictionary IdentityProviders { get; set; }
 
         /// <summary>
         /// Set of callbacks that can be used as extension points for various

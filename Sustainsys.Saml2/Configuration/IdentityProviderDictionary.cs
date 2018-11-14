@@ -19,7 +19,7 @@ namespace Sustainsys.Saml2.Configuration
     /// this part of the code shouldn't be that performance sensitive.
     /// </remarks>
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1711:IdentifiersShouldNotHaveIncorrectSuffix", Justification="It works like dictionary, even though it doesn't implement the full interface.")]
-    public class IdentityProviderDictionary
+    public class IdentityProviderDictionary : IIdentityProviderDictionary
     {
         private Dictionary<EntityId, IdentityProvider> dictionary =
             new Dictionary<EntityId, IdentityProvider>(EntityIdEqualityComparer.Instance);
@@ -106,7 +106,7 @@ namespace Sustainsys.Saml2.Configuration
         }
 
         // Used by tests.
-        internal IdentityProvider this[int i]
+        public IdentityProvider this[int i]
         {
             get
             {

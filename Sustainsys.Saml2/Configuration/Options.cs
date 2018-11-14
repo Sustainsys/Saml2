@@ -62,16 +62,20 @@ namespace Sustainsys.Saml2.Configuration
         /// </summary>
         public SPOptions SPOptions { get; }
 
-        private readonly IdentityProviderDictionary identityProviders = new IdentityProviderDictionary();
+        private IIdentityProviderDictionary identityProviders = new IdentityProviderDictionary();
 
         /// <summary>
         /// Available identity providers.
         /// </summary>
-        public IdentityProviderDictionary IdentityProviders
+        public IIdentityProviderDictionary IdentityProviders
         {
             get
             {
                 return identityProviders;
+            }
+            set
+            {
+                identityProviders = value;
             }
         }
     }

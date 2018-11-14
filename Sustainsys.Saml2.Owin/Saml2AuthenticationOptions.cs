@@ -48,16 +48,20 @@ namespace Sustainsys.Saml2.Owin
         /// </summary>
         public SPOptions SPOptions { get; set; }
 
-        private readonly IdentityProviderDictionary identityProviders = new IdentityProviderDictionary();
+        private IIdentityProviderDictionary identityProviders = new IdentityProviderDictionary();
 
         /// <summary>
         /// Available identity providers.
         /// </summary>
-        public IdentityProviderDictionary IdentityProviders
+        public IIdentityProviderDictionary IdentityProviders
         {
             get
             {
                 return identityProviders;
+            }
+            set
+            {
+                identityProviders = value;
             }
         }
 
