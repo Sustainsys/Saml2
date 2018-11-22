@@ -21,10 +21,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "nuget", "nuget", "{8EE1C45E
 		nuget\MakePackage.ps1 = nuget\MakePackage.ps1
 		nuget\ReleaseNotes.txt = nuget\ReleaseNotes.txt
 		nuget\Sustainsys.png = nuget\Sustainsys.png
-		nuget\Sustainsys.Saml2.AspNetCore2.nuspec = nuget\Sustainsys.Saml2.AspNetCore2.nuspec
 		nuget\Sustainsys.Saml2.HttpModule.nuspec = nuget\Sustainsys.Saml2.HttpModule.nuspec
 		nuget\Sustainsys.Saml2.Mvc.nuspec = nuget\Sustainsys.Saml2.Mvc.nuspec
-		nuget\Sustainsys.Saml2.nuspec = nuget\Sustainsys.Saml2.nuspec
 		nuget\Sustainsys.Saml2.Owin.nuspec = nuget\Sustainsys.Saml2.Owin.nuspec
 	EndProjectSection
 EndProject

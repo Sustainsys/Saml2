@@ -10,11 +10,11 @@
     <projectUrl>https://github.com/Sustainsys/Saml2</projectUrl>
     <iconUrl>https://raw.github.com/Sustainsys/Saml2/master/nuget/Sustainsys.png</iconUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
-    <summary>A SAML2 Service Provider for ASP.NET. The package adds an Http module for SAML2 Authentication. It is built on top of the claims model of .NET 4.5 and uses the present infrastructure for claims translation, session authentication cookies etc.</summary>
+    <summary>A SAML2 Service Provider for ASP.NET. The package adds an Http module for SAML2 Authentication.</summary>
     <description>
-      A SAML2 Http Module for ASP.NET. Install in project and add sections to web.config. No coding required. The package adds an ASP.NET Http Authentication Module that handles the SAML SignIn and SignOut. It works with the claims model of .NET 4.5 and uses the present infrastructure for claims translation, session authentication cookies etc.
+      A SAML2 Http Module for ASP.NET. Install in project and add sections to web.config. No coding required. The package adds an ASP.NET Http Authentication Module that handles SAML SignIn and SignOut. It works with the claims model of .NET 4.6.1 and uses the present infrastructure for claims translation, session authentication cookies etc.
     </description>
-    <copyright>Copyright Sustainsys and contributors 2013-2019</copyright>
+    <copyright>Copyright Sustainsys and contributors 2013-2018</copyright>
     <tags>SAML2 authentication AspNet SAML SSO</tags>
     <releaseNotes />
     <dependencies>
