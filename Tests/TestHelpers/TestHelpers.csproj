@@ -5,10 +5,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="System.Security.Cryptography.Xml" Version="4.4.1" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\..\Sustainsys.Saml2\Sustainsys.Saml2.csproj" />
   </ItemGroup>
 
