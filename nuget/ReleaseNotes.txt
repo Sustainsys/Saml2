@@ -1,3 +1,6 @@
+Version 2.2.0
+* Support TLS Client Certificates for Artifact Resolve
+
 Version 2.1.0
 * Add back support for .NET 4.6.1 (without ECDSA support)
 * Idp selection through Asp.Net Core2 AuthProps
