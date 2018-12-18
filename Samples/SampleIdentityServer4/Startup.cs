@@ -38,7 +38,7 @@ namespace SampleIdentityServer4
 				.AddSaml2(options =>
 				{
 					options.SignInScheme = IdentityServerConstants.ExternalCookieAuthenticationScheme;
-					options.SPOptions.EntityId = new EntityId("https://localhost:44342/Saml2");
+					options.SPOptions.EntityId = new EntityId("https://localhost:44369/Saml2");
 					options.IdentityProviders.Add(
 						new IdentityProvider(
 							new EntityId("http://localhost:52071/Metadata"), options.SPOptions)
