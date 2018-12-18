@@ -38,6 +38,7 @@ namespace SampleIdentityServer4
 				.AddSaml2(options =>
 				{
 					options.SignInScheme = IdentityServerConstants.ExternalCookieAuthenticationScheme;
+                    options.SignOutScheme = IdentityServerConstants.DefaultCookieAuthenticationScheme;
 					options.SPOptions.EntityId = new EntityId("https://localhost:44369/Saml2");
 					options.IdentityProviders.Add(
 						new IdentityProvider(
