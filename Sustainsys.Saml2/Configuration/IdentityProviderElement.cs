@@ -218,5 +218,22 @@ namespace Sustainsys.Saml2.Configuration
                 base[disableOutboundLogoutRequests] = value;
             }
         }
+
+        /// <summary>
+        /// Indicates that the IDP sends the redirect url as part of the RelayState.
+        /// This is used when <see cref="AllowUnsolicitedAuthnResponse"/> is enabled.
+        /// </summary>
+        [ConfigurationProperty("relayStateUsedAsRedirectUrl", IsRequired = false, DefaultValue = false)]
+        public bool RelayStateUsedAsRedirectUrl
+        {
+            get
+            {
+                return (bool)base["relayStateUsedAsRedirectUrl"];
+            }
+            set
+            {
+                base["relayStateUsedAsRedirectUrl"] = value;
+            }
+        }
     }
 }

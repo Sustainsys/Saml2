@@ -1,5 +1,6 @@
 ﻿using Sustainsys.Saml2.Configuration;
 using Sustainsys.Saml2.Exceptions;
+using Sustainsys.Saml2.Metadata;
 using Sustainsys.Saml2.Saml2P;
 using System;
 using System.Configuration;
@@ -45,16 +46,22 @@ namespace Sustainsys.Saml2.WebSso
                 try
                 {
                     unbindResult = binding.Unbind(request, options);
+
                     options.Notifications.MessageUnbound(unbindResult);
 
                     var samlResponse = new Saml2Response(unbindResult.Data, request.StoredRequestState?.MessageId, options);
+                    
+                    var idpContext = GetIdpContext(unbindResult.Data, options);
 
-                    var result = ProcessResponse(options, samlResponse, request.StoredRequestState);
-                    if(unbindResult.RelayState != null)
+                    var result = ProcessResponse(options, samlResponse, request.StoredRequestState, idpContext, unbindResult.RelayState);
+
+                    if(unbindResult.RelayState != null && (idpContext != null ? !idpContext.RelayStateUsedAsReturnUrl : false))
                     {
                         result.ClearCookieName = StoredRequestState.CookieNameBase + unbindResult.RelayState;
                     }
+
                     options.Notifications.AcsCommandResultCreated(result, samlResponse);
+
                     return result;
                 }
                 catch (FormatException ex)
@@ -88,6 +95,17 @@ namespace Sustainsys.Saml2.WebSso
             throw new NoSamlResponseFoundException();
         }
 
+        private static IdentityProvider GetIdpContext(XmlElement xml, IOptions options)
+        {
+            var entityId = new EntityId(xml["Issuer", Saml2Namespaces.Saml2Name].GetTrimmedTextIfNotNull());
+
+            IdentityProvider identityProvider;
+
+            options.IdentityProviders.TryGetValue(entityId, out identityProvider);            
+
+            return identityProvider;
+        }
+
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "AuthenticationProperty")]
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "RedirectUri")]
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "returnUrl")]
@@ -96,11 +114,15 @@ namespace Sustainsys.Saml2.WebSso
         private static CommandResult ProcessResponse(
             IOptions options,
             Saml2Response samlResponse,
-            StoredRequestState storedRequestState)
+            StoredRequestState storedRequestState,
+            IdentityProvider identityProvider,
+            string relayState)
         {
             var principal = new ClaimsPrincipal(samlResponse.GetClaims(options, storedRequestState?.RelayData));
 
-            if(options.SPOptions.ReturnUrl == null)
+            var isRelayStateUsedAsReturnUrl = identityProvider != null ? identityProvider.RelayStateUsedAsReturnUrl : false;
+
+            if (options.SPOptions.ReturnUrl == null && !isRelayStateUsedAsReturnUrl)
             {
                 if (storedRequestState == null)
                 {
@@ -112,13 +134,21 @@ namespace Sustainsys.Saml2.WebSso
                 }
             }
 
+            if (isRelayStateUsedAsReturnUrl)
+            {
+                if (relayState == null)
+                {
+                    throw new ConfigurationErrorsException(RelayStateMissing);
+                }
+            }
+
             options.SPOptions.Logger.WriteInformation("Successfully processed SAML response " + samlResponse.Id
                 + " and authenticated " + principal.FindFirst(ClaimTypes.NameIdentifier)?.Value);
 
             return new CommandResult()
             {
                 HttpStatusCode = HttpStatusCode.SeeOther,
-                Location = storedRequestState?.ReturnUrl ?? options.SPOptions.ReturnUrl,
+                Location = isRelayStateUsedAsReturnUrl ? new Uri(relayState) : storedRequestState?.ReturnUrl ?? options.SPOptions.ReturnUrl,
                 Principal = principal,
                 RelayData = storedRequestState?.RelayData,
                 SessionNotOnOrAfter = samlResponse.SessionNotOnOrAfter
@@ -144,5 +174,10 @@ the request and there is no default return url configured.
 When initiating a request, pass a ReturnUrl query parameter (case matters) or 
 use the RedirectUri AuthenticationProperty for owin. Or add a default ReturnUrl
 in the configuration.";
+
+        internal const string RelayStateMissing =
+@"Relay state data missing from the response.
+the application is expecting a return url as part of the RelayState response from the IDP.
+This is expected because the setting 'relayStateUsedAsRedirectUrl' has been set to true.";
     }
 }
