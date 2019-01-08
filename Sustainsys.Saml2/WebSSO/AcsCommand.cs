@@ -174,6 +174,6 @@ in the configuration.";
         internal const string RelayStateMissing =
 @"Relay state data missing from the response.
 the application is expecting a return url as part of the RelayState response from the IDP.
-This is expected because the setting 'relayStateUsedAsRedirectUrl' has been set to true.";
+This is expected because the setting 'relayStateUsedAsReturnUrl' has been set to true.";
     }
 }
