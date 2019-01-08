@@ -51,11 +51,11 @@ namespace Sustainsys.Saml2.WebSso
 
                     var samlResponse = new Saml2Response(unbindResult.Data, request.StoredRequestState?.MessageId, options);
                     
-                    var idpContext = GetIdpContext(unbindResult.Data, options);
+                    var idpContext = GetIdpContext(unbindResult.Data, request, options);
 
                     var result = ProcessResponse(options, samlResponse, request.StoredRequestState, idpContext, unbindResult.RelayState);
 
-                    if(unbindResult.RelayState != null && (idpContext != null ? !idpContext.RelayStateUsedAsReturnUrl : false))
+                    if (unbindResult.RelayState != null && !idpContext.RelayStateUsedAsReturnUrl)
                     {
                         result.ClearCookieName = StoredRequestState.CookieNameBase + unbindResult.RelayState;
                     }
@@ -95,13 +95,11 @@ namespace Sustainsys.Saml2.WebSso
             throw new NoSamlResponseFoundException();
         }
 
-        private static IdentityProvider GetIdpContext(XmlElement xml, IOptions options)
+        private static IdentityProvider GetIdpContext(XmlElement xml, HttpRequestData request, IOptions options)
         {
             var entityId = new EntityId(xml["Issuer", Saml2Namespaces.Saml2Name].GetTrimmedTextIfNotNull());
 
-            IdentityProvider identityProvider;
-
-            options.IdentityProviders.TryGetValue(entityId, out identityProvider);            
+            var identityProvider = options.Notifications.GetIdentityProvider(entityId, request.StoredRequestState?.RelayData, options);
 
             return identityProvider;
         }
@@ -119,10 +117,8 @@ namespace Sustainsys.Saml2.WebSso
             string relayState)
         {
             var principal = new ClaimsPrincipal(samlResponse.GetClaims(options, storedRequestState?.RelayData));
-
-            var isRelayStateUsedAsReturnUrl = identityProvider != null ? identityProvider.RelayStateUsedAsReturnUrl : false;
-
-            if (options.SPOptions.ReturnUrl == null && !isRelayStateUsedAsReturnUrl)
+            
+            if (options.SPOptions.ReturnUrl == null && !identityProvider.RelayStateUsedAsReturnUrl)
             {
                 if (storedRequestState == null)
                 {
@@ -134,7 +130,7 @@ namespace Sustainsys.Saml2.WebSso
                 }
             }
 
-            if (isRelayStateUsedAsReturnUrl)
+            if (identityProvider.RelayStateUsedAsReturnUrl)
             {
                 if (relayState == null)
                 {
@@ -148,7 +144,7 @@ namespace Sustainsys.Saml2.WebSso
             return new CommandResult()
             {
                 HttpStatusCode = HttpStatusCode.SeeOther,
-                Location = isRelayStateUsedAsReturnUrl ? new Uri(relayState) : storedRequestState?.ReturnUrl ?? options.SPOptions.ReturnUrl,
+                Location = identityProvider.RelayStateUsedAsReturnUrl ? new Uri(relayState) : storedRequestState?.ReturnUrl ?? options.SPOptions.ReturnUrl,
                 Principal = principal,
                 RelayData = storedRequestState?.RelayData,
                 SessionNotOnOrAfter = samlResponse.SessionNotOnOrAfter

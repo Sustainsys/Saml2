@@ -220,19 +220,19 @@ namespace Sustainsys.Saml2.Configuration
         }
 
         /// <summary>
-        /// Indicates that the IDP sends the redirect url as part of the RelayState.
+        /// Indicates that the IDP sends the return url as part of the RelayState.
         /// This is used when <see cref="AllowUnsolicitedAuthnResponse"/> is enabled.
         /// </summary>
-        [ConfigurationProperty("relayStateUsedAsRedirectUrl", IsRequired = false, DefaultValue = false)]
-        public bool RelayStateUsedAsRedirectUrl
+        [ConfigurationProperty("relayStateUsedAsReturnUrl", IsRequired = false, DefaultValue = false)]
+        public bool RelayStateUsedAsReturnUrl
         {
             get
             {
-                return (bool)base["relayStateUsedAsRedirectUrl"];
+                return (bool)base["relayStateUsedAsReturnUrl"];
             }
             set
             {
-                base["relayStateUsedAsRedirectUrl"] = value;
+                base["relayStateUsedAsReturnUrl"] = value;
             }
         }
     }

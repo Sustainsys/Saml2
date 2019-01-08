@@ -83,7 +83,7 @@ namespace Sustainsys.Saml2
                 Validate();
             }
 
-            RelayStateUsedAsReturnUrl = config.RelayStateUsedAsRedirectUrl;
+            RelayStateUsedAsReturnUrl = config.RelayStateUsedAsReturnUrl;
         }
 
         private void Validate()
@@ -257,7 +257,7 @@ namespace Sustainsys.Saml2
         public bool AllowUnsolicitedAuthnResponse { get; set; }
 
         /// <summary>
-        /// Does the RelayState contains the redirect url?, 
+        /// Does the RelayState contains the return url?, 
         /// This setting is used only when the AllowUnsolicitedAuthnResponse setting is enabled.
         /// </summary>
         public bool RelayStateUsedAsReturnUrl { get; set; }
