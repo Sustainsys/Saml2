@@ -82,10 +82,15 @@ namespace Sustainsys.Saml2.Saml2P
         /// </summary>
         public EntityId Issuer { get; set; }
 
-        /// <summary>
-        /// The SAML2 request name
-        /// </summary>
-        protected abstract string LocalName { get; }
+		/// <summary>
+		/// The additional content to append within an Extensions element.
+		/// </summary>
+		public List<XElement> ExtensionContents { get; } = new List<XElement>();
+
+		/// <summary>
+		/// The SAML2 request name
+		/// </summary>
+		protected abstract string LocalName { get; }
 
         /// <summary>
         /// Creates XNodes for the fields of the Saml2RequestBase class. These
@@ -109,7 +114,12 @@ namespace Sustainsys.Saml2.Saml2P
             {
                 yield return new XElement(Saml2Namespaces.Saml2 + "Issuer", Issuer.Id);
             }
-        }
+
+			if (ExtensionContents != null && ExtensionContents.Count > 0)
+			{
+				yield return new XElement(Saml2Namespaces.Saml2P + "Extensions", ExtensionContents);
+			}
+		}
 
         /// <summary>
         /// Reads the request properties present in Saml2RequestBase
@@ -136,7 +146,15 @@ namespace Sustainsys.Saml2.Saml2P
             {
                 Issuer = new EntityId(issuerNode.InnerXml);
             }
-        }
+
+			var extensionsNode = xml["Extensions", Saml2Namespaces.Saml2PName];
+			if (extensionsNode != null && extensionsNode.HasChildNodes)
+			{
+				XElement converted = XElement.Parse(extensionsNode.OuterXml);
+				ExtensionContents.Clear();
+				ExtensionContents.AddRange(converted.Elements());
+			}
+		}
 
         private void ValidateCorrectDocument(XmlElement xml)
         {

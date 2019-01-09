@@ -80,7 +80,20 @@ namespace Sustainsys.Saml2.Tests.Saml2P
                 .Should().NotBeNull().And.Subject.Value.Should().Be("true");
         }
 
-        [TestMethod]
+		[TestMethod]
+		public void Saml2AuthenticationRequest_Extensions()
+		{
+			var request = new Saml2AuthenticationRequest();
+			request.ExtensionContents.Add(new XElement(XNamespace.Get("test") + "aditional"));
+			var subject = request.ToXElement();
+
+			subject.Should().NotBeNull().And.Subject
+				.Element(Saml2Namespaces.Saml2P + "Extensions").Should().NotBeNull().And.Subject
+				.Elements().Should().HaveCount(1).And.Subject
+				.First().Name.LocalName.Should().Be("aditional");
+		}
+
+		[TestMethod]
         public void Saml2AuthenticationRequest_Read()
         {
             var xmlData = @"<?xml version=""1.0"" encoding=""UTF-8""?>
@@ -218,7 +231,32 @@ namespace Sustainsys.Saml2.Tests.Saml2P
             subject.NameIdPolicy.Format.Should().Be(NameIdFormat.NotConfigured);
         }
 
-        [TestMethod]
+		[TestMethod]
+		public void Saml2AuthenticationRequest_Read_Extensions()
+		{
+			var xmlData = @"<?xml version=""1.0"" encoding=""UTF-8""?>
+<samlp:AuthnRequest
+                     xmlns:samlp=""urn:oasis:names:tc:SAML:2.0:protocol""
+                     xmlns:saml=""urn:oasis:names:tc:SAML:2.0:assertion""
+                     ID=""Saml2AuthenticationRequest_AssertionConsumerServiceUrl""
+                     Version=""2.0""
+                     Destination=""http://destination.example.com""
+                     AssertionConsumerServiceURL=""https://sp.example.com/SAML2/Acs""
+                     IssueInstant=""2004-12-05T09:21:59Z""
+                     ForceAuthn=""true"">
+    <saml:Issuer>https://sp.example.com/SAML2</saml:Issuer>
+    <samlp:Extensions>
+      <additional xmlns=""testurn:test"" />
+    </samlp:Extensions>
+</samlp:AuthnRequest>
+";
+
+			var subject = Saml2AuthenticationRequest.Read(xmlData, null);
+			subject.ExtensionContents.Should().HaveCount(1);
+			subject.ExtensionContents[0].ToString().Should().BeEquivalentTo(@"<additional xmlns=""testurn:test"" />");
+		}
+
+		[TestMethod]
         public void Saml2AuthenticationRequest_ToXElement_AddsElementSaml2NameIdPolicy_ForAllowCreate()
         {
             var subject = new Saml2AuthenticationRequest()
