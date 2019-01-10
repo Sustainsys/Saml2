@@ -55,7 +55,7 @@ namespace Sustainsys.Saml2.WebSso
 
                     var result = ProcessResponse(options, samlResponse, request.StoredRequestState, idpContext, unbindResult.RelayState);
 
-                    if (unbindResult.RelayState != null && !idpContext.RelayStateUsedAsReturnUrl)
+                    if (request.StoredRequestState != null)
                     {
                         result.ClearCookieName = StoredRequestState.CookieNameBase + unbindResult.RelayState;
                     }
@@ -104,6 +104,29 @@ namespace Sustainsys.Saml2.WebSso
             return identityProvider;
         }
 
+        private static Uri GetLocation(StoredRequestState storedRequestState, IdentityProvider identityProvider, string relayState, IOptions options)
+        {
+            // When SP-Initiated
+            if (storedRequestState != null)
+            {
+                return storedRequestState.ReturnUrl ?? options.SPOptions.ReturnUrl;
+
+            }
+            else
+            { //When IDP-Initiated
+
+                if (identityProvider.RelayStateUsedAsReturnUrl)
+                {
+                    if (Uri.IsWellFormedUriString(relayState, UriKind.Absolute))
+                    {
+                        return new Uri(relayState);
+                    }
+                }
+            }
+
+            return options.SPOptions.ReturnUrl;
+        }
+
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "AuthenticationProperty")]
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "RedirectUri")]
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "returnUrl")]
@@ -144,12 +167,14 @@ namespace Sustainsys.Saml2.WebSso
             return new CommandResult()
             {
                 HttpStatusCode = HttpStatusCode.SeeOther,
-                Location = identityProvider.RelayStateUsedAsReturnUrl ? new Uri(relayState) : storedRequestState?.ReturnUrl ?? options.SPOptions.ReturnUrl,
+                Location = GetLocation(storedRequestState, identityProvider, relayState, options),
                 Principal = principal,
                 RelayData = storedRequestState?.RelayData,
                 SessionNotOnOrAfter = samlResponse.SessionNotOnOrAfter
             };
         }
+
+        
 
         internal const string UnsolicitedMissingReturnUrlMessage =
 @"Unsolicited SAML response received, but no ReturnUrl is configured.

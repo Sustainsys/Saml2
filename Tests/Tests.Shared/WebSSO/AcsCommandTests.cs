@@ -794,6 +794,6 @@ namespace Sustainsys.Saml2.Tests.WebSso
             Action a = () => new AcsCommand().Run(r, Options.FromConfiguration);
 
             a.Should().Throw<ConfigurationErrorsException>();
-        }
+        }        
     }
 }
