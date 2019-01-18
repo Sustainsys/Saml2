@@ -1,16 +1,11 @@
-﻿using Sustainsys.Saml2;
+﻿using Microsoft.AspNetCore.Authentication;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
-using Microsoft.AspNetCore.Authentication;
 
 namespace Sustainsys.Saml2.AspNetCore2
 {
-    class PostConfigureSaml2Options : IPostConfigureOptions<Saml2Options>
+    public class PostConfigureSaml2Options : IPostConfigureOptions<Saml2Options>
     {
         private ILoggerFactory loggerFactory;
         private IOptions<AuthenticationOptions> authOptions;
