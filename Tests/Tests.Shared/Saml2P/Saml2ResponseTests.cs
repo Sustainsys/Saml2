@@ -1323,10 +1323,10 @@ namespace Sustainsys.Saml2.Tests.Saml2P
             var subject = Saml2Response.Read(response);
 
             var options = StubFactory.CreateOptions();
-            //options.SPOptions.SystemIdentityModelIdentityConfiguration
-            //    .AudienceRestriction.AudienceMode = AudienceUriMode.Never;
-
-            Assert.Inconclusive();
+            options.Notifications.TokenValidationParametersCreated = (tvp) =>
+            {
+                tvp.ValidateAudience = false;
+            };
 
             subject.Invoking(s => s.GetClaims(options)).Should().NotThrow();
         }

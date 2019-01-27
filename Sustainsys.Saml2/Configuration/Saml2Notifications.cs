@@ -1,4 +1,5 @@
-﻿using Sustainsys.Saml2.Metadata;
+﻿using Microsoft.IdentityModel.Tokens;
+using Sustainsys.Saml2.Metadata;
 using Sustainsys.Saml2.Saml2P;
 using Sustainsys.Saml2.WebSso;
 using System;
@@ -142,5 +143,12 @@ namespace Sustainsys.Saml2.Configuration
         /// </summary>
         public Func<EntityId, IDictionary<string, string>, IOptions, IdentityProvider> GetIdentityProvider { get; set; }
             = (ei, rd, opt) => opt.IdentityProviders[ei];
+
+        /// <summary>
+        /// Notification called when the token handler has populated the
+        /// <see cref="TokenValidationParameters"/>. Modify it's properties to customize
+        /// the generated validation parameters.
+        /// </summary>
+        public Action<TokenValidationParameters> TokenValidationParametersCreated { get; set; } = tvp => { };
     }
 }
