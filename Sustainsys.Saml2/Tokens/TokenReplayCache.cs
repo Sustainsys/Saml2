@@ -1,4 +1,8 @@
-﻿using Microsoft.Extensions.Caching.Memory;
+﻿#if NETSTANDARD2_0
+using Microsoft.Extensions.Caching.Memory;
+#else
+using System.Runtime.Caching;
+#endif
 using Microsoft.IdentityModel.Tokens;
 using System;
 
@@ -6,41 +10,28 @@ namespace Sustainsys.Saml2.Tokens
 {
 	class TokenReplayCache : ITokenReplayCache
 	{
-		MemoryCache cache = new MemoryCache(new MemoryCacheOptions());
-		static readonly object cacheObject = new object();
+#if NETSTANDARD2_0
+        MemoryCache cache = new MemoryCache(new MemoryCacheOptions());
+#else
+        MemoryCache cache = new MemoryCache(nameof(TokenReplayCache));
+#endif
 
-		public TimeSpan? ExpiryTime { get; set; }
-
-		public TokenReplayCache()
-		{
-		}
-
-		public TokenReplayCache(TimeSpan? expiryTime)
-		{
-			ExpiryTime = expiryTime;
-		}
+        // Dummy object to store in cache.
+        private static object cacheObject = new object();
 
 		public bool TryAdd(string securityToken, DateTime expiresOn)
 		{
-			object entry;
-			if (cache.TryGetValue(securityToken, out entry))
-			{
-				return false;
-			}
-			
-			if (ExpiryTime.HasValue)
-			{
-				DateTime expiryOverride = DateTime.UtcNow.Add(ExpiryTime.Value);
-				expiresOn = expiresOn < expiryOverride ? expiresOn : expiryOverride;
-			}
+#if NETSTANDARD2_0
+            cache.Set(securityToken, cacheObject, new DateTimeOffset(expiresOn));
+#else
+            cache.Add(securityToken, cache, new DateTimeOffset(expiresOn));
+#endif
+            return true;
+        }
 
-			cache.Set<object>(securityToken, cacheObject, expiresOn);
-			return true;
-		}
-
-		public bool TryFind(string securityToken)
+        public bool TryFind(string securityToken)
 		{
-			return cache.Get(securityToken) != null;
+            return cache.Get(securityToken) != null;
 		}
 	}
 }

@@ -72,6 +72,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)ServiceCertificateTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Startup.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)StoredRequestStateTests.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Tokens\TokenReplayCacheTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)WebSSO\AcsCommandTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)WebSSO\CommandFactoryTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)WebSSO\CommandResultTests.cs" />
