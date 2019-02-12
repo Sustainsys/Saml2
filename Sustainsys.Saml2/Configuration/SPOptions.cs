@@ -105,7 +105,7 @@ namespace Sustainsys.Saml2.Configuration
                 if(value == null)
                 {
                     // Set the saved value, but don't trust it - still use a local var for the return.
-                    saml2PSecurityTokenHandler = value = new Saml2PSecurityTokenHandler();
+                    saml2PSecurityTokenHandler = value = new Saml2PSecurityTokenHandler(this);
                 }
 
                 return value;
