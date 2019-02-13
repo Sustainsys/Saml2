@@ -46,12 +46,12 @@ namespace Sustainsys.Saml2.Saml2P
 	// - ignore authentication context if configured to do so
 	class Saml2PSerializer : Saml2Serializer
 	{
-        private SPOptions spOptions;
+		private SPOptions spOptions;
 
-        public Saml2PSerializer(SPOptions spOptions)
-        {
-            this.spOptions = spOptions;
-        }
+		public Saml2PSerializer(SPOptions spOptions)
+		{
+			this.spOptions = spOptions;
+		}
 
 		public ICollection<X509Certificate2> DecryptionCertificates { get; set; }
 
