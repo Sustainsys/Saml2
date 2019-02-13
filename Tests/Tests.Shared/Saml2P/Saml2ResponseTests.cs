@@ -311,7 +311,7 @@ namespace Sustainsys.Saml2.Tests.Saml2P
                 </saml2:Assertion>
             </saml2p:Response>";
 
-            var signedResponse = SignedXmlHelper.SignXml(response, false, true, XmlHelpers.GetDefaultSigningAlgorithmName(), SignedXml.XmlDsigC14NWithCommentsTransformUrl);
+            var signedResponse = SignedXmlHelper.SignXml(response, false, true, XmlHelpers.GetDefaultSigningAlgorithmName(), SignedXml.XmlDsigC14NTransformUrl);
             var modifiedSignedResponse = signedResponse.Replace("Some<!--Comment-->User", "Some<!--Comment2-->User");
 
             var claims = Saml2Response.Read(modifiedSignedResponse).GetClaims(StubFactory.CreateOptions());
