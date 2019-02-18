@@ -4,6 +4,7 @@ using Sustainsys.Saml2.Saml2P;
 using Sustainsys.Saml2.WebSso;
 using System;
 using System.Collections.Generic;
+using System.Xml;
 
 namespace Sustainsys.Saml2.Configuration
 {
@@ -149,6 +150,6 @@ namespace Sustainsys.Saml2.Configuration
         /// <see cref="TokenValidationParameters"/>. Modify it's properties to customize
         /// the generated validation parameters.
         /// </summary>
-        public Action<TokenValidationParameters> TokenValidationParametersCreated { get; set; } = tvp => { };
+        public Action<TokenValidationParameters, IdentityProvider, XmlElement> TokenValidationParametersCreated { get; set; } = (tvp, idp, xmlElement) => { };
     }
 }
