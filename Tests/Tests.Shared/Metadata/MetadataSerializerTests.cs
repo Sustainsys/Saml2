@@ -5325,6 +5325,110 @@ namespace Sustainsys.Saml2.Tests.Metadata
 				(serializer, writer, obj) =>
 					serializer.TestWriteEntityDescriptor(writer, obj));
 		}
+		[TestData]
+		public static void AddEntityDescriptorTestData2()
+		{
+			string xml =
+			@"<?xml version='1.0' encoding='UTF-8'?>
+			<EntityDescriptor
+				xmlns='urn:oasis:names:tc:SAML:2.0:metadata'
+				xmlns:ds='http://www.w3.org/2000/09/xmldsig#'
+				xmlns:shibmd='urn:mace:shibboleth:metadata:1.0'
+				xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'
+				entityID='https://idp.example.org/idp/shibboleth'>
+				<RoleDescriptor xmlns:fed='http://docs.oasis-open.org/wsfed/federation/200706' xsi:type='fed:SecurityTokenServiceType' protocolSupportEnumeration='http://docs.oasis-open.org/wsfed/federation/200706'>
+				</RoleDescriptor><IDPSSODescriptor protocolSupportEnumeration='urn:mace:shibboleth:1.0 urn:oasis:names:tc:SAML:2.0:protocol'>
+					<Extensions>
+						<shibmd:Scope regexp='false'>example.org</shibmd:Scope>
+					</Extensions>
+					<KeyDescriptor>
+						<ds:KeyInfo>
+						<ds:X509Data>
+							<ds:X509Certificate>" + certData + @"</ds:X509Certificate>
+							</ds:X509Data>
+						</ds:KeyInfo>
+					</KeyDescriptor>
+ 
+					<NameIDFormat>urn:mace:shibboleth:1.0:nameIdentifier</NameIDFormat>
+					<NameIDFormat>urn:oasis:names:tc:SAML:2.0:nameid-format:transient</NameIDFormat>
+ 
+					<SingleSignOnService Binding='urn:mace:shibboleth:1.0:profiles:AuthnRequest'
+							Location='https://idp.example.org/idp/profile/Shibboleth/SSO' />
+         
+					<SingleSignOnService Binding='urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST'
+							Location='https://idp.example.org/idp/profile/SAML2/POST/SSO' />
+ 
+					<SingleSignOnService Binding='urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect'
+							Location='https://idp.example.org/idp/profile/SAML2/Redirect/SSO' />
+				</IDPSSODescriptor>
+			</EntityDescriptor>";
+			
+			(XmlDocument doc, XmlNamespaceManager nsmgr) = LoadXml(xml);
+
+			var obj = new EntityDescriptor(new EntityId("https://idp.example.org/idp/shibboleth"))
+			{
+				RoleDescriptors = {
+					new SecurityTokenServiceDescriptor
+					{
+						 ProtocolsSupported = {
+							new Uri("http://docs.oasis-open.org/wsfed/federation/200706")
+						}
+					},
+					new IdpSsoDescriptor
+					{
+						ProtocolsSupported = {
+							new Uri("urn:mace:shibboleth:1.0"),
+							new Uri("urn:oasis:names:tc:SAML:2.0:protocol")
+						},
+						Extensions = {
+							doc.SelectSingleNode(
+								"md:EntityDescriptor[1]/md:IDPSSODescriptor/md:Extensions/*[1]",
+								nsmgr).As<XmlElement>()
+						},
+						Keys = {
+							new KeyDescriptor {
+								KeyInfo = new DSigKeyInfo {
+									Data = {
+										new X509Data {
+											Certificates = {
+												new X509Certificate2(Convert.FromBase64String(certData))
+											}
+										}
+									}
+								}
+							}
+						},
+						NameIdentifierFormats = {
+							new NameIDFormat { Uri = new Uri("urn:mace:shibboleth:1.0:nameIdentifier") },
+							new NameIDFormat { Uri = new Uri("urn:oasis:names:tc:SAML:2.0:nameid-format:transient") },
+						},
+						SingleSignOnServices = {
+							new SingleSignOnService {
+								Binding = new Uri("urn:mace:shibboleth:1.0:profiles:AuthnRequest"),
+								Location = new Uri("https://idp.example.org/idp/profile/Shibboleth/SSO")
+							},
+							new SingleSignOnService {
+								Binding = new Uri("urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST"),
+								Location = new Uri("https://idp.example.org/idp/profile/SAML2/POST/SSO")
+							},
+							new SingleSignOnService {
+								Binding = new Uri("urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect"),
+								Location = new Uri("https://idp.example.org/idp/profile/SAML2/Redirect/SSO")
+							}
+						}
+					}
+				}
+			};
+
+			AddTestData("EntityDescriptor2", xml, obj);
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_ReadEntityDescriptor2()
+		{
+			ReadTest("EntityDescriptor2", (serializer, reader) =>
+				serializer.TestReadEntityDescriptor(reader));
+		}
 
 		[TestMethod]
 		public void MetadataSerializerTests_ReadEntityDescriptorNull()
