@@ -18,13 +18,13 @@ namespace Sustainsys.Saml2.Saml2P
 	/// </summary>
 	public class Saml2PSecurityTokenHandler : Saml2SecurityTokenHandler
 	{
+		public Saml2PSecurityTokenHandler(): this(null)
+		{
+			// backward compatibility = null spOptions
+		}
+
 		public Saml2PSecurityTokenHandler(SPOptions spOptions)
 		{
-			if (spOptions == null)
-			{
-				throw new ArgumentNullException(nameof(spOptions));
-			}
-
 			Serializer = new Saml2PSerializer(spOptions);
 		}
 

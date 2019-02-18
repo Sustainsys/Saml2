@@ -295,7 +295,7 @@ namespace Sustainsys.Saml2.Saml2P
 
 		protected override Saml2AuthenticationContext ReadAuthenticationContext(XmlDictionaryReader reader)
 		{
-			if (spOptions.Compatibility.IgnoreAuthenticationContextInResponse)
+			if (spOptions?.Compatibility?.IgnoreAuthenticationContextInResponse ?? false)
 			{
 				reader.Skip();
 				//hack to get around the lack of a sane constructor
