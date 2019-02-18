@@ -16,6 +16,7 @@ using Sustainsys.Saml2.Metadata;
 using Sustainsys.Saml2.Tests.WebSSO;
 using Sustainsys.Saml2.TestHelpers;
 using Microsoft.IdentityModel.Tokens.Saml2;
+using System.Runtime.CompilerServices;
 
 namespace Sustainsys.Saml2.Tests.WebSso
 {
@@ -91,10 +92,10 @@ namespace Sustainsys.Saml2.Tests.WebSso
 
             Action a = () => new AcsCommand().Run(r, Options.FromConfiguration);
 
-			a.Should().Throw<BadFormatSamlResponseException>()
-				.WithMessage("The SAML response contains incorrect XML")
-				.Where(ex => ex.Data["Saml2Response"] as string == "<foo />")
-				.WithInnerException<XmlException>();
+            a.Should().Throw<BadFormatSamlResponseException>()
+                .WithMessage("The SAML response contains incorrect XML")
+                .Where(ex => ex.Data["Saml2Response"] as string == "<foo />")
+                .WithInnerException<XmlException>();
         }
 
         [TestMethod]
@@ -274,7 +275,7 @@ namespace Sustainsys.Saml2.Tests.WebSso
                     null)
                 );
 
-            var ids = new ClaimsIdentity[] { new ClaimsIdentity("Federation")};
+            var ids = new ClaimsIdentity[] { new ClaimsIdentity("Federation") };
             ids[0].AddClaim(new Claim(ClaimTypes.NameIdentifier, "SomeUser", null, "https://idp.example.com"));
 
             var expected = new CommandResult()
@@ -346,8 +347,8 @@ namespace Sustainsys.Saml2.Tests.WebSso
         [TestMethod]
         public void AcsCommand_Run_UnsolicitedResponse_ThrowsOnNoConfiguredReturnUrl()
         {
-           var response =
-            @"<saml2p:Response xmlns:saml2p=""urn:oasis:names:tc:SAML:2.0:protocol""
+            var response =
+             @"<saml2p:Response xmlns:saml2p=""urn:oasis:names:tc:SAML:2.0:protocol""
                 xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
                 ID = """ + MethodBase.GetCurrentMethod().Name + @""" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z"">
                 <saml2:Issuer>
@@ -695,13 +696,17 @@ namespace Sustainsys.Saml2.Tests.WebSso
             actual.Principal.Claims.First().Issuer.Should().Be("https://other.idp.example.com");
         }
 
-        [TestMethod]
-        public void AcsCommand_Run_WithRelayStateUsedAsReturnUrl_Success()
+        private void RelayStateAsReturnUrl(string relayState, IOptions options, [CallerMemberName] string caller = null)
         {
+            if(string.IsNullOrEmpty(caller))
+            {
+                throw new ArgumentNullException(nameof(caller));
+            }
+
             var response =
             @"<saml2p:Response xmlns:saml2p=""urn:oasis:names:tc:SAML:2.0:protocol""
                 xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
-                ID = """ + MethodBase.GetCurrentMethod().Name + @""" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z"">
+                ID = """ + caller + @""" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z"">
                 <saml2:Issuer>
                     https://idp5.example.com
                 </saml2:Issuer>
@@ -709,7 +714,7 @@ namespace Sustainsys.Saml2.Tests.WebSso
                     <saml2p:StatusCode Value=""urn:oasis:names:tc:SAML:2.0:status:Success"" />
                 </saml2p:Status>
                 <saml2:Assertion
-                Version=""2.0"" ID=""" + MethodBase.GetCurrentMethod().Name + @"_Assertion2""
+                Version=""2.0"" ID=""" + caller + @"_Assertion""
                 IssueInstant=""2013-09-25T00:00:00Z"">
                     <saml2:Issuer>https://idp5.example.com</saml2:Issuer>
                     <saml2:Subject>
@@ -723,19 +728,21 @@ namespace Sustainsys.Saml2.Tests.WebSso
             var responseFormValue = Convert.ToBase64String
                 (Encoding.UTF8.GetBytes(SignedXmlHelper.SignXml(response)));
 
-            var relayStateFormValue = "https://somedomain.com/restrictedpage";
+            var formData = new List<KeyValuePair<string, IEnumerable<string>>>
+            {
+                new KeyValuePair<string, IEnumerable<string>>("SAMLResponse", new string[] { responseFormValue }),
+            };
+            if(relayState != null)
+            {
+                formData.Add(new KeyValuePair<string, IEnumerable<string>>("RelayState", new string[] { relayState }));
+            }
 
             var r = new HttpRequestData(
                 "POST",
                 new Uri("http://localhost"),
                 "/ModulePath",
-                new KeyValuePair<string, IEnumerable<string>>[]
-                {
-                    new KeyValuePair<string, IEnumerable<string>>("SAMLResponse", new string[] { responseFormValue }),
-                    new KeyValuePair<string, IEnumerable<string>>("RelayState", new string[] { relayStateFormValue })
-                },
-                null
-                );
+                formData,
+                null);
 
             var ids = new ClaimsIdentity[] { new ClaimsIdentity("Federation") };
 
@@ -745,55 +752,49 @@ namespace Sustainsys.Saml2.Tests.WebSso
             {
                 Principal = new ClaimsPrincipal(ids),
                 HttpStatusCode = HttpStatusCode.SeeOther,
-                Location = new Uri(relayStateFormValue),
+                Location = relayState != null ? new Uri(relayState, UriKind.RelativeOrAbsolute) : null,
             };
 
-            new AcsCommand().Run(r, StubFactory.CreateOptions())
-                .Should().BeEquivalentTo(expected, opt => opt.IgnoringCyclicReferences());
+            new AcsCommand().Run(r, options)
+                .Location.OriginalString.Should().Be(relayState);
+        }
+
+        [TestMethod]
+        public void AcsCommand_Run_WithRelayStateUsedAsReturnUrl_Success()
+        {
+            RelayStateAsReturnUrl("/someUrl", StubFactory.CreateOptions());
         }
 
         [TestMethod]
         public void AcsCommand_Run_WithRelayStateUsedAsReturnUrl_Missing()
         {
-            var response =
-            @"<saml2p:Response xmlns:saml2p=""urn:oasis:names:tc:SAML:2.0:protocol""
-                xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
-                ID = """ + MethodBase.GetCurrentMethod().Name + @""" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z"">
-                <saml2:Issuer>
-                    https://idp5.example.com
-                </saml2:Issuer>
-                <saml2p:Status>
-                    <saml2p:StatusCode Value=""urn:oasis:names:tc:SAML:2.0:status:Success"" />
-                </saml2p:Status>
-                <saml2:Assertion
-                Version=""2.0"" ID=""" + MethodBase.GetCurrentMethod().Name + @"_Assertion2""
-                IssueInstant=""2013-09-25T00:00:00Z"">
-                    <saml2:Issuer>https://idp5.example.com</saml2:Issuer>
-                    <saml2:Subject>
-                        <saml2:NameID>SomeUser</saml2:NameID>
-                        <saml2:SubjectConfirmation Method=""urn:oasis:names:tc:SAML:2.0:cm:bearer"" />
-                    </saml2:Subject>
-                    <saml2:Conditions NotOnOrAfter=""2100-01-01T00:00:00Z"" />
-                </saml2:Assertion>
-            </saml2p:Response>";
+            this.Invoking(t => t.RelayStateAsReturnUrl(null, StubFactory.CreateOptions()))
+                .Should().Throw<ConfigurationErrorsException>();
+        }
 
-            var responseFormValue = Convert.ToBase64String
-                (Encoding.UTF8.GetBytes(SignedXmlHelper.SignXml(response)));            
+        [TestMethod]
+        public void AcsCommand_Run_WithRelayStateUserAsReturnUrl_AbsolutUrlThrows()
+        {
+            this.Invoking(t => t.RelayStateAsReturnUrl("https://absolute.example.com/something", StubFactory.CreateOptions()))
+                .Should().Throw<InvalidOperationException>().WithMessage("*relative*");
+        }
 
-            var r = new HttpRequestData(
-                "POST",
-                new Uri("http://localhost"),
-                "/ModulePath",
-                new KeyValuePair<string, IEnumerable<string>>[]
-                {
-                    new KeyValuePair<string, IEnumerable<string>>("SAMLResponse", new string[] { responseFormValue })
-                },
-                null
-                );            
+        [TestMethod]
+        public void AcsCommand_Run_WithRelayStateUserAsReturnUrl_AbsolutUrlValidatesThroughNotification()
+        {
+            var options = StubFactory.CreateOptions();
 
-            Action a = () => new AcsCommand().Run(r, Options.FromConfiguration);
+            bool called = false;
+            options.Notifications.ValidateAbsoluteReturnUrl = url =>
+            {
+                called = true;
+                return true;
+            };
 
-            a.Should().Throw<ConfigurationErrorsException>();
-        }        
+            // Should not throw this time.
+            RelayStateAsReturnUrl("https://absolute.example.com/something", options);
+
+            called.Should().BeTrue("Notifaction should have been called");
+        }
     }
 }

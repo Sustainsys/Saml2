@@ -1,5 +1,6 @@
 ﻿using Sustainsys.Saml2.Configuration;
 using Sustainsys.Saml2.Exceptions;
+using Sustainsys.Saml2.Internal;
 using Sustainsys.Saml2.Metadata;
 using Sustainsys.Saml2.Saml2P;
 using System;
@@ -117,10 +118,14 @@ namespace Sustainsys.Saml2.WebSso
 
                 if (identityProvider.RelayStateUsedAsReturnUrl)
                 {
-                    if (Uri.IsWellFormedUriString(relayState, UriKind.Absolute))
+                    if (!PathHelper.IsLocalWebUrl(relayState))
                     {
-                        return new Uri(relayState);
+                        if (!options.Notifications.ValidateAbsoluteReturnUrl(relayState))
+                        {
+                            throw new InvalidOperationException("Return Url must be a relative Url.");
+                        }
                     }
+                    return new Uri(relayState, UriKind.RelativeOrAbsolute);
                 }
             }
 
