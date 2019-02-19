@@ -146,10 +146,21 @@ namespace Sustainsys.Saml2.Configuration
             = (ei, rd, opt) => opt.IdentityProviders[ei];
 
         /// <summary>
-        /// Notification called when the token handler has populated the
-        /// <see cref="TokenValidationParameters"/>. Modify it's properties to customize
-        /// the generated validation parameters.
+        /// Callbacks that allow modifying the validation behavior in potentially unsafe/insecure ways
         /// </summary>
-        public Action<TokenValidationParameters, IdentityProvider, XmlElement> TokenValidationParametersCreated { get; set; } = (tvp, idp, xmlElement) => { };
+        public UnsafeNotifications Unsafe { get; } = new UnsafeNotifications();
+
+        /// <summary>
+        /// Callbacks that allow modification of validation behavior in potentially unsafe/insecure ways
+        /// </summary>
+        public class UnsafeNotifications
+        {
+            /// <summary>
+            /// Notification called when the token handler has populated the
+            /// <see cref="TokenValidationParameters"/>. Modify it's properties to customize
+            /// the generated validation parameters.
+            /// </summary>
+            public Action<TokenValidationParameters, IdentityProvider, XmlElement> TokenValidationParametersCreated { get; set; } = (tvp, idp, xmlElement) => { };
+        }
     }
 }

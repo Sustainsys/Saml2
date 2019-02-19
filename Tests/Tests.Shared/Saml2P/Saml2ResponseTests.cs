@@ -1283,8 +1283,6 @@ namespace Sustainsys.Saml2.Tests.Saml2P
             var subject = Saml2Response.Read(response);
 
             var options = StubFactory.CreateOptions();
-            //options.SPOptions.SystemIdentityModelIdentityConfiguration.AudienceRestriction.AudienceMode
-            //    = AudienceUriMode.Always;
 
             subject.Invoking(s => s.GetClaims(options))
                 .Should().Throw<SecurityTokenInvalidAudienceException>();
@@ -1323,7 +1321,7 @@ namespace Sustainsys.Saml2.Tests.Saml2P
             var subject = Saml2Response.Read(response);
 
             var options = StubFactory.CreateOptions();
-            options.Notifications.TokenValidationParametersCreated = (tvp, idp, xml) =>
+            options.Notifications.Unsafe.TokenValidationParametersCreated = (tvp, idp, xml) =>
             {
                 tvp.ValidateAudience = false;
 
