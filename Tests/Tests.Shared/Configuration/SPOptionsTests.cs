@@ -624,7 +624,7 @@ namespace Sustainsys.Saml2.Tests.Configuration
         {
             var subject = StubFactory.CreateSPOptions();
 
-            var handler = new Saml2PSecurityTokenHandler();
+            var handler = new Saml2PSecurityTokenHandler(subject);
 
             subject.Saml2PSecurityTokenHandler = handler;
 

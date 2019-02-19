@@ -1,5 +1,6 @@
 ﻿using Microsoft.IdentityModel.Tokens.Saml2;
 using Microsoft.IdentityModel.Xml;
+using Sustainsys.Saml2.Configuration;
 using Sustainsys.Saml2.Internal;
 using System;
 using System.Collections.Generic;
@@ -45,6 +46,13 @@ namespace Sustainsys.Saml2.Saml2P
 	// - ignore authentication context if configured to do so
 	class Saml2PSerializer : Saml2Serializer
 	{
+		private SPOptions spOptions;
+
+		public Saml2PSerializer(SPOptions spOptions)
+		{
+			this.spOptions = spOptions;
+		}
+
 		public ICollection<X509Certificate2> DecryptionCertificates { get; set; }
 
 		/// <summary>
@@ -284,7 +292,19 @@ namespace Sustainsys.Saml2.Saml2P
 
 			writer.WriteEndElement();
 		}
-	
+
+		protected override Saml2AuthenticationContext ReadAuthenticationContext(XmlDictionaryReader reader)
+		{
+			if (spOptions?.Compatibility?.IgnoreAuthenticationContextInResponse ?? false)
+			{
+				reader.Skip();
+				//hack to get around the lack of a sane constructor
+				return (Saml2AuthenticationContext)System.Runtime.Serialization.FormatterServices.GetUninitializedObject(typeof(Saml2AuthenticationContext));
+			}
+
+			return base.ReadAuthenticationContext(reader);
+		}
+
 		internal static Exception LogReadException(string message)
 		{
 			return LogExceptionMessage(new Saml2SecurityTokenReadException(message));
