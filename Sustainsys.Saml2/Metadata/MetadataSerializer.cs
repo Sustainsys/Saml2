@@ -2010,13 +2010,13 @@ namespace Sustainsys.Saml2.Metadata
 					{
 						if (String.Equals(extensionType, "ApplicationServiceType", StringComparison.Ordinal))
 						{
-							descriptor.RoleDescriptors.Add(
-								ReadApplicationServiceDescriptor(reader));
+							roleDescriptor = ReadApplicationServiceDescriptor(reader);
+							descriptor.RoleDescriptors.Add(roleDescriptor);
 						}
 						else if (String.Equals(extensionType, "SecurityTokenServiceType", StringComparison.Ordinal))
 						{
-							descriptor.RoleDescriptors.Add(
-								ReadSecurityTokenServiceDescriptor(reader));
+							roleDescriptor = ReadSecurityTokenServiceDescriptor(reader);
+							descriptor.RoleDescriptors.Add(roleDescriptor);
 						}
 					}
 					if (roleDescriptor == null)
