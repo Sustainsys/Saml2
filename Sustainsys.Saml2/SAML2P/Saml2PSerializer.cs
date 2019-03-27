@@ -223,8 +223,18 @@ namespace Sustainsys.Saml2.Saml2P
 					"EncryptedId could not be decrypted using any available decryption certificate");
 			}
 
-			reader = XmlDictionaryReader.CreateDictionaryReader(new XmlNodeReader(decrypted.FirstChild));
+			reader = XmlDictionaryReader.CreateDictionaryReader(new XmlNodeReader(StripWrapper(decrypted)));
 			return ReadNameIdentifier(reader, null);
+		}
+
+		private static XmlNode StripWrapper(XmlElement decrypted)
+		{
+			var inner = decrypted.FirstChild;
+			while (!(inner is XmlElement) && inner != null)
+			{
+				inner = inner.NextSibling;
+			}
+			return inner;
 		}
 
 		public virtual void WriteEncryptedAssertion(XmlWriter writer, Saml2EncryptedAssertion assertion)

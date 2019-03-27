@@ -88,7 +88,9 @@ namespace Sustainsys.Saml2.TestHelpers
             }
 
             var xmlDoc = XmlHelpers.CreateSafeXmlDocument();
-            var wrappedId = $@"<saml2:EncryptedID xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion"">{nameIdXml}</saml2:EncryptedID>";
+            var wrappedId = "<saml2:EncryptedID xmlns:saml2=\"urn:oasis:names:tc:SAML:2.0:assertion\">\r\n"
+                            + $"    {nameIdXml}\r\n"  // the whitespace in this string is an important part of the test.
+                            + "</saml2:EncryptedID>";
             xmlDoc.LoadXml(wrappedId);
             var elementToEncrypt = (XmlElement)xmlDoc.GetElementsByTagName("NameID", Saml2Namespaces.Saml2Name)[0];
 
