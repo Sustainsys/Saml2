@@ -1,4 +1,5 @@
-﻿<!DOCTYPE html>
+﻿@using NWebsec.Mvc.HttpHeaders.Csp
+<!DOCTYPE html>
 <html>
 <head>
     <meta charset="utf-8" />
@@ -39,8 +40,8 @@
         </footer>
     </div>
 
-    @Scripts.Render("~/bundles/jquery")
-    @Scripts.Render("~/bundles/bootstrap")
+    @Scripts.RenderFormat("<script src='{0}'" + @Html.CspScriptNonce() + "></script>", "~/bundles/jquery")
+    @Scripts.RenderFormat("<script src='{0}'" + @Html.CspScriptNonce() + "></script>", "~/bundles/bootstrap")
     @RenderSection("scripts", required: false)
 </body>
 </html>

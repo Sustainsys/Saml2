@@ -133,7 +133,7 @@ namespace Sustainsys.Saml2.Tests.WebSso
 <!DOCTYPE html PUBLIC ""-//W3C//DTD XHTML 1.1//EN""
 ""http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd"">
 <html xmlns=""http://www.w3.org/1999/xhtml"" xml:lang=""en"">
-<body onload=""document.forms[0].submit()"">
+<body>
 <noscript>
 <p>
 <strong>Note:</strong> Since your browser does not support JavaScript, 
@@ -151,6 +151,9 @@ value=""PHJvb3Q+PGNvbnRlbnQ+ZGF0YTwvY29udGVudD48L3Jvb3Q+""/>
 </div>
 </noscript>
 </form>
+<script type=""text/javascript"">
+document.forms[0].submit();
+</script>
 </body>
 </html>"
             };
@@ -178,7 +181,7 @@ value=""PHJvb3Q+PGNvbnRlbnQ+ZGF0YTwvY29udGVudD48L3Jvb3Q+""/>
 <!DOCTYPE html PUBLIC ""-//W3C//DTD XHTML 1.1//EN""
 ""http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd"">
 <html xmlns=""http://www.w3.org/1999/xhtml"" xml:lang=""en"">
-<body onload=""document.forms[0].submit()"">
+<body>
 <noscript>
 <p>
 <strong>Note:</strong> Since your browser does not support JavaScript, 
@@ -197,6 +200,9 @@ value=""PHJvb3Q+PGNvbnRlbnQ+ZGF0YTwvY29udGVudD48L3Jvb3Q+""/>
 </div>
 </noscript>
 </form>
+<script type=""text/javascript"">
+document.forms[0].submit();
+</script>
 </body>
 </html>"
             };
@@ -229,7 +235,7 @@ value=""PHJvb3Q+PGNvbnRlbnQ+ZGF0YTwvY29udGVudD48L3Jvb3Q+""/>
 <!DOCTYPE html PUBLIC ""-//W3C//DTD XHTML 1.1//EN""
 ""http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd"">
 <html xmlns=""http://www.w3.org/1999/xhtml"" xml:lang=""en"">
-<body onload=""document.forms[0].submit()"">
+<body>
 <noscript>
 <p>
 <strong>Note:</strong> Since your browser does not support JavaScript, 
@@ -248,6 +254,9 @@ value=""" + expectedValue + @"""/>
 </div>
 </noscript>
 </form>
+<script type=""text/javascript"">
+document.forms[0].submit();
+</script>
 </body>
 </html>"
             };
