@@ -94,7 +94,7 @@ namespace Sustainsys.Saml2.WebSso
 ""http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd"">
 <html xmlns=""http://www.w3.org/1999/xhtml"" xml:lang=""en"">
 <head>
-<meta http-equiv=""Content-Security-Policy"" content=""script-src 'sha256-P3ctnFLM5WKMitbWbZPkh7TsbhvCPtdF7mlwMUv2pgc='"">
+<meta http-equiv=""Content-Security-Policy"" content=""script-src 'sha256-H3SVZBYrbqBt3ncrT/nNmOb6nwCjC12cPQzh5jnW4Y0='"">
 </head>
 <body>
 <noscript>
@@ -103,7 +103,7 @@ namespace Sustainsys.Saml2.WebSso
 you must press the Continue button once to proceed.
 </p>
 </noscript>
-<form action=""{0}"" method=""post"">
+<form action=""{0}"" method=""post"" name=""sustainsysSamlPostBindingSubmit"">
 <div>{1}
 <input type=""hidden"" name=""{2}""
 value=""{3}""/>
@@ -115,7 +115,7 @@ value=""{3}""/>
 </noscript>
 </form>
 <script type=""text/javascript"">
-document.forms[0].submit();
+document.forms.sustainsysSamlPostBindingSubmit.submit();
 </script>
 </body>
 </html>";

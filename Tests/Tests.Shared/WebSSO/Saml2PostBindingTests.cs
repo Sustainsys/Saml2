@@ -134,7 +134,7 @@ namespace Sustainsys.Saml2.Tests.WebSso
 ""http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd"">
 <html xmlns=""http://www.w3.org/1999/xhtml"" xml:lang=""en"">
 <head>
-<meta http-equiv=""Content-Security-Policy"" content=""script-src 'sha256-P3ctnFLM5WKMitbWbZPkh7TsbhvCPtdF7mlwMUv2pgc='"">
+<meta http-equiv=""Content-Security-Policy"" content=""script-src 'sha256-H3SVZBYrbqBt3ncrT/nNmOb6nwCjC12cPQzh5jnW4Y0='"">
 </head>
 <body>
 <noscript>
@@ -143,7 +143,7 @@ namespace Sustainsys.Saml2.Tests.WebSso
 you must press the Continue button once to proceed.
 </p>
 </noscript>
-<form action=""http://www.example.com/acs"" method=""post"">
+<form action=""http://www.example.com/acs"" method=""post"" name=""sustainsysSamlPostBindingSubmit"">
 <div>
 <input type=""hidden"" name=""SAMLMessageName""
 value=""PHJvb3Q+PGNvbnRlbnQ+ZGF0YTwvY29udGVudD48L3Jvb3Q+""/>
@@ -155,7 +155,7 @@ value=""PHJvb3Q+PGNvbnRlbnQ+ZGF0YTwvY29udGVudD48L3Jvb3Q+""/>
 </noscript>
 </form>
 <script type=""text/javascript"">
-document.forms[0].submit();
+document.forms.sustainsysSamlPostBindingSubmit.submit();
 </script>
 </body>
 </html>"
@@ -185,7 +185,7 @@ document.forms[0].submit();
 ""http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd"">
 <html xmlns=""http://www.w3.org/1999/xhtml"" xml:lang=""en"">
 <head>
-<meta http-equiv=""Content-Security-Policy"" content=""script-src 'sha256-P3ctnFLM5WKMitbWbZPkh7TsbhvCPtdF7mlwMUv2pgc='"">
+<meta http-equiv=""Content-Security-Policy"" content=""script-src 'sha256-H3SVZBYrbqBt3ncrT/nNmOb6nwCjC12cPQzh5jnW4Y0='"">
 </head>
 <body>
 <noscript>
@@ -194,7 +194,7 @@ document.forms[0].submit();
 you must press the Continue button once to proceed.
 </p>
 </noscript>
-<form action=""http://www.example.com/acs"" method=""post"">
+<form action=""http://www.example.com/acs"" method=""post"" name=""sustainsysSamlPostBindingSubmit"">
 <div>
 <input type=""hidden"" name=""RelayState"" value=""ABC1234""/>
 <input type=""hidden"" name=""SAMLMessageName""
@@ -207,7 +207,7 @@ value=""PHJvb3Q+PGNvbnRlbnQ+ZGF0YTwvY29udGVudD48L3Jvb3Q+""/>
 </noscript>
 </form>
 <script type=""text/javascript"">
-document.forms[0].submit();
+document.forms.sustainsysSamlPostBindingSubmit.submit();
 </script>
 </body>
 </html>"
@@ -242,7 +242,7 @@ document.forms[0].submit();
 ""http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd"">
 <html xmlns=""http://www.w3.org/1999/xhtml"" xml:lang=""en"">
 <head>
-<meta http-equiv=""Content-Security-Policy"" content=""script-src 'sha256-P3ctnFLM5WKMitbWbZPkh7TsbhvCPtdF7mlwMUv2pgc='"">
+<meta http-equiv=""Content-Security-Policy"" content=""script-src 'sha256-H3SVZBYrbqBt3ncrT/nNmOb6nwCjC12cPQzh5jnW4Y0='"">
 </head>
 <body>
 <noscript>
@@ -251,7 +251,7 @@ document.forms[0].submit();
 you must press the Continue button once to proceed.
 </p>
 </noscript>
-<form action=""http://www.example.com/acs"" method=""post"">
+<form action=""http://www.example.com/acs"" method=""post"" name=""sustainsysSamlPostBindingSubmit"">
 <div>
 <input type=""hidden"" name=""RelayState"" value=""ABC1234""/>
 <input type=""hidden"" name=""SAMLMessageName""
@@ -264,7 +264,7 @@ value=""" + expectedValue + @"""/>
 </noscript>
 </form>
 <script type=""text/javascript"">
-document.forms[0].submit();
+document.forms.sustainsysSamlPostBindingSubmit.submit();
 </script>
 </body>
 </html>"
