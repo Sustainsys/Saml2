@@ -31,7 +31,19 @@ namespace Sustainsys.Saml2.Internal
 
             return queryString.Split('&')
                 .Where(x => !string.IsNullOrWhiteSpace(x))
-                .Select(x => x.Split('='))
+                .Select(x =>
+                {
+                    int indexOfFirstEqualsSign = x.IndexOf("=");
+                    if(indexOfFirstEqualsSign == -1)
+                    {
+                        return new string[] { x };
+                    }
+                    return new string[] 
+                    {
+                        x.Substring(0, indexOfFirstEqualsSign),
+                        x.Substring(indexOfFirstEqualsSign + 1)
+                    };
+                })
                 .ToLookup(y => y[0], y => y.Length > 1 ? Uri.UnescapeDataString(y[1]) : null);
         }
     }
