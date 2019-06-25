@@ -62,7 +62,8 @@ namespace Sustainsys.Saml2.Tests.Saml2P
         [TestMethod]
         public void Saml2AuthenticationRequest_ForceAuthentication_OmittedIfFalse()
         {
-            var subject = new Saml2AuthenticationRequest() {
+            var subject = new Saml2AuthenticationRequest()
+            {
                 ForceAuthentication = false
             }.ToXElement();
 
@@ -72,7 +73,8 @@ namespace Sustainsys.Saml2.Tests.Saml2P
         [TestMethod]
         public void Saml2AuthenticationRequest_ForceAuthentication()
         {
-            var subject = new Saml2AuthenticationRequest() {
+            var subject = new Saml2AuthenticationRequest()
+            {
                 ForceAuthentication = true
             }.ToXElement();
 
@@ -80,20 +82,20 @@ namespace Sustainsys.Saml2.Tests.Saml2P
                 .Should().NotBeNull().And.Subject.Value.Should().Be("true");
         }
 
-		[TestMethod]
-		public void Saml2AuthenticationRequest_Extensions()
-		{
-			var request = new Saml2AuthenticationRequest();
-			request.ExtensionContents.Add(new XElement(XNamespace.Get("test") + "aditional"));
-			var subject = request.ToXElement();
+        [TestMethod]
+        public void Saml2AuthenticationRequest_Extensions()
+        {
+            var request = new Saml2AuthenticationRequest();
+            request.ExtensionContents.Add(new XElement(XNamespace.Get("test") + "aditional"));
+            var subject = request.ToXElement();
 
-			subject.Should().NotBeNull().And.Subject
-				.Element(Saml2Namespaces.Saml2P + "Extensions").Should().NotBeNull().And.Subject
-				.Elements().Should().HaveCount(1).And.Subject
-				.First().Name.LocalName.Should().Be("aditional");
-		}
+            subject.Should().NotBeNull().And.Subject
+                .Element(Saml2Namespaces.Saml2P + "Extensions").Should().NotBeNull().And.Subject
+                .Elements().Should().HaveCount(1).And.Subject
+                .First().Name.LocalName.Should().Be("aditional");
+        }
 
-		[TestMethod]
+        [TestMethod]
         public void Saml2AuthenticationRequest_Read()
         {
             var xmlData = @"<?xml version=""1.0"" encoding=""UTF-8""?>
@@ -231,10 +233,10 @@ namespace Sustainsys.Saml2.Tests.Saml2P
             subject.NameIdPolicy.Format.Should().Be(NameIdFormat.NotConfigured);
         }
 
-		[TestMethod]
-		public void Saml2AuthenticationRequest_Read_Extensions()
-		{
-			var xmlData = @"<?xml version=""1.0"" encoding=""UTF-8""?>
+        [TestMethod]
+        public void Saml2AuthenticationRequest_Read_Extensions()
+        {
+            var xmlData = @"<?xml version=""1.0"" encoding=""UTF-8""?>
 <samlp:AuthnRequest
                      xmlns:samlp=""urn:oasis:names:tc:SAML:2.0:protocol""
                      xmlns:saml=""urn:oasis:names:tc:SAML:2.0:assertion""
@@ -251,12 +253,12 @@ namespace Sustainsys.Saml2.Tests.Saml2P
 </samlp:AuthnRequest>
 ";
 
-			var subject = Saml2AuthenticationRequest.Read(xmlData, null);
-			subject.ExtensionContents.Should().HaveCount(1);
-			subject.ExtensionContents[0].ToString().Should().BeEquivalentTo(@"<additional xmlns=""testurn:test"" />");
-		}
+            var subject = Saml2AuthenticationRequest.Read(xmlData, null);
+            subject.ExtensionContents.Should().HaveCount(1);
+            subject.ExtensionContents[0].ToString().Should().BeEquivalentTo(@"<additional xmlns=""testurn:test"" />");
+        }
 
-		[TestMethod]
+        [TestMethod]
         public void Saml2AuthenticationRequest_ToXElement_AddsElementSaml2NameIdPolicy_ForAllowCreate()
         {
             var subject = new Saml2AuthenticationRequest()
@@ -343,7 +345,7 @@ namespace Sustainsys.Saml2.Tests.Saml2P
                     ProxyCount = 0
                 }
             };
-            
+
             var actual = subject.ToXElement().Element(Saml2Namespaces.Saml2P + "Scoping");
 
             var expected = new XElement(Saml2Namespaces.Saml2P + "root",
