@@ -93,14 +93,17 @@ namespace Sustainsys.Saml2.WebSso
 <!DOCTYPE html PUBLIC ""-//W3C//DTD XHTML 1.1//EN""
 ""http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd"">
 <html xmlns=""http://www.w3.org/1999/xhtml"" xml:lang=""en"">
-<body onload=""document.forms[0].submit()"">
+<head>
+<meta http-equiv=""Content-Security-Policy"" content=""script-src 'sha256-H3SVZBYrbqBt3ncrT/nNmOb6nwCjC12cPQzh5jnW4Y0='"">
+</head>
+<body>
 <noscript>
 <p>
 <strong>Note:</strong> Since your browser does not support JavaScript, 
 you must press the Continue button once to proceed.
 </p>
 </noscript>
-<form action=""{0}"" method=""post"">
+<form action=""{0}"" method=""post"" name=""sustainsysSamlPostBindingSubmit"">
 <div>{1}
 <input type=""hidden"" name=""{2}""
 value=""{3}""/>
@@ -111,6 +114,9 @@ value=""{3}""/>
 </div>
 </noscript>
 </form>
+<script type=""text/javascript"">
+document.forms.sustainsysSamlPostBindingSubmit.submit();
+</script>
 </body>
 </html>";
     }

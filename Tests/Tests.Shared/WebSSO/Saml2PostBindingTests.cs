@@ -133,14 +133,17 @@ namespace Sustainsys.Saml2.Tests.WebSso
 <!DOCTYPE html PUBLIC ""-//W3C//DTD XHTML 1.1//EN""
 ""http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd"">
 <html xmlns=""http://www.w3.org/1999/xhtml"" xml:lang=""en"">
-<body onload=""document.forms[0].submit()"">
+<head>
+<meta http-equiv=""Content-Security-Policy"" content=""script-src 'sha256-H3SVZBYrbqBt3ncrT/nNmOb6nwCjC12cPQzh5jnW4Y0='"">
+</head>
+<body>
 <noscript>
 <p>
 <strong>Note:</strong> Since your browser does not support JavaScript, 
 you must press the Continue button once to proceed.
 </p>
 </noscript>
-<form action=""http://www.example.com/acs"" method=""post"">
+<form action=""http://www.example.com/acs"" method=""post"" name=""sustainsysSamlPostBindingSubmit"">
 <div>
 <input type=""hidden"" name=""SAMLMessageName""
 value=""PHJvb3Q+PGNvbnRlbnQ+ZGF0YTwvY29udGVudD48L3Jvb3Q+""/>
@@ -151,6 +154,9 @@ value=""PHJvb3Q+PGNvbnRlbnQ+ZGF0YTwvY29udGVudD48L3Jvb3Q+""/>
 </div>
 </noscript>
 </form>
+<script type=""text/javascript"">
+document.forms.sustainsysSamlPostBindingSubmit.submit();
+</script>
 </body>
 </html>"
             };
@@ -178,14 +184,17 @@ value=""PHJvb3Q+PGNvbnRlbnQ+ZGF0YTwvY29udGVudD48L3Jvb3Q+""/>
 <!DOCTYPE html PUBLIC ""-//W3C//DTD XHTML 1.1//EN""
 ""http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd"">
 <html xmlns=""http://www.w3.org/1999/xhtml"" xml:lang=""en"">
-<body onload=""document.forms[0].submit()"">
+<head>
+<meta http-equiv=""Content-Security-Policy"" content=""script-src 'sha256-H3SVZBYrbqBt3ncrT/nNmOb6nwCjC12cPQzh5jnW4Y0='"">
+</head>
+<body>
 <noscript>
 <p>
 <strong>Note:</strong> Since your browser does not support JavaScript, 
 you must press the Continue button once to proceed.
 </p>
 </noscript>
-<form action=""http://www.example.com/acs"" method=""post"">
+<form action=""http://www.example.com/acs"" method=""post"" name=""sustainsysSamlPostBindingSubmit"">
 <div>
 <input type=""hidden"" name=""RelayState"" value=""ABC1234""/>
 <input type=""hidden"" name=""SAMLMessageName""
@@ -197,6 +206,9 @@ value=""PHJvb3Q+PGNvbnRlbnQ+ZGF0YTwvY29udGVudD48L3Jvb3Q+""/>
 </div>
 </noscript>
 </form>
+<script type=""text/javascript"">
+document.forms.sustainsysSamlPostBindingSubmit.submit();
+</script>
 </body>
 </html>"
             };
@@ -229,14 +241,17 @@ value=""PHJvb3Q+PGNvbnRlbnQ+ZGF0YTwvY29udGVudD48L3Jvb3Q+""/>
 <!DOCTYPE html PUBLIC ""-//W3C//DTD XHTML 1.1//EN""
 ""http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd"">
 <html xmlns=""http://www.w3.org/1999/xhtml"" xml:lang=""en"">
-<body onload=""document.forms[0].submit()"">
+<head>
+<meta http-equiv=""Content-Security-Policy"" content=""script-src 'sha256-H3SVZBYrbqBt3ncrT/nNmOb6nwCjC12cPQzh5jnW4Y0='"">
+</head>
+<body>
 <noscript>
 <p>
 <strong>Note:</strong> Since your browser does not support JavaScript, 
 you must press the Continue button once to proceed.
 </p>
 </noscript>
-<form action=""http://www.example.com/acs"" method=""post"">
+<form action=""http://www.example.com/acs"" method=""post"" name=""sustainsysSamlPostBindingSubmit"">
 <div>
 <input type=""hidden"" name=""RelayState"" value=""ABC1234""/>
 <input type=""hidden"" name=""SAMLMessageName""
@@ -248,6 +263,9 @@ value=""" + expectedValue + @"""/>
 </div>
 </noscript>
 </form>
+<script type=""text/javascript"">
+document.forms.sustainsysSamlPostBindingSubmit.submit();
+</script>
 </body>
 </html>"
             };
