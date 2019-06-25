@@ -83,6 +83,11 @@ namespace Sustainsys.Saml2.Saml2P
         public EntityId Issuer { get; set; }
 
         /// <summary>
+        /// The additional content to append within an Extensions element.
+        /// </summary>
+        public List<XElement> ExtensionContents { get; } = new List<XElement>();
+
+        /// <summary>
         /// The SAML2 request name
         /// </summary>
         protected abstract string LocalName { get; }
@@ -109,6 +114,11 @@ namespace Sustainsys.Saml2.Saml2P
             {
                 yield return new XElement(Saml2Namespaces.Saml2 + "Issuer", Issuer.Id);
             }
+
+            if (ExtensionContents != null && ExtensionContents.Count > 0)
+            {
+                yield return new XElement(Saml2Namespaces.Saml2P + "Extensions", ExtensionContents);
+            }
         }
 
         /// <summary>
@@ -126,15 +136,23 @@ namespace Sustainsys.Saml2.Saml2P
             Id = new Saml2Id(xml.Attributes["ID"].Value);
 
             var destination = xml.Attributes["Destination"];
-            if(destination != null)
+            if (destination != null)
             {
                 DestinationUrl = new Uri(destination.Value);
             }
 
             var issuerNode = xml["Issuer", Saml2Namespaces.Saml2Name];
-            if(issuerNode != null)
+            if (issuerNode != null)
             {
                 Issuer = new EntityId(issuerNode.InnerXml);
+            }
+
+            var extensionsNode = xml["Extensions", Saml2Namespaces.Saml2PName];
+            if (extensionsNode != null && extensionsNode.HasChildNodes)
+            {
+                XElement converted = XElement.Parse(extensionsNode.OuterXml);
+                ExtensionContents.Clear();
+                ExtensionContents.AddRange(converted.Elements());
             }
         }
 
