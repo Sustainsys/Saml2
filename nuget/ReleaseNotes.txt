@@ -1,16 +1,11 @@
+Version 2.3.0
+* Support for RequestAbstractType.Extensions - EIDAS compatibility
+* Mark correlation cookie as essential
+* CSP Hash for POST binding
+* Support specifying ReturnUrl through RelayState
+* Remove .NET Standard dependencies when targeting .NET Framework
+
 Version 2.2.0
 * Support TLS Client Certificates for Artifact Resolve
-
-Version 2.1.0
-* Add back support for .NET 4.6.1 (without ECDSA support)
-* Idp selection through Asp.Net Core2 AuthProps
-* Proper file name on Metadata download
-* Notification to get Idp - allows Idp storage in database.
-* XML docs are back
-
-Version 2.0.0
-* Core library is now .NET Standard. HttpModule, MVC and Owin works
-  on full .NET Framework. Asp.NET Core2 handler on both the full
-  .NET Framework and on .NET Core.
 
 See GitHub milestone issue list for details.
