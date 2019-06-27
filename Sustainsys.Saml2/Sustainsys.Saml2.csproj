@@ -9,6 +9,7 @@
     <PackageIconUrl>https://raw.github.com/Sustainsys/Saml2/master/nuget/Sustainsys.png</PackageIconUrl>
     <PackageTags>SAML2 authentication AspNet SAML SSO</PackageTags>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+    <PackageDescription>SAML2 protocol support. Do not use directly, use the high level package for your platform.</PackageDescription>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">

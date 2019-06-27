@@ -9,6 +9,7 @@
     <PackageIconUrl>https://raw.github.com/Sustainsys/Saml2/master/nuget/Sustainsys.png</PackageIconUrl>
     <Copyright>Copyright © Sustainsys and contributors 2017-2018</Copyright>
     <PackageTags>SAML2 authentication AspNet SAML SSO</PackageTags>
+    <PackageDescription>ASP.NET Core authentication handler for the SAML2 protocol, compatible with Asp.Net Core 2.X</PackageDescription>
   </PropertyGroup>
 
   <ItemGroup>
