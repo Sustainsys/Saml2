@@ -49,7 +49,7 @@ Attributes
 
     If you need to set this value on a per-request basis, provide a ``GetPublicOrigin`` Notification function instead.
 
-``outboundSignAlgorithm`` (Optional)
+``outboundSigningAlgorithm`` (Optional)
     By default Saml2 uses SHA256 signatures if running on .NET 4.6.2 or later or when you 
     have called ``GlobalEnableSha256XmlSignatures()``. Otherwise, it uses SHA1 signatures. Use this attribute to 
     set the default signing algorithm for any messages (including metadata) that Saml2 generates. Possible values:
