@@ -505,6 +505,28 @@ namespace Sustainsys.Saml2
             return xmlElement.InnerText.Trim();
         }
 
+        internal static string GetRequiredAttributeValue(this XmlElement node, string attributeName)
+        {
+            var foundAttribute = node.Attributes[attributeName];
+            if (string.IsNullOrWhiteSpace(foundAttribute?.Value))
+            {
+                throw new BadFormatSamlResponseException($"Attribute '{attributeName}' (case-sensitive) was not found or its value is empty");
+            }
+
+            return foundAttribute.Value;
+        }
+
+        internal static XmlElement GetRequiredElement(this XmlElement node, string name, string namespaceValue)
+        {
+            var foundElement = node[name, namespaceValue];
+            if (foundElement == null)
+            {
+                throw new BadFormatSamlResponseException($"Element '{name}' (case-sensitive, namespace '{namespaceValue}') was not found");
+            }
+
+            return foundElement;
+        }
+
         internal static XmlElement StartElement(this XmlNode parent, string name, Uri namespaceUri)
         {
             var xmlElement = parent.GetOwnerDoc().CreateElement(name, namespaceUri.OriginalString);

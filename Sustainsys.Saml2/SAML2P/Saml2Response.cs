@@ -104,23 +104,24 @@ namespace Sustainsys.Saml2.Saml2P
 
             xmlElement = xml;
 
-            id = new Saml2Id(xml.Attributes["ID"].Value);
+            id = new Saml2Id(xml.GetRequiredAttributeValue("ID"));
 
             ReadAndValidateInResponseTo(xml, expectedInResponseTo, options);
 
-            issueInstant = DateTime.Parse(xml.Attributes["IssueInstant"].Value,
+            issueInstant = DateTime.Parse(xml.GetRequiredAttributeValue("IssueInstant"),
                 CultureInfo.InvariantCulture, DateTimeStyles.AdjustToUniversal);
 
-            var statusString = xml["Status", Saml2Namespaces.Saml2PName]
-                ["StatusCode", Saml2Namespaces.Saml2PName].Attributes["Value"].Value;
+            var statusElement = xml.GetRequiredElement("Status", Saml2Namespaces.Saml2PName);
+            var statusCodeElement = statusElement.GetRequiredElement("StatusCode", Saml2Namespaces.Saml2PName);
+            var statusString = statusCodeElement.GetRequiredAttributeValue("Value");
 
             status = StatusCodeHelper.FromString(statusString);
 
-            statusMessage = xml["Status", Saml2Namespaces.Saml2PName]
+            statusMessage = statusElement
                 ["StatusMessage", Saml2Namespaces.Saml2PName].GetTrimmedTextIfNotNull();
-            if (xml["Status", Saml2Namespaces.Saml2PName]["StatusCode", Saml2Namespaces.Saml2PName]["StatusCode", Saml2Namespaces.Saml2PName] != null)
+            if (statusCodeElement["StatusCode", Saml2Namespaces.Saml2PName] != null)
             {
-                secondLevelStatus = xml["Status", Saml2Namespaces.Saml2PName]["StatusCode", Saml2Namespaces.Saml2PName]["StatusCode", Saml2Namespaces.Saml2PName].Attributes["Value"].Value;
+                secondLevelStatus = statusCodeElement["StatusCode", Saml2Namespaces.Saml2PName].Attributes["Value"].Value;
             }
 
             Issuer = new EntityId(xmlElement["Issuer", Saml2Namespaces.Saml2Name].GetTrimmedTextIfNotNull());
