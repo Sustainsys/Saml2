@@ -239,6 +239,31 @@ namespace Sustainsys.Saml2.Tests
         }
 
         [TestMethod]
+        public void XmlHelpers_IsSignedBy_ThrowsOnEmptyReferencesInSignature()
+        {
+            var xml = "<xml ID=\"myxml\" />";
+
+            var xmlDoc = XmlHelpers.XmlDocumentFromString( xml );
+
+            var signedXml = new SignedXml( xmlDoc );
+            signedXml.SigningKey = SignedXmlHelper.TestCert.PrivateKey;
+            signedXml.SignedInfo.CanonicalizationMethod = SignedXml.XmlDsigExcC14NTransformUrl;
+
+            var ref1 = new Reference { Uri = "" };
+            ref1.AddTransform( new XmlDsigEnvelopedSignatureTransform() );
+            ref1.AddTransform( new XmlDsigExcC14NTransform() );
+            signedXml.AddReference( ref1 );
+
+            signedXml.ComputeSignature();
+            xmlDoc.DocumentElement.AppendChild( xmlDoc.ImportNode( signedXml.GetXml(), true ) );
+
+            xmlDoc.DocumentElement.Invoking(
+                x => x.IsSignedBy( SignedXmlHelper.TestCert ) )
+                .Should().Throw<InvalidSignatureException>()
+                .And.Message.Should().Be( "Empty reference for Xml signature is not allowed." );
+        }
+
+        [TestMethod]
         public void XmlHelpers_IsSignedBy_ThrowsOnDualReferencesInSignature()
         {
             var xml = "<xml ID=\"myxml\" />";

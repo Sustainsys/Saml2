@@ -451,6 +451,10 @@ namespace Sustainsys.Saml2
             }
 
             var reference = (Reference)signedXml.SignedInfo.References[0];
+            if ( string.IsNullOrWhiteSpace( reference.Uri ) )
+            {
+                throw new InvalidSignatureException( "Empty reference for Xml signature is not allowed." );
+            }
             var id = reference.Uri.Substring(1);
 
 			var idElement = signedXml.GetIdElement(xmlElement.OwnerDocument, id);
