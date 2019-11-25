@@ -53,6 +53,10 @@ namespace Sustainsys.Saml2.Saml2P
             {
                 x.Add(new XAttribute("ForceAuthn", ForceAuthentication));
             }
+            if (IsPassive)
+            {
+                x.Add(new XAttribute("IsPassive", IsPassive));
+            }
 
             AddNameIdPolicy(x);
 
@@ -161,6 +165,12 @@ namespace Sustainsys.Saml2.Saml2P
                 ForceAuthentication = bool.Parse(forceAuthnString);
             }
 
+            var isPassiveString = xml.Attributes["IsPassive"].GetValueIfNotNull();
+            if (isPassiveString != null)
+            {
+                IsPassive = bool.Parse(isPassiveString);
+            }
+
             var node = xml["NameIDPolicy", Saml2Namespaces.Saml2PName];
             if (node != null)
             {
@@ -220,5 +230,12 @@ namespace Sustainsys.Saml2.Saml2P
         /// If true, the request is sent with ForceAuthn="true".
         /// </summary>
         public bool ForceAuthentication { get; set; } = false;
+
+        /// <summary>
+        /// Sets whether request should request for SAML Passive login if possible, 
+        /// If false, the IsPassive parameter is omitted from the request.
+        /// If true, the request is sent with IsPassive="true".
+        /// </summary>
+        public bool IsPassive { get; set; } = false;
     }
 }
