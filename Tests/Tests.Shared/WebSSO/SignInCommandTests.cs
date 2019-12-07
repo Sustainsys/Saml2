@@ -335,7 +335,7 @@ namespace Sustainsys.Saml2.Tests.WebSso
                 RelayState = relayState
             };
 
-            var subject = CommandFactory.GetCommand(CommandFactory.SignInCommandName);
+            var subject = new CommandFactory().GetCommand(CommandFactory.SignInCommandName);
 
             var actual = subject.Run(request, options);
 
@@ -376,7 +376,7 @@ namespace Sustainsys.Saml2.Tests.WebSso
                 RelayState = relayState
             };
 
-            var subject = CommandFactory.GetCommand(CommandFactory.SignInCommandName);
+            var subject = new CommandFactory().GetCommand(CommandFactory.SignInCommandName);
 
             var actual = subject.Run(request, options);
 
@@ -393,7 +393,7 @@ namespace Sustainsys.Saml2.Tests.WebSso
 
             var request = new HttpRequestData("GET", uri);
 
-            var subject = CommandFactory.GetCommand(CommandFactory.SignInCommandName);
+            var subject = new CommandFactory().GetCommand(CommandFactory.SignInCommandName);
 
             subject.Invoking(s => s.Run(request, StubFactory.CreateOptions()))
                 .Should().Throw<InvalidOperationException>().

@@ -7,8 +7,17 @@ using System.Threading.Tasks;
 
 namespace Sustainsys.Saml2.AspNetCore2
 {
-    static class HttpRequestExtensions
+    /// <summary>
+    /// Extensions for HttpRequest.
+    /// </summary>
+    public static class HttpRequestExtensions
     {
+        /// <summary>
+        /// Convert HttpContext to HttpRequestData.
+        /// </summary>
+        /// <param name="httpContext"></param>
+        /// <param name="cookieDecryptor"></param>
+        /// <returns></returns>
         public static HttpRequestData ToHttpRequestData(
             this HttpContext httpContext,
             Func<byte[], byte[]> cookieDecryptor)

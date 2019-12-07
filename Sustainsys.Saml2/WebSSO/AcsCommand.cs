@@ -17,7 +17,7 @@ namespace Sustainsys.Saml2.WebSso
     /// <summary>
     /// Represents the assertion consumer service command behaviour.
     /// Instances of this class can be created directly or by using the factory method
-    /// CommandFactory.GetCommand(CommandFactory.AcsCommandName).
+    /// new CommandFactory().GetCommand(CommandFactory.AcsCommandName).
     /// </summary>
     public class AcsCommand : ICommand
     {
@@ -27,7 +27,7 @@ namespace Sustainsys.Saml2.WebSso
         /// <param name="request">Request data.</param>
         /// <param name="options">Options</param>
         /// <returns>CommandResult</returns>
-        public CommandResult Run(HttpRequestData request, IOptions options)
+        public virtual CommandResult Run(HttpRequestData request, IOptions options)
         {
             if(request == null)
             {

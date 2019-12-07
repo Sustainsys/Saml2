@@ -9,7 +9,7 @@ namespace Sustainsys.Saml2.WebSso
 {
     /// <summary>
     /// Represents a missing command.
-    /// Instances of this class are returned by CommandFactory.GetCommand(...)
+    /// Instances of this class are returned by new CommandFactory().GetCommand(...)
     /// when the specified command name is not recognised.
     /// </summary>
     public class NotFoundCommand : ICommand
@@ -20,7 +20,7 @@ namespace Sustainsys.Saml2.WebSso
         /// <param name="request">Request data.</param>
         /// <param name="options">Options</param>
         /// <returns>CommandResult</returns>
-        public CommandResult Run(HttpRequestData request, IOptions options)
+        public virtual CommandResult Run(HttpRequestData request, IOptions options)
         {
             return new CommandResult()
             {

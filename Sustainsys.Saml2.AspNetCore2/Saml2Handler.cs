@@ -25,6 +25,7 @@ namespace Sustainsys.Saml2.AspNetCore2
         HttpContext context;
         private readonly IDataProtector dataProtector;
         private readonly IOptionsFactory<Saml2Options> optionsFactory;
+        private readonly ICommandFactory commandFactory;
 
         /// <summary>
         /// Ctor
@@ -32,10 +33,12 @@ namespace Sustainsys.Saml2.AspNetCore2
         /// <param name="optionsCache">Options</param>
         /// <param name="dataProtectorProvider">Data Protector Provider</param>
         /// <param name="optionsFactory">Factory for options</param>
+        /// <param name="commandFactory">Factory for commands</param>
         public Saml2Handler(
             IOptionsMonitorCache<Saml2Options> optionsCache,
             IDataProtectionProvider dataProtectorProvider,
-            IOptionsFactory<Saml2Options> optionsFactory)
+            IOptionsFactory<Saml2Options> optionsFactory,
+            ICommandFactory commandFactory = null)
         {
             if (dataProtectorProvider == null)
             {
@@ -46,12 +49,13 @@ namespace Sustainsys.Saml2.AspNetCore2
 
             this.optionsFactory = optionsFactory;
             this.optionsCache = optionsCache;
+            this.commandFactory = commandFactory ?? new CommandFactory();
         }
 
         /// <InheritDoc />
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1500:VariableNamesShouldNotMatchFieldNames", MessageId = "scheme")]
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1500:VariableNamesShouldNotMatchFieldNames", MessageId = "context")]
-        public Task InitializeAsync(AuthenticationScheme scheme, HttpContext context)
+        public virtual Task InitializeAsync(AuthenticationScheme scheme, HttpContext context)
         {
             this.context = context;
             options = optionsCache.GetOrAdd(scheme.Name, () => optionsFactory.Create(scheme.Name));
@@ -61,7 +65,7 @@ namespace Sustainsys.Saml2.AspNetCore2
 
         /// <InheritDoc />
         [ExcludeFromCodeCoverage]
-        public Task<AuthenticateResult> AuthenticateAsync()
+        public virtual Task<AuthenticateResult> AuthenticateAsync()
         {
             throw new NotImplementedException();
         }
@@ -76,7 +80,7 @@ namespace Sustainsys.Saml2.AspNetCore2
         }
 
         /// <InheritDoc />
-        public async Task ChallengeAsync(AuthenticationProperties properties)
+        public virtual async Task ChallengeAsync(AuthenticationProperties properties)
         {
             properties = properties ?? new AuthenticationProperties();
 
@@ -105,20 +109,20 @@ namespace Sustainsys.Saml2.AspNetCore2
 
         /// <InheritDoc />
         [ExcludeFromCodeCoverage]
-        public Task ForbidAsync(AuthenticationProperties properties)
+        public virtual Task ForbidAsync(AuthenticationProperties properties)
         {
             throw new NotImplementedException();
         }
 
         /// <InheritDoc />
-        public async Task<bool> HandleRequestAsync()
+        public virtual async Task<bool> HandleRequestAsync()
         {
             if (context.Request.Path.StartsWithSegments(options.SPOptions.ModulePath, StringComparison.Ordinal))
             {
                 var commandName = context.Request.Path.Value.Substring(
                     options.SPOptions.ModulePath.Length).TrimStart('/');
 
-                var commandResult = CommandFactory.GetCommand(commandName).Run(
+                var commandResult = this.commandFactory.GetCommand(commandName).Run(
                     context.ToHttpRequestData(dataProtector.Unprotect), options);
 
                 await commandResult.Apply(context, dataProtector, options.SignInScheme, options.SignOutScheme);
@@ -134,7 +138,7 @@ namespace Sustainsys.Saml2.AspNetCore2
         /// </summary>
         /// <param name="properties">Authentication props, containing a return url.</param>
         /// <returns>Task</returns>
-        public async Task SignOutAsync(AuthenticationProperties properties)
+        public virtual async Task SignOutAsync(AuthenticationProperties properties)
         {
             if (properties == null)
             {

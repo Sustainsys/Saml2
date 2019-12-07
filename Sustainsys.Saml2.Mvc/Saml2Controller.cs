@@ -42,7 +42,7 @@ namespace Sustainsys.Saml2.Mvc
         [SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "CommandResult")]
         public ActionResult SignIn()
         {
-            var result = CommandFactory.GetCommand(CommandFactory.SignInCommandName).Run(
+            var result = new CommandFactory().GetCommand(CommandFactory.SignInCommandName).Run(
                 Request.ToHttpRequestData(),
                 Options);
 
@@ -66,7 +66,7 @@ namespace Sustainsys.Saml2.Mvc
         [SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "CommandResult")]
         public ActionResult Acs()
         {
-            var result = CommandFactory.GetCommand(CommandFactory.AcsCommandName).Run(
+            var result = new CommandFactory().GetCommand(CommandFactory.AcsCommandName).Run(
                 Request.ToHttpRequestData(),
                 Options);
 
@@ -88,7 +88,7 @@ namespace Sustainsys.Saml2.Mvc
         [SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "CommandResult")]
         public ActionResult Index()
         {
-            var result = CommandFactory.GetCommand(CommandFactory.MetadataCommand).Run(
+            var result = new CommandFactory().GetCommand(CommandFactory.MetadataCommand).Run(
                 Request.ToHttpRequestData(),
                 Options);
 
@@ -111,7 +111,7 @@ namespace Sustainsys.Saml2.Mvc
         [SuppressMessage("Microsoft.Naming", "CA1726:UsePreferredTerms", MessageId = "Logout")]
         public ActionResult Logout()
         {
-            var result = CommandFactory.GetCommand(CommandFactory.LogoutCommandName)
+            var result = new CommandFactory().GetCommand(CommandFactory.LogoutCommandName)
                 .Run(Request.ToHttpRequestData(), Options);
 
             if (result.HandledResult)

@@ -63,7 +63,7 @@ namespace Sustainsys.Saml2.HttpModule
             {
                 var commandName = appRelativePath.Substring(modulePath.Length);
 
-                var command = CommandFactory.GetCommand(commandName);
+                var command = new CommandFactory().GetCommand(commandName);
                 var commandResult = command.Run(
                     new HttpRequestWrapper(application.Request).ToHttpRequestData(),
                     Options);

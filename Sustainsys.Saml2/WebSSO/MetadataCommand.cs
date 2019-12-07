@@ -14,7 +14,7 @@ namespace Sustainsys.Saml2.WebSso
     /// <summary>
     /// Represents the service provider metadata command behaviour.
     /// Instances of this class can be created directly or by using the factory method
-    /// CommandFactory.GetCommand(CommandFactory.MetadataCommandName).
+    /// new CommandFactory().GetCommand(CommandFactory.MetadataCommandName).
     /// </summary>
     public class MetadataCommand : ICommand
     {
@@ -24,7 +24,7 @@ namespace Sustainsys.Saml2.WebSso
         /// <param name="request">Request data.</param>
         /// <param name="options">Options</param>
         /// <returns>CommandResult</returns>
-        public CommandResult Run(HttpRequestData request, IOptions options)
+        public virtual CommandResult Run(HttpRequestData request, IOptions options)
         {
             if(options == null)
             {

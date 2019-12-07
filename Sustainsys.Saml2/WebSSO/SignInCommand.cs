@@ -12,7 +12,7 @@ namespace Sustainsys.Saml2.WebSso
     /// <summary>
     /// Represents the sign in command behaviour.
     /// Instances of this class can be created directly or by using the factory method
-    /// CommandFactory.GetCommand(CommandFactory.SignInCommandName).
+    /// new CommandFactory().GetCommand(CommandFactory.SignInCommandName).
     /// </summary>
     public class SignInCommand : ICommand
     {
@@ -22,7 +22,7 @@ namespace Sustainsys.Saml2.WebSso
         /// <param name="request">Request data.</param>
         /// <param name="options">Options</param>
         /// <returns>CommandResult</returns>
-        public CommandResult Run(HttpRequestData request, IOptions options)
+        public virtual CommandResult Run(HttpRequestData request, IOptions options)
         {
             if (request == null)
             {

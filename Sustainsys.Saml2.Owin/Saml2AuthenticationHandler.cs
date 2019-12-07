@@ -29,7 +29,7 @@ namespace Sustainsys.Saml2.Owin
             var httpRequestData = await Context.ToHttpRequestData(Options.DataProtector.Unprotect);
             try
             {
-                var result = CommandFactory.GetCommand(CommandFactory.AcsCommandName)
+                var result = new CommandFactory().GetCommand(CommandFactory.AcsCommandName)
                     .Run(httpRequestData, Options);
 
                 if (!result.HandledResult)
@@ -204,7 +204,7 @@ namespace Sustainsys.Saml2.Owin
 
                 try
                 {
-                    var result = CommandFactory.GetCommand(remainingPath.Value)
+                    var result = new CommandFactory().GetCommand(remainingPath.Value)
                         .Run(await Context.ToHttpRequestData(Options.DataProtector.Unprotect), Options);
 
                     if (!result.HandledResult)

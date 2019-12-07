@@ -10,7 +10,7 @@ namespace Sustainsys.Saml2.WebSso
     /// <summary>
     /// Factory to create the command objects thand handles the incoming http requests.
     /// </summary>
-    public static class CommandFactory
+    public class CommandFactory : ICommandFactory
     {
         private static readonly ICommand notFoundCommand = new NotFoundCommand();
 
@@ -51,7 +51,7 @@ namespace Sustainsys.Saml2.WebSso
         /// <param name="commandName">Name of a command. Probably a path. A
         /// leading slash in the command name is ignored.</param>
         /// <returns>A command implementation or notFoundCommand if invalid.</returns>
-        public static ICommand GetCommand(string commandName)
+        public ICommand GetCommand(string commandName)
         {
             ICommand command;
 

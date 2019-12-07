@@ -8,8 +8,20 @@ using System.Threading.Tasks;
 
 namespace Sustainsys.Saml2.AspNetCore2
 {
-    static class CommandResultExtensions
+    /// <summary>
+    /// Extensions for CommandResult.
+    /// </summary>
+    public static class CommandResultExtensions
     {
+        /// <summary>
+        /// Apply CommandResult.
+        /// </summary>
+        /// <param name="commandResult"></param>
+        /// <param name="httpContext"></param>
+        /// <param name="dataProtector"></param>
+        /// <param name="signInScheme"></param>
+        /// <param name="signOutScheme"></param>
+        /// <returns></returns>
         public static async Task Apply(
             this CommandResult commandResult,
             HttpContext httpContext,
