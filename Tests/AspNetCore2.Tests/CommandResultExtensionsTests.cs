@@ -41,6 +41,7 @@ namespace Sustainsys.Saml2.AspNetCore2.Tests
                 HttpStatusCode = System.Net.HttpStatusCode.Redirect,
                 Location = new Uri(redirectLocation),
                 SetCookieName = "Saml2.123",
+                SetCookieSecureFlag = true,
                 RelayState = "123",
                 RequestState = state,
                 ContentType = "application/json",
@@ -76,7 +77,8 @@ namespace Sustainsys.Saml2.AspNetCore2.Tests
             context.Response.Headers["Location"].SingleOrDefault()
                 .Should().Be(redirectLocation, "location header should be set");
             context.Response.Cookies.Received().Append(
-                "Saml2.123", expectedCookieData, Arg.Is<CookieOptions>(co => co.HttpOnly && co.SameSite == SameSiteMode.None));
+                "Saml2.123", expectedCookieData, Arg.Is<CookieOptions>(
+                    co => co.HttpOnly && co.Secure && co.SameSite == SameSiteMode.None));
 
             context.Response.Cookies.Received().Delete("Clear-Cookie");
 

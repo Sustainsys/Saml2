@@ -62,7 +62,8 @@ namespace Sustainsys.Saml2.Owin.Tests
                     new Uri("http://sp.example.com/loggedout"),
                     new Saml2Id("id123"),
                     null),
-                SetCookieName = "CookieName"
+                SetCookieName = "CookieName",
+                SetCookieSecureFlag = true,
             };
 
             var context = OwinTestHelpers.CreateOwinContext();
@@ -75,7 +76,7 @@ namespace Sustainsys.Saml2.Owin.Tests
             var protectedData = HttpRequestData.ConvertBinaryData(
                 StubDataProtector.Protect(cr.GetSerializedRequestState()));
 
-            var expected = $"CookieName={protectedData}; path=/; HttpOnly";
+            var expected = $"CookieName={protectedData}; path=/; secure; HttpOnly";
 
             setCookieHeader.Should().Be(expected);
         }
