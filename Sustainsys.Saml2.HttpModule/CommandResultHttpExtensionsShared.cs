@@ -42,7 +42,8 @@ namespace Sustainsys.Saml2.HttpModule
                     commandResult.SetCookieName,
                     protectedData)
                 {
-                    HttpOnly = true
+                    HttpOnly = true,
+                    Secure = commandResult.SetCookieSecureFlag,
                 });
             }
 

@@ -35,6 +35,7 @@ namespace Sustainsys.Saml2.AspNetCore2
                     new CookieOptions()
                     {
                         HttpOnly = true,
+                        Secure = commandResult.SetCookieSecureFlag,
                         // We are expecting a different site to POST back to us,
                         // so the ASP.Net Core default of Lax is not appropriate in this case
                         SameSite = SameSiteMode.None,

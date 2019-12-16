@@ -52,6 +52,7 @@ namespace Sustainsys.Saml2.HttpModule.Tests
             new CommandResult()
             {
                 SetCookieName = "CookieName",
+                SetCookieSecureFlag = true,
                 RequestState = new StoredRequestState(
                     new EntityId("http://idp.example.com"),
                     null,
@@ -64,7 +65,8 @@ namespace Sustainsys.Saml2.HttpModule.Tests
                 c.Name == "CookieName"
                 && c.Value.All(ch => ch != '/' && ch != '+' && ch != '=')
                 && new StoredRequestState(DecryptCookieData(c.Value)).Idp.Id == "http://idp.example.com"
-                && c.HttpOnly == true));
+                && c.HttpOnly == true
+                && c.Secure == true));
         }
 
         private byte[] DecryptCookieData(string data)

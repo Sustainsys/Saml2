@@ -412,5 +412,41 @@ namespace Sustainsys.Saml2.Tests.WebSso
 
             a.Should().NotThrow();
         }
+
+        [TestMethod]
+        public void SignInCommand_WithHttpUrl_DoesNotSetSecureCookieFlag()
+        {
+            var options = StubFactory.CreateOptions();
+            var httpRequest = new HttpRequestData("GET", new Uri("http://localhost"));
+
+            var actual = SignInCommand.Run(options.IdentityProviders.Default.EntityId, null, httpRequest, options, null);
+
+            actual.SetCookieName.Should().StartWith(StoredRequestState.CookieNameBase);
+            actual.SetCookieSecureFlag.Should().BeFalse();
+        }
+
+        [TestMethod]
+        public void SignInCommand_WithHttpsUrl_SetsSecureCookieFlag()
+        {
+            var options = StubFactory.CreateOptions();
+            var httpRequest = new HttpRequestData("GET", new Uri("https://localhost"));
+
+            var actual = SignInCommand.Run(options.IdentityProviders.Default.EntityId, null, httpRequest, options, null);
+
+            actual.SetCookieName.Should().StartWith(StoredRequestState.CookieNameBase);
+            actual.SetCookieSecureFlag.Should().BeTrue();
+        }
+
+        [TestMethod]
+        public void SignInCommand_WithHttpsPublicOrigin_SetsSecureCookieFlag()
+        {
+            var options = StubFactory.CreateOptionsPublicOrigin(new Uri("https://my.public.origin:8443"));
+            var httpRequest = new HttpRequestData("GET", new Uri("http://localhost"));
+
+            var actual = SignInCommand.Run(options.IdentityProviders.Default.EntityId, null, httpRequest, options, null);
+
+            actual.SetCookieName.Should().StartWith(StoredRequestState.CookieNameBase);
+            actual.SetCookieSecureFlag.Should().BeTrue();
+        }
     }
 }

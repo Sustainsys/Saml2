@@ -71,6 +71,7 @@ namespace Sustainsys.Saml2.Owin
                     new CookieOptions()
                     {
                         HttpOnly = true,
+                        Secure = commandResult.SetCookieSecureFlag,
                     });
             }
 
