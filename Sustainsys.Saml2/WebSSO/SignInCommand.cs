@@ -157,6 +157,8 @@ namespace Sustainsys.Saml2.WebSso
 
             commandResult.RequestState = new StoredRequestState(
                 idp.EntityId, returnUrl, authnRequest.Id, relayData);
+
+            commandResult.SetCookieSecureFlag = string.Equals(urls.AssertionConsumerServiceUrl.Scheme, "https", StringComparison.OrdinalIgnoreCase);
             commandResult.SetCookieName = StoredRequestState.CookieNameBase + authnRequest.RelayState;
 
             options.Notifications.SignInCommandResultCreated(commandResult, relayData);
