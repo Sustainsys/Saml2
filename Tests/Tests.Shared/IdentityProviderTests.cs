@@ -1,21 +1,21 @@
-﻿using System.Linq;
-using FluentAssertions;
-using Sustainsys.Saml2.Configuration;
-using Sustainsys.Saml2.Tests.Helpers;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Microsoft.IdentityModel.Tokens.Saml2;
-using System;
+﻿using System;
 using System.Configuration;
-using Sustainsys.Saml2.Saml2P;
-using Sustainsys.Saml2.WebSso;
-using Sustainsys.Saml2.Metadata;
-using Sustainsys.Saml2.Tokens;
-using System.Threading;
+using System.Linq;
+using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
-using System.Security.Claims;
 using System.Security.Principal;
+using System.Threading;
+using FluentAssertions;
+using Microsoft.IdentityModel.Tokens.Saml2;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Sustainsys.Saml2.Configuration;
+using Sustainsys.Saml2.Metadata;
+using Sustainsys.Saml2.Saml2P;
 using Sustainsys.Saml2.TestHelpers;
+using Sustainsys.Saml2.Tests.Helpers;
+using Sustainsys.Saml2.Tokens;
+using Sustainsys.Saml2.WebSso;
 
 namespace Sustainsys.Saml2.Tests
 {
@@ -48,15 +48,17 @@ namespace Sustainsys.Saml2.Tests
         {
             // %41 is A, which doesn't need to be encoded. Ensure it is kept in original format.
             string idpUri = "http://idp.example.com/x=%41";
+            var httpRequest = new HttpRequestData("GET",
+                new Uri("http://sp.example.com"));
 
             var subject = new IdentityProvider(
                 new EntityId(idpUri),
                 Options.FromConfiguration.SPOptions)
-                {
-                    SingleSignOnServiceUrl = new Uri(idpUri)
-                };
+            {
+                SingleSignOnServiceUrl = new Uri(idpUri)
+            };
 
-            var r = subject.CreateAuthenticateRequest(StubFactory.CreateSaml2Urls());
+            var r = subject.CreateAuthenticateRequest(StubFactory.CreateSaml2Urls(), httpRequest);
 
             r.ToXElement().Attribute("Destination").Should().NotBeNull()
                 .And.Subject.Value.Should().Be(idpUri);
@@ -68,9 +70,11 @@ namespace Sustainsys.Saml2.Tests
             var options = Options.FromConfiguration;
 
             var idp = options.IdentityProviders.Default;
+            var httpRequest = new HttpRequestData("GET",
+                new Uri("http://sp.example.com"));
 
             var urls = StubFactory.CreateSaml2Urls();
-            var subject = idp.CreateAuthenticateRequest(urls);
+            var subject = idp.CreateAuthenticateRequest(urls, httpRequest);
 
             var expected = new Saml2AuthenticationRequest()
             {
@@ -86,7 +90,7 @@ namespace Sustainsys.Saml2.Tests
 
             subject.Should().BeEquivalentTo(expected, opt => opt
             .Excluding(au => au.Id)
-            .Excluding(au=>au.SigningAlgorithm)
+            .Excluding(au => au.SigningAlgorithm)
             .Excluding(au => au.RelayState));
 
             subject.RelayState.Should().HaveLength(24);
@@ -99,9 +103,11 @@ namespace Sustainsys.Saml2.Tests
             var options = StubFactory.CreateOptionsPublicOrigin(origin);
 
             var idp = options.IdentityProviders.Default;
+            var httpRequest = new HttpRequestData("GET",
+                new Uri("http://sp.example.com"));
 
             var urls = StubFactory.CreateSaml2UrlsPublicOrigin(origin);
-            var subject = idp.CreateAuthenticateRequest(urls);
+            var subject = idp.CreateAuthenticateRequest(urls, httpRequest);
 
             var expected = new Saml2AuthenticationRequest()
             {
@@ -123,10 +129,12 @@ namespace Sustainsys.Saml2.Tests
             var options = StubFactory.CreateOptions();
             var idp = options.IdentityProviders.Default;
             var urls = StubFactory.CreateSaml2Urls();
+            var httpRequest = new HttpRequestData("GET",
+                new Uri("http://sp.example.com"));
 
             options.SPOptions.AttributeConsumingServices.Clear();
 
-            var subject = idp.CreateAuthenticateRequest(urls);
+            var subject = idp.CreateAuthenticateRequest(urls, httpRequest);
 
             var expected = new Saml2AuthenticationRequest()
             {
@@ -146,8 +154,10 @@ namespace Sustainsys.Saml2.Tests
         public void IdentityProvider_CreateAuthenticateRequest_NullcheckSaml2Urls()
         {
             var idp = Options.FromConfiguration.IdentityProviders.Default;
+            var httpRequest = new HttpRequestData("GET",
+                new Uri("http://sp.example.com"));
 
-            Action a = () => idp.CreateAuthenticateRequest(null);
+            Action a = () => idp.CreateAuthenticateRequest(null, httpRequest);
 
             a.Should().Throw<ArgumentNullException>().And.ParamName.Should().Be("saml2Urls");
         }
@@ -165,8 +175,10 @@ namespace Sustainsys.Saml2.Tests
 
             var idp = options.IdentityProviders.Default;
             var urls = StubFactory.CreateSaml2Urls();
+            var httpRequest = new HttpRequestData("GET",
+                new Uri("http://sp.example.com"));
 
-            var subject = idp.CreateAuthenticateRequest(urls);
+            var subject = idp.CreateAuthenticateRequest(urls, httpRequest);
 
             subject.SigningCertificate.Thumbprint.Should().Be(SignedXmlHelper.TestCert.Thumbprint);
         }
@@ -179,8 +191,10 @@ namespace Sustainsys.Saml2.Tests
 
             var subject = options.IdentityProviders[new EntityId("https://idp2.example.com")];
             var urls = StubFactory.CreateSaml2Urls();
+            var httpRequest = new HttpRequestData("GET",
+                new Uri("http://sp.example.com"));
 
-            var actual = subject.CreateAuthenticateRequest(urls).SigningCertificate;
+            var actual = subject.CreateAuthenticateRequest(urls, httpRequest).SigningCertificate;
 
             (actual?.Thumbprint).Should().Be(SignedXmlHelper.TestCert2.Thumbprint);
         }
@@ -201,8 +215,10 @@ namespace Sustainsys.Saml2.Tests
                 WantAuthnRequestsSigned = true
             };
             var urls = StubFactory.CreateSaml2Urls();
+            var httpRequest = new HttpRequestData("GET",
+                new Uri("http://sp.example.com"));
 
-            var actual = subject.CreateAuthenticateRequest(urls).SigningCertificate;
+            var actual = subject.CreateAuthenticateRequest(urls, httpRequest).SigningCertificate;
 
             actual.Should().BeNull();
         }
@@ -216,8 +232,10 @@ namespace Sustainsys.Saml2.Tests
 
             var idp = options.IdentityProviders.Default;
             var urls = StubFactory.CreateSaml2Urls();
+            var httpRequest = new HttpRequestData("GET",
+                new Uri("http://sp.example.com"));
 
-            idp.Invoking(i => i.CreateAuthenticateRequest(urls))
+            idp.Invoking(i => i.CreateAuthenticateRequest(urls, httpRequest))
                 .Should().Throw<ConfigurationErrorsException>()
                 .WithMessage($"Idp \"https://idp.example.com\" is configured for signed AuthenticateRequests*");
         }
@@ -408,7 +426,7 @@ namespace Sustainsys.Saml2.Tests
             var subject = new IdentityProvider(config, Options.FromConfiguration.SPOptions);
 
             subject.SingleLogoutServiceBinding.Should().Be(Saml2BindingType.HttpRedirect);
-            subject.SingleLogoutServiceUrl.Should().Be( "http://idp2Bindings.example.com/LogoutRedirect" );
+            subject.SingleLogoutServiceUrl.Should().Be("http://idp2Bindings.example.com/LogoutRedirect");
         }
 
         [TestMethod]
@@ -489,7 +507,7 @@ namespace Sustainsys.Saml2.Tests
             config.LoadMetadata = true;
             config.EntityId = "http://localhost:13428/idpMetadataVeryShortCacheDuration";
             var spOptions = Options.FromConfiguration.SPOptions;
-            if(setLoggerToNull)
+            if (setLoggerToNull)
             {
                 spOptions = StubFactory.CreateSPOptions();
                 spOptions.Logger = null;
@@ -590,9 +608,9 @@ namespace Sustainsys.Saml2.Tests
             var subject = new IdentityProvider(
                 new EntityId("http://localhost:13428/idpMetadata"),
                 StubFactory.CreateSPOptions())
-                {
-                    LoadMetadata = true
-                };
+            {
+                LoadMetadata = true
+            };
 
             subject.SingleSignOnServiceUrl.Port.Should().Be(13428);
             StubServer.IdpMetadataSsoPort = 147;
@@ -763,6 +781,8 @@ namespace Sustainsys.Saml2.Tests
         public void IdentityProvider_MetadataLoadedConfiguredFromCode()
         {
             var spOptions = StubFactory.CreateSPOptions();
+            var httpRequest = new HttpRequestData("GET",
+                new Uri("http://sp.example.com"));
 
             spOptions.ServiceCertificates.Add(new ServiceCertificate()
             {
@@ -787,7 +807,7 @@ namespace Sustainsys.Saml2.Tests
             subject.SingleSignOnServiceUrl.Should().Be("http://wrong.entityid.example.com/acs");
             subject.WantAuthnRequestsSigned.Should().Be(true, "WantAuthnRequestsSigned should have been loaded from metadata");
 
-            Action a = () => subject.CreateAuthenticateRequest(StubFactory.CreateSaml2Urls());
+            Action a = () => subject.CreateAuthenticateRequest(StubFactory.CreateSaml2Urls(), httpRequest);
             a.Should().NotThrow();
         }
 
@@ -797,11 +817,11 @@ namespace Sustainsys.Saml2.Tests
             var subject = new IdentityProvider(
                 new EntityId("http://idp.example.com"),
                 StubFactory.CreateSPOptions())
-                {
-                    AllowUnsolicitedAuthnResponse = true,
-                    Binding = Saml2BindingType.HttpPost,
-                    SingleSignOnServiceUrl = new Uri("http://idp.example.com/sso")
-                };
+            {
+                AllowUnsolicitedAuthnResponse = true,
+                Binding = Saml2BindingType.HttpPost,
+                SingleSignOnServiceUrl = new Uri("http://idp.example.com/sso")
+            };
 
             subject.SigningKeys.AddConfiguredKey(SignedXmlHelper.TestKey);
 
@@ -818,7 +838,7 @@ namespace Sustainsys.Saml2.Tests
 
             var expectedKeyParams = SignedXmlHelper.TestCert.PublicKey.Key.As<RSA>()
                 .ExportParameters(false);
-                
+
             subjectKeyParams.Modulus.Should().BeEquivalentTo(expectedKeyParams.Modulus);
             subjectKeyParams.Exponent.Should().BeEquivalentTo(expectedKeyParams.Exponent);
 
