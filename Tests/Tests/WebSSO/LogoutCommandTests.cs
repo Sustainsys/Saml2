@@ -112,7 +112,8 @@ namespace Sustainsys.Saml2.Tests.WebSSO
                     new EntityId("https://idp.example.com"),
                     new Uri("https://sp.example.com/"),
                     null,
-                    null)
+                    null),
+                SetCookieSecureFlag = true
             };
 
             actual.ShouldBeEquivalentTo(expected, opt => opt

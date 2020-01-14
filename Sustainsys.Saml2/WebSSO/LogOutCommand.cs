@@ -198,6 +198,9 @@ namespace Sustainsys.Saml2.WebSso
                 if (!options.SPOptions.Compatibility.DisableLogoutStateCookie)
                 {
                     commandResult.SetCookieName = StoredRequestState.CookieNameBase + logoutRequest.RelayState;
+
+                    var urls = new Saml2Urls(request, options);
+                    commandResult.SetCookieSecureFlag = string.Equals(urls.AssertionConsumerServiceUrl.Scheme, "https", StringComparison.OrdinalIgnoreCase);
                 }
 
                 commandResult.TerminateLocalSession = terminateLocalSession;
