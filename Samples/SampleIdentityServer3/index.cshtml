@@ -262,7 +262,7 @@
             var iframe = document.getElementById("idp-initiated-logout-frame");
             iframe.style = "";
 
-            iframe.src = "http://localhost:52071/Logout?NameId=JohnDoe&DestinationUrl=http://localhost:4589/IdSrv3/Saml2/Logout&AutoPost=true";
+            iframe.src = "https://localhost:44300/Logout?NameId=JohnDoe&DestinationUrl=http://localhost:4589/IdSrv3/Saml2/Logout&AutoPost=true";
         }
 
         document.getElementById("idp-initiated-logout").addEventListener("click", idpLogout);
