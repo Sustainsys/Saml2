@@ -12,8 +12,9 @@ namespace Sustainsys.Saml2.HttpModule
         /// </summary>
         /// <param name="commandResult">The CommandResult that will update the HttpResponse.</param>
         /// <param name="response">Http Response to write the result to.</param>
+        /// <param name="emitSameSiteNone">Include a SameSite=None attribute on any cookies set</param>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "HttpStatusCode")]
-        public static void Apply(this CommandResult commandResult, HttpResponseBase response)
+        public static void Apply(this CommandResult commandResult, HttpResponseBase response, bool emitSameSiteNone)
         {
             if (commandResult == null)
             {
@@ -27,7 +28,7 @@ namespace Sustainsys.Saml2.HttpModule
 
             response.Cache.SetCacheability((HttpCacheability)commandResult.Cacheability);
 
-            ApplyCookies(commandResult, response);
+            ApplyCookies(commandResult, response, emitSameSiteNone);
             ApplyHeaders(commandResult, response);
 
             if (commandResult.HttpStatusCode == HttpStatusCode.SeeOther || commandResult.Location != null)
