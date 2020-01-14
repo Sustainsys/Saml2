@@ -165,20 +165,21 @@ namespace Sustainsys.Saml2.Tests.WebSso
                     EntityId = new EntityId("https://github.com/SustainsysIT/Saml2")
                 });
 
-            var request = new HttpRequestData("GET", new Uri("http://localhost/signin?ReturnUrl=%2FReturn%2FPath"));
+            var request = new HttpRequestData("GET", new Uri("https://localhost/signin?ReturnUrl=%2FReturn%2FPath"));
 
             var result = new SignInCommand().Run(request, options);
 
             result.HttpStatusCode.Should().Be(HttpStatusCode.SeeOther);
 
             result.SetCookieName.Should().StartWith(StoredRequestState.CookieNameBase);
+            result.SetCookieSecureFlag.Should().BeTrue();
 
             var relayState = result.SetCookieName.Substring(StoredRequestState.CookieNameBase.Length);
 
             var queryString = string.Format("?entityID={0}&return={1}&returnIDParam=idp",
                 Uri.EscapeDataString(options.SPOptions.EntityId.Id),
                 Uri.EscapeDataString(
-                    "http://localhost/Saml2/SignIn?RelayState=" + relayState));
+                    "https://localhost/Saml2/SignIn?RelayState=" + relayState));
 
             var expectedLocation = new Uri(dsUrl + queryString);
 

@@ -196,7 +196,8 @@ namespace Sustainsys.Saml2.WebSso
                 HttpStatusCode = HttpStatusCode.SeeOther,
                 Location = new Uri(redirectLocation),
                 RequestState = requestState,
-                SetCookieName = StoredRequestState.CookieNameBase + relayState
+                SetCookieName = StoredRequestState.CookieNameBase + relayState,
+                SetCookieSecureFlag = string.Equals(saml2Urls.AssertionConsumerServiceUrl.Scheme, "https", StringComparison.OrdinalIgnoreCase)
             };
         }
     }
