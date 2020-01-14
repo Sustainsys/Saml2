@@ -19,7 +19,7 @@ namespace Sustainsys.Saml2.HttpModule.Tests
         [TestMethod]
         public void CommandResultHttp_Apply_ChecksResponseNull()
         {
-            Action a = () => new CommandResult().Apply(null);
+            Action a = () => new CommandResult().Apply(null, true);
 
             a.ShouldThrow<ArgumentNullException>().And.ParamName.Should().Be("response");
         }
@@ -28,7 +28,7 @@ namespace Sustainsys.Saml2.HttpModule.Tests
         public void CommandResultHttp_Apply_NullShouldThrow()
         {
             CommandResult obj = null;
-            Action a = () => obj.Apply(null);
+            Action a = () => obj.Apply(null, true);
             a.ShouldThrow<ArgumentNullException>().And.ParamName.Should().Be("commandResult");
         }
 
@@ -40,7 +40,7 @@ namespace Sustainsys.Saml2.HttpModule.Tests
             new CommandResult()
             {
                 HttpStatusCode = HttpStatusCode.PaymentRequired
-            }.Apply(response);
+            }.Apply(response, true);
 
             response.Received().StatusCode = (int)HttpStatusCode.PaymentRequired;
         }
@@ -53,19 +53,41 @@ namespace Sustainsys.Saml2.HttpModule.Tests
             new CommandResult()
             {
                 SetCookieName = "CookieName",
+                SetCookieSecureFlag = true,
                 RequestState = new StoredRequestState(
                     new EntityId("http://idp.example.com"),
                     null,
                     null,
                     null)
-            }.Apply(response);
+            }.Apply(response, true);
 
             response.Received().SetCookie(
                 Arg.Is<HttpCookie>(c => 
                 c.Name == "CookieName"
                 && c.Value.All(ch => ch != '/' && ch != '+' && ch != '=')
                 && new StoredRequestState(DecryptCookieData(c.Value)).Idp.Id == "http://idp.example.com"
-                && c.HttpOnly == true));
+                && c.HttpOnly == true
+                && c.SameSite == SameSiteMode.None
+                && c.Secure == true));
+        }
+
+        [TestMethod]
+        public void CommandResultHttp_Apply_SetsCookie_NoSameSite()
+        {
+            var response = Substitute.For<HttpResponseBase>();
+
+            new CommandResult()
+            {
+                SetCookieName = "CookieName",
+                RequestState = new StoredRequestState(
+                    new EntityId("http://idp.example.com"),
+                    null,
+                    null,
+                    null)
+            }.Apply(response, false);
+
+            response.Received().SetCookie(
+                Arg.Is<HttpCookie>(c => c.SameSite == (SameSiteMode)(-1)));
         }
 
         private byte[] DecryptCookieData(string data)
@@ -83,7 +105,7 @@ namespace Sustainsys.Saml2.HttpModule.Tests
             new CommandResult()
             {
                 ClearCookieName = "CookieName",
-            }.Apply(response);
+            }.Apply(response, true);
 
             response.Received().SetCookie(
                 Arg.Is<HttpCookie>(c =>
@@ -101,7 +123,7 @@ namespace Sustainsys.Saml2.HttpModule.Tests
             new CommandResult()
             {
                 Cacheability = Cacheability.ServerAndNoCache
-            }.Apply(response);
+            }.Apply(response, true);
 
             cache.Received().SetCacheability(HttpCacheability.ServerAndNoCache);
         }
@@ -116,7 +138,7 @@ namespace Sustainsys.Saml2.HttpModule.Tests
             {
                 Location = new Uri(redirectTarget),
                 HttpStatusCode = HttpStatusCode.SeeOther
-            }.Apply(response);
+            }.Apply(response, true);
 
             response.Received().Redirect(redirectTarget);
         }
@@ -130,7 +152,7 @@ namespace Sustainsys.Saml2.HttpModule.Tests
                 new CommandResult()
                 {
                     HttpStatusCode = HttpStatusCode.SeeOther
-                }.Apply(response);
+                }.Apply(response, true);
 
             a.ShouldThrow<InvalidOperationException>();
         }
@@ -144,7 +166,7 @@ namespace Sustainsys.Saml2.HttpModule.Tests
                 new CommandResult()
                 {
                     Location = new Uri("http://example.com")
-                }.Apply(response);
+                }.Apply(response, true);
 
             a.ShouldThrow<InvalidOperationException>();
         }
@@ -160,7 +182,7 @@ namespace Sustainsys.Saml2.HttpModule.Tests
                 ContentType = "text"
             };
 
-            commandResult.Apply(response);
+            commandResult.Apply(response, true);
 
             response.Received().ContentType = "text";
             response.Received().Write("Some Content!");

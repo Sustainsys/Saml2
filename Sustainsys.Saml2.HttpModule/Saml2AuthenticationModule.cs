@@ -71,7 +71,9 @@ namespace Sustainsys.Saml2.HttpModule
                 if (!commandResult.HandledResult)
                 {
                     commandResult.SignInOrOutSessionAuthenticationModule();
-                    commandResult.Apply(new HttpResponseWrapper(application.Response));
+                    commandResult.Apply(
+                        new HttpResponseWrapper(application.Response),
+                        Options.Notifications.EmitSameSiteNone(application.Request.UserAgent));
                 }
             }
         }

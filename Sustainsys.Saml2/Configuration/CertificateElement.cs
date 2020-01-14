@@ -118,10 +118,10 @@ namespace Sustainsys.Saml2.Configuration
                 // in the config.
                 if (StoreLocation != 0)
                 {
-                    var store = new X509Store(StoreName, StoreLocation);
-                    store.Open(OpenFlags.ReadOnly);
-                    try
+                    using (var store = new X509Store(StoreName, StoreLocation))
                     {
+                        store.Open(OpenFlags.ReadOnly);
+
                         var certs = store.Certificates.Find(X509FindType, FindValue, false);
 
                         if (certs.Count != 1)
@@ -133,10 +133,6 @@ namespace Sustainsys.Saml2.Configuration
                         }
 
                         return certs[0];
-                    }
-                    finally
-                    {
-                        store.Close();
                     }
                 }
                 else

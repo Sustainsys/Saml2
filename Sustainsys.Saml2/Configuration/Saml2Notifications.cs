@@ -16,6 +16,7 @@ namespace Sustainsys.Saml2.Configuration
         /// <summary>
         /// Ctor, setting all callbacks to do-nothing versions.
         /// </summary>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1502:AvoidExcessiveComplexity")]
         public Saml2Notifications()
         {
             AuthenticationRequestCreated = (request, provider, dictionary) => { };
@@ -31,6 +32,7 @@ namespace Sustainsys.Saml2.Configuration
             MetadataCreated = (md, urls) => { };
             MetadataCommandResultCreated = cr => { };
             ValidateAbsoluteReturnUrl = url => false;
+            EmitSameSiteNone = userAgent => SameSiteHelper.EmitSameSiteNone(userAgent);
         }
 
         /// <summary>
@@ -64,6 +66,13 @@ namespace Sustainsys.Saml2.Configuration
         public Func<EntityId, IDictionary<string, string>, IdentityProvider>
             SelectIdentityProvider { get; set; }
 
+        /// <summary>
+        /// Notification called to decide if a SameSite=None attribute should
+        /// be set for a cookie. The default implementation is based on the pseudo
+        /// code supplied by Google in https://www.chromium.org/updates/same-site/incompatible-clients
+        /// </summary>
+        public Func<string, bool> EmitSameSiteNone { get; set; }
+        
         /// <summary>
         /// Notification called when the logout command is about to use the 
         /// <code>StoredRequestState</code> derived from the request's RelayState data.
