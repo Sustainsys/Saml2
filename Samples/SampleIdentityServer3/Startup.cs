@@ -144,7 +144,7 @@ namespace SampleIdentityServer3
                 AppDomain.CurrentDomain.SetupInformation.ApplicationBase + "/App_Data/Sustainsys.Saml2.Tests.pfx"));
 
             options.IdentityProviders.Add(new IdentityProvider(
-                new EntityId("http://localhost:52071/Metadata"),
+                new EntityId("https://localhost:44300/Metadata"),
                 options.SPOptions)
             {
                 LoadMetadata = true
