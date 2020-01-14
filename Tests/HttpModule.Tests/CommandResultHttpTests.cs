@@ -196,7 +196,7 @@ namespace Sustainsys.Saml2.HttpModule.Tests
 
             commandResult.Headers.Add("header", "value");
 
-            commandResult.Apply(response);
+            commandResult.Apply(response, true);
 
             response.Received().AddHeader("header", "value");
         }
