@@ -54,6 +54,7 @@
       <Link>VersionInfo.cs</Link>
     </Compile>
     <Compile Include="Configuration\Saml2Notifications.cs" />
+    <Compile Include="SameSiteHelper.cs" />
     <Compile Include="Saml2ClaimTypes.cs" />
     <Compile Include="ClaimsExtensions.cs" />
     <Compile Include="Configuration\ArtifactResolutionServiceCollection.cs" />
