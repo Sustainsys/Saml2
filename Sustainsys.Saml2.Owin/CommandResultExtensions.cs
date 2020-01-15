@@ -13,7 +13,8 @@ namespace Sustainsys.Saml2.Owin
     {
         public static void Apply(this CommandResult commandResult,
             IOwinContext context,
-            IDataProtector dataProtector)
+            IDataProtector dataProtector,
+            bool emitSameSiteNone)
         {
             if (commandResult == null)
             {
@@ -38,12 +39,13 @@ namespace Sustainsys.Saml2.Owin
                 context.Authentication.SignOut();
             }
 
+            ApplyCookies(commandResult, context, dataProtector, emitSameSiteNone);
+            
             foreach(var h in commandResult.Headers)
             {
                 context.Response.Headers[h.Key] = h.Value;
             }
 
-            ApplyCookies(commandResult, context, dataProtector);
 
             // Write the content last, it causes the headers to be flushed
             // on some hosts.
@@ -56,7 +58,11 @@ namespace Sustainsys.Saml2.Owin
             }
         }
 
-        private static void ApplyCookies(CommandResult commandResult, IOwinContext context, IDataProtector dataProtector)
+        private static void ApplyCookies(
+            CommandResult commandResult,
+            IOwinContext context,
+            IDataProtector dataProtector,
+            bool emitSameSiteNone)
         {
             var serializedCookieData = commandResult.GetSerializedRequestState();
 
@@ -72,6 +78,7 @@ namespace Sustainsys.Saml2.Owin
                     {
                         HttpOnly = true,
                         Secure = commandResult.SetCookieSecureFlag,
+                        SameSite = emitSameSiteNone ? SameSiteMode.None : default(SameSiteMode?)
                     });
             }
 
@@ -86,7 +93,6 @@ namespace Sustainsys.Saml2.Owin
                     commandResult.ClearCookieName,
                     new CookieOptions
                     {
-                        HttpOnly = true
                     });
             }
         }
