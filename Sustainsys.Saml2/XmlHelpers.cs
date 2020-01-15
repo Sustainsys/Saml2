@@ -325,12 +325,9 @@ namespace Sustainsys.Saml2
                         keyIdentifier.GetType().Name));
                 }
 
-                using (var cert = new X509Certificate2(rawCert.GetX509RawData()))
+                if(!new X509Certificate2(rawCert.GetX509RawData()).Verify())
                 {
-                    if (!cert.Verify())
-                    {
-                        throw new InvalidSignatureException("The signature was valid, but the verification of the certificate failed. Is it expired or revoked? Are you sure you really want to enable ValidateCertificates (it's normally not needed)?");
-                    }
+                    throw new InvalidSignatureException("The signature was valid, but the verification of the certificate failed. Is it expired or revoked? Are you sure you really want to enable ValidateCertificates (it's normally not needed)?");
                 }
             }
         }
