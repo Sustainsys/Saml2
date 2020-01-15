@@ -40,5 +40,10 @@ namespace Sustainsys.Saml2.AspNetCore2
                 cookieDecryptor,
                 httpContext.User);
         }
+
+        public static string GetUserAgent(this HttpRequest request)
+        {
+            return request.Headers["user-agent"].FirstOrDefault() ?? "";
+        }
     }
 }

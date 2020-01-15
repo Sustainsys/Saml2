@@ -20,20 +20,22 @@ namespace Sustainsys.Saml2.AspNetCore2.Tests
     [TestClass]
     public class CommandResultExtensionsTests
     {
-        [TestMethod]
-        public async Task CommandResultExtensions_Apply()
-        {
-            var context = TestHelpers.CreateHttpContext();
 
-            var state = new StoredRequestState(
+        StoredRequestState GetRequestState() =>
+            new StoredRequestState(
                 new EntityId("https://idp.example.com"),
                 new Uri("https://sp.example.com/ReturnUrl"),
                 new Saml2Id(),
                 new Dictionary<string, string>()
                 {
-                    { "Key1", "Value1" },
-                    { "Key2", "value2" }
+                                { "Key1", "Value1" },
+                                { "Key2", "value2" }
                 });
+
+        [TestMethod]
+        public async Task CommandResultExtensions_Apply()
+        {
+            var context = TestHelpers.CreateHttpContext();
 
             var redirectLocation = "https://destination.com/?q=http%3A%2F%2Fexample.com";
             var commandResult = new CommandResult()
@@ -43,7 +45,7 @@ namespace Sustainsys.Saml2.AspNetCore2.Tests
                 SetCookieName = "Saml2.123",
                 SetCookieSecureFlag = true,
                 RelayState = "123",
-                RequestState = state,
+                RequestState = GetRequestState(),
                 ContentType = "application/json",
                 Content = "{ value: 42 }",
                 ClearCookieName = "Clear-Cookie",
@@ -54,7 +56,7 @@ namespace Sustainsys.Saml2.AspNetCore2.Tests
                 RelayData = new Dictionary<string, string>()
                 {
                     { "Relayed", "Value" }
-                }
+                },
             };
 
             ClaimsPrincipal principal = null;
@@ -68,7 +70,7 @@ namespace Sustainsys.Saml2.AspNetCore2.Tests
                 Arg.Do<ClaimsPrincipal>(p => principal = p),
                 Arg.Do<AuthenticationProperties>(ap => authProps = ap));
 
-            await commandResult.Apply(context, new StubDataProtector(), "TestSignInScheme", null);
+            await commandResult.Apply(context, new StubDataProtector(), "TestSignInScheme", null, true);
 
             var expectedCookieData = HttpRequestData.ConvertBinaryData(
                 StubDataProtector.Protect(commandResult.GetSerializedRequestState()));
@@ -80,7 +82,9 @@ namespace Sustainsys.Saml2.AspNetCore2.Tests
                 "Saml2.123", expectedCookieData, Arg.Is<CookieOptions>(
                     co => co.HttpOnly && co.Secure && co.SameSite == SameSiteMode.None));
 
-            context.Response.Cookies.Received().Delete("Clear-Cookie");
+            context.Response.Cookies.Received().Delete(
+                "Clear-Cookie",
+                Arg.Is<CookieOptions>(co => co.Secure));
 
             context.Response.ContentType
                 .Should().Be("application/json", "content type should be set");
@@ -95,6 +99,27 @@ namespace Sustainsys.Saml2.AspNetCore2.Tests
         }
 
         [TestMethod]
+        public async Task CommandResultExtensions_Apply_NonSecureCookie_NoSameSite()
+        {
+            var context = TestHelpers.CreateHttpContext();
+
+            var commandResult = new CommandResult
+            {
+                SetCookieName = "CookieName",
+                RequestState = GetRequestState(),
+                ClearCookieName = "DeleteName"
+            };
+
+            await commandResult.Apply(context, new StubDataProtector(), null, null, false);
+
+            context.Response.Cookies.Received().Delete(
+                "DeleteName", Arg.Is<CookieOptions>(co => !co.Secure));
+
+            context.Response.Cookies.Received().Append(
+                "CookieName", Arg.Any<string>(), Arg.Is<CookieOptions>(co => !co.Secure && co.SameSite == (SameSiteMode)(-1)));
+        }
+
+        [TestMethod]
         public async Task CommandResultExtensions_Apply_Minimal()
         {
             var context = TestHelpers.CreateHttpContext();
@@ -105,7 +130,7 @@ namespace Sustainsys.Saml2.AspNetCore2.Tests
             context.RequestServices.GetService(typeof(IAuthenticationService))
                 .Returns(authService);
 
-            await commandResult.Apply(context, new StubDataProtector(), "TestSignInScheme", null);
+            await commandResult.Apply(context, new StubDataProtector(), "TestSignInScheme", null, false);
 
             context.Response.StatusCode.Should().Be(200);
             context.Response.Headers.Keys.Should().NotContain("Location");

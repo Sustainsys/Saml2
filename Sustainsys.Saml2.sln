@@ -56,7 +56,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Owin.Tests", "Tests\Owin.Te
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HttpModule.Tests", "Tests\HttpModule.Tests\HttpModule.Tests.csproj", "{4D3EADFB-93E9-4F66-BD61-FBAC9E30A294}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SampleAspNetCore2ApplicationNETFramework", "Samples\SampleAspNetCore2ApplicationNETFramework\SampleAspNetCore2ApplicationNETFramework.csproj", "{8EB3820A-4DB4-4875-A155-6C3D7458983E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SampleAspNetCore2ApplicationNetFramework", "Samples\SampleAspNetCore2ApplicationNETFramework\SampleAspNetCore2ApplicationNetFramework.csproj", "{8EB3820A-4DB4-4875-A155-6C3D7458983E}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sustainsys.Saml2.AspNetCore2", "Sustainsys.Saml2.AspNetCore2\Sustainsys.Saml2.AspNetCore2.csproj", "{0A1A7E8C-838C-4114-894B-564592417AFA}"
 EndProject
