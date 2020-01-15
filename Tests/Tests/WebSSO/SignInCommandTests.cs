@@ -79,14 +79,16 @@ namespace Sustainsys.Saml2.Tests.WebSso
             var httpRequest = new HttpRequestData("GET", new Uri($"http://localhost/signin?ReturnUrl={absoluteUri}"));
             var validateAbsoluteReturnUrlCalled = false;
 
-            Options.FromConfiguration.Notifications.ValidateAbsoluteReturnUrl =
+            var options = StubFactory.CreateOptions();
+
+            options.Notifications.ValidateAbsoluteReturnUrl =
                 (url) =>
                 {
                     validateAbsoluteReturnUrlCalled = true;
                     return true;
                 };
             
-            Action a = () => new SignInCommand().Run(httpRequest, Options.FromConfiguration);
+            Action a = () => new SignInCommand().Run(httpRequest, options);
 
             a.ShouldNotThrow<InvalidOperationException>("the ValidateAbsoluteReturnUrl notification returns true");
             validateAbsoluteReturnUrlCalled.Should().BeTrue("the ValidateAbsoluteReturnUrl notification should have been called");
@@ -100,14 +102,16 @@ namespace Sustainsys.Saml2.Tests.WebSso
             var httpRequest = new HttpRequestData("GET", new Uri($"http://localhost/signin?ReturnUrl={relativeUri}"));
             var validateAbsoluteReturnUrlCalled = false;
 
-            Options.FromConfiguration.Notifications.ValidateAbsoluteReturnUrl =
+            var options = StubFactory.CreateOptions();
+
+            options.Notifications.ValidateAbsoluteReturnUrl =
                 (url) =>
                 {
                     validateAbsoluteReturnUrlCalled = true;
                     return true;
                 };
 
-            Action a = () => new SignInCommand().Run(httpRequest, Options.FromConfiguration);
+            Action a = () => new SignInCommand().Run(httpRequest, options);
 
             a.ShouldNotThrow<InvalidOperationException>("the ReturnUrl is relative");
             validateAbsoluteReturnUrlCalled.Should().BeFalse("the ValidateAbsoluteReturnUrl notification should not have been called");
