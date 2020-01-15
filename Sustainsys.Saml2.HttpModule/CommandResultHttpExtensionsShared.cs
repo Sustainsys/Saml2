@@ -54,6 +54,7 @@ namespace Sustainsys.Saml2.HttpModule
                 response.SetCookie(new HttpCookie(commandResult.ClearCookieName)
                 {
                     Expires = new DateTime(1970, 01, 01),
+                    Secure = commandResult.SetCookieSecureFlag
                 });
             }
         }

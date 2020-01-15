@@ -109,7 +109,26 @@ namespace Sustainsys.Saml2.HttpModule.Tests
             response.Received().SetCookie(
                 Arg.Is<HttpCookie>(c =>
                 c.Name == "CookieName"
-                && c.Expires == new DateTime(1970, 01, 01)));
+                && c.Expires == new DateTime(1970, 01, 01)
+                && !c.Secure));
+        }
+
+        [TestMethod]
+        public void CommandResultHttp_Apply_ClearsCookie_SecureFlag()
+        {
+            var response = Substitute.For<HttpResponseBase>();
+
+            new CommandResult()
+            {
+                ClearCookieName = "CookieName",
+                SetCookieSecureFlag = true
+            }.Apply(response, true);
+
+            response.Received().SetCookie(
+                Arg.Is<HttpCookie>(c =>
+                c.Name == "CookieName"
+                && c.Expires == new DateTime(1970, 01, 01)
+                && c.Secure));
         }
 
         [TestMethod]

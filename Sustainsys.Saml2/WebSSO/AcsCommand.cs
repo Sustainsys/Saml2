@@ -58,7 +58,9 @@ namespace Sustainsys.Saml2.WebSso
 
                     if (request.StoredRequestState != null)
                     {
+                        var urls = new Saml2Urls(request, options);
                         result.ClearCookieName = StoredRequestState.CookieNameBase + unbindResult.RelayState;
+                        result.SetCookieSecureFlag = urls.AssertionConsumerServiceUrl.IsHttps();
                     }
 
                     options.Notifications.AcsCommandResultCreated(result, samlResponse);

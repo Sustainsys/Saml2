@@ -93,6 +93,7 @@ namespace Sustainsys.Saml2.Owin
                     commandResult.ClearCookieName,
                     new CookieOptions
                     {
+                        Secure = commandResult.SetCookieSecureFlag
                     });
             }
         }
