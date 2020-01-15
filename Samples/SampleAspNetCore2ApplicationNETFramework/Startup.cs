@@ -68,7 +68,6 @@ namespace SampleAspNetCore2ApplicationNETFramework
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
-                app.UseBrowserLink();
                 app.UseDatabaseErrorPage();
             }
             else

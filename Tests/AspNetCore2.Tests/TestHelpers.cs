@@ -53,7 +53,6 @@ namespace Sustainsys.Saml2.AspNetCore2.Tests
         {
             var context = Substitute.For<HttpContext>();
 
-            var form = Substitute.For<IFormCollection>();
             context.Request.Form.Returns(new FormValues());
             context.Request.Method = "POST";
             context.Request.ContentType = "application/x-www-form-urlencoded";

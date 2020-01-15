@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>netstandard2.0;net461</TargetFrameworks>
+    <TargetFrameworks>netstandard2.0;net47;net461</TargetFrameworks>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <PackageReleaseNotes>$releaseNotes$</PackageReleaseNotes>
     <PackageLicenseUrl>https://github.com/Sustainsys/Saml2/blob/master/LICENSE</PackageLicenseUrl>
@@ -12,17 +12,14 @@
     <PackageDescription>ASP.NET Core authentication handler for the SAML2 protocol, compatible with Asp.Net Core 2.X</PackageDescription>
   </PropertyGroup>
 
-  <ItemGroup>
-    <Compile Include="..\VersionInfo.cs" Link="VersionInfo.cs" />
-  </ItemGroup>
-
   <PropertyGroup>
     <DocumentationFile>C:\git\Sustainsys.Saml2\Sustainsys.Saml2.AspNetCore2\bin\Sustainsys.Saml2.AspNetCore2.xml</DocumentationFile>
   </PropertyGroup>
-  
+
   <PropertyGroup>
     <Authors>Sustainsys</Authors>
   </PropertyGroup>
+
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Authentication" Version="2.1.2" />
@@ -31,6 +28,10 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Sustainsys.Saml2\Sustainsys.Saml2.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config" />
+    <None Include="packages.config" />
   </ItemGroup>
 
 </Project>
