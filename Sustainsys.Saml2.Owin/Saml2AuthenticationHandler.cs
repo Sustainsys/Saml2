@@ -34,7 +34,10 @@ namespace Sustainsys.Saml2.Owin
 
                 if (!result.HandledResult)
                 {
-                    result.Apply(Context, Options.DataProtector);
+                    result.Apply(
+                        Context,
+                        Options.DataProtector,
+                        Options.Notifications.EmitSameSiteNone(Request.GetUserAgent()));
                 }
 
                 var identities = result.Principal.Identities.Select(i =>
@@ -136,7 +139,10 @@ namespace Sustainsys.Saml2.Owin
 
                     if (!result.HandledResult)
                     {
-                        result.Apply(Context, Options.DataProtector);
+                        result.Apply(
+                            Context,
+                            Options.DataProtector,
+                            Options.Notifications.EmitSameSiteNone(Request.GetUserAgent()));
                     }
                 }
             }
@@ -173,7 +179,10 @@ namespace Sustainsys.Saml2.Owin
 
                 if (!result.HandledResult)
                 {
-                    result.Apply(Context, Options.DataProtector);
+                    result.Apply(
+                        Context,
+                        Options.DataProtector,
+                        Options.Notifications.EmitSameSiteNone(Request.GetUserAgent()));
                 }
             }
 
@@ -209,7 +218,10 @@ namespace Sustainsys.Saml2.Owin
 
                     if (!result.HandledResult)
                     {
-                        result.Apply(Context, Options.DataProtector);
+                        result.Apply(
+                            Context,
+                            Options.DataProtector,
+                            Options.Notifications.EmitSameSiteNone(Request.GetUserAgent()));
                     }
 
                     return true;
