@@ -359,7 +359,8 @@ namespace Sustainsys.Saml2.Tests.WebSSO
             {
                 Location = new Uri("http://loggedout.example.com"),
                 HttpStatusCode = HttpStatusCode.SeeOther,
-                ClearCookieName = StoredRequestState.CookieNameBase + relayState
+                ClearCookieName = StoredRequestState.CookieNameBase + relayState,
+                SetCookieSecureFlag = true
             };
 
             actual.ShouldBeEquivalentTo(expected);
@@ -406,7 +407,7 @@ namespace Sustainsys.Saml2.Tests.WebSSO
             {
                 Location = new Uri("http://loggedout.example.com"),
                 HttpStatusCode = HttpStatusCode.SeeOther,
-                ClearCookieName = StoredRequestState.CookieNameBase + relayState
+                ClearCookieName = StoredRequestState.CookieNameBase + relayState,
             };
 
             actual.ShouldBeEquivalentTo(expected);
