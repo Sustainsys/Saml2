@@ -85,8 +85,11 @@ namespace Sustainsys.Saml2.Metadata
             {
                 spsso.SingleLogoutServices.Add(new SingleLogoutService(
                     Saml2Binding.HttpRedirectUri, urls.LogoutUrl));
-                spsso.SingleLogoutServices.Add(new SingleLogoutService(
-                    Saml2Binding.HttpPostUri, urls.LogoutUrl));
+                if(spOptions.Compatibility.EnableLogoutOverPost)
+                {
+                    spsso.SingleLogoutServices.Add(new ProtocolEndpoint(
+                        Saml2Binding.HttpPostUri, urls.LogoutUrl));
+                }
             }
 
             if (spOptions.DiscoveryServiceUrl != null
