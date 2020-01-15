@@ -63,6 +63,7 @@
     <Compile Include="CommandResultExtensions.cs" />
     <Compile Include="Constants.cs" />
     <Compile Include="GlobalSuppressions.cs" />
+    <Compile Include="OwinRequestExtensions.cs" />
     <Compile Include="Saml2AuthenticationExtensions.cs" />
     <Compile Include="Saml2AuthenticationHandler.cs" />
     <Compile Include="Saml2AuthenticationMiddleware.cs" />
