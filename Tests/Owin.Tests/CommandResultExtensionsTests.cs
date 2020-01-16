@@ -15,7 +15,7 @@ namespace Sustainsys.Saml2.Owin.Tests
         [TestMethod]
         public void CommandResultExtensions_Apply_NullCheck_CommandResult()
         {
-            Action a = () => ((CommandResult)null).Apply(OwinTestHelpers.CreateOwinContext(), null);
+            Action a = () => ((CommandResult)null).Apply(OwinTestHelpers.CreateOwinContext(), null, true);
 
             a.Should().Throw<ArgumentNullException>().And.ParamName.Should().Be("commandResult");
         }
@@ -23,7 +23,7 @@ namespace Sustainsys.Saml2.Owin.Tests
         [TestMethod]
         public void CommandResultExtensions_Apply_NullCheck_OwinContext()
         {
-            Action a = () => new CommandResult().Apply(context:null, dataProtector:null);
+            Action a = () => new CommandResult().Apply(context:null, dataProtector:null, true);
 
             a.Should().Throw<ArgumentNullException>().And.ParamName.Should().Be("context");
         }
@@ -39,7 +39,7 @@ namespace Sustainsys.Saml2.Owin.Tests
 
             var context = OwinTestHelpers.CreateOwinContext();
 
-            cr.Apply(context, null);
+            cr.Apply(context, null, true);
 
             context.Response.StatusCode.Should().Be(200);
             context.Response.ContentType.Should().Be("application/whatever+text");
@@ -62,13 +62,14 @@ namespace Sustainsys.Saml2.Owin.Tests
                     new Uri("http://sp.example.com/loggedout"),
                     new Saml2Id("id123"),
                     null),
-                SetCookieName = "CookieName"
+                SetCookieName = "CookieName",
+                SetCookieSecureFlag = false,
             };
 
             var context = OwinTestHelpers.CreateOwinContext();
 
             var dataProtector = new StubDataProtector();
-            cr.Apply(context, dataProtector);
+            cr.Apply(context, dataProtector, false);
 
             var setCookieHeader = context.Response.Headers["Set-Cookie"];
 
@@ -76,6 +77,35 @@ namespace Sustainsys.Saml2.Owin.Tests
                 StubDataProtector.Protect(cr.GetSerializedRequestState()));
 
             var expected = $"CookieName={protectedData}; path=/; HttpOnly";
+
+            setCookieHeader.Should().Be(expected);
+        }
+
+        [TestMethod]
+        public void CommandREsultExtensions_Apply_Cookie_EmitSameSiteNone_AndSecure()
+        {
+            var cr = new CommandResult()
+            {
+                RequestState = new StoredRequestState(
+                    new EntityId("http://idp.example.com"),
+                    new Uri("http://sp.example.com/loggedout"),
+                    new Saml2Id("id123"),
+                    null),
+                SetCookieName = "CookieName",
+                SetCookieSecureFlag = true,
+            };
+
+            var context = OwinTestHelpers.CreateOwinContext();
+
+            var dataProtector = new StubDataProtector();
+            cr.Apply(context, dataProtector, true);
+
+            var setCookieHeader = context.Response.Headers["Set-Cookie"];
+
+            var protectedData = HttpRequestData.ConvertBinaryData(
+                StubDataProtector.Protect(cr.GetSerializedRequestState()));
+
+            var expected = $"CookieName={protectedData}; path=/; secure; HttpOnly; SameSite=None";
 
             setCookieHeader.Should().Be(expected);
         }
@@ -96,7 +126,7 @@ namespace Sustainsys.Saml2.Owin.Tests
             var context = OwinTestHelpers.CreateOwinContext();
 
             var dataProtector = new StubDataProtector();
-            cr.Apply(context, dataProtector);
+            cr.Apply(context, dataProtector, true);
 
             var setCookieHeader = context.Response.Headers["Set-Cookie"];
 
@@ -116,11 +146,31 @@ namespace Sustainsys.Saml2.Owin.Tests
 
             var context = OwinTestHelpers.CreateOwinContext();
             var dataProtector = new StubDataProtector();
-            cr.Apply(context, dataProtector);
+            cr.Apply(context, dataProtector, true);
 
             var setCookieHeader = context.Response.Headers["Set-Cookie"];
 
             var expected = "CookieName=; path=/; expires=Thu, 01-Jan-1970 00:00:00 GMT";
+
+            setCookieHeader.Should().Be(expected);
+        }
+
+        [TestMethod]
+        public void CommandResultExtensions_Apply_ClearCookie_Secure()
+        {
+            var cr = new CommandResult()
+            {
+                ClearCookieName = "CookieName",
+                SetCookieSecureFlag = true
+            };
+
+            var context = OwinTestHelpers.CreateOwinContext();
+            var dataProtector = new StubDataProtector();
+            cr.Apply(context, dataProtector, true);
+
+            var setCookieHeader = context.Response.Headers["Set-Cookie"];
+
+            var expected = "CookieName=; path=/; expires=Thu, 01-Jan-1970 00:00:00 GMT; secure";
 
             setCookieHeader.Should().Be(expected);
         }
@@ -137,7 +187,7 @@ namespace Sustainsys.Saml2.Owin.Tests
 
             var context = OwinTestHelpers.CreateOwinContext();
 
-            cr.Apply(context, null);
+            cr.Apply(context, null, true);
 
             context.Response.StatusCode.Should().Be(303);
             context.Response.Headers["Location"].Should().Be(redirectUrl);
@@ -151,7 +201,7 @@ namespace Sustainsys.Saml2.Owin.Tests
 
             var context = OwinTestHelpers.CreateOwinContext();
 
-            cr.Apply(context, null);
+            cr.Apply(context, null, true);
 
             context.Response.Headers["header"].Should().Be("value");
         }

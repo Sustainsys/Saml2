@@ -91,7 +91,8 @@ namespace Sustainsys.Saml2.WebSso
                         break;
                     case "LogoutResponse":
                         var storedRequestState = options.Notifications.GetLogoutResponseState(request);
-                        commandResult = HandleResponse(unbindResult, storedRequestState, options, returnUrl);
+                        var urls = new Saml2Urls(request, options);
+                        commandResult = HandleResponse(unbindResult, storedRequestState, options, returnUrl, urls);
                         break;
                     default:
                         throw new NotImplementedException();
@@ -198,6 +199,9 @@ namespace Sustainsys.Saml2.WebSso
                 if (!options.SPOptions.Compatibility.DisableLogoutStateCookie)
                 {
                     commandResult.SetCookieName = StoredRequestState.CookieNameBase + logoutRequest.RelayState;
+
+                    var urls = new Saml2Urls(request, options);
+                    commandResult.SetCookieSecureFlag = urls.LogoutUrl.IsHttps();
                 }
 
                 commandResult.TerminateLocalSession = terminateLocalSession;
@@ -278,7 +282,12 @@ namespace Sustainsys.Saml2.WebSso
             return result;
         }
 
-        private static CommandResult HandleResponse(UnbindResult unbindResult, StoredRequestState storedRequestState, IOptions options, Uri returnUrl)
+        private static CommandResult HandleResponse(
+            UnbindResult unbindResult,
+            StoredRequestState storedRequestState,
+            IOptions options,
+            Uri returnUrl,
+            Saml2Urls urls)
         {
             var logoutResponse = Saml2LogoutResponse.FromXml(unbindResult.Data);
             var notificationHandledTheStatus = options.Notifications.ProcessSingleLogoutResponseStatus(logoutResponse, storedRequestState);
@@ -299,6 +308,7 @@ namespace Sustainsys.Saml2.WebSso
             if (!options.SPOptions.Compatibility.DisableLogoutStateCookie)
             {
                 commandResult.ClearCookieName = StoredRequestState.CookieNameBase + unbindResult.RelayState;
+                commandResult.SetCookieSecureFlag = urls.LogoutUrl.IsHttps();
             }
             commandResult.Location = storedRequestState?.ReturnUrl ?? returnUrl;
 

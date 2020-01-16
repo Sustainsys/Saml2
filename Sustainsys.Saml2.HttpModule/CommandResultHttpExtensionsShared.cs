@@ -19,7 +19,8 @@ namespace Sustainsys.Saml2.HttpModule
         /// </summary>
         /// <param name="commandResult">Commandresult</param>
         /// <param name="response">Response</param>
-        public static void ApplyCookies(this CommandResult commandResult, HttpResponseBase response)
+        /// <param name="emitSameSiteNone">Include a SameSite=None attribute on any cookies set</param>
+        public static void ApplyCookies(this CommandResult commandResult, HttpResponseBase response, bool emitSameSiteNone)
         {
             if(commandResult == null)
             {
@@ -42,7 +43,9 @@ namespace Sustainsys.Saml2.HttpModule
                     commandResult.SetCookieName,
                     protectedData)
                 {
-                    HttpOnly = true
+                    HttpOnly = true,
+                    Secure = commandResult.SetCookieSecureFlag,
+                    SameSite = emitSameSiteNone ? SameSiteMode.None : (SameSiteMode)(-1)
                 });
             }
 
@@ -50,7 +53,8 @@ namespace Sustainsys.Saml2.HttpModule
             {
                 response.SetCookie(new HttpCookie(commandResult.ClearCookieName)
                 {
-                    Expires = new DateTime(1970, 01, 01)
+                    Expires = new DateTime(1970, 01, 01),
+                    Secure = commandResult.SetCookieSecureFlag
                 });
             }
         }

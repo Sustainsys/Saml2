@@ -47,6 +47,14 @@ namespace Sustainsys.Saml2.Configuration
         { get; set; } = (ei, r) => null;
 
         /// <summary>
+        /// Notification called to decide if a SameSite=None attribute should
+        /// be set for a cookie. The default implementation is based on the pseudo
+        /// code supplied by Google in https://www.chromium.org/updates/same-site/incompatible-clients
+        /// </summary>
+        public Func<string, bool> EmitSameSiteNone { get; set; }
+            = userAgent => SameSiteHelper.EmitSameSiteNone(userAgent);
+        
+        /// <summary>
         /// Notification called when the logout command is about to use the 
         /// <code>StoredRequestState</code> derived from the request's RelayState data.
         /// Return a different StoredRequestState if you would like to customize the 

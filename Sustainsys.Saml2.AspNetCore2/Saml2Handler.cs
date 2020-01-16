@@ -25,6 +25,7 @@ namespace Sustainsys.Saml2.AspNetCore2
         HttpContext context;
         private readonly IDataProtector dataProtector;
         private readonly IOptionsFactory<Saml2Options> optionsFactory;
+        bool emitSameSiteNone;
 
         /// <summary>
         /// Ctor
@@ -53,8 +54,15 @@ namespace Sustainsys.Saml2.AspNetCore2
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1500:VariableNamesShouldNotMatchFieldNames", MessageId = "context")]
         public Task InitializeAsync(AuthenticationScheme scheme, HttpContext context)
         {
+            if(context == null)
+            {
+                throw new ArgumentNullException(nameof(context));
+            }
+
             this.context = context;
             options = optionsCache.GetOrAdd(scheme.Name, () => optionsFactory.Create(scheme.Name));
+
+            emitSameSiteNone = options.Notifications.EmitSameSiteNone(context.Request.GetUserAgent());
 
             return Task.CompletedTask;
         }
@@ -100,7 +108,7 @@ namespace Sustainsys.Saml2.AspNetCore2
                 options,
                 properties.Items);
 
-            await result.Apply(context, dataProtector, null, null);
+            await result.Apply(context, dataProtector, null, null, emitSameSiteNone);
         }
 
         /// <InheritDoc />
@@ -121,7 +129,8 @@ namespace Sustainsys.Saml2.AspNetCore2
                 var commandResult = CommandFactory.GetCommand(commandName).Run(
                     context.ToHttpRequestData(dataProtector.Unprotect), options);
 
-                await commandResult.Apply(context, dataProtector, options.SignInScheme, options.SignOutScheme);
+                await commandResult.Apply(
+                    context, dataProtector, options.SignInScheme, options.SignOutScheme, emitSameSiteNone);
 
                 return true;
             }
@@ -148,7 +157,7 @@ namespace Sustainsys.Saml2.AspNetCore2
                 // In the Asp.Net Core2 model, it's the caller's responsibility to terminate the
                 // local session on an SP-initiated logout.
                 terminateLocalSession: false)
-                .Apply(context, dataProtector, null, null);
+                .Apply(context, dataProtector, null, null, emitSameSiteNone);
         }
     }
 }

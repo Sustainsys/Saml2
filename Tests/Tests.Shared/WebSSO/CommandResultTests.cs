@@ -31,7 +31,8 @@ namespace Sustainsys.Saml2.Tests.WebSso
                 RequestState = (StoredRequestState)null,
                 ClearCookieName = (string)null,
                 HandledResult = false,
-                SessionNotOnOrAfter = (DateTime?)null
+                SessionNotOnOrAfter = (DateTime?)null,
+                SetCookieSecureFlag = false,
             };
 
             new CommandResult().Should().BeEquivalentTo(expected);

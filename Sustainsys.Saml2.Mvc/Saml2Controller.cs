@@ -51,7 +51,7 @@ namespace Sustainsys.Saml2.Mvc
                 throw new NotSupportedException("The MVC controller doesn't support setting CommandResult.HandledResult.");
             }
 
-            result.ApplyCookies(Response);
+            result.ApplyCookies(Response, Options.Notifications.EmitSameSiteNone(Request.UserAgent));
             return result.ToActionResult();
         }
 
@@ -76,7 +76,7 @@ namespace Sustainsys.Saml2.Mvc
             }
 
             result.SignInOrOutSessionAuthenticationModule();
-            result.ApplyCookies(Response);
+            result.ApplyCookies(Response, Options.Notifications.EmitSameSiteNone(Request.UserAgent));
             return result.ToActionResult();
         }
 
@@ -120,7 +120,7 @@ namespace Sustainsys.Saml2.Mvc
             }
 
             result.SignInOrOutSessionAuthenticationModule();
-            result.ApplyCookies(Response);
+            result.ApplyCookies(Response, Options.Notifications.EmitSameSiteNone(Request.UserAgent));
             return result.ToActionResult();
         }
     }

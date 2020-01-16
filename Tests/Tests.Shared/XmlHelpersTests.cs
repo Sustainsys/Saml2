@@ -247,6 +247,7 @@ namespace Sustainsys.Saml2.Tests
 
             var signedXml = new SignedXml( xmlDoc );
             signedXml.SigningKey = SignedXmlHelper.TestCert.PrivateKey;
+            signedXml.SignedInfo.SignatureMethod = SignedXml.XmlDsigRSASHA1Url;
             signedXml.SignedInfo.CanonicalizationMethod = SignedXml.XmlDsigExcC14NTransformUrl;
 
             var ref1 = new Reference { Uri = "" };
@@ -272,6 +273,7 @@ namespace Sustainsys.Saml2.Tests
 
             var signedXml = new SignedXml(xmlDoc);
             signedXml.SigningKey = SignedXmlHelper.TestCert.PrivateKey;
+            signedXml.SignedInfo.SignatureMethod = SignedXml.XmlDsigRSASHA1Url;
             signedXml.SignedInfo.CanonicalizationMethod = SignedXml.XmlDsigExcC14NTransformUrl;
 
             var ref1 = new Reference { Uri = "#myxml" };
@@ -321,6 +323,7 @@ namespace Sustainsys.Saml2.Tests
 
             var signedXml = new SignedXml(xmlDoc);
             signedXml.SigningKey = SignedXmlHelper.TestCert.PrivateKey;
+            signedXml.SignedInfo.SignatureMethod = SignedXml.XmlDsigRSASHA1Url;
             signedXml.SignedInfo.CanonicalizationMethod = SignedXml.XmlDsigExcC14NTransformUrl;
 
             var reference = new Reference { Uri = "#MyXml" };

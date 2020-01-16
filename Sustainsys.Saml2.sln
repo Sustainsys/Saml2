@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.27130.2020
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29613.14
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sustainsys.Saml2", "Sustainsys.Saml2\Sustainsys.Saml2.csproj", "{93BA675E-A159-4701-B68B-C4B81015C556}"
 EndProject
@@ -38,8 +38,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Samples", "Samples", "{0963
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SampleHttpModuleApplication", "Samples\SampleHttpModuleApplication\SampleHttpModuleApplication.csproj", "{A8933B89-1052-43EF-A884-07860375F3FA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SampleIdentityServer3", "Samples\SampleIdentityServer3\SampleIdentityServer3.csproj", "{D4B36D49-D994-48AC-AC1F-7A2AA49BDF0B}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SampleMvcApplication", "Samples\SampleMvcApplication\SampleMvcApplication.csproj", "{CE07482B-C6AB-4195-A1A7-3BB69176EFF2}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SampleOwinApplication", "Samples\SampleOwinApplication\SampleOwinApplication.csproj", "{1C263C1A-3201-4A90-96BB-22CD3F074EC8}"
@@ -54,7 +52,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Owin.Tests", "Tests\Owin.Te
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HttpModule.Tests", "Tests\HttpModule.Tests\HttpModule.Tests.csproj", "{4D3EADFB-93E9-4F66-BD61-FBAC9E30A294}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SampleAspNetCore2ApplicationNETFramework", "Samples\SampleAspNetCore2ApplicationNETFramework\SampleAspNetCore2ApplicationNETFramework.csproj", "{8EB3820A-4DB4-4875-A155-6C3D7458983E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SampleAspNetCore2ApplicationNetFramework", "Samples\SampleAspNetCore2ApplicationNETFramework\SampleAspNetCore2ApplicationNetFramework.csproj", "{8EB3820A-4DB4-4875-A155-6C3D7458983E}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sustainsys.Saml2.AspNetCore2", "Sustainsys.Saml2.AspNetCore2\Sustainsys.Saml2.AspNetCore2.csproj", "{0A1A7E8C-838C-4114-894B-564592417AFA}"
 EndProject
@@ -135,10 +133,6 @@ Global
 		{A8933B89-1052-43EF-A884-07860375F3FA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A8933B89-1052-43EF-A884-07860375F3FA}.Release|Any CPU.ActiveCfg = Debug|Any CPU
 		{A8933B89-1052-43EF-A884-07860375F3FA}.Release|Any CPU.Build.0 = Debug|Any CPU
-		{D4B36D49-D994-48AC-AC1F-7A2AA49BDF0B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{D4B36D49-D994-48AC-AC1F-7A2AA49BDF0B}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{D4B36D49-D994-48AC-AC1F-7A2AA49BDF0B}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{D4B36D49-D994-48AC-AC1F-7A2AA49BDF0B}.Release|Any CPU.Build.0 = Release|Any CPU
 		{CE07482B-C6AB-4195-A1A7-3BB69176EFF2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{CE07482B-C6AB-4195-A1A7-3BB69176EFF2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CE07482B-C6AB-4195-A1A7-3BB69176EFF2}.Release|Any CPU.ActiveCfg = Debug|Any CPU
@@ -197,7 +191,6 @@ Global
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{A8933B89-1052-43EF-A884-07860375F3FA} = {09639770-8C2B-4D30-BBFC-4F6DD1A92C89}
-		{D4B36D49-D994-48AC-AC1F-7A2AA49BDF0B} = {09639770-8C2B-4D30-BBFC-4F6DD1A92C89}
 		{CE07482B-C6AB-4195-A1A7-3BB69176EFF2} = {09639770-8C2B-4D30-BBFC-4F6DD1A92C89}
 		{1C263C1A-3201-4A90-96BB-22CD3F074EC8} = {09639770-8C2B-4D30-BBFC-4F6DD1A92C89}
 		{F09D61F6-CA41-4B73-B59E-2A5C5626F058} = {F3C8CC66-4CE9-4683-BC31-B89AF47A5897}

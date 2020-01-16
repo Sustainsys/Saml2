@@ -15,7 +15,8 @@ namespace Sustainsys.Saml2.AspNetCore2
             HttpContext httpContext,
             IDataProtector dataProtector,
             string signInScheme,
-            string signOutScheme)
+            string signOutScheme,
+            bool emitSameSiteNone)
         {
             httpContext.Response.StatusCode = (int)commandResult.HttpStatusCode;
 
@@ -35,9 +36,10 @@ namespace Sustainsys.Saml2.AspNetCore2
                     new CookieOptions()
                     {
                         HttpOnly = true,
+                        Secure = commandResult.SetCookieSecureFlag,
                         // We are expecting a different site to POST back to us,
                         // so the ASP.Net Core default of Lax is not appropriate in this case
-                        SameSite = SameSiteMode.None,
+                        SameSite = emitSameSiteNone ? SameSiteMode.None : (SameSiteMode)(-1),
                         IsEssential = true
                     });
             }
@@ -49,7 +51,12 @@ namespace Sustainsys.Saml2.AspNetCore2
 
             if(!string.IsNullOrEmpty(commandResult.ClearCookieName))
             {
-                httpContext.Response.Cookies.Delete(commandResult.ClearCookieName);
+                httpContext.Response.Cookies.Delete(
+                    commandResult.ClearCookieName,
+                    new CookieOptions
+                    {
+                        Secure = commandResult.SetCookieSecureFlag
+                    });
             }
 
             if(!string.IsNullOrEmpty(commandResult.Content))

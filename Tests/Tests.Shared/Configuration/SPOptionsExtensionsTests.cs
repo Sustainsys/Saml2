@@ -53,6 +53,21 @@ namespace Sustainsys.Saml2.Tests.Configuration
                 slo => slo.Binding == Saml2Binding.HttpRedirectUri);
             sloRedirect.Location.Should().Be("http://localhost/Saml2/Logout");
             sloRedirect.ResponseLocation.Should().BeNull();
+            var sloPost = spMetadata.SingleLogoutServices.SingleOrDefault(
+                slo => slo.Binding == Saml2Binding.HttpPostUri);
+            sloPost.Should().BeNull();
+        }
+
+        [TestMethod]
+        public void SPOptionsExtensions_CreateMetadata_WithServiceCertificateConfiguredAndPostLogoutEnabled()
+        {
+            var options = StubFactory.CreateOptions();
+            options.SPOptions.ServiceCertificates.Add(new ServiceCertificate { Certificate = SignedXmlHelper.TestCert2 });
+            options.SPOptions.Compatibility.EnableLogoutOverPost = true;
+
+            var metadata = options.SPOptions.CreateMetadata(StubFactory.CreateSaml2Urls());
+            var spMetadata = metadata.RoleDescriptors.OfType<SpSsoDescriptor>().Single();
+
             var sloPost = spMetadata.SingleLogoutServices.Single(
                 slo => slo.Binding == Saml2Binding.HttpPostUri);
             sloPost.Location.Should().Be("http://localhost/Saml2/Logout");

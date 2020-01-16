@@ -113,7 +113,8 @@ namespace Sustainsys.Saml2.Tests.WebSSO
                     new EntityId("https://idp.example.com"),
                     new Uri("https://sp.example.com/"),
                     null,
-                    null)
+                    null),
+                SetCookieSecureFlag = true
             };
 
             actual.Should().BeEquivalentTo(expected, opt => opt
@@ -359,7 +360,8 @@ namespace Sustainsys.Saml2.Tests.WebSSO
             {
                 Location = new Uri("http://loggedout.example.com"),
                 HttpStatusCode = HttpStatusCode.SeeOther,
-                ClearCookieName = StoredRequestState.CookieNameBase + relayState
+                ClearCookieName = StoredRequestState.CookieNameBase + relayState,
+                SetCookieSecureFlag = true
             };
 
             actual.Should().BeEquivalentTo(expected);
@@ -406,7 +408,7 @@ namespace Sustainsys.Saml2.Tests.WebSSO
             {
                 Location = new Uri("http://loggedout.example.com"),
                 HttpStatusCode = HttpStatusCode.SeeOther,
-                ClearCookieName = StoredRequestState.CookieNameBase + relayState
+                ClearCookieName = StoredRequestState.CookieNameBase + relayState,
             };
 
             actual.Should().BeEquivalentTo(expected);

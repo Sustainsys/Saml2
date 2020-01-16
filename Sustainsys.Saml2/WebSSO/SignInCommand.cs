@@ -157,6 +157,8 @@ namespace Sustainsys.Saml2.WebSso
 
             commandResult.RequestState = new StoredRequestState(
                 idp.EntityId, returnUrl, authnRequest.Id, relayData);
+
+            commandResult.SetCookieSecureFlag = urls.AssertionConsumerServiceUrl.IsHttps();
             commandResult.SetCookieName = StoredRequestState.CookieNameBase + authnRequest.RelayState;
 
             options.Notifications.SignInCommandResultCreated(commandResult, relayData);
@@ -194,7 +196,8 @@ namespace Sustainsys.Saml2.WebSso
                 HttpStatusCode = HttpStatusCode.SeeOther,
                 Location = new Uri(redirectLocation),
                 RequestState = requestState,
-                SetCookieName = StoredRequestState.CookieNameBase + relayState
+                SetCookieName = StoredRequestState.CookieNameBase + relayState,
+                SetCookieSecureFlag = saml2Urls.AssertionConsumerServiceUrl.IsHttps()
             };
         }
     }

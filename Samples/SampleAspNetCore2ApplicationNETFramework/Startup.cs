@@ -53,7 +53,7 @@ namespace SampleAspNetCore2ApplicationNETFramework
                     options.SPOptions.EntityId = new EntityId("https://localhost:44342/Saml2");
                     options.IdentityProviders.Add(
                         new IdentityProvider(
-                            new EntityId("http://localhost:52071/Metadata"), options.SPOptions)
+                            new EntityId("https://localhost:44300/Metadata"), options.SPOptions)
                         {
                             LoadMetadata = true
                         });
@@ -68,7 +68,6 @@ namespace SampleAspNetCore2ApplicationNETFramework
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
-                app.UseBrowserLink();
                 app.UseDatabaseErrorPage();
             }
             else

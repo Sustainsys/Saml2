@@ -71,5 +71,14 @@ namespace Sustainsys.Saml2.Configuration
         /// IgnoreMissingInResponseTo to true will always skip the check.
         /// </summary>
         public bool IgnoreMissingInResponseTo { get; set; }
+
+        /// <summary>
+        /// Handling logout requires access to the authenticated user session. If logout
+        /// is done over the POST binding, the session cookie must have SameSite=None
+        /// set (which is probably a bad idea). To avoid problems, disable logout
+        /// over POST in metadata by default.
+        /// </summary>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1726:UsePreferredTerms", MessageId = "Logout")]
+        public bool EnableLogoutOverPost { get; set; }
     }
 }

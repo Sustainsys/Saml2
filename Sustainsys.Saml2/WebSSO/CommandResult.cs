@@ -68,6 +68,12 @@ namespace Sustainsys.Saml2.WebSso
         public string SetCookieName { get; set; }
 
         /// <summary>
+        /// Value of the "Secure" flag for the cookie (relevant if <see cref="SetCookieName"/> != null).
+        /// </summary>
+        [SuppressMessage("Microsoft.Naming", "CA1726:UsePreferredTerms", MessageId = "Flag")]
+        public bool SetCookieSecureFlag { get; set; }
+
+        /// <summary>
         /// SAML RelayState value
         /// </summary>
         public string RelayState { get; set; }
