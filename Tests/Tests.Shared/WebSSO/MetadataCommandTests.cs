@@ -194,24 +194,5 @@ namespace Sustainsys.Saml2.Tests.WebSso
             parsedResult.Attribute("cacheDuration").Value
                 .Should().Be("PT17S");
         }
-
-        [TestMethod]
-        public void MetadataCommand_Run_IncludesLogoutOverPostIfEnabled()
-        {
-            var request = new HttpRequestData("GET", new Uri("http://localhost/Saml2"));
-
-            var options = StubFactory.CreateOptions();
-            options.SPOptions.Compatibility.EnableLogoutOverPost = true;
-            options.SPOptions.ServiceCertificates.Add(new ServiceCertificate()
-            {
-                Certificate = SignedXmlHelper.TestCertSignOnly,
-                Use = CertificateUse.Signing,
-            });
-
-            var subject = new MetadataCommand();
-            var actual = subject.Run(request, options);
-
-            actual.Content.Should().Contain("<SingleLogoutService Binding=\"urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST\" Location=\"http://localhost/Saml2/Logout\" />");
-        }
     }
 }
