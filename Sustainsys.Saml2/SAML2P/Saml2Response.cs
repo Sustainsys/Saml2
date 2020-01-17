@@ -569,6 +569,8 @@ namespace Sustainsys.Saml2.Saml2P
 			validationParameters.ValidateIssuer = false;
             validationParameters.ValidAudience = options.SPOptions.EntityId.Id;
 
+            options.Notifications.Unsafe.TokenValidationParametersCreated(validationParameters, idp, XmlElement);
+
 			var handler = options.SPOptions.Saml2PSecurityTokenHandler;
 
 			foreach (XmlElement assertionNode in GetAllAssertionElementNodes(options))

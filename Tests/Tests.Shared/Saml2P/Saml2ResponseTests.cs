@@ -1495,15 +1495,13 @@ namespace Sustainsys.Saml2.Tests.Saml2P
             var subject = Saml2Response.Read(response);
 
             var options = StubFactory.CreateOptions();
-            //options.SPOptions.SystemIdentityModelIdentityConfiguration.AudienceRestriction.AudienceMode
-            //    = AudienceUriMode.Always;
 
             subject.Invoking(s => s.GetClaims(options))
                 .Should().Throw<SecurityTokenInvalidAudienceException>();
 		}
 
 		[TestMethod]
-        public void Saml2Response_GetClaims_IgnoresAudienceIfConfiguredWithNever()
+        public void Saml2Response_GetClaims_IgnoresAudienceUsingTVPNotificationFlag()
         {
             var response =
             @"<?xml version=""1.0"" encoding=""UTF-8""?>
@@ -1535,10 +1533,13 @@ namespace Sustainsys.Saml2.Tests.Saml2P
             var subject = Saml2Response.Read(response);
 
             var options = StubFactory.CreateOptions();
-            //options.SPOptions.SystemIdentityModelIdentityConfiguration
-            //    .AudienceRestriction.AudienceMode = AudienceUriMode.Never;
+            options.Notifications.Unsafe.TokenValidationParametersCreated = (tvp, idp, xml) =>
+            {
+                tvp.ValidateAudience = false;
 
-            Assert.Inconclusive();
+                idp.EntityId.Id.Should().Be("https://idp.example.com");
+                xml.OuterXml.Should().Contain("https://example.com/wrong/audience");
+            };
 
             subject.Invoking(s => s.GetClaims(options)).Should().NotThrow();
         }
