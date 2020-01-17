@@ -1,3 +1,6 @@
+Version 1.0.1
+* SameSite cookie update for Chrome 80
+
 Version 1.0.0
 * Bug fix: Asp.Net Core2 handler, incorrect signed redirect messages.
 
