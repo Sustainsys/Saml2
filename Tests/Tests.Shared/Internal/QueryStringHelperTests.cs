@@ -64,5 +64,33 @@ namespace Sustainsys.Saml2.Tests.Internal
 
             subject.Should().BeEquivalentTo(expected);
         }
+
+        [TestMethod]
+        public void QueryStringHelper_ParseQueryString_HandlesEqualsSignInParameter()
+        {
+            var subject = QueryStringHelper.ParseQueryString("?fname=john&lname=do=e");
+
+            var expected = new[]
+            {
+                new { key = "fname", value = "john" },
+                new { key = "lname", value="do=e" }
+            }.ToLookup(x => x.key, x => x.value);
+
+            subject.Should().BeEquivalentTo(expected);
+        }
+
+        [TestMethod]
+        public void QueryStringHelper_ParseQueryString_HandlesEqualsSignAtTheEndOfParameter()
+        {
+            var subject = QueryStringHelper.ParseQueryString("?fname=john&lname=doe=");
+
+            var expected = new[]
+            {
+                new { key = "fname", value = "john" },
+                new { key = "lname", value="doe=" }
+            }.ToLookup(x => x.key, x => x.value);
+
+            subject.Should().BeEquivalentTo(expected);
+        }
     }
 }
