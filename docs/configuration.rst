@@ -64,7 +64,7 @@ A sample section is shown below.  For full details and all avaialble options, se
                         discoveryServiceUrl="http://localhost:52071/DiscoveryService" 
                         authenticateRequestSigningBehavior="Always">
         <nameIdPolicy allowCreate="true" format="Persistent"/>
-        <metadata cacheDuration="0:0:42" validDuration="7.12:00:00" wantAssertionsSigned="true">
+        <metadata cacheDuration="PT42S" validDuration="7.12:00:00" wantAssertionsSigned="true">
             <organization name="Sustainsys AB" displayName="Sustainsys" url="https://www.Sustainsys.com" language="sv" />
             <contactPerson type="Other" email="info@Sustainsys.se" />
             <requestedAttributes>
