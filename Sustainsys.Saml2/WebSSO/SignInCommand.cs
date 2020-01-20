@@ -149,7 +149,19 @@ namespace Sustainsys.Saml2.WebSso
 
         private static CommandResult InitiateLoginToIdp(IOptions options, IDictionary<string, string> relayData, Saml2Urls urls, IdentityProvider idp, Uri returnUrl, HttpRequestData request)
         {
-            var authnRequest = idp.CreateAuthenticateRequest(urls, request);
+            var authnRequest = idp.CreateAuthenticateRequest(urls);
+
+            var forceAuthnString = request.QueryString["ForceAuthn"].SingleOrDefault();
+            if (!string.IsNullOrWhiteSpace(forceAuthnString))
+            {
+                authnRequest.ForceAuthentication = bool.Parse(forceAuthnString);
+            }
+
+            var isPassiveString = request.QueryString["IsPassive"].SingleOrDefault();
+            if (!string.IsNullOrWhiteSpace(isPassiveString))
+            {
+                authnRequest.IsPassive = bool.Parse(isPassiveString);
+            }
 
             options.Notifications.AuthenticationRequestCreated(authnRequest, idp, relayData);
 

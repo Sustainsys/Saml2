@@ -1629,10 +1629,7 @@ namespace Sustainsys.Saml2.Tests.Saml2P
         public void Saml2Response_GetClaims_MissingInResponseTo_IfAllowed()
         {
             var idp = Options.FromConfiguration.IdentityProviders.Default;
-            var httpRequest = new HttpRequestData("GET",
-                new Uri("http://sp.example.com"));
-
-            var request = idp.CreateAuthenticateRequest(StubFactory.CreateSaml2Urls(), httpRequest);
+            var request = idp.CreateAuthenticateRequest(StubFactory.CreateSaml2Urls());
 
             var responseXML =
             @"<?xml version=""1.0"" encoding=""UTF-8""?>

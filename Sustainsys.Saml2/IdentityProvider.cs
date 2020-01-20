@@ -291,8 +291,7 @@ namespace Sustainsys.Saml2
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "AuthenticateRequestSigningBehavior")]
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "ServiceCertificates")]
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "AuthenticateRequests")]
-        public Saml2AuthenticationRequest CreateAuthenticateRequest(
-            Saml2Urls saml2Urls, HttpRequestData request)
+        public Saml2AuthenticationRequest CreateAuthenticateRequest(Saml2Urls saml2Urls)
         {
             if (saml2Urls == null)
             {
@@ -310,18 +309,6 @@ namespace Sustainsys.Saml2
                 RequestedAuthnContext = spOptions.RequestedAuthnContext,
                 SigningAlgorithm = this.OutboundSigningAlgorithm
             };
-
-            var forceAuthnString = request.QueryString["ForceAuthn"].SingleOrDefault();
-            if (!string.IsNullOrWhiteSpace(forceAuthnString))
-            {
-                authnRequest.ForceAuthentication = bool.Parse(forceAuthnString);
-            }
-
-            var isPassiveString = request.QueryString["IsPassive"].SingleOrDefault();
-            if (!string.IsNullOrWhiteSpace(isPassiveString))
-            {
-                authnRequest.IsPassive = bool.Parse(isPassiveString);
-            }
 
             if (spOptions.AuthenticateRequestSigningBehavior == SigningBehavior.Always
                 || (spOptions.AuthenticateRequestSigningBehavior == SigningBehavior.IfIdpWantAuthnRequestsSigned
