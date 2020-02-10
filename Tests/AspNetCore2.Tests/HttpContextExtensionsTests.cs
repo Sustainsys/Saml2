@@ -48,6 +48,19 @@ namespace Sustainsys.Saml2.AspNetCore2.Tests
         }
 
         [TestMethod]
+        public void HttpContextExtensions_ToHttpRequestData_InvalidPost()
+        {
+            var context = TestHelpers.CreateHttpContext();
+
+            context.Request.HasFormContentType.Returns(false);
+            context.Request.Form.Returns(i => { throw new InvalidOperationException(); });
+
+            context.ToHttpRequestData(StubDataProtector.Unprotect);
+
+            // No exception = pass
+        }
+
+        [TestMethod]
         public void HttpContextExtensions_ToHttpRequestData_ApplicationNotInRoot()
         {
             var context = TestHelpers.CreateHttpContext();
