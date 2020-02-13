@@ -6,6 +6,7 @@ using Sustainsys.Saml2.Tests.Helpers;
 using System.Xml;
 using System;
 using Microsoft.IdentityModel.Tokens.Saml2;
+using System.Xml.Linq;
 
 namespace Sustainsys.Saml2.Tests.Saml2P
 {
@@ -93,6 +94,32 @@ namespace Sustainsys.Saml2.Tests.Saml2P
 
             a.Should().Throw<ArgumentNullException>()
                 .And.ParamName.Should().Be("xml");
+        }
+
+        [TestMethod]
+        public void Saml2LogoutRequest_ToXml_PreservesCustomChanges()
+        {
+            var subject = new Saml2LogoutRequest()
+            {
+                DestinationUrl = new Uri("http://idp.example.com/logout"),
+                Issuer = new EntityId("http://sp.example.com/"),
+                NameId = new Saml2NameIdentifier("005a06e0-ad82-110d-a556-004005b13a2b")
+                {
+                    Format = new Uri(NameIdFormat.Persistent.GetUri().AbsoluteUri),
+                    NameQualifier = "qualifier",
+                    SPNameQualifier = "spQualifier",
+                    SPProvidedId = "spId"
+                },
+                SessionIndex = "SessionId"
+            };
+            subject.XmlCreated += (e) =>
+            {
+                e.Add(new XAttribute("CustomAttribute", "CustomValue"));
+            };
+
+            var xml = subject.ToXml();
+
+            xml.Should().Contain("CustomAttribute=\"CustomValue\"");
         }
     }
 }

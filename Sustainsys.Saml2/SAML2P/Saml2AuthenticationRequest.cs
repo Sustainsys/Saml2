@@ -116,7 +116,9 @@ namespace Sustainsys.Saml2.Saml2P
         /// <returns>string containing the Xml data.</returns>
         public override string ToXml()
         {
-            return ToXElement().ToString();
+            var xElement = ToXElement();
+            XmlCreated(xElement);
+            return xElement.ToString();
         }
 
         /// <summary>

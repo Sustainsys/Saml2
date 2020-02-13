@@ -478,5 +478,19 @@ namespace Sustainsys.Saml2.Tests.Saml2P
 
             subject.Attribute("ProtocolBinding").Value.Should().Be(expectedProtocolBinding);
         }
+
+        [TestMethod]
+        public void Saml2AuthenticationRequest_ToXml_PreservesCustomChanges()
+        {
+            var subject = new Saml2AuthenticationRequest();
+            subject.XmlCreated += (e) =>
+            {
+                e.Add(new XAttribute("CustomAttribute", "CustomValue"));
+            };
+
+            var xml = subject.ToXml();
+
+            xml.Should().Contain("CustomAttribute=\"CustomValue\"");
+        }
     }
 }

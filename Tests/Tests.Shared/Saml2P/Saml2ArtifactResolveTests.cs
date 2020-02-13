@@ -43,5 +43,19 @@ namespace Sustainsys.Saml2.Tests.Saml2P
 
 			actual.Should().BeEquivalentTo(expected);
         }
+
+        [TestMethod]
+        public void Saml2ArtifactResolve_ToXml_ToXml_PreservesCustomChanges()
+        {
+            var subject = new Saml2ArtifactResolve();
+            subject.XmlCreated += (e) =>
+            {
+                e.Add(new XAttribute("CustomAttribute", "CustomValue"));
+            };
+
+            var xml = subject.ToXml();
+
+            xml.Should().Contain("CustomAttribute=\"CustomValue\"");
+        }
     }
 }
