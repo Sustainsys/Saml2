@@ -177,6 +177,11 @@ namespace Sustainsys.Saml2.Saml2P
         public abstract string ToXml();
 
         /// <summary>
+        /// Event that fires just before xml is returned.
+        /// </summary>
+        public Action<XElement> XmlCreated = delegate { };
+
+        /// <summary>
         /// RelayState attached to the message.
         /// </summary>
         public string RelayState { get; protected set; }

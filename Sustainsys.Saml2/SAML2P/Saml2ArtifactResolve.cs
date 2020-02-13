@@ -37,11 +37,16 @@ namespace Sustainsys.Saml2.Saml2P
         /// <returns>string containing the Xml data.</returns>
         public override string ToXml()
         {
-            return new XElement(
+            var xElement = new XElement(
                 Saml2Namespaces.Saml2P + "ArtifactResolve",
                 base.ToXNodes(),
-                new XElement(Saml2Namespaces.Saml2P + "Artifact", Artifact))
-                .ToString();
+                new XElement(Saml2Namespaces.Saml2P + "Artifact", Artifact));
+
+            XmlCreated(xElement);
+
+            return xElement.ToString();
         }
+
+        private Action<XElement> Saml2ArtifactResolve_XmlCreated;
     }
 }
