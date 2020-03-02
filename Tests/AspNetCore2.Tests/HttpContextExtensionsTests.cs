@@ -103,5 +103,14 @@ namespace Sustainsys.Saml2.AspNetCore2.Tests
 
             actual.User.Should().BeSameAs(context.User);
         }
+
+        [TestMethod]
+        public void HttpContextExtensions_ToHttpRequestData_HandlesNonFormPost()
+        {
+            var context = TestHelpers.CreateHttpPostWithNonFormContentType();
+
+            var actual = context.ToHttpRequestData(null);
+            actual.Form.Count.Should().Be(0, "Form should only be read if ContentType is a form content type.");
+        }
     }
 }

@@ -25,7 +25,7 @@ namespace Sustainsys.Saml2.AspNetCore2
             var pathBase = httpContext.Request.PathBase.Value;
             pathBase = string.IsNullOrEmpty(pathBase) ? "/" : pathBase;
             IEnumerable<KeyValuePair<string, IEnumerable<string>>> formData = null;
-            if (httpContext.Request.Method == "POST")
+            if (httpContext.Request.Method == "POST" && httpContext.Request.HasFormContentType)
             {
                 formData = request.Form.Select(
                     f => new KeyValuePair<string, IEnumerable<string>>(f.Key, f.Value));

@@ -56,6 +56,7 @@ namespace Sustainsys.Saml2.AspNetCore2.Tests
             context.Request.Form.Returns(new FormValues());
             context.Request.Method = "POST";
             context.Request.ContentType = "application/x-www-form-urlencoded";
+            context.Request.HasFormContentType.Returns(true);
             context.Request.Host = new HostString("sp.example.com");
             context.Request.Scheme = "https";
             context.Request.Path = "/somePath";
@@ -63,6 +64,15 @@ namespace Sustainsys.Saml2.AspNetCore2.Tests
             context.Request.QueryString = new QueryString("?param=value");
 
             context.Response.Body.Returns(new MemoryStream());
+
+            return context;
+        }
+
+        public static HttpContext CreateHttpPostWithNonFormContentType()
+        {
+            var context = CreateHttpContext();
+            context.Request.ContentType = "application/json";
+            context.Request.HasFormContentType.Returns(false);
 
             return context;
         }
