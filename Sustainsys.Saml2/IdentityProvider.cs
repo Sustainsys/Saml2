@@ -1,18 +1,20 @@
-﻿using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using Sustainsys.Saml2.Configuration;
+using System;
 using System.Configuration;
-using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Linq;
-using System.Net;
-using System.Security.Claims;
-using System.Threading.Tasks;
-using Sustainsys.Saml2.Configuration;
+using System.Security.Cryptography;
+using Sustainsys.Saml2.Internal;
 using Sustainsys.Saml2.Metadata;
 using Sustainsys.Saml2.Saml2P;
-using Sustainsys.Saml2.Tokens;
 using Sustainsys.Saml2.WebSso;
+using System.Threading.Tasks;
+using System.Net;
+using System.Collections.Concurrent;
+using System.Security.Claims;
+using System.Diagnostics.CodeAnalysis;
+using Sustainsys.Saml2.Tokens;
 
 namespace Sustainsys.Saml2
 {
@@ -287,11 +289,11 @@ namespace Sustainsys.Saml2
         /// </summary>
         /// <param name="saml2Urls">Urls for Saml2, used to populate fields
         /// in the created AuthnRequest</param>
-        /// <param name="request">The incoming http request.</param>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "AuthenticateRequestSigningBehavior")]
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "ServiceCertificates")]
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "AuthenticateRequests")]
-        public Saml2AuthenticationRequest CreateAuthenticateRequest(Saml2Urls saml2Urls)
+        public Saml2AuthenticationRequest CreateAuthenticateRequest(
+            Saml2Urls saml2Urls)
         {
             if (saml2Urls == null)
             {
@@ -439,11 +441,11 @@ namespace Sustainsys.Saml2
 
             foreach (var kv in idpDescriptor.ArtifactResolutionServices)
             {
-                var ars = kv.Value;
+				var ars = kv.Value;
                 artifactResolutionServiceUrls[ars.Index] = ars.Location;
             }
 
-            var arsKeys = idpDescriptor.ArtifactResolutionServices.ToLookup(x => x.Value.Index);
+			var arsKeys = idpDescriptor.ArtifactResolutionServices.ToLookup(x => x.Value.Index);
             foreach (var ars in artifactResolutionServiceUrls.Keys
                 .Where(k => !arsKeys.Contains(k)))
             {
@@ -453,7 +455,7 @@ namespace Sustainsys.Saml2
             var keys = idpDescriptor.Keys.Where(k => k.Use == KeyType.Unspecified || k.Use == KeyType.Signing);
 
             signingKeys.SetLoadedItems(keys.Select(k => k.KeyInfo
-                .MakeSecurityKeyIdentifier().First(c => c.CanCreateKey)).ToList());
+				.MakeSecurityKeyIdentifier().First(c => c.CanCreateKey)).ToList());
         }
 
         private static T GetPreferredEndpoint<T>(ICollection<T> endpoints) where T : Endpoint
@@ -504,7 +506,7 @@ namespace Sustainsys.Saml2
         private static void DoLoadMetadataIfTargetAlive(WeakReference<IdentityProvider> target)
         {
             IdentityProvider idp;
-            if (target.TryGetTarget(out idp))
+            if(target.TryGetTarget(out idp))
             {
                 idp.DoLoadMetadata();
             }
