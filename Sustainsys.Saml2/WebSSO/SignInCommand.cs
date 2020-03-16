@@ -1,9 +1,9 @@
-﻿using Sustainsys.Saml2.Configuration;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Net;
+using Sustainsys.Saml2.Configuration;
 using Sustainsys.Saml2.Internal;
 using Sustainsys.Saml2.Metadata;
 
@@ -144,12 +144,24 @@ namespace Sustainsys.Saml2.WebSso
                 : new Uri(returnPath, UriKind.RelativeOrAbsolute);
 
             options.SPOptions.Logger.WriteInformation("Initiating login to " + idp.EntityId.Id);
-            return InitiateLoginToIdp(options, relayData, urls, idp, returnUrl);
+            return InitiateLoginToIdp(options, relayData, urls, idp, returnUrl, request);
         }
 
-        private static CommandResult InitiateLoginToIdp(IOptions options, IDictionary<string, string> relayData, Saml2Urls urls, IdentityProvider idp, Uri returnUrl)
+        private static CommandResult InitiateLoginToIdp(IOptions options, IDictionary<string, string> relayData, Saml2Urls urls, IdentityProvider idp, Uri returnUrl, HttpRequestData request)
         {
             var authnRequest = idp.CreateAuthenticateRequest(urls);
+
+            var forceAuthnString = request.QueryString["ForceAuthn"].SingleOrDefault();
+            if (!string.IsNullOrWhiteSpace(forceAuthnString))
+            {
+                authnRequest.ForceAuthentication = bool.Parse(forceAuthnString);
+            }
+
+            var isPassiveString = request.QueryString["IsPassive"].SingleOrDefault();
+            if (!string.IsNullOrWhiteSpace(isPassiveString))
+            {
+                authnRequest.IsPassive = bool.Parse(isPassiveString);
+            }
 
             options.Notifications.AuthenticationRequestCreated(authnRequest, idp, relayData);
 

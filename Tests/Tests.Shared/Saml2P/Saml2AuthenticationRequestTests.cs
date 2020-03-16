@@ -83,6 +83,18 @@ namespace Sustainsys.Saml2.Tests.Saml2P
         }
 
         [TestMethod]
+        public void Saml2AuthenticationRequest_IsPassive()
+        {
+            var subject = new Saml2AuthenticationRequest()
+            {
+                IsPassive = true
+            }.ToXElement();
+
+            subject.Should().NotBeNull().And.Subject.Attribute("IsPassive")
+                .Should().NotBeNull().And.Subject.Value.Should().Be("true");
+        }
+
+        [TestMethod]
         public void Saml2AuthenticationRequest_Extensions()
         {
             var request = new Saml2AuthenticationRequest();
@@ -106,21 +118,49 @@ namespace Sustainsys.Saml2.Tests.Saml2P
   Version=""2.0""
   Destination=""http://destination.example.com""
   AssertionConsumerServiceURL=""https://sp.example.com/SAML2/Acs""
-  IssueInstant=""2004-12-05T09:21:59Z""
-  ForceAuthn=""true"">
+  IssueInstant=""2004-12-05T09:21:59Z"">
   <saml:Issuer>https://sp.example.com/SAML2</saml:Issuer>
 />
 </samlp:AuthnRequest>
 ";
 
             var relayState = "My relay state";
-            var forceAuthn = true;
             var subject = Saml2AuthenticationRequest.Read(xmlData, relayState);
 
             subject.Id.Value.Should().Be("Saml2AuthenticationRequest_AssertionConsumerServiceUrl");
             subject.AssertionConsumerServiceUrl.Should().Be(new Uri("https://sp.example.com/SAML2/Acs"));
             subject.RelayState.Should().Be(relayState);
-            subject.ForceAuthentication.Should().Be(forceAuthn);
+            subject.ForceAuthentication.Should().BeFalse();
+            subject.IsPassive.Should().BeFalse();
+        }
+
+        [TestMethod]
+        public void Saml2AuthenticationRequest_Read_FlagsSet()
+        {
+            var xmlData = @"<?xml version=""1.0"" encoding=""UTF-8""?>
+<samlp:AuthnRequest
+  xmlns:samlp=""urn:oasis:names:tc:SAML:2.0:protocol""
+  xmlns:saml=""urn:oasis:names:tc:SAML:2.0:assertion""
+  ID=""Saml2AuthenticationRequest_AssertionConsumerServiceUrl""
+  Version=""2.0""
+  Destination=""http://destination.example.com""
+  AssertionConsumerServiceURL=""https://sp.example.com/SAML2/Acs""
+  IssueInstant=""2004-12-05T09:21:59Z""
+  ForceAuthn=""true""
+  IsPassive=""true"">
+  <saml:Issuer>https://sp.example.com/SAML2</saml:Issuer>
+/>
+</samlp:AuthnRequest>
+";
+
+            var relayState = "My relay state";
+            var subject = Saml2AuthenticationRequest.Read(xmlData, relayState);
+
+            subject.Id.Value.Should().Be("Saml2AuthenticationRequest_AssertionConsumerServiceUrl");
+            subject.AssertionConsumerServiceUrl.Should().Be(new Uri("https://sp.example.com/SAML2/Acs"));
+            subject.RelayState.Should().Be(relayState);
+            subject.ForceAuthentication.Should().BeTrue();
+            subject.IsPassive.Should().BeTrue();
         }
 
         [TestMethod]

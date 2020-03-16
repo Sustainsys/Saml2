@@ -449,5 +449,53 @@ namespace Sustainsys.Saml2.Tests.WebSso
             actual.SetCookieName.Should().StartWith(StoredRequestState.CookieNameBase);
             actual.SetCookieSecureFlag.Should().BeTrue();
         }
+
+        [TestMethod]
+        public void SignInCommand_Run_SetIsPassiveFromQueryString()
+        {
+            var options = StubFactory.CreateOptions();
+            options.SPOptions.DiscoveryServiceUrl = null;
+
+            bool? isPassiveValue = null;
+            bool? forceAuthnValue = null;
+
+            options.Notifications.AuthenticationRequestCreated = (authnr, idp, relay) => 
+            {
+                isPassiveValue = authnr.IsPassive;
+                forceAuthnValue = authnr.ForceAuthentication;
+            };
+
+            var request = new HttpRequestData("GET",
+                new Uri("http://sp.example.com/Saml2/SignIn?IsPassive=true"));
+
+            SignInCommand.Run(null, null, request, options, null);
+
+            isPassiveValue.Should().BeTrue();
+            forceAuthnValue.Should().BeFalse();
+        }
+
+        [TestMethod]
+        public void SignInCommand_Run_SetForceAuthnFromQueryString()
+        {
+            var options = StubFactory.CreateOptions();
+            options.SPOptions.DiscoveryServiceUrl = null;
+
+            bool? isPassiveValue = null;
+            bool? forceAuthnValue = null;
+
+            options.Notifications.AuthenticationRequestCreated = (authnr, idp, relay) =>
+            {
+                isPassiveValue = authnr.IsPassive;
+                forceAuthnValue = authnr.ForceAuthentication;
+            };
+
+            var request = new HttpRequestData("GET",
+                new Uri("http://sp.example.com/Saml2/SignIn?ForceAuthn=true"));
+
+            SignInCommand.Run(null, null, request, options, null);
+
+            isPassiveValue.Should().BeFalse();
+            forceAuthnValue.Should().BeTrue();
+        }
     }
 }
