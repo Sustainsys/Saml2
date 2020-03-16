@@ -24,7 +24,6 @@ using SigningCredentials = Microsoft.IdentityModel.Tokens.SigningCredentials;
 using X509SecurityKey = Microsoft.IdentityModel.Tokens.X509SecurityKey;
 using System.Collections.Generic;
 using Microsoft.IdentityModel.Logging;
-using Sustainsys.Saml2.WebSso;
 
 namespace Sustainsys.Saml2.Tests.Saml2P
 {
@@ -1629,6 +1628,7 @@ namespace Sustainsys.Saml2.Tests.Saml2P
         public void Saml2Response_GetClaims_MissingInResponseTo_IfAllowed()
         {
             var idp = Options.FromConfiguration.IdentityProviders.Default;
+
             var request = idp.CreateAuthenticateRequest(StubFactory.CreateSaml2Urls());
 
             var responseXML =
