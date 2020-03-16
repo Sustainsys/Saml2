@@ -98,7 +98,6 @@ the "Identity Provider Issuer" value.
             saml2Options.IdentityProviders.Add(new IdentityProvider(
                 new EntityId("<OktaIssuerUri>"), saml2Options.SPOptions)  // from (F) above
                 {
-                    LoadMetadata = true,
                     MetadataLocation = "https://<OktaInstance>/app/<OktaAppId>/sso/saml/metadata" // see Metadata note above
                 });
             
