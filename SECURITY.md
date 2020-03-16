@@ -12,4 +12,4 @@ The 2.x branch is the currently supported version where new functionality is add
 
 ## Reporting a Vulnerability
 
-Mail any security issues to support@sustainsys.com. Never open an issue in the repo unless instructed so by mail. Do not submit an open pull request.
+Mail any security issues to security@sustainsys.com. Never open an issue in the repo unless instructed so by mail. Do not submit an open pull request.
