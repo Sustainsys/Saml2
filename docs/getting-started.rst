@@ -46,12 +46,10 @@ information on how to set up and use the middleware.
 
 ASP.NET Core 2 Handler
 ----------------------
-The ASP.NET Core 2 Handler is compatbile with the ASP.NET Core 2.0 
+The ASP.NET Core 2 Handler is compatbile with the ASP.NET Core 2.X and 3.X
 authentication model.
 
 Nuget Package to use: `Sustainsys.Saml2.AspNetCore2 <https://www.nuget.org/packages/Sustainsys.Saml2.AspNetCore2/>`_
-
-HOW TO CONFIGURE ASP.NET CORE 2 -- owin middleware doc?  somewhere else?
 
 IdentityServer[3/4] Integration
 -------------------------------
