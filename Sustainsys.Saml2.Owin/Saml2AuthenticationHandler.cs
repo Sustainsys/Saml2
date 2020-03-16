@@ -171,7 +171,8 @@ namespace Sustainsys.Saml2.Owin
                     }
                     else
                     {
-                        redirectUrl = Context.Request.Path.ToUriComponent();
+                        // ApplicationUrl is base path, after consideration taken to PublicOrigin.
+                        redirectUrl = urls.ApplicationUrl.AbsolutePath + Context.Request.Path.ToString().TrimStart('/');
                     }
                 }
 

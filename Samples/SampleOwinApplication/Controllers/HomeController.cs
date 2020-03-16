@@ -11,6 +11,8 @@ namespace SampleOwinApplication.Controllers
     {
         public ActionResult Index()
         {
+            var ctx = HttpContext.GetOwinContext();
+
             return View();
         }
         

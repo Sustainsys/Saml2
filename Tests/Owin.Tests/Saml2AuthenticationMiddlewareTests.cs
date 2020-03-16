@@ -275,7 +275,7 @@ namespace Sustainsys.Saml2.Owin.Tests
             context.Response.Headers["Location"].Should().StartWith("https://idp.example.com/logout?SAMLRequest");
             var returnUrl = ExtractRequestState(options.DataProtector, context).ReturnUrl;
 
-            returnUrl.Should().Be("/LoggedOut");
+            returnUrl.Should().Be("/ExternalPath/LoggedOut");
         }
 
         [TestMethod]
