@@ -51,7 +51,10 @@ namespace Sustainsys.Saml2.Configuration
         /// <summary>
         /// Notification called to decide if a SameSite=None attribute should
         /// be set for a cookie. The default implementation is based on the pseudo
-        /// code supplied by Google in https://www.chromium.org/updates/same-site/incompatible-clients
+        /// code in https://devblogs.microsoft.com/aspnet/upcoming-samesite-cookie-changes-in-asp-net-and-asp-net-core/
+        /// More covering code can be found at 
+        /// https://www.chromium.org/updates/same-site/incompatible-clients but that cannot
+        /// be shipped with the library due to the license.
         /// </summary>
         public Func<string, bool> EmitSameSiteNone { get; set; }
             = userAgent => SameSiteHelper.EmitSameSiteNone(userAgent);
