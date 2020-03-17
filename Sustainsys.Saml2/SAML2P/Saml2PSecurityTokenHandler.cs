@@ -91,6 +91,11 @@ namespace Sustainsys.Saml2.Saml2P
 			validatedToken = samlToken;
 			var identity = CreateClaimsIdentity(samlToken, issuer, validationParameters);
 
+			if(validationParameters.SaveSigninToken)
+			{
+				identity.BootstrapContext = samlToken;
+			}
+
 			return new ClaimsPrincipal(identity);
 		}
 	}

@@ -1386,8 +1386,6 @@ namespace Sustainsys.Saml2.Tests.Saml2P
         [TestMethod]
         public void Saml2Response_GetClaims_SavesBootstrapContext()
         {
-            Assert.Inconclusive("Deliberately ignored test for now");
-            
             var assertion =
             @"<saml2:Assertion xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
                 Version=""2.0"" ID=""" + MethodBase.GetCurrentMethod().Name + @"_Assertion""
@@ -1414,15 +1412,19 @@ namespace Sustainsys.Saml2.Tests.Saml2P
 
             var options = StubFactory.CreateOptions();
 
-            //options.SPOptions.Saml2PSecurityTokenHandler.Configuration.SaveBootstrapContext = true;
+            options.Notifications.Unsafe.TokenValidationParametersCreated = (tvp, idp, xml) =>
+            {
+                tvp.SaveSigninToken = true;
+            };
 
             var expected = options.SPOptions.Saml2PSecurityTokenHandler.ReadToken(assertion);
 
             var r = Saml2Response.Read(SignedXmlHelper.SignXml(response));
 
-            var subject = r.GetClaims(options).Single().BootstrapContext;
+            var claims = r.GetClaims(options).Single();
 
-            subject.As<BootstrapContext>().SecurityToken.Should().BeEquivalentTo(expected);
+            // Not same object as we're reading it twice.
+            claims.BootstrapContext.Should().BeEquivalentTo(expected);
         }
 
         [TestMethod]
