@@ -75,7 +75,8 @@ namespace Sustainsys.Saml2.Tests.WebSso
 
             result.Should().BeEquivalentTo(expected);
             StubServer.LastArtifactResolutionSoapActionHeader.Should().Be(
-                "http://www.oasis-open.org/committees/security");
+                "\"http://www.oasis-open.org/committees/security\"");
+            StubServer.LastArtifactResolutionContentType.Should().Be("text/xml; charset=\"utf-8\"");
             StubServer.LastArtifactResolutionWasSigned.Should().BeFalse();
         }
 
@@ -148,8 +149,6 @@ namespace Sustainsys.Saml2.Tests.WebSso
             var expected = new UnbindResult(xmlDocument.DocumentElement, relayState, TrustLevel.None);
 
             result.Should().BeEquivalentTo(expected);
-            StubServer.LastArtifactResolutionSoapActionHeader.Should().Be(
-                "http://www.oasis-open.org/committees/security");
             StubServer.LastArtifactResolutionWasSigned.Should().BeFalse();
         }
 
@@ -198,8 +197,6 @@ namespace Sustainsys.Saml2.Tests.WebSso
             var expected = new UnbindResult(xmlDocument.DocumentElement, null, TrustLevel.None);
 
             result.Should().BeEquivalentTo(expected);
-            StubServer.LastArtifactResolutionSoapActionHeader.Should().Be(
-                "http://www.oasis-open.org/committees/security");
         }
 
         [TestMethod]
@@ -232,8 +229,6 @@ namespace Sustainsys.Saml2.Tests.WebSso
             var expected = new UnbindResult(xmlDocument.DocumentElement, relayState, TrustLevel.None);
 
             result.Should().BeEquivalentTo(expected);
-            StubServer.LastArtifactResolutionSoapActionHeader.Should().Be(
-                "http://www.oasis-open.org/committees/security");
         }
 
         [TestMethod]
@@ -264,8 +259,6 @@ namespace Sustainsys.Saml2.Tests.WebSso
             var expected = new UnbindResult(xmlDocument.DocumentElement, null, TrustLevel.None);
 
             result.Should().BeEquivalentTo(expected);
-            StubServer.LastArtifactResolutionSoapActionHeader.Should().Be(
-                "http://www.oasis-open.org/committees/security");
         }
 
         [TestMethod]

@@ -408,6 +408,7 @@ entityID=""http://localhost:13428/idpMetadataVeryShortCacheDuration"" cacheDurat
 		private static async Task ArtifactResolutionService(HttpContext ctx)
         {
             LastArtifactResolutionSoapActionHeader = ctx.Request.Headers["SOAPAction"];
+            LastArtifactResolutionContentType = ctx.Request.Headers["Content-Type"];
 
             using (var reader = new StreamReader(ctx.Request.Body))
             {
@@ -451,6 +452,8 @@ entityID=""http://localhost:13428/idpMetadataVeryShortCacheDuration"" cacheDurat
         }
 
         public static string LastArtifactResolutionSoapActionHeader { get; set; }
+
+        public static string LastArtifactResolutionContentType { get; set; }
 
         public static bool LastArtifactResolutionWasSigned { get; set; }
 
