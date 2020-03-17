@@ -5,7 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Sustainsys.Saml2.Tests.WebSSO
+namespace Sustainsys.Saml2.Tests.WebSso
 {
     [TestClass]
     public class HttpRequestDataTests

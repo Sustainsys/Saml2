@@ -4,7 +4,6 @@ using FluentAssertions;
 using NSubstitute;
 using System.Web;
 using Sustainsys.Saml2.WebSso;
-using Sustainsys.Saml2.Tests.WebSSO;
 using System.IO;
 using System.IO.Compression;
 using System.Net;

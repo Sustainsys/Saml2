@@ -13,7 +13,6 @@ using System.Reflection;
 using System.Configuration;
 using Sustainsys.Saml2.Exceptions;
 using Sustainsys.Saml2.Metadata;
-using Sustainsys.Saml2.Tests.WebSSO;
 using Sustainsys.Saml2.TestHelpers;
 using Microsoft.IdentityModel.Tokens.Saml2;
 using System.Runtime.CompilerServices;

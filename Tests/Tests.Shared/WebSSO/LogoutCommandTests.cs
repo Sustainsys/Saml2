@@ -20,7 +20,7 @@ using System.Threading;
 using System.Web;
 using Microsoft.IdentityModel.Tokens.Saml2;
 
-namespace Sustainsys.Saml2.Tests.WebSSO
+namespace Sustainsys.Saml2.Tests.WebSso
 {
     [TestClass]
     public class LogoutCommandTests

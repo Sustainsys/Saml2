@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Sustainsys.Saml2.Tests.WebSSO
+namespace Sustainsys.Saml2.Tests.WebSso
 {
     class StubSaml2Binding : Saml2Binding
     {

@@ -14,7 +14,7 @@ using System.Reflection;
 using Sustainsys.Saml2.Tests.Helpers;
 using Sustainsys.Saml2.TestHelpers;
 
-namespace Sustainsys.Saml2.Tests.WebSSO
+namespace Sustainsys.Saml2.Tests.WebSso
 {
     [TestClass]
     public class Saml2ArtifactBindingTests

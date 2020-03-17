@@ -5,7 +5,6 @@ using System.Text;
 using System.Collections.Generic;
 using Sustainsys.Saml2.Tokens;
 using Sustainsys.Saml2.WebSso;
-using Sustainsys.Saml2.Tests.WebSSO;
 using System.Security.Cryptography.Xml;
 using NSubstitute;
 using Sustainsys.Saml2.TestHelpers;

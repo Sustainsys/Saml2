@@ -9,7 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Security.Cryptography.Xml;
 
-namespace Sustainsys.Saml2.Tests.WebSSO
+namespace Sustainsys.Saml2.Tests.WebSso
 {
     class Saml2MessageImplementation : ISaml2Message
     {

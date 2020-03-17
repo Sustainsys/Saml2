@@ -6,7 +6,6 @@ using System.Collections.Specialized;
 using FluentAssertions;
 using System.Collections.Generic;
 using Sustainsys.Saml2.WebSso;
-using Sustainsys.Saml2.Tests.WebSSO;
 
 namespace Sustainsys.Saml2.Tests.WebSso
 {
