@@ -1,4 +1,5 @@
 ﻿using Sustainsys.Saml2.Configuration;
+using Sustainsys.Saml2.Exceptions;
 using Sustainsys.Saml2.Internal;
 using System;
 using System.IdentityModel.Metadata;
@@ -10,6 +11,7 @@ using System.Security.Claims;
 
 namespace Sustainsys.Saml2.Saml2P
 {
+    using System.Collections.ObjectModel;
     using System.Linq;
 
     /// <summary>
@@ -161,6 +163,25 @@ namespace Sustainsys.Saml2.Saml2P
             }
 
             return audienceRestriction;
+		}
+
+        private static readonly Uri bearerUri = new Uri("urn:oasis:names:tc:SAML:2.0:cm:bearer");
+
+        /// <summary>
+        /// Ensure subject confirmation is bearer.
+        /// </summary>
+        /// <param name="samlToken"></param>
+        public static void ValidateSubjectConfirmation(Saml2SecurityToken samlToken)
+        {
+            if(samlToken == null)
+            {
+                throw new ArgumentNullException(nameof(samlToken));
+            }
+            
+            if (!samlToken.Assertion.Subject.SubjectConfirmations.Any(sc => sc.Method == bearerUri))
+            {
+                throw new Saml2ResponseFailedValidationException("Only assertions with subject confirmation method \"bearer\" are supported.");
+            }
         }
     }
 }

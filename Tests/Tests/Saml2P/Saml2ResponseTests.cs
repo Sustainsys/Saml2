@@ -2136,6 +2136,106 @@ namespace Sustainsys.Saml2.Tests.Saml2P
         }
 
         [TestMethod]
+        public void Saml2Response_GetClaims_RejectsHolderOfKey()
+        {
+            var options = StubFactory.CreateOptions();
+
+            var responseXml =
+            @"<?xml version=""1.0"" encoding=""UTF-8""?>
+            <saml2p:Response xmlns:saml2p=""urn:oasis:names:tc:SAML:2.0:protocol""
+            xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
+            ID = """ + MethodBase.GetCurrentMethod().Name + @""" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z"">
+                <saml2:Issuer>https://idp.example.com</saml2:Issuer>
+                <saml2p:Status>
+                    <saml2p:StatusCode Value=""urn:oasis:names:tc:SAML:2.0:status:Success"" />
+                </saml2p:Status>
+                <saml2:Assertion xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
+                Version=""2.0"" ID=""" + MethodBase.GetCurrentMethod().Name + @"_Assertion1""
+                IssueInstant=""2013-09-25T00:00:00Z"">
+                    <saml2:Issuer>https://idp.example.com</saml2:Issuer>
+                    <saml2:Subject>
+                        <saml2:NameID>SomeUser</saml2:NameID>
+                        <saml2:SubjectConfirmation Method=""urn:oasis:names:tc:SAML:2.0:cm:holder-of-key"">
+                            <saml2:SubjectConfirmationData
+                            xmlns:xsi=""http://www.w3.org/2001/XMLSchema-instance""
+                            xsi:type=""saml2:KeyInfoConfirmationDataType"">
+                                <ds:KeyInfo xmlns:ds=""http://www.w3.org/2000/09/xmldsig#"">
+                                    <ds:X509Data>
+                                        <ds:X509Certificate>
+                                            MIIDuDCCAqACCQCJZK8wF0xVXjANBgkqhkiG9w0BAQQFADCBnTELMAkGA1UEBhMCQlIxEzARBgNV
+                                            BAgTClNvbWUtU3RhdGUxEjAQBgNVBAcTCVNvbWUtQ2l0eTESMBAGA1UEChMJR1NvQyAyMDA4MRIw
+                                            EAYDVQQLEwlHU29DIDIwMDgxFzAVBgNVBAMTDkpvYW5hIFRyaW5kYWRlMSQwIgYJKoZIhvcNAQkB
+                                            FhVzb21lLWFkZHJlc3NAaG9zdC5vcmcwHhcNMDgwNjE2MTcyMTQzWhcNMDkwNjE2MTcyMTQzWjCB
+                                            nTELMAkGA1UEBhMCQlIxEzARBgNVBAgTClNvbWUtU3RhdGUxEjAQBgNVBAcTCVNvbWUtQ2l0eTES
+                                            MBAGA1UEChMJR1NvQyAyMDA4MRIwEAYDVQQLEwlHU29DIDIwMDgxFzAVBgNVBAMTDkpvYW5hIFRy
+                                            aW5kYWRlMSQwIgYJKoZIhvcNAQkBFhVzb21lLWFkZHJlc3NAaG9zdC5vcmcwggEiMA0GCSqGSIb3
+                                            DQEBAQUAA4IBDwAwggEKAoIBAQDIDVKdO2CCVYA0TspOPmcSNnivjQq7jCacrgRPawKi3/pTuvnW
+                                            3c2XCpyT2s6Sks3Eg5T4HIXta5E+lOpN8VbTunVdSrac54r2uK8x+8AqX7M0wQw+98iGw9E2an5q
+                                            xRZfqqE1T5jWL/a/G1/e2TGlmp521W3k1nNtf8rYH39JpwBSZMeW7uHOSZOkT/pVvqPTgG7vUQT6
+                                            BiRh7PfwsLrLOMubbeQ6Z2m3Vnsv20E1FbPzwswzh4X1gXj9bnyI2UsuoisW9Y4p4byjL3GJ/hxp
+                                            mjRjXs+aIpzi0V3MH+jVJ98eomhlUFLaE83xycC8lns+FcCSQZ8RsbnaLZrtC8r7AgMBAAEwDQYJ
+                                            KoZIhvcNAQEEBQADggEBACwnWSEpwq5aE7QBdDNNXyok34RIonYi9690yw7i+JU7R/QdE42GERJS
+                                            DVKBN959ELLJf5d0vybGv08QWbZVQ7eBGn9xaZ7MhSnblYNDXs9vuv1V2Dy32q1J5nCSzqpJDyln
+                                            lVFWe9UQMCJOO6ibUtWLhiDQ49kmMabgyYfX28qB6oRdVL+mDI/XTt+mkCgk4Rs78n4kbX6qnRlj
+                                            dE/YnibP1A7iMh8pQkv49J6sP9SeUmQ2zxKCt3tSRzzypWc8JjOZGuBYGQHl9Xm7WEs4CXS7iZJW
+                                            E32frMAtavMcTM/gnDtCc8tZAxl2PSLOF1954vapfMjBhg3VTI6QRW//wPE=
+                                        </ds:X509Certificate>
+                                        <ds:X509SubjectName>emailAddress=some-address@host.org,CN=Joana Trindade,OU=GSoC 2008,O=GSoC 2008,L=Some-City,ST=Some-State,C=BR</ds:X509SubjectName>
+                                        <ds:X509IssuerSerial>
+                                            <ds:X509IssuerName>emailAddress=some-address@host.org,CN=Joana Trindade,OU=GSoC 2008,O=GSoC 2008,L=Some-City,ST=Some-State,C=BR</ds:X509IssuerName>
+                                            <ds:X509SerialNumber>9900230501951362398</ds:X509SerialNumber>
+                                        </ds:X509IssuerSerial>
+                                    </ds:X509Data>
+                                </ds:KeyInfo>
+                            </saml2:SubjectConfirmationData>
+                        </saml2:SubjectConfirmation>
+                    </saml2:Subject>
+                    <saml2:Conditions NotOnOrAfter=""2100-01-01T00:00:00Z"" />
+                </saml2:Assertion>
+            </saml2p:Response>";
+
+            responseXml = SignedXmlHelper.SignXml(responseXml);
+
+            Saml2Response.Read(responseXml).Invoking(
+                r => r.GetClaims(options))
+                .ShouldThrow<Saml2Exception>()
+                .WithMessage("*subject confirmation*bearer*");
+        }
+
+        [TestMethod]
+        public void Saml2Response_GetClaims_RejectsMissingSubjectConfirmation()
+        {
+            var options = StubFactory.CreateOptions();
+
+            var responseXml =
+            @"<?xml version=""1.0"" encoding=""UTF-8""?>
+            <saml2p:Response xmlns:saml2p=""urn:oasis:names:tc:SAML:2.0:protocol""
+            xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
+            ID = """ + MethodBase.GetCurrentMethod().Name + @""" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z"">
+                <saml2:Issuer>https://idp.example.com</saml2:Issuer>
+                <saml2p:Status>
+                    <saml2p:StatusCode Value=""urn:oasis:names:tc:SAML:2.0:status:Success"" />
+                </saml2p:Status>
+                <saml2:Assertion xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
+                Version=""2.0"" ID=""" + MethodBase.GetCurrentMethod().Name + @"_Assertion1""
+                IssueInstant=""2013-09-25T00:00:00Z"">
+                    <saml2:Issuer>https://idp.example.com</saml2:Issuer>
+                    <saml2:Subject>
+                        <saml2:NameID>SomeUser</saml2:NameID>
+                    </saml2:Subject>
+                    <saml2:Conditions NotOnOrAfter=""2100-01-01T00:00:00Z"" />
+                </saml2:Assertion>
+            </saml2p:Response>";
+
+            responseXml = SignedXmlHelper.SignXml(responseXml);
+
+            Saml2Response.Read(responseXml).Invoking(
+                r => r.GetClaims(options))
+                .ShouldThrow<SecurityTokenException>()
+                .WithMessage("*SubjectConfirmation*");
+        }
+
+        [TestMethod]
         public void Saml2Response_SessionNotOnOrAfter_ExtractedFromMessage()
         {
             var response =

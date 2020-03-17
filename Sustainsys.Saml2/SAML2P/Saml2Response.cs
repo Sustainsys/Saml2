@@ -572,6 +572,8 @@ namespace Sustainsys.Saml2.Saml2P
 
                     handler.ValidateConditions(token.Assertion.Conditions, validateAudience);
 
+                    Saml2PSecurityTokenHandler.ValidateSubjectConfirmation(token);
+
                     options.SPOptions.Logger.WriteVerbose("Validated conditions for SAML2 Response " + Id);
 
                     sessionNotOnOrAfter = DateTimeHelper.EarliestTime(sessionNotOnOrAfter,
