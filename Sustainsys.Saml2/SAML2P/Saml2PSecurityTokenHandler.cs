@@ -1,6 +1,7 @@
 ﻿using Microsoft.IdentityModel.Tokens;
 using Microsoft.IdentityModel.Tokens.Saml2;
 using Sustainsys.Saml2.Configuration;
+using Sustainsys.Saml2.Exceptions;
 using Sustainsys.Saml2.Internal;
 using Sustainsys.Saml2.Tokens;
 using System;
@@ -97,6 +98,22 @@ namespace Sustainsys.Saml2.Saml2P
 			}
 
 			return new ClaimsPrincipal(identity);
+		}
+		private static readonly Uri bearerUri = new Uri("urn:oasis:names:tc:SAML:2.0:cm:bearer");
+
+		protected override void ValidateSubject(Saml2SecurityToken samlToken, TokenValidationParameters validationParameters)
+		{
+			base.ValidateSubject(samlToken, validationParameters);
+
+			if(!samlToken.Assertion.Subject.SubjectConfirmations.Any())
+			{
+				throw new Saml2ResponseFailedValidationException("No subject confirmation method found.");
+			}
+
+			if(!samlToken.Assertion.Subject.SubjectConfirmations.Any(sc => sc.Method == bearerUri))
+			{
+				throw new Saml2ResponseFailedValidationException("Only assertions with subject confirmation method \"bearer\" are supported.");
+			}
 		}
 	}
 }
