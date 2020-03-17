@@ -423,5 +423,19 @@ namespace Sustainsys.Saml2.Configuration
                 tokenReplayCache = value;
             }
         }
-}
+
+        /// <summary>
+        /// Template for token validation parameters. Some security critical validation
+        /// parameters are set for each use. The Unsafe.TokenValidationParametersCreated notification
+        /// is called after those are set if those need to be overriden.
+        /// </summary>
+        public TokenValidationParameters TokenValidationParametersTemplate { get; } =
+            new TokenValidationParameters
+            {
+                AuthenticationType = "Federation",
+                RequireAudience = false, // Audience restriction optional in SAML2 spec.
+                RequireSignedTokens = false,
+                ValidateIssuer = false
+            };
+    }
 }

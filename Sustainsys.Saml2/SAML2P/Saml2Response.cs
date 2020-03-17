@@ -592,7 +592,7 @@ namespace Sustainsys.Saml2.Saml2P
                     status, statusMessage, secondLevelStatus);
             }
 
-			TokenValidationParameters validationParameters = new TokenValidationParameters();
+            TokenValidationParameters validationParameters = options.SPOptions.TokenValidationParametersTemplate.Clone();
 			validationParameters.AuthenticationType = "Federation";
 			validationParameters.RequireSignedTokens = false;
 			validationParameters.ValidateIssuer = false;
