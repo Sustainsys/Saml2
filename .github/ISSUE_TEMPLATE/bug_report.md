@@ -13,7 +13,7 @@ If you have found a bug that you think might be security related, please *DO NOT
 ### Information needed
 1. What nuget packages are you using
 2. What is the expected behaviour
-3. What happens instead.
+3. What happens instead. In the case of an exception, this includes the exception typ, complete exception message (personal information may be redacted) and a stack trace.
 
 ### Additional info
 Please include
