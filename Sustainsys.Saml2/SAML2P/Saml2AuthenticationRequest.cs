@@ -162,13 +162,13 @@ namespace Sustainsys.Saml2.Saml2P
             var forceAuthnString = xml.Attributes["ForceAuthn"].GetValueIfNotNull();
             if (forceAuthnString != null)
             {
-                ForceAuthentication = bool.Parse(forceAuthnString);
+                ForceAuthentication = XmlConvert.ToBoolean(forceAuthnString);
             }
 
             var isPassiveString = xml.Attributes["IsPassive"].GetValueIfNotNull();
             if (isPassiveString != null)
             {
-                IsPassive = bool.Parse(isPassiveString);
+                IsPassive = XmlConvert.ToBoolean(isPassiveString);
             }
 
             var node = xml["NameIDPolicy", Saml2Namespaces.Saml2PName];
@@ -186,7 +186,7 @@ namespace Sustainsys.Saml2.Saml2P
                 var allowCreateStr = node.Attributes["AllowCreate"].GetValueIfNotNull();
                 if (allowCreateStr != null)
                 {
-                    allowCreate = bool.Parse(allowCreateStr);
+                    allowCreate = XmlConvert.ToBoolean(allowCreateStr);
                 }
 
                 NameIdPolicy = new Saml2NameIdPolicy(allowCreate, nameIdFormat);

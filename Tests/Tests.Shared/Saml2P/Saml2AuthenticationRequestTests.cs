@@ -147,7 +147,7 @@ namespace Sustainsys.Saml2.Tests.Saml2P
   AssertionConsumerServiceURL=""https://sp.example.com/SAML2/Acs""
   IssueInstant=""2004-12-05T09:21:59Z""
   ForceAuthn=""true""
-  IsPassive=""true"">
+  IsPassive=""1"">
   <saml:Issuer>https://sp.example.com/SAML2</saml:Issuer>
 />
 </samlp:AuthnRequest>
@@ -173,7 +173,8 @@ namespace Sustainsys.Saml2.Tests.Saml2P
   ID=""Saml2AuthenticationRequest_Read_NoACS""
   Version=""2.0""
   Destination=""http://destination.example.com""
-  IssueInstant=""2004-12-05T09:21:59Z"">
+  IssueInstant=""2004-12-05T09:21:59Z""
+  ForceAuthn=""false"">
   <saml:Issuer>https://sp.example.com/SAML2</saml:Issuer>
 />
 </samlp:AuthnRequest>
