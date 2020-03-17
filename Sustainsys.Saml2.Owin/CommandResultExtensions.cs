@@ -65,11 +65,22 @@ namespace Sustainsys.Saml2.Owin
             bool emitSameSiteNone)
         {
             var serializedCookieData = commandResult.GetSerializedRequestState();
+            //TODO: from config
+            var maxCookieCount = 3;
 
             if (serializedCookieData != null && !string.IsNullOrEmpty(commandResult.SetCookieName))
             {
                 var protectedData = HttpRequestData.ConvertBinaryData(
                         dataProtector.Protect(serializedCookieData));
+
+                var ourCookies = context.Request.Cookies
+                    .Where( c => c.Key.StartsWith( StoredRequestState.CookieNameBase, StringComparison.OrdinalIgnoreCase ) );
+                var excessCookies = ourCookies.OrderByDescending( c => c.Value ).Skip( maxCookieCount - 1 ).ToList();
+
+                foreach ( var cookie in excessCookies )
+                {
+                    context.Response.Cookies.Delete( cookie.Key, new CookieOptions { Secure = commandResult.SetCookieSecureFlag } );
+                }
 
                 context.Response.Cookies.Append(
                     commandResult.SetCookieName,

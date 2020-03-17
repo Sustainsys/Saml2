@@ -120,8 +120,11 @@ namespace Sustainsys.Saml2.WebSso
 
         internal static byte[] GetBinaryData(string cookieData)
         {
+            var cookieParts = cookieData.Split( separator );
+            // for backward compatibility of existing cookies during upgrades
+            var cookieToParse = cookieParts.Length > 1 ? cookieParts[ 1 ] : cookieParts[ 0 ];
             return Convert.FromBase64String(
-                cookieData
+                cookieToParse
                 .Replace('_', '/')
                 .Replace('-', '+')
                 .Replace('.', '='));
@@ -138,6 +141,8 @@ namespace Sustainsys.Saml2.WebSso
             QueryString = QueryStringHelper.ParseQueryString(url.Query);
         }
 
+        private const char separator = '~';
+
         /// <summary>
         /// Escape a Base 64 encoded cookie value, matching the unescaping
         /// that is done in the ctor.
@@ -151,10 +156,13 @@ namespace Sustainsys.Saml2.WebSso
                 throw new ArgumentNullException(nameof(data));
             }
 
-            return Convert.ToBase64String(data)
+            var converted = Convert.ToBase64String(data)
                 .Replace('/', '_')
                 .Replace('+', '-')
                 .Replace('=', '.');
+
+            var elapsed = Convert.ToInt64( ( DateTime.UtcNow - new DateTime( 1970, 1, 1 ) ).TotalSeconds );
+            return $"{elapsed}{separator}{converted}";
         }
 
         /// <summary>

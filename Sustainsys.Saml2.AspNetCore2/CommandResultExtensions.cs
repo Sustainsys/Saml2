@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Http;
 using System;
 using System.Text;
 using System.Threading.Tasks;
+using System.Linq;
 
 namespace Sustainsys.Saml2.AspNetCore2
 {
@@ -24,11 +25,22 @@ namespace Sustainsys.Saml2.AspNetCore2
             {
                 httpContext.Response.Headers["Location"] = commandResult.Location.OriginalString;
             }
+            //TODO: from config
+            var maxCookieCount = 3;
 
             if(!string.IsNullOrEmpty(commandResult.SetCookieName))
             {
                 var cookieData = HttpRequestData.ConvertBinaryData(
                     dataProtector.Protect(commandResult.GetSerializedRequestState()));
+
+                var ourCookies = httpContext.Request.Cookies
+                    .Where( c => c.Key.StartsWith( StoredRequestState.CookieNameBase, StringComparison.OrdinalIgnoreCase ) );
+                var excessCookies = ourCookies.OrderByDescending( c => c.Value ).Skip( maxCookieCount - 1 ).ToList();
+
+                foreach ( var cookie in excessCookies )
+                {
+                    httpContext.Response.Cookies.Delete( cookie.Key, new CookieOptions { Secure = commandResult.SetCookieSecureFlag } );
+                }
 
                 httpContext.Response.Cookies.Append(
                     commandResult.SetCookieName,
