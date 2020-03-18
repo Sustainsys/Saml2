@@ -1,4 +1,5 @@
 ﻿using Microsoft.IdentityModel.Tokens;
+using Sustainsys.Saml2.Internal;
 using Sustainsys.Saml2.Metadata;
 using Sustainsys.Saml2.Saml2P;
 using Sustainsys.Saml2.Tokens;
@@ -433,9 +434,8 @@ namespace Sustainsys.Saml2.Configuration
             new TokenValidationParameters
             {
                 AuthenticationType = "Federation",
-                RequireAudience = false, // Audience restriction optional in SAML2 spec.
                 RequireSignedTokens = false,
                 ValidateIssuer = false
-            };
+            }.SetRequireAudience(false); // RequireAudience must be set to false for versions 5.5.0+ that have it.
     }
 }

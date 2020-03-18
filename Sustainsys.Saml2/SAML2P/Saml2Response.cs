@@ -593,11 +593,7 @@ namespace Sustainsys.Saml2.Saml2P
             }
 
             TokenValidationParameters validationParameters = options.SPOptions.TokenValidationParametersTemplate.Clone();
-			validationParameters.AuthenticationType = "Federation";
-			validationParameters.RequireSignedTokens = false;
-			validationParameters.ValidateIssuer = false;
             validationParameters.ValidAudience = options.SPOptions.EntityId.Id;
-            validationParameters.RequireAudience = false; // Audience restriction optional in SAML2 spec.
             validationParameters.TokenReplayCache = options.SPOptions.TokenReplayCache;
             validationParameters.ValidateTokenReplay = true;
 
