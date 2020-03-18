@@ -139,8 +139,6 @@ namespace Sustainsys.Saml2.Tests.WebSso
                 null,
                 new StoredRequestState(issuer, null, null, null));
 
-            StubServer.LastArtifactResolutionSoapActionHeader = null;
-
             var result = Saml2Binding.Get(Saml2BindingType.Artifact).Unbind(r, StubFactory.CreateOptions());
 
             var xmlDocument = XmlHelpers.XmlDocumentFromString(

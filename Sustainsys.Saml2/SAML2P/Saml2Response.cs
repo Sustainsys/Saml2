@@ -597,6 +597,9 @@ namespace Sustainsys.Saml2.Saml2P
 			validationParameters.RequireSignedTokens = false;
 			validationParameters.ValidateIssuer = false;
             validationParameters.ValidAudience = options.SPOptions.EntityId.Id;
+            validationParameters.RequireAudience = false; // Audience restriction optional in SAML2 spec.
+            validationParameters.TokenReplayCache = options.SPOptions.TokenReplayCache;
+            validationParameters.ValidateTokenReplay = true;
 
             options.Notifications.Unsafe.TokenValidationParametersCreated(validationParameters, idp, XmlElement);
 

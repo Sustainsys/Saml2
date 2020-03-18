@@ -1918,8 +1918,6 @@ namespace Sustainsys.Saml2.Tests.Saml2P
         [TestMethod]
         public void Saml2Response_GetClaims_ThrowsOnReplayAssertionId()
         {
-            Assert.Inconclusive("Deliberately ignored test for now");
-
             var response =
             @"<?xml version=""1.0"" encoding=""UTF-8""?>
             <saml2p:Response xmlns:saml2p=""urn:oasis:names:tc:SAML:2.0:protocol""
@@ -1955,8 +1953,6 @@ namespace Sustainsys.Saml2.Tests.Saml2P
         [TestMethod]
         public void Saml2Response_GetClaims_ThrowsOnReplayAssertionIdSameConfig()
         {
-            Assert.Inconclusive("Ingored for now");
-
             var response =
             @"<?xml version=""1.0"" encoding=""UTF-8""?>
             <saml2p:Response xmlns:saml2p=""urn:oasis:names:tc:SAML:2.0:protocol""
