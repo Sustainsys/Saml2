@@ -3,6 +3,7 @@ using Sustainsys.Saml2.WebSso;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
 using System;
+using Microsoft.AspNetCore.Authentication.Cookies;
 
 namespace Sustainsys.Saml2.AspNetCore2
 {
@@ -20,6 +21,8 @@ namespace Sustainsys.Saml2.AspNetCore2
             {
                 ModulePath = "/Saml2"
             };
+            // uses the headers directly when no chunk size is set
+            CookieManager = new ChunkingCookieManager();
         }
 
         /// <summary>
@@ -40,6 +43,11 @@ namespace Sustainsys.Saml2.AspNetCore2
         /// the idp list and the notifications.
         /// </summary>
         public SPOptions SPOptions { get; set; }
+
+        /// <summary>
+        /// Cookie manager for reading/writing cookies
+        /// </summary>
+        public ICookieManager CookieManager { get; set; }
 
         /// <summary>
         /// Information about known identity providers.

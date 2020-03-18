@@ -104,7 +104,7 @@ namespace Sustainsys.Saml2.AspNetCore2
                 options,
                 properties.Items);
 
-            await result.Apply(context, dataProtector, null, null, emitSameSiteNone);
+            await result.Apply(context, dataProtector, options.CookieManager, null, null, emitSameSiteNone);
         }
 
         /// <InheritDoc />
@@ -126,7 +126,7 @@ namespace Sustainsys.Saml2.AspNetCore2
                     context.ToHttpRequestData(dataProtector.Unprotect), options);
 
                 await commandResult.Apply(
-                    context, dataProtector, options.SignInScheme, options.SignOutScheme, emitSameSiteNone);
+                    context, dataProtector, options.CookieManager, options.SignInScheme, options.SignOutScheme, emitSameSiteNone);
 
                 return true;
             }
@@ -153,7 +153,7 @@ namespace Sustainsys.Saml2.AspNetCore2
                 // In the Asp.Net Core2 model, it's the caller's responsibility to terminate the
                 // local session on an SP-initiated logout.
                 terminateLocalSession: false)
-                .Apply(context, dataProtector, null, null, emitSameSiteNone);
+                .Apply(context, dataProtector, options.CookieManager, null, null, emitSameSiteNone);
         }
     }
 }
