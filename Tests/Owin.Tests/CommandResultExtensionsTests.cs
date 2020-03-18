@@ -26,7 +26,7 @@ namespace Sustainsys.Saml2.Owin.Tests
         [TestMethod]
         public void CommandResultExtensions_Apply_NullCheck_OwinContext()
         {
-            Action a = () => new CommandResult().Apply(context:null, dataProtector:null, new CookieManager(), emitSameSiteNone:true);
+            Action a = () => new CommandResult().Apply(context:null, dataProtector:null, cookieManager: new CookieManager(), emitSameSiteNone:true);
 
             a.Should().Throw<ArgumentNullException>().And.ParamName.Should().Be("context");
         }
