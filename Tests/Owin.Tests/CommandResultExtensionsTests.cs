@@ -1,7 +1,9 @@
 ﻿using FluentAssertions;
 using Microsoft.IdentityModel.Tokens.Saml2;
+using Microsoft.Owin;
 using Microsoft.Owin.Infrastructure;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using NSubstitute;
 using Sustainsys.Saml2.Metadata;
 using Sustainsys.Saml2.WebSso;
 using System;
@@ -69,18 +71,19 @@ namespace Sustainsys.Saml2.Owin.Tests
 
             var context = OwinTestHelpers.CreateOwinContext();
 
+            var mockCookieManager = Substitute.For<ICookieManager>();
             var dataProtector = new StubDataProtector();
-            cr.Apply(context, dataProtector, new CookieManager(), false);
-
-            var setCookieHeader = context.Response.Headers["Set-Cookie"];
+            cr.Apply(context, dataProtector, mockCookieManager, false);
 
             var protectedData = HttpRequestData.ConvertBinaryData(
                 StubDataProtector.Protect(cr.GetSerializedRequestState()));
 
-            //TODO: write the tests against ICookieManager rather than OWIN headers?
-            var expected = $"CookieName={protectedData}; path=/; HttpOnly";
-
-            setCookieHeader.Should().Be(expected);
+            mockCookieManager.Received().AppendResponseCookie(
+                context,
+                "CookieName",
+                protectedData,
+                Arg.Is<CookieOptions>( c => c.HttpOnly && c.Path == "/" )
+            );
         }
 
         [TestMethod]
@@ -148,13 +151,14 @@ namespace Sustainsys.Saml2.Owin.Tests
 
             var context = OwinTestHelpers.CreateOwinContext();
             var dataProtector = new StubDataProtector();
-            cr.Apply(context, dataProtector, new CookieManager(), true);
+            var mockCookieManager = Substitute.For<ICookieManager>();
+            cr.Apply(context, dataProtector, mockCookieManager, true);
 
-            var setCookieHeader = context.Response.Headers["Set-Cookie"];
-
-            var expected = "CookieName=; path=/; expires=Thu, 01-Jan-1970 00:00:00 GMT";
-
-            setCookieHeader.Should().Be(expected);
+            mockCookieManager.Received().DeleteCookie(
+                context,
+                "CookieName",
+                Arg.Is<CookieOptions>(c => c.Path == "/" && !c.Expires.HasValue)
+            );
         }
 
         [TestMethod]
