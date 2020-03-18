@@ -21,8 +21,6 @@ namespace Sustainsys.Saml2.AspNetCore2
             {
                 ModulePath = "/Saml2"
             };
-            // uses the headers directly when no chunk size is set
-            CookieManager = new ChunkingCookieManager();
         }
 
         /// <summary>

@@ -6,6 +6,7 @@ using Microsoft.Extensions.Logging;
 using Sustainsys.Saml2;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.Options;
+using Microsoft.AspNetCore.Authentication.Cookies;
 
 namespace Sustainsys.Saml2.AspNetCore2.Tests
 {
@@ -150,6 +151,34 @@ namespace Sustainsys.Saml2.AspNetCore2.Tests
             subject.PostConfigure(null, options);
 
             options.SignOutScheme.Should().Be("specificSignOutScheme");
+        }
+
+        [TestMethod]
+        public void PostConfigureSaml2Options_PostConfigure_CustomCookieManagerIsUsed()
+        {
+            var options = new Saml2Options();
+            var cookieManager = Substitute.For<ICookieManager>();
+            options.CookieManager = cookieManager;
+
+            var subject = new PostConfigureSaml2Options( null,
+                TestHelpers.GetAuthenticationOptions() );
+
+            subject.PostConfigure( null, options );
+
+            options.CookieManager.Should().BeSameAs( cookieManager );
+        }
+
+        [TestMethod]
+        public void PostConfigureSaml2Options_PostConfigure_ProvidesDefaultCookieManager()
+        {
+            var options = new Saml2Options();
+
+            var subject = new PostConfigureSaml2Options( null,
+                TestHelpers.GetAuthenticationOptions() );
+
+            subject.PostConfigure( null, options );
+
+            options.CookieManager.Should().NotBeNull();
         }
     }
 }
