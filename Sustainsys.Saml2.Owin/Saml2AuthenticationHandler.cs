@@ -37,6 +37,7 @@ namespace Sustainsys.Saml2.Owin
                     result.Apply(
                         Context,
                         Options.DataProtector,
+                        Options.CookieManager,
                         Options.Notifications.EmitSameSiteNone(Request.GetUserAgent()));
                 }
 
@@ -142,6 +143,7 @@ namespace Sustainsys.Saml2.Owin
                         result.Apply(
                             Context,
                             Options.DataProtector,
+                            Options.CookieManager,
                             Options.Notifications.EmitSameSiteNone(Request.GetUserAgent()));
                     }
                 }
@@ -183,6 +185,7 @@ namespace Sustainsys.Saml2.Owin
                     result.Apply(
                         Context,
                         Options.DataProtector,
+                        Options.CookieManager,
                         Options.Notifications.EmitSameSiteNone(Request.GetUserAgent()));
                 }
             }
@@ -222,6 +225,7 @@ namespace Sustainsys.Saml2.Owin
                         result.Apply(
                             Context,
                             Options.DataProtector,
+                            Options.CookieManager,
                             Options.Notifications.EmitSameSiteNone(Request.GetUserAgent()));
                     }
 

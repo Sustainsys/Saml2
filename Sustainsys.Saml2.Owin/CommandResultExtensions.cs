@@ -1,5 +1,6 @@
 ﻿using Sustainsys.Saml2.WebSso;
 using Microsoft.Owin;
+using Microsoft.Owin.Infrastructure;
 using Microsoft.Owin.Security.DataProtection;
 using System;
 using System.Collections.Generic;
@@ -14,6 +15,7 @@ namespace Sustainsys.Saml2.Owin
         public static void Apply(this CommandResult commandResult,
             IOwinContext context,
             IDataProtector dataProtector,
+            ICookieManager cookieManager,
             bool emitSameSiteNone)
         {
             if (commandResult == null)
@@ -39,7 +41,7 @@ namespace Sustainsys.Saml2.Owin
                 context.Authentication.SignOut();
             }
 
-            ApplyCookies(commandResult, context, dataProtector, emitSameSiteNone);
+            ApplyCookies(commandResult, context, dataProtector, cookieManager, emitSameSiteNone);
             
             foreach(var h in commandResult.Headers)
             {
@@ -62,6 +64,7 @@ namespace Sustainsys.Saml2.Owin
             CommandResult commandResult,
             IOwinContext context,
             IDataProtector dataProtector,
+            ICookieManager cookieManager,
             bool emitSameSiteNone)
         {
             var serializedCookieData = commandResult.GetSerializedRequestState();
@@ -71,7 +74,7 @@ namespace Sustainsys.Saml2.Owin
                 var protectedData = HttpRequestData.ConvertBinaryData(
                         dataProtector.Protect(serializedCookieData));
 
-                context.Response.Cookies.Append(
+                cookieManager.AppendResponseCookie(context,
                     commandResult.SetCookieName,
                     protectedData,
                     new CookieOptions()
@@ -82,14 +85,14 @@ namespace Sustainsys.Saml2.Owin
                     });
             }
 
-            commandResult.ApplyClearCookie(context);
+            commandResult.ApplyClearCookie(context, cookieManager);
         }
 
-        public static void ApplyClearCookie(this CommandResult commandResult, IOwinContext context)
+        public static void ApplyClearCookie(this CommandResult commandResult, IOwinContext context, ICookieManager cookieManager)
         {
             if (!string.IsNullOrEmpty(commandResult.ClearCookieName))
             {
-                context.Response.Cookies.Delete(
+                cookieManager.DeleteCookie(context,
                     commandResult.ClearCookieName,
                     new CookieOptions
                     {

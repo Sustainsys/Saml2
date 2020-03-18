@@ -1,11 +1,12 @@
 ﻿using Sustainsys.Saml2.Configuration;
 using Microsoft.Owin.Security;
 using Microsoft.Owin.Security.DataProtection;
+using Microsoft.Owin.Infrastructure;
 
 namespace Sustainsys.Saml2.Owin
 {
     /// <summary>
-    /// Options for Sustainsys Saml2 Saml2 Authentication.
+    /// Options for Sustainsys Saml2 OWIN Authentication.
     /// </summary>
     public class Saml2AuthenticationOptions : AuthenticationOptions, IOptions
     {
@@ -27,6 +28,7 @@ namespace Sustainsys.Saml2.Owin
             AuthenticationMode = AuthenticationMode.Passive;
             Description.Caption = Constants.DefaultCaption;
             Notifications = new Saml2Notifications();
+            CookieManager = new CookieManager();
 
             if (loadConfiguration)
             {
@@ -75,6 +77,11 @@ namespace Sustainsys.Saml2.Owin
                 Description.Caption = value;
             }
         }
+
+        /// <summary>
+        /// Gets or sets the cookie manager used for reading and writing cookies
+        /// </summary>
+        public ICookieManager CookieManager { get; set; }
 
         /// <summary>
         /// Gets or sets the type used to secure data handled by the middleware.

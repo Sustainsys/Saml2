@@ -1,5 +1,6 @@
 ﻿using FluentAssertions;
 using Microsoft.IdentityModel.Tokens.Saml2;
+using Microsoft.Owin.Infrastructure;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Sustainsys.Saml2.Metadata;
 using Sustainsys.Saml2.WebSso;
@@ -15,7 +16,7 @@ namespace Sustainsys.Saml2.Owin.Tests
         [TestMethod]
         public void CommandResultExtensions_Apply_NullCheck_CommandResult()
         {
-            Action a = () => ((CommandResult)null).Apply(OwinTestHelpers.CreateOwinContext(), null, true);
+            Action a = () => ((CommandResult)null).Apply(OwinTestHelpers.CreateOwinContext(), null, new CookieManager(), true);
 
             a.Should().Throw<ArgumentNullException>().And.ParamName.Should().Be("commandResult");
         }
@@ -23,7 +24,7 @@ namespace Sustainsys.Saml2.Owin.Tests
         [TestMethod]
         public void CommandResultExtensions_Apply_NullCheck_OwinContext()
         {
-            Action a = () => new CommandResult().Apply(context:null, dataProtector:null, emitSameSiteNone:true);
+            Action a = () => new CommandResult().Apply(context:null, dataProtector:null, new CookieManager(), emitSameSiteNone:true);
 
             a.Should().Throw<ArgumentNullException>().And.ParamName.Should().Be("context");
         }
@@ -39,7 +40,7 @@ namespace Sustainsys.Saml2.Owin.Tests
 
             var context = OwinTestHelpers.CreateOwinContext();
 
-            cr.Apply(context, null, true);
+            cr.Apply(context, null, new CookieManager(), true);
 
             context.Response.StatusCode.Should().Be(200);
             context.Response.ContentType.Should().Be("application/whatever+text");
@@ -69,13 +70,14 @@ namespace Sustainsys.Saml2.Owin.Tests
             var context = OwinTestHelpers.CreateOwinContext();
 
             var dataProtector = new StubDataProtector();
-            cr.Apply(context, dataProtector, false);
+            cr.Apply(context, dataProtector, new CookieManager(), false);
 
             var setCookieHeader = context.Response.Headers["Set-Cookie"];
 
             var protectedData = HttpRequestData.ConvertBinaryData(
                 StubDataProtector.Protect(cr.GetSerializedRequestState()));
 
+            //TODO: write the tests against ICookieManager rather than OWIN headers?
             var expected = $"CookieName={protectedData}; path=/; HttpOnly";
 
             setCookieHeader.Should().Be(expected);
@@ -98,7 +100,7 @@ namespace Sustainsys.Saml2.Owin.Tests
             var context = OwinTestHelpers.CreateOwinContext();
 
             var dataProtector = new StubDataProtector();
-            cr.Apply(context, dataProtector, true);
+            cr.Apply(context, dataProtector, new CookieManager(), true);
 
             var setCookieHeader = context.Response.Headers["Set-Cookie"];
 
@@ -126,7 +128,7 @@ namespace Sustainsys.Saml2.Owin.Tests
             var context = OwinTestHelpers.CreateOwinContext();
 
             var dataProtector = new StubDataProtector();
-            cr.Apply(context, dataProtector, true);
+            cr.Apply(context, dataProtector, new CookieManager(), true);
 
             var setCookieHeader = context.Response.Headers["Set-Cookie"];
 
@@ -146,7 +148,7 @@ namespace Sustainsys.Saml2.Owin.Tests
 
             var context = OwinTestHelpers.CreateOwinContext();
             var dataProtector = new StubDataProtector();
-            cr.Apply(context, dataProtector, true);
+            cr.Apply(context, dataProtector, new CookieManager(), true);
 
             var setCookieHeader = context.Response.Headers["Set-Cookie"];
 
@@ -166,7 +168,7 @@ namespace Sustainsys.Saml2.Owin.Tests
 
             var context = OwinTestHelpers.CreateOwinContext();
             var dataProtector = new StubDataProtector();
-            cr.Apply(context, dataProtector, true);
+            cr.Apply(context, dataProtector, new CookieManager(), true);
 
             var setCookieHeader = context.Response.Headers["Set-Cookie"];
 
@@ -187,7 +189,7 @@ namespace Sustainsys.Saml2.Owin.Tests
 
             var context = OwinTestHelpers.CreateOwinContext();
 
-            cr.Apply(context, null, true);
+            cr.Apply(context, null, new CookieManager(), true);
 
             context.Response.StatusCode.Should().Be(303);
             context.Response.Headers["Location"].Should().Be(redirectUrl);
@@ -201,7 +203,7 @@ namespace Sustainsys.Saml2.Owin.Tests
 
             var context = OwinTestHelpers.CreateOwinContext();
 
-            cr.Apply(context, null, true);
+            cr.Apply(context, null, new CookieManager(), true);
 
             context.Response.Headers["header"].Should().Be("value");
         }
