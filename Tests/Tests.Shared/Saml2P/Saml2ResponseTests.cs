@@ -58,6 +58,7 @@ namespace Sustainsys.Saml2.Tests.Saml2P
                 RequestState = (StoredRequestState)null,
                 SecondLevelStatus = (string)null,
                 RelayState = (string)null,
+                ExpectedInResponseTo = new Saml2Id("InResponseToId")
             };
 
 			var response = Saml2Response.Read(responseText, expected.InResponseTo);
@@ -621,46 +622,6 @@ namespace Sustainsys.Saml2.Tests.Saml2P
 
             var options = Options.FromConfiguration;
             options.SPOptions.Saml2PSecurityTokenHandler = new Saml2PSecurityTokenHandler();
-            var result = Saml2Response.Read(signedResponse).GetClaims(options);
-
-            var authMethodClaim = result.Single().Claims.SingleOrDefault(c => c.Type == ClaimTypes.AuthenticationMethod);
-            authMethodClaim.Should().NotBeNull("the authentication method claim should be generated");
-            authMethodClaim.Value.Should().Be("urn:somespecialvalue");
-        }
-
-        [TestMethod]
-        public void Saml2Response_GetClaims_OptionsWithNullCompatibility_AuthnContextGeneratesClaims()
-        {
-            var response =
-            @"<?xml version=""1.0"" encoding=""UTF-8""?>
-            <saml2p:Response xmlns:saml2p=""urn:oasis:names:tc:SAML:2.0:protocol""
-            xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
-            ID = """ + MethodBase.GetCurrentMethod().Name + @""" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z"">
-                <saml2:Issuer>https://idp.example.com</saml2:Issuer>
-                <saml2p:Status>
-                    <saml2p:StatusCode Value=""urn:oasis:names:tc:SAML:2.0:status:Success"" />
-                </saml2p:Status>
-                <saml2:Assertion xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
-                Version=""2.0"" ID=""" + MethodBase.GetCurrentMethod().Name + @"_Assertion1""
-                IssueInstant=""2013-09-25T00:00:00Z"">
-                    <saml2:Issuer>https://idp.example.com</saml2:Issuer>
-                    <saml2:Subject>
-                        <saml2:NameID>SomeOne</saml2:NameID>
-                        <saml2:SubjectConfirmation Method=""urn:oasis:names:tc:SAML:2.0:cm:bearer"" />
-                    </saml2:Subject>
-                    <saml2:Conditions NotOnOrAfter=""2100-01-01T00:00:00Z"" />
-                    <saml2:AuthnStatement AuthnInstant=""2013-09-25T00:00:00Z"" SessionIndex=""17"" >
-                        <saml2:AuthnContext>
-                            <saml2:AuthnContextClassRef>urn:somespecialvalue</saml2:AuthnContextClassRef>
-                        </saml2:AuthnContext>
-                    </saml2:AuthnStatement>
-                </saml2:Assertion>
-            </saml2p:Response>";
-
-            var signedResponse = SignedXmlHelper.SignXml(response);
-
-            var options = StubFactory.CreateOptions();
-            options.SPOptions.Compatibility = null;
             var result = Saml2Response.Read(signedResponse).GetClaims(options);
 
             var authMethodClaim = result.Single().Claims.SingleOrDefault(c => c.Type == ClaimTypes.AuthenticationMethod);
@@ -1652,7 +1613,7 @@ namespace Sustainsys.Saml2.Tests.Saml2P
         }
 
         [TestMethod]
-        public void Saml2Response_Read_ThrowsOnIncorrectInResponseTo()
+        public void Saml2Response_GetClaims_ThrowsOnIncorrectInResponseTo()
         {
             var idp = Options.FromConfiguration.IdentityProviders.Default;
 
@@ -1664,20 +1625,32 @@ namespace Sustainsys.Saml2.Tests.Saml2P
             InResponseTo = ""anothervalue"">
                 <saml2:Issuer>https://idp.example.com</saml2:Issuer>
                 <saml2p:Status>
-                    <saml2p:StatusCode Value=""urn:oasis:names:tc:SAML:2.0:status:Requester"" />
+                    <saml2p:StatusCode Value=""urn:oasis:names:tc:SAML:2.0:status:Success"" />
                 </saml2p:Status>
+                <saml2:Assertion
+                Version=""2.0"" ID=""" + MethodBase.GetCurrentMethod().Name + @"_Assertion""
+                IssueInstant=""2013-09-25T00:00:00Z"">
+                    <saml2:Issuer>https://idp.example.com</saml2:Issuer>
+                    <saml2:Subject>
+                        <saml2:NameID>SomeUser</saml2:NameID>
+                        <saml2:SubjectConfirmation Method=""urn:oasis:names:tc:SAML:2.0:cm:bearer"" />
+                    </saml2:Subject>
+                    <saml2:Conditions NotOnOrAfter=""2100-06-30T08:00:00Z"" />
+                </saml2:Assertion>
             </saml2p:Response>";
 
             responseXML = SignedXmlHelper.SignXml(responseXML);
 
-            Action a = () => Saml2Response.Read(responseXML, new Saml2Id("somevalue"));
+            var subject = Saml2Response.Read(responseXML, new Saml2Id("somevalue"));
+
+            Action a = () => subject.GetClaims(StubFactory.CreateOptions());
 
             a.Should().Throw<Saml2ResponseFailedValidationException>()
                 .WithMessage("InResponseTo Id \"anothervalue\" in received response does not match Id \"somevalue\" of the sent request.");
         }
 
         [TestMethod]
-        public void Saml2Response_Read_ThrowsOnInResponseTo_When_NoneExpected()
+        public void Saml2Response_GetClaims_ThrowsOnInResponseTo_When_NoneExpected()
         {
             var idp = Options.FromConfiguration.IdentityProviders.Default;
 
@@ -1689,20 +1662,32 @@ namespace Sustainsys.Saml2.Tests.Saml2P
             InResponseTo = ""InResponseTo"">
                 <saml2:Issuer>https://idp.example.com</saml2:Issuer>
                 <saml2p:Status>
-                    <saml2p:StatusCode Value=""urn:oasis:names:tc:SAML:2.0:status:Requester"" />
+                    <saml2p:StatusCode Value=""urn:oasis:names:tc:SAML:2.0:status:Success"" />
                 </saml2p:Status>
+                <saml2:Assertion
+                Version=""2.0"" ID=""" + MethodBase.GetCurrentMethod().Name + @"_Assertion""
+                IssueInstant=""2013-09-25T00:00:00Z"">
+                    <saml2:Issuer>https://idp.example.com</saml2:Issuer>
+                    <saml2:Subject>
+                        <saml2:NameID>SomeUser</saml2:NameID>
+                        <saml2:SubjectConfirmation Method=""urn:oasis:names:tc:SAML:2.0:cm:bearer"" />
+                    </saml2:Subject>
+                    <saml2:Conditions NotOnOrAfter=""2100-06-30T08:00:00Z"" />
+                </saml2:Assertion>
             </saml2p:Response>";
 
             responseXML = SignedXmlHelper.SignXml(responseXML);
 
-            Action a = () => Saml2Response.Read(responseXML, null);
+            var subject = Saml2Response.Read(responseXML, null);
+
+            Action a = () => subject.GetClaims(StubFactory.CreateOptions());
 
             a.Should().Throw<UnexpectedInResponseToException>()
                 .WithMessage("Received message contains unexpected InResponseTo \"InResponseTo\"*");
         }
 
         [TestMethod]
-        public void Saml2Response_Read_ThrowsOnNoInResponseTo_When_OneWasExpected()
+        public void Saml2Response_GetClaims_ThrowsOnNoInResponseTo_When_OneWasExpected()
         {
             var idp = Options.FromConfiguration.IdentityProviders.Default;
 
@@ -1713,15 +1698,27 @@ namespace Sustainsys.Saml2.Tests.Saml2P
             ID = """ + MethodBase.GetCurrentMethod().Name + @""" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z"">
                 <saml2:Issuer>https://idp.example.com</saml2:Issuer>
                 <saml2p:Status>
-                    <saml2p:StatusCode Value=""urn:oasis:names:tc:SAML:2.0:status:Requester"" />
+                    <saml2p:StatusCode Value=""urn:oasis:names:tc:SAML:2.0:status:Success"" />
                 </saml2p:Status>
+                <saml2:Assertion
+                    Version=""2.0"" ID=""" + MethodBase.GetCurrentMethod().Name + @"_Assertion""
+                    IssueInstant=""2013-09-25T00:00:00Z"">
+                    <saml2:Issuer>https://idp.example.com</saml2:Issuer>
+                    <saml2:Subject>
+                        <saml2:NameID>SomeUser</saml2:NameID>
+                        <saml2:SubjectConfirmation Method=""urn:oasis:names:tc:SAML:2.0:cm:bearer"" />
+                    </saml2:Subject>
+                    <saml2:Conditions NotOnOrAfter=""2100-06-30T08:00:00Z"" />
+                </saml2:Assertion>
             </saml2p:Response>";
 
             responseXML = SignedXmlHelper.SignXml(responseXML);
 
-            Action a = () => Saml2Response.Read(responseXML, new Saml2Id("ExpectedId"));
+            var subject = Saml2Response.Read(responseXML, new Saml2Id("ExpectedId"));
 
-			a.Should().Throw<Saml2ResponseFailedValidationException>()
+            Action a = () => subject.GetClaims(StubFactory.CreateOptions());
+
+            a.Should().Throw<Saml2ResponseFailedValidationException>()
 				.WithMessage(
 					"Expected message to contain InResponseTo \"ExpectedId\", but found none. If this error occurs " +
 					"due to the Idp not setting InResponseTo according to the SAML2 specification, this check " +
@@ -1753,7 +1750,7 @@ namespace Sustainsys.Saml2.Tests.Saml2P
         }
 
         [TestMethod]
-        public void Saml2Response_Read_ThrowsOnNoInResponseTo_When_MissingInResponseTo_AndIgnoreMissingDisabled()
+        public void Saml2Response_GetClaims_ThrowsOnNoInResponseTo_When_MissingInResponseTo_AndIgnoreMissingDisabled()
         {
             var options = Options.FromConfiguration;
             options.SPOptions.Compatibility.IgnoreMissingInResponseTo = false;
@@ -1765,13 +1762,25 @@ namespace Sustainsys.Saml2.Tests.Saml2P
             ID = """ + MethodBase.GetCurrentMethod().Name + @""" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z"">
                 <saml2:Issuer>https://idp.example.com</saml2:Issuer>
                 <saml2p:Status>
-                    <saml2p:StatusCode Value=""urn:oasis:names:tc:SAML:2.0:status:Requester"" />
+                    <saml2p:StatusCode Value=""urn:oasis:names:tc:SAML:2.0:status:Success"" />
                 </saml2p:Status>
+                <saml2:Assertion
+                    Version=""2.0"" ID=""" + MethodBase.GetCurrentMethod().Name + @"_Assertion""
+                    IssueInstant=""2013-09-25T00:00:00Z"">
+                    <saml2:Issuer>https://idp.example.com</saml2:Issuer>
+                    <saml2:Subject>
+                        <saml2:NameID>SomeUser</saml2:NameID>
+                        <saml2:SubjectConfirmation Method=""urn:oasis:names:tc:SAML:2.0:cm:bearer"" />
+                    </saml2:Subject>
+                    <saml2:Conditions NotOnOrAfter=""2100-06-30T08:00:00Z"" />
+                </saml2:Assertion>
             </saml2p:Response>";
 
             responseXML = SignedXmlHelper.SignXml(responseXML);
 
-            Action a = () => Saml2Response.Read(responseXML, new Saml2Id("ExpectedId"), options);
+            var subject = Saml2Response.Read(responseXML, new Saml2Id("ExpectedId"), options);
+
+            Action a = () => subject.GetClaims(StubFactory.CreateOptions());
 
             a.Should().Throw<Saml2ResponseFailedValidationException>()
                 .WithMessage("Expected message to contain InResponseTo \"ExpectedId\", but found none*");
