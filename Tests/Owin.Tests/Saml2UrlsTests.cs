@@ -4,6 +4,8 @@ using Sustainsys.Saml2.WebSso;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Threading.Tasks;
+using NSubstitute;
+using Microsoft.Owin.Infrastructure;
 
 namespace Sustainsys.Saml2.Owin.Tests
 {
@@ -15,7 +17,7 @@ namespace Sustainsys.Saml2.Owin.Tests
         {
             var ctx = OwinTestHelpers.CreateOwinContext();
             var options = StubFactory.CreateOptionsPublicOrigin(new Uri("https://my.public.origin:8443/"));
-            var subject = await ctx.ToHttpRequestData(null);
+            var subject = await ctx.ToHttpRequestData(Substitute.For<ICookieManager>(), null);
             var urls = new Saml2Urls(subject, options);
             urls.AssertionConsumerServiceUrl.Should().BeEquivalentTo(
 				new Uri("https://my.public.origin:8443/Saml2/Acs"));
