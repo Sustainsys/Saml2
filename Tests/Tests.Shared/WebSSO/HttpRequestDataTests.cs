@@ -53,7 +53,7 @@ namespace Sustainsys.Saml2.Tests.WebSso
                  {
                     new KeyValuePair<string, IEnumerable<string>>("Key", new string[] { "Value" })
                  },
-                 Enumerable.Empty<KeyValuePair<string, string>>(),
+                 cookieName => null,
                  null);
 
             a.Should().NotThrow();

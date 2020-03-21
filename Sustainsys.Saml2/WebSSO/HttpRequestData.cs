@@ -25,7 +25,7 @@ namespace Sustainsys.Saml2.WebSso
         /// <param name="url">Full url requested</param>
         /// <param name="formData">Form data, if present (only for POST requests)</param>
         /// <param name="applicationPath">Path to the application root</param>
-        /// <param name="cookies">Cookies of request</param>
+        /// <param name="cookieReader">Function that reads cookie if it exists</param>
         /// <param name="cookieDecryptor">Function that decrypts cookie
         /// contents to clear text.</param>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Decryptor")]
@@ -35,8 +35,8 @@ namespace Sustainsys.Saml2.WebSso
             Uri url,
             string applicationPath,
             IEnumerable<KeyValuePair<string, IEnumerable<string>>> formData,
-            IEnumerable<KeyValuePair<string, string>> cookies,
-            Func<byte[], byte[]> cookieDecryptor) : this(httpMethod, url, applicationPath, formData, cookies, cookieDecryptor, user: null)
+            Func<string, string> cookieReader,
+            Func<byte[], byte[]> cookieDecryptor) : this(httpMethod, url, applicationPath, formData, cookieReader, cookieDecryptor, user: null)
         {
             // empty
         }
@@ -48,7 +48,7 @@ namespace Sustainsys.Saml2.WebSso
         /// <param name="url">Full url requested</param>
         /// <param name="formData">Form data, if present (only for POST requests)</param>
         /// <param name="applicationPath">Path to the application root</param>
-        /// <param name="cookies">Cookies of request</param>
+        /// <param name="cookieReader">Function that reads cookie if it exists</param>
         /// <param name="cookieDecryptor">Function that decrypts cookie
         /// contents to clear text.</param>
         /// <param name="user">Claims Principal associated with the request</param>
@@ -59,17 +59,17 @@ namespace Sustainsys.Saml2.WebSso
             Uri url,
             string applicationPath,
             IEnumerable<KeyValuePair<string, IEnumerable<string>>> formData,
-            IEnumerable<KeyValuePair<string, string>> cookies,
+            Func<string, string> cookieReader,
             Func<byte[], byte[]> cookieDecryptor,
             ClaimsPrincipal user)
         {
-            Init(httpMethod, url, applicationPath, formData, cookies, cookieDecryptor, user);
+            Init(httpMethod, url, applicationPath, formData, cookieReader, cookieDecryptor, user);
         }
 
         // Used by tests.
         internal HttpRequestData(string httpMethod, Uri url)
         {
-            Init(httpMethod, url, "/", null, Enumerable.Empty<KeyValuePair<string, string>>(), null, null);
+            Init(httpMethod, url, "/", null, cookieName => null, null, null);
         }
 
         // Used by tests.
@@ -89,7 +89,7 @@ namespace Sustainsys.Saml2.WebSso
             Uri url,
             string applicationPath,
             IEnumerable<KeyValuePair<string, IEnumerable<string>>> formData,
-            IEnumerable<KeyValuePair<string, string>> cookies,
+            Func<string, string> cookieReader,
             Func<byte[], byte[]> cookieDecryptor,
             ClaimsPrincipal user)
         {
@@ -106,9 +106,9 @@ namespace Sustainsys.Saml2.WebSso
             if (relayState != null)
             {
                 var cookieName = StoredRequestState.CookieNameBase + relayState;
-                if (cookies.Any(c => c.Key == cookieName))
+                var cookieData = cookieReader( cookieName );
+                if (!string.IsNullOrEmpty(cookieData))
                 {
-                    var cookieData = cookies.SingleOrDefault(c => c.Key == cookieName).Value;
                     byte[] encryptedData = GetBinaryData(cookieData);
 
                     var decryptedData = cookieDecryptor(encryptedData);

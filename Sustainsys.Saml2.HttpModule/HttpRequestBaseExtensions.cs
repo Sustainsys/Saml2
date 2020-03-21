@@ -57,7 +57,7 @@ namespace Sustainsys.Saml2.HttpModule
                 requestBase.ApplicationPath,
                 requestBase.Form.Cast<string>().Select((de, i) =>
                     new KeyValuePair<string, IEnumerable<string>>(de, ((string)requestBase.Form[i]).Split(','))),
-                cookies,
+                cookieName => cookies.Any( c => c.Key == cookieName ) ? cookies.SingleOrDefault( c => c.Key == cookieName ).Value : null,
                 v => MachineKey.Unprotect(v, ProtectionPurpose),
                 ClaimsPrincipal.Current);
         }

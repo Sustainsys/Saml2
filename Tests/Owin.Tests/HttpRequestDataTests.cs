@@ -28,20 +28,16 @@ namespace Sustainsys.Saml2.Owin.Tests
                     new Saml2Id("id123"),
                     null);
 
-            var cookies = new KeyValuePair<string, string>[]
-            {
-                new KeyValuePair<string, string>(
-                    StoredRequestState.CookieNameBase +"Foo",
-                    HttpRequestData.ConvertBinaryData(
-                            StubDataProtector.Protect(storedRequestData.Serialize())))
-            };
+            var cookieValue =
+                HttpRequestData.ConvertBinaryData(
+                        StubDataProtector.Protect(storedRequestData.Serialize()));
 
             var subject = new HttpRequestData(
                  "GET",
                  url,
                  appPath,
                  Enumerable.Empty<KeyValuePair<string, IEnumerable<string>>>(),
-                 cookies,
+                 cookieName => cookieValue,
                  StubDataProtector.Unprotect);
 
             subject.StoredRequestState.Should().BeEquivalentTo(storedRequestData);

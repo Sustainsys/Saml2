@@ -393,7 +393,7 @@ namespace Sustainsys.Saml2.Tests.WebSso
                     new KeyValuePair<string, IEnumerable<string>>("SAMLResponse", new[] { responseData }),
                     new KeyValuePair<string, IEnumerable<string>>("RelayState", new[] { relayState })
                 },
-                Enumerable.Empty<KeyValuePair<string, string>>(),
+                cookieName => null,
                 null);
 
             httpRequest.StoredRequestState = new StoredRequestState(null, new Uri("http://loggedout.example.com"), null, null);

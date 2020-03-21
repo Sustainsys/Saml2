@@ -64,7 +64,7 @@ namespace Sustainsys.Saml2.Tests.WebSso
                 {
                     new KeyValuePair<string, IEnumerable<string>>("SAMLResponse", new string[] { "#¤!2" })
                 },
-                Enumerable.Empty<KeyValuePair<string, string>>(),
+                cookieName => null,
                 null);
 
             Action a = () => new AcsCommand().Run(r, Options.FromConfiguration);
@@ -86,7 +86,7 @@ namespace Sustainsys.Saml2.Tests.WebSso
                 {
                     new KeyValuePair<string, IEnumerable<string>>("SAMLResponse", new string[] { encoded })
                 },
-                Enumerable.Empty<KeyValuePair<string, string>>(),
+                cookieName => null,
                 null);
 
             Action a = () => new AcsCommand().Run(r, Options.FromConfiguration);
@@ -113,7 +113,7 @@ namespace Sustainsys.Saml2.Tests.WebSso
                 {
                     new KeyValuePair<string, IEnumerable<string>>("SAMLResponse", new string[] { encoded })
                 },
-                Enumerable.Empty<KeyValuePair<string, string>>(),
+                cookieName => null,
                 null);
 
             Action a = () => new AcsCommand().Run(r, Options.FromConfiguration);
@@ -135,7 +135,7 @@ namespace Sustainsys.Saml2.Tests.WebSso
                 {
                     new KeyValuePair<string, IEnumerable<string>>("SAMLResponse", new string[] { encoded })
                 },
-                Enumerable.Empty<KeyValuePair<string, string>>(),
+                cookieName => null,
                 null);
 
             Action a = () => new AcsCommand().Run(r, Options.FromConfiguration);
@@ -162,7 +162,7 @@ namespace Sustainsys.Saml2.Tests.WebSso
                 {
                     new KeyValuePair<string, IEnumerable<string>>("SAMLart", new string[] { artifactString })
                 },
-                Enumerable.Empty<KeyValuePair<string, string>>(),
+                cookieName => null,
                 null);
 
             Action a = () => new AcsCommand().Run(r, Options.FromConfiguration);
@@ -208,7 +208,7 @@ namespace Sustainsys.Saml2.Tests.WebSso
                 {
                     new KeyValuePair<string, IEnumerable<string>>("SAMLResponse", new string[] { formValue })
                 },
-                Enumerable.Empty<KeyValuePair<string, string>>(),
+                cookieName => null,
                 null);
 
             var ids = new ClaimsIdentity[] { new ClaimsIdentity("Federation") };
@@ -433,7 +433,7 @@ namespace Sustainsys.Saml2.Tests.WebSso
                 {
                     new KeyValuePair<string, IEnumerable<string>>("SAMLResponse", new string[] { formValue })
                 },
-                Enumerable.Empty<KeyValuePair<string, string>>(),
+                cookieName => null,
                 null);
 
             var options = StubFactory.CreateOptions();
