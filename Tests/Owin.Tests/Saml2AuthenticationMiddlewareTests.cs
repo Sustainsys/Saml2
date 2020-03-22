@@ -418,6 +418,44 @@ namespace Sustainsys.Saml2.Owin.Tests
         }
 
         [TestMethod]
+        public async Task Saml2AuthenticationMiddleware_OnlyExecutesLogoutCommandOnce()
+        {
+            // A test case for a bug. If logout command is called through the /Saml2/Logout endpoint,
+            // it will cause a logout of the local session. Which caused the automatic processing
+            // of logout to run the logout command again.
+
+            Saml2AuthenticationOptions options = new Saml2AuthenticationOptions(true)
+            {
+                AuthenticationMode = AuthenticationMode.Passive
+            };
+
+            var subject = new Saml2AuthenticationMiddleware(
+                new StubOwinMiddleware(200, revoke: new AuthenticationResponseRevoke(
+                    new string[0])),
+                CreateAppBuilder(),
+                options);
+
+            var context = OwinTestHelpers.CreateOwinContext();
+
+            context.Request.Path = new PathString("/Saml2/Logout");
+            context.Request.User = new ClaimsPrincipal(
+                new ClaimsIdentity(new Claim[]
+                {
+                    new Claim(Saml2ClaimTypes.LogoutNameIdentifier, ",,,,NameId", null, "https://idp.example.com"),
+                    new Claim(Saml2ClaimTypes.SessionIndex, "SessionId", null, "https://idp.example.com")
+                }, "Federation"));
+
+            var logoutCommandCalled = false;
+            options.Notifications.LogoutCommandResultCreated = cr =>
+            {
+                logoutCommandCalled.Should().BeFalse();
+                logoutCommandCalled = true;
+            };
+
+            await subject.Invoke(context);
+        }
+
+        [TestMethod]
         public async Task Saml2AuthenticationMiddleware_HandlesLogoutResponse()
         {
             var app = CreateAppBuilder();

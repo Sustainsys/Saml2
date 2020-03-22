@@ -159,7 +159,7 @@ namespace Sustainsys.Saml2.Owin
 
             var revoke = Helper.LookupSignOut(Options.AuthenticationType, mode);
 
-            if (revoke != null)
+            if (revoke != null && Context.Request.Path.Value != (Options.SPOptions.ModulePath + "/Logout"))
             {
                 var request = await Context.ToHttpRequestData(Options.CookieManager, Options.DataProtector.Unprotect);
                 var urls = new Saml2Urls(request, Options);
