@@ -4,7 +4,7 @@
     ViewData.AddActivePage(ManageNavPages.ExternalLogins);
 }
 
-@Html.Partial("_StatusMessage", Model.StatusMessage)
+<partial name="_StatusMessage" model="@Model.StatusMessage" />
 @if (Model.CurrentLogins?.Count > 0)
 {
     <h4>Registered Logins</h4>

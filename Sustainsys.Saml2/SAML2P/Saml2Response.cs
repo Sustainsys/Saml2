@@ -72,10 +72,12 @@ namespace Sustainsys.Saml2.Saml2P
         /// <param name="xml">Root xml element.</param>
         /// <param name="expectedInResponseTo">The expected value of the
         /// InReplyTo parameter in the message.</param>
-        [ExcludeFromCodeCoverage] // Just a wrapper o keep backward compatibility
-        public Saml2Response(XmlElement xml, Saml2Id expectedInResponseTo): this(xml, expectedInResponseTo, null)
-        {
-        }
+        /// <param name="options">Service provider settings used when validating Saml response</param>
+#pragma warning disable IDE0060 // Remove unused parameter
+        public Saml2Response(XmlElement xml, Saml2Id expectedInResponseTo, IOptions options)
+            : this(xml, expectedInResponseTo)
+#pragma warning restore IDE0060 // Remove unused parameter
+        { }
 
         /// <summary>
         /// Ctor
@@ -83,8 +85,7 @@ namespace Sustainsys.Saml2.Saml2P
         /// <param name="xml">Root xml element.</param>
         /// <param name="expectedInResponseTo">The expected value of the
         /// InReplyTo parameter in the message.</param>
-        /// <param name="options">Service provider settings used when validating Saml response</param>
-        public Saml2Response(XmlElement xml, Saml2Id expectedInResponseTo, IOptions options)
+        public Saml2Response(XmlElement xml, Saml2Id expectedInResponseTo)
         {
             if (xml == null)
             {
@@ -106,7 +107,7 @@ namespace Sustainsys.Saml2.Saml2P
 
             id = new Saml2Id(xml.GetRequiredAttributeValue("ID"));
 
-            this.ExpectedInResponseTo = expectedInResponseTo;
+            ExpectedInResponseTo = expectedInResponseTo;
             ReadInResponseTo(xml);
 
             issueInstant = DateTime.Parse(xml.GetRequiredAttributeValue("IssueInstant"),
@@ -131,8 +132,7 @@ namespace Sustainsys.Saml2.Saml2P
 
             if (destinationUrlString != null)
             {
-                Uri parsedDestination;
-                if (!Uri.TryCreate(destinationUrlString, UriKind.Absolute, out parsedDestination))
+                if (!Uri.TryCreate(destinationUrlString, UriKind.Absolute, out Uri parsedDestination))
                 {
                     throw new BadFormatSamlResponseException("Destination value was not a valid Uri");
                 }
@@ -431,10 +431,10 @@ namespace Sustainsys.Saml2.Saml2P
         /// <value>All assertion element nodes.</value>
         private IEnumerable<XmlElement> GetAllAssertionElementNodes(IOptions options)
         {
-            return allAssertionElementNodes ?? (allAssertionElementNodes = retrieveAssertionElements(options));
+            return allAssertionElementNodes ?? (allAssertionElementNodes = RetrieveAssertionElements(options));
         }
 
-        private IEnumerable<XmlElement> retrieveAssertionElements(IOptions options)
+        private IEnumerable<XmlElement> RetrieveAssertionElements(IOptions options)
         {
             var assertions = new List<XmlElement>();
 
@@ -528,7 +528,7 @@ namespace Sustainsys.Saml2.Saml2P
             options.SPOptions.Logger.WriteVerbose("Signature validation passed for Saml Response " + Id);
         }
 
-        private Uri audience;
+        private readonly Uri audience;
 
         private IEnumerable<ClaimsIdentity> claimsIdentities;
         private Exception createClaimsException;
@@ -604,9 +604,8 @@ namespace Sustainsys.Saml2.Saml2P
 
 			foreach (XmlElement assertionNode in GetAllAssertionElementNodes(options))
             {
-				SecurityToken baseToken;
-                var principal = handler.ValidateToken(assertionNode.OuterXml, validationParameters, out baseToken);
-				var token = (Saml2SecurityToken)baseToken;
+                var principal = handler.ValidateToken(assertionNode.OuterXml, validationParameters, out SecurityToken baseToken);
+                var token = (Saml2SecurityToken)baseToken;
                 options.SPOptions.Logger.WriteVerbose("Extracted SAML assertion " + token.Id);
 
 				sessionNotOnOrAfter = DateTimeHelper.EarliestTime(sessionNotOnOrAfter,
