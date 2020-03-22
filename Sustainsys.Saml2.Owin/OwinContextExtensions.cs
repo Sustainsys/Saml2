@@ -1,5 +1,6 @@
 ﻿using Sustainsys.Saml2.WebSso;
 using Microsoft.Owin;
+using Microsoft.Owin.Infrastructure;
 using Microsoft.Owin.Security.DataProtection;
 using System;
 using System.Collections.Generic;
@@ -16,6 +17,7 @@ namespace Sustainsys.Saml2.Owin
     {
         public async static Task<HttpRequestData> ToHttpRequestData(
             this IOwinContext context,
+            ICookieManager cookieManager,
             Func<byte[], byte[]> cookieDecryptor)
         {
             if(context == null)
@@ -40,7 +42,7 @@ namespace Sustainsys.Saml2.Owin
                 context.Request.Uri,
                 applicationRootPath,
                 formData?.Select(f => new KeyValuePair<string, IEnumerable<string>>(f.Key, f.Value)),
-                context.Request.Cookies,
+                cookieName => cookieManager.GetRequestCookie(context, cookieName),
                 cookieDecryptor,
                 context.Request.User as ClaimsPrincipal);
         }

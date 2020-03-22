@@ -58,6 +58,28 @@ namespace Sustainsys.Saml2.Tests.WebSso
 
             a.Should().NotThrow();
         }
+
+        [TestMethod]
+        public void HttpRequestData_Ctor_ThrowsOnNullCookieReader()
+        {
+            var url = new Uri("http://example.com:42/ApplicationPath/Path?RelayState=Foo");
+            string appPath = "/ApplicationPath";
+
+            Action a = () => new HttpRequestData(
+                 "GET",
+                 url,
+                 appPath,
+                 new KeyValuePair<string, IEnumerable<string>>[]
+                 {
+                    new KeyValuePair<string, IEnumerable<string>>("Key", new string[] { "Value" })
+                 },
+                 cookieReader: null,
+                 cookieDecryptor: null,
+                 user: null);
+
+            a.Should().Throw<ArgumentNullException>()
+                .And.ParamName.Should().Be( "cookieReader" );
+        }
     }
 }
 

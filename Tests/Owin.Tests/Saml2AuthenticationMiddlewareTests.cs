@@ -22,7 +22,8 @@ using System.Xml.Linq;
 
 namespace Sustainsys.Saml2.Owin.Tests
 {
-	using Microsoft.Owin.Security.DataProtection;
+    using Microsoft.Owin.Infrastructure;
+    using Microsoft.Owin.Security.DataProtection;
 	using NSubstitute;
 	using Saml2.Exceptions;
 	using Sustainsys.Saml2.TestHelpers;
@@ -659,6 +660,34 @@ namespace Sustainsys.Saml2.Owin.Tests
             var storedState = ExtractRequestState(options.DataProtector, context);
 
             storedState.ReturnUrl.Should().Be(returnUrl);
+        }
+
+        [TestMethod]
+        public async Task Saml2AuthenticationMiddleware_UseConfiguredCookieManager()
+        {
+            var returnUrl = "http://sp.example.com/returnurl";
+
+            var options = new Saml2AuthenticationOptions(true);
+            var mockCookieManager = Substitute.For<ICookieManager>();
+            options.CookieManager = mockCookieManager;
+
+            var subject = new Saml2AuthenticationMiddleware(
+                new StubOwinMiddleware(401, new AuthenticationResponseChallenge(
+                    new string[] { "Saml2" }, new AuthenticationProperties()
+                    {
+                        RedirectUri = returnUrl
+                    } ) ),
+                    CreateAppBuilder(), options);
+
+            var context = OwinTestHelpers.CreateOwinContext();
+
+            await subject.Invoke(context);
+
+            mockCookieManager.Received().AppendResponseCookie(
+                context,
+                Arg.Is<string>(value => value.StartsWith("Saml2.")),
+                Arg.Is<string>(value => true),
+                Arg.Is<CookieOptions>(c => c.HttpOnly && c.Path == "/" ));
         }
 
         [TestMethod]

@@ -26,7 +26,7 @@ namespace Sustainsys.Saml2.Owin
                 return null;
             }
 
-            var httpRequestData = await Context.ToHttpRequestData(Options.DataProtector.Unprotect);
+            var httpRequestData = await Context.ToHttpRequestData(Options.CookieManager, Options.DataProtector.Unprotect);
             try
             {
                 var result = CommandFactory.GetCommand(CommandFactory.AcsCommandName)
@@ -37,6 +37,7 @@ namespace Sustainsys.Saml2.Owin
                     result.Apply(
                         Context,
                         Options.DataProtector,
+                        Options.CookieManager,
                         Options.Notifications.EmitSameSiteNone(Request.GetUserAgent()));
                 }
 
@@ -133,7 +134,7 @@ namespace Sustainsys.Saml2.Owin
                     var result = SignInCommand.Run(
                         idp,
                         redirectUri,
-                        await Context.ToHttpRequestData(Options.DataProtector.Unprotect),
+                        await Context.ToHttpRequestData(Options.CookieManager, Options.DataProtector.Unprotect),
                         Options,
                         challenge.Properties.Dictionary);
 
@@ -142,6 +143,7 @@ namespace Sustainsys.Saml2.Owin
                         result.Apply(
                             Context,
                             Options.DataProtector,
+                            Options.CookieManager,
                             Options.Notifications.EmitSameSiteNone(Request.GetUserAgent()));
                     }
                 }
@@ -159,7 +161,7 @@ namespace Sustainsys.Saml2.Owin
 
             if (revoke != null)
             {
-                var request = await Context.ToHttpRequestData(Options.DataProtector.Unprotect);
+                var request = await Context.ToHttpRequestData(Options.CookieManager, Options.DataProtector.Unprotect);
                 var urls = new Saml2Urls(request, Options);
 
                 string redirectUrl = revoke.Properties.RedirectUri;
@@ -183,6 +185,7 @@ namespace Sustainsys.Saml2.Owin
                     result.Apply(
                         Context,
                         Options.DataProtector,
+                        Options.CookieManager,
                         Options.Notifications.EmitSameSiteNone(Request.GetUserAgent()));
                 }
             }
@@ -215,13 +218,14 @@ namespace Sustainsys.Saml2.Owin
                 try
                 {
                     var result = CommandFactory.GetCommand(remainingPath.Value)
-                        .Run(await Context.ToHttpRequestData(Options.DataProtector.Unprotect), Options);
+                        .Run(await Context.ToHttpRequestData(Options.CookieManager, Options.DataProtector.Unprotect), Options);
 
                     if (!result.HandledResult)
                     {
                         result.Apply(
                             Context,
                             Options.DataProtector,
+                            Options.CookieManager,
                             Options.Notifications.EmitSameSiteNone(Request.GetUserAgent()));
                     }
 
