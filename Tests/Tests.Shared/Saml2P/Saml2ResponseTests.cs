@@ -1683,7 +1683,63 @@ namespace Sustainsys.Saml2.Tests.Saml2P
             Action a = () => subject.GetClaims(StubFactory.CreateOptions());
 
             a.Should().Throw<UnexpectedInResponseToException>()
-                .WithMessage("Received message contains unexpected InResponseTo \"InResponseTo\"*");
+                .WithMessage("*unexpected InResponseTo \"InResponseTo\"*");
+
+            // Should throw even on a second call (catches bug where incorrect placement of the
+            // check caused second call to succeed. That's bad.
+            a.Should().Throw<UnexpectedInResponseToException>()
+                .WithMessage("*unexpected InResponseTo \"InResponseTo\"*");
+        }
+
+        [TestMethod]
+        public void Saml2Response_GetClaims_UsesNotificationByPassOnInResponseTo_When_NoneExpected()
+        {
+            var idp = Options.FromConfiguration.IdentityProviders.Default;
+
+            var responseXML =
+            @"<?xml version=""1.0"" encoding=""UTF-8""?>
+            <saml2p:Response xmlns:saml2p=""urn:oasis:names:tc:SAML:2.0:protocol""
+            xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
+            ID = """ + MethodBase.GetCurrentMethod().Name + @""" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z""
+            InResponseTo = ""InResponseTo"">
+                <saml2:Issuer>https://idp.example.com</saml2:Issuer>
+                <saml2p:Status>
+                    <saml2p:StatusCode Value=""urn:oasis:names:tc:SAML:2.0:status:Success"" />
+                </saml2p:Status>
+                <saml2:Assertion
+                Version=""2.0"" ID=""" + MethodBase.GetCurrentMethod().Name + @"_Assertion""
+                IssueInstant=""2013-09-25T00:00:00Z"">
+                    <saml2:Issuer>https://idp.example.com</saml2:Issuer>
+                    <saml2:Subject>
+                        <saml2:NameID>SomeUser</saml2:NameID>
+                        <saml2:SubjectConfirmation Method=""urn:oasis:names:tc:SAML:2.0:cm:bearer"" />
+                    </saml2:Subject>
+                    <saml2:Conditions NotOnOrAfter=""2100-06-30T08:00:00Z"" />
+                </saml2:Assertion>
+            </saml2p:Response>";
+
+            responseXML = SignedXmlHelper.SignXml(responseXML);
+
+            var subject = Saml2Response.Read(responseXML, null);
+
+            var options = StubFactory.CreateOptions();
+
+            Saml2Response capturedResponse = null;
+            IEnumerable<ClaimsIdentity> claimsIdentities = null;
+
+            options.Notifications.Unsafe.IgnoreUnexpectedInResponseTo = (r, c) =>
+            {
+                capturedResponse = r;
+                claimsIdentities = c;
+
+                return true;
+            };
+
+            // Should not throw
+            subject.GetClaims(options);
+
+            capturedResponse.Should().BeSameAs(subject);
+            claimsIdentities.Single().FindFirst(ClaimTypes.NameIdentifier).Value.Should().Be("SomeUser");
         }
 
         [TestMethod]

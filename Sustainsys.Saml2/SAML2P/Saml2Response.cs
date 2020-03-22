@@ -159,19 +159,31 @@ namespace Sustainsys.Saml2.Saml2P
             { 
                 if (ExpectedInResponseTo == null)
                 {
-                    throw new UnexpectedInResponseToException(
-                        string.Format(CultureInfo.InvariantCulture,
-                        "Received message contains unexpected InResponseTo \"{0}\". No cookie preserving state " +
-                        "from the request was found so the message was not expected to have an InResponseTo attribute. " +
-                        "This error typically occurs if the cookie set when doing SP-initiated sign on have been lost.",
-                        InResponseTo.Value));
+                    if (options.Notifications.Unsafe.IgnoreUnexpectedInResponseTo(this, claimsIdentities))
+                    {
+                        options.SPOptions.Logger.WriteInformation($"Ignoring unexpected InReponseTo {InResponseTo.Value}"
+                            + $"for Saml2 response {Id.Value} for user "
+                            + claimsIdentities.First().FindFirst(ClaimTypes.NameIdentifier)?.Value + ".");
+                    }
+                    else
+                    {
+                        throw new UnexpectedInResponseToException(
+                            $"Received message {id.Value} contains unexpected InResponseTo \"{InResponseTo.Value}\". No " +
+                            $"cookie preserving state from the request was found so the message was not expected to have an " +
+                            $"InResponseTo attribute. This error typically occurs if the cookie set when doing SP-initiated " +
+                            $"sign on have been lost.");
+                    }
+
                 }
-                if (ExpectedInResponseTo.Value != InResponseTo.Value)
+                else
                 {
-                    throw new Saml2ResponseFailedValidationException(
-                        string.Format(CultureInfo.InvariantCulture,
-                        "InResponseTo Id \"{0}\" in received response does not match Id \"{1}\" of the sent request.",
-                        InResponseTo.Value, ExpectedInResponseTo.Value));
+                    if (ExpectedInResponseTo.Value != InResponseTo.Value)
+                    {
+                        throw new Saml2ResponseFailedValidationException(
+                            string.Format(CultureInfo.InvariantCulture,
+                            "InResponseTo Id \"{0}\" in received response does not match Id \"{1}\" of the sent request.",
+                            InResponseTo.Value, ExpectedInResponseTo.Value));
+                    }
                 }
             }
             else
