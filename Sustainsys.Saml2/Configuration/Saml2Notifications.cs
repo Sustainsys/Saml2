@@ -4,6 +4,7 @@ using Sustainsys.Saml2.Saml2P;
 using Sustainsys.Saml2.WebSso;
 using System;
 using System.Collections.Generic;
+using System.Security.Claims;
 using System.Xml;
 
 namespace Sustainsys.Saml2.Configuration
@@ -172,6 +173,16 @@ namespace Sustainsys.Saml2.Configuration
             /// the generated validation parameters.
             /// </summary>
             public Action<TokenValidationParameters, IdentityProvider, XmlElement> TokenValidationParametersCreated { get; set; } = (tvp, idp, xmlElement) => { };
+
+            /// <summary>
+            /// Notification called when an incoming Saml Response contains an unexpected
+            /// InResponseTo value. Return true to acceppt the message despite this.
+            /// </summary>
+            /// <remarks>This notification has been added to aid in troubleshooting a
+            /// hard-to-track-down issue. It will be removed in a future release if a 
+            /// better solution is identified thanks to the added production analysis
+            /// that this enables.</remarks>
+            public Func<Saml2Response, IEnumerable<ClaimsIdentity>, bool> IgnoreUnexpectedInResponseTo { get; set; } = (r, ci) => false;
         }
     }
 }

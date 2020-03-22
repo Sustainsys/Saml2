@@ -106,7 +106,8 @@ namespace Sustainsys.Saml2.Saml2P
 
             id = new Saml2Id(xml.GetRequiredAttributeValue("ID"));
 
-            ReadAndValidateInResponseTo(xml, expectedInResponseTo, options);
+            this.ExpectedInResponseTo = expectedInResponseTo;
+            ReadInResponseTo(xml);
 
             issueInstant = DateTime.Parse(xml.GetRequiredAttributeValue("IssueInstant"),
                 CultureInfo.InvariantCulture, DateTimeStyles.AdjustToUniversal);
@@ -139,30 +140,50 @@ namespace Sustainsys.Saml2.Saml2P
             }
         }
 
+        private void ReadInResponseTo(XmlElement xml)
+        {
+            var parsedInResponseTo = xml.Attributes["InResponseTo"].GetValueIfNotNull();
+
+            if(parsedInResponseTo != null)
+            {
+                InResponseTo = new Saml2Id(parsedInResponseTo);
+            }
+        }
+
         [SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "IgnoreMissingInResponseTo")]
         [SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "InResponseTo")]
         [SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "RelayState")]
-        private void ReadAndValidateInResponseTo(XmlElement xml, Saml2Id expectedInResponseTo, IOptions options)
+        private void ValidateInResponseTo(IOptions options, IEnumerable<ClaimsIdentity> claimsIdentities)
         {
-            var parsedInResponseTo = xml.Attributes["InResponseTo"].GetValueIfNotNull();
-            if (parsedInResponseTo != null)
-            {
-                InResponseTo = new Saml2Id(parsedInResponseTo);
-                if (expectedInResponseTo == null)
+            if(InResponseTo != null)
+            { 
+                if (ExpectedInResponseTo == null)
                 {
-                    throw new UnexpectedInResponseToException(
-                        string.Format(CultureInfo.InvariantCulture,
-                        "Received message contains unexpected InResponseTo \"{0}\". No cookie preserving state " +
-                        "from the request was found so the message was not expected to have an InResponseTo attribute. " +
-                        "This error typically occurs if the cookie set when doing SP-initiated sign on have been lost.",
-                        InResponseTo.Value));
+                    if (options.Notifications.Unsafe.IgnoreUnexpectedInResponseTo(this, claimsIdentities))
+                    {
+                        options.SPOptions.Logger.WriteInformation($"Ignoring unexpected InReponseTo {InResponseTo.Value}"
+                            + $"for Saml2 response {Id.Value} for user "
+                            + claimsIdentities.First().FindFirst(ClaimTypes.NameIdentifier)?.Value + ".");
+                    }
+                    else
+                    {
+                        throw new UnexpectedInResponseToException(
+                            $"Received message {id.Value} contains unexpected InResponseTo \"{InResponseTo.Value}\". No " +
+                            $"cookie preserving state from the request was found so the message was not expected to have an " +
+                            $"InResponseTo attribute. This error typically occurs if the cookie set when doing SP-initiated " +
+                            $"sign on have been lost.");
+                    }
+
                 }
-                if (expectedInResponseTo.Value != InResponseTo.Value)
+                else
                 {
-                    throw new Saml2ResponseFailedValidationException(
-                        string.Format(CultureInfo.InvariantCulture,
-                        "InResponseTo Id \"{0}\" in received response does not match Id \"{1}\" of the sent request.",
-                        InResponseTo.Value, expectedInResponseTo.Value));
+                    if (ExpectedInResponseTo.Value != InResponseTo.Value)
+                    {
+                        throw new Saml2ResponseFailedValidationException(
+                            string.Format(CultureInfo.InvariantCulture,
+                            "InResponseTo Id \"{0}\" in received response does not match Id \"{1}\" of the sent request.",
+                            InResponseTo.Value, ExpectedInResponseTo.Value));
+                    }
                 }
             }
             else
@@ -172,14 +193,14 @@ namespace Sustainsys.Saml2.Saml2P
                     return;
                 };
 
-                if (expectedInResponseTo != null)
+                if (ExpectedInResponseTo != null)
                 {
                     throw new Saml2ResponseFailedValidationException(
                         string.Format(CultureInfo.InvariantCulture,
                         "Expected message to contain InResponseTo \"{0}\", but found none. If this error occurs " +
                         "due to the Idp not setting InResponseTo according to the SAML2 specification, this check " +
                         "can be disabled by setting the IgnoreMissingInResponseTo compatibility flag to true.",
-                        expectedInResponseTo.Value));
+                        ExpectedInResponseTo.Value));
                 }
             }
         }
@@ -357,6 +378,11 @@ namespace Sustainsys.Saml2.Saml2P
         /// Id of the response message.
         /// </summary>
         public Saml2Id Id { get { return id; } }
+
+        /// <summary>
+        /// Expected InResponseTo as extracted from 
+        /// </summary>
+        public Saml2Id ExpectedInResponseTo { get; private set; }
 
         /// <summary>
         /// InResponseTo id.
@@ -541,6 +567,9 @@ namespace Sustainsys.Saml2.Saml2P
                 {
                     var idp = options.Notifications.GetIdentityProvider(Issuer, relayData, options);
                     claimsIdentities = CreateClaims(options, idp).ToList();
+
+                    // Validate InResponseTo now, to be able to include generated claims in notification.
+                    ValidateInResponseTo(options, claimsIdentities);
                 }
                 catch (Exception ex)
                 {
