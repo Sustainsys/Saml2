@@ -8,14 +8,6 @@ namespace SampleOwinApplication
     {
         public void Configuration(IAppBuilder app)
         {
-            app.Map("/foo", a =>
-            {
-                a.Use((ctx, next) =>
-                {
-                    return next.Invoke();
-                });
-            });
-
             ConfigureAuth(app);
         }
     }
