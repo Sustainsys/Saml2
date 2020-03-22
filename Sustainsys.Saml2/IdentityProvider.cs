@@ -32,13 +32,10 @@ namespace Sustainsys.Saml2
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "sp")]
         public IdentityProvider(EntityId entityId, SPOptions spOptions)
         {
-            if (spOptions == null)
-            {
-                throw new ArgumentNullException(nameof(spOptions));
-            }
-
             EntityId = entityId;
-            this.spOptions = spOptions;
+
+            this.spOptions = spOptions ?? throw new ArgumentNullException(nameof(spOptions));
+
             OutboundSigningAlgorithm = spOptions.OutboundSigningAlgorithm;
         }
 
@@ -170,7 +167,7 @@ namespace Sustainsys.Saml2
             }
         }
 
-        private IDictionary<int, Uri> artifactResolutionServiceUrls
+        private readonly IDictionary<int, Uri> artifactResolutionServiceUrls
             = new ConcurrentDictionary<int, Uri>();
 
         /// <summary>
@@ -347,7 +344,7 @@ namespace Sustainsys.Saml2
             return Saml2Binding.Get(Binding).Bind(request);
         }
 
-        private ConfiguredAndLoadedSigningKeysCollection signingKeys =
+        private readonly ConfiguredAndLoadedSigningKeysCollection signingKeys =
             new ConfiguredAndLoadedSigningKeysCollection();
 
         /// <summary>
@@ -362,7 +359,7 @@ namespace Sustainsys.Saml2
             }
         }
 
-        object metadataLoadLock = new object();
+        readonly object metadataLoadLock = new object();
 
         private void DoLoadMetadata()
         {
@@ -505,8 +502,7 @@ namespace Sustainsys.Saml2
         [ExcludeFromCodeCoverage]
         private static void DoLoadMetadataIfTargetAlive(WeakReference<IdentityProvider> target)
         {
-            IdentityProvider idp;
-            if(target.TryGetTarget(out idp))
+            if (target.TryGetTarget(out IdentityProvider idp))
             {
                 idp.DoLoadMetadata();
             }

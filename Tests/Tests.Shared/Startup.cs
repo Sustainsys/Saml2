@@ -13,7 +13,9 @@ namespace Tests
     public class Startup
     {
 		[AssemblyInitialize]
+#pragma warning disable IDE0060 // Remove unused parameter
 		public static void Initialize(TestContext testContext)
+#pragma warning restore IDE0060 // Remove unused parameter
 		{
 			// This is needed because testhost.exe uses its own location for the config file
 			// There appears to be no way to set it in .NET Core.  See:
@@ -22,7 +24,7 @@ namespace Tests
 			// https://github.com/dotnet/corefx/issues/26626
 			string asmPath = Assembly.GetExecutingAssembly().Location;
 			SustainsysSaml2Section.Configuration = ConfigurationManager.OpenExeConfiguration(asmPath);
-			StubServer.Start(testContext);
+			StubServer.Start();
 		}
 
 		[AssemblyCleanup]

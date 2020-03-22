@@ -54,12 +54,8 @@ namespace Sustainsys.Saml2.AspNetCore2
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1500:VariableNamesShouldNotMatchFieldNames", MessageId = "context")]
         public Task InitializeAsync(AuthenticationScheme scheme, HttpContext context)
         {
-            if(context == null)
-            {
-                throw new ArgumentNullException(nameof(context));
-            }
+            this.context = context ?? throw new ArgumentNullException(nameof(context));
 
-            this.context = context;
             options = optionsCache.GetOrAdd(scheme.Name, () => optionsFactory.Create(scheme.Name));
 
             emitSameSiteNone = options.Notifications.EmitSameSiteNone(context.Request.GetUserAgent());

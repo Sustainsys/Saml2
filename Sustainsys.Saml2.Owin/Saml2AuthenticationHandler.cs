@@ -44,8 +44,10 @@ namespace Sustainsys.Saml2.Owin
                 var identities = result.Principal.Identities.Select(i =>
                     new ClaimsIdentity(i, null, Options.SignInAsAuthenticationType, i.NameClaimType, i.RoleClaimType));
 
-                var authProperties = new AuthenticationProperties(result.RelayData);
-                authProperties.RedirectUri = result.Location.OriginalString;
+                var authProperties = new AuthenticationProperties(result.RelayData)
+                {
+                    RedirectUri = result.Location.OriginalString
+                };
                 if (result.SessionNotOnOrAfter.HasValue)
                 {
                     authProperties.AllowRefresh = false;
@@ -111,15 +113,13 @@ namespace Sustainsys.Saml2.Owin
                 if (challenge != null)
                 {
                     EntityId idp;
-                    string strIdp;
-                    if (challenge.Properties.Dictionary.TryGetValue("idp", out strIdp))
+                    if (challenge.Properties.Dictionary.TryGetValue("idp", out string strIdp))
                     {
                         idp = new EntityId(strIdp);
                     }
                     else
                     {
-                        object objIdp = null;
-                        Context.Environment.TryGetValue("saml2.idp", out objIdp);
+                        Context.Environment.TryGetValue("saml2.idp", out object objIdp);
                         idp = objIdp as EntityId;
                     }
                     var redirectUri = challenge.Properties.RedirectUri;
@@ -196,9 +196,8 @@ namespace Sustainsys.Saml2.Owin
         public override async Task<bool> InvokeAsync()
         {
             var Saml2Path = new PathString(Options.SPOptions.ModulePath);
-            PathString remainingPath;
 
-            if (Request.Path.StartsWithSegments(Saml2Path, out remainingPath))
+            if (Request.Path.StartsWithSegments(Saml2Path, out PathString remainingPath))
             {
                 if (remainingPath == new PathString("/" + CommandFactory.AcsCommandName))
                 {
@@ -231,7 +230,7 @@ namespace Sustainsys.Saml2.Owin
 
                     return true;
                 }
-                catch(Exception ex)
+                catch (Exception ex)
                 {
                     Options.SPOptions.Logger.WriteError("Error in Saml2 for " + Request.Path, ex);
                     throw;

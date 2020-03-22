@@ -165,8 +165,7 @@ namespace Sustainsys.Saml2.WebSso
                 sessionIndexClaim = request.User.FindFirst(Saml2ClaimTypes.SessionIndex);
             }
 
-            IdentityProvider idp;
-            var knownIdp = options.IdentityProviders.TryGetValue(new EntityId(idpEntityId), out idp);
+            var knownIdp = options.IdentityProviders.TryGetValue(new EntityId(idpEntityId), out IdentityProvider idp);
 
             options.SPOptions.Logger.WriteVerbose("Initiating logout, checking requirements for federated logout"
                 + "\n  Issuer of LogoutNameIdentifier claim (should be Idp entity id): " + idpEntityId

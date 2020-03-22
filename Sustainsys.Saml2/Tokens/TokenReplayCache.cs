@@ -11,13 +11,13 @@ namespace Sustainsys.Saml2.Tokens
 	class TokenReplayCache : ITokenReplayCache
 	{
 #if NETSTANDARD2_0
-        MemoryCache cache = new MemoryCache(new MemoryCacheOptions());
+        readonly MemoryCache cache = new MemoryCache(new MemoryCacheOptions());
 #else
-        MemoryCache cache = new MemoryCache(nameof(TokenReplayCache));
+        readonly MemoryCache cache = new MemoryCache(nameof(TokenReplayCache));
 #endif
 
         // Dummy object to store in cache.
-        private static object cacheObject = new object();
+        private static readonly object cacheObject = new object();
 
 		public bool TryAdd(string securityToken, DateTime expiresOn)
 		{

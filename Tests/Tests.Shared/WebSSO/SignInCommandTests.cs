@@ -38,8 +38,6 @@ namespace Sustainsys.Saml2.Tests.WebSso
         [TestMethod]
         public void SignInCommand_Run_MapsReturnUrl()
         {
-            var defaultDestination = Options.FromConfiguration.IdentityProviders.Default.SingleSignOnServiceUrl;
-
             var httpRequest = new HttpRequestData("GET", new Uri("http://localhost/signin?ReturnUrl=%2FReturn.aspx"));
 
             var actual = new SignInCommand().Run(httpRequest, Options.FromConfiguration);
