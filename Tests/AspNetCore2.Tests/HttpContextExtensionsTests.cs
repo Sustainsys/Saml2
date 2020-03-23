@@ -1,6 +1,7 @@
 ﻿using FluentAssertions;
 using Sustainsys.Saml2.WebSso;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.Extensions.Primitives;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NSubstitute;
@@ -24,7 +25,7 @@ namespace Sustainsys.Saml2.AspNetCore2.Tests
         {
             var context = TestHelpers.CreateHttpContext();
 
-            var actual = context.ToHttpRequestData(StubDataProtector.Unprotect);
+            var actual = context.ToHttpRequestData(Substitute.For<ICookieManager>(), StubDataProtector.Unprotect);
 
             actual.Url.Should().Be(new Uri("https://sp.example.com/somePath?param=value"));
             actual.Form.Count.Should().Be(2);
@@ -39,7 +40,7 @@ namespace Sustainsys.Saml2.AspNetCore2.Tests
         {
             var context = TestHelpers.CreateHttpGet();
 
-            var actual = context.ToHttpRequestData(StubDataProtector.Unprotect);
+            var actual = context.ToHttpRequestData(Substitute.For<ICookieManager>(), StubDataProtector.Unprotect);
 
             actual.Url.Should().Be(new Uri("https://sp.example.com/somePath?param=value"));
             actual.Form.Count.Should().Be(0);
@@ -55,7 +56,7 @@ namespace Sustainsys.Saml2.AspNetCore2.Tests
             context.Request.HasFormContentType.Returns(false);
             context.Request.Form.Returns(i => { throw new InvalidOperationException(); });
 
-            context.ToHttpRequestData(StubDataProtector.Unprotect);
+            context.ToHttpRequestData(Substitute.For<ICookieManager>(), StubDataProtector.Unprotect);
 
             // No exception = pass
         }
@@ -67,7 +68,7 @@ namespace Sustainsys.Saml2.AspNetCore2.Tests
 
             context.Request.PathBase = "/ApplicationPath";
 
-            var actual = context.ToHttpRequestData(null);
+            var actual = context.ToHttpRequestData(Substitute.For<ICookieManager>(), null);
 
             actual.ApplicationUrl.Should().Be(new Uri("https://sp.example.com/ApplicationPath"));
         }
@@ -83,12 +84,12 @@ namespace Sustainsys.Saml2.AspNetCore2.Tests
 
             var cookieData = HttpRequestData.ConvertBinaryData(
                     StubDataProtector.Protect(storedRequestState.Serialize()));
+            var cookieName = $"{StoredRequestState.CookieNameBase}SomeState";
 
-            context.Request.Cookies = new StubCookieCollection(
-                Enumerable.Repeat(new KeyValuePair<string, string>(
-                    StoredRequestState.CookieNameBase + "SomeState", cookieData), 1));
+            var cookieManager = Substitute.For<ICookieManager>();
+            cookieManager.GetRequestCookie(context, cookieName).Returns(cookieData);
 
-            var actual = context.ToHttpRequestData(StubDataProtector.Unprotect);
+            var actual = context.ToHttpRequestData(cookieManager, StubDataProtector.Unprotect);
 
             actual.StoredRequestState.Should().BeEquivalentTo(storedRequestState);
         }
@@ -99,7 +100,7 @@ namespace Sustainsys.Saml2.AspNetCore2.Tests
             var context = TestHelpers.CreateHttpContext();
             context.Request.QueryString = new QueryString("?RelayState=SomeState");
 
-            context.Invoking(c => c.ToHttpRequestData(null))
+            context.Invoking(c => c.ToHttpRequestData(Substitute.For<ICookieManager>(), null ))
                 .Should().NotThrow();
         }
 
@@ -112,7 +113,7 @@ namespace Sustainsys.Saml2.AspNetCore2.Tests
                 new Claim(ClaimTypes.NameIdentifier, "NameID")
             }));
 
-            var actual = context.ToHttpRequestData(null);
+            var actual = context.ToHttpRequestData(Substitute.For<ICookieManager>(), null);
 
             actual.User.Should().BeSameAs(context.User);
         }

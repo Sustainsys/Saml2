@@ -88,7 +88,7 @@ namespace Sustainsys.Saml2.AspNetCore2
             var redirectUri = properties.RedirectUri ?? CurrentUri;
             properties.RedirectUri = null;
 
-            var requestData = context.ToHttpRequestData(null);
+            var requestData = context.ToHttpRequestData(options.CookieManager, null);
 
             EntityId entityId = null;
 
@@ -123,7 +123,7 @@ namespace Sustainsys.Saml2.AspNetCore2
                     options.SPOptions.ModulePath.Length).TrimStart('/');
 
                 var commandResult = CommandFactory.GetCommand(commandName).Run(
-                    context.ToHttpRequestData(dataProtector.Unprotect), options);
+                    context.ToHttpRequestData(options.CookieManager, dataProtector.Unprotect), options);
 
                 await commandResult.Apply(
                     context, dataProtector, options.CookieManager, options.SignInScheme, options.SignOutScheme, emitSameSiteNone);
@@ -147,7 +147,7 @@ namespace Sustainsys.Saml2.AspNetCore2
             }
 
             await LogoutCommand.InitiateLogout(
-                context.ToHttpRequestData(dataProtector.Unprotect),
+                context.ToHttpRequestData(options.CookieManager, dataProtector.Unprotect),
                 new Uri(properties.RedirectUri, UriKind.RelativeOrAbsolute),
                 options,
                 // In the Asp.Net Core2 model, it's the caller's responsibility to terminate the
