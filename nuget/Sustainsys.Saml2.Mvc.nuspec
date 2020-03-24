@@ -7,7 +7,7 @@
     <authors>$author$</authors>
     <owners>$author$</owners>
     <license type="expression">MIT</license>
-    <icon>sustainsys.png</icon>
+    <icon>Sustainsys.png</icon>
     <projectUrl>https://github.com/Sustainsys/Saml2</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <summary>A SAML2 Service Provider for ASP.NET MVC. The package adds an MVC controller that handles SAML SignIn and SignOut.</summary>
