@@ -6,9 +6,9 @@
     <title>$title$</title>
     <authors>$author$</authors>
     <owners>$author$</owners>
-    <licenseUrl>https://github.com/Sustainsys/Saml2/blob/master/LICENSE</licenseUrl>
+    <license type="expression">MIT</license>
+    <icon>sustainsys.png</icon>
     <projectUrl>https://github.com/Sustainsys/Saml2</projectUrl>
-    <iconUrl>https://raw.github.com/Sustainsys/Saml2/master/nuget/Sustainsys.png</iconUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <summary>A SAML2 Service Provider for ASP.NET. The package adds an Http module for SAML2 Authentication.</summary>
     <description>
@@ -23,4 +23,7 @@
       </group>
     </dependencies>
   </metadata>
+  <files>
+    <file src="..\nuget\sustainsys.png" target="\" />
+  </files>
 </package>

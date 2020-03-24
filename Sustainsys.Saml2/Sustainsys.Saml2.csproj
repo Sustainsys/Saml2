@@ -3,9 +3,9 @@
     <TargetFrameworks>netstandard2.0;net47;net461</TargetFrameworks>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <PackageReleaseNotes>$releaseNotes$</PackageReleaseNotes>
-    <PackageLicenseUrl>https://github.com/Sustainsys/Saml2/blob/master/LICENSE</PackageLicenseUrl>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageProjectUrl>https://github.com/Sustainsys/Saml2</PackageProjectUrl>
-    <PackageIconUrl>https://raw.github.com/Sustainsys/Saml2/master/nuget/Sustainsys.png</PackageIconUrl>
+    <PackageIcon>sustainsys.png</PackageIcon>
     <PackageTags>SAML2 authentication AspNet SAML SSO</PackageTags>
     <PackageDescription>SAML2 protocol support. Do not use directly, use the high level package for your platform.</PackageDescription>
     <TargetFrameworkProfile />
@@ -27,6 +27,7 @@
 
   <ItemGroup>
     <Compile Include="..\VersionInfo.cs" Link="VersionInfo.cs" />
+    <None Include="..\nuget\sustainsys.png" Pack="true" PackagePath="\" />
   </ItemGroup>
 
   <ItemGroup Condition=" '$(TargetFramework)' == 'netstandard2.0' ">
@@ -49,5 +50,5 @@
     <PackageReference Include="System.Security.Cryptography.Xml" Version="4.5.0" />
   </ItemGroup>
 
-</Project>
+  </Project>
  
