@@ -83,7 +83,11 @@ namespace Sustainsys.Saml2.WebSso
                 var unbindResult = binding.Unbind(request, options);
                 options.Notifications.MessageUnbound(unbindResult);
 
-                VerifyMessageIsSigned(unbindResult, options);
+                if (!options.SPOptions.Compatibility.AcceptUnsignedLogoutResponses)
+                {
+                    VerifyMessageIsSigned(unbindResult, options);
+                }
+
                 switch (unbindResult.Data.LocalName)
                 {
                     case "LogoutRequest":

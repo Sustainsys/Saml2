@@ -685,6 +685,30 @@ namespace Sustainsys.Saml2.Tests.WebSso
                 .WithMessage("Received a LogoutRequest from https://idp.example.com that cannot be processed because it is not signed.");
         }
 
+        [TestMethod]
+        public void LogoutCommand_Run_IncomingRequest_ThroughRedirectBinding_DoesnotThrowOnMissingSignatureWithCompatibilityOption()
+        {
+            var request = new Saml2LogoutRequest()
+            {
+                DestinationUrl = new Uri("http://sp.example.com/path/Saml2/logout"),
+                Issuer = new EntityId("https://idp.example.com"),
+                NameId = new Saml2NameIdentifier("NameId"),
+                SessionIndex = "SessionID"
+            };
+
+            var bindResult = Saml2Binding.Get(Saml2BindingType.HttpRedirect)
+                .Bind(request);
+
+            var httpRequest = new HttpRequestData("GET", bindResult.Location);
+
+            var options = StubFactory.CreateOptions();
+            options.SPOptions.ServiceCertificates.Add(SignedXmlHelper.TestCert);
+            options.SPOptions.Compatibility.AcceptUnsignedLogoutResponses = true;
+
+            CommandFactory.GetCommand(CommandFactory.LogoutCommandName)
+                .Invoking(c => c.Run(httpRequest, options))
+                .Should().NotThrow();
+        }
 
         [TestMethod]
         public void LogoutCommand_Run_ThrowsOnLogoutResponseStatusNonSuccess()
