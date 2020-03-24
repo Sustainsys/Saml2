@@ -1,5 +1,6 @@
 ﻿using Sustainsys.Saml2.WebSso;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Http;
 using System;
@@ -14,6 +15,7 @@ namespace Sustainsys.Saml2.AspNetCore2
             this CommandResult commandResult,
             HttpContext httpContext,
             IDataProtector dataProtector,
+            ICookieManager cookieManager,
             string signInScheme,
             string signOutScheme,
             bool emitSameSiteNone)
@@ -30,7 +32,8 @@ namespace Sustainsys.Saml2.AspNetCore2
                 var cookieData = HttpRequestData.ConvertBinaryData(
                     dataProtector.Protect(commandResult.GetSerializedRequestState()));
 
-                httpContext.Response.Cookies.Append(
+                cookieManager.AppendResponseCookie(
+                    httpContext,
                     commandResult.SetCookieName,
                     cookieData,
                     new CookieOptions()
@@ -51,7 +54,8 @@ namespace Sustainsys.Saml2.AspNetCore2
 
             if(!string.IsNullOrEmpty(commandResult.ClearCookieName))
             {
-                httpContext.Response.Cookies.Delete(
+                cookieManager.DeleteCookie(
+                    httpContext,
                     commandResult.ClearCookieName,
                     new CookieOptions
                     {

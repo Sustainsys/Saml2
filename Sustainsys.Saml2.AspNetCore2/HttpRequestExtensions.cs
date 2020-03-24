@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authentication.Cookies;
 
 namespace Sustainsys.Saml2.AspNetCore2
 {
@@ -11,6 +12,7 @@ namespace Sustainsys.Saml2.AspNetCore2
     {
         public static HttpRequestData ToHttpRequestData(
             this HttpContext httpContext,
+            ICookieManager cookieManager,
             Func<byte[], byte[]> cookieDecryptor)
         {
             var request = httpContext.Request;
@@ -36,7 +38,7 @@ namespace Sustainsys.Saml2.AspNetCore2
                 uri,
                 pathBase,
                 formData,
-                request.Cookies,
+                cookieName => cookieManager.GetRequestCookie(httpContext, cookieName),
                 cookieDecryptor,
                 httpContext.User);
         }

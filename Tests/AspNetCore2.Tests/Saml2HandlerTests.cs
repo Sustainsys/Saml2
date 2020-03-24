@@ -26,6 +26,7 @@ using System.Security.Cryptography.Xml;
 using System.Text;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authentication.Cookies;
 
 namespace Sustainsys.Saml2.AspNetCore2.Tests
 {
@@ -118,6 +119,29 @@ namespace Sustainsys.Saml2.AspNetCore2.Tests
 
             // Don't dual-store the return-url.
             state.RelayData.Values.Should().NotContain("https://sp.example.com/LoggedIn");
+        }
+
+        [TestMethod]
+        public async Task Saml2Handler_ChallengeAsync_UsesConfiguredCookieManager()
+        {
+            var context = new Saml2HandlerTestContext();
+            var cookieManager = Substitute.For<ICookieManager>();
+            context.Subject.options.CookieManager = cookieManager;
+
+            var authProps = new AuthenticationProperties {RedirectUri = "https://sp.example.com/LoggedIn"};
+
+            var response = context.HttpContext.Response;
+
+            string cookieData = null;
+            response.Cookies.Append(Arg.Any<string>(), Arg.Do<string>(v => cookieData = v), Arg.Any<CookieOptions>());
+
+            await context.Subject.ChallengeAsync(authProps);
+
+            cookieManager.Received().AppendResponseCookie(
+                Arg.Any<HttpContext>(),
+                Arg.Is<string>(value => value.StartsWith( "Saml2." )),
+                Arg.Any<string>(),
+                Arg.Is<CookieOptions>(c => c.HttpOnly && c.Path == "/" ));
         }
 
         [TestMethod]

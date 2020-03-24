@@ -3,6 +3,7 @@ using Sustainsys.Saml2;
 using Sustainsys.Saml2.Metadata;
 using Sustainsys.Saml2.WebSso;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Http;
 using Microsoft.IdentityModel.Tokens.Saml2;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -63,6 +64,7 @@ namespace Sustainsys.Saml2.AspNetCore2.Tests
 
             ClaimsPrincipal principal = null;
             AuthenticationProperties authProps = null;
+            var cookieManager = Substitute.For<ICookieManager>();
             var authService = Substitute.For<IAuthenticationService>();
             context.RequestServices.GetService(typeof(IAuthenticationService))
                 .Returns(authService);
@@ -72,7 +74,7 @@ namespace Sustainsys.Saml2.AspNetCore2.Tests
                 Arg.Do<ClaimsPrincipal>(p => principal = p),
                 Arg.Do<AuthenticationProperties>(ap => authProps = ap));
 
-            await commandResult.Apply(context, new StubDataProtector(), "TestSignInScheme", null, true);
+            await commandResult.Apply(context, new StubDataProtector(), cookieManager, "TestSignInScheme", null, true);
 
             var expectedCookieData = HttpRequestData.ConvertBinaryData(
                 StubDataProtector.Protect(commandResult.GetSerializedRequestState()));
@@ -80,13 +82,19 @@ namespace Sustainsys.Saml2.AspNetCore2.Tests
             context.Response.StatusCode.Should().Be(302);
             context.Response.Headers["Location"].SingleOrDefault()
                 .Should().Be(redirectLocation, "location header should be set");
-            context.Response.Cookies.Received().Append(
-                "Saml2.123", expectedCookieData, Arg.Is<CookieOptions>(
-                    co => co.HttpOnly && co.Secure && co.SameSite == SameSiteMode.None));
 
-            context.Response.Cookies.Received().Delete(
+            cookieManager.Received().AppendResponseCookie(
+                context,
+                "Saml2.123",
+                expectedCookieData,
+                Arg.Is<CookieOptions>(co => co.HttpOnly && co.Secure && co.SameSite == SameSiteMode.None)
+            );
+
+            cookieManager.Received().DeleteCookie(
+                context,
                 "Clear-Cookie",
-                Arg.Is<CookieOptions>(co => co.Secure));
+                Arg.Is<CookieOptions>(co => co.Secure)
+            );
 
             context.Response.Headers.Received().Add("header", "value");
 
@@ -114,13 +122,21 @@ namespace Sustainsys.Saml2.AspNetCore2.Tests
                 ClearCookieName = "DeleteName"
             };
 
-            await commandResult.Apply(context, new StubDataProtector(), null, null, false);
+            var cookieManager = Substitute.For<ICookieManager>();
+            await commandResult.Apply(context, new StubDataProtector(), cookieManager, null, null, false);
 
-            context.Response.Cookies.Received().Delete(
-                "DeleteName", Arg.Is<CookieOptions>(co => !co.Secure));
+            cookieManager.Received().DeleteCookie(
+                context,
+                "DeleteName",
+                Arg.Is<CookieOptions>( co => !co.Secure )
+            );
 
-            context.Response.Cookies.Received().Append(
-                "CookieName", Arg.Any<string>(), Arg.Is<CookieOptions>(co => !co.Secure && co.SameSite == (SameSiteMode)(-1)));
+            cookieManager.Received().AppendResponseCookie(
+                context,
+                "CookieName",
+                Arg.Any<string>(),
+                Arg.Is<CookieOptions>( co => !co.Secure && co.SameSite == (SameSiteMode)( -1 ) )
+            );
         }
 
         [TestMethod]
@@ -134,12 +150,13 @@ namespace Sustainsys.Saml2.AspNetCore2.Tests
             context.RequestServices.GetService(typeof(IAuthenticationService))
                 .Returns(authService);
 
-            await commandResult.Apply(context, new StubDataProtector(), "TestSignInScheme", null, false);
+            var cookieManager = Substitute.For<ICookieManager>();
+            await commandResult.Apply(context, new StubDataProtector(), cookieManager, "TestSignInScheme", null, false);
 
             context.Response.StatusCode.Should().Be(200);
             context.Response.Headers.Keys.Should().NotContain("Location");
-            context.Response.Cookies.DidNotReceive().Append(
-                Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CookieOptions>());
+            cookieManager.DidNotReceive().AppendResponseCookie(
+                context, Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CookieOptions>());
 
             await authService.DidNotReceive().SignInAsync(
                 Arg.Any<HttpContext>(), Arg.Any<string>(), Arg.Any<ClaimsPrincipal>(), Arg.Any<AuthenticationProperties>());

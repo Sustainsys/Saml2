@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
 
 namespace Sustainsys.Saml2.AspNetCore2
 {
@@ -53,6 +54,9 @@ namespace Sustainsys.Saml2.AspNetCore2
             options.SignOutScheme = options.SignOutScheme
                 ?? authOptions.Value.DefaultSignOutScheme
                 ?? authOptions.Value.DefaultAuthenticateScheme;
+
+            // ChunkingCookieManager uses the headers directly when no chunk size is set
+            options.CookieManager = options.CookieManager ?? new ChunkingCookieManager();
         }
     }
 }
