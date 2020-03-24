@@ -74,11 +74,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{46971976-4
 		docs\configuration.rst = docs\configuration.rst
 		docs\contributing.rst = docs\contributing.rst
 		docs\getting-started.rst = docs\getting-started.rst
-		docs\identity-server-3-okta.rst = docs\identity-server-3-okta.rst
 		docs\index.rst = docs\index.rst
 		docs\make.bat = docs\make.bat
 		docs\Makefile = docs\Makefile
-		docs\OktaAppOptions.png = docs\OktaAppOptions.png
 		docs\owin-middleware.rst = docs\owin-middleware.rst
 		docs\troubleshooting.rst = docs\troubleshooting.rst
 	EndProjectSection

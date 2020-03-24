@@ -36,7 +36,6 @@ the license change only applies to the new versions, the old versions are still 
    getting-started
    configuration
    owin-middleware
-   identity-server-3-okta
    troubleshooting
    contributing
 
