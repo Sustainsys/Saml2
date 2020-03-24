@@ -1,17 +1,13 @@
+Version 2.5.0
+* Security Fix: Token Replay Detection 
+* Configuration of TokenValidationParameters
+* Use CookieManager in Asp.Net Core and Owin
+* Bug fixes to Artifact binding, AuthnRequest, Owin Logout
+
 Version 2.4.0
 * SameSite cookie update for Chrome 80
 * TokenValidationParametersCreated notification
 * Bug Fix: Handle query string with =
 * Improved error messages
-
-Version 2.3.0
-* Support for RequestAbstractType.Extensions - EIDAS compatibility
-* Mark correlation cookie as essential
-* CSP Hash for POST binding
-* Support specifying ReturnUrl through RelayState
-* Remove .NET Standard dependencies when targeting .NET Framework
-
-Version 2.2.0
-* Support TLS Client Certificates for Artifact Resolve
 
 See GitHub milestone issue list for details.

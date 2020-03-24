@@ -13,7 +13,7 @@
     <description>
       A SAML2 Owin middleware, compatible with ASP.NET Identity for external logins.
     </description>
-    <copyright>Copyright Sustainsys and contributors 2015-2018</copyright>
+    <copyright>Copyright Sustainsys and contributors 2015-2020</copyright>
     <tags>SAML2 authentication AspNet SAML SSO Owin</tags>
     <releaseNotes />
     <dependencies>
