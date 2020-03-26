@@ -15,6 +15,7 @@ using Sustainsys.Saml2.Configuration;
 using Sustainsys.Saml2.Internal;
 using Sustainsys.Saml2.Tokens;
 using Sustainsys.Saml2.TestHelpers;
+using System.Xml.Linq;
 
 namespace Sustainsys.Saml2.Tests.WebSso
 {
@@ -44,7 +45,7 @@ namespace Sustainsys.Saml2.Tests.WebSso
 
 		private const string ExampleSerializedData = "fZFBSwMxEIXvgv8h5J7uJt26NHQLS4tQUBErHryl26kNbJI1M6v135ttUaqHXmfeN4%2F3ZobGtZ2ue9r7J3jvAYkdXOtRHxcV76PXwaBF7Y0D1NTodX1%2Fp9Uo110MFJrQ8jPkMmEQIZINnrPVsuLG7NRYTm%2BELMuxUFKORVEWRuxAyqKQymxKxdkLRExIxdOFxCH2sPJIxlMa5XkhpBL55DmfaiX1ZPrKWf1jswgeewdxDfHDNgnbwqHi6UpNFO2mJzgprH%2F7L5lfXzE2GyLpo2Wc74k61FmG3QgOxnUtjJrgsiGcmmXnyl%2B00w%2Bpg9XyMbS2%2BWJ124bPRQRDUHGKPXB2G6IzdLm1YWK3YneUaorGowVPnGXJ6eT894Xzbw%3D%3D";
 
-		private static string DeflateBase64EncodedData(string input)
+		private static string InflateBase64EncodedData(string input)
 		{
 			byte[] data = Convert.FromBase64String(input);
 			using (MemoryStream ms = new MemoryStream(data, false))
@@ -109,8 +110,8 @@ namespace Sustainsys.Saml2.Tests.WebSso
 
 						if (key == "SAMLRequest")
 						{
-							resultValue = DeflateBase64EncodedData(resultValue);
-							expectedValue = DeflateBase64EncodedData(expectedValue);
+							resultValue = InflateBase64EncodedData(resultValue);
+							expectedValue = InflateBase64EncodedData(expectedValue);
 						}
 						resultValue.Should().Be(expectedValue);
 					}
@@ -137,6 +138,28 @@ namespace Sustainsys.Saml2.Tests.WebSso
 			};
 
 			CompareCommandResults(result, expected);
+        }
+
+        [TestMethod]
+        public void Saml2RedirectBinding_Bind_WithXmlDeclaration()
+        {
+            var message = new Saml2MessageImplementation
+            {
+                XmlData = "<xml/>",
+                DestinationUrl = new Uri("http://www.example.com/sso"),
+                MessageName = "SAMLRequest"
+            };
+
+            var result = Saml2Binding.Get(Saml2BindingType.HttpRedirect).Bind(message, null, (m, x) =>
+            {
+                x.Declaration = new XDeclaration("42.17", "utf-73", null);
+            });
+
+            var payload = Uri.UnescapeDataString(result.Location.Query.Split('=')[1]);
+
+            var inflated = InflateBase64EncodedData(payload);
+
+            inflated.Should().Be("<?xml version=\"42.17\" encoding=\"utf-73\"?>\r\n<xml />");
         }
 
         [TestMethod]
