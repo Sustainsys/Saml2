@@ -89,7 +89,7 @@ namespace Sustainsys.Saml2.Owin.Tests
 
             options.SignInAsAuthenticationType.Should().BeNull();
 
-            var middleware = new Saml2AuthenticationMiddleware(new StubOwinMiddleware(0, null),
+            new Saml2AuthenticationMiddleware(new StubOwinMiddleware(0, null),
                 CreateAppBuilder(), options);
 
             options.SignInAsAuthenticationType.Should().Be(DefaultSignInAsAuthenticationType);
@@ -1348,7 +1348,7 @@ namespace Sustainsys.Saml2.Owin.Tests
             context.Response.StatusCode.Should().Be(303);
             context.Response.Headers["Location"].Should().StartWith("https://idp2.example.com/idp?SAMLRequest");
 
-            var relayState = ExtractRelayState(context);
+            ExtractRelayState(context);
 
             var storedAuthnData = ExtractRequestState(options.DataProtector, context);
 

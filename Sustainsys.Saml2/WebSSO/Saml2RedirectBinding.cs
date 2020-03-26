@@ -124,8 +124,7 @@ namespace Sustainsys.Saml2.WebSso
                 return TrustLevel.None;
             }
 
-            IdentityProvider idp;
-            if (!options.IdentityProviders.TryGetValue(new EntityId(issuer), out idp))
+            if (!options.IdentityProviders.TryGetValue(new EntityId(issuer), out IdentityProvider idp))
             {
                 throw new InvalidSignatureException(string.Format(CultureInfo.InvariantCulture, "Cannot verify signature of message from unknown sender {0}.", issuer));
             }
@@ -143,8 +142,7 @@ namespace Sustainsys.Saml2.WebSso
             var rawQueryStringParams = request.Url.Query.TrimStart('?').Split('&').Select(qp => qp.Split('=')).ToDictionary(kv => kv[0], kv => kv[1]);
 
             var msgParam = "";
-            string msg;
-            if (rawQueryStringParams.TryGetValue("SAMLRequest", out msg))
+            if (rawQueryStringParams.TryGetValue("SAMLRequest", out string msg))
             {
                 msgParam = "SAMLRequest=" + msg;
             }
@@ -154,8 +152,7 @@ namespace Sustainsys.Saml2.WebSso
             }
 
             var relayStateParam = "";
-            string relayState;
-            if (rawQueryStringParams.TryGetValue("RelayState", out relayState))
+            if (rawQueryStringParams.TryGetValue("RelayState", out string relayState))
             {
                 relayStateParam = "&RelayState=" + relayState;
             }

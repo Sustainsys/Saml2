@@ -137,7 +137,7 @@ namespace Sustainsys.Saml2.WebSso
                     .SequenceEqual(sourceId));
         }
 
-        private static SHA1 sha1 = SHA1.Create();
+        private static readonly SHA1 sha1 = SHA1.Create();
 
         /// <summary>
         /// Create a SAML artifact value.

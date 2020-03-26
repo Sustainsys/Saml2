@@ -85,8 +85,10 @@ namespace Sustainsys.Saml2.Tests.WebSso
                     new Claim(Saml2ClaimTypes.SessionIndex, "SessionId", null, "https://idp.example.com")
                 }, "Federation"));
 
-            var request = new HttpRequestData("GET", new Uri("http://sp-internal.example.com/Saml2/Logout"));
-            request.User = user;
+            var request = new HttpRequestData("GET", new Uri("http://sp-internal.example.com/Saml2/Logout"))
+            {
+                User = user
+            };
 
             var options = StubFactory.CreateOptions();
             options.SPOptions.ServiceCertificates.Add(SignedXmlHelper.TestCert);
@@ -139,8 +141,10 @@ namespace Sustainsys.Saml2.Tests.WebSso
                     new Claim(Saml2ClaimTypes.SessionIndex, "SessionId", null, "https://idp.example.com")
                 }, "Federation"));
 
-            var request = new HttpRequestData("GET", new Uri("http://sp-internal.example.com/Saml2/Logout"));
-            request.User = user;
+            var request = new HttpRequestData("GET", new Uri("http://sp-internal.example.com/Saml2/Logout"))
+            {
+                User = user
+            };
 
             var options = StubFactory.CreateOptions();
             options.SPOptions.ServiceCertificates.Add(SignedXmlHelper.TestCert);
@@ -163,8 +167,10 @@ namespace Sustainsys.Saml2.Tests.WebSso
                     new Claim(Saml2ClaimTypes.SessionIndex, "SessionId", null, "https://idp.example.com")
                 }, "Federation"));
 
-            var request = new HttpRequestData("GET", new Uri("http://sp-internal.example.com/Saml2/Logout"));
-            request.User = user;
+            var request = new HttpRequestData("GET", new Uri("http://sp-internal.example.com/Saml2/Logout"))
+            {
+                User = user
+            };
 
             var options = StubFactory.CreateOptions();
             options.SPOptions.ServiceCertificates.Add(SignedXmlHelper.TestCert);
@@ -190,8 +196,10 @@ namespace Sustainsys.Saml2.Tests.WebSso
                     new Claim(Saml2ClaimTypes.SessionIndex, "SessionId", null, "https://idp.example.com")
                 }, "Federation"));
 
-            var request = new HttpRequestData("GET", new Uri("http://sp.example.com/Saml2/Logout?ReturnUrl=%2FLoggedOut"));
-            request.User = user;
+            var request = new HttpRequestData("GET", new Uri("http://sp.example.com/Saml2/Logout?ReturnUrl=%2FLoggedOut"))
+            {
+                User = user
+            };
 
             var options = StubFactory.CreateOptions();
             options.SPOptions.ServiceCertificates.Add(SignedXmlHelper.TestCert);
@@ -283,8 +291,10 @@ namespace Sustainsys.Saml2.Tests.WebSso
                     new Claim(Saml2ClaimTypes.SessionIndex, "SessionId", null, "https://idp.example.com")
                 }, "Federation"));
 
-            var request = new HttpRequestData("GET", new Uri("http://sp.example.com/Saml2/Logout"));
-            request.User = user;
+            var request = new HttpRequestData("GET", new Uri("http://sp.example.com/Saml2/Logout"))
+            {
+                User = user
+            };
 
             var options = StubFactory.CreateOptions();
             options.SPOptions.ServiceCertificates.Add(SignedXmlHelper.TestCert);
@@ -383,7 +393,7 @@ namespace Sustainsys.Saml2.Tests.WebSso
             xml.Sign(SignedXmlHelper.TestCert);
 
             var responseData = Convert.ToBase64String(Encoding.UTF8.GetBytes(xml.OuterXml));
-            
+
             var httpRequest = new HttpRequestData(
                 "POST",
                 new Uri("http://something"),
@@ -394,9 +404,10 @@ namespace Sustainsys.Saml2.Tests.WebSso
                     new KeyValuePair<string, IEnumerable<string>>("RelayState", new[] { relayState })
                 },
                 Enumerable.Empty<KeyValuePair<string, string>>(),
-                null);
-
-            httpRequest.StoredRequestState = new StoredRequestState(null, new Uri("http://loggedout.example.com"), null, null);
+                null)
+            {
+                StoredRequestState = new StoredRequestState(null, new Uri("http://loggedout.example.com"), null, null)
+            };
 
             var options = StubFactory.CreateOptions();
             options.SPOptions.ServiceCertificates.Add(SignedXmlHelper.TestCert);

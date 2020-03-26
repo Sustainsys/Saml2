@@ -168,7 +168,7 @@ namespace Sustainsys.Saml2.Tests.WebSso
                 Certificate = SignedXmlHelper.TestCert
             });
 
-            var result = Saml2Binding.Get(Saml2BindingType.Artifact).Unbind(r, options);
+            Saml2Binding.Get(Saml2BindingType.Artifact).Unbind(r, options);
 
             StubServer.LastArtifactResolutionWasSigned.Should().BeTrue();
         }
@@ -299,8 +299,7 @@ namespace Sustainsys.Saml2.Tests.WebSso
             var artifact = Convert.FromBase64String(
                 Uri.UnescapeDataString(query["SAMLart"]));
 
-            ISaml2Message storedMessage;
-            Saml2ArtifactBinding.PendingMessages.TryRemove(artifact, out storedMessage)
+            Saml2ArtifactBinding.PendingMessages.TryRemove(artifact, out ISaml2Message storedMessage)
                 .Should().BeTrue();
 
             storedMessage.Should().BeSameAs(message);

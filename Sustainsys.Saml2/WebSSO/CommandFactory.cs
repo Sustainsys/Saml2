@@ -53,19 +53,17 @@ namespace Sustainsys.Saml2.WebSso
         /// <returns>A command implementation or notFoundCommand if invalid.</returns>
         public static ICommand GetCommand(string commandName)
         {
-            ICommand command;
-
-            if(commandName ==  null)
+            if (commandName == null)
             {
                 throw new ArgumentNullException(nameof(commandName));
             }
 
-            if(commandName.StartsWith("/", StringComparison.OrdinalIgnoreCase))
+            if (commandName.StartsWith("/", StringComparison.OrdinalIgnoreCase))
             {
                 commandName = commandName.Substring(1);
             }
 
-            if (commands.TryGetValue(commandName, out command))
+            if (commands.TryGetValue(commandName, out ICommand command))
             {
                 return command;
             }

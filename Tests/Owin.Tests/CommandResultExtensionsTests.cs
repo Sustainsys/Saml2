@@ -135,7 +135,7 @@ namespace Sustainsys.Saml2.Owin.Tests
 
             var setCookieHeader = context.Response.Headers["Set-Cookie"];
 
-            var protectedData = HttpRequestData.ConvertBinaryData(
+            HttpRequestData.ConvertBinaryData(
                 StubDataProtector.Protect(cr.GetSerializedRequestState()));
 
             setCookieHeader.Should().Be(null);
