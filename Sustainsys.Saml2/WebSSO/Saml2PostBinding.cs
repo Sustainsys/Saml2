@@ -52,7 +52,7 @@ namespace Sustainsys.Saml2.WebSso
         }
 
         public override CommandResult Bind<TMessage>(
-            TMessage message, ILoggerAdapter logger, Action<TMessage, XDocument> xmlCreatedNotification)
+            TMessage message, ILoggerAdapter logger, Action<TMessage, XDocument, Saml2BindingType> xmlCreatedNotification)
         {
             if(message == null)
             {

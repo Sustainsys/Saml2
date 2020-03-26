@@ -109,10 +109,11 @@ namespace Sustainsys.Saml2.Tests.WebSso
             };
 
             var logoutRequestXmlCreatedCalled = false;
-            options.Notifications.LogoutRequestXmlCreated = (lr, xd) =>
+            options.Notifications.LogoutRequestXmlCreated = (lr, xd, bt) =>
             {
                 logoutRequestXmlCreatedCalled = true;
                 xd.Root.Attribute("ID").Value.Should().Be(lr.Id.Value);
+                bt.Should().Be(Saml2BindingType.HttpRedirect);
             };
 
             var actual = CommandFactory.GetCommand(CommandFactory.LogoutCommandName)
@@ -480,11 +481,12 @@ namespace Sustainsys.Saml2.Tests.WebSso
             };
 
             bool xmlCreatedCalled = false;
-            options.Notifications.LogoutResponseXmlCreated = (resp, xml) =>
+            options.Notifications.LogoutResponseXmlCreated = (resp, xml, bt) =>
             {
                 xmlCreatedCalled = true;
                 resp.Should().BeSameAs(logoutResponse);
                 xml.Root.Attribute("ID").Value.Should().BeSameAs(resp.Id.Value);
+                bt.Should().Be(Saml2BindingType.HttpRedirect);
             };
 
             CommandResult notifiedCommandResult = null;

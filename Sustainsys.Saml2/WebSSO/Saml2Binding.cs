@@ -99,7 +99,7 @@ namespace Sustainsys.Saml2.WebSso
         /// <param name="xmlCreatedNotification">Notification to call for modification of XDocument, can be null.</param>
         /// <returns>CommandResult.</returns>
         public virtual CommandResult Bind<TMessage>(
-            TMessage message, ILoggerAdapter logger, Action<TMessage, XDocument> xmlCreatedNotification)
+            TMessage message, ILoggerAdapter logger, Action<TMessage, XDocument, Saml2BindingType> xmlCreatedNotification)
             where TMessage : ISaml2Message
         {
             throw new NotImplementedException();

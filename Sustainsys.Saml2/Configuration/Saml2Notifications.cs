@@ -26,9 +26,9 @@ namespace Sustainsys.Saml2.Configuration
             AuthenticationRequestCreated
         { get; set; } = (request, provider, dictionary) => { };
 
-        public Action<Saml2AuthenticationRequest, XDocument>
+        public Action<Saml2AuthenticationRequest, XDocument, Saml2BindingType>
             AuthenticationRequestXmlCreated
-        { get; set; } = (request, xDocument) => { };
+        { get; set; } = (request, xDocument, Saml2BindingType) => { };
 
         /// <summary>
         /// Notification called when the SignIn command has produced a
@@ -138,7 +138,7 @@ namespace Sustainsys.Saml2.Configuration
         /// <summary>
         /// Notification called when a logout request has been transformed to an XML node tree.
         /// </summary>
-        public Action<Saml2LogoutRequest, XDocument> LogoutRequestXmlCreated { get; set; } = (lr, xd) => { };
+        public Action<Saml2LogoutRequest, XDocument, Saml2BindingType> LogoutRequestXmlCreated { get; set; } = (lr, xd, bt) => { };
 
         /// <summary>
         /// Notification called when a logout request has been received and processed and a Logout Response has been created.
@@ -146,7 +146,7 @@ namespace Sustainsys.Saml2.Configuration
         public Action<Saml2LogoutResponse, Saml2LogoutRequest, ClaimsPrincipal, IdentityProvider> LogoutResponseCreated { get; set; } 
             = (resp, req, u, idp) => { };
 
-        public Action<Saml2LogoutResponse, XDocument> LogoutResponseXmlCreated { get; set; } = (lr, xd) => { };
+        public Action<Saml2LogoutResponse, XDocument, Saml2BindingType> LogoutResponseXmlCreated { get; set; } = (lr, xd, bt) => { };
 
         /// <summary>
         /// Notification called when metadata has been created, but before

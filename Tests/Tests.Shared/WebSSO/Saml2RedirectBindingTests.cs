@@ -150,7 +150,7 @@ namespace Sustainsys.Saml2.Tests.WebSso
                 MessageName = "SAMLRequest"
             };
 
-            var result = Saml2Binding.Get(Saml2BindingType.HttpRedirect).Bind(message, null, (m, x) =>
+            var result = Saml2Binding.Get(Saml2BindingType.HttpRedirect).Bind(message, null, (m, x, t) =>
             {
                 x.Declaration = new XDeclaration("42.17", "utf-73", null);
             });

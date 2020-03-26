@@ -249,10 +249,11 @@ namespace Sustainsys.Saml2.Tests.WebSso
                 };
 
             bool authenticationRequestXmlCreatedCalled = false;
-            options.Notifications.AuthenticationRequestXmlCreated = (ar, xd) =>
+            options.Notifications.AuthenticationRequestXmlCreated = (ar, xd, bt) =>
             {
-                ar.Should().BeSameAs(saml2AuthenticationRequest);
                 authenticationRequestXmlCreatedCalled = true;
+                ar.Should().BeSameAs(saml2AuthenticationRequest);
+                bt.Should().Be(Saml2BindingType.HttpRedirect);
             };
 
             SignInCommand.Run(idp.EntityId, null, request, options, relayData)

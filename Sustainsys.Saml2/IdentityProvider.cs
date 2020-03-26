@@ -357,7 +357,7 @@ namespace Sustainsys.Saml2
         /// <param name="xmlCreatedNotification">Notification to call with Xml structure</param>
         /// <returns>CommandResult with the bound message.</returns>
         public CommandResult Bind<TMessage>(
-            TMessage message, Action<TMessage, XDocument> xmlCreatedNotification)
+            TMessage message, Action<TMessage, XDocument, Saml2BindingType> xmlCreatedNotification)
             where TMessage: ISaml2Message
         {
             return Saml2Binding.Get(Binding).Bind(message, spOptions.Logger, xmlCreatedNotification);
