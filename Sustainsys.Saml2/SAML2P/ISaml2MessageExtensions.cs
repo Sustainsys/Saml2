@@ -18,8 +18,8 @@ namespace Sustainsys.Saml2.Saml2P
             where TMessage : ISaml2Message
         {
             var xDocument = new XDocument(message.ToXElement());
-            
-            xmlCreatedNotification(message, xDocument);
+
+            xmlCreatedNotification?.Invoke(message, xDocument);
 
             return xDocument.ToStringWithXmlDeclaration();
         }
