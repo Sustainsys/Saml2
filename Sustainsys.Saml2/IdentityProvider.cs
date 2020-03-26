@@ -360,7 +360,7 @@ namespace Sustainsys.Saml2
             TMessage message, Action<TMessage, XDocument> xmlCreatedNotification)
             where TMessage: ISaml2Message
         {
-            return Saml2Binding.Get(Binding).Bind(message, null, xmlCreatedNotification);
+            return Saml2Binding.Get(Binding).Bind(message, spOptions.Logger, xmlCreatedNotification);
         }
 
         private readonly ConfiguredAndLoadedSigningKeysCollection signingKeys =

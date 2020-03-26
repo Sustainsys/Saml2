@@ -130,6 +130,17 @@ namespace Sustainsys.Saml2.Configuration
         public Action<CommandResult> LogoutCommandResultCreated { get; set; } = cr => { };
 
         /// <summary>
+        /// Notification called when a logout request is created to initiate single log
+        /// out with an identity provider.
+        /// </summary>
+        public Action<Saml2LogoutRequest, ClaimsPrincipal, IdentityProvider> LogoutRequestCreated { get; set; } = (lr, user, idp) => { };
+
+        /// <summary>
+        /// Notification called when a logout request has been transformed to an XML node tree.
+        /// </summary>
+        public Action<Saml2LogoutRequest, XDocument> LogoutRequestXmlCreated { get; set; } = (lr, xd) => { };
+
+        /// <summary>
         /// Notification called when metadata has been created, but before
         /// signing. At this point the contents of the metadata can be
         /// altered before presented.

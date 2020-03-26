@@ -100,10 +100,27 @@ namespace Sustainsys.Saml2.Tests.WebSso
                 notifiedCommandResult = cr;
             };
 
+            Saml2LogoutRequest logoutRequest = null;
+            options.Notifications.LogoutRequestCreated = (lr, u, idp) =>
+            {
+                logoutRequest = lr;
+                u.Identities.Single().FindFirst(Saml2ClaimTypes.SessionIndex).Value.Should().Be("SessionId");
+                idp.EntityId.Id.Should().Be("https://idp.example.com");
+            };
+
+            var logoutRequestXmlCreatedCalled = false;
+            options.Notifications.LogoutRequestXmlCreated = (lr, xd) =>
+            {
+                logoutRequestXmlCreatedCalled = true;
+                xd.Root.Attribute("ID").Value.Should().Be(lr.Id.Value);
+            };
+
             var actual = CommandFactory.GetCommand(CommandFactory.LogoutCommandName)
                 .Run(request, options);
 
             actual.Should().BeSameAs(notifiedCommandResult);
+            logoutRequest.Should().NotBeNull();
+            logoutRequestXmlCreatedCalled.Should().BeTrue();
 
             var expected = new CommandResult
             {

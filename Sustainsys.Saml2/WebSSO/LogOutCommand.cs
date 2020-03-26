@@ -185,8 +185,10 @@ namespace Sustainsys.Saml2.WebSso
             {
                 var logoutRequest = idp.CreateLogoutRequest(request.User);
 
+                options.Notifications.LogoutRequestCreated(logoutRequest, request.User, idp);
+
                 commandResult = Saml2Binding.Get(idp.SingleLogoutServiceBinding)
-                    .Bind(logoutRequest);
+                    .Bind(logoutRequest, options.SPOptions.Logger, options.Notifications.LogoutRequestXmlCreated);
 
                 commandResult.RelayState = logoutRequest.RelayState;
                 commandResult.RequestState = new StoredRequestState(
