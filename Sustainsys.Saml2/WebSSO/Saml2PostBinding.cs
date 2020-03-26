@@ -5,6 +5,7 @@ using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Xml;
+using System.Xml.Linq;
 
 namespace Sustainsys.Saml2.WebSso
 {
@@ -46,6 +47,12 @@ namespace Sustainsys.Saml2.WebSso
         }
 
         public override CommandResult Bind(ISaml2Message message, ILoggerAdapter logger)
+        {
+            return Bind(message, logger, null);
+        }
+
+        public override CommandResult Bind<TMessage>(
+            TMessage message, ILoggerAdapter logger, Action<TMessage, XDocument> xmlCreatedNotification)
         {
             if(message == null)
             {
