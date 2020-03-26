@@ -13,6 +13,7 @@ using System.Net;
 using System.Security.Cryptography;
 using System.Text;
 using System.Xml;
+using System.Xml.Linq;
 
 namespace Sustainsys.Saml2.WebSso
 {
@@ -20,12 +21,18 @@ namespace Sustainsys.Saml2.WebSso
     {
         public override CommandResult Bind(ISaml2Message message, ILoggerAdapter logger)
         {
+            return Bind(message, logger, null);
+        }
+
+        public override CommandResult Bind<TMessage>(
+            TMessage message, ILoggerAdapter logger, Action<TMessage, XDocument, Saml2BindingType> xmlCreatedNotification)
+        {
             if (message == null)
             {
                 throw new ArgumentNullException(nameof(message));
             }
 
-            var messageXml = message.ToXml();
+            var messageXml = message.ToXml(xd => xmlCreatedNotification?.Invoke(message, xd, Saml2BindingType.HttpRedirect));
             logger?.WriteVerbose("Sending message over Http Redirect Binding\n" + messageXml);
 
             var serializedRequest = Serialize(messageXml);

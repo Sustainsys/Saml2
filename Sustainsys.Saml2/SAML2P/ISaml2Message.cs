@@ -4,6 +4,7 @@ using System.Linq;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 using Sustainsys.Saml2.Metadata;
 
 namespace Sustainsys.Saml2.Saml2P
@@ -27,6 +28,12 @@ namespace Sustainsys.Saml2.Saml2P
         /// </summary>
         /// <returns>string containing the Xml data.</returns>
         string ToXml();
+
+        /// <summary>
+        /// Transforms the message to an XElement object tree.
+        /// </summary>
+        /// <returns>XElement with Xml representation of the message</returns>
+        XElement ToXElement();
 
         /// <summary>
         /// The name of the message to use in a query string or form input

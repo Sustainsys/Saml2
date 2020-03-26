@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Web;
 using System.Xml;
+using System.Xml.Linq;
 
 namespace Sustainsys.Saml2.WebSso
 {
@@ -88,6 +89,22 @@ namespace Sustainsys.Saml2.WebSso
         {
             throw new NotImplementedException();
         }
+
+        /// <summary>
+        /// Binds a message to an http response.
+        /// </summary>
+        /// <typeparam name="TMessage">Type of the message.</typeparam>
+        /// <param name="message">Message to bind</param>
+        /// <param name="logger">Logger to log use, can be null.</param>
+        /// <param name="xmlCreatedNotification">Notification to call for modification of XDocument, can be null.</param>
+        /// <returns>CommandResult.</returns>
+        public virtual CommandResult Bind<TMessage>(
+            TMessage message, ILoggerAdapter logger, Action<TMessage, XDocument, Saml2BindingType> xmlCreatedNotification)
+            where TMessage : ISaml2Message
+        {
+            throw new NotImplementedException();
+        }
+
         /// <summary>
         /// Binds a message to a http response.
         /// </summary>
@@ -183,8 +200,7 @@ namespace Sustainsys.Saml2.WebSso
                 throw new ArgumentNullException(nameof(uri));
             }
 
-            Saml2BindingType bindingType;
-            if(bindingTypeMap.TryGetValue(uri, out bindingType))
+            if(bindingTypeMap.TryGetValue(uri, out Saml2BindingType bindingType))
             {
                 return bindingType;
             }
@@ -201,8 +217,7 @@ namespace Sustainsys.Saml2.WebSso
         /// <exception cref="ArgumentException">If the type is not mapped.</exception>
         public static Uri Saml2BindingTypeToUri(Saml2BindingType type)
         {
-            Uri uri;
-            if (bindingUriMap.TryGetValue(type, out uri))
+            if (bindingUriMap.TryGetValue(type, out Uri uri))
             {
                 return uri;
             }

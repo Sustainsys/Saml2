@@ -95,6 +95,11 @@ namespace Sustainsys.Saml2.Saml2P
         /// <returns>string containing the Xml data.</returns>
         public override string ToXml()
         {
+            return ToXElement().ToString();
+        }
+
+        public override XElement ToXElement()
+        {
             var x = new XElement(Saml2Namespaces.Saml2P + LocalName);
 
             x.Add(base.ToXNodes());
@@ -103,7 +108,7 @@ namespace Sustainsys.Saml2.Saml2P
             x.Add(new XElement(Saml2Namespaces.Saml2P + "SessionIndex",
                 SessionIndex));
 
-            return x.ToString();
+            return x;
         }
     }
 }

@@ -43,5 +43,10 @@ namespace Sustainsys.Saml2.Saml2P
                 new XElement(Saml2Namespaces.Saml2P + "Artifact", Artifact))
                 .ToString();
         }
+
+        public override XElement ToXElement()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

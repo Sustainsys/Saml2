@@ -15,6 +15,7 @@ using System.Collections.Concurrent;
 using System.Security.Claims;
 using System.Diagnostics.CodeAnalysis;
 using Sustainsys.Saml2.Tokens;
+using System.Xml.Linq;
 
 namespace Sustainsys.Saml2
 {
@@ -334,14 +335,32 @@ namespace Sustainsys.Saml2
         public string OutboundSigningAlgorithm { get; set; }
 
         /// <summary>
-        /// Bind a Saml2AuthenticateRequest using the active binding of the idp,
+        /// Bind a Saml2 message using the active binding of the idp,
         /// producing a CommandResult with the result of the binding.
         /// </summary>
-        /// <param name="request">The AuthnRequest to bind.</param>
+        /// <remarks>
+        /// This overload does not support the usage of Xml Created notifications.
+        /// </remarks>
+        /// <param name="request">The Saml2 message to bind.</param>
         /// <returns>CommandResult with the bound request.</returns>
         public CommandResult Bind(ISaml2Message request)
         {
             return Saml2Binding.Get(Binding).Bind(request);
+        }
+
+        /// <summary>
+        /// Bind a Saml2 message using the active binding of hte idp,
+        /// producing a CommandResult with the result of the binding.
+        /// </summary>
+        /// <typeparam name="TMessage">Type of the message.</typeparam>
+        /// <param name="message">The Saml2 message to bind.</param>
+        /// <param name="xmlCreatedNotification">Notification to call with Xml structure</param>
+        /// <returns>CommandResult with the bound message.</returns>
+        public CommandResult Bind<TMessage>(
+            TMessage message, Action<TMessage, XDocument, Saml2BindingType> xmlCreatedNotification)
+            where TMessage: ISaml2Message
+        {
+            return Saml2Binding.Get(Binding).Bind(message, spOptions.Logger, xmlCreatedNotification);
         }
 
         private readonly ConfiguredAndLoadedSigningKeysCollection signingKeys =

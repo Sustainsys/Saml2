@@ -5,6 +5,7 @@ using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Xml;
+using System.Xml.Linq;
 
 namespace Sustainsys.Saml2.WebSso
 {
@@ -29,8 +30,7 @@ namespace Sustainsys.Saml2.WebSso
                 throw new ArgumentNullException(nameof(request));
             }
 
-            string encodedMessage;
-            if (!request.Form.TryGetValue("SAMLResponse", out encodedMessage))
+            if (!request.Form.TryGetValue("SAMLResponse", out string encodedMessage))
             {
                 encodedMessage = request.Form["SAMLRequest"];
             }
@@ -41,20 +41,25 @@ namespace Sustainsys.Saml2.WebSso
 
             options?.SPOptions.Logger.WriteVerbose("Http POST binding extracted message\n" + xmlDoc.OuterXml);
 
-            string relayState = null;
-            request.Form.TryGetValue("RelayState", out relayState);
+            request.Form.TryGetValue("RelayState", out string relayState);
 
             return new UnbindResult(xmlDoc.DocumentElement, relayState, TrustLevel.None);
         }
 
         public override CommandResult Bind(ISaml2Message message, ILoggerAdapter logger)
         {
+            return Bind(message, logger, null);
+        }
+
+        public override CommandResult Bind<TMessage>(
+            TMessage message, ILoggerAdapter logger, Action<TMessage, XDocument, Saml2BindingType> xmlCreatedNotification)
+        {
             if(message == null)
             {
                 throw new ArgumentNullException(nameof(message));
             }
 
-            var xml = message.ToXml();
+            var xml = message.ToXml(xd => xmlCreatedNotification?.Invoke(message, xd, Saml2BindingType.HttpPost));
 
             if(message.SigningCertificate != null)
             {
@@ -74,7 +79,7 @@ namespace Sustainsys.Saml2.WebSso
             var cr = new CommandResult()
             {
                 ContentType = "text/html",
-                Content = String.Format(
+                Content = string.Format(
                     CultureInfo.InvariantCulture, 
                     PostHtmlFormatString, 
                     message.DestinationUrl, 

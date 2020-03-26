@@ -8,6 +8,7 @@ using Sustainsys.Saml2.WebSso;
 using System.Security.Cryptography.Xml;
 using NSubstitute;
 using Sustainsys.Saml2.TestHelpers;
+using System.Xml.Linq;
 
 namespace Sustainsys.Saml2.Tests.WebSso
 {
@@ -110,7 +111,7 @@ namespace Sustainsys.Saml2.Tests.WebSso
                 },
                 logger);
 
-            logger.Received().WriteVerbose("Sending message over Http POST binding\n<xml/>");
+            logger.Received().WriteVerbose("Sending message over Http POST binding\n<xml />");
         }
 
         [TestMethod]
@@ -118,7 +119,7 @@ namespace Sustainsys.Saml2.Tests.WebSso
         {
             var message = new Saml2MessageImplementation
             {
-                XmlData = "<root><content>data</content></root>",
+                XmlData = "<root>\r\n  <content>data</content>\r\n</root>",
                 DestinationUrl = new Uri("http://www.example.com/acs"),
                 MessageName = "SAMLMessageName"
             };
@@ -145,7 +146,7 @@ you must press the Continue button once to proceed.
 <form action=""http://www.example.com/acs"" method=""post"" name=""sustainsysSamlPostBindingSubmit"">
 <div>
 <input type=""hidden"" name=""SAMLMessageName""
-value=""PHJvb3Q+PGNvbnRlbnQ+ZGF0YTwvY29udGVudD48L3Jvb3Q+""/>
+value=""PHJvb3Q+DQogIDxjb250ZW50PmRhdGE8L2NvbnRlbnQ+DQo8L3Jvb3Q+""/>
 </div>
 <noscript>
 <div>
@@ -169,7 +170,7 @@ document.forms.sustainsysSamlPostBindingSubmit.submit();
             var message = new Saml2MessageImplementation
             {
                 DestinationUrl = new Uri("http://www.example.com/acs"),
-                XmlData = "<root><content>data</content></root>",
+                XmlData = "<root>\r\n  <content>data</content>\r\n</root>",
                 MessageName = "SAMLMessageName",
                 RelayState = "ABC1234"
             };
@@ -197,7 +198,7 @@ you must press the Continue button once to proceed.
 <div>
 <input type=""hidden"" name=""RelayState"" value=""ABC1234""/>
 <input type=""hidden"" name=""SAMLMessageName""
-value=""PHJvb3Q+PGNvbnRlbnQ+ZGF0YTwvY29udGVudD48L3Jvb3Q+""/>
+value=""PHJvb3Q+DQogIDxjb250ZW50PmRhdGE8L2NvbnRlbnQ+DQo8L3Jvb3Q+""/>
 </div>
 <noscript>
 <div>
@@ -221,7 +222,7 @@ document.forms.sustainsysSamlPostBindingSubmit.submit();
             var message = new Saml2MessageImplementation
             {
                 DestinationUrl = new Uri("http://www.example.com/acs"),
-                XmlData = "<root ID=\"id\"><content>data</content></root>",
+                XmlData = "<root ID=\"id\">\r\n  <content>data</content>\r\n</root>",
                 MessageName = "SAMLMessageName",
                 RelayState = "ABC1234",
                 SigningCertificate = SignedXmlHelper.TestCert,
@@ -270,6 +271,72 @@ document.forms.sustainsysSamlPostBindingSubmit.submit();
             };
 
             result.Should().BeEquivalentTo(expected);
+        }
+
+        [TestMethod]
+        public void Saml2PostBinding_Bind_SignsXmlAndPreserversXmlDeclaration()
+        {
+            var message = new Saml2MessageImplementation
+            {
+                DestinationUrl = new Uri("http://www.example.com/acs"),
+                XmlData = "<root ID=\"id\">\r\n  <content>data</content>\r\n</root>",
+                MessageName = "SAMLMessageName",
+                RelayState = "ABC1234",
+                SigningCertificate = SignedXmlHelper.TestCert,
+                SigningAlgorithm = SecurityAlgorithms.RsaSha256Signature
+            };
+
+            var signedXml = "<?xml version=\"1.0\" encoding=\"blaha\"?>\r\n" 
+                + SignedXmlHelper.SignXml(message.XmlData, true);
+            var expectedValue = Convert.ToBase64String(Encoding.UTF8.GetBytes(signedXml));
+
+            var notificationCalled = false;
+            var result = Saml2Binding.Get(Saml2BindingType.HttpPost).Bind(message, null, (m, xd, bt) =>
+            {
+                xd.Declaration = new XDeclaration("1.0", "blaha", null);
+                m.Should().BeSameAs(message);
+                bt.Should().Be(Saml2BindingType.HttpPost);
+                notificationCalled = true;
+            });
+
+            var expected = new CommandResult()
+            {
+                ContentType = "text/html",
+                Content = @"<?xml version=""1.0"" encoding=""UTF-8""?>
+<!DOCTYPE html PUBLIC ""-//W3C//DTD XHTML 1.1//EN""
+""http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd"">
+<html xmlns=""http://www.w3.org/1999/xhtml"" xml:lang=""en"">
+<head>
+<meta http-equiv=""Content-Security-Policy"" content=""script-src 'sha256-H3SVZBYrbqBt3ncrT/nNmOb6nwCjC12cPQzh5jnW4Y0='"">
+</head>
+<body>
+<noscript>
+<p>
+<strong>Note:</strong> Since your browser does not support JavaScript, 
+you must press the Continue button once to proceed.
+</p>
+</noscript>
+<form action=""http://www.example.com/acs"" method=""post"" name=""sustainsysSamlPostBindingSubmit"">
+<div>
+<input type=""hidden"" name=""RelayState"" value=""ABC1234""/>
+<input type=""hidden"" name=""SAMLMessageName""
+value=""" + expectedValue + @"""/>
+</div>
+<noscript>
+<div>
+<input type=""submit"" value=""Continue""/>
+</div>
+</noscript>
+</form>
+<script type=""text/javascript"">
+document.forms.sustainsysSamlPostBindingSubmit.submit();
+</script>
+</body>
+</html>"
+            };
+
+            result.Should().BeEquivalentTo(expected);
+            notificationCalled.Should().BeTrue();
         }
 
         [TestMethod]

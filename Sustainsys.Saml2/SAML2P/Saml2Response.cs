@@ -14,6 +14,7 @@ using Sustainsys.Saml2.Internal;
 using Sustainsys.Saml2.Exceptions;
 using System.Diagnostics.CodeAnalysis;
 using Sustainsys.Saml2.Metadata;
+using System.Xml.Linq;
 
 namespace Sustainsys.Saml2.Saml2P
 {
@@ -105,25 +106,25 @@ namespace Sustainsys.Saml2.Saml2P
 
             xmlElement = xml;
 
-            id = new Saml2Id(xml.GetRequiredAttributeValue("ID"));
+            Id = new Saml2Id(xml.GetRequiredAttributeValue("ID"));
 
             ExpectedInResponseTo = expectedInResponseTo;
             ReadInResponseTo(xml);
 
-            issueInstant = DateTime.Parse(xml.GetRequiredAttributeValue("IssueInstant"),
+            IssueInstant = DateTime.Parse(xml.GetRequiredAttributeValue("IssueInstant"),
                 CultureInfo.InvariantCulture, DateTimeStyles.AdjustToUniversal);
 
             var statusElement = xml.GetRequiredElement("Status", Saml2Namespaces.Saml2PName);
             var statusCodeElement = statusElement.GetRequiredElement("StatusCode", Saml2Namespaces.Saml2PName);
             var statusString = statusCodeElement.GetRequiredAttributeValue("Value");
 
-            status = StatusCodeHelper.FromString(statusString);
+            Status = StatusCodeHelper.FromString(statusString);
 
-            statusMessage = statusElement
+            StatusMessage = statusElement
                 ["StatusMessage", Saml2Namespaces.Saml2PName].GetTrimmedTextIfNotNull();
             if (statusCodeElement["StatusCode", Saml2Namespaces.Saml2PName] != null)
             {
-                secondLevelStatus = statusCodeElement["StatusCode", Saml2Namespaces.Saml2PName].Attributes["Value"].Value;
+                SecondLevelStatus = statusCodeElement["StatusCode", Saml2Namespaces.Saml2PName].Attributes["Value"].Value;
             }
 
             Issuer = new EntityId(xmlElement["Issuer", Saml2Namespaces.Saml2Name].GetTrimmedTextIfNotNull());
@@ -168,7 +169,7 @@ namespace Sustainsys.Saml2.Saml2P
                     else
                     {
                         throw new UnexpectedInResponseToException(
-                            $"Received message {id.Value} contains unexpected InResponseTo \"{InResponseTo.Value}\". No " +
+                            $"Received message {Id.Value} contains unexpected InResponseTo \"{InResponseTo.Value}\". No " +
                             $"cookie preserving state from the request was found so the message was not expected to have an " +
                             $"InResponseTo attribute. This error typically occurs if the cookie set when doing SP-initiated " +
                             $"sign on have been lost.");
@@ -273,8 +274,8 @@ namespace Sustainsys.Saml2.Saml2P
             DestinationUrl = destinationUrl;
             RelayState = relayState;
             InResponseTo = inResponseTo;
-            id = new Saml2Id("id" + Guid.NewGuid().ToString("N"));
-            status = Saml2StatusCode.Success;
+            Id = new Saml2Id("id" + Guid.NewGuid().ToString("N"));
+            Status = Saml2StatusCode.Success;
             this.audience = audience;
         }
 
@@ -313,6 +314,20 @@ namespace Sustainsys.Saml2.Saml2P
         }
 
         /// <summary>
+        /// Transforms the message to an XElement object tree.
+        /// </summary>
+        /// <remarks>This operation is inefficient, but it is only used by
+        /// the StubIdp so it's acceptable.</remarks>
+        /// <returns>XElement with Xml representation of the message</returns>
+        public XElement ToXElement()
+        {
+            using(var reader = new XmlNodeReader(XmlElement))
+            {
+                return XElement.Load(reader);
+            }
+        }
+
+        /// <summary>
         /// SAML Message name for responses, hard coded to SAMLResponse.
         /// </summary>
         public string MessageName
@@ -343,7 +358,7 @@ namespace Sustainsys.Saml2.Saml2P
                 responseElement.SetAttributeNode("Destination", "").Value = DestinationUrl.ToString();
             }
 
-            responseElement.SetAttributeNode("ID", "").Value = id.Value;
+            responseElement.SetAttributeNode("ID", "").Value = Id.Value;
             responseElement.SetAttributeNode("Version", "").Value = "2.0";
             responseElement.SetAttributeNode("IssueInstant", "").Value =
                 DateTime.UtcNow.ToSaml2DateTimeString();
@@ -372,12 +387,10 @@ namespace Sustainsys.Saml2.Saml2P
             xmlElement = xml.DocumentElement;
         }
 
-        readonly Saml2Id id;
-
         /// <summary>
         /// Id of the response message.
         /// </summary>
-        public Saml2Id Id { get { return id; } }
+        public Saml2Id Id { get; }
 
         /// <summary>
         /// Expected InResponseTo as extracted from 
@@ -389,33 +402,26 @@ namespace Sustainsys.Saml2.Saml2P
         /// </summary>
         public Saml2Id InResponseTo { get; private set; }
 
-        readonly DateTime issueInstant;
-
         /// <summary>
         /// Issue instant of the response message.
         /// </summary>
-        public DateTime IssueInstant { get { return issueInstant; } }
-
-        readonly Saml2StatusCode status;
+        public DateTime IssueInstant { get; }
 
         /// <summary>
         /// Status code of the message according to the SAML2 spec section 3.2.2.2
         /// </summary>
-        public Saml2StatusCode Status { get { return status; } }
-
-        readonly string statusMessage;
+        public Saml2StatusCode Status { get; }
 
         /// <summary>
         /// StatusMessage of the message according to the SAML2 spec section 3.2.2.1
         /// </summary>
-        public string StatusMessage { get { return statusMessage; } }
+        public string StatusMessage { get; }
 
-        readonly string secondLevelStatus;
         /// <summary>
         /// Optional status which MAY give additional information about the cause of the problem (according to the SAML2 spec section 3.2.2.2))))))))). 
         /// Because it may change in future specifications let's not make enum out of it yet.
         /// </summary>
-        public string SecondLevelStatus { get { return secondLevelStatus; } }
+        public string SecondLevelStatus { get; }
 
         /// <summary>
         /// Issuer (= sender) of the response.
@@ -585,11 +591,11 @@ namespace Sustainsys.Saml2.Saml2P
         {
             Validate(options, idp);
 
-            if (status != Saml2StatusCode.Success)
+            if (Status != Saml2StatusCode.Success)
             {
                 throw new UnsuccessfulSamlOperationException(
                     "The Saml2Response must have status success to extract claims.",
-                    status, statusMessage, secondLevelStatus);
+                    Status, StatusMessage, SecondLevelStatus);
             }
 
             TokenValidationParameters validationParameters = options.SPOptions.TokenValidationParametersTemplate.Clone();

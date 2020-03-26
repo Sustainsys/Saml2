@@ -18,22 +18,10 @@ namespace Sustainsys.Saml2.Saml2P
     /// </summary>
     public abstract class Saml2RequestBase : ISaml2Message
     {
-        private Saml2Id id = new Saml2Id("id" + Guid.NewGuid().ToString("N"));
-
         /// <summary>
         /// The id of the request.
         /// </summary>
-        public Saml2Id Id
-        {
-            get
-            {
-                return id;
-            }
-            protected set
-            {
-                id = value;
-            }
-        }
+        public Saml2Id Id { get; protected set; } = new Saml2Id("id" + Guid.NewGuid().ToString("N"));
 
         /// <summary>
         /// Version of the SAML request. Always returns "2.0"
@@ -47,19 +35,10 @@ namespace Sustainsys.Saml2.Saml2P
             }
         }
 
-        private readonly string issueInstant =
-            DateTime.UtcNow.ToSaml2DateTimeString();
-
         /// <summary>
         /// The instant that the request was issued (well actually, created).
         /// </summary>
-        public string IssueInstant
-        {
-            get
-            {
-                return issueInstant;
-            }
-        }
+        public string IssueInstant { get; } = DateTime.UtcNow.ToSaml2DateTimeString();
 
         /// <summary>
         /// SAML message name for requests - hard coded to SAMLRequest.
@@ -91,6 +70,12 @@ namespace Sustainsys.Saml2.Saml2P
         /// The SAML2 request name
         /// </summary>
         protected abstract string LocalName { get; }
+
+        /// <summary>
+        /// Transforms the message to an XElement object tree.
+        /// </summary>
+        /// <returns>XElement with Xml representation of the message</returns>
+        public abstract XElement ToXElement();
 
         /// <summary>
         /// Creates XNodes for the fields of the Saml2RequestBase class. These

@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
+using System.Xml.Linq;
 
 namespace Sustainsys.Saml2.Saml2P
 {
@@ -32,6 +33,27 @@ namespace Sustainsys.Saml2.Saml2P
             AppendTo(doc);
             return doc.DocumentElement.OuterXml;
         }
+
+        public override XElement ToXElement()
+        {
+            var xe = new XElement(Saml2Namespaces.Saml2P + "LogoutResponse",
+                new XAttribute("ID", Id.Value),
+                new XAttribute("Version", "2.0"),
+                new XAttribute("IssueInstant", IssueInstant.ToSaml2DateTimeString()),
+                new XElement(Saml2Namespaces.Saml2P + "Status",
+                    new XElement(Saml2Namespaces.Saml2P + "StatusCode",
+                    new XAttribute("Value", StatusCodeHelper.FromCode(Status)))));
+
+            if(Issuer != null)
+            {
+                xe.AddFirst(new XElement(Saml2Namespaces.Saml2 + "Issuer", Issuer.Id));
+            }
+
+            xe.AddAttributeIfNotNullOrEmpty("InResponseTo", InResponseTo?.Value);
+            xe.AddAttributeIfNotNullOrEmpty("Destination", DestinationUrl?.OriginalString);
+
+            return xe;
+       }
 
         /// <summary>
         /// Appends xml for the Saml2LogoutResponse to the given parent node.

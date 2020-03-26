@@ -100,10 +100,28 @@ namespace Sustainsys.Saml2.Tests.WebSso
                 notifiedCommandResult = cr;
             };
 
+            Saml2LogoutRequest logoutRequest = null;
+            options.Notifications.LogoutRequestCreated = (lr, u, idp) =>
+            {
+                logoutRequest = lr;
+                u.Identities.Single().FindFirst(Saml2ClaimTypes.SessionIndex).Value.Should().Be("SessionId");
+                idp.EntityId.Id.Should().Be("https://idp.example.com");
+            };
+
+            var logoutRequestXmlCreatedCalled = false;
+            options.Notifications.LogoutRequestXmlCreated = (lr, xd, bt) =>
+            {
+                logoutRequestXmlCreatedCalled = true;
+                xd.Root.Attribute("ID").Value.Should().Be(lr.Id.Value);
+                bt.Should().Be(Saml2BindingType.HttpRedirect);
+            };
+
             var actual = CommandFactory.GetCommand(CommandFactory.LogoutCommandName)
                 .Run(request, options);
 
             actual.Should().BeSameAs(notifiedCommandResult);
+            logoutRequest.Should().NotBeNull();
+            logoutRequestXmlCreatedCalled.Should().BeTrue();
 
             var expected = new CommandResult
             {
@@ -441,10 +459,35 @@ namespace Sustainsys.Saml2.Tests.WebSso
             var bindResult = Saml2Binding.Get(Saml2BindingType.HttpRedirect)
                 .Bind(request);
 
-            var httpRequest = new HttpRequestData("GET", bindResult.Location);
+            var httpRequest = new HttpRequestData(
+                "GET",
+                bindResult.Location,
+                "/",
+                null,
+                cookieName => null,
+                null,
+                new ClaimsPrincipal(new ClaimsIdentity(new Claim[] { new Claim(Saml2ClaimTypes.SessionIndex, "SessionID") })));
 
             var options = StubFactory.CreateOptions();
             options.SPOptions.ServiceCertificates.Add(SignedXmlHelper.TestCert);
+
+            Saml2LogoutResponse logoutResponse = null;
+            options.Notifications.LogoutResponseCreated = (resp, req, u, idp) =>
+            {
+                logoutResponse = resp;
+                req.Id.Value.Should().Be(request.Id.Value);
+                u.Identities.First().FindFirst(Saml2ClaimTypes.SessionIndex).Value.Should().Be("SessionID");
+                idp.EntityId.Id.Should().Be(request.Issuer.Id);
+            };
+
+            bool xmlCreatedCalled = false;
+            options.Notifications.LogoutResponseXmlCreated = (resp, xml, bt) =>
+            {
+                xmlCreatedCalled = true;
+                resp.Should().BeSameAs(logoutResponse);
+                xml.Root.Attribute("ID").Value.Should().BeSameAs(resp.Id.Value);
+                bt.Should().Be(Saml2BindingType.HttpRedirect);
+            };
 
             CommandResult notifiedCommandResult = null;
             options.Notifications.LogoutCommandResultCreated = cr =>
@@ -474,6 +517,8 @@ namespace Sustainsys.Saml2.Tests.WebSso
 
             actual.Should().BeEquivalentTo(expected, opt => opt.Excluding(cr => cr.Location));
             actual.Should().BeSameAs(notifiedCommandResult);
+            logoutResponse.InResponseTo.Value.Should().Be(request.Id.Value);
+            xmlCreatedCalled.Should().BeTrue();
 
             var actualUnbindResult = Saml2Binding.Get(Saml2BindingType.HttpRedirect)
                 .Unbind(new HttpRequestData("GET", actual.Location), options);

@@ -15,6 +15,7 @@ using Sustainsys.Saml2.Configuration;
 using Sustainsys.Saml2.Internal;
 using Sustainsys.Saml2.Tokens;
 using Sustainsys.Saml2.TestHelpers;
+using System.Xml.Linq;
 
 namespace Sustainsys.Saml2.Tests.WebSso
 {
@@ -37,25 +38,14 @@ namespace Sustainsys.Saml2.Tests.WebSso
                 .Should().Throw<ArgumentNullException>().And.ParamName.Should().Be("request");
         }
 
-        // Example from http://en.wikipedia.org/wiki/SAML_2.0#HTTP_Redirect_Binding
-        private const string ExampleXmlData = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n"
-                + "<samlp:AuthnRequest\r\n"
-                + "  xmlns:samlp=\"urn:oasis:names:tc:SAML:2.0:protocol\"\r\n"
-                + "  xmlns:saml=\"urn:oasis:names:tc:SAML:2.0:assertion\"\r\n"
-                + "  ID=\"aaf23196-1773-2113-474a-fe114412ab72\"\r\n"
-                + "  Version=\"2.0\"\r\n"
-                + "  IssueInstant=\"2004-12-05T09:21:59Z\"\r\n"
-                + "  AssertionConsumerServiceIndex=\"0\"\r\n"
-                + "  AttributeConsumingServiceIndex=\"0\">\r\n"
-                + "  <saml:Issuer>https://sp.example.com/SAML2</saml:Issuer>\r\n"
-                + "  <samlp:NameIDPolicy\r\n"
-                + "    AllowCreate=\"true\"\r\n"
-                + "    Format=\"urn:oasis:names:tc:SAML:2.0:nameid-format:transient\"/>\r\n"
-                + "</samlp:AuthnRequest>\r\n";
+        private const string ExampleXmlData = "<samlp:AuthnRequest xmlns:samlp=\"urn:oasis:names:tc:SAML:2.0:protocol\" xmlns:saml=\"urn:oasis:names:tc:SAML:2.0:assertion\" ID=\"aaf23196-1773-2113-474a-fe114412ab72\" Version=\"2.0\" IssueInstant=\"2004-12-05T09:21:59Z\" AssertionConsumerServiceIndex=\"0\" AttributeConsumingServiceIndex=\"0\">\r\n"
+            + " <saml:Issuer>https://sp.example.com/SAML2</saml:Issuer>\r\n"
+            + " <samlp:NameIDPolicy AllowCreate=\"true\" Format=\"urn:oasis:names:tc:SAML:2.0:nameid-format:transient\" />\r\n"
+            + "</samlp:AuthnRequest>";
 
-		private const string ExampleSerializedData = "fZFfa8IwFMXfBb9DyXvaJtZ1BqsURRC2Mabbw95ivc5Am3TJrXPffmmLY3%2FA15Pzuyf33On8XJXBCaxTRmeEhTEJQBdmr%2FRbRp63K3pL5rPhYOpkVdYib%2FCon%2BC9AYfDQRB4WDvRvWWksVoY6ZQTWlbgBBZik9%2FfCR7GorYGTWFK8pu6DknnwKL%2FWEetlxmR8sBHbHJDWZqOKGdsRJM0kfQAjCUJ43KX8s78ctnIz%2Blp5xpYa4dSo1fjOKGM03i8jSeCMzGevHa2%2FBK5MNo1FdgN2JMqPLmHc0b6WTmiVbsGoTf5qv66Zq2t60x0wXZ2RKydiCJXh3CWVV1CWJgqanfl0%2Bin8xutxYOvZL18NKUqPlvZR5el%2BVhYkAgZQdsA6fWVsZXE63W2itrTQ2cVaKV2CjSSqL1v9P%2FAXv4C";
+		private const string ExampleSerializedData = "fZFBSwMxEIXvgv8h5J7uJt26NHQLS4tQUBErHryl26kNbJI1M6v135ttUaqHXmfeN4%2F3ZobGtZ2ue9r7J3jvAYkdXOtRHxcV76PXwaBF7Y0D1NTodX1%2Fp9Uo110MFJrQ8jPkMmEQIZINnrPVsuLG7NRYTm%2BELMuxUFKORVEWRuxAyqKQymxKxdkLRExIxdOFxCH2sPJIxlMa5XkhpBL55DmfaiX1ZPrKWf1jswgeewdxDfHDNgnbwqHi6UpNFO2mJzgprH%2F7L5lfXzE2GyLpo2Wc74k61FmG3QgOxnUtjJrgsiGcmmXnyl%2B00w%2Bpg9XyMbS2%2BWJ124bPRQRDUHGKPXB2G6IzdLm1YWK3YneUaorGowVPnGXJ6eT894Xzbw%3D%3D";
 
-		private static string DeflateBase64EncodedData(string input)
+		private static string InflateBase64EncodedData(string input)
 		{
 			byte[] data = Convert.FromBase64String(input);
 			using (MemoryStream ms = new MemoryStream(data, false))
@@ -120,8 +110,8 @@ namespace Sustainsys.Saml2.Tests.WebSso
 
 						if (key == "SAMLRequest")
 						{
-							resultValue = DeflateBase64EncodedData(resultValue);
-							expectedValue = DeflateBase64EncodedData(expectedValue);
+							resultValue = InflateBase64EncodedData(resultValue);
+							expectedValue = InflateBase64EncodedData(expectedValue);
 						}
 						resultValue.Should().Be(expectedValue);
 					}
@@ -144,10 +134,32 @@ namespace Sustainsys.Saml2.Tests.WebSso
 			var expected = new CommandResult()
 			{
 				Location = new Uri("http://www.example.com/sso?SAMLRequest=" + ExampleSerializedData),
-				HttpStatusCode = System.Net.HttpStatusCode.SeeOther,
+				HttpStatusCode = HttpStatusCode.SeeOther,
 			};
 
 			CompareCommandResults(result, expected);
+        }
+
+        [TestMethod]
+        public void Saml2RedirectBinding_Bind_WithXmlDeclaration()
+        {
+            var message = new Saml2MessageImplementation
+            {
+                XmlData = "<xml/>",
+                DestinationUrl = new Uri("http://www.example.com/sso"),
+                MessageName = "SAMLRequest"
+            };
+
+            var result = Saml2Binding.Get(Saml2BindingType.HttpRedirect).Bind(message, null, (m, x, t) =>
+            {
+                x.Declaration = new XDeclaration("42.17", "utf-73", null);
+            });
+
+            var payload = Uri.UnescapeDataString(result.Location.Query.Split('=')[1]);
+
+            var inflated = InflateBase64EncodedData(payload);
+
+            inflated.Should().Be("<?xml version=\"42.17\" encoding=\"utf-73\"?>\r\n<xml />");
         }
 
         [TestMethod]
@@ -206,7 +218,7 @@ namespace Sustainsys.Saml2.Tests.WebSso
         {
             var message = new Saml2MessageImplementation
             {
-                XmlData = "Data",
+                XmlData = "<xml />",
                 RelayState = "SomeState that needs escaping #%=3",
                 DestinationUrl = new Uri("http://host"),
                 MessageName = "SAMLRequest"
@@ -214,9 +226,9 @@ namespace Sustainsys.Saml2.Tests.WebSso
 
             var expected = new CommandResult()
             {
-                Location = new Uri("http://host?SAMLRequest=c0ksSQQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA%3D%3D"
+                Location = new Uri("http://host?SAMLRequest=s6nIzVHQtwMA"
                 + "&RelayState=" + Uri.EscapeDataString(message.RelayState)),
-                HttpStatusCode = System.Net.HttpStatusCode.SeeOther
+                HttpStatusCode = HttpStatusCode.SeeOther
             };
 
             var result = Saml2Binding.Get(Saml2BindingType.HttpRedirect).Bind(message);
@@ -418,13 +430,13 @@ namespace Sustainsys.Saml2.Tests.WebSso
             var message = new Saml2MessageImplementation()
             {
                 DestinationUrl = new Uri("http://destination"),
-                XmlData = "<xml/>"
+                XmlData = "<xml />"
             };
             var logger = Substitute.For<ILoggerAdapter>();
 
             Saml2Binding.Get(Saml2BindingType.HttpRedirect).Bind(message, logger);
 
-            logger.Received().WriteVerbose("Sending message over Http Redirect Binding\n<xml/>");
+            logger.Received().WriteVerbose("Sending message over Http Redirect Binding\n<xml />");
         }
     }
 }
