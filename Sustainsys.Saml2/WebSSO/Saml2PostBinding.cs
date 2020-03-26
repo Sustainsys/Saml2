@@ -29,8 +29,7 @@ namespace Sustainsys.Saml2.WebSso
                 throw new ArgumentNullException(nameof(request));
             }
 
-            string encodedMessage;
-            if (!request.Form.TryGetValue("SAMLResponse", out encodedMessage))
+            if (!request.Form.TryGetValue("SAMLResponse", out string encodedMessage))
             {
                 encodedMessage = request.Form["SAMLRequest"];
             }
@@ -41,8 +40,7 @@ namespace Sustainsys.Saml2.WebSso
 
             options?.SPOptions.Logger.WriteVerbose("Http POST binding extracted message\n" + xmlDoc.OuterXml);
 
-            string relayState = null;
-            request.Form.TryGetValue("RelayState", out relayState);
+            request.Form.TryGetValue("RelayState", out string relayState);
 
             return new UnbindResult(xmlDoc.DocumentElement, relayState, TrustLevel.None);
         }
