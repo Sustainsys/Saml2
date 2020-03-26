@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -38,7 +39,7 @@ namespace Sustainsys.Saml2.Saml2P
         /// </summary>
         /// <returns>XElement</returns>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", "CA1308:NormalizeStringsToUppercase", Justification = "Lowercase demanded by specification.")]
-        public XElement ToXElement()
+        public override XElement ToXElement()
         {
             var x = new XElement(Saml2Namespaces.Saml2P + LocalName);
 
@@ -115,7 +116,7 @@ namespace Sustainsys.Saml2.Saml2P
         }
 
         /// <summary>
-        /// Serializes the message into wellformed Xml.
+        /// Serializes the message into wellformed Xml
         /// </summary>
         /// <returns>string containing the Xml data.</returns>
         public override string ToXml()

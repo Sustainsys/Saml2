@@ -118,7 +118,7 @@ namespace Sustainsys.Saml2
             LoadMetadata();
         }
 
-        private object metadataLoadLock = new object();
+        private readonly object metadataLoadLock = new object();
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes", Justification ="We want a retry, regardless of exception type")]
         private void LoadMetadata()

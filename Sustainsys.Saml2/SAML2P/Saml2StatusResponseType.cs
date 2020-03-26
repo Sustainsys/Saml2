@@ -2,6 +2,7 @@
 using System;
 using System.Security.Cryptography.X509Certificates;
 using Sustainsys.Saml2.Metadata;
+using System.Xml.Linq;
 
 namespace Sustainsys.Saml2.Saml2P
 {
@@ -82,5 +83,11 @@ namespace Sustainsys.Saml2.Saml2P
         /// </summary>
         /// <returns>string containing the Xml data.</returns>
         public abstract string ToXml();
+
+        /// <summary>
+        /// Transforms the message to an XElement object tree.
+        /// </summary>
+        /// <returns>XElement with Xml representation of the message</returns>
+        public abstract XElement ToXElement();
     }
 }

@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
+using System.Xml.Linq;
 
 namespace Sustainsys.Saml2.Saml2P
 {
@@ -31,6 +32,11 @@ namespace Sustainsys.Saml2.Saml2P
             var doc = XmlHelpers.CreateSafeXmlDocument();
             AppendTo(doc);
             return doc.DocumentElement.OuterXml;
+        }
+
+        public override XElement ToXElement()
+        {
+            throw new NotImplementedException();
         }
 
         /// <summary>

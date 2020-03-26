@@ -10,7 +10,7 @@ namespace Sustainsys.Saml2.Tests.Saml2P
 {
     class ConcreteSaml2Request : Saml2RequestBase
     {
-        public XElement ToXElement()
+        public override XElement ToXElement()
         {
             var x = new XElement("Foo");
             x.Add(ToXNodes());

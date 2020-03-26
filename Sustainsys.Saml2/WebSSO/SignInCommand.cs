@@ -165,7 +165,7 @@ namespace Sustainsys.Saml2.WebSso
 
             options.Notifications.AuthenticationRequestCreated(authnRequest, idp, relayData);
 
-            var commandResult = idp.Bind(authnRequest);
+            var commandResult = idp.Bind(authnRequest, options.Notifications.AuthenticationRequestXmlCreated);
 
             commandResult.RequestState = new StoredRequestState(
                 idp.EntityId, returnUrl, authnRequest.Id, relayData);

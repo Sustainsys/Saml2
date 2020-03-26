@@ -8,6 +8,7 @@ using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
 using System.Security.Cryptography.Xml;
+using System.Xml.Linq;
 
 namespace Sustainsys.Saml2.Tests.WebSso
 {
@@ -22,6 +23,10 @@ namespace Sustainsys.Saml2.Tests.WebSso
         public string ToXml()
         {
             return XmlData;
+        }
+        public XElement ToXElement()
+        {
+            return XElement.Parse(XmlData);
         }
 
         public string XmlData { get; set; }

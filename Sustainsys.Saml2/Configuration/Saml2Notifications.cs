@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Security.Claims;
 using System.Xml;
+using System.Xml.Linq;
 
 namespace Sustainsys.Saml2.Configuration
 {
@@ -24,6 +25,10 @@ namespace Sustainsys.Saml2.Configuration
         public Action<Saml2AuthenticationRequest, IdentityProvider, IDictionary<string, string>>
             AuthenticationRequestCreated
         { get; set; } = (request, provider, dictionary) => { };
+
+        public Action<Saml2AuthenticationRequest, XDocument>
+            AuthenticationRequestXmlCreated
+        { get; set; } = (request, xDocument) => { };
 
         /// <summary>
         /// Notification called when the SignIn command has produced a

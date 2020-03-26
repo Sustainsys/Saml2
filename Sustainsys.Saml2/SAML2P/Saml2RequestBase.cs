@@ -72,6 +72,12 @@ namespace Sustainsys.Saml2.Saml2P
         protected abstract string LocalName { get; }
 
         /// <summary>
+        /// Transforms the message to an XElement object tree.
+        /// </summary>
+        /// <returns>XElement with Xml representation of the message</returns>
+        public abstract XElement ToXElement();
+
+        /// <summary>
         /// Creates XNodes for the fields of the Saml2RequestBase class. These
         /// nodes should be added when creating XML out of derived classes.
         /// </summary>

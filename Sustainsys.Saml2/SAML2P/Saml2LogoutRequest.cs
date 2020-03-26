@@ -105,5 +105,10 @@ namespace Sustainsys.Saml2.Saml2P
 
             return x.ToString();
         }
+
+        public override XElement ToXElement()
+        {
+            throw new NotImplementedException();
+        }
     }
 }
