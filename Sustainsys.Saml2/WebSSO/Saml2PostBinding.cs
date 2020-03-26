@@ -59,7 +59,7 @@ namespace Sustainsys.Saml2.WebSso
                 throw new ArgumentNullException(nameof(message));
             }
 
-            var xml = message.ToXml();
+            var xml = message.ToXml(xd => xmlCreatedNotification?.Invoke(message, xd, Saml2BindingType.HttpPost));
 
             if(message.SigningCertificate != null)
             {
@@ -79,7 +79,7 @@ namespace Sustainsys.Saml2.WebSso
             var cr = new CommandResult()
             {
                 ContentType = "text/html",
-                Content = String.Format(
+                Content = string.Format(
                     CultureInfo.InvariantCulture, 
                     PostHtmlFormatString, 
                     message.DestinationUrl, 
