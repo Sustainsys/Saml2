@@ -1,3 +1,6 @@
+Version 2.6.0
+* Xml Created Notifications
+
 Version 2.5.0
 * Security Fix: Token Replay Detection 
 * Configuration of TokenValidationParameters
