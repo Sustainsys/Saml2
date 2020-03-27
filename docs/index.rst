@@ -20,6 +20,17 @@ Using the Sustainsys.Saml2 library to add SAML2P support into your ASP.NET web a
 The exact nature of these steps depends on the ASP.NET integration you're after.  
 See :doc:`getting-started` for all the details.
 
+Versions
+--------
+There are two supported major version of the library.
+
+1.X is built for .Net Framework only. It is fully supported with security updates being released if needed, 
+but no new functionality is added. The latest 1.X version is recommended for anyone upgrading from previous
+versions (including from Kentor.AuthServices).
+
+2.X is built for both .Net Framework and .Net Core and is where new features are added. For new implementations 
+2.X versions are recommended.
+
 Licensing
 ---------
 The library is licensed under the `MIT license <https://github.com/Sustainsys/Saml2/blob/master/LICENSE>`_.
@@ -56,8 +67,3 @@ the license change only applies to the new versions, the old versions are still 
    config-elements/federations
    config-elements/service-certificates
    config-elements/compatibility
-
-   
-
-   
-

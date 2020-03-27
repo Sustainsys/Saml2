@@ -51,23 +51,16 @@ authentication model.
 
 Nuget Package to use: `Sustainsys.Saml2.AspNetCore2 <https://www.nuget.org/packages/Sustainsys.Saml2.AspNetCore2/>`_
 
-IdentityServer[3/4] Integration
+IdentityServer4 Integration
 -------------------------------
-If you're using ``IdentityServer`` (v3 or later), you may want to 
+If you're using ``IdentityServer``, you may want to 
 configure SAML identity providers like Okta or Ping as external
 identity providers within your IdentityServer implementation.
 
-The ``Owin`` & ``ASP.NET Core2`` modules enable SAML identity 
-providers to be integrated within `IdentityServer3 <https://github.com/IdentityServer/IdentityServer3>`_ and 
-`IdentityServer4 <https://github.com/IdentityServer/IdentityServer4>`_ packages. 
+The ``ASP.NET Core2`` module enable SAML identity 
+providers to be integrated within `IdentityServer4 <https://github.com/IdentityServer/IdentityServer4>`_ packages. 
 
-Nuget Package to use for IdentityServer3: `Sustainsys.Saml2.Owin <https://www.nuget.org/packages/Sustainsys.Saml2.Owin/>`_
 Nuget Package for IdentityServer4: `Sustainsys.Saml2.AspNetCore2 <https://www.nuget.org/packages/Sustainsys.Saml2.AspNetCore2/>`_
-
-Review :doc:`this document <identity-server-3-okta>` to see how to configure Saml2 with 
-IdentityServer3 and Okta to add Okta as an 
-identity provider to an IdentityServer3 project. There is 
-also a SampleIdentityServer3 project in the Saml2 repository.
 
 .. note:: 
 

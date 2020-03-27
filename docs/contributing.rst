@@ -51,7 +51,7 @@ To make a clean pull request, it is important to follow some git best practices.
 
 Licensing
 ---------
-The library is licensed under LGPL and by submitting code it is accepted that the submitted code will be 
-released under the same license. Third party code may only be added to the library if the author of the 
-pull request holds the copyright to the code, or the code is previously licensed under a 
-license compatible with LGPL.
+The library is licensed under MIT (for the master branch) and by submitting code it is accepted that the
+submitted code will be released under the same license. Third party code may only be added to the
+library if the author of the pull request holds the copyright to the code, or the code is previously
+licensed under a license compatible with MIT.
