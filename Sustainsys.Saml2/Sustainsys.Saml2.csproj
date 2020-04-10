@@ -50,5 +50,9 @@
     <PackageReference Include="System.Security.Cryptography.Xml" Version="4.5.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Sustainsys.Saml2.Metadata\Sustainsys.Saml2.Metadata.csproj" />
+  </ItemGroup>
+
   </Project>
  

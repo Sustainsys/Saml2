@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Text;
+using Sustainsys.Saml2.Metadata.Services;
 
 namespace Sustainsys.Saml2.Metadata
 {

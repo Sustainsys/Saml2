@@ -2,8 +2,12 @@
 using Sustainsys.Saml2.WebSso;
 using System;
 using System.Collections.Generic;
+using System.IdentityModel.Metadata;
 using System.Linq;
 using System.Web;
+using Sustainsys.Saml2.Metadata.Services;
+using EntitiesDescriptor = Sustainsys.Saml2.Metadata.EntitiesDescriptor;
+using EntityDescriptor = Sustainsys.Saml2.Metadata.EntityDescriptor;
 
 namespace Sustainsys.Saml2.StubIdp.Models
 {
@@ -13,7 +17,7 @@ namespace Sustainsys.Saml2.StubIdp.Models
         {
             var metadata = new EntityDescriptor()
             {
-                EntityId = new EntityId(UrlResolver.MetadataUrl.ToString())
+                EntityId = new Metadata.EntityId(UrlResolver.MetadataUrl.ToString())
             };
 
             if (includeCacheDuration)

@@ -15,6 +15,8 @@ using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Xml;
+using Sustainsys.Saml2.Metadata.Localization;
+using Sustainsys.Saml2.Metadata.Services;
 
 namespace Sustainsys.Saml2.Tests.Metadata
 {
@@ -26,7 +28,7 @@ namespace Sustainsys.Saml2.Tests.Metadata
 		public AffiliationDescriptor TestCreateAffiliationDescriptorInstance() =>
 			base.CreateAffiliationDescriptorInstance();
 
-		public ApplicationServiceEndpoint TestCreateApplicationServiceEndpointInstance() =>
+		public ApplicationService TestCreateApplicationServiceEndpointInstance() =>
 			base.CreateApplicationServiceEndpointInstance();
 
 		public ApplicationServiceDescriptor TestCreateApplicationServiceInstance() =>
@@ -759,7 +761,7 @@ namespace Sustainsys.Saml2.Tests.Metadata
 			serializer.TestCreateAffiliationDescriptorInstance()
 				.Should().BeOfType<AffiliationDescriptor>();
 			serializer.TestCreateApplicationServiceEndpointInstance()
-				.Should().BeOfType<ApplicationServiceEndpoint>();
+				.Should().BeOfType<ApplicationService>();
 			serializer.TestCreateApplicationServiceInstance()
 				.Should().BeOfType<ApplicationServiceDescriptor>();
 			serializer.TestCreateArtifactResolutionServiceInstance()

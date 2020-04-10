@@ -11,6 +11,8 @@ using System.Numerics;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 using System.Xml;
+using Sustainsys.Saml2.Metadata.Localization;
+using Sustainsys.Saml2.Metadata.Services;
 using SigningCredentials = Microsoft.IdentityModel.Tokens.SigningCredentials;
 
 namespace Sustainsys.Saml2.Metadata
@@ -71,8 +73,8 @@ namespace Sustainsys.Saml2.Metadata
 		protected virtual AffiliationDescriptor CreateAffiliationDescriptorInstance() =>
 			new AffiliationDescriptor();
 
-		protected virtual ApplicationServiceEndpoint CreateApplicationServiceEndpointInstance() =>
-			new ApplicationServiceEndpoint();
+		protected virtual ApplicationService CreateApplicationServiceEndpointInstance() =>
+			new ApplicationService();
 
 		protected virtual ApplicationServiceDescriptor CreateApplicationServiceInstance() =>
 			new ApplicationServiceDescriptor();
@@ -2869,7 +2871,7 @@ namespace Sustainsys.Saml2.Metadata
 		protected virtual SingleSignOutNotificationEndpoint ReadSingleSignOutNotificationEndpoint(XmlReader reader) =>
 			ReadWrappedEndpoint(reader, CreateSingleSignOutNotificationEndpointInstance);
 
-		protected virtual ApplicationServiceEndpoint ReadApplicationServiceEndpoint(XmlReader reader) =>
+		protected virtual ApplicationService ReadApplicationServiceEndpoint(XmlReader reader) =>
 			ReadWrappedEndpoint(reader, CreateApplicationServiceEndpointInstance);
 
 		protected virtual PassiveRequestorEndpoint ReadPassiveRequestorEndpoint(XmlReader reader) =>

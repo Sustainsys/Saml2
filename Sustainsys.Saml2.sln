@@ -43,7 +43,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AspNetCore2.Tests", "Tests\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tests.NETCore", "Tests\Tests.NETCore\Tests.NETCore.csproj", "{FF774B2E-51D4-4C64-BA0E-C061683A9B93}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests.NETFramework", "Tests\Tests.NETFramework\Tests.NETFramework.csproj", "{C5C43D57-3A9C-4EDF-97AF-EE55A950284C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tests.NETFramework", "Tests\Tests.NETFramework\Tests.NETFramework.csproj", "{C5C43D57-3A9C-4EDF-97AF-EE55A950284C}"
 EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Tests.Shared", "Tests\Tests.Shared\Tests.Shared.shproj", "{82F84E61-1292-47CF-B0DC-59F26EC56C32}"
 EndProject
@@ -79,6 +79,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "config-elements", "config-e
 		docs\config-elements\signing-certificate.rst = docs\config-elements\signing-certificate.rst
 		docs\config-elements\sustainsys-saml2.rst = docs\config-elements\sustainsys-saml2.rst
 	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sustainsys.Saml2.Metadata", "Sustainsys.Saml2.Metadata\Sustainsys.Saml2.Metadata.csproj", "{84CB2BF8-5EB7-4F82-951B-2ECA45CD0BE2}"
 EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
@@ -132,6 +134,10 @@ Global
 		{A6DA495F-3AE8-482B-BC63-1F70BC752654}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A6DA495F-3AE8-482B-BC63-1F70BC752654}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A6DA495F-3AE8-482B-BC63-1F70BC752654}.Release|Any CPU.Build.0 = Release|Any CPU
+		{84CB2BF8-5EB7-4F82-951B-2ECA45CD0BE2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{84CB2BF8-5EB7-4F82-951B-2ECA45CD0BE2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{84CB2BF8-5EB7-4F82-951B-2ECA45CD0BE2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{84CB2BF8-5EB7-4F82-951B-2ECA45CD0BE2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

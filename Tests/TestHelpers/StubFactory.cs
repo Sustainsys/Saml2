@@ -9,6 +9,8 @@ using System.Linq;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
+using Sustainsys.Saml2.Metadata.Localization;
+using Sustainsys.Saml2.Metadata.Services;
 
 namespace Sustainsys.Saml2.TestHelpers
 {

@@ -1,6 +1,7 @@
 ﻿using Microsoft.IdentityModel.Tokens.Saml2;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using Sustainsys.Saml2.Metadata.Services;
 
 namespace Sustainsys.Saml2.Metadata
 {

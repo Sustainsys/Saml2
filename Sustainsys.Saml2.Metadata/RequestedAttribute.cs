@@ -1,8 +1,5 @@
 ﻿using Microsoft.IdentityModel.Tokens.Saml2;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace Sustainsys.Saml2.Metadata
 {
@@ -20,19 +17,19 @@ namespace Sustainsys.Saml2.Metadata
             : base(name)
         { }
 
-		/// <summary>
-		/// Ctor
-		/// </summary>
-		/// <param name="name">Name of the attribute.</param>
-		/// <param name="value">Value of the attribute.</param>
-		public RequestedAttribute(string name, string value)
-			: base(name, value)
-		{ }
+        /// <summary>
+        /// Ctor
+        /// </summary>
+        /// <param name="name">Name of the attribute.</param>
+        /// <param name="value">Value of the attribute.</param>
+        public RequestedAttribute(string name, string value)
+            : base(name, value)
+        { }
 
-		/// <summary>
-		/// Is this attribute required by the service provider?
-		/// </summary>
-		public bool? IsRequired { get; set; }
+        /// <summary>
+        /// Is this attribute required by the service provider?
+        /// </summary>
+        public bool? IsRequired { get; set; }
 
         /// <summary>
         /// Uri used for NameFormat to specify that the Name is a Uri.
@@ -40,13 +37,13 @@ namespace Sustainsys.Saml2.Metadata
         public static readonly Uri AttributeNameFormatUri = new Uri("urn:oasis:names:tc:SAML:2.0:attrname-format:uri");
 
         /// <summary>
-        /// Uri used for NameFormat to specify that the format of the Name 
+        /// Uri used for NameFormat to specify that the format of the Name
         /// is unspecified.
         /// </summary>
         public static readonly Uri AttributeNameFormatUnspecified = new Uri("urn:oasis:names:tc:SAML:2.0:attrname-format:unspecified");
 
         /// <summary>
-        /// Uri used for NameFormat to specify that the format of the Name 
+        /// Uri used for NameFormat to specify that the format of the Name
         /// fulfills the standard's basic requirements.
         /// </summary>
         public static readonly Uri AttributeNameFormatBasic = new Uri("urn:oasis:names:tc:SAML:2.0:attrname-format:basic");
