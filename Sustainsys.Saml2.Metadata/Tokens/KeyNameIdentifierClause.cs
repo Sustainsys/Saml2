@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Sustainsys.Saml2.Tokens
+namespace Sustainsys.Saml2.Metadata.Tokens
 {
     public class KeyNameIdentifierClause : SecurityKeyIdentifierClause
     {

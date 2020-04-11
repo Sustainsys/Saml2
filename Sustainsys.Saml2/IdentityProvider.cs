@@ -17,6 +17,7 @@ using System.Diagnostics.CodeAnalysis;
 using Sustainsys.Saml2.Tokens;
 using System.Xml.Linq;
 using Sustainsys.Saml2.Metadata.Services;
+using Sustainsys.Saml2.Metadata.Tokens;
 
 namespace Sustainsys.Saml2
 {

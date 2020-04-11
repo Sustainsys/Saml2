@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Sustainsys.Saml2.Internal
+﻿namespace Sustainsys.Saml2.Metadata.Helpers
 {
     static class CompareHelper
     {

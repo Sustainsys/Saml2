@@ -5,7 +5,6 @@ namespace Sustainsys.Saml2.Metadata
 {
 	public class EncryptionProperties
 	{
-		// EncryptionProperty
 		public string Id { get; set; }
 		public ICollection<EncryptionProperty> Properties { get; private set; } =
 			new Collection<EncryptionProperty>();

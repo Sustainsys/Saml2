@@ -1,11 +1,9 @@
-﻿using Sustainsys.Saml2.Internal;
-using System;
-using System.Linq;
+﻿using System;
 using System.Security.Cryptography;
 using System.Security.Cryptography.Xml;
-using System.Xml;
+using Sustainsys.Saml2.Metadata.Helpers;
 
-namespace Sustainsys.Saml2.Tokens
+namespace Sustainsys.Saml2.Metadata.Tokens
 {
 	public class RsaSecurityKey : AsymmetricSecurityKey
 	{

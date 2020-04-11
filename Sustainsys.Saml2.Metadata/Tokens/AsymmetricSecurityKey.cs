@@ -1,6 +1,6 @@
 ﻿using System.Security.Cryptography;
 
-namespace Sustainsys.Saml2.Tokens
+namespace Sustainsys.Saml2.Metadata.Tokens
 {
 	public abstract class AsymmetricSecurityKey : SecurityKey
 	{

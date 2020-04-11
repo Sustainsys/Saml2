@@ -27,6 +27,7 @@ using System.Text;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Sustainsys.Saml2.Metadata.Tokens;
 
 namespace Sustainsys.Saml2.AspNetCore2.Tests
 {

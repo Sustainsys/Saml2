@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Security.Cryptography;
-using Sustainsys.Saml2.Internal;
+using Sustainsys.Saml2.Metadata.Helpers;
 
 #if !NET461
 
-namespace Sustainsys.Saml2.Tokens
+namespace Sustainsys.Saml2.Metadata.Tokens
 {
     static class EcUtils
 	{

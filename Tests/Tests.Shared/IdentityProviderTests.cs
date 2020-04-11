@@ -16,6 +16,7 @@ using System.Security.Cryptography.X509Certificates;
 using System.Security.Claims;
 using System.Security.Principal;
 using Sustainsys.Saml2.Metadata.Services;
+using Sustainsys.Saml2.Metadata.Tokens;
 using Sustainsys.Saml2.TestHelpers;
 
 namespace Sustainsys.Saml2.Tests

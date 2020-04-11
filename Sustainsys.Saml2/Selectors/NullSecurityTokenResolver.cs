@@ -1,4 +1,5 @@
-﻿using Sustainsys.Saml2.Tokens;
+﻿using Sustainsys.Saml2.Metadata.Tokens;
+using Sustainsys.Saml2.Tokens;
 
 namespace Sustainsys.Saml2.Selectors
 {

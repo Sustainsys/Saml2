@@ -3,7 +3,7 @@ using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 using System.Security.Cryptography.Xml;
 
-namespace Sustainsys.Saml2.Tokens
+namespace Sustainsys.Saml2.Metadata.Tokens
 {
 	public class X509AsymmetricSecurityKey : AsymmetricSecurityKey
 	{

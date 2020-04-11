@@ -1,6 +1,6 @@
 ﻿namespace Sustainsys.Saml2.Metadata.Services
 {
-    public class ApplicationService : Endpoint
+    public class ApplicationServiceEndpoint : Endpoint
     {
     }
 }

@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
 using Sustainsys.Saml2.Metadata;
+using Sustainsys.Saml2.Metadata.Tokens;
 using Sustainsys.Saml2.Tokens;
 
 namespace Sustainsys.Saml2.Tests.Helpers

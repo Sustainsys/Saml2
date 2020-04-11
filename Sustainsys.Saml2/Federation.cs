@@ -9,6 +9,7 @@ using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using System.Security.Cryptography.X509Certificates;
+using Sustainsys.Saml2.Metadata.Tokens;
 using Sustainsys.Saml2.Tokens;
 
 namespace Sustainsys.Saml2

@@ -1,7 +1,7 @@
-﻿using Microsoft.IdentityModel.Tokens;
-using System;
+﻿using System;
+using Microsoft.IdentityModel.Tokens;
 
-namespace Sustainsys.Saml2.Tokens
+namespace Sustainsys.Saml2.Metadata.Tokens
 {
     public abstract class SecurityKeyIdentifierClause
     {

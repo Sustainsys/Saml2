@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Xml;
+using Sustainsys.Saml2.Metadata.Descriptors;
 
 namespace Sustainsys.Saml2.Metadata
 {

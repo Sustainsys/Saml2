@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Xml;
+using Sustainsys.Saml2.Metadata.Tokens;
 using Sustainsys.Saml2.Selectors;
 using Sustainsys.Saml2.Tokens;
 

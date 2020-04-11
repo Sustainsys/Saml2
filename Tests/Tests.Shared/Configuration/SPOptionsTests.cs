@@ -7,6 +7,7 @@ using Sustainsys.Saml2.Tokens;
 using FluentAssertions;
 using Sustainsys.Saml2.Saml2P;
 using System.Security.Cryptography.Xml;
+using Sustainsys.Saml2.Metadata.Tokens;
 using Sustainsys.Saml2.TestHelpers;
 
 namespace Sustainsys.Saml2.Tests.Configuration

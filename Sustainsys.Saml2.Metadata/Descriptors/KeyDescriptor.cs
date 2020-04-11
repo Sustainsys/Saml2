@@ -1,11 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Text;
-using Sustainsys.Saml2.Tokens;
-using Microsoft.IdentityModel.Xml;
 
-namespace Sustainsys.Saml2.Metadata
+namespace Sustainsys.Saml2.Metadata.Descriptors
 {
 	public class KeyDescriptor
 	{
