@@ -4,6 +4,7 @@ using FluentAssertions;
 using System.Xml.Linq;
 using System.Linq;
 using Sustainsys.Saml2.Metadata;
+using Sustainsys.Saml2.Metadata.Descriptors;
 
 namespace Sustainsys.Saml2.Tests.Metadata
 {

@@ -1,16 +1,11 @@
 ﻿using Microsoft.IdentityModel.Xml;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Xml;
 
 namespace Sustainsys.Saml2.Metadata
 {
-    class FilteringXmlDictionaryReader : DelegatingXmlDictionaryReader
+    internal class FilteringXmlDictionaryReader : DelegatingXmlDictionaryReader
     {
-        string xmlNamespaceUri, name;
+        private string xmlNamespaceUri, name;
 
         public FilteringXmlDictionaryReader(string xmlNamespaceUri, string name, XmlDictionaryReader innerReader)
         {
@@ -34,29 +29,29 @@ namespace Sustainsys.Saml2.Metadata
             return result;
         }
 
-		// Sigh.  ASPNET core bug.
-		// XmlReader:
-		// public void Dispose()
-		// {
-		//     Dispose(true);
-		// }
-		// protected virtual void Dispose(bool disposing)
-		// {
-		//     if (disposing && ReadState != ReadState.Closed)
-		//     {
-		//         Close();
-		//     }
-		// }
-		//
-		// XmlDictionaryReader:
-		// public override void Close()
-		// {
-		// 	base.Dispose();
-		// }
-		// = stack overflow
-		//
-		public override void Close()
-		{
-		}
-	}
+        // Sigh.  ASPNET core bug.
+        // XmlReader:
+        // public void Dispose()
+        // {
+        //     Dispose(true);
+        // }
+        // protected virtual void Dispose(bool disposing)
+        // {
+        //     if (disposing && ReadState != ReadState.Closed)
+        //     {
+        //         Close();
+        //     }
+        // }
+        //
+        // XmlDictionaryReader:
+        // public override void Close()
+        // {
+        // 	base.Dispose();
+        // }
+        // = stack overflow
+        //
+        public override void Close()
+        {
+        }
+    }
 }

@@ -1,18 +1,11 @@
-﻿using Sustainsys.Saml2.Configuration;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Security.Cryptography.X509Certificates;
-using System.Web;
-using System.Xml;
+﻿using System.Security.Cryptography.X509Certificates;
 
 namespace Sustainsys.Saml2.Metadata
 {
     /// <summary>
     /// Extensions for Metadatabase.
     /// </summary>
-    public static class MetadataBaseExtensions
+    public static class MetadatabaseExtensions
     {
         /// <summary>
         /// Use a MetadataSerializer to create an XML string out of metadata.

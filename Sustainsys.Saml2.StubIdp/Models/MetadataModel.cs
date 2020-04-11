@@ -1,13 +1,10 @@
 ﻿using Sustainsys.Saml2.Metadata;
+using Sustainsys.Saml2.Metadata.Descriptors;
+using Sustainsys.Saml2.Metadata.Services;
 using Sustainsys.Saml2.WebSso;
 using System;
-using System.Collections.Generic;
-using System.IdentityModel.Metadata;
-using System.Linq;
-using System.Web;
-using Sustainsys.Saml2.Metadata.Services;
-using EntitiesDescriptor = Sustainsys.Saml2.Metadata.EntitiesDescriptor;
-using EntityDescriptor = Sustainsys.Saml2.Metadata.EntityDescriptor;
+using EntitiesDescriptor = Sustainsys.Saml2.Metadata.Descriptors.EntitiesDescriptor;
+using EntityDescriptor = Sustainsys.Saml2.Metadata.Descriptors.EntityDescriptor;
 
 namespace Sustainsys.Saml2.StubIdp.Models
 {
@@ -22,7 +19,7 @@ namespace Sustainsys.Saml2.StubIdp.Models
 
             if (includeCacheDuration)
             {
-				metadata.CacheDuration = new XsdDuration(minutes: 15);
+                metadata.CacheDuration = new XsdDuration(minutes: 15);
                 metadata.ValidUntil = DateTime.UtcNow.AddDays(1);
             }
 
@@ -68,10 +65,10 @@ namespace Sustainsys.Saml2.StubIdp.Models
 
         public static EntitiesDescriptor CreateFederationMetadata()
         {
-			var metadata = new EntitiesDescriptor
-			{
-				Name = "Sustainsys.Saml2.StubIdp Federation",
-				CacheDuration = new XsdDuration(minutes: 15),
+            var metadata = new EntitiesDescriptor
+            {
+                Name = "Sustainsys.Saml2.StubIdp Federation",
+                CacheDuration = new XsdDuration(minutes: 15),
                 ValidUntil = DateTime.UtcNow.AddDays(1)
             };
 

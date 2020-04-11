@@ -1,24 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Sustainsys.Saml2.Metadata.Descriptors;
 using System.Xml;
-using System.Xml.Linq;
-using Sustainsys.Saml2.Configuration;
-using Sustainsys.Saml2.Tokens;
-using Sustainsys.Saml2.Selectors;
 
 namespace Sustainsys.Saml2.Metadata
 {
-	class ExtendedMetadataSerializer : MetadataSerializer
+    internal class ExtendedMetadataSerializer : MetadataSerializer
     {
         private ExtendedMetadataSerializer(SecurityTokenSerializer serializer)
             : base(serializer)
         { }
 
-        private ExtendedMetadataSerializer() { }
+        private ExtendedMetadataSerializer()
+        {
+        }
 
         private static ExtendedMetadataSerializer readerInstance =
             new ExtendedMetadataSerializer();
@@ -49,12 +42,11 @@ namespace Sustainsys.Saml2.Metadata
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1062:Validate arguments of public methods", MessageId = "0", Justification = "Method is only called by base class no validation needed.")]
         protected override void WriteCustomAttributes<T>(XmlWriter writer, T source)
         {
-            if(typeof(T) == typeof(EntityDescriptor))
+            if (typeof(T) == typeof(EntityDescriptor))
             {
                 writer.WriteAttributeString("xmlns", "saml2", null, Saml2Namespaces.Saml2Name);
             }
         }
-
 
 #if FALSE
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1062:Validate arguments of public methods", MessageId = "0")]
@@ -71,5 +63,5 @@ namespace Sustainsys.Saml2.Metadata
             return CreateOrganizationInstance();
         }
 #endif
-	}
+    }
 }

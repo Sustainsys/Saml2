@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Xml;
 
-namespace Sustainsys.Saml2.Metadata
+namespace Sustainsys.Saml2.Metadata.Descriptors
 {
     public class EntityDescriptor : MetadataBase, ICachedMetadata
     {

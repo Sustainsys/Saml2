@@ -1,11 +1,9 @@
-﻿using Microsoft.IdentityModel.Tokens.Saml2;
-using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Text;
+using Microsoft.IdentityModel.Tokens.Saml2;
 using Sustainsys.Saml2.Metadata.Services;
 
-namespace Sustainsys.Saml2.Metadata
+namespace Sustainsys.Saml2.Metadata.Descriptors
 {
 #if FALSE
 	public class SamlAttribute

@@ -2,6 +2,7 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Sustainsys.Saml2.Metadata;
 using System;
+using Sustainsys.Saml2.Metadata.Helpers;
 
 namespace Sustainsys.Saml2.Tests.Metadata
 {

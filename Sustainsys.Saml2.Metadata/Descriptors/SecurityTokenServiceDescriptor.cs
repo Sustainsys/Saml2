@@ -1,10 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Text;
+﻿using System.Collections.ObjectModel;
 using Sustainsys.Saml2.Metadata.Services;
 
-namespace Sustainsys.Saml2.Metadata
+namespace Sustainsys.Saml2.Metadata.Descriptors
 {
     public class SecurityTokenServiceDescriptor : WebServiceDescriptor
     {
