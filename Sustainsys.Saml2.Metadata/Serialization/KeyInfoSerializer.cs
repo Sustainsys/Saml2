@@ -1,18 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
-using System.Linq;
-using System.Security.Cryptography;
-using System.Security.Cryptography.Xml;
-using System.Text;
-using System.Threading.Tasks;
-using System.Xml;
-using Sustainsys.Saml2.Selectors;
-using Sustainsys.Saml2.Tokens;
-
-using SecurityToken = Microsoft.IdentityModel.Tokens.SecurityToken;
-
-namespace Sustainsys.Saml2.Metadata
+﻿namespace Sustainsys.Saml2.Metadata.Serialization
 {
 #if FALSE
     // The default KeyInfoSerializer can't handle X509Data elements with
@@ -131,7 +117,7 @@ namespace Sustainsys.Saml2.Metadata
             return clause;
         }
 
-        #region overrides throwing NotImplementedException
+    #region overrides throwing NotImplementedException
 
         [ExcludeFromCodeCoverage]
         protected override bool CanReadKeyIdentifierClauseCore(System.Xml.XmlReader reader)
@@ -198,7 +184,8 @@ namespace Sustainsys.Saml2.Metadata
         {
             throw new NotImplementedException();
         }
-        #endregion
+
+    #endregion overrides throwing NotImplementedException
     }
 #endif
 }

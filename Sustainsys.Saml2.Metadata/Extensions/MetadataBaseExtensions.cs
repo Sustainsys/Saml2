@@ -1,11 +1,14 @@
-﻿using System.Security.Cryptography.X509Certificates;
+﻿using Sustainsys.Saml2.Metadata.Helpers;
+using Sustainsys.Saml2.Metadata.Serialization;
+using System.Security.Cryptography.X509Certificates;
+using System.Xml;
 
-namespace Sustainsys.Saml2.Metadata
+namespace Sustainsys.Saml2.Metadata.Extensions
 {
     /// <summary>
     /// Extensions for Metadatabase.
     /// </summary>
-    public static class MetadatabaseExtensions
+    public static class MetadataBaseExtensions
     {
         /// <summary>
         /// Use a MetadataSerializer to create an XML string out of metadata.
@@ -25,7 +28,7 @@ namespace Sustainsys.Saml2.Metadata
             var xmlDoc = XmlHelpers.CreateSafeXmlDocument();
             using (var xmlWriter = xmlDoc.CreateNavigator().AppendChild())
             {
-                serializer.WriteMetadata(xmlWriter, metadata);
+                serializer.WriteMetadata((XmlWriter)xmlWriter, metadata);
             }
 
             if (signingCertificate != null)

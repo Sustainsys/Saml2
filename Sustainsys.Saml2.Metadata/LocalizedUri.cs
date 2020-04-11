@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Sustainsys.Saml2.Metadata.Localization
+namespace Sustainsys.Saml2.Metadata
 {
     public class LocalizedUri : LocalizedEntry
     {

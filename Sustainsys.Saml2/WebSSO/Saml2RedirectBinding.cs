@@ -14,6 +14,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Xml;
 using System.Xml.Linq;
+using Sustainsys.Saml2.Metadata.Exceptions;
 using Sustainsys.Saml2.Metadata.Tokens;
 
 namespace Sustainsys.Saml2.WebSso

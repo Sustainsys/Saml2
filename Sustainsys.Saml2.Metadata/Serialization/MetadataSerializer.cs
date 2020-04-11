@@ -1,11 +1,11 @@
 ﻿using Microsoft.IdentityModel.Tokens.Saml2;
 using Microsoft.IdentityModel.Xml;
 using Sustainsys.Saml2.Metadata.Descriptors;
+using Sustainsys.Saml2.Metadata.Exceptions;
 using Sustainsys.Saml2.Metadata.Helpers;
-using Sustainsys.Saml2.Metadata.Localization;
+using Sustainsys.Saml2.Metadata.Selectors;
 using Sustainsys.Saml2.Metadata.Services;
 using Sustainsys.Saml2.Metadata.Tokens;
-using Sustainsys.Saml2.Selectors;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -17,21 +17,8 @@ using System.Security.Cryptography.X509Certificates;
 using System.Xml;
 using SigningCredentials = Microsoft.IdentityModel.Tokens.SigningCredentials;
 
-namespace Sustainsys.Saml2.Metadata
+namespace Sustainsys.Saml2.Metadata.Serialization
 {
-    public class MetadataSerializationException : Exception
-    {
-        public MetadataSerializationException(string message) :
-            base(message)
-        {
-        }
-
-        public MetadataSerializationException(string message, Exception innerException) :
-            base(message, innerException)
-        {
-        }
-    }
-
     public class MetadataSerializer
     {
         private const string XmlNs = "http://www.w3.org/XML/1998/namespace";

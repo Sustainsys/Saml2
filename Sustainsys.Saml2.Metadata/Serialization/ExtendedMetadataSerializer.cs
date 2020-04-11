@@ -1,9 +1,9 @@
 ﻿using Sustainsys.Saml2.Metadata.Descriptors;
 using System.Xml;
 
-namespace Sustainsys.Saml2.Metadata
+namespace Sustainsys.Saml2.Metadata.Serialization
 {
-    internal class ExtendedMetadataSerializer : MetadataSerializer
+    public class ExtendedMetadataSerializer : MetadataSerializer
     {
         private ExtendedMetadataSerializer(SecurityTokenSerializer serializer)
             : base(serializer)

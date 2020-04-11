@@ -1,5 +1,4 @@
-﻿using Sustainsys.Saml2.Metadata.Localization;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Xml;
 

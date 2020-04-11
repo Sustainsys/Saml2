@@ -19,6 +19,7 @@ using System.Text;
 using System.Threading;
 using System.Web;
 using Microsoft.IdentityModel.Tokens.Saml2;
+using Sustainsys.Saml2.Metadata.Exceptions;
 using Sustainsys.Saml2.Metadata.Tokens;
 
 namespace Sustainsys.Saml2.Tests.WebSso

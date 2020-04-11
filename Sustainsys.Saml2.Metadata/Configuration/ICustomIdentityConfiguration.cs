@@ -1,6 +1,6 @@
 ﻿using System.Xml;
 
-namespace Sustainsys.Saml2.Configuration
+namespace Sustainsys.Saml2.Metadata.Configuration
 {
     interface ICustomIdentityConfiguration
     {

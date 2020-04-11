@@ -1,6 +1,6 @@
 ﻿using System.Collections.ObjectModel;
 
-namespace Sustainsys.Saml2.Metadata.Localization
+namespace Sustainsys.Saml2.Metadata
 {
     public class LocalizedEntryCollection<T> : KeyedCollection<string, T> where T : LocalizedEntry
     {

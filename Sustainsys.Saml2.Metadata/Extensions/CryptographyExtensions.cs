@@ -1,5 +1,4 @@
 ﻿using Microsoft.IdentityModel.Tokens;
-using Sustainsys.Saml2.Metadata;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
@@ -7,14 +6,13 @@ using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 using System.Security.Cryptography.Xml;
 using System.Xml;
-using CipherData = System.Security.Cryptography.Xml.CipherData;
-using EncryptedData = System.Security.Cryptography.Xml.EncryptedData;
 using EncryptingCredentials = Microsoft.IdentityModel.Tokens.EncryptingCredentials;
-using EncryptionMethod = System.Security.Cryptography.Xml.EncryptionMethod;
 using SecurityAlgorithms = Microsoft.IdentityModel.Tokens.SecurityAlgorithms;
 
-namespace Sustainsys.Saml2.Internal
+namespace Sustainsys.Saml2.Metadata.Extensions
 {
+    // TODO : Refactor as there is duplicate in the Sustainsys.Saml2 assembly
+    // for not set to internal to prevent conflict
     internal static class CryptographyExtensions
     {
         internal static void Encrypt(this XmlElement elementToEncrypt, EncryptingCredentials encryptingCredentials)
@@ -52,10 +50,10 @@ namespace Sustainsys.Saml2.Internal
                         $"Unsupported cryptographic algorithm {encryptingCredentials.Enc}");
             }
 
-            var encryptedData = new EncryptedData
+            var encryptedData = new System.Security.Cryptography.Xml.EncryptedData
             {
                 Type = EncryptedXml.XmlEncElementUrl,
-                EncryptionMethod = new EncryptionMethod(enc)
+                EncryptionMethod = new System.Security.Cryptography.Xml.EncryptionMethod(enc)
             };
 
             string alg;
@@ -75,7 +73,7 @@ namespace Sustainsys.Saml2.Internal
             }
             var encryptedKey = new EncryptedKey
             {
-                EncryptionMethod = new EncryptionMethod(alg),
+                EncryptionMethod = new System.Security.Cryptography.Xml.EncryptionMethod(alg),
             };
 
             var encryptedXml = new EncryptedXml();
@@ -90,7 +88,7 @@ namespace Sustainsys.Saml2.Internal
                 }
 
                 symmetricAlgorithm.KeySize = keySize;
-                encryptedKey.CipherData = new CipherData(EncryptedXml.EncryptKey(symmetricAlgorithm.Key,
+                encryptedKey.CipherData = new System.Security.Cryptography.Xml.CipherData(EncryptedXml.EncryptKey(symmetricAlgorithm.Key,
                     (RSA)x509SecurityKey.PublicKey, alg == EncryptedXml.XmlEncRSAOAEPUrl));
                 encryptedElement = encryptedXml.EncryptData(elementToEncrypt, symmetricAlgorithm, false);
             }
@@ -105,16 +103,16 @@ namespace Sustainsys.Saml2.Internal
         {
             if (certificate == null) throw new ArgumentNullException(nameof(certificate));
 
-            var encryptedData = new EncryptedData
+            var encryptedData = new System.Security.Cryptography.Xml.EncryptedData
             {
                 Type = EncryptedXml.XmlEncElementUrl,
-                EncryptionMethod = new EncryptionMethod(EncryptedXml.XmlEncAES256Url)
+                EncryptionMethod = new System.Security.Cryptography.Xml.EncryptionMethod(EncryptedXml.XmlEncAES256Url)
             };
 
             var algorithm = useOaep ? EncryptedXml.XmlEncRSAOAEPUrl : EncryptedXml.XmlEncRSA15Url;
             var encryptedKey = new EncryptedKey
             {
-                EncryptionMethod = new EncryptionMethod(algorithm),
+                EncryptionMethod = new System.Security.Cryptography.Xml.EncryptionMethod(algorithm),
             };
 
             var encryptedXml = new EncryptedXml();
@@ -122,7 +120,7 @@ namespace Sustainsys.Saml2.Internal
             using (var symmetricAlgorithm = new RijndaelManaged())
             {
                 symmetricAlgorithm.KeySize = 256;
-                encryptedKey.CipherData = new CipherData(EncryptedXml.EncryptKey(symmetricAlgorithm.Key, (RSA)certificate.PublicKey.Key, useOaep));
+                encryptedKey.CipherData = new System.Security.Cryptography.Xml.CipherData(EncryptedXml.EncryptKey(symmetricAlgorithm.Key, (RSA)certificate.PublicKey.Key, useOaep));
                 encryptedElement = encryptedXml.EncryptData(elementToEncrypt, symmetricAlgorithm, false);
             }
             encryptedData.CipherData.CipherValue = encryptedElement;
@@ -130,25 +128,6 @@ namespace Sustainsys.Saml2.Internal
             encryptedData.KeyInfo = new KeyInfo();
             encryptedData.KeyInfo.AddClause(new KeyInfoEncryptedKey(encryptedKey));
             EncryptedXml.ReplaceElement(elementToEncrypt, encryptedData, false);
-        }
-
-        internal static IEnumerable<XmlElement> Decrypt(this IEnumerable<XmlElement> elements, AsymmetricAlgorithm key)
-        {
-            foreach (var element in elements)
-            {
-                yield return element.Decrypt(key);
-            }
-        }
-
-        internal static XmlElement Decrypt(this XmlElement element, AsymmetricAlgorithm key)
-        {
-            var xmlDoc = XmlHelpers.XmlDocumentFromString(element.OuterXml);
-
-            var exml = new RSAEncryptedXml(xmlDoc, (RSA)key);
-
-            exml.DecryptDocument();
-
-            return xmlDoc.DocumentElement;
         }
 
         internal static RSACryptoServiceProvider GetSha256EnabledRSACryptoServiceProvider(

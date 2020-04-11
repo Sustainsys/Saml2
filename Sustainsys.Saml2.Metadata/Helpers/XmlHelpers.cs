@@ -1,56 +1,55 @@
-﻿using System;
+﻿using Sustainsys.Saml2.Metadata.Exceptions;
+using Sustainsys.Saml2.Metadata.Extensions;
+using Sustainsys.Saml2.Metadata.Tokens;
+using System;
+using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
+using System.Globalization;
+using System.Linq;
+using System.Reflection;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 using System.Security.Cryptography.Xml;
 using System.Xml;
-using System.Linq;
-//using Sustainsys.Saml2.Exceptions;
-using System.Collections.Generic;
-using System.Reflection;
-using System.Globalization;
-using System.Diagnostics.CodeAnalysis;
 using System.Xml.Linq;
-using System.IO;
-using Sustainsys.Saml2.Exceptions;
-using Sustainsys.Saml2.Internal;
-using Sustainsys.Saml2.Metadata.Exceptions;
-//using Sustainsys.Saml2.Internal;
-using Sustainsys.Saml2.Metadata.Tokens;
 
-namespace Sustainsys.Saml2
+namespace Sustainsys.Saml2.Metadata.Helpers
 {
-	public class SignedXmlWithIdFix : SignedXml
-	{
-		public SignedXmlWithIdFix(XmlElement element) :
-			base(element)
-		{
-		}
+    // TODO : Refactor as there is duplicate in the Sustainsys.Saml2 assembly
+    // for not set to internal to prevent conflict
 
-		public SignedXmlWithIdFix(XmlDocument doc) :
-			base(doc)
-		{
-		}
+    internal class SignedXmlWithIdFix : SignedXml
+    {
+        public SignedXmlWithIdFix(XmlElement element) :
+            base(element)
+        {
+        }
 
-		public override XmlElement GetIdElement(XmlDocument document, string id)
-		{
-			var nodes = document.SelectNodes(
-				$"//*[name() != 'Reference' and (@id='{id}' or @iD='{id}' or @Id='{id}' or @ID='{id}')]");
-			if (nodes.Count == 0)
-			{
-				throw new CryptographicException($"The reference id '{id}' does not match any nodes");
-			}
-			if (nodes.Count > 1)
-			{
-				throw new CryptographicException($"The reference id '{id}' matches multiple nodes");
-			}
-			return (XmlElement)nodes[0];
-		}
-	}
+        public SignedXmlWithIdFix(XmlDocument doc) :
+            base(doc)
+        {
+        }
 
-	/// <summary>
-	/// Extension methods and helpers for XmlDocument/XmlElement etc.
-	/// </summary>
-	public static class XmlHelpers
+        public override XmlElement GetIdElement(XmlDocument document, string id)
+        {
+            var nodes = document.SelectNodes(
+                $"//*[name() != 'Reference' and (@id='{id}' or @iD='{id}' or @Id='{id}' or @ID='{id}')]");
+            if (nodes.Count == 0)
+            {
+                throw new CryptographicException($"The reference id '{id}' does not match any nodes");
+            }
+            if (nodes.Count > 1)
+            {
+                throw new CryptographicException($"The reference id '{id}' matches multiple nodes");
+            }
+            return (XmlElement)nodes[0];
+        }
+    }
+
+    /// <summary>
+    /// Extension methods and helpers for XmlDocument/XmlElement etc.
+    /// </summary>
+    internal static class XmlHelpers
     {
         /// <summary>
         /// Sign an xml document with the supplied cert.
@@ -100,12 +99,12 @@ namespace Sustainsys.Saml2
         /// <param name="attributeName">Name of attribute to remove.</param>
         public static void Remove(this XmlAttributeCollection attributes, string attributeName)
         {
-            if(attributes == null)
+            if (attributes == null)
             {
                 throw new ArgumentNullException(nameof(attributes));
             }
 
-            if(attributeName == null)
+            if (attributeName == null)
             {
                 throw new ArgumentNullException(nameof(attributeName));
             }
@@ -123,17 +122,17 @@ namespace Sustainsys.Saml2
         /// <param name="ns">Namespace of child</param>
         public static void RemoveChild(this XmlElement xmlElement, string name, string ns)
         {
-            if(xmlElement == null)
+            if (xmlElement == null)
             {
                 throw new ArgumentNullException(nameof(xmlElement));
             }
 
-            if(name == null)
+            if (name == null)
             {
                 throw new ArgumentNullException(nameof(name));
             }
 
-            if(ns == null)
+            if (ns == null)
             {
                 throw new ArgumentNullException(nameof(ns));
             }
@@ -151,7 +150,7 @@ namespace Sustainsys.Saml2
         /// <param name="includeKeyInfo">Include public key in signed output.</param>
         public static void Sign(this XmlDocument xmlDocument, X509Certificate2 cert, bool includeKeyInfo)
         {
-            if(xmlDocument == null)
+            if (xmlDocument == null)
             {
                 throw new ArgumentNullException(nameof(xmlDocument));
             }
@@ -219,25 +218,25 @@ namespace Sustainsys.Saml2
 
             var signedXml = new SignedXmlWithIdFix(xmlElement.OwnerDocument);
 
-			// The transform XmlDsigExcC14NTransform and canonicalization method XmlDsigExcC14NTransformUrl is important for partially signed XML files
-			// see: http://msdn.microsoft.com/en-us/library/system.security.cryptography.xml.signedxml.xmldsigexcc14ntransformurl(v=vs.110).aspx
-			// The reference URI has to be set correctly to avoid assertion injections
-			// For both, the ID/Reference and the Transform/Canonicalization see as well: 
-			// https://www.oasis-open.org/committees/download.php/35711/sstc-saml-core-errata-2.0-wd-06-diff.pdf section 5.4.2 and 5.4.3
+            // The transform XmlDsigExcC14NTransform and canonicalization method XmlDsigExcC14NTransformUrl is important for partially signed XML files
+            // see: http://msdn.microsoft.com/en-us/library/system.security.cryptography.xml.signedxml.xmldsigexcc14ntransformurl(v=vs.110).aspx
+            // The reference URI has to be set correctly to avoid assertion injections
+            // For both, the ID/Reference and the Transform/Canonicalization see as well:
+            // https://www.oasis-open.org/committees/download.php/35711/sstc-saml-core-errata-2.0-wd-06-diff.pdf section 5.4.2 and 5.4.3
 
-			signedXml.SigningKey = EnvironmentHelpers.IsNetCore ? cert.PrivateKey :
-				((RSACryptoServiceProvider)cert.PrivateKey)
-				.GetSha256EnabledRSACryptoServiceProvider();
+            signedXml.SigningKey = EnvironmentHelpers.IsNetCore ? cert.PrivateKey :
+                ((RSACryptoServiceProvider)cert.PrivateKey)
+                .GetSha256EnabledRSACryptoServiceProvider();
             signedXml.SignedInfo.CanonicalizationMethod = SignedXml.XmlDsigExcC14NTransformUrl;
             signedXml.SignedInfo.SignatureMethod = signingAlgorithm;
 
-			// We need a document unique ID on the element to sign it -- make one up if it's missing
-			string id = xmlElement.GetAttribute("ID");
-			if (String.IsNullOrEmpty(id))
-			{
-				id = "_" + Guid.NewGuid().ToString("N");
-				xmlElement.SetAttribute("ID", id);
-			}
+            // We need a document unique ID on the element to sign it -- make one up if it's missing
+            string id = xmlElement.GetAttribute("ID");
+            if (String.IsNullOrEmpty(id))
+            {
+                id = "_" + Guid.NewGuid().ToString("N");
+                xmlElement.SetAttribute("ID", id);
+            }
             var reference = new Reference
             {
                 Uri = "#" + id,
@@ -274,7 +273,7 @@ namespace Sustainsys.Saml2
         /// <exception cref="InvalidSignatureException">If the data has
         /// been tampered with or is not valid according to the SAML spec.</exception>
         public static bool IsSignedByAny(
-            this XmlElement xmlElement, 
+            this XmlElement xmlElement,
             IEnumerable<SecurityKeyIdentifierClause> signingKeys,
             bool validateCertificate,
             string minimumSigningAlgorithm)
@@ -357,7 +356,7 @@ namespace Sustainsys.Saml2
             }
         }
 
-        static readonly PropertyInfo signaturePosition = typeof(XmlDsigEnvelopedSignatureTransform)
+        private static readonly PropertyInfo signaturePosition = typeof(XmlDsigEnvelopedSignatureTransform)
             .GetProperty("SignaturePosition", BindingFlags.Instance | BindingFlags.NonPublic);
 
         /// <summary>
@@ -370,17 +369,17 @@ namespace Sustainsys.Saml2
         /// <param name="signatureElement">Signature element.</param>
         private static void FixSignatureIndex(SignedXml signedXml, XmlElement signatureElement)
         {
-			Transform transform = null;
-            foreach(var t in ((Reference)signedXml.SignedInfo.References[0]).TransformChain)
+            Transform transform = null;
+            foreach (var t in ((Reference)signedXml.SignedInfo.References[0]).TransformChain)
             {
                 var envelopeTransform = t as XmlDsigEnvelopedSignatureTransform;
-                if(envelopeTransform != null)
+                if (envelopeTransform != null)
                 {
                     transform = envelopeTransform;
                 }
             }
 
-            if(signaturePosition != null)
+            if (signaturePosition != null)
             {
                 var nsm = new XmlNamespaceManager(signatureElement.OwnerDocument.NameTable);
                 nsm.AddNamespace("ds", SignedXml.XmlDsigNamespaceUrl);
@@ -454,15 +453,15 @@ namespace Sustainsys.Saml2
             }
 
             var reference = (Reference)signedXml.SignedInfo.References[0];
-            if ( string.IsNullOrWhiteSpace( reference.Uri ) )
+            if (string.IsNullOrWhiteSpace(reference.Uri))
             {
-                throw new InvalidSignatureException( "Empty reference for Xml signature is not allowed." );
+                throw new InvalidSignatureException("Empty reference for Xml signature is not allowed.");
             }
             var id = reference.Uri.Substring(1);
 
-			var idElement = signedXml.GetIdElement(xmlElement.OwnerDocument, id);
+            var idElement = signedXml.GetIdElement(xmlElement.OwnerDocument, id);
 
-			if (idElement != xmlElement)
+            if (idElement != xmlElement)
             {
                 throw new InvalidSignatureException("Incorrect reference on Xml signature. The reference must be to the root element of the element containing the signature.");
             }
@@ -476,7 +475,7 @@ namespace Sustainsys.Saml2
                 }
             }
 
-            if(!DigestAlgorithms.SkipWhile(a => a != mininumDigestAlgorithm)
+            if (!DigestAlgorithms.SkipWhile(a => a != mininumDigestAlgorithm)
                 .Contains(reference.DigestMethod))
             {
                 throw new InvalidSignatureException("The digest method " + reference.DigestMethod
@@ -512,139 +511,35 @@ namespace Sustainsys.Saml2
             return xmlElement.InnerText.Trim();
         }
 
-        internal static string GetRequiredAttributeValue(this XmlElement node, string attributeName)
-        {
-            var foundAttribute = node.Attributes[attributeName];
-            if (string.IsNullOrWhiteSpace(foundAttribute?.Value))
-            {
-                throw new BadFormatSamlResponseException($"Attribute '{attributeName}' (case-sensitive) was not found or its value is empty");
-            }
-
-            return foundAttribute.Value;
-        }
-
-        internal static XmlElement GetRequiredElement(this XmlElement node, string name, string namespaceValue)
-        {
-            var foundElement = node[name, namespaceValue];
-            if (foundElement == null)
-            {
-                throw new BadFormatSamlResponseException($"Element '{name}' (case-sensitive, namespace '{namespaceValue}') was not found");
-            }
-
-            return foundElement;
-        }
-
-        internal static XmlElement StartElement(this XmlNode parent, string name, Uri namespaceUri)
-        {
-            var xmlElement = parent.GetOwnerDoc().CreateElement(name, namespaceUri.OriginalString);
-            parent.AppendChild(xmlElement);
-            return xmlElement;
-        }
-
-        private static XmlDocument GetOwnerDoc(this XmlNode node)
-        {
-            var doc = node as XmlDocument;
-            if(doc != null)
-            {
-                return doc;
-            }
-
-            return node.OwnerDocument;
-        }
-
-        internal static XmlElement AddAttribute(this XmlElement parent, string name, string value)
-        {
-            parent.SetAttribute(name, value);
-
-            return parent;
-        }
-
-        internal static XmlElement AddAttributeIfNotNull(this XmlElement parent, string name, object value)
-        {
-            if(value != null)
-            {
-                parent.SetAttribute(name, value.ToString());
-            }
-            return parent;
-        }
-
-        internal static XmlElement If(this XmlElement parent, bool condition, Action<XmlElement> action)
-        {
-            if (condition)
-            {
-                action(parent);
-            }
-
-            return parent;
-        }
-
-        internal static XmlElement AddElement(this XmlElement parent, string name, Uri namespaceUri, string content)
-        {
-            parent.StartElement(name, namespaceUri)
-                .SetInnerText(content);
-
-            return parent;
-        }
-
-        internal static XmlElement SetInnerText(this XmlElement parent, string content)
-        {
-            parent.InnerText = content;
-            return parent;
-        }
-
         /// <summary>
-        /// Pretty an xml element.
+        /// Store a list of signing algorithms that are available in SignedXml.
+        /// This needs to be done through reflection, to keep the library
+        /// targetting lowest supported .NET version, while still getting
+        /// access to new algorithms if the hosting application targets a
+        /// later version.
         /// </summary>
-        /// <param name="xml">Xml to pretty print.</param>
-        /// <returns>Nicely indented and readable data.</returns>
-        [SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope", Justification = "I don't care, the StringWriter contains no references to unmanaged resources")]
-        public static string PrettyPrint(this XmlElement xml)
+        private static string[] GetKnownSigningAlgorithms()
         {
-            if(xml == null)
+            // The newer algorithms names are marked internal in .NET Core
+            // https://github.com/dotnet/corefx/issues/25123
+            if (EnvironmentHelpers.IsNetCore)
             {
-                throw new ArgumentNullException(nameof(xml));
+                return new string[] {
+                    "http://www.w3.org/2000/09/xmldsig#rsa-sha1",
+                    "http://www.w3.org/2001/04/xmldsig-more#rsa-sha256",
+                    "http://www.w3.org/2001/04/xmldsig-more#rsa-sha384",
+                    "http://www.w3.org/2001/04/xmldsig-more#rsa-sha512",
+                };
             }
+            return typeof(SignedXml).GetFields()
+                .Where(f => f.Name.StartsWith("XmlDsigRSASHA", StringComparison.Ordinal))
+                .Select(f => (string)f.GetRawConstantValue())
+                .OrderBy(f => f)
+                .ToArray();
+        }
 
-            // Based on http://stackoverflow.com/a/1123731/280222
-            var strWriter = new StringWriter(CultureInfo.InvariantCulture);
-            using (var xmlWriter = new XmlTextWriter(strWriter))
-            {
-                xmlWriter.Formatting = Formatting.Indented;
-                xml.ParentNode.WriteContentTo(xmlWriter);
-                xmlWriter.Flush();
-                return strWriter.ToString();
-            }
-		}
-
-		/// <summary>
-		/// Store a list of signing algorithms that are available in SignedXml.
-		/// This needs to be done through reflection, to keep the library
-		/// targetting lowest supported .NET version, while still getting
-		/// access to new algorithms if the hosting application targets a
-		/// later version.
-		/// </summary>
-		private static string[] GetKnownSigningAlgorithms()
-		{
-			// The newer algorithms names are marked internal in .NET Core
-			// https://github.com/dotnet/corefx/issues/25123
-			if (EnvironmentHelpers.IsNetCore)
-			{
-				return new string[] {
-					"http://www.w3.org/2000/09/xmldsig#rsa-sha1",
-					"http://www.w3.org/2001/04/xmldsig-more#rsa-sha256",
-					"http://www.w3.org/2001/04/xmldsig-more#rsa-sha384",
-					"http://www.w3.org/2001/04/xmldsig-more#rsa-sha512",
-				};
-			}
-			return typeof(SignedXml).GetFields()
-				.Where(f => f.Name.StartsWith("XmlDsigRSASHA", StringComparison.Ordinal))
-				.Select(f => (string)f.GetRawConstantValue())
-				.OrderBy(f => f)
-				.ToArray();
-		}
-
-		internal static readonly string[] KnownSigningAlgorithms =
-			GetKnownSigningAlgorithms();
+        internal static readonly string[] KnownSigningAlgorithms =
+            GetKnownSigningAlgorithms();
 
         internal static string GetFullSigningAlgorithmName(string shortName)
         {
@@ -654,52 +549,52 @@ namespace Sustainsys.Saml2
                 a => a.EndsWith(shortName, StringComparison.OrdinalIgnoreCase));
         }
 
-		// Can't test the fallback behaviour on a machine that has a modern
-		// framework installed.
-		[ExcludeFromCodeCoverage]
+        // Can't test the fallback behaviour on a machine that has a modern
+        // framework installed.
+        [ExcludeFromCodeCoverage]
         internal static string GetDefaultSigningAlgorithmName()
         {
             var rsaSha256Name = "http://www.w3.org/2001/04/xmldsig-more#rsa-sha256";
             if (EnvironmentHelpers.IsNetCore ||
-				KnownSigningAlgorithms.Contains(rsaSha256Name))
+                KnownSigningAlgorithms.Contains(rsaSha256Name))
             {
                 return rsaSha256Name;
             }
             return SignedXml.XmlDsigRSASHA1Url;
         }
 
-		private static string[] GetKnownDigestAlgorithms()
-		{
-			if (EnvironmentHelpers.IsNetCore)
-			{
-				return new string[] {
-					"http://www.w3.org/2000/09/xmldsig#sha1",
-					"http://www.w3.org/2001/04/xmlenc#sha256",
-					"http://www.w3.org/2001/04/xmldsig-more#sha384",
-					"http://www.w3.org/2001/04/xmlenc#sha512"
-				};
-			}
-			return typeof(SignedXml).GetFields()
-				.Where(f => f.Name.StartsWith("XmlDsigSHA", StringComparison.Ordinal))
-				.Select(f => (string)f.GetRawConstantValue())
-				.OrderBy(f => f)
-				.ToArray();
-		}
+        private static string[] GetKnownDigestAlgorithms()
+        {
+            if (EnvironmentHelpers.IsNetCore)
+            {
+                return new string[] {
+                    "http://www.w3.org/2000/09/xmldsig#sha1",
+                    "http://www.w3.org/2001/04/xmlenc#sha256",
+                    "http://www.w3.org/2001/04/xmldsig-more#sha384",
+                    "http://www.w3.org/2001/04/xmlenc#sha512"
+                };
+            }
+            return typeof(SignedXml).GetFields()
+                .Where(f => f.Name.StartsWith("XmlDsigSHA", StringComparison.Ordinal))
+                .Select(f => (string)f.GetRawConstantValue())
+                .OrderBy(f => f)
+                .ToArray();
+        }
 
-		internal static readonly string[] DigestAlgorithms = GetKnownDigestAlgorithms();
+        internal static readonly string[] DigestAlgorithms = GetKnownDigestAlgorithms();
 
         internal static string GetCorrespondingDigestAlgorithm(string signingAlgorithm)
         {
-			var matchPattern = signingAlgorithm.Substring(signingAlgorithm.LastIndexOf('-') + 1);
+            var matchPattern = signingAlgorithm.Substring(signingAlgorithm.LastIndexOf('-') + 1);
             string match = DigestAlgorithms.FirstOrDefault(a => a.EndsWith(
                 matchPattern,
                 StringComparison.Ordinal));
-			if (match == null)
-			{
-				throw new InvalidOperationException(
-					$"Unable to find a digest algorithm for the signing algorithm {signingAlgorithm}");
-			}
-			return match;
-		}
-	}
+            if (match == null)
+            {
+                throw new InvalidOperationException(
+                    $"Unable to find a digest algorithm for the signing algorithm {signingAlgorithm}");
+            }
+            return match;
+        }
+    }
 }

@@ -1,4 +1,4 @@
-﻿namespace Sustainsys.Saml2.Metadata.Localization
+﻿namespace Sustainsys.Saml2.Metadata
 {
     public abstract class LocalizedEntry
     {

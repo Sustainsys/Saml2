@@ -1,10 +1,10 @@
-﻿using Sustainsys.Saml2.Metadata.Tokens;
-using Sustainsys.Saml2.Selectors;
+﻿using Sustainsys.Saml2.Metadata.Selectors;
+using Sustainsys.Saml2.Metadata.Tokens;
 using System;
 using System.Xml;
 using SecurityToken = Microsoft.IdentityModel.Tokens.SecurityToken;
 
-namespace Sustainsys.Saml2.Metadata
+namespace Sustainsys.Saml2.Metadata.Serialization
 {
     public abstract class SecurityTokenSerializer
     {

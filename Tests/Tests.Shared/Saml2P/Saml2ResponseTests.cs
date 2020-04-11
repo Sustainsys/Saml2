@@ -24,6 +24,7 @@ using SigningCredentials = Microsoft.IdentityModel.Tokens.SigningCredentials;
 using X509SecurityKey = Microsoft.IdentityModel.Tokens.X509SecurityKey;
 using System.Collections.Generic;
 using Microsoft.IdentityModel.Logging;
+using Sustainsys.Saml2.Metadata.Exceptions;
 
 namespace Sustainsys.Saml2.Tests.Saml2P
 {

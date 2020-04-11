@@ -1,18 +1,14 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Runtime.Serialization;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace Sustainsys.Saml2.Exceptions
+namespace Sustainsys.Saml2.Metadata.Exceptions
 {
     /// <summary>
     /// Exception thrown when an signature is not valid according to the
     /// SAML standard.
     /// </summary>
     [Serializable]
-    public class InvalidSignatureException : Saml2Exception
+    public class InvalidSignatureException : Saml2MetadataException
     {
         /// <summary>
         /// Default ctor
@@ -33,7 +29,7 @@ namespace Sustainsys.Saml2.Exceptions
         /// <param name="message">Message</param>
         /// <param name="innerException">Inner exception</param>
         public InvalidSignatureException(string message, Exception innerException)
-            : base( message, innerException)
+            : base(message, innerException)
         { }
 
         /// <summary>

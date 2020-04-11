@@ -9,6 +9,8 @@ using System.Linq;
 using System.Net;
 using System.Security.Cryptography.Xml;
 using System.Xml;
+using Sustainsys.Saml2.Metadata.Exceptions;
+using Sustainsys.Saml2.Metadata.Serialization;
 
 namespace Sustainsys.Saml2.Metadata
 {
