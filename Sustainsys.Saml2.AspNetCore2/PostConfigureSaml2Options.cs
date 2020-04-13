@@ -11,7 +11,11 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 
 namespace Sustainsys.Saml2.AspNetCore2
 {
-    class PostConfigureSaml2Options : IPostConfigureOptions<Saml2Options>
+    /// <summary>
+    /// Post configure service to set default values in configuration if
+    /// the startup didn't set them.
+    /// </summary>
+    public class PostConfigureSaml2Options : IPostConfigureOptions<Saml2Options>
     {
         private ILoggerFactory loggerFactory;
         private IOptions<AuthenticationOptions> authOptions;
@@ -29,6 +33,11 @@ namespace Sustainsys.Saml2.AspNetCore2
             this.authOptions = authOptions;
         }
 
+        /// <summary>
+        /// Add defaults to configuration.
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="options"></param>
         public void PostConfigure(string name, Saml2Options options)
         {
             if(options == null)
