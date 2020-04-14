@@ -80,5 +80,13 @@ namespace Sustainsys.Saml2.Configuration
         /// </summary>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1726:UsePreferredTerms", MessageId = "Logout")]
         public bool EnableLogoutOverPost { get; set; }
+
+        /// <summary>
+        /// SAML2 Specs says in section 4.4.4.2:
+        /// "... The responder MUST authenticate itself to the requester and ensure message integrity, either by signing the message or using a binding-specific mechanism."
+        /// 
+        /// Unfortunately not all IDP seem to follow the specification. Disables requirement for a signed LogoutResponse.
+        /// </summary>
+        public bool AcceptUnsignedLogoutResponses { get; set; }
     }
 }
