@@ -368,6 +368,63 @@ namespace Sustainsys.Saml2.Tests.WebSso
         }
 
         [TestMethod]
+        public void LogoutCommand_Run_RejectsUnsignedLogoutResponse()
+        {
+            var relayState = "MyRelayState";
+            var response = new Saml2LogoutResponse(Saml2StatusCode.Success)
+            {
+                DestinationUrl = new Uri("http://sp.example.com/path/Saml2/logout"),
+                Issuer = new EntityId("https://idp.example.com"),
+                InResponseTo = new Saml2Id(),
+                RelayState = relayState
+            };
+
+            var bindResult = Saml2Binding.Get(Saml2BindingType.HttpRedirect)
+                .Bind(response);
+
+            var request = new HttpRequestData("GET",
+                bindResult.Location,
+                "http://sp-internal.example.com/path/Saml2",
+                null,
+                new StoredRequestState(null, new Uri("http://loggedout.example.com"), null, null));
+
+            var options = StubFactory.CreateOptions();
+
+            CommandFactory.GetCommand(CommandFactory.LogoutCommandName)
+                .Invoking(c => c.Run(request, options))
+                .Should().Throw<UnsuccessfulSamlOperationException>();
+        }
+
+        [TestMethod]
+        public void LogoutCommand_Run_AcceptsUnsignedLogoutResponseIfCompatFlagSet()
+        {
+            var relayState = "MyRelayState";
+            var response = new Saml2LogoutResponse(Saml2StatusCode.Success)
+            {
+                DestinationUrl = new Uri("http://sp.example.com/path/Saml2/logout"),
+                Issuer = new EntityId("https://idp.example.com"),
+                InResponseTo = new Saml2Id(),
+                RelayState = relayState
+            };
+
+            var bindResult = Saml2Binding.Get(Saml2BindingType.HttpRedirect)
+                .Bind(response);
+
+            var request = new HttpRequestData("GET",
+                bindResult.Location,
+                "http://sp-internal.example.com/path/Saml2",
+                null,
+                new StoredRequestState(null, new Uri("http://loggedout.example.com"), null, null));
+
+            var options = StubFactory.CreateOptions();
+            options.SPOptions.Compatibility.AcceptUnsignedLogoutResponses = true;
+
+            // Should not throw.
+            CommandFactory.GetCommand(CommandFactory.LogoutCommandName)
+                .Run(request, options);
+        }
+
+        [TestMethod]
         public void LogoutCommand_Run_HandlesLogoutResponse_InPost()
         {
             var relayState = "TestState";
@@ -686,31 +743,6 @@ namespace Sustainsys.Saml2.Tests.WebSso
         }
 
         [TestMethod]
-        public void LogoutCommand_Run_IncomingRequest_ThroughRedirectBinding_DoesnotThrowOnMissingSignatureWithCompatibilityOption()
-        {
-            var request = new Saml2LogoutRequest()
-            {
-                DestinationUrl = new Uri("http://sp.example.com/path/Saml2/logout"),
-                Issuer = new EntityId("https://idp.example.com"),
-                NameId = new Saml2NameIdentifier("NameId"),
-                SessionIndex = "SessionID"
-            };
-
-            var bindResult = Saml2Binding.Get(Saml2BindingType.HttpRedirect)
-                .Bind(request);
-
-            var httpRequest = new HttpRequestData("GET", bindResult.Location);
-
-            var options = StubFactory.CreateOptions();
-            options.SPOptions.ServiceCertificates.Add(SignedXmlHelper.TestCert);
-            options.SPOptions.Compatibility.AcceptUnsignedLogoutResponses = true;
-
-            CommandFactory.GetCommand(CommandFactory.LogoutCommandName)
-                .Invoking(c => c.Run(httpRequest, options))
-                .Should().NotThrow();
-        }
-
-        [TestMethod]
         public void LogoutCommand_Run_ThrowsOnLogoutResponseStatusNonSuccess()
         {
             var response = new Saml2LogoutResponse(Saml2StatusCode.Requester)
@@ -937,7 +969,7 @@ namespace Sustainsys.Saml2.Tests.WebSso
                 MessageName = "SAMLRequest",
                 SigningCertificate = SignedXmlHelper.TestCert,
                 DestinationUrl = new Uri("http://localhost"),
-                XmlData = "<Xml />"
+                XmlData = "<samlp:LogoutRequest xmlns:samlp=\"urn:oasis:names:tc:SAML:2.0:protocol\"/>"
             };
 
             var url = Saml2Binding.Get(Saml2BindingType.HttpRedirect)
