@@ -1,3 +1,6 @@
+Version 1.0.2
+* Security Fix: Ensure received token is a bearer token.
+
 Version 1.0.1
 * SameSite cookie update for Chrome 80
 
