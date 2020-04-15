@@ -1,20 +1,20 @@
-﻿using System.Collections.Generic;
-using Sustainsys.Saml2.Configuration;
-using System;
-using System.Configuration;
-using System.Globalization;
-using System.Linq;
-using System.Security.Cryptography;
-using Sustainsys.Saml2.Internal;
+﻿using Sustainsys.Saml2.Configuration;
 using Sustainsys.Saml2.Metadata;
+using Sustainsys.Saml2.Metadata.Descriptors;
+using Sustainsys.Saml2.Metadata.Services;
+using Sustainsys.Saml2.Metadata.Tokens;
 using Sustainsys.Saml2.Saml2P;
 using Sustainsys.Saml2.WebSso;
-using System.Threading.Tasks;
-using System.Net;
+using System;
 using System.Collections.Concurrent;
-using System.Security.Claims;
+using System.Collections.Generic;
+using System.Configuration;
 using System.Diagnostics.CodeAnalysis;
-using Sustainsys.Saml2.Tokens;
+using System.Globalization;
+using System.Linq;
+using System.Net;
+using System.Security.Claims;
+using System.Threading.Tasks;
 using System.Xml.Linq;
 
 namespace Sustainsys.Saml2
@@ -28,7 +28,7 @@ namespace Sustainsys.Saml2
         /// Ctor
         /// </summary>
         /// <param name="entityId">Entity id of the identityprovider.</param>
-        /// <param name="spOptions">Service provider options to use when 
+        /// <param name="spOptions">Service provider options to use when
         /// creating AuthnRequests for this Idp.</param>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "sp")]
         public IdentityProvider(EntityId entityId, SPOptions spOptions)
@@ -40,7 +40,7 @@ namespace Sustainsys.Saml2
             OutboundSigningAlgorithm = spOptions.OutboundSigningAlgorithm;
         }
 
-        readonly SPOptions spOptions;
+        private readonly SPOptions spOptions;
 
         internal IdentityProvider(IdentityProviderElement config, SPOptions spOptions)
         {
@@ -183,8 +183,8 @@ namespace Sustainsys.Saml2
             }
         }
 
+        private Uri singleLogoutServiceUrl;
 
-        Uri singleLogoutServiceUrl;
         /// <summary>
         /// The Url of the single sign out service. This is where the browser
         /// is redirected or where the post data is sent to when sending a
@@ -204,9 +204,10 @@ namespace Sustainsys.Saml2
             }
         }
 
-        Uri singleLogoutServiceResponseUrl;
+        private Uri singleLogoutServiceResponseUrl;
+
         /// <summary>
-        /// The Url to send single logout responses to. Defaults to 
+        /// The Url to send single logout responses to. Defaults to
         /// SingleLogoutServiceUrl.
         /// </summary>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1726:UsePreferredTerms", MessageId = "Logout")]
@@ -224,6 +225,7 @@ namespace Sustainsys.Saml2
         }
 
         private Saml2BindingType singleLogoutServiceBinding;
+
         /// <summary>
         /// Binding for the Single logout service. If not set, returns the
         /// same as the main binding (used for AuthnRequests)
@@ -255,7 +257,7 @@ namespace Sustainsys.Saml2
         public bool AllowUnsolicitedAuthnResponse { get; set; }
 
         /// <summary>
-        /// Does the RelayState contains the return url?, 
+        /// Does the RelayState contains the return url?,
         /// This setting is used only when the AllowUnsolicitedAuthnResponse setting is enabled.
         /// </summary>
         public bool RelayStateUsedAsReturnUrl { get; set; }
@@ -265,7 +267,7 @@ namespace Sustainsys.Saml2
         /// <summary>
         /// Location of metadata for the Identity Provider. Automatically enables
         /// <see cref="LoadMetadata"/>. The location can be a URL, an absolute
-        /// path to a local file or an app relative  path 
+        /// path to a local file or an app relative  path
         /// (e.g. ~/App_Data/IdpMetadata.xml). By default the entity id is
         /// interpreted as the metadata location (which is a convention).
         /// </summary>
@@ -358,7 +360,7 @@ namespace Sustainsys.Saml2
         /// <returns>CommandResult with the bound message.</returns>
         public CommandResult Bind<TMessage>(
             TMessage message, Action<TMessage, XDocument, Saml2BindingType> xmlCreatedNotification)
-            where TMessage: ISaml2Message
+            where TMessage : ISaml2Message
         {
             return Saml2Binding.Get(Binding).Bind(message, spOptions.Logger, xmlCreatedNotification);
         }
@@ -378,7 +380,7 @@ namespace Sustainsys.Saml2
             }
         }
 
-        readonly object metadataLoadLock = new object();
+        private readonly object metadataLoadLock = new object();
 
         private void DoLoadMetadata()
         {
@@ -406,7 +408,7 @@ namespace Sustainsys.Saml2
         }
 
         /// <summary>
-        /// Reads the supplied metadata and sets all properties of the 
+        /// Reads the supplied metadata and sets all properties of the
         /// IdentityProvider based on the metadata.
         /// </summary>
         /// <param name="metadata">Metadata to read.</param>
@@ -457,11 +459,11 @@ namespace Sustainsys.Saml2
 
             foreach (var kv in idpDescriptor.ArtifactResolutionServices)
             {
-				var ars = kv.Value;
+                var ars = kv.Value;
                 artifactResolutionServiceUrls[ars.Index] = ars.Location;
             }
 
-			var arsKeys = idpDescriptor.ArtifactResolutionServices.ToLookup(x => x.Value.Index);
+            var arsKeys = idpDescriptor.ArtifactResolutionServices.ToLookup(x => x.Value.Index);
             foreach (var ars in artifactResolutionServiceUrls.Keys
                 .Where(k => !arsKeys.Contains(k)))
             {
@@ -471,12 +473,12 @@ namespace Sustainsys.Saml2
             var keys = idpDescriptor.Keys.Where(k => k.Use == KeyType.Unspecified || k.Use == KeyType.Signing);
 
             signingKeys.SetLoadedItems(keys.Select(k => k.KeyInfo
-				.MakeSecurityKeyIdentifier().First(c => c.CanCreateKey)).ToList());
+                .MakeSecurityKeyIdentifier().First(c => c.CanCreateKey)).ToList());
         }
 
         private static T GetPreferredEndpoint<T>(ICollection<T> endpoints) where T : Endpoint
         {
-            // Prefer an endpoint with a redirect binding, then check for POST which 
+            // Prefer an endpoint with a redirect binding, then check for POST which
             // is the other supported by Saml2.
             return endpoints.FirstOrDefault(s => s.Binding == Saml2Binding.HttpRedirectUri) ??
                 endpoints.FirstOrDefault(s => s.Binding == Saml2Binding.HttpPostUri);

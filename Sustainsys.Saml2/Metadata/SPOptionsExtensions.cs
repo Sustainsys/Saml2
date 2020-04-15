@@ -5,6 +5,8 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 using Sustainsys.Saml2.Configuration;
+using Sustainsys.Saml2.Metadata.Descriptors;
+using Sustainsys.Saml2.Metadata.Services;
 using Sustainsys.Saml2.Tokens;
 using Sustainsys.Saml2.WebSso;
 

@@ -16,6 +16,8 @@ using Sustainsys.Saml2.Internal;
 using Sustainsys.Saml2.Tokens;
 using Sustainsys.Saml2.TestHelpers;
 using System.Xml.Linq;
+using Sustainsys.Saml2.Metadata.Exceptions;
+using Sustainsys.Saml2.Metadata.Tokens;
 
 namespace Sustainsys.Saml2.Tests.WebSso
 {

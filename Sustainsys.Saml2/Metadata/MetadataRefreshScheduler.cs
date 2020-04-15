@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Sustainsys.Saml2.Metadata
 {
@@ -37,7 +33,7 @@ namespace Sustainsys.Saml2.Metadata
         {
             return metadata.ValidUntil ??
                    DateTime.UtcNow.Add((metadata.CacheDuration ?? DefaultMetadataCacheDuration)
-					.ToTimeSpan());
+                    .ToTimeSpan());
         }
     }
 }

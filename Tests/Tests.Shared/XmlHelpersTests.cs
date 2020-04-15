@@ -12,6 +12,8 @@ using Sustainsys.Saml2.Configuration;
 using System.Linq;
 using System.Xml.Linq;
 using Sustainsys.Saml2.Internal;
+using Sustainsys.Saml2.Metadata.Exceptions;
+using Sustainsys.Saml2.Metadata.Tokens;
 using Sustainsys.Saml2.TestHelpers;
 using Sustainsys.Saml2.Tokens;
 

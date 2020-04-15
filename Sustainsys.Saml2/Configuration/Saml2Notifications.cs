@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Security.Claims;
 using System.Xml;
 using System.Xml.Linq;
+using Sustainsys.Saml2.Metadata.Descriptors;
 
 namespace Sustainsys.Saml2.Configuration
 {

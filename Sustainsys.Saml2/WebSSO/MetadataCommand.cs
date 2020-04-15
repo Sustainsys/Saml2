@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using System.Web;
 using System.Xml.Linq;
 using Sustainsys.Saml2.Metadata;
+using Sustainsys.Saml2.Metadata.Extensions;
 
 namespace Sustainsys.Saml2.WebSso
 {

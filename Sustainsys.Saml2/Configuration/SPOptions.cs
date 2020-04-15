@@ -11,6 +11,7 @@ using System.Linq;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
+using Sustainsys.Saml2.Metadata.Services;
 
 namespace Sustainsys.Saml2.Configuration
 {

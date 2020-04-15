@@ -9,6 +9,7 @@ using Sustainsys.Saml2.Metadata;
 using Sustainsys.Saml2.Saml2P;
 using System.Diagnostics.CodeAnalysis;
 using System.Collections.ObjectModel;
+using Sustainsys.Saml2.Metadata.Services;
 
 namespace Sustainsys.Saml2.Configuration
 {

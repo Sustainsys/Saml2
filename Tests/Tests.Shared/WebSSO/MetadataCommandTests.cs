@@ -10,6 +10,8 @@ using System.Security.Cryptography.Xml;
 using Sustainsys.Saml2.TestHelpers;
 using Sustainsys.Saml2.Tokens;
 using System.Collections.Generic;
+using Sustainsys.Saml2.Metadata.Exceptions;
+using Sustainsys.Saml2.Metadata.Tokens;
 
 namespace Sustainsys.Saml2.Tests.WebSso
 {

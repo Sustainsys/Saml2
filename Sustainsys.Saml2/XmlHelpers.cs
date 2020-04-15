@@ -4,15 +4,18 @@ using System.Security.Cryptography.X509Certificates;
 using System.Security.Cryptography.Xml;
 using System.Xml;
 using System.Linq;
-using Sustainsys.Saml2.Exceptions;
+//using Sustainsys.Saml2.Exceptions;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Globalization;
 using System.Diagnostics.CodeAnalysis;
 using System.Xml.Linq;
 using System.IO;
+using Sustainsys.Saml2.Exceptions;
 using Sustainsys.Saml2.Internal;
-using Sustainsys.Saml2.Tokens;
+using Sustainsys.Saml2.Metadata.Exceptions;
+//using Sustainsys.Saml2.Internal;
+using Sustainsys.Saml2.Metadata.Tokens;
 
 namespace Sustainsys.Saml2
 {
