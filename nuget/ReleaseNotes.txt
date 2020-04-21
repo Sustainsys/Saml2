@@ -1,3 +1,7 @@
+Version 2.7.0
+* Security Fix: Ensure received token is a bearer token.
+* Compatibility flag to allow unsigned logout responses
+
 Version 2.6.0
 * Xml Created Notifications
 
@@ -6,11 +10,5 @@ Version 2.5.0
 * Configuration of TokenValidationParameters
 * Use CookieManager in Asp.Net Core and Owin
 * Bug fixes to Artifact binding, AuthnRequest, Owin Logout
-
-Version 2.4.0
-* SameSite cookie update for Chrome 80
-* TokenValidationParametersCreated notification
-* Bug Fix: Handle query string with =
-* Improved error messages
 
 See GitHub milestone issue list for details.
