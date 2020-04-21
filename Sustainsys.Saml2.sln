@@ -85,7 +85,7 @@ EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		Tests\Tests.Shared\Tests.Shared.projitems*{82f84e61-1292-47cf-b0dc-59f26ec56c32}*SharedItemsImports = 13
-		Tests\Tests.Shared\Tests.Shared.projitems*{c5c43d57-3a9c-4edf-97af-ee55a950284c}*SharedItemsImports = 4
+		Tests\Tests.Shared\Tests.Shared.projitems*{c5c43d57-3a9c-4edf-97af-ee55a950284c}*SharedItemsImports = 5
 		Tests\Tests.Shared\Tests.Shared.projitems*{ff774b2e-51d4-4c64-ba0e-c061683a9b93}*SharedItemsImports = 5
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
