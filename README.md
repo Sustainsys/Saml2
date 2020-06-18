@@ -14,7 +14,8 @@ Sustainsys.Saml2 is open sourced and contributions are welcome, please see
 There are three active branches in the repo
 * v1 is a security-supported-only version that uses the `System.IdentityModel` library for token handling and supports HttpModule, Mvc, Owin and AspNetCore2 (only on full. Net Framework).
 * v2 is a currently supported version that uses the `Microsoft.IdentityModel` nuget packages for toking handling, multi-targets and supports HttpModule, Mvc, Owin and AspNetCore2 
-* master is development for a new version (will be released as v3 eventually) that only supports Asp.Net Core.
+* develop is development for a new version (will be released as v3 eventually) that only supports Asp.Net Core.
+* master is deprecated and only kept around to ensure all old links pointing to it works.
 
 ## Documentation
 Complete documentation is available at [our documentation site](https://saml2.sustainsys.com).
