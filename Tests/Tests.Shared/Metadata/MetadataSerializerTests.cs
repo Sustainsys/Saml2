@@ -5650,12 +5650,36 @@ namespace Sustainsys.Saml2.Tests.Metadata
 			};
 
 			AddTestData("Organization1", xml, obj);
+
+			xml = @"<?xml version='1.0' encoding='UTF-8'?>
+				<Organization xmlns='urn:oasis:names:tc:SAML:2.0:metadata'>
+					<OrganizationName xml:lang='en'>Acme Ltd</OrganizationName>
+					<OrganizationName xml:lang='en'>Ooops, duplicate entry</OrganizationName>
+				</Organization>";
+
+			obj = new Organization
+			{
+				Names = {
+					new LocalizedName("Acme Ltd", "en"),
+					new LocalizedName("Ooops, duplicate entry", "en")
+				},
+			};
+
+			AddTestData("OrganizationDuplicateNameEntries", xml, obj);
+
 		}
 
 		[TestMethod]
 		public void MetadataSerializerTests_ReadOrganization()
 		{
 			ReadTest("Organization1", (serializer, reader) =>
+				serializer.TestReadOrganization(reader));
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_ReadOrganizationWithDuplicateNameEntries()
+		{
+			ReadTest("OrganizationDuplicateNameEntries", (serializer, reader) =>
 				serializer.TestReadOrganization(reader));
 		}
 
