@@ -33,6 +33,7 @@ namespace Sustainsys.Saml2.Configuration
                 configElement.UnpackEntitiesDescriptorInIdentityProviderMetadata;
             DisableLogoutStateCookie = configElement.DisableLogoutStateCookie;
             IgnoreMissingInResponseTo = configElement.IgnoreMissingInResponseTo;
+            IgnoreAuthenticationContextInResponse = configElement.IgnoreAuthenticationContextInResponse;
         }
 
         /// <summary>

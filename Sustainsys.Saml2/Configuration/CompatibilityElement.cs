@@ -85,5 +85,26 @@ namespace Sustainsys.Saml2.Configuration
                 base[ignoreMissingInResponseTo] = value;
             }
         }
+
+        const string ignoreAuthenticationContextInResponse = nameof(ignoreAuthenticationContextInResponse);
+
+        /// <summary>
+        /// Do not read the AuthnContext element in Saml2Response.
+        /// If you do not need these values to be present as claims in the generated
+        /// identity, using this option can prevent XML format errors (IDX13102)
+        /// e.g. when value cannot parse as absolute URI
+        /// </summary>
+        [ConfigurationProperty(ignoreAuthenticationContextInResponse, IsRequired = false)]
+        public bool IgnoreAuthenticationContextInResponse
+        {
+            get
+            {
+                return (bool)base[ignoreAuthenticationContextInResponse];
+            }
+            set
+            {
+                base[ignoreAuthenticationContextInResponse] = value;
+            }
+        }
     }
 }
