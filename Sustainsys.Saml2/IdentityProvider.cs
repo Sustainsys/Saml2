@@ -130,16 +130,16 @@ namespace Sustainsys.Saml2
             }
         }
 
-        private byte[] metadataBytes;
-        public byte[] MetadataBytes 
+        private Func<byte[]> getMetadataBytesCallback;
+        public Func<byte[]> GetMetadataBytesCallback 
         { 
             get
             {
-                return metadataBytes; 
+                return getMetadataBytesCallback; 
             }
             set 
             {
-                metadataBytes = value;
+                getMetadataBytesCallback = value;
                 LoadMetadata = true;
             } 
         }
@@ -402,11 +402,11 @@ namespace Sustainsys.Saml2
                 {
                     try
                     {
-                        if (MetadataBytes != null)
+                        if (GetMetadataBytesCallback != null)
                         {
                             spOptions.Logger?.WriteInformation("Loading metadata from byte array for idp " + EntityId.Id);
                             var metadata = MetadataLoader.LoadIdpFromBytes(
-                                MetadataBytes,
+                                GetMetadataBytesCallback(),
                                 spOptions.Compatibility.UnpackEntitiesDescriptorInIdentityProviderMetadata);
                             ReadMetadata(metadata);
                         }
