@@ -13,6 +13,8 @@ using System.Security.Cryptography.X509Certificates;
 using System.Collections.Generic;
 using Sustainsys.Saml2.Exceptions;
 using System.Security.Cryptography.Xml;
+using Sustainsys.Saml2.Metadata.Exceptions;
+using Sustainsys.Saml2.Metadata.Tokens;
 using Sustainsys.Saml2.TestHelpers;
 
 namespace Sustainsys.Saml2.Tests

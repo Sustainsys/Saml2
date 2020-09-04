@@ -4,6 +4,8 @@ using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using FluentAssertions;
 using Sustainsys.Saml2.Metadata;
+using Sustainsys.Saml2.Metadata.Descriptors;
+using Sustainsys.Saml2.Metadata.Services;
 using Sustainsys.Saml2.WebSso;
 using Sustainsys.Saml2.TestHelpers;
 

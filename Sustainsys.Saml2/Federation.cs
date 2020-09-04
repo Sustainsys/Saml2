@@ -1,15 +1,12 @@
 ﻿using Sustainsys.Saml2.Configuration;
 using Sustainsys.Saml2.Metadata;
+using Sustainsys.Saml2.Metadata.Descriptors;
+using Sustainsys.Saml2.Metadata.Tokens;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Globalization;
 using System.Linq;
-using System.Net;
-using System.Text;
-using System.Threading.Tasks;
 using System.Security.Cryptography.X509Certificates;
-using Sustainsys.Saml2.Tokens;
+using System.Threading.Tasks;
 
 namespace Sustainsys.Saml2
 {
@@ -43,15 +40,15 @@ namespace Sustainsys.Saml2
         /// <summary>
         /// Ctor
         /// </summary>
-        /// <param name="metadataLocation">Location (url, local path or app 
+        /// <param name="metadataLocation">Location (url, local path or app
         /// relative path such as ~/App_Data) where metadata is located.</param>
-        /// <param name="allowUnsolicitedAuthnResponse">Should unsolicited responses 
+        /// <param name="allowUnsolicitedAuthnResponse">Should unsolicited responses
         /// from idps in this federation be accepted?</param>
         /// <param name="options">Options to pass on to created IdentityProvider
         /// instances and register identity providers in.</param>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "sp")]
         public Federation(string metadataLocation, bool allowUnsolicitedAuthnResponse, IOptions options)
-            : this (metadataLocation,
+            : this(metadataLocation,
                   allowUnsolicitedAuthnResponse,
                   options,
                   (IEnumerable<SecurityKeyIdentifierClause>)null)
@@ -60,9 +57,9 @@ namespace Sustainsys.Saml2
         /// <summary>
         /// Ctor
         /// </summary>
-        /// <param name="metadataLocation">Location (url, local path or app 
+        /// <param name="metadataLocation">Location (url, local path or app
         /// relative path such as ~/App_Data) where metadata is located.</param>
-        /// <param name="allowUnsolicitedAuthnResponse">Should unsolicited responses 
+        /// <param name="allowUnsolicitedAuthnResponse">Should unsolicited responses
         /// from idps in this federation be accepted?</param>
         /// <param name="options">Options to pass on to created IdentityProvider
         /// instances and register identity providers in.</param>
@@ -72,18 +69,18 @@ namespace Sustainsys.Saml2
             bool allowUnsolicitedAuthnResponse,
             IOptions options,
             IEnumerable<X509Certificate2> signingKeys)
-            :this (metadataLocation,
+            : this(metadataLocation,
                  allowUnsolicitedAuthnResponse,
-                 options, 
+                 options,
                  signingKeys.Select(k => new X509RawDataKeyIdentifierClause(k)))
         { }
 
         /// <summary>
         /// Ctor
         /// </summary>
-        /// <param name="metadataLocation">Location (url, local path or app 
+        /// <param name="metadataLocation">Location (url, local path or app
         /// relative path such as ~/App_Data) where metadata is located.</param>
-        /// <param name="allowUnsolicitedAuthnResponse">Should unsolicited responses 
+        /// <param name="allowUnsolicitedAuthnResponse">Should unsolicited responses
         /// from idps in this federation be accepted?</param>
         /// <param name="options">Options to pass on to created IdentityProvider
         /// instances and register identity providers in.</param>
@@ -99,6 +96,7 @@ namespace Sustainsys.Saml2
 
         // Internal to allow checking from tests.
         internal bool allowUnsolicitedAuthnResponse;
+
         internal string metadataLocation;
         private IOptions options;
 
@@ -120,7 +118,7 @@ namespace Sustainsys.Saml2
 
         private readonly object metadataLoadLock = new object();
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes", Justification ="We want a retry, regardless of exception type")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes", Justification = "We want a retry, regardless of exception type")]
         private void LoadMetadata()
         {
             lock (metadataLoadLock)
@@ -139,7 +137,7 @@ namespace Sustainsys.Saml2
 
                     var identityProviders = new List<IdentityProvider>();
 
-                    foreach(var idpMetadata in identityProvidersMetadata)
+                    foreach (var idpMetadata in identityProvidersMetadata)
                     {
                         var idp = new IdentityProvider(idpMetadata.EntityId, options.SPOptions)
                         {
@@ -152,7 +150,7 @@ namespace Sustainsys.Saml2
 
                     RegisterIdentityProviders(identityProviders);
 
-                    MetadataValidUntil =  metadata.CalculateMetadataValidUntil();
+                    MetadataValidUntil = metadata.CalculateMetadataValidUntil();
 
                     LastMetadataLoadException = null;
                 }

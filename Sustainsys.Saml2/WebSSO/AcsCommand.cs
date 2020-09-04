@@ -168,8 +168,9 @@ namespace Sustainsys.Saml2.WebSso
                 }
             }
 
-            options.SPOptions.Logger.WriteInformation("Successfully processed SAML response " + samlResponse.Id
-                + " and authenticated " + principal.FindFirst(ClaimTypes.NameIdentifier)?.Value);
+            options.SPOptions.Logger.WriteInformation("Successfully processed SAML response " 
+                + samlResponse.Id.Value + " and authenticated " 
+                + principal.FindFirst(ClaimTypes.NameIdentifier)?.Value);
 
             return new CommandResult()
             {

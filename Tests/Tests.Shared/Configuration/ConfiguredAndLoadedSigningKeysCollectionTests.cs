@@ -5,6 +5,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Sustainsys.Saml2.Tokens;
 using System.Linq;
 using System.Security.Cryptography.X509Certificates;
+using Sustainsys.Saml2.Metadata.Tokens;
 
 namespace Sustainsys.Saml2.Tests.Configuration
 {

@@ -2,7 +2,6 @@
 using Microsoft.IdentityModel.Tokens.Saml2;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Sustainsys.Saml2.Metadata;
-using Sustainsys.Saml2.Selectors;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -15,6 +14,11 @@ using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Xml;
+using Sustainsys.Saml2.Metadata.Descriptors;
+using Sustainsys.Saml2.Metadata.Exceptions;
+using Sustainsys.Saml2.Metadata.Selectors;
+using Sustainsys.Saml2.Metadata.Serialization;
+using Sustainsys.Saml2.Metadata.Services;
 
 namespace Sustainsys.Saml2.Tests.Metadata
 {
@@ -5650,12 +5654,36 @@ namespace Sustainsys.Saml2.Tests.Metadata
 			};
 
 			AddTestData("Organization1", xml, obj);
+
+			xml = @"<?xml version='1.0' encoding='UTF-8'?>
+				<Organization xmlns='urn:oasis:names:tc:SAML:2.0:metadata'>
+					<OrganizationName xml:lang='en'>Acme Ltd</OrganizationName>
+					<OrganizationName xml:lang='en'>Ooops, duplicate entry</OrganizationName>
+				</Organization>";
+
+			obj = new Organization
+			{
+				Names = {
+					new LocalizedName("Acme Ltd", "en"),
+					new LocalizedName("Ooops, duplicate entry", "en")
+				},
+			};
+
+			AddTestData("OrganizationDuplicateNameEntries", xml, obj);
+
 		}
 
 		[TestMethod]
 		public void MetadataSerializerTests_ReadOrganization()
 		{
 			ReadTest("Organization1", (serializer, reader) =>
+				serializer.TestReadOrganization(reader));
+		}
+
+		[TestMethod]
+		public void MetadataSerializerTests_ReadOrganizationWithDuplicateNameEntries()
+		{
+			ReadTest("OrganizationDuplicateNameEntries", (serializer, reader) =>
 				serializer.TestReadOrganization(reader));
 		}
 

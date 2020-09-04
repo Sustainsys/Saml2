@@ -259,6 +259,10 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Sustainsys.Saml2.Metadata\Sustainsys.Saml2.Metadata.csproj">
+      <Project>{84cb2bf8-5eb7-4f82-951b-2eca45cd0be2}</Project>
+      <Name>Sustainsys.Saml2.Metadata</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Sustainsys.Saml2.Mvc\Sustainsys.Saml2.Mvc.csproj">
       <Project>{7d32f0a3-cec8-4dc6-a096-5905ea9c3770}</Project>
       <Name>Sustainsys.Saml2.Mvc</Name>

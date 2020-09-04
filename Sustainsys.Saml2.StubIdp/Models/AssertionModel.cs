@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Configuration;
+using System.IdentityModel.Metadata;
 using Sustainsys.Saml2.Metadata;
 using Microsoft.IdentityModel.Tokens.Saml2;
 using System.Linq;
@@ -82,7 +83,7 @@ namespace Sustainsys.Saml2.StubIdp.Models
                 : new Uri(Audience);
 
             return new Saml2Response(
-                new EntityId(UrlResolver.MetadataUrl.ToString()),
+                new Metadata.EntityId(UrlResolver.MetadataUrl.ToString()),
                 CertificateHelper.SigningCertificate, new Uri(AssertionConsumerServiceUrl),
                 saml2Id, RelayState, audienceUrl, identity);
         }

@@ -5,6 +5,9 @@ using System.Xml.Linq;
 using System.Security.Cryptography.Xml;
 using Sustainsys.Saml2.WebSso;
 using FluentAssertions;
+using Sustainsys.Saml2.Metadata.Descriptors;
+using Sustainsys.Saml2.Metadata.Extensions;
+using Sustainsys.Saml2.Metadata.Services;
 using Sustainsys.Saml2.TestHelpers;
 
 namespace Sustainsys.Saml2.Tests.Metadata

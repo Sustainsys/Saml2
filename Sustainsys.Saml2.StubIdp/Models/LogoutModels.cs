@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
+using System.IdentityModel.Metadata;
 using Sustainsys.Saml2.Metadata;
 using Microsoft.IdentityModel.Tokens.Saml2;
 using System.Linq;
@@ -38,7 +39,7 @@ namespace Sustainsys.Saml2.StubIdp.Models
                 DestinationUrl = DestinationUrl,
                 SigningCertificate = CertificateHelper.SigningCertificate,
                 SigningAlgorithm = SignedXml.XmlDsigRSASHA256Url,
-                Issuer = new EntityId(UrlResolver.MetadataUrl.ToString()),
+                Issuer = new Metadata.EntityId(UrlResolver.MetadataUrl.ToString()),
                 NameId = new Saml2NameIdentifier(NameId),
                 SessionIndex = SessionIndex,
             };
@@ -68,7 +69,7 @@ namespace Sustainsys.Saml2.StubIdp.Models
                 SigningCertificate = CertificateHelper.SigningCertificate,
                 SigningAlgorithm = SignedXml.XmlDsigRSASHA256Url,
                 InResponseTo = new Saml2Id(InResponseTo),
-                Issuer = new EntityId(UrlResolver.MetadataUrl.ToString()),
+                Issuer = new Metadata.EntityId(UrlResolver.MetadataUrl.ToString()),
                 RelayState = RelayState
             };
         }

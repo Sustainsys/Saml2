@@ -1,16 +1,9 @@
-﻿#if NETCOREAPP2_1
-using Microsoft.AspNetCore;
+﻿using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-#else
-using Owin;
-using Microsoft.Owin;
-using Microsoft.Owin.Hosting;
-using HttpContext = Microsoft.Owin.IOwinContext;
-#endif
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
@@ -25,11 +18,7 @@ namespace Sustainsys.Saml2.Tests.Helpers
 {
     public class StubServer
     {
-#if NETCOREAPP2_1
 		private static IWebHost host;
-#else
-        private static IDisposable host;
-#endif
         static IDictionary<string, string> GetContent()
         {
             var content = new Dictionary<string, string>
@@ -384,7 +373,6 @@ entityID=""http://localhost:13428/idpMetadataVeryShortCacheDuration"" cacheDurat
 			await next.Invoke();
 		}
 
-#if NETCOREAPP2_1
 		public static void Start()
         {
 			host = new WebHostBuilder()
@@ -394,15 +382,6 @@ entityID=""http://localhost:13428/idpMetadataVeryShortCacheDuration"" cacheDurat
 				.Build();
 			host.Start();
         }
-#else
-		public static void Start()
-		{
-			host = WebApp.Start("http://localhost:13428", app =>
-			{
-				app.Use(HandleRequestAsync);
-			});
-		}
-#endif
 
 		private static async Task ArtifactResolutionService(HttpContext ctx)
         {

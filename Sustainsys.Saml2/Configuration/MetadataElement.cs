@@ -5,6 +5,7 @@ using System.Configuration;
 using System.Globalization;
 using System.Linq;
 using System.Text;
+using Sustainsys.Saml2.Metadata;
 
 namespace Sustainsys.Saml2.Configuration
 {

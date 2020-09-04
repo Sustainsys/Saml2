@@ -8,6 +8,9 @@ using Sustainsys.Saml2.Metadata;
 using System.Xml.Linq;
 using Sustainsys.Saml2.WebSso;
 using System.Linq;
+using Sustainsys.Saml2.Metadata.Descriptors;
+using Sustainsys.Saml2.Metadata.Serialization;
+using Sustainsys.Saml2.Metadata.Services;
 using Sustainsys.Saml2.Tokens;
 
 namespace Sustainsys.Saml2.Tests
