@@ -140,16 +140,7 @@ namespace Sustainsys.Saml2
             set 
             {
                 metadataBytes = value;
-                try
-                {
-                    DoLoadMetadata();
-                    Validate();
-                }
-                catch (WebException)
-                {
-                    // Ignore if metadata load failed, an automatic
-                    // retry has been scheduled.
-                }
+                LoadMetadata = true;
             } 
         }
 
@@ -405,39 +396,28 @@ namespace Sustainsys.Saml2
 
         private void DoLoadMetadata()
         {
-            if (MetadataBytes != null)
+            if (LoadMetadata)
             {
                 lock (metadataLoadLock)
                 {
                     try
                     {
-                        spOptions.Logger?.WriteInformation("Loading metadata for idp " + EntityId.Id);
-                        var metadata = MetadataLoader.LoadIdp(
-                            MetadataBytes,
-                            spOptions.Compatibility.UnpackEntitiesDescriptorInIdentityProviderMetadata);
-
-                        ReadMetadata(metadata);
-                    }
-                    catch (WebException ex)
-                    {
-                        spOptions.Logger?.WriteError("Failed to load metadata for idp " + EntityId.Id, ex);
-                        MetadataValidUntil = DateTime.MinValue;
-                        throw;
-                    }
-                }
-            }
-            else if (LoadMetadata)
-            {
-                lock (metadataLoadLock)
-                {
-                    try
-                    {
-                        spOptions.Logger?.WriteInformation("Loading metadata for idp " + EntityId.Id);
-                        var metadata = MetadataLoader.LoadIdp(
-                            MetadataLocation,
-                            spOptions.Compatibility.UnpackEntitiesDescriptorInIdentityProviderMetadata);
-
-                        ReadMetadata(metadata);
+                        if (MetadataBytes != null)
+                        {
+                            spOptions.Logger?.WriteInformation("Loading metadata from byte array for idp " + EntityId.Id);
+                            var metadata = MetadataLoader.LoadIdpFromBytes(
+                                MetadataBytes,
+                                spOptions.Compatibility.UnpackEntitiesDescriptorInIdentityProviderMetadata);
+                            ReadMetadata(metadata);
+                        }
+                        else
+                        {
+                            spOptions.Logger?.WriteInformation("Loading metadata for idp " + EntityId.Id);
+                            var metadata = MetadataLoader.LoadIdp(
+                                MetadataLocation,
+                                spOptions.Compatibility.UnpackEntitiesDescriptorInIdentityProviderMetadata);
+                            ReadMetadata(metadata);
+                        }
                     }
                     catch (WebException ex)
                     {

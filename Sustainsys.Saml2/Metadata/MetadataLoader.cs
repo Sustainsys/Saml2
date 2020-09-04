@@ -80,14 +80,14 @@ namespace Sustainsys.Saml2.Metadata
 
 
         /// <summary>
-        /// Load and parse metadata.
+        /// Load and parse metadata directly from a byte array
         /// </summary>
         /// <param name="metadataBytes">byte array of metadata</param>
         /// <returns>EntityDescriptor containing metadata</returns>
-        public static EntityDescriptor LoadIdp(byte[] metadataBytes) => LoadIdp(metadataBytes, false);
+        public static EntityDescriptor LoadIdpFromBytes(byte[] metadataBytes) => LoadIdpFromBytes(metadataBytes, false);
 
         /// <summary>
-        /// Load and parse metadata.
+        /// Load and parse metadata directly from a byte array
         /// </summary>
         /// <param name="metadataBytes">byte array of metadata</param>
         /// <param name="unpackEntitiesDescriptor">If the metadata contains
@@ -101,7 +101,7 @@ namespace Sustainsys.Saml2.Metadata
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "EntityDescriptor")]
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "IdentityProvider")]
 
-        public static EntityDescriptor LoadIdp(byte[] metadataBytes, bool unpackEntitiesDescriptor)
+        public static EntityDescriptor LoadIdpFromBytes(byte[] metadataBytes, bool unpackEntitiesDescriptor)
         {
             if (metadataBytes == null)
             {
