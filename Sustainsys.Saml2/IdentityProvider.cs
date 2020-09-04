@@ -130,6 +130,29 @@ namespace Sustainsys.Saml2
             }
         }
 
+        private byte[] metadataBytes;
+        public byte[] MetadataBytes 
+        { 
+            get
+            {
+                return metadataBytes; 
+            }
+            set 
+            {
+                metadataBytes = value;
+                try
+                {
+                    DoLoadMetadata();
+                    Validate();
+                }
+                catch (WebException)
+                {
+                    // Ignore if metadata load failed, an automatic
+                    // retry has been scheduled.
+                }
+            } 
+        }
+
         private Saml2BindingType binding;
 
         /// <summary>
@@ -382,7 +405,28 @@ namespace Sustainsys.Saml2
 
         private void DoLoadMetadata()
         {
-            if (LoadMetadata)
+            if (MetadataBytes != null)
+            {
+                lock (metadataLoadLock)
+                {
+                    try
+                    {
+                        spOptions.Logger?.WriteInformation("Loading metadata for idp " + EntityId.Id);
+                        var metadata = MetadataLoader.LoadIdp(
+                            MetadataBytes,
+                            spOptions.Compatibility.UnpackEntitiesDescriptorInIdentityProviderMetadata);
+
+                        ReadMetadata(metadata);
+                    }
+                    catch (WebException ex)
+                    {
+                        spOptions.Logger?.WriteError("Failed to load metadata for idp " + EntityId.Id, ex);
+                        MetadataValidUntil = DateTime.MinValue;
+                        throw;
+                    }
+                }
+            }
+            else if (LoadMetadata)
             {
                 lock (metadataLoadLock)
                 {
@@ -534,6 +578,9 @@ namespace Sustainsys.Saml2
 
         private void ReloadMetadataIfRequired()
         {
+            if (MetadataBytes != null)
+                return; // No need to reload as the metadata is a byte array.
+
             if (LoadMetadata && MetadataValidUntil.Value < DateTime.UtcNow)
             {
                 lock (metadataLoadLock)
