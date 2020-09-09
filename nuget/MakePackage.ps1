@@ -9,7 +9,15 @@ if ("$clean" -eq "")
   exit
 }
 
-pushd ..
+$master = $status | select-string "On branch master"	
+
+if ("$master" -eq "")	
+{	
+  echo "Releases are only allowed from the master branch."	
+  exit	
+}	
+
+pushd ..	pushd ..
 if (Test-Path "Sustainsys.Saml2\bin\Release")
 {
 	del Sustainsys.Saml2\bin\Release\*.dll
