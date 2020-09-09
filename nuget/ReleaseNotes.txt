@@ -1,7 +1,3 @@
-Version 2.7.0
-* Security Fix: Ensure received token is a bearer token.
-* Compatibility flag to allow unsigned logout responses
-
 Version 2.6.0
 * Xml Created Notifications
 
