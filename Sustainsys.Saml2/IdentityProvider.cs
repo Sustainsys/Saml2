@@ -560,14 +560,14 @@ namespace Sustainsys.Saml2
 
         private void ReloadMetadataIfRequired()
         {
-            if (MetadataBytes != null)
-                return; // No need to reload as the metadata is a byte array.
-
             if (LoadMetadata && MetadataValidUntil.Value < DateTime.UtcNow)
             {
                 lock (metadataLoadLock)
                 {
-                    DoLoadMetadata();
+                    if (LoadMetadata && MetadataValidUntil.Value < DateTime.UtcNow)
+                    {
+                        DoLoadMetadata();
+                    }
                 }
             }
         }
