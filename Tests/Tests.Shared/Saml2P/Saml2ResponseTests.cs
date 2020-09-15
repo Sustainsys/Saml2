@@ -25,6 +25,7 @@ using X509SecurityKey = Microsoft.IdentityModel.Tokens.X509SecurityKey;
 using System.Collections.Generic;
 using Microsoft.IdentityModel.Logging;
 using Sustainsys.Saml2.Metadata.Exceptions;
+using System.Security.Cryptography;
 
 namespace Sustainsys.Saml2.Tests.Saml2P
 {
@@ -2089,6 +2090,204 @@ namespace Sustainsys.Saml2.Tests.Saml2P
                 .WithMessage("The Saml2Response must have status success to extract claims.*Status Code: Responder*Message: A status message*RequestDenied")
                 .Where(x => x.Status == Saml2StatusCode.Responder && x.StatusMessage == "A status message" && x.SecondLevelStatus == "urn:oasis:names:tc:SAML:2.0:status:RequestDenied");
         }
+
+        private string GetFirstAssertion(string methodName, string nameId)
+        {
+            return $@"<saml2:Assertion xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
+                Version=""2.0"" ID=""{ methodName }_Assertion1""
+                IssueInstant=""2013-09-25T00:00:00Z"">
+                    <saml2:Issuer>https://idp.example.com</saml2:Issuer>
+                    <saml2:Subject>
+                        <saml2:NameID>{nameId}</saml2:NameID>
+                        <saml2:SubjectConfirmation Method=""urn:oasis:names:tc:SAML:2.0:cm:bearer"" />
+                    </saml2:Subject>
+                    <saml2:Conditions NotOnOrAfter=""2100-01-01T00:00:00Z"" />
+                </saml2:Assertion>";
+
+        }
+        private string GetCommonResponse(string methodName, string assertions)
+        {
+            return $@"<saml2p:Response xmlns:saml2p=""urn:oasis:names:tc:SAML:2.0:protocol""
+            xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion""
+            ID = ""{methodName}"" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z"">
+                <saml2:Issuer>https://idp.example.com</saml2:Issuer>
+                <saml2p:Status>
+                    <saml2p:StatusCode Value=""urn:oasis:names:tc:SAML:2.0:status:Success"" />
+                </saml2p:Status>
+                {assertions}
+            </saml2p:Response>";
+
+        }
+        private XmlDocument GetSignedSamlResponseDocument(string methodName)
+        {
+            var signedXml = SignedXmlHelper.SignXml(
+                GetCommonResponse(methodName,
+                SignedXmlHelper.SignXml(GetFirstAssertion(methodName, "SomeUser"))));
+
+            return XmlHelpers.XmlDocumentFromString(signedXml);
+        }
+
+        [TestMethod]
+        public void Saml2Response_GetClaims_ThrowsOnTamperedAssertionXSW1()
+        {
+            var xmlDoc = GetSignedSamlResponseDocument(MethodBase.GetCurrentMethod().Name);
+
+            XmlElement response = (XmlElement)xmlDoc.GetElementsByTagName("Response", "urn:oasis:names:tc:SAML:2.0:protocol").Item(0);
+            XmlElement clonedResponse = (XmlElement)response.CloneNode(true);
+            var clonedSignature = clonedResponse.GetElementsByTagName("Signature").Item(0);
+            clonedResponse.RemoveChild(clonedSignature);
+            var signature = response.GetElementsByTagName("Signature").Item(0);
+            signature.AppendChild(clonedResponse);
+            response.SetAttribute("ID", "_xsw1_explot_response_deadbeef");
+
+            var tamperedXml = xmlDoc.OuterXml;
+
+            Action a = () => Saml2Response.Read(tamperedXml).GetClaims(Options.FromConfiguration);
+
+            a.Should().Throw<CryptographicException>()
+                .WithMessage("Malformed element Signature.");
+        }
+
+        [TestMethod]
+        public void Saml2Response_GetClaims_ThrowsOnTamperedAssertionXSW2()
+        {
+            var xmlDoc = GetSignedSamlResponseDocument(MethodBase.GetCurrentMethod().Name);
+
+            XmlElement response = (XmlElement)xmlDoc.GetElementsByTagName("Response", "urn:oasis:names:tc:SAML:2.0:protocol").Item(0);
+            XmlElement clonedResponse = (XmlElement)response.CloneNode(true);
+            var clonedSignature = clonedResponse.GetElementsByTagName("Signature").Item(0);
+            clonedResponse.RemoveChild(clonedSignature);
+            var signature = response.GetElementsByTagName("Signature").Item(0);
+            signature.AppendChild(clonedResponse);
+            response.InsertBefore(clonedResponse, signature);
+            response.SetAttribute("ID", "_xsw2_explot_response_deadbeef");
+
+            var tamperedXml = xmlDoc.OuterXml;
+            Action a = () => Saml2Response.Read(tamperedXml).GetClaims(Options.FromConfiguration);
+
+            a.Should().Throw<InvalidSignatureException>()
+                .WithMessage("Incorrect reference on Xml signature. The reference must be to the root element of the element containing the signature.");
+        }
+
+        [TestMethod]
+        public void Saml2Response_GetClaims_ThrowsOnTamperedAssertionXSW3()
+        {
+            var xmlDoc = GetSignedSamlResponseDocument(MethodBase.GetCurrentMethod().Name);
+
+            XmlElement assertion = (XmlElement)xmlDoc.GetElementsByTagName("Assertion", "urn:oasis:names:tc:SAML:2.0:assertion").Item(0);
+            XmlElement clonedAssertion = (XmlElement)assertion.CloneNode(true);
+            var clonedSignature = clonedAssertion.GetElementsByTagName("Signature").Item(0);
+            clonedAssertion.SetAttribute("ID", "_xsw3_explot_response_deadbeef");
+            clonedAssertion.RemoveChild(clonedSignature);
+            xmlDoc.DocumentElement.InsertBefore(clonedAssertion, assertion);
+
+            var tamperedXml = xmlDoc.OuterXml;
+            Action a = () => Saml2Response.Read(tamperedXml).GetClaims(Options.FromConfiguration);
+
+            a.Should().Throw<InvalidSignatureException>()
+                .WithMessage("Signature didn't verify. Have the contents been tampered with?");
+        }
+
+        [TestMethod]
+        public void Saml2Response_GetClaims_ThrowsOnTamperedAssertionXSW4()
+        {
+            var xmlDoc = GetSignedSamlResponseDocument(MethodBase.GetCurrentMethod().Name);
+
+            XmlElement assertion = (XmlElement)xmlDoc.GetElementsByTagName("Assertion", "urn:oasis:names:tc:SAML:2.0:assertion").Item(0);
+            XmlElement clonedAssertion = (XmlElement)assertion.CloneNode(true);
+            var clonedSignature = clonedAssertion.GetElementsByTagName("Signature").Item(0);
+            clonedAssertion.SetAttribute("ID", "_xsw4_explot_response_deadbeef");
+            clonedAssertion.RemoveChild(clonedSignature);
+            xmlDoc.DocumentElement.AppendChild(clonedAssertion);
+            clonedAssertion.AppendChild(assertion);
+
+            var tamperedXml = xmlDoc.OuterXml;
+            Action a = () => Saml2Response.Read(tamperedXml).GetClaims(Options.FromConfiguration);
+
+            a.Should().Throw<InvalidSignatureException>()
+                .WithMessage("Signature didn't verify. Have the contents been tampered with?");
+        }
+
+        [TestMethod]
+        public void Saml2Response_GetClaims_ThrowsOnTamperedAssertionXSW5()
+        {
+            var xmlDoc = GetSignedSamlResponseDocument(MethodBase.GetCurrentMethod().Name);
+
+            XmlElement assertion = (XmlElement)xmlDoc.GetElementsByTagName("Assertion", "urn:oasis:names:tc:SAML:2.0:assertion").Item(0);
+            XmlElement clonedAssertion = (XmlElement)assertion.CloneNode(true);
+            var clonedSignature = clonedAssertion.GetElementsByTagName("Signature").Item(0);
+            clonedAssertion.RemoveChild(clonedSignature);
+            xmlDoc.DocumentElement.AppendChild(clonedAssertion);
+            assertion.SetAttribute("ID", "_xsw5_explot_response_deadbeef");
+
+            var tamperedXml = xmlDoc.OuterXml;
+            Action a = () => Saml2Response.Read(tamperedXml).GetClaims(Options.FromConfiguration);
+
+            a.Should().Throw<InvalidSignatureException>()
+                .WithMessage("Signature didn't verify. Have the contents been tampered with?");
+        }
+
+        [TestMethod]
+        public void Saml2Response_GetClaims_ThrowsOnTamperedAssertionXSW6()
+        {
+            var xmlDoc = GetSignedSamlResponseDocument(MethodBase.GetCurrentMethod().Name);
+
+            XmlElement assertion = (XmlElement)xmlDoc.GetElementsByTagName("Assertion", "urn:oasis:names:tc:SAML:2.0:assertion").Item(0);
+            var assertionSignature = assertion.GetElementsByTagName("Signature").Item(0);
+            XmlElement clonedAssertion = (XmlElement)assertion.CloneNode(true);
+            var clonedSignature = clonedAssertion.GetElementsByTagName("Signature").Item(0);
+            clonedAssertion.RemoveChild(clonedSignature);
+            assertionSignature.AppendChild(clonedAssertion);
+            assertion.SetAttribute("ID", "_xsw6_explot_response_deadbeef");
+
+            var tamperedXml = xmlDoc.OuterXml;
+            Action a = () => Saml2Response.Read(tamperedXml).GetClaims(Options.FromConfiguration);
+
+            a.Should().Throw<InvalidSignatureException>()
+                .WithMessage("Signature didn't verify. Have the contents been tampered with?");
+        }
+
+        [TestMethod]
+        public void Saml2Response_GetClaims_ThrowsOnTamperedAssertionXSW7()
+        {
+            var xmlDoc = GetSignedSamlResponseDocument(MethodBase.GetCurrentMethod().Name);
+
+            XmlElement assertion = (XmlElement)xmlDoc.GetElementsByTagName("Assertion", "urn:oasis:names:tc:SAML:2.0:assertion").Item(0);
+            XmlElement clonedAssertion = (XmlElement)assertion.CloneNode(true);
+            var clonedSignature = clonedAssertion.GetElementsByTagName("Signature").Item(0);
+            clonedAssertion.RemoveChild(clonedSignature);
+            XmlElement extensions = xmlDoc.CreateElement("Extensions");
+            xmlDoc.DocumentElement.InsertBefore(extensions, assertion);
+            extensions.AppendChild(clonedAssertion);
+
+            var tamperedXml = xmlDoc.OuterXml;
+            Action a = () => Saml2Response.Read(tamperedXml).GetClaims(Options.FromConfiguration);
+
+            a.Should().Throw<InvalidSignatureException>()
+                .WithMessage("Signature didn't verify. Have the contents been tampered with?");
+        }
+
+        [TestMethod]
+        public void Saml2Response_GetClaims_ThrowsOnTamperedAssertionXSW8()
+        {
+            var xmlDoc = GetSignedSamlResponseDocument(MethodBase.GetCurrentMethod().Name);
+
+            XmlElement assertion = (XmlElement)xmlDoc.GetElementsByTagName("Assertion", "urn:oasis:names:tc:SAML:2.0:assertion").Item(0);
+            var assertionSignature = assertion.GetElementsByTagName("Signature").Item(0);
+            XmlElement clonedAssertion = (XmlElement)assertion.CloneNode(true);
+            var clonedSignature = clonedAssertion.GetElementsByTagName("Signature").Item(0);
+            clonedAssertion.RemoveChild(clonedSignature);
+            XmlElement xmlObject = xmlDoc.CreateElement("Object");
+            assertionSignature.AppendChild(xmlObject);
+            xmlObject.AppendChild(clonedAssertion);
+
+            var tamperedXml = xmlDoc.OuterXml;
+            Action a = () => Saml2Response.Read(tamperedXml).GetClaims(Options.FromConfiguration);
+
+            a.Should().Throw<InvalidSignatureException>()
+                .WithMessage("Signature didn't verify. Have the contents been tampered with?");
+        }
+
 
         [TestMethod]
         public void Saml2Response_DisplayStatusMessageInExceptionText()
