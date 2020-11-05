@@ -43,6 +43,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Internal\DateTimeHelperTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Internal\DelimitedStringTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Internal\EntityIdEqualityComparerTests.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Internal\RSAEncryptedXmlTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Internal\EnumeratorTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Internal\PathHelperTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Internal\QueryStringHelperTests.cs" />

@@ -1,3 +1,6 @@
+Version 2.8.0
+* Enable adding support for AES-GCM (http://www.w3.org/2009/xmlenc11#aes128-gcm) in incoming SAML messages
+
 Version 2.7.0
 * Security Fix: Ensure received token is a bearer token.
 * Compatibility flag to allow unsigned logout responses
