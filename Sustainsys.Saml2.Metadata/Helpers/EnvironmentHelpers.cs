@@ -8,8 +8,9 @@ namespace Sustainsys.Saml2.Metadata.Helpers
         public static bool IsNetCore =>
 #if NETSTANDARD2_0
             RuntimeInformation.FrameworkDescription.
-            StartsWith(".NET Core", StringComparison.OrdinalIgnoreCase);
-
+                StartsWith(".NET Core", StringComparison.OrdinalIgnoreCase)
+            || RuntimeInformation.FrameworkDescription.
+                StartsWith(".NET 5", StringComparison.OrdinalIgnoreCase);
 #else
         // If not netstandard, then it is one of the .NET Framework targets. And
         // obviously not running on core.
