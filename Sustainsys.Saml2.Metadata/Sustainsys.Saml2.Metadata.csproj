@@ -17,7 +17,7 @@
     <None Include="..\nuget\sustainsys.png" Pack="true" PackagePath="\" />
   </ItemGroup>
 
-  <ItemGroup Condition=" '$(TargetFramework)' == 'net461'">
+  <ItemGroup Condition=" '$(TargetFramework)' == 'net461' ">
     <PackageReference Include="System.ValueTuple" Version="4.5.0" />
   </ItemGroup>
 
