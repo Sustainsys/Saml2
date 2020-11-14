@@ -660,8 +660,7 @@ namespace Sustainsys.Saml2
         internal static string GetDefaultSigningAlgorithmName()
         {
             var rsaSha256Name = "http://www.w3.org/2001/04/xmldsig-more#rsa-sha256";
-            if (EnvironmentHelpers.IsNetCore ||
-				KnownSigningAlgorithms.Contains(rsaSha256Name))
+            if (KnownSigningAlgorithms.Contains(rsaSha256Name))
             {
                 return rsaSha256Name;
             }
