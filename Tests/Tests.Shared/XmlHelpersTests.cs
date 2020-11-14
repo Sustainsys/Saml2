@@ -408,9 +408,7 @@ $@"<xml>
             reference.AddTransform(new XmlDsigExcC14NTransform());
             reference.AddTransform(new XmlDsigEnvelopedSignatureTransform());
             sx.AddReference(reference);
-            sx.SigningKey = EnvironmentHelpers.IsNetCore ? SignedXmlHelper.TestCert.PrivateKey :
-				((RSACryptoServiceProvider)SignedXmlHelper.TestCert.PrivateKey)
-                .GetSha256EnabledRSACryptoServiceProvider();
+            sx.SigningKey = SignedXmlHelper.TestCert.PrivateKey.GetSha256EnabledAsymmetricAlgorithm();
 
             sx.SignedInfo.SignatureMethod = SignedXml.XmlDsigRSASHA1Url;
             sx.ComputeSignature();
@@ -440,9 +438,7 @@ $@"<xml>
             reference.AddTransform(new XmlDsigExcC14NTransform());
             reference.AddTransform(new XmlDsigEnvelopedSignatureTransform());
             sx.AddReference(reference);
-            sx.SigningKey = EnvironmentHelpers.IsNetCore ? SignedXmlHelper.TestCert.PrivateKey :
-				((RSACryptoServiceProvider)SignedXmlHelper.TestCert.PrivateKey)
-                .GetSha256EnabledRSACryptoServiceProvider();
+            sx.SigningKey = SignedXmlHelper.TestCert.PrivateKey.GetSha256EnabledAsymmetricAlgorithm();
 
             sx.SignedInfo.SignatureMethod = SecurityAlgorithms.RsaSha256Signature;
             sx.ComputeSignature();
