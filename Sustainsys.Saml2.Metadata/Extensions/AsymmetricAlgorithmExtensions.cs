@@ -3,9 +3,7 @@ using System.Security.Cryptography;
 
 namespace Sustainsys.Saml2.Metadata.Extensions
 {
-    // TODO : Refactor as there is duplicate in the Sustainsys.Saml2 assembly
-    // for not set to internal to prevent conflict
-    internal static class CryptographyExtensions
+    internal static class AsymmetricAlgorithmExtensions
     {
         internal static AsymmetricAlgorithm GetSha256EnabledAsymmetricAlgorithm(
             this AsymmetricAlgorithm original)
