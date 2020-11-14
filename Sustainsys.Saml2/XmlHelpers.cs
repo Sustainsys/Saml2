@@ -622,24 +622,11 @@ namespace Sustainsys.Saml2
 		/// later version.
 		/// </summary>
 		private static string[] GetKnownSigningAlgorithms()
-		{
-			// The newer algorithms names are marked internal in .NET Core
-			// https://github.com/dotnet/corefx/issues/25123
-			if (EnvironmentHelpers.IsNetCore)
-			{
-				return new string[] {
-					"http://www.w3.org/2000/09/xmldsig#rsa-sha1",
-					"http://www.w3.org/2001/04/xmldsig-more#rsa-sha256",
-					"http://www.w3.org/2001/04/xmldsig-more#rsa-sha384",
-					"http://www.w3.org/2001/04/xmldsig-more#rsa-sha512",
-				};
-			}
-			return typeof(SignedXml).GetFields()
+			=> typeof(SignedXml).GetFields()
 				.Where(f => f.Name.StartsWith("XmlDsigRSASHA", StringComparison.Ordinal))
 				.Select(f => (string)f.GetRawConstantValue())
 				.OrderBy(f => f)
 				.ToArray();
-		}
 
 		internal static readonly string[] KnownSigningAlgorithms =
 			GetKnownSigningAlgorithms();
@@ -666,22 +653,11 @@ namespace Sustainsys.Saml2
         }
 
 		private static string[] GetKnownDigestAlgorithms()
-		{
-			if (EnvironmentHelpers.IsNetCore)
-			{
-				return new string[] {
-					"http://www.w3.org/2000/09/xmldsig#sha1",
-					"http://www.w3.org/2001/04/xmlenc#sha256",
-					"http://www.w3.org/2001/04/xmldsig-more#sha384",
-					"http://www.w3.org/2001/04/xmlenc#sha512"
-				};
-			}
-			return typeof(SignedXml).GetFields()
+			=> typeof(SignedXml).GetFields()
 				.Where(f => f.Name.StartsWith("XmlDsigSHA", StringComparison.Ordinal))
 				.Select(f => (string)f.GetRawConstantValue())
 				.OrderBy(f => f)
 				.ToArray();
-		}
 
 		internal static readonly string[] DigestAlgorithms = GetKnownDigestAlgorithms();
 
