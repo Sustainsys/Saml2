@@ -14,6 +14,10 @@ example.
     is set up to use web.config (by passing ``true`` to the ``Saml2AuthenticationOptions`` 
     constructor) the information here applies.
 
+.. note::
+    Applications on Asp.Net Core do not support web.config. Use the ``Saml2Options`` class
+    directly.
+
 Config Sections
 ---------------
 Three new config sections are required. Add these under ``configuration/configSections``.  Each of the sections
