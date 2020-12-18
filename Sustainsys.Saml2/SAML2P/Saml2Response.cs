@@ -466,17 +466,20 @@ namespace Sustainsys.Saml2.Saml2P
                         assertions.AddRange(encryptedAssertions.Decrypt(serviceCertificate.PrivateKey)
                                 .Select(xe => (XmlElement)xe.GetElementsByTagName("Assertion", Saml2Namespaces.Saml2Name)[0]));
                         decrypted = true;
+                        options.SPOptions.Logger.WriteVerbose($"Assertion decryption succeeded using {serviceCertificate.Thumbprint}");
                         break;
                     }
-                    catch (CryptographicException)
+                    catch (CryptographicException ex)
                     {
+                        options.SPOptions.Logger.WriteVerbose($"Assertion decryption using {serviceCertificate.Thumbprint} failed: {ex.Message}");
                         // we cannot depend on Idp's sending KeyInfo, so this is the only 
                         // reliable way to know we've got the wrong cert
                     }
                 }
                 if (!decrypted)
                 {
-                    throw new Saml2ResponseFailedValidationException("Encrypted Assertion(s) could not be decrypted using the configured Service Certificate(s).");
+
+                    throw new Saml2ResponseFailedValidationException("Encrypted Assertion(s) could not be decrypted using the configured Service Certificate(s)");
                 }
             }
 
