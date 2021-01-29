@@ -531,7 +531,7 @@ namespace Sustainsys.Saml2.Saml2P
             {
                 throw new Saml2ResponseFailedValidationException("The SAML Response is not signed and contains unsigned Assertions. Response cannot be trusted.");
             }
-            options.SPOptions.Logger.WriteVerbose("Signature validation passed for Saml Response " + Id);
+            options.SPOptions.Logger.WriteVerbose("Signature validation passed for Saml Response " + Id.Value);
         }
 
         private readonly Uri audience;
