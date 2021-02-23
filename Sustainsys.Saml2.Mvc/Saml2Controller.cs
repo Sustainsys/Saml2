@@ -4,6 +4,7 @@ using Sustainsys.Saml2.HttpModule;
 using Sustainsys.Saml2.Configuration;
 using Sustainsys.Saml2.WebSso;
 using System.Diagnostics.CodeAnalysis;
+using System.Threading.Tasks;
 
 namespace Sustainsys.Saml2.Mvc
 {
@@ -40,9 +41,9 @@ namespace Sustainsys.Saml2.Mvc
         /// <returns>Redirect with sign in request</returns>
         [SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "HandledResult")]
         [SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "CommandResult")]
-        public ActionResult SignIn()
+        public async Task<ActionResult> SignIn()
         {
-            var result = CommandFactory.GetCommand(CommandFactory.SignInCommandName).Run(
+            var result = await CommandFactory.GetCommand(CommandFactory.SignInCommandName).Run(
                 Request.ToHttpRequestData(),
                 Options);
 
@@ -64,9 +65,9 @@ namespace Sustainsys.Saml2.Mvc
         /// http request.</remarks>
         [SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "HandledResult")]
         [SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "CommandResult")]
-        public ActionResult Acs()
+        public async Task<ActionResult> Acs()
         {
-            var result = CommandFactory.GetCommand(CommandFactory.AcsCommandName).Run(
+            var result = await CommandFactory.GetCommand(CommandFactory.AcsCommandName).Run(
                 Request.ToHttpRequestData(),
                 Options);
 
@@ -86,9 +87,9 @@ namespace Sustainsys.Saml2.Mvc
         /// <returns>ActionResult with Metadata</returns>
         [SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "HandledResult")]
         [SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "CommandResult")]
-        public ActionResult Index()
+        public async Task<ActionResult> Index()
         {
-            var result = CommandFactory.GetCommand(CommandFactory.MetadataCommand).Run(
+            var result = await CommandFactory.GetCommand(CommandFactory.MetadataCommand).Run(
                 Request.ToHttpRequestData(),
                 Options);
 
@@ -109,9 +110,9 @@ namespace Sustainsys.Saml2.Mvc
         [SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "HandledResult")]
         [SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "CommandResult")]
         [SuppressMessage("Microsoft.Naming", "CA1726:UsePreferredTerms", MessageId = "Logout")]
-        public ActionResult Logout()
+        public async Task<ActionResult> Logout()
         {
-            var result = CommandFactory.GetCommand(CommandFactory.LogoutCommandName)
+            var result = await CommandFactory.GetCommand(CommandFactory.LogoutCommandName)
                 .Run(Request.ToHttpRequestData(), Options);
 
             if (result.HandledResult)

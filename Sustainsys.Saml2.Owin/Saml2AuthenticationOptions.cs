@@ -2,6 +2,7 @@
 using Microsoft.Owin.Security;
 using Microsoft.Owin.Security.DataProtection;
 using Microsoft.Owin.Infrastructure;
+using System.Net.Http;
 
 namespace Sustainsys.Saml2.Owin
 {
@@ -87,5 +88,10 @@ namespace Sustainsys.Saml2.Owin
         /// Gets or sets the type used to secure data handled by the middleware.
         /// </summary>
         internal IDataProtector DataProtector { get; set; }
+
+        /// <summary>
+        /// Factory for creating HttpClients.
+        /// </summary>
+        public IHttpClientFactory HttpClientFactory { get; }
     }
 }

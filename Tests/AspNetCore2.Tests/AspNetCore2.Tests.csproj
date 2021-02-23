@@ -7,7 +7,7 @@
   <ItemGroup>
     <PackageReference Include="FluentAssertions" Version="5.2.0" />
     <PackageReference Include="Microsoft.AspNetCore" Version="2.1.7" />
-    <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="2.1.2" />
+    <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="2.1.23" />
     <PackageReference Include="Microsoft.IdentityModel.Tokens.Saml" Version="5.2.4" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.9.0" />
     <PackageReference Include="MSTest.TestAdapter" Version="1.2.0" />

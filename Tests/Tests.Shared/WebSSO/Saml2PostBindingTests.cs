@@ -67,18 +67,18 @@ namespace Sustainsys.Saml2.Tests.WebSso
         }
 
         [TestMethod]
-        public void Saml2PostBinding_Unbind_ReadsSaml2Response()
+        public async void Saml2PostBinding_Unbind_ReadsSaml2Response()
         {
             string response = "<responsestring />";
 
             var r = CreateRequest(Convert.ToBase64String(Encoding.UTF8.GetBytes(response)));
 
-            Saml2Binding.Get(Saml2BindingType.HttpPost).Unbind(r, StubFactory.CreateOptions())
-                .Data.OuterXml.Should().Be(response);
+            UnbindResult unbindResult = await Saml2Binding.Get(Saml2BindingType.HttpPost).Unbind(r, StubFactory.CreateOptions());
+            unbindResult.Data.OuterXml.Should().Be(response);
         }
 
         [TestMethod]
-        public void Saml2PostBinding_Unbind_ReadsRelayState()
+        public async void Saml2PostBinding_Unbind_ReadsRelayState()
         {
             string response = "<responsestring/>";
             string relayState = "someState";
@@ -87,8 +87,8 @@ namespace Sustainsys.Saml2.Tests.WebSso
                 Convert.ToBase64String(Encoding.UTF8.GetBytes(response)),
                 relayState);
 
-            Saml2Binding.Get(Saml2BindingType.HttpPost)
-                .Unbind(r, StubFactory.CreateOptions()).RelayState.Should().Be(relayState);
+            UnbindResult unbindResult = await Saml2Binding.Get(Saml2BindingType.HttpPost).Unbind(r, StubFactory.CreateOptions());
+            unbindResult.RelayState.Should().Be(relayState);
         }
 
         [TestMethod]
@@ -368,7 +368,7 @@ document.forms.sustainsysSamlPostBindingSubmit.submit();
         }
 
         [TestMethod]
-        public void Saml2PostBinding_Unbind_Request()
+        public async void Saml2PostBinding_Unbind_Request()
         {
             var requestData = Convert.ToBase64String(Encoding.UTF8.GetBytes("<data/>"));
 
@@ -383,7 +383,7 @@ document.forms.sustainsysSamlPostBindingSubmit.submit();
                 null,
                 null);
 
-            var actual = Saml2Binding.Get(request).Unbind(request, StubFactory.CreateOptions());
+            var actual = await Saml2Binding.Get(request).Unbind(request, StubFactory.CreateOptions());
 
             actual.Data.Should().BeEquivalentTo(XmlHelpers.XmlDocumentFromString("<data/>").DocumentElement);
             actual.RelayState.Should().BeNull();

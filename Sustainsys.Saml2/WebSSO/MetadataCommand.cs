@@ -24,7 +24,7 @@ namespace Sustainsys.Saml2.WebSso
         /// <param name="request">Request data.</param>
         /// <param name="options">Options</param>
         /// <returns>CommandResult</returns>
-        public CommandResult Run(HttpRequestData request, IOptions options)
+        public Task<CommandResult> Run(HttpRequestData request, IOptions options)
         {
             if(options == null)
             {
@@ -52,7 +52,7 @@ namespace Sustainsys.Saml2.WebSso
 
             options.SPOptions.Logger.WriteInformation("Created metadata");
 
-            return result;
+            return Task.FromResult(result);
         }
 
         private object CreateFileName(string id)

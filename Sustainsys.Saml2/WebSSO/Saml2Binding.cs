@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web;
@@ -123,7 +124,7 @@ namespace Sustainsys.Saml2.WebSso
         /// in bindings that validate signatures. If set to null, the returned 
         /// result will have TrustLevel.None.</param>
         /// <returns>Extracted message.</returns>
-        public virtual UnbindResult Unbind(HttpRequestData request, IOptions options)
+        public virtual Task<UnbindResult> Unbind(HttpRequestData request, IOptions options)
         {
             throw new NotImplementedException();
         }

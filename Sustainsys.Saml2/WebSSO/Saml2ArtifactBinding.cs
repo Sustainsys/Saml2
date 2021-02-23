@@ -9,6 +9,8 @@ using System.Collections.Generic;
 using Sustainsys.Saml2.Configuration;
 using System.Xml;
 using Sustainsys.Saml2.Metadata;
+using System.Net.Http;
+using System.Threading.Tasks;
 
 namespace Sustainsys.Saml2.WebSso
 {
@@ -17,7 +19,9 @@ namespace Sustainsys.Saml2.WebSso
     /// </summary>
     public class Saml2ArtifactBinding : Saml2Binding
     {
-        internal Saml2ArtifactBinding() { }
+        internal Saml2ArtifactBinding()
+        {
+        }
 
         /// <summary>
         /// 
@@ -43,7 +47,7 @@ namespace Sustainsys.Saml2.WebSso
         /// <param name="options">Options used to look up details of issuing
         /// idp when needed (artifact binding).</param>
         /// <returns>True if the binding supports the current request.</returns>
-        public override UnbindResult Unbind(HttpRequestData request, IOptions options)
+        public override async Task<UnbindResult> Unbind(HttpRequestData request, IOptions options)
         {
             if(request == null)
             {
@@ -75,12 +79,12 @@ namespace Sustainsys.Saml2.WebSso
 
             options.SPOptions.Logger.WriteVerbose("Artifact binding found Artifact\n" + artifact);
 
-            var data = ResolveArtifact(artifact, request.StoredRequestState, options);
+            var data = await ResolveArtifact(artifact, request.StoredRequestState, options);
 
             return new UnbindResult(data, relayState, TrustLevel.None);
         }
 
-        private static XmlElement ResolveArtifact(
+        private static async Task<XmlElement> ResolveArtifact(
             string artifact,
             StoredRequestState storedRequestState,
             IOptions options)
@@ -105,11 +109,11 @@ namespace Sustainsys.Saml2.WebSso
 
             options.SPOptions.Logger.WriteVerbose("Calling idp " + idp.EntityId.Id + " to resolve artifact\n" + artifact);
 
-            var clientCertificates = options.SPOptions.ServiceCertificates
-                .Where(sc => sc.Use.HasFlag(CertificateUse.TlsClient) && sc.Status == CertificateStatus.Current)
-                .Select(sc => sc.Certificate);
+            //var clientCertificates = options.SPOptions.ServiceCertificates
+            //    .Where(sc => sc.Use.HasFlag(CertificateUse.TlsClient) && sc.Status == CertificateStatus.Current)
+            //    .Select(sc => sc.Certificate);
 
-            var response = Saml2SoapBinding.SendSoapRequest(payload, arsUri, clientCertificates);
+            var response = await Saml2SoapBinding.SendSoapRequest(payload, arsUri, options.HttpClientFactory);
 
             options.SPOptions.Logger.WriteVerbose("Artifact resolved returned\n" + response);
 

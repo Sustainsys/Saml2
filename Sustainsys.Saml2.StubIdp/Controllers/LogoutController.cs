@@ -6,6 +6,7 @@ using Sustainsys.Saml2.WebSso;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
 
@@ -13,7 +14,7 @@ namespace Sustainsys.Saml2.StubIdp.Controllers
 {
     public class LogoutController : Controller
     {
-        public ActionResult Index()
+        public async Task<ActionResult> Index()
         {
             var requestData = Request.ToHttpRequestData(true);
 
@@ -21,7 +22,7 @@ namespace Sustainsys.Saml2.StubIdp.Controllers
 
             if(binding != null)
             {
-                var unbindResult = binding.Unbind(requestData, null);
+                UnbindResult unbindResult = await binding.Unbind(requestData, null);
                 switch(unbindResult.Data.LocalName)
                 {
                     case "LogoutRequest":

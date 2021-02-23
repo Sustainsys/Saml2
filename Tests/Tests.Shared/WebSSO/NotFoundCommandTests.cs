@@ -12,10 +12,10 @@ namespace Sustainsys.Saml2.Tests.WebSso
     public class NotFoundCommandTests
     {
         [TestMethod]
-        public void NotFoundCommand_Run_Sets404()
+        public async void NotFoundCommand_Run_Sets404()
         {
             var command = new NotFoundCommand();
-            var result = command.Run(
+            var result = await command.Run(
                 new HttpRequestData("GET", new Uri("http://localhost/Saml2AuthenticationModule/NonExistingPath")),
                 null);
 

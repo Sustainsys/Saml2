@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
 using System;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using System.Net.Http;
 
 namespace Sustainsys.Saml2.AspNetCore2
 {
@@ -59,5 +60,10 @@ namespace Sustainsys.Saml2.AspNetCore2
         /// </summary>
         public Saml2Notifications Notifications { get; }
             = new Saml2Notifications();
+
+        /// <summary>
+        /// Factory for creating HttpClients.
+        /// </summary>
+        public IHttpClientFactory HttpClientFactory { get; set; }
     }
 }

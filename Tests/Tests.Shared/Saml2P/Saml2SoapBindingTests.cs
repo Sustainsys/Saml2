@@ -5,6 +5,9 @@ using System;
 using System.IO;
 using System.Net;
 using System.Xml.Linq;
+using System.Net.Http;
+using TestHelpers;
+using System.Threading.Tasks;
 
 namespace Sustainsys.Saml2.Tests.Saml2P
 {
@@ -59,7 +62,7 @@ namespace Sustainsys.Saml2.Tests.Saml2P
         {
             string payload = "Doesn't matter";
 
-            Action a = () => Saml2SoapBinding.SendSoapRequest(payload, null);
+            Func<Task> a = () => Saml2SoapBinding.SendSoapRequest(payload, null, new MockHttpClientFactory());
 
             a.Should().Throw<ArgumentNullException>()
                 .And.ParamName.Should().Be("destination");
@@ -74,7 +77,7 @@ namespace Sustainsys.Saml2.Tests.Saml2P
             var payload = "Doesn't matter";
             var destination = new Uri("file://c:/Sustainsys-Unit-Test.txt");
 
-            Action a = () => Saml2SoapBinding.SendSoapRequest(payload, destination);
+            Func<Task> a = () => Saml2SoapBinding.SendSoapRequest(payload, destination, new MockHttpClientFactory());
 
             a.Should().Throw<ArgumentException>()
                 .WithMessage("*file*");
@@ -86,7 +89,7 @@ namespace Sustainsys.Saml2.Tests.Saml2P
             var payload = "Doesn't matter";
             var destination = new Uri("http://localhost/Endpoint");
 
-            Action a = () => Saml2SoapBinding.SendSoapRequest(payload, destination);
+            Func<Task> a = () => Saml2SoapBinding.SendSoapRequest(payload, destination, new MockHttpClientFactory());
 
             // Destination is not listening, but we should get an exception that shows it
             // at least tried to connect there.
@@ -99,7 +102,7 @@ namespace Sustainsys.Saml2.Tests.Saml2P
             var payload = "Doesn't matter";
             var destination = new Uri("https://localhost/Endpoint");
 
-            Action a = () => Saml2SoapBinding.SendSoapRequest(payload, destination);
+            Func<Task> a = () => Saml2SoapBinding.SendSoapRequest(payload, destination, new MockHttpClientFactory());
 
             // Destination is not listening, but we should get an exception that shows it
             // at least tried to connect there.

@@ -9,6 +9,7 @@ using System.Net;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
+using System.Threading.Tasks;
 using System.Web;
 using System.Xml;
 
@@ -27,7 +28,7 @@ namespace Sustainsys.Saml2.WebSso
         /// <param name="request">Request data.</param>
         /// <param name="options">Options</param>
         /// <returns>CommandResult</returns>
-        public CommandResult Run(HttpRequestData request, IOptions options)
+        public async Task<CommandResult> Run(HttpRequestData request, IOptions options)
         {
             if(request == null)
             {
@@ -46,7 +47,7 @@ namespace Sustainsys.Saml2.WebSso
                 UnbindResult unbindResult = null;
                 try
                 {
-                    unbindResult = binding.Unbind(request, options);
+                    unbindResult = await binding.Unbind(request, options);
 
                     options.Notifications.MessageUnbound(unbindResult);
 

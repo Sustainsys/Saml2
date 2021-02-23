@@ -9,6 +9,7 @@ using Sustainsys.Saml2.WebSso;
 using System.Collections.Generic;
 using Sustainsys.Saml2.TestHelpers;
 using Sustainsys.Saml2.Saml2P;
+using System.Threading.Tasks;
 
 namespace Sustainsys.Saml2.Tests.WebSso
 {
@@ -16,12 +17,12 @@ namespace Sustainsys.Saml2.Tests.WebSso
     public class SignInCommandTests
     {
         [TestMethod]
-        public void SignInCommand_Run_ReturnsAuthnRequestForDefaultIdp()
+        public async void SignInCommand_Run_ReturnsAuthnRequestForDefaultIdp()
         {
             var idp = Options.FromConfiguration.IdentityProviders.Default;
             var defaultDestination = idp.SingleSignOnServiceUrl;
 
-            var result = new SignInCommand().Run(
+            var result = await new SignInCommand().Run(
                 new HttpRequestData("GET", new Uri("http://example.com")),
                 Options.FromConfiguration);
 
@@ -37,11 +38,11 @@ namespace Sustainsys.Saml2.Tests.WebSso
         }
 
         [TestMethod]
-        public void SignInCommand_Run_MapsReturnUrl()
+        public async void SignInCommand_Run_MapsReturnUrl()
         {
             var httpRequest = new HttpRequestData("GET", new Uri("http://localhost/signin?ReturnUrl=%2FReturn.aspx"));
 
-            var actual = new SignInCommand().Run(httpRequest, Options.FromConfiguration);
+            var actual = await new SignInCommand().Run(httpRequest, Options.FromConfiguration);
 
             actual.RequestState.ReturnUrl.Should().Be("/Return.aspx");
         }
@@ -53,7 +54,7 @@ namespace Sustainsys.Saml2.Tests.WebSso
             var absoluteUri = HttpUtility.UrlEncode("http://google.com");
             var httpRequest = new HttpRequestData("GET", new Uri($"http://localhost/signin?ReturnUrl={absoluteUri}"));
 
-            Action a = () => new SignInCommand().Run(httpRequest, Options.FromConfiguration);
+            Func<Task> a = () => new SignInCommand().Run(httpRequest, Options.FromConfiguration);
 
             a.Should().Throw<InvalidOperationException>().WithMessage("Return Url must be a relative Url.");
         }
@@ -65,7 +66,7 @@ namespace Sustainsys.Saml2.Tests.WebSso
             var absoluteUri = HttpUtility.UrlEncode("//google.com");
             var httpRequest = new HttpRequestData("GET", new Uri($"http://localhost/signin?ReturnUrl={absoluteUri}"));
 
-            Action a = () => new SignInCommand().Run(httpRequest, Options.FromConfiguration);
+            Func<Task> a = () => new SignInCommand().Run(httpRequest, Options.FromConfiguration);
 
             a.Should().Throw<InvalidOperationException>().WithMessage("Return Url must be a relative Url.");
         }
@@ -85,8 +86,8 @@ namespace Sustainsys.Saml2.Tests.WebSso
                     validateAbsoluteReturnUrlCalled = true;
                     return true;
                 };
-            
-            Action a = () => new SignInCommand().Run(httpRequest, options);
+
+            Func<Task> a = () => new SignInCommand().Run(httpRequest, options);
 
             a.Should().NotThrow<InvalidOperationException>("the ValidateAbsoluteReturnUrl notification returns true");
             validateAbsoluteReturnUrlCalled.Should().BeTrue("the ValidateAbsoluteReturnUrl notification should have been called");
@@ -108,14 +109,14 @@ namespace Sustainsys.Saml2.Tests.WebSso
                     return true;
                 };
 
-            Action a = () => new SignInCommand().Run(httpRequest, options);
+            Func<Task> a = () => new SignInCommand().Run(httpRequest, options);
 
             a.Should().NotThrow<InvalidOperationException>("the ReturnUrl is relative");
             validateAbsoluteReturnUrlCalled.Should().BeFalse("the ValidateAbsoluteReturnUrl notification should not have been called");
         }
 
         [TestMethod]
-        public void SignInCommand_Run_With_Idp2_ReturnsAuthnRequestForSecondIdp()
+        public async void SignInCommand_Run_With_Idp2_ReturnsAuthnRequestForSecondIdp()
         {
             var secondIdp = Options.FromConfiguration.IdentityProviders[1];
             var secondDestination = secondIdp.SingleSignOnServiceUrl;
@@ -124,7 +125,7 @@ namespace Sustainsys.Saml2.Tests.WebSso
             var request = new HttpRequestData("GET",
                 new Uri("http://sp.example.com?idp=" + Uri.EscapeDataString(secondEntityId.Id)));
 
-            var subject = new SignInCommand().Run(request, Options.FromConfiguration);
+            var subject = await new SignInCommand().Run(request, Options.FromConfiguration);
 
             subject.Location.Host.Should().Be(secondDestination.Host);
         }
@@ -134,7 +135,7 @@ namespace Sustainsys.Saml2.Tests.WebSso
         {
             var request = new HttpRequestData("GET", new Uri("http://localhost/signin?idp=no-such-idp-in-config"));
 
-            Action a = () => new SignInCommand().Run(request, Options.FromConfiguration);
+            Func<Task> a = () => new SignInCommand().Run(request, Options.FromConfiguration);
 
             a.Should().Throw<InvalidOperationException>().WithMessage("Unknown idp no-such-idp-in-config");
         }
@@ -142,7 +143,7 @@ namespace Sustainsys.Saml2.Tests.WebSso
         [TestMethod]
         public void SignInCommand_Run_NullCheckRequest()
         {
-            Action a = () => new SignInCommand().Run(null, Options.FromConfiguration);
+            Func<Task> a = () => new SignInCommand().Run(null, Options.FromConfiguration);
 
             a.Should().Throw<ArgumentNullException>().And.ParamName.Should().Be("request");
         }
@@ -150,13 +151,13 @@ namespace Sustainsys.Saml2.Tests.WebSso
         [TestMethod]
         public void SignInCommand_Run_NullCheckOptions()
         {
-            Action a = () => new SignInCommand().Run(new HttpRequestData("GET", new Uri("http://localhost")), null);
+            Func<Task> a = () => new SignInCommand().Run(new HttpRequestData("GET", new Uri("http://localhost")), null);
 
             a.Should().Throw<ArgumentNullException>().And.ParamName.Should().Be("options");
         }
 
         [TestMethod]
-        public void SignInCommand_Run_ReturnsRedirectToDiscoveryService()
+        public async void SignInCommand_Run_ReturnsRedirectToDiscoveryService()
         {
             var dsUrl = new Uri("http://ds.example.com");
 
@@ -168,7 +169,7 @@ namespace Sustainsys.Saml2.Tests.WebSso
 
             var request = new HttpRequestData("GET", new Uri("https://localhost/signin?ReturnUrl=%2FReturn%2FPath"));
 
-            var result = new SignInCommand().Run(request, options);
+            var result = await new SignInCommand().Run(request, options);
 
             result.HttpStatusCode.Should().Be(HttpStatusCode.SeeOther);
 
@@ -189,7 +190,7 @@ namespace Sustainsys.Saml2.Tests.WebSso
         }
 
         [TestMethod]
-        public void SignInCommand_Run_PublicOrigin()
+        public async void SignInCommand_Run_PublicOrigin()
         {
             var options = StubFactory.CreateOptionsPublicOrigin(new Uri("https://my.public.origin:8443"));
             var idp = options.IdentityProviders.Default;
@@ -197,7 +198,7 @@ namespace Sustainsys.Saml2.Tests.WebSso
             var request = new HttpRequestData("GET",
                 new Uri("http://sp.example.com?idp=" + Uri.EscapeDataString(idp.EntityId.Id)));
 
-            var subject = new SignInCommand().Run(request, Options.FromConfiguration);
+            var subject = await new SignInCommand().Run(request, Options.FromConfiguration);
 
             subject.Location.Host.Should().Be(new Uri("https://idp.example.com").Host);
         }
@@ -313,7 +314,7 @@ namespace Sustainsys.Saml2.Tests.WebSso
         }
 
         [TestMethod]
-        public void SignInCommand_Run_CarriesOverRelayStateOnReturnFromDS()
+        public async void SignInCommand_Run_CarriesOverRelayStateOnReturnFromDS()
         {
             var options = StubFactory.CreateOptions();
             var idp = options.IdentityProviders.Default;
@@ -346,7 +347,7 @@ namespace Sustainsys.Saml2.Tests.WebSso
 
             var subject = CommandFactory.GetCommand(CommandFactory.SignInCommandName);
 
-            var actual = subject.Run(request, options);
+            var actual = await subject.Run(request, options);
 
             actual.ClearCookieName.Should().Be(StoredRequestState.CookieNameBase + relayState, "cookie should be cleared");
             actual.RequestState.ReturnUrl.Should().Be(returnUrl);
@@ -355,7 +356,7 @@ namespace Sustainsys.Saml2.Tests.WebSso
         }
 
         [TestMethod]
-        public void SignInCommand_Run_WorksWithoutReturnUrlOnReturnFromDS()
+        public async void SignInCommand_Run_WorksWithoutReturnUrlOnReturnFromDS()
         {
             var options = StubFactory.CreateOptions();
             var idp = options.IdentityProviders.Default;
@@ -387,7 +388,7 @@ namespace Sustainsys.Saml2.Tests.WebSso
 
             var subject = CommandFactory.GetCommand(CommandFactory.SignInCommandName);
 
-            var actual = subject.Run(request, options);
+            var actual = await subject.Run(request, options);
 
             actual.ClearCookieName.Should().Be(StoredRequestState.CookieNameBase + relayState, "cookie should be cleared");
             actual.RequestState.ReturnUrl.Should().BeNull();
@@ -404,8 +405,9 @@ namespace Sustainsys.Saml2.Tests.WebSso
 
             var subject = CommandFactory.GetCommand(CommandFactory.SignInCommandName);
 
-            subject.Invoking(s => s.Run(request, StubFactory.CreateOptions()))
-                .Should().Throw<InvalidOperationException>().
+            Func<Task> a = () => subject.Run(request, StubFactory.CreateOptions());
+            
+            a.Should().Throw<InvalidOperationException>().
                 WithMessage("*Both*ReturnUrl*RelayState*");
         }
 

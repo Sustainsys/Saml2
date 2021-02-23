@@ -15,12 +15,13 @@ using Sustainsys.Saml2.Saml2P;
 using Sustainsys.Saml2.WebSso;
 using Sustainsys.Saml2.HttpModule;
 using System.Xml;
+using System.Threading.Tasks;
 
 namespace Sustainsys.Saml2.StubIdp.Controllers
 {
     public class HomeController : BaseController
     {
-        public ActionResult Index(Guid? idpId)
+        public async Task<ActionResult> Index(Guid? idpId)
         {
             var model = new HomePageModel
             {
@@ -29,7 +30,7 @@ namespace Sustainsys.Saml2.StubIdp.Controllers
 
             ReadCustomIdpConfig(idpId, model);
 
-            HandleReceivedAuthnReqest(model);
+            await HandleReceivedAuthnReqest(model);
 
             return View(model);
         }
@@ -58,13 +59,13 @@ namespace Sustainsys.Saml2.StubIdp.Controllers
             }
         }
 
-        private bool HandleReceivedAuthnReqest(HomePageModel model)
+        private async Task<bool> HandleReceivedAuthnReqest(HomePageModel model)
         {
             var requestData = Request.ToHttpRequestData(true);
             var binding = Saml2Binding.Get(requestData);
             if (binding != null)
             {
-                var extractedMessage = binding.Unbind(requestData, null);
+                var extractedMessage = await binding.Unbind(requestData, null);
 
                 var request = new Saml2AuthenticationRequest(
                     extractedMessage.Data,
@@ -90,7 +91,7 @@ namespace Sustainsys.Saml2.StubIdp.Controllers
         }
 
         [HttpPost]
-        public ActionResult Index(Guid? idpId, HomePageModel model)
+        public async Task<ActionResult> Index(Guid? idpId, HomePageModel model)
         {
             if (ModelState.IsValid)
             {
@@ -105,7 +106,7 @@ namespace Sustainsys.Saml2.StubIdp.Controllers
                 model.AssertionModel = AssertionModel.CreateFromConfiguration();
             };
 
-            if (HandleReceivedAuthnReqest(model))
+            if (await HandleReceivedAuthnReqest(model))
             {
                 ReadCustomIdpConfig(idpId, model);
             }

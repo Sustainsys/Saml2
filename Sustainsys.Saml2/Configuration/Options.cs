@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Net.Http;
 using System.Security.Cryptography;
 
 namespace Sustainsys.Saml2.Configuration
@@ -74,5 +75,10 @@ namespace Sustainsys.Saml2.Configuration
                 return identityProviders;
             }
         }
+ 
+        /// <summary>
+        /// Factory for creating HttpClients.
+        /// </summary>
+        public IHttpClientFactory HttpClientFactory { get; }
     }
 }

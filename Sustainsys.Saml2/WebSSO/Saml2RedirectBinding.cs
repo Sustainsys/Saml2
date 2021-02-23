@@ -12,6 +12,7 @@ using System.Linq;
 using System.Net;
 using System.Security.Cryptography;
 using System.Text;
+using System.Threading.Tasks;
 using System.Xml;
 using System.Xml.Linq;
 
@@ -76,7 +77,7 @@ namespace Sustainsys.Saml2.WebSso
         }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2202:Do not dispose objects multiple times", Justification = "The MemoryStream is not disposed by the DeflateStream - we're using the keep-open flag.")]
-        public override UnbindResult Unbind(HttpRequestData request, IOptions options)
+        public override Task<UnbindResult> Unbind(HttpRequestData request, IOptions options)
         {
             if (request == null)
             {
@@ -101,7 +102,10 @@ namespace Sustainsys.Saml2.WebSso
 
                             options?.SPOptions.Logger.WriteVerbose("Http Redirect binding extracted message\n" + xml.OuterXml);
 
-                            return new UnbindResult(xml.DocumentElement, request.QueryString["RelayState"].SingleOrDefault(), GetTrustLevel(xml.DocumentElement, request, options));
+                            return Task.FromResult(new UnbindResult(
+                                xml.DocumentElement, 
+                                request.QueryString["RelayState"].SingleOrDefault(), 
+                                GetTrustLevel(xml.DocumentElement, request, options)));
                         }
                     }
                 }

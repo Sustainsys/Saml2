@@ -29,7 +29,7 @@ namespace Sustainsys.Saml2.Owin
             var httpRequestData = await Context.ToHttpRequestData(Options.CookieManager, Options.DataProtector.Unprotect);
             try
             {
-                var result = CommandFactory.GetCommand(CommandFactory.AcsCommandName)
+                var result = await CommandFactory.GetCommand(CommandFactory.AcsCommandName)
                     .Run(httpRequestData, Options);
 
                 if (!result.HandledResult)
@@ -178,7 +178,7 @@ namespace Sustainsys.Saml2.Owin
                     }
                 }
 
-                var result = LogoutCommand.Run(request, redirectUrl, Options);
+                var result = await LogoutCommand.Run(request, redirectUrl, Options);
 
                 if (!result.HandledResult)
                 {
@@ -216,7 +216,7 @@ namespace Sustainsys.Saml2.Owin
 
                 try
                 {
-                    var result = CommandFactory.GetCommand(remainingPath.Value)
+                    var result = await CommandFactory.GetCommand(remainingPath.Value)
                         .Run(await Context.ToHttpRequestData(Options.CookieManager, Options.DataProtector.Unprotect), Options);
 
                     if (!result.HandledResult)

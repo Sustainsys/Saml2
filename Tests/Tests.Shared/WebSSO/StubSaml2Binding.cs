@@ -10,7 +10,7 @@ namespace Sustainsys.Saml2.Tests.WebSso
 {
     class StubSaml2Binding : Saml2Binding
     {
-        public override UnbindResult Unbind(HttpRequestData request, IOptions options)
+        public override Task<UnbindResult> Unbind(HttpRequestData request, IOptions options)
         {
             throw new NotImplementedException(
                 $"{nameof(StubSaml2Binding)}.{nameof(Unbind)} was called");

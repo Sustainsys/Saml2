@@ -1,9 +1,6 @@
 ﻿using Sustainsys.Saml2.Configuration;
-using System;
-using System.Collections.Specialized;
-using System.Linq;
 using System.Net;
-using System.Web;
+using System.Threading.Tasks;
 
 namespace Sustainsys.Saml2.WebSso
 {
@@ -20,12 +17,12 @@ namespace Sustainsys.Saml2.WebSso
         /// <param name="request">Request data.</param>
         /// <param name="options">Options</param>
         /// <returns>CommandResult</returns>
-        public CommandResult Run(HttpRequestData request, IOptions options)
+        public Task<CommandResult> Run(HttpRequestData request, IOptions options)
         {
-            return new CommandResult()
+            return Task.FromResult(new CommandResult()
             {
                 HttpStatusCode = HttpStatusCode.NotFound
-            };
+            });
         }
     }
 }

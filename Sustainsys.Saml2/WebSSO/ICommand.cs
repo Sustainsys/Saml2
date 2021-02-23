@@ -1,5 +1,5 @@
 ﻿using Sustainsys.Saml2.Configuration;
-using System.Web;
+using System.Threading.Tasks;
 
 namespace Sustainsys.Saml2.WebSso
 {
@@ -15,6 +15,6 @@ namespace Sustainsys.Saml2.WebSso
         /// data can be read from.</param>
         /// <param name="options">The options to use when performing the command.</param>
         /// <returns>The results of the command, as a DTO.</returns>
-        CommandResult Run(HttpRequestData request, IOptions options);
+        Task<CommandResult> Run(HttpRequestData request, IOptions options);
     }
 }

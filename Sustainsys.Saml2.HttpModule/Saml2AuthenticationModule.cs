@@ -3,6 +3,7 @@ using Sustainsys.Saml2.WebSso;
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Net;
+using System.Threading.Tasks;
 using System.Web;
 
 namespace Sustainsys.Saml2.HttpModule
@@ -47,7 +48,7 @@ namespace Sustainsys.Saml2.HttpModule
         /// </summary>
         /// <param name="sender">The http application.</param>
         /// <param name="e">Ignored</param>
-        protected void OnAuthenticateRequest(object sender, EventArgs e)
+        protected async void OnAuthenticateRequest(object sender, EventArgs e)
         {
             var application = (HttpApplication)sender;
 
@@ -64,7 +65,7 @@ namespace Sustainsys.Saml2.HttpModule
                 var commandName = appRelativePath.Substring(modulePath.Length);
 
                 var command = CommandFactory.GetCommand(commandName);
-                var commandResult = command.Run(
+                var commandResult = await command.Run(
                     new HttpRequestWrapper(application.Request).ToHttpRequestData(),
                     Options);
 

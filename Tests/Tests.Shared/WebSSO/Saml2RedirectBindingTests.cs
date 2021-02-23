@@ -163,11 +163,11 @@ namespace Sustainsys.Saml2.Tests.WebSso
         }
 
         [TestMethod]
-        public void Saml2RedirectBinding_Unbind_WithoutRelayStateAndSignature()
+        public async void Saml2RedirectBinding_Unbind_WithoutRelayStateAndSignature()
         {
             var request = new HttpRequestData("GET", new Uri("http://localhost?SAMLRequest=" + ExampleSerializedData));
 
-            var result = Saml2Binding.Get(Saml2BindingType.HttpRedirect).Unbind(request, null);
+            var result = await Saml2Binding.Get(Saml2BindingType.HttpRedirect).Unbind(request, null);
 
             var expectedXml = XmlHelpers.XmlDocumentFromString(ExampleXmlData).DocumentElement;
 
@@ -178,14 +178,14 @@ namespace Sustainsys.Saml2.Tests.WebSso
 
 
         [TestMethod]
-        public void Saml2RedirectBinding_Unbind_WithRelayState()
+        public async void Saml2RedirectBinding_Unbind_WithRelayState()
         {
             var relayState = "BD823LGD";
 
             var request = new HttpRequestData("GET", new Uri("http://localhost?SAMLRequest=" 
                 + ExampleSerializedData + "&RelayState=" + relayState));
 
-            var result = Saml2Binding.Get(Saml2BindingType.HttpRedirect).Unbind(request, null);
+            var result = await Saml2Binding.Get(Saml2BindingType.HttpRedirect).Unbind(request, null);
 
             result.RelayState.Should().Be(relayState);
         }
@@ -295,52 +295,52 @@ namespace Sustainsys.Saml2.Tests.WebSso
         }
 
         [TestMethod]
-        public void Saml2RedirectBinding_Unbind_HandlesValidSignature_SAMLResponse()
+        public async void Saml2RedirectBinding_Unbind_HandlesValidSignature_SAMLResponse()
         {
             var url = CreateAndBindMessageWithSignature(messageName: "SAMLResponse").Location;
 
             var request = new HttpRequestData("GET", url);
 
-            var actual = Saml2Binding.Get(request)
+            var actual = await Saml2Binding.Get(request)
                 .Unbind(request, StubFactory.CreateOptions());
 
             actual.TrustLevel.Should().Be(TrustLevel.Signature);
         }
 
         [TestMethod]
-        public void Saml2RedirectBinding_Unbind_HandlesValidSignature_SAMLRequest()
+        public async void Saml2RedirectBinding_Unbind_HandlesValidSignature_SAMLRequest()
         {
             var url = CreateAndBindMessageWithSignature(messageName: "SAMLRequest").Location;
 
             var request = new HttpRequestData("GET", url);
 
-            var actual = Saml2Binding.Get(request)
+            var actual = await Saml2Binding.Get(request)
                 .Unbind(request, StubFactory.CreateOptions());
 
             actual.TrustLevel.Should().Be(TrustLevel.Signature);
         }
         
         [TestMethod]
-        public void Saml2RedirectBinding_Unbind_HandlesValidSignature_WithoutRelayState()
+        public async void Saml2RedirectBinding_Unbind_HandlesValidSignature_WithoutRelayState()
         {
             var url = CreateAndBindMessageWithSignature(includeRelayState: false).Location;
 
             var request = new HttpRequestData("GET", url);
 
-            var actual = Saml2Binding.Get(request)
+            var actual = await Saml2Binding.Get(request)
                 .Unbind(request, StubFactory.CreateOptions());
 
             actual.TrustLevel.Should().Be(TrustLevel.Signature);
         }
 
         [TestMethod]
-        public void Saml2RedirectBinding_Unbind_TrustLevelNoneWithMissingSignature()
+        public async void Saml2RedirectBinding_Unbind_TrustLevelNoneWithMissingSignature()
         {
             var url = CreateAndBindMessageWithSignature(null).Location;
 
             var request = new HttpRequestData("GET", url);
 
-            var actual = Saml2Binding.Get(request)
+            var actual = await Saml2Binding.Get(request)
                 .Unbind(request, StubFactory.CreateOptions());
 
             actual.TrustLevel.Should().Be(TrustLevel.None);
@@ -409,7 +409,7 @@ namespace Sustainsys.Saml2.Tests.WebSso
         }
 
         [TestMethod]
-        public void Saml2Redirectbinding_Unbind_TrustLevelNoneWithMissingOptions()
+        public async void Saml2Redirectbinding_Unbind_TrustLevelNoneWithMissingOptions()
         {
             // The stub idp uses the binding, but doesn't provide an options
             // instance - enable it to do so by ignoring certificates.
@@ -418,7 +418,7 @@ namespace Sustainsys.Saml2.Tests.WebSso
 
             var request = new HttpRequestData("GET", new Uri(url));
 
-            var actual = Saml2Binding.Get(request)
+            var actual = await Saml2Binding.Get(request)
                 .Unbind(request, null);
 
             actual.TrustLevel.Should().Be(TrustLevel.None);

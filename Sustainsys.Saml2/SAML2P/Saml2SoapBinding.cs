@@ -4,11 +4,11 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Net;
+using System.Net.Http;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
-using System.Xml.Linq;
 
 namespace Sustainsys.Saml2.Saml2P
 {
@@ -53,23 +53,12 @@ namespace Sustainsys.Saml2.Saml2P
         /// </summary>
         /// <param name="payload">Message payload</param>
         /// <param name="destination">Destination endpoint</param>
+        /// <param name="httpClientFactory">Factory for creating HttpClients.</param>
         /// <returns>Response.</returns>
-        public static XmlElement SendSoapRequest(string payload, Uri destination)
-        {
-            return SendSoapRequest(payload, destination, null);
-        }
-
-        /// <summary>
-        /// Send a SOAP request to the specified endpoint and return the result.
-        /// </summary>
-        /// <param name="payload">Message payload</param>
-        /// <param name="destination">Destination endpoint</param>
-        /// <param name="clientCertificates">Client certificates to offer to the server.</param>
-        /// <returns>Response.</returns>
-        public static XmlElement SendSoapRequest(
+        public static async Task<XmlElement> SendSoapRequest(
             string payload,
             Uri destination,
-            IEnumerable<X509Certificate2> clientCertificates)
+            IHttpClientFactory httpClientFactory)       
         {
             if(destination == null)
             {
@@ -88,16 +77,17 @@ namespace Sustainsys.Saml2.Saml2P
 
             var message = CreateSoapBody(payload);
 
-            using (var client = new ClientCertificateWebClient(clientCertificates))
-            {
-                client.Headers.Add("SOAPAction", "\"http://www.oasis-open.org/committees/security\"");
-                client.Encoding = Encoding.UTF8;
-                client.Headers.Add(HttpRequestHeader.ContentType, "text/xml; charset=\"utf-8\"");
+            var request = new HttpRequestMessage(HttpMethod.Post, destination);
 
-                var response = client.UploadString(destination, message);
+            request.Headers.Add("SOAPAction", "\"http://www.oasis-open.org/committees/security\"");
+            request.Content = new StringContent(message, Encoding.UTF8, "text/xml");
 
-                return ExtractBody(response);
-            }
+            HttpClient httpClient = httpClientFactory.CreateClient(nameof(Saml2SoapBinding));
+
+            HttpResponseMessage response = await httpClient.SendAsync(request);
+            string responseContent = await response.EnsureSuccessStatusCode().Content.ReadAsStringAsync();
+
+            return ExtractBody(responseContent);
         }
     }
 }

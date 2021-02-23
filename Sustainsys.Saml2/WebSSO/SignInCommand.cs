@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Net;
+using System.Threading.Tasks;
 using Sustainsys.Saml2.Configuration;
 using Sustainsys.Saml2.Internal;
 using Sustainsys.Saml2.Metadata;
@@ -22,7 +23,7 @@ namespace Sustainsys.Saml2.WebSso
         /// <param name="request">Request data.</param>
         /// <param name="options">Options</param>
         /// <returns>CommandResult</returns>
-        public CommandResult Run(HttpRequestData request, IOptions options)
+        public Task<CommandResult> Run(HttpRequestData request, IOptions options)
         {
             if (request == null)
             {
@@ -48,7 +49,7 @@ namespace Sustainsys.Saml2.WebSso
                 result.ClearCookieName = StoredRequestState.CookieNameBase + request.RelayState;
             }
 
-            return result;
+            return Task.FromResult(result);
         }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "SignIn")]

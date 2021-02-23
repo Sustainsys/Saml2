@@ -16,6 +16,7 @@ using Sustainsys.Saml2.Metadata;
 using Sustainsys.Saml2.TestHelpers;
 using Microsoft.IdentityModel.Tokens.Saml2;
 using System.Runtime.CompilerServices;
+using System.Threading.Tasks;
 
 namespace Sustainsys.Saml2.Tests.WebSso
 {
@@ -25,7 +26,7 @@ namespace Sustainsys.Saml2.Tests.WebSso
         [TestMethod]
         public void AcsCommand_Run_NullCheckRequest()
         {
-            Action a = () => new AcsCommand().Run(null, StubFactory.CreateOptions());
+            Func<Task> a = () => new AcsCommand().Run(null, StubFactory.CreateOptions());
 
             // Verify exception is thrown and that it is thrown directly by the Run()
             // method and not by some method being called by Run().
@@ -37,7 +38,7 @@ namespace Sustainsys.Saml2.Tests.WebSso
         [TestMethod]
         public void AcsCommand_Run_NullCheckOptions()
         {
-            Action a = () => new AcsCommand().Run(new HttpRequestData("GET", new Uri("http://localhost")), null);
+            Func<Task> a = () => new AcsCommand().Run(new HttpRequestData("GET", new Uri("http://localhost")), null);
 
             a.Should().Throw<ArgumentNullException>().And.ParamName.Should().Be("options");
         }
@@ -45,7 +46,7 @@ namespace Sustainsys.Saml2.Tests.WebSso
         [TestMethod]
         public void AcsCommand_Run_ErrorOnNoSamlResponseFound()
         {
-            Action a = () => new AcsCommand().Run(
+            Func<Task> a = () => new AcsCommand().Run(
                 new HttpRequestData("GET", new Uri("http://localhost")),
                 Options.FromConfiguration);
 
@@ -67,7 +68,7 @@ namespace Sustainsys.Saml2.Tests.WebSso
                 Enumerable.Empty<KeyValuePair<string, string>>(),
                 null);
 
-            Action a = () => new AcsCommand().Run(r, Options.FromConfiguration);
+            Func<Task> a = () => new AcsCommand().Run(r, Options.FromConfiguration);
 
             a.Should().Throw<BadFormatSamlResponseException>()
                 .WithMessage("The SAML Response did not contain valid BASE64 encoded data.")
@@ -89,7 +90,7 @@ namespace Sustainsys.Saml2.Tests.WebSso
                 Enumerable.Empty<KeyValuePair<string, string>>(),
                 null);
 
-            Action a = () => new AcsCommand().Run(r, Options.FromConfiguration);
+            Func<Task> a = () => new AcsCommand().Run(r, Options.FromConfiguration);
 
             a.Should().Throw<BadFormatSamlResponseException>()
                 .WithMessage("The SAML response contains incorrect XML")
@@ -116,7 +117,7 @@ namespace Sustainsys.Saml2.Tests.WebSso
                 Enumerable.Empty<KeyValuePair<string, string>>(),
                 null);
 
-            Action a = () => new AcsCommand().Run(r, Options.FromConfiguration);
+            Func<Task> a = () => new AcsCommand().Run(r, Options.FromConfiguration);
 
             a.Should().Throw<Exception>()
                 .And.Data["Saml2Response"].Should().Be(payload);
@@ -138,7 +139,7 @@ namespace Sustainsys.Saml2.Tests.WebSso
                 Enumerable.Empty<KeyValuePair<string, string>>(),
                 null);
 
-            Action a = () => new AcsCommand().Run(r, Options.FromConfiguration);
+            Func<Task> a = () => new AcsCommand().Run(r, Options.FromConfiguration);
 
             a.Should().Throw<BadFormatSamlResponseException>();
         }
@@ -165,7 +166,7 @@ namespace Sustainsys.Saml2.Tests.WebSso
                 Enumerable.Empty<KeyValuePair<string, string>>(),
                 null);
 
-            Action a = () => new AcsCommand().Run(r, Options.FromConfiguration);
+            Func<Task> a = () => new AcsCommand().Run(r, Options.FromConfiguration);
 
             // The real exception was masked by a NullRef in the exception
             // handler in AcsCommand.Run
@@ -173,7 +174,7 @@ namespace Sustainsys.Saml2.Tests.WebSso
         }
 
         [TestMethod]
-        public void AcsCommand_Run_SuccessfulResult()
+        public async void AcsCommand_Run_SuccessfulResult()
         {
             var response =
             @"<saml2p:Response xmlns:saml2p=""urn:oasis:names:tc:SAML:2.0:protocol""
@@ -223,8 +224,8 @@ namespace Sustainsys.Saml2.Tests.WebSso
 
             var options = StubFactory.CreateOptions();
 
-            new AcsCommand().Run(r, options)
-                .Should().BeEquivalentTo(expected, opt => opt.IgnoringCyclicReferences());
+            var result = await new AcsCommand().Run(r, options);
+            result.Should().BeEquivalentTo(expected, opt => opt.IgnoringCyclicReferences());
         }
 
         [TestMethod]
@@ -285,8 +286,8 @@ namespace Sustainsys.Saml2.Tests.WebSso
                 ClearCookieName = StoredRequestState.CookieNameBase + relayStateFormValue
             };
 
-            new AcsCommand().Run(r, StubFactory.CreateOptions())
-                .Should().BeEquivalentTo(expected, opt => opt.IgnoringCyclicReferences());
+            var result = new AcsCommand().Run(r, StubFactory.CreateOptions());
+            result.Should().BeEquivalentTo(expected, opt => opt.IgnoringCyclicReferences());
         }
 
         [TestMethod]
@@ -339,11 +340,11 @@ namespace Sustainsys.Saml2.Tests.WebSso
             var options = StubFactory.CreateOptions();
             options.SPOptions.ReturnUrl = null;
 
-            new AcsCommand().Invoking(c => c.Run(r, options))
-                .Should().NotThrow();
+            Func<Task> a = () => new AcsCommand().Run(r, options);
+            a.Should().NotThrow();
         }
         [TestMethod]
-        public void AcsCommand_Run_WithReturnUrl_SuccessfulResult_ClearSecureCookie()
+        public async void AcsCommand_Run_WithReturnUrl_SuccessfulResult_ClearSecureCookie()
         {
             var idp = Options.FromConfiguration.IdentityProviders.Default;
 
@@ -392,7 +393,7 @@ namespace Sustainsys.Saml2.Tests.WebSso
             var options = StubFactory.CreateOptions();
             options.SPOptions.ReturnUrl = null;
 
-            var actual = new AcsCommand().Run(r, options);
+            var actual = await new AcsCommand().Run(r, options);
 
             actual.SetCookieSecureFlag.Should().BeTrue();
         }
@@ -439,8 +440,9 @@ namespace Sustainsys.Saml2.Tests.WebSso
             var options = StubFactory.CreateOptions();
             options.SPOptions.ReturnUrl = null;
 
-            new AcsCommand().Invoking(a => a.Run(r, options))
-                .Should().Throw<ConfigurationErrorsException>().WithMessage(AcsCommand.UnsolicitedMissingReturnUrlMessage);
+            Func<Task> a = () => new AcsCommand().Run(r, options);
+
+            a.Should().Throw<ConfigurationErrorsException>().WithMessage(AcsCommand.UnsolicitedMissingReturnUrlMessage);
         }
 
         [TestMethod]
@@ -485,8 +487,8 @@ namespace Sustainsys.Saml2.Tests.WebSso
             var options = StubFactory.CreateOptions();
             options.SPOptions.ReturnUrl = null;
 
-            new AcsCommand().Invoking(a => a.Run(r, options))
-                .Should().Throw<ConfigurationErrorsException>().WithMessage(AcsCommand.SpInitiatedMissingReturnUrl);
+            Func<Task> a = () => new AcsCommand().Run(r, options);
+            a.Should().Throw<ConfigurationErrorsException>().WithMessage(AcsCommand.SpInitiatedMissingReturnUrl);
         }
 
         [TestMethod]
@@ -495,14 +497,14 @@ namespace Sustainsys.Saml2.Tests.WebSso
             var options = StubFactory.CreateOptions();
             options.Notifications.GetBinding = r => new StubSaml2Binding();
 
-            var subject = new AcsCommand();
-            subject.Invoking(s => s.Run(new HttpRequestData("GET", new Uri("http://host")), options))
-                .Should().Throw<NotImplementedException>()
+            Func<Task> a = () => new AcsCommand().Run(new HttpRequestData("GET", new Uri("http://host")), options);
+            
+            a.Should().Throw<NotImplementedException>()
                 .WithMessage("StubSaml2Binding.*");
         }
 
         [TestMethod]
-        public void AcsCommand_Run_CallsNotifications()
+        public async void AcsCommand_Run_CallsNotifications()
         {
             var messageId = MethodBase.GetCurrentMethod().Name;
             var response =
@@ -565,15 +567,15 @@ namespace Sustainsys.Saml2.Tests.WebSso
                 return opt.IdentityProviders[idpEntityId];
             };
 
-            new AcsCommand().Run(requestData, options)
-                .Should().BeSameAs(notifiedCommandResult);
+            var result = await new AcsCommand().Run(requestData, options);
+            result.Should().BeSameAs(notifiedCommandResult);
 
             responseUnboundCalled.Should().BeTrue("the ResponseUnbound notification should have been called.");
             getIdentityProviderCalled.Should().BeTrue("the GetIdentityProvider notification should have been called.");
         }
 
         [TestMethod]
-        public void AcsCommand_Run_ExtractsSessionNotOnOrAfter()
+        public async void AcsCommand_Run_ExtractsSessionNotOnOrAfter()
         {
             var messageId = MethodBase.GetCurrentMethod().Name;
             var response =
@@ -619,13 +621,13 @@ namespace Sustainsys.Saml2.Tests.WebSso
             var options = StubFactory.CreateOptions();
 
             var subject = new AcsCommand();
-            var actual = subject.Run(requestData, options);
+            var actual = await subject.Run(requestData, options);
 
             actual.SessionNotOnOrAfter.Should().Be(new DateTime(2200, 01, 01, 0, 0, 0, DateTimeKind.Utc));
         }
 
         [TestMethod]
-        public void AcsCommand_Run_SessionNotOnOrAfterNullIfNotSpecifiedInResponse()
+        public async void AcsCommand_Run_SessionNotOnOrAfterNullIfNotSpecifiedInResponse()
         {
             var messageId = MethodBase.GetCurrentMethod().Name;
             var response =
@@ -671,13 +673,13 @@ namespace Sustainsys.Saml2.Tests.WebSso
             var options = StubFactory.CreateOptions();
 
             var subject = new AcsCommand();
-            var actual = subject.Run(requestData, options);
+            var actual = await subject.Run(requestData, options);
 
             actual.SessionNotOnOrAfter.Should().NotHaveValue();
         }
 
         [TestMethod]
-        public void AcsCommand_Run_UsesIdpFromNotification()
+        public async void AcsCommand_Run_UsesIdpFromNotification()
         {
             var messageId = MethodBase.GetCurrentMethod().Name;
             var response =
@@ -744,12 +746,12 @@ namespace Sustainsys.Saml2.Tests.WebSso
             };
 
             var subject = new AcsCommand();
-            var actual = subject.Run(requestData, options);
+            var actual = await subject.Run(requestData, options);
 
             actual.Principal.Claims.First().Issuer.Should().Be("https://other.idp.example.com");
         }
 
-        private void RelayStateAsReturnUrl(string relayState, IOptions options, [CallerMemberName] string caller = null)
+        private async void RelayStateAsReturnUrl(string relayState, IOptions options, [CallerMemberName] string caller = null)
         {
             if(string.IsNullOrEmpty(caller))
             {
@@ -808,8 +810,8 @@ namespace Sustainsys.Saml2.Tests.WebSso
                 Location = relayState != null ? new Uri(relayState, UriKind.RelativeOrAbsolute) : null,
             };
 
-            new AcsCommand().Run(r, options)
-                .Location.OriginalString.Should().Be(relayState);
+            CommandResult result = await new AcsCommand().Run(r, options);
+            result.Location.OriginalString.Should().Be(relayState);
         }
 
         [TestMethod]

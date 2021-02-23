@@ -2,6 +2,7 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -29,5 +30,10 @@ namespace Sustainsys.Saml2.Configuration
         /// events.
         /// </summary>
         Saml2Notifications Notifications { get; }
+
+        /// <summary>
+        /// Factory for creating HttpClients.
+        /// </summary>
+        IHttpClientFactory HttpClientFactory { get; }
     }
 }

@@ -27,6 +27,7 @@ using System.Text;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using TestHelpers;
 
 namespace Sustainsys.Saml2.AspNetCore2.Tests
 {
@@ -40,7 +41,8 @@ namespace Sustainsys.Saml2.AspNetCore2.Tests
                 Subject = new Saml2Handler(
                     OptionsCache,
                     new StubDataProtector(),
-                    OptionsFactory);
+                    OptionsFactory,
+                    new MockHttpClientFactory());
 
                 Subject.InitializeAsync(AuthenticationScheme, HttpContext)
                     .Wait();
@@ -359,7 +361,7 @@ namespace Sustainsys.Saml2.AspNetCore2.Tests
         {
             var context = new Saml2HandlerTestContext();
 
-            Func<Task> f = async () => await context.Subject.ChallengeAsync(null);
+            Func<Task> f = () => context.Subject.ChallengeAsync(null);
 
             f.Should().NotThrow();
         }
@@ -367,7 +369,7 @@ namespace Sustainsys.Saml2.AspNetCore2.Tests
         [TestMethod]
         public void Saml2Handler_Ctor_NullcheckDataProtectorProvider()
         {
-            Action a = () => new Saml2Handler(null, null, null);
+            Action a = () => new Saml2Handler(null, null, null, null);
 
             a.Should().Throw<ArgumentNullException>()
                 .And.ParamName.Should().Be("dataProtectorProvider");

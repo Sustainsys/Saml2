@@ -10,6 +10,7 @@ using System.Linq;
 using System.Security.Cryptography.Xml;
 using Sustainsys.Saml2.Internal;
 using Sustainsys.Saml2.Metadata;
+using System.Threading.Tasks;
 
 namespace Sustainsys.Saml2.WebSso
 {
@@ -27,7 +28,7 @@ namespace Sustainsys.Saml2.WebSso
         /// <param name="request">Request data.</param>
         /// <param name="options">Options</param>
         /// <returns>CommandResult</returns>
-        public CommandResult Run(HttpRequestData request, IOptions options)
+        public Task<CommandResult> Run(HttpRequestData request, IOptions options)
         {
             if(request == null)
             {
@@ -60,7 +61,7 @@ namespace Sustainsys.Saml2.WebSso
         /// <param name="options">Options</param>
         /// <returns>CommandResult</returns>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2234:PassSystemUriObjectsInsteadOfStrings")]
-        public static CommandResult Run(
+        public static async Task<CommandResult> Run(
             HttpRequestData request,
             string returnPath,
             IOptions options)
@@ -80,7 +81,7 @@ namespace Sustainsys.Saml2.WebSso
             var binding = options.Notifications.GetBinding(request);
             if (binding != null)
             {
-                var unbindResult = binding.Unbind(request, options);
+                UnbindResult unbindResult = await binding.Unbind(request, options);
                 options.Notifications.MessageUnbound(unbindResult);
 
                 switch (unbindResult.Data.LocalName)

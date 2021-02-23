@@ -10,6 +10,7 @@ using System.Security.Cryptography.Xml;
 using Sustainsys.Saml2.TestHelpers;
 using Sustainsys.Saml2.Tokens;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Sustainsys.Saml2.Tests.WebSso
 {
@@ -19,7 +20,7 @@ namespace Sustainsys.Saml2.Tests.WebSso
         [TestMethod]
         public void MetadataCommand_Run_NullcheckOptions()
         {
-            Action a = () => new MetadataCommand().Run(
+            Func<Task> a = () => new MetadataCommand().Run(
                 new HttpRequestData("GET", new Uri("http://localhost")), 
                 null);
 
@@ -29,7 +30,7 @@ namespace Sustainsys.Saml2.Tests.WebSso
         HttpRequestData request = new HttpRequestData("GET", new Uri("http://localhost"));
 
         [TestMethod]
-        public void MetadataCommand_Run_CompleteMetadata()
+        public async void MetadataCommand_Run_CompleteMetadata()
         {
             var options = StubFactory.CreateOptions();
             options.SPOptions.DiscoveryServiceUrl = new Uri("http://ds.example.com");
@@ -42,7 +43,7 @@ namespace Sustainsys.Saml2.Tests.WebSso
                 MetadataPublishOverride = MetadataPublishOverrideType.PublishUnspecified
             });
 
-            var subject = new MetadataCommand().Run(request, options);
+            var subject = await new MetadataCommand().Run(request, options);
 
             var payloadXml = XmlHelpers.XmlDocumentFromString(subject.Content);
 
@@ -107,7 +108,7 @@ namespace Sustainsys.Saml2.Tests.WebSso
         }
 
         [TestMethod]
-        public void MetadataCommand_Run_MinimalMetadata()
+        public async void MetadataCommand_Run_MinimalMetadata()
         {
             var spOptions = new SPOptions()
             {
@@ -115,7 +116,7 @@ namespace Sustainsys.Saml2.Tests.WebSso
             };
             var options = new Options(spOptions);
 
-            var result = new MetadataCommand().Run(request, options);
+            var result = await new MetadataCommand().Run(request, options);
 
             XDocument subject = XDocument.Parse(result.Content);
 
@@ -161,14 +162,14 @@ namespace Sustainsys.Saml2.Tests.WebSso
 
             options.SPOptions.Organization.DisplayNames.Clear();
 
-            Action a = () => new MetadataCommand().Run(request, options);
+            Func<Task> a = () => new MetadataCommand().Run(request, options);
 
             a.Should().Throw<MetadataSerializationException>().And.Message.Should().StartWith(
 				"An organisation");
         }
 
         [TestMethod]
-        public void MetadataCommand_Run_CallsNotifications()
+        public async void MetadataCommand_Run_CallsNotifications()
         {
             var request = new HttpRequestData("GET", new Uri("http://localhost/Saml2"));
 
@@ -187,7 +188,7 @@ namespace Sustainsys.Saml2.Tests.WebSso
             };
 
             var subject = new MetadataCommand();
-            var actualCommandResult = subject.Run(request, options);
+            var actualCommandResult = await subject.Run(request, options);
             actualCommandResult.Should().BeSameAs(notifiedCommandResult);
 
             var parsedResult = XElement.Parse(actualCommandResult.Content);

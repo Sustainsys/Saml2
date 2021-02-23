@@ -18,6 +18,7 @@ using Sustainsys.Saml2.Metadata;
 using Sustainsys.Saml2.WebSso;
 using System.Web.Security;
 using System.Web.Routing;
+using System.Threading.Tasks;
 
 namespace Sustainsys.Saml2.Mvc.Tests
 {
@@ -84,8 +85,8 @@ namespace Sustainsys.Saml2.Mvc.Tests
                 cr.HandledResult = true;
             };
 
-            var actual = subject.Invoking(s => s.SignIn())
-                .Should().Throw<NotSupportedException>();
+            Func<Task> a = () => subject.SignIn();
+            a.Should().Throw<NotSupportedException>();
         }
 
         [TestMethod]
@@ -219,16 +220,16 @@ namespace Sustainsys.Saml2.Mvc.Tests
                 cr.HandledResult = true;
             };
 
-            subject.Invoking(s => s.Acs())
-                .Should().Throw<NotSupportedException>();
+            Func<Task> a = () => subject.Acs();
+            a.Should().Throw<NotSupportedException>();
         }
 
         [TestMethod]
-        public void Saml2Controller_Metadata()
+        public async void Saml2Controller_Metadata()
         {
             var subject = CreateInstanceWithContext();
 
-            var result = (ContentResult)subject.Index();
+            var result = (ContentResult) await subject.Index();
 
             result.ContentType.Should().Contain("application/samlmetadata+xml");
 
@@ -248,8 +249,8 @@ namespace Sustainsys.Saml2.Mvc.Tests
                 cr.HandledResult = true;
             };
 
-            subject.Invoking(s => s.Index())
-                .Should().Throw<NotSupportedException>();
+            Func<Task> a = () => subject.Index();
+            a.Should().Throw<NotSupportedException>();
         }
 
         [TestMethod]
@@ -303,8 +304,8 @@ namespace Sustainsys.Saml2.Mvc.Tests
                 cr.HandledResult = true;
             };
 
-            subject.Invoking(s => s.Logout())
-                .Should().Throw<NotSupportedException>();
+            Func<Task> a = () => subject.Logout();
+            a.Should().Throw<NotSupportedException>();
         }
 
         [TestMethod]

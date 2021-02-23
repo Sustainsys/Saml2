@@ -4,7 +4,7 @@ using System;
 using System.Globalization;
 using System.Linq;
 using System.Text;
-using System.Xml;
+using System.Threading.Tasks;
 using System.Xml.Linq;
 
 namespace Sustainsys.Saml2.WebSso
@@ -23,7 +23,7 @@ namespace Sustainsys.Saml2.WebSso
                     || request.Form.Keys.Contains("SAMLRequest"));
         }
 
-        public override UnbindResult Unbind(HttpRequestData request, IOptions options)
+        public override Task<UnbindResult> Unbind(HttpRequestData request, IOptions options)
         {
             if (request == null)
             {
@@ -43,7 +43,7 @@ namespace Sustainsys.Saml2.WebSso
 
             request.Form.TryGetValue("RelayState", out string relayState);
 
-            return new UnbindResult(xmlDoc.DocumentElement, relayState, TrustLevel.None);
+            return Task.FromResult(new UnbindResult(xmlDoc.DocumentElement, relayState, TrustLevel.None));
         }
 
         public override CommandResult Bind(ISaml2Message message, ILoggerAdapter logger)
