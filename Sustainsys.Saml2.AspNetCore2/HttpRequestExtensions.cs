@@ -10,7 +10,7 @@ namespace Sustainsys.Saml2.AspNetCore2
 {
     static class HttpRequestExtensions
     {
-        public static HttpRequestData ToHttpRequestData(
+        public async static Task<HttpRequestData> ToHttpRequestData(
             this HttpContext httpContext,
             ICookieManager cookieManager,
             Func<byte[], byte[]> cookieDecryptor)
@@ -29,8 +29,8 @@ namespace Sustainsys.Saml2.AspNetCore2
             IEnumerable<KeyValuePair<string, IEnumerable<string>>> formData = null;
             if (httpContext.Request.Method == "POST" && httpContext.Request.HasFormContentType)
             {
-                formData = request.Form.Select(
-                    f => new KeyValuePair<string, IEnumerable<string>>(f.Key, f.Value));
+                IFormCollection formCollection = await request.ReadFormAsync();
+                formData = formCollection.Select(f => new KeyValuePair<string, IEnumerable<string>>(f.Key, f.Value));
             }
 
             return new HttpRequestData(
