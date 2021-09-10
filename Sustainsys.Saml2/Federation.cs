@@ -197,7 +197,7 @@ namespace Sustainsys.Saml2
                 options.IdentityProviders.Remove(idp);
             }
 
-            // Remember what we registered this time, to know what to remove nex time.
+            // Remember what we registered this time, to know what to remove next time.
             registeredIdentityProviders = identityProviders.ToDictionary(
                 i => i.EntityId.Id,
                 i => i.EntityId);
