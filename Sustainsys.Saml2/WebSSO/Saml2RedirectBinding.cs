@@ -68,10 +68,7 @@ namespace Sustainsys.Saml2.WebSso
             HashAlgorithm hashAlg = signatureDescription.CreateDigest();
             hashAlg.ComputeHash(Encoding.UTF8.GetBytes(queryString));
             AsymmetricSignatureFormatter asymmetricSignatureFormatter =
-                signatureDescription.CreateFormatter(
-                    EnvironmentHelpers.IsNetCore ? message.SigningCertificate.PrivateKey :
-                    ((RSACryptoServiceProvider)message.SigningCertificate.PrivateKey)
-                    .GetSha256EnabledRSACryptoServiceProvider());
+                signatureDescription.CreateFormatter(message.SigningCertificate.GetPrivateKey());
             byte[] signatureValue = asymmetricSignatureFormatter.CreateSignature(hashAlg);
             queryString += "&Signature=" + Uri.EscapeDataString(Convert.ToBase64String(signatureValue));
             return queryString;

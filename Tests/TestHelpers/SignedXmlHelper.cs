@@ -22,6 +22,8 @@ namespace Sustainsys.Saml2.TestHelpers
 
         public static readonly X509Certificate2 TestCertSignOnly = new X509Certificate2("Sustainsys.Saml2.TestsSignOnly.pfx");
 
+        public static readonly X509Certificate2 TestCertInMemory = new X509Certificate2(File.ReadAllBytes("Sustainsys.Saml2.Tests.pfx"), "", X509KeyStorageFlags.EphemeralKeySet);
+
         public static readonly RsaKeyIdentifierClause TestKey =
             new RsaKeyIdentifierClause((RSA)TestCert.PublicKey.Key);
 

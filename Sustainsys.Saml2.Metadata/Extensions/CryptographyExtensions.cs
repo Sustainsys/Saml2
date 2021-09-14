@@ -15,6 +15,10 @@ namespace Sustainsys.Saml2.Metadata.Extensions
     // for not set to internal to prevent conflict
     internal static class CryptographyExtensions
     {
+        private const String RSA = "1.2.840.113549.1.1.1";
+        private const String DSA = "1.2.840.10040.4.1";
+        private const String ECC = "1.2.840.10045.2.1";
+
         internal static void Encrypt(this XmlElement elementToEncrypt, EncryptingCredentials encryptingCredentials)
         {
             if (elementToEncrypt == null)
@@ -130,27 +134,21 @@ namespace Sustainsys.Saml2.Metadata.Extensions
             EncryptedXml.ReplaceElement(elementToEncrypt, encryptedData, false);
         }
 
-        internal static RSACryptoServiceProvider GetSha256EnabledRSACryptoServiceProvider(
-            this RSACryptoServiceProvider original)
+        internal static AsymmetricAlgorithm GetPrivateKey(this X509Certificate2 cert)
         {
-            // The provider is probably using the default ProviderType. That's
-            // a problem, because it doesn't support SHA256. Let's do some
-            // black magic and create a new provider of a type that supports
-            // SHA256 without the user ever knowing we fix this. This is what
-            // is done in X509AsymmetricKey.GetSignatureFormatter if
-            // http://www.w3.org/2001/04/xmldsig-more#rsa-sha256 isn't
-            // a known algorithm, so users kind of expect this to be handled
-            // for them magically.
-
-            var cspParams = new CspParameters();
-            cspParams.ProviderType = 24; //PROV_RSA_AES
-            cspParams.KeyContainerName = original.CspKeyContainerInfo.KeyContainerName;
-            cspParams.KeyNumber = (int)original.CspKeyContainerInfo.KeyNumber;
-            SetMachineKeyFlag(original, cspParams);
-
-            cspParams.Flags |= CspProviderFlags.UseExistingKey;
-
-            return new RSACryptoServiceProvider(cspParams);
+            switch (cert.PublicKey.Oid.Value)
+            {
+                case RSA:
+                    return cert.GetRSAPrivateKey();
+                case ECC:
+                    return cert.GetECDsaPrivateKey();
+#if NET472_OR_GREATER
+                case DSA:
+                    return cert.GetDSAPrivateKey();
+#endif
+                default:
+                    return cert.PrivateKey;
+            }
         }
 
         // We don't want to use Machine Key store during tests, so let's
