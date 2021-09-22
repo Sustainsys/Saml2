@@ -54,7 +54,7 @@ namespace Sustainsys.Saml2.WebSso
                     
                     var idpContext = GetIdpContext(unbindResult.Data, request, options);
 
-                    var result = ProcessResponse(options, samlResponse, request.StoredRequestState, idpContext, unbindResult.RelayState);
+                    var result = ProcessResponse(options, samlResponse, request.ContextObject, request.StoredRequestState, idpContext, unbindResult.RelayState);
 
                     if (request.StoredRequestState != null)
                     {
@@ -102,7 +102,7 @@ namespace Sustainsys.Saml2.WebSso
         {
             var entityId = new EntityId(xml["Issuer", Saml2Namespaces.Saml2Name].GetTrimmedTextIfNotNull());
 
-            var identityProvider = options.Notifications.GetIdentityProvider(entityId, request.StoredRequestState?.RelayData, options);
+            var identityProvider = options.Notifications.GetIdentityProvider(request.ContextObject, entityId, request.StoredRequestState?.RelayData, options);
 
             return identityProvider;
         }
@@ -142,11 +142,12 @@ namespace Sustainsys.Saml2.WebSso
         private static CommandResult ProcessResponse(
             IOptions options,
             Saml2Response samlResponse,
+            object contextObject,
             StoredRequestState storedRequestState,
             IdentityProvider identityProvider,
             string relayState)
         {
-            var principal = new ClaimsPrincipal(samlResponse.GetClaims(options, storedRequestState?.RelayData));
+            var principal = new ClaimsPrincipal(samlResponse.GetClaims(options, contextObject, storedRequestState?.RelayData));
             
             if (options.SPOptions.ReturnUrl == null && !identityProvider.RelayStateUsedAsReturnUrl)
             {

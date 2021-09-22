@@ -272,7 +272,7 @@ namespace Sustainsys.Saml2.Tests.Saml2P
                 </saml2:Assertion>
             </saml2p:Response>";
 
-            Action a = () => Saml2Response.Read(response).GetClaims(Options.FromConfiguration);
+            Action a = () => Saml2Response.Read(response).GetClaims(Options.FromConfiguration, context: null);
 
             a.Should().Throw<Saml2ResponseFailedValidationException>()
                 .WithMessage("The SAML Response is not signed and contains unsigned Assertions. Response cannot be trusted.");
@@ -304,7 +304,7 @@ namespace Sustainsys.Saml2.Tests.Saml2P
 
             var signedResponse = SignedXmlHelper.SignXml(response);
 
-            Action a = () => Saml2Response.Read(signedResponse).GetClaims(Options.FromConfiguration);
+            Action a = () => Saml2Response.Read(signedResponse).GetClaims(Options.FromConfiguration, context: null);
             a.Should().NotThrow();
         }
 
@@ -335,7 +335,7 @@ namespace Sustainsys.Saml2.Tests.Saml2P
             </saml2p:Response>";
 
             var signedResponse = SignedXmlHelper.SignXml(response);
-			var claims = Saml2Response.Read(signedResponse).GetClaims(StubFactory.CreateOptions());
+			var claims = Saml2Response.Read(signedResponse).GetClaims(StubFactory.CreateOptions(), context: null);
 			claims.Single().FindFirst(
 				"http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier")
 				.Value.Should().Be("SomeUser");
@@ -374,7 +374,7 @@ namespace Sustainsys.Saml2.Tests.Saml2P
 
             var signedResponse = SignedXmlHelper.SignXml(response);
 
-            var claims = Saml2Response.Read(signedResponse).GetClaims(StubFactory.CreateOptions());
+            var claims = Saml2Response.Read(signedResponse).GetClaims(StubFactory.CreateOptions(), context: null);
 
             claims.Single().FindFirst("CommentTest").Value.Should().Be("SomeValue");
         }
@@ -419,7 +419,7 @@ namespace Sustainsys.Saml2.Tests.Saml2P
 
             options.IdentityProviders.Add(idp);
 
-            Action a = () => Saml2Response.Read(signedResponse).GetClaims(options);
+            Action a = () => Saml2Response.Read(signedResponse).GetClaims(options, context: null);
             a.Should().NotThrow();
         }
 
@@ -460,7 +460,7 @@ namespace Sustainsys.Saml2.Tests.Saml2P
 
             var signedResponse = SignedXmlHelper.SignXml(response);
 
-            var result = Saml2Response.Read(signedResponse).GetClaims(Options.FromConfiguration);
+            var result = Saml2Response.Read(signedResponse).GetClaims(Options.FromConfiguration, context: null);
 
             var logoutInfoClaim = result.Single().Claims.SingleOrDefault(c => c.Type == Saml2ClaimTypes.LogoutNameIdentifier);
             logoutInfoClaim.Should().NotBeNull("the LogoutInfo claim should be generated");
@@ -499,7 +499,7 @@ namespace Sustainsys.Saml2.Tests.Saml2P
 
             var signedResponse = SignedXmlHelper.SignXml(response);
 
-            var result = Saml2Response.Read(signedResponse).GetClaims(Options.FromConfiguration);
+            var result = Saml2Response.Read(signedResponse).GetClaims(Options.FromConfiguration, context: null);
 
             var logoutInfoClaim = result.Single().Claims.SingleOrDefault(c => c.Type == Saml2ClaimTypes.LogoutNameIdentifier);
             logoutInfoClaim.Should().NotBeNull("the Logout name identifier claim should be generated");
@@ -541,7 +541,7 @@ namespace Sustainsys.Saml2.Tests.Saml2P
 
             var signedResponse = SignedXmlHelper.SignXml(response);
 
-            var result = Saml2Response.Read(signedResponse).GetClaims(Options.FromConfiguration);
+            var result = Saml2Response.Read(signedResponse).GetClaims(Options.FromConfiguration, context: null);
 
             var authMethodClaim = result.Single().Claims.SingleOrDefault(c => c.Type == ClaimTypes.AuthenticationMethod);
             authMethodClaim.Should().NotBeNull("the authentication method claim should be generated");
@@ -581,7 +581,7 @@ namespace Sustainsys.Saml2.Tests.Saml2P
 
             var options = StubFactory.CreateOptions();
             options.SPOptions.Compatibility.IgnoreAuthenticationContextInResponse = true;
-            var result = Saml2Response.Read(signedResponse).GetClaims(options);
+            var result = Saml2Response.Read(signedResponse).GetClaims(options, context: null);
 
             var authMethodClaim = result.Single().Claims.SingleOrDefault(c => c.Type == ClaimTypes.AuthenticationMethod);
             authMethodClaim.Should().BeNull("the authentication method claim should not be generated");
@@ -624,7 +624,7 @@ namespace Sustainsys.Saml2.Tests.Saml2P
 
             var options = Options.FromConfiguration;
             options.SPOptions.Saml2PSecurityTokenHandler = new Saml2PSecurityTokenHandler();
-            var result = Saml2Response.Read(signedResponse).GetClaims(options);
+            var result = Saml2Response.Read(signedResponse).GetClaims(options, context: null);
 
             var authMethodClaim = result.Single().Claims.SingleOrDefault(c => c.Type == ClaimTypes.AuthenticationMethod);
             authMethodClaim.Should().NotBeNull("the authentication method claim should be generated");
@@ -662,7 +662,7 @@ namespace Sustainsys.Saml2.Tests.Saml2P
 
             var signedResponse = SignedXmlHelper.SignXml(response);
 
-            var result = Saml2Response.Read(signedResponse).GetClaims(Options.FromConfiguration);
+            var result = Saml2Response.Read(signedResponse).GetClaims(Options.FromConfiguration, context: null);
 
             result.First().FindFirst(ClaimTypes.NameIdentifier).Should().BeNull();
 
@@ -701,7 +701,7 @@ namespace Sustainsys.Saml2.Tests.Saml2P
             var signedAssertion = SignedXmlHelper.SignXml(assertion);
             var signedResponse = string.Format(response, signedAssertion);
 
-            Action a = () => Saml2Response.Read(signedResponse).GetClaims(Options.FromConfiguration);
+            Action a = () => Saml2Response.Read(signedResponse).GetClaims(Options.FromConfiguration, context: null);
             a.Should().NotThrow();
         }
 
@@ -734,7 +734,7 @@ namespace Sustainsys.Saml2.Tests.Saml2P
             var signedAssertion = SignedXmlHelper.SignXml(assertion, true, false);
             var signedResponse = string.Format(response, signedAssertion);
 
-            Action a = () => Saml2Response.Read(signedResponse).GetClaims(Options.FromConfiguration);
+            Action a = () => Saml2Response.Read(signedResponse).GetClaims(Options.FromConfiguration, context: null);
             a.Should().NotThrow();
         }
 
@@ -779,7 +779,7 @@ namespace Sustainsys.Saml2.Tests.Saml2P
             var signedAssertion2 = SignedXmlHelper.SignXml(assertion2);
             var signedResponse = string.Format(response, signedAssertion1, signedAssertion2);
 
-            Action a = () => Saml2Response.Read(signedResponse).GetClaims(Options.FromConfiguration);
+            Action a = () => Saml2Response.Read(signedResponse).GetClaims(Options.FromConfiguration, context: null);
             a.Should().NotThrow();
         }
 
@@ -824,7 +824,7 @@ namespace Sustainsys.Saml2.Tests.Saml2P
             var signedAssertion2 = SignedXmlHelper.SignXml(assertion2, true, false);
             var signedResponse = string.Format(response, signedAssertion1, signedAssertion2);
 
-            Action a = () => Saml2Response.Read(signedResponse).GetClaims(Options.FromConfiguration);
+            Action a = () => Saml2Response.Read(signedResponse).GetClaims(Options.FromConfiguration, context: null);
             a.Should().NotThrow();
         }
 
@@ -869,7 +869,7 @@ namespace Sustainsys.Saml2.Tests.Saml2P
             var signedAssertion1 = SignedXmlHelper.SignXml(assertion1);
             var signedResponse = string.Format(response, signedAssertion1, assertion2);
 
-            Action a = () => Saml2Response.Read(signedResponse).GetClaims(Options.FromConfiguration);
+            Action a = () => Saml2Response.Read(signedResponse).GetClaims(Options.FromConfiguration, context: null);
 
             a.Should().Throw<Saml2ResponseFailedValidationException>()
                 .WithMessage("The SAML Response is not signed and contains unsigned Assertions. Response cannot be trusted.");
@@ -916,7 +916,7 @@ namespace Sustainsys.Saml2.Tests.Saml2P
             var signedAssertion2 = SignedXmlHelper.SignXml(assertion2).Replace("SomeUser2", "SomeOtherUser");
             var signedResponse = string.Format(response, signedAssertion1, signedAssertion2);
 
-            Action a = () => Saml2Response.Read(signedResponse).GetClaims(Options.FromConfiguration);
+            Action a = () => Saml2Response.Read(signedResponse).GetClaims(Options.FromConfiguration, context: null);
 
             a.Should().Throw<InvalidSignatureException>()
                 .WithMessage("Signature didn't verify. Have the contents been tampered with?");
@@ -973,7 +973,7 @@ namespace Sustainsys.Saml2.Tests.Saml2P
 
             var signedResponse = string.Format(response, signedAssertion1, signedAssertionToInject);
 
-            Action a = () => Saml2Response.Read(signedResponse).GetClaims(Options.FromConfiguration);
+            Action a = () => Saml2Response.Read(signedResponse).GetClaims(Options.FromConfiguration, context: null);
 
             a.Should().Throw<InvalidSignatureException>()
                 .WithMessage("Incorrect reference on Xml signature. The reference must be to the root element of the element containing the signature.");
@@ -996,7 +996,7 @@ namespace Sustainsys.Saml2.Tests.Saml2P
 
             var samlResponse = Saml2Response.Read(signedResponse);
 
-            Action a = () => samlResponse.GetClaims(Options.FromConfiguration);
+            Action a = () => samlResponse.GetClaims(Options.FromConfiguration, context: null);
 
             a.Should().NotThrow();
             a.Should().NotThrow();
@@ -1033,7 +1033,7 @@ namespace Sustainsys.Saml2.Tests.Saml2P
             var options = StubFactory.CreateOptions();
             options.SPOptions.ServiceCertificates.Add(new ServiceCertificate { Certificate = SignedXmlHelper.TestCert2 });
 
-            var claims = Saml2Response.Read(signedResponse).GetClaims(options);
+            var claims = Saml2Response.Read(signedResponse).GetClaims(options, context: null);
             claims.Count().Should().Be(1);
             claims.First().FindFirst(ClaimTypes.NameIdentifier).Value.Should().Be("UserIDInsideEncryptedAssertion");
         }
@@ -1068,7 +1068,7 @@ namespace Sustainsys.Saml2.Tests.Saml2P
             var encryptedAssertion = SignedXmlHelper.EncryptAssertion(signedAssertion);
             var responseWithAssertion = string.Format(response, encryptedAssertion);
 
-            var claims = Saml2Response.Read(responseWithAssertion).GetClaims(Options.FromConfiguration);
+            var claims = Saml2Response.Read(responseWithAssertion).GetClaims(Options.FromConfiguration, context: null);
             claims.Count().Should().Be(1);
             claims.First().FindFirst(ClaimTypes.NameIdentifier).Value.Should().Be("SomeUser");
         }
@@ -1105,7 +1105,7 @@ namespace Sustainsys.Saml2.Tests.Saml2P
             options.SPOptions.ServiceCertificates.Add(new ServiceCertificate { Certificate = SignedXmlHelper.TestCert });
             options.SPOptions.ServiceCertificates.Add(new ServiceCertificate { Certificate = SignedXmlHelper.TestCert2 });
 
-            var claims = Saml2Response.Read(signedResponse).GetClaims(options);
+            var claims = Saml2Response.Read(signedResponse).GetClaims(options, context: null);
             claims.Count().Should().Be(1);
             claims.First().FindFirst(ClaimTypes.NameIdentifier).Value.Should().Be("UserIDInsideEncryptedAssertion");
         }
@@ -1141,7 +1141,7 @@ namespace Sustainsys.Saml2.Tests.Saml2P
             var options = StubFactory.CreateOptions();
             options.SPOptions.ServiceCertificates.Add(new ServiceCertificate { Certificate = SignedXmlHelper.TestCert });
 
-            Action a = () => Saml2Response.Read(signedResponse).GetClaims(options);
+            Action a = () => Saml2Response.Read(signedResponse).GetClaims(options, context: null);
 
             a.Should().Throw<Saml2ResponseFailedValidationException>()
                 .WithMessage("Encrypted Assertion(s) could not be decrypted using the configured Service Certificate(s).");
@@ -1177,7 +1177,7 @@ namespace Sustainsys.Saml2.Tests.Saml2P
             var encryptedAssertion = SignedXmlHelper.EncryptAssertion(signedAssertion, useOaep: true);
             var responseWithAssertion = string.Format(response, encryptedAssertion);
 
-            var claims = Saml2Response.Read(responseWithAssertion).GetClaims(Options.FromConfiguration);
+            var claims = Saml2Response.Read(responseWithAssertion).GetClaims(Options.FromConfiguration, context: null);
             claims.Count().Should().Be(1);
             claims.First().FindFirst(ClaimTypes.NameIdentifier).Value.Should().Be("SomeUser");
         }
@@ -1227,7 +1227,7 @@ namespace Sustainsys.Saml2.Tests.Saml2P
             }
             var responseWithAssertion = string.Format(response, assertionXml);
 
-			var claims = Saml2Response.Read(responseWithAssertion).GetClaims(Options.FromConfiguration);
+			var claims = Saml2Response.Read(responseWithAssertion).GetClaims(Options.FromConfiguration, context: null);
             claims.Count().Should().Be(1);
             claims.First().FindFirst(ClaimTypes.NameIdentifier).Value.Should().Be("WIFUser");
         }
@@ -1261,7 +1261,7 @@ namespace Sustainsys.Saml2.Tests.Saml2P
             var encryptedAssertion = SignedXmlHelper.EncryptAssertion(assertion);
             var responseWithAssertion = string.Format(response, encryptedAssertion);
 
-            Action a = () => Saml2Response.Read(responseWithAssertion).GetClaims(Options.FromConfiguration);
+            Action a = () => Saml2Response.Read(responseWithAssertion).GetClaims(Options.FromConfiguration, context: null);
 
             a.Should().Throw<Saml2ResponseFailedValidationException>()
                 .WithMessage("The SAML Response is not signed and contains unsigned Assertions. Response cannot be trusted.");
@@ -1298,7 +1298,7 @@ namespace Sustainsys.Saml2.Tests.Saml2P
             var encryptedAssertion = SignedXmlHelper.EncryptAssertion(tamperedAssertion);
             var responseWithAssertion = string.Format(response, encryptedAssertion);
 
-            Action a = () => Saml2Response.Read(responseWithAssertion).GetClaims(Options.FromConfiguration);
+            Action a = () => Saml2Response.Read(responseWithAssertion).GetClaims(Options.FromConfiguration, context: null);
 
             a.Should().Throw<InvalidSignatureException>()
                 .WithMessage("Signature didn't verify. Have the contents been tampered with?");
@@ -1334,7 +1334,7 @@ namespace Sustainsys.Saml2.Tests.Saml2P
 
             var options = StubFactory.CreateOptions();
 
-            Action a = () => Saml2Response.Read(signedResponse).GetClaims(options);
+            Action a = () => Saml2Response.Read(signedResponse).GetClaims(options, context: null);
             a.Should().Throw<Saml2ResponseFailedValidationException>();
         }
 
@@ -1381,7 +1381,7 @@ namespace Sustainsys.Saml2.Tests.Saml2P
 
             var r = Saml2Response.Read(SignedXmlHelper.SignXml(response));
 
-            r.GetClaims(StubFactory.CreateOptions())
+            r.GetClaims(StubFactory.CreateOptions(), context: null)
                 .Should().BeEquivalentTo(expected, opt => opt.IgnoringCyclicReferences());
         }
 
@@ -1423,7 +1423,7 @@ namespace Sustainsys.Saml2.Tests.Saml2P
 
             var r = Saml2Response.Read(SignedXmlHelper.SignXml(response));
 
-            var claims = r.GetClaims(options).Single();
+            var claims = r.GetClaims(options, context: null).Single();
 
             // Not same object as we're reading it twice.
             claims.BootstrapContext.Should().BeEquivalentTo(expected);
@@ -1463,7 +1463,7 @@ namespace Sustainsys.Saml2.Tests.Saml2P
 
             var options = StubFactory.CreateOptions();
 
-            subject.Invoking(s => s.GetClaims(options))
+            subject.Invoking(s => s.GetClaims(options, context: null))
                 .Should().Throw<SecurityTokenInvalidAudienceException>();
 		}
 
@@ -1508,7 +1508,7 @@ namespace Sustainsys.Saml2.Tests.Saml2P
                 xml.OuterXml.Should().Contain("https://example.com/wrong/audience");
             };
 
-            subject.Invoking(s => s.GetClaims(options)).Should().NotThrow();
+            subject.Invoking(s => s.GetClaims(options, context: null)).Should().NotThrow();
         }
 
         [TestMethod]
@@ -1538,7 +1538,7 @@ namespace Sustainsys.Saml2.Tests.Saml2P
             response = SignedXmlHelper.SignXml(response);
             var r = Saml2Response.Read(response);
 
-            Action a = () => r.GetClaims(Options.FromConfiguration);
+            Action a = () => r.GetClaims(Options.FromConfiguration, context: null);
 
             a.Should().Throw<SecurityTokenExpiredException>();
         }
@@ -1564,7 +1564,7 @@ namespace Sustainsys.Saml2.Tests.Saml2P
 
             var response = Saml2Response.Read(responseXML, new Saml2Id("abc123"));
 
-            Action a = () => response.GetClaims(Options.FromConfiguration);
+            Action a = () => response.GetClaims(Options.FromConfiguration, context: null);
             a.Should().NotThrow();
         }
 
@@ -1586,7 +1586,7 @@ namespace Sustainsys.Saml2.Tests.Saml2P
 
             var response = Saml2Response.Read(responseXML);
 
-            Action a = () => response.GetClaims(Options.FromConfiguration);
+            Action a = () => response.GetClaims(Options.FromConfiguration, context: null);
 
             a.Should().Throw<Saml2ResponseFailedValidationException>()
                 .WithMessage("Unsolicited responses are not allowed for idp \"https://idp2.example.com\".");
@@ -1614,7 +1614,7 @@ namespace Sustainsys.Saml2.Tests.Saml2P
 
             var response = Saml2Response.Read(responseXML);
 
-            Action a = () => response.GetClaims(Options.FromConfiguration);
+            Action a = () => response.GetClaims(Options.FromConfiguration, context: null);
             a.Should().NotThrow();
         }
 
@@ -1649,7 +1649,7 @@ namespace Sustainsys.Saml2.Tests.Saml2P
 
             var subject = Saml2Response.Read(responseXML, new Saml2Id("somevalue"));
 
-            Action a = () => subject.GetClaims(StubFactory.CreateOptions());
+            Action a = () => subject.GetClaims(StubFactory.CreateOptions(), context: null);
 
             a.Should().Throw<Saml2ResponseFailedValidationException>()
                 .WithMessage("InResponseTo Id \"anothervalue\" in received response does not match Id \"somevalue\" of the sent request.");
@@ -1686,7 +1686,7 @@ namespace Sustainsys.Saml2.Tests.Saml2P
 
             var subject = Saml2Response.Read(responseXML, null);
 
-            Action a = () => subject.GetClaims(StubFactory.CreateOptions());
+            Action a = () => subject.GetClaims(StubFactory.CreateOptions(), context: null);
 
             a.Should().Throw<UnexpectedInResponseToException>()
                 .WithMessage("*unexpected InResponseTo \"InResponseTo\"*");
@@ -1742,7 +1742,7 @@ namespace Sustainsys.Saml2.Tests.Saml2P
             };
 
             // Should not throw
-            subject.GetClaims(options);
+            subject.GetClaims(options, context: null);
 
             capturedResponse.Should().BeSameAs(subject);
             claimsIdentities.Single().FindFirst(ClaimTypes.NameIdentifier).Value.Should().Be("SomeUser");
@@ -1778,7 +1778,7 @@ namespace Sustainsys.Saml2.Tests.Saml2P
 
             var subject = Saml2Response.Read(responseXML, new Saml2Id("ExpectedId"));
 
-            Action a = () => subject.GetClaims(StubFactory.CreateOptions());
+            Action a = () => subject.GetClaims(StubFactory.CreateOptions(), context: null);
 
             a.Should().Throw<Saml2ResponseFailedValidationException>()
 				.WithMessage(
@@ -1842,7 +1842,7 @@ namespace Sustainsys.Saml2.Tests.Saml2P
 
             var subject = Saml2Response.Read(responseXML, new Saml2Id("ExpectedId"), options);
 
-            Action a = () => subject.GetClaims(StubFactory.CreateOptions());
+            Action a = () => subject.GetClaims(StubFactory.CreateOptions(), context: null);
 
             a.Should().Throw<Saml2ResponseFailedValidationException>()
                 .WithMessage("Expected message to contain InResponseTo \"ExpectedId\", but found none*");
@@ -1871,7 +1871,7 @@ namespace Sustainsys.Saml2.Tests.Saml2P
 
             Action a = () =>
             {
-                response.GetClaims(Options.FromConfiguration);
+                response.GetClaims(Options.FromConfiguration, context: null);
             };
 
             a.Should().Throw<InvalidSignatureException>()
@@ -1912,7 +1912,7 @@ namespace Sustainsys.Saml2.Tests.Saml2P
 
             Action a = () =>
             {
-                response.GetClaims(options);
+                response.GetClaims(options, context: null);
             };
 
             a.Should().Throw<InvalidSignatureException>()
@@ -1945,11 +1945,11 @@ namespace Sustainsys.Saml2.Tests.Saml2P
 
             response = SignedXmlHelper.SignXml(response);
             var r1 = Saml2Response.Read(response);
-            r1.GetClaims(Options.FromConfiguration);
+            r1.GetClaims(Options.FromConfiguration, context: null);
 
             var r2 = Saml2Response.Read(response);
 
-            Action a = () => r2.GetClaims(Options.FromConfiguration);
+            Action a = () => r2.GetClaims(Options.FromConfiguration, context: null);
 
             a.Should().Throw<SecurityTokenReplayDetectedException>();
         }
@@ -1981,11 +1981,11 @@ namespace Sustainsys.Saml2.Tests.Saml2P
             response = SignedXmlHelper.SignXml(response);
             var r1 = Saml2Response.Read(response);
             var options = StubFactory.CreateOptions();
-            r1.GetClaims(options);
+            r1.GetClaims(options, context: null);
 
             var r2 = Saml2Response.Read(response);
 
-            Action a = () => r2.GetClaims(options);
+            Action a = () => r2.GetClaims(options, context: null);
 
             a.Should().Throw<SecurityTokenReplayDetectedException>();
         }
@@ -2017,12 +2017,12 @@ namespace Sustainsys.Saml2.Tests.Saml2P
             response = SignedXmlHelper.SignXml(response);
             var r1 = Saml2Response.Read(response);
             var options1 = StubFactory.CreateOptions();
-            r1.GetClaims(options1);
+            r1.GetClaims(options1, context: null);
 
             var r2 = Saml2Response.Read(response);
 
             var options2 = StubFactory.CreateOptions();
-            Action a = () => r2.GetClaims(options2);
+            Action a = () => r2.GetClaims(options2, context: null);
 
             a.Should().NotThrow();
         }
@@ -2055,7 +2055,7 @@ namespace Sustainsys.Saml2.Tests.Saml2P
 
             var subject = Saml2Response.Read(xml);
 
-            Action a = () => subject.GetClaims(Options.FromConfiguration);
+            Action a = () => subject.GetClaims(Options.FromConfiguration, context: null);
 
             a.Should().Throw<UnsuccessfulSamlOperationException>()
                 .WithMessage("The Saml2Response must have status success to extract claims.\n*Status Code: Requester*")
@@ -2084,7 +2084,7 @@ namespace Sustainsys.Saml2.Tests.Saml2P
 
             var subject = Saml2Response.Read(xml);
 
-            Action a = () => subject.GetClaims(Options.FromConfiguration);
+            Action a = () => subject.GetClaims(Options.FromConfiguration, context: null);
 
             a.Should().Throw<UnsuccessfulSamlOperationException>()
                 .WithMessage("The Saml2Response must have status success to extract claims.*Status Code: Responder*Message: A status message*RequestDenied")
@@ -2142,7 +2142,7 @@ namespace Sustainsys.Saml2.Tests.Saml2P
 
             var tamperedXml = xmlDoc.OuterXml;
 
-            Action a = () => Saml2Response.Read(tamperedXml).GetClaims(Options.FromConfiguration);
+            Action a = () => Saml2Response.Read(tamperedXml).GetClaims(Options.FromConfiguration, context: null);
 
             a.Should().Throw<CryptographicException>()
                 .WithMessage("Malformed element Signature.");
@@ -2163,7 +2163,7 @@ namespace Sustainsys.Saml2.Tests.Saml2P
             response.SetAttribute("ID", "_xsw2_explot_response_deadbeef");
 
             var tamperedXml = xmlDoc.OuterXml;
-            Action a = () => Saml2Response.Read(tamperedXml).GetClaims(Options.FromConfiguration);
+            Action a = () => Saml2Response.Read(tamperedXml).GetClaims(Options.FromConfiguration, context: null);
 
             a.Should().Throw<InvalidSignatureException>()
                 .WithMessage("Incorrect reference on Xml signature. The reference must be to the root element of the element containing the signature.");
@@ -2182,7 +2182,7 @@ namespace Sustainsys.Saml2.Tests.Saml2P
             xmlDoc.DocumentElement.InsertBefore(clonedAssertion, assertion);
 
             var tamperedXml = xmlDoc.OuterXml;
-            Action a = () => Saml2Response.Read(tamperedXml).GetClaims(Options.FromConfiguration);
+            Action a = () => Saml2Response.Read(tamperedXml).GetClaims(Options.FromConfiguration, context: null);
 
             a.Should().Throw<InvalidSignatureException>()
                 .WithMessage("Signature didn't verify. Have the contents been tampered with?");
@@ -2202,7 +2202,7 @@ namespace Sustainsys.Saml2.Tests.Saml2P
             clonedAssertion.AppendChild(assertion);
 
             var tamperedXml = xmlDoc.OuterXml;
-            Action a = () => Saml2Response.Read(tamperedXml).GetClaims(Options.FromConfiguration);
+            Action a = () => Saml2Response.Read(tamperedXml).GetClaims(Options.FromConfiguration, context: null);
 
             a.Should().Throw<InvalidSignatureException>()
                 .WithMessage("Signature didn't verify. Have the contents been tampered with?");
@@ -2221,7 +2221,7 @@ namespace Sustainsys.Saml2.Tests.Saml2P
             assertion.SetAttribute("ID", "_xsw5_explot_response_deadbeef");
 
             var tamperedXml = xmlDoc.OuterXml;
-            Action a = () => Saml2Response.Read(tamperedXml).GetClaims(Options.FromConfiguration);
+            Action a = () => Saml2Response.Read(tamperedXml).GetClaims(Options.FromConfiguration, context: null);
 
             a.Should().Throw<InvalidSignatureException>()
                 .WithMessage("Signature didn't verify. Have the contents been tampered with?");
@@ -2241,7 +2241,7 @@ namespace Sustainsys.Saml2.Tests.Saml2P
             assertion.SetAttribute("ID", "_xsw6_explot_response_deadbeef");
 
             var tamperedXml = xmlDoc.OuterXml;
-            Action a = () => Saml2Response.Read(tamperedXml).GetClaims(Options.FromConfiguration);
+            Action a = () => Saml2Response.Read(tamperedXml).GetClaims(Options.FromConfiguration, context: null);
 
             a.Should().Throw<InvalidSignatureException>()
                 .WithMessage("Signature didn't verify. Have the contents been tampered with?");
@@ -2261,7 +2261,7 @@ namespace Sustainsys.Saml2.Tests.Saml2P
             extensions.AppendChild(clonedAssertion);
 
             var tamperedXml = xmlDoc.OuterXml;
-            Action a = () => Saml2Response.Read(tamperedXml).GetClaims(Options.FromConfiguration);
+            Action a = () => Saml2Response.Read(tamperedXml).GetClaims(Options.FromConfiguration, context: null);
 
             a.Should().Throw<InvalidSignatureException>()
                 .WithMessage("Signature didn't verify. Have the contents been tampered with?");
@@ -2282,7 +2282,7 @@ namespace Sustainsys.Saml2.Tests.Saml2P
             xmlObject.AppendChild(clonedAssertion);
 
             var tamperedXml = xmlDoc.OuterXml;
-            Action a = () => Saml2Response.Read(tamperedXml).GetClaims(Options.FromConfiguration);
+            Action a = () => Saml2Response.Read(tamperedXml).GetClaims(Options.FromConfiguration, context: null);
 
             a.Should().Throw<InvalidSignatureException>()
                 .WithMessage("Signature didn't verify. Have the contents been tampered with?");
@@ -2318,7 +2318,7 @@ namespace Sustainsys.Saml2.Tests.Saml2P
 
             var subject = Saml2Response.Read(xml);
 
-            Action a = () => subject.GetClaims(Options.FromConfiguration);
+            Action a = () => subject.GetClaims(Options.FromConfiguration, context: null);
 
             a.Should().Throw<UnsuccessfulSamlOperationException>()
                 .WithMessage("The Saml2Response must have status success to extract claims.*Status Code: Requester*Message: A status message*")
@@ -2337,7 +2337,7 @@ namespace Sustainsys.Saml2.Tests.Saml2P
             var response = new Saml2Response(issuer, null, null, null, identity);
 
             response.Issuer.Should().Be(issuer);
-            response.GetClaims(Options.FromConfiguration)
+            response.GetClaims(Options.FromConfiguration, context: null)
                 .Single()
                 .Should().BeEquivalentTo(identity);
         }
@@ -2513,7 +2513,7 @@ namespace Sustainsys.Saml2.Tests.Saml2P
             idp.SigningKeys.AddConfiguredKey(SignedXmlHelper.TestKeySignOnly);
             options.IdentityProviders.Add(idp);
 
-            Action a = () => Saml2Response.Read(signedResponse).GetClaims(options);
+            Action a = () => Saml2Response.Read(signedResponse).GetClaims(options, context: null);
             a.Should().NotThrow();
         }
 
@@ -2548,7 +2548,7 @@ namespace Sustainsys.Saml2.Tests.Saml2P
             responseXml = SignedXmlHelper.SignXml(responseXml);
 
             Saml2Response.Read(responseXml).Invoking(
-                r => r.GetClaims(options))
+                r => r.GetClaims(options, context: null))
                 .Should().Throw<InvalidSignatureException>()
                 .And.Message.Should().Be("The signature was valid, but the verification of the certificate failed. Is it expired or revoked? Are you sure you really want to enable ValidateCertificates (it's normally not needed)?");
         }
@@ -2582,7 +2582,7 @@ namespace Sustainsys.Saml2.Tests.Saml2P
             responseXml = SignedXmlHelper.SignXml(responseXml);
 
             Saml2Response.Read(responseXml).Invoking(
-                r => r.GetClaims(options))
+                r => r.GetClaims(options, context: null))
                 .Should().Throw<Saml2Exception>()
                 .WithMessage("*subject confirmation*bearer*");
         }
@@ -2615,7 +2615,7 @@ namespace Sustainsys.Saml2.Tests.Saml2P
             responseXml = SignedXmlHelper.SignXml(responseXml);
 
             Saml2Response.Read(responseXml).Invoking(
-                r => r.GetClaims(options))
+                r => r.GetClaims(options, context: null))
                 .Should().Throw<Saml2ResponseFailedValidationException>()
                 .WithMessage("*No subject confirmation*");
         }
@@ -2666,7 +2666,7 @@ namespace Sustainsys.Saml2.Tests.Saml2P
 
             var subject = Saml2Response.Read(SignedXmlHelper.SignXml(response));
 
-            subject.GetClaims(StubFactory.CreateOptions());
+            subject.GetClaims(StubFactory.CreateOptions(), context: null);
 
             subject.SessionNotOnOrAfter.Should().Be(new DateTime(2050, 1, 1, 0, 0, 0, DateTimeKind.Utc));
         }

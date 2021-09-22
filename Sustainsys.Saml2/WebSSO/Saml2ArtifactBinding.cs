@@ -75,18 +75,19 @@ namespace Sustainsys.Saml2.WebSso
 
             options.SPOptions.Logger.WriteVerbose("Artifact binding found Artifact\n" + artifact);
 
-            var data = ResolveArtifact(artifact, request.StoredRequestState, options);
+            var data = ResolveArtifact(artifact, request.ContextObject, request.StoredRequestState, options);
 
             return new UnbindResult(data, relayState, TrustLevel.None);
         }
 
         private static XmlElement ResolveArtifact(
             string artifact,
+            object contextObject,
             StoredRequestState storedRequestState,
             IOptions options)
         {
             var binaryArtifact = Convert.FromBase64String(artifact);
-            var idp = GetIdp(binaryArtifact, storedRequestState, options);
+            var idp = GetIdp(binaryArtifact, contextObject, storedRequestState, options);
             var arsIndex = (binaryArtifact[2] << 8) | binaryArtifact[3];
             var arsUri = idp.ArtifactResolutionServiceUrls[arsIndex];
 
@@ -118,12 +119,13 @@ namespace Sustainsys.Saml2.WebSso
 
         private static IdentityProvider GetIdp(
             byte[] binaryArtifact,
+            object context,
             StoredRequestState storedRequestState,
             IOptions options)
         {
             if(storedRequestState != null)
             {
-                return options.Notifications.GetIdentityProvider(storedRequestState.Idp, storedRequestState.RelayData, options);
+                return options.Notifications.GetIdentityProvider(context, storedRequestState.Idp, storedRequestState.RelayData, options);
             }
 
             // It is RECOMMENDED in the spec that the first part of the artifact

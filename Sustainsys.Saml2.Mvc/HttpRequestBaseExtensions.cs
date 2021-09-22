@@ -51,7 +51,8 @@ namespace Sustainsys.Saml2.HttpModule
                 ? Enumerable.Empty<KeyValuePair<string, string>>()
                 : GetCookies(requestBase);
 
-            return new HttpRequestData(
+            return new HttpRequestData<HttpRequestBase>(
+                requestBase,
                 requestBase.HttpMethod,
                 requestBase.Url,
                 requestBase.ApplicationPath,

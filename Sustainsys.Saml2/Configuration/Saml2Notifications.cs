@@ -51,9 +51,9 @@ namespace Sustainsys.Saml2.Configuration
         /// in selection.
         /// </summary>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
-        public Func<EntityId, IDictionary<string, string>, IdentityProvider>
+        public Func<object, EntityId, IDictionary<string, string>, IOptions, IdentityProvider>
             SelectIdentityProvider
-        { get; set; } = (ei, r) => null;
+        { get; set; } = (ctx, ei, rd, opt) => null;
 
         /// <summary>
         /// Notification called to decide if a SameSite=None attribute should
@@ -179,8 +179,8 @@ namespace Sustainsys.Saml2.Configuration
         /// Notification called when getting an identity provider. Default version is to return
         /// the given idp from Options.IdentityProviders.
         /// </summary>
-        public Func<EntityId, IDictionary<string, string>, IOptions, IdentityProvider> GetIdentityProvider { get; set; }
-            = (ei, rd, opt) => opt.IdentityProviders[ei];
+        public Func<object, EntityId, IDictionary<string, string>, IOptions, IdentityProvider> GetIdentityProvider { get; set; }
+            = (ctx, ei, rd, opt) => opt.IdentityProviders[ei];
 
         /// <summary>
         /// Callbacks that allow modifying the validation behavior in potentially unsafe/insecure ways

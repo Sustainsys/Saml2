@@ -112,7 +112,7 @@ namespace Sustainsys.Saml2.WebSso
 
             var urls = new Saml2Urls(request, options);
 
-            IdentityProvider idp = options.Notifications.SelectIdentityProvider(idpEntityId, relayData);
+            IdentityProvider idp = options.Notifications.SelectIdentityProvider(request.ContextObject, idpEntityId, relayData, options);
             if (idp == null)
             {
                 var idpEntityIdString = idpEntityId?.Id;

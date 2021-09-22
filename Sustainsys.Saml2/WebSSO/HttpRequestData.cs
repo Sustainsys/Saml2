@@ -230,5 +230,10 @@ namespace Sustainsys.Saml2.WebSso
         /// User (if any) associated with the request
         /// </summary>
         public ClaimsPrincipal User { get; set; }
+
+        /// <summary>
+        /// The target-specific HTTP request object.
+        /// </summary>
+        public virtual object ContextObject { get; }
     }
 }

@@ -543,24 +543,26 @@ namespace Sustainsys.Saml2.Saml2P
         /// Extract claims from the assertions contained in the response.
         /// </summary>
         /// <param name="options">Service provider settings used when processing the response into claims.</param>
+        /// <param name="context">The target-specific HTTP context.</param>
         /// <returns>ClaimsIdentities</returns>
         // Method might throw expections so make it a method and not a property.
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1024:UsePropertiesWhereAppropriate")]
-        public IEnumerable<ClaimsIdentity> GetClaims(IOptions options)
+        public IEnumerable<ClaimsIdentity> GetClaims(IOptions options, object context)
         {
-            return GetClaims(options, null);
+            return GetClaims(options, context, null);
         }
-        
+
         /// <summary>
         /// Extract claims from the assertions contained in the response.
         /// </summary>
         /// <param name="options">Service provider settings used when processing the response into claims.</param>
+        /// <param name="context">The target-specific HTTP context.</param>
         /// <param name="relayData">Relay data stored when creating AuthnRequest, to be passed on to
         /// GetIdentityProvider notification.</param>
         /// <returns>ClaimsIdentities</returns>
         // Method might throw expections so make it a method and not a property.
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1024:UsePropertiesWhereAppropriate")]
-        public IEnumerable<ClaimsIdentity> GetClaims(IOptions options, IDictionary<string, string> relayData)
+        public IEnumerable<ClaimsIdentity> GetClaims(IOptions options, object context, IDictionary<string, string> relayData)
         {
             if (createClaimsException != null)
             {
@@ -571,7 +573,7 @@ namespace Sustainsys.Saml2.Saml2P
             {
                 try
                 {
-                    var idp = options.Notifications.GetIdentityProvider(Issuer, relayData, options);
+                    var idp = options.Notifications.GetIdentityProvider(context, Issuer, relayData, options);
                     claimsIdentities = CreateClaims(options, idp).ToList();
 
                     // Validate InResponseTo now, to be able to include generated claims in notification.

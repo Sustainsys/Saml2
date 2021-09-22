@@ -527,10 +527,12 @@ namespace Sustainsys.Saml2.Tests.WebSso
                 </saml2:Assertion>
             </saml2p:Response>";
 
+            var context = new object(); // HttpContext
             var formValue = Convert.ToBase64String(Encoding.UTF8.GetBytes(
                 SignedXmlHelper.SignXml(response)));
 
-            var requestData = new HttpRequestData(
+            var requestData = new HttpRequestData<object>(
+                context,
                 "POST",
                 new Uri("http://localhost"),
                 "/ModulePath",
@@ -557,8 +559,9 @@ namespace Sustainsys.Saml2.Tests.WebSso
             };
 
             var getIdentityProviderCalled = false;
-            options.Notifications.GetIdentityProvider = (idpEntityId, relayData, opt) =>
+            options.Notifications.GetIdentityProvider = (ctx, idpEntityId, relayData, opt) =>
             {
+                ctx.Should().BeSameAs(context);
                 idpEntityId.Id.Should().Be("https://idp.example.com");
                 relayData.Should().BeNull();
                 getIdentityProviderCalled = true;
@@ -707,6 +710,7 @@ namespace Sustainsys.Saml2.Tests.WebSso
                 </saml2:Assertion>
             </saml2p:Response>";
 
+            var context = new object(); // HttpContext
             var formValue = Convert.ToBase64String(Encoding.UTF8.GetBytes(
                 SignedXmlHelper.SignXml(response)));
 
@@ -715,7 +719,8 @@ namespace Sustainsys.Saml2.Tests.WebSso
                 { "key", "value" }
             };
 
-            var requestData = new HttpRequestData(
+            var requestData = new HttpRequestData<object>(
+                context,
                 "POST",
                 new Uri("http://localhost"),
                 "/ModulePath",
@@ -731,8 +736,9 @@ namespace Sustainsys.Saml2.Tests.WebSso
 
             var options = StubFactory.CreateOptions();
 
-            options.Notifications.GetIdentityProvider = (idpEntityId, rd, opt) =>
+            options.Notifications.GetIdentityProvider = (ctx, idpEntityId, rd, opt) =>
             {
+                ctx.Should().BeSameAs(context);
                 idpEntityId.Id.Should().Be("https://other.idp.example.com");
                 rd["key"].Should().Be("value");
 

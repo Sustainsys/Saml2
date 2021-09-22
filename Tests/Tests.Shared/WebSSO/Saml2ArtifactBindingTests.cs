@@ -83,6 +83,7 @@ namespace Sustainsys.Saml2.Tests.WebSso
         [TestMethod]
         public void Saml2ArtifactBinding_Unbind_FromGetUsesIdpFromNotification()
         {
+            var context = new object(); // HttpContext
             var issuer = new EntityId("https://idp.example.com");
             var artifact = Uri.EscapeDataString(
                 Convert.ToBase64String(
@@ -95,7 +96,8 @@ namespace Sustainsys.Saml2.Tests.WebSso
                 { "key", "value" }
             };
 
-            var r = new HttpRequestData(
+            var r = new HttpRequestData<object>(
+                context,
                 "GET",
                 new Uri($"http://example.com/path/acs?SAMLart={artifact}&RelayState={relayState}"),
                 null,
@@ -108,8 +110,9 @@ namespace Sustainsys.Saml2.Tests.WebSso
             options.IdentityProviders.Remove(idp.EntityId);
 
             var getIdentityProviderCalled = false;
-            options.Notifications.GetIdentityProvider = (ei, rd, opt) =>
+            options.Notifications.GetIdentityProvider = (ctx, ei, rd, opt) =>
             {
+                ctx.Should().BeSameAs(context);
                 getIdentityProviderCalled = true;
                 rd["key"].Should().Be("value");
                 return idp;

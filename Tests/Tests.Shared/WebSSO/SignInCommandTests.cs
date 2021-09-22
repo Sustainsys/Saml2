@@ -214,20 +214,25 @@ namespace Sustainsys.Saml2.Tests.WebSso
         [TestMethod]
         public void SignInCommand_Run_Calls_Notifications()
         {
+            var context = new object(); // HttpContext
             var options = StubFactory.CreateOptions();
             var idp = options.IdentityProviders.Default;
             var relayData = new Dictionary<string, string>();
             options.SPOptions.DiscoveryServiceUrl = null;
            
-            var request = new HttpRequestData("GET",
+            var request = new HttpRequestData<object>(
+                context,
+                "GET",
                 new Uri("http://sp.example.com"));
 
             var selectedIdpCalled = false;
             options.Notifications.SelectIdentityProvider =
-                (ei, r) =>
+                (ctx, ei, r, o) =>
             {
+                ctx.Should().BeSameAs(context);
                 ei.Should().BeSameAs(idp.EntityId);
                 r.Should().BeSameAs(relayData);
+                o.Should().BeSameAs(options);
                 selectedIdpCalled = true;
                 return null;
             };
@@ -275,8 +280,9 @@ namespace Sustainsys.Saml2.Tests.WebSso
             var request = new HttpRequestData("GET",
                 new Uri("http://sp.example.com"));
 
-            options.Notifications.SelectIdentityProvider = (ei, r) =>
+            options.Notifications.SelectIdentityProvider = (ctx, ei, r, o) =>
             {
+                ctx.Should().BeNull();
                 return idp;
             };
 

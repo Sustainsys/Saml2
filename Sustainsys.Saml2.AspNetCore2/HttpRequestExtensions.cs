@@ -10,7 +10,7 @@ namespace Sustainsys.Saml2.AspNetCore2
 {
     static class HttpRequestExtensions
     {
-        public static HttpRequestData ToHttpRequestData(
+        public static HttpRequestData<HttpContext> ToHttpRequestData(
             this HttpContext httpContext,
             ICookieManager cookieManager,
             Func<byte[], byte[]> cookieDecryptor)
@@ -33,7 +33,8 @@ namespace Sustainsys.Saml2.AspNetCore2
                     f => new KeyValuePair<string, IEnumerable<string>>(f.Key, f.Value));
             }
 
-            return new HttpRequestData(
+            return new HttpRequestData<HttpContext>(
+                httpContext,
                 httpContext.Request.Method,
                 uri,
                 pathBase,
