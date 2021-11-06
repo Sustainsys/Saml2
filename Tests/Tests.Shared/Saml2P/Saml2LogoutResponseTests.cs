@@ -94,5 +94,41 @@ namespace Sustainsys.Saml2.Tests.Saml2P
             a.Should().Throw<ArgumentNullException>()
                 .And.ParamName.Should().Be("xml");
         }
+
+        [TestMethod]
+        public void Saml2LogoutResponse_FromXml()
+        {
+            var expected = new Saml2LogoutResponse(Saml2StatusCode.Success)
+            {
+                DestinationUrl = new Uri("https://IdentityProvider.com/Logout"),
+                Id = new Saml2Id(),
+                InResponseTo = new Saml2Id(),
+                IssueInstant = new DateTime(2021, 11, 06, 1, 2, 3, 0, DateTimeKind.Utc),
+                Issuer = new EntityId("https://ServiceProvider.com/SAML"),
+            };
+
+            var inputXml = $@"<samlp:LogoutResponse xmlns:samlp=""urn:oasis:names:tc:SAML:2.0:protocol""
+                    xmlns=""urn:oasis:names:tc:SAML:2.0:assertion""
+                    ID=""{expected.Id.Value}""
+                    InResponseTo=""{expected.InResponseTo.Value}""
+                    IssueInstant=""{expected.IssueInstant.ToSaml2DateTimeString()}"" Version=""2.0""
+                    Destination=""{expected.DestinationUrl}"">
+                    <Issuer>{expected.Issuer.Id}</Issuer>
+                    <samlp:Status>
+                        <samlp:StatusCode Value=""urn:oasis:names:tc:SAML:2.0:status:Success""/>
+                    </samlp:Status>
+                </samlp:LogoutResponse>";
+
+            var doc = new XmlDocument();
+            doc.LoadXml(inputXml);
+            var actual = Saml2LogoutResponse.FromXml(doc.DocumentElement);
+
+            actual.Id.Value.Should().Be(expected.Id.Value);
+            actual.DestinationUrl.Should().Be(expected.DestinationUrl);
+            actual.InResponseTo.Value.Should().Be(expected.InResponseTo.Value);
+            actual.IssueInstant.Should().Be(expected.IssueInstant);
+            actual.Issuer.Id.Should().Be(expected.Issuer.Id);
+            actual.Status.Should().Be(expected.Status);
+        }
     }
 }

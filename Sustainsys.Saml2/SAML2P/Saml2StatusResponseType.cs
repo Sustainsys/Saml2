@@ -1,8 +1,11 @@
-﻿using Microsoft.IdentityModel.Tokens.Saml2;
-using System;
+﻿using System;
 using System.Security.Cryptography.X509Certificates;
-using Sustainsys.Saml2.Metadata;
 using System.Xml.Linq;
+using System.Xml;
+using System.Globalization;
+
+using Microsoft.IdentityModel.Tokens.Saml2;
+using Sustainsys.Saml2.Metadata;
 
 namespace Sustainsys.Saml2.Saml2P
 {
@@ -71,12 +74,12 @@ namespace Sustainsys.Saml2.Saml2P
         /// <summary>
         /// Id of the message.
         /// </summary>
-        public Saml2Id Id { get; } = new Saml2Id();
+        public Saml2Id Id { get; set; } = new Saml2Id();
 
         /// <summary>
         /// Issue instant.
         /// </summary>
-        public DateTime IssueInstant { get; } = DateTime.UtcNow;
+        public DateTime IssueInstant { get; set; } = DateTime.UtcNow;
 
         /// <summary>
         /// Serializes the message into wellformed Xml.
@@ -89,5 +92,44 @@ namespace Sustainsys.Saml2.Saml2P
         /// </summary>
         /// <returns>XElement with Xml representation of the message</returns>
         public abstract XElement ToXElement();
+
+        protected void ReadBaseProperties(XmlElement xml)
+        {
+            if (xml == null)
+            {
+                throw new ArgumentNullException(nameof(xml));
+            }
+
+            if (xml.Attributes["Version"].Value != "2.0")
+            {
+                throw new XmlException("Wrong or unsupported SAML2 version");
+            }
+
+            Id = new Saml2Id(xml.Attributes["ID"].Value);
+
+            var destination = xml.Attributes["Destination"];
+            if (destination != null)
+            {
+                DestinationUrl = new Uri(destination.Value);
+            }
+
+            var issuerNode = xml["Issuer", Saml2Namespaces.Saml2Name];
+            if (issuerNode != null)
+            {
+                Issuer = new EntityId(issuerNode.InnerXml);
+            }
+
+            var inResponseTo = xml.GetAttribute("InResponseTo");
+            if (inResponseTo != null)
+            {
+                InResponseTo = new Saml2Id(inResponseTo);
+            }
+
+            var issueInstant = xml.GetAttribute("IssueInstant");
+            if (issueInstant != null)
+            {
+                IssueInstant = DateTime.Parse(issueInstant, CultureInfo.InvariantCulture, DateTimeStyles.AdjustToUniversal);
+            }
+        }
     }
 }
