@@ -1,11 +1,8 @@
-﻿using Sustainsys.Saml2.Internal;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System;
 using System.Xml;
 using System.Xml.Linq;
+
+using Sustainsys.Saml2.Internal;
 
 namespace Sustainsys.Saml2.Saml2P
 {
@@ -75,10 +72,10 @@ namespace Sustainsys.Saml2.Saml2P
         }
 
         /// <summary>
-        /// Load values into 
+        /// Load values into Saml2LogoutResponse from passed xml element
         /// </summary>
-        /// <param name="xml"></param>
-        /// <returns></returns>
+        /// <param name="xml">XmlElement containing a LogoutResponse</param>
+        /// <returns>Saml2LogoutResponse</returns>
         public static Saml2LogoutResponse FromXml(XmlElement xml)
         {
             if(xml == null)
@@ -90,7 +87,11 @@ namespace Sustainsys.Saml2.Saml2P
                 xml["Status", Saml2Namespaces.Saml2PName]
                 ["StatusCode", Saml2Namespaces.Saml2PName]
                 .GetAttribute("Value"));
-            return new Saml2LogoutResponse(status);
+
+            var response = new Saml2LogoutResponse(status);
+            response.ReadBaseProperties(xml);
+
+            return response;
         }
     }
 }
