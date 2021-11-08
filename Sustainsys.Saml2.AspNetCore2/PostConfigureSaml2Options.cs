@@ -23,7 +23,7 @@ namespace Sustainsys.Saml2.AspNetCore2
         /// <summary>
         /// Ctor
         /// </summary>
-        /// <param name="loggerFactory">Logger factory to use to hook up Saml2 loggin.</param>
+        /// <param name="loggerFactory">Logger factory to use to hook up Saml2 logging.</param>
         /// <param name="authOptions">Authentication options, to look up Default Sign In schema</param>
         public PostConfigureSaml2Options(
             ILoggerFactory loggerFactory,
@@ -45,14 +45,18 @@ namespace Sustainsys.Saml2.AspNetCore2
                 throw new ArgumentNullException(nameof(options));
             }
 
-            if(loggerFactory != null)
+            // Logger may have been set in the options already. In that case keep it as it is.
+            if (options.SPOptions.Logger == null)
             {
-                options.SPOptions.Logger = new AspNetCoreLoggerAdapter(
-                    loggerFactory.CreateLogger<Saml2Handler>());
-            }
-            else
-            {
-                options.SPOptions.Logger = new NullLoggerAdapter();
+                if (loggerFactory != null)
+                {
+                    options.SPOptions.Logger = new AspNetCoreLoggerAdapter(
+                        loggerFactory.CreateLogger<Saml2Handler>());
+                }
+                else
+                {
+                    options.SPOptions.Logger = new NullLoggerAdapter();
+                }
             }
             options.SPOptions.Logger.WriteVerbose("Saml2 logging enabled.");
 
