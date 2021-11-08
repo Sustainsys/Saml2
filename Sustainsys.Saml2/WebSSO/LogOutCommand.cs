@@ -292,8 +292,11 @@ namespace Sustainsys.Saml2.WebSso
                 response, options.SPOptions.Logger, options.Notifications.LogoutResponseXmlCreated);
             result.TerminateLocalSession = true;
 
-            // 'request' contains details about the logout command. We return that details to whoever is listening to the notifications.
-            result.Content = Newtonsoft.Json.JsonConvert.SerializeObject(request);
+            if (result.Content == null)
+            {
+                // 'request' contains details about the logout command. We return that details to whoever is listening to the notifications.
+                result.Content = Newtonsoft.Json.JsonConvert.SerializeObject(request);
+            }
 
             return result;
         }

@@ -569,12 +569,13 @@ namespace Sustainsys.Saml2.Tests.WebSso
                 HttpStatusCode = HttpStatusCode.SeeOther,
                 TerminateLocalSession = true
                 // Deliberately not comparing Location
+                // Deliberately not comparing Content
             };
 
             HttpUtility.ParseQueryString(actual.Location.Query)["Signature"]
                 .Should().NotBeNull("LogoutResponse should be signed");
 
-            actual.Should().BeEquivalentTo(expected, opt => opt.Excluding(cr => cr.Location));
+            actual.Should().BeEquivalentTo(expected, opt => opt.Excluding(cr => cr.Location).Excluding(cr => cr.Content));
             actual.Should().BeSameAs(notifiedCommandResult);
             logoutResponse.InResponseTo.Value.Should().Be(request.Id.Value);
             xmlCreatedCalled.Should().BeTrue();
