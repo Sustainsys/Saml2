@@ -291,6 +291,10 @@ namespace Sustainsys.Saml2.WebSso
             var result = Saml2Binding.Get(idp.SingleLogoutServiceBinding).Bind(
                 response, options.SPOptions.Logger, options.Notifications.LogoutResponseXmlCreated);
             result.TerminateLocalSession = true;
+
+            // 'request' contains details about the logout command. We return that details to whoever is listening to the notifications.
+            result.Content = Newtonsoft.Json.JsonConvert.SerializeObject(request);
+
             return result;
         }
 
