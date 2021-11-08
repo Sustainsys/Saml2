@@ -87,10 +87,12 @@ namespace Sustainsys.Saml2.WebSso
                 switch (unbindResult.Data.LocalName)
                 {
                     case "LogoutRequest":
+                        options.SPOptions.Logger.WriteVerbose("Logout triggered (LogoutRequest)");
                         VerifyMessageIsSigned(unbindResult, options);
                         commandResult = HandleRequest(unbindResult, request, options);
                         break;
                     case "LogoutResponse":
+                        options.SPOptions.Logger.WriteVerbose("Logout triggered (LogoutResponse)");
                         if (!options.SPOptions.Compatibility.AcceptUnsignedLogoutResponses)
                         {
                             VerifyMessageIsSigned(unbindResult, options);
@@ -105,6 +107,7 @@ namespace Sustainsys.Saml2.WebSso
             }
             else
             {
+                options.SPOptions.Logger.WriteVerbose("Logout triggered (binding==NULL)");
                 commandResult = InitiateLogout(request, returnUrl, options, true);
             }
             options.Notifications.LogoutCommandResultCreated(commandResult);
@@ -282,8 +285,8 @@ namespace Sustainsys.Saml2.WebSso
 
             options.Notifications.LogoutResponseCreated(response, request, httpRequest.User, idp);
 
-            options.SPOptions.Logger.WriteInformation("Got a logout request " + request.Id
-                + ", responding with logout response " + response.Id);
+            options.SPOptions.Logger.WriteInformation("Got a logout request " + request.Id.Value
+                + ", responding with logout response " + response.Id.Value);
 
             var result = Saml2Binding.Get(idp.SingleLogoutServiceBinding).Bind(
                 response, options.SPOptions.Logger, options.Notifications.LogoutResponseXmlCreated);
@@ -321,7 +324,7 @@ namespace Sustainsys.Saml2.WebSso
             }
             commandResult.Location = storedRequestState?.ReturnUrl ?? returnUrl;
 
-            options.SPOptions.Logger.WriteInformation("Received logout response " + logoutResponse.Id
+            options.SPOptions.Logger.WriteInformation("Received logout response " + logoutResponse.Id.Value
                 + ", redirecting to " + commandResult.Location);
 
             return commandResult;
