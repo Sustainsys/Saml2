@@ -662,9 +662,13 @@ $@"<xml>
         {
             var actual = XmlHelpers.CreateSafeXmlDocument();
 
-			string fieldName = (EnvironmentHelpers.IsNetCore ? "_": "") +"resolver";
-            typeof(XmlDocument).GetField(fieldName, BindingFlags.NonPublic | BindingFlags.Instance)
-                .GetValue(actual).Should().BeNull();
+            var field = typeof(XmlDocument).GetField("_resolver", BindingFlags.NonPublic | BindingFlags.Instance);
+            if (field == null)
+            {
+                field = typeof(XmlDocument).GetField("resolver", BindingFlags.NonPublic | BindingFlags.Instance);
+            }
+
+            field.GetValue(actual).Should().BeNull();
 
             actual.PreserveWhitespace.Should().BeTrue();
         }

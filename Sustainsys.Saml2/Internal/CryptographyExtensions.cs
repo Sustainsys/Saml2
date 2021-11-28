@@ -172,17 +172,6 @@ namespace Sustainsys.Saml2.Internal
             }
         }
 
-        // We don't want to use Machine Key store during tests, so let's
-        // put this one in an own method that's not included in coverage metrics.
-        [ExcludeFromCodeCoverage]
-        private static void SetMachineKeyFlag(RSACryptoServiceProvider provider, CspParameters cspParams)
-        {
-            if (provider.CspKeyContainerInfo.MachineKeyStore)
-            {
-                cspParams.Flags = CspProviderFlags.UseMachineKeyStore;
-            }
-        }
-
         // CryptoConfig.CreateFromName doesn't know about these
         private static Dictionary<string, Type> s_extraAlgorithms = new Dictionary<string, Type>(StringComparer.OrdinalIgnoreCase)
         {
