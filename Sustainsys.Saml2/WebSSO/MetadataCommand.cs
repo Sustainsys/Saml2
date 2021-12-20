@@ -1,12 +1,5 @@
-﻿using Sustainsys.Saml2.Configuration;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Web;
-using System.Xml.Linq;
+﻿using System;
+using Sustainsys.Saml2.Configuration;
 using Sustainsys.Saml2.Metadata;
 
 namespace Sustainsys.Saml2.WebSso
@@ -40,7 +33,8 @@ namespace Sustainsys.Saml2.WebSso
             {
                 Content = metadata.ToXmlString(
                     options.SPOptions.SigningServiceCertificate,
-                    options.SPOptions.OutboundSigningAlgorithm),
+                    options.SPOptions.OutboundSigningAlgorithm,
+                    options.Notifications.MetadataDocumentCreated),
                 ContentType = "application/samlmetadata+xml"
             };
 

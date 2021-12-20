@@ -1,15 +1,15 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Security.Cryptography.Xml;
 using System.Xml.Linq;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using FluentAssertions;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Sustainsys.Saml2.Configuration;
 using Sustainsys.Saml2.Metadata;
-using Sustainsys.Saml2.WebSso;
-using Sustainsys.Saml2.Tests.Helpers;
-using System.Security.Cryptography.Xml;
 using Sustainsys.Saml2.TestHelpers;
+using Sustainsys.Saml2.Tests.Helpers;
 using Sustainsys.Saml2.Tokens;
-using System.Collections.Generic;
+using Sustainsys.Saml2.WebSso;
 
 namespace Sustainsys.Saml2.Tests.WebSso
 {
@@ -119,28 +119,28 @@ namespace Sustainsys.Saml2.Tests.WebSso
 
             XDocument subject = XDocument.Parse(result.Content);
 
-			// Ignore the ID attribute, it is just filled with a GUID that can't be easily tested.
-			var att = subject.Root.Attribute("ID");
-			if (att != null)
-			{
-				att.Remove();
-			}
+            // Ignore the ID attribute, it is just filled with a GUID that can't be easily tested.
+            var att = subject.Root.Attribute("ID");
+            if (att != null)
+            {
+                att.Remove();
+            }
 
-			var expectedXml = new XDocument(new XElement(Saml2Namespaces.Saml2Metadata + "EntityDescriptor",
-				new XAttribute("entityID", "http://localhost/Saml2"),
-				new XAttribute("cacheDuration", "PT1H"),
-				// Have to manually add the xmlns attribute here, as it will be present in the subject
-				// data and the xml tree comparison will fail if it is not present in both. Just setting the 
-				// namespace of the elements does not inject the xmlns attribute into the node tree. It is
-				// only done when outputting a string.
-				// See http://stackoverflow.com/questions/24156689/xnode-deepequals-unexpectedly-returns-false
-				new XAttribute(XNamespace.Xmlns + "saml2", Saml2Namespaces.Saml2),
-				new XAttribute("xmlns", Saml2Namespaces.Saml2MetadataName),
-				new XElement(Saml2Namespaces.Saml2Metadata + "SPSSODescriptor",
-					new XAttribute("protocolSupportEnumeration", "urn:oasis:names:tc:SAML:2.0:protocol"),
-					new XAttribute("AuthnRequestsSigned", false),
-					new XAttribute("WantAssertionsSigned", false),
-					new XElement(Saml2Namespaces.Saml2Metadata + "AssertionConsumerService",
+            var expectedXml = new XDocument(new XElement(Saml2Namespaces.Saml2Metadata + "EntityDescriptor",
+                new XAttribute("entityID", "http://localhost/Saml2"),
+                new XAttribute("cacheDuration", "PT1H"),
+                // Have to manually add the xmlns attribute here, as it will be present in the subject
+                // data and the xml tree comparison will fail if it is not present in both. Just setting the 
+                // namespace of the elements does not inject the xmlns attribute into the node tree. It is
+                // only done when outputting a string.
+                // See http://stackoverflow.com/questions/24156689/xnode-deepequals-unexpectedly-returns-false
+                new XAttribute(XNamespace.Xmlns + "saml2", Saml2Namespaces.Saml2),
+                new XAttribute("xmlns", Saml2Namespaces.Saml2MetadataName),
+                new XElement(Saml2Namespaces.Saml2Metadata + "SPSSODescriptor",
+                    new XAttribute("protocolSupportEnumeration", "urn:oasis:names:tc:SAML:2.0:protocol"),
+                    new XAttribute("AuthnRequestsSigned", false),
+                    new XAttribute("WantAssertionsSigned", false),
+                    new XElement(Saml2Namespaces.Saml2Metadata + "AssertionConsumerService",
                         new XAttribute("Binding", Saml2Binding.HttpPostUri),
                         new XAttribute("Location", "http://localhost/Saml2/Acs"),
                         new XAttribute("index", 0),
@@ -164,7 +164,7 @@ namespace Sustainsys.Saml2.Tests.WebSso
             Action a = () => new MetadataCommand().Run(request, options);
 
             a.Should().Throw<MetadataSerializationException>().And.Message.Should().StartWith(
-				"An organisation");
+                "An organisation");
         }
 
         [TestMethod]
@@ -186,6 +186,17 @@ namespace Sustainsys.Saml2.Tests.WebSso
                 notifiedCommandResult = cr;
             };
 
+            const string expectedNodeName = "CustomNode";
+            string expectedNodeValue = null;
+
+            options.Notifications.MetadataDocumentCreated = metadata =>
+            {
+                var customElement = metadata.CreateElement(expectedNodeName);
+                expectedNodeValue = DateTime.Now.Ticks.ToString();
+                customElement.InnerText = expectedNodeValue;
+                metadata.DocumentElement.AppendChild(customElement);
+            };
+
             var subject = new MetadataCommand();
             var actualCommandResult = subject.Run(request, options);
             actualCommandResult.Should().BeSameAs(notifiedCommandResult);
@@ -193,6 +204,12 @@ namespace Sustainsys.Saml2.Tests.WebSso
             var parsedResult = XElement.Parse(actualCommandResult.Content);
             parsedResult.Attribute("cacheDuration").Value
                 .Should().Be("PT17S");
+
+            parsedResult.Elements()
+                .Should().Contain(
+                    actualNode =>
+                        actualNode.Name.LocalName == expectedNodeName
+                        && actualNode.Value == expectedNodeValue);
         }
     }
 }
