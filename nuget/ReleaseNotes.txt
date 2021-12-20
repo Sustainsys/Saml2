@@ -1,5 +1,6 @@
 Version 2.9.0
 * Add runtime detection for .NET 5+
+* Deserialize LogoutResponse
 
 Version 2.8.0
 * Add runtime detection for .NET 5
