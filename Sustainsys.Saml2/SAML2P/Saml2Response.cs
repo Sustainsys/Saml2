@@ -479,7 +479,7 @@ namespace Sustainsys.Saml2.Saml2P
                 if (!decrypted)
                 {
 
-                    throw new Saml2ResponseFailedValidationException("Encrypted Assertion(s) could not be decrypted using the configured Service Certificate(s)");
+                    throw new Saml2ResponseFailedValidationException("Encrypted Assertion(s) could not be decrypted using the configured Service Certificate(s).");
                 }
             }
 

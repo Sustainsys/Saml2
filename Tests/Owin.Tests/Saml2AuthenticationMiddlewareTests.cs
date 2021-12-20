@@ -474,7 +474,8 @@ namespace Sustainsys.Saml2.Owin.Tests
                 RelayState = relayState,
                 SigningCertificate = SignedXmlHelper.TestCert,
                 SigningAlgorithm = SignedXml.XmlDsigRSASHA256Url,
-                Issuer = new EntityId("https://idp.example.com")
+                Issuer = new EntityId("https://idp.example.com"),
+                InResponseTo = new Saml2Id()
             };
             var requestUri = Saml2Binding.Get(Saml2BindingType.HttpRedirect).Bind(response).Location;
 
