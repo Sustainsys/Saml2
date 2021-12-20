@@ -37,12 +37,7 @@ The Sustainsys.Saml2 library has been developed using TDD (Test Driven Developme
 by tests, and it will remain that way. Pull requests will only be merged if they contain tests covering the 
 added functionality. Parts of the code that aren't practically possible to test because of tight integration with 
 the web server (see e.g. ``CommandResult.ApplyPrincipal``) are excluded from this rule and should be 
-marked with an ``[ExcludeFromCodeCoverage]`` attribute. The code coverage report is at 100.00% coverage 
-and should remain so.
-
-Continuous Integration / Build Server
--------------------------------------
-All pull requests are built on AppVeyor and code coverage is checked.
+marked with an ``[ExcludeFromCodeCoverage]`` attribute.
 
 Branching
 ---------
@@ -51,7 +46,7 @@ To make a clean pull request, it is important to follow some git best practices.
 
 Licensing
 ---------
-The library is licensed under MIT (for the master branch) and by submitting code it is accepted that the
+The library is licensed under MIT (LGPL for v1) and by submitting code it is accepted that the
 submitted code will be released under the same license. Third party code may only be added to the
 library if the author of the pull request holds the copyright to the code, or the code is previously
 licensed under a license compatible with MIT.

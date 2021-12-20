@@ -8,7 +8,7 @@ The Sustainsys.Saml2 library adds SAML2P support to ASP.NET web sites, allowing 
 to act as a SAML2 Service Provider (SP). The library was previously named Kentor.AuthServices.
 
 Sustainsys.Saml2 is open sourced and contributions are welcome, please see 
-[contributing guidelines](CONTRIBUTING.md) for info on coding standards etc.
+[contributing guidelines](docs/contributiong.rst) for info on coding standards etc.
 
 ## Branches
 There are three active branches in the repo
