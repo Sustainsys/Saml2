@@ -320,7 +320,7 @@ namespace Sustainsys.Saml2.WebSso
             }
             commandResult.Location = storedRequestState?.ReturnUrl ?? returnUrl;
 
-            options.SPOptions.Logger.WriteInformation("Received logout response " + logoutResponse.Id
+            options.SPOptions.Logger.WriteInformation("Received logout response " + logoutResponse.Id.Value
                 + ", redirecting to " + commandResult.Location);
 
             return commandResult;
