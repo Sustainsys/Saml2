@@ -17,5 +17,12 @@ There are three active branches in the repo
 * develop is development for a new version (will be released as v3 eventually) that only supports Asp.Net Core.
 * master is deprecated and only kept around to ensure all old links pointing to it works.
 
+## Current Development Goals
+The current development goals are to get a new, more flexible architecture.
+* The Metadata handling is broken out to a separate library that can be reused seprately. Some further work is probably needed to the structure.
+* All `Web.config` code should be removed.
+* The `RequestData` class should be removed - with Asp.Net Core as the only target we can take a direct dependency and use the `HttpContext` and `HttpRequest` directly.
+* The `CommandResult` can probably be simplified, although having the result of a command in an abstract form before updating the `HttpResponse` is probably a good idea.
+
 ## Documentation
 Complete documentation is available at [our documentation site](https://saml2.sustainsys.com).
