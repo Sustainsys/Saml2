@@ -5,6 +5,7 @@ using System.Xml;
 using System.Xml.Linq;
 using Microsoft.IdentityModel.Tokens;
 using Sustainsys.Saml2.Metadata;
+using Sustainsys.Saml2.Metadata.Descriptors;
 using Sustainsys.Saml2.Saml2P;
 using Sustainsys.Saml2.WebSso;
 

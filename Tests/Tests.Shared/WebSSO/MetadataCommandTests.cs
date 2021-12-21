@@ -6,9 +6,10 @@ using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Sustainsys.Saml2.Configuration;
 using Sustainsys.Saml2.Metadata;
+using Sustainsys.Saml2.Metadata.Exceptions;
+using Sustainsys.Saml2.Metadata.Tokens;
 using Sustainsys.Saml2.TestHelpers;
 using Sustainsys.Saml2.Tests.Helpers;
-using Sustainsys.Saml2.Tokens;
 using Sustainsys.Saml2.WebSso;
 
 namespace Sustainsys.Saml2.Tests.WebSso
