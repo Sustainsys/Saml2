@@ -18,13 +18,13 @@ namespace Sustainsys.Saml2.Metadata.Extensions
         /// <param name="signingCertificate">Certificate to sign the metadata
         /// with. Supply null to not sign.</param>
         /// <param name="signingAlgorithm">Algorithm to use when signing.</param>
-        /// <param name="customizeMetadata">A callback action to be called once an XmlDocument is created and metadata written to it. If null then it's just not called.</param>
+        /// <param name="metadataDocumentCreated">A callback to be called once XmlDocument with metadata is created and ready for signing.</param>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2202:Do not dispose objects multiple times")]
         public static string ToXmlString(
             this MetadataBase metadata,
             X509Certificate2 signingCertificate,
             string signingAlgorithm,
-            Action<XmlDocument> customizeMetadata = null)
+            Action<XmlDocument> metadataDocumentCreated = null)
         {
             var serializer = ExtendedMetadataSerializer.WriterInstance;
 
@@ -34,7 +34,7 @@ namespace Sustainsys.Saml2.Metadata.Extensions
                 serializer.WriteMetadata(xmlWriter, metadata);
             }
 
-            customizeMetadata?.Invoke(xmlDoc);
+            metadataDocumentCreated?.Invoke(xmlDoc);
 
             if (signingCertificate != null)
             {
