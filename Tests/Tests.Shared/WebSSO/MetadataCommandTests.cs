@@ -119,8 +119,8 @@ namespace Sustainsys.Saml2.Tests.WebSso
 
             XDocument subject = XDocument.Parse(result.Content);
 
-            // Ignore the ID attribute, it is just filled with a GUID that can't be easily tested.
-            var att = subject.Root.Attribute("ID");
+			// Ignore the ID attribute, it is just filled with a GUID that can't be easily tested.
+			var att = subject.Root.Attribute("ID");
 			if (att != null)
 			{
 				att.Remove();
