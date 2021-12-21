@@ -9,6 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Security.Cryptography.Xml;
 using System.Xml.Linq;
+using Sustainsys.Saml2.Metadata.Tokens;
 
 namespace Sustainsys.Saml2.Tests.WebSso
 {

@@ -2,6 +2,7 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using FluentAssertions;
 using Sustainsys.Saml2.Exceptions;
+using Sustainsys.Saml2.Metadata.Exceptions;
 
 namespace Sustainsys.Saml2.Tests.Exceptions
 {

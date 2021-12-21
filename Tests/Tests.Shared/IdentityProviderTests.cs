@@ -1,29 +1,32 @@
-﻿using System.Linq;
-using FluentAssertions;
-using Sustainsys.Saml2.Configuration;
-using Sustainsys.Saml2.Tests.Helpers;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using FluentAssertions;
 using Microsoft.IdentityModel.Tokens.Saml2;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Sustainsys.Saml2.Configuration;
+using Sustainsys.Saml2.Metadata;
+using Sustainsys.Saml2.Metadata.Descriptors;
+using Sustainsys.Saml2.Metadata.Services;
+using Sustainsys.Saml2.Metadata.Tokens;
+using Sustainsys.Saml2.Saml2P;
+using Sustainsys.Saml2.TestHelpers;
+using Sustainsys.Saml2.Tests.Helpers;
+using Sustainsys.Saml2.WebSso;
 using System;
 using System.Configuration;
-using Sustainsys.Saml2.Saml2P;
-using Sustainsys.Saml2.WebSso;
-using Sustainsys.Saml2.Metadata;
-using Sustainsys.Saml2.Tokens;
-using System.Threading;
+using System.Linq;
+using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
-using System.Security.Claims;
 using System.Security.Principal;
-using Sustainsys.Saml2.TestHelpers;
+using System.Threading;
+using Sustainsys.Saml2.Metadata.Exceptions;
 
 namespace Sustainsys.Saml2.Tests
 {
     [TestClass]
     public class IdentityProviderTests
     {
-        TimeSpan refreshMinInterval = MetadataRefreshScheduler.minInterval;
-        int idpMetadataSsoPort = StubServer.IdpMetadataSsoPort;
+        private TimeSpan refreshMinInterval = MetadataRefreshScheduler.minInterval;
+        private int idpMetadataSsoPort = StubServer.IdpMetadataSsoPort;
 
         private IPrincipal currentPrincipal;
 
@@ -52,9 +55,9 @@ namespace Sustainsys.Saml2.Tests
             var subject = new IdentityProvider(
                 new EntityId(idpUri),
                 Options.FromConfiguration.SPOptions)
-                {
-                    SingleSignOnServiceUrl = new Uri(idpUri)
-                };
+            {
+                SingleSignOnServiceUrl = new Uri(idpUri)
+            };
 
             var r = subject.CreateAuthenticateRequest(StubFactory.CreateSaml2Urls());
 
@@ -86,7 +89,7 @@ namespace Sustainsys.Saml2.Tests
 
             subject.Should().BeEquivalentTo(expected, opt => opt
             .Excluding(au => au.Id)
-            .Excluding(au=>au.SigningAlgorithm)
+            .Excluding(au => au.SigningAlgorithm)
             .Excluding(au => au.RelayState));
 
             subject.RelayState.Should().HaveLength(24);
@@ -408,7 +411,7 @@ namespace Sustainsys.Saml2.Tests
             var subject = new IdentityProvider(config, Options.FromConfiguration.SPOptions);
 
             subject.SingleLogoutServiceBinding.Should().Be(Saml2BindingType.HttpRedirect);
-            subject.SingleLogoutServiceUrl.Should().Be( "http://idp2Bindings.example.com/LogoutRedirect" );
+            subject.SingleLogoutServiceUrl.Should().Be("http://idp2Bindings.example.com/LogoutRedirect");
         }
 
         [TestMethod]
@@ -483,13 +486,13 @@ namespace Sustainsys.Saml2.Tests
             subject.MetadataValidUntil.Should().BeCloseTo(expectedValidUntil, 1000);
         }
 
-        IdentityProvider CreateSubjectForMetadataRefresh(bool setLoggerToNull = false)
+        private IdentityProvider CreateSubjectForMetadataRefresh(bool setLoggerToNull = false)
         {
             var config = CreateConfig();
             config.LoadMetadata = true;
             config.EntityId = "http://localhost:13428/idpMetadataVeryShortCacheDuration";
             var spOptions = Options.FromConfiguration.SPOptions;
-            if(setLoggerToNull)
+            if (setLoggerToNull)
             {
                 spOptions = StubFactory.CreateSPOptions();
                 spOptions.Logger = null;
@@ -590,9 +593,9 @@ namespace Sustainsys.Saml2.Tests
             var subject = new IdentityProvider(
                 new EntityId("http://localhost:13428/idpMetadata"),
                 StubFactory.CreateSPOptions())
-                {
-                    LoadMetadata = true
-                };
+            {
+                LoadMetadata = true
+            };
 
             subject.SingleSignOnServiceUrl.Port.Should().Be(13428);
             StubServer.IdpMetadataSsoPort = 147;
@@ -797,11 +800,11 @@ namespace Sustainsys.Saml2.Tests
             var subject = new IdentityProvider(
                 new EntityId("http://idp.example.com"),
                 StubFactory.CreateSPOptions())
-                {
-                    AllowUnsolicitedAuthnResponse = true,
-                    Binding = Saml2BindingType.HttpPost,
-                    SingleSignOnServiceUrl = new Uri("http://idp.example.com/sso")
-                };
+            {
+                AllowUnsolicitedAuthnResponse = true,
+                Binding = Saml2BindingType.HttpPost,
+                SingleSignOnServiceUrl = new Uri("http://idp.example.com/sso")
+            };
 
             subject.SigningKeys.AddConfiguredKey(SignedXmlHelper.TestKey);
 
@@ -818,7 +821,7 @@ namespace Sustainsys.Saml2.Tests
 
             var expectedKeyParams = SignedXmlHelper.TestCert.PublicKey.Key.As<RSA>()
                 .ExportParameters(false);
-                
+
             subjectKeyParams.Modulus.Should().BeEquivalentTo(expectedKeyParams.Modulus);
             subjectKeyParams.Exponent.Should().BeEquivalentTo(expectedKeyParams.Exponent);
 

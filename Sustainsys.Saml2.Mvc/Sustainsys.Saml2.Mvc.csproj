@@ -70,15 +70,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\Sustainsys.Saml2.HttpModule\CommandResultHttpExtensionsShared.cs">
-      <Link>CommandResultHttpExtensionsShared.cs</Link>
-    </Compile>
-    <Compile Include="..\Sustainsys.Saml2.HttpModule\HttpRequestBaseExtensions.cs">
-      <Link>HttpRequestBaseExtensions.cs</Link>
-    </Compile>
     <Compile Include="..\VersionInfo.cs">
       <Link>VersionInfo.cs</Link>
     </Compile>
+    <Compile Include="CommandResultHttpExtensionsShared.cs" />
+    <Compile Include="HttpRequestBaseExtensions.cs" />
     <Compile Include="Saml2Controller.cs" />
     <Compile Include="CommandResultExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

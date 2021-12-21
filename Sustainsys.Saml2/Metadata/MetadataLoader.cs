@@ -1,18 +1,16 @@
 ﻿using Sustainsys.Saml2.Exceptions;
 using Sustainsys.Saml2.Internal;
+using Sustainsys.Saml2.Metadata.Descriptors;
+using Sustainsys.Saml2.Metadata.Tokens;
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Net;
-using System.Security.Cryptography.X509Certificates;
 using System.Security.Cryptography.Xml;
-using System.Text;
-using System.Threading.Tasks;
 using System.Xml;
-using System.Xml.Linq;
-using Sustainsys.Saml2.Tokens;
+using Sustainsys.Saml2.Metadata.Exceptions;
+using Sustainsys.Saml2.Metadata.Serialization;
 
 namespace Sustainsys.Saml2.Metadata
 {
@@ -31,7 +29,7 @@ namespace Sustainsys.Saml2.Metadata
         {
             return LoadIdp(metadataLocation, false);
         }
-        
+
         internal const string LoadIdpFoundEntitiesDescriptor = "Tried to load metadata for an IdentityProvider, which should be an <EntityDescriptor>, but found an <EntitiesDescriptor>. To load that metadata you should use the Federation configuration and not an IdentityProvider. You can also set the SPOptions.Compatibility.UnpackEntitiesDescriptorInIdentityProviderMetadata option to true.";
         internal const string LoadIdpUnpackingFoundMultipleEntityDescriptors = "Unpacked an EntitiesDescriptor when loading idp metadata, but found multiple EntityDescriptors.Unpacking is only supported if the metadata contains a single EntityDescriptor. Maybe you should use a Federation instead of configuring a single IdentityProvider";
 
@@ -60,11 +58,11 @@ namespace Sustainsys.Saml2.Metadata
             var result = Load(metadataLocation, null, false, null);
 
             var entitiesDescriptor = result as EntitiesDescriptor;
-            if(entitiesDescriptor != null)
+            if (entitiesDescriptor != null)
             {
-                if(unpackEntitiesDescriptor)
+                if (unpackEntitiesDescriptor)
                 {
-                    if(entitiesDescriptor.ChildEntities.Count > 1)
+                    if (entitiesDescriptor.ChildEntities.Count > 1)
                     {
                         throw new InvalidOperationException(LoadIdpUnpackingFoundMultipleEntityDescriptors);
                     }
@@ -84,30 +82,30 @@ namespace Sustainsys.Saml2.Metadata
             bool validateCertificate,
             string minIncomingSigningAlgorithm)
         {
-            if(PathHelper.IsWebRootRelative(metadataLocation))
+            if (PathHelper.IsWebRootRelative(metadataLocation))
             {
                 metadataLocation = PathHelper.MapPath(metadataLocation);
             }
 
             using (var client = new WebClient())
             using (var stream = client.OpenRead(metadataLocation))
-			using (var ms = new MemoryStream())
-			{
-				byte[] buf = new byte[65536];
-				for (; ;)
-				{
-					int read = stream.Read(buf, 0, buf.Length);
-					if (read == 0)
-						break;
-					ms.Write(buf, 0, read);
-				}
-				// System.Diagnostics.Debug.WriteLine(Encoding.UTF8.GetString(ms.ToArray()));
-				ms.Position = 0;
+            using (var ms = new MemoryStream())
+            {
+                byte[] buf = new byte[65536];
+                for (; ; )
+                {
+                    int read = stream.Read(buf, 0, buf.Length);
+                    if (read == 0)
+                        break;
+                    ms.Write(buf, 0, read);
+                }
+                // System.Diagnostics.Debug.WriteLine(Encoding.UTF8.GetString(ms.ToArray()));
+                ms.Position = 0;
                 var reader = XmlDictionaryReader.CreateTextReader(
                     ms,
                     XmlDictionaryReaderQuotas.Max);
 
-                if(signingKeys != null)
+                if (signingKeys != null)
                 {
                     reader = ValidateSignature(
                         reader,
@@ -130,7 +128,7 @@ namespace Sustainsys.Saml2.Metadata
             var xmlDoc = XmlHelpers.CreateSafeXmlDocument();
             xmlDoc.Load(reader);
 
-            if(!xmlDoc.DocumentElement.IsSignedByAny(
+            if (!xmlDoc.DocumentElement.IsSignedByAny(
                 signingKeys,
                 validateCertificate,
                 minIncomingSigningAlgorithm))
@@ -145,7 +143,7 @@ namespace Sustainsys.Saml2.Metadata
         internal static MetadataBase Load(XmlDictionaryReader reader)
         {
             var serializer = ExtendedMetadataSerializer.ReaderInstance;
-            
+
             // Filter out the signature from the metadata, as the built in MetadataSerializer
             // doesn't handle the XmlDsigNamespaceUrl http://www.w3.org/2000/09/xmldsig# which
             // is allowed (and for SAMLv1 even recommended).
@@ -206,6 +204,5 @@ namespace Sustainsys.Saml2.Metadata
 
             return (EntitiesDescriptor)result;
         }
-
     }
 }

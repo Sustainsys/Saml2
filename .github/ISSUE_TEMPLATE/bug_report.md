@@ -1,6 +1,7 @@
 ---
 name: Bug report
 about: Report a (non-security) bug
+labels: bug
 
 ---
 

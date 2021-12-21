@@ -10,6 +10,7 @@ using System.Linq;
 using System.Security.Cryptography.Xml;
 using Sustainsys.Saml2.Internal;
 using Sustainsys.Saml2.Metadata;
+using Sustainsys.Saml2.Metadata.Exceptions;
 
 namespace Sustainsys.Saml2.WebSso
 {

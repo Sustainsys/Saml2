@@ -1,15 +1,7 @@
-﻿using Sustainsys.Saml2.StubIdp.Models;
-using System;
-using System.Collections.Generic;
-using System.IdentityModel.Metadata;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Web;
-using System.Web.Mvc;
-using System.Xml;
-using Sustainsys.Saml2.Metadata;
+﻿using Sustainsys.Saml2.Metadata.Extensions;
+using Sustainsys.Saml2.StubIdp.Models;
 using System.Security.Cryptography.Xml;
+using System.Web.Mvc;
 
 namespace Sustainsys.Saml2.StubIdp.Controllers
 {

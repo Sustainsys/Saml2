@@ -9,6 +9,8 @@ using Sustainsys.Saml2.Tokens;
 using System.Reflection;
 using System.Collections.Generic;
 using System;
+using Sustainsys.Saml2.Metadata.Descriptors;
+using Sustainsys.Saml2.Metadata.Tokens;
 
 namespace Sustainsys.Saml2.TestHelpers
 {

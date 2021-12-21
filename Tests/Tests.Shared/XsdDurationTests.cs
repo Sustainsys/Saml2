@@ -1,6 +1,7 @@
 ﻿using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
+using Sustainsys.Saml2.Metadata;
 
 namespace Sustainsys.Saml2.Tests
 {

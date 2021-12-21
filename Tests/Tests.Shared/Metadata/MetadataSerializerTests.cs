@@ -2,7 +2,6 @@
 using Microsoft.IdentityModel.Tokens.Saml2;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Sustainsys.Saml2.Metadata;
-using Sustainsys.Saml2.Selectors;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -15,6 +14,11 @@ using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Xml;
+using Sustainsys.Saml2.Metadata.Descriptors;
+using Sustainsys.Saml2.Metadata.Exceptions;
+using Sustainsys.Saml2.Metadata.Selectors;
+using Sustainsys.Saml2.Metadata.Serialization;
+using Sustainsys.Saml2.Metadata.Services;
 
 namespace Sustainsys.Saml2.Tests.Metadata
 {

@@ -4,6 +4,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
+using Sustainsys.Saml2.Metadata.Tokens;
 using Sustainsys.Saml2.Tokens;
 
 namespace Sustainsys.Saml2.Configuration

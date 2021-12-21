@@ -1,6 +1,7 @@
 ﻿using System;
 using Sustainsys.Saml2.Configuration;
 using Sustainsys.Saml2.Metadata;
+using Sustainsys.Saml2.Metadata.Extensions;
 
 namespace Sustainsys.Saml2.WebSso
 {
