@@ -67,7 +67,7 @@ namespace Sustainsys.Saml2.AspNetCore2
         [ExcludeFromCodeCoverage]
         public Task<AuthenticateResult> AuthenticateAsync()
         {
-            throw new NotImplementedException();
+            throw new NotImplementedException("Don't call Authenticate on the Saml2 scheme. Call Challenge on the Saml2 scheme. The result is stored in the configured cookie scheme. Then call Authenticate on the cookie scheme to read the result.");
         }
 
         private string CurrentUri
