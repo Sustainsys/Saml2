@@ -1,17 +1,16 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Security.Cryptography.Xml;
 using System.Xml.Linq;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using FluentAssertions;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Sustainsys.Saml2.Configuration;
 using Sustainsys.Saml2.Metadata;
-using Sustainsys.Saml2.WebSso;
-using Sustainsys.Saml2.Tests.Helpers;
-using System.Security.Cryptography.Xml;
-using Sustainsys.Saml2.TestHelpers;
-using Sustainsys.Saml2.Tokens;
-using System.Collections.Generic;
 using Sustainsys.Saml2.Metadata.Exceptions;
 using Sustainsys.Saml2.Metadata.Tokens;
+using Sustainsys.Saml2.TestHelpers;
+using Sustainsys.Saml2.Tests.Helpers;
+using Sustainsys.Saml2.WebSso;
 
 namespace Sustainsys.Saml2.Tests.WebSso
 {
@@ -188,6 +187,17 @@ namespace Sustainsys.Saml2.Tests.WebSso
                 notifiedCommandResult = cr;
             };
 
+            const string expectedNodeName = "CustomNode";
+            string expectedNodeValue = null;
+
+            options.Notifications.MetadataDocumentCreated = metadata =>
+            {
+                var customElement = metadata.CreateElement(expectedNodeName);
+                expectedNodeValue = DateTime.Now.Ticks.ToString();
+                customElement.InnerText = expectedNodeValue;
+                metadata.DocumentElement.AppendChild(customElement);
+            };
+
             var subject = new MetadataCommand();
             var actualCommandResult = subject.Run(request, options);
             actualCommandResult.Should().BeSameAs(notifiedCommandResult);
@@ -195,6 +205,12 @@ namespace Sustainsys.Saml2.Tests.WebSso
             var parsedResult = XElement.Parse(actualCommandResult.Content);
             parsedResult.Attribute("cacheDuration").Value
                 .Should().Be("PT17S");
+
+            parsedResult.Elements()
+                .Should().Contain(
+                    actualNode =>
+                        actualNode.Name.LocalName == expectedNodeName
+                        && actualNode.Value == expectedNodeValue);
         }
     }
 }

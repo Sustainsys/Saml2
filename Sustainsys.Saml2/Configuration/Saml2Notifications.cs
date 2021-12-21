@@ -1,13 +1,13 @@
-﻿using Microsoft.IdentityModel.Tokens;
-using Sustainsys.Saml2.Metadata;
-using Sustainsys.Saml2.Saml2P;
-using Sustainsys.Saml2.WebSso;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Security.Claims;
 using System.Xml;
 using System.Xml.Linq;
+using Microsoft.IdentityModel.Tokens;
+using Sustainsys.Saml2.Metadata;
 using Sustainsys.Saml2.Metadata.Descriptors;
+using Sustainsys.Saml2.Saml2P;
+using Sustainsys.Saml2.WebSso;
 
 namespace Sustainsys.Saml2.Configuration
 {
@@ -157,6 +157,13 @@ namespace Sustainsys.Saml2.Configuration
         public Action<EntityDescriptor, Saml2Urls>
             MetadataCreated
         { get; set; } = (md, urls) => { };
+
+        /// <summary>
+        /// Notification is called when xml document has been created and metadata has been written to it, but before signing.
+        /// At this point the contents of the metadata xml document can be altered.
+        /// By defaul the document is left as is without any changes.
+        /// </summary>
+        public Action<XmlDocument> MetadataDocumentCreated { get; set; } = (metadata) => { };
 
         /// <summary>
         /// Notification called when the Metadata command has produced a
