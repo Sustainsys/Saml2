@@ -12,7 +12,10 @@ public class MetadataSerializer
 
         return new EntityDescriptor()
         {
-            EntityId = xmlReader.GetRequiredAttribute("entityID")
+            EntityId = xmlReader.GetRequiredAttribute("entityID"),
+            Id = xmlReader.GetAttribute("ID"),
+            CacheDuraton = xmlReader.GetTimeSpanAttribute("cacheDuration"),
+            ValidUntil = xmlReader.GetDateTimeAttribute("validUntil")
         };
     }
 }

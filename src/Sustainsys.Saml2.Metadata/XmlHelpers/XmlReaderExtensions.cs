@@ -10,6 +10,24 @@ public static class XmlReaderExtensions
             ?? throw new Saml2XmlException($"Required attribute {localName} not found on {xmlReader.Name}");
     }
 
+    public static TimeSpan? GetTimeSpanAttribute(this XmlReader xmlReader, string localName)
+    {
+        var str = xmlReader.GetAttribute(localName);
+
+        if (str == null) return null;
+
+        return XmlConvert.ToTimeSpan(str);
+    }
+
+    public static DateTime? GetDateTimeAttribute(this XmlReader xmlReader, string localName)
+    {
+        var str = xmlReader.GetAttribute(localName);
+
+        if (str == null) return null;
+
+        return XmlConvert.ToDateTime(str, XmlDateTimeSerializationMode.RoundtripKind);
+    }
+
     public static void EnsureName(this XmlReader xmlReader, string namespaceUri, string localName)
     {
         if (xmlReader.Name != localName)

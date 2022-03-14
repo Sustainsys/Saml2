@@ -8,6 +8,7 @@
 
   <ItemGroup>
     <PackageReference Include="fluentassertions" Version="6.5.1" />
+    <PackageReference Include="microsoft.codeanalysis" Version="4.1.0" />
   </ItemGroup>
 
 </Project>
