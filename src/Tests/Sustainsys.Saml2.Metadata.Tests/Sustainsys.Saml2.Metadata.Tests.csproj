@@ -22,6 +22,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\Sustainsys.Saml2.Metadata\Sustainsys.Saml2.Metadata.csproj" />
+    <ProjectReference Include="..\Sustainsys.Saml2.Tests.Helpers\Sustainsys.Saml2.Tests.Helpers.csproj" />
   </ItemGroup>
 
 </Project>

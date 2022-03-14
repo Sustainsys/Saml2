@@ -6,8 +6,4 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="fluentassertions" Version="6.5.1" />
-  </ItemGroup>
-
 </Project>
