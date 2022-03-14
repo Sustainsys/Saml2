@@ -115,6 +115,7 @@ nuget/*nupkg
 
 *.nuspec
 !/nuget/*.nuspec
+!/legacy/nuget/*.nuspec
 Sustainsys.Saml2.StubIdp/App_Data/*.json
 
 #Ndepend Stuff
