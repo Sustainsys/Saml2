@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace Sustainsys.Saml2.Metadata
 {
-    public class Saml2MetadataException : Exception
+    public class Saml2XmlException : Exception
     {
-        public Saml2MetadataException(string message)
+        public Saml2XmlException(string message)
             : base(message) { }
     }
 }

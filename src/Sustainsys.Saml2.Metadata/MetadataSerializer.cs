@@ -12,6 +12,8 @@ namespace Sustainsys.Saml2.Metadata
     {
         public EntityDescriptor ReadEntityDescriptor(XmlReader xmlReader)
         {
+            xmlReader.EnsureName(Namespaces.Metadata, "EntityDescriptor");
+
             return new EntityDescriptor()
             {
                 EntityId = xmlReader.GetRequiredAttribute("entityID")

@@ -1,11 +1,6 @@
 ﻿using FluentAssertions;
 using Sustainsys.Saml2.Tests.Helpers;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
 using System.Xml;
 using Xunit;
 
@@ -17,7 +12,7 @@ namespace Sustainsys.Saml2.Metadata.Tests
             => TestData.GetXmlReader<MetadataSerializerTests>(fileName);
 
         [Fact]
-        public void ReadBasicEntityDescriptor()
+        public void ReadEntityDescriptor_EntityId()
         {
             var xmlReader = GetXmlReader();
 
@@ -31,6 +26,30 @@ namespace Sustainsys.Saml2.Metadata.Tests
             };
 
             actual.Should().BeEquivalentTo(expected);
+        }
+
+        [Fact]
+        public void ReadEntityDescriptor_ValidatesNamespace()
+        {
+            var xmlReader = GetXmlReader();
+
+            var subject = new MetadataSerializer();
+
+            subject.Invoking(s => s.ReadEntityDescriptor(xmlReader))
+                .Should().Throw<Saml2XmlException>()
+                .WithMessage("*namespace*");
+        }
+        
+        [Fact]
+        public void ReadEntityDescriptor_ValidatesLocalName()
+        {
+            var xmlReader = GetXmlReader();
+
+            var subject = new MetadataSerializer();
+
+            subject.Invoking(s => s.ReadEntityDescriptor(xmlReader))
+                .Should().Throw<Saml2XmlException>()
+                .WithMessage("*name*EntityDescriptor*");
         }
     }
 }
