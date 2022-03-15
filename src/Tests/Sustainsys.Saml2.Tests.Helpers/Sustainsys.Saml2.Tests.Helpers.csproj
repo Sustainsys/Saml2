@@ -6,4 +6,8 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\..\Sustainsys.Saml2.Metadata\Sustainsys.Saml2.Metadata.csproj" />
+  </ItemGroup>
+
 </Project>

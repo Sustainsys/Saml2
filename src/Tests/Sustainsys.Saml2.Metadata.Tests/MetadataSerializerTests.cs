@@ -1,6 +1,6 @@
 ﻿using FluentAssertions;
 using Sustainsys.Saml2.Metadata.Elements;
-using Sustainsys.Saml2.Metadata.XmlHelpers;
+using Sustainsys.Saml2.Metadata.Xml;
 using Sustainsys.Saml2.Tests.Helpers;
 using System;
 using System.Runtime.CompilerServices;
@@ -11,17 +11,17 @@ namespace Sustainsys.Saml2.Metadata.Tests;
 
 public class MetadataSerializerTests
 {
-    private XmlReader GetXmlReader([CallerMemberName] string? fileName = null)
-        => TestData.GetXmlReader<MetadataSerializerTests>(fileName);
+    private XmlTraverser GetXmlTraverser([CallerMemberName] string? fileName = null)
+        => TestData.GetXmlTraverser<MetadataSerializerTests>(fileName);
 
     [Fact]
     public void ReadEntityDescriptor_EntityId()
     {
-        var xmlReader = GetXmlReader();
+        var xmlTraverser = GetXmlTraverser();
 
         var subject = new MetadataSerializer();
 
-        var actual = subject.ReadEntityDescriptor(xmlReader);
+        var actual = subject.ReadEntityDescriptor(xmlTraverser);
 
         var expected = new EntityDescriptor
         {
@@ -34,11 +34,11 @@ public class MetadataSerializerTests
     [Fact]
     public void ReadEntityDescriptor_ValidatesNamespace()
     {
-        var xmlReader = GetXmlReader();
+        var xmlTraverser = GetXmlTraverser();
 
         var subject = new MetadataSerializer();
 
-        subject.Invoking(s => s.ReadEntityDescriptor(xmlReader))
+        subject.Invoking(s => s.ReadEntityDescriptor(xmlTraverser))
             .Should().Throw<Saml2XmlException>()
             .WithMessage("*namespace*");
     }
@@ -46,11 +46,11 @@ public class MetadataSerializerTests
     [Fact]
     public void ReadEntityDescriptor_ValidatesLocalName()
     {
-        var xmlReader = GetXmlReader();
+        var xmlTraverser = GetXmlTraverser();
 
         var subject = new MetadataSerializer();
 
-        subject.Invoking(s => s.ReadEntityDescriptor(xmlReader))
+        subject.Invoking(s => s.ReadEntityDescriptor(xmlTraverser))
             .Should().Throw<Saml2XmlException>()
             .WithMessage("*name*EntityDescriptor*");
     }
@@ -58,11 +58,11 @@ public class MetadataSerializerTests
     [Fact]
     public void ReadEntityDescriptor_OptionalAttributes()
     {
-        var xmlReader = GetXmlReader();
+        var xmlTraverser = GetXmlTraverser();
 
         var subject = new MetadataSerializer();
 
-        var actual = subject.ReadEntityDescriptor(xmlReader);
+        var actual = subject.ReadEntityDescriptor(xmlTraverser);
 
         var expected = new EntityDescriptor
         {
