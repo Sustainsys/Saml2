@@ -1,4 +1,6 @@
-﻿using System.Xml;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.Runtime.CompilerServices;
+using System.Xml;
 
 namespace Sustainsys.Saml2.Metadata.Xml;
 
@@ -17,7 +19,25 @@ public class XmlTraverser
     /// </summary>
     public List<Error> Errors = new();
 
-    private XmlNode currentNode;
+    private XmlNode? currentNode;
+
+    /// <summary>
+    /// The current node being processed.
+    /// </summary>
+    public XmlNode CurrentNode
+    {
+        get
+        {
+            if (currentNode == null)
+            {
+                throw new InvalidOperationException("There is no current node");
+            }
+            return currentNode;
+        }
+    }
+
+    private XmlNode? firstChild;
+    private XmlNode? parentNode;
 
     /// <summary>
     /// Ctor
@@ -33,10 +53,110 @@ public class XmlTraverser
     /// </summary>
     public void ThrowOnErrors()
     {
-        if(Errors.Any(e => !e.Ignore))
+        if (Errors.Any(e => !e.Ignore))
         {
             throw new Saml2XmlException(Errors);
         }
+    }
+
+    private class ChildScope : IDisposable
+    {
+        bool isDisposed = false;
+        private XmlTraverser xmlTraverser;
+        private XmlNode? previousParentNode;
+
+        public ChildScope(XmlTraverser xmlTraverser)
+        {
+            this.xmlTraverser = xmlTraverser;
+            previousParentNode = xmlTraverser.parentNode;
+            xmlTraverser.parentNode = xmlTraverser.CurrentNode;
+
+            // Block further access to the current node as that is not a child node.
+            xmlTraverser.currentNode = null;
+        }
+
+        public void Dispose()
+        {
+            if (isDisposed)
+            {
+                throw new InvalidOperationException();
+            }
+
+            xmlTraverser.currentNode = xmlTraverser.parentNode;
+            xmlTraverser.parentNode = previousParentNode;
+            isDisposed = true;
+        }
+    }
+
+    /// <summary>
+    /// Steps down the traverser to the children of the current node. The traverser
+    /// steps back up when the returned scope is disposed.
+    /// </summary>
+    /// <returns></returns>
+    /// <exception cref="NotImplementedException"></exception>
+    public IDisposable EnterChildLevel()
+    {
+        firstChild = CurrentNode.FirstChild;
+
+        // Create scope that captures current level and moves to child level
+        return new ChildScope(this);
+    }
+
+    /// <summary>
+    /// Moves to the next child node in the current collection, if one is available.
+    /// </summary>
+    /// <returns>true if the move was successful</returns>
+    public bool MoveToNextChild()
+    {
+        while (true)
+        {
+            // First check if we are fresh into child level, then use firstChild to seed. Otherwise
+            // just traverse forward one step (if possible)
+            currentNode = firstChild ?? currentNode?.NextSibling;
+            firstChild = null;
+
+            if (currentNode == null)
+            {
+                // No more children.
+                return false;
+            }
+
+            if (currentNode.NodeType == XmlNodeType.Element)
+            {
+                // We're happy, we found an element.
+                return true;
+            }
+
+            // We are ok to skip over white space and comments , but anything else is an error.
+            if (currentNode.NodeType != XmlNodeType.Whitespace && currentNode.NodeType != XmlNodeType.Comment)
+            {
+                Errors.Add(new Error(
+                    ErrorReason.UnsupportedNodeType,
+                    currentNode.LocalName,
+                    currentNode,
+                    $"Unsupported node type {currentNode.NodeType}"));
+            }
+        }
+    }
+
+    /// <summary>
+    /// Move to next child if the current collection, record an error if none is available.
+    /// </summary>
+    /// <returns>ture if the move was successful</returns>
+    public bool MoveToNextRequiredChild()
+    {
+        var result = MoveToNextChild();
+
+        if (!result)
+        {
+            Errors.Add(new Error(
+                ErrorReason.MissingElement,
+                parentNode!.LocalName,
+                parentNode!,
+                $"There should be a child element here under {parentNode.LocalName}, but found none."));
+        }
+
+        return result;
     }
 
     /// <summary>
@@ -47,22 +167,22 @@ public class XmlTraverser
     /// <exception cref="Saml2XmlException">Thrown if names do not match</exception>
     public void EnsureName(string namespaceUri, string localName)
     {
-        if (currentNode.Name != localName)
+        if (CurrentNode.Name != localName)
         {
             Errors.Add(new Error(
                 ErrorReason.UnexpectedLocalName,
                 localName,
-                currentNode, 
-                $"Unexpected node name \"{currentNode.LocalName}\", expected \"{localName}\"."));
+                CurrentNode,
+                $"Unexpected node name \"{CurrentNode.LocalName}\", expected \"{localName}\"."));
         }
 
-        if (currentNode.NamespaceURI != namespaceUri)
+        if (CurrentNode.NamespaceURI != namespaceUri)
         {
             Errors.Add(new Error(
                 ErrorReason.UnexpectedNamespace,
                 localName,
-                currentNode,
-                $"Unexpected namespace \"{currentNode.NamespaceURI}\" for local name \"{currentNode.Name}\", expected \"{namespaceUri}\"."));
+                CurrentNode,
+                $"Unexpected namespace \"{CurrentNode.NamespaceURI}\" for local name \"{CurrentNode.Name}\", expected \"{namespaceUri}\"."));
         }
     }
 
@@ -73,7 +193,7 @@ public class XmlTraverser
     /// <param name="localName">Local name of attribute</param>
     /// <returns>Attribute value, null if none.</returns>
     public string? GetAttribute(string localName)
-        => currentNode.Attributes?.GetNamedItem(localName)?.Value;
+        => CurrentNode.Attributes?.GetNamedItem(localName)?.Value;
 
     /// <summary>
     /// Get required attribute value with specified <paramref name="localName"/> and where there is no namespace
@@ -91,10 +211,10 @@ public class XmlTraverser
             Errors.Add(new Error(
                 ErrorReason.MissingAttribute,
                 localName,
-                currentNode,
-                $"Required attribute {localName} not found on {currentNode.Name}."));
+                CurrentNode,
+                $"Required attribute {localName} not found on {CurrentNode.Name}."));
         }
-        
+
         return value;
     }
 
@@ -114,7 +234,7 @@ public class XmlTraverser
             Errors.Add(new Error(
                 ErrorReason.NotAbsoluteUri,
                 localName,
-                currentNode,
+                CurrentNode,
                 $"Attribute \"{localName}\" should be an absolute Uri, but \"{value}\" isn't")
             {
                 StringValue = value
@@ -146,11 +266,11 @@ public class XmlTraverser
         return TryGetAttribute(localName, s => XmlConvert.ToDateTime(s, XmlDateTimeSerializationMode.RoundtripKind));
     }
 
-    private Nullable<TTarget> TryGetAttribute<TTarget>(string localName, Func<string, TTarget> converter)
-        where TTarget: struct
+    private TTarget? TryGetAttribute<TTarget>(string localName, Func<string, TTarget> converter)
+        where TTarget : struct
     {
         var source = GetAttribute(localName);
-        
+
         if (source == null)
             return default;
 
@@ -158,16 +278,16 @@ public class XmlTraverser
         {
             return converter(source);
         }
-        catch(FormatException)
+        catch (FormatException)
         {
             Errors.Add(new Error(
                 ErrorReason.ConversionFailed,
                 localName,
-                currentNode,
+                CurrentNode,
                 $"Conversion to {typeof(TTarget).Name} failed for {source}")
-                {
-                    StringValue = source
-                });
+            {
+                StringValue = source
+            });
         }
 
         return default;

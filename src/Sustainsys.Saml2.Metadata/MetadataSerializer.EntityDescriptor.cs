@@ -10,6 +10,21 @@ namespace Sustainsys.Saml2.Metadata;
 public class MetadataSerializer
 {
     /// <summary>
+    /// Shared instance, the class has no state, it is only a normal
+    /// class to enable inheritance.
+    /// </summary>
+    public static MetadataSerializer Instance {get;} = new();
+
+    /// <summary>
+    /// Helper method that calls ThrowOnErrors. If you want to supress
+    /// errors and prevent throwing, this is the last chance method to
+    /// override.
+    /// </summary>
+    /// <param name="xmlTraverser">XmlTraverser to call ThrowOnErrors on.</param>
+    protected virtual void ThrowOnErrors(XmlTraverser xmlTraverser)
+        => xmlTraverser.ThrowOnErrors();
+
+    /// <summary>
     /// Create EntityDescriptor instance. Override to use subclass.
     /// </summary>
     /// <returns>EntityDescriptor</returns>
@@ -27,8 +42,13 @@ public class MetadataSerializer
         var entityDescriptor = CreateEntityDescriptor();
         
         ReadAttributes(xmlTraverser, entityDescriptor);
+        
+        using (xmlTraverser.EnterChildLevel())
+        {
+            ReadElements(xmlTraverser, entityDescriptor);
+        }
 
-        xmlTraverser.ThrowOnErrors();
+        ThrowOnErrors(xmlTraverser);
 
         return entityDescriptor;
     }
@@ -44,5 +64,16 @@ public class MetadataSerializer
         entityDescriptor.Id = xmlTraverser.GetAttribute("ID");
         entityDescriptor.CacheDuraton = xmlTraverser.GetTimeSpanAttribute("cacheDuration");
         entityDescriptor.ValidUntil = xmlTraverser.GetDateTimeAttribute("validUntil");
+    }
+
+    /// <summary>
+    /// Read the child elements of the EntityDescriptor.
+    /// </summary>
+    /// <param name="xmlTraverser">Xml data to read</param>
+    /// <param name="entityDescriptor">Entity Descriptor to populate</param>
+    protected virtual void ReadElements(XmlTraverser xmlTraverser, EntityDescriptor entityDescriptor)
+    {
+        if (!xmlTraverser.MoveToNextRequiredChild())
+            return; // Abort, errors will be reported.
     }
 }

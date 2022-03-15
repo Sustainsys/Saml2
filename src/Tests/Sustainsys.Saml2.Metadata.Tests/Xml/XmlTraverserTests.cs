@@ -16,9 +16,12 @@ public class XmlTraverserTests
     public XmlTraverserTests()
     {
         var xml = "<root xmlns=\"urn:r\" xmlns:a=\"urn:a\" x=\"1\" a:x=\"2\" a:y=\"3\" a:z=\"4\" z=\"5\" " +
-            "validTimeSpan=\"PT15M\" invalidTimeSpan=\"XYZ\" uri=\"urn:uri\"/>";
+            "validTimeSpan=\"PT15M\" invalidTimeSpan=\"XYZ\" uri=\"urn:uri\"> <p/><q/>abc</root>";
 
-        xmlDocument = new XmlDocument();
+        xmlDocument = new XmlDocument()
+        {
+            PreserveWhitespace = true
+        };
         xmlDocument.LoadXml(xml);
     }
 
@@ -117,7 +120,7 @@ public class XmlTraverserTests
         var actual = subject.GetTimeSpanAttribute("invalidTimeSpan");
 
         actual.HasValue.Should().BeFalse();
-        
+
         subject.Errors.Should().HaveCount(1);
         subject.Errors.Single().Reason.Should().Be(ErrorReason.ConversionFailed);
         subject.Errors.Single().StringValue.Should().Be("XYZ");
@@ -143,5 +146,52 @@ public class XmlTraverserTests
         error.LocalName.Should().Be("x");
         error.Node.Should().BeSameAs(xmlDocument.DocumentElement);
         error.StringValue.Should().Be("1");
+    }
+
+    [Fact]
+    public void TraverseChildren()
+    {
+        var subject = GetXmlTraverser();
+
+        var parentNode = subject.CurrentNode;
+
+        var childScope = subject.EnterChildLevel();
+
+        subject.Invoking(s => s.CurrentNode).Should().Throw<InvalidOperationException>();
+
+        subject.MoveToNextChild().Should().BeTrue();
+
+        subject.CurrentNode!.LocalName.Should().Be("p");
+
+        subject.MoveToNextChild().Should().BeTrue();
+
+        subject.CurrentNode.LocalName.Should().Be("q");
+
+        var childScope2 = subject.EnterChildLevel();
+
+        // Just check that we have no errors so far as we're soon checking error count = 1.
+        subject.Errors.Should().HaveCount(0);
+
+        subject.MoveToNextRequiredChild().Should().BeFalse();
+
+        subject.Errors.Should().HaveCount(1);
+        subject.Errors.Single().Reason.Should().Be(ErrorReason.MissingElement);
+
+        subject.Invoking(s => s.CurrentNode).Should().Throw<InvalidOperationException>();
+
+        childScope2.Dispose();
+
+        // Just check that we have no errors so far as we're soon checking error count = 1.
+        subject.Errors.Should().HaveCount(1);
+
+        subject.MoveToNextChild().Should().BeFalse();
+
+        // We should how have hit the abc text node.
+        subject.Errors.Should().HaveCount(2);
+        subject.Errors.Last().Reason.Should().Be(ErrorReason.UnsupportedNodeType);
+
+        childScope.Dispose();
+
+        subject.CurrentNode.Should().BeSameAs(parentNode);
     }
 }

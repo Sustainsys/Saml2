@@ -30,4 +30,14 @@ public enum ErrorReason
     /// A string value that should be an absolute Uri wasn't that.
     /// </summary>
     NotAbsoluteUri,
+
+    /// <summary>
+    /// When traversing child elements, an unsupported node type was encountered.
+    /// </summary>
+    UnsupportedNodeType,
+
+    /// <summary>
+    /// Tried to move to next child element, but there was none as it should be.
+    /// </summary>
+    MissingElement,
 }
