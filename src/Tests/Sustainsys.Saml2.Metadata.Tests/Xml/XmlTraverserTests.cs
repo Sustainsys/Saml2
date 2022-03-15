@@ -1,5 +1,6 @@
 ﻿using FluentAssertions;
 using Sustainsys.Saml2.Metadata.Xml;
+using System;
 using System.Linq;
 using System.Xml;
 using Xunit;
@@ -14,7 +15,8 @@ public class XmlTraverserTests
 
     public XmlTraverserTests()
     {
-        var xml = "<root xmlns=\"urn:r\" xmlns:a=\"urn:a\" x=\"1\" a:x=\"2\" a:y=\"3\" a:z=\"4\" z=\"5\"/>";
+        var xml = "<root xmlns=\"urn:r\" xmlns:a=\"urn:a\" x=\"1\" a:x=\"2\" a:y=\"3\" a:z=\"4\" z=\"5\" " +
+            "validTimeSpan=\"PT15M\" invalidTimeSpan=\"XYZ\" uri=\"urn:uri\"/>";
 
         xmlDocument = new XmlDocument();
         xmlDocument.LoadXml(xml);
@@ -75,7 +77,7 @@ public class XmlTraverserTests
 
         subject.EnsureName("whatever", "something");
 
-        foreach(var error in subject.Errors)
+        foreach (var error in subject.Errors)
         {
             error.Ignore = true;
         }
@@ -99,5 +101,47 @@ public class XmlTraverserTests
             .WithMessage("Unexpected namespace \"urn:r\" for local name \"root\", expected \"whatever\".")
             // But the collection should contain everything.
             .Which.Errors.Count().Should().Be(2);
+    }
+
+    [Fact]
+    public void GetTimeSpanAttribute()
+    {
+        GetXmlTraverser().GetTimeSpanAttribute("validTimeSpan").Should().Be(TimeSpan.FromMinutes(15));
+    }
+
+    [Fact]
+    public void GetTimeSpanAttribute_ParseError()
+    {
+        var subject = GetXmlTraverser();
+
+        var actual = subject.GetTimeSpanAttribute("invalidTimeSpan");
+
+        actual.HasValue.Should().BeFalse();
+        
+        subject.Errors.Should().HaveCount(1);
+        subject.Errors.Single().Reason.Should().Be(ErrorReason.ConversionFailed);
+        subject.Errors.Single().StringValue.Should().Be("XYZ");
+    }
+
+    [Fact]
+    public void GetRequiredAbsoluteUriAttribute()
+    {
+        GetXmlTraverser().GetRequiredAbsoluteUriAttribute("uri").Should().Be("urn:uri");
+    }
+
+    [Fact]
+    public void GetRequiredAbsoluteUriAttribute_NotAbsoluteUri()
+    {
+        var subject = GetXmlTraverser();
+
+        subject.GetRequiredAbsoluteUriAttribute("x").Should().Be("1");
+
+        subject.Errors.Should().HaveCount(1);
+        var error = subject.Errors.Single();
+
+        error.Reason.Should().Be(ErrorReason.NotAbsoluteUri);
+        error.LocalName.Should().Be("x");
+        error.Node.Should().BeSameAs(xmlDocument.DocumentElement);
+        error.StringValue.Should().Be("1");
     }
 }

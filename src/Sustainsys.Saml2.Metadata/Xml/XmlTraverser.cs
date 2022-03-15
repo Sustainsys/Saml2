@@ -82,13 +82,12 @@ public class XmlTraverser
     /// <param name="localName">Local name of attribute</param>
     /// <returns>Attribute value</returns>
     /// <exception cref="Saml2XmlException">If no such attribute is found.</exception>
-    public string GetRequiredAttribute(string localName)
+    public string? GetRequiredAttribute(string localName)
     {
         var value = GetAttribute(localName);
 
         if (value == null)
         {
-            value = "";
             Errors.Add(new Error(
                 ErrorReason.MissingAttribute,
                 localName,
@@ -100,30 +99,77 @@ public class XmlTraverser
     }
 
     /// <summary>
-    /// Gets an attribute as timespan.
+    /// Gets a string attribute and validates that the value is an absolute URI.
+    /// Note that even if the validation fails, the value is still returned to
+    /// make it possible for consumers to supress the errors.
     /// </summary>
-    /// <param name="localName">Local name of attribute</param>
-    /// <returns>Parsed Timespan</returns>
-    public TimeSpan? GetTimeSpanAttribute(string localName)
+    /// <param name="localName"></param>
+    /// <returns></returns>
+    public string? GetRequiredAbsoluteUriAttribute(string localName)
     {
-        var str = GetAttribute(localName);
+        var value = GetRequiredAttribute(localName);
 
-        if (str == null) return null;
+        if (value != null && !Uri.TryCreate(value, UriKind.Absolute, out var _))
+        {
+            Errors.Add(new Error(
+                ErrorReason.NotAbsoluteUri,
+                localName,
+                currentNode,
+                $"Attribute \"{localName}\" should be an absolute Uri, but \"{value}\" isn't")
+            {
+                StringValue = value
+            });
+        }
 
-        return XmlConvert.ToTimeSpan(str);
+        return value;
     }
 
     /// <summary>
-    /// Gets an attribute as a DateTime
+    /// Gets an attribute as timespan. On parse errors the Error
+    /// is reported to the errors collection.
     /// </summary>
     /// <param name="localName">Local name of attribute</param>
-    /// <returns>Parsed DateTime</returns>
+    /// <returns>Parsed Timespan or null if parse fails</returns>
+    public TimeSpan? GetTimeSpanAttribute(string localName)
+    {
+        return TryGetAttribute(localName, XmlConvert.ToTimeSpan);
+    }
+
+    /// <summary>
+    /// Gets an attribute as DateTime. On parse errors the Error
+    /// is reported to the errors collection.
+    /// </summary>
+    /// <param name="localName">Local name of attribute</param>
+    /// <returns>Parsed DateTime or null if parse fails</returns>
     public DateTime? GetDateTimeAttribute(string localName)
     {
-        var str = GetAttribute(localName);
+        return TryGetAttribute(localName, s => XmlConvert.ToDateTime(s, XmlDateTimeSerializationMode.RoundtripKind));
+    }
 
-        if (str == null) return null;
+    private Nullable<TTarget> TryGetAttribute<TTarget>(string localName, Func<string, TTarget> converter)
+        where TTarget: struct
+    {
+        var source = GetAttribute(localName);
+        
+        if (source == null)
+            return default;
 
-        return XmlConvert.ToDateTime(str, XmlDateTimeSerializationMode.RoundtripKind);
+        try
+        {
+            return converter(source);
+        }
+        catch(FormatException)
+        {
+            Errors.Add(new Error(
+                ErrorReason.ConversionFailed,
+                localName,
+                currentNode,
+                $"Conversion to {typeof(TTarget).Name} failed for {source}")
+                {
+                    StringValue = source
+                });
+        }
+
+        return default;
     }
 }

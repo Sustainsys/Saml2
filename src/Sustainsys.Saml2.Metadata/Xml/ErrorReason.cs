@@ -19,4 +19,15 @@ public enum ErrorReason
     /// A required attribute was missing.
     /// </summary>
     MissingAttribute,
+    
+    /// <summary>
+    /// Value conversion failed for the attribute. The string
+    /// representation is stored as <see cref="Error.StringValue"/>.
+    /// </summary>
+    ConversionFailed,
+
+    /// <summary>
+    /// A string value that should be an absolute Uri wasn't that.
+    /// </summary>
+    NotAbsoluteUri,
 }

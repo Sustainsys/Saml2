@@ -22,25 +22,15 @@ public class MetadataSerializer
     /// <returns>EntityDescriptor</returns>
     public virtual EntityDescriptor ReadEntityDescriptor(XmlTraverser xmlTraverser)
     {
+        xmlTraverser.EnsureName(Namespaces.Metadata, "EntityDescriptor");
+        
         var entityDescriptor = CreateEntityDescriptor();
-
+        
         ReadAttributes(xmlTraverser, entityDescriptor);
-       
-        Validate(xmlTraverser, entityDescriptor);
 
         xmlTraverser.ThrowOnErrors();
 
         return entityDescriptor;
-    }
-
-    /// <summary>
-    /// Validates the EntityDescriptor
-    /// </summary>
-    /// <param name="xmlTraverser">Xml Traverser source</param>
-    /// <param name="entityDescriptor">Parsed entity descriptor</param>
-    protected virtual void Validate(XmlTraverser xmlTraverser, EntityDescriptor entityDescriptor)
-    {
-        xmlTraverser.EnsureName(Namespaces.Metadata, "EntityDescriptor");
     }
 
     /// <summary>
@@ -50,7 +40,7 @@ public class MetadataSerializer
     /// <param name="entityDescriptor">EntityDescriptor</param>
     protected virtual void ReadAttributes(XmlTraverser xmlTraverser, EntityDescriptor entityDescriptor)
     {
-        entityDescriptor.EntityId = xmlTraverser.GetRequiredAttribute("entityID");
+        entityDescriptor.EntityId = xmlTraverser.GetRequiredAbsoluteUriAttribute("entityID");
         entityDescriptor.Id = xmlTraverser.GetAttribute("ID");
         entityDescriptor.CacheDuraton = xmlTraverser.GetTimeSpanAttribute("cacheDuration");
         entityDescriptor.ValidUntil = xmlTraverser.GetDateTimeAttribute("validUntil");

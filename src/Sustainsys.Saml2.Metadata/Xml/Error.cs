@@ -15,4 +15,9 @@ public record Error(ErrorReason Reason, string LocalName, XmlNode Node, string M
     /// Do not throw for this error
     /// </summary>
     public bool Ignore { get; set; } = false;
+
+    /// <summary>
+    /// The string value of the failed operation, if applicable.
+    /// </summary>
+    public string? StringValue { get; set; }
 }

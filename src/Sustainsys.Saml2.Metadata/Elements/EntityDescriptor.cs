@@ -8,7 +8,7 @@ public class EntityDescriptor
     /// <summary>
     /// Id of the Entity. MUST be an absolute URI
     /// </summary>
-    public string EntityId { get; set; } = String.Empty;
+    public string? EntityId { get; set; }
     
     /// <summary>
     /// Id of the EntityDescriptor node.
