@@ -6,9 +6,18 @@
 public class Saml2XmlException : Exception
 {
     /// <summary>
+    /// Errors encountered.
+    /// </summary>
+    public IEnumerable<Error> Errors { get; }
+
+    /// <summary>
     /// Ctor
     /// </summary>
-    /// <param name="message">Message</param>
-    public Saml2XmlException(string message)
-        : base(message) { }
+    /// <param name="errors">Error list</param>
+    public Saml2XmlException(IEnumerable<Error> errors)
+        : base(string.Join(" ", 
+            errors.Where(e => !e.Ignore).Select(e => e.Message)))
+    {
+        Errors = errors;
+    }
 }

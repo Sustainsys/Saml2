@@ -12,6 +12,11 @@ namespace Sustainsys.Saml2.Metadata.Xml;
 /// </summary>
 public class XmlTraverser
 {
+    /// <summary>
+    /// Errors encountered so far during the traversal.
+    /// </summary>
+    public List<Error> Errors = new();
+
     private XmlNode currentNode;
 
     /// <summary>
@@ -24,6 +29,17 @@ public class XmlTraverser
     }
 
     /// <summary>
+    /// Throws exception if the error collection is non-empty.
+    /// </summary>
+    public void ThrowOnErrors()
+    {
+        if(Errors.Any(e => !e.Ignore))
+        {
+            throw new Saml2XmlException(Errors);
+        }
+    }
+
+    /// <summary>
     /// Ensure that the current node has a specific localName and namespace.
     /// </summary>
     /// <param name="namespaceUri">Expected Namespace uri</param>
@@ -33,12 +49,20 @@ public class XmlTraverser
     {
         if (currentNode.Name != localName)
         {
-            throw new Saml2XmlException($"Unexpected node name \"{currentNode.LocalName}\", expected \"{localName}\"");
+            Errors.Add(new Error(
+                ErrorReason.UnexpectedLocalName,
+                localName,
+                currentNode, 
+                $"Unexpected node name \"{currentNode.LocalName}\", expected \"{localName}\"."));
         }
 
         if (currentNode.NamespaceURI != namespaceUri)
         {
-            throw new Saml2XmlException($"Unexpected namespace \"{currentNode.NamespaceURI}\" for local name \"{currentNode.Name}\", expected \"{namespaceUri}\"");
+            Errors.Add(new Error(
+                ErrorReason.UnexpectedNamespace,
+                localName,
+                currentNode,
+                $"Unexpected namespace \"{currentNode.NamespaceURI}\" for local name \"{currentNode.Name}\", expected \"{namespaceUri}\"."));
         }
     }
 
@@ -60,8 +84,19 @@ public class XmlTraverser
     /// <exception cref="Saml2XmlException">If no such attribute is found.</exception>
     public string GetRequiredAttribute(string localName)
     {
-        return GetAttribute(localName)
-            ?? throw new Saml2XmlException($"Required attribute {localName} not found on {currentNode.Name}");
+        var value = GetAttribute(localName);
+
+        if (value == null)
+        {
+            value = "";
+            Errors.Add(new Error(
+                ErrorReason.MissingAttribute,
+                localName,
+                currentNode,
+                $"Required attribute {localName} not found on {currentNode.Name}."));
+        }
+        
+        return value;
     }
 
     /// <summary>
@@ -91,6 +126,4 @@ public class XmlTraverser
 
         return XmlConvert.ToDateTime(str, XmlDateTimeSerializationMode.RoundtripKind);
     }
-
-
 }
