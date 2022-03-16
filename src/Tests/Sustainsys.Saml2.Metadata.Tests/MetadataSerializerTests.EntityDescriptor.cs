@@ -83,4 +83,18 @@ public partial class MetadataSerializerTests
             .Should().Throw<Saml2XmlException>()
             .Where(ex => ex.Errors.Single().Reason == ErrorReason.MissingElement);
     }
+
+    [Fact]
+    public void ReadEntityDescriptor_ValidateSignature()
+    {
+        var xmlTraverser = GetXmlTraverser();
+        //xmlTraverser.SigningKeys.Add(new SigningKey
+        //{
+        //    ThumbPrint
+        //})
+
+        //var actual = MetadataSerializer.Instance.ReadEntityDescriptor(xmlTraverser);
+
+        //actual.TrustLevel 
+    }
 }

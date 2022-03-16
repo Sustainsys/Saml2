@@ -1,7 +1,9 @@
 ﻿using FluentAssertions;
 using Sustainsys.Saml2.Metadata.Xml;
+using Sustainsys.Saml2.Tests.Helpers;
 using System;
 using System.Linq;
+using System.Security.Cryptography.Xml;
 using System.Xml;
 using Xunit;
 
@@ -193,5 +195,16 @@ public class XmlTraverserTests
         childScope.Dispose();
 
         subject.CurrentNode.Should().BeSameAs(parentNode);
+    }
+
+    [Fact]
+    public void ValidateSignature()
+    {
+        var xml = "<xml ID=\"id123\"/>";
+
+        var xmlDoc = new XmlDocument();
+        xmlDoc.LoadXml(xml);
+
+        SignedXmlHelper.Sign(xmlDoc.DocumentElement!, TestData.Certificate);
     }
 }
