@@ -166,8 +166,20 @@ public class SignedXmlHelperTests
     [Fact]
     public void VerifySignature_MultipleSignaturesInSameDocument()
     {
-        // .Net contains a bug that only lets the first signature in a document be validated,
-        // we want a workaround for that.
+        var xml = "<xml><a ID=\"a\"/><b ID=\"b\"/></xml>";
+
+        var xmlDoc = new XmlDocument();
+        xmlDoc.LoadXml(xml);
+
+        var elemA = xmlDoc.DocumentElement!["a"]!;
+        var elemB = xmlDoc.DocumentElement!["b"]!;
+        
+        
+        elemA.Sign(TestData.Certificate);
+        elemB.Sign(TestData.Certificate);
+
+        elemA["Signature"]!.VerifySignature(TestData.SigningKey).Error.Should().BeNull();
+        elemB["Signature"]!.VerifySignature(TestData.SigningKey).Error.Should().BeNull();
     }
 
     [Fact]

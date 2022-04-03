@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 using System.Security.Cryptography.Xml;
@@ -61,6 +62,13 @@ public static class SignedXmlHelper
 
         signedXml.LoadXml(signatureElement);
 
+        // All versions of .NET prior to .NET 7 contains a bug that only lets the first signature in a
+        // document be validated, we want a workaround for that. For .NET 7+ I contributed
+        // this fix to the System.Security.Cryptography.Xml library.
+#if !NET7_0_OR_GREATER
+        FixSignatureIndex(signedXml, signatureElement);
+#endif
+
         string? error = null;
         bool keyWorked = signedXml.CheckSignature(key.Key);
         XmlElement? signedElement = null;
@@ -83,16 +91,54 @@ public static class SignedXmlHelper
 
             if(signedElement == null || signedElement != signatureElement.ParentNode)
             {
-                error += "Incorrect reference on Xml Signature. The reference must be to the parent element of the signature. ";
+                error += "Incorrect reference on Xml Signature, the reference must be to the parent element of the signature. ";
             }
         }
 
         var valid = string.IsNullOrEmpty(error);
 
         return (
-            error,
+            error?.TrimEnd(),
             keyWorked, 
             valid ? key.TrustLevel : TrustLevel.None,
             valid ? signedElement : null);
+    }
+
+    static readonly PropertyInfo? signaturePosition = typeof(XmlDsigEnvelopedSignatureTransform)
+    .GetProperty("SignaturePosition", BindingFlags.Instance | BindingFlags.NonPublic);
+
+    /// <summary>
+    /// Workaround for a bug in Reference.LoadXml incorrectly counting index
+    /// of signature from the start of the document, not from the start of
+    /// the element.
+    /// </summary>
+    /// <param name="signedXml">SignedXml</param>
+    /// <param name="signatureElement">Signature element.</param>
+    private static void FixSignatureIndex(SignedXml signedXml, XmlElement signatureElement)
+    {
+        if (signaturePosition == null)
+            return;
+
+        var nsm = new XmlNamespaceManager(signatureElement.OwnerDocument.NameTable);
+        nsm.AddNamespace("ds", SignedXml.XmlDsigNamespaceUrl);
+
+        var signaturesInParent = signatureElement.ParentNode!.SelectNodes(".//ds:Signature", nsm)!;
+
+        int correctSignaturePosition = 0;
+        for (int i = 0; i < signaturesInParent.Count; i++)
+        {
+            if (signaturesInParent[i] == signatureElement)
+            {
+                correctSignaturePosition = i + 1;
+            }
+        }
+
+        foreach (var t in ((Reference)signedXml.SignedInfo.References[0]!).TransformChain)
+        {
+            if(t is XmlDsigEnvelopedSignatureTransform envelopedTransform)
+            {
+                signaturePosition.SetValue(envelopedTransform, correctSignaturePosition);
+            }
+        }
     }
 }
