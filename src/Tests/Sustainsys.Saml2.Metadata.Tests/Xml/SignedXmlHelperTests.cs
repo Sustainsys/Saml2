@@ -4,6 +4,7 @@ using Sustainsys.Saml2.Tests.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 using System.Security.Cryptography.Xml;
 using System.Text;
 using System.Threading.Tasks;
@@ -145,6 +146,28 @@ public class SignedXmlHelperTests
         // While an empty reference Uri is allowed in the SignedXml general spec
         // and means the root of the containing document, it is explicitly not
         // allowed by the Saml2 Xml Signature processing rules.
+        var xml = "<xml/>";
+
+        var xd = new XmlDocument();
+        xd.LoadXml(xml);
+
+        var signedXml = new SignedXml(xd)
+        {
+            SigningKey = TestData.Certificate.GetRSAPrivateKey()
+        };
+
+        var reference = new Reference("");
+        signedXml.AddReference(reference);
+        reference.AddTransform(new XmlDsigEnvelopedSignatureTransform());
+        reference.AddTransform(new XmlDsigExcC14NTransform());
+
+        signedXml.ComputeSignature();
+
+        xd.DocumentElement!.AppendChild(signedXml.GetXml());
+
+        var (error, _, _, _) = xd.DocumentElement["Signature"]!.VerifySignature(TestData.SigningKey);
+
+        error.Should().Match("Empty reference*");
     }
 
     [Fact]
@@ -173,7 +196,6 @@ public class SignedXmlHelperTests
 
         var elemA = xmlDoc.DocumentElement!["a"]!;
         var elemB = xmlDoc.DocumentElement!["b"]!;
-        
         
         elemA.Sign(TestData.Certificate);
         elemB.Sign(TestData.Certificate);

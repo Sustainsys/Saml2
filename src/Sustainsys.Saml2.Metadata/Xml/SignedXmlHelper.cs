@@ -85,13 +85,21 @@ public static class SignedXmlHelper
         else
         {
             var reference = (Reference)signedXml.SignedInfo.References[0]!;
-            var id = reference.Uri.Substring(1); // Drop of the #
 
-            signedElement = signedXml.GetIdElement(signatureElement.OwnerDocument, id);
-
-            if(signedElement == null || signedElement != signatureElement.ParentNode)
+            if(reference.Uri == "")
             {
-                error += "Incorrect reference on Xml Signature, the reference must be to the parent element of the signature. ";
+                error += "Empty reference URI is not allowed in Saml2";
+            }
+            else
+            {
+                var id = reference.Uri.Substring(1); // Drop off the #
+
+                signedElement = signedXml.GetIdElement(signatureElement.OwnerDocument, id);
+
+                if(signedElement == null || signedElement != signatureElement.ParentNode)
+                {
+                    error += "Incorrect reference on Xml Signature, the reference must be to the parent element of the signature. ";
+                }
             }
         }
 
