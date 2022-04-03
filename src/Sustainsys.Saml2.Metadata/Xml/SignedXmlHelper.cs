@@ -62,46 +62,53 @@ public static class SignedXmlHelper
 
         signedXml.LoadXml(signatureElement);
 
-        // All versions of .NET prior to .NET 7 contains a bug that only lets the first signature in a
-        // document be validated, we want a workaround for that. For .NET 7+ I contributed
-        // this fix to the System.Security.Cryptography.Xml library.
-#if !NET7_0_OR_GREATER
-        FixSignatureIndex(signedXml, signatureElement);
-#endif
-
         string? error = null;
-        bool keyWorked = signedXml.CheckSignature(key.Key);
+        bool keyWorked = false;
         XmlElement? signedElement = null;
 
-        if (!keyWorked)
-        {
-            error = "Signature didn't verify for the specified key. ";
-        }
-
-        if(signedXml.SignedInfo.References.Count != 1)
+        if (signedXml.SignedInfo.References.Count != 1)
         {
             error += "The Signature should contain exactly one reference. ";
         }
         else
         {
-            var reference = (Reference)signedXml.SignedInfo.References[0]!;
+            // All versions of .NET prior to .NET 7 contains a bug that only lets the first signature in a
+            // document be validated, we want a workaround for that. For .NET 7+ I contributed
+            // this fix to the System.Security.Cryptography.Xml library.
+#if !NET7_0_OR_GREATER
+            FixSignatureIndex(signedXml, signatureElement);
+#endif
 
-            if(reference.Uri == "")
+            keyWorked = signedXml.CheckSignature(key.Key);
+
+            if (!keyWorked)
             {
-                error += "Empty reference URI is not allowed in Saml2";
+                error = "Signature didn't verify for the specified key. ";
             }
+
             else
             {
-                var id = reference.Uri.Substring(1); // Drop off the #
+                var reference = (Reference)signedXml.SignedInfo.References[0]!;
 
-                signedElement = signedXml.GetIdElement(signatureElement.OwnerDocument, id);
-
-                if(signedElement == null || signedElement != signatureElement.ParentNode)
+                if (reference.Uri == "")
                 {
-                    error += "Incorrect reference on Xml Signature, the reference must be to the parent element of the signature. ";
+                    error += "Empty reference URI is not allowed in Saml2";
+                }
+                else
+                {
+                    var id = reference.Uri.Substring(1); // Drop off the #
+
+                    signedElement = signedXml.GetIdElement(signatureElement.OwnerDocument, id);
+
+                    if (signedElement == null || signedElement != signatureElement.ParentNode)
+                    {
+                        error += "Incorrect reference on Xml Signature, the reference must be to the parent element of the signature. ";
+                    }
                 }
             }
+
         }
+
 
         var valid = string.IsNullOrEmpty(error);
 

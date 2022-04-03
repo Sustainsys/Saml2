@@ -63,7 +63,7 @@ public class SignedXmlHelperTests
     {
         var element = GetSignatureElement();
 
-        var (error, keyWorked, trustLevel, signedElement) = 
+        var (error, keyWorked, trustLevel, signedElement) =
             element.VerifySignature(TestData.SigningKey);
 
         error.Should().BeNull();
@@ -101,7 +101,7 @@ public class SignedXmlHelperTests
     {
         var xml = "<xml ID=\"someID\"><content ID=\"content1\">text</content>"
             + "<injected>other text</injected></xml>";
-        
+
         var xmlDoc = new XmlDocument();
         xmlDoc.LoadXml(xml);
 
@@ -170,14 +170,14 @@ public class SignedXmlHelperTests
         error.Should().Match("Empty reference*");
     }
 
-    [Fact]
+    [Fact(Skip = "Test Not Implemented")]
     public void VerifySignature_MultipleReferences()
     {
         // While the SignedXml general spec allows multiple references, the
         // Saml2 Xml Signature processing rules do not.
     }
 
-    [Fact]
+    [Fact(Skip = "Test Not Implemented")]
     public void VerifySignature_IncorrectTransforms()
     {
         // SAML2 Core 5.4.4 states that signatures SHOULD NOT contain other transforms than
@@ -196,7 +196,7 @@ public class SignedXmlHelperTests
 
         var elemA = xmlDoc.DocumentElement!["a"]!;
         var elemB = xmlDoc.DocumentElement!["b"]!;
-        
+
         elemA.Sign(TestData.Certificate);
         elemB.Sign(TestData.Certificate);
 
@@ -204,19 +204,26 @@ public class SignedXmlHelperTests
         elemB["Signature"]!.VerifySignature(TestData.SigningKey).Error.Should().BeNull();
     }
 
-    [Fact]
+    [Fact(Skip = "Test Not Implemented")]
     public void VerifySignature_SigningAlgorithmStrength()
     { }
 
-    [Fact]
+    [Fact(Skip = "Test Not Implemented")]
     public void VerifySignature_DigestAlgorithmStrength()
     { }
 
-    [Fact]
+    [Fact(Skip = "Test Not Implemented")]
     public void IsSignedByAny()
     { }
 
-    [Fact]
+    [Fact(Skip = "Test Not Implemented")]
     public void IsSignedByAny_NoKeyMatches()
     { }
+
+    [Fact(Skip = "Test Not Implemented")]
+    public void VerifySignaure_RejectsDuplicateIdsEvenIfCaseDiffer()
+    {
+        // Ensure that a document where referenced id exists in multiple
+        // locations but ID is spelled Id or id is rejected.
+    }
 }
