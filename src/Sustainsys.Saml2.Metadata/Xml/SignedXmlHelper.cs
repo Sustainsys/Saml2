@@ -37,9 +37,9 @@ public static class SignedXmlHelper
         var id = element.Attributes!["ID"]?.Value;
 
         var reference = new Reference($"#{id}");
-        signedXml.AddReference(reference);
         reference.AddTransform(new XmlDsigEnvelopedSignatureTransform());
         reference.AddTransform(new XmlDsigExcC14NTransform());
+        signedXml.AddReference(reference);
 
         signedXml.ComputeSignature();
 

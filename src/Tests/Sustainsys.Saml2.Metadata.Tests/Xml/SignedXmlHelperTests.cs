@@ -157,9 +157,9 @@ public class SignedXmlHelperTests
         };
 
         var reference = new Reference("");
-        signedXml.AddReference(reference);
         reference.AddTransform(new XmlDsigEnvelopedSignatureTransform());
         reference.AddTransform(new XmlDsigExcC14NTransform());
+        signedXml.AddReference(reference);
 
         signedXml.ComputeSignature();
 
@@ -170,11 +170,39 @@ public class SignedXmlHelperTests
         error.Should().Match("Empty reference*");
     }
 
-    [Fact(Skip = "Test Not Implemented")]
+    [Fact]
     public void VerifySignature_MultipleReferences()
     {
         // While the SignedXml general spec allows multiple references, the
         // Saml2 Xml Signature processing rules do not.
+
+        var xml = "<xml><a ID=\"a\"/><b ID=\"b\"/></xml>";
+
+        var xd = new XmlDocument();
+        xd.LoadXml(xml);
+
+        var signedXml = new SignedXml(xd)
+        {
+            SigningKey = TestData.Certificate.GetRSAPrivateKey()
+        };
+
+        var reference = new Reference("#a");
+        reference.AddTransform(new XmlDsigEnvelopedSignatureTransform());
+        reference.AddTransform(new XmlDsigExcC14NTransform());
+        signedXml.AddReference(reference);
+
+        reference = new Reference("#b");
+        reference.AddTransform(new XmlDsigEnvelopedSignatureTransform());
+        reference.AddTransform(new XmlDsigExcC14NTransform());
+        signedXml.AddReference(reference);
+
+        signedXml.ComputeSignature();
+
+        xd.DocumentElement!.AppendChild(signedXml.GetXml());
+
+        var (error, _, _, _) = xd.DocumentElement["Signature"]!.VerifySignature(TestData.SigningKey);
+
+        error.Should().Match("*Signature*one reference*");
     }
 
     [Fact(Skip = "Test Not Implemented")]
