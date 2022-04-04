@@ -51,12 +51,15 @@ public static class SignedXmlHelper
     /// </summary>
     /// <param name="signatureElement">The signature element to verify.</param>
     /// <param name="key">They key to use to verify.</param>
+    /// <param name="allowedHashes">Allowed hash algorithms. Values must be short form, 
+    /// lower case e.g. sha256 to match end of algorithm identifier URI, both for
+    /// signing and hashing algorithms."</param>
     /// <returns>Typle with bool flag if the signature is valid, possibly error message,
     /// TrustLevel of the signed data (based on the key's trust level) and the element
     /// that is signed.</returns>
     /// <exception cref="NotImplementedException"></exception>
-    public static (string? Error, bool KeyWorked, TrustLevel, XmlElement? SignedElement) 
-        VerifySignature(this XmlElement signatureElement, SigningKey key)
+    public static (string? Error, bool KeyWorked, TrustLevel, XmlElement? SignedElement)
+        VerifySignature(this XmlElement signatureElement, SigningKey key, string[] allowedHashes)
     {
         var signedXml = new SignedXml(signatureElement.OwnerDocument);
 
@@ -86,35 +89,58 @@ public static class SignedXmlHelper
                 error = "Signature didn't verify for the specified key. ";
             }
 
+            var reference = (Reference)signedXml.SignedInfo.References[0]!;
+
+            if (reference.Uri == "")
+            {
+                error += "Empty reference URI is not allowed in Saml2. ";
+            }
             else
             {
-                var reference = (Reference)signedXml.SignedInfo.References[0]!;
+                var id = reference.Uri.Substring(1); // Drop off the #
 
-                if (reference.Uri == "")
+                signedElement = signedXml.GetIdElement(signatureElement.OwnerDocument, id);
+
+                if (signedElement == null || signedElement != signatureElement.ParentNode)
                 {
-                    error += "Empty reference URI is not allowed in Saml2";
-                }
-                else
-                {
-                    var id = reference.Uri.Substring(1); // Drop off the #
-
-                    signedElement = signedXml.GetIdElement(signatureElement.OwnerDocument, id);
-
-                    if (signedElement == null || signedElement != signatureElement.ParentNode)
-                    {
-                        error += "Incorrect reference on Xml Signature, the reference must be to the parent element of the signature. ";
-                    }
+                    error += "Incorrect reference on Xml Signature, the reference must be to the parent element of the signature. ";
                 }
             }
 
+            foreach(Transform transform in reference.TransformChain)
+            {
+                switch (transform.Algorithm)
+                {
+                    case SignedXml.XmlDsigEnvelopedSignatureTransformUrl:
+                    case SignedXml.XmlDsigExcC14NTransformUrl:
+                    case SignedXml.XmlDsigExcC14NWithCommentsTransformUrl:
+                        break;
+                    default:
+                        error += $"Transform {transform.Algorithm} is not allowed in SAML2. ";
+                        break;
+                }
+            }
+
+            // The algorithm names has the form http://foo/bar/xyz#sha256
+            var digestHash = reference.DigestMethod.Substring(reference.DigestMethod.LastIndexOf('#') + 1);
+            if (!allowedHashes.Contains(digestHash))
+            {
+                error += $"Digest algorithm {reference.DigestMethod} does not match configured [{string.Join(", ", allowedHashes)}]. ";
+            }
         }
 
+        // The algorithm names has the form http://foo/bar/xyz#rsa-sha256
+        var signingHash = signedXml.SignatureMethod.Substring(signedXml.SignatureMethod.LastIndexOf('-') + 1);
+        if (!allowedHashes.Contains(signingHash))
+        {
+            error += $"Signature algorithm {signedXml.SignatureMethod} does not match configured [{string.Join(", ", allowedHashes)}]. ";
+        }
 
         var valid = string.IsNullOrEmpty(error);
 
         return (
             error?.TrimEnd(),
-            keyWorked, 
+            keyWorked,
             valid ? key.TrustLevel : TrustLevel.None,
             valid ? signedElement : null);
     }
@@ -150,7 +176,7 @@ public static class SignedXmlHelper
 
         foreach (var t in ((Reference)signedXml.SignedInfo.References[0]!).TransformChain)
         {
-            if(t is XmlDsigEnvelopedSignatureTransform envelopedTransform)
+            if (t is XmlDsigEnvelopedSignatureTransform envelopedTransform)
             {
                 signaturePosition.SetValue(envelopedTransform, correctSignaturePosition);
             }

@@ -15,6 +15,8 @@ namespace Sustainsys.Saml2.Metadata.Tests.Xml;
 
 public class SignedXmlHelperTests
 {
+    private readonly string[] allowedHashes = { "sha256" };
+    
     private XmlDocument CreateSignedDocument()
     {
         var xml = "<xml ID=\"id123\"/>";
@@ -64,7 +66,7 @@ public class SignedXmlHelperTests
         var element = GetSignatureElement();
 
         var (error, keyWorked, trustLevel, signedElement) =
-            element.VerifySignature(TestData.SigningKey);
+            element.VerifySignature(TestData.SigningKey, allowedHashes);
 
         error.Should().BeNull();
         keyWorked.Should().BeTrue();
@@ -77,7 +79,7 @@ public class SignedXmlHelperTests
     {
         var element = GetSignatureElement();
 
-        var (error, keyWorked, _, _) = element.VerifySignature(TestData.SigningKey2);
+        var (error, keyWorked, _, _) = element.VerifySignature(TestData.SigningKey2, allowedHashes);
 
         error.Should().Contain("key");
         keyWorked.Should().BeFalse();
@@ -90,7 +92,7 @@ public class SignedXmlHelperTests
 
         ((XmlElement)element.ParentNode!).SetAttribute("foo", "bar");
 
-        var (error, keyWorked, _, _) = element.VerifySignature(TestData.SigningKey);
+        var (error, keyWorked, _, _) = element.VerifySignature(TestData.SigningKey, allowedHashes);
 
         error.Should().Contain("didn't verify");
         keyWorked.Should().BeFalse();
@@ -119,7 +121,7 @@ public class SignedXmlHelperTests
         injected.AppendChild(signatureNode);
 
         var (error, keyWorked, _, _) = injected["Signature", SignedXml.XmlDsigNamespaceUrl]!
-            .VerifySignature(TestData.SigningKey);
+            .VerifySignature(TestData.SigningKey, allowedHashes);
 
         error.Should().Contain("reference");
         keyWorked.Should().BeTrue();
@@ -135,7 +137,7 @@ public class SignedXmlHelperTests
 
         var signature = xmlDoc.DocumentElement!["Signature", SignedXml.XmlDsigNamespaceUrl]!;
 
-        var (error, _, _, _) = signature.VerifySignature(TestData.SigningKey);
+        var (error, _, _, _) = signature.VerifySignature(TestData.SigningKey, allowedHashes);
 
         error.Should().Contain("reference");
     }
@@ -165,7 +167,8 @@ public class SignedXmlHelperTests
 
         xd.DocumentElement!.AppendChild(signedXml.GetXml());
 
-        var (error, _, _, _) = xd.DocumentElement["Signature"]!.VerifySignature(TestData.SigningKey);
+        var (error, _, _, _) = xd.DocumentElement["Signature"]!.VerifySignature(
+            TestData.SigningKey, allowedHashes);
 
         error.Should().Match("Empty reference*");
     }
@@ -200,18 +203,43 @@ public class SignedXmlHelperTests
 
         xd.DocumentElement!.AppendChild(signedXml.GetXml());
 
-        var (error, _, _, _) = xd.DocumentElement["Signature"]!.VerifySignature(TestData.SigningKey);
+        var (error, _, _, _) = xd.DocumentElement["Signature"]!.VerifySignature(
+            TestData.SigningKey, allowedHashes);
 
         error.Should().Match("*Signature*one reference*");
     }
 
-    [Fact(Skip = "Test Not Implemented")]
+    [Fact]
     public void VerifySignature_IncorrectTransforms()
     {
         // SAML2 Core 5.4.4 states that signatures SHOULD NOT contain other transforms than
         // the enveloped signature or exclusive canonicalization transforms and that a verifier
         // of a signature MAY reject signatures with other transforms. We'll reject them to
         // mitigate the risk of transforms opening up for assertion injections.
+
+        var xml = "<xml ID=\"x\"/>";
+
+        var xd = new XmlDocument();
+        xd.LoadXml(xml);
+
+        var signedXml = new SignedXml(xd)
+        {
+            SigningKey = TestData.Certificate.GetRSAPrivateKey()
+        };
+
+        var reference = new Reference("#x");
+        reference.AddTransform(new XmlDsigEnvelopedSignatureTransform());
+        reference.AddTransform(new XmlDsigC14NTransform());
+        signedXml.AddReference(reference);
+
+        signedXml.ComputeSignature();
+
+        xd.DocumentElement!.AppendChild(signedXml.GetXml());
+
+        var (error, _, _, _) = xd.DocumentElement["Signature"]!.VerifySignature(
+            TestData.SigningKey, allowedHashes);
+
+        error.Should().Match("Transform*");
     }
 
     [Fact]
@@ -228,24 +256,76 @@ public class SignedXmlHelperTests
         elemA.Sign(TestData.Certificate);
         elemB.Sign(TestData.Certificate);
 
-        elemA["Signature"]!.VerifySignature(TestData.SigningKey).Error.Should().BeNull();
-        elemB["Signature"]!.VerifySignature(TestData.SigningKey).Error.Should().BeNull();
+        elemA["Signature"]!.VerifySignature(TestData.SigningKey, allowedHashes)
+            .Error.Should().BeNull();
+        elemB["Signature"]!.VerifySignature(TestData.SigningKey, allowedHashes)
+            .Error.Should().BeNull();
     }
 
-    [Fact(Skip = "Test Not Implemented")]
+    [Fact]
     public void VerifySignature_SigningAlgorithmStrength()
-    { }
+    {
+        var xml = "<xml ID=\"x\"/>";
 
-    [Fact(Skip = "Test Not Implemented")]
+        var xd = new XmlDocument();
+        xd.LoadXml(xml);
+
+        var signedXml = new SignedXml(xd)
+        {
+            SigningKey = TestData.Certificate.GetRSAPrivateKey()
+        };
+
+        var reference = new Reference("#x");
+        reference.AddTransform(new XmlDsigEnvelopedSignatureTransform());
+        reference.AddTransform(new XmlDsigExcC14NTransform());
+        signedXml.AddReference(reference);
+
+        signedXml.SignedInfo.SignatureMethod = SignedXml.XmlDsigRSASHA1Url;
+        signedXml.ComputeSignature();
+
+        xd.DocumentElement!.AppendChild(signedXml.GetXml());
+
+        var (error, _, _, _) = xd.DocumentElement["Signature"]!
+            .VerifySignature(TestData.SigningKey, allowedHashes);
+
+        error.Should().Match("Signature*algorithm*sha1*");
+    }
+
+    [Fact]
     public void VerifySignature_DigestAlgorithmStrength()
-    { }
+    {
+        var xml = "<xml ID=\"x\"/>";
+
+        var xd = new XmlDocument();
+        xd.LoadXml(xml);
+
+        var signedXml = new SignedXml(xd)
+        {
+            SigningKey = TestData.Certificate.GetRSAPrivateKey()
+        };
+
+        var reference = new Reference("#x");
+        reference.AddTransform(new XmlDsigEnvelopedSignatureTransform());
+        reference.AddTransform(new XmlDsigExcC14NTransform());
+        reference.DigestMethod = SignedXml.XmlDsigSHA1Url;
+        signedXml.AddReference(reference);
+
+        signedXml.ComputeSignature();
+
+        xd.DocumentElement!.AppendChild(signedXml.GetXml());
+
+        var (error, _, _, _) = xd.DocumentElement["Signature"]!
+            .VerifySignature(TestData.SigningKey, allowedHashes);
+
+        error.Should().Match("Digest*algorithm*sha1*");
+    }
 
     [Fact(Skip = "Test Not Implemented")]
     public void IsSignedByAny()
     { }
 
     [Fact(Skip = "Test Not Implemented")]
-    public void IsSignedByAny_NoKeyMatches()
+    public void IsSignedByAny_NoKeyMatches_ButEmbeddedKeyValidatesContent()
     { }
 
     [Fact(Skip = "Test Not Implemented")]
