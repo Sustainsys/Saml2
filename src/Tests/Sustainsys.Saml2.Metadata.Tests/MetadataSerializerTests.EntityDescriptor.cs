@@ -97,4 +97,12 @@ public partial class MetadataSerializerTests
 
         //actual.TrustLevel 
     }
+
+    [Fact(Skip = "Not implemented yet")]
+    public void ReadEntityDescriptor_ValidateElementName()
+    {
+        // Bail out in a good way if the element name is not matching. Probably
+        // need to add a return value to EnsureName indicating if it was successful
+        // to be able to skip over the element if it's not the right one.
+    }
 }
