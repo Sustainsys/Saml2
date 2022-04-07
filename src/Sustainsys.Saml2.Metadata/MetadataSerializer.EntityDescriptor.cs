@@ -52,15 +52,16 @@ public class MetadataSerializer
     /// <returns>EntityDescriptor</returns>
     public virtual EntityDescriptor ReadEntityDescriptor(XmlTraverser source)
     {
-        source.EnsureName(Namespaces.Metadata, "EntityDescriptor");
-
         var entityDescriptor = CreateEntityDescriptor();
-
-        ReadAttributes(source, entityDescriptor);
-
-        using (source.EnterChildLevel())
+        
+        if(source.EnsureName(Namespaces.Metadata, "EntityDescriptor"))
         {
-            ReadElements(source, entityDescriptor);
+            ReadAttributes(source, entityDescriptor);
+
+            using (source.EnterChildLevel())
+            {
+                ReadElements(source, entityDescriptor);
+            }
         }
 
         ThrowOnErrors(source);
@@ -103,5 +104,25 @@ public class MetadataSerializer
                 return;
             }
         }
+
+        if(ReadExtensions(source, entityDescriptor)
+            && !source.MoveToNextRequiredChild())
+        {
+            return;
+        }
+
+
+    }
+
+    /// <summary>
+    /// Process extensions node. Default just checks if this is an extensions node and then returns.
+    /// </summary>
+    /// <param name="source">Source</param>
+    /// <param name="entityDescriptor">Currently processed EntityDescriptor</param>
+    /// <returns>True if current node was an Extensions element</returns>
+    protected virtual bool ReadExtensions(XmlTraverser source, EntityDescriptor entityDescriptor)
+    {
+        return source.CurrentNode.LocalName == "Extensions"
+            && source.CurrentNode.NamespaceURI == Namespaces.Metadata;
     }
 }

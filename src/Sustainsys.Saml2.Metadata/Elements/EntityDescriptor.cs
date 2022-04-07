@@ -1,4 +1,5 @@
 ﻿using Sustainsys.Saml2.Metadata.Xml;
+using System.Xml;
 
 namespace Sustainsys.Saml2.Metadata.Elements;
 
@@ -31,4 +32,9 @@ public class EntityDescriptor
     /// Trust level of this data.
     /// </summary>
     public TrustLevel TrustLevel { get; set; }
+    
+    /// <summary>
+    /// The extensions node of the metadata.
+    /// </summary>
+    public XmlElement? Extensions { get; set; }
 }

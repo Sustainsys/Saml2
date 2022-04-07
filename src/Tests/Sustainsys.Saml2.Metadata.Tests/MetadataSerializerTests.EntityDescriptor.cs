@@ -116,11 +116,23 @@ public partial class MetadataSerializerTests
             .WithMessage("Signature*");
     }
 
-    [Fact(Skip = "Not implemented yet")]
+    [Fact]
     public void ReadEntityDescriptor_ValidateElementName()
     {
-        // Bail out in a good way if the element name is not matching. Probably
-        // need to add a return value to EnsureName indicating if it was successful
-        // to be able to skip over the element if it's not the right one.
+        var xmlTraverser = GetXmlTraverser();
+
+        var actual = new MetadataSerializer(null, null)
+            .Invoking(s => s.ReadEntityDescriptor(xmlTraverser))
+            .Should().Throw<Saml2XmlException>()
+            .WithMessage("Unexpected*metadata\".");
+    }
+
+    [Fact]
+    public void ReadEntityDescriptor_SkipsExtensions()
+    {
+        var xmlTraverser = GetXmlTraverser();
+
+        new MetadataSerializer(null, null)
+            .ReadEntityDescriptor(xmlTraverser);
     }
 }
