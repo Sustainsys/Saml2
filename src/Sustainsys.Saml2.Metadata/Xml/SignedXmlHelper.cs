@@ -96,15 +96,15 @@ public static class SignedXmlHelper
     /// </summary>
     /// <param name="signatureElement">The signature element to verify.</param>
     /// <param name="keys">They signing keys that can be used to verify.</param>
-    /// <param name="allowedHashes">Allowed hash algorithms. Values must be short form, 
+    /// <param name="allowedHashAlgorithms">Allowed hash algorithms. Values must be short form, 
     /// lower case e.g. sha256 to match end of algorithm identifier URI, both for
     /// signing and hashing algorithms."</param>
-    /// <returns>Typle with bool flag if the signature is valid, possibly error message,
-    /// TrustLevel of the signed data (based on the key's trust level) and the element
-    /// that is signed.</returns>
+    /// <returns>Tuple with possibly error message, and the signing key that worked.</returns>
     /// <exception cref="NotImplementedException"></exception>
-    public static (string? Error, SigningKey? WorkingKey, XmlElement? SignedElement)
-        VerifySignature(this XmlElement signatureElement, IEnumerable<SigningKey> keys, string[] allowedHashes)
+    public static (string? Error, SigningKey? WorkingKey) VerifySignature(
+        this XmlElement signatureElement,
+        IEnumerable<SigningKey> keys,
+        IEnumerable<string> allowedHashAlgorithms)
     {
         var signedXml = new SignedXmlWithStrictIdResolution(signatureElement.OwnerDocument);
 
@@ -183,25 +183,22 @@ public static class SignedXmlHelper
 
             // The algorithm names has the form http://foo/bar/xyz#sha256
             var digestHash = reference.DigestMethod.Substring(reference.DigestMethod.LastIndexOf('#') + 1);
-            if (!allowedHashes.Contains(digestHash))
+            if (!allowedHashAlgorithms.Contains(digestHash))
             {
-                error += $"Digest algorithm {reference.DigestMethod} does not match configured [{string.Join(", ", allowedHashes)}]. ";
+                error += $"Digest algorithm {reference.DigestMethod} does not match configured [{string.Join(", ", allowedHashAlgorithms)}]. ";
             }
         }
 
         // The algorithm names has the form http://foo/bar/xyz#rsa-sha256
         var signingHash = signedXml.SignatureMethod.Substring(signedXml.SignatureMethod.LastIndexOf('-') + 1);
-        if (!allowedHashes.Contains(signingHash))
+        if (!allowedHashAlgorithms.Contains(signingHash))
         {
-            error += $"Signature algorithm {signedXml.SignatureMethod} does not match configured [{string.Join(", ", allowedHashes)}]. ";
+            error += $"Signature algorithm {signedXml.SignatureMethod} does not match configured [{string.Join(", ", allowedHashAlgorithms)}]. ";
         }
 
         var valid = string.IsNullOrEmpty(error);
 
-        return (
-            error?.TrimEnd(),
-            workingKey,
-            valid ? signedElement : null);
+        return (error?.TrimEnd(), workingKey);
     }
 
     static readonly PropertyInfo? signaturePosition = typeof(XmlDsigEnvelopedSignatureTransform)

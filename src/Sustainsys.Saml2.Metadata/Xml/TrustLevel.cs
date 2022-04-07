@@ -20,9 +20,9 @@ public enum TrustLevel
 
     /// <summary>
     /// The data was retreived over an outbound network connection,
-    /// but the transport was not encrypted. This level is also set
+    /// but the transport was not protected. This level is also set
     /// on all data that is verified as signed by a key that was retrieved
-    /// over plan http.
+    /// over plain http.
     /// </summary>
     Http,
 
@@ -40,5 +40,4 @@ public enum TrustLevel
     /// from configuration.
     /// </summary>
     ConfiguredKey
-
 }

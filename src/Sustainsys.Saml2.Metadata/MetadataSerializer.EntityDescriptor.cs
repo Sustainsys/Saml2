@@ -10,19 +10,35 @@ namespace Sustainsys.Saml2.Metadata;
 public class MetadataSerializer
 {
     /// <summary>
-    /// Shared instance, the class has no state, it is only a normal
-    /// class to enable inheritance.
+    /// Allowed hash algorithms if validating signatures.
     /// </summary>
-    public static MetadataSerializer Instance {get;} = new();
+    protected IEnumerable<string>? AllowedHashAlgorithms { get; }
+
+    /// <summary>
+    /// Signing keys to trust when validating signatures of the metadata.
+    /// </summary>
+    protected IEnumerable<SigningKey>? TrustedSigningKeys { get; }
+
+    /// <summary>
+    /// Ctor
+    /// </summary>
+    /// <param name="trustedSigningKeys">Trusted signing keys to use to validate any signature found.</param>
+    /// <param name="allowedHashAlgorithms">Allowed hash algorithms if validating signatures.</param>
+    public MetadataSerializer(
+        IEnumerable<SigningKey>? trustedSigningKeys,
+        IEnumerable<string>? allowedHashAlgorithms)
+    {
+        TrustedSigningKeys = trustedSigningKeys;
+        AllowedHashAlgorithms = allowedHashAlgorithms;
+    }
 
     /// <summary>
     /// Helper method that calls ThrowOnErrors. If you want to supress
     /// errors and prevent throwing, this is the last chance method to
     /// override.
     /// </summary>
-    /// <param name="xmlTraverser">XmlTraverser to call ThrowOnErrors on.</param>
-    protected virtual void ThrowOnErrors(XmlTraverser xmlTraverser)
-        => xmlTraverser.ThrowOnErrors();
+    protected virtual void ThrowOnErrors(XmlTraverser source)
+        => source.ThrowOnErrors();
 
     /// <summary>
     /// Create EntityDescriptor instance. Override to use subclass.
@@ -33,22 +49,21 @@ public class MetadataSerializer
     /// <summary>
     /// Read an EntityDescriptor
     /// </summary>
-    /// <param name="xmlTraverser">Source data</param>
     /// <returns>EntityDescriptor</returns>
-    public virtual EntityDescriptor ReadEntityDescriptor(XmlTraverser xmlTraverser)
+    public virtual EntityDescriptor ReadEntityDescriptor(XmlTraverser source)
     {
-        xmlTraverser.EnsureName(Namespaces.Metadata, "EntityDescriptor");
-        
+        source.EnsureName(Namespaces.Metadata, "EntityDescriptor");
+
         var entityDescriptor = CreateEntityDescriptor();
-        
-        ReadAttributes(xmlTraverser, entityDescriptor);
-        
-        using (xmlTraverser.EnterChildLevel())
+
+        ReadAttributes(source, entityDescriptor);
+
+        using (source.EnterChildLevel())
         {
-            ReadElements(xmlTraverser, entityDescriptor);
+            ReadElements(source, entityDescriptor);
         }
 
-        ThrowOnErrors(xmlTraverser);
+        ThrowOnErrors(source);
 
         return entityDescriptor;
     }
@@ -56,24 +71,37 @@ public class MetadataSerializer
     /// <summary>
     /// Read attributes of EntityDescriptor
     /// </summary>
-    /// <param name="xmlTraverser">Xml data to read</param>
+    /// <param name="source">Source data</param>
     /// <param name="entityDescriptor">EntityDescriptor</param>
-    protected virtual void ReadAttributes(XmlTraverser xmlTraverser, EntityDescriptor entityDescriptor)
+    protected virtual void ReadAttributes(XmlTraverser source, EntityDescriptor entityDescriptor)
     {
-        entityDescriptor.EntityId = xmlTraverser.GetRequiredAbsoluteUriAttribute("entityID");
-        entityDescriptor.Id = xmlTraverser.GetAttribute("ID");
-        entityDescriptor.CacheDuraton = xmlTraverser.GetTimeSpanAttribute("cacheDuration");
-        entityDescriptor.ValidUntil = xmlTraverser.GetDateTimeAttribute("validUntil");
+        entityDescriptor.EntityId = source.GetRequiredAbsoluteUriAttribute("entityID");
+        entityDescriptor.Id = source.GetAttribute("ID");
+        entityDescriptor.CacheDuraton = source.GetTimeSpanAttribute("cacheDuration");
+        entityDescriptor.ValidUntil = source.GetDateTimeAttribute("validUntil");
     }
 
     /// <summary>
     /// Read the child elements of the EntityDescriptor.
     /// </summary>
-    /// <param name="xmlTraverser">Xml data to read</param>
+    /// <param name="source">Source data</param>
     /// <param name="entityDescriptor">Entity Descriptor to populate</param>
-    protected virtual void ReadElements(XmlTraverser xmlTraverser, EntityDescriptor entityDescriptor)
+    protected virtual void ReadElements(XmlTraverser source, EntityDescriptor entityDescriptor)
     {
-        if (!xmlTraverser.MoveToNextRequiredChild())
-            return; // Abort, errors will be reported.
+        if (!source.MoveToNextRequiredChild())
+        {
+            return;
+        }
+
+        if (source.ReadAndValidateOptionalSignature(
+            TrustedSigningKeys, AllowedHashAlgorithms, out var trustLevel))
+        {
+            entityDescriptor.TrustLevel = trustLevel;
+
+            if(!source.MoveToNextRequiredChild())
+            {
+                return;
+            }
+        }
     }
 }

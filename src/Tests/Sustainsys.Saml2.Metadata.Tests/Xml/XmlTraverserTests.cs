@@ -45,7 +45,9 @@ public class XmlTraverserTests
     {
         var subject = GetXmlTraverser();
 
-        subject.EnsureName(ns, localName);
+        var actual = subject.EnsureName(ns, localName);
+
+        actual.Should().Be(errorReasons.Length == 0);
 
         subject.Errors.Select(e => e.Reason).Should().BeEquivalentTo(errorReasons);
     }
@@ -159,10 +161,8 @@ public class XmlTraverserTests
 
         var childScope = subject.EnterChildLevel();
 
-        subject.Invoking(s => s.CurrentNode).Should().Throw<InvalidOperationException>();
-
         subject.MoveToNextChild().Should().BeTrue();
-
+        
         subject.CurrentNode!.LocalName.Should().Be("p");
 
         subject.MoveToNextChild().Should().BeTrue();
@@ -171,25 +171,19 @@ public class XmlTraverserTests
 
         var childScope2 = subject.EnterChildLevel();
 
-        // Just check that we have no errors so far as we're soon checking error count = 1.
-        subject.Errors.Should().HaveCount(0);
-
-        subject.MoveToNextRequiredChild().Should().BeFalse();
-
-        subject.Errors.Should().HaveCount(1);
-        subject.Errors.Single().Reason.Should().Be(ErrorReason.MissingElement);
+        subject.MoveToNextChild().Should().BeFalse();
 
         subject.Invoking(s => s.CurrentNode).Should().Throw<InvalidOperationException>();
 
         childScope2.Dispose();
 
         // Just check that we have no errors so far as we're soon checking error count = 1.
-        subject.Errors.Should().HaveCount(1);
+        subject.Errors.Should().HaveCount(0);
 
         subject.MoveToNextChild().Should().BeFalse();
 
         // We should how have hit the abc text node.
-        subject.Errors.Should().HaveCount(2);
+        subject.Errors.Should().HaveCount(1);
         subject.Errors.Last().Reason.Should().Be(ErrorReason.UnsupportedNodeType);
 
         childScope.Dispose();

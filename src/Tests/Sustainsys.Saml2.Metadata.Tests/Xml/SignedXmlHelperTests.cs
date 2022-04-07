@@ -16,7 +16,7 @@ namespace Sustainsys.Saml2.Metadata.Tests.Xml;
 
 public class SignedXmlHelperTests
 {
-    private readonly string[] allowedHashes = { "sha256" };
+    public static readonly string[] allowedHashes = { "sha256" };
 
     private XmlDocument CreateSignedDocument()
     {
@@ -66,13 +66,11 @@ public class SignedXmlHelperTests
     {
         var element = GetSignatureElement();
 
-        var (error, workingKey, signedElement) =
+        var (error, workingKey) =
             element.VerifySignature(TestData.SingleSigningKey, allowedHashes);
 
         error.Should().BeNull();
-        workingKey.Should().NotBeNull();
-        workingKey!.TrustLevel.Should().Be(TestData.SigningKey.TrustLevel);
-        signedElement.Should().BeSameAs((XmlElement)element.ParentNode!);
+        workingKey.Should().BeSameAs(TestData.SigningKey);
     }
 
     [Fact]
@@ -80,7 +78,7 @@ public class SignedXmlHelperTests
     {
         var element = GetSignatureElement();
 
-        var (error, workingKey, _) = element.VerifySignature(TestData.SingleSigningKey2, allowedHashes);
+        var (error, workingKey) = element.VerifySignature(TestData.SingleSigningKey2, allowedHashes);
 
         error.Should().Contain("key");
         workingKey.Should().BeNull();
@@ -93,7 +91,7 @@ public class SignedXmlHelperTests
 
         ((XmlElement)element.ParentNode!).SetAttribute("foo", "bar");
 
-        var (error, workingKey, _) = element.VerifySignature(TestData.SingleSigningKey, allowedHashes);
+        var (error, workingKey) = element.VerifySignature(TestData.SingleSigningKey, allowedHashes);
 
         error.Should().Contain("didn't verify");
         workingKey.Should().BeNull();
@@ -121,11 +119,11 @@ public class SignedXmlHelperTests
         var injected = xmlDoc.DocumentElement!["injected"]!;
         injected.AppendChild(signatureNode);
 
-        var (error, workingKey, _) = injected["Signature", SignedXml.XmlDsigNamespaceUrl]!
+        var (error, workingKey) = injected["Signature", SignedXml.XmlDsigNamespaceUrl]!
             .VerifySignature(TestData.SingleSigningKey, allowedHashes);
 
         error.Should().Contain("reference");
-        workingKey.Should().NotBeNull();
+        workingKey.Should().BeSameAs(TestData.SigningKey);
     }
 
     [Fact]
@@ -138,9 +136,8 @@ public class SignedXmlHelperTests
 
         var signature = xmlDoc.DocumentElement!["Signature", SignedXml.XmlDsigNamespaceUrl]!;
 
-        var (error, _, _) = signature.VerifySignature(TestData.SingleSigningKey, allowedHashes);
-
-        error.Should().Contain("reference");
+        signature.VerifySignature(TestData.SingleSigningKey, allowedHashes)
+            .Error.Should().Contain("reference");
     }
 
     [Fact]
@@ -168,10 +165,9 @@ public class SignedXmlHelperTests
 
         xd.DocumentElement!.AppendChild(signedXml.GetXml());
 
-        var (error, _, _) = xd.DocumentElement["Signature"]!.VerifySignature(
-            TestData.SingleSigningKey, allowedHashes);
-
-        error.Should().Match("Empty reference*");
+        xd.DocumentElement["Signature"]!.VerifySignature(
+            TestData.SingleSigningKey, allowedHashes)
+            .Error.Should().Match("Empty reference*");
     }
 
     [Fact]
@@ -204,10 +200,9 @@ public class SignedXmlHelperTests
 
         xd.DocumentElement!.AppendChild(signedXml.GetXml());
 
-        var (error, _, _) = xd.DocumentElement["Signature"]!.VerifySignature(
-            TestData.SingleSigningKey, allowedHashes);
-
-        error.Should().Match("*Signature*one reference*");
+        xd.DocumentElement["Signature"]!.VerifySignature(
+            TestData.SingleSigningKey, allowedHashes)
+            .Error.Should().Match("*Signature*one reference*");
     }
 
     [Fact]
@@ -237,10 +232,9 @@ public class SignedXmlHelperTests
 
         xd.DocumentElement!.AppendChild(signedXml.GetXml());
 
-        var (error, _, _) = xd.DocumentElement["Signature"]!.VerifySignature(
-            TestData.SingleSigningKey, allowedHashes);
-
-        error.Should().Match("Transform*");
+        xd.DocumentElement["Signature"]!.VerifySignature(
+            TestData.SingleSigningKey, allowedHashes)
+            .Error.Should().Match("Transform*");
     }
 
     [Fact]
@@ -286,10 +280,9 @@ public class SignedXmlHelperTests
 
         xd.DocumentElement!.AppendChild(signedXml.GetXml());
 
-        var (error, _, _) = xd.DocumentElement["Signature"]!
-            .VerifySignature(TestData.SingleSigningKey, allowedHashes);
-
-        error.Should().Match("Signature*algorithm*sha1*");
+        xd.DocumentElement["Signature"]!
+            .VerifySignature(TestData.SingleSigningKey, allowedHashes)
+            .Error.Should().Match("Signature*algorithm*sha1*");
     }
 
     [Fact]
@@ -315,10 +308,9 @@ public class SignedXmlHelperTests
 
         xd.DocumentElement!.AppendChild(signedXml.GetXml());
 
-        var (error, _, _) = xd.DocumentElement["Signature"]!
-            .VerifySignature(TestData.SingleSigningKey, allowedHashes);
-
-        error.Should().Match("Digest*algorithm*sha1*");
+        xd.DocumentElement["Signature"]!
+            .VerifySignature(TestData.SingleSigningKey, allowedHashes)
+            .Error.Should().Match("Digest*algorithm*sha1*");
     }
 
     [Fact]

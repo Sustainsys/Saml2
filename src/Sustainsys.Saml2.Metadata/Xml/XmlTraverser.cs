@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
+using System.Security.Cryptography.Xml;
 using System.Xml;
 
 namespace Sustainsys.Saml2.Metadata.Xml;
@@ -20,6 +21,8 @@ public class XmlTraverser
     public List<Error> Errors = new();
 
     private XmlNode? currentNode;
+    private XmlNode? parentNode;
+    private XmlNode? firstChild;
 
     /// <summary>
     /// The current node being processed.
@@ -35,9 +38,6 @@ public class XmlTraverser
             return currentNode;
         }
     }
-
-    private XmlNode? firstChild;
-    private XmlNode? parentNode;
 
     /// <summary>
     /// Ctor
@@ -70,8 +70,9 @@ public class XmlTraverser
             this.xmlTraverser = xmlTraverser;
             previousParentNode = xmlTraverser.parentNode;
             xmlTraverser.parentNode = xmlTraverser.CurrentNode;
+            xmlTraverser.firstChild = xmlTraverser.CurrentNode.FirstChild;
 
-            // Block further access to the current node as that is not a child node.
+            // We've entered child level, current node cannot be stuck on now-parent.
             xmlTraverser.currentNode = null;
         }
 
@@ -96,10 +97,50 @@ public class XmlTraverser
     /// <exception cref="NotImplementedException"></exception>
     public IDisposable EnterChildLevel()
     {
-        firstChild = CurrentNode.FirstChild;
-
         // Create scope that captures current level and moves to child level
         return new ChildScope(this);
+    }
+
+    /// <summary>
+    /// If the current node is a signature node, read and validate it and 
+    /// </summary>
+    /// <param name="trustedSigningKeys">Signing keys trusted when validating the signature.</param>
+    /// <param name="allowedHashAlgorithms">Allowed hash algorithms.</param>
+    /// <param name="trustLevel">Trust level outcome. None if no signature was processed.</param>
+    /// <returns>True if there was a signature node.</returns>
+    public bool ReadAndValidateOptionalSignature(
+        IEnumerable<SigningKey>? trustedSigningKeys,
+        IEnumerable<string>? allowedHashAlgorithms,
+        out TrustLevel trustLevel)
+    {
+        trustLevel = TrustLevel.None;
+
+        if (CurrentNode.LocalName == "Signature" 
+            && CurrentNode.NamespaceURI == SignedXml.XmlDsigNamespaceUrl)
+        {
+            if (trustedSigningKeys != null
+                && trustedSigningKeys.Any())
+            {
+                trustLevel = ReadAndValidateSignature(trustedSigningKeys, allowedHashAlgorithms);
+            }
+
+            return true;
+        }
+
+        return false;
+    }
+
+    // Private worker method, assumes we've already validated current node is a signature.
+    private TrustLevel ReadAndValidateSignature(
+        IEnumerable<SigningKey> trustedSigningKeys,
+        IEnumerable<string>? allowedHashAlgorithms)
+    {
+        ArgumentNullException.ThrowIfNull(allowedHashAlgorithms);
+
+        var (error, workingKey) = ((XmlElement)CurrentNode)
+            .VerifySignature(trustedSigningKeys, allowedHashAlgorithms);
+
+        return workingKey?.TrustLevel ?? TrustLevel.None;
     }
 
     /// <summary>
@@ -165,8 +206,10 @@ public class XmlTraverser
     /// <param name="namespaceUri">Expected Namespace uri</param>
     /// <param name="localName">Expected local name</param>
     /// <exception cref="Saml2XmlException">Thrown if names do not match</exception>
-    public void EnsureName(string namespaceUri, string localName)
+    public bool EnsureName(string namespaceUri, string localName)
     {
+        var result = true;
+
         if (CurrentNode.Name != localName)
         {
             Errors.Add(new Error(
@@ -174,6 +217,8 @@ public class XmlTraverser
                 localName,
                 CurrentNode,
                 $"Unexpected node name \"{CurrentNode.LocalName}\", expected \"{localName}\"."));
+
+            result = false;
         }
 
         if (CurrentNode.NamespaceURI != namespaceUri)
@@ -183,7 +228,11 @@ public class XmlTraverser
                 localName,
                 CurrentNode,
                 $"Unexpected namespace \"{CurrentNode.NamespaceURI}\" for local name \"{CurrentNode.Name}\", expected \"{namespaceUri}\"."));
+
+            result = false;
         }
+
+        return result;
     }
 
     /// <summary>

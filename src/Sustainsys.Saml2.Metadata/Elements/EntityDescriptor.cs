@@ -1,4 +1,6 @@
-﻿namespace Sustainsys.Saml2.Metadata.Elements;
+﻿using Sustainsys.Saml2.Metadata.Xml;
+
+namespace Sustainsys.Saml2.Metadata.Elements;
 
 /// <summary>
 /// A Saml2 Metadata &lt;EntityDescriptor&gt; element.
@@ -24,4 +26,9 @@ public class EntityDescriptor
     /// Absolute expiry time of any cached data.
     /// </summary>
     public DateTime? ValidUntil { get; set; }
+
+    /// <summary>
+    /// Trust level of this data.
+    /// </summary>
+    public TrustLevel TrustLevel { get; set; }
 }

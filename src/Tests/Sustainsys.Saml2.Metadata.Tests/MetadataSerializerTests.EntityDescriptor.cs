@@ -1,10 +1,12 @@
 ﻿using FluentAssertions;
 using Sustainsys.Saml2.Metadata.Elements;
+using Sustainsys.Saml2.Metadata.Tests.Xml;
 using Sustainsys.Saml2.Metadata.Xml;
 using Sustainsys.Saml2.Tests.Helpers;
 using System;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Security.Cryptography.X509Certificates;
 using Xunit;
 
 namespace Sustainsys.Saml2.Metadata.Tests;
@@ -16,7 +18,7 @@ public partial class MetadataSerializerTests
     {
         var xmlTraverser = GetXmlTraverser();
 
-        var actual = MetadataSerializer.Instance.ReadEntityDescriptor(xmlTraverser);
+        var actual = new MetadataSerializer(null, null).ReadEntityDescriptor(xmlTraverser);
 
         var expected = new EntityDescriptor
         {
@@ -31,7 +33,7 @@ public partial class MetadataSerializerTests
     {
         var xmlTraverser = GetXmlTraverser();
 
-        MetadataSerializer.Instance.Invoking(s => s.ReadEntityDescriptor(xmlTraverser))
+        new MetadataSerializer(null, null).Invoking(s => s.ReadEntityDescriptor(xmlTraverser))
             .Should().Throw<Saml2XmlException>()
             .Where(ex => ex.Errors.Single().Reason == ErrorReason.MissingAttribute);
     }
@@ -41,7 +43,7 @@ public partial class MetadataSerializerTests
     {
         var xmlTraverser = GetXmlTraverser();
 
-        MetadataSerializer.Instance.Invoking(s => s.ReadEntityDescriptor(xmlTraverser))
+        new MetadataSerializer(null, null).Invoking(s => s.ReadEntityDescriptor(xmlTraverser))
             .Should().Throw<Saml2XmlException>()
             .WithMessage("*namespace*");
     }
@@ -51,7 +53,7 @@ public partial class MetadataSerializerTests
     {
         var xmlTraverser = GetXmlTraverser();
 
-        MetadataSerializer.Instance.Invoking(s => s.ReadEntityDescriptor(xmlTraverser))
+        new MetadataSerializer(null, null).Invoking(s => s.ReadEntityDescriptor(xmlTraverser))
             .Should().Throw<Saml2XmlException>()
             .WithMessage("*name*EntityDescriptor*");
     }
@@ -61,7 +63,7 @@ public partial class MetadataSerializerTests
     {
         var xmlTraverser = GetXmlTraverser();
 
-        var actual = MetadataSerializer.Instance.ReadEntityDescriptor(xmlTraverser);
+        var actual = new MetadataSerializer(null, null).ReadEntityDescriptor(xmlTraverser);
 
         var expected = new EntityDescriptor
         {
@@ -79,7 +81,7 @@ public partial class MetadataSerializerTests
     {
         var xmlTraverser = GetXmlTraverser();
 
-        MetadataSerializer.Instance.Invoking(s => s.ReadEntityDescriptor(xmlTraverser))
+        new MetadataSerializer(null, null).Invoking(s => s.ReadEntityDescriptor(xmlTraverser))
             .Should().Throw<Saml2XmlException>()
             .Where(ex => ex.Errors.Single().Reason == ErrorReason.MissingElement);
     }
@@ -88,14 +90,19 @@ public partial class MetadataSerializerTests
     public void ReadEntityDescriptor_ValidateSignature()
     {
         var xmlTraverser = GetXmlTraverser();
-        //xmlTraverser.SigningKeys.Add(new SigningKey
-        //{
-        //    ThumbPrint
-        //})
+        var signingKeys = new[]
+        {
+            new SigningKey
+            {
+                Certificate = new X509Certificate2("stubidp.sustainsys.com.cer"),
+                TrustLevel = TrustLevel.ConfiguredKey
+            }
+        };
 
-        //var actual = MetadataSerializer.Instance.ReadEntityDescriptor(xmlTraverser);
+        var actual = new MetadataSerializer(signingKeys, SignedXmlHelperTests.allowedHashes)
+            .ReadEntityDescriptor(xmlTraverser);
 
-        //actual.TrustLevel 
+        actual.TrustLevel.Should().Be(TrustLevel.ConfiguredKey);
     }
 
     [Fact(Skip = "Not implemented yet")]

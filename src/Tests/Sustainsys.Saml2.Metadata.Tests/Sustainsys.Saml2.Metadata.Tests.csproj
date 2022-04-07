@@ -27,4 +27,10 @@
     <ProjectReference Include="..\Sustainsys.Saml2.Tests.Helpers\Sustainsys.Saml2.Tests.Helpers.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="stubidp.sustainsys.com.cer">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>
