@@ -23,14 +23,24 @@ namespace Sustainsys.Saml2.Tests.Helpers
 
         public static SigningKey SigningKey = new()
         {
-            Key = Certificate.GetRSAPublicKey(),
+            Certificate = Certificate,
             TrustLevel = TrustLevel.ConfiguredKey
+        };
+
+        public static SigningKey[] SingleSigningKey =
+        {
+            SigningKey
         };
 
         public static SigningKey SigningKey2 = new()
         {
-            Key = new X509Certificate2("Sustainsys.Saml2.Tests2.pfx").GetRSAPublicKey(),
+            Certificate = new X509Certificate2("Sustainsys.Saml2.Tests2.pfx"),
             TrustLevel = TrustLevel.TLS
+        };
+
+        public static SigningKey[] SingleSigningKey2 =
+        {
+            SigningKey2
         };
     }
 }

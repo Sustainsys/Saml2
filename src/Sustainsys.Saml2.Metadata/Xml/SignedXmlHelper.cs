@@ -93,7 +93,7 @@ public static class SignedXmlHelper
     /// Verifies a found Xml signature.
     /// </summary>
     /// <param name="signatureElement">The signature element to verify.</param>
-    /// <param name="key">They key to use to verify.</param>
+    /// <param name="keys">They signing keys that can be used to verify.</param>
     /// <param name="allowedHashes">Allowed hash algorithms. Values must be short form, 
     /// lower case e.g. sha256 to match end of algorithm identifier URI, both for
     /// signing and hashing algorithms."</param>
@@ -101,16 +101,16 @@ public static class SignedXmlHelper
     /// TrustLevel of the signed data (based on the key's trust level) and the element
     /// that is signed.</returns>
     /// <exception cref="NotImplementedException"></exception>
-    public static (string? Error, bool KeyWorked, TrustLevel, XmlElement? SignedElement)
-        VerifySignature(this XmlElement signatureElement, SigningKey key, string[] allowedHashes)
+    public static (string? Error, SigningKey? WorkingKey, XmlElement? SignedElement)
+        VerifySignature(this XmlElement signatureElement, IEnumerable<SigningKey> keys, string[] allowedHashes)
     {
         var signedXml = new SignedXmlWithStrictIdResolution(signatureElement.OwnerDocument);
 
         signedXml.LoadXml(signatureElement);
 
         string? error = null;
-        bool keyWorked = false;
         XmlElement? signedElement = null;
+        SigningKey? workingKey = null;
 
         if (signedXml.SignedInfo.References.Count != 1)
         {
@@ -125,11 +125,17 @@ public static class SignedXmlHelper
             FixSignatureIndex(signedXml, signatureElement);
 #endif
 
-            keyWorked = signedXml.CheckSignature(key.Key);
-
-            if (!keyWorked)
+            foreach (var key in keys)
             {
-                error = "Signature didn't verify for the specified key. ";
+                if (signedXml.CheckSignature(key.Certificate, true))
+                {
+                    workingKey = key;
+                }
+            }
+
+            if (workingKey == null)
+            {
+                error = "Signature didn't verify for any of the the specified keys. ";
             }
 
             var reference = (Reference)signedXml.SignedInfo.References[0]!;
@@ -183,8 +189,7 @@ public static class SignedXmlHelper
 
         return (
             error?.TrimEnd(),
-            keyWorked,
-            valid ? key.TrustLevel : TrustLevel.None,
+            workingKey,
             valid ? signedElement : null);
     }
 
