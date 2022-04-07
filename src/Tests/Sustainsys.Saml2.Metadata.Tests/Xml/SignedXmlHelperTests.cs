@@ -4,6 +4,7 @@ using Sustainsys.Saml2.Tests.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 using System.Security.Cryptography.Xml;
 using System.Text;
@@ -16,7 +17,7 @@ namespace Sustainsys.Saml2.Metadata.Tests.Xml;
 public class SignedXmlHelperTests
 {
     private readonly string[] allowedHashes = { "sha256" };
-    
+
     private XmlDocument CreateSignedDocument()
     {
         var xml = "<xml ID=\"id123\"/>";
@@ -328,10 +329,75 @@ public class SignedXmlHelperTests
     public void IsSignedByAny_NoKeyMatches_ButEmbeddedKeyValidatesContent()
     { }
 
-    [Fact(Skip = "Test Not Implemented")]
+    [Fact]
     public void VerifySignaure_RejectsDuplicateIdsEvenIfCaseDiffer()
     {
         // Ensure that a document where referenced id exists in multiple
-        // locations but ID is spelled Id or id is rejected.
+        // locations but ID is spelled Id or id is rejected. Allowing this is a
+        // questionable design of SignedXml that Microsoft is not fixing.
+
+        var xml = "<xml><b ID=\"a\"/></xml>";
+
+        var xd = new XmlDocument();
+        xd.LoadXml(xml);
+
+        var signedXml = new SignedXml(xd)
+        {
+            SigningKey = TestData.Certificate.GetRSAPrivateKey()
+        };
+
+        var reference = new Reference("#a");
+        reference.AddTransform(new XmlDsigEnvelopedSignatureTransform());
+        reference.AddTransform(new XmlDsigExcC14NTransform());
+        signedXml.AddReference(reference);
+
+        signedXml.ComputeSignature();
+
+        var b = xd.DocumentElement!["b"]!;
+
+        // Need to add the extra node after the signature was created.
+        var a = xd.CreateElement("a");
+        a.SetAttribute("Id", "a");
+        xd.DocumentElement.AppendChild(a);
+
+        b.AppendChild(signedXml.GetXml());
+
+        b["Signature"]!.Invoking(s => s.VerifySignature(TestData.SigningKey, allowedHashes))
+            .Should().Throw<CryptographicException>()
+            .WithMessage("Reference*one*");
+    }
+
+    [Fact]
+    public void VerifySignature_RejectXmlLowerCaseIDs()
+    {
+        var xml = "<xml id=\"a\"/>";
+
+        var xd = new XmlDocument();
+        xd.LoadXml(xml);
+
+        var signedXml = new SignedXml(xd)
+        {
+            SigningKey = TestData.Certificate.GetRSAPrivateKey()
+        };
+
+        var reference = new Reference("#a");
+        reference.AddTransform(new XmlDsigEnvelopedSignatureTransform());
+        reference.AddTransform(new XmlDsigExcC14NTransform());
+        signedXml.AddReference(reference);
+
+        signedXml.ComputeSignature();
+
+        xd.DocumentElement!.AppendChild(signedXml.GetXml());
+
+        xd.DocumentElement!["Signature"]!
+            .Invoking(s => s.VerifySignature(TestData.SigningKey, allowedHashes))
+            .Should().Throw<CryptographicException>()
+            .WithMessage("Reference*ID*uppercase*");
+    }
+
+    [Fact(Skip = "Not implemented yet")]
+    public void VerifySignature_RequiresReferenceNCName()
+    {
+        // Verify an Non-NCName for the ID doesn't pass.
     }
 }

@@ -47,6 +47,49 @@ public static class SignedXmlHelper
     }
 
     /// <summary>
+    /// Signed Xml version that is strict that the ID attribute must be exactly ID and
+    /// not contains any weird fallback behaviour.
+    /// </summary>
+    public class SignedXmlWithStrictIdResolution : SignedXml
+    {
+        /// <summary>
+        /// Ctor
+        /// </summary>
+        /// <param name="xmlDocument">Xml document</param>
+        internal SignedXmlWithStrictIdResolution(XmlDocument xmlDocument)
+            : base(xmlDocument)
+        { }
+
+        /// <summary>
+        /// Get Id Element, being strict
+        /// </summary>
+        /// <param name="document">Xml Document</param>
+        /// <param name="idValue">Id value to find</param>
+        /// <returns>XmlElement</returns>
+        /// <exception cref="CryptographicException">If not exactly one match</exception>
+        public override XmlElement GetIdElement(XmlDocument document, string idValue)
+        {
+            var possibleNodes = document.SelectNodes($"//*[@ID=\"{idValue}\" or @Id=\"{idValue}\" or @id=\"{idValue}\"]")!;
+
+            if (possibleNodes.Count != 1)
+            {
+                throw new CryptographicException("Reference target should resolve to exactly one node");
+            }
+
+            var element = (XmlElement)possibleNodes[0]!;
+
+            var attr = element.GetAttributeNode("ID");
+            if(attr == null)
+            {
+                // If we don't find the ID attribute it means it matched Id or id, which is not allowed.
+                throw new CryptographicException("Reference target ID attribute must be named ID with uppercase letters");
+            }
+
+            return element;
+        }
+    }
+
+    /// <summary>
     /// Verifies a found Xml signature.
     /// </summary>
     /// <param name="signatureElement">The signature element to verify.</param>
@@ -61,7 +104,7 @@ public static class SignedXmlHelper
     public static (string? Error, bool KeyWorked, TrustLevel, XmlElement? SignedElement)
         VerifySignature(this XmlElement signatureElement, SigningKey key, string[] allowedHashes)
     {
-        var signedXml = new SignedXml(signatureElement.OwnerDocument);
+        var signedXml = new SignedXmlWithStrictIdResolution(signatureElement.OwnerDocument);
 
         signedXml.LoadXml(signatureElement);
 
@@ -107,7 +150,7 @@ public static class SignedXmlHelper
                 }
             }
 
-            foreach(Transform transform in reference.TransformChain)
+            foreach (Transform transform in reference.TransformChain)
             {
                 switch (transform.Algorithm)
                 {
