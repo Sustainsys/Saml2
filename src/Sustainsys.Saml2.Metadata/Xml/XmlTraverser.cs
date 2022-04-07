@@ -18,7 +18,7 @@ public class XmlTraverser
     /// <summary>
     /// Errors encountered so far during the traversal.
     /// </summary>
-    public List<Error> Errors = new();
+    public List<Error> Errors { get; } = new();
 
     private XmlNode? currentNode;
     private XmlNode? parentNode;
@@ -46,6 +46,11 @@ public class XmlTraverser
     public XmlTraverser(XmlNode rootNode)
     {
         currentNode = rootNode;
+    }
+
+    private void AddError(ErrorReason reason, string message)
+    {
+        Errors.Add(new(reason, CurrentNode.LocalName, CurrentNode, message));
     }
 
     /// <summary>
@@ -140,6 +145,11 @@ public class XmlTraverser
         var (error, workingKey) = ((XmlElement)CurrentNode)
             .VerifySignature(trustedSigningKeys, allowedHashAlgorithms);
 
+        if(!string.IsNullOrEmpty(error))
+        {
+            AddError(ErrorReason.SignatureFailure, error);
+        }
+
         return workingKey?.TrustLevel ?? TrustLevel.None;
     }
 
@@ -171,11 +181,7 @@ public class XmlTraverser
             // We are ok to skip over white space and comments , but anything else is an error.
             if (currentNode.NodeType != XmlNodeType.Whitespace && currentNode.NodeType != XmlNodeType.Comment)
             {
-                Errors.Add(new Error(
-                    ErrorReason.UnsupportedNodeType,
-                    currentNode.LocalName,
-                    currentNode,
-                    $"Unsupported node type {currentNode.NodeType}"));
+                AddError(ErrorReason.UnsupportedNodeType, $"Unsupported node type {currentNode.NodeType}");
             }
         }
     }
@@ -190,11 +196,11 @@ public class XmlTraverser
 
         if (!result)
         {
-            Errors.Add(new Error(
+            Errors.Add(new(
                 ErrorReason.MissingElement,
                 parentNode!.LocalName,
-                parentNode!,
-                $"There should be a child element here under {parentNode.LocalName}, but found none."));
+                parentNode,
+                $"There should be a child element here under {parentNode!.LocalName}, but found none."));
         }
 
         return result;
@@ -212,22 +218,18 @@ public class XmlTraverser
 
         if (CurrentNode.Name != localName)
         {
-            Errors.Add(new Error(
+            AddError(
                 ErrorReason.UnexpectedLocalName,
-                localName,
-                CurrentNode,
-                $"Unexpected node name \"{CurrentNode.LocalName}\", expected \"{localName}\"."));
+                $"Unexpected node name \"{CurrentNode.LocalName}\", expected \"{localName}\".");
 
             result = false;
         }
 
         if (CurrentNode.NamespaceURI != namespaceUri)
         {
-            Errors.Add(new Error(
+            AddError(
                 ErrorReason.UnexpectedNamespace,
-                localName,
-                CurrentNode,
-                $"Unexpected namespace \"{CurrentNode.NamespaceURI}\" for local name \"{CurrentNode.Name}\", expected \"{namespaceUri}\"."));
+                $"Unexpected namespace \"{CurrentNode.NamespaceURI}\" for local name \"{CurrentNode.Name}\", expected \"{namespaceUri}\".");
 
             result = false;
         }
@@ -257,11 +259,9 @@ public class XmlTraverser
 
         if (value == null)
         {
-            Errors.Add(new Error(
+            AddError(
                 ErrorReason.MissingAttribute,
-                localName,
-                CurrentNode,
-                $"Required attribute {localName} not found on {CurrentNode.Name}."));
+                $"Required attribute {localName} not found on {CurrentNode.Name}.");
         }
 
         return value;

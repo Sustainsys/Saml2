@@ -40,4 +40,9 @@ public enum ErrorReason
     /// Tried to move to next child element, but there was none as it should be.
     /// </summary>
     MissingElement,
+
+    /// <summary>
+    /// A signature failed validation.
+    /// </summary>
+    SignatureFailure,
 }

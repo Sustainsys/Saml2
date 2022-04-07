@@ -105,6 +105,17 @@ public partial class MetadataSerializerTests
         actual.TrustLevel.Should().Be(TrustLevel.ConfiguredKey);
     }
 
+    [Fact]
+    public void ReadEntityDescriptor_ValidateSignature_ReportsError()
+    {
+        var xmlTraverser = GetXmlTraverser();
+
+        var actual = new MetadataSerializer(TestData.SingleSigningKey, SignedXmlHelperTests.allowedHashes)
+            .Invoking(s => s.ReadEntityDescriptor(xmlTraverser))
+            .Should().Throw<Saml2XmlException>()
+            .WithMessage("Signature*");
+    }
+
     [Fact(Skip = "Not implemented yet")]
     public void ReadEntityDescriptor_ValidateElementName()
     {
