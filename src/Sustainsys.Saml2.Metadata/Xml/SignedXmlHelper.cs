@@ -41,6 +41,8 @@ public static class SignedXmlHelper
         reference.AddTransform(new XmlDsigExcC14NTransform());
         signedXml.AddReference(reference);
 
+        signedXml.KeyInfo.AddClause(new KeyInfoX509Data(certificate));
+
         signedXml.ComputeSignature();
 
         element.AppendChild(signedXml.GetXml());
@@ -135,7 +137,14 @@ public static class SignedXmlHelper
 
             if (workingKey == null)
             {
-                error = "Signature didn't verify for any of the the specified keys. ";
+                if(signedXml.CheckSignatureReturningKey(out _))
+                {
+                    error += "Signature validated with the contained key, but that is not configured as a trusted key. ";
+                }
+                else
+                {
+                    error += "Signature didn't verify for any of the the specified keys. ";
+                }
             }
 
             var reference = (Reference)signedXml.SignedInfo.References[0]!;

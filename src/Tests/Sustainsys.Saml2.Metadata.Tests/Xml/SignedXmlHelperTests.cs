@@ -336,9 +336,19 @@ public class SignedXmlHelperTests
             .Error.Should().BeNull();
     }
 
-    [Fact(Skip = "Not Implemented yet")]
+    [Fact]
     public void IsSignedByAny_NoKeyMatches_ButEmbeddedKeyValidatesContent()
-    { }
+    {
+        var xml = "<xml ID=\"a\"/>";
+
+        var xd = new XmlDocument();
+        xd.LoadXml(xml);
+
+        xd.DocumentElement!.Sign(TestData.Certificate);
+
+        xd.DocumentElement!["Signature"]!.VerifySignature(TestData.SingleSigningKey2, allowedHashes)
+            .Error.Should().Match("*validated*contained*trusted*");
+    }
 
     [Fact]
     public void VerifySignaure_RejectsDuplicateIdsEvenIfCaseDiffer()
