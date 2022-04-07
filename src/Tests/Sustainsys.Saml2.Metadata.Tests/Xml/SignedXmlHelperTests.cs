@@ -336,7 +336,7 @@ public class SignedXmlHelperTests
             .Error.Should().BeNull();
     }
 
-    [Fact]
+    [Fact(Skip = "Not Implemented yet")]
     public void IsSignedByAny_NoKeyMatches_ButEmbeddedKeyValidatesContent()
     { }
 
@@ -406,9 +406,42 @@ public class SignedXmlHelperTests
             .WithMessage("Reference*ID*uppercase*");
     }
 
-    [Fact(Skip = "Not implemented yet")]
+    private class SignRootSignedXml : SignedXml
+    {
+        public SignRootSignedXml(XmlDocument xd) : base(xd) { }
+
+        // Hack that allows us to create a signature with invalid reference for the
+        // VerifySignature_RequiresReferenceNCName test.
+        public override XmlElement GetIdElement(XmlDocument document, string idValue)
+            => document.DocumentElement!;
+    }
+
+    [Fact]
     public void VerifySignature_RequiresReferenceNCName()
     {
         // Verify an Non-NCName for the ID doesn't pass.
+        var xml = "<xml ID=\"urn:a\"/>";
+
+        var xd = new XmlDocument();
+        xd.LoadXml(xml);
+
+        var signedXml = new SignRootSignedXml(xd)
+        {
+            SigningKey = TestData.Certificate.GetRSAPrivateKey()
+        };
+
+        var reference = new Reference("#urn:a");
+
+        reference.AddTransform(new XmlDsigEnvelopedSignatureTransform());
+        reference.AddTransform(new XmlDsigExcC14NTransform());
+        signedXml.AddReference(reference);
+
+        signedXml.ComputeSignature();
+
+        xd.DocumentElement!.AppendChild(signedXml.GetXml());
+
+        xd.DocumentElement!["Signature"]!
+            .Invoking(s => s.VerifySignature(TestData.SingleSigningKey, allowedHashes))
+            .Should().Throw<XmlException>();
     }
 }

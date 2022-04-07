@@ -50,7 +50,7 @@ public static class SignedXmlHelper
     /// Signed Xml version that is strict that the ID attribute must be exactly ID and
     /// not contains any weird fallback behaviour.
     /// </summary>
-    public class SignedXmlWithStrictIdResolution : SignedXml
+    internal class SignedXmlWithStrictIdResolution : SignedXml
     {
         /// <summary>
         /// Ctor
@@ -142,11 +142,13 @@ public static class SignedXmlHelper
 
             if (reference.Uri == "")
             {
-                error += "Empty reference URI is not allowed in Saml2. ";
+                error += "Empty reference URI (implying the whole document is signed) is not allowed in Saml2. ";
             }
             else
             {
                 var id = reference.Uri.Substring(1); // Drop off the #
+
+                XmlConvert.VerifyNCName(id);
 
                 signedElement = signedXml.GetIdElement(signatureElement.OwnerDocument, id);
 
