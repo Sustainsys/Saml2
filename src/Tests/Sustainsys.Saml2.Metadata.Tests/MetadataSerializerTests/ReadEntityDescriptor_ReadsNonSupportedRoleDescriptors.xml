@@ -1,0 +1,6 @@
+﻿<EntityDescriptor xmlns="urn:oasis:names:tc:SAML:2.0:metadata" entityID="https://stubidp.sustainsys.com/Metadata" >
+	<RoleDescriptor />
+	<AuthnAuthorityDescriptor />
+	<AttributeAuthorityDescriptor />
+	<PDPDescriptor />
+</EntityDescriptor>

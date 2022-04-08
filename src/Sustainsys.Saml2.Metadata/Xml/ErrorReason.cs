@@ -45,4 +45,9 @@ public enum ErrorReason
     /// A signature failed validation.
     /// </summary>
     SignatureFailure,
+
+    /// <summary>
+    /// There are extra elements that were neither processed nor ignored.
+    /// </summary>
+    ExtraElements,
 }

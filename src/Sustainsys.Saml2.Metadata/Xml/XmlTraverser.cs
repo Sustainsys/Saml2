@@ -88,6 +88,16 @@ public class XmlTraverser
                 throw new InvalidOperationException();
             }
 
+            // Detect if we are leaving unprocessed child elements.
+            if(xmlTraverser.currentNode != null)
+            {
+                xmlTraverser.Errors.Add(new(
+                    ErrorReason.ExtraElements,
+                    xmlTraverser.currentNode.LocalName,
+                    xmlTraverser.currentNode,
+                    $"Unexpected child element {xmlTraverser.currentNode.LocalName} found, all elements should be processed or explicitly skipped."));
+            }
+
             xmlTraverser.currentNode = xmlTraverser.parentNode;
             xmlTraverser.parentNode = previousParentNode;
             isDisposed = true;

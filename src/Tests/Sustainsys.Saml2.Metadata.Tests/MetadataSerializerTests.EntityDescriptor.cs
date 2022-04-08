@@ -128,11 +128,23 @@ public partial class MetadataSerializerTests
     }
 
     [Fact]
-    public void ReadEntityDescriptor_SkipsExtensions()
+    public void ReadEntityDescriptor_ReadsExtensions()
+    {
+        var xmlTraverser = GetXmlTraverser();
+
+        // Should not throw.
+        new MetadataSerializer(null, null)
+            .ReadEntityDescriptor(xmlTraverser);
+    }
+
+    [Fact]
+    public void ReadEntityDescriptor_FailsOnNonProcessedElements()
     {
         var xmlTraverser = GetXmlTraverser();
 
         new MetadataSerializer(null, null)
-            .ReadEntityDescriptor(xmlTraverser);
+            .Invoking(s => s.ReadEntityDescriptor(xmlTraverser))
+            .Should().Throw<Saml2XmlException>()
+            .WithMessage("*InvalidElement*");
     }
 }

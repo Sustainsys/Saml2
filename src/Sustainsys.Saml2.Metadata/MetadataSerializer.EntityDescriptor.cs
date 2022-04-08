@@ -1,6 +1,5 @@
 ﻿using Sustainsys.Saml2.Metadata.Elements;
 using Sustainsys.Saml2.Metadata.Xml;
-using System.Xml;
 
 namespace Sustainsys.Saml2.Metadata;
 
@@ -53,8 +52,8 @@ public class MetadataSerializer
     public virtual EntityDescriptor ReadEntityDescriptor(XmlTraverser source)
     {
         var entityDescriptor = CreateEntityDescriptor();
-        
-        if(source.EnsureName(Namespaces.Metadata, "EntityDescriptor"))
+
+        if (source.EnsureName(Namespaces.Metadata, ElementNames.EntityDescriptor))
         {
             ReadAttributes(source, entityDescriptor);
 
@@ -76,10 +75,10 @@ public class MetadataSerializer
     /// <param name="entityDescriptor">EntityDescriptor</param>
     protected virtual void ReadAttributes(XmlTraverser source, EntityDescriptor entityDescriptor)
     {
-        entityDescriptor.EntityId = source.GetRequiredAbsoluteUriAttribute("entityID");
-        entityDescriptor.Id = source.GetAttribute("ID");
-        entityDescriptor.CacheDuraton = source.GetTimeSpanAttribute("cacheDuration");
-        entityDescriptor.ValidUntil = source.GetDateTimeAttribute("validUntil");
+        entityDescriptor.EntityId = source.GetRequiredAbsoluteUriAttribute(AttributeNames.entityID);
+        entityDescriptor.Id = source.GetAttribute(AttributeNames.ID);
+        entityDescriptor.CacheDuraton = source.GetTimeSpanAttribute(AttributeNames.cacheDuration);
+        entityDescriptor.ValidUntil = source.GetDateTimeAttribute(AttributeNames.validUntil);
     }
 
     /// <summary>
@@ -99,30 +98,71 @@ public class MetadataSerializer
         {
             entityDescriptor.TrustLevel = trustLevel;
 
-            if(!source.MoveToNextRequiredChild())
+            if (!source.MoveToNextRequiredChild())
             {
                 return;
             }
         }
 
-        if(ReadExtensions(source, entityDescriptor)
+        if (ReadExtensions(source, entityDescriptor)
             && !source.MoveToNextRequiredChild())
         {
             return;
         }
 
+        // Now we're at the actual role descriptors - or possibly an AffiliationDescriptor.
+        bool roleDescriptorRead;
+        do
+        {
+            switch (source.CurrentNode.LocalName)
+            {
+                case ElementNames.RoleDescriptor:
+                    roleDescriptorRead = ReadRoleDescriptor(source, entityDescriptor);
+                    break;
+                case ElementNames.IDPSSODescriptor:
+                    roleDescriptorRead = ReadIDPSSODescriptor(source, entityDescriptor);
+                    break;
+                default:
+                    roleDescriptorRead = false;
+                    break;
+            }
 
+        } while (roleDescriptorRead && source.MoveToNextChild());
     }
 
     /// <summary>
-    /// Process extensions node. Default just checks if this is an extensions node and then returns.
+    /// Process extensions node. Default just checks qualified name and then returns.
     /// </summary>
     /// <param name="source">Source</param>
     /// <param name="entityDescriptor">Currently processed EntityDescriptor</param>
     /// <returns>True if current node was an Extensions element</returns>
     protected virtual bool ReadExtensions(XmlTraverser source, EntityDescriptor entityDescriptor)
     {
-        return source.CurrentNode.LocalName == "Extensions"
+        return source.CurrentNode.LocalName == ElementNames.Extensions
+            && source.CurrentNode.NamespaceURI == Namespaces.Metadata;
+    }
+
+    /// <summary>
+    /// Process a RoleDescriptor element. Default just checks qualified name and then returns.
+    /// </summary>
+    /// <param name="source">Source</param>
+    /// <param name="entityDescriptor">Currently processed EntityDescriptor</param>
+    /// <returns>True if current node was a RoleDescriptor element</returns>
+    protected bool ReadRoleDescriptor(XmlTraverser source, EntityDescriptor entityDescriptor)
+    {
+        return source.CurrentNode.LocalName == ElementNames.RoleDescriptor
+            && source.CurrentNode.NamespaceURI == Namespaces.Metadata;
+    }
+
+    /// <summary>
+    /// Process an IDPSSODescriptor element.
+    /// </summary>
+    /// <param name="source">Source</param>
+    /// <param name="entityDescriptor">Currently processed EntityDescriptor</param>
+    /// <returns>True if current node was an IDPSSoDescriptor element</returns>
+    protected bool ReadIDPSSODescriptor(XmlTraverser source, EntityDescriptor entityDescriptor)
+    {
+        return source.CurrentNode.LocalName == ElementNames.IDPSSODescriptor
             && source.CurrentNode.NamespaceURI == Namespaces.Metadata;
     }
 }
