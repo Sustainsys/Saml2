@@ -6,7 +6,7 @@
 public static class Namespaces
 {
     /// <summary>
-    /// The Saml2 Metadat namespace uri.
+    /// The Saml2 Metadata namespace uri.
     /// </summary>
     public const string Metadata = "urn:oasis:names:tc:SAML:2.0:metadata";
 }

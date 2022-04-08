@@ -11,7 +11,7 @@ public class EntityDescriptor
     /// <summary>
     /// Id of the Entity. MUST be an absolute URI
     /// </summary>
-    public string? EntityId { get; set; }
+    public string EntityId { get; set; } = "";
     
     /// <summary>
     /// Id of the EntityDescriptor node.
@@ -37,4 +37,9 @@ public class EntityDescriptor
     /// The extensions node of the metadata.
     /// </summary>
     public XmlElement? Extensions { get; set; }
+
+    /// <summary>
+    /// Role Descriptors.
+    /// </summary>
+    public List<RoleDescriptor> RoleDescriptors { get; } = new();
 }

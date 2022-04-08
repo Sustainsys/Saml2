@@ -22,7 +22,14 @@ public partial class MetadataSerializerTests
 
         var expected = new EntityDescriptor
         {
-            EntityId = "https://stubidp.sustainsys.com/Metadata"
+            EntityId = "https://stubidp.sustainsys.com/Metadata",
+            RoleDescriptors =
+            {
+                new RoleDescriptor
+                {
+                    ProtocolSupportEnumeration = "urn:whatever"
+                }
+            }
         };
 
         actual.Should().BeEquivalentTo(expected);
@@ -35,7 +42,7 @@ public partial class MetadataSerializerTests
 
         new MetadataSerializer(null, null).Invoking(s => s.ReadEntityDescriptor(xmlTraverser))
             .Should().Throw<Saml2XmlException>()
-            .Where(ex => ex.Errors.Single().Reason == ErrorReason.MissingAttribute);
+            .WithErrors(ErrorReason.MissingAttribute);
     }
 
     [Fact]
@@ -45,7 +52,7 @@ public partial class MetadataSerializerTests
 
         new MetadataSerializer(null, null).Invoking(s => s.ReadEntityDescriptor(xmlTraverser))
             .Should().Throw<Saml2XmlException>()
-            .WithMessage("*namespace*");
+            .WithErrors(ErrorReason.UnexpectedNamespace);
     }
 
     [Fact]
@@ -55,6 +62,7 @@ public partial class MetadataSerializerTests
 
         new MetadataSerializer(null, null).Invoking(s => s.ReadEntityDescriptor(xmlTraverser))
             .Should().Throw<Saml2XmlException>()
+            .WithErrors(ErrorReason.UnexpectedLocalName)
             .WithMessage("*name*EntityDescriptor*");
     }
 
@@ -70,7 +78,14 @@ public partial class MetadataSerializerTests
             EntityId = "https://stubidp.sustainsys.com/Metadata",
             Id = "_eb83b59a-572a-480b-b36c-e3a3edfd92d0",
             CacheDuraton = TimeSpan.FromMinutes(15),
-            ValidUntil = new DateTime(2022, 03, 15, 20, 47, 00, DateTimeKind.Utc)
+            ValidUntil = new DateTime(2022, 03, 15, 20, 47, 00, DateTimeKind.Utc),
+            RoleDescriptors =
+            {
+                new RoleDescriptor
+                {
+                    ProtocolSupportEnumeration = "urn:whatever"
+                }
+            }
         };
 
         actual.Should().BeEquivalentTo(expected);
@@ -83,7 +98,7 @@ public partial class MetadataSerializerTests
 
         new MetadataSerializer(null, null).Invoking(s => s.ReadEntityDescriptor(xmlTraverser))
             .Should().Throw<Saml2XmlException>()
-            .Where(ex => ex.Errors.Single().Reason == ErrorReason.MissingElement);
+            .WithErrors(ErrorReason.MissingElement);
     }
 
     [Fact]
@@ -113,7 +128,7 @@ public partial class MetadataSerializerTests
         var actual = new MetadataSerializer(TestData.SingleSigningKey, SignedXmlHelperTests.allowedHashes)
             .Invoking(s => s.ReadEntityDescriptor(xmlTraverser))
             .Should().Throw<Saml2XmlException>()
-            .WithMessage("Signature*");
+            .WithErrors(ErrorReason.SignatureFailure);
     }
 
     [Fact]
@@ -124,7 +139,8 @@ public partial class MetadataSerializerTests
         var actual = new MetadataSerializer(null, null)
             .Invoking(s => s.ReadEntityDescriptor(xmlTraverser))
             .Should().Throw<Saml2XmlException>()
-            .WithMessage("Unexpected*metadata\".");
+            .WithErrors(ErrorReason.UnexpectedLocalName, ErrorReason.UnexpectedNamespace)
+            .WithMessage("Unexpected*metadata*");
     }
 
     [Fact]
@@ -145,6 +161,7 @@ public partial class MetadataSerializerTests
         new MetadataSerializer(null, null)
             .Invoking(s => s.ReadEntityDescriptor(xmlTraverser))
             .Should().Throw<Saml2XmlException>()
+            .WithErrors(ErrorReason.ExtraElements)
             .WithMessage("*InvalidElement*");
     }
 }

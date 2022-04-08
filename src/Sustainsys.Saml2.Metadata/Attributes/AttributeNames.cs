@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Sustainsys.Saml2.Metadata.Elements;
+namespace Sustainsys.Saml2.Metadata.Attributes;
 
 /// <summary>
 /// Names of attributes.
@@ -30,7 +30,22 @@ public static class AttributeNames
     public const string cacheDuration = nameof(cacheDuration);
 
     /// <summary>
-    /// validUntil attribute Name.
+    /// validUntil attribute name.
     /// </summary>
     public const string validUntil = nameof(validUntil);
+
+    /// <summary>
+    /// Binding attibute name.
+    /// </summary>
+    public const string Binding = nameof(Binding);
+
+    /// <summary>
+    /// Location attribute name.
+    /// </summary>
+    public const string Location = nameof(Location);
+
+    /// <summary>
+    /// protocolSupportEnumeration attribute name.
+    /// </summary>
+    public const string protocolSupportEnumeration = nameof(protocolSupportEnumeration);
 }

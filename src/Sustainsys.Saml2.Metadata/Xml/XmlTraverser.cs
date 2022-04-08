@@ -217,14 +217,32 @@ public class XmlTraverser
     }
 
     /// <summary>
+    /// Ensures that the node has the specific namespace.
+    /// </summary>
+    /// <param name="namespaceUri">Expected Namespace uri.</param>
+    /// <returns>True if ok</returns>
+    public bool EnsureNamespace(string namespaceUri)
+    {
+        if (CurrentNode.NamespaceURI != namespaceUri)
+        {
+            AddError(
+                ErrorReason.UnexpectedNamespace,
+                $"Unexpected namespace \"{CurrentNode.NamespaceURI}\" for local name \"{CurrentNode.Name}\", expected \"{namespaceUri}\".");
+
+            return false;
+        }
+        return true;
+    }
+
+    /// <summary>
     /// Ensure that the current node has a specific localName and namespace.
     /// </summary>
     /// <param name="namespaceUri">Expected Namespace uri</param>
     /// <param name="localName">Expected local name</param>
-    /// <exception cref="Saml2XmlException">Thrown if names do not match</exception>
+    /// <returns>True if both are ok</returns>
     public bool EnsureName(string namespaceUri, string localName)
     {
-        var result = true;
+        var namespaceOk = EnsureNamespace(namespaceUri);
 
         if (CurrentNode.Name != localName)
         {
@@ -232,19 +250,10 @@ public class XmlTraverser
                 ErrorReason.UnexpectedLocalName,
                 $"Unexpected node name \"{CurrentNode.LocalName}\", expected \"{localName}\".");
 
-            result = false;
+            return false;
         }
 
-        if (CurrentNode.NamespaceURI != namespaceUri)
-        {
-            AddError(
-                ErrorReason.UnexpectedNamespace,
-                $"Unexpected namespace \"{CurrentNode.NamespaceURI}\" for local name \"{CurrentNode.Name}\", expected \"{namespaceUri}\".");
-
-            result = false;
-        }
-
-        return result;
+        return namespaceOk;
     }
 
     /// <summary>
@@ -274,7 +283,7 @@ public class XmlTraverser
                 $"Required attribute {localName} not found on {CurrentNode.Name}.");
         }
 
-        return value;
+        return value; 
     }
 
     /// <summary>
@@ -351,4 +360,6 @@ public class XmlTraverser
 
         return default;
     }
+
+    internal string GetRequiredAttribute(object location) => throw new NotImplementedException();
 }

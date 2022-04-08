@@ -24,4 +24,9 @@ public static class ElementNames
     /// Extensions XML node name.
     /// </summary>
     public const string Extensions = nameof(Extensions);
+
+    /// <summary>
+    /// SingleSignOnService XML node name.
+    /// </summary>
+    public const string SingleSignOnService = nameof(SingleSignOnService);
 }

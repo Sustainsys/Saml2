@@ -1,0 +1,5 @@
+<EntityDescriptor xmlns="urn:oasis:names:tc:SAML:2.0:metadata" entityID="https://stubidp.sustainsys.com/Metadata" >
+	<IDPSSODescriptor protocolSupportEnumeration="urn:oasis:names:tc:SAML:2.0:protocol">
+		<SingleSignOnService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect" Location="https://stubidp.sustainsys.com/" />
+	</IDPSSODescriptor>
+</EntityDescriptor>

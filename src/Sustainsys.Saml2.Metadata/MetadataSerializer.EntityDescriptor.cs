@@ -1,4 +1,5 @@
-﻿using Sustainsys.Saml2.Metadata.Elements;
+﻿using Sustainsys.Saml2.Metadata.Attributes;
+using Sustainsys.Saml2.Metadata.Elements;
 using Sustainsys.Saml2.Metadata.Xml;
 
 namespace Sustainsys.Saml2.Metadata;
@@ -75,7 +76,7 @@ public partial class MetadataSerializer
     /// <param name="entityDescriptor">EntityDescriptor</param>
     protected virtual void ReadAttributes(XmlTraverser source, EntityDescriptor entityDescriptor)
     {
-        entityDescriptor.EntityId = source.GetRequiredAbsoluteUriAttribute(AttributeNames.entityID);
+        entityDescriptor.EntityId = source.GetRequiredAbsoluteUriAttribute(AttributeNames.entityID) ?? "";
         entityDescriptor.Id = source.GetAttribute(AttributeNames.ID);
         entityDescriptor.CacheDuraton = source.GetTimeSpanAttribute(AttributeNames.cacheDuration);
         entityDescriptor.ValidUntil = source.GetDateTimeAttribute(AttributeNames.validUntil);
@@ -111,22 +112,39 @@ public partial class MetadataSerializer
         }
 
         // Now we're at the actual role descriptors - or possibly an AffiliationDescriptor.
-        bool roleDescriptorRead;
+        bool wasRoleDescriptor = true; // Assume the best.
         do
         {
-            switch (source.CurrentNode.LocalName)
+            if(source.EnsureNamespace(Namespaces.Metadata))
             {
-                case ElementNames.RoleDescriptor:
-                    roleDescriptorRead = ReadRoleDescriptor(source, entityDescriptor);
-                    break;
-                case ElementNames.IDPSSODescriptor:
-                    roleDescriptorRead = ReadIDPSSODescriptor(source, entityDescriptor);
-                    break;
-                default:
-                    roleDescriptorRead = false;
-                    break;
+                switch (source.CurrentNode.LocalName)
+                {
+                    case ElementNames.RoleDescriptor:
+                        entityDescriptor.RoleDescriptors.Add(ReadRoleDescriptor(source));
+                        break;
+                    case ElementNames.IDPSSODescriptor:
+                        entityDescriptor.RoleDescriptors.Add(ReadIDPSSODescriptor(source));
+                        break;
+                    // SPSSODescriptor, AuthnAuthorityDescriptor, AttributeAuthorityDescriptor, PDPDescriptor, 
+                    default:
+                        wasRoleDescriptor = false; // Nope, something else.
+                        break;
+                }
             }
+        } while (wasRoleDescriptor && source.MoveToNextChild());
 
-        } while (roleDescriptorRead && source.MoveToNextChild());
+        // AffiliationDescriptor
+    }
+
+    /// <summary>
+    /// Process extensions node. Default just checks qualified name and then returns.
+    /// </summary>
+    /// <param name="source">Source</param>
+    /// <param name="entityDescriptor">Currently processed EntityDescriptor</param>
+    /// <returns>True if current node was an Extensions element</returns>
+    protected virtual bool ReadExtensions(XmlTraverser source, EntityDescriptor entityDescriptor)
+    {
+        return source.CurrentNode.LocalName == ElementNames.Extensions
+            && source.CurrentNode.NamespaceURI == Namespaces.Metadata;
     }
 }
