@@ -36,7 +36,7 @@ public class EntityDescriptor
     /// <summary>
     /// The extensions node of the metadata.
     /// </summary>
-    public XmlElement? Extensions { get; set; }
+    public Extensions? Extensions { get; set; }
 
     /// <summary>
     /// Role Descriptors.

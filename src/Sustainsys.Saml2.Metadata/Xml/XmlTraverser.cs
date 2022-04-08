@@ -244,7 +244,7 @@ public class XmlTraverser
     {
         var namespaceOk = EnsureNamespace(namespaceUri);
 
-        if (CurrentNode.Name != localName)
+        if (CurrentNode.LocalName != localName)
         {
             AddError(
                 ErrorReason.UnexpectedLocalName,
@@ -255,6 +255,15 @@ public class XmlTraverser
 
         return namespaceOk;
     }
+
+    /// <summary>
+    /// Checks if the current node has the qualified name.
+    /// </summary>
+    /// <param name="namespaceUri">Expected namespace</param>
+    /// <param name="localName">Expected local name</param>
+    /// <returns>True if expected</returns>
+    public bool IsName(string namespaceUri, string localName)
+        => CurrentNode.LocalName == localName && CurrentNode.NamespaceURI == namespaceUri;
 
     /// <summary>
     /// Get attribute value with specified <paramref name="localName"/> and where there is no namespace

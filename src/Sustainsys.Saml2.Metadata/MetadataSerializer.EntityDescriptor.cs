@@ -105,10 +105,13 @@ public partial class MetadataSerializer
             }
         }
 
-        if (ReadExtensions(source, entityDescriptor)
-            && !source.MoveToNextRequiredChild())
+        if (source.IsName(Namespaces.Metadata, ElementNames.Extensions))
         {
-            return;
+            entityDescriptor.Extensions = ReadExtensions(source);
+            if (!source.MoveToNextRequiredChild())
+            {
+                return;
+            }
         }
 
         // Now we're at the actual role descriptors - or possibly an AffiliationDescriptor.
@@ -134,17 +137,5 @@ public partial class MetadataSerializer
         } while (wasRoleDescriptor && source.MoveToNextChild());
 
         // AffiliationDescriptor
-    }
-
-    /// <summary>
-    /// Process extensions node. Default just checks qualified name and then returns.
-    /// </summary>
-    /// <param name="source">Source</param>
-    /// <param name="entityDescriptor">Currently processed EntityDescriptor</param>
-    /// <returns>True if current node was an Extensions element</returns>
-    protected virtual bool ReadExtensions(XmlTraverser source, EntityDescriptor entityDescriptor)
-    {
-        return source.CurrentNode.LocalName == ElementNames.Extensions
-            && source.CurrentNode.NamespaceURI == Namespaces.Metadata;
     }
 }
