@@ -128,7 +128,7 @@ public partial class MetadataSerializerTests
     }
 
     [Fact]
-    public void ReadEntityDescriptor_ReadsExtensions()
+        public void ReadEntityDescriptor_ReadsExtensions()
     {
         var xmlTraverser = GetXmlTraverser();
 

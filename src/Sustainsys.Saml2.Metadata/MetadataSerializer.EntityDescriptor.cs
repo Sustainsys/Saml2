@@ -6,7 +6,7 @@ namespace Sustainsys.Saml2.Metadata;
 /// <summary>
 /// Serializer for Saml2 Metadata
 /// </summary>
-public class MetadataSerializer
+public partial class MetadataSerializer
 {
     /// <summary>
     /// Allowed hash algorithms if validating signatures.
@@ -128,41 +128,5 @@ public class MetadataSerializer
             }
 
         } while (roleDescriptorRead && source.MoveToNextChild());
-    }
-
-    /// <summary>
-    /// Process extensions node. Default just checks qualified name and then returns.
-    /// </summary>
-    /// <param name="source">Source</param>
-    /// <param name="entityDescriptor">Currently processed EntityDescriptor</param>
-    /// <returns>True if current node was an Extensions element</returns>
-    protected virtual bool ReadExtensions(XmlTraverser source, EntityDescriptor entityDescriptor)
-    {
-        return source.CurrentNode.LocalName == ElementNames.Extensions
-            && source.CurrentNode.NamespaceURI == Namespaces.Metadata;
-    }
-
-    /// <summary>
-    /// Process a RoleDescriptor element. Default just checks qualified name and then returns.
-    /// </summary>
-    /// <param name="source">Source</param>
-    /// <param name="entityDescriptor">Currently processed EntityDescriptor</param>
-    /// <returns>True if current node was a RoleDescriptor element</returns>
-    protected bool ReadRoleDescriptor(XmlTraverser source, EntityDescriptor entityDescriptor)
-    {
-        return source.CurrentNode.LocalName == ElementNames.RoleDescriptor
-            && source.CurrentNode.NamespaceURI == Namespaces.Metadata;
-    }
-
-    /// <summary>
-    /// Process an IDPSSODescriptor element.
-    /// </summary>
-    /// <param name="source">Source</param>
-    /// <param name="entityDescriptor">Currently processed EntityDescriptor</param>
-    /// <returns>True if current node was an IDPSSoDescriptor element</returns>
-    protected bool ReadIDPSSODescriptor(XmlTraverser source, EntityDescriptor entityDescriptor)
-    {
-        return source.CurrentNode.LocalName == ElementNames.IDPSSODescriptor
-            && source.CurrentNode.NamespaceURI == Namespaces.Metadata;
     }
 }
