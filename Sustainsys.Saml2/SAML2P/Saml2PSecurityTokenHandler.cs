@@ -85,10 +85,10 @@ namespace Sustainsys.Saml2.Saml2P
 
 			// Just using the assertion id for token replay. As that is part of the signed value it cannot
 			// be altered by someone replaying the token.
-            if (validationParameters.ValidateTokenReplay)
-            {
-                ValidateTokenReplay(samlToken.Assertion.Conditions.NotOnOrAfter, samlToken.Assertion.Id.Value, validationParameters);
-            }
+			if (validationParameters.ValidateTokenReplay)
+			{
+				ValidateTokenReplay(samlToken.Assertion.Conditions.NotOnOrAfter, samlToken.Assertion.Id.Value, validationParameters);
+			}
 
 			// ValidateIssuerSecurityKey not called - we have our own signature validation.
 
