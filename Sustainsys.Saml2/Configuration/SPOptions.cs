@@ -178,7 +178,7 @@ namespace Sustainsys.Saml2.Configuration
 
         /// <summary>
         /// By default, the service provider uses the host, protocol, port and
-        /// application root path from the HTTP request when creating links. 
+        /// application root path from the HTTP request when creating links.
         /// This might not be accurate in reverse proxy or load-balancing
         /// situations. You can override the origin used for link generation
         /// for the entire application using this property. To override per request,
@@ -357,7 +357,7 @@ namespace Sustainsys.Saml2.Configuration
         public SigningBehavior AuthenticateRequestSigningBehavior { get; set; }
 
         /// <summary>
-        /// Signing algorithm for metadata and outbound messages. Can be 
+        /// Signing algorithm for metadata and outbound messages. Can be
         /// overriden for each <see cref="IdentityProvider"/>.
         /// </summary>
         public string OutboundSigningAlgorithm { get; set; }
@@ -409,8 +409,8 @@ namespace Sustainsys.Saml2.Configuration
         public ILoggerAdapter Logger { get; set; }
 
         private ITokenReplayCache tokenReplayCache;
-        public ITokenReplayCache TokenReplayCache 
-        { 
+        public ITokenReplayCache TokenReplayCache
+        {
             get
             {
                 if(tokenReplayCache == null)
@@ -435,7 +435,8 @@ namespace Sustainsys.Saml2.Configuration
             {
                 AuthenticationType = "Federation",
                 RequireSignedTokens = false,
-                ValidateIssuer = false
+                ValidateIssuer = false,
+                ValidateTokenReplay = true,
             }.SetRequireAudience(false); // RequireAudience must be set to false for versions 5.5.0+ that have it.
     }
 }

@@ -604,8 +604,7 @@ namespace Sustainsys.Saml2.Saml2P
             TokenValidationParameters validationParameters = options.SPOptions.TokenValidationParametersTemplate.Clone();
             validationParameters.ValidAudience = options.SPOptions.EntityId.Id;
             validationParameters.TokenReplayCache = options.SPOptions.TokenReplayCache;
-            validationParameters.ValidateTokenReplay = true;
-
+            
             options.Notifications.Unsafe.TokenValidationParametersCreated(validationParameters, idp, XmlElement);
 
 			var handler = options.SPOptions.Saml2PSecurityTokenHandler;

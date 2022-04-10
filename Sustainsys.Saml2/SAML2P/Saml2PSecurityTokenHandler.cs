@@ -31,7 +31,7 @@ namespace Sustainsys.Saml2.Saml2P
 
 		// TODO: needed with Microsoft.identitymodel?
 		/// <summary>
-		/// Process authentication statement from SAML assertion. WIF chokes if the authentication statement 
+		/// Process authentication statement from SAML assertion. WIF chokes if the authentication statement
 		/// contains a DeclarationReference, so we clear this out before calling the base method
 		/// http://referencesource.microsoft.com/#System.IdentityModel/System/IdentityModel/Tokens/Saml2SecurityTokenHandler.cs,1970
 		/// </summary>
@@ -85,7 +85,10 @@ namespace Sustainsys.Saml2.Saml2P
 
 			// Just using the assertion id for token replay. As that is part of the signed value it cannot
 			// be altered by someone replaying the token.
-			ValidateTokenReplay(samlToken.Assertion.Conditions.NotOnOrAfter, samlToken.Assertion.Id.Value, validationParameters);
+            if (validationParameters.ValidateTokenReplay)
+            {
+                ValidateTokenReplay(samlToken.Assertion.Conditions.NotOnOrAfter, samlToken.Assertion.Id.Value, validationParameters);
+            }
 
 			// ValidateIssuerSecurityKey not called - we have our own signature validation.
 
