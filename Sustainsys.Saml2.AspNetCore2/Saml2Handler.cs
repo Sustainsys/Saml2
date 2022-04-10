@@ -65,9 +65,20 @@ namespace Sustainsys.Saml2.AspNetCore2
 
         /// <InheritDoc />
         [ExcludeFromCodeCoverage]
-        public Task<AuthenticateResult> AuthenticateAsync()
+        public async Task<AuthenticateResult> AuthenticateAsync()
         {
-            throw new NotImplementedException();
+            var commandResult = CommandFactory.GetCommand(CommandFactory.AcsCommandName).Run(
+                context.ToHttpRequestData(options.CookieManager, dataProtector.Unprotect), options);
+
+            await commandResult.Apply(
+                context, dataProtector, options.CookieManager, options.SignInScheme, options.SignOutScheme, emitSameSiteNone);
+
+            if (context.User != null)
+            {
+                var ticket = new AuthenticationTicket(context.User, Saml2Defaults.Scheme);
+                return AuthenticateResult.Success(ticket);
+            }
+            return AuthenticateResult.Fail("Failed SSO");
         }
 
         private string CurrentUri
