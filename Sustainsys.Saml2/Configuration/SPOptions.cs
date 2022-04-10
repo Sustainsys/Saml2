@@ -11,6 +11,7 @@ using System.Linq;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
+using Sustainsys.Saml2.WebSso;
 
 namespace Sustainsys.Saml2.Configuration
 {
@@ -178,7 +179,7 @@ namespace Sustainsys.Saml2.Configuration
 
         /// <summary>
         /// By default, the service provider uses the host, protocol, port and
-        /// application root path from the HTTP request when creating links. 
+        /// application root path from the HTTP request when creating links.
         /// This might not be accurate in reverse proxy or load-balancing
         /// situations. You can override the origin used for link generation
         /// for the entire application using this property. To override per request,
@@ -357,7 +358,7 @@ namespace Sustainsys.Saml2.Configuration
         public SigningBehavior AuthenticateRequestSigningBehavior { get; set; }
 
         /// <summary>
-        /// Signing algorithm for metadata and outbound messages. Can be 
+        /// Signing algorithm for metadata and outbound messages. Can be
         /// overriden for each <see cref="IdentityProvider"/>.
         /// </summary>
         public string OutboundSigningAlgorithm { get; set; }
@@ -409,8 +410,8 @@ namespace Sustainsys.Saml2.Configuration
         public ILoggerAdapter Logger { get; set; }
 
         private ITokenReplayCache tokenReplayCache;
-        public ITokenReplayCache TokenReplayCache 
-        { 
+        public ITokenReplayCache TokenReplayCache
+        {
             get
             {
                 if(tokenReplayCache == null)
@@ -437,5 +438,20 @@ namespace Sustainsys.Saml2.Configuration
                 RequireSignedTokens = false,
                 ValidateIssuer = false
             }.SetRequireAudience(false); // RequireAudience must be set to false for versions 5.5.0+ that have it.
+
+        /// <summary>
+        /// Assertion consumer service command url part, the default is <see cref="CommandFactory.AcsCommandName"/>
+        /// </summary>
+        public string AcsCommandUrlPart { get; set; } = CommandFactory.AcsCommandName;
+
+        /// <summary>
+        /// Sign In command url part, the default is <see cref="CommandFactory.SignInCommandName"/>
+        /// </summary>
+        public string SignInCommandUrlPart { get; set; } = CommandFactory.SignInCommandName;
+
+        /// <summary>
+        /// Logout command url part, the default is <see cref="CommandFactory.LogoutCommandName"/>
+        /// </summary>
+        public string LogoutCommandUrlPart { get; set; } = CommandFactory.LogoutCommandName;
     }
 }

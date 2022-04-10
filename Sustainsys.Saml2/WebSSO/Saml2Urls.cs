@@ -12,6 +12,10 @@ namespace Sustainsys.Saml2.WebSso
     /// </summary>
     public class Saml2Urls
     {
+        private readonly string acsCommandUrlPart;
+        private readonly string signInCommandUrlPart;
+        private readonly string logoutCommandUrlPart;
+
         /// <summary>
         /// Resolve the urls for Saml2 from an http request and options.
         /// </summary>
@@ -43,6 +47,10 @@ namespace Sustainsys.Saml2.WebSso
                 + "\n  SignInUrl: " + SignInUrl
                 + "\n  LogoutUrl: " + LogoutUrl
                 + "\n  ApplicationUrl: " + ApplicationUrl);
+
+            acsCommandUrlPart = options.SPOptions.AcsCommandUrlPart;
+            signInCommandUrlPart = options.SPOptions.SignInCommandUrlPart;
+            logoutCommandUrlPart = options.SPOptions.LogoutCommandUrlPart;
         }
 
         /// <summary>
@@ -99,12 +107,12 @@ namespace Sustainsys.Saml2.WebSso
                 publicOrigin = new Uri(publicOrigin.AbsoluteUri + "/");
             }
 
-            var Saml2Root = publicOrigin.AbsoluteUri.TrimEnd('/') + modulePath + "/";
+            string saml2Root = publicOrigin.AbsoluteUri.TrimEnd('/') + modulePath + "/";
 
-            AssertionConsumerServiceUrl = new Uri(Saml2Root + CommandFactory.AcsCommandName);
-            SignInUrl = new Uri(Saml2Root + CommandFactory.SignInCommandName);
+            AssertionConsumerServiceUrl = new Uri(saml2Root + acsCommandUrlPart);
+            SignInUrl = new Uri(saml2Root + signInCommandUrlPart);
             ApplicationUrl = publicOrigin;
-            LogoutUrl = new Uri(Saml2Root + CommandFactory.LogoutCommandName);
+            LogoutUrl = new Uri(saml2Root + logoutCommandUrlPart);
         }
 
         /// <summary>
@@ -113,11 +121,11 @@ namespace Sustainsys.Saml2.WebSso
         public Uri AssertionConsumerServiceUrl { get; private set; }
 
         /// <summary>
-        /// The full url of the signin command, which is also the response 
+        /// The full url of the signin command, which is also the response
         /// location for idp discovery.
         /// </summary>
         public Uri SignInUrl { get; private set; }
-        
+
         /// <summary>
         /// The full url of the application root. Used as default redirect
         /// location after logout.
