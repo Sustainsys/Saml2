@@ -128,7 +128,11 @@ public partial class MetadataSerializer
                     case ElementNames.IDPSSODescriptor:
                         entityDescriptor.RoleDescriptors.Add(ReadIDPSSODescriptor(source));
                         break;
-                    // SPSSODescriptor, AuthnAuthorityDescriptor, AttributeAuthorityDescriptor, PDPDescriptor, 
+                    case ElementNames.SPSSODescriptor:
+                    case ElementNames.AuthnAuthorityDescriptor:
+                    case ElementNames.AttributeAuthorityDescriptor:
+                    case ElementNames.PDPDescriptor:
+                        break;
                     default:
                         wasRoleDescriptor = false; // Nope, something else.
                         break;
@@ -136,6 +140,7 @@ public partial class MetadataSerializer
             }
         } while (wasRoleDescriptor && source.MoveToNextChild());
 
-        // AffiliationDescriptor
+        // We're not reading the organization information for now, just skip the rest.
+        source.SkipChildren();
     }
 }

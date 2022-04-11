@@ -148,24 +148,28 @@ public partial class MetadataSerializerTests
     {
         var xmlTraverser = GetXmlTraverser();
 
-        // Should not throw.
         new MetadataSerializer(null, null)
-            .ReadEntityDescriptor(xmlTraverser);
+            .Invoking(s => s.ReadEntityDescriptor(xmlTraverser))
+            .Should().NotThrow();
     }
 
     [Fact]
-    public void ReadEntityDescriptor_FailsOnNonProcessedElements()
+    public void ReadEntityDescriptor_ReadsNonSupportedRoleDescriptors()
     {
         var xmlTraverser = GetXmlTraverser();
 
         new MetadataSerializer(null, null)
             .Invoking(s => s.ReadEntityDescriptor(xmlTraverser))
-            .Should().Throw<Saml2XmlException>()
-            .WithErrors(ErrorReason.ExtraElements)
-            .WithMessage("*InvalidElement*");
+            .Should().NotThrow();
     }
 
-    [Fact(Skip ="Not implemented yet")]
-    public void ReadEntityDescriptor_ReadsNonSupportedRoleDescriptors()
-    { }
+    [Fact]
+    public void ReadEntityDescriptor_ADFS()
+    {
+        var xmlTraverser = GetXmlTraverser();
+
+        new MetadataSerializer(null, null)
+            .Invoking(s => s.ReadEntityDescriptor(xmlTraverser))
+            .Should().NotThrow();
+    }
 }

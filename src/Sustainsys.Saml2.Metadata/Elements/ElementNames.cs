@@ -74,4 +74,24 @@ public static class ElementNames
     /// KeyInfo XML element name.
     /// </summary>
     public const string KeyInfo = nameof(KeyInfo);
+
+    /// <summary>
+    /// SPSSODescriptor XML element name.
+    /// </summary>
+    public const string SPSSODescriptor = nameof(SPSSODescriptor);
+
+    /// <summary>
+    /// AuthnAuthorityDescriptor XML element name.
+    /// </summary>
+    public const string AuthnAuthorityDescriptor = nameof(AuthnAuthorityDescriptor);
+
+    /// <summary>
+    /// AttributeAuthorityDescriptor XML element name.
+    /// </summary>
+    public const string AttributeAuthorityDescriptor = nameof(AttributeAuthorityDescriptor);
+
+    /// <summary>
+    /// PDPDescriptor XML element name.
+    /// </summary>
+    public const string PDPDescriptor = nameof(PDPDescriptor);
 }
