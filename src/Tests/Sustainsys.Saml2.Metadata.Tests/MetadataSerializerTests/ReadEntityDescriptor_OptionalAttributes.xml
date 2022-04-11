@@ -1,0 +1,4 @@
+﻿<EntityDescriptor xmlns="urn:oasis:names:tc:SAML:2.0:metadata" ID="_eb83b59a-572a-480b-b36c-e3a3edfd92d0" entityID="https://stubidp.sustainsys.com/Metadata" cacheDuration="PT15M" validUntil="2022-03-15T20:47:00Z">
+	<!--Need to put in something to fulfill non-empty requirement, but we're not parsing generic RoleDescriptors-->
+	<RoleDescriptor protocolSupportEnumeration="urn:whatever"/>
+</EntityDescriptor>

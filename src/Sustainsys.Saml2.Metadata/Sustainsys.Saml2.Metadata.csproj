@@ -4,6 +4,12 @@
     <TargetFramework>net6.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <GenerateDocumentationFile>True</GenerateDocumentationFile>
   </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="microsoft.codeanalysis" Version="4.1.0" />
+    <PackageReference Include="System.Security.Cryptography.Xml" Version="6.0.0" />
+  </ItemGroup>
 
 </Project>

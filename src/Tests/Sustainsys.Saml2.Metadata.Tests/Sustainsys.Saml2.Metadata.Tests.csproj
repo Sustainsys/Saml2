@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
+    <TargetFrameworks>net6.0</TargetFrameworks>
     <Nullable>enable</Nullable>
 
     <IsPackable>false</IsPackable>
@@ -9,8 +9,9 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.11.0" />
+    <PackageReference Include="System.Security.Cryptography.Xml" Version="6.0.0" />
     <PackageReference Include="xunit" Version="2.4.1" />
-    <PackageReference Include="xunit.runner.visualstudio" Version="2.4.3">
+	<PackageReference Include="xunit.runner.visualstudio" Version="2.4.3">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
@@ -22,6 +23,13 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\Sustainsys.Saml2.Metadata\Sustainsys.Saml2.Metadata.csproj" />
+    <ProjectReference Include="..\Sustainsys.Saml2.Tests.Helpers\Sustainsys.Saml2.Tests.Helpers.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="stubidp.sustainsys.com.cer">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>

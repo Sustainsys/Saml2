@@ -1,0 +1,4 @@
+﻿<EntityDescriptor xmlns="urn:oasis:names:tc:SAML:2.0:metadata">
+	<!--Need to put in something to fulfill non-empty requirement, but we're not parsing generic RoleDescriptors-->
+	<RoleDescriptor protocolSupportEnumeration="urn:whatever"/>
+</EntityDescriptor>
