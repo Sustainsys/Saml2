@@ -1,5 +1,7 @@
 ﻿<EntityDescriptor xmlns="urn:oasis:names:tc:SAML:2.0:metadata" entityID="https://stubidp.sustainsys.com/Metadata" >
-	<RoleDescriptor />
+	<RoleDescriptor>
+		<AdditonalData>This could be something from another protocol, like what ADFS does.</AdditonalData>
+	</RoleDescriptor>
 	<AuthnAuthorityDescriptor />
 	<AttributeAuthorityDescriptor />
 	<PDPDescriptor />

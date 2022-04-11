@@ -105,7 +105,7 @@ public partial class MetadataSerializer
             }
         }
 
-        if (source.IsName(Namespaces.Metadata, ElementNames.Extensions))
+        if (source.HasName(Namespaces.Metadata, ElementNames.Extensions))
         {
             entityDescriptor.Extensions = ReadExtensions(source);
             if (!source.MoveToNextRequiredChild())

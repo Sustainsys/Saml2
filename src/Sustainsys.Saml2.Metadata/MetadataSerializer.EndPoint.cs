@@ -10,12 +10,40 @@ partial class MetadataSerializer
     /// </summary>
     /// <param name="source">Source data</param>
     /// <returns>Endpoint read</returns>
-    public virtual Endpoint ReadEndpoint(XmlTraverser source)
+    protected virtual Endpoint ReadEndpoint(XmlTraverser source)
     {
-        return new Endpoint
+        var result = new Endpoint();
+        ReadAttributes(source, result);
+
+        return result;
+    }
+
+    /// <summary>
+    /// Read endpoint attributes.
+    /// </summary>
+    /// <param name="source">Source</param>
+    /// <param name="endpoint">Endpoint</param>
+    protected virtual void ReadAttributes(XmlTraverser source, Endpoint endpoint)
+    {
+        endpoint.Binding = source.GetRequiredAbsoluteUriAttribute(AttributeNames.Binding).MapEnum<Binding>();
+        endpoint.Location = source.GetRequiredAttribute(AttributeNames.Location) ?? "";
+    }
+
+    /// <summary>
+    /// Read indexed endpoint
+    /// </summary>
+    /// <param name="source">Source</param>
+    /// <returns>IndexedEndpoint</returns>
+    protected virtual IndexedEndpoint ReadIndexedEndpoint(XmlTraverser source)
+    {
+        var result = new IndexedEndpoint()
         {
-            Binding = source.GetRequiredAbsoluteUriAttribute(AttributeNames.Binding).MapEnum<Binding>(),
-            Location = source.GetRequiredAttribute(AttributeNames.Location) ?? ""
+            Index = source.GetRequiredIntAttribute(AttributeNames.index) ?? 0,
+            IsDefault = source.GetBoolAttribute(AttributeNames.isDefault) ?? false
         };
+
+        ReadAttributes(source, result);
+
+        return result;
     }
 }

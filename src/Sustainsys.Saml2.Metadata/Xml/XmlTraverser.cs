@@ -1,4 +1,5 @@
-﻿using System.Diagnostics.CodeAnalysis;
+﻿using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Security.Cryptography.Xml;
 using System.Xml;
@@ -13,6 +14,7 @@ namespace Sustainsys.Saml2.Metadata.Xml;
 /// EnvelopedSignatureReader of the Microsoft.IdentityModel.Xml library is just too complex and error
 /// prone in my opinion, I prefer using the SignedXml implementation for signature handling.
 /// </summary>
+[DebuggerDisplay("{CurrentNode}")]
 public class XmlTraverser
 {
     /// <summary>
@@ -197,6 +199,14 @@ public class XmlTraverser
     }
 
     /// <summary>
+    /// Ignore the rest of the child nodes on this level.
+    /// </summary>
+    public void SkipChildren()
+    {
+        currentNode = null;
+    }
+
+    /// <summary>
     /// Move to next child if the current collection, record an error if none is available.
     /// </summary>
     /// <returns>ture if the move was successful</returns>
@@ -262,7 +272,7 @@ public class XmlTraverser
     /// <param name="namespaceUri">Expected namespace</param>
     /// <param name="localName">Expected local name</param>
     /// <returns>True if expected</returns>
-    public bool IsName(string namespaceUri, string localName)
+    public bool HasName(string namespaceUri, string localName)
         => CurrentNode.LocalName == localName && CurrentNode.NamespaceURI == namespaceUri;
 
     /// <summary>
@@ -328,9 +338,7 @@ public class XmlTraverser
     /// <param name="localName">Local name of attribute</param>
     /// <returns>Parsed Timespan or null if parse fails</returns>
     public TimeSpan? GetTimeSpanAttribute(string localName)
-    {
-        return TryGetAttribute(localName, XmlConvert.ToTimeSpan);
-    }
+        => TryGetAttribute(localName, XmlConvert.ToTimeSpan);
 
     /// <summary>
     /// Gets an attribute as DateTime. On parse errors the Error
@@ -339,21 +347,54 @@ public class XmlTraverser
     /// <param name="localName">Local name of attribute</param>
     /// <returns>Parsed DateTime or null if parse fails</returns>
     public DateTime? GetDateTimeAttribute(string localName)
+        => TryGetAttribute(localName, s => XmlConvert.ToDateTime(s, XmlDateTimeSerializationMode.RoundtripKind));
+
+    /// <summary>
+    /// Gets an optional bool attribute. On parse errors the Error
+    /// is reported to the errors collection.
+    /// </summary>
+    /// <param name="localName">Local name of attribute</param>
+    /// <returns>Parsed DateTime or bool if parse fails</returns>
+    public bool? GetBoolAttribute(string localName)
+        => TryGetAttribute(localName, XmlConvert.ToBoolean);
+
+    /// <summary>
+    /// Get an attribute as int. On parse errors the Error
+    /// is reported to the errors collection.
+    /// </summary>
+    /// <param name="localName">Local name of the attribute</param>
+    /// <returns>Parsed int or null if parse fails</returns>
+    public int? GetRequiredIntAttribute(string localName)
     {
-        return TryGetAttribute(localName, s => XmlConvert.ToDateTime(s, XmlDateTimeSerializationMode.RoundtripKind));
+        var stringValue = GetRequiredAttribute(localName);
+
+        if(stringValue == null)
+        {
+            return default;
+        }
+
+        return TryConvertAttribute(localName, int.Parse, stringValue);
     }
 
     private TTarget? TryGetAttribute<TTarget>(string localName, Func<string, TTarget> converter)
         where TTarget : struct
     {
-        var source = GetAttribute(localName);
+        var stringValue = GetAttribute(localName);
 
-        if (source == null)
+        if (stringValue == null)
+        {
             return default;
+        }
 
+        return TryConvertAttribute(localName, converter, stringValue);
+    }
+
+    private TTarget? TryConvertAttribute<TTarget>(string localName, Func<string, TTarget> converter, string stringValue) 
+        where TTarget : struct
+    {
         try
         {
-            return converter(source);
+            return converter(stringValue);
         }
         catch (FormatException)
         {
@@ -361,14 +402,12 @@ public class XmlTraverser
                 ErrorReason.ConversionFailed,
                 localName,
                 CurrentNode,
-                $"Conversion to {typeof(TTarget).Name} failed for {source}")
+                $"Conversion to {typeof(TTarget).Name} failed for {stringValue}")
             {
-                StringValue = source
+                StringValue = stringValue
             });
         }
 
         return default;
     }
-
-    internal string GetRequiredAttribute(object location) => throw new NotImplementedException();
 }

@@ -48,4 +48,24 @@ public static class AttributeNames
     /// protocolSupportEnumeration attribute name.
     /// </summary>
     public const string protocolSupportEnumeration = nameof(protocolSupportEnumeration);
+
+    /// <summary>
+    /// use attribute name.
+    /// </summary>
+    public const string use = nameof(use);
+
+    /// <summary>
+    /// index attribute name.
+    /// </summary>
+    public const string index = nameof(index);
+
+    /// <summary>
+    /// isDefault attribute name.
+    /// </summary>
+    public const string isDefault = nameof(isDefault);
+
+    /// <summary>
+    /// WantAuthnRequestsSigned attribute name.
+    /// </summary>
+    public const string WantAuthnRequestsSigned = nameof(WantAuthnRequestsSigned);
 }

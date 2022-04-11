@@ -164,4 +164,8 @@ public partial class MetadataSerializerTests
             .WithErrors(ErrorReason.ExtraElements)
             .WithMessage("*InvalidElement*");
     }
+
+    [Fact(Skip ="Not implemented yet")]
+    public void ReadEntityDescriptor_ReadsNonSupportedRoleDescriptors()
+    { }
 }
