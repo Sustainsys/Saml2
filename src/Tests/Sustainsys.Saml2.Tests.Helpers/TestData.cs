@@ -11,7 +11,7 @@ namespace Sustainsys.Saml2.Tests.Helpers
         {
             ArgumentNullException.ThrowIfNull(testName);
 
-            var fileName = "..\\..\\..\\" + typeof(TDirectory).Name + "\\" + testName + ".xml";
+            var fileName = "../../../" + typeof(TDirectory).Name + "/" + testName + ".xml";
 
             var document = new XmlDocument();
             document.Load(fileName);
