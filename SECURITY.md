@@ -7,11 +7,9 @@
 | Sustainsys.Saml2 latest 2.x.y   | :white_check_mark: |
 | Sustainsys.Saml2 master branch, planned major version 3. | :x: | Wait for develpment to get ready. Or help out! |
 
-The 1.x branch only receives security updates or critical functionality patches, such as the SameSite cookie fix.
+The 1.x and 2.x versions/branches only receives security updates or critical functionality patches, such as the SameSite cookie fix.
 
-The 2.x branch is the currently supported version where new functionality is added. Only tha latest version will receive patches.
-
-The master branch is for development of a new major version 3. It is work in progress and is not supported yet.
+The develop branch is for development of a new major version 3. It is work in progress and is not supported yet.
 
 ## Reporting a Vulnerability
 
