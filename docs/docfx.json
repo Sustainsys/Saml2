@@ -5,9 +5,8 @@
         {
           "src": "../",
           "files": [
-            "src/**.csproj"
-          ],
-          "exclude": "src/**/**Tests"
+            "src/Sustainsys*/*.csproj"
+          ]
         }
       ],
       "dest": "api",
@@ -54,7 +53,7 @@
     "globalMetadataFiles": [],
     "fileMetadataFiles": [],
     "template": [
-      "default"
+      "statictoc"
     ],
     "postProcessors": [],
     "markdownEngineName": "markdig",
