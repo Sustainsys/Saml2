@@ -1,6 +1,6 @@
 ---
 name: Questions and Support Requests
-about: Ask a question on how to use the library or how to solve a problem. Please note that questions posted here are answered by the community as available. To get guranteed help, mail support@sustainsys.com for information on commercial support options.
+about: Ask a question on how to use the library or how to solve a problem.
 labels: question
 ---
 
