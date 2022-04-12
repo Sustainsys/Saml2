@@ -124,7 +124,7 @@ namespace Sustainsys.Saml2.WebSso
                 return TrustLevel.None;
             }
 
-            var issuer = documentElement["Issuer", Saml2Namespaces.Saml2Name]?.InnerText;
+            var issuer = documentElement["Issuer", Saml2Namespaces.Saml2Name]?.InnerText?.Trim();
 
             if (string.IsNullOrEmpty(issuer))
             {
