@@ -97,7 +97,10 @@ namespace Sustainsys.Saml2.Saml2P
 
             if (Issuer != null && !string.IsNullOrEmpty(Issuer.Id))
             {
-                yield return new XElement(Saml2Namespaces.Saml2 + "Issuer", Issuer.Id);
+                var issuerElement = new XElement(Saml2Namespaces.Saml2 + "Issuer", Issuer.Id);
+                issuerElement.AddAttributeIfNotNullOrEmpty("Format", Issuer.Format);
+                issuerElement.AddAttributeIfNotNullOrEmpty("NameQualifier", Issuer.NameQualifier);
+                yield return issuerElement;
             }
 
             if (ExtensionContents != null && ExtensionContents.Count > 0)
