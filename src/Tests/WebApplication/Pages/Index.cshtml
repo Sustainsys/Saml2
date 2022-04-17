@@ -1,0 +1,28 @@
+﻿@page
+@model WebApplication.Pages.IndexModel
+@{
+}
+
+<html>
+<head>
+    <title>Saml2 Test Application</title>
+</head>
+<body>
+    <h1>Saml2 Test Application</h1>
+    <p>
+        Please note that this application is not meant as a starting point
+        for development of your own solution. It is a test host used during
+        development to test run the handler.
+    </p>
+    <form method="post">
+        @if (User!.Identity!.IsAuthenticated)
+        {
+            <button name="Action" value="SignOut">Sign Out</button>
+        }
+        else
+        {
+            <button name="Action" value="SignIn">Sign In</button>
+        }
+    </form>
+</body>
+</html>

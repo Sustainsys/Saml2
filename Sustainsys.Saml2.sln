@@ -20,11 +20,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		SECURITY.md = SECURITY.md
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sustainsys.Saml2.AspNetCore", "src\Sustainsys.Saml2.AspNetCore\Sustainsys.Saml2.AspNetCore.csproj", "{33D38960-FC49-443D-933B-40A992030981}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sustainsys.Saml2.AspNetCore", "src\Sustainsys.Saml2.AspNetCore\Sustainsys.Saml2.AspNetCore.csproj", "{33D38960-FC49-443D-933B-40A992030981}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sustainsys.Saml2", "src\Sustainsys.Saml2\Sustainsys.Saml2.csproj", "{A5EEC055-2C50-4E34-98D4-A2B5B1CB0F8D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sustainsys.Saml2", "src\Sustainsys.Saml2\Sustainsys.Saml2.csproj", "{A5EEC055-2C50-4E34-98D4-A2B5B1CB0F8D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebApplication", "src\Tests\WebApplication\WebApplication.csproj", "{A03937C8-9CBA-4B60-8116-4EFF2531DF0A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebApplication", "src\Tests\WebApplication\WebApplication.csproj", "{A03937C8-9CBA-4B60-8116-4EFF2531DF0A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

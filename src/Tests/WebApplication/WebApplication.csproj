@@ -6,4 +6,8 @@
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\..\Sustainsys.Saml2.AspNetCore\Sustainsys.Saml2.AspNetCore.csproj" />
+  </ItemGroup>
+
 </Project>
