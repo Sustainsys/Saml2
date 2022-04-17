@@ -21,8 +21,8 @@ jobs:
     - uses: actions/stale@v5
       with:
         repo-token: ${{ secrets.GITHUB_TOKEN }}
-        days-before-stale: 30
-        days-before-close: 15
+        days-before-stale: 15
+        days-before-close: 10
         stale-issue-label: 'no-issue-activity'
         stale-pr-label: 'no-pr-activity'
         any-of-issue-labels: question, triage
