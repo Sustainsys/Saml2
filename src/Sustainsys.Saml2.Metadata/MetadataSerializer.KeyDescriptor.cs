@@ -30,6 +30,8 @@ partial class MetadataSerializer
         if (children.MoveNext()
             && children.EnsureName(SignedXml.XmlDsigNamespaceUrl, ElementNames.KeyInfo))
         {
+            children.IgnoreChildren();
+
             var keyInfo = new KeyInfo();
             keyInfo.LoadXml((XmlElement)children.CurrentNode);
 

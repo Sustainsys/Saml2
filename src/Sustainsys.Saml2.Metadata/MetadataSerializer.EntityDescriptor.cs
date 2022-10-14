@@ -59,7 +59,10 @@ public partial class MetadataSerializer
             ReadAttributes(source, entityDescriptor);
 
             ReadElements(source.GetChildren(), entityDescriptor);
+
         }
+
+        source.MoveNext(true);
 
         ThrowOnErrors(source);
 
@@ -129,6 +132,7 @@ public partial class MetadataSerializer
                     case ElementNames.AuthnAuthorityDescriptor:
                     case ElementNames.AttributeAuthorityDescriptor:
                     case ElementNames.PDPDescriptor:
+                        source.IgnoreChildren();
                         break;
                     default:
                         wasRoleDescriptor = false; // Nope, something else.

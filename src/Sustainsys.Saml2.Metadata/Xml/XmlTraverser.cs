@@ -39,6 +39,12 @@ public class XmlTraverser
     private readonly XmlTraverser? parent;
 
     /// <summary>
+    /// Are the children of the current node handled? Default to true
+    /// as we're setting it to false whenever we hit an element.
+    /// </summary>
+    private bool childrenHandled = true;
+
+    /// <summary>
     /// The current node being processed.
     /// </summary>
     public XmlNode CurrentNode
@@ -85,6 +91,16 @@ public class XmlTraverser
     /// </summary>
     public void ThrowOnErrors()
     {
+        if (parent != null)
+        {
+            throw new InvalidOperationException("ThrowOnErrors can only be called from the root traverser");
+        }
+
+        if (currentNode != null)
+        {
+            throw new InvalidOperationException("Before completing the traversal, call MoveNext to move past the root element. The root element must also be marked as completely processed for the child processing detection to work.");
+        }
+
         if (Errors.Any(e => !e.Ignore))
         {
             throw new Saml2XmlException(Errors);
@@ -115,6 +131,8 @@ public class XmlTraverser
         if (CurrentNode.LocalName == "Signature" 
             && CurrentNode.NamespaceURI == SignedXml.XmlDsigNamespaceUrl)
         {
+            childrenHandled = true;
+
             if (trustedSigningKeys != null
                 && trustedSigningKeys.Any())
             {
@@ -155,6 +173,15 @@ public class XmlTraverser
     {
         while (true)
         {
+            if(!childrenHandled && CurrentNode.HasChildNodes)
+            {
+                Errors.Add(new(
+                    ErrorReason.ExtraElements,
+                    CurrentNode.LocalName,
+                    CurrentNode,
+                    $"All child nodes under {CurrentNode.LocalName} have not been processed"));
+            }
+
             // First check if we are fresh into child level, then use firstChild to seed. Otherwise
             // just traverse forward one step (if possible)
             currentNode = firstNode ?? currentNode?.NextSibling;
@@ -172,12 +199,25 @@ public class XmlTraverser
                 }
 
                 // No more children.
+                if(parent != null)
+                { 
+                    parent!.childrenHandled = true;
+                }
+
                 return false;
             }
 
             if (currentNode.NodeType == XmlNodeType.Element)
             {
-                // We're happy, we found an element.
+                if(currentNode.HasChildNodes)
+                    //&& (currentNode.ChildNodes.Count != 1 || currentNode.FirstChild!.NodeType == XmlNodeType.Text))
+                {
+                    // We just found the node and it has children. And it is not just one child that is text content
+                    childrenHandled = false;
+                }
+                childrenHandled = !CurrentNode.HasChildNodes;
+                
+                // We're happy, we found an element. 
                 return true;
             }
 
@@ -187,6 +227,22 @@ public class XmlTraverser
                 AddError(ErrorReason.UnsupportedNodeType, $"Unsupported node type {currentNode.NodeType}");
             }
         }
+    }
+
+    /// <summary>
+    /// Ignore any children of this element. This suppresses the error that there are unprocessed child nodes.
+    /// </summary>
+    public void IgnoreChildren()
+    {
+        childrenHandled = true;
+    }
+
+    /// <summary>
+    /// Skip over the rest of the elements on this level. This suppresses any errors if the parent calls MoveNext
+    /// </summary>
+    public void Skip()
+    {
+        parent!.childrenHandled = true;
     }
 
     /// <summary>
@@ -227,6 +283,27 @@ public class XmlTraverser
         }
 
         return namespaceOk;
+    }
+
+    /// <summary>
+    /// Ensure that there is a current node and that the current node is an element. Typically used
+    /// if the expectation of further elements is not known when <see cref="MoveNext(bool)"/> is called.
+    /// </summary>
+    /// <returns>Was there an element?</returns>
+    public bool EnsureElement()
+    {
+        if(currentNode == null || currentNode.NodeType != XmlNodeType.Element)
+        {
+            Errors.Add(new(
+                ErrorReason.MissingElement,
+                parent!.CurrentNode.LocalName,
+                parent.CurrentNode,
+                "There is no current node or current node is not an element"));
+
+            return false;
+        }
+
+        return true;
     }
 
     /// <summary>

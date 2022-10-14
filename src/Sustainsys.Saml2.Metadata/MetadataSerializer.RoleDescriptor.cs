@@ -22,6 +22,10 @@ partial class MetadataSerializer
         var result = CreateRoleDescriptor();
 
         ReadAttributes(source, result);
+        ReadElements(source.GetChildren(), result);
+
+        // Custom RoleDesciptors might have other elements that we do not know - ignore them.
+        source.IgnoreChildren();
 
         return result;
     }
@@ -45,9 +49,16 @@ partial class MetadataSerializer
     /// <returns>More elements available?</returns>
     protected virtual bool ReadElements(XmlTraverser source, RoleDescriptor result)
     {
+        if (!source.MoveNext(true))
+        {
+            return false;
+        }
+
         if (source.HasName(SignedXml.XmlDsigNamespaceUrl, ElementNames.Signature))
         {
             // Signatures on RoleDescriptors are not supported.
+            source.IgnoreChildren();
+
             if (!source.MoveNext())
             {
                 return false;
@@ -57,6 +68,8 @@ partial class MetadataSerializer
         if (source.HasName(Namespaces.Metadata, ElementNames.Extensions))
         {
             // Extensions on RoleDescriptors are not supported.
+            source.IgnoreChildren();
+
             if (!source.MoveNext())
             {
                 return false;
@@ -66,7 +79,7 @@ partial class MetadataSerializer
         while (source.HasName(Namespaces.Metadata, ElementNames.KeyDescriptor))
         {
             result.Keys.Add(ReadKeyDescriptor(source));
-            if(!source.MoveNext())
+            if (!source.MoveNext())
             {
                 return false;
             }
@@ -75,16 +88,20 @@ partial class MetadataSerializer
         if (source.HasName(Namespaces.Metadata, ElementNames.Organization))
         {
             // Organization reading is not supported.
-            if(!source.MoveNext())
+            source.IgnoreChildren();
+
+            if (!source.MoveNext())
             {
                 return false;
             }
         }
 
-        if(source.HasName(Namespaces.Metadata, ElementNames.ContactPerson))
+        if (source.HasName(Namespaces.Metadata, ElementNames.ContactPerson))
         {
             // Contact person reading is not supported.
-            if(!source.MoveNext())
+            source.IgnoreChildren();
+
+            if (!source.MoveNext())
             {
                 return false;
             }

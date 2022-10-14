@@ -51,6 +51,8 @@ partial class MetadataSerializer
             || source.HasName(Namespaces.Metadata, ElementNames.NameIDFormat))
         {
             // We're not supporting ManageNameIDService nor NameIDFormat.
+            source.IgnoreChildren();
+
             if(!source.MoveNext())
             {
                 return false;

@@ -46,13 +46,11 @@ partial class MetadataSerializer
     /// <param name="result"></param>
     protected virtual void ReadElements(XmlTraverser source, IDPSSODescriptor result)
     {
-        if (!source.MoveNext() || !ReadElements(source, (SSODescriptor)result))
-        {
-            return;
-        }
-        
+        ReadElements(source, (SSODescriptor)result);
+
         // We must have at least one SingleSignOnService in an IDPSSODescriptor and now we should be at it.
-        if(!source.EnsureName(Namespaces.Metadata, ElementNames.SingleSignOnService))
+        if(!source.EnsureElement() &&             
+            !source.EnsureName(Namespaces.Metadata, ElementNames.SingleSignOnService))
         {
             return;
         }
@@ -61,5 +59,7 @@ partial class MetadataSerializer
         {
             result.SingleSignOnServices.Add(ReadEndpoint(source));
         } while (source.MoveNext(true) && source.HasName(Namespaces.Metadata, ElementNames.SingleSignOnService));
+
+        source.Skip();
     }
 }
