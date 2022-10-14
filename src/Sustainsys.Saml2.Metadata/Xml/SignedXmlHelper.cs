@@ -69,6 +69,8 @@ public static class SignedXmlHelper
         /// <exception cref="CryptographicException">If not exactly one match</exception>
         public override XmlElement GetIdElement(XmlDocument document, string idValue)
         {
+            XmlConvert.VerifyNCName(idValue);
+
             var possibleNodes = document.SelectNodes($"//*[@ID=\"{idValue}\" or @Id=\"{idValue}\" or @id=\"{idValue}\"]")!;
 
             if (possibleNodes.Count != 1)
@@ -119,8 +121,8 @@ public static class SignedXmlHelper
         else
         {
             // All versions of .NET prior to .NET 7 contains a bug that only lets the first signature in a
-            // document be validated, we want a workaround for that. For .NET 7+ I contributed
-            // this fix to the System.Security.Cryptography.Xml library.
+            // document be validated, we want a workaround for that. For .NET 7 I contributed
+            // a fix to the System.Security.Cryptography.Xml library, so no need to do private reflection then.
 #if !NET7_0_OR_GREATER
             FixSignatureIndex(signedXml, signatureElement);
 #endif
@@ -154,8 +156,6 @@ public static class SignedXmlHelper
             else
             {
                 var id = reference.Uri[1..]; // Drop off the #
-
-                XmlConvert.VerifyNCName(id);
 
                 signedElement = signedXml.GetIdElement(signatureElement.OwnerDocument, id);
 
@@ -212,10 +212,6 @@ public static class SignedXmlHelper
     /// <param name="signatureElement">Signature element.</param>
     private static void FixSignatureIndex(SignedXml signedXml, XmlElement signatureElement)
     {
-
-// I've got a PR merged to .NET 7 that fixes this bug, so for .NET 7 and up - don't do private reflection hacks with this.
-#if !NET7_0_OR_GREATER
-
         if (signaturePosition == null)
             return;
 
@@ -240,6 +236,5 @@ public static class SignedXmlHelper
                 signaturePosition.SetValue(envelopedTransform, correctSignaturePosition);
             }
         }
-#endif
     }
 }

@@ -3,6 +3,7 @@ using Sustainsys.Saml2.Metadata.Xml;
 using Sustainsys.Saml2.Tests.Helpers;
 using System;
 using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 using System.Security.Cryptography.Xml;
 using System.Xml;
 using Xunit;
@@ -12,8 +13,19 @@ namespace Sustainsys.Saml2.Metadata.Tests.Xml;
 public class XmlTraverserTests
 {
     private readonly XmlDocument xmlDocument;
+    private readonly XmlDocument signedXmlDocument;
 
     private XmlTraverser GetXmlTraverser() => new(xmlDocument!.DocumentElement!);
+    private XmlTraverser GetSignatureNode() 
+    {
+        var traverser = new XmlTraverser(signedXmlDocument!.DocumentElement!);
+
+        var subject = traverser .GetChildren();
+
+        subject.MoveNext().Should().BeTrue();
+
+        return subject;
+    }
 
     public XmlTraverserTests()
     {
@@ -25,6 +37,17 @@ public class XmlTraverserTests
             PreserveWhitespace = true
         };
         xmlDocument.LoadXml(xml);
+
+        xml = "<xml ID=\"id123\"/>";
+
+        signedXmlDocument = new XmlDocument()
+        {
+            PreserveWhitespace = true
+        };
+
+        signedXmlDocument.LoadXml(xml);
+
+        SignedXmlHelper.Sign(signedXmlDocument.DocumentElement!, TestData.Certificate);
     }
 
     [Theory]
@@ -185,14 +208,32 @@ public class XmlTraverserTests
         subject.Errors.Last().Reason.Should().Be(ErrorReason.UnsupportedNodeType);
     }
 
-    [Fact(Skip = "TODO")]
+    [Fact]
     public void ValidateSignature()
     {
-        var xml = "<xml ID=\"id123\"/>";
+        var subject = GetSignatureNode();
 
-        var xmlDoc = new XmlDocument();
-        xmlDoc.LoadXml(xml);
+        subject.ReadAndValidateOptionalSignature(TestData.SingleSigningKey, SignedXmlHelperTests.allowedHashes, out var trustLevel)
+            .Should().BeTrue();
 
-        SignedXmlHelper.Sign(xmlDoc.DocumentElement!, TestData.Certificate);
+        trustLevel.Should().Be(TestData.SigningKey.TrustLevel);
+    }
+
+    [Fact]
+    public void ValidateSignatureWrongKey()
+    {
+        var subject = GetSignatureNode();
+
+        subject.ReadAndValidateOptionalSignature(TestData.SingleSigningKey2, SignedXmlHelperTests.allowedHashes, out var trustLevel)
+            .Should().BeTrue();
+
+        trustLevel.Should().Be(TrustLevel.None);
+
+        subject.Errors.Should().HaveCount(1);
+
+        var error = subject.Errors[0];
+        
+        error.Message.Should().Match("*contained key*not*trusted*");
+        error.Reason.Should().Be(ErrorReason.SignatureFailure);
     }
 }
