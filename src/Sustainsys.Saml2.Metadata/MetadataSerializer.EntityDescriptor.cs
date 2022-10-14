@@ -58,10 +58,7 @@ public partial class MetadataSerializer
         {
             ReadAttributes(source, entityDescriptor);
 
-            using (source.EnterChildLevel())
-            {
-                ReadElements(source, entityDescriptor);
-            }
+            ReadElements(source.GetChildren(), entityDescriptor);
         }
 
         ThrowOnErrors(source);
@@ -89,7 +86,7 @@ public partial class MetadataSerializer
     /// <param name="entityDescriptor">Entity Descriptor to populate</param>
     protected virtual void ReadElements(XmlTraverser source, EntityDescriptor entityDescriptor)
     {
-        if (!source.MoveToNextRequiredChild())
+        if (!source.MoveNext())
         {
             return;
         }
@@ -99,7 +96,7 @@ public partial class MetadataSerializer
         {
             entityDescriptor.TrustLevel = trustLevel;
 
-            if (!source.MoveToNextRequiredChild())
+            if (!source.MoveNext())
             {
                 return;
             }
@@ -108,7 +105,7 @@ public partial class MetadataSerializer
         if (source.HasName(Namespaces.Metadata, ElementNames.Extensions))
         {
             entityDescriptor.Extensions = ReadExtensions(source);
-            if (!source.MoveToNextRequiredChild())
+            if (!source.MoveNext())
             {
                 return;
             }
@@ -138,9 +135,6 @@ public partial class MetadataSerializer
                         break;
                 }
             }
-        } while (wasRoleDescriptor && source.MoveToNextChild());
-
-        // We're not reading the organization information for now, just skip the rest.
-        source.SkipChildren();
+        } while (wasRoleDescriptor && source.MoveNext(true));
     }
 }

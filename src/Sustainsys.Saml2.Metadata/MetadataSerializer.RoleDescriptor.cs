@@ -48,7 +48,7 @@ partial class MetadataSerializer
         if (source.HasName(SignedXml.XmlDsigNamespaceUrl, ElementNames.Signature))
         {
             // Signatures on RoleDescriptors are not supported.
-            if (!source.MoveToNextChild())
+            if (!source.MoveNext())
             {
                 return false;
             }
@@ -57,7 +57,7 @@ partial class MetadataSerializer
         if (source.HasName(Namespaces.Metadata, ElementNames.Extensions))
         {
             // Extensions on RoleDescriptors are not supported.
-            if (!source.MoveToNextChild())
+            if (!source.MoveNext())
             {
                 return false;
             }
@@ -66,7 +66,7 @@ partial class MetadataSerializer
         while (source.HasName(Namespaces.Metadata, ElementNames.KeyDescriptor))
         {
             result.Keys.Add(ReadKeyDescriptor(source));
-            if(!source.MoveToNextChild())
+            if(!source.MoveNext())
             {
                 return false;
             }
@@ -75,7 +75,7 @@ partial class MetadataSerializer
         if (source.HasName(Namespaces.Metadata, ElementNames.Organization))
         {
             // Organization reading is not supported.
-            if(!source.MoveToNextChild())
+            if(!source.MoveNext())
             {
                 return false;
             }
@@ -84,7 +84,7 @@ partial class MetadataSerializer
         if(source.HasName(Namespaces.Metadata, ElementNames.ContactPerson))
         {
             // Contact person reading is not supported.
-            if(!source.MoveToNextChild())
+            if(!source.MoveNext())
             {
                 return false;
             }

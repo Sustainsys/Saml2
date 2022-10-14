@@ -23,16 +23,14 @@ public static class SignedXmlHelper
     /// <param name="certificate">Certificate to use to sign</param>
     public static void Sign(this XmlElement element, X509Certificate2 certificate)
     {
-        var signedXml = new SignedXml(element.OwnerDocument);
-
-        switch (certificate.PublicKey.Oid.FriendlyName)
+        var signedXml = new SignedXml(element.OwnerDocument)
         {
-            case "RSA":
-                signedXml.SigningKey = certificate.GetRSAPrivateKey();
-                break;
-            default:
-                throw new NotImplementedException();
-        }
+            SigningKey = certificate.PublicKey.Oid.FriendlyName switch
+            {
+                "RSA" => certificate.GetRSAPrivateKey(),
+                _ => throw new NotImplementedException(),
+            }
+        };
 
         var id = element.Attributes!["ID"]?.Value;
 
@@ -155,7 +153,7 @@ public static class SignedXmlHelper
             }
             else
             {
-                var id = reference.Uri.Substring(1); // Drop off the #
+                var id = reference.Uri[1..]; // Drop off the #
 
                 XmlConvert.VerifyNCName(id);
 
@@ -182,7 +180,7 @@ public static class SignedXmlHelper
             }
 
             // The algorithm names has the form http://foo/bar/xyz#sha256
-            var digestHash = reference.DigestMethod.Substring(reference.DigestMethod.LastIndexOf('#') + 1);
+            var digestHash = reference.DigestMethod[(reference.DigestMethod.LastIndexOf('#') + 1)..];
             if (!allowedHashAlgorithms.Contains(digestHash))
             {
                 error += $"Digest algorithm {reference.DigestMethod} does not match configured [{string.Join(", ", allowedHashAlgorithms)}]. ";
@@ -190,10 +188,11 @@ public static class SignedXmlHelper
         }
 
         // The algorithm names has the form http://foo/bar/xyz#rsa-sha256
-        var signingHash = signedXml.SignatureMethod.Substring(signedXml.SignatureMethod.LastIndexOf('-') + 1);
+        var signingHash = signedXml.SignatureMethod[(signedXml.SignatureMethod.LastIndexOf('-') + 1)..];
         if (!allowedHashAlgorithms.Contains(signingHash))
         {
-            error += $"Signature algorithm {signedXml.SignatureMethod} does not match configured [{string.Join(", ", allowedHashAlgorithms)}]. ";
+            var allowed = string.Join(", ", allowedHashAlgorithms);
+            error += $"Signature algorithm {signedXml.SignatureMethod} does not match configured [{allowed}]. ";
         }
 
         var valid = string.IsNullOrEmpty(error);
@@ -213,6 +212,10 @@ public static class SignedXmlHelper
     /// <param name="signatureElement">Signature element.</param>
     private static void FixSignatureIndex(SignedXml signedXml, XmlElement signatureElement)
     {
+
+// I've got a PR merged to .NET 7 that fixes this bug, so for .NET 7 and up - don't do private reflection hacks with this.
+#if !NET7_0_OR_GREATER
+
         if (signaturePosition == null)
             return;
 
@@ -237,5 +240,6 @@ public static class SignedXmlHelper
                 signaturePosition.SetValue(envelopedTransform, correctSignaturePosition);
             }
         }
+#endif
     }
 }

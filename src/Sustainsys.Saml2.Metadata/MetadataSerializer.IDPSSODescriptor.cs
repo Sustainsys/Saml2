@@ -22,10 +22,7 @@ partial class MetadataSerializer
 
         ReadAttributes(source, result);
 
-        using (source.EnterChildLevel())
-        {
-            ReadElements(source, result);
-        }
+        ReadElements(source.GetChildren(), result);
 
         return result;
     }
@@ -49,7 +46,7 @@ partial class MetadataSerializer
     /// <param name="result"></param>
     protected virtual void ReadElements(XmlTraverser source, IDPSSODescriptor result)
     {
-        if (!source.MoveToNextRequiredChild() || !ReadElements(source, (SSODescriptor)result))
+        if (!source.MoveNext() || !ReadElements(source, (SSODescriptor)result))
         {
             return;
         }
@@ -63,9 +60,6 @@ partial class MetadataSerializer
         do
         {
             result.SingleSignOnServices.Add(ReadEndpoint(source));
-        } while (source.MoveToNextChild() && source.HasName(Namespaces.Metadata, ElementNames.SingleSignOnService));
-
-        // Skip over unsupported elements.
-        source.SkipChildren();
+        } while (source.MoveNext(true) && source.HasName(Namespaces.Metadata, ElementNames.SingleSignOnService));
     }
 }

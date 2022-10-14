@@ -1,6 +1,7 @@
 ﻿using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
+using System.Runtime.ExceptionServices;
 using System.Security.Cryptography.Xml;
 using System.Xml;
 
@@ -20,11 +21,22 @@ public class XmlTraverser
     /// <summary>
     /// Errors encountered so far during the traversal.
     /// </summary>
-    public List<Error> Errors { get; } = new();
+    public List<Error> Errors { get; }
 
+    /// <summary>
+    /// Current Node.
+    /// </summary>
     private XmlNode? currentNode;
-    private XmlNode? parentNode;
-    private XmlNode? firstChild;
+
+    /// <summary>
+    /// First Node to move to if current is null because it is before start.
+    /// </summary>
+    private XmlNode? firstNode;
+
+    /// <summary>
+    /// Keep parent node around to enable error reporting.
+    /// </summary>
+    private readonly XmlTraverser? parent;
 
     /// <summary>
     /// The current node being processed.
@@ -48,6 +60,19 @@ public class XmlTraverser
     public XmlTraverser(XmlNode rootNode)
     {
         currentNode = rootNode;
+        Errors = new();
+    }
+
+    /// <summary>
+    /// Ctor used when processing child nodes.
+    /// </summary>
+    /// <param name="parent">Parent node to process children for.</param>
+    /// <param name="errors">Errors collection</param>
+    private XmlTraverser(XmlTraverser parent, List<Error> errors)
+    {
+        this.parent = parent;
+        firstNode = parent.CurrentNode.FirstChild;
+        Errors = errors;
     }
 
     private void AddError(ErrorReason reason, string message)
@@ -66,57 +91,12 @@ public class XmlTraverser
         }
     }
 
-    private class ChildScope : IDisposable
-    {
-        bool isDisposed = false;
-        private XmlTraverser xmlTraverser;
-        private XmlNode? previousParentNode;
-
-        public ChildScope(XmlTraverser xmlTraverser)
-        {
-            this.xmlTraverser = xmlTraverser;
-            previousParentNode = xmlTraverser.parentNode;
-            xmlTraverser.parentNode = xmlTraverser.CurrentNode;
-            xmlTraverser.firstChild = xmlTraverser.CurrentNode.FirstChild;
-
-            // We've entered child level, current node cannot be stuck on now-parent.
-            xmlTraverser.currentNode = null;
-        }
-
-        public void Dispose()
-        {
-            if (isDisposed)
-            {
-                throw new InvalidOperationException();
-            }
-
-            // Detect if we are leaving unprocessed child elements.
-            if(xmlTraverser.currentNode != null)
-            {
-                xmlTraverser.Errors.Add(new(
-                    ErrorReason.ExtraElements,
-                    xmlTraverser.currentNode.LocalName,
-                    xmlTraverser.currentNode,
-                    $"Unexpected child element {xmlTraverser.currentNode.LocalName} found, all elements should be processed or explicitly skipped."));
-            }
-
-            xmlTraverser.currentNode = xmlTraverser.parentNode;
-            xmlTraverser.parentNode = previousParentNode;
-            isDisposed = true;
-        }
-    }
-
     /// <summary>
-    /// Steps down the traverser to the children of the current node. The traverser
-    /// steps back up when the returned scope is disposed.
+    /// Creates an XML traverser for the child elements of the current node, keeping
+    /// the same error list as the current traverser.
     /// </summary>
-    /// <returns></returns>
-    /// <exception cref="NotImplementedException"></exception>
-    public IDisposable EnterChildLevel()
-    {
-        // Create scope that captures current level and moves to child level
-        return new ChildScope(this);
-    }
+    /// <returns>XmlTraverser</returns>
+    public XmlTraverser GetChildren() => new(this, Errors);
 
     /// <summary>
     /// If the current node is a signature node, read and validate it and 
@@ -168,18 +148,29 @@ public class XmlTraverser
     /// <summary>
     /// Moves to the next child node in the current collection, if one is available.
     /// </summary>
+    /// <param name="expectEnd">Do we expect this MoveNext call to hit the end of the child list? If not
+    /// an error is recorded if we do not find any more nodes.</param>
     /// <returns>true if the move was successful</returns>
-    public bool MoveToNextChild()
+    public bool MoveNext(bool expectEnd = false)
     {
         while (true)
         {
             // First check if we are fresh into child level, then use firstChild to seed. Otherwise
             // just traverse forward one step (if possible)
-            currentNode = firstChild ?? currentNode?.NextSibling;
-            firstChild = null;
+            currentNode = firstNode ?? currentNode?.NextSibling;
+            firstNode = null;
 
             if (currentNode == null)
             {
+                if(!expectEnd)
+                {
+                    Errors.Add(new(
+                        ErrorReason.MissingElement,
+                        parent!.CurrentNode.LocalName,
+                        parent!.CurrentNode,
+                        $"There should be a child element here under {parent.CurrentNode.LocalName}, but found none."));
+                }
+
                 // No more children.
                 return false;
             }
@@ -196,34 +187,6 @@ public class XmlTraverser
                 AddError(ErrorReason.UnsupportedNodeType, $"Unsupported node type {currentNode.NodeType}");
             }
         }
-    }
-
-    /// <summary>
-    /// Ignore the rest of the child nodes on this level.
-    /// </summary>
-    public void SkipChildren()
-    {
-        currentNode = null;
-    }
-
-    /// <summary>
-    /// Move to next child if the current collection, record an error if none is available.
-    /// </summary>
-    /// <returns>ture if the move was successful</returns>
-    public bool MoveToNextRequiredChild()
-    {
-        var result = MoveToNextChild();
-
-        if (!result)
-        {
-            Errors.Add(new(
-                ErrorReason.MissingElement,
-                parentNode!.LocalName,
-                parentNode,
-                $"There should be a child element here under {parentNode!.LocalName}, but found none."));
-        }
-
-        return result;
     }
 
     /// <summary>
