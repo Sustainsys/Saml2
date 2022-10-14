@@ -23,14 +23,7 @@ partial class MetadataSerializer
     {
         var result = CreateKeyDescriptor();
 
-        var useValue = source.GetAttribute(AttributeNames.use);
-        if (useValue != null)
-        {
-            if (Enum.TryParse(useValue, ignoreCase: true, out KeyUse use))
-            {
-                result.Use = use;
-            }
-        }
+        result.Use = source.GetEnumAttribute<KeyUse>(AttributeNames.use, true) ?? KeyUse.Both;
 
         var children = source.GetChildren();
 

@@ -59,6 +59,20 @@ public class XmlTraverserTests
         GetXmlTraverser().GetAttribute(localName).Should().Be(expectedValue);
     }
 
+    private enum GetEnumAttributeEnum
+    {
+        Xyz = 42
+    }
+
+    [Fact]
+    public void GetEnumAttribute()
+
+    {
+        GetXmlTraverser().GetEnumAttribute<GetEnumAttributeEnum>("invalidTimeSpan", true).Should().Be(GetEnumAttributeEnum.Xyz);
+
+        GetXmlTraverser().GetEnumAttribute<GetEnumAttributeEnum>("validTimeSpan", true).Should().Be(null);
+    }
+
     [Theory]
     [InlineData("urn:r", "root")]
     [InlineData("urn:X", "root", ErrorReason.UnexpectedNamespace)]

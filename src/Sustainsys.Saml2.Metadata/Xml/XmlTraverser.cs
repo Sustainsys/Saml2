@@ -317,9 +317,21 @@ public class XmlTraverser
     /// is reported to the errors collection.
     /// </summary>
     /// <param name="localName">Local name of attribute</param>
-    /// <returns>Parsed DateTime or bool if parse fails</returns>
+    /// <returns>Parsed bool or null if parse fails.</returns>
     public bool? GetBoolAttribute(string localName)
         => TryGetAttribute(localName, XmlConvert.ToBoolean);
+
+    /// <summary>
+    /// Gets an optional enum attribute. On parse errors the Error
+    /// is reported to the errors collection.
+    /// </summary>
+    /// <typeparam name="TEnum">Enum type to parse</typeparam>
+    /// <param name="localName">Local name of attribute</param>
+    /// <param name="ignoreCase">Ignore case when parsing?</param>
+    /// <returns>Parsed enum or null if parse fails</returns>
+    public TEnum? GetEnumAttribute<TEnum>(string localName, bool ignoreCase)
+        where TEnum : struct
+        => TryGetAttribute(localName, s => Enum.Parse<TEnum>(s, ignoreCase));
 
     /// <summary>
     /// Get an attribute as int. On parse errors the Error
@@ -359,7 +371,9 @@ public class XmlTraverser
         {
             return converter(stringValue);
         }
-        catch (FormatException)
+        catch (Exception ex) when (
+            ex is FormatException // Thrown by XmlConvert
+            || ex is ArgumentException) // Thrown by Enum.Parse
         {
             Errors.Add(new Error(
                 ErrorReason.ConversionFailed,
