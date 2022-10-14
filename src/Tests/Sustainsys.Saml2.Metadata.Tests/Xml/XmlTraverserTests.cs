@@ -3,28 +3,55 @@ using Sustainsys.Saml2.Metadata.Xml;
 using Sustainsys.Saml2.Tests.Helpers;
 using System;
 using System.Linq;
-using System.Security.Cryptography.Xml;
+using System.Runtime.CompilerServices;
 using System.Xml;
+using System.Xml.Linq;
 using Xunit;
 
 namespace Sustainsys.Saml2.Metadata.Tests.Xml;
 
 public class XmlTraverserTests
 {
-    private XmlDocument xmlDocument;
+    private const string xml = "<root xmlns=\"urn:r\" xmlns:a=\"urn:a\" x=\"1\" a:x=\"2\" a:y=\"3\" a:z=\"4\" z=\"5\" " +
+        "validTimeSpan=\"PT15M\" invalidTimeSpan=\"XYZ\" uri=\"urn:uri\"> <p/><q/>abc</root>";
 
-    private XmlTraverser GetXmlTraverser() => new XmlTraverser(xmlDocument!.DocumentElement!);
+    private readonly XmlDocument signedXmlDocument;
 
-    public XmlTraverserTests()
+    private static XmlTraverser GetXmlTraverser(string xml = xml)
     {
-        var xml = "<root xmlns=\"urn:r\" xmlns:a=\"urn:a\" x=\"1\" a:x=\"2\" a:y=\"3\" a:z=\"4\" z=\"5\" " +
-            "validTimeSpan=\"PT15M\" invalidTimeSpan=\"XYZ\" uri=\"urn:uri\"> <p/><q/>abc</root>";
-
-        xmlDocument = new XmlDocument()
+        var xd = new XmlDocument()
         {
             PreserveWhitespace = true
         };
-        xmlDocument.LoadXml(xml);
+
+        xd.LoadXml(xml);
+
+        return new(xd.DocumentElement!);
+    }
+
+    private XmlTraverser GetSignatureNode() 
+    {
+        var traverser = new XmlTraverser(signedXmlDocument!.DocumentElement!);
+
+        var subject = traverser .GetChildren();
+
+        subject.MoveNext().Should().BeTrue();
+
+        return subject;
+    }
+
+    public XmlTraverserTests()
+    {
+        var xml = "<xml ID=\"id123\"/>";
+
+        signedXmlDocument = new XmlDocument()
+        {
+            PreserveWhitespace = true
+        };
+
+        signedXmlDocument.LoadXml(xml);
+
+        SignedXmlHelper.Sign(signedXmlDocument.DocumentElement!, TestData.Certificate);
     }
 
     [Theory]
@@ -34,6 +61,20 @@ public class XmlTraverserTests
     public void GetAttribute(string localName, string expectedValue)
     {
         GetXmlTraverser().GetAttribute(localName).Should().Be(expectedValue);
+    }
+
+    private enum GetEnumAttributeEnum
+    {
+        Xyz = 42
+    }
+
+    [Fact]
+    public void GetEnumAttribute()
+
+    {
+        GetXmlTraverser().GetEnumAttribute<GetEnumAttributeEnum>("invalidTimeSpan", true).Should().Be(GetEnumAttributeEnum.Xyz);
+
+        GetXmlTraverser().GetEnumAttribute<GetEnumAttributeEnum>("validTimeSpan", true).Should().Be(null);
     }
 
     [Theory]
@@ -59,6 +100,8 @@ public class XmlTraverserTests
 
         subject.EnsureName("whatever", "root");
 
+        subject.MoveNext(true);
+
         subject.Invoking(s => s.ThrowOnErrors())
             .Should().Throw<Saml2XmlException>()
             .Which.Errors.Single().Reason
@@ -72,9 +115,23 @@ public class XmlTraverserTests
 
         subject.EnsureName("whatever", "something");
 
+        subject.MoveNext(true);
+
         subject.Invoking(s => s.ThrowOnErrors())
             .Should().Throw<Saml2XmlException>()
             .Which.Errors.Count().Should().Be(2);
+    }
+
+    [Fact]
+    public void ThrowOnErrors_OnlyAllowedOnRoot()
+    {
+        var xml = "<r><a/></r>";
+
+        var subject = GetXmlTraverser(xml).GetChildren();
+
+        subject.Invoking(s => s.ThrowOnErrors())
+            .Should().Throw<InvalidOperationException>()
+            .WithMessage("*root traverser*");
     }
 
     [Fact]
@@ -83,6 +140,8 @@ public class XmlTraverserTests
         var subject = GetXmlTraverser();
 
         subject.EnsureName("whatever", "something");
+
+        subject.MoveNext(true);
 
         foreach (var error in subject.Errors)
         {
@@ -99,6 +158,8 @@ public class XmlTraverserTests
         var subject = GetXmlTraverser();
 
         subject.EnsureName("whatever", "something");
+
+        subject.MoveNext(true);
 
         subject.Errors.Single(e => e.Reason == ErrorReason.UnexpectedLocalName).Ignore = true;
 
@@ -148,7 +209,7 @@ public class XmlTraverserTests
 
         error.Reason.Should().Be(ErrorReason.NotAbsoluteUri);
         error.LocalName.Should().Be("x");
-        error.Node.Should().BeSameAs(xmlDocument.DocumentElement);
+        error.Node.Should().BeSameAs(subject.CurrentNode);
         error.StringValue.Should().Be("1");
     }
 
@@ -159,46 +220,174 @@ public class XmlTraverserTests
 
         var parentNode = subject.CurrentNode;
 
-        var childScope = subject.EnterChildLevel();
+        var childElements = subject.GetChildren();
 
-        subject.MoveToNextChild().Should().BeTrue();
-        
-        subject.CurrentNode!.LocalName.Should().Be("p");
+        childElements.MoveNext().Should().BeTrue();
 
-        subject.MoveToNextChild().Should().BeTrue();
+        childElements.CurrentNode!.LocalName.Should().Be("p");
 
-        subject.CurrentNode.LocalName.Should().Be("q");
+        childElements.MoveNext().Should().BeTrue();
 
-        var childScope2 = subject.EnterChildLevel();
+        childElements.CurrentNode.LocalName.Should().Be("q");
 
-        subject.MoveToNextChild().Should().BeFalse();
+        var grandChildElements = childElements.GetChildren();
 
-        subject.Invoking(s => s.CurrentNode).Should().Throw<InvalidOperationException>();
+        grandChildElements.MoveNext(true).Should().BeFalse();
 
-        childScope2.Dispose();
+        grandChildElements.Invoking(s => s.CurrentNode).Should().Throw<InvalidOperationException>();
 
         // Just check that we have no errors so far as we're soon checking error count = 1.
         subject.Errors.Should().HaveCount(0);
 
-        subject.MoveToNextChild().Should().BeFalse();
+        childElements.MoveNext(true).Should().BeFalse();
 
         // We should how have hit the abc text node.
         subject.Errors.Should().HaveCount(1);
         subject.Errors.Last().Reason.Should().Be(ErrorReason.UnsupportedNodeType);
-
-        childScope.Dispose();
-
-        subject.CurrentNode.Should().BeSameAs(parentNode);
     }
 
     [Fact]
     public void ValidateSignature()
     {
-        var xml = "<xml ID=\"id123\"/>";
+        var subject = GetSignatureNode();
 
-        var xmlDoc = new XmlDocument();
-        xmlDoc.LoadXml(xml);
+        subject.ReadAndValidateOptionalSignature(TestData.SingleSigningKey, SignedXmlHelperTests.allowedHashes, out var trustLevel)
+            .Should().BeTrue();
 
-        SignedXmlHelper.Sign(xmlDoc.DocumentElement!, TestData.Certificate);
+        trustLevel.Should().Be(TestData.SigningKey.TrustLevel);
+    }
+
+    [Fact]
+    public void ValidateSignatureWrongKey()
+    {
+        var subject = GetSignatureNode();
+
+        subject.ReadAndValidateOptionalSignature(TestData.SingleSigningKey2, SignedXmlHelperTests.allowedHashes, out var trustLevel)
+            .Should().BeTrue();
+
+        trustLevel.Should().Be(TrustLevel.None);
+
+        subject.Errors.Should().HaveCount(1);
+
+        var error = subject.Errors[0];
+        
+        error.Message.Should().Match("*contained key*not*trusted*");
+        error.Reason.Should().Be(ErrorReason.SignatureFailure);
+    }
+
+    [Fact]
+    public void DetectSkippedChildren_NoChildAccess()
+    {
+        var xml = "<r><a><b/></a></r>";
+
+        var subject = GetXmlTraverser(xml);
+
+        var rChildren = subject.GetChildren();
+        rChildren.MoveNext().Should().BeTrue();
+        var a = rChildren.CurrentNode;
+
+        rChildren.MoveNext(true).Should().BeFalse();
+
+        subject.Errors.Should().HaveCount(1);
+
+        var error = subject.Errors[0];
+        error.Reason.Should().Be(ErrorReason.ExtraElements);
+        error.Node.Should().BeSameAs(a);
+        error.LocalName.Should().Be("a");
+        error.Message.Should().Match("*not been processed*");
+    }
+
+    [Fact]
+    public void DetectSkippedChildren_NotAllChildren()
+    {
+        var xml = "<r><a><b/></a></r>";
+
+        var subject = GetXmlTraverser(xml);
+
+        var rChildren = subject.GetChildren();
+        rChildren.MoveNext().Should().BeTrue();
+        var a = rChildren.CurrentNode;
+        var aChildren = rChildren.GetChildren();
+        
+        aChildren.MoveNext().Should().BeTrue();
+        aChildren.CurrentNode.LocalName.Should().Be("b");
+
+        rChildren.MoveNext(true).Should().BeFalse();
+
+        subject.Errors.Should().HaveCount(1);
+        
+        var error = subject.Errors[0];
+        error.Reason.Should().Be(ErrorReason.ExtraElements);
+        error.Node.Should().BeSameAs(a);
+        error.LocalName.Should().Be("a");
+        error.Message.Should().Match("*not been processed*");
+    }
+
+    [Fact]
+    public void ThrowOnErrors_DetectIfNotMovedOffRoot()
+    {
+        var xml = "<r/>";
+
+        var subject = GetXmlTraverser(xml);
+
+        subject.Invoking(s => s.ThrowOnErrors())
+            .Should().Throw<InvalidOperationException>()
+            .WithMessage("*move*root element*");
+    }
+
+    [Fact]
+
+    public void IgnoreChildren()
+    {
+        var xml = "<r><a/></r>";
+
+        var subject = GetXmlTraverser(xml);
+
+        subject.IgnoreChildren();
+
+        subject.MoveNext(true);
+
+        subject.Errors.Should().HaveCount(0);
+    }
+
+    [Theory]
+    [InlineData("<r/>", false)]
+    [InlineData("<r><a/></r>", true)]
+    [InlineData("<r>text</r>", false)]
+    public void EnsureElement(string xml, bool expected)
+    {
+        var subject = GetXmlTraverser(xml);
+
+        var children = subject.GetChildren();
+        children.MoveNext(true).Should().Be(expected);
+
+        children.EnsureElement().Should().Be(expected);
+
+        if(!expected)
+        { 
+            // For the text node, there's first a text node error.
+            subject.Errors.Should().NotBeEmpty();
+            var e = subject.Errors.Last();
+
+            e.Reason.Should().Be(ErrorReason.MissingElement);
+            e.Node.Should().BeSameAs(subject.CurrentNode);
+            e.LocalName.Should().Be("r");
+            e.Message.Should().Match("*not*element*");
+        }
+    }
+
+    [Fact]
+    public void Skip()
+    {
+        var xml = "<r><a/></r>";
+
+        var subject = GetXmlTraverser(xml);
+
+        subject.GetChildren().Skip();
+
+        subject.MoveNext(true);
+
+        subject.Invoking(s => s.ThrowOnErrors())
+            .Should().NotThrow();
     }
 }

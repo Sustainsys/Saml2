@@ -58,11 +58,11 @@ public partial class MetadataSerializer
         {
             ReadAttributes(source, entityDescriptor);
 
-            using (source.EnterChildLevel())
-            {
-                ReadElements(source, entityDescriptor);
-            }
+            ReadElements(source.GetChildren(), entityDescriptor);
+
         }
+
+        source.MoveNext(true);
 
         ThrowOnErrors(source);
 
@@ -89,7 +89,7 @@ public partial class MetadataSerializer
     /// <param name="entityDescriptor">Entity Descriptor to populate</param>
     protected virtual void ReadElements(XmlTraverser source, EntityDescriptor entityDescriptor)
     {
-        if (!source.MoveToNextRequiredChild())
+        if (!source.MoveNext())
         {
             return;
         }
@@ -99,7 +99,7 @@ public partial class MetadataSerializer
         {
             entityDescriptor.TrustLevel = trustLevel;
 
-            if (!source.MoveToNextRequiredChild())
+            if (!source.MoveNext())
             {
                 return;
             }
@@ -108,7 +108,7 @@ public partial class MetadataSerializer
         if (source.HasName(Namespaces.Metadata, ElementNames.Extensions))
         {
             entityDescriptor.Extensions = ReadExtensions(source);
-            if (!source.MoveToNextRequiredChild())
+            if (!source.MoveNext())
             {
                 return;
             }
@@ -132,15 +132,13 @@ public partial class MetadataSerializer
                     case ElementNames.AuthnAuthorityDescriptor:
                     case ElementNames.AttributeAuthorityDescriptor:
                     case ElementNames.PDPDescriptor:
+                        source.IgnoreChildren();
                         break;
                     default:
                         wasRoleDescriptor = false; // Nope, something else.
                         break;
                 }
             }
-        } while (wasRoleDescriptor && source.MoveToNextChild());
-
-        // We're not reading the organization information for now, just skip the rest.
-        source.SkipChildren();
+        } while (wasRoleDescriptor && source.MoveNext(true));
     }
 }

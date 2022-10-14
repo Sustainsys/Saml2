@@ -23,27 +23,21 @@ partial class MetadataSerializer
     {
         var result = CreateKeyDescriptor();
 
-        var useValue = source.GetAttribute(AttributeNames.use);
-        if(useValue != null)
+        result.Use = source.GetEnumAttribute<KeyUse>(AttributeNames.use, true) ?? KeyUse.Both;
+
+        var children = source.GetChildren();
+
+        if (children.MoveNext()
+            && children.EnsureName(SignedXml.XmlDsigNamespaceUrl, ElementNames.KeyInfo))
         {
-            if(Enum.TryParse(useValue, ignoreCase:true, out KeyUse use))
-            {
-                result.Use = use;
-            }
-        }
+            children.IgnoreChildren();
 
-        using (source.EnterChildLevel())
-        { 
-            if(source.MoveToNextRequiredChild()
-                && source.EnsureName(SignedXml.XmlDsigNamespaceUrl, ElementNames.KeyInfo))
-            {
-                var keyInfo = new KeyInfo();
-                keyInfo.LoadXml((XmlElement)source.CurrentNode);
+            var keyInfo = new KeyInfo();
+            keyInfo.LoadXml((XmlElement)children.CurrentNode);
 
-                result.KeyInfo = keyInfo;
+            result.KeyInfo = keyInfo;
 
-                source.MoveToNextChild();
-            }
+            children.MoveNext(true);
         }
 
         return result;

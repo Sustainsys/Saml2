@@ -31,7 +31,7 @@ partial class MetadataSerializer
         {
             result.ArtifactResolutionServices.Add(ReadIndexedEndpoint(source));
 
-            if(!source.MoveToNextChild())
+            if(!source.MoveNext())
             {
                 return false;
             }
@@ -41,7 +41,7 @@ partial class MetadataSerializer
         {
             result.SingleLogoutServices.Add(ReadEndpoint(source));
 
-            if (!source.MoveToNextChild())
+            if (!source.MoveNext())
             {
                 return false;
             }
@@ -51,7 +51,9 @@ partial class MetadataSerializer
             || source.HasName(Namespaces.Metadata, ElementNames.NameIDFormat))
         {
             // We're not supporting ManageNameIDService nor NameIDFormat.
-            if(!source.MoveToNextChild())
+            source.IgnoreChildren();
+
+            if(!source.MoveNext())
             {
                 return false;
             }

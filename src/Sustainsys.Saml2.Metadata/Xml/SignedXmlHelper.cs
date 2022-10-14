@@ -23,16 +23,14 @@ public static class SignedXmlHelper
     /// <param name="certificate">Certificate to use to sign</param>
     public static void Sign(this XmlElement element, X509Certificate2 certificate)
     {
-        var signedXml = new SignedXml(element.OwnerDocument);
-
-        switch (certificate.PublicKey.Oid.FriendlyName)
+        var signedXml = new SignedXml(element.OwnerDocument)
         {
-            case "RSA":
-                signedXml.SigningKey = certificate.GetRSAPrivateKey();
-                break;
-            default:
-                throw new NotImplementedException();
-        }
+            SigningKey = certificate.PublicKey.Oid.FriendlyName switch
+            {
+                "RSA" => certificate.GetRSAPrivateKey(),
+                _ => throw new NotImplementedException(),
+            }
+        };
 
         var id = element.Attributes!["ID"]?.Value;
 
@@ -71,6 +69,8 @@ public static class SignedXmlHelper
         /// <exception cref="CryptographicException">If not exactly one match</exception>
         public override XmlElement GetIdElement(XmlDocument document, string idValue)
         {
+            XmlConvert.VerifyNCName(idValue);
+
             var possibleNodes = document.SelectNodes($"//*[@ID=\"{idValue}\" or @Id=\"{idValue}\" or @id=\"{idValue}\"]")!;
 
             if (possibleNodes.Count != 1)
@@ -121,8 +121,8 @@ public static class SignedXmlHelper
         else
         {
             // All versions of .NET prior to .NET 7 contains a bug that only lets the first signature in a
-            // document be validated, we want a workaround for that. For .NET 7+ I contributed
-            // this fix to the System.Security.Cryptography.Xml library.
+            // document be validated, we want a workaround for that. For .NET 7 I contributed
+            // a fix to the System.Security.Cryptography.Xml library, so no need to do private reflection then.
 #if !NET7_0_OR_GREATER
             FixSignatureIndex(signedXml, signatureElement);
 #endif
@@ -155,9 +155,7 @@ public static class SignedXmlHelper
             }
             else
             {
-                var id = reference.Uri.Substring(1); // Drop off the #
-
-                XmlConvert.VerifyNCName(id);
+                var id = reference.Uri[1..]; // Drop off the #
 
                 signedElement = signedXml.GetIdElement(signatureElement.OwnerDocument, id);
 
@@ -182,7 +180,7 @@ public static class SignedXmlHelper
             }
 
             // The algorithm names has the form http://foo/bar/xyz#sha256
-            var digestHash = reference.DigestMethod.Substring(reference.DigestMethod.LastIndexOf('#') + 1);
+            var digestHash = reference.DigestMethod[(reference.DigestMethod.LastIndexOf('#') + 1)..];
             if (!allowedHashAlgorithms.Contains(digestHash))
             {
                 error += $"Digest algorithm {reference.DigestMethod} does not match configured [{string.Join(", ", allowedHashAlgorithms)}]. ";
@@ -190,10 +188,11 @@ public static class SignedXmlHelper
         }
 
         // The algorithm names has the form http://foo/bar/xyz#rsa-sha256
-        var signingHash = signedXml.SignatureMethod.Substring(signedXml.SignatureMethod.LastIndexOf('-') + 1);
+        var signingHash = signedXml.SignatureMethod[(signedXml.SignatureMethod.LastIndexOf('-') + 1)..];
         if (!allowedHashAlgorithms.Contains(signingHash))
         {
-            error += $"Signature algorithm {signedXml.SignatureMethod} does not match configured [{string.Join(", ", allowedHashAlgorithms)}]. ";
+            var allowed = string.Join(", ", allowedHashAlgorithms);
+            error += $"Signature algorithm {signedXml.SignatureMethod} does not match configured [{allowed}]. ";
         }
 
         var valid = string.IsNullOrEmpty(error);

@@ -1,6 +1,7 @@
 ﻿using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
+using System.Runtime.ExceptionServices;
 using System.Security.Cryptography.Xml;
 using System.Xml;
 
@@ -20,11 +21,28 @@ public class XmlTraverser
     /// <summary>
     /// Errors encountered so far during the traversal.
     /// </summary>
-    public List<Error> Errors { get; } = new();
+    public List<Error> Errors { get; }
 
+    /// <summary>
+    /// Current Node.
+    /// </summary>
     private XmlNode? currentNode;
-    private XmlNode? parentNode;
-    private XmlNode? firstChild;
+
+    /// <summary>
+    /// First Node to move to if current is null because it is before start.
+    /// </summary>
+    private XmlNode? firstNode;
+
+    /// <summary>
+    /// Keep parent node around to enable error reporting.
+    /// </summary>
+    private readonly XmlTraverser? parent;
+
+    /// <summary>
+    /// Are the children of the current node handled? Default to true
+    /// as we're setting it to false whenever we hit an element.
+    /// </summary>
+    private bool childrenHandled = true;
 
     /// <summary>
     /// The current node being processed.
@@ -48,6 +66,19 @@ public class XmlTraverser
     public XmlTraverser(XmlNode rootNode)
     {
         currentNode = rootNode;
+        Errors = new();
+    }
+
+    /// <summary>
+    /// Ctor used when processing child nodes.
+    /// </summary>
+    /// <param name="parent">Parent node to process children for.</param>
+    /// <param name="errors">Errors collection</param>
+    private XmlTraverser(XmlTraverser parent, List<Error> errors)
+    {
+        this.parent = parent;
+        firstNode = parent.CurrentNode.FirstChild;
+        Errors = errors;
     }
 
     private void AddError(ErrorReason reason, string message)
@@ -60,63 +91,28 @@ public class XmlTraverser
     /// </summary>
     public void ThrowOnErrors()
     {
+        if (parent != null)
+        {
+            throw new InvalidOperationException("ThrowOnErrors can only be called from the root traverser");
+        }
+
+        if (currentNode != null)
+        {
+            throw new InvalidOperationException("Before completing the traversal, call MoveNext to move past the root element. The root element must also be marked as completely processed for the child processing detection to work.");
+        }
+
         if (Errors.Any(e => !e.Ignore))
         {
             throw new Saml2XmlException(Errors);
         }
     }
 
-    private class ChildScope : IDisposable
-    {
-        bool isDisposed = false;
-        private XmlTraverser xmlTraverser;
-        private XmlNode? previousParentNode;
-
-        public ChildScope(XmlTraverser xmlTraverser)
-        {
-            this.xmlTraverser = xmlTraverser;
-            previousParentNode = xmlTraverser.parentNode;
-            xmlTraverser.parentNode = xmlTraverser.CurrentNode;
-            xmlTraverser.firstChild = xmlTraverser.CurrentNode.FirstChild;
-
-            // We've entered child level, current node cannot be stuck on now-parent.
-            xmlTraverser.currentNode = null;
-        }
-
-        public void Dispose()
-        {
-            if (isDisposed)
-            {
-                throw new InvalidOperationException();
-            }
-
-            // Detect if we are leaving unprocessed child elements.
-            if(xmlTraverser.currentNode != null)
-            {
-                xmlTraverser.Errors.Add(new(
-                    ErrorReason.ExtraElements,
-                    xmlTraverser.currentNode.LocalName,
-                    xmlTraverser.currentNode,
-                    $"Unexpected child element {xmlTraverser.currentNode.LocalName} found, all elements should be processed or explicitly skipped."));
-            }
-
-            xmlTraverser.currentNode = xmlTraverser.parentNode;
-            xmlTraverser.parentNode = previousParentNode;
-            isDisposed = true;
-        }
-    }
-
     /// <summary>
-    /// Steps down the traverser to the children of the current node. The traverser
-    /// steps back up when the returned scope is disposed.
+    /// Creates an XML traverser for the child elements of the current node, keeping
+    /// the same error list as the current traverser.
     /// </summary>
-    /// <returns></returns>
-    /// <exception cref="NotImplementedException"></exception>
-    public IDisposable EnterChildLevel()
-    {
-        // Create scope that captures current level and moves to child level
-        return new ChildScope(this);
-    }
+    /// <returns>XmlTraverser</returns>
+    public XmlTraverser GetChildren() => new(this, Errors);
 
     /// <summary>
     /// If the current node is a signature node, read and validate it and 
@@ -135,6 +131,8 @@ public class XmlTraverser
         if (CurrentNode.LocalName == "Signature" 
             && CurrentNode.NamespaceURI == SignedXml.XmlDsigNamespaceUrl)
         {
+            childrenHandled = true;
+
             if (trustedSigningKeys != null
                 && trustedSigningKeys.Any())
             {
@@ -168,25 +166,58 @@ public class XmlTraverser
     /// <summary>
     /// Moves to the next child node in the current collection, if one is available.
     /// </summary>
+    /// <param name="expectEnd">Do we expect this MoveNext call to hit the end of the child list? If not
+    /// an error is recorded if we do not find any more nodes.</param>
     /// <returns>true if the move was successful</returns>
-    public bool MoveToNextChild()
+    public bool MoveNext(bool expectEnd = false)
     {
         while (true)
         {
+            if(!childrenHandled && CurrentNode.HasChildNodes)
+            {
+                Errors.Add(new(
+                    ErrorReason.ExtraElements,
+                    CurrentNode.LocalName,
+                    CurrentNode,
+                    $"All child nodes under {CurrentNode.LocalName} have not been processed"));
+            }
+
             // First check if we are fresh into child level, then use firstChild to seed. Otherwise
             // just traverse forward one step (if possible)
-            currentNode = firstChild ?? currentNode?.NextSibling;
-            firstChild = null;
+            currentNode = firstNode ?? currentNode?.NextSibling;
+            firstNode = null;
 
             if (currentNode == null)
             {
+                if(!expectEnd)
+                {
+                    Errors.Add(new(
+                        ErrorReason.MissingElement,
+                        parent!.CurrentNode.LocalName,
+                        parent!.CurrentNode,
+                        $"There should be a child element here under {parent.CurrentNode.LocalName}, but found none."));
+                }
+
                 // No more children.
+                if(parent != null)
+                { 
+                    parent!.childrenHandled = true;
+                }
+
                 return false;
             }
 
             if (currentNode.NodeType == XmlNodeType.Element)
             {
-                // We're happy, we found an element.
+                if(currentNode.HasChildNodes)
+                    //&& (currentNode.ChildNodes.Count != 1 || currentNode.FirstChild!.NodeType == XmlNodeType.Text))
+                {
+                    // We just found the node and it has children. And it is not just one child that is text content
+                    childrenHandled = false;
+                }
+                childrenHandled = !CurrentNode.HasChildNodes;
+                
+                // We're happy, we found an element. 
                 return true;
             }
 
@@ -199,31 +230,19 @@ public class XmlTraverser
     }
 
     /// <summary>
-    /// Ignore the rest of the child nodes on this level.
+    /// Ignore any children of this element. This suppresses the error that there are unprocessed child nodes.
     /// </summary>
-    public void SkipChildren()
+    public void IgnoreChildren()
     {
-        currentNode = null;
+        childrenHandled = true;
     }
 
     /// <summary>
-    /// Move to next child if the current collection, record an error if none is available.
+    /// Skip over the rest of the elements on this level. This suppresses any errors if the parent calls MoveNext
     /// </summary>
-    /// <returns>ture if the move was successful</returns>
-    public bool MoveToNextRequiredChild()
+    public void Skip()
     {
-        var result = MoveToNextChild();
-
-        if (!result)
-        {
-            Errors.Add(new(
-                ErrorReason.MissingElement,
-                parentNode!.LocalName,
-                parentNode,
-                $"There should be a child element here under {parentNode!.LocalName}, but found none."));
-        }
-
-        return result;
+        parent!.childrenHandled = true;
     }
 
     /// <summary>
@@ -264,6 +283,27 @@ public class XmlTraverser
         }
 
         return namespaceOk;
+    }
+
+    /// <summary>
+    /// Ensure that there is a current node and that the current node is an element. Typically used
+    /// if the expectation of further elements is not known when <see cref="MoveNext(bool)"/> is called.
+    /// </summary>
+    /// <returns>Was there an element?</returns>
+    public bool EnsureElement()
+    {
+        if(currentNode == null || currentNode.NodeType != XmlNodeType.Element)
+        {
+            Errors.Add(new(
+                ErrorReason.MissingElement,
+                parent!.CurrentNode.LocalName,
+                parent.CurrentNode,
+                "There is no current node or current node is not an element"));
+
+            return false;
+        }
+
+        return true;
     }
 
     /// <summary>
@@ -354,9 +394,21 @@ public class XmlTraverser
     /// is reported to the errors collection.
     /// </summary>
     /// <param name="localName">Local name of attribute</param>
-    /// <returns>Parsed DateTime or bool if parse fails</returns>
+    /// <returns>Parsed bool or null if parse fails.</returns>
     public bool? GetBoolAttribute(string localName)
         => TryGetAttribute(localName, XmlConvert.ToBoolean);
+
+    /// <summary>
+    /// Gets an optional enum attribute. On parse errors the Error
+    /// is reported to the errors collection.
+    /// </summary>
+    /// <typeparam name="TEnum">Enum type to parse</typeparam>
+    /// <param name="localName">Local name of attribute</param>
+    /// <param name="ignoreCase">Ignore case when parsing?</param>
+    /// <returns>Parsed enum or null if parse fails</returns>
+    public TEnum? GetEnumAttribute<TEnum>(string localName, bool ignoreCase)
+        where TEnum : struct
+        => TryGetAttribute(localName, s => Enum.Parse<TEnum>(s, ignoreCase));
 
     /// <summary>
     /// Get an attribute as int. On parse errors the Error
@@ -396,7 +448,9 @@ public class XmlTraverser
         {
             return converter(stringValue);
         }
-        catch (FormatException)
+        catch (Exception ex) when (
+            ex is FormatException // Thrown by XmlConvert
+            || ex is ArgumentException) // Thrown by Enum.Parse
         {
             Errors.Add(new Error(
                 ErrorReason.ConversionFailed,
