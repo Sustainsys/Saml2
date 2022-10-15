@@ -1,4 +1,0 @@
-﻿user-agent: *
-Allow: /DiscoveryService
-Allow: /$
-Disallow: /*
