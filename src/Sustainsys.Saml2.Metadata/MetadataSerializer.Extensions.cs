@@ -15,7 +15,7 @@ partial class MetadataSerializer
     /// </summary>
     /// <param name="source">Soure to read from</param>
     /// <returns>Extensions</returns>
-    protected Extensions ReadExtensions(XmlTraverser source)
+    protected virtual Extensions ReadExtensions(XmlTraverser source)
     {
         source.IgnoreChildren();
 

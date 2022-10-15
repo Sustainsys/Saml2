@@ -100,7 +100,6 @@ public static class SignedXmlHelper
     /// lower case e.g. sha256 to match end of algorithm identifier URI, both for
     /// signing and hashing algorithms."</param>
     /// <returns>Tuple with possibly error message, and the signing key that worked.</returns>
-    /// <exception cref="NotImplementedException"></exception>
     public static (string? Error, SigningKey? WorkingKey) VerifySignature(
         this XmlElement signatureElement,
         IEnumerable<SigningKey> keys,

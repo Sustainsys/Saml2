@@ -57,9 +57,7 @@ public partial class MetadataSerializer
         if (source.EnsureName(Namespaces.Metadata, ElementNames.EntityDescriptor))
         {
             ReadAttributes(source, entityDescriptor);
-
             ReadElements(source.GetChildren(), entityDescriptor);
-
         }
 
         source.MoveNext(true);
