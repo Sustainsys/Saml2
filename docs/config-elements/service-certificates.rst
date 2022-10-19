@@ -75,3 +75,23 @@ Attributes
           - Future
           - Encryption
           - Yes
+          
+``filepath``
+ Filename and path to local SP certificate, only to be used in testing.
+
+``storeName``
+ Store name when to be used with certificate store, ex. My
+
+``storeLocation``
+ Store name when to be used with certificate store, ex. LocalMachine
+
+``x509FindType``
+ Type to find the X509 certificate in store ex. FindByThumbprint. 
+
+ Allows for System.Security.Cryptography.X509Certificates.X509FindTypes enum.
+
+``findValue``
+ The value to be find according to the x509FindType.
+
+          
+          
