@@ -75,3 +75,27 @@ Attributes
           - Future
           - Encryption
           - Yes
+          
+``fileName``
+    A file name to load the certificate from. The path is relative to the execution path of the application.  Make sure
+    to heed the warning above -- *best to use store-based certificates for non-development environments.*
+
+``storeName``
+    Name of the certificate store to search for the certificate. It is recommended to keep the certificate 
+    of the identity provider in the "Other People" store which is specified by the ``AddressBook`` enum value.
+    Valid values are those from the ``System.Security.Cryptography.X509Certificates.StoreName`` enumeration.
+
+``storeLocation``
+    The location of the store to search for the certificate. On production services it is recommended 
+    to use the LocalMachine value, while it makes more sense to use CurrentUser in development setups.
+    Valid values are those from the ``System.Security.Cryptography.X509Certificates.StoreLocation`` enumeration.
+
+``findValue``
+    A search term to use to find the certificate. The value will be searched for in the field specified by 
+    the ``x509FindType`` attribute.
+
+``x509FindType``
+    The field that will be seach for a match to the value in findValue. For security, it is recommended to 
+    use ``FindBySerialNumber``.
+
+    Valid values are those from the ``System.Security.Cryptography.X509Certificates.X509FindType`` enumeration.
