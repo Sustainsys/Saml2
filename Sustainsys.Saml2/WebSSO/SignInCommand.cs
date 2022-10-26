@@ -6,6 +6,7 @@ using System.Net;
 using Sustainsys.Saml2.Configuration;
 using Sustainsys.Saml2.Internal;
 using Sustainsys.Saml2.Metadata;
+using Microsoft.IdentityModel.Tokens.Saml2;
 
 namespace Sustainsys.Saml2.WebSso
 {
@@ -161,6 +162,16 @@ namespace Sustainsys.Saml2.WebSso
             if (!string.IsNullOrWhiteSpace(isPassiveString))
             {
                 authnRequest.IsPassive = bool.Parse(isPassiveString);
+            }
+
+            var subjectString = request.QueryString["Subject"].SingleOrDefault();
+            if (relayData.TryGetValue("Subject", out var subjectName))
+            {
+                authnRequest.Subject = new Saml2Subject(new Saml2NameIdentifier(subjectName));
+            } 
+            else if (!string.IsNullOrWhiteSpace(subjectString))
+            {
+                authnRequest.Subject = new Saml2Subject(new Saml2NameIdentifier(subjectString));
             }
 
             options.Notifications.AuthenticationRequestCreated(authnRequest, idp, relayData);

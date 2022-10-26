@@ -10,6 +10,7 @@ using System.Xml.Linq;
 using Sustainsys.Saml2.Configuration;
 using Sustainsys.Saml2.Internal;
 using Sustainsys.Saml2.WebSso;
+using Microsoft.IdentityModel.Tokens.Saml2;
 
 namespace Sustainsys.Saml2.Saml2P
 {
@@ -60,6 +61,7 @@ namespace Sustainsys.Saml2.Saml2P
             }
 
             AddNameIdPolicy(x);
+            AddSubject(x);
 
             if (RequestedAuthnContext != null && RequestedAuthnContext.ClassRef != null)
             {
@@ -112,6 +114,14 @@ namespace Sustainsys.Saml2.Saml2P
             if (Scoping != null)
             {
                 xElement.Add(Scoping.ToXElement());
+            }
+        }
+
+        private void AddSubject(XElement xElement)
+        {
+            if (Subject != null)
+            {
+                xElement.Add(Subject.ToXElement());
             }
         }
 
@@ -213,6 +223,11 @@ namespace Sustainsys.Saml2.Saml2P
         /// NameId policy.
         /// </summary>
         public Saml2NameIdPolicy NameIdPolicy { get; set; }
+        
+        /// <summary>
+        /// Subject.
+        /// </summary>
+        public Saml2Subject Subject { get; set; }
 
         /// <summary>
         /// RequestedAuthnContext.
