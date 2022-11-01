@@ -1,4 +1,5 @@
 ﻿using System;
+using Microsoft.IdentityModel.Tokens.Saml2;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using FluentAssertions;
 using System.Net;
@@ -504,6 +505,36 @@ namespace Sustainsys.Saml2.Tests.WebSso
 
             isPassiveValue.Should().BeFalse();
             forceAuthnValue.Should().BeTrue();
+        }
+        
+        [TestMethod]
+        public void SignInCommand_Run_Uses_SubjectFromNotification()
+        {
+            const string username = "username";
+            var options = StubFactory.CreateOptions();
+            var idp = options.IdentityProviders.Default;
+            var relayData = new Dictionary<string, string> { { "Subject", username }};
+            options.SPOptions.DiscoveryServiceUrl = null;
+            
+            
+            var request = new HttpRequestData("GET",
+                new Uri("http://sp.example.com"));
+            var expectedSubject = new Saml2Subject(new Saml2NameIdentifier(username));
+
+            options.Notifications.AuthenticationRequestCreated = (a, i, r) =>
+            {
+                a.Subject.Should().BeEquivalentTo(expectedSubject, "the given Subject in relayData should be added to the AuthnRequest");
+            };
+
+            options.Notifications.AuthenticationRequestXmlCreated = (r, d, s) =>
+            {
+                var authnRequestXml = d.ToString();
+                authnRequestXml.Should().Contain("Subject");
+                authnRequestXml.Should().Contain("NameID");
+                authnRequestXml.Should().Contain(username);
+            };
+
+            SignInCommand.Run(idp.EntityId, null, request, options, relayData);
         }
     }
 }

@@ -93,6 +93,21 @@ namespace Sustainsys.Saml2.Tests.Saml2P
             subject.Should().NotBeNull().And.Subject.Attribute("IsPassive")
                 .Should().NotBeNull().And.Subject.Value.Should().Be("true");
         }
+        
+        [TestMethod]
+        public void Saml2AuthenticationRequest_Subject()
+        {
+            var subject = new Saml2AuthenticationRequest()
+            {
+                Subject = new Saml2Subject(new Saml2NameIdentifier("username"))
+            }.ToXElement();
+            
+            subject.Should().NotBeNull()
+                .And.Subject.Element(XNamespace.Get(Saml2Namespaces.Saml2Name) + "Subject").Should().NotBeNull()
+                .And.Subject.Elements().Should().HaveCount(2)
+                .And.Subject.First().Name.LocalName.Should().Be("NameID");
+            subject.Element(XNamespace.Get(Saml2Namespaces.Saml2Name) + "Subject")?.Elements().Last().Name.LocalName.Should().Be("SubjectConfirmation");
+        }
 
         [TestMethod]
         public void Saml2AuthenticationRequest_Extensions()
