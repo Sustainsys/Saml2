@@ -111,7 +111,7 @@ empty (use ``<system.identityModel />``).
 
 System.IdentityModel.Services Section
 -------------------------------------
-The ``<system.identityModel.services>`` element configures the built in servies. For testing on non ssl sites, the 
+The ``<system.identityModel.services>`` element configures the built in services. For testing on non ssl sites, the 
 requirement for ssl for the session authentication cookie must be disabled.
 
 .. danger::  
