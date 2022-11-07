@@ -10,6 +10,7 @@ using Sustainsys.Saml2.Saml2P;
 using System.Diagnostics.CodeAnalysis;
 using System.Collections.ObjectModel;
 
+
 namespace Sustainsys.Saml2.Configuration
 {
     /// <summary>
@@ -281,11 +282,21 @@ namespace Sustainsys.Saml2.Configuration
             {
                 if (Metadata.RequestedAttributes.Any())
                 {
-                    var acs = new AttributeConsumingService
-                    {
-                        IsDefault = true
-                    };
-					acs.ServiceNames.Add(new LocalizedName("SP", "en"));
+                    int index = 0;
+                    index = string.IsNullOrEmpty(Metadata.RequestedAttributes.Index)
+                        ? index
+                        : int.Parse(Metadata.RequestedAttributes.Index);
+
+                    var acs = (index == 0)
+                        ? new AttributeConsumingService
+                        {
+                            IsDefault = true,
+                        }
+                        : new AttributeConsumingService
+                        {
+                            Index = index,
+                        };
+                    acs.ServiceNames.Add(new LocalizedName("SP", "en"));
 
                     foreach (var confAttribute in Metadata.RequestedAttributes)
                     {

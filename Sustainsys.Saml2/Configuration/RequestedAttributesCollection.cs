@@ -21,6 +21,25 @@ namespace Sustainsys.Saml2.Configuration
             return new RequestedAttributeElement();
         }
 
+        const string index = "index";
+
+        /// <summary>
+        /// Set the endpoint for the RequestedAttribute
+        /// </summary>
+        /// <returns>Returns the selected endpoint</returns>
+        [ConfigurationProperty(index, IsRequired = false)]
+        public string Index
+        {
+            get
+            {
+                return (string)base[index];
+            }
+            set
+            {
+                base[index] = value;
+            }
+        }
+
         /// <summary>
         /// Get the key of an element.
         /// </summary>
