@@ -23,6 +23,8 @@
   <PropertyGroup>
     <NoWarn>1701;1702;1591</NoWarn>
     <Authors>Sustainsys</Authors>
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+    <PackageId>UiPath.$(AssemblyName)</PackageId>
   </PropertyGroup>
 
   <ItemGroup>

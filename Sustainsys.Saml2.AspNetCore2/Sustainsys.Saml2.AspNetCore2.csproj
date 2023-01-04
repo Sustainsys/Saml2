@@ -18,6 +18,8 @@
 
   <PropertyGroup>
     <Authors>Sustainsys</Authors>
+    <PackageId>UiPath.$(AssemblyName)</PackageId>
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
   </PropertyGroup>
 
 
