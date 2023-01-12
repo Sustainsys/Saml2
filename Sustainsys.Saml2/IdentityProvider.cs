@@ -40,7 +40,7 @@ namespace Sustainsys.Saml2
             OutboundSigningAlgorithm = spOptions.OutboundSigningAlgorithm;
         }
 
-        readonly SPOptions spOptions;
+        internal readonly SPOptions spOptions;
 
         internal IdentityProvider(IdentityProviderElement config, SPOptions spOptions)
         {
