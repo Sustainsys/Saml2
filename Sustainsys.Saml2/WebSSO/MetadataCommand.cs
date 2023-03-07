@@ -33,14 +33,16 @@ namespace Sustainsys.Saml2.WebSso
 
             var urls = new Saml2Urls(request, options);
 
-            var metadata = options.SPOptions.CreateMetadata(urls);
+			IdentityProvider identityProvider = options.Notifications.GetIdentityProvider(options.SPOptions.EntityId, null, options);
+
+			var metadata = identityProvider.spOptions.CreateMetadata(urls);
             options.Notifications.MetadataCreated(metadata, urls);
 
             var result = new CommandResult()
             {
                 Content = metadata.ToXmlString(
-                    options.SPOptions.SigningServiceCertificate,
-                    options.SPOptions.OutboundSigningAlgorithm),
+					identityProvider.spOptions.SigningServiceCertificate,
+                    identityProvider.spOptions.OutboundSigningAlgorithm),
                 ContentType = "application/samlmetadata+xml"
             };
 
