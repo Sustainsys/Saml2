@@ -33,18 +33,24 @@ namespace Sustainsys.Saml2.WebSso
 
             var urls = new Saml2Urls(request, options);
 
-            var metadata = options.SPOptions.CreateMetadata(urls);
+            /* Dynamically fetch the identity provider for the entityid.
+             * This will ensure any settings controlled with a feature flag or dynamically refreshed values will be updated after Identity Server startup.
+             * We use these identity provider specific settings instead of the startup settings for the rest of the flow.
+             */
+            IdentityProvider identityProvider = options.Notifications.GetIdentityProvider(options.SPOptions.EntityId, null, options);
+
+			var metadata = identityProvider.spOptions.CreateMetadata(urls);
             options.Notifications.MetadataCreated(metadata, urls);
 
             var result = new CommandResult()
             {
                 Content = metadata.ToXmlString(
-                    options.SPOptions.SigningServiceCertificate,
-                    options.SPOptions.OutboundSigningAlgorithm),
+					identityProvider.spOptions.SigningServiceCertificate,
+                    identityProvider.spOptions.OutboundSigningAlgorithm),
                 ContentType = "application/samlmetadata+xml"
             };
 
-            var fileName = CreateFileName(options.SPOptions.EntityId.Id);
+            var fileName = CreateFileName(identityProvider.spOptions.EntityId.Id);
 
             result.Headers.Add("Content-Disposition", "attachment; filename=\"" + fileName + "\"");
 
