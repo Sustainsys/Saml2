@@ -85,6 +85,19 @@ namespace Sustainsys.Saml2.Tests
             signedXml.CheckSignature(TestCert, true).Should().BeTrue();
         }
 
+        [TestMethod]
+        public void XmlHelpers_Sign_WithCngProvider()
+        {
+            var xmlDoc = XmlHelpers.XmlDocumentFromString(
+                "<root ID=\"rootElementId\"><content>Some Content</content></root>");
+
+            var cert = new X509Certificate2("Sustainsys.Saml2.Tests.CngProvider.pfx");
+
+            // Using a certificate with a modern CNG provider threw exceptions, this
+            // test validates that it works.
+            xmlDoc.Sign(cert);
+        }
+
         const string xmlString = "<xml a=\"b\">\n  <indented>content</indented>\n</xml>";
         readonly XmlDocument xmlDocument = XmlHelpers.XmlDocumentFromString(xmlString);
 
@@ -406,9 +419,7 @@ $@"<xml>
             reference.AddTransform(new XmlDsigExcC14NTransform());
             reference.AddTransform(new XmlDsigEnvelopedSignatureTransform());
             sx.AddReference(reference);
-            sx.SigningKey = EnvironmentHelpers.IsNetCore ? SignedXmlHelper.TestCert.PrivateKey :
-				((RSACryptoServiceProvider)SignedXmlHelper.TestCert.PrivateKey)
-                .GetSha256EnabledRSACryptoServiceProvider();
+            sx.SigningKey = SignedXmlHelper.TestCert.GetSha256EnabledAsymmetricAlgorithm();
 
             sx.SignedInfo.SignatureMethod = SignedXml.XmlDsigRSASHA1Url;
             sx.ComputeSignature();
@@ -438,9 +449,7 @@ $@"<xml>
             reference.AddTransform(new XmlDsigExcC14NTransform());
             reference.AddTransform(new XmlDsigEnvelopedSignatureTransform());
             sx.AddReference(reference);
-            sx.SigningKey = EnvironmentHelpers.IsNetCore ? SignedXmlHelper.TestCert.PrivateKey :
-				((RSACryptoServiceProvider)SignedXmlHelper.TestCert.PrivateKey)
-                .GetSha256EnabledRSACryptoServiceProvider();
+            sx.SigningKey = SignedXmlHelper.TestCert.GetSha256EnabledAsymmetricAlgorithm();
 
             sx.SignedInfo.SignatureMethod = SecurityAlgorithms.RsaSha256Signature;
             sx.ComputeSignature();

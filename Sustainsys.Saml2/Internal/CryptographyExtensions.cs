@@ -12,88 +12,88 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace Sustainsys.Saml2.Internal
 {
-	internal static class CryptographyExtensions
-	{
-		internal static void Encrypt(this XmlElement elementToEncrypt, EncryptingCredentials encryptingCredentials)
-		{
-			if (elementToEncrypt == null)
-			{
-				throw new ArgumentNullException(nameof(elementToEncrypt));
-			}
-			if (encryptingCredentials == null)
-			{
-				throw new ArgumentNullException(nameof(encryptingCredentials));
-			}
+    internal static class CryptographyExtensions
+    {
+        internal static void Encrypt(this XmlElement elementToEncrypt, EncryptingCredentials encryptingCredentials)
+        {
+            if (elementToEncrypt == null)
+            {
+                throw new ArgumentNullException(nameof(elementToEncrypt));
+            }
+            if (encryptingCredentials == null)
+            {
+                throw new ArgumentNullException(nameof(encryptingCredentials));
+            }
 
-			string enc;
-			int keySize;
-			switch (encryptingCredentials.Enc)
-			{
-				case SecurityAlgorithms.Aes128CbcHmacSha256:
-					enc = EncryptedXml.XmlEncAES128Url;
-					keySize = 128;
-					break;
-				case SecurityAlgorithms.Aes192CbcHmacSha384:
-					enc = EncryptedXml.XmlEncAES192Url;
-					keySize = 192;
-					break;
-				case SecurityAlgorithms.Aes256CbcHmacSha512:
-					enc = EncryptedXml.XmlEncAES256Url;
-					keySize = 256;
-					break;
-				default:
-					throw new CryptographicException(
-						$"Unsupported cryptographic algorithm {encryptingCredentials.Enc}");
-			}
+            string enc;
+            int keySize;
+            switch (encryptingCredentials.Enc)
+            {
+                case SecurityAlgorithms.Aes128CbcHmacSha256:
+                    enc = EncryptedXml.XmlEncAES128Url;
+                    keySize = 128;
+                    break;
+                case SecurityAlgorithms.Aes192CbcHmacSha384:
+                    enc = EncryptedXml.XmlEncAES192Url;
+                    keySize = 192;
+                    break;
+                case SecurityAlgorithms.Aes256CbcHmacSha512:
+                    enc = EncryptedXml.XmlEncAES256Url;
+                    keySize = 256;
+                    break;
+                default:
+                    throw new CryptographicException(
+                        $"Unsupported cryptographic algorithm {encryptingCredentials.Enc}");
+            }
 
-			var encryptedData = new EncryptedData
-			{
-				Type = EncryptedXml.XmlEncElementUrl,
-				EncryptionMethod = new EncryptionMethod(enc)
-			};
+            var encryptedData = new EncryptedData
+            {
+                Type = EncryptedXml.XmlEncElementUrl,
+                EncryptionMethod = new EncryptionMethod(enc)
+            };
 
-			string alg;
-			switch (encryptingCredentials.Alg)
-			{
-				case SecurityAlgorithms.RsaOAEP:
-					alg = EncryptedXml.XmlEncRSAOAEPUrl;
-					break;
-				case SecurityAlgorithms.RsaPKCS1:
-					alg = EncryptedXml.XmlEncRSA15Url;
-					break;
-				default:
-					throw new CryptographicException(
-						$"Unsupported cryptographic algorithm {encryptingCredentials.Alg}");
-			}
-			var encryptedKey = new EncryptedKey
-			{
-				EncryptionMethod = new EncryptionMethod(alg),
-			};
+            string alg;
+            switch (encryptingCredentials.Alg)
+            {
+                case SecurityAlgorithms.RsaOAEP:
+                    alg = EncryptedXml.XmlEncRSAOAEPUrl;
+                    break;
+                case SecurityAlgorithms.RsaPKCS1:
+                    alg = EncryptedXml.XmlEncRSA15Url;
+                    break;
+                default:
+                    throw new CryptographicException(
+                        $"Unsupported cryptographic algorithm {encryptingCredentials.Alg}");
+            }
+            var encryptedKey = new EncryptedKey
+            {
+                EncryptionMethod = new EncryptionMethod(alg),
+            };
 
-			var encryptedXml = new EncryptedXml();
-			byte[] encryptedElement;
-			using (var symmetricAlgorithm = new RijndaelManaged())
-			{
-				X509SecurityKey x509SecurityKey = encryptingCredentials.Key as X509SecurityKey;
-				if (x509SecurityKey == null)
-				{
-					throw new CryptographicException(
-						"The encrypting credentials have an unknown key of type {encryptingCredentials.Key.GetType()}");
-				}
-				
-				symmetricAlgorithm.KeySize = keySize;
-				encryptedKey.CipherData = new CipherData(EncryptedXml.EncryptKey(symmetricAlgorithm.Key, 
-					(RSA)x509SecurityKey.PublicKey, alg == EncryptedXml.XmlEncRSAOAEPUrl));
-				encryptedElement = encryptedXml.EncryptData(elementToEncrypt, symmetricAlgorithm, false);
-			}
-			encryptedData.CipherData.CipherValue = encryptedElement;
+            var encryptedXml = new EncryptedXml();
+            byte[] encryptedElement;
+            using (var symmetricAlgorithm = new RijndaelManaged())
+            {
+                X509SecurityKey x509SecurityKey = encryptingCredentials.Key as X509SecurityKey;
+                if (x509SecurityKey == null)
+                {
+                    throw new CryptographicException(
+                        "The encrypting credentials have an unknown key of type {encryptingCredentials.Key.GetType()}");
+                }
 
-			encryptedData.KeyInfo = new KeyInfo();
-			encryptedData.KeyInfo.AddClause(new KeyInfoEncryptedKey(encryptedKey));
-			EncryptedXml.ReplaceElement(elementToEncrypt, encryptedData, false);
-		}
+                symmetricAlgorithm.KeySize = keySize;
+                encryptedKey.CipherData = new CipherData(EncryptedXml.EncryptKey(symmetricAlgorithm.Key,
+                    (RSA)x509SecurityKey.PublicKey, alg == EncryptedXml.XmlEncRSAOAEPUrl));
+                encryptedElement = encryptedXml.EncryptData(elementToEncrypt, symmetricAlgorithm, false);
+            }
+            encryptedData.CipherData.CipherValue = encryptedElement;
 
-		internal static void Encrypt(this XmlElement elementToEncrypt, bool useOaep, X509Certificate2 certificate)
+            encryptedData.KeyInfo = new KeyInfo();
+            encryptedData.KeyInfo.AddClause(new KeyInfoEncryptedKey(encryptedKey));
+            EncryptedXml.ReplaceElement(elementToEncrypt, encryptedData, false);
+        }
+
+        internal static void Encrypt(this XmlElement elementToEncrypt, bool useOaep, X509Certificate2 certificate)
         {
             if (certificate == null) throw new ArgumentNullException(nameof(certificate));
 
@@ -143,10 +143,41 @@ namespace Sustainsys.Saml2.Internal
             return xmlDoc.DocumentElement;
         }
 
-        internal static RSACryptoServiceProvider GetSha256EnabledRSACryptoServiceProvider(
-            this RSACryptoServiceProvider original)
+        internal static AsymmetricAlgorithm GetSha256EnabledAsymmetricAlgorithm(this X509Certificate2 x509Certificate2)
         {
-            // The provider is probably using the default ProviderType. That's
+            var ecDsa = x509Certificate2.GetECDsaPrivateKey();
+
+            if (ecDsa != null)
+            {
+                return ecDsa;
+            }
+
+            var rsa = x509Certificate2.GetRSAPrivateKey();
+
+            if (rsa != null)
+            {
+                return rsa.GetSha256EnabledRSACryptoServiceProvider();
+            }
+
+            throw new NotImplementedException();
+        }
+
+        internal static RSA GetSha256EnabledRSACryptoServiceProvider(this RSA rsa)
+        {
+            // For .NET Core, everything supports SHA256 out of the box.
+            if (EnvironmentHelpers.IsNetCore)
+            {
+                return rsa;
+            }
+
+            var original = rsa as RSACryptoServiceProvider;
+            if (original == null)
+            {
+                return rsa;
+            }
+
+            // It's a legacy RSACryptoServiceProvider.
+            // The provider might be using the legacy ProviderType. That's
             // a problem, because it doesn't support SHA256. Let's do some
             // black magic and create a new provider of a type that supports
             // SHA256 without the user ever knowing we fix this. This is what 
@@ -155,15 +186,21 @@ namespace Sustainsys.Saml2.Internal
             // a known algorithm, so users kind of expect this to be handled
             // for them magically.
 
-            var cspParams = new CspParameters();
-            cspParams.ProviderType = 24; //PROV_RSA_AES
-            cspParams.KeyContainerName = original.CspKeyContainerInfo.KeyContainerName;
-            cspParams.KeyNumber = (int)original.CspKeyContainerInfo.KeyNumber;
-            SetMachineKeyFlag(original, cspParams);
+            if ((original.CspKeyContainerInfo.ProviderType == 1 || original.CspKeyContainerInfo.ProviderType == 12)
+                && !original.CspKeyContainerInfo.HardwareDevice)
+            {
+                var cspParams = new CspParameters();
+                cspParams.ProviderType = 24; //PROV_RSA_AES
+                cspParams.KeyContainerName = original.CspKeyContainerInfo.KeyContainerName;
+                cspParams.KeyNumber = (int)original.CspKeyContainerInfo.KeyNumber;
+                SetMachineKeyFlag(original, cspParams);
 
-            cspParams.Flags |= CspProviderFlags.UseExistingKey;
+                cspParams.Flags |= CspProviderFlags.UseExistingKey;
 
-            return new RSACryptoServiceProvider(cspParams);
+                return new RSACryptoServiceProvider(cspParams);
+            }
+
+            return original;
         }
 
         // We don't want to use Machine Key store during tests, so let's
@@ -177,28 +214,28 @@ namespace Sustainsys.Saml2.Internal
             }
         }
 
-		// CryptoConfig.CreateFromName doesn't know about these
-		static Dictionary<string, Type> s_extraAlgorithms = new Dictionary<string, Type>(StringComparer.OrdinalIgnoreCase)
-		{
-			{  SecurityAlgorithms.RsaSha256Signature, typeof(ManagedRSASHA256SignatureDescription) },
-			{  SecurityAlgorithms.RsaSha384Signature, typeof(ManagedRSASHA384SignatureDescription) },
-			{  SecurityAlgorithms.RsaSha512Signature, typeof(ManagedRSASHA512SignatureDescription) }
-		};
+        // CryptoConfig.CreateFromName doesn't know about these
+        static Dictionary<string, Type> s_extraAlgorithms = new Dictionary<string, Type>(StringComparer.OrdinalIgnoreCase)
+        {
+            {  SecurityAlgorithms.RsaSha256Signature, typeof(ManagedRSASHA256SignatureDescription) },
+            {  SecurityAlgorithms.RsaSha384Signature, typeof(ManagedRSASHA384SignatureDescription) },
+            {  SecurityAlgorithms.RsaSha512Signature, typeof(ManagedRSASHA512SignatureDescription) }
+        };
 
-		public static object CreateAlgorithmFromName(string name, params object[] args)
-		{
-			var result = CryptoConfig.CreateFromName(name);
-			if (result != null)
-			{
-				return result;
-			}
+        public static object CreateAlgorithmFromName(string name, params object[] args)
+        {
+            var result = CryptoConfig.CreateFromName(name);
+            if (result != null)
+            {
+                return result;
+            }
 
-			Type type;
-			if (!s_extraAlgorithms.TryGetValue(name, out type))
-			{
-				throw new CryptographicException($"Unknown crypto algorithm '{name}'");
-			}
-			return Activator.CreateInstance(type, args);
-		}
+            Type type;
+            if (!s_extraAlgorithms.TryGetValue(name, out type))
+            {
+                throw new CryptographicException($"Unknown crypto algorithm '{name}'");
+            }
+            return Activator.CreateInstance(type, args);
+        }
     }
 }

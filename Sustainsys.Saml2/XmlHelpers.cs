@@ -216,15 +216,13 @@ namespace Sustainsys.Saml2
 
             var signedXml = new SignedXmlWithIdFix(xmlElement.OwnerDocument);
 
-			// The transform XmlDsigExcC14NTransform and canonicalization method XmlDsigExcC14NTransformUrl is important for partially signed XML files
-			// see: http://msdn.microsoft.com/en-us/library/system.security.cryptography.xml.signedxml.xmldsigexcc14ntransformurl(v=vs.110).aspx
-			// The reference URI has to be set correctly to avoid assertion injections
-			// For both, the ID/Reference and the Transform/Canonicalization see as well: 
-			// https://www.oasis-open.org/committees/download.php/35711/sstc-saml-core-errata-2.0-wd-06-diff.pdf section 5.4.2 and 5.4.3
+            // The transform XmlDsigExcC14NTransform and canonicalization method XmlDsigExcC14NTransformUrl is important for partially signed XML files
+            // see: http://msdn.microsoft.com/en-us/library/system.security.cryptography.xml.signedxml.xmldsigexcc14ntransformurl(v=vs.110).aspx
+            // The reference URI has to be set correctly to avoid assertion injections
+            // For both, the ID/Reference and the Transform/Canonicalization see as well: 
+            // https://www.oasis-open.org/committees/download.php/35711/sstc-saml-core-errata-2.0-wd-06-diff.pdf section 5.4.2 and 5.4.3
 
-			signedXml.SigningKey = EnvironmentHelpers.IsNetCore ? cert.PrivateKey :
-				((RSACryptoServiceProvider)cert.PrivateKey)
-				.GetSha256EnabledRSACryptoServiceProvider();
+            signedXml.SigningKey = cert.GetSha256EnabledAsymmetricAlgorithm();
             signedXml.SignedInfo.CanonicalizationMethod = SignedXml.XmlDsigExcC14NTransformUrl;
             signedXml.SignedInfo.SignatureMethod = signingAlgorithm;
 
