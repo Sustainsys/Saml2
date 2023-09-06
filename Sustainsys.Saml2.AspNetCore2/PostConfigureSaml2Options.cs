@@ -40,23 +40,26 @@ namespace Sustainsys.Saml2.AspNetCore2
         /// <param name="options"></param>
         public void PostConfigure(string name, Saml2Options options)
         {
-            if(options == null)
+            if (options == null)
             {
                 throw new ArgumentNullException(nameof(options));
             }
 
-            if(loggerFactory != null)
+            if (options.SPOptions.Logger == null)
             {
-                options.SPOptions.Logger = new AspNetCoreLoggerAdapter(
-                    loggerFactory.CreateLogger<Saml2Handler>());
-            }
-            else
-            {
-                options.SPOptions.Logger = new NullLoggerAdapter();
+                if (loggerFactory != null)
+                {
+                    options.SPOptions.Logger = new AspNetCoreLoggerAdapter(
+                        loggerFactory.CreateLogger<Saml2Handler>());
+                }
+                else
+                {
+                    options.SPOptions.Logger = new NullLoggerAdapter();
+                }
             }
             options.SPOptions.Logger.WriteVerbose("Saml2 logging enabled.");
 
-            options.SignInScheme = options.SignInScheme 
+            options.SignInScheme = options.SignInScheme
                 ?? authOptions.Value.DefaultSignInScheme
                 ?? authOptions.Value.DefaultScheme;
 

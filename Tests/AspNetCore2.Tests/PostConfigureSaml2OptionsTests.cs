@@ -45,6 +45,25 @@ namespace Sustainsys.Saml2.AspNetCore2.Tests
         }
 
         [TestMethod]
+        public void PostConfigureSaml2Options_PostConfigure_DoesntOverwrite()
+        {
+            var options = new Saml2Options();
+
+            var logger = Substitute.For<ILoggerAdapter>(); ;
+
+            options.SPOptions.Logger = logger;
+
+            var loggerFactory = Substitute.For<ILoggerFactory>();
+
+            var subject = new PostConfigureSaml2Options(
+                loggerFactory, TestHelpers.GetAuthenticationOptions());
+
+            subject.PostConfigure(null, options);
+
+            logger.Received().WriteVerbose(Arg.Any<string>());
+        }
+
+        [TestMethod]
         public void PostConfigureSaml2Options_PostConfigure_NullLoggerFactoryGivesNullLogger()
         {
             var options = new Saml2Options();

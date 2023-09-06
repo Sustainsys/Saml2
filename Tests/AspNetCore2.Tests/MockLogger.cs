@@ -20,7 +20,7 @@ namespace Sustainsys.Saml2.AspNetCore2.Tests
             throw new NotImplementedException();
         }
 
-        public LogLevel ReceivedLogLevel { get; set; }
+        public LogLevel ReceivedLogLevel { get; set; } = (LogLevel)(-1);
 
         public string ReceivedMessage { get; set; }
 
