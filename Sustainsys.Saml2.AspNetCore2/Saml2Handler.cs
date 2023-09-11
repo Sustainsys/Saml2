@@ -141,14 +141,17 @@ namespace Sustainsys.Saml2.AspNetCore2
         /// <returns>Task</returns>
         public async Task SignOutAsync(AuthenticationProperties properties)
         {
-            if (properties == null)
-            {
-                throw new ArgumentNullException(nameof(properties));
-            }
+            var request = context.ToHttpRequestData(options.CookieManager, dataProtector.Unprotect);
+
+            // This is not the right behaviour for Asp.Net Core - we should do nothing if
+            // there was not a configured ReturnUrl. But the LogoutCommand is designed
+            // to always redirect so this is the best we can do to accept null AuthProps without
+            // changing other stuff
+            var returnUrl = properties?.RedirectUri ?? (context.Request.PathBase + "/");
 
             await LogoutCommand.InitiateLogout(
-                context.ToHttpRequestData(options.CookieManager, dataProtector.Unprotect),
-                new Uri(properties.RedirectUri, UriKind.RelativeOrAbsolute),
+                request,
+                new Uri(returnUrl, UriKind.RelativeOrAbsolute),
                 options,
                 // In the Asp.Net Core2 model, it's the caller's responsibility to terminate the
                 // local session on an SP-initiated logout.

@@ -453,13 +453,14 @@ namespace Sustainsys.Saml2.AspNetCore2.Tests
         }
 
         [TestMethod]
-        public void Saml2Handler_SignOutAsync_NullcheckProperties()
+        public async Task Saml2Handler_SignOutAsync_AllowNullProperties()
         {
             var context = new Saml2HandlerTestContext();
             
-            Func<Task> f = async () => await context.Subject.SignOutAsync(null);
+            await context.Subject.SignOutAsync(null);
 
-            f.Should().Throw<ArgumentNullException>().And.ParamName.Should().Be("properties");
+            context.HttpContext.Response.Headers["Location"].Single().Should().Be("/",
+                "if federated logout is not enabled, there should be a redirect to path base for null auth props");
         }
 
         [TestMethod]
