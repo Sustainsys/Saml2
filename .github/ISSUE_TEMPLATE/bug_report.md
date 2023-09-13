@@ -7,7 +7,7 @@ labels: ["bug", "triage"]
 
 # Security issues
 
-If you have found a bug that you think might be security related, please *DO NOT OPEN A PUBLIC ISSUE*. Send an e-mail to security@sustainsys.com instead. Normally you should get a response by the next business day.
+If you have found a bug that you think might be security related, please *DO NOT OPEN A PUBLIC ISSUE*. Select  the `Report a vulnerability` button instead.
 
 ## Non Security Issues
 Please note that only *critical* compatibility fixes, such as when major browsers change behaviour, are fixed in 1.X or 2.X versions.
