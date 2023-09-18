@@ -605,6 +605,8 @@ namespace Sustainsys.Saml2.Saml2P
             validationParameters.ValidAudience = options.SPOptions.EntityId.Id;
             validationParameters.TokenReplayCache = options.SPOptions.TokenReplayCache;
             validationParameters.ValidateTokenReplay = true;
+            validationParameters.ValidIssuer = idp.EntityId.Id;
+            validationParameters.ValidateIssuer = true;
 
             options.Notifications.Unsafe.TokenValidationParametersCreated(validationParameters, idp, XmlElement);
 
