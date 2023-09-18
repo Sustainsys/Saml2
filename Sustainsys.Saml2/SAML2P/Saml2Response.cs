@@ -552,6 +552,8 @@ namespace Sustainsys.Saml2.Saml2P
                     status, statusMessage, secondLevelStatus);
             }
 
+            validationParameters.ValidIssuer = idp.EntityId.Id;
+            validationParameters.ValidateIssuer = true;
             foreach (XmlElement assertionNode in GetAllAssertionElementNodes(options))
             {
                 using (var reader = new FilteringXmlNodeReader(SignedXml.XmlDsigNamespaceUrl, "Signature", assertionNode))
