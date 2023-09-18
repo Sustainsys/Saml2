@@ -118,7 +118,7 @@ namespace Sustainsys.Saml2.WebSso
             else
             { //When IDP-Initiated
 
-                if (identityProvider.RelayStateUsedAsReturnUrl)
+                if (identityProvider.RelayStateUsedAsReturnUrl && !string.IsNullOrWhiteSpace(relayState))
                 {
                     if (!PathHelper.IsLocalWebUrl(relayState))
                     {
@@ -157,14 +157,6 @@ namespace Sustainsys.Saml2.WebSso
                 if(storedRequestState.ReturnUrl == null)
                 {
                     throw new ConfigurationErrorsException(SpInitiatedMissingReturnUrl);
-                }
-            }
-
-            if (identityProvider.RelayStateUsedAsReturnUrl)
-            {
-                if (relayState == null)
-                {
-                    throw new ConfigurationErrorsException(RelayStateMissing);
                 }
             }
 

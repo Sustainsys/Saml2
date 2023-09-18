@@ -749,7 +749,11 @@ namespace Sustainsys.Saml2.Tests.WebSso
             actual.Principal.Claims.First().Issuer.Should().Be("https://other.idp.example.com");
         }
 
-        private void RelayStateAsReturnUrl(string relayState, IOptions options, [CallerMemberName] string caller = null)
+        private void RelayStateAsReturnUrl(
+            string relayState, 
+            IOptions options,
+            string expectedReturnUrl = null,
+            [CallerMemberName] string caller = null)
         {
             if(string.IsNullOrEmpty(caller))
             {
@@ -809,7 +813,7 @@ namespace Sustainsys.Saml2.Tests.WebSso
             };
 
             new AcsCommand().Run(r, options)
-                .Location.OriginalString.Should().Be(relayState);
+                .Location.OriginalString.Should().Be(expectedReturnUrl ?? relayState);
         }
 
         [TestMethod]
@@ -821,8 +825,7 @@ namespace Sustainsys.Saml2.Tests.WebSso
         [TestMethod]
         public void AcsCommand_Run_WithRelayStateUsedAsReturnUrl_Missing()
         {
-            this.Invoking(t => t.RelayStateAsReturnUrl(null, StubFactory.CreateOptions()))
-                .Should().Throw<ConfigurationErrorsException>();
+            RelayStateAsReturnUrl(null, StubFactory.CreateOptions(), "https://localhost/returnUrl");
         }
 
         [TestMethod]
