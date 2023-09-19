@@ -1,13 +1,12 @@
+Version 2.9.2
+* Security Fix: Bind state and assertion to response issuer.
+* Security Fix: Bind request state to module path to prevent substitution.
+
 Version 2.9.1
 * Support modern crypto providers
 
 Version 2.9.0
 * Add runtime detection for .NET 5+
 * Deserialize LogoutResponse
-
-Version 2.8.0
-* Add runtime detection for .NET 5
-* Enable adding support for AES-GCM (http://www.w3.org/2009/xmlenc11#aes128-gcm)
-* Bug fix: Do not crash on duplicate language entries for localized strings in metadata
 
 See GitHub milestone issue list for details.
