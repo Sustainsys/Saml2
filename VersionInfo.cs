@@ -1,7 +1,7 @@
 using System.Reflection;
 
 [assembly: AssemblyCompany("Sustainsys")]
-[assembly: AssemblyCopyright("Copyright © Sustainsys and contributors 2013-2020")]
+[assembly: AssemblyCopyright("Copyright © Sustainsys and contributors 2013-2023")]
 
 
 // Sustainsys.Saml2 uses semantic versioning
@@ -11,6 +11,6 @@ using System.Reflection;
 //      Patch Number
 //
 
-[assembly: AssemblyVersion("1.0.2")]
-[assembly: AssemblyFileVersion("1.0.2")]
-[assembly: AssemblyInformationalVersion("1.0.2")]
+[assembly: AssemblyVersion("1.0.3")]
+[assembly: AssemblyFileVersion("1.0.3")]
+[assembly: AssemblyInformationalVersion("1.0.3")]

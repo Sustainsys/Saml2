@@ -1,3 +1,7 @@
+Version 1.0.3
+* Security Fix: Bind state and assertion to response issuer.
+* Security Fix: Bind request state to module path to prevent substitution.
+
 Version 1.0.2
 * Security Fix: Ensure received token is a bearer token.
 
@@ -6,14 +10,5 @@ Version 1.0.1
 
 Version 1.0.0
 * Bug fix: Asp.Net Core2 handler, incorrect signed redirect messages.
-
-Version 0.24.0
-* Bug fix: Asp.Net Core2 handler with null AuthenticationProperties now works.
-* Bug fix: Error handling in Owin middleware with null/missing return url.
-* Compatibility setting to ignore missing InResponseTo
-
-Version 0.23.0
-* Project renamed to Sustainsys.Saml2
-* No other changes since 0.22.0
 
 See GitHub milestone issue list for details.
