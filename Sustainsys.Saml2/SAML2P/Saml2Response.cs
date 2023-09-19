@@ -73,7 +73,7 @@ namespace Sustainsys.Saml2.Saml2P
         /// <param name="expectedInResponseTo">The expected value of the
         /// InReplyTo parameter in the message.</param>
         [ExcludeFromCodeCoverage] // Just a wrapper o keep backward compatibility
-        public Saml2Response(XmlElement xml, Saml2Id expectedInResponseTo): this(xml, expectedInResponseTo, null)
+        public Saml2Response(XmlElement xml, Saml2Id expectedInResponseTo) : this(xml, expectedInResponseTo, null)
         {
         }
 
@@ -477,7 +477,7 @@ namespace Sustainsys.Saml2.Saml2P
                 var idp = options.IdentityProviders[Issuer];
                 if (idp.AllowUnsolicitedAuthnResponse)
                 {
-                    options.SPOptions.Logger.WriteVerbose("Received unsolicited Saml Response " + Id 
+                    options.SPOptions.Logger.WriteVerbose("Received unsolicited Saml Response " + Id
                         + " which is allowed for idp " + idp.EntityId.Id);
                     return;
                 }
@@ -493,7 +493,7 @@ namespace Sustainsys.Saml2.Saml2P
 
             var minAlgorithm = options.SPOptions.MinIncomingSigningAlgorithm;
 
-            if(!xmlElement.IsSignedByAny(idpKeys, options.SPOptions.ValidateCertificates, minAlgorithm)
+            if (!xmlElement.IsSignedByAny(idpKeys, options.SPOptions.ValidateCertificates, minAlgorithm)
                 && GetAllAssertionElementNodes(options)
                 .Any(a => !a.IsSignedByAny(idpKeys, options.SPOptions.ValidateCertificates, minAlgorithm)))
             {
@@ -552,8 +552,6 @@ namespace Sustainsys.Saml2.Saml2P
                     status, statusMessage, secondLevelStatus);
             }
 
-            validationParameters.ValidIssuer = idp.EntityId.Id;
-            validationParameters.ValidateIssuer = true;
             foreach (XmlElement assertionNode in GetAllAssertionElementNodes(options))
             {
                 using (var reader = new FilteringXmlNodeReader(SignedXml.XmlDsigNamespaceUrl, "Signature", assertionNode))
@@ -562,6 +560,8 @@ namespace Sustainsys.Saml2.Saml2P
 
                     var token = (Saml2SecurityToken)handler.ReadToken(reader);
                     options.SPOptions.Logger.WriteVerbose("Extracted SAML assertion " + token.Id);
+
+                    ValidateIssuer(token);
 
                     handler.DetectReplayedToken(token);
 
@@ -586,7 +586,18 @@ namespace Sustainsys.Saml2.Saml2P
                 }
             }
         }
-        
+
+        private void ValidateIssuer(Saml2SecurityToken token)
+        {
+            var tokenIssuer = token.Assertion.Issuer.Value;
+
+            if (tokenIssuer != Issuer.Id)
+            {
+                throw new Saml2ResponseFailedValidationException($"Issuer {tokenIssuer} of assertion is " +
+                    $"not the same as issuer {Issuer.Id} of response.");
+            }
+        }
+
         /// <summary>
         /// RelayState attached to the message.
         /// </summary>
@@ -604,7 +615,7 @@ namespace Sustainsys.Saml2.Saml2P
         {
             get
             {
-                if(claimsIdentities == null)
+                if (claimsIdentities == null)
                 {
                     // This is not a good design, but will have to do for now.
                     // The entire Saml2Response class needs some refactoring

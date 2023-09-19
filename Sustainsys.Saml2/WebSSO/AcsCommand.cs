@@ -145,6 +145,7 @@ namespace Sustainsys.Saml2.WebSso
                     $"Unexpected issuer {samlResponse.Issuer.Id} found in response, request was sent to {idp.Id}");
             }
         }
+
         internal const string UnsolicitedMissingReturnUrlMessage =
 @"Unsolicited SAML response received, but no ReturnUrl is configured.
 

@@ -781,7 +781,7 @@ namespace Sustainsys.Saml2.Tests.WebSso
 
             var subject = new AcsCommand();
             subject.Invoking(s => s.Run(r, StubFactory.CreateOptions()))
-                .Should().Throw<Saml2ResponseFailedValidationException>()
+                .ShouldThrow<Saml2ResponseFailedValidationException>()
                 .WithMessage("Unexpected issuer*idp*other*");
         }
     }

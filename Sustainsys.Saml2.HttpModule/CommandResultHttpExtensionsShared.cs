@@ -20,7 +20,12 @@ namespace Sustainsys.Saml2.HttpModule
         /// <param name="commandResult">Commandresult</param>
         /// <param name="response">Response</param>
         /// <param name="emitSameSiteNone">Include a SameSite=None attribute on any cookies set</param>
-        public static void ApplyCookies(this CommandResult commandResult, HttpResponseBase response, bool emitSameSiteNone)
+        /// <param name="modulePath">Path of Sustainsys.Saml2 instance - used for isolation of data protection</param>
+        public static void ApplyCookies(
+            this CommandResult commandResult,
+            HttpResponseBase response,
+            bool emitSameSiteNone,
+            string modulePath)
         {
             if(commandResult == null)
             {
@@ -37,7 +42,8 @@ namespace Sustainsys.Saml2.HttpModule
                 var protectedData = HttpRequestData.ConvertBinaryData(
                         MachineKey.Protect(
                             commandResult.GetSerializedRequestState(),
-                            HttpRequestBaseExtensions.ProtectionPurpose));
+                            HttpRequestBaseExtensions.ProtectionPurpose,
+                            modulePath));
 
                 response.SetCookie(new HttpCookie(
                     commandResult.SetCookieName,

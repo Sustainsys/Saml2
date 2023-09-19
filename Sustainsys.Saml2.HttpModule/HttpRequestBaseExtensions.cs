@@ -24,12 +24,13 @@ namespace Sustainsys.Saml2.HttpModule
         /// Extension method to convert a HttpRequestBase to a HttpRequestData.
         /// </summary>
         /// <param name="requestBase">The request object used to populate the <c>HttpRequestData</c>.</param>
+        /// <param name="modulePath">Path of Sustainsys.Saml2 instance - used for isolation of data protection</param>
         /// <returns>The <c>HttpRequestData</c> object that has been populated by the request.</returns>
-        public static HttpRequestData ToHttpRequestData(this HttpRequestBase requestBase)
+        public static HttpRequestData ToHttpRequestData(this HttpRequestBase requestBase, string modulePath)
         {
-            return requestBase.ToHttpRequestData(false);
+            return requestBase.ToHttpRequestData(false, modulePath);
         }
-        
+
         /// <summary>
         /// Extension method to convert a HttpRequestBase to a HttpRequestData.
         /// </summary>
@@ -37,10 +38,12 @@ namespace Sustainsys.Saml2.HttpModule
         /// <param name="ignoreCookies">Ignore cookies when extracting data.
         /// This is useful for the stub idp that might see the relay state
         /// and the requester's cookie, but shouldn't try to decrypt it.</param>
+        /// <param name="modulePath">Path of Sustainsys.Saml2 instance - used for isolation of data protection</param>
         /// <returns>The <c>HttpRequestData</c> object that has been populated by the request.</returns>
         public static HttpRequestData ToHttpRequestData(
             this HttpRequestBase requestBase,
-            bool ignoreCookies)
+            bool ignoreCookies,
+            string modulePath)
         {
             if (requestBase == null)
             {
@@ -58,7 +61,7 @@ namespace Sustainsys.Saml2.HttpModule
                 requestBase.Form.Cast<string>().Select((de, i) =>
                     new KeyValuePair<string, IEnumerable<string>>(de, ((string)requestBase.Form[i]).Split(','))),
                 cookies,
-                v => MachineKey.Unprotect(v, ProtectionPurpose),
+                v => MachineKey.Unprotect(v, ProtectionPurpose, modulePath),
                 ClaimsPrincipal.Current);
         }
 

@@ -923,7 +923,7 @@ namespace Sustainsys.Saml2.Owin.Tests
 
             var cookieData = HttpRequestData.ConvertBinaryData(
                 CreateAppBuilder().CreateDataProtector(
-                    typeof(Saml2AuthenticationMiddleware).FullName)
+                    typeof(Saml2AuthenticationMiddleware).FullName, "/Saml2")
                     .Protect(state.Serialize()));
 
             context.Request.Headers["Cookie"] = $"{StoredRequestState.CookieNameBase}{relayState}={cookieData}";
@@ -995,7 +995,7 @@ namespace Sustainsys.Saml2.Owin.Tests
 
             var cookieData = HttpRequestData.ConvertBinaryData(
                 CreateAppBuilder().CreateDataProtector(
-                    typeof(Saml2AuthenticationMiddleware).FullName)
+                    typeof(Saml2AuthenticationMiddleware).FullName, "/Saml2")
                     .Protect(state.Serialize()));
 
             context.Request.Headers["Cookie"] = $"{StoredRequestState.CookieNameBase}{relayState}={cookieData}";
@@ -1071,7 +1071,7 @@ namespace Sustainsys.Saml2.Owin.Tests
 
             var cookieData = HttpRequestData.ConvertBinaryData(
                 CreateAppBuilder().CreateDataProtector(
-                    typeof(Saml2AuthenticationMiddleware).FullName)
+                    typeof(Saml2AuthenticationMiddleware).FullName, "/Saml2")
                     .Protect(state.Serialize()));
 
             context.Request.Headers["Cookie"] = $"{StoredRequestState.CookieNameBase}{relayState}={cookieData}";

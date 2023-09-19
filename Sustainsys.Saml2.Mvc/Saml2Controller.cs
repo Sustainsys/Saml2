@@ -45,7 +45,7 @@ namespace Sustainsys.Saml2.Mvc
         public ActionResult SignIn()
         {
             var result = CommandFactory.GetCommand(CommandFactory.SignInCommandName).Run(
-                Request.ToHttpRequestData(),
+                Request.ToHttpRequestData(Options.SPOptions.ModulePath),
                 Options);
 
             if(result.HandledResult)
@@ -53,7 +53,10 @@ namespace Sustainsys.Saml2.Mvc
                 throw new NotSupportedException("The MVC controller doesn't support setting CommandResult.HandledResult.");
             }
 
-            result.ApplyCookies(Response, Options.Notifications.EmitSameSiteNone(Request.UserAgent));
+            result.ApplyCookies(
+                Response,
+                Options.Notifications.EmitSameSiteNone(Request.UserAgent),
+                options.SPOptions.ModulePath);
             return result.ToActionResult();
         }
 
@@ -69,7 +72,7 @@ namespace Sustainsys.Saml2.Mvc
         public ActionResult Acs()
         {
             var result = CommandFactory.GetCommand(CommandFactory.AcsCommandName).Run(
-                Request.ToHttpRequestData(),
+                Request.ToHttpRequestData(Options.SPOptions.ModulePath),
                 Options);
 
             if(result.HandledResult)
@@ -78,7 +81,10 @@ namespace Sustainsys.Saml2.Mvc
             }
 
             result.SignInOrOutSessionAuthenticationModule();
-            result.ApplyCookies(Response, Options.Notifications.EmitSameSiteNone(Request.UserAgent));
+            result.ApplyCookies(
+                Response,
+                Options.Notifications.EmitSameSiteNone(Request.UserAgent),
+                options.SPOptions.ModulePath);
             return result.ToActionResult();
         }
 
@@ -91,7 +97,7 @@ namespace Sustainsys.Saml2.Mvc
         public ActionResult Index()
         {
             var result = CommandFactory.GetCommand(CommandFactory.MetadataCommand).Run(
-                Request.ToHttpRequestData(),
+                Request.ToHttpRequestData(Options.SPOptions.ModulePath),
                 Options);
 
             if (result.HandledResult)
@@ -112,7 +118,7 @@ namespace Sustainsys.Saml2.Mvc
         public ActionResult Logout()
         {
             var result = CommandFactory.GetCommand(CommandFactory.LogoutCommandName)
-                .Run(Request.ToHttpRequestData(), Options);
+                .Run(Request.ToHttpRequestData(Options.SPOptions.ModulePath), Options);
 
             if (result.HandledResult)
             {
@@ -120,7 +126,10 @@ namespace Sustainsys.Saml2.Mvc
             }
 
             result.SignInOrOutSessionAuthenticationModule();
-            result.ApplyCookies(Response, Options.Notifications.EmitSameSiteNone(Request.UserAgent));
+            result.ApplyCookies(
+                Response,
+                Options.Notifications.EmitSameSiteNone(Request.UserAgent),
+                options.SPOptions.ModulePath);
             return result.ToActionResult();
         }
     }

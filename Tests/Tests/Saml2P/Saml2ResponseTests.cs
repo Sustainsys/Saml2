@@ -15,7 +15,6 @@ using System.IdentityModel.Selectors;
 using Sustainsys.Saml2.Exceptions;
 using Sustainsys.Saml2.TestHelpers;
 
-using Microsoft.IdentityModel.Tokens;
 namespace Sustainsys.Saml2.Tests.Saml2P
 {
     [TestClass]
@@ -2350,7 +2349,7 @@ namespace Sustainsys.Saml2.Tests.Saml2P
             var signedResponse = SignedXmlHelper.SignXml(response);
 
             Saml2Response.Read(signedResponse).Invoking(r => r.GetClaims(Options.FromConfiguration))
-                .Should().Throw<SecurityTokenInvalidIssuerException>();
+                .ShouldThrow<Saml2ResponseFailedValidationException>();
         }
     }
 }
