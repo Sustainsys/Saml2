@@ -15,7 +15,7 @@ namespace Sustainsys.Saml2.StubIdp.Controllers
     {
         public ActionResult Index()
         {
-            var requestData = Request.ToHttpRequestData(true);
+            var requestData = Request.ToHttpRequestData(true, null);
 
             var binding = Saml2Binding.Get(requestData);
 

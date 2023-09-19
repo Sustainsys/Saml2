@@ -23,7 +23,7 @@ namespace Sustainsys.Saml2.HttpModule.Tests
             request.Form.Returns(new NameValueCollection { { "Key", "Value" } });
             request.ApplicationPath.Returns(appPath);
             var options = StubFactory.CreateOptionsPublicOrigin(new Uri("https://my.public.origin:8443/OtherPath"));
-            var subject = request.ToHttpRequestData();
+            var subject = request.ToHttpRequestData("/saml2");
             var urls = new Saml2Urls(subject, options);
             urls.AssertionConsumerServiceUrl.Should().BeEquivalentTo(
 				new Uri("https://my.public.origin:8443/OtherPath/Saml2/Acs"));

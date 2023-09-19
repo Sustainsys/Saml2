@@ -56,7 +56,7 @@ namespace Sustainsys.Saml2.Owin
             }
 
             options.DataProtector = app.CreateDataProtector(
-                typeof(Saml2AuthenticationMiddleware).FullName);
+                typeof(Saml2AuthenticationMiddleware).FullName, options.SPOptions.ModulePath);
 
             if(options.SPOptions.Logger == null)
             {

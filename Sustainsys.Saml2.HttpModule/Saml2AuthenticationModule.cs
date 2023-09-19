@@ -65,7 +65,7 @@ namespace Sustainsys.Saml2.HttpModule
 
                 var command = CommandFactory.GetCommand(commandName);
                 var commandResult = command.Run(
-                    new HttpRequestWrapper(application.Request).ToHttpRequestData(),
+                    new HttpRequestWrapper(application.Request).ToHttpRequestData(Options.SPOptions.ModulePath),
                     Options);
 
                 if (!commandResult.HandledResult)
@@ -73,7 +73,8 @@ namespace Sustainsys.Saml2.HttpModule
                     commandResult.SignInOrOutSessionAuthenticationModule();
                     commandResult.Apply(
                         new HttpResponseWrapper(application.Response),
-                        Options.Notifications.EmitSameSiteNone(application.Request.UserAgent));
+                        Options.Notifications.EmitSameSiteNone(application.Request.UserAgent),
+                        Options.SPOptions.ModulePath);
                 }
             }
         }

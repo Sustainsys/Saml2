@@ -21,7 +21,7 @@ namespace Sustainsys.Saml2.HttpModule.Tests
         public void HttpRequestBaseExtensions_ToHttpRequestData_ShouldThrowOnNull()
         {
             HttpRequestBase request = null;
-            Action a = () => request.ToHttpRequestData();
+            Action a = () => request.ToHttpRequestData("/saml");
 
             a.Should().Throw<ArgumentNullException>().And.ParamName.Should().Be("requestBase");
         }
@@ -45,7 +45,7 @@ namespace Sustainsys.Saml2.HttpModule.Tests
             request.Cookies.Returns(new HttpCookieCollection());
             request.Cookies.Add(new HttpCookie(StoredRequestState.CookieNameBase + "SomeState", cookieValue));
 
-            var actual = request.ToHttpRequestData();
+            var actual = request.ToHttpRequestData("/saml2");
 
             var expected = new HttpRequestData(
                 "GET",
@@ -79,7 +79,7 @@ namespace Sustainsys.Saml2.HttpModule.Tests
             request.Cookies.Returns(new HttpCookieCollection());
             request.Cookies.Add(new HttpCookie("Sustainsys.SomeState", cookieValue));
 
-            var subject = request.ToHttpRequestData(true);
+            var subject = request.ToHttpRequestData(true, "/saml2");
 
             var expected = new HttpRequestData(
                 "GET",
