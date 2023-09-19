@@ -92,8 +92,8 @@ namespace SampleOwinApplication
 
             var spOptions = new SPOptions
             {
-                EntityId = new EntityId("http://localhost:57294/Saml2"),
-                ReturnUrl = new Uri("http://localhost:57294/Account/ExternalLoginCallback"),
+                EntityId = new EntityId("https://localhost:44303/Saml2"),
+                ReturnUrl = new Uri("https://localhost:44303/Account/ExternalLoginCallback"),
                 DiscoveryServiceUrl = new Uri("https://localhost:44300/DiscoveryService"),
                 Organization = organization
             };
