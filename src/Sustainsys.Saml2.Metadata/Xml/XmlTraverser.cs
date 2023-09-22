@@ -128,7 +128,7 @@ public class XmlTraverser
     {
         trustLevel = TrustLevel.None;
 
-        if (CurrentNode.LocalName == "Signature" 
+        if (CurrentNode.LocalName == "Signature"
             && CurrentNode.NamespaceURI == SignedXml.XmlDsigNamespaceUrl)
         {
             childrenHandled = true;
@@ -155,7 +155,7 @@ public class XmlTraverser
         var (error, workingKey) = ((XmlElement)CurrentNode)
             .VerifySignature(trustedSigningKeys, allowedHashAlgorithms);
 
-        if(!string.IsNullOrEmpty(error))
+        if (!string.IsNullOrEmpty(error))
         {
             AddError(ErrorReason.SignatureFailure, error);
         }
@@ -173,7 +173,7 @@ public class XmlTraverser
     {
         while (true)
         {
-            if(!childrenHandled && CurrentNode.HasChildNodes)
+            if (!childrenHandled && CurrentNode.HasChildNodes)
             {
                 Errors.Add(new(
                     ErrorReason.ExtraElements,
@@ -189,7 +189,7 @@ public class XmlTraverser
 
             if (currentNode == null)
             {
-                if(!expectEnd)
+                if (!expectEnd)
                 {
                     Errors.Add(new(
                         ErrorReason.MissingElement,
@@ -199,8 +199,8 @@ public class XmlTraverser
                 }
 
                 // No more children.
-                if(parent != null)
-                { 
+                if (parent != null)
+                {
                     parent!.childrenHandled = true;
                 }
 
@@ -209,14 +209,14 @@ public class XmlTraverser
 
             if (currentNode.NodeType == XmlNodeType.Element)
             {
-                if(currentNode.HasChildNodes)
-                    //&& (currentNode.ChildNodes.Count != 1 || currentNode.FirstChild!.NodeType == XmlNodeType.Text))
+                if (currentNode.HasChildNodes)
+                //&& (currentNode.ChildNodes.Count != 1 || currentNode.FirstChild!.NodeType == XmlNodeType.Text))
                 {
                     // We just found the node and it has children. And it is not just one child that is text content
                     childrenHandled = false;
                 }
                 childrenHandled = !CurrentNode.HasChildNodes;
-                
+
                 // We're happy, we found an element. 
                 return true;
             }
@@ -292,7 +292,7 @@ public class XmlTraverser
     /// <returns>Was there an element?</returns>
     public bool EnsureElement()
     {
-        if(currentNode == null || currentNode.NodeType != XmlNodeType.Element)
+        if (currentNode == null || currentNode.NodeType != XmlNodeType.Element)
         {
             Errors.Add(new(
                 ErrorReason.MissingElement,
@@ -342,7 +342,7 @@ public class XmlTraverser
                 $"Required attribute {localName} not found on {CurrentNode.Name}.");
         }
 
-        return value; 
+        return value;
     }
 
     /// <summary>
@@ -420,7 +420,7 @@ public class XmlTraverser
     {
         var stringValue = GetRequiredAttribute(localName);
 
-        if(stringValue == null)
+        if (stringValue == null)
         {
             return default;
         }
@@ -441,7 +441,7 @@ public class XmlTraverser
         return TryConvertAttribute(localName, converter, stringValue);
     }
 
-    private TTarget? TryConvertAttribute<TTarget>(string localName, Func<string, TTarget> converter, string stringValue) 
+    private TTarget? TryConvertAttribute<TTarget>(string localName, Func<string, TTarget> converter, string stringValue)
         where TTarget : struct
     {
         try
