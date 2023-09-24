@@ -1,11 +1,15 @@
 ﻿using FluentAssertions;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc.Routing;
 using NSubstitute;
 using Sustainsys.Saml2.Bindings;
 using System;
 using System.IO;
 using System.IO.Compression;
 using System.Net.Http;
+using System.Text.Encodings.Web;
 using System.Threading.Tasks;
+using System.Web;
 using System.Xml;
 using Xunit;
 
@@ -16,7 +20,7 @@ public class RedirectBindingTests
     private const string Xml = "<xml />";
 
     [Fact]
-    public void Bind()
+    public async Task Bind()
     {
         var xd = new XmlDocument();
         xd.LoadXml(Xml);
@@ -29,19 +33,29 @@ public class RedirectBindingTests
 
         var subject = new RedirectBinding();
 
-        var actual = subject.Bind(message);
+        var httpResponse = Substitute.For<HttpResponse>();
 
-        actual.Method.Should().Be(HttpMethod.Get);
+        await subject.Bind(httpResponse, message);
 
-        actual.Items.Should().HaveCount(1);
-        var item = actual.Items[0];
+        void validateUrl(string url)
+        {
+            Uri uri = new Uri(url);
 
-        item.Key.Should().Be(message.Name);
-       
-        using var inflated = new MemoryStream(Convert.FromBase64String(Uri.UnescapeDataString(item.Value)));
-        using var deflateStream = new DeflateStream(inflated, CompressionMode.Decompress);
-        using var reader = new StreamReader(deflateStream);
+            var query = uri.Query;
 
-        reader.ReadToEnd().Should().Be(Xml);
+            var expectedParam = $"{message!.Name}=";
+
+            query.StartsWith(expectedParam).Should().BeTrue();
+
+            var value = query.Substring(expectedParam.Length);
+
+            using var inflated = new MemoryStream(Convert.FromBase64String(Uri.UnescapeDataString(value)));
+            using var deflateStream = new DeflateStream(inflated, CompressionMode.Decompress);
+            using var reader = new StreamReader(deflateStream);
+
+            reader.ReadToEnd().Should().Be(Xml);
+        }
+
+        httpResponse.Received().Redirect(Arg.Do<string>(validateUrl));
     }
 }

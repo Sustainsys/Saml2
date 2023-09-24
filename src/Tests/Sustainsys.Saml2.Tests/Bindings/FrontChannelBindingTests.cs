@@ -1,4 +1,6 @@
 ﻿using FluentAssertions;
+using Microsoft.AspNetCore.Http;
+using NSubstitute;
 using Sustainsys.Saml2.Bindings;
 using System;
 using System.Threading.Tasks;
@@ -8,11 +10,12 @@ using Xunit;
 namespace Sustainsys.Saml2.Tests.Bindings;
 public class FrontChannelBindingTests
 {
-    private class Subject : Binding
+    private class Subject : FrontChannelBinding
     {
         public override string Identification => throw new NotImplementedException();
 
-        protected override BoundMessage DoBind(Saml2Message message) => throw new NotImplementedException();
+        protected override Task DoBind(HttpResponse httpResponse, Saml2Message message) 
+            => throw new NotImplementedException();
     }
 
     [Theory]
@@ -36,7 +39,9 @@ public class FrontChannelBindingTests
 
         var subject = new Subject();
 
-        subject.Invoking(s => s.Bind(message))
-            .Should().Throw<ArgumentException>().WithParameterName("message").WithMessage(expectedMessage);
+        var httpResponse = Substitute.For<HttpResponse>();
+
+        subject.Invoking(s => s.Bind(httpResponse, message))
+            .Should().ThrowAsync<ArgumentException>().WithParameterName("message").WithMessage(expectedMessage);
     }
 }

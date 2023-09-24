@@ -51,6 +51,7 @@ public static class Saml2Extensions
     /// <param name="builder">Authentication builder</param>
     /// <param name="authenticationScheme">Authentication scheme name</param>
     /// <param name="configureOptions">Options configurator</param>
+    /// <param name="displayName">Display name of authentication scheme</param>
     /// <returns>Authentication builder</returns>
     public static AuthenticationBuilder AddSaml2(
         this AuthenticationBuilder builder,

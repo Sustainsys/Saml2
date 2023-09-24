@@ -14,6 +14,11 @@ public class Saml2Message
     public string Name { get; init; } = default!;
 
     /// <summary>
+    /// Destination URL of the message.
+    /// </summary>
+    public string Destination { get; init; } = default!;
+
+    /// <summary>
     /// RelayState to include with message
     /// </summary>
     public string? RelayState { get; init; }

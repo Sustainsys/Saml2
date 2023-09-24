@@ -1,17 +1,19 @@
-﻿using System.IO.Compression;
+﻿using Microsoft.AspNetCore.Http;
+using Sustainsys.Saml2.Metadata.Attributes;
+using System.IO.Compression;
 
 namespace Sustainsys.Saml2.Bindings;
 
 /// <summary>
 /// Saml2 Http Redirect Binding
 /// </summary>
-public class RedirectBinding : Binding
+public class RedirectBinding : FrontChannelBinding
 {
     /// <inheritdoc/>
-    public override string Identification => throw new NotImplementedException();
+    public override string Identification => BindingUris.HttpRedirect;
 
     /// <inheritdoc/>
-    protected override BoundMessage DoBind(Saml2Message message)
+    protected override async Task DoBind(HttpResponse httpResponse, Saml2Message message)
     {
         var xmlString = message.Xml.OuterXml;
 
@@ -19,15 +21,9 @@ public class RedirectBinding : Binding
         using (var deflateStream = new DeflateStream(compressed, CompressionLevel.Optimal))
         {
             using var writer = new StreamWriter(deflateStream);
-            writer.Write(xmlString);
+            await writer.WriteAsync(xmlString);
         }
 
         var encoded = Uri.EscapeDataString(Convert.ToBase64String(compressed.ToArray()));
-
-        return new()
-        {
-            Method = HttpMethod.Get,
-            Items = { new(message.Name, encoded) }
-        };
     }
 }

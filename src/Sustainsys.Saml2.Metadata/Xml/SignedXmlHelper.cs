@@ -80,12 +80,9 @@ public static class SignedXmlHelper
 
             var element = (XmlElement)possibleNodes[0]!;
 
-            var attr = element.GetAttributeNode("ID");
-            if(attr == null)
-            {
-                // If we don't find the ID attribute it means it matched Id or id, which is not allowed.
-                throw new CryptographicException("Reference target ID attribute must be named ID with uppercase letters");
-            }
+            // If we don't find the ID attribute it means it matched Id or id, which is not allowed.
+            _ = element.GetAttributeNode("ID")
+                ?? throw new CryptographicException("Reference target ID attribute must be named ID with uppercase letters");
 
             return element;
         }
@@ -136,7 +133,7 @@ public static class SignedXmlHelper
 
             if (workingKey == null)
             {
-                if(signedXml.CheckSignatureReturningKey(out _))
+                if (signedXml.CheckSignatureReturningKey(out _))
                 {
                     error += "Signature validated with the contained key, but that is not configured as a trusted key. ";
                 }

@@ -19,26 +19,26 @@ namespace Sustainsys.Saml2.Tests.Helpers
             return new XmlTraverser(document.DocumentElement ?? throw new InvalidOperationException("XmlDoc contained no DocumentElement"));
         }
 
-        public static X509Certificate2 Certificate = new X509Certificate2("Sustainsys.Saml2.Tests.pfx");
+        public static X509Certificate2 Certificate { get; } = new X509Certificate2("Sustainsys.Saml2.Tests.pfx");
 
-        public static SigningKey SigningKey = new()
+        public static SigningKey SigningKey { get; } = new()
         {
             Certificate = Certificate,
             TrustLevel = TrustLevel.ConfiguredKey
         };
 
-        public static SigningKey[] SingleSigningKey =
+        public static SigningKey[] SingleSigningKey { get; } =
         {
             SigningKey
         };
 
-        public static SigningKey SigningKey2 = new()
+        public static SigningKey SigningKey2 { get; } = new()
         {
             Certificate = new X509Certificate2("Sustainsys.Saml2.Tests2.pfx"),
             TrustLevel = TrustLevel.TLS
         };
 
-        public static SigningKey[] SingleSigningKey2 =
+        public static SigningKey[] SingleSigningKey2 { get; } =
         {
             SigningKey2
         };
