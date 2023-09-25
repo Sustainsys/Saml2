@@ -18,7 +18,7 @@ public class SignedXmlHelperTests
 {
     public static readonly string[] allowedHashes = { "sha256" };
 
-    private XmlDocument CreateSignedDocument()
+    private static XmlDocument CreateSignedDocument()
     {
         var xml = "<xml ID=\"id123\"/>";
 
@@ -252,9 +252,30 @@ public class SignedXmlHelperTests
         elemB.Sign(TestData.Certificate);
 
         elemA["Signature"]!.VerifySignature(TestData.SingleSigningKey, allowedHashes)
-            .Error.Should().BeNull();
+            .Error.Should().BeNull("First signature should validate");
         elemB["Signature"]!.VerifySignature(TestData.SingleSigningKey, allowedHashes)
-            .Error.Should().BeNull();
+            .Error.Should().BeNull("Second signature should validate");
+    }
+
+    [Fact]
+    public void VerifySignature_NestedSignaturesInSameDocument()
+    {
+        var xml = "<xml><a ID=\"a\"><b ID=\"b\"/></a></xml>";
+
+        var xmlDoc = new XmlDocument();
+        xmlDoc.LoadXml(xml);
+
+        var elemA = xmlDoc.DocumentElement!["a"]!;
+        var elemB = xmlDoc.DocumentElement!["a"]!["b"]!;
+
+        // Important - sign nested element first.
+        elemB.Sign(TestData.Certificate);
+        elemA.Sign(TestData.Certificate);
+
+        elemA["Signature"]!.VerifySignature(TestData.SingleSigningKey, allowedHashes)
+            .Error.Should().BeNull("First signature should validate");
+        elemB["Signature"]!.VerifySignature(TestData.SingleSigningKey, allowedHashes)
+            .Error.Should().BeNull("Second signature should validate");
     }
 
     [Fact]
