@@ -28,7 +28,9 @@ public class RedirectBindingTests
         var message = new Saml2Message
         {
             Name = "SamlRequest",
-            Xml = xd
+            Xml = xd,
+            Destination = "https://example.com/destination",
+            RelayState = "someRelayState"
         };
 
         var subject = new RedirectBinding();
@@ -39,21 +41,25 @@ public class RedirectBindingTests
 
         void validateUrl(string url)
         {
+            url.Should().StartWith(message.Destination);
+
             Uri uri = new Uri(url);
 
-            var query = uri.Query;
+            var query = uri.Query.Split("&");
 
             var expectedParam = $"{message!.Name}=";
 
-            query.StartsWith(expectedParam).Should().BeTrue();
+            query[0].StartsWith(expectedParam).Should().BeTrue();
 
-            var value = query[expectedParam.Length..];
+            var value = query[0][expectedParam.Length..];
 
             using var inflated = new MemoryStream(Convert.FromBase64String(Uri.UnescapeDataString(value)));
             using var deflateStream = new DeflateStream(inflated, CompressionMode.Decompress);
             using var reader = new StreamReader(deflateStream);
 
             reader.ReadToEnd().Should().Be(Xml);
+
+            query[1].Should().Be("RelayState=someRelayState");
         }
 
         httpResponse.Received().Redirect(Arg.Do<string>(validateUrl));

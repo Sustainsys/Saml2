@@ -25,5 +25,9 @@ public class RedirectBinding : FrontChannelBinding
         }
 
         var encoded = Uri.EscapeDataString(Convert.ToBase64String(compressed.ToArray()));
+
+        var location = $"{message.Destination}?{message.Name}={encoded}&RelayState={message.RelayState}";
+
+        httpResponse.Redirect(location);
     }
 }
