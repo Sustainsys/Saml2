@@ -1,17 +1,11 @@
-﻿using FluentAssertions;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc.Routing;
+﻿using Microsoft.AspNetCore.Http;
 using NSubstitute;
 using Sustainsys.Saml2.Bindings;
 using System;
 using System.IO;
 using System.IO.Compression;
-using System.Net.Http;
-using System.Text.Encodings.Web;
 using System.Threading.Tasks;
-using System.Web;
 using System.Xml;
-using Xunit;
 
 namespace Sustainsys.Saml2.Tests.Bindings;
 

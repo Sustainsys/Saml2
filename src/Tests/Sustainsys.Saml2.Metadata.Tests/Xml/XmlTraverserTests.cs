@@ -1,12 +1,8 @@
-﻿using FluentAssertions;
-using Sustainsys.Saml2.Metadata.Xml;
+﻿using Sustainsys.Saml2.Metadata.Xml;
 using Sustainsys.Saml2.Tests.Helpers;
 using System;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Xml;
-using System.Xml.Linq;
-using Xunit;
 
 namespace Sustainsys.Saml2.Metadata.Tests.Xml;
 

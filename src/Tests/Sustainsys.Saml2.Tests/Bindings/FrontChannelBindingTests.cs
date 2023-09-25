@@ -1,11 +1,9 @@
-﻿using FluentAssertions;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 using NSubstitute;
 using Sustainsys.Saml2.Bindings;
 using System;
 using System.Threading.Tasks;
 using System.Xml;
-using Xunit;
 
 namespace Sustainsys.Saml2.Tests.Bindings;
 public class FrontChannelBindingTests

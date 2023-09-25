@@ -4,10 +4,7 @@ using Sustainsys.Saml2.Metadata.Tests.Xml;
 using Sustainsys.Saml2.Metadata.Xml;
 using Sustainsys.Saml2.Tests.Helpers;
 using System;
-using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Security.Cryptography.X509Certificates;
-using Xunit;
 
 namespace Sustainsys.Saml2.Metadata.Tests;
 

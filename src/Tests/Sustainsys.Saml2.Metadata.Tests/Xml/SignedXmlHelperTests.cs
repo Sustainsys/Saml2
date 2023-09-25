@@ -1,16 +1,9 @@
-﻿using FluentAssertions;
-using Sustainsys.Saml2.Metadata.Xml;
+﻿using Sustainsys.Saml2.Metadata.Xml;
 using Sustainsys.Saml2.Tests.Helpers;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 using System.Security.Cryptography.Xml;
-using System.Text;
-using System.Threading.Tasks;
 using System.Xml;
-using Xunit;
 
 namespace Sustainsys.Saml2.Metadata.Tests.Xml;
 
@@ -30,7 +23,7 @@ public class SignedXmlHelperTests
         return xmlDoc;
     }
 
-    private XmlElement GetSignatureElement()
+    private static XmlElement GetSignatureElement()
     {
         var xmlDocument = CreateSignedDocument();
 
@@ -64,7 +57,7 @@ public class SignedXmlHelperTests
     [Fact]
     public void VerifySignature()
     {
-        var element = GetSignatureElement();
+        var element = SignedXmlHelperTests.GetSignatureElement();
 
         var (error, workingKey) =
             element.VerifySignature(TestData.SingleSigningKey, allowedHashes);
@@ -76,7 +69,7 @@ public class SignedXmlHelperTests
     [Fact]
     public void VerifySignature_WrongCert()
     {
-        var element = GetSignatureElement();
+        var element = SignedXmlHelperTests.GetSignatureElement();
 
         var (error, workingKey) = element.VerifySignature(TestData.SingleSigningKey2, allowedHashes);
 
@@ -87,7 +80,7 @@ public class SignedXmlHelperTests
     [Fact]
     public void VerifySignature_TamperedData()
     {
-        var element = GetSignatureElement();
+        var element = SignedXmlHelperTests.GetSignatureElement();
 
         ((XmlElement)element.ParentNode!).SetAttribute("foo", "bar");
 
