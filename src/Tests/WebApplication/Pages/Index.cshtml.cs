@@ -18,14 +18,11 @@ public class IndexModel : PageModel
 
     public IActionResult OnPost()
     {
-        switch(Action)
+        return Action switch
         {
-            case "SignOut":
-                return SignOut(CookieAuthenticationDefaults.AuthenticationScheme, Saml2Defaults.AuthenticationScheme);
-            case "SignIn":
-                return Challenge();
-        }
-
-        throw new NotImplementedException();
+            "SignOut" => SignOut(CookieAuthenticationDefaults.AuthenticationScheme, Saml2Defaults.AuthenticationScheme),
+            "SignIn" => Challenge(),
+            _ => throw new NotImplementedException(),
+        };
     }
 }

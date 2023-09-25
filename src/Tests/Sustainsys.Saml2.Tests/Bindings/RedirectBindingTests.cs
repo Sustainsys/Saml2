@@ -47,7 +47,7 @@ public class RedirectBindingTests
 
             query.StartsWith(expectedParam).Should().BeTrue();
 
-            var value = query.Substring(expectedParam.Length);
+            var value = query[expectedParam.Length..];
 
             using var inflated = new MemoryStream(Convert.FromBase64String(Uri.UnescapeDataString(value)));
             using var deflateStream = new DeflateStream(inflated, CompressionMode.Decompress);

@@ -10,7 +10,7 @@ namespace Sustainsys.Saml2.Metadata.Tests;
 
 public partial class MetadataSerializerTests
 {
-    private XmlTraverser GetXmlTraverser([CallerMemberName] string? fileName = null)
+    private static XmlTraverser GetXmlTraverser([CallerMemberName] string? fileName = null)
         => TestData.GetXmlTraverser<MetadataSerializerTests>(fileName);
 
 }
