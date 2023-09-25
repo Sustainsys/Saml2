@@ -107,7 +107,6 @@ public static class SignedXmlHelper
         signedXml.LoadXml(signatureElement);
 
         string? error = null;
-        XmlElement? signedElement = null;
         SigningKey? workingKey = null;
 
         if (signedXml.SignedInfo.References.Count != 1)
@@ -146,7 +145,7 @@ public static class SignedXmlHelper
             {
                 var id = reference.Uri[1..]; // Drop off the #
 
-                signedElement = signedXml.GetIdElement(signatureElement.OwnerDocument, id);
+                var signedElement = signedXml.GetIdElement(signatureElement.OwnerDocument, id);
 
                 if (signedElement == null || signedElement != signatureElement.ParentNode)
                 {
@@ -184,11 +183,6 @@ public static class SignedXmlHelper
             error += $"Signature algorithm {signedXml.SignatureMethod} does not match configured [{allowed}]. ";
         }
 
-        var valid = string.IsNullOrEmpty(error);
-
         return (error?.TrimEnd(), workingKey);
     }
-
-    static readonly PropertyInfo? signaturePosition = typeof(XmlDsigEnvelopedSignatureTransform)
-    .GetProperty("SignaturePosition", BindingFlags.Instance | BindingFlags.NonPublic);
 }
