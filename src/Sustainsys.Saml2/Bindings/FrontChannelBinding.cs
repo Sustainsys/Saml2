@@ -19,7 +19,7 @@ public abstract class FrontChannelBinding
     /// <param name="httpResponse">Http response to bind message to</param>
     /// <returns>Task</returns>
     /// <exception cref="System.ArgumentException">If message properties not properly set</exception>
-    public Task Bind(HttpResponse httpResponse, Saml2Message message)
+    public Task BindAsync(HttpResponse httpResponse, Saml2Message message)
     {
         if (string.IsNullOrWhiteSpace(message.Name))
         {
@@ -31,7 +31,7 @@ public abstract class FrontChannelBinding
             throw new ArgumentException("Xml property must have value", nameof(message));
         }
 
-        return DoBind(httpResponse, message);
+        return DoBindAsync(httpResponse, message);
     }
 
     /// <summary>
@@ -40,5 +40,5 @@ public abstract class FrontChannelBinding
     /// <param name="message">Saml2 message</param>
     /// <param name="httpResponse">Http response to bind message to</param>
     /// <returns>Task</returns>
-    protected abstract Task DoBind(HttpResponse httpResponse, Saml2Message message);
+    protected abstract Task DoBindAsync(HttpResponse httpResponse, Saml2Message message);
 }

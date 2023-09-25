@@ -13,7 +13,7 @@ public class RedirectBinding : FrontChannelBinding
     public override string Identification => BindingUris.HttpRedirect;
 
     /// <inheritdoc/>
-    protected override async Task DoBind(HttpResponse httpResponse, Saml2Message message)
+    protected override async Task DoBindAsync(HttpResponse httpResponse, Saml2Message message)
     {
         var xmlString = message.Xml.OuterXml;
 

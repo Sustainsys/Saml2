@@ -12,7 +12,7 @@ public class FrontChannelBindingTests
     {
         public override string Identification => throw new NotImplementedException();
 
-        protected override Task DoBind(HttpResponse httpResponse, Saml2Message message) 
+        protected override Task DoBindAsync(HttpResponse httpResponse, Saml2Message message) 
             => throw new NotImplementedException();
     }
 
@@ -39,7 +39,7 @@ public class FrontChannelBindingTests
 
         var httpResponse = Substitute.For<HttpResponse>();
 
-        subject.Invoking(s => s.Bind(httpResponse, message))
+        subject.Invoking(s => s.BindAsync(httpResponse, message))
             .Should().ThrowAsync<ArgumentException>().WithParameterName("message").WithMessage(expectedMessage);
     }
 }

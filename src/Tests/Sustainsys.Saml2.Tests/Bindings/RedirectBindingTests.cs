@@ -31,7 +31,7 @@ public class RedirectBindingTests
 
         var httpResponse = Substitute.For<HttpResponse>();
 
-        await subject.Bind(httpResponse, message);
+        await subject.BindAsync(httpResponse, message);
 
         void validateUrl(string url)
         {

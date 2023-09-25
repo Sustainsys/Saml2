@@ -1,9 +1,7 @@
-﻿using FluentAssertions;
-using Sustainsys.Saml2.Metadata.Elements;
+﻿using Sustainsys.Saml2.Metadata.Elements;
 using Sustainsys.Saml2.Metadata.Tests.Xml;
 using Sustainsys.Saml2.Metadata.Xml;
 using Sustainsys.Saml2.Tests.Helpers;
-using System;
 using System.Security.Cryptography.X509Certificates;
 
 namespace Sustainsys.Saml2.Metadata.Tests;
