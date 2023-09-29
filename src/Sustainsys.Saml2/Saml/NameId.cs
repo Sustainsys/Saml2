@@ -1,12 +1,4 @@
-﻿using Microsoft.CodeAnalysis.VisualBasic.Syntax;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Sustainsys.Saml2.Saml;
+﻿namespace Sustainsys.Saml2.Saml;
 
 /// <summary>
 /// The Saml NameIDType

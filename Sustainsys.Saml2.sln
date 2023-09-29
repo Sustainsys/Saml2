@@ -3,11 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.32112.339
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sustainsys.Saml2.Metadata", "src\Sustainsys.Saml2.Metadata\Sustainsys.Saml2.Metadata.csproj", "{9618F2E8-9A98-4A07-825D-E4CC52097ED9}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{92934DC3-A1E1-48D0-BBBF-8499A94EB9DC}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sustainsys.Saml2.Metadata.Tests", "src\Tests\Sustainsys.Saml2.Metadata.Tests\Sustainsys.Saml2.Metadata.Tests.csproj", "{3AE76002-E0DC-4172-B244-F15A3A7EB3D4}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sustainsys.Saml2.Tests.Helpers", "src\Tests\Sustainsys.Saml2.Tests.Helpers\Sustainsys.Saml2.Tests.Helpers.csproj", "{073997A4-7572-4C62-9C53-8DD17A62888D}"
 EndProject
@@ -29,7 +25,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebApplication", "src\Tests
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sustainsys.Saml2.Tests", "src\Tests\Sustainsys.Saml2.Tests\Sustainsys.Saml2.Tests.csproj", "{F4B928E9-9E1D-4760-BA36-91BA46C2AA33}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sustainsys.Saml2.AspNetCore.Tests", "src\Tests\Sustainsys.Saml2.AspNetCore.Tests\Sustainsys.Saml2.AspNetCore.Tests.csproj", "{3B9D67BD-1F66-4232-B558-2C63881A8F66}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sustainsys.Saml2.AspNetCore.Tests", "src\Tests\Sustainsys.Saml2.AspNetCore.Tests\Sustainsys.Saml2.AspNetCore.Tests.csproj", "{3B9D67BD-1F66-4232-B558-2C63881A8F66}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -37,14 +33,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{9618F2E8-9A98-4A07-825D-E4CC52097ED9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{9618F2E8-9A98-4A07-825D-E4CC52097ED9}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{9618F2E8-9A98-4A07-825D-E4CC52097ED9}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{9618F2E8-9A98-4A07-825D-E4CC52097ED9}.Release|Any CPU.Build.0 = Release|Any CPU
-		{3AE76002-E0DC-4172-B244-F15A3A7EB3D4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{3AE76002-E0DC-4172-B244-F15A3A7EB3D4}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{3AE76002-E0DC-4172-B244-F15A3A7EB3D4}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{3AE76002-E0DC-4172-B244-F15A3A7EB3D4}.Release|Any CPU.Build.0 = Release|Any CPU
 		{073997A4-7572-4C62-9C53-8DD17A62888D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{073997A4-7572-4C62-9C53-8DD17A62888D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{073997A4-7572-4C62-9C53-8DD17A62888D}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -78,7 +66,6 @@ Global
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{3AE76002-E0DC-4172-B244-F15A3A7EB3D4} = {92934DC3-A1E1-48D0-BBBF-8499A94EB9DC}
 		{073997A4-7572-4C62-9C53-8DD17A62888D} = {92934DC3-A1E1-48D0-BBBF-8499A94EB9DC}
 		{A03937C8-9CBA-4B60-8116-4EFF2531DF0A} = {92934DC3-A1E1-48D0-BBBF-8499A94EB9DC}
 		{F4B928E9-9E1D-4760-BA36-91BA46C2AA33} = {92934DC3-A1E1-48D0-BBBF-8499A94EB9DC}

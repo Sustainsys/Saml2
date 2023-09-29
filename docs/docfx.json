@@ -5,7 +5,8 @@
         {
           "src": "../",
           "files": [
-            "src/Sustainsys*/*.csproj"
+            "src/Sustainsys.Saml2/Sustainsys.Saml2.csproj",
+            "src/Sustainsys.Saml2.AspNetCore/Sustainsys.Saml2.AspNetCore.csproj"
           ]
         }
       ],

@@ -1,4 +1,4 @@
-﻿using Sustainsys.Saml2.Metadata.Xml;
+﻿using Sustainsys.Saml2.Xml;
 using System.Runtime.CompilerServices;
 using System.Security.Cryptography.X509Certificates;
 using System.Xml;
@@ -11,7 +11,9 @@ namespace Sustainsys.Saml2.Tests.Helpers
         {
             ArgumentNullException.ThrowIfNull(testName);
 
-            var fileName = "../../../" + typeof(TDirectory).Name + "/" + testName + ".xml";
+            var fileName = "../../../"
+                + typeof(TDirectory).FullName!["Sustainsys.Saml2.Tests".Length..].Replace('.', '/')
+                + "/" + testName + ".xml";
 
             var document = new XmlDocument();
             document.Load(fileName);

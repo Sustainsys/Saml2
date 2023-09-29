@@ -1,4 +1,4 @@
-﻿using Sustainsys.Saml2.Metadata.Xml;
+﻿using Sustainsys.Saml2.Xml;
 using System;
 using System.Collections.Generic;
 using System.Linq;

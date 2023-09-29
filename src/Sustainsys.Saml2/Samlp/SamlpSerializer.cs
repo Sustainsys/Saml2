@@ -1,4 +1,4 @@
-﻿using Sustainsys.Saml2.Metadata.Xml;
+﻿using Sustainsys.Saml2.Xml;
 using Sustainsys.Saml2.Saml;
 using System.Reflection.Metadata.Ecma335;
 using System.Xml;

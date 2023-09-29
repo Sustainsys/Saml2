@@ -1,5 +1,5 @@
 ﻿using Sustainsys.Saml2.Metadata.Elements;
-using Sustainsys.Saml2.Metadata.Xml;
+using Sustainsys.Saml2.Xml;
 using Sustainsys.Saml2.Saml;
 
 namespace Sustainsys.Saml2.Samlp;

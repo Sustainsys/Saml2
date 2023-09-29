@@ -4,7 +4,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using NSubstitute;
 using Sustainsys.Saml2.Bindings;
-using Sustainsys.Saml2.Metadata.Xml;
+using Sustainsys.Saml2.Xml;
 using Sustainsys.Saml2.Saml;
 using Sustainsys.Saml2.Samlp;
 using System.Net.Http;

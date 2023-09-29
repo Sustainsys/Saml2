@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
 		<TargetFrameworks>net6.0;net7.0</TargetFrameworks>
@@ -13,7 +13,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="..\..\Sustainsys.Saml2.Metadata\Sustainsys.Saml2.Metadata.csproj" />
+	  <ProjectReference Include="..\..\Sustainsys.Saml2\Sustainsys.Saml2.csproj" />
 	</ItemGroup>
 
 	<ItemGroup>

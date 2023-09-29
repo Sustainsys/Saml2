@@ -13,7 +13,8 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <ProjectReference Include="..\Sustainsys.Saml2.Metadata\Sustainsys.Saml2.Metadata.csproj" />
+		<!--Use version 7.0 even on .NET 6 to get the patched version for nested signatures-->
+		<PackageReference Include="System.Security.Cryptography.Xml" Version="7.0.1" />	
 	</ItemGroup>
 
 </Project>
