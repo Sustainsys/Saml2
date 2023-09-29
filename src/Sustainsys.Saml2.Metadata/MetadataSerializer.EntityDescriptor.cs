@@ -7,18 +7,8 @@ namespace Sustainsys.Saml2.Metadata;
 /// <summary>
 /// Serializer for Saml2 Metadata
 /// </summary>
-public partial class MetadataSerializer
+public partial class MetadataSerializer : SerializerBase
 {
-    /// <summary>
-    /// Allowed hash algorithms if validating signatures.
-    /// </summary>
-    protected IEnumerable<string>? AllowedHashAlgorithms { get; }
-
-    /// <summary>
-    /// Signing keys to trust when validating signatures of the metadata.
-    /// </summary>
-    protected IEnumerable<SigningKey>? TrustedSigningKeys { get; }
-
     /// <summary>
     /// Ctor
     /// </summary>
@@ -31,14 +21,6 @@ public partial class MetadataSerializer
         TrustedSigningKeys = trustedSigningKeys;
         AllowedHashAlgorithms = allowedHashAlgorithms;
     }
-
-    /// <summary>
-    /// Helper method that calls ThrowOnErrors. If you want to supress
-    /// errors and prevent throwing, this is the last chance method to
-    /// override.
-    /// </summary>
-    protected virtual void ThrowOnErrors(XmlTraverser source)
-        => source.ThrowOnErrors();
 
     /// <summary>
     /// Create EntityDescriptor instance. Override to use subclass.

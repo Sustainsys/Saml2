@@ -1,6 +1,10 @@
 ﻿using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Sustainsys.Saml2.AspNetCore.Events;
+using Sustainsys.Saml2.Bindings;
+using Sustainsys.Saml2.Samlp;
 using System.Text.Encodings.Web;
 
 namespace Sustainsys.Saml2.AspNetCore;
@@ -21,9 +25,31 @@ public class Saml2Handler : RemoteAuthenticationHandler<Saml2Options>
         IOptionsMonitor<Saml2Options> options,
         ILoggerFactory logger,
         UrlEncoder encoder,
-        ISystemClock clock) 
+        ISystemClock clock)
         : base(options, logger, encoder, clock)
     {
+    }
+
+    /// <summary>
+    /// Create events by invoking Options.ServiceResolver.CreateEventsAsync()
+    /// </summary>
+    /// <returns><see cref="Saml2Events"/>Saml2 events instance</returns>
+    protected override Task<object> CreateEventsAsync() => Task.FromResult<object>(GetService(s => s.CreateEvents));
+
+    private T GetService<T>(
+        Func<ServiceResolver, Func<ServiceResolver.ResolverContext, T>> factorySelector,
+        AuthenticationProperties? authenticationProperties = null) =>
+        factorySelector(Options.ServiceResolver)
+        (new ServiceResolver.ResolverContext(Context, Options, authenticationProperties));
+
+    /// <summary>
+    /// Events represents the easiest and most straight forward way to customize the
+    /// behaviour of the Saml2 handler. An event can inspect and alter data.
+    /// </summary>
+    protected new Saml2Events Events
+    {
+        get => (Saml2Events)base.Events;
+        set { base.Events = value; }
     }
 
     /// <summary>
@@ -40,8 +66,25 @@ public class Saml2Handler : RemoteAuthenticationHandler<Saml2Options>
     /// </summary>
     /// <param name="properties">Authentication properties</param>
     /// <returns>Task</returns>
-    protected override Task HandleChallengeAsync(AuthenticationProperties properties)
+    protected override async Task HandleChallengeAsync(AuthenticationProperties properties)
     {
-        throw new NotImplementedException();
+        var authnRequest = new AuthnRequest()
+        {
+            Issuer = Options.EntityId,
+            IssueInstant = Clock.UtcNow,
+            AssertionConsumerServiceUrl = BuildRedirectUri(Options.CallbackPath)
+        };
+
+        var authnRequestGeneratedContext = new AuthnRequestGeneratedContext(Context, Scheme, Options, properties, authnRequest);
+        await Events.AuthnRequestGeneratedAsync(authnRequestGeneratedContext);
+
+
+
+        //var message = new Saml2Message
+        //{
+        //    Destination = Options.IdentityProvider!.SsoServiceUrl!,
+        //    Name = Constants.SamlRequest,
+        //    Xml = 
+        //}
     }
 }

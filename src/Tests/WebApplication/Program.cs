@@ -15,6 +15,10 @@ builder.Services.AddRazorPages();
 
 var app = builder.Build();
 
+// Enable running the pipeline with path base. This somewhat confusingly
+// allows the rest of the app to answer both on / and /subdir.
+app.UsePathBase("/subdir");
+
 app.UseRouting();
 
 app.MapRazorPages();

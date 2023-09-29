@@ -12,6 +12,13 @@ public class RedirectBinding : FrontChannelBinding
     /// <inheritdoc/>
     public override string Identification => BindingUris.HttpRedirect;
 
+    /// <summary>
+    /// Unbinds a Saml2 mesasge from a URL
+    /// </summary>
+    /// <param name="url">URL with Saml message</param>
+    /// <returns>Unbount message</returns>
+    public Saml2Message UnBindAsync(string url) => throw new NotImplementedException();
+
     /// <inheritdoc/>
     protected override async Task DoBindAsync(HttpResponse httpResponse, Saml2Message message)
     {

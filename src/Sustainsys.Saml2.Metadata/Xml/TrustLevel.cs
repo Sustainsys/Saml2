@@ -36,7 +36,7 @@ public enum TrustLevel
 
     /// <summary>
     /// The data was verified by a signature where signing key or a strong
-    /// identifier of the key (such as a SAH256 cert thumbprint) was read 
+    /// identifier of the key (such as a SHA256 cert thumbprint) was read 
     /// from configuration.
     /// </summary>
     ConfiguredKey
