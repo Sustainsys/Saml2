@@ -31,8 +31,22 @@ public static class XmlHelpers
     /// <summary>
     /// Get an Xml traverser for an XmlDocument
     /// </summary>
-    /// <param name="xmlDoc">Source XmlDocument</param>
+    /// <param name="xmlElement">Source XmlElement. Typically the document element</param>
     /// <returns>XmlTraverser locatet at DocumentElement</returns>
-    public static XmlTraverser GetXmlTraverser(this XmlDocument xmlDoc)
-        => new(xmlDoc?.DocumentElement ?? throw new ArgumentException("DocumentElement cannot be null"));
+    public static XmlTraverser GetXmlTraverser(this XmlElement xmlElement)
+        => new(xmlElement ?? throw new ArgumentException("DocumentElement cannot be null"));
+
+    /// <summary>
+    /// Sets an attribute if the value is not null.
+    /// </summary>
+    /// <param name="element">Element to set attribute on.</param>
+    /// <param name="name">Name of attribute</param>
+    /// <param name="value">String value. If null, no attribute is set/created</param>
+    public static void SetAttributeIfValue(this XmlElement element, string name, string? value)
+    {
+        if(value != null)
+        {
+            element.SetAttribute(name, value);
+        }
+    }
 }

@@ -12,7 +12,12 @@ public class FrontChannelBindingTests
     {
         public override string Identification => throw new NotImplementedException();
 
-        protected override Task DoBindAsync(HttpResponse httpResponse, Saml2Message message) 
+        public override Task<InboundSaml2Message> UnbindAsync(
+            HttpRequest httpRequest,
+            Func<string, Task<IdentityProvider>> getIdentityProviderAsync) 
+            => throw new NotImplementedException();
+        
+        protected override Task DoBindAsync(HttpResponse httpResponse, OutboundSaml2Message message) 
             => throw new NotImplementedException();
     }
 
@@ -29,10 +34,10 @@ public class FrontChannelBindingTests
             xmlDocument.LoadXml(xml);
         }
 
-        var message = new Saml2Message()
+        var message = new OutboundSaml2Message()
         {
             Name = name!,
-            Xml = xmlDocument!
+            Xml = xmlDocument?.DocumentElement!
         };
 
         var subject = new Subject();

@@ -10,7 +10,7 @@ public class Endpoint
     /// <summary>
     /// Binding supported by the endpoint.
     /// </summary>
-    public Binding Binding { get; set; }
+    public string Binding { get; set; } = "";
 
     /// <summary>
     /// URL of the endpoint.

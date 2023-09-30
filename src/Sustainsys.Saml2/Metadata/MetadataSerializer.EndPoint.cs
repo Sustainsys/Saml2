@@ -25,7 +25,7 @@ partial class MetadataSerializer
     /// <param name="endpoint">Endpoint</param>
     protected virtual void ReadAttributes(XmlTraverser source, Endpoint endpoint)
     {
-        endpoint.Binding = source.GetRequiredAbsoluteUriAttribute(AttributeNames.Binding).MapEnum<Binding>();
+        endpoint.Binding = source.GetRequiredAbsoluteUriAttribute(AttributeNames.Binding) ?? "";
         endpoint.Location = source.GetRequiredAttribute(AttributeNames.Location) ?? "";
     }
 

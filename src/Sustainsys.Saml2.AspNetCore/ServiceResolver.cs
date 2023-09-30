@@ -1,5 +1,8 @@
 ﻿using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
+using Sustainsys.Saml2.Bindings;
+using Sustainsys.Saml2.Saml;
+using Sustainsys.Saml2.Samlp;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,20 +23,107 @@ public class ServiceResolver
     /// <summary>
     /// Context for service resolver
     /// </summary>
-    /// <param name="Context">Current http context</param>
-    /// <param name="Options">Current options</param>
-    /// <param name="AuthenticationProperties">Authentication properties, if available</param>
-    public record struct ResolverContext(
-        HttpContext Context,
-        Saml2Options Options,
-        AuthenticationProperties? AuthenticationProperties = null)
-    { }
+    public class ResolverContext
+    {
+        /// <summary>
+        /// Ctor
+        /// </summary>
+        /// <param name="context">Current http context</param>
+        /// <param name="options">Current options</param>
+        /// <param name="scheme">Current authentication scheme</param>
+        /// <param name="authenticationProperties">Authentication properties, if available</param>
+        public ResolverContext(
+            HttpContext context,
+            Saml2Options options,
+            AuthenticationScheme scheme,
+            AuthenticationProperties? authenticationProperties)
+        {
+            Context = context;
+            Options = options;
+            Scheme = scheme;
+            AuthenticationProperties = authenticationProperties;
+        }
+
+        /// <summary>
+        /// Current HttpContext
+        /// </summary>
+        public HttpContext Context { get; }
+
+        /// <summary>
+        /// Current options
+        /// </summary>
+        public Saml2Options Options { get; }
+
+        /// <summary>
+        /// Current authentication scheme
+        /// </summary>
+        public AuthenticationScheme Scheme { get; }
+
+        /// <summary>
+        /// Current AuthenticationProperties, if available
+        /// </summary>
+        public AuthenticationProperties? AuthenticationProperties { get; }
+    }
 
     /// <summary>
     /// Factory for the events class. Defaults to returning a new Saml2Events instance. It's usually
     /// easier to just set the Events property on the options than to use this. If you want to
     /// resolve the events from DI, this is the best place to do it.
     /// </summary>
-    public Func<ResolverContext, Saml2Events> CreateEvents { get; set; } 
-        = (_) => new Saml2Events();
+    public Func<ResolverContext, Saml2Events> CreateEvents { get; set; }
+        = _ => new Saml2Events();
+
+    /// <summary>
+    /// Factory for <see cref="ISamlpSerializer"/>
+    /// </summary>
+    public Func<ResolverContext, ISamlpSerializer> GetSamlpSerializer { get; set; }
+        = ctx => new SamlpSerializer(ctx.Options.ServiceResolver.GetSamlSerializer(ctx));
+
+    /// <summary>
+    /// Factory for <see cref="ISamlSerializer"/>
+    /// </summary>
+    public Func<ResolverContext, ISamlSerializer> GetSamlSerializer { get; set; }
+        = _ => new SamlSerializer();
+
+    /// <summary>
+    /// Context for resolving binding
+    /// </summary>
+    public class BindingResolverContext : ResolverContext
+    {
+        /// <summary>
+        /// Ctor
+        /// </summary>
+        /// <param name="context">Current http context</param>
+        /// <param name="options">Current options</param>
+        /// <param name="scheme">Current authentication scheme</param>
+        /// <param name="authenticationProperties">Authentication properties, if available</param>
+        /// <param name="binding">Uri for requested binding</param>
+        public BindingResolverContext(
+            HttpContext context,
+            Saml2Options options,
+            AuthenticationScheme scheme,
+            AuthenticationProperties? authenticationProperties,
+            string binding)
+            : base(context, options, scheme, authenticationProperties)
+        {
+            Binding = binding;
+        }
+
+        /// <summary>
+        /// Requested binding
+        /// </summary>
+        public string Binding { get; }
+    }
+
+    /// <summary>
+    /// Factory for front channel bindings
+    /// </summary>
+    public Func<BindingResolverContext, IFrontChannelBinding> GetBinding { get; set; }
+        = ctx => ctx.Binding switch
+        {
+            Constants.BindingUris.HttpRedirect => new HttpRedirectBinding(),
+            null => throw new ArgumentException("Requested binding is null"),
+            "" => throw new ArgumentException("Requested binding is blank"),
+            _ => throw new NotImplementedException($"Unknown binding {ctx.Binding} requested")
+        };
 }

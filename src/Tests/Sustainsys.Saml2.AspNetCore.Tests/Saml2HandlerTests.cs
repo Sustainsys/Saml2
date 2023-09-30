@@ -53,21 +53,10 @@ public class Saml2HandlerTests
             IdentityProvider = new()
             {
                 EntityId = "https://idp.example.com",
-                SsoServiceUrl = "https://idp.example.com/sso"
+                SsoServiceUrl = "https://idp.example.com/sso",
+                SsoServiceBinding = Constants.BindingUris.HttpRedirect
             }
         };
-    }
-
-    private static void ValidateAuthnRequest(AuthnRequest authnRequest)
-    {
-        // Profile 4.1.4.1: Issuer is required for WebSSO
-        authnRequest.Issuer?.Value.Should().Be("https://sp.example.com/Metadata");
-
-        // Core 3.2.1: Issue instant is required
-        authnRequest.IssueInstant.Should().Be(CurrentFakeTime);
-
-        // Core 3.4.1 AssertionConsumerServicerUrl is optional, but our StubIdp requires it
-        authnRequest.AssertionConsumerServiceUrl.Should().Be("https://sp.example.com:8888/Saml2/Acs");
     }
 
     [Fact]
@@ -82,7 +71,15 @@ public class Saml2HandlerTests
             // Use event to validate contents of AuthnRequest
             OnAuthnRequestGeneratedAsync = ctx =>
             {
-                ValidateAuthnRequest(ctx.AuthnRequest);
+                // Profile 4.1.4.1: Issuer is required for WebSSO
+                ctx.AuthnRequest.Issuer?.Value.Should().Be("https://sp.example.com/Metadata");
+
+                // Core 3.2.1: Issue instant is required
+                ctx.AuthnRequest.IssueInstant.Should().Be(CurrentFakeTime);
+
+                // Core 3.4.1 AssertionConsumerServicerUrl is optional, but our StubIdp requires it
+                ctx.AuthnRequest.AssertionConsumerServiceUrl.Should().Be("https://sp.example.com:8888/Saml2/Acs");
+
                 eventCalled = true;
                 return Task.CompletedTask;
             }
@@ -100,6 +97,9 @@ public class Saml2HandlerTests
     [Fact]
     public async Task ChallengeSetsRedirect()
     {
+        // This test only validates that the AuthnRequest ends up as a redirect. The contents of
+        // the AuthnRequest are validated in ChallengeCreatesAuthnRequest through the event.
+
         var options = CreateOptions();
 
         AuthnRequest? authnRequest = null;
@@ -119,15 +119,20 @@ public class Saml2HandlerTests
 
         await subject.ChallengeAsync(props);
 
-        static void validateLocation(string location)
+        void validateLocation(string location)
         {
-            var message = new RedirectBinding().UnBindAsync(location);
+            location.Should().StartWith("https://idp.example.com/sso?SamlRequest=");
+
+            var message = new HttpRedirectBinding().UnBindAsync(location, _ => throw new NotImplementedException());
             var deserializedAuthnRequest = new SamlpSerializer(new SamlSerializer())
                 .ReadAuthnRequest(message.Xml.GetXmlTraverser());
+
+            deserializedAuthnRequest.Should().BeEquivalentTo(authnRequest);
         }
 
         httpContext.Response.Received().Redirect(Arg.Do<string>(validateLocation));
     }
 
-    // TODO: Use event to resolve IdentityProvider - reason enum to differ between challenge and response handling
+    // TODO: Use event to resolve IdentityProvider - presense of EntityId indicates if challenge or response processing
+    // TODO: Event when Xml was created
 }

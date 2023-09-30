@@ -27,7 +27,7 @@ partial class MetadataSerializer
             return false;
         }
 
-        while (source.HasName(Namespaces.Metadata, ElementNames.ArtifactResolutionService))
+        while (source.HasName(Constants.Namespaces.Metadata, ElementNames.ArtifactResolutionService))
         {
             result.ArtifactResolutionServices.Add(ReadIndexedEndpoint(source));
 
@@ -37,7 +37,7 @@ partial class MetadataSerializer
             }
         }
 
-        while(source.HasName(Namespaces.Metadata, ElementNames.SingleLogoutService))
+        while(source.HasName(Constants.Namespaces.Metadata, ElementNames.SingleLogoutService))
         {
             result.SingleLogoutServices.Add(ReadEndpoint(source));
 
@@ -47,8 +47,8 @@ partial class MetadataSerializer
             }
         }
 
-        while(source.HasName(Namespaces.Metadata, ElementNames.ManageNameIDService)
-            || source.HasName(Namespaces.Metadata, ElementNames.NameIDFormat))
+        while(source.HasName(Constants.Namespaces.Metadata, ElementNames.ManageNameIDService)
+            || source.HasName(Constants.Namespaces.Metadata, ElementNames.NameIDFormat))
         {
             // We're not supporting ManageNameIDService nor NameIDFormat.
             source.IgnoreChildren();

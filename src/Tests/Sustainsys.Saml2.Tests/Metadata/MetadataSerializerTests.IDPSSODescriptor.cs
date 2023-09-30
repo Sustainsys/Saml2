@@ -21,7 +21,7 @@ public partial class MetadataSerializerTests
             {
                 new Endpoint
                 {
-                    Binding = Binding.HttpRedirect,
+                    Binding = Constants.BindingUris.HttpRedirect,
                     Location = "https://stubidp.sustainsys.com/"
                 }
             }
@@ -65,7 +65,7 @@ public partial class MetadataSerializerTests
             {
                 new IndexedEndpoint
                 {
-                    Binding = Binding.SOAP,
+                    Binding = Constants.BindingUris.SOAP,
                     Location = "https://stubidp.sustainsys.com/ArtifactResolve",
                     Index = 2,
                     IsDefault = true
@@ -75,12 +75,12 @@ public partial class MetadataSerializerTests
             {
                 new Endpoint
                 {
-                    Binding = Binding.HttpRedirect,
+                    Binding = Constants.BindingUris.HttpRedirect,
                     Location = "https://stubidp.sustainsys.com/Logout"
                 },
                 new Endpoint
                 {
-                    Binding = Binding.HttpPOST,
+                    Binding = Constants.BindingUris.HttpPOST,
                     Location = "https://stubidp.sustainsys.com/Logout"
                 }
             },
@@ -89,12 +89,12 @@ public partial class MetadataSerializerTests
             {
                 new Endpoint
                 {
-                    Binding = Binding.HttpRedirect,
+                    Binding = Constants.BindingUris.HttpRedirect,
                     Location = "https://stubidp.sustainsys.com/"
                 },
                 new Endpoint
                 {
-                    Binding = Binding.HttpPOST,
+                    Binding = Constants.BindingUris.HttpPOST,
                     Location = "https://stubidp.sustainsys.com/"
                 }
             }

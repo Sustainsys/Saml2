@@ -36,7 +36,7 @@ public partial class MetadataSerializer : SerializerBase
     {
         var entityDescriptor = CreateEntityDescriptor();
 
-        if (source.EnsureName(Namespaces.Metadata, ElementNames.EntityDescriptor))
+        if (source.EnsureName(Constants.Namespaces.Metadata, ElementNames.EntityDescriptor))
         {
             ReadAttributes(source, entityDescriptor);
             ReadElements(source.GetChildren(), entityDescriptor);
@@ -85,7 +85,7 @@ public partial class MetadataSerializer : SerializerBase
             }
         }
 
-        if (source.HasName(Namespaces.Metadata, ElementNames.Extensions))
+        if (source.HasName(Constants.Namespaces.Metadata, ElementNames.Extensions))
         {
             entityDescriptor.Extensions = ReadExtensions(source);
             if (!source.MoveNext())
@@ -98,7 +98,7 @@ public partial class MetadataSerializer : SerializerBase
         bool wasRoleDescriptor = true; // Assume the best.
         do
         {
-            if(source.EnsureNamespace(Namespaces.Metadata))
+            if(source.EnsureNamespace(Constants.Namespaces.Metadata))
             {
                 switch (source.CurrentNode.LocalName)
                 {

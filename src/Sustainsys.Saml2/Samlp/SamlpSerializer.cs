@@ -39,7 +39,7 @@ public class SamlpSerializer : SerializerBase, ISamlpSerializer
     public SamlpSerializer(ISamlSerializer samlSerializer)
     {
         Prefix = "samlp";
-        NamespaceUri = Constants.SamlpNamespace;
+        NamespaceUri = Constants.Namespaces.Samlp;
         this.samlSerializer = samlSerializer;
     }
 
@@ -64,11 +64,13 @@ public class SamlpSerializer : SerializerBase, ISamlpSerializer
     /// <param name="authnRequest">AuthnRequest</param>
     protected virtual void Append(XmlNode node, AuthnRequest authnRequest)
     {
-        Append(node, authnRequest, "AuthnRequest");
+        var xe = Append(node, authnRequest, "AuthnRequest");
+        xe.SetAttributeIfValue("AssertionConsumerServiceURL", authnRequest.AssertionConsumerServiceUrl);
+        samlSerializer.AppendIfValue(xe, authnRequest.Issuer, "Issuer");
     }
 
     /// <summary>
-    /// Append an type derived from RequestAbstractType, with the given name.
+    /// Append a type derived from RequestAbstractType, with the given name.
     /// </summary>
     /// <param name="parent">Parent node to append child element to</param>
     /// <param name="request">data</param>

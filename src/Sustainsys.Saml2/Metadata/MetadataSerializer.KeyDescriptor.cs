@@ -12,9 +12,11 @@ partial class MetadataSerializer
     /// Create Key Descriptor object.
     /// </summary>
     /// <returns>KeyDescriptor</returns>
+#pragma warning disable IDE0079 // Remove unnecessary suppression
 #pragma warning disable CA1822 // Mark members as static - this is intended to be possible to override.
     protected KeyDescriptor CreateKeyDescriptor() => new();
 #pragma warning restore CA1822 // Mark members as static
+#pragma warning restore IDE0079 // Remove unnecessary suppression
 
     /// <summary>
     /// Read KeyDescriptor

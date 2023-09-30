@@ -3,7 +3,7 @@
 namespace Sustainsys.Saml2.Bindings;
 
 /// <summary>
-/// Represents a SAML2 message as seen by the binding.
+/// Represents a Saml2 message as seen by the binding.
 /// </summary>
 public class Saml2Message
 {
@@ -14,11 +14,6 @@ public class Saml2Message
     public string Name { get; init; } = default!;
 
     /// <summary>
-    /// Destination URL of the message.
-    /// </summary>
-    public string Destination { get; init; } = default!;
-
-    /// <summary>
     /// RelayState to include with message
     /// </summary>
     public string? RelayState { get; init; }
@@ -26,5 +21,28 @@ public class Saml2Message
     /// <summary>
     /// The XML payload.
     /// </summary>
-    public XmlDocument Xml { get; init; } = default!;
+    public XmlElement Xml { get; init; } = default!;
+
+    /// <summary>
+    /// Destination URL of the message. For outbound messages the URL
+    /// to send the message to. For inbound, the URL the message was
+    /// received at.
+    /// </summary>
+    public string Destination { get; init; } = default!;
+}
+
+/// <summary>
+/// Represents an outbound Saml2 message as seen by the binding.
+/// </summary>
+public class OutboundSaml2Message : Saml2Message
+{
+
+}
+
+/// <summary>
+/// Represents an inbound Saml2 message as extracted by the binding.
+/// </summary>
+public class InboundSaml2Message : Saml2Message
+{
+
 }

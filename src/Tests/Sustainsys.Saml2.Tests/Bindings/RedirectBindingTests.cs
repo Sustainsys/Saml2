@@ -19,15 +19,15 @@ public class RedirectBindingTests
         var xd = new XmlDocument();
         xd.LoadXml(Xml);
 
-        var message = new Saml2Message
+        var message = new OutboundSaml2Message
         {
             Name = "SamlRequest",
-            Xml = xd,
+            Xml = xd.DocumentElement!,
             Destination = "https://example.com/destination",
             RelayState = "someRelayState"
         };
 
-        var subject = new RedirectBinding();
+        var subject = new HttpRedirectBinding();
 
         var httpResponse = Substitute.For<HttpResponse>();
 

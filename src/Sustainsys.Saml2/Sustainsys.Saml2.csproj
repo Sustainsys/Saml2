@@ -12,8 +12,9 @@
 		<FrameworkReference Include="Microsoft.AspNetCore.App" />
 	</ItemGroup>
 
-	<ItemGroup>
-		<!--Use version 7.0 even on .NET 6 to get the patched version for nested signatures-->
+	<!--Use version 7.0 even on .NET 6 to get the patched version for nested signatures. For 7
+	and above, use the framework supplied version.-->
+	<ItemGroup Condition=" '$(TargetFramework)' == 'net6.0' ">
 		<PackageReference Include="System.Security.Cryptography.Xml" Version="7.0.1" />	
 	</ItemGroup>
 

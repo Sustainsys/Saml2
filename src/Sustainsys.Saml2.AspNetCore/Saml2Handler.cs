@@ -40,8 +40,8 @@ public class Saml2Handler : RemoteAuthenticationHandler<Saml2Options>
         Func<ServiceResolver, Func<ServiceResolver.ResolverContext, T>> factorySelector,
         AuthenticationProperties? authenticationProperties = null) =>
         factorySelector(Options.ServiceResolver)
-        (new ServiceResolver.ResolverContext(Context, Options, authenticationProperties));
-
+        (new ServiceResolver.ResolverContext(Context, Options, Scheme, authenticationProperties));
+    
     /// <summary>
     /// Events represents the easiest and most straight forward way to customize the
     /// behaviour of the Saml2 handler. An event can inspect and alter data.
@@ -78,13 +78,18 @@ public class Saml2Handler : RemoteAuthenticationHandler<Saml2Options>
         var authnRequestGeneratedContext = new AuthnRequestGeneratedContext(Context, Scheme, Options, properties, authnRequest);
         await Events.AuthnRequestGeneratedAsync(authnRequestGeneratedContext);
 
+        var xmlDoc = GetService(sr => sr.GetSamlpSerializer, properties).Write(authnRequest);
 
+        var message = new OutboundSaml2Message
+        {
+            Destination = Options.IdentityProvider!.SsoServiceUrl!,
+            Name = Constants.SamlRequest,
+            Xml = xmlDoc.DocumentElement!,
+        };
 
-        //var message = new Saml2Message
-        //{
-        //    Destination = Options.IdentityProvider!.SsoServiceUrl!,
-        //    Name = Constants.SamlRequest,
-        //    Xml = 
-        //}
+        var binding = Options.ServiceResolver.GetBinding(
+            new(Context, Options, Scheme, properties, Options.IdentityProvider.SsoServiceBinding!));
+
+        await binding.BindAsync(Response, message);
     }
 }
