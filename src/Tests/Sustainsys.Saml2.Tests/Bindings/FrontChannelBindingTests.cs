@@ -12,7 +12,7 @@ public class FrontChannelBindingTests
     {
         public override string Identification => throw new NotImplementedException();
 
-        public override Task<InboundSaml2Message> UnbindAsync(
+        public override Task<Saml2Message> UnbindAsync(
             HttpRequest httpRequest,
             Func<string, Task<IdentityProvider>> getIdentityProviderAsync) 
             => throw new NotImplementedException();

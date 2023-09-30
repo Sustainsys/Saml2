@@ -15,7 +15,7 @@ public interface IHttpRedirectBinding
     /// <param name="url">Url to unbind from</param>
     /// <param name="getIdentityProviderAsync">Func that returns Identity provider from an entity id</param>
     /// <returns>Unbound message</returns>
-    InboundSaml2Message UnBindAsync(
+    Saml2Message UnBindAsync(
         string url, 
         Func<string, Task<IdentityProvider>> getIdentityProviderAsync);
 }
@@ -34,13 +34,13 @@ public class HttpRedirectBinding : FrontChannelBinding, IHttpRedirectBinding
     /// <param name="url">URL with Saml message</param>
     /// <param name="getIdentityProviderAsync">Func that returns Identity provider from an entity id</param>
     /// <returns>Unbount message</returns>
-    public InboundSaml2Message UnBindAsync(
+    public Saml2Message UnBindAsync(
         string url,
         Func<string, Task<IdentityProvider>> getIdentityProviderAsync)
         => throw new NotImplementedException();
     
     /// <inheritdoc/>    
-    public override Task<InboundSaml2Message> UnbindAsync(
+    public override Task<Saml2Message> UnbindAsync(
         HttpRequest httpRequest,
         Func<string, Task<IdentityProvider>> getIdentityProviderAsync) => throw new NotImplementedException();
 

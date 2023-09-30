@@ -30,11 +30,3 @@ public class Saml2Message
     /// </summary>
     public string Destination { get; init; } = default!;
 }
-
-/// <summary>
-/// Represents an inbound Saml2 message as extracted by the binding.
-/// </summary>
-public class InboundSaml2Message : Saml2Message
-{
-
-}
