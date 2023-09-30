@@ -14,7 +14,7 @@ public interface IFrontChannelBinding
     /// <param name="httpResponse">Http response to bind message to</param>
     /// <returns>Task</returns>
     /// <exception cref="System.ArgumentException">If message properties not properly set</exception>
-    Task BindAsync(HttpResponse httpResponse, OutboundSaml2Message message);
+    Task BindAsync(HttpResponse httpResponse, Saml2Message message);
 
     /// <summary>
     /// Unbinds a Saml2 message from an http request.
@@ -37,7 +37,7 @@ public abstract class FrontChannelBinding : IFrontChannelBinding
     public abstract string Identification { get; }
 
     /// <inheritdoc/>
-    public Task BindAsync(HttpResponse httpResponse, OutboundSaml2Message message)
+    public Task BindAsync(HttpResponse httpResponse, Saml2Message message)
     {
         if (string.IsNullOrWhiteSpace(message.Name))
         {
@@ -58,7 +58,7 @@ public abstract class FrontChannelBinding : IFrontChannelBinding
     /// <param name="message">Saml2 message</param>
     /// <param name="httpResponse">Http response to bind message to</param>
     /// <returns>Task</returns>
-    protected abstract Task DoBindAsync(HttpResponse httpResponse, OutboundSaml2Message message);
+    protected abstract Task DoBindAsync(HttpResponse httpResponse, Saml2Message message);
 
     /// <inheritdoc />
     public abstract Task<InboundSaml2Message> UnbindAsync(

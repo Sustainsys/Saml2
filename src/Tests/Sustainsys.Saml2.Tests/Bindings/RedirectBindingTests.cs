@@ -19,7 +19,7 @@ public class RedirectBindingTests
         var xd = new XmlDocument();
         xd.LoadXml(Xml);
 
-        var message = new OutboundSaml2Message
+        var message = new Saml2Message
         {
             Name = "SamlRequest",
             Xml = xd.DocumentElement!,

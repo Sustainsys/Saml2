@@ -45,7 +45,7 @@ public class HttpRedirectBinding : FrontChannelBinding, IHttpRedirectBinding
         Func<string, Task<IdentityProvider>> getIdentityProviderAsync) => throw new NotImplementedException();
 
     /// <inheritdoc/>
-    protected override async Task DoBindAsync(HttpResponse httpResponse, OutboundSaml2Message message)
+    protected override async Task DoBindAsync(HttpResponse httpResponse, Saml2Message message)
     {
         var xmlString = message.Xml.OuterXml;
 

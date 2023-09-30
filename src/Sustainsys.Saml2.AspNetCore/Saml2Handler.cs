@@ -80,7 +80,7 @@ public class Saml2Handler : RemoteAuthenticationHandler<Saml2Options>
 
         var xmlDoc = GetService(sr => sr.GetSamlpSerializer, properties).Write(authnRequest);
 
-        var message = new OutboundSaml2Message
+        var message = new Saml2Message
         {
             Destination = Options.IdentityProvider!.SsoServiceUrl!,
             Name = Constants.SamlRequest,

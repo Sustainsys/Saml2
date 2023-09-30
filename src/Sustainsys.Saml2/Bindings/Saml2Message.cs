@@ -32,14 +32,6 @@ public class Saml2Message
 }
 
 /// <summary>
-/// Represents an outbound Saml2 message as seen by the binding.
-/// </summary>
-public class OutboundSaml2Message : Saml2Message
-{
-
-}
-
-/// <summary>
 /// Represents an inbound Saml2 message as extracted by the binding.
 /// </summary>
 public class InboundSaml2Message : Saml2Message
