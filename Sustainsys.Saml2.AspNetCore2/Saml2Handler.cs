@@ -18,34 +18,30 @@ namespace Sustainsys.Saml2.AspNetCore2
     /// </summary>
     public class Saml2Handler : IAuthenticationRequestHandler, IAuthenticationSignOutHandler
     {
-        private readonly IOptionsMonitorCache<Saml2Options> optionsCache;
+        private readonly IOptionsMonitor<Saml2Options> optionsMonitor;
         private readonly IDataProtectionProvider dataProtectorProvider;
 
         // Internal to be visible to tests.
         internal Saml2Options options;
         HttpContext context;
         private IDataProtector dataProtector;
-        private readonly IOptionsFactory<Saml2Options> optionsFactory;
         bool emitSameSiteNone;
 
         /// <summary>
         /// Ctor
         /// </summary>
-        /// <param name="optionsCache">Options</param>
+        /// <param name="optionsMonitor">Options monitor</param>
         /// <param name="dataProtectorProvider">Data Protector Provider</param>
-        /// <param name="optionsFactory">Factory for options</param>
         public Saml2Handler(
-            IOptionsMonitorCache<Saml2Options> optionsCache,
-            IDataProtectionProvider dataProtectorProvider,
-            IOptionsFactory<Saml2Options> optionsFactory)
+            IOptionsMonitor<Saml2Options> optionsMonitor,
+            IDataProtectionProvider dataProtectorProvider)
         {
             if (dataProtectorProvider == null)
             {
                 throw new ArgumentNullException(nameof(dataProtectorProvider));
             }
 
-            this.optionsFactory = optionsFactory;
-            this.optionsCache = optionsCache;
+            this.optionsMonitor = optionsMonitor;
             this.dataProtectorProvider = dataProtectorProvider;
         }
 
@@ -56,7 +52,7 @@ namespace Sustainsys.Saml2.AspNetCore2
         {
             this.context = context ?? throw new ArgumentNullException(nameof(context));
 
-            options = optionsCache.GetOrAdd(scheme.Name, () => optionsFactory.Create(scheme.Name));
+            options = optionsMonitor.Get(scheme.Name);
 
             dataProtector = dataProtectorProvider.CreateProtector(GetType().FullName, options.SPOptions.ModulePath);
 
