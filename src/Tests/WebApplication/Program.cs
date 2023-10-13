@@ -29,6 +29,8 @@ var app = builder.Build();
 // allows the rest of the app to answer both on / and /subdir.
 app.UsePathBase("/subdir");
 
+app.UseAuthentication();
+
 app.UseRouting();
 
 app.MapRazorPages();

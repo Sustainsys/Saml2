@@ -86,6 +86,12 @@ public class ServiceResolver
         = _ => new SamlSerializer();
 
     /// <summary>
+    /// Factory for collection of front channel bindings.
+    /// </summary>
+    public Func<ResolverContext, IEnumerable<IFrontChannelBinding>> GetAllBindings { get; set; }
+        = _ => new IFrontChannelBinding[] { new HttpRedirectBinding(), new HttpPostBinding() };
+    
+    /// <summary>
     /// Context for resolving binding
     /// </summary>
     public class BindingResolverContext : ResolverContext

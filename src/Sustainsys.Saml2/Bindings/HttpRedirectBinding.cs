@@ -13,11 +13,11 @@ public interface IHttpRedirectBinding
     /// Unbind from a URL.
     /// </summary>
     /// <param name="url">Url to unbind from</param>
-    /// <param name="getIdentityProviderAsync">Func that returns Identity provider from an entity id</param>
+    /// <param name="getSaml2Entity">Func that returns Identity provider from an entity id</param>
     /// <returns>Unbound message</returns>
     Saml2Message UnBindAsync(
         string url, 
-        Func<string, Task<IdentityProvider>> getIdentityProviderAsync);
+        Func<string, Task<Saml2Entity>> getSaml2Entity);
 }
 
 /// <summary>
@@ -26,23 +26,24 @@ public interface IHttpRedirectBinding
 public class HttpRedirectBinding : FrontChannelBinding, IHttpRedirectBinding
 {
     /// <inheritdoc/>
-    public override string Identification => Constants.BindingUris.HttpRedirect;
+    public override bool CanUnbind(HttpRequest httpRequest)
+        => throw new NotImplementedException();
 
     /// <summary>
     /// Unbinds a Saml2 mesasge from a URL
     /// </summary>
     /// <param name="url">URL with Saml message</param>
-    /// <param name="getIdentityProviderAsync">Func that returns Identity provider from an entity id</param>
+    /// <param name="getSaml2Entity">Func that returns Identity provider from an entity id</param>
     /// <returns>Unbount message</returns>
     public Saml2Message UnBindAsync(
         string url,
-        Func<string, Task<IdentityProvider>> getIdentityProviderAsync)
+        Func<string, Task<Saml2Entity>> getSaml2Entity)
         => throw new NotImplementedException();
     
     /// <inheritdoc/>    
     public override Task<Saml2Message> UnbindAsync(
         HttpRequest httpRequest,
-        Func<string, Task<IdentityProvider>> getIdentityProviderAsync) => throw new NotImplementedException();
+        Func<string, Task<Saml2Entity>> getSaml2Entity) => throw new NotImplementedException();
 
     /// <inheritdoc/>
     protected override async Task DoBindAsync(HttpResponse httpResponse, Saml2Message message)

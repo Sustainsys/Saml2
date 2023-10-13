@@ -3,13 +3,8 @@
 /// <summary>
 /// A Saml2 identity provider
 /// </summary>
-public class IdentityProvider
+public class IdentityProvider : Saml2Entity
 {
-    /// <summary>
-    /// The entity id of the identity provider
-    /// </summary>
-    public string? EntityId { get; set; }
-
     /// <summary>
     /// The Sso service url of the identity provider
     /// </summary>

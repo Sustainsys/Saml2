@@ -10,11 +10,11 @@ public class FrontChannelBindingTests
 {
     private class Subject : FrontChannelBinding
     {
-        public override string Identification => throw new NotImplementedException();
+        public override bool CanUnbind(HttpRequest httpRequest) => throw new NotImplementedException();
 
         public override Task<Saml2Message> UnbindAsync(
             HttpRequest httpRequest,
-            Func<string, Task<IdentityProvider>> getIdentityProviderAsync) 
+            Func<string, Task<Saml2Entity>> getSaml2Entity) 
             => throw new NotImplementedException();
         
         protected override Task DoBindAsync(HttpResponse httpResponse, Saml2Message message) 
@@ -37,7 +37,7 @@ public class FrontChannelBindingTests
         var message = new Saml2Message()
         {
             Name = name!,
-            Xml = xmlDocument!.DocumentElement!
+            Xml = xmlDocument?.DocumentElement!
         };
 
         var subject = new Subject();

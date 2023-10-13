@@ -39,6 +39,16 @@ public static class Constants
     public const string SamlRequest = "SAMLRequest";
 
     /// <summary>
+    /// SAMLResponse
+    /// </summary>
+    public const string SamlResponse = "SAMLResponse";
+
+    /// <summary>
+    /// RelayState
+    /// </summary>
+    public const string RelayState = "RelayState";
+
+    /// <summary>
     /// String constants for binding Uris.
     /// </summary>
     public static class BindingUris
