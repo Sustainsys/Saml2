@@ -8,6 +8,10 @@ using System.Threading.Tasks;
 
 namespace Sustainsys.Saml2.Xml;
 
+// TODO: Redesign to handle both signing and encryption keys, as well as
+// signing validaton keys that validates e.g. thumbprint of the certificate
+// that is embedded in the signature.
+
 /// <summary>
 /// Represents a signing key.
 /// </summary>

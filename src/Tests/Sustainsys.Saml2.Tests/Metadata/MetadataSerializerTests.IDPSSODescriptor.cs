@@ -11,7 +11,7 @@ public partial class MetadataSerializerTests
     {
         var xmlTraverser = GetXmlTraverser();
 
-        var actual = new MetadataSerializer(null, null).ReadEntityDescriptor(xmlTraverser)
+        var actual = new MetadataSerializer().ReadEntityDescriptor(xmlTraverser)
             .RoleDescriptors.OfType<IDPSSODescriptor>().Single();
 
         var expected = new IDPSSODescriptor
@@ -35,7 +35,7 @@ public partial class MetadataSerializerTests
     {
         var xmlTraverser = GetXmlTraverser();
 
-        var actual = new MetadataSerializer(null, null).ReadEntityDescriptor(xmlTraverser)
+        var actual = new MetadataSerializer().ReadEntityDescriptor(xmlTraverser)
             .RoleDescriptors.OfType<IDPSSODescriptor>().Single();
 
         var expectedKeyInfo = new KeyInfo();

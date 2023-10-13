@@ -14,7 +14,7 @@ public partial class MetadataSerializerTests
     {
         var xmlTraverser = GetXmlTraverser();
 
-        var actual = new MetadataSerializer(null, null).ReadEntityDescriptor(xmlTraverser);
+        var actual = new MetadataSerializer().ReadEntityDescriptor(xmlTraverser);
 
         var expected = new EntityDescriptor
         {
@@ -36,7 +36,7 @@ public partial class MetadataSerializerTests
     {
         var xmlTraverser = GetXmlTraverser();
 
-        new MetadataSerializer(null, null).Invoking(s => s.ReadEntityDescriptor(xmlTraverser))
+        new MetadataSerializer().Invoking(s => s.ReadEntityDescriptor(xmlTraverser))
             .Should().Throw<Saml2XmlException>()
             .WithErrors(ErrorReason.MissingAttribute);
     }
@@ -46,7 +46,7 @@ public partial class MetadataSerializerTests
     {
         var xmlTraverser = GetXmlTraverser();
 
-        new MetadataSerializer(null, null).Invoking(s => s.ReadEntityDescriptor(xmlTraverser))
+        new MetadataSerializer().Invoking(s => s.ReadEntityDescriptor(xmlTraverser))
             .Should().Throw<Saml2XmlException>()
             .WithErrors(ErrorReason.UnexpectedNamespace);
     }
@@ -56,7 +56,7 @@ public partial class MetadataSerializerTests
     {
         var xmlTraverser = GetXmlTraverser();
 
-        new MetadataSerializer(null, null).Invoking(s => s.ReadEntityDescriptor(xmlTraverser))
+        new MetadataSerializer().Invoking(s => s.ReadEntityDescriptor(xmlTraverser))
             .Should().Throw<Saml2XmlException>()
             .WithErrors(ErrorReason.UnexpectedLocalName)
             .WithMessage("*name*EntityDescriptor*");
@@ -67,7 +67,7 @@ public partial class MetadataSerializerTests
     {
         var xmlTraverser = GetXmlTraverser();
 
-        var actual = new MetadataSerializer(null, null).ReadEntityDescriptor(xmlTraverser);
+        var actual = new MetadataSerializer().ReadEntityDescriptor(xmlTraverser);
 
         var expected = new EntityDescriptor
         {
@@ -92,7 +92,7 @@ public partial class MetadataSerializerTests
     {
         var xmlTraverser = GetXmlTraverser();
 
-        new MetadataSerializer(null, null).Invoking(s => s.ReadEntityDescriptor(xmlTraverser))
+        new MetadataSerializer().Invoking(s => s.ReadEntityDescriptor(xmlTraverser))
             .Should().Throw<Saml2XmlException>()
             .WithErrors(ErrorReason.MissingElement);
     }
@@ -110,7 +110,11 @@ public partial class MetadataSerializerTests
             }
         };
 
-        var actual = new MetadataSerializer(signingKeys, SignedXmlHelperTests.allowedHashes)
+        var actual = new MetadataSerializer
+        {
+            TrustedSigningKeys = signingKeys,
+            AllowedHashAlgorithms = SignedXmlHelperTests.allowedHashes
+        }
             .ReadEntityDescriptor(xmlTraverser);
 
         actual.TrustLevel.Should().Be(TrustLevel.ConfiguredKey);
@@ -121,7 +125,11 @@ public partial class MetadataSerializerTests
     {
         var xmlTraverser = GetXmlTraverser();
 
-        var actual = new MetadataSerializer(TestData.SingleSigningKey, SignedXmlHelperTests.allowedHashes)
+        var actual = new MetadataSerializer
+        {
+            TrustedSigningKeys = TestData.SingleSigningKey,
+            AllowedHashAlgorithms = SignedXmlHelperTests.allowedHashes
+        }
             .Invoking(s => s.ReadEntityDescriptor(xmlTraverser))
             .Should().Throw<Saml2XmlException>()
             .WithErrors(ErrorReason.SignatureFailure);
@@ -132,7 +140,7 @@ public partial class MetadataSerializerTests
     {
         var xmlTraverser = GetXmlTraverser();
 
-        var actual = new MetadataSerializer(null, null)
+        var actual = new MetadataSerializer()
             .Invoking(s => s.ReadEntityDescriptor(xmlTraverser))
             .Should().Throw<Saml2XmlException>()
             .WithErrors(ErrorReason.UnexpectedLocalName, ErrorReason.UnexpectedNamespace)
@@ -144,7 +152,7 @@ public partial class MetadataSerializerTests
     {
         var xmlTraverser = GetXmlTraverser();
 
-        new MetadataSerializer(null, null)
+        new MetadataSerializer()
             .Invoking(s => s.ReadEntityDescriptor(xmlTraverser))
             .Should().NotThrow();
     }
@@ -154,7 +162,7 @@ public partial class MetadataSerializerTests
     {
         var xmlTraverser = GetXmlTraverser();
 
-        new MetadataSerializer(null, null)
+        new MetadataSerializer()
             .Invoking(s => s.ReadEntityDescriptor(xmlTraverser))
             .Should().NotThrow();
     }
@@ -164,7 +172,7 @@ public partial class MetadataSerializerTests
     {
         var xmlTraverser = GetXmlTraverser();
 
-        new MetadataSerializer(null, null)
+        new MetadataSerializer()
             .Invoking(s => s.ReadEntityDescriptor(xmlTraverser))
             .Should().NotThrow();
     }

@@ -8,6 +8,11 @@ namespace Sustainsys.Saml2.Bindings;
 public interface IFrontChannelBinding
 {
     /// <summary>
+    /// The identifying Uri for this binding.
+    /// </summary>
+    string Identifier { get; }
+
+    /// <summary>
     /// Binds a Saml2 message to the http response.
     /// </summary>
     /// <param name="message">Saml2 message</param>
@@ -22,7 +27,7 @@ public interface IFrontChannelBinding
     /// <param name="httpRequest">HttpRequest to unbind from</param>
     /// <param name="getSaml2Entity">Func that returns a Saml2 entity from an entity id</param>
     /// <returns></returns>
-    Task<Saml2Message> UnbindAsync(HttpRequest httpRequest,
+    Task<TrustedData<Saml2Message>> UnbindAsync(HttpRequest httpRequest,
         Func<string, Task<Saml2Entity>> getSaml2Entity);
 
     /// <summary>
@@ -38,6 +43,18 @@ public interface IFrontChannelBinding
 /// </summary>
 public abstract class FrontChannelBinding : IFrontChannelBinding
 {
+    /// <summary>
+    /// Constructor
+    /// </summary>
+    /// <param name="identifier">Identifying Uri for this binding</param>
+    protected FrontChannelBinding(string identifier)
+    {
+        Identifier = identifier;
+    }
+
+    /// <inheritdoc/>
+    public string Identifier { get;  }
+
     /// <inheritdoc/>
     public abstract bool CanUnbind(HttpRequest httpRequest);
 
@@ -66,7 +83,7 @@ public abstract class FrontChannelBinding : IFrontChannelBinding
     protected abstract Task DoBindAsync(HttpResponse httpResponse, Saml2Message message);
 
     /// <inheritdoc />
-    public abstract Task<Saml2Message> UnbindAsync(
+    public abstract Task<TrustedData<Saml2Message>> UnbindAsync(
         HttpRequest httpRequest,
         Func<string, Task<Saml2Entity>> getSaml2Entity);
 }

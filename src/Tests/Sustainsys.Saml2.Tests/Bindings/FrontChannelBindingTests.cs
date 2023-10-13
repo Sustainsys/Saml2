@@ -10,9 +10,11 @@ public class FrontChannelBindingTests
 {
     private class Subject : FrontChannelBinding
     {
+        public Subject() : base("Mock") { }
+
         public override bool CanUnbind(HttpRequest httpRequest) => throw new NotImplementedException();
 
-        public override Task<Saml2Message> UnbindAsync(
+        public override Task<TrustedData<Saml2Message>> UnbindAsync(
             HttpRequest httpRequest,
             Func<string, Task<Saml2Entity>> getSaml2Entity) 
             => throw new NotImplementedException();

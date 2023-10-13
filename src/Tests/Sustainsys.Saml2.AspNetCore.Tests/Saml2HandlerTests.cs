@@ -10,6 +10,8 @@ using Sustainsys.Saml2.Samlp;
 using System.Net.Http;
 using System.Text.Encodings.Web;
 using System.Xml;
+using Sustainsys.Saml2.Tests.Helpers;
+using System.Text;
 
 namespace Sustainsys.Saml2.AspNetCore.Tests;
 public class Saml2HandlerTests
@@ -131,6 +133,44 @@ public class Saml2HandlerTests
         }
 
         httpContext.Response.Received().Redirect(Arg.Do<string>(validateLocation));
+    }
+
+
+    [Fact]
+    public async Task HandleRemoteAuthenticate_CannotUnbind()
+    {
+        var options = CreateOptions();
+        var (subject, _) = await CreateSubject(options);
+
+        var result = await subject.HandleRequestAsync();
+
+        result.Should().BeFalse();
+    }
+
+
+    [Fact]
+    // Full happy path test case for a signed response via Http POST binding
+    public async Task HandleRemoteAuthenticate()
+    {
+        var options = CreateOptions();
+        var (subject, httpContext) = await CreateSubject(options);
+
+        // Have to match callback path.
+        httpContext.Request.Path = "/Saml2/Acs";
+        httpContext.Request.Method = "POST";
+
+        var xmlDoc = TestData.GetXmlDocument<Saml2HandlerTests>();
+
+        var encodedResponse = Convert.ToBase64String(Encoding.UTF8.GetBytes(xmlDoc.OuterXml));
+
+        httpContext.Request.Form = new FormCollection(new()
+        {
+            { "SAMLResponse", new(encodedResponse) }
+        });
+
+        var result = await subject.HandleRequestAsync();
+
+        result.Should().BeTrue();
     }
 
     // TODO: Use event to resolve IdentityProvider - presense of EntityId indicates if challenge or response processing

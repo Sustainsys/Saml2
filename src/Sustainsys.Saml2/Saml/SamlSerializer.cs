@@ -12,7 +12,7 @@ namespace Sustainsys.Saml2.Saml;
 /// <summary>
 /// Serializer for Saml assertion classes
 /// </summary>
-public interface ISamlSerializer
+public interface ISamlSerializer : ISerializerBase
 {
     /// <summary>
     /// Append a nameid to the parent with the given local name
@@ -23,7 +23,6 @@ public interface ISamlSerializer
     /// <returns>The created element, or null if none</returns>
     XmlElement? AppendIfValue(XmlNode parent, NameId? nameId, string localName);
 }
-
 
 /// <summary>
 /// Serializer for Saml assertion classes

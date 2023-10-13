@@ -25,9 +25,14 @@ public interface IHttpRedirectBinding
 /// </summary>
 public class HttpRedirectBinding : FrontChannelBinding, IHttpRedirectBinding
 {
+    /// <summary>
+    /// Constructor
+    /// </summary>
+    public HttpRedirectBinding() : base(Constants.BindingUris.HttpRedirect) { }
+
     /// <inheritdoc/>
     public override bool CanUnbind(HttpRequest httpRequest)
-        => throw new NotImplementedException();
+        => false; // Because we haven't implemented redirect unbind yet.
 
     /// <summary>
     /// Unbinds a Saml2 mesasge from a URL
@@ -41,7 +46,7 @@ public class HttpRedirectBinding : FrontChannelBinding, IHttpRedirectBinding
         => throw new NotImplementedException();
     
     /// <inheritdoc/>    
-    public override Task<Saml2Message> UnbindAsync(
+    public override Task<TrustedData<Saml2Message>> UnbindAsync(
         HttpRequest httpRequest,
         Func<string, Task<Saml2Entity>> getSaml2Entity) => throw new NotImplementedException();
 

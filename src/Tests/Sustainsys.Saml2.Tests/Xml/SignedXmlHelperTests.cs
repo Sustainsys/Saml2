@@ -55,6 +55,47 @@ public class SignedXmlHelperTests
     }
 
     [Fact]
+    public void Sign_SignatureLocation()
+    {
+        var xml = "<xml ID=\"id123\"><a/><b/></xml>";
+
+        var xmlDoc = new XmlDocument();
+        xmlDoc.LoadXml(xml);
+
+        var aNode = xmlDoc.DocumentElement!["a"]!;
+
+        xmlDoc.DocumentElement!.Sign(TestData.Certificate, aNode);
+
+        aNode.NextSibling!.LocalName.Should().Be("Signature");
+    }
+
+    [Fact]
+    public void Sign_SignatureLocation_Null()
+    {
+        var xml = "<xml ID=\"id123\"/>";
+
+        var xmlDoc = new XmlDocument();
+        xmlDoc.LoadXml(xml);
+
+        xmlDoc.DocumentElement!.Invoking(de => de.Sign(TestData.Certificate, null!))
+            .Should().Throw<ArgumentNullException>().WithParameterName("insertAfter");
+    }
+
+    [Fact]
+    public void Sign_SignatureLocation_ImmediateChild()
+    {
+        var xml = "<xml ID=\"id123\"><a><b/></a></xml>";
+
+        var xmlDoc = new XmlDocument();
+        xmlDoc.LoadXml(xml);
+
+        var bNode = xmlDoc.DocumentElement!["a"]!["b"]!;
+
+        xmlDoc.DocumentElement!.Invoking(de => de.Sign(TestData.Certificate, bNode))
+            .Should().Throw<ArgumentException>();
+    }
+
+    [Fact]
     public void VerifySignature()
     {
         var element = SignedXmlHelperTests.GetSignatureElement();

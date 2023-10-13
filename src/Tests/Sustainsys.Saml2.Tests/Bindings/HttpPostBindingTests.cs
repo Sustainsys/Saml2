@@ -13,6 +13,12 @@ namespace Sustainsys.Saml2.Tests.Bindings;
 public class HttpPostBindingTests
 {
     [Fact]
+    public void Uri()
+    {
+        new HttpPostBinding().Identifier.Should().Be("urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST");
+    }
+
+    [Fact]
     public void CanUnbind_RejectsGet()
     {
         var request = Substitute.For<HttpRequest>();
@@ -62,7 +68,7 @@ public class HttpPostBindingTests
 
         var subject = new HttpPostBinding();
 
-        Func<string, Task<Saml2Entity>> getEntity = str => 
+        Func<string, Task<Saml2Entity>> getEntity = str =>
             Task.FromResult<Saml2Entity>(new IdentityProvider());
 
         var actual = await subject.UnbindAsync(request, getEntity);
@@ -70,13 +76,17 @@ public class HttpPostBindingTests
         var xd = new XmlDocument();
         xd.LoadXml("<xml><a/></xml>");
 
-        var expected = new Saml2Message
-        {
-            Destination = "/subdir/Saml2/Acs",
-            Name = messageName,
-            RelayState = "ABC123",
-            Xml = xd.DocumentElement!
-        };
+        var expected = new TrustedData<Saml2Message>(
+            // With Http post, the signature is inside the data, so there is no
+            // envelope or transport level signature that could give trust.
+            TrustLevel.None,
+            new Saml2Message
+            {
+                Destination = "/subdir/Saml2/Acs",
+                Name = messageName,
+                RelayState = "ABC123",
+                Xml = xd.DocumentElement!
+            });
 
         actual.Should().BeEquivalentTo(expected);
     }

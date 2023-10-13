@@ -125,11 +125,15 @@ public class ServiceResolver
     /// Factory for front channel bindings
     /// </summary>
     public Func<BindingResolverContext, IFrontChannelBinding> GetBinding { get; set; }
-        = ctx => ctx.Binding switch
+        = ctx =>
         {
-            Constants.BindingUris.HttpRedirect => new HttpRedirectBinding(),
-            null => throw new ArgumentException("Requested binding is null"),
-            "" => throw new ArgumentException("Requested binding is blank"),
-            _ => throw new NotImplementedException($"Unknown binding {ctx.Binding} requested")
+            if(string.IsNullOrEmpty(ctx.Binding))
+            {
+                throw new ArgumentNullException("Binding property must have value to get binding");
+            }
+
+            return ctx.Options.ServiceResolver.GetAllBindings(ctx)
+                .SingleOrDefault(b => b.Identifier == ctx.Binding)
+                ?? throw new NotImplementedException($"Unknown binding {ctx.Binding} requested");
         };
 }

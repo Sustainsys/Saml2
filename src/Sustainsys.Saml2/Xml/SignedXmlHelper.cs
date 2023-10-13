@@ -21,7 +21,37 @@ public static class SignedXmlHelper
     /// </summary>
     /// <param name="element">Element to sign</param>
     /// <param name="certificate">Certificate to use to sign</param>
-    public static void Sign(this XmlElement element, X509Certificate2 certificate)
+    public static void Sign(
+        this XmlElement element,
+        X509Certificate2 certificate)
+    {
+        var signedXml = CreateSignedXml(element, certificate);
+
+        element.AppendChild(signedXml.GetXml());
+    }
+
+    /// <summary>
+    /// Adds an envoleped signature to the node.
+    /// </summary>
+    /// <param name="element">Element to sign</param>
+    /// <param name="certificate">Certificate to use to sign</param>
+    /// <param name="insertAfter">Insert the signature after this node.</param>
+    public static void Sign(
+        this XmlElement element,
+        X509Certificate2 certificate,
+        XmlNode insertAfter)
+    {
+        if(insertAfter == null)
+        {
+            throw new ArgumentNullException(nameof(insertAfter));
+        }
+
+        var signedXml = CreateSignedXml(element, certificate);
+
+        element.InsertAfter(signedXml.GetXml(), insertAfter);
+    }
+
+    private static SignedXml CreateSignedXml(XmlElement element, X509Certificate2 certificate)
     {
         var signedXml = new SignedXml(element.OwnerDocument)
         {
@@ -42,8 +72,7 @@ public static class SignedXmlHelper
         signedXml.KeyInfo.AddClause(new KeyInfoX509Data(certificate));
 
         signedXml.ComputeSignature();
-
-        element.AppendChild(signedXml.GetXml());
+        return signedXml;
     }
 
     /// <summary>

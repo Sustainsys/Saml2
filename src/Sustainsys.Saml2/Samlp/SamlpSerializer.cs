@@ -8,7 +8,7 @@ namespace Sustainsys.Saml2.Samlp;
 /// <summary>
 /// Serializer for Saml protocol classes
 /// </summary>
-public interface ISamlpSerializer
+public interface ISamlpSerializer : ISerializerBase
 {
     /// <summary>
     /// Create an Xml document and write an AuthnRequest to it.
@@ -23,12 +23,19 @@ public interface ISamlpSerializer
     /// <param name="source">XmlTraverser to read from</param>
     /// <returns>AuthnRequest</returns>
     public AuthnRequest ReadAuthnRequest(XmlTraverser source);
+
+    /// <summary>
+    /// Read a SamlResponse from Xml.
+    /// </summary>
+    /// <param name="source"></param>
+    /// <returns></returns>
+    public TrustedData<SamlResponse> ReadSamlResponse(XmlTraverser source);
 }
 
 /// <summary>
 /// Serializer for Saml protocol classes
 /// </summary>
-public class SamlpSerializer : SerializerBase, ISamlpSerializer
+public partial class SamlpSerializer : SerializerBase, ISamlpSerializer
 {
     private readonly ISamlSerializer samlSerializer;
 
@@ -41,47 +48,5 @@ public class SamlpSerializer : SerializerBase, ISamlpSerializer
         Prefix = "samlp";
         NamespaceUri = Constants.Namespaces.Samlp;
         this.samlSerializer = samlSerializer;
-    }
-
-    /// <inheritdoc/>
-    public AuthnRequest ReadAuthnRequest(XmlTraverser source) 
-        => throw new NotImplementedException();
-
-    /// <inheritdoc/>
-    public virtual XmlDocument Write(AuthnRequest authnRequest)
-    {
-        var xmlDoc = CreateXmlDocument();
-
-        Append(xmlDoc, authnRequest);
-
-        return xmlDoc;
-    }
-
-    /// <summary>
-    /// Append the authnrequest as a child node
-    /// </summary>
-    /// <param name="node">parent node</param>
-    /// <param name="authnRequest">AuthnRequest</param>
-    protected virtual void Append(XmlNode node, AuthnRequest authnRequest)
-    {
-        var xe = Append(node, authnRequest, "AuthnRequest");
-        xe.SetAttributeIfValue("AssertionConsumerServiceURL", authnRequest.AssertionConsumerServiceUrl);
-        samlSerializer.AppendIfValue(xe, authnRequest.Issuer, "Issuer");
-    }
-
-    /// <summary>
-    /// Append a type derived from RequestAbstractType, with the given name.
-    /// </summary>
-    /// <param name="parent">Parent node to append child element to</param>
-    /// <param name="request">data</param>
-    /// <param name="localName">Local name of the new element.</param>
-    protected virtual XmlElement Append(XmlNode parent, RequestAbstractType request, string localName)
-    {
-        var element = Append(parent, localName);
-        element.SetAttribute("ID", request.Id);
-        element.SetAttribute("IssueInstant", XmlConvert.ToString(request.IssueInstant));
-        element.SetAttribute("Version", request.Version);
-
-        return element;
     }
 }

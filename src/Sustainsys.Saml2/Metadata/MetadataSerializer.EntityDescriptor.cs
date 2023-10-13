@@ -4,24 +4,8 @@ using Sustainsys.Saml2.Xml;
 
 namespace Sustainsys.Saml2.Metadata;
 
-/// <summary>
-/// Serializer for Saml2 Metadata
-/// </summary>
-public partial class MetadataSerializer : SerializerBase
+partial class MetadataSerializer
 {
-    /// <summary>
-    /// Ctor
-    /// </summary>
-    /// <param name="trustedSigningKeys">Trusted signing keys to use to validate any signature found.</param>
-    /// <param name="allowedHashAlgorithms">Allowed hash algorithms if validating signatures.</param>
-    public MetadataSerializer(
-        IEnumerable<SigningKey>? trustedSigningKeys,
-        IEnumerable<string>? allowedHashAlgorithms)
-    {
-        TrustedSigningKeys = trustedSigningKeys;
-        AllowedHashAlgorithms = allowedHashAlgorithms;
-    }
-
     /// <summary>
     /// Create EntityDescriptor instance. Override to use subclass.
     /// </summary>
@@ -36,7 +20,7 @@ public partial class MetadataSerializer : SerializerBase
     {
         var entityDescriptor = CreateEntityDescriptor();
 
-        if (source.EnsureName(Constants.Namespaces.Metadata, ElementNames.EntityDescriptor))
+        if (source.EnsureName(NamespaceUri, ElementNames.EntityDescriptor))
         {
             ReadAttributes(source, entityDescriptor);
             ReadElements(source.GetChildren(), entityDescriptor);
@@ -85,7 +69,7 @@ public partial class MetadataSerializer : SerializerBase
             }
         }
 
-        if (source.HasName(Constants.Namespaces.Metadata, ElementNames.Extensions))
+        if (source.HasName(NamespaceUri, ElementNames.Extensions))
         {
             entityDescriptor.Extensions = ReadExtensions(source);
             if (!source.MoveNext())
@@ -98,7 +82,7 @@ public partial class MetadataSerializer : SerializerBase
         bool wasRoleDescriptor = true; // Assume the best.
         do
         {
-            if(source.EnsureNamespace(Constants.Namespaces.Metadata))
+            if(source.EnsureNamespace(NamespaceUri))
             {
                 switch (source.CurrentNode.LocalName)
                 {

@@ -9,6 +9,10 @@
 		<IsTestProject>true</IsTestProject>
 	</PropertyGroup>
 
+	<PropertyGroup>
+	  <NoWarn>1701;1702;IDE0039</NoWarn>
+	</PropertyGroup>
+
 	<ItemGroup>
 		<PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.11.0" />
 		<PackageReference Include="NSubstitute" Version="4.3.0" />

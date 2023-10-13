@@ -9,16 +9,24 @@ namespace Sustainsys.Saml2.Tests.Helpers
     {
         public static XmlTraverser GetXmlTraverser<TDirectory>([CallerMemberName] string? testName = null)
         {
+            var document = GetXmlDocument<TDirectory>(testName);
+
+            return new XmlTraverser(document.DocumentElement ?? throw new InvalidOperationException("XmlDoc contained no DocumentElement"));
+        }
+
+        public static XmlDocument GetXmlDocument<TDirectory>([CallerMemberName] string? testName = null)
+        {
             ArgumentNullException.ThrowIfNull(testName);
 
-            var fileName = "../../../"
-                + typeof(TDirectory).FullName!["Sustainsys.Saml2.Tests".Length..].Replace('.', '/')
+            var assemblyName = typeof(TDirectory).Assembly.GetName().Name!;
+
+            var fileName = "../../.."
+                + typeof(TDirectory).FullName![assemblyName.Length..].Replace('.', '/')
                 + "/" + testName + ".xml";
 
             var document = new XmlDocument();
             document.Load(fileName);
-
-            return new XmlTraverser(document.DocumentElement ?? throw new InvalidOperationException("XmlDoc contained no DocumentElement"));
+            return document;
         }
 
         public static X509Certificate2 Certificate { get; } = new X509Certificate2("Sustainsys.Saml2.Tests.pfx");

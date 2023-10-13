@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Sustainsys.Saml2.Xml;
+namespace Sustainsys.Saml2;
 
 /// <summary>
 /// What is the trust level of a piece of data? The levels reflect
@@ -40,4 +40,32 @@ public enum TrustLevel
     /// from configuration.
     /// </summary>
     ConfiguredKey
+}
+
+/// <summary>
+/// Data that has a trust level attached.
+/// </summary>
+/// <typeparam name="TData">Type of the data</typeparam>
+public class TrustedData<TData>
+{
+    /// <summary>
+    /// Constructor
+    /// </summary>
+    /// <param name="trustLevel">Trust level of the data.</param>
+    /// <param name="data">The data.</param>
+    public TrustedData(TrustLevel trustLevel, TData data)
+    {
+        TrustLevel = trustLevel;
+        Data = data;
+    }
+
+    /// <summary>
+    /// Trust level of the data.
+    /// </summary>
+    public TrustLevel TrustLevel { get; }
+    
+    /// <summary>
+    /// The data.
+    /// </summary>
+    public TData Data { get; }
 }

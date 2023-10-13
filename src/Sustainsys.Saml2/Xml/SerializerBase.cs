@@ -6,9 +6,25 @@ using System.Xml.Linq;
 namespace Sustainsys.Saml2.Xml;
 
 /// <summary>
+/// Shared interface for all serializers
+/// </summary>
+public interface ISerializerBase
+{
+    /// <summary>
+    /// Allowed hash algorithms if validating signatures.
+    /// </summary>
+    IEnumerable<string>? AllowedHashAlgorithms { get; set; }
+
+    /// <summary>
+    /// Signing keys to trust when validating signatures of the metadata.
+    /// </summary>
+    IEnumerable<SigningKey>? TrustedSigningKeys { get; set; }
+}
+
+/// <summary>
 /// Base class for serializers
 /// </summary>
-public class SerializerBase
+public abstract class SerializerBase
 {
     /// <summary>
     /// Default namespace prefix for this serializer
@@ -20,15 +36,11 @@ public class SerializerBase
     /// </summary>
     protected string NamespaceUri { get; set; } = default!;
 
-    /// <summary>
-    /// Allowed hash algorithms if validating signatures.
-    /// </summary>
-    protected IEnumerable<string>? AllowedHashAlgorithms { get; set; }
+    /// <inheritdoc/>
+    public IEnumerable<string>? AllowedHashAlgorithms { get; set; }
 
-    /// <summary>
-    /// Signing keys to trust when validating signatures of the metadata.
-    /// </summary>
-    protected IEnumerable<SigningKey>? TrustedSigningKeys { get; set; }
+    /// <inheritdoc/>
+    public IEnumerable<SigningKey>? TrustedSigningKeys { get; set; }
 
     /// <summary>
     /// Helper method that calls ThrowOnErrors. If you want to supress
