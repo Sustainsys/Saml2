@@ -16,21 +16,23 @@ partial class MetadataSerializer
     /// Read an EntityDescriptor
     /// </summary>
     /// <returns>EntityDescriptor</returns>
-    public virtual EntityDescriptor ReadEntityDescriptor(XmlTraverser source)
+    public virtual TrustedData<EntityDescriptor> ReadEntityDescriptor(XmlTraverser source)
     {
         var entityDescriptor = CreateEntityDescriptor();
+
+        TrustLevel trustLevel = TrustLevel.None;
 
         if (source.EnsureName(NamespaceUri, ElementNames.EntityDescriptor))
         {
             ReadAttributes(source, entityDescriptor);
-            ReadElements(source.GetChildren(), entityDescriptor);
+            trustLevel = ReadElements(source.GetChildren(), entityDescriptor);
         }
 
         source.MoveNext(true);
 
         ThrowOnErrors(source);
 
-        return entityDescriptor;
+        return new(trustLevel,entityDescriptor);
     }
 
     /// <summary>
@@ -51,21 +53,22 @@ partial class MetadataSerializer
     /// </summary>
     /// <param name="source">Source data</param>
     /// <param name="entityDescriptor">Entity Descriptor to populate</param>
-    protected virtual void ReadElements(XmlTraverser source, EntityDescriptor entityDescriptor)
+    /// <returns>Trustlevel based on signature</returns>
+    protected virtual TrustLevel ReadElements(XmlTraverser source, EntityDescriptor entityDescriptor)
     {
+        TrustLevel trustLevel = TrustLevel.None;
+
         if (!source.MoveNext())
         {
-            return;
+            return trustLevel;
         }
 
         if (source.ReadAndValidateOptionalSignature(
-            TrustedSigningKeys, AllowedHashAlgorithms, out var trustLevel))
+            TrustedSigningKeys, AllowedHashAlgorithms, out trustLevel))
         {
-            entityDescriptor.TrustLevel = trustLevel;
-
             if (!source.MoveNext())
             {
-                return;
+                return trustLevel;
             }
         }
 
@@ -74,7 +77,7 @@ partial class MetadataSerializer
             entityDescriptor.Extensions = ReadExtensions(source);
             if (!source.MoveNext())
             {
-                return;
+                return trustLevel;
             }
         }
 
@@ -104,5 +107,7 @@ partial class MetadataSerializer
                 }
             }
         } while (wasRoleDescriptor && source.MoveNext(true));
+
+        return trustLevel;
     }
 }

@@ -47,7 +47,7 @@ public class SamlpSerializerTests
 
         var actual = subject.Write(authnRequest);
 
-        var xml =
+        var xml = 
             $"<samlp:AuthnRequest xmlns:samlp=\"{Constants.Namespaces.Samlp}\" " +
             $"ID=\"{authnRequest.Id}\" IssueInstant=\"2023-09-14T15:23:47Z\" Version=\"2.0\" " +
             $"AssertionConsumerServiceURL=\"https://sp.example.com/acs\">" +
@@ -58,5 +58,10 @@ public class SamlpSerializerTests
         expected.LoadXml(xml);
 
         actual.Should().BeEquivalentTo(expected);
+    }
+
+    [Fact]
+    public void ReadSamlResponse_MinimalErrorRequester()
+    {
     }
 }

@@ -28,11 +28,6 @@ public class EntityDescriptor
     public DateTime? ValidUntil { get; set; }
 
     /// <summary>
-    /// Trust level of this data.
-    /// </summary>
-    public TrustLevel TrustLevel { get; set; }
-    
-    /// <summary>
     /// The extensions node of the metadata.
     /// </summary>
     public Extensions? Extensions { get; set; }

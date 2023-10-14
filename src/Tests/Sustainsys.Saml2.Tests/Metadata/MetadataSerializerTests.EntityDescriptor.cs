@@ -16,17 +16,19 @@ public partial class MetadataSerializerTests
 
         var actual = new MetadataSerializer().ReadEntityDescriptor(xmlTraverser);
 
-        var expected = new EntityDescriptor
-        {
-            EntityId = "https://stubidp.sustainsys.com/Metadata",
-            RoleDescriptors =
+        var expected = new TrustedData<EntityDescriptor>(
+            TrustLevel.None,
+            new EntityDescriptor
             {
-                new RoleDescriptor
+                EntityId = "https://stubidp.sustainsys.com/Metadata",
+                RoleDescriptors =
                 {
-                    ProtocolSupportEnumeration = "urn:whatever"
+                    new RoleDescriptor
+                    {
+                        ProtocolSupportEnumeration = "urn:whatever"
+                    }
                 }
-            }
-        };
+            });
 
         actual.Should().BeEquivalentTo(expected);
     }
