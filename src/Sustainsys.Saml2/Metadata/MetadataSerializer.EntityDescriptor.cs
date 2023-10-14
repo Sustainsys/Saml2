@@ -56,29 +56,18 @@ partial class MetadataSerializer
     /// <returns>Trustlevel based on signature</returns>
     protected virtual TrustLevel ReadElements(XmlTraverser source, EntityDescriptor entityDescriptor)
     {
-        TrustLevel trustLevel = TrustLevel.None;
-
-        if (!source.MoveNext())
-        {
-            return trustLevel;
-        }
+        source.MoveNext();
 
         if (source.ReadAndValidateOptionalSignature(
-            TrustedSigningKeys, AllowedHashAlgorithms, out trustLevel))
+            TrustedSigningKeys, AllowedHashAlgorithms, out var trustLevel))
         {
-            if (!source.MoveNext())
-            {
-                return trustLevel;
-            }
+            source.MoveNext();
         }
 
         if (source.HasName(NamespaceUri, ElementNames.Extensions))
         {
             entityDescriptor.Extensions = ReadExtensions(source);
-            if (!source.MoveNext())
-            {
-                return trustLevel;
-            }
+            source.MoveNext();
         }
 
         // Now we're at the actual role descriptors - or possibly an AffiliationDescriptor.
@@ -87,7 +76,7 @@ partial class MetadataSerializer
         {
             if(source.EnsureNamespace(NamespaceUri))
             {
-                switch (source.CurrentNode.LocalName)
+                switch (source.CurrentNode?.LocalName)
                 {
                     case ElementNames.RoleDescriptor:
                         entityDescriptor.RoleDescriptors.Add(ReadRoleDescriptor(source));
@@ -105,6 +94,11 @@ partial class MetadataSerializer
                         wasRoleDescriptor = false; // Nope, something else.
                         break;
                 }
+            }
+            else
+            {
+                // TODO: Test case for this.
+                wasRoleDescriptor = false;
             }
         } while (wasRoleDescriptor && source.MoveNext(true));
 

@@ -37,7 +37,7 @@ partial class MetadataSerializer
             children.IgnoreChildren();
 
             var keyInfo = new KeyInfo();
-            keyInfo.LoadXml((XmlElement)children.CurrentNode);
+            keyInfo.LoadXml((XmlElement)children.CurrentNode!);
 
             result.KeyInfo = keyInfo;
 

@@ -71,20 +71,22 @@ public partial class MetadataSerializerTests
 
         var actual = new MetadataSerializer().ReadEntityDescriptor(xmlTraverser);
 
-        var expected = new EntityDescriptor
-        {
-            EntityId = "https://stubidp.sustainsys.com/Metadata",
-            Id = "_eb83b59a-572a-480b-b36c-e3a3edfd92d0",
-            CacheDuraton = TimeSpan.FromMinutes(15),
-            ValidUntil = new DateTime(2022, 03, 15, 20, 47, 00, DateTimeKind.Utc),
-            RoleDescriptors =
+        var expected = new TrustedData<EntityDescriptor>(
+            TrustLevel.None,
+            new EntityDescriptor
             {
-                new RoleDescriptor
+                EntityId = "https://stubidp.sustainsys.com/Metadata",
+                Id = "_eb83b59a-572a-480b-b36c-e3a3edfd92d0",
+                CacheDuraton = TimeSpan.FromMinutes(15),
+                ValidUntil = new DateTime(2022, 03, 15, 20, 47, 00, DateTimeKind.Utc),
+                RoleDescriptors =
                 {
-                    ProtocolSupportEnumeration = "urn:whatever"
+                    new RoleDescriptor
+                    {
+                        ProtocolSupportEnumeration = "urn:whatever"
+                    }
                 }
-            }
-        };
+            });
 
         actual.Should().BeEquivalentTo(expected);
     }

@@ -24,11 +24,6 @@ public class XmlTraverser
     public List<Error> Errors { get; }
 
     /// <summary>
-    /// Current Node.
-    /// </summary>
-    private XmlNode? currentNode;
-
-    /// <summary>
     /// First Node to move to if current is null because it is before start.
     /// </summary>
     private XmlNode? firstNode;
@@ -47,17 +42,7 @@ public class XmlTraverser
     /// <summary>
     /// The current node being processed.
     /// </summary>
-    public XmlNode CurrentNode
-    {
-        get
-        {
-            if (currentNode == null)
-            {
-                throw new InvalidOperationException("There is no current node");
-            }
-            return currentNode;
-        }
-    }
+    public XmlNode? CurrentNode { get; private set; }
 
     /// <summary>
     /// Ctor
@@ -65,7 +50,7 @@ public class XmlTraverser
     /// <param name="rootNode">Root node for this traverser</param>
     public XmlTraverser(XmlNode rootNode)
     {
-        currentNode = rootNode;
+        CurrentNode = rootNode;
         Errors = new();
     }
 
@@ -77,13 +62,13 @@ public class XmlTraverser
     private XmlTraverser(XmlTraverser parent, List<Error> errors)
     {
         this.parent = parent;
-        firstNode = parent.CurrentNode.FirstChild;
+        firstNode = parent.CurrentNode!.FirstChild;
         Errors = errors;
     }
 
     private void AddError(ErrorReason reason, string message)
     {
-        Errors.Add(new(reason, CurrentNode.LocalName, CurrentNode, message));
+        Errors.Add(new(reason, CurrentNode!.LocalName, CurrentNode, message));
     }
 
     /// <summary>
@@ -96,7 +81,7 @@ public class XmlTraverser
             throw new InvalidOperationException("ThrowOnErrors can only be called from the root traverser");
         }
 
-        if (currentNode != null)
+        if (CurrentNode != null)
         {
             throw new InvalidOperationException("Before completing the traversal, call MoveNext to move past the root element. The root element must also be marked as completely processed for the child processing detection to work.");
         }
@@ -128,7 +113,8 @@ public class XmlTraverser
     {
         trustLevel = TrustLevel.None;
 
-        if (CurrentNode.LocalName == "Signature"
+        if (CurrentNode != null
+            && CurrentNode.LocalName == "Signature"
             && CurrentNode.NamespaceURI == SignedXml.XmlDsigNamespaceUrl)
         {
             childrenHandled = true;
@@ -152,7 +138,7 @@ public class XmlTraverser
     {
         ArgumentNullException.ThrowIfNull(allowedHashAlgorithms);
 
-        var (error, workingKey) = ((XmlElement)CurrentNode)
+        var (error, workingKey) = ((XmlElement)CurrentNode!)
             .VerifySignature(trustedSigningKeys, allowedHashAlgorithms);
 
         if (!string.IsNullOrEmpty(error))
@@ -173,7 +159,7 @@ public class XmlTraverser
     {
         while (true)
         {
-            if (!childrenHandled && CurrentNode.HasChildNodes)
+            if (!childrenHandled && CurrentNode!.HasChildNodes)
             {
                 Errors.Add(new(
                     ErrorReason.ExtraElements,
@@ -184,16 +170,16 @@ public class XmlTraverser
 
             // First check if we are fresh into child level, then use firstChild to seed. Otherwise
             // just traverse forward one step (if possible)
-            currentNode = firstNode ?? currentNode?.NextSibling;
+            CurrentNode = firstNode ?? CurrentNode?.NextSibling;
             firstNode = null;
 
-            if (currentNode == null)
+            if (CurrentNode == null)
             {
                 if (!expectEnd)
                 {
                     Errors.Add(new(
                         ErrorReason.MissingElement,
-                        parent!.CurrentNode.LocalName,
+                        parent!.CurrentNode!.LocalName,
                         parent!.CurrentNode,
                         $"There should be a child element here under {parent.CurrentNode.LocalName}, but found none."));
                 }
@@ -207,14 +193,8 @@ public class XmlTraverser
                 return false;
             }
 
-            if (currentNode.NodeType == XmlNodeType.Element)
+            if (CurrentNode.NodeType == XmlNodeType.Element)
             {
-                if (currentNode.HasChildNodes)
-                //&& (currentNode.ChildNodes.Count != 1 || currentNode.FirstChild!.NodeType == XmlNodeType.Text))
-                {
-                    // We just found the node and it has children. And it is not just one child that is text content
-                    childrenHandled = false;
-                }
                 childrenHandled = !CurrentNode.HasChildNodes;
 
                 // We're happy, we found an element. 
@@ -222,9 +202,9 @@ public class XmlTraverser
             }
 
             // We are ok to skip over white space and comments , but anything else is an error.
-            if (currentNode.NodeType != XmlNodeType.Whitespace && currentNode.NodeType != XmlNodeType.Comment)
+            if (CurrentNode.NodeType != XmlNodeType.Whitespace && CurrentNode.NodeType != XmlNodeType.Comment)
             {
-                AddError(ErrorReason.UnsupportedNodeType, $"Unsupported node type {currentNode.NodeType}");
+                AddError(ErrorReason.UnsupportedNodeType, $"Unsupported node type {CurrentNode.NodeType}");
             }
         }
     }
@@ -252,6 +232,11 @@ public class XmlTraverser
     /// <returns>True if ok</returns>
     public bool EnsureNamespace(string namespaceUri)
     {
+        if (CurrentNode == null)
+        {
+            return false;
+        }
+
         if (CurrentNode.NamespaceURI != namespaceUri)
         {
             AddError(
@@ -260,6 +245,7 @@ public class XmlTraverser
 
             return false;
         }
+
         return true;
     }
 
@@ -273,7 +259,7 @@ public class XmlTraverser
     {
         var namespaceOk = EnsureNamespace(namespaceUri);
 
-        if (CurrentNode.LocalName != localName)
+        if (CurrentNode != null && CurrentNode.LocalName != localName)
         {
             AddError(
                 ErrorReason.UnexpectedLocalName,
@@ -292,11 +278,11 @@ public class XmlTraverser
     /// <returns>Was there an element?</returns>
     public bool EnsureElement()
     {
-        if (currentNode == null || currentNode.NodeType != XmlNodeType.Element)
+        if (CurrentNode == null || CurrentNode.NodeType != XmlNodeType.Element)
         {
             Errors.Add(new(
                 ErrorReason.MissingElement,
-                parent!.CurrentNode.LocalName,
+                parent!.CurrentNode?.LocalName,
                 parent.CurrentNode,
                 "There is no current node or current node is not an element"));
 
@@ -313,7 +299,7 @@ public class XmlTraverser
     /// <param name="localName">Expected local name</param>
     /// <returns>True if expected</returns>
     public bool HasName(string namespaceUri, string localName)
-        => CurrentNode.LocalName == localName && CurrentNode.NamespaceURI == namespaceUri;
+        => CurrentNode != null && CurrentNode.LocalName == localName && CurrentNode.NamespaceURI == namespaceUri;
 
     /// <summary>
     /// Get attribute value with specified <paramref name="localName"/> and where there is no namespace
@@ -322,7 +308,7 @@ public class XmlTraverser
     /// <param name="localName">Local name of attribute</param>
     /// <returns>Attribute value, null if none.</returns>
     public string? GetAttribute(string localName)
-        => CurrentNode.Attributes?.GetNamedItem(localName)?.Value;
+        => CurrentNode?.Attributes?.GetNamedItem(localName)?.Value;
 
     /// <summary>
     /// Get required attribute value with specified <paramref name="localName"/> and where there is no namespace
@@ -333,6 +319,13 @@ public class XmlTraverser
     /// <exception cref="Saml2XmlException">If no such attribute is found.</exception>
     public string? GetRequiredAttribute(string localName)
     {
+        if(CurrentNode == null)
+        {
+            //TOOD: Test case for this.
+            //AddError()
+            return null;
+        }
+
         var value = GetAttribute(localName);
 
         if (value == null)

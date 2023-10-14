@@ -29,7 +29,7 @@ public class XmlTraverserTests
     {
         var traverser = new XmlTraverser(signedXmlDocument!.DocumentElement!);
 
-        var subject = traverser .GetChildren();
+        var subject = traverser.GetChildren();
 
         subject.MoveNext().Should().BeTrue();
 
@@ -230,7 +230,7 @@ public class XmlTraverserTests
 
         grandChildElements.MoveNext(true).Should().BeFalse();
 
-        grandChildElements.Invoking(s => s.CurrentNode).Should().Throw<InvalidOperationException>();
+        grandChildElements.CurrentNode.Should().BeNull();
 
         // Just check that we have no errors so far as we're soon checking error count = 1.
         subject.Errors.Should().HaveCount(0);
@@ -243,7 +243,7 @@ public class XmlTraverserTests
     }
 
     [Fact]
-    public void ValidateSignature()
+    public void ReadAndValidateOptionalSignature()
     {
         var subject = GetSignatureNode();
 
@@ -254,7 +254,7 @@ public class XmlTraverserTests
     }
 
     [Fact]
-    public void ValidateSignatureWrongKey()
+    public void ReadAndValidateOptionalSignature_WrongKey()
     {
         var subject = GetSignatureNode();
 
@@ -269,6 +269,30 @@ public class XmlTraverserTests
         
         error.Message.Should().Match("*contained key*not*trusted*");
         error.Reason.Should().Be(ErrorReason.SignatureFailure);
+    }
+
+    [Fact]
+    public void ReadAndValidateOptionalSignature_NotSignature()
+    {
+        var subject = GetXmlTraverser("<xml><a/></xml>").GetChildren();
+
+        subject.MoveNext();
+
+        subject.ReadAndValidateOptionalSignature(null, null, out var trustLevel).Should().BeFalse();
+
+        trustLevel.Should().Be(TrustLevel.None);
+    }
+
+    [Fact]
+    public void ReadAndValidateOptionalSignature_NoCurrentNode()
+    {
+        var subject = GetXmlTraverser("<xml/>").GetChildren();
+
+        subject.MoveNext();
+
+        subject.ReadAndValidateOptionalSignature(null, null, out var trustLevel).Should().BeFalse();
+
+        trustLevel.Should().Be(TrustLevel.None);
     }
 
     [Fact]
@@ -306,7 +330,7 @@ public class XmlTraverserTests
         var aChildren = rChildren.GetChildren();
         
         aChildren.MoveNext().Should().BeTrue();
-        aChildren.CurrentNode.LocalName.Should().Be("b");
+        aChildren.CurrentNode!.LocalName.Should().Be("b");
 
         rChildren.MoveNext(true).Should().BeFalse();
 
