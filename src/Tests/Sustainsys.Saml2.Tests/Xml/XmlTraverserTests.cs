@@ -213,9 +213,7 @@ public class XmlTraverserTests
     public void TraverseChildren()
     {
         var subject = GetXmlTraverser();
-
-        var parentNode = subject.CurrentNode;
-
+       
         var childElements = subject.GetChildren();
 
         childElements.MoveNext().Should().BeTrue();

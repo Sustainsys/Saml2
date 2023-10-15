@@ -317,13 +317,13 @@ public class XmlTraverser
     /// <param name="localName">Local name of attribute</param>
     /// <returns>Attribute value</returns>
     /// <exception cref="Saml2XmlException">If no such attribute is found.</exception>
-    public string? GetRequiredAttribute(string localName)
+    public string GetRequiredAttribute(string localName)
     {
-        if(CurrentNode == null)
+        if (CurrentNode == null)
         {
-            //TOOD: Test case for this.
-            //AddError()
-            return null;
+            // If there's already an error so we're not on a node, just do nothing. There
+            // should already be an error reported for missing node.
+            return null!;
         }
 
         var value = GetAttribute(localName);
@@ -335,7 +335,7 @@ public class XmlTraverser
                 $"Required attribute {localName} not found on {CurrentNode.Name}.");
         }
 
-        return value;
+        return value!;
     }
 
     /// <summary>
@@ -374,13 +374,22 @@ public class XmlTraverser
         => TryGetAttribute(localName, XmlConvert.ToTimeSpan);
 
     /// <summary>
-    /// Gets an attribute as DateTime. On parse errors the Error
+    /// Gets an optional attribute as DateTime. On parse errors the Error
     /// is reported to the errors collection.
     /// </summary>
     /// <param name="localName">Local name of attribute</param>
     /// <returns>Parsed DateTime or null if parse fails</returns>
     public DateTime? GetDateTimeAttribute(string localName)
         => TryGetAttribute(localName, s => XmlConvert.ToDateTime(s, XmlDateTimeSerializationMode.RoundtripKind));
+
+    /// <summary>
+    /// Gets a required attribute as DateTime. On missing attribute or parse errors the Error
+    /// is reported to the errors collection.
+    /// </summary>
+    /// <param name="localName">Local name of attribute</param>
+    /// <returns>Parsed DateTime or null if parse fails</returns>
+    public DateTime GetRequiredDateTimeAttribute(string localName)
+        => GetRequiredAttribute(localName, s => XmlConvert.ToDateTime(s, XmlDateTimeSerializationMode.RoundtripKind));
 
     /// <summary>
     /// Gets an optional bool attribute. On parse errors the Error
@@ -404,21 +413,25 @@ public class XmlTraverser
         => TryGetAttribute(localName, s => Enum.Parse<TEnum>(s, ignoreCase));
 
     /// <summary>
-    /// Get an attribute as int. On parse errors the Error
+    /// Get a required attribute as int. On missing attribute or parse errors the Error
     /// is reported to the errors collection.
     /// </summary>
     /// <param name="localName">Local name of the attribute</param>
     /// <returns>Parsed int or null if parse fails</returns>
-    public int? GetRequiredIntAttribute(string localName)
+    public int GetRequiredIntAttribute(string localName)
+        => GetRequiredAttribute(localName, int.Parse);
+
+    private TTarget GetRequiredAttribute<TTarget>(string localName, Func<string, TTarget> converter)
+        where TTarget : struct
     {
         var stringValue = GetRequiredAttribute(localName);
 
         if (stringValue == null)
         {
-            return default;
+            return default!;
         }
 
-        return TryConvertAttribute(localName, int.Parse, stringValue);
+        return TryConvertAttribute(localName, converter, stringValue) ?? default;
     }
 
     private TTarget? TryGetAttribute<TTarget>(string localName, Func<string, TTarget> converter)

@@ -1,4 +1,5 @@
-﻿using Sustainsys.Saml2.Xml;
+﻿using Sustainsys.Saml2.Samlp.Elements;
+using Sustainsys.Saml2.Xml;
 
 namespace Sustainsys.Saml2.Samlp;
 
@@ -11,10 +12,30 @@ partial class SamlpSerializer
     protected virtual SamlResponse CreateSamlResponse() => new();
 
 	/// <inheritdoc/>
-	public TrustedData<SamlResponse> ReadSamlResponse(XmlTraverser source)
+	public virtual SamlResponse ReadSamlResponse(XmlTraverser source)
 	{
         var samlResponse = CreateSamlResponse();
 
-        return new TrustedData<SamlResponse>(TrustLevel.None, samlResponse);
+        if(source.EnsureName(NamespaceUri, ElementNames.Response))
+        {
+            ReadAttributes(source, samlResponse);
+            ReadElements(source.GetChildren(), samlResponse);
+        }
+
+        source.MoveNext(true);
+
+        source.ThrowOnErrors();
+
+        return samlResponse;
 	}
+
+    /// <summary>
+    /// Read elements of SamlResponse
+    /// </summary>
+    /// <param name="source">XmlTraverser</param>
+    /// <param name="samlResponse">SamlResponse to populate</param>
+    protected virtual void ReadElements(XmlTraverser source, SamlResponse samlResponse)
+    {
+        ReadElements(source, (StatusResponseType)samlResponse);
+    }
 }

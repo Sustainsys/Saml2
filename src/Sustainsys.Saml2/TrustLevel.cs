@@ -16,7 +16,7 @@ public enum TrustLevel
     /// <summary>
     /// There is no integrity protection for the data.
     /// </summary>
-    None,
+    None = 0,
 
     /// <summary>
     /// The data was retreived over an outbound network connection,
@@ -24,7 +24,7 @@ public enum TrustLevel
     /// on all data that is verified as signed by a key that was retrieved
     /// over plain http.
     /// </summary>
-    Http,
+    Http = 10,
 
     /// <summary>
     /// The data was directly retreived from the source using a valid
@@ -32,40 +32,12 @@ public enum TrustLevel
     /// is verified as signed by a key that was retrieved over TLS/https.
     /// In most setups, this level is regarded as secure.
     /// </summary>
-    TLS,
+    TLS = 20,
 
     /// <summary>
     /// The data was verified by a signature where signing key or a strong
     /// identifier of the key (such as a SHA256 cert thumbprint) was read 
     /// from configuration.
     /// </summary>
-    ConfiguredKey
-}
-
-/// <summary>
-/// Data that has a trust level attached.
-/// </summary>
-/// <typeparam name="TData">Type of the data</typeparam>
-public class TrustedData<TData>
-{
-    /// <summary>
-    /// Constructor
-    /// </summary>
-    /// <param name="trustLevel">Trust level of the data.</param>
-    /// <param name="data">The data.</param>
-    public TrustedData(TrustLevel trustLevel, TData data)
-    {
-        TrustLevel = trustLevel;
-        Data = data;
-    }
-
-    /// <summary>
-    /// Trust level of the data.
-    /// </summary>
-    public TrustLevel TrustLevel { get; }
-    
-    /// <summary>
-    /// The data.
-    /// </summary>
-    public TData Data { get; }
+    ConfiguredKey = 30
 }

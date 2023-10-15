@@ -29,7 +29,7 @@ public interface ISamlpSerializer : ISerializerBase
     /// </summary>
     /// <param name="source"></param>
     /// <returns></returns>
-    public TrustedData<SamlResponse> ReadSamlResponse(XmlTraverser source);
+    public SamlResponse ReadSamlResponse(XmlTraverser source);
 }
 
 /// <summary>

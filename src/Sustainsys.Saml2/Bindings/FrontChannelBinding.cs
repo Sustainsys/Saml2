@@ -27,7 +27,7 @@ public interface IFrontChannelBinding
     /// <param name="httpRequest">HttpRequest to unbind from</param>
     /// <param name="getSaml2Entity">Func that returns a Saml2 entity from an entity id</param>
     /// <returns></returns>
-    Task<TrustedData<Saml2Message>> UnbindAsync(HttpRequest httpRequest,
+    Task<Saml2Message> UnbindAsync(HttpRequest httpRequest,
         Func<string, Task<Saml2Entity>> getSaml2Entity);
 
     /// <summary>
@@ -83,7 +83,7 @@ public abstract class FrontChannelBinding : IFrontChannelBinding
     protected abstract Task DoBindAsync(HttpResponse httpResponse, Saml2Message message);
 
     /// <inheritdoc />
-    public abstract Task<TrustedData<Saml2Message>> UnbindAsync(
+    public abstract Task<Saml2Message> UnbindAsync(
         HttpRequest httpRequest,
         Func<string, Task<Saml2Entity>> getSaml2Entity);
 }

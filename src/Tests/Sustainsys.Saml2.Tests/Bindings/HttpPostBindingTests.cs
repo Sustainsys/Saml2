@@ -76,17 +76,13 @@ public class HttpPostBindingTests
         var xd = new XmlDocument();
         xd.LoadXml("<xml><a/></xml>");
 
-        var expected = new TrustedData<Saml2Message>(
-            // With Http post, the signature is inside the data, so there is no
-            // envelope or transport level signature that could give trust.
-            TrustLevel.None,
-            new Saml2Message
-            {
-                Destination = "/subdir/Saml2/Acs",
-                Name = messageName,
-                RelayState = "ABC123",
-                Xml = xd.DocumentElement!
-            });
+        var expected = new Saml2Message
+        {
+            Destination = "/subdir/Saml2/Acs",
+            Name = messageName,
+            RelayState = "ABC123",
+            Xml = xd.DocumentElement!
+        };
 
         actual.Should().BeEquivalentTo(expected);
     }

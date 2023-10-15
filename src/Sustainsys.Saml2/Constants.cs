@@ -1,4 +1,5 @@
-﻿using Sustainsys.Saml2.Xml;
+﻿using Sustainsys.Saml2.Samlp;
+using Sustainsys.Saml2.Xml;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -67,5 +68,17 @@ public static class Constants
         /// SOAP binding identifier.
         /// </summary>
         public const string SOAP = "urn:oasis:names:tc:SAML:2.0:bindings:SOAP";
+    }
+
+    
+    /// <summary>
+    /// Standard status code URIs
+    /// </summary>
+    public static class StatusCodes
+    {
+        /// <summary>
+        /// Failed because of the requester, i.e. invalid request.
+        /// </summary>
+        public const string Requester = "urn:oasis:names:tc:SAML:2.0:status:Requester";
     }
 }

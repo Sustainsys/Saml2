@@ -16,7 +16,7 @@ using System.Text;
 namespace Sustainsys.Saml2.AspNetCore.Tests;
 public class Saml2HandlerTests
 {
-    private readonly static DateTimeOffset CurrentFakeTime = new(2023, 09, 08, 14, 53, 02, TimeSpan.Zero);
+    private readonly static DateTime CurrentFakeTime = new(2023, 09, 08, 14, 53, 02, DateTimeKind.Utc);
 
     private static async Task<(Saml2Handler subject, HttpContext httpContext)> CreateSubject(Saml2Options options)
     {

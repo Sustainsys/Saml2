@@ -70,7 +70,7 @@ public class Saml2Handler : RemoteAuthenticationHandler<Saml2Options>
 
         var samlMessage = await binding.UnbindAsync(Context.Request, str => Task.FromResult<Saml2Entity>(Options.IdentityProvider!));
 
-        var source = XmlHelpers.GetXmlTraverser(samlMessage.Data.Xml);
+        var source = XmlHelpers.GetXmlTraverser(samlMessage.Xml);
         var serializer = GetService(sr => sr.GetSamlpSerializer);
         var samlResponse = serializer.ReadSamlResponse(source);
 
@@ -88,7 +88,7 @@ public class Saml2Handler : RemoteAuthenticationHandler<Saml2Options>
         var authnRequest = new AuthnRequest()
         {
             Issuer = Options.EntityId,
-            IssueInstant = Clock.UtcNow,
+            IssueInstant = Clock.UtcNow.DateTime,
             AssertionConsumerServiceUrl = BuildRedirectUri(Options.CallbackPath)
         };
 

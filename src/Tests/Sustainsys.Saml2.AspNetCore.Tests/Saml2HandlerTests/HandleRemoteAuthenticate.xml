@@ -1,6 +1,10 @@
-﻿<samlp:Response xmlns:samlp="urn:oasis:names:tc:SAML:2.0:protocol" xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion">
-	<saml:Issuer>https:/idp.example.com</saml:Issuer>
+﻿<samlp:Response xmlns:samlp="urn:oasis:names:tc:SAML:2.0:protocol" xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion"
+				ID="x123" Version="2.0" IssueInstant="2023-10-14T13:46:32Z">
+	<!--<saml:Issuer>https:/idp.example.com</saml:Issuer>
 	<saml:Assertion>
 		
-	</saml:Assertion>
+	</saml:Assertion>-->
+	<samlp:Status>
+		<samlp:StatusCode Value="urn:oasis:names:tc:SAML:2.0:status:Success" />
+	</samlp:Status>
 </samlp:Response>

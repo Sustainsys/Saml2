@@ -9,7 +9,7 @@ partial class MetadataSerializer
     /// <summary>
     /// Create an IDPSSODescriptor instance.
     /// </summary>
-    protected virtual IDPSSODescriptor CreateIDPSSODescriptor => new();
+    protected virtual IDPSSODescriptor CreateIDPSSODescriptor() => new();
 
     /// <summary>
     /// Read the current node as an IDPSSODescriptor
@@ -18,7 +18,7 @@ partial class MetadataSerializer
     /// <returns></returns>
     protected virtual IDPSSODescriptor ReadIDPSSODescriptor(XmlTraverser source)
     {
-        var result = new IDPSSODescriptor();
+        var result = CreateIDPSSODescriptor();
 
         ReadAttributes(source, result);
 

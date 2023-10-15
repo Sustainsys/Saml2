@@ -16,23 +16,21 @@ partial class MetadataSerializer
     /// Read an EntityDescriptor
     /// </summary>
     /// <returns>EntityDescriptor</returns>
-    public virtual TrustedData<EntityDescriptor> ReadEntityDescriptor(XmlTraverser source)
+    public virtual EntityDescriptor ReadEntityDescriptor(XmlTraverser source)
     {
         var entityDescriptor = CreateEntityDescriptor();
-
-        TrustLevel trustLevel = TrustLevel.None;
 
         if (source.EnsureName(NamespaceUri, ElementNames.EntityDescriptor))
         {
             ReadAttributes(source, entityDescriptor);
-            trustLevel = ReadElements(source.GetChildren(), entityDescriptor);
+            ReadElements(source.GetChildren(), entityDescriptor);
         }
 
         source.MoveNext(true);
 
         ThrowOnErrors(source);
 
-        return new(trustLevel,entityDescriptor);
+        return entityDescriptor;
     }
 
     /// <summary>
@@ -53,14 +51,14 @@ partial class MetadataSerializer
     /// </summary>
     /// <param name="source">Source data</param>
     /// <param name="entityDescriptor">Entity Descriptor to populate</param>
-    /// <returns>Trustlevel based on signature</returns>
-    protected virtual TrustLevel ReadElements(XmlTraverser source, EntityDescriptor entityDescriptor)
+    protected virtual void ReadElements(XmlTraverser source, EntityDescriptor entityDescriptor)
     {
         source.MoveNext();
 
         if (source.ReadAndValidateOptionalSignature(
             TrustedSigningKeys, AllowedHashAlgorithms, out var trustLevel))
         {
+            entityDescriptor.TrustLevel = trustLevel;
             source.MoveNext();
         }
 
@@ -101,7 +99,5 @@ partial class MetadataSerializer
                 wasRoleDescriptor = false;
             }
         } while (wasRoleDescriptor && source.MoveNext(true));
-
-        return trustLevel;
     }
 }

@@ -1,13 +1,11 @@
-﻿using Sustainsys.Saml2.Metadata.Elements;
+﻿using Sustainsys.Saml2.Samlp.Elements;
 using Sustainsys.Saml2.Xml;
-using Sustainsys.Saml2.Saml;
 
 namespace Sustainsys.Saml2.Samlp;
-
 /// <summary>
-/// Abstract base class for requests
+/// Saml2 p abstract StatusResponseType
 /// </summary>
-public class RequestAbstractType
+public class StatusResponseType
 {
     /// <summary>
     /// Id of the request.
@@ -25,7 +23,7 @@ public class RequestAbstractType
     public DateTime IssueInstant { get; set; }
 
     /// <summary>
-    /// Identifies the entity that generated the request message.
+    /// Saml status
     /// </summary>
-    public NameId? Issuer { get; set; }
+    public SamlStatus Status { get; set; } = default!;
 }

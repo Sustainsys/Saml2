@@ -36,4 +36,9 @@ public class EntityDescriptor
     /// Role Descriptors.
     /// </summary>
     public List<RoleDescriptor> RoleDescriptors { get; } = new();
+    
+    /// <summary>
+    /// Trustlevel, set from validation of the signature, if there was one.
+    /// </summary>
+    public TrustLevel TrustLevel { get; set; }
 }

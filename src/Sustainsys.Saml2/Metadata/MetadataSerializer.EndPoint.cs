@@ -38,7 +38,7 @@ partial class MetadataSerializer
     {
         var result = new IndexedEndpoint()
         {
-            Index = source.GetRequiredIntAttribute(AttributeNames.index) ?? 0,
+            Index = source.GetRequiredIntAttribute(AttributeNames.index),
             IsDefault = source.GetBoolAttribute(AttributeNames.isDefault) ?? false
         };
 

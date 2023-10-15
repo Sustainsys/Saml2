@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Sustainsys.Saml2.Samlp;
+namespace Sustainsys.Saml2.Samlp.Elements;
 
 /// <summary>
 /// Extensions

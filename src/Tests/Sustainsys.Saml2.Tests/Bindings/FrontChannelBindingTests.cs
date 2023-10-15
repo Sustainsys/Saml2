@@ -14,7 +14,7 @@ public class FrontChannelBindingTests
 
         public override bool CanUnbind(HttpRequest httpRequest) => throw new NotImplementedException();
 
-        public override Task<TrustedData<Saml2Message>> UnbindAsync(
+        public override Task<Saml2Message> UnbindAsync(
             HttpRequest httpRequest,
             Func<string, Task<Saml2Entity>> getSaml2Entity) 
             => throw new NotImplementedException();
