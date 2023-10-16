@@ -176,4 +176,15 @@ public partial class MetadataSerializerTests
             .Invoking(s => s.ReadEntityDescriptor(xmlTraverser))
             .Should().NotThrow();
     }
+
+    [Fact]
+    public void ReadEntityDescriptor_WrongNamespaceRoleDescriptor()
+    {
+        var xmlTraverser = GetXmlTraverser();
+
+        new MetadataSerializer()
+            .Invoking(s => s.ReadEntityDescriptor(xmlTraverser))
+            .Should().Throw<Saml2XmlException>()
+            .WithErrors(ErrorReason.UnexpectedNamespace);
+    }
 }

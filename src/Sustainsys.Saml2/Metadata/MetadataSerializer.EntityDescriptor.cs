@@ -93,11 +93,6 @@ partial class MetadataSerializer
                         break;
                 }
             }
-            else
-            {
-                // TODO: Test case for this.
-                wasRoleDescriptor = false;
-            }
         } while (wasRoleDescriptor && source.MoveNext(true));
     }
 }

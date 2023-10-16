@@ -16,7 +16,7 @@ partial class SamlpSerializer
     /// <inheritdoc/>
     public virtual XmlDocument Write(AuthnRequest authnRequest)
     {
-        var xmlDoc = CreateXmlDocument();
+        var xmlDoc = new XmlDocument();
 
         Append(xmlDoc, authnRequest);
 

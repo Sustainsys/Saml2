@@ -6,6 +6,9 @@ using System.Xml.Linq;
 
 namespace Sustainsys.Saml2.Xml;
 
+// TODO: Separate and rename to SamlReaderBase/SamlWriterBase - SamlpReader/SamlpWriter
+// Make XmlTraverser a property of the reader - enforces being transient
+
 /// <summary>
 /// Shared interface for all serializers
 /// </summary>
@@ -66,11 +69,6 @@ public abstract class SerializerBase
     /// </summary>
     protected virtual void ThrowOnErrors(XmlTraverser source)
         => source.ThrowOnErrors();
-
-    /// <summary>
-    /// Creates an Xml document with good settings.
-    /// </summary>
-    protected virtual XmlDocument CreateXmlDocument() => new() { PreserveWhitespace = true };
 
     /// <summary>
     /// Append an element using the serializers default <see cref="Prefix"/> and <see cref="NamespaceUri"/>.
