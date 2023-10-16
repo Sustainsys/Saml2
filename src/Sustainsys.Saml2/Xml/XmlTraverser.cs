@@ -71,6 +71,7 @@ public class XmlTraverser
         Errors.Add(new(reason, CurrentNode!.LocalName, CurrentNode, message));
     }
 
+    //TODO: Add callback function as parameter that allows ignoring - easier way to wire up with events.
     /// <summary>
     /// Throws exception if the error collection is non-empty.
     /// </summary>
@@ -78,7 +79,7 @@ public class XmlTraverser
     {
         if (parent != null)
         {
-            throw new InvalidOperationException("ThrowOnErrors can only be called from the root traverser");
+            throw new InvalidOperationException("ThrowOnErrors can only be called from the root traverser.");
         }
 
         if (CurrentNode != null)
@@ -165,7 +166,7 @@ public class XmlTraverser
                     ErrorReason.ExtraElements,
                     CurrentNode.LocalName,
                     CurrentNode,
-                    $"All child nodes under {CurrentNode.LocalName} have not been processed"));
+                    $"All child nodes under {CurrentNode.LocalName} have not been processed."));
             }
 
             // First check if we are fresh into child level, then use firstChild to seed. Otherwise
@@ -204,7 +205,7 @@ public class XmlTraverser
             // We are ok to skip over white space and comments , but anything else is an error.
             if (CurrentNode.NodeType != XmlNodeType.Whitespace && CurrentNode.NodeType != XmlNodeType.Comment)
             {
-                AddError(ErrorReason.UnsupportedNodeType, $"Unsupported node type {CurrentNode.NodeType}");
+                AddError(ErrorReason.UnsupportedNodeType, $"Unsupported node type {CurrentNode.NodeType}.");
             }
         }
     }
@@ -272,6 +273,17 @@ public class XmlTraverser
     }
 
     /// <summary>
+    /// Ensures that the contents of the current node is only text and returns the text.
+    /// </summary>
+    /// <returns></returns>
+    public string GetTextContents()
+    {
+        //TODO: Test case + error handling for non text content.
+        IgnoreChildren();
+        return CurrentNode!.InnerText;
+    }
+
+    /// <summary>
     /// Ensure that there is a current node and that the current node is an element. Typically used
     /// if the expectation of further elements is not known when <see cref="MoveNext(bool)"/> is called.
     /// </summary>
@@ -284,7 +296,7 @@ public class XmlTraverser
                 ErrorReason.MissingElement,
                 parent!.CurrentNode?.LocalName,
                 parent.CurrentNode,
-                "There is no current node or current node is not an element"));
+                "There is no current node or current node is not an element."));
 
             return false;
         }
@@ -355,7 +367,7 @@ public class XmlTraverser
                 ErrorReason.NotAbsoluteUri,
                 localName,
                 CurrentNode,
-                $"Attribute \"{localName}\" should be an absolute Uri, but \"{value}\" isn't")
+                $"Attribute \"{localName}\" should be an absolute Uri, but \"{value}\" isn't.")
             {
                 StringValue = value
             });
@@ -462,7 +474,7 @@ public class XmlTraverser
                 ErrorReason.ConversionFailed,
                 localName,
                 CurrentNode,
-                $"Conversion to {typeof(TTarget).Name} failed for {stringValue}")
+                $"Conversion to {typeof(TTarget).Name} failed for {stringValue}.")
             {
                 StringValue = stringValue
             });

@@ -20,4 +20,9 @@ public static class ElementNames
     /// StatusCode
     /// </summary>
     public const string StatusCode = nameof(StatusCode);
+
+    /// <summary>
+    /// Extensions
+    /// </summary>
+    public const string Extensions = nameof(Extensions);
 }

@@ -1,0 +1,14 @@
+﻿<samlp:Response xmlns:samlp="urn:oasis:names:tc:SAML:2.0:protocol" xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion"
+				ID="x123" InResponseTo="x789" Version="2.0" IssueInstant="2023-10-14T13:46:32Z" 
+				Destination="https://sp.example.com/Saml2/Acs" Consent="urn:oasis:names:tc:SAML:2.0:consent:obtained">
+	<saml:Issuer Format="urn:oasis:names:tc:SAML:1.1:nameid-format:entity">https://idp.example.com/Metadata</saml:Issuer>
+	<samlp:Extensions>
+		<foo xmlns="urn:bar"/>
+	</samlp:Extensions>
+	<samlp:Status>
+		<samlp:StatusCode Value="urn:oasis:names:tc:SAML:2.0:status:Success" />
+	</samlp:Status>
+	<saml:Assertion>
+		
+	</saml:Assertion>
+</samlp:Response>

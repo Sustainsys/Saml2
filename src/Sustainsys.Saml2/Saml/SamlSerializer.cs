@@ -1,4 +1,5 @@
-﻿using Sustainsys.Saml2.Xml;
+﻿using Sustainsys.Saml2.Saml.Elements;
+using Sustainsys.Saml2.Xml;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,12 +23,19 @@ public interface ISamlSerializer : ISerializerBase
     /// <param name="localName">Local name of new element</param>
     /// <returns>The created element, or null if none</returns>
     XmlElement? AppendIfValue(XmlNode parent, NameId? nameId, string localName);
+
+    /// <summary>
+    /// Read a NameID
+    /// </summary>
+    /// <param name="source">Xml Traverser</param>
+    /// <returns>NameId</returns>
+    NameId ReadNameId(XmlTraverser source);
 }
 
 /// <summary>
 /// Serializer for Saml assertion classes
 /// </summary>
-public class SamlSerializer : SerializerBase, ISamlSerializer
+public partial class SamlSerializer : SerializerBase, ISamlSerializer
 {
     /// <summary>
     /// Ctor
@@ -36,18 +44,5 @@ public class SamlSerializer : SerializerBase, ISamlSerializer
     {
         NamespaceUri = Constants.Namespaces.Saml;
         Prefix = "saml";
-    }
-
-    /// <inheritdoc/>
-    public XmlElement? AppendIfValue(XmlNode parent, NameId? nameId, string localName)
-    {
-        if(nameId != null)
-        {
-            var element = Append(parent, localName);
-            element.InnerText = nameId.Value;
-
-            return element;
-        }
-        return null;
     }
 }

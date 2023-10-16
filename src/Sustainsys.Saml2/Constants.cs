@@ -80,5 +80,10 @@ public static class Constants
         /// Failed because of the requester, i.e. invalid request.
         /// </summary>
         public const string Requester = "urn:oasis:names:tc:SAML:2.0:status:Requester";
+
+        /// <summary>
+        /// Success
+        /// </summary>
+        public const string Success = "urn:oasis:names:tc:SAML:2.0:status:Success";
     }
 }

@@ -27,4 +27,14 @@ public class AttributeNames
     /// Value
     /// </summary>
     public const string Value = nameof(Value);
+
+    /// <summary>
+    /// InResponseTo
+    /// </summary>
+    public const string InResponseTo = nameof(InResponseTo);
+
+    /// <summary>
+    /// Destination
+    /// </summary>
+    public const string Destination = nameof(Destination);
 }

@@ -1,10 +1,15 @@
-﻿namespace Sustainsys.Saml2.Saml;
+﻿namespace Sustainsys.Saml2.Saml.Elements;
 
 /// <summary>
 /// The Saml NameIDType
 /// </summary>
 public class NameId
 {
+    /// <summary>
+    /// Ctor
+    /// </summary>
+    public NameId() { }
+
     /// <summary>
     /// Ctor
     /// </summary>

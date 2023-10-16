@@ -2,6 +2,7 @@
 using Sustainsys.Saml2.Samlp.Attributes;
 using Sustainsys.Saml2.Samlp.Elements;
 using Sustainsys.Saml2.Xml;
+using System.Data;
 
 namespace Sustainsys.Saml2.Samlp;
 partial class SamlpSerializer
@@ -16,6 +17,8 @@ partial class SamlpSerializer
         response.Id = source.GetRequiredAttribute(AttributeNames.ID);
         response.Version = source.GetRequiredAttribute(AttributeNames.Version);
         response.IssueInstant = source.GetRequiredDateTimeAttribute(AttributeNames.IssueInstant);
+        response.InResponseTo = source.GetAttribute(AttributeNames.InResponseTo);
+        response.Destination = source.GetAttribute(AttributeNames.Destination);
     }
 
     /// <summary>
@@ -27,73 +30,36 @@ partial class SamlpSerializer
     {
         source.MoveNext();
 
-        if(source.EnsureName(NamespaceUri, ElementNames.Status))
+        if (source.HasName(Constants.Namespaces.Saml, Saml.Elements.ElementNames.Issuer))
+        {
+            response.Issuer = samlSerializer.ReadNameId(source);
+
+            if (EntityResolver != null)
+            {
+                var entity = EntityResolver(response.Issuer.Value);
+                TrustedSigningKeys = entity.TrustedSigningKeys;
+                AllowedHashAlgorithms = entity.AllowedHashAlgorithms ?? AllowedHashAlgorithms;
+            }
+
+            source.MoveNext();
+        }
+
+        if (source.ReadAndValidateOptionalSignature(TrustedSigningKeys, AllowedHashAlgorithms, out var trustLevel))
+        {
+            response.TrustLevel = trustLevel;
+            source.MoveNext();
+        }
+
+        if (source.HasName(Constants.Namespaces.Samlp, ElementNames.Extensions))
+        {
+            response.Extensions = ReadExtensions(source);
+            source.MoveNext();
+        }
+
+        if (source.EnsureName(NamespaceUri, ElementNames.Status))
         {
             response.Status = ReadStatus(source);
+            source.MoveNext(true);
         }
-    }
-
-    /// <summary>
-    /// Factory for SamlStatus
-    /// </summary>
-    /// <returns>SamlStatus</returns>
-    protected virtual SamlStatus CreateSamlStatus() => new();
-
-    /// <summary>
-    /// Reads Status
-    /// </summary>
-    /// <param name="source">Xml Traverser</param>
-    /// <returns>Status</returns>
-    protected virtual SamlStatus ReadStatus(XmlTraverser source)
-    {
-        var result = CreateSamlStatus();
-
-        ReadElements(source.GetChildren(), result);
-
-        return result;
-    }
-
-    /// <summary>
-    /// Reads elements of SamlStatus
-    /// </summary>
-    /// <param name="source">Xml Traverser</param>
-    /// <param name="status">Status to populate</param>
-    protected virtual void ReadElements(XmlTraverser source, SamlStatus status)
-    {
-        source.MoveNext();
-
-        if(source.EnsureName(NamespaceUri, ElementNames.StatusCode))
-        {
-            status.StatusCode = ReadStatusCode(source);
-        }
-    }
-
-    /// <summary>
-    /// Factory for StatusCode
-    /// </summary>
-    /// <returns>StatusCode</returns>
-    protected virtual StatusCode CreateStatusCode() => new();
-
-    /// <summary>
-    /// Reads a status code
-    /// </summary>
-    /// <param name="source"></param>
-    protected virtual StatusCode ReadStatusCode(XmlTraverser source)
-    {
-        var result = CreateStatusCode();
-
-        ReadAttributes(source, result);
-
-        return result;
-    }
-
-    /// <summary>
-    /// Reads attributes of StatusCode
-    /// </summary>
-    /// <param name="source"></param>
-    /// <param name="statusCode"></param>
-    protected virtual void ReadAttributes(XmlTraverser source, StatusCode statusCode)
-    {
-        statusCode.Value = source.GetRequiredAbsoluteUriAttribute(AttributeNames.Value)!;
     }
 }

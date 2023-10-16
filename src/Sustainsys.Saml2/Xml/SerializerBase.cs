@@ -1,4 +1,5 @@
 ﻿using Microsoft.VisualBasic;
+using System.Security.Cryptography.Xml;
 using System.Text;
 using System.Xml;
 using System.Xml.Linq;
@@ -19,6 +20,12 @@ public interface ISerializerBase
     /// Signing keys to trust when validating signatures of the metadata.
     /// </summary>
     IEnumerable<SigningKey>? TrustedSigningKeys { get; set; }
+
+    /// <summary>
+    /// Called when information about a Saml entity is needed, e.g. to read
+    /// the signing keys and TrustedSigninKeys
+    /// </summary>
+    Func<string, Saml2Entity>? EntityResolver { get; set; }
 }
 
 /// <summary>
@@ -37,10 +44,20 @@ public abstract class SerializerBase
     protected string NamespaceUri { get; set; } = default!;
 
     /// <inheritdoc/>
-    public IEnumerable<string>? AllowedHashAlgorithms { get; set; }
+    public virtual IEnumerable<string>? AllowedHashAlgorithms { get; set; } =
+        new[]
+        {
+            SignedXml.XmlDsigRSASHA256Url,
+            SignedXml.XmlDsigRSASHA384Url,
+            SignedXml.XmlDsigRSASHA512Url,
+            SignedXml.XmlDsigDSAUrl
+        };
 
     /// <inheritdoc/>
-    public IEnumerable<SigningKey>? TrustedSigningKeys { get; set; }
+    public virtual IEnumerable<SigningKey>? TrustedSigningKeys { get; set; }
+
+    /// <inheritdoc/>
+    public virtual Func<string, Saml2Entity>? EntityResolver { get; set; }
 
     /// <summary>
     /// Helper method that calls ThrowOnErrors. If you want to supress

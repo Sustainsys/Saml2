@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
-using Sustainsys.Saml2.Saml;
+using Sustainsys.Saml2.Saml.Elements;
 
 namespace Sustainsys.Saml2.AspNetCore;
 

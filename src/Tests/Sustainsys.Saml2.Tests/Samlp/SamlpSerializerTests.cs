@@ -1,13 +1,7 @@
-﻿using Sustainsys.Saml2.Metadata;
-using Sustainsys.Saml2.Saml;
+﻿using Sustainsys.Saml2.Saml;
 using Sustainsys.Saml2.Samlp;
 using Sustainsys.Saml2.Tests.Helpers;
 using Sustainsys.Saml2.Xml;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Xml;
 
 namespace Sustainsys.Saml2.Tests.Samlp;
@@ -114,5 +108,40 @@ public class SamlpSerializerTests
         subject.Invoking(s => s.ReadSamlResponse(source))
             .Should().Throw<Saml2XmlException>()
             .WithErrors(expectedError);
+    }
+
+    // Test that a response with all optional content present in the Response can be read. The embedded
+    // assertion is minimal. This doesn't mean that we  actual read everything, a lot of rarely used
+    // stuff is just ignored.
+    [Fact]
+    public void ReadSamlResponse_CanReadCompleteResponseWithAssertion()
+    {
+        var source = TestData.GetXmlTraverser<SamlpSerializerTests>();
+        ((XmlElement)source.CurrentNode!).Sign(
+            TestData.Certificate, source.CurrentNode![Saml.Elements.ElementNames.Issuer, Constants.Namespaces.Saml]!);
+        
+        var subject = new SamlpSerializer(new SamlSerializer());
+
+        var actual = subject.ReadSamlResponse(source);
+
+        var expected = new SamlResponse
+        {
+            Id = "x123",
+            InResponseTo = "x789",
+            Version = "2.0",
+            IssueInstant = new DateTime(2023, 10, 14, 13, 46, 32, DateTimeKind.Utc),
+            Destination = "https://sp.example.com/Saml2/Acs",
+            Issuer = "https://idp.example.com/Metadata",
+            Status = new()
+            {
+                StatusCode = new()
+                {
+                    Value = Constants.StatusCodes.Success
+                }
+            },
+            Extensions = new()
+        };
+
+        actual.Should().BeEquivalentTo(expected);
     }
 }
