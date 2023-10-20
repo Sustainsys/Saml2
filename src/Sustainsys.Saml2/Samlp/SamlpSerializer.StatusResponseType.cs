@@ -30,7 +30,7 @@ partial class SamlpSerializer
     {
         source.MoveNext();
 
-        if (source.HasName(Constants.Namespaces.Saml, Saml.Elements.ElementNames.Issuer))
+        if (source.HasName(Constants.Namespaces.Saml, Constants.Elements.Issuer))
         {
             response.Issuer = samlSerializer.ReadNameId(source);
 
@@ -50,13 +50,13 @@ partial class SamlpSerializer
             source.MoveNext();
         }
 
-        if (source.HasName(Constants.Namespaces.Samlp, ElementNames.Extensions))
+        if (source.HasName(Constants.Namespaces.Samlp, Constants.Elements.Extensions))
         {
             response.Extensions = ReadExtensions(source);
             source.MoveNext();
         }
 
-        if (source.EnsureName(NamespaceUri, ElementNames.Status))
+        if (source.EnsureName(NamespaceUri, Constants.Elements.Status))
         {
             response.Status = ReadStatus(source);
             source.MoveNext(true);

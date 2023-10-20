@@ -16,7 +16,7 @@ partial class SamlpSerializer
 	{
         var samlResponse = CreateSamlResponse();
 
-        if(source.EnsureName(NamespaceUri, ElementNames.Response))
+        if(source.EnsureName(NamespaceUri, Constants.Elements.Response))
         {
             ReadAttributes(source, samlResponse);
             ReadElements(source.GetChildren(), samlResponse);

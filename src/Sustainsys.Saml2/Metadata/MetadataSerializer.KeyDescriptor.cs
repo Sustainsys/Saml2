@@ -32,7 +32,7 @@ partial class MetadataSerializer
         var children = source.GetChildren();
 
         if (children.MoveNext()
-            && children.EnsureName(SignedXml.XmlDsigNamespaceUrl, ElementNames.KeyInfo))
+            && children.EnsureName(SignedXml.XmlDsigNamespaceUrl, Constants.Elements.KeyInfo))
         {
             children.IgnoreChildren();
 

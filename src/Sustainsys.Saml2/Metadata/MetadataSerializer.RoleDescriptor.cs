@@ -54,7 +54,7 @@ partial class MetadataSerializer
             return false;
         }
 
-        if (source.HasName(SignedXml.XmlDsigNamespaceUrl, ElementNames.Signature))
+        if (source.HasName(SignedXml.XmlDsigNamespaceUrl, Constants.Elements.Signature))
         {
             // Signatures on RoleDescriptors are not supported.
             source.IgnoreChildren();
@@ -65,7 +65,7 @@ partial class MetadataSerializer
             }
         }
 
-        if (source.HasName(NamespaceUri, ElementNames.Extensions))
+        if (source.HasName(NamespaceUri, Constants.Elements.Extensions))
         {
             // Extensions on RoleDescriptors are not supported.
             source.IgnoreChildren();
@@ -76,7 +76,7 @@ partial class MetadataSerializer
             }
         }
 
-        while (source.HasName(NamespaceUri, ElementNames.KeyDescriptor))
+        while (source.HasName(NamespaceUri, Constants.Elements.KeyDescriptor))
         {
             result.Keys.Add(ReadKeyDescriptor(source));
             if (!source.MoveNext())
@@ -85,7 +85,7 @@ partial class MetadataSerializer
             }
         }
 
-        if (source.HasName(NamespaceUri, ElementNames.Organization))
+        if (source.HasName(NamespaceUri, Constants.Elements.Organization))
         {
             // Organization reading is not supported.
             source.IgnoreChildren();
@@ -96,7 +96,7 @@ partial class MetadataSerializer
             }
         }
 
-        if (source.HasName(NamespaceUri, ElementNames.ContactPerson))
+        if (source.HasName(NamespaceUri, Constants.Elements.ContactPerson))
         {
             // Contact person reading is not supported.
             source.IgnoreChildren();

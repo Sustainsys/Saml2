@@ -50,7 +50,7 @@ partial class MetadataSerializer
 
         // We must have at least one SingleSignOnService in an IDPSSODescriptor and now we should be at it.
         if(!source.EnsureElement() &&             
-            !source.EnsureName(NamespaceUri, ElementNames.SingleSignOnService))
+            !source.EnsureName(NamespaceUri, Constants.Elements.SingleSignOnService))
         {
             return;
         }
@@ -58,7 +58,7 @@ partial class MetadataSerializer
         do
         {
             result.SingleSignOnServices.Add(ReadEndpoint(source));
-        } while (source.MoveNext(true) && source.HasName(NamespaceUri, ElementNames.SingleSignOnService));
+        } while (source.MoveNext(true) && source.HasName(NamespaceUri, Constants.Elements.SingleSignOnService));
 
         source.Skip();
     }

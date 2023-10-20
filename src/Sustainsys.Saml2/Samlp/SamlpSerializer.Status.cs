@@ -35,7 +35,7 @@ partial class SamlpSerializer
 	{
 		source.MoveNext();
 
-		if (source.EnsureName(NamespaceUri, ElementNames.StatusCode))
+		if (source.EnsureName(NamespaceUri, Constants.Elements.StatusCode))
 		{
 			status.StatusCode = ReadStatusCode(source);
 			source.MoveNext(true);

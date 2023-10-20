@@ -118,7 +118,7 @@ public class SamlpSerializerTests
     {
         var source = TestData.GetXmlTraverser<SamlpSerializerTests>();
         ((XmlElement)source.CurrentNode!).Sign(
-            TestData.Certificate, source.CurrentNode![Saml.Elements.ElementNames.Issuer, Constants.Namespaces.Saml]!);
+            TestData.Certificate, source.CurrentNode![Constants.Elements.Issuer, Constants.Namespaces.Saml]!);
         
         var subject = new SamlpSerializer(new SamlSerializer());
 

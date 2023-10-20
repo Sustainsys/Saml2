@@ -20,7 +20,7 @@ partial class MetadataSerializer
     {
         var entityDescriptor = CreateEntityDescriptor();
 
-        if (source.EnsureName(NamespaceUri, ElementNames.EntityDescriptor))
+        if (source.EnsureName(NamespaceUri, Constants.Elements.EntityDescriptor))
         {
             ReadAttributes(source, entityDescriptor);
             ReadElements(source.GetChildren(), entityDescriptor);
@@ -62,7 +62,7 @@ partial class MetadataSerializer
             source.MoveNext();
         }
 
-        if (source.HasName(NamespaceUri, ElementNames.Extensions))
+        if (source.HasName(NamespaceUri, Constants.Elements.Extensions))
         {
             entityDescriptor.Extensions = ReadExtensions(source);
             source.MoveNext();
@@ -76,16 +76,16 @@ partial class MetadataSerializer
             {
                 switch (source.CurrentNode?.LocalName)
                 {
-                    case ElementNames.RoleDescriptor:
+                    case Constants.Elements.RoleDescriptor:
                         entityDescriptor.RoleDescriptors.Add(ReadRoleDescriptor(source));
                         break;
-                    case ElementNames.IDPSSODescriptor:
+                    case Constants.Elements.IDPSSODescriptor:
                         entityDescriptor.RoleDescriptors.Add(ReadIDPSSODescriptor(source));
                         break;
-                    case ElementNames.SPSSODescriptor:
-                    case ElementNames.AuthnAuthorityDescriptor:
-                    case ElementNames.AttributeAuthorityDescriptor:
-                    case ElementNames.PDPDescriptor:
+                    case Constants.Elements.SPSSODescriptor:
+                    case Constants.Elements.AuthnAuthorityDescriptor:
+                    case Constants.Elements.AttributeAuthorityDescriptor:
+                    case Constants.Elements.PDPDescriptor:
                         source.IgnoreChildren();
                         break;
                     default:
