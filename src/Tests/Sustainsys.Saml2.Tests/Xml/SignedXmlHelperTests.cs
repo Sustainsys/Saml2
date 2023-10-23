@@ -467,7 +467,7 @@ public class SignedXmlHelperTests
     {
         public SignRootSignedXml(XmlDocument xd) : base(xd) { }
 
-        // Hack that allows us to create a signature with invalid reference for the
+        // This allows us to create a signature with invalid reference for the
         // VerifySignature_RequiresReferenceNCName test.
         public override XmlElement GetIdElement(XmlDocument document, string idValue)
             => document.DocumentElement!;
