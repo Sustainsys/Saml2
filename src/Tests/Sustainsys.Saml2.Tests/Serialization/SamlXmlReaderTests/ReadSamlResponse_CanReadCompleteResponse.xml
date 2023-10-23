@@ -8,7 +8,4 @@
 	<samlp:Status>
 		<samlp:StatusCode Value="urn:oasis:names:tc:SAML:2.0:status:Success" />
 	</samlp:Status>
-	<saml:Assertion>
-		
-	</saml:Assertion>
 </samlp:Response>

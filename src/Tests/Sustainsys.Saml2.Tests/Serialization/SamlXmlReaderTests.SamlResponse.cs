@@ -67,11 +67,10 @@ partial class SamlXmlReaderTests
             .WithErrors(expectedError);
     }
 
-    // Test that a response with all optional content present in the Response can be read. The embedded
-    // assertion is minimal. This doesn't mean that we  actual read everything, a lot of rarely used
-    // stuff is just ignored.
+    // Test that a response with all optional content present in the Response can be read. This doesn't
+    // mean that we  actual read everything, a lot of rarely used stuff is just ignored (for now)
     [Fact]
-    public void ReadSamlResponse_CanReadCompleteResponseWithAssertion()
+    public void ReadSamlResponse_CanReadCompleteResponse()
     {
         var source = GetXmlTraverser();
         ((XmlElement)source.CurrentNode!).Sign(
