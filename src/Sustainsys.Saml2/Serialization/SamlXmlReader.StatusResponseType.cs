@@ -43,7 +43,8 @@ partial class SamlXmlReader
         {
             if (response.Issuer == null)
             {
-                // TODO: Error - issuer is mandatory if there is a signature.
+                source.Errors.Add(new(ErrorReason.MissingElement, Elements.Issuer, source.CurrentNode,
+                    "A signature was found, but there was no Issuer specified. See profile spec 4.1.4.2, 4.4.4.2"));
             }
             else
             {

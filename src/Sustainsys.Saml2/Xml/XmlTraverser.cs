@@ -89,7 +89,7 @@ public class XmlTraverser
 
         if (Errors.Any(e => !e.Ignore))
         {
-            throw new Saml2XmlException(Errors);
+            throw new SamlXmlException(Errors);
         }
     }
 
@@ -329,7 +329,7 @@ public class XmlTraverser
     /// </summary>
     /// <param name="localName">Local name of attribute</param>
     /// <returns>Attribute value</returns>
-    /// <exception cref="Saml2XmlException">If no such attribute is found.</exception>
+    /// <exception cref="SamlXmlException">If no such attribute is found.</exception>
     public string GetRequiredAttribute(string localName)
     {
         if (CurrentNode == null)

@@ -99,7 +99,7 @@ public class XmlTraverserTests
         subject.MoveNext(true);
 
         subject.Invoking(s => s.ThrowOnErrors())
-            .Should().Throw<Saml2XmlException>()
+            .Should().Throw<SamlXmlException>()
             .Which.Errors.Single().Reason
             .Should().Be(ErrorReason.UnexpectedNamespace);
     }
@@ -114,7 +114,7 @@ public class XmlTraverserTests
         subject.MoveNext(true);
 
         subject.Invoking(s => s.ThrowOnErrors())
-            .Should().Throw<Saml2XmlException>()
+            .Should().Throw<SamlXmlException>()
             .Which.Errors.Count().Should().Be(2);
     }
 
@@ -160,7 +160,7 @@ public class XmlTraverserTests
         subject.Errors.Single(e => e.Reason == ErrorReason.UnexpectedLocalName).Ignore = true;
 
         subject.Invoking(s => s.ThrowOnErrors())
-            .Should().Throw<Saml2XmlException>()
+            .Should().Throw<SamlXmlException>()
             // Message should only contain the non-ignored message.
             .WithMessage("Unexpected namespace \"urn:r\" for local name \"root\", expected \"whatever\".")
             // But the collection should contain everything.

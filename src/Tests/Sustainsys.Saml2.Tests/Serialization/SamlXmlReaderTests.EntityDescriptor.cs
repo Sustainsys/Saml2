@@ -37,7 +37,7 @@ public partial class SamlXmlReaderTests
         var xmlTraverser = GetXmlTraverser();
 
         new SamlXmlReader().Invoking(s => s.ReadEntityDescriptor(xmlTraverser))
-            .Should().Throw<Saml2XmlException>()
+            .Should().Throw<SamlXmlException>()
             .WithErrors(ErrorReason.MissingAttribute);
     }
 
@@ -47,7 +47,7 @@ public partial class SamlXmlReaderTests
         var xmlTraverser = GetXmlTraverser();
 
         new SamlXmlReader().Invoking(s => s.ReadEntityDescriptor(xmlTraverser))
-            .Should().Throw<Saml2XmlException>()
+            .Should().Throw<SamlXmlException>()
             .WithErrors(ErrorReason.UnexpectedNamespace);
     }
 
@@ -57,7 +57,7 @@ public partial class SamlXmlReaderTests
         var xmlTraverser = GetXmlTraverser();
 
         new SamlXmlReader().Invoking(s => s.ReadEntityDescriptor(xmlTraverser))
-            .Should().Throw<Saml2XmlException>()
+            .Should().Throw<SamlXmlException>()
             .WithErrors(ErrorReason.UnexpectedLocalName)
             .WithMessage("*name*EntityDescriptor*");
     }
@@ -93,7 +93,7 @@ public partial class SamlXmlReaderTests
         var xmlTraverser = GetXmlTraverser();
 
         new SamlXmlReader().Invoking(s => s.ReadEntityDescriptor(xmlTraverser))
-            .Should().Throw<Saml2XmlException>()
+            .Should().Throw<SamlXmlException>()
             .WithErrors(ErrorReason.MissingElement);
     }
 
@@ -131,7 +131,7 @@ public partial class SamlXmlReaderTests
             AllowedHashAlgorithms = SignedXmlHelperTests.allowedHashes
         }
             .Invoking(s => s.ReadEntityDescriptor(xmlTraverser))
-            .Should().Throw<Saml2XmlException>()
+            .Should().Throw<SamlXmlException>()
             .WithErrors(ErrorReason.SignatureFailure);
     }
 
@@ -142,7 +142,7 @@ public partial class SamlXmlReaderTests
 
         var actual = new SamlXmlReader()
             .Invoking(s => s.ReadEntityDescriptor(xmlTraverser))
-            .Should().Throw<Saml2XmlException>()
+            .Should().Throw<SamlXmlException>()
             .WithErrors(ErrorReason.UnexpectedLocalName, ErrorReason.UnexpectedNamespace)
             .WithMessage("Unexpected*metadata*");
     }
@@ -184,7 +184,7 @@ public partial class SamlXmlReaderTests
 
         new SamlXmlReader()
             .Invoking(s => s.ReadEntityDescriptor(xmlTraverser))
-            .Should().Throw<Saml2XmlException>()
+            .Should().Throw<SamlXmlException>()
             .WithErrors(ErrorReason.UnexpectedNamespace);
     }
 }
