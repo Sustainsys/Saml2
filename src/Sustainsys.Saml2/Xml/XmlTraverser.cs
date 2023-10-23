@@ -250,6 +250,7 @@ public class XmlTraverser
         return true;
     }
 
+    // TODO: Reorder params to follow XmlNode convention with localname, namespaceUri
     /// <summary>
     /// Ensure that the current node has a specific localName and namespace.
     /// </summary>

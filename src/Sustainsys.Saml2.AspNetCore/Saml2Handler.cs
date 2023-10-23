@@ -71,8 +71,8 @@ public class Saml2Handler : RemoteAuthenticationHandler<Saml2Options>
         var samlMessage = await binding.UnbindAsync(Context.Request, str => Task.FromResult<Saml2Entity>(Options.IdentityProvider!));
 
         var source = XmlHelpers.GetXmlTraverser(samlMessage.Xml);
-        var serializer = GetService(sr => sr.GetSamlpSerializer);
-        var samlResponse = serializer.ReadSamlResponse(source);
+        var reader = GetService(sr => sr.GetSamlXmlReader);
+        var samlResponse = reader.ReadSamlResponse(source);
 
         // For now, to make half-baked test pass.
         return HandleRequestResult.Handle();
@@ -95,7 +95,7 @@ public class Saml2Handler : RemoteAuthenticationHandler<Saml2Options>
         var authnRequestGeneratedContext = new AuthnRequestGeneratedContext(Context, Scheme, Options, properties, authnRequest);
         await Events.AuthnRequestGeneratedAsync(authnRequestGeneratedContext);
 
-        var xmlDoc = GetService(sr => sr.GetSamlpSerializer, properties).Write(authnRequest);
+        var xmlDoc = GetService(sr => sr.GetSamlXmlWriter, properties).Write(authnRequest);
 
         var message = new Saml2Message
         {

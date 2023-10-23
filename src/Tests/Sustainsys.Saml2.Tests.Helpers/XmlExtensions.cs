@@ -15,9 +15,9 @@ public static class XmlExtensions
 
         var nsMgr = new XmlNamespaceManager(xmlDoc.NameTable);
 
-        nsMgr.AddNamespace("saml", Constants.Namespaces.Saml);
-        nsMgr.AddNamespace("samlp", Constants.Namespaces.Samlp);
-        nsMgr.AddNamespace("md", Constants.Namespaces.Metadata);
+        nsMgr.AddNamespace("saml", Constants.Namespaces.SamlUri);
+        nsMgr.AddNamespace("samlp", Constants.Namespaces.SamlpUri);
+        nsMgr.AddNamespace("md", Constants.Namespaces.MetadataUri);
 
         return nsMgr;
     }

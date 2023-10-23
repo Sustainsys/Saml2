@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
 using Sustainsys.Saml2.Bindings;
-using Sustainsys.Saml2.Saml;
 using Sustainsys.Saml2.Samlp;
+using Sustainsys.Saml2.Serialization;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -74,16 +74,16 @@ public class ServiceResolver
         = _ => new Saml2Events();
 
     /// <summary>
-    /// Factory for <see cref="ISamlpSerializer"/>
+    /// Factory for <see cref="ISamlXmlReader"/>
     /// </summary>
-    public Func<ResolverContext, ISamlpSerializer> GetSamlpSerializer { get; set; }
-        = ctx => new SamlpSerializer(ctx.Options.ServiceResolver.GetSamlSerializer(ctx));
+    public Func<ResolverContext, ISamlXmlReader> GetSamlXmlReader { get; set; }
+        = _ => new SamlXmlReader();
 
     /// <summary>
-    /// Factory for <see cref="ISamlSerializer"/>
+    /// Factory for <see cref="ISamlXmlWriter"/>
     /// </summary>
-    public Func<ResolverContext, ISamlSerializer> GetSamlSerializer { get; set; }
-        = _ => new SamlSerializer();
+    public Func<ResolverContext, ISamlXmlWriter> GetSamlXmlWriter { get; set; }
+        = _ => new SamlXmlWriter();
 
     /// <summary>
     /// Factory for collection of front channel bindings.

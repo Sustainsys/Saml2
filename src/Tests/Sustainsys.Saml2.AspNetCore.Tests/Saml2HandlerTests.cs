@@ -12,6 +12,7 @@ using System.Text.Encodings.Web;
 using System.Xml;
 using Sustainsys.Saml2.Tests.Helpers;
 using System.Text;
+using Sustainsys.Saml2.Serialization;
 
 namespace Sustainsys.Saml2.AspNetCore.Tests;
 public class Saml2HandlerTests
@@ -121,18 +122,26 @@ public class Saml2HandlerTests
 
         await subject.ChallengeAsync(props);
 
+        //bool validated = false;
+
         void validateLocation(string location)
         {
             location.Should().StartWith("https://idp.example.com/sso?SamlRequest=");
 
             var message = new HttpRedirectBinding().UnBindAsync(location, _ => throw new NotImplementedException());
-            var deserializedAuthnRequest = new SamlpSerializer(new SamlSerializer())
+
+            var deserializedAuthnRequest = new SamlXmlReader()
                 .ReadAuthnRequest(message.Xml.GetXmlTraverser());
 
             deserializedAuthnRequest.Should().BeEquivalentTo(authnRequest);
+
+            // validated = true;
         }
 
         httpContext.Response.Received().Redirect(Arg.Do<string>(validateLocation));
+
+        // TODO: Check that validation was called.
+        //validated.Should().BeTrue();
     }
 
 

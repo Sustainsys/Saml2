@@ -15,7 +15,7 @@ public class RequestAbstractTypeTests
 
         // Core 3.2.1: Id is required
         XmlConvert.VerifyNCName(subject.Id);
-        
+
         // Core 3.2.1: Version is required and must be "2.0"
         subject.Version.Should().Be("2.0");
     }

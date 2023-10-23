@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Http;
-using Sustainsys.Saml2.Metadata.Attributes;
 using System.IO.Compression;
 
 namespace Sustainsys.Saml2.Bindings;

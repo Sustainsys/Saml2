@@ -21,17 +21,32 @@ public static class Constants
         /// <summary>
         /// Namespace uri for the saml 2.0 protocol namespace.
         /// </summary>
-        public const string Samlp = "urn:oasis:names:tc:SAML:2.0:protocol";
+        public const string SamlpUri = "urn:oasis:names:tc:SAML:2.0:protocol";
+
+        /// <summary>
+        /// Namespace prefix samlp for <see cref="SamlpUri"/>
+        /// </summary>
+        public const string Samlp = "samlp";
 
         /// <summary>
         /// Namespace uri for the saml 2.0 assertion namespace.
         /// </summary>
-        public const string Saml = "urn:oasis:names:tc:SAML:2.0:assertion";
+        public const string SamlUri = "urn:oasis:names:tc:SAML:2.0:assertion";
+
+        /// <summary>
+        /// Namespace prefix saml for <see cref="SamlUri"/>
+        /// </summary>
+        public const string Saml = "saml";
 
         /// <summary>
         /// Namespace uri for the saml 2.0 Metadata namespace.
         /// </summary>
-        public const string Metadata = "urn:oasis:names:tc:SAML:2.0:metadata";
+        public const string MetadataUri = "urn:oasis:names:tc:SAML:2.0:metadata";
+
+        /// <summary>
+        /// Namespace prefix md for <see cref="MetadataUri"/>
+        /// </summary>
+        public const string Metadata = "md";
     }
 
     /// <summary>
@@ -200,5 +215,94 @@ public static class Constants
         /// PDPDescriptor XML element name.
         /// </summary>
         public const string PDPDescriptor = nameof(PDPDescriptor);
+    }
+
+    /// <summary>
+    /// Names of attributes.
+    /// </summary>
+    /// <remarks>The naming of the constants are deriberately not following
+    /// casing convention in order to be exactly the same as the contents.
+    /// </remarks>
+    public static class AttributeNames
+    {
+        /// <summary>
+        /// entityID attribute name.
+        /// </summary>
+        public const string entityID = nameof(entityID);
+
+        /// <summary>
+        /// ID attribute name.
+        /// </summary>
+        public const string ID = nameof(ID);
+
+        /// <summary>
+        /// cacheDuration attribute name.
+        /// </summary>
+        public const string cacheDuration = nameof(cacheDuration);
+
+        /// <summary>
+        /// validUntil attribute name.
+        /// </summary>
+        public const string validUntil = nameof(validUntil);
+
+        /// <summary>
+        /// Binding attibute name.
+        /// </summary>
+        public const string Binding = nameof(Binding);
+
+        /// <summary>
+        /// Location attribute name.
+        /// </summary>
+        public const string Location = nameof(Location);
+
+        /// <summary>
+        /// protocolSupportEnumeration attribute name.
+        /// </summary>
+        public const string protocolSupportEnumeration = nameof(protocolSupportEnumeration);
+
+        /// <summary>
+        /// use attribute name.
+        /// </summary>
+        public const string use = nameof(use);
+
+        /// <summary>
+        /// index attribute name.
+        /// </summary>
+        public const string index = nameof(index);
+
+        /// <summary>
+        /// isDefault attribute name.
+        /// </summary>
+        public const string isDefault = nameof(isDefault);
+
+        /// <summary>
+        /// WantAuthnRequestsSigned attribute name.
+        /// </summary>
+        public const string WantAuthnRequestsSigned = nameof(WantAuthnRequestsSigned);
+
+        /// <summary>
+        /// IssueInstant attribute name.
+        /// </summary>
+        public const string IssueInstant = nameof(IssueInstant);
+
+        /// <summary>
+        /// Version attribute name.
+        /// </summary>
+        public const string Version = nameof(Version);
+
+        /// <summary>
+        /// Value attribute name.
+        /// </summary>
+        public const string Value = nameof(Value);
+
+        /// <summary>
+        /// InResponseTo attribute name.
+        /// </summary>
+        public const string InResponseTo = nameof(InResponseTo);
+
+        /// <summary>
+        /// Destination attribute name.
+        /// </summary>
+        public const string Destination = nameof(Destination);
     }
 }
