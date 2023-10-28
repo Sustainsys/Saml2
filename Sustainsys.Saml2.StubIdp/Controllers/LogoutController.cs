@@ -33,7 +33,7 @@ namespace Sustainsys.Saml2.StubIdp.Controllers
                                 LogoutRequestXml = unbindResult.Data.PrettyPrint(),
                                 InResponseTo = logoutRequest.Id.Value,
                                 DestinationUrl = new Uri(new Uri(logoutRequest.Issuer.Id + "/"), "Logout"),
-                                RelayState = Request.QueryString["RelayState"]
+                                RelayState = Request.QueryString["RelayState"] ?? Request.Form["RelayState"]
                             };
                             return View("RespondToLogout", model);
                         }
