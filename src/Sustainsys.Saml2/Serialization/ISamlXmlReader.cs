@@ -42,9 +42,9 @@ public interface ISamlXmlReader
     SamlResponse ReadSamlResponse(XmlTraverser source);
 
     /// <summary>
-    /// Read an AuthnReqeust
+    /// Read an <see cref="AuthnRequest"/>
     /// </summary>
     /// <param name="source">Xml Traverser to read from</param>
-    /// <returns>AutnnRequest</returns>
+    /// <returns><see cref="AuthnRequest"/></returns>
     AuthnRequest ReadAuthnRequest(XmlTraverser source);
 }

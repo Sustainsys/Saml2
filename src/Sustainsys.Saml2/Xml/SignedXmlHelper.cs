@@ -17,7 +17,7 @@ namespace Sustainsys.Saml2.Xml;
 public static class SignedXmlHelper
 {
     /// <summary>
-    /// Adds an envoleped signature to the node.
+    /// Adds an enveloped signature to the node.
     /// </summary>
     /// <param name="element">Element to sign</param>
     /// <param name="certificate">Certificate to use to sign</param>
@@ -31,7 +31,7 @@ public static class SignedXmlHelper
     }
 
     /// <summary>
-    /// Adds an envoleped signature to the node.
+    /// Adds an enveloped signature to the node.
     /// </summary>
     /// <param name="element">Element to sign</param>
     /// <param name="certificate">Certificate to use to sign</param>
@@ -41,10 +41,7 @@ public static class SignedXmlHelper
         X509Certificate2 certificate,
         XmlNode insertAfter)
     {
-        if(insertAfter == null)
-        {
-            throw new ArgumentNullException(nameof(insertAfter));
-        }
+        ArgumentNullException.ThrowIfNull(insertAfter);
 
         var signedXml = CreateSignedXml(element, certificate);
 
@@ -96,8 +93,10 @@ public static class SignedXmlHelper
         /// <param name="idValue">Id value to find</param>
         /// <returns>XmlElement</returns>
         /// <exception cref="CryptographicException">If not exactly one match</exception>
-        public override XmlElement GetIdElement(XmlDocument document, string idValue)
+        public override XmlElement GetIdElement(XmlDocument? document, string idValue)
         {
+            ArgumentNullException.ThrowIfNull(document);
+
             XmlConvert.VerifyNCName(idValue);
 
             var possibleNodes = document.SelectNodes($"//*[@ID=\"{idValue}\" or @Id=\"{idValue}\" or @id=\"{idValue}\"]")!;
@@ -138,7 +137,7 @@ public static class SignedXmlHelper
         string? error = null;
         SigningKey? workingKey = null;
 
-        if (signedXml.SignedInfo.References.Count != 1)
+        if (signedXml.SignedInfo!.References.Count != 1)
         {
             error += "The Signature should contain exactly one reference. ";
         }
@@ -146,6 +145,11 @@ public static class SignedXmlHelper
         {
             foreach (var key in keys)
             {
+                if (key.Certificate == null)
+                {
+                    throw new InvalidOperationException("Signing key certificate cannot be null");
+                }
+
                 if (signedXml.CheckSignature(key.Certificate, true))
                 {
                     workingKey = key;
@@ -172,7 +176,7 @@ public static class SignedXmlHelper
             }
             else
             {
-                var id = reference.Uri[1..]; // Drop off the #
+                var id = reference.Uri![1..]; // Drop off the #
 
                 var signedElement = signedXml.GetIdElement(signatureElement.OwnerDocument, id);
 
@@ -205,7 +209,7 @@ public static class SignedXmlHelper
         }
 
         // The algorithm names has the form http://foo/bar/xyz#rsa-sha256
-        var signingHash = signedXml.SignatureMethod[(signedXml.SignatureMethod.LastIndexOf('-') + 1)..];
+        var signingHash = signedXml.SignatureMethod![(signedXml.SignatureMethod!.LastIndexOf('-') + 1)..];
         if (!allowedHashAlgorithms.Contains(signingHash))
         {
             var allowed = string.Join(", ", allowedHashAlgorithms);

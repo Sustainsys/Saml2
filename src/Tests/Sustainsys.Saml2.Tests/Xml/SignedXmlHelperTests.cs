@@ -163,7 +163,7 @@ public class SignedXmlHelperTests
     [Fact]
     public void VerifySignature_NoReference()
     {
-        var signedWithoutReference = @"<saml2p:Response xmlns:saml2p=""urn:oasis:names:tc:SAML:2.0:protocol"" xmlns:saml2=""urn:oasis:names:tc:SAML:2.0:assertion"" ID=""Saml2Response_Validate_FalseOnMissingReference"" Version=""2.0"" IssueInstant=""2013-01-01T00:00:00Z""><saml2:Issuer>https://idp.example.com</saml2:Issuer><saml2p:Status><saml2p:StatusCode Value=""urn:oasis:names:tc:SAML:2.0:status:Requester"" /></saml2p:Status><Signature xmlns=""http://www.w3.org/2000/09/xmldsig#""><SignedInfo><CanonicalizationMethod Algorithm=""http://www.w3.org/TR/2001/REC-xml-c14n-20010315"" /><SignatureMethod Algorithm=""http://www.w3.org/2000/09/xmldsig#rsa-sha1"" /></SignedInfo><SignatureValue>tYFIoYmrzmp3H7TXm9IS8DW3buBZIb6sI2ycrn+AOnVcdYnPTJpk3ntHlqQKXNEyXgXZNdqEuFpgI1I0P0TlhM+C3rBJnflkApkxZkak5RwnJzDWTHpsSDjYcm+/XgBy3JVZJuMWb2YPaV8GB6cjBMDrENUEaoKRg+FpzPUZO1EOMcqbocXp5cHie1CkPnD1OtT/cuzMBUMpBGZMxjZwdFpOO7R3CUXh/McxKfoGUQGC3DVpt5T8uGkpj4KqZVPS/qTCRhbPRDjg73BdWbdkFpFWge8G/FgkYxr9LBE1TsrxptppO9xoA5jXwJVZaWndSMvo6TuOjUgqY2w5RTkqhA==</SignatureValue></Signature></saml2p:Response>";
+        var signedWithoutReference = File.ReadAllText("../../../Xml/SignedXmlHelperTests/VerifySignature_NoReference.xml");
 
         var xmlDoc = new XmlDocument();
         xmlDoc.LoadXml(signedWithoutReference);
@@ -330,7 +330,7 @@ public class SignedXmlHelperTests
         reference.AddTransform(new XmlDsigExcC14NTransform());
         signedXml.AddReference(reference);
 
-        signedXml.SignedInfo.SignatureMethod = SignedXml.XmlDsigRSASHA1Url;
+        signedXml.SignedInfo!.SignatureMethod = SignedXml.XmlDsigRSASHA1Url;
         signedXml.ComputeSignature();
 
         xd.DocumentElement!.AppendChild(signedXml.GetXml());
@@ -398,7 +398,7 @@ public class SignedXmlHelperTests
     }
 
     [Fact]
-    public void VerifySignaure_RejectsDuplicateIdsEvenIfCaseDiffer()
+    public void VerifySignature_RejectsDuplicateIdsEvenIfCaseDiffer()
     {
         // Ensure that a document where referenced id exists in multiple
         // locations but ID is spelled Id or id is rejected. Allowing this is a
@@ -465,12 +465,13 @@ public class SignedXmlHelperTests
 
     private class SignRootSignedXml : SignedXml
     {
-        public SignRootSignedXml(XmlDocument xd) : base(xd) { }
+        public SignRootSignedXml(XmlDocument xd) : base(xd)
+        { }
 
         // This allows us to create a signature with invalid reference for the
         // VerifySignature_RequiresReferenceNCName test.
-        public override XmlElement GetIdElement(XmlDocument document, string idValue)
-            => document.DocumentElement!;
+        public override XmlElement GetIdElement(XmlDocument? document, string idValue)
+            => document!.DocumentElement!;
     }
 
     [Fact]

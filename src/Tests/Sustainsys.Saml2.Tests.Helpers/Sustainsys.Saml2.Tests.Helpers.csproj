@@ -8,6 +8,10 @@
 		<IsPackable>false</IsPackable>
 	</PropertyGroup>
 
+	<PropertyGroup>
+		<NoWarn>1701;1702;IDE0039;IDE0290;IDE0300</NoWarn>
+	</PropertyGroup>
+
 	<ItemGroup>
 		<PackageReference Include="FluentAssertions" Version="6.6.0" />
 	</ItemGroup>
@@ -24,5 +28,10 @@
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		</None>
 	</ItemGroup>
+
+	<PropertyGroup>
+		<!--Restrict warning level to what is supported in .Net 6-->
+		<WarningLevel>6</WarningLevel>
+	</PropertyGroup>
 
 </Project>

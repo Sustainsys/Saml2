@@ -250,7 +250,7 @@ public class XmlTraverser
         return true;
     }
 
-    // TODO: Reorder params to follow XmlNode convention with localname, namespaceUri
+    // TODO: Reorder params to follow XmlNode convention with localName, namespaceUri
     /// <summary>
     /// Ensure that the current node has a specific localName and namespace.
     /// </summary>
@@ -329,7 +329,6 @@ public class XmlTraverser
     /// </summary>
     /// <param name="localName">Local name of attribute</param>
     /// <returns>Attribute value</returns>
-    /// <exception cref="SamlXmlException">If no such attribute is found.</exception>
     public string GetRequiredAttribute(string localName)
     {
         if (CurrentNode == null)

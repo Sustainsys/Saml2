@@ -32,7 +32,7 @@ public static class XmlHelpers
     /// Get an Xml traverser for an XmlDocument
     /// </summary>
     /// <param name="xmlElement">Source XmlElement. Typically the document element</param>
-    /// <returns>XmlTraverser locatet at DocumentElement</returns>
+    /// <returns>XmlTraverser located at DocumentElement</returns>
     public static XmlTraverser GetXmlTraverser(this XmlElement xmlElement)
         => new(xmlElement ?? throw new ArgumentException("DocumentElement cannot be null"));
 

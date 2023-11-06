@@ -38,8 +38,7 @@ public class Saml2HandlerTests
 #if NET8_0_OR_GREATER
             );
 #else
-            ,
-            systemClock);
+            ,systemClock);
 #endif
 
         var scheme = new AuthenticationScheme("Saml2", "Saml2", typeof(Saml2Handler));
@@ -192,6 +191,6 @@ public class Saml2HandlerTests
         result.Should().BeTrue();
     }
 
-    // TODO: Use event to resolve IdentityProvider - presense of EntityId indicates if challenge or response processing
+    // TODO: Use event to resolve IdentityProvider - presence of EntityId indicates if challenge or response processing
     // TODO: Event when Xml was created
 }

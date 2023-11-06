@@ -10,7 +10,7 @@
 	</PropertyGroup>
 
 	<PropertyGroup>
-	  <NoWarn>1701;1702;IDE0039</NoWarn>
+		<NoWarn>1701;1702;IDE0039;IDE0290;IDE0300</NoWarn>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -37,9 +37,9 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <None Update="stubidp.sustainsys.com.cer">
-	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-	  </None>
+		<None Update="stubidp.sustainsys.com.cer">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
 	</ItemGroup>
 
 </Project>

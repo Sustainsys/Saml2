@@ -32,4 +32,9 @@
 		<ProjectReference Include="..\Sustainsys.Saml2.Tests.Helpers\Sustainsys.Saml2.Tests.Helpers.csproj" />
 	</ItemGroup>
 
+	<PropertyGroup>
+		<!--Restrict warning level to what is supported in .Net 6-->
+		<WarningLevel>6</WarningLevel>
+	</PropertyGroup>
+	
 </Project>

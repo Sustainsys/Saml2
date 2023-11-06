@@ -16,6 +16,22 @@ namespace Sustainsys.Saml2.AspNetCore;
 /// </summary>
 public class Saml2Handler : RemoteAuthenticationHandler<Saml2Options>
 {
+#if NET8_0_OR_GREATER
+    /// <summary>
+    /// Constructor
+    /// </summary>
+    /// <param name="options">Options</param>
+    /// <param name="logger">Logger factory</param>
+    /// <param name="encoder">Url encoder</param>
+    public Saml2Handler(
+        IOptionsMonitor<Saml2Options> options,
+        ILoggerFactory logger,
+        UrlEncoder encoder
+        )
+        : base(options, logger, encoder)
+    {}
+#else
+
     /// <summary>
     /// Constructor
     /// </summary>
@@ -26,17 +42,11 @@ public class Saml2Handler : RemoteAuthenticationHandler<Saml2Options>
     public Saml2Handler(
         IOptionsMonitor<Saml2Options> options,
         ILoggerFactory logger,
-        UrlEncoder encoder
-#if NET8_0_OR_GREATER
-        )
-        : base(options, logger, encoder)
-#else
-        ,
+        UrlEncoder encoder,
         ISystemClock clock)
         : base(options, logger, encoder, clock)
+    { }
 #endif
-    {
-    }
 
     /// <summary>
     /// Create events by invoking Options.ServiceResolver.CreateEventsAsync()
@@ -95,7 +105,11 @@ public class Saml2Handler : RemoteAuthenticationHandler<Saml2Options>
         var authnRequest = new AuthnRequest()
         {
             Issuer = Options.EntityId,
+#if NET8_0_OR_GREATER
+            IssueInstant = TimeProvider.GetUtcNow().DateTime,
+#else
             IssueInstant = Clock.UtcNow.DateTime,
+#endif
             AssertionConsumerServiceUrl = BuildRedirectUri(Options.CallbackPath)
         };
 
