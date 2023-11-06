@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Sustainsys.Saml2.AspNetCore.Events;
@@ -9,6 +8,8 @@ using Sustainsys.Saml2.Xml;
 using System.Text.Encodings.Web;
 
 namespace Sustainsys.Saml2.AspNetCore;
+
+// TODO: OTel Metrics + Activities + logging/traces
 
 /// <summary>
 /// Saml2 authentication handler
@@ -25,9 +26,15 @@ public class Saml2Handler : RemoteAuthenticationHandler<Saml2Options>
     public Saml2Handler(
         IOptionsMonitor<Saml2Options> options,
         ILoggerFactory logger,
-        UrlEncoder encoder,
+        UrlEncoder encoder
+#if NET8_0_OR_GREATER
+        )
+        : base(options, logger, encoder)
+#else
+        ,
         ISystemClock clock)
         : base(options, logger, encoder, clock)
+#endif
     {
     }
 
