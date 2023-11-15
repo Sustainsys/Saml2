@@ -51,7 +51,7 @@ public class XmlTraverser
     public XmlTraverser(XmlNode rootNode)
     {
         CurrentNode = rootNode;
-        Errors = new();
+        Errors = [];
     }
 
     /// <summary>

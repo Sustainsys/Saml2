@@ -26,20 +26,10 @@ public class Saml2HandlerTests
 
         var loggerFactory = Substitute.For<ILoggerFactory>();
 
-#if !NET8_0_OR_GREATER
-        var systemClock = Substitute.For<ISystemClock>();
-        systemClock.UtcNow.Returns(CurrentFakeTime);
-#endif
-
         var handler = new Saml2Handler(
             optionsMonitor,
             loggerFactory,
-            UrlEncoder.Default
-#if NET8_0_OR_GREATER
-            );
-#else
-            ,systemClock);
-#endif
+            UrlEncoder.Default);
 
         var scheme = new AuthenticationScheme("Saml2", "Saml2", typeof(Saml2Handler));
 
@@ -65,9 +55,7 @@ public class Saml2HandlerTests
                 SsoServiceUrl = "https://idp.example.com/sso",
                 SsoServiceBinding = Constants.BindingUris.HttpRedirect
             },
-#if NET8_0_OR_GREATER
             TimeProvider = new Microsoft.Extensions.Time.Testing.FakeTimeProvider(CurrentFakeTime)
-#endif
         };
     }
 

@@ -23,46 +23,35 @@ public class ServiceResolver
     /// <summary>
     /// Context for service resolver
     /// </summary>
-    public class ResolverContext
+    /// <param name="context">Current http context</param>
+    /// <param name="options">Current options</param>
+    /// <param name="scheme">Current authentication scheme</param>
+    /// <param name="authenticationProperties">Authentication properties, if available</param>
+    public class ResolverContext(
+        HttpContext context,
+        Saml2Options options,
+        AuthenticationScheme scheme,
+        AuthenticationProperties? authenticationProperties)
     {
-        /// <summary>
-        /// Ctor
-        /// </summary>
-        /// <param name="context">Current http context</param>
-        /// <param name="options">Current options</param>
-        /// <param name="scheme">Current authentication scheme</param>
-        /// <param name="authenticationProperties">Authentication properties, if available</param>
-        public ResolverContext(
-            HttpContext context,
-            Saml2Options options,
-            AuthenticationScheme scheme,
-            AuthenticationProperties? authenticationProperties)
-        {
-            Context = context;
-            Options = options;
-            Scheme = scheme;
-            AuthenticationProperties = authenticationProperties;
-        }
-
         /// <summary>
         /// Current HttpContext
         /// </summary>
-        public HttpContext Context { get; }
+        public HttpContext Context { get; } = context;
 
         /// <summary>
         /// Current options
         /// </summary>
-        public Saml2Options Options { get; }
+        public Saml2Options Options { get; } = options;
 
         /// <summary>
         /// Current authentication scheme
         /// </summary>
-        public AuthenticationScheme Scheme { get; }
+        public AuthenticationScheme Scheme { get; } = scheme;
 
         /// <summary>
         /// Current AuthenticationProperties, if available
         /// </summary>
-        public AuthenticationProperties? AuthenticationProperties { get; }
+        public AuthenticationProperties? AuthenticationProperties { get; } = authenticationProperties;
     }
 
     /// <summary>
@@ -90,35 +79,28 @@ public class ServiceResolver
     /// </summary>
     public Func<ResolverContext, IEnumerable<IFrontChannelBinding>> GetAllBindings { get; set; }
         = _ => new IFrontChannelBinding[] { new HttpRedirectBinding(), new HttpPostBinding() };
-    
+
     /// <summary>
     /// Context for resolving binding
     /// </summary>
-    public class BindingResolverContext : ResolverContext
+    /// <param name="context">Current http context</param>
+    /// <param name="options">Current options</param>
+    /// <param name="scheme">Current authentication scheme</param>
+    /// <param name="authenticationProperties">Authentication properties, if available</param>
+    /// <param name="binding">Uri for requested binding</param>
+    public class BindingResolverContext(
+        HttpContext context,
+        Saml2Options options,
+        AuthenticationScheme scheme,
+        AuthenticationProperties? authenticationProperties,
+        string binding) 
+        : ResolverContext(context, options, scheme, authenticationProperties)
     {
-        /// <summary>
-        /// Ctor
-        /// </summary>
-        /// <param name="context">Current http context</param>
-        /// <param name="options">Current options</param>
-        /// <param name="scheme">Current authentication scheme</param>
-        /// <param name="authenticationProperties">Authentication properties, if available</param>
-        /// <param name="binding">Uri for requested binding</param>
-        public BindingResolverContext(
-            HttpContext context,
-            Saml2Options options,
-            AuthenticationScheme scheme,
-            AuthenticationProperties? authenticationProperties,
-            string binding)
-            : base(context, options, scheme, authenticationProperties)
-        {
-            Binding = binding;
-        }
 
         /// <summary>
         /// Requested binding
         /// </summary>
-        public string Binding { get; }
+        public string Binding { get; } = binding;
     }
 
     /// <summary>

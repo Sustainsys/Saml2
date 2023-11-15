@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<TargetFrameworks>net6.0;net7.0;net8.0</TargetFrameworks>
+		<TargetFramework>net8.0</TargetFramework>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Nullable>enable</Nullable>
 
@@ -31,10 +31,5 @@
 		<ProjectReference Include="..\..\Sustainsys.Saml2.AspNetCore\Sustainsys.Saml2.AspNetCore.csproj" />
 		<ProjectReference Include="..\Sustainsys.Saml2.Tests.Helpers\Sustainsys.Saml2.Tests.Helpers.csproj" />
 	</ItemGroup>
-
-	<PropertyGroup>
-		<!--Restrict warning level to what is supported in .Net 6-->
-		<WarningLevel>6</WarningLevel>
-	</PropertyGroup>
 	
 </Project>

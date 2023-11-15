@@ -13,5 +13,5 @@ public class RoleDescriptor
     /// <summary>
     /// Cryptographif keys for signing and encryption.
     /// </summary>
-    public List<KeyDescriptor> Keys { get; set; } = new();
+    public List<KeyDescriptor> Keys { get; set; } = [];
 }

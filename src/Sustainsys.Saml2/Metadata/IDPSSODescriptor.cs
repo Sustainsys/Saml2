@@ -8,7 +8,7 @@ public class IDPSSODescriptor : SSODescriptor
     /// <summary>
     /// List of SingleSignOnService endpoints.
     /// </summary>
-    public List<Endpoint> SingleSignOnServices { get; } = new();
+    public List<Endpoint> SingleSignOnServices { get; } = [];
 
     /// <summary>
     /// Does the Idp wants any AuthnRequests to be signed?

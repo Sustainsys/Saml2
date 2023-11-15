@@ -11,10 +11,10 @@ public abstract class SSODescriptor : RoleDescriptor
     /// <summary>
     /// Artifact resolution services.
     /// </summary>
-    public List<IndexedEndpoint> ArtifactResolutionServices { get; } = new();
+    public List<IndexedEndpoint> ArtifactResolutionServices { get; } = [];
 
     /// <summary>
     /// Single logout services.
     /// </summary>
-    public List<Endpoint> SingleLogoutServices { get; } = new();
+    public List<Endpoint> SingleLogoutServices { get; } = [];
 }
