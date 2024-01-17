@@ -26,7 +26,7 @@ namespace Sustainsys.Saml2.WebSso
         /// <returns>CommandResult</returns>
         public CommandResult Run(HttpRequestData request, IOptions options)
         {
-            if(options == null)
+            if (options == null)
             {
                 throw new ArgumentNullException(nameof(options));
             }

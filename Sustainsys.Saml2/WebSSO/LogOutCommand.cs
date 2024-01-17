@@ -120,7 +120,7 @@ namespace Sustainsys.Saml2.WebSso
                 {
                     throw new InvalidSignatureException("There is no Issuer element in the message, so there is no way to know what certificate to use to validate the signature.");
                 }
-                var idp = options.IdentityProviders[new EntityId(issuer)];
+                var idp = options.Notifications.GetIdentityProvider(new EntityId(issuer), null, options);
 
                 if (!unbindResult.Data.IsSignedByAny(
                     idp.SigningKeys,
@@ -249,7 +249,7 @@ namespace Sustainsys.Saml2.WebSso
         {
             var request = Saml2LogoutRequest.FromXml(unbindResult.Data);
 
-            var idp = options.IdentityProviders[request.Issuer];
+            var idp = options.Notifications.GetIdentityProvider(request.Issuer, null, options);
 
             if(options.SPOptions.SigningServiceCertificate == null)
             {

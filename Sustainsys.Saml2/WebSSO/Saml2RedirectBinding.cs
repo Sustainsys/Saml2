@@ -131,7 +131,8 @@ namespace Sustainsys.Saml2.WebSso
                 return TrustLevel.None;
             }
 
-            if (!options.IdentityProviders.TryGetValue(new EntityId(issuer), out IdentityProvider idp))
+		    IdentityProvider idp = options.Notifications.GetIdentityProvider(new EntityId(issuer), null, options);
+			if (idp == null)
             {
                 throw new InvalidSignatureException(string.Format(CultureInfo.InvariantCulture, "Cannot verify signature of message from unknown sender {0}.", issuer));
             }
