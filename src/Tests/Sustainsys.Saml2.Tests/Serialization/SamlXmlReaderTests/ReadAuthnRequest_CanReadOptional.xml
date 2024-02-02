@@ -1,0 +1,14 @@
+﻿<samlp:AuthnRequest xmlns:samlp="urn:oasis:names:tc:SAML:2.0:protocol" xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion"
+					ID="x123" Version="2.0" IssueInstant="2023-11-24T22:44:14Z"
+					Destination="https://idp.example.com/Sso"
+					Consent="urn:oasis:names:tc:SAML:2.0:consent:obtained"
+					AssertionConsumerServiceURL = "https://sp.example.com/Acs"
+					AssertionConsumerServiceIndex = "42"
+					ForceAuthn="true" IsPassive="true"
+					ProtocolBinding = "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST">
+	<saml:Issuer>https://sp.example.com/Metadata</saml:Issuer>
+	<samlp:Extensions></samlp:Extensions>
+	<saml:Subject>
+		<saml:NameID>abc12345</saml:NameID>
+	</saml:Subject>
+</samlp:AuthnRequest>

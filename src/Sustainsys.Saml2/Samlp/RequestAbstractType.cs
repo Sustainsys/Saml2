@@ -1,5 +1,6 @@
 ﻿using Sustainsys.Saml2.Xml;
 using Sustainsys.Saml2.Saml;
+using Sustainsys.Saml2.Common;
 
 namespace Sustainsys.Saml2.Samlp;
 
@@ -27,4 +28,24 @@ public class RequestAbstractType
     /// Identifies the entity that generated the request message.
     /// </summary>
     public NameId? Issuer { get; set; }
+
+    /// <summary>
+    /// Destination Url that the messages is/was sent to.
+    /// </summary>
+    public string? Destination { get; set; }
+
+    /// <summary>
+    /// URI reference for consent.
+    /// </summary>
+    public string? Consent { get; set; }
+
+    /// <summary>
+    /// Extensions
+    /// </summary>
+    public Extensions? Extensions { get; set; }
+
+    /// <summary>
+    /// Trust level, based on signature validation
+    /// </summary>
+    public TrustLevel TrustLevel { get; set; }
 }

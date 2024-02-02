@@ -30,19 +30,19 @@ partial class SamlXmlReader
     /// <summary>
     /// Read attributes of IDPSSODescriptor.
     /// </summary>
-    /// <param name="source">Source</param>
+    /// <param name="source">Xml traverser to read from</param>
     /// <param name="result">Result</param>
     protected virtual void ReadAttributes(XmlTraverser source, IDPSSODescriptor result)
     {
-        result.WantAuthnRequestsSigned = source.GetBoolAttribute(AttributeNames.WantAuthnRequestsSigned) ?? false;
-
         ReadAttributes(source, (SSODescriptor)result);
+
+        result.WantAuthnRequestsSigned = source.GetBoolAttribute(AttributeNames.WantAuthnRequestsSigned) ?? false;
     }
 
     /// <summary>
     /// Read child elements of IDPSSODescriptor
     /// </summary>
-    /// <param name="source"></param>
+    /// <param name="source">Xml traverser to read from</param>
     /// <param name="result"></param>
     protected virtual void ReadElements(XmlTraverser source, IDPSSODescriptor result)
     {

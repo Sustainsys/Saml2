@@ -14,9 +14,10 @@ namespace Sustainsys.Saml2.AspNetCore;
 /// <summary>
 /// The Sustainsys.Saml2 library uses multiple loosely coupled services internally. The 
 /// default implementation is to not register these in the main dependency injection 
-/// system to avoid clutter. All services are resolved using the service resolver.
-/// To override services, override the factory method here. The resolver context
-/// always contains the HttpContext, which can be used to resolve services from DI.
+/// system to avoid clutter and to allow per scheme registrations. All services are 
+/// resolved using the service resolver. To override services, override the factory 
+/// method here. The resolver context always contains the HttpContext, which can be 
+/// used to resolve services from DI.
 /// </summary>
 public class ServiceResolver
 {
@@ -68,12 +69,14 @@ public class ServiceResolver
     public Func<ResolverContext, ISamlXmlReader> GetSamlXmlReader { get; set; }
         = _ => new SamlXmlReader();
 
+    // TODO: Can this be a static instance?
     /// <summary>
     /// Factory for <see cref="ISamlXmlWriter"/>
     /// </summary>
     public Func<ResolverContext, ISamlXmlWriter> GetSamlXmlWriter { get; set; }
         = _ => new SamlXmlWriter();
 
+    // TODO: Can this be a static instance?
     /// <summary>
     /// Factory for collection of front channel bindings.
     /// </summary>

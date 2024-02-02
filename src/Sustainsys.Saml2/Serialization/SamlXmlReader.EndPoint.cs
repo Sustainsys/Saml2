@@ -6,13 +6,25 @@ namespace Sustainsys.Saml2.Serialization;
 partial class SamlXmlReader
 {
     /// <summary>
+    /// Factory for Endpoint.
+    /// </summary>
+    /// <returns>Created Endpoint</returns>
+    protected virtual Endpoint CreateEndpoint() => new();
+
+    /// <summary>
+    /// Factory for indexed endpoint
+    /// </summary>
+    /// <returns>Created IndexedEndpoint</returns>
+    protected virtual IndexedEndpoint CreateIndexedEndpoint() => new();
+
+    /// <summary>
     /// Reads an endpoint.
     /// </summary>
     /// <param name="source">Source data</param>
     /// <returns>Endpoint read</returns>
     protected virtual Endpoint ReadEndpoint(XmlTraverser source)
     {
-        var result = new Endpoint();
+        var result = CreateEndpoint();
         ReadAttributes(source, result);
 
         return result;
@@ -36,11 +48,9 @@ partial class SamlXmlReader
     /// <returns>IndexedEndpoint</returns>
     protected virtual IndexedEndpoint ReadIndexedEndpoint(XmlTraverser source)
     {
-        var result = new IndexedEndpoint()
-        {
-            Index = source.GetRequiredIntAttribute(AttributeNames.index),
-            IsDefault = source.GetBoolAttribute(AttributeNames.isDefault) ?? false
-        };
+        var result = CreateIndexedEndpoint();
+        result.Index = source.GetRequiredIntAttribute(AttributeNames.index);
+        result.IsDefault = source.GetBoolAttribute(AttributeNames.isDefault) ?? false;
 
         ReadAttributes(source, result);
 

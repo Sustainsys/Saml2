@@ -3,13 +3,16 @@ using Sustainsys.Saml2.Tests.Helpers;
 using System;
 using System.Linq;
 using System.Xml;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Sustainsys.Saml2.Saml;
+using NSubstitute;
 
 namespace Sustainsys.Saml2.Tests.Xml;
 
 public class XmlTraverserTests
 {
-    private const string xml = "<root xmlns=\"urn:r\" xmlns:a=\"urn:a\" x=\"1\" a:x=\"2\" a:y=\"3\" a:z=\"4\" z=\"5\" " +
-        "validTimeSpan=\"PT15M\" invalidTimeSpan=\"XYZ\" uri=\"urn:uri\"> <p/><q/>abc</root>";
+    private const string xml = "<root xmlns=\"urn:r\" xmlns:a=\"urn:a\" x=\"1\" a:x=\"2\" a:y=\"3\" a:z=\"4\" five=\"5\" " +
+        "validTimeSpan=\"PT15M\" xyz=\"XYZ\" def=\"DEF\" uri=\"urn:uri\" bool=\"true\"><p/><q/>abc</root>";
 
     private readonly XmlDocument signedXmlDocument;
 
@@ -53,24 +56,10 @@ public class XmlTraverserTests
     [Theory]
     [InlineData("x", "1")]
     [InlineData("y", null)]
-    [InlineData("z", "5")]
+    [InlineData("five", "5")]
     public void GetAttribute(string localName, string expectedValue)
     {
         GetXmlTraverser().GetAttribute(localName).Should().Be(expectedValue);
-    }
-
-    private enum GetEnumAttributeEnum
-    {
-        Xyz = 42
-    }
-
-    [Fact]
-    public void GetEnumAttribute()
-
-    {
-        GetXmlTraverser().GetEnumAttribute<GetEnumAttributeEnum>("invalidTimeSpan", true).Should().Be(GetEnumAttributeEnum.Xyz);
-
-        GetXmlTraverser().GetEnumAttribute<GetEnumAttributeEnum>("validTimeSpan", true).Should().Be(null);
     }
 
     [Theory]
@@ -167,6 +156,37 @@ public class XmlTraverserTests
             .Which.Errors.Count().Should().Be(2);
     }
 
+    private enum GetEnumAttributeEnum
+    {
+        Def = 42
+    }
+
+    [Fact]
+    public void GetEnumAttribute()
+
+    {
+        GetXmlTraverser().GetEnumAttribute<GetEnumAttributeEnum>("def", true).Should().Be(GetEnumAttributeEnum.Def);
+    }
+
+    [Fact]
+    public void GetEnumAttribute_Missing()
+    {
+        GetXmlTraverser().GetEnumAttribute<GetEnumAttributeEnum>("notexisting", true)
+            .Should().BeNull();
+    }
+
+    [Fact]
+    public void GetEnumAttribute_ParseError()
+    {
+        var subject = GetXmlTraverser();
+
+        var actual = subject.GetEnumAttribute<GetEnumAttributeEnum>("xyz", true);
+
+        actual.Should().BeNull();
+
+        ValidateParseError(subject);
+    }
+
     [Fact]
     public void GetTimeSpanAttribute()
     {
@@ -178,19 +198,49 @@ public class XmlTraverserTests
     {
         var subject = GetXmlTraverser();
 
-        var actual = subject.GetTimeSpanAttribute("invalidTimeSpan");
+        var actual = subject.GetTimeSpanAttribute("xyz");
 
-        actual.HasValue.Should().BeFalse();
+        actual.Should().BeNull();
 
+        ValidateParseError(subject);
+    }
+
+    private static void ValidateParseError(XmlTraverser subject)
+    {
         subject.Errors.Should().HaveCount(1);
-        subject.Errors.Single().Reason.Should().Be(ErrorReason.ConversionFailed);
-        subject.Errors.Single().StringValue.Should().Be("XYZ");
+        var error = subject.Errors.Single();
+
+        error.Reason.Should().Be(ErrorReason.ConversionFailed);
+        error.StringValue.Should().Be("XYZ");
+        error.LocalName.Should().Be("xyz");
+        error.Node.Should().BeSameAs(subject.CurrentNode);
     }
 
     [Fact]
     public void GetRequiredAbsoluteUriAttribute()
     {
         GetXmlTraverser().GetRequiredAbsoluteUriAttribute("uri").Should().Be("urn:uri");
+    }
+
+    [Fact]
+    public void GetRequiredAbsoluteUriAttribute_Missing()
+    {
+        var subject = GetXmlTraverser();
+
+        subject.GetRequiredAbsoluteUriAttribute("notExisting").Should().BeNull();
+
+        ValidateMissing(subject);
+    }
+
+    private static void ValidateMissing(XmlTraverser subject)
+    {
+        subject.Errors.Count().Should().Be(1);
+        var error = subject.Errors.Single();
+
+        error.Reason.Should().Be(ErrorReason.MissingAttribute);
+        error.StringValue.Should().BeNull();
+        error.LocalName.Should().Be("notExisting");
+        error.Node.Should().BeSameAs(subject.CurrentNode);
     }
 
     [Fact]
@@ -207,6 +257,82 @@ public class XmlTraverserTests
         error.LocalName.Should().Be("x");
         error.Node.Should().BeSameAs(subject.CurrentNode);
         error.StringValue.Should().Be("1");
+    }
+
+    [Fact]
+    public void GetBoolAttribute()
+    {
+        GetXmlTraverser().GetBoolAttribute("bool").Should().BeTrue();
+    }
+
+    [Fact]
+    public void GetBoolAttribute_Missing()
+    {
+        GetXmlTraverser().GetBoolAttribute("notExisting").Should().BeNull();
+    }
+
+    [Fact]
+    public void GetBoolAttribute_ParseError()
+    {
+        var subject = GetXmlTraverser();
+
+        var actual = subject.GetBoolAttribute("xyz");
+
+        actual.Should().BeNull();
+
+        ValidateParseError(subject);
+    }
+
+    [Fact]
+    public void GetIntAttribute()
+    {
+        GetXmlTraverser().GetIntAttribute("five").Should().Be(5);
+    }
+
+    [Fact]
+    public void GetIntAttribute_Missing()
+    {
+        GetXmlTraverser().GetIntAttribute("notExisting").Should().BeNull();
+    }
+
+    [Fact]
+    public void GetIntAttribute_ParseError()
+    {
+        var subject = GetXmlTraverser();
+
+        var actual = subject.GetIntAttribute("xyz");
+
+        actual.HasValue.Should().BeFalse();
+
+        ValidateParseError(subject);
+    }
+
+    [Fact]
+    public void GetRequiredIntAttribute()
+    {
+        GetXmlTraverser().GetRequiredIntAttribute("five").Should().Be(5);
+    }
+
+    [Fact]
+    public void GetRequiredIntAttribute_Missing()
+    {
+        var subject = GetXmlTraverser();
+
+        subject.GetRequiredIntAttribute("notExisting").Should().Be(0);
+
+        ValidateMissing(subject);
+    }
+
+    [Fact]
+    public void GetRequiredIntAttribute_ParseError()
+    {
+        var subject = GetXmlTraverser();
+
+        var actual = subject.GetRequiredIntAttribute("xyz");
+
+        actual.Should().Be(default);
+
+        ValidateParseError(subject);
     }
 
     [Fact]

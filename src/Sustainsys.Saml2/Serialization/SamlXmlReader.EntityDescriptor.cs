@@ -76,16 +76,16 @@ partial class SamlXmlReader
             {
                 switch (source.CurrentNode?.LocalName)
                 {
-                    case Constants.Elements.RoleDescriptor:
+                    case Elements.RoleDescriptor:
                         entityDescriptor.RoleDescriptors.Add(ReadRoleDescriptor(source));
                         break;
-                    case Constants.Elements.IDPSSODescriptor:
+                    case Elements.IDPSSODescriptor:
                         entityDescriptor.RoleDescriptors.Add(ReadIDPSSODescriptor(source));
                         break;
-                    case Constants.Elements.SPSSODescriptor:
-                    case Constants.Elements.AuthnAuthorityDescriptor:
-                    case Constants.Elements.AttributeAuthorityDescriptor:
-                    case Constants.Elements.PDPDescriptor:
+                    case Elements.SPSSODescriptor:
+                    case Elements.AuthnAuthorityDescriptor:
+                    case Elements.AttributeAuthorityDescriptor:
+                    case Elements.PDPDescriptor:
                         source.IgnoreChildren();
                         break;
                     default:

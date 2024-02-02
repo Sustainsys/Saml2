@@ -1,4 +1,5 @@
-﻿using Sustainsys.Saml2.Samlp;
+﻿using Sustainsys.Saml2.Saml;
+using Sustainsys.Saml2.Samlp;
 using Sustainsys.Saml2.Xml;
 using System.Security.Cryptography.Xml;
 using static Sustainsys.Saml2.Constants;
@@ -29,9 +30,6 @@ partial class SamlXmlReader
     {
         source.MoveNext();
 
-        var trustedSigningKeys = TrustedSigningKeys;
-        var allowedHashAlgorithms = AllowedHashAlgorithms;
-
         if (source.HasName(Namespaces.SamlUri, Elements.Issuer))
         {
             response.Issuer = ReadNameId(source);
@@ -39,23 +37,8 @@ partial class SamlXmlReader
             source.MoveNext();
         }
 
-        if (source.HasName(SignedXml.XmlDsigNamespaceUrl, Elements.Signature))
-        {
-            if (response.Issuer == null)
-            {
-                source.Errors.Add(new(ErrorReason.MissingElement, Elements.Issuer, source.CurrentNode,
-                    "A signature was found, but there was no Issuer specified. See profile spec 4.1.4.2, 4.4.4.2"));
-            }
-            else
-            {
-                if (EntityResolver != null)
-                {
-                    var entity = EntityResolver(response.Issuer.Value);
-                    trustedSigningKeys = entity.TrustedSigningKeys;
-                    allowedHashAlgorithms = entity.AllowedHashAlgorithms ?? AllowedHashAlgorithms;
-                }
-            }
-        }
+       (var trustedSigningKeys, var allowedHashAlgorithms) = 
+            GetSignatureValidationParametersFromIssuer(source, response.Issuer);
 
         if (source.ReadAndValidateOptionalSignature(trustedSigningKeys, allowedHashAlgorithms, out var trustLevel))
         {

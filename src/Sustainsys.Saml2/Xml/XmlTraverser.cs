@@ -66,9 +66,9 @@ public class XmlTraverser
         Errors = errors;
     }
 
-    private void AddError(ErrorReason reason, string message)
+    private void AddError(ErrorReason reason, string message, string? localName = null)
     {
-        Errors.Add(new(reason, CurrentNode!.LocalName, CurrentNode, message));
+        Errors.Add(new(reason, localName ?? CurrentNode!.LocalName, CurrentNode, message));
     }
 
     //TODO: Add callback function as parameter that allows ignoring - easier way to wire up with events.
@@ -344,7 +344,8 @@ public class XmlTraverser
         {
             AddError(
                 ErrorReason.MissingAttribute,
-                $"Required attribute {localName} not found on {CurrentNode.Name}.");
+                $"Required attribute {localName} not found on {CurrentNode.Name}.",
+                localName);
         }
 
         return value!;
@@ -425,13 +426,22 @@ public class XmlTraverser
         => TryGetAttribute(localName, s => Enum.Parse<TEnum>(s, ignoreCase));
 
     /// <summary>
-    /// Get a required attribute as int. On missing attribute or parse errors the Error
+    /// Get a required int attribute. On missing attribute or parse errors the error
     /// is reported to the errors collection.
     /// </summary>
     /// <param name="localName">Local name of the attribute</param>
     /// <returns>Parsed int or null if parse fails</returns>
     public int GetRequiredIntAttribute(string localName)
         => GetRequiredAttribute(localName, int.Parse);
+
+    /// <summary>
+    /// Get an optional int attribute. On parse errors the error is reported to the
+    /// errors collection
+    /// </summary>
+    /// <param name="localName">the local name of the attribute</param>
+    /// <returns>Int, if available</returns>
+    public int? GetIntAttribute(string localName)
+        => TryGetAttribute(localName, int.Parse);
 
     private TTarget GetRequiredAttribute<TTarget>(string localName, Func<string, TTarget> converter)
         where TTarget : struct

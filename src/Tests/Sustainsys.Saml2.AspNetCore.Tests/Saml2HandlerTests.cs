@@ -34,7 +34,8 @@ public class Saml2HandlerTests
         var scheme = new AuthenticationScheme("Saml2", "Saml2", typeof(Saml2Handler));
 
         var httpContext = Substitute.For<HttpContext>();
-        httpContext.Request.Returns(Substitute.For<HttpRequest>());
+        httpContext.Response.HttpContext.Returns(httpContext);
+
         httpContext.Request.Scheme = "https";
         httpContext.Request.Host = new HostString("sp.example.com", 8888);
         httpContext.Request.Path = "/path";
@@ -116,29 +117,30 @@ public class Saml2HandlerTests
         (var subject, var httpContext) = await CreateSubject(options);
 
         var props = new AuthenticationProperties();
+        
+        httpContext.Response.Redirect(Arg.Do<string>(validateLocation));
 
+        bool validated = false;
+      
         await subject.ChallengeAsync(props);
-
-        //bool validated = false;
 
         void validateLocation(string location)
         {
-            location.Should().StartWith("https://idp.example.com/sso?SamlRequest=");
+            location.Should().StartWith("https://idp.example.com/sso?SAMLRequest=");
 
-            var message = new HttpRedirectBinding().UnBindAsync(location, _ => throw new NotImplementedException());
+            var message = new HttpRedirectBinding().UnBindAsync(location, _ => throw new NotImplementedException()).Result;
 
             var deserializedAuthnRequest = new SamlXmlReader()
                 .ReadAuthnRequest(message.Xml.GetXmlTraverser());
 
             deserializedAuthnRequest.Should().BeEquivalentTo(authnRequest);
 
-            // validated = true;
+            validated = true;
         }
 
-        httpContext.Response.Received().Redirect(Arg.Do<string>(validateLocation));
+        httpContext.Response.Received().Redirect(Arg.Any<string>());
 
-        // TODO: Check that validation was called.
-        //validated.Should().BeTrue();
+        validated.Should().BeTrue("The validation should have been called.");
     }
 
 

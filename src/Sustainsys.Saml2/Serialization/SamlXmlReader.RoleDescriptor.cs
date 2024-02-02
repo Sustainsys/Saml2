@@ -47,7 +47,7 @@ partial class SamlXmlReader
     /// <param name="source">Source data</param>
     /// <param name="result">Target to set properties on</param>
     /// <returns>More elements available?</returns>
-    protected virtual bool ReadElements(XmlTraverser source, RoleDescriptor result)
+    protected virtual void ReadElements(XmlTraverser source, RoleDescriptor result)
     {
         source.MoveNext(true);
 
@@ -88,8 +88,6 @@ partial class SamlXmlReader
 
             source.MoveNext(true);
         }
-
-        return true;
     }
 }
 

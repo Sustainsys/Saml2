@@ -215,6 +215,22 @@ public static class Constants
         /// PDPDescriptor XML element name.
         /// </summary>
         public const string PDPDescriptor = nameof(PDPDescriptor);
+
+        /// <summary>
+        /// AuthnRequest XML element name.
+        /// </summary>
+        public const string AuthnRequest = nameof(AuthnRequest);
+        
+        
+        /// <summary>
+        /// Subject XML element name
+        /// </summary>
+        public const string Subject = nameof(Subject);
+
+        /// <summary>
+        /// NameID element name
+        /// </summary>
+        public const string NameID = nameof(NameID);
     }
 
     /// <summary>
@@ -304,5 +320,36 @@ public static class Constants
         /// Destination attribute name.
         /// </summary>
         public const string Destination = nameof(Destination);
+
+        /// <summary>
+        /// AssertionConsumerServiceURL attribute name.
+        /// </summary>
+        public const string AssertionConsumerServiceURL = nameof(AssertionConsumerServiceURL);
+        
+        
+        /// <summary>
+        /// ForceAuthn attribute name
+        /// </summary>
+        public const string ForceAuthn = nameof(ForceAuthn);
+
+        /// <summary>
+        /// IsPassive attribute name
+        /// </summary>
+        public const string IsPassive = nameof(IsPassive);
+
+        /// <summary>
+        /// AssertionConsumerServiceIndex attribute name
+        /// </summary>
+        public const string AssertionConsumerServiceIndex = nameof(AssertionConsumerServiceIndex);
+
+        /// <summary>
+        /// ProtocolBinding attribute name
+        /// </summary>
+        public const string ProtocolBinding = nameof(ProtocolBinding);
+
+        /// <summary>
+        /// Consent attribute name
+        /// </summary>
+        public const string Consent = nameof(Consent);
     }
 }

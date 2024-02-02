@@ -68,7 +68,7 @@ partial class SamlXmlReaderTests
     }
 
     // Test that a response with all optional content present in the Response can be read. This doesn't
-    // mean that we  actual read everything, a lot of rarely used stuff is just ignored (for now)
+    // mean that we actually read everything, a lot of rarely used stuff is just ignored (for now)
     [Fact]
     public void ReadSamlResponse_CanReadCompleteResponse()
     {
@@ -96,6 +96,7 @@ partial class SamlXmlReaderTests
                 }
             },
             Extensions = new()
+            // TODO: Trustlevel?
         };
 
         actual.Should().BeEquivalentTo(expected);

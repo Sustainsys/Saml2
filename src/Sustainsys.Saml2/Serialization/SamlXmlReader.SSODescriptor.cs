@@ -20,13 +20,9 @@ partial class SamlXmlReader
     /// </summary>
     /// <param name="source">Source data</param>
     /// <param name="result">Target to set properties on</param>
-    /// <returns>More elements available?</returns>
-    protected virtual bool ReadElements(XmlTraverser source, SSODescriptor result)
+    protected virtual void ReadElements(XmlTraverser source, SSODescriptor result)
     {
-        if(!ReadElements(source, (RoleDescriptor)result))
-        {
-            return false;
-        }
+        ReadElements(source, (RoleDescriptor)result);
 
         while (source.HasName(Namespaces.MetadataUri, Elements.ArtifactResolutionService))
         {
@@ -50,7 +46,5 @@ partial class SamlXmlReader
 
             source.MoveNext(true);
         }
-
-        return true;
     }
 }
