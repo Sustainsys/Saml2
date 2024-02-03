@@ -11,6 +11,10 @@ using System.Threading.Tasks;
 
 namespace Sustainsys.Saml2.AspNetCore;
 
+// TODO: Replace with .NET 8 keyed services
+// Resolve services from key (= scheme) first, then fallback to
+// normal registration. Add default service implementations as singletons to DI.
+
 /// <summary>
 /// The Sustainsys.Saml2 library uses multiple loosely coupled services internally. The 
 /// default implementation is to not register these in the main dependency injection 
@@ -63,6 +67,7 @@ public class ServiceResolver
     public Func<ResolverContext, Saml2Events> CreateEvents { get; set; }
         = _ => new Saml2Events();
 
+    // TODO: Can this be a shared instance?
     /// <summary>
     /// Factory for <see cref="ISamlXmlReader"/>
     /// </summary>

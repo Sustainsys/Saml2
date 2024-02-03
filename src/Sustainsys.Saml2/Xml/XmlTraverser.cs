@@ -39,6 +39,8 @@ public class XmlTraverser
     /// </summary>
     private bool childrenHandled = true;
 
+    internal XmlNode? RootNode { get; set; }
+
     /// <summary>
     /// The current node being processed.
     /// </summary>
@@ -50,6 +52,7 @@ public class XmlTraverser
     /// <param name="rootNode">Root node for this traverser</param>
     public XmlTraverser(XmlNode rootNode)
     {
+        RootNode = rootNode;
         CurrentNode = rootNode;
         Errors = [];
     }

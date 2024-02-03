@@ -76,7 +76,49 @@ partial class SamlXmlReaderTests
         actual.Should().BeEquivalentTo(expected);
     }
 
-    // TODO: Test with AssertionConsumerServiceIndex - note mutually exclusive to AcsUrl + Binding
+    [Fact]
+    public void ReadAuthnRequest_ErrorCallback()
+    {
+        var source = GetXmlTraverser(nameof(ReadAuthnRequest_Error));
 
-    // TODO: Test error callback
+        var subject = new SamlXmlReader();
+
+        bool errorInspectorCalled = false;
+
+        void errorInspector(ReadErrorInspectorContext<AuthnRequest> context)
+        {
+            context.Data.Id.Should().Be("x123");
+
+            var xmlSourceElement = context.XmlSource as XmlElement;
+            xmlSourceElement.Should().NotBeNull();
+            xmlSourceElement!.GetAttribute("ID").Should().Be("x123");
+            context.Errors.Count.Should().Be(1);
+
+            var error = context.Errors.Single();
+            error.Node.Should().BeSameAs(context.XmlSource);
+            error.LocalName.Should().Be("Version");
+            error.Reason.Should().Be(ErrorReason.MissingAttribute);
+            error.Ignore.Should().BeFalse();
+
+            error.Ignore = true;
+
+            errorInspectorCalled = true;
+        }
+
+        var actual = subject.ReadAuthnRequest(source, errorInspector);
+
+        errorInspectorCalled.Should().BeTrue();
+    }
+
+    [Fact]
+    public void ReadAuthnRequest_Error()
+    {
+        var source = GetXmlTraverser();
+
+        var subject = new SamlXmlReader();
+
+        subject.Invoking(s => s.ReadAuthnRequest(source))
+            .Should().Throw<SamlXmlException>()
+            .WithMessage("*Version*not found*");
+    }
 }

@@ -1,5 +1,6 @@
 ﻿using Sustainsys.Saml2.Samlp;
 using Sustainsys.Saml2.Xml;
+using System.Xml;
 using static Sustainsys.Saml2.Constants;
 
 namespace Sustainsys.Saml2.Serialization;
@@ -14,11 +15,13 @@ public partial class SamlXmlReader
     //TODO: Convert other reads to follow this pattern with a callback for errors
 
     /// <inheritdoc/>
-    public virtual AuthnRequest ReadAuthnRequest(
+    public AuthnRequest ReadAuthnRequest(
         XmlTraverser source,
-        Action<AuthnRequest, IList<Error>>? errorInspector = null)
+        Action<ReadErrorInspectorContext<AuthnRequest>>? errorInspector = null)
     {
         var authnRequest = ReadAuthnRequest(source);
+
+        CallErrorInspector(errorInspector, authnRequest, source);
 
         source.ThrowOnErrors();
 

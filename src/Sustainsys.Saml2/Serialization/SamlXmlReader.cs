@@ -1,5 +1,6 @@
 ﻿using Sustainsys.Saml2.Common;
 using Sustainsys.Saml2.Saml;
+using Sustainsys.Saml2.Samlp;
 using Sustainsys.Saml2.Xml;
 using System;
 using System.Collections.Generic;
@@ -8,6 +9,7 @@ using System.Linq;
 using System.Security.Cryptography.Xml;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml;
 using static Sustainsys.Saml2.Constants;
 
 namespace Sustainsys.Saml2.Serialization;
@@ -79,4 +81,21 @@ public partial class SamlXmlReader : ISamlXmlReader
         return (trustedSigningKeys, allowedHashAlgorithms);
     }
 
+    private void CallErrorInspector<TData>(
+        Action<ReadErrorInspectorContext<TData>>? errorInspector,
+        TData data,
+        XmlTraverser source)
+    {
+        if (errorInspector != null)
+        {
+            var context = new ReadErrorInspectorContext<TData>()
+            {
+                Data = data,
+                Errors = source.Errors,
+                XmlSource = source.RootNode
+            };
+
+            errorInspector(context);
+        }
+    }
 }
