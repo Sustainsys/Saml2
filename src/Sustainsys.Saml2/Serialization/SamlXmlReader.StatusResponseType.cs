@@ -14,11 +14,11 @@ partial class SamlXmlReader
     /// <param name="response">StatusResponse</param>
     protected virtual void ReadAttributes(XmlTraverser source, StatusResponseType response)
     {
-        response.Id = source.GetRequiredAttribute(AttributeNames.ID);
-        response.Version = source.GetRequiredAttribute(AttributeNames.Version);
-        response.IssueInstant = source.GetRequiredDateTimeAttribute(AttributeNames.IssueInstant);
-        response.InResponseTo = source.GetAttribute(AttributeNames.InResponseTo);
-        response.Destination = source.GetAttribute(AttributeNames.Destination);
+        response.Id = source.GetRequiredAttribute(Attributes.ID);
+        response.Version = source.GetRequiredAttribute(Attributes.Version);
+        response.IssueInstant = source.GetRequiredDateTimeAttribute(Attributes.IssueInstant);
+        response.InResponseTo = source.GetAttribute(Attributes.InResponseTo);
+        response.Destination = source.GetAttribute(Attributes.Destination);
     }
 
     /// <summary>

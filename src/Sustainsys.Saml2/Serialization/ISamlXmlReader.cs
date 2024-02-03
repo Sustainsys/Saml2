@@ -50,4 +50,14 @@ public interface ISamlXmlReader
     AuthnRequest ReadAuthnRequest(
         XmlTraverser source,
         Action<ReadErrorInspectorContext<AuthnRequest>>? errorInspector = null);
+
+    /// <summary>
+    /// Read an <see cref="Assertion"/>
+    /// </summary>
+    /// <param name="source">Xml Traverser to read from</param>
+    /// <param name="errorInspector">Callback that can inspect and alter errors before throwing</param>
+    /// <returns><see cref="Assertion"/></returns>
+    Assertion ReadAssertion(
+        XmlTraverser source,
+        Action<ReadErrorInspectorContext<Assertion>>? errorInspector = null);
 }

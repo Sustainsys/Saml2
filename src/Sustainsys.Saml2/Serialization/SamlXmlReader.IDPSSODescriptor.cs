@@ -36,7 +36,7 @@ partial class SamlXmlReader
     {
         ReadAttributes(source, (SSODescriptor)result);
 
-        result.WantAuthnRequestsSigned = source.GetBoolAttribute(AttributeNames.WantAuthnRequestsSigned) ?? false;
+        result.WantAuthnRequestsSigned = source.GetBoolAttribute(Attributes.WantAuthnRequestsSigned) ?? false;
     }
 
     /// <summary>

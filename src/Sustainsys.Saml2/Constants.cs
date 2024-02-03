@@ -231,6 +231,11 @@ public static class Constants
         /// NameID element name
         /// </summary>
         public const string NameID = nameof(NameID);
+
+        /// <summary>
+        /// Assertion element name
+        /// </summary>
+        public const string Assertion = nameof(Assertion);
     }
 
     /// <summary>
@@ -239,7 +244,7 @@ public static class Constants
     /// <remarks>The naming of the constants are deriberately not following
     /// casing convention in order to be exactly the same as the contents.
     /// </remarks>
-    public static class AttributeNames
+    public static class Attributes
     {
         /// <summary>
         /// entityID attribute name.

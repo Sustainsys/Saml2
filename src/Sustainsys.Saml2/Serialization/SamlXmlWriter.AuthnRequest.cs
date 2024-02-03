@@ -24,7 +24,7 @@ partial class SamlXmlWriter
     protected virtual void Append(XmlNode node, AuthnRequest authnRequest)
     {
         var xe = Append(node, authnRequest, Elements.AuthnRequest);
-        xe.SetAttributeIfValue(AttributeNames.AssertionConsumerServiceURL, authnRequest.AssertionConsumerServiceUrl);
+        xe.SetAttributeIfValue(Attributes.AssertionConsumerServiceURL, authnRequest.AssertionConsumerServiceUrl);
         AppendIfValue(xe, authnRequest.Issuer, Namespaces.Saml, Elements.Issuer);
     }
 }

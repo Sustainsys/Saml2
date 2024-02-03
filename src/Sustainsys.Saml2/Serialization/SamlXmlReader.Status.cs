@@ -69,7 +69,7 @@ partial class SamlXmlReader
 	/// <param name="statusCode"></param>
 	protected virtual void ReadAttributes(XmlTraverser source, StatusCode statusCode)
 	{
-		statusCode.Value = source.GetRequiredAbsoluteUriAttribute(AttributeNames.Value)!;
+		statusCode.Value = source.GetRequiredAbsoluteUriAttribute(Attributes.Value)!;
 	}
 
 }

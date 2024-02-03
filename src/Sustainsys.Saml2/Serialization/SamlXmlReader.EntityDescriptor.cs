@@ -40,10 +40,10 @@ partial class SamlXmlReader
     /// <param name="entityDescriptor">EntityDescriptor</param>
     protected virtual void ReadAttributes(XmlTraverser source, EntityDescriptor entityDescriptor)
     {
-        entityDescriptor.EntityId = source.GetRequiredAbsoluteUriAttribute(AttributeNames.entityID) ?? "";
-        entityDescriptor.Id = source.GetAttribute(AttributeNames.ID);
-        entityDescriptor.CacheDuraton = source.GetTimeSpanAttribute(AttributeNames.cacheDuration);
-        entityDescriptor.ValidUntil = source.GetDateTimeAttribute(AttributeNames.validUntil);
+        entityDescriptor.EntityId = source.GetRequiredAbsoluteUriAttribute(Attributes.entityID) ?? "";
+        entityDescriptor.Id = source.GetAttribute(Attributes.ID);
+        entityDescriptor.CacheDuraton = source.GetTimeSpanAttribute(Attributes.cacheDuration);
+        entityDescriptor.ValidUntil = source.GetDateTimeAttribute(Attributes.validUntil);
     }
 
     /// <summary>

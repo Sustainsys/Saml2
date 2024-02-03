@@ -38,7 +38,7 @@ partial class SamlXmlReader
     protected virtual void ReadAttributes(XmlTraverser source, RoleDescriptor result)
     {
         result.ProtocolSupportEnumeration =
-            source.GetRequiredAbsoluteUriAttribute(AttributeNames.protocolSupportEnumeration);
+            source.GetRequiredAbsoluteUriAttribute(Attributes.protocolSupportEnumeration);
     }
 
     /// <summary>

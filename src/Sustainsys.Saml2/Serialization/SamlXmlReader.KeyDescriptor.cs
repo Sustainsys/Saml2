@@ -27,7 +27,7 @@ partial class SamlXmlReader
     {
         var result = CreateKeyDescriptor();
 
-        result.Use = source.GetEnumAttribute<KeyUse>(AttributeNames.use, true) ?? KeyUse.Both;
+        result.Use = source.GetEnumAttribute<KeyUse>(Attributes.use, true) ?? KeyUse.Both;
 
         var children = source.GetChildren();
 

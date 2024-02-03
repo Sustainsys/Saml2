@@ -14,7 +14,7 @@ public class SamlAssertionValidator : ISamlAssertionValidator
 {
     /// <inheritdoc/>
     public void Validate(
-        SamlAssertion assertion,
+        Assertion assertion,
         SamlAssertionValidationParameters parameters)
     {
         // TODO: Remember to validate issuer.

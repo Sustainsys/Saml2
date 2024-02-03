@@ -18,11 +18,11 @@ public partial class SamlXmlReader
     /// <param name="request">RequestAbstractType</param>
     protected virtual void ReadAttributes(XmlTraverser source, RequestAbstractType request)
     {
-        request.Id = source.GetRequiredAttribute(AttributeNames.ID);
-        request.IssueInstant = source.GetRequiredDateTimeAttribute(AttributeNames.IssueInstant);
-        request.Version = source.GetRequiredAttribute(AttributeNames.Version);
-        request.Destination = source.GetAttribute(AttributeNames.Destination);
-        request.Consent = source.GetAttribute(AttributeNames.Consent);
+        request.Id = source.GetRequiredAttribute(Attributes.ID);
+        request.IssueInstant = source.GetRequiredDateTimeAttribute(Attributes.IssueInstant);
+        request.Version = source.GetRequiredAttribute(Attributes.Version);
+        request.Destination = source.GetAttribute(Attributes.Destination);
+        request.Consent = source.GetAttribute(Attributes.Consent);
     }
 
     /// <summary>

@@ -14,9 +14,9 @@ partial class SamlXmlWriter
     protected virtual XmlElement Append(XmlNode parent, RequestAbstractType request, string localName)
     {
         var element = Append(parent, Namespaces.Samlp, localName);
-        element.SetAttribute(AttributeNames.ID, request.Id);
-        element.SetAttribute(AttributeNames.IssueInstant, XmlConvert.ToString(request.IssueInstant, XmlDateTimeSerializationMode.RoundtripKind));
-        element.SetAttribute(AttributeNames.Version, request.Version);
+        element.SetAttribute(Attributes.ID, request.Id);
+        element.SetAttribute(Attributes.IssueInstant, XmlConvert.ToString(request.IssueInstant, XmlDateTimeSerializationMode.RoundtripKind));
+        element.SetAttribute(Attributes.Version, request.Version);
 
         return element;
     }

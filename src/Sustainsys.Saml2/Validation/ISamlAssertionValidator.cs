@@ -17,7 +17,7 @@ public interface ISamlAssertionValidator
     /// </summary>
     /// <param name="assertion"></param>
     /// <param name="parameters"></param>
-    void Validate(SamlAssertion assertion, SamlAssertionValidationParameters parameters);
+    void Validate(Assertion assertion, SamlAssertionValidationParameters parameters);
 }
 
 /// <summary>

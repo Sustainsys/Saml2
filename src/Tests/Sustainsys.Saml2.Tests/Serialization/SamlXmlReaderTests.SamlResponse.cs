@@ -125,4 +125,6 @@ partial class SamlXmlReaderTests
             .Should().Throw<SamlXmlException>()
             .WithErrors(ErrorReason.MissingElement);
     }
+
+    // TODO: Test and addition of error callback.
 }

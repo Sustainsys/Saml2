@@ -12,7 +12,7 @@ public partial class SamlXmlReader
     /// <returns>AuthnRequest</returns>
     protected virtual AuthnRequest CreateAuthnRequest() => new();
 
-    //TODO: Convert other reads to follow this pattern with a callback for errors
+    // TODO: Convert other reads to follow this pattern with a callback for errors
 
     /// <inheritdoc/>
     public AuthnRequest ReadAuthnRequest(
@@ -72,10 +72,10 @@ public partial class SamlXmlReader
     {
         ReadAttributes(source, (RequestAbstractType)authnRequest);
 
-        authnRequest.ForceAuthn = source.GetBoolAttribute(AttributeNames.ForceAuthn) ?? authnRequest.ForceAuthn;
-        authnRequest.IsPassive = source.GetBoolAttribute(AttributeNames.IsPassive) ?? authnRequest.IsPassive;
-        authnRequest.AssertionConsumerServiceIndex = source.GetIntAttribute(AttributeNames.AssertionConsumerServiceIndex);
-        authnRequest.AssertionConsumerServiceUrl = source.GetAttribute(AttributeNames.AssertionConsumerServiceURL);
-        authnRequest.ProtocolBinding = source.GetAttribute(AttributeNames.ProtocolBinding);
+        authnRequest.ForceAuthn = source.GetBoolAttribute(Attributes.ForceAuthn) ?? authnRequest.ForceAuthn;
+        authnRequest.IsPassive = source.GetBoolAttribute(Attributes.IsPassive) ?? authnRequest.IsPassive;
+        authnRequest.AssertionConsumerServiceIndex = source.GetIntAttribute(Attributes.AssertionConsumerServiceIndex);
+        authnRequest.AssertionConsumerServiceUrl = source.GetAttribute(Attributes.AssertionConsumerServiceURL);
+        authnRequest.ProtocolBinding = source.GetAttribute(Attributes.ProtocolBinding);
     }
 }

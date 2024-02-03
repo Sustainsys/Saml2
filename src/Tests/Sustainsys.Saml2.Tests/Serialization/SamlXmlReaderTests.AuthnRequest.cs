@@ -92,8 +92,8 @@ partial class SamlXmlReaderTests
             var xmlSourceElement = context.XmlSource as XmlElement;
             xmlSourceElement.Should().NotBeNull();
             xmlSourceElement!.GetAttribute("ID").Should().Be("x123");
-            context.Errors.Count.Should().Be(1);
 
+            context.Errors.Count.Should().Be(1);
             var error = context.Errors.Single();
             error.Node.Should().BeSameAs(context.XmlSource);
             error.LocalName.Should().Be("Version");
@@ -105,7 +105,7 @@ partial class SamlXmlReaderTests
             errorInspectorCalled = true;
         }
 
-        var actual = subject.ReadAuthnRequest(source, errorInspector);
+        subject.ReadAuthnRequest(source, errorInspector);
 
         errorInspectorCalled.Should().BeTrue();
     }

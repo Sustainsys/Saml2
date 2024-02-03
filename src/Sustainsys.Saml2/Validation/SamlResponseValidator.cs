@@ -18,6 +18,7 @@ public class SamlResponseValidator : ISamlResponseValidator
         SamlResponse samlResponse,
         SamlResponseValidationParameters validationParameters)
     {
+        // TODO: Validate Version
         ValidateIssuer(samlResponse, validationParameters);
         ValidateStatusCode(samlResponse);
     }
@@ -26,7 +27,7 @@ public class SamlResponseValidator : ISamlResponseValidator
     /// Validate that the status code is <see cref="Constants.StatusCodes.Success"/>
     /// </summary>
     /// <param name="samlResponse">Saml Response</param>
-    public virtual void ValidateStatusCode(SamlResponse samlResponse)
+    protected void ValidateStatusCode(SamlResponse samlResponse)
     {
         if (samlResponse.Status?.StatusCode?.Value != Constants.StatusCodes.Success)
         {
@@ -39,7 +40,7 @@ public class SamlResponseValidator : ISamlResponseValidator
     /// </summary>
     /// <param name="samlResponse">Saml response</param>
     /// <param name="validationParameters">Validation parameters</param>
-    public virtual void ValidateIssuer(
+    protected virtual void ValidateIssuer(
         SamlResponse samlResponse,
         SamlResponseValidationParameters validationParameters)
     {

@@ -37,8 +37,8 @@ partial class SamlXmlReader
     /// <param name="endpoint">Endpoint</param>
     protected virtual void ReadAttributes(XmlTraverser source, Endpoint endpoint)
     {
-        endpoint.Binding = source.GetRequiredAbsoluteUriAttribute(AttributeNames.Binding) ?? "";
-        endpoint.Location = source.GetRequiredAttribute(AttributeNames.Location) ?? "";
+        endpoint.Binding = source.GetRequiredAbsoluteUriAttribute(Attributes.Binding) ?? "";
+        endpoint.Location = source.GetRequiredAttribute(Attributes.Location) ?? "";
     }
 
     /// <summary>
@@ -49,8 +49,8 @@ partial class SamlXmlReader
     protected virtual IndexedEndpoint ReadIndexedEndpoint(XmlTraverser source)
     {
         var result = CreateIndexedEndpoint();
-        result.Index = source.GetRequiredIntAttribute(AttributeNames.index);
-        result.IsDefault = source.GetBoolAttribute(AttributeNames.isDefault) ?? false;
+        result.Index = source.GetRequiredIntAttribute(Attributes.index);
+        result.IsDefault = source.GetBoolAttribute(Attributes.isDefault) ?? false;
 
         ReadAttributes(source, result);
 
