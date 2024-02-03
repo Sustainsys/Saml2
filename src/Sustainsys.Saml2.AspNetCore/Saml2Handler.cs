@@ -1,10 +1,13 @@
 ﻿using Microsoft.AspNetCore.Authentication;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Sustainsys.Saml2.AspNetCore.Events;
 using Sustainsys.Saml2.Bindings;
 using Sustainsys.Saml2.Samlp;
+using Sustainsys.Saml2.Serialization;
 using Sustainsys.Saml2.Xml;
+using System.Runtime.Serialization;
 using System.Text.Encodings.Web;
 
 namespace Sustainsys.Saml2.AspNetCore;
@@ -17,24 +20,30 @@ namespace Sustainsys.Saml2.AspNetCore;
 /// <param name="options">Options</param>
 /// <param name="logger">Logger factory</param>
 /// <param name="encoder">Url encoder</param>
+/// <param name="keyedServiceProvider">Keyed service provider used to resolve services</param>
 public class Saml2Handler(
     IOptionsMonitor<Saml2Options> options,
     ILoggerFactory logger,
-    UrlEncoder encoder) 
+    UrlEncoder encoder,
+    IKeyedServiceProvider keyedServiceProvider) 
     : RemoteAuthenticationHandler<Saml2Options>(options, logger, encoder)
 {
+    private TService GetRequiredService<TService>() where TService : notnull =>
+        keyedServiceProvider.GetKeyedService<TService>(Scheme.Name) ??
+        keyedServiceProvider.GetRequiredService<TService>();
+
+    private IFrontChannelBinding GetFrontChannelBinding(string uri) =>
+        GetRequiredService<IEnumerable<IFrontChannelBinding>>()
+        .Single(b => b.Identifier == uri);
 
     /// <summary>
-    /// Create events by invoking Options.ServiceResolver.CreateEventsAsync()
+    /// Resolves events as keyed service from DI, falls back to non-keyed service and 
+    /// finally falls back to creating an events instance.
     /// </summary>
     /// <returns><see cref="Saml2Events"/>Saml2 events instance</returns>
-    protected override Task<object> CreateEventsAsync() => Task.FromResult<object>(GetService(s => s.CreateEvents));
-
-    private T GetService<T>(
-        Func<ServiceResolver, Func<ServiceResolver.ResolverContext, T>> factorySelector,
-        AuthenticationProperties? authenticationProperties = null) =>
-        factorySelector(Options.ServiceResolver)
-        (new ServiceResolver.ResolverContext(Context, Options, Scheme, authenticationProperties));
+    protected override Task<object> CreateEventsAsync() => Task.FromResult<object>(
+        keyedServiceProvider.GetKeyedService<Saml2Events>(Scheme.Name) ??
+        new Saml2Events());
 
     /// <summary>
     /// Events represents the easiest and most straight forward way to customize the
@@ -52,7 +61,7 @@ public class Saml2Handler(
     /// <returns></returns>
     protected override async Task<HandleRequestResult> HandleRemoteAuthenticateAsync()
     {
-        var bindings = GetService(sr => sr.GetAllBindings);
+        var bindings = GetRequiredService<IEnumerable<IFrontChannelBinding>>();
 
         var binding = bindings.SingleOrDefault(b => b.CanUnbind(Context.Request));
 
@@ -64,7 +73,7 @@ public class Saml2Handler(
         var samlMessage = await binding.UnbindAsync(Context.Request, str => Task.FromResult<Saml2Entity>(Options.IdentityProvider!));
 
         var source = XmlHelpers.GetXmlTraverser(samlMessage.Xml);
-        var reader = GetService(sr => sr.GetSamlXmlReader);
+        var reader = GetRequiredService<ISamlXmlReader>();
         var samlResponse = reader.ReadSamlResponse(source);
 
         // For now, to make half-baked test pass.
@@ -88,7 +97,7 @@ public class Saml2Handler(
         var authnRequestGeneratedContext = new AuthnRequestGeneratedContext(Context, Scheme, Options, properties, authnRequest);
         await Events.AuthnRequestGeneratedAsync(authnRequestGeneratedContext);
 
-        var xmlDoc = GetService(sr => sr.GetSamlXmlWriter, properties).Write(authnRequest);
+        var xmlDoc = GetRequiredService<ISamlXmlWriter>().Write(authnRequest);
 
         var message = new Saml2Message
         {
@@ -97,8 +106,7 @@ public class Saml2Handler(
             Xml = xmlDoc.DocumentElement!,
         };
 
-        var binding = Options.ServiceResolver.GetBinding(
-            new(Context, Options, Scheme, properties, Options.IdentityProvider.SsoServiceBinding!));
+        var binding = GetFrontChannelBinding(Options.IdentityProvider.SsoServiceBinding!);
 
         await binding.BindAsync(Response, message);
     }

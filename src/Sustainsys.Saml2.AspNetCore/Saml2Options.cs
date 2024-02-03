@@ -18,13 +18,10 @@ public class Saml2Options : RemoteAuthenticationOptions
     }
 
     /// <summary>
-    /// The service resolver can 
-    /// </summary>
-    public ServiceResolver ServiceResolver { get; set; } = new ServiceResolver();
-
-    /// <summary>
     /// Events can be used to override behaviour. Setting this property is the easy way.
-    /// To resolve the events form DI, use <see cref="ServiceResolver.CreateEvents"/>
+    /// To resolve from DI register Saml2Events as a keyed service with the scheme name
+    /// as the key, or to use the same events for all schemes register as an normal
+    /// service
     /// </summary>
     public new Saml2Events Events
     {

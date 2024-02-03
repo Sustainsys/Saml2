@@ -5,6 +5,8 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
 using Sustainsys.Saml2.AspNetCore;
+using Sustainsys.Saml2.Bindings;
+using Sustainsys.Saml2.Serialization;
 
 namespace Microsoft.Extensions.DependencyInjection;
 
@@ -62,6 +64,14 @@ public static class Saml2Extensions
         builder.Services.TryAddEnumerable(
             ServiceDescriptor.Singleton<IPostConfigureOptions<Saml2Options>,
             Saml2PostConfigureOptions>());
+
+        builder.Services.TryAddSingleton<ISamlXmlReader, SamlXmlReader>();
+        builder.Services.TryAddSingleton<ISamlXmlWriter, SamlXmlWriter>();
+
+        builder.Services.TryAddEnumerable(
+            ServiceDescriptor.Singleton<IFrontChannelBinding, HttpRedirectBinding>());
+        builder.Services.TryAddEnumerable(
+            ServiceDescriptor.Singleton<IFrontChannelBinding, HttpPostBinding>());
 
         return builder.AddRemoteScheme<Saml2Options, Saml2Handler>(authenticationScheme, displayName, configureOptions);
     }

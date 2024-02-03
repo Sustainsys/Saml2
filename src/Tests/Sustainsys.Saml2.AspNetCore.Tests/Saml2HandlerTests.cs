@@ -13,6 +13,7 @@ using System.Xml;
 using Sustainsys.Saml2.Tests.Helpers;
 using System.Text;
 using Sustainsys.Saml2.Serialization;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Sustainsys.Saml2.AspNetCore.Tests;
 public class Saml2HandlerTests
@@ -26,10 +27,21 @@ public class Saml2HandlerTests
 
         var loggerFactory = Substitute.For<ILoggerFactory>();
 
+        var keyedServiceProvider = Substitute.For<IKeyedServiceProvider>();
+        keyedServiceProvider.GetService(typeof(ISamlXmlReader)).Returns(new SamlXmlReader());
+        keyedServiceProvider.GetService(typeof(ISamlXmlWriter)).Returns(new SamlXmlWriter());
+        keyedServiceProvider.GetService(typeof(IEnumerable<IFrontChannelBinding>)).Returns(
+            new IFrontChannelBinding[]
+        {
+            new HttpRedirectBinding(),
+            new HttpPostBinding()
+        });
+
         var handler = new Saml2Handler(
             optionsMonitor,
             loggerFactory,
-            UrlEncoder.Default);
+            UrlEncoder.Default,
+            keyedServiceProvider);
 
         var scheme = new AuthenticationScheme("Saml2", "Saml2", typeof(Saml2Handler));
 
