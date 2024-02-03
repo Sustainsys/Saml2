@@ -19,6 +19,19 @@ public class SamlResponseValidator : ISamlResponseValidator
         SamlResponseValidationParameters validationParameters)
     {
         ValidateIssuer(samlResponse, validationParameters);
+        ValidateStatusCode(samlResponse);
+    }
+
+    /// <summary>
+    /// Validate that the status code is <see cref="Constants.StatusCodes.Success"/>
+    /// </summary>
+    /// <param name="samlResponse">Saml Response</param>
+    public virtual void ValidateStatusCode(SamlResponse samlResponse)
+    {
+        if (samlResponse.Status?.StatusCode?.Value != Constants.StatusCodes.Success)
+        {
+            throw new SamlValidationException($"Saml status code {samlResponse.Status?.StatusCode?.Value} is not success");
+        }
     }
 
     /// <summary>

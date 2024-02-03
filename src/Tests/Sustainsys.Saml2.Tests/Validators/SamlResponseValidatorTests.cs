@@ -18,6 +18,13 @@ public class SamlResponseValidatorTests
             Issuer = new()
             {
                 Value = "https://idp.example.com/Saml2"
+            },
+            Status = new()
+            {
+                StatusCode = new()
+                {
+                    Value = Constants.StatusCodes.Success
+                }
             }
         };
 
@@ -73,5 +80,20 @@ public class SamlResponseValidatorTests
             .WithMessage("*issuer*https://unexpected*https://idp.example.com/Saml2*");
 
         // TODO: Validate NameID format once it is supported.
+    }
+
+    [Fact]
+    public void Validate_Status_IsNonSuccess()
+    {
+        var subject = new SamlResponseValidator();
+
+        var response = CreateSamlResponse();
+        response.Status.StatusCode.Value = Constants.StatusCodes.Requester;
+
+        var parameters = CreateValidationParameters();
+
+        subject.Invoking(s => s.Validate(response, parameters))
+            .Should().Throw<SamlValidationException>()
+            .WithMessage("*status*Requester*");
     }
 }
