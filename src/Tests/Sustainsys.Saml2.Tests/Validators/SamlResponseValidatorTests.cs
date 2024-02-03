@@ -24,7 +24,10 @@ public class SamlResponseValidatorTests
     SamlResponseValidationParameters CreateValidationParameters() =>
         new SamlResponseValidationParameters()
         {
-            ValidIssuer = "https://idp.example.com/Saml2"
+            AssertionValidationParameters = new()
+            {
+                ValidIssuer = "https://idp.example.com/Saml2"
+            }
         };
 
     // The happy path that should just validate the default response
