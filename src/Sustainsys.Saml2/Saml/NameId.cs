@@ -54,7 +54,7 @@ public class NameId
     /// <param name="n1"></param>
     /// <param name="n2"></param>
     /// <returns></returns>
-    public static bool operator ==(NameId n1, NameId n2) =>
+    public static bool operator ==(NameId? n1, NameId? n2) =>
         n1?.Value == n2?.Value;
 
     /// <summary>
@@ -63,7 +63,7 @@ public class NameId
     /// <param name="n1"></param>
     /// <param name="n2"></param>
     /// <returns></returns>
-    public static bool operator !=(NameId n1, NameId n2) =>
+    public static bool operator !=(NameId? n1, NameId? n2) =>
         n1?.Value != n2?.Value;
 
     /// <summary>
