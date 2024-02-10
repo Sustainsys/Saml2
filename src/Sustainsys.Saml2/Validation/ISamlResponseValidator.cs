@@ -18,6 +18,7 @@ public interface ISamlResponseValidator
     /// </summary>
     /// <param name="samlResponse"></param>
     /// <param name="parameters">Expected values and settings for validation</param>
+    /// <exception cref="SamlValidationException">On validation failure</exception>
     void Validate(SamlResponse samlResponse, SamlResponseValidationParameters parameters);
 }
 

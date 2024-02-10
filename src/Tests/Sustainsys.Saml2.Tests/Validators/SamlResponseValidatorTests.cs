@@ -65,6 +65,31 @@ public class SamlResponseValidatorTests
         subject.Validate(response, parameters);
     }
 
+    [Theory]
+    [InlineData("2.0", true)]
+    [InlineData("2.1", false)]
+    [InlineData(null, false)]
+    public void Validate_Version(string version, bool valid)
+    {
+        var subject = new SamlResponseValidator();
+
+        var response = CreateSamlResponse();
+        response.Version = version;
+
+        var parameters = CreateValidationParameters();
+
+        if (valid)
+        {
+            subject.Validate(response, parameters);
+        }
+        else
+        {
+            subject.Invoking(s => s.Validate(response, parameters))
+                .Should().Throw<SamlValidationException>()
+                .WithMessage("*version*incorrect*");
+        }
+    }
+
     [Fact]
     public void Validate_Issuer_IsIncorrect()
     {
