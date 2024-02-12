@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Sustainsys.Saml2.Tests;
+namespace Sustainsys.Saml2.Tests.Saml;
 public class NameIdTests
 {
     private const string Value = "https://idp.example.com";

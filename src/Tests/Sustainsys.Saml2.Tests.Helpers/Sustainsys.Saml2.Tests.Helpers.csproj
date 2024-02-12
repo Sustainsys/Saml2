@@ -20,13 +20,4 @@
 	  <ProjectReference Include="..\..\Sustainsys.Saml2\Sustainsys.Saml2.csproj" />
 	</ItemGroup>
 
-	<ItemGroup>
-		<None Update="Sustainsys.Saml2.Tests.pfx">
-			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-		</None>
-		<None Update="Sustainsys.Saml2.Tests2.pfx">
-			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-		</None>
-	</ItemGroup>
-
 </Project>

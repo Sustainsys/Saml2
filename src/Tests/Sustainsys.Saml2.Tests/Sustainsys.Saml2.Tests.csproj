@@ -29,8 +29,8 @@
 
 	<ItemGroup>
 		<ProjectReference Include="..\..\Sustainsys.Saml2\Sustainsys.Saml2.csproj" />
-		<ProjectReference Include="..\Sustainsys.Saml2.Tests.Helpers\Sustainsys.Saml2.Tests.Helpers.csproj" />
-		<PackageReference Include="Microsoft.Extensions.TimeProvider.Testing" Version="8.1.0"/>
+		<PackageReference Include="Microsoft.Extensions.TimeProvider.Testing" Version="8.1.0" />
+		<PackageReference Include="FluentAssertions" Version="6.12.0" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -40,6 +40,12 @@
 	<ItemGroup>
 		<None Update="stubidp.sustainsys.com.cer">
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Sustainsys.Saml2.Tests.pfx">
+		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Sustainsys.Saml2.Tests2.pfx">
+		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		</None>
 	</ItemGroup>
 
