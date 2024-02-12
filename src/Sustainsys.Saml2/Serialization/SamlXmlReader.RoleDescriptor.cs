@@ -7,19 +7,13 @@ namespace Sustainsys.Saml2.Serialization;
 partial class SamlXmlReader
 {
     /// <summary>
-    /// Create RoleDescriptor instance
-    /// </summary>
-    /// <returns>RoleDescriptor</returns>
-    protected virtual RoleDescriptor CreateRoleDescriptor() => new();
-
-    /// <summary>
     /// Process a RoleDescriptor element.
     /// </summary>
     /// <param name="source">Source</param>
     /// <returns>True if current node was a RoleDescriptor element</returns>
     protected virtual RoleDescriptor ReadRoleDescriptor(XmlTraverser source)
     {
-        var result = CreateRoleDescriptor();
+        var result = Create<RoleDescriptor>();
 
         ReadAttributes(source, result);
         ReadElements(source.GetChildren(), result);

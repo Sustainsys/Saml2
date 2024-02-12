@@ -1,4 +1,5 @@
 ﻿using FluentAssertions.Equivalency.Steps;
+using Microsoft.Extensions.DependencyInjection;
 using Sustainsys.Saml2.Saml;
 using Sustainsys.Saml2.Serialization;
 using Sustainsys.Saml2.Tests.Helpers;
@@ -108,7 +109,82 @@ public partial class SamlXmlReaderTests
         subject.ReadAssertion(source, errorInspector);
 
         errorInspectorCalled.Should().BeTrue();
-        
+    }
 
+    [Fact]
+    public void ReadAssertion_CanReadOptional()
+    {
+        // TODO: Go through spec and check that there are tests for minimal/maximal
+        // sub-contents. E.g. a minimal SubjectConfirmationData
+
+        var source = GetXmlTraverser();
+
+        ((XmlElement)source.CurrentNode!).Sign(
+            TestData.Certificate, source.CurrentNode![Constants.Elements.Issuer, Constants.Namespaces.SamlUri]!);
+
+        var subject = new SamlXmlReader();
+
+        var actual = subject.ReadAssertion(source, null);
+
+        var expected = new Assertion()
+        {
+            Version = "2.42",
+            Id = "a9329",
+            IssueInstance = new(2024, 2, 3, 18, 24, 14, DateTimeKind.Utc),
+            Issuer = "https://idp.example.com/Saml2",
+            Subject = new()
+            {
+                NameId = "x987654",
+                SubjectConfirmation = new()
+                {
+                    Method = Constants.SubjectConfirmationMethods.Bearer,
+                    SubjectConfirmationData = new()
+                    {
+                        NotBefore = new(2024, 2, 10, 17, 45, 14, DateTimeKind.Utc),
+                        NotOnOrAfter = new(2024, 2, 10, 17, 50, 14, DateTimeKind.Utc),
+                        Recipient = "https://sp.example.com/Saml2/Acs",
+                        InResponseTo = "b123456",
+                        Address = "192.168.42.17"
+                    }
+                }
+            },
+            Conditions = new()
+            {
+                NotBefore = new(2024, 2, 10, 17, 45, 14, DateTimeKind.Utc),
+                AudienceRestrictions =
+                {
+                    new()
+                    {
+                        Audiences =
+                        {
+                            "https://sp.example.com/Saml2",
+                            "https://other.example.com/Saml2"
+                        }
+                    }
+                },
+                OneTimeUse = true
+            },
+            AuthnStatement = new()
+            {
+                AuthnInstant = new(2024, 2, 10, 15, 27, 34, DateTimeKind.Utc),
+                SessionIndex = "42",
+                SessionNotOnOrAfter = new(2024, 2, 10, 19, 45, 14, DateTimeKind.Utc),
+                AuthnContext = new()
+                {
+                    AuthnContextClassRef = Constants.AuthnContextClasses.PasswordProtectedTransport
+                }
+            },
+            Attributes =
+            {
+                new()
+                {
+                    Name = "role",
+                    Values = {"coder", "OSS Maintainer"}
+                },
+                { "organisation", "Sustainsys AB" }
+            }
+        };
+
+        actual.Should().BeEquivalentTo(expected);
     }
 }

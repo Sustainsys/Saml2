@@ -9,23 +9,13 @@ namespace Sustainsys.Saml2.Serialization;
 partial class SamlXmlReader
 {
     /// <summary>
-    /// Create Key Descriptor object.
-    /// </summary>
-    /// <returns>KeyDescriptor</returns>
-#pragma warning disable IDE0079 // Remove unnecessary suppression
-#pragma warning disable CA1822 // Mark members as static - this is intended to be possible to override.
-    protected KeyDescriptor CreateKeyDescriptor() => new();
-#pragma warning restore CA1822 // Mark members as static
-#pragma warning restore IDE0079 // Remove unnecessary suppression
-
-    /// <summary>
     /// Read KeyDescriptor
     /// </summary>
     /// <param name="source"></param>
     /// <returns></returns>
     protected virtual KeyDescriptor ReadKeyDescriptor(XmlTraverser source)
     {
-        var result = CreateKeyDescriptor();
+        var result = Create<KeyDescriptor>();
 
         result.Use = source.GetEnumAttribute<KeyUse>(Attributes.use, true) ?? KeyUse.Both;
 

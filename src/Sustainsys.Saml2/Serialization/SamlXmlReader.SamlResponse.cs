@@ -5,26 +5,39 @@ namespace Sustainsys.Saml2.Serialization;
 
 partial class SamlXmlReader
 {
-    /// <summary>
-    /// Create an empty saml response instance.
-    /// </summary>
-    /// <returns>SamlResponse</returns>
-    protected virtual SamlResponse CreateSamlResponse() => new();
+    /// <inheritdoc/>
+    public SamlResponse ReadSamlResponse(
+        XmlTraverser source,
+        Action<ReadErrorInspectorContext<SamlResponse>>? errorInspector = null)
+    {
+        SamlResponse samlResponse = default!;
 
-	/// <inheritdoc/>
-	public virtual SamlResponse ReadSamlResponse(XmlTraverser source)
-	{
-        var samlResponse = CreateSamlResponse();
-
-        if(source.EnsureName(Constants.Namespaces.SamlpUri, Constants.Elements.Response))
+        if (source.EnsureName(Constants.Namespaces.SamlpUri, Constants.Elements.Response))
         {
-            ReadAttributes(source, samlResponse);
-            ReadElements(source.GetChildren(), samlResponse);
+            samlResponse = ReadSamlResponse(source);
         }
 
         source.MoveNext(true);
 
+        // TODO: Test for error inspector call
+        CallErrorInspector(errorInspector, samlResponse, source);
+        
         source.ThrowOnErrors();
+
+        return samlResponse;
+    }
+
+    /// <summary>
+    /// Read a Saml Response
+    /// </summary>
+    /// <param name="source">Source Data</param>
+    /// <returns>SamlResponse</returns>
+    protected virtual SamlResponse ReadSamlResponse(XmlTraverser source)
+    { 
+        var samlResponse = Create<SamlResponse>();
+
+        ReadAttributes(source, samlResponse);
+        ReadElements(source.GetChildren(), samlResponse);
 
         return samlResponse;
 	}

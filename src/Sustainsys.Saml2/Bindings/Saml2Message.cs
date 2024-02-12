@@ -11,7 +11,7 @@ public class Saml2Message
     /// Name of the message to be used in query strings, form fields etc.
     /// This is typically "SamlRequest" or "SamlResponse".
     /// </summary>
-    public string Name { get; init; } = default!;
+    public required string Name { get; init; }
 
     /// <summary>
     /// RelayState to include with message
@@ -21,12 +21,12 @@ public class Saml2Message
     /// <summary>
     /// The XML payload.
     /// </summary>
-    public XmlElement Xml { get; init; } = default!;
+    public required XmlElement Xml { get; init; }
 
     /// <summary>
     /// Destination URL of the message. For outbound messages the URL
     /// to send the message to. For inbound, the URL the message was
     /// received at.
     /// </summary>
-    public string Destination { get; init; } = default!;
+    public required string Destination { get; init; }
 }

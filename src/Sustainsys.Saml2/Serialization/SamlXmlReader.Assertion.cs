@@ -12,18 +12,18 @@ namespace Sustainsys.Saml2.Serialization;
 
 public partial class SamlXmlReader
 {
-    /// <summary>
-    /// Create an empty Assertion instances
-    /// </summary>
-    /// <returns>Assertion</returns>
-    protected virtual Assertion CreateAssertion() => new();
-
     /// <inheritdoc/>
     public Assertion ReadAssertion(
         XmlTraverser source,
         Action<ReadErrorInspectorContext<Assertion>>? errorInspector = null)
     {
-        var assertion = ReadAssertion(source);
+        Assertion assertion = default!;
+
+        if (source.EnsureName(Namespaces.SamlUri, Elements.Assertion))
+        {
+            assertion = ReadAssertion(source);
+            source.MoveNext(true);
+        }
 
         CallErrorInspector(errorInspector, assertion, source);
 
@@ -36,17 +36,12 @@ public partial class SamlXmlReader
     /// Read an <see cref="Assertion"/>
     /// </summary>
     /// <param name="source">Xml Traverser to read from</param>
-    protected virtual Assertion ReadAssertion(XmlTraverser source)
+    protected Assertion ReadAssertion(XmlTraverser source)
     {
-        var assertion = CreateAssertion();
+        var assertion = Create<Assertion>();
 
-        if (source.EnsureName(Namespaces.SamlUri, Elements.Assertion))
-        {
-            ReadAttributes(source, assertion);
-            ReadElements(source.GetChildren(), assertion);
-
-            source.MoveNext(true);
-        }
+        ReadAttributes(source, assertion);
+        ReadElements(source.GetChildren(), assertion);
 
         return assertion;
     }
@@ -78,11 +73,62 @@ public partial class SamlXmlReader
             source.MoveNext();
         }
 
+        (var trustedSigningKeys, var allowedHashAlgorithms) =
+            GetSignatureValidationParametersFromIssuer(source, assertion.Issuer);
+
+        if (source.ReadAndValidateOptionalSignature(trustedSigningKeys, allowedHashAlgorithms, out var trustLevel))
+        {
+            assertion.TrustLevel = trustLevel;
+            source.MoveNext();
+        }
+
         // Status is optional on XML schema level, but Core 2.3.3. says that
         // "an assertion without a subject has no defined meaning in this specification."
+        // so we are treating it as mandatory.
         if (source.EnsureName(Namespaces.SamlUri, Elements.Subject))
         {
             assertion.Subject = ReadSubject(source);
+            source.MoveNext(true);
+        }
+
+        if (source.HasName(Namespaces.SamlUri, Elements.Conditions))
+        {
+            assertion.Conditions = ReadConditions(source);
+            source.MoveNext(true);
+        }
+
+        if (source.HasName(Namespaces.SamlUri, Elements.Advice))
+        {
+            // We're not supporting Advice
+            source.IgnoreChildren();
+            source.MoveNext(true);
+        }
+
+        if (source.HasName(Namespaces.SamlUri, Elements.AuthnStatement))
+        {
+            assertion.AuthnStatement = ReadAuthnStatement(source);
+            source.MoveNext(true);
+        }
+
+        if (source.HasName(Namespaces.SamlUri, Elements.AuthzDecisionStatement))
+        {
+            // Not supporting AuthzDecisionStatement, skip it
+            source.IgnoreChildren();
+            source.MoveNext(true);
+        }
+
+        if (source.HasName(Namespaces.SamlUri, Elements.AttributeStatement))
+        {
+            var attributes = source.GetChildren();
+
+            while(attributes.MoveNext(true))
+            {
+                if(attributes.EnsureName(Namespaces.SamlUri, Elements.Attribute))
+                {
+                    assertion.Attributes.Add(ReadAttribute(attributes));
+                }
+            }
+            
             source.MoveNext(true);
         }
     }

@@ -8,33 +8,17 @@ namespace Sustainsys.Saml2.Serialization;
 partial class SamlXmlReader
 {
     /// <summary>
-    /// Factory for Subject
-    /// </summary>
-    protected virtual Subject CreateSubject() => new();
-
-    /// <summary>
     /// Reads a Subject.
     /// </summary>
     /// <param name="source">Source data</param>
     /// <returns>Subject read</returns>
-    protected virtual Subject ReadSubject(XmlTraverser source)
+    protected Subject ReadSubject(XmlTraverser source)
     {
-        var result = CreateSubject();
+        var result = Create<Subject>();
         
-        ReadAttributes(source, result);
-
         ReadElements(source.GetChildren(), result);
 
         return result;
-    }
-
-    /// <summary>
-    /// Extension point to add reading of attributes for Subject
-    /// </summary>
-    /// <param name="source">Source</param>
-    /// <param name="subject">Subject</param>
-    protected virtual void ReadAttributes(XmlTraverser source, Subject subject)
-    {
     }
 
     /// <summary>
@@ -56,6 +40,10 @@ partial class SamlXmlReader
             // TODO: Support BaseID and EncryptedID
         }
 
-        // TODO: Support SubjectConfirmation
+        if (source.HasName(Namespaces.SamlUri, Elements.SubjectConfirmation))
+        {
+            subject.SubjectConfirmation = ReadSubjectConfirmation(source);
+            source.MoveNext(true);
+        }
     }
 }

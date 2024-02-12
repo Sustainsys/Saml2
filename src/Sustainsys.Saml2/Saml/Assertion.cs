@@ -37,4 +37,24 @@ public class Assertion
     /// Subject of the assertion
     /// </summary>
     public Subject Subject { get; set; } = default!;
+
+    /// <summary>
+    /// Conditions of the assertion
+    /// </summary>
+    public Conditions? Conditions {  get; set; }
+    
+    /// <summary>
+    /// Authentication Statement
+    /// </summary>
+    public AuthnStatement? AuthnStatement { get; set; }
+
+    /// <summary>
+    /// Attributes
+    /// </summary>
+    public AttributeStatement Attributes { get; } = [];
+
+    /// <summary>
+    /// Trust level derived from the signature validation
+    /// </summary>
+    public TrustLevel TrustLevel { get; set; }
 }

@@ -1,4 +1,5 @@
-﻿using Sustainsys.Saml2.Saml;
+﻿using Sustainsys.Saml2.Metadata;
+using Sustainsys.Saml2.Saml;
 using Sustainsys.Saml2.Samlp;
 using Sustainsys.Saml2.Xml;
 
@@ -28,18 +29,24 @@ public interface ISamlXmlReader
     Func<string, Saml2Entity>? EntityResolver { get; set; }
 
     /// <summary>
-    /// Read a NameID
+    /// Read an Entity Descriptor
     /// </summary>
     /// <param name="source">Xml Traverser to read from</param>
-    /// <returns>NameId</returns>
-    NameId ReadNameId(XmlTraverser source);
+    /// <param name="errorInspector">Callback that can inspect and alter errors before throwing</param>
+    /// <returns>EntityDescriptor</returns>
+    EntityDescriptor ReadEntityDescriptor(
+        XmlTraverser source,
+        Action<ReadErrorInspectorContext<EntityDescriptor>>? errorInspector = null);
 
     /// <summary>
     /// Read a Saml response
     /// </summary>
     /// <param name="source">Xml Traverser to read from</param>
+    /// <param name="errorInspector">Callback that can inspect and alter errors before throwing</param>
     /// <returns>SamlResponse</returns>
-    SamlResponse ReadSamlResponse(XmlTraverser source);
+    SamlResponse ReadSamlResponse(
+        XmlTraverser source,
+        Action<ReadErrorInspectorContext<SamlResponse>>? errorInspector = null);
 
     /// <summary>
     /// Read an <see cref="AuthnRequest"/>

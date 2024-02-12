@@ -8,5 +8,5 @@ public class Extensions
     /// <summary>
     /// Collection of conentent nodes read by extension-aware readers.
     /// </summary>
-    public List<object> Contents { get; set; } = new List<object>();
+    public List<object> Contents { get; set; } = [];
 }

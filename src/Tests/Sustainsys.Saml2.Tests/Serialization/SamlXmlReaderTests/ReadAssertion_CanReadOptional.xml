@@ -1,0 +1,44 @@
+﻿<Assertion xmlns="urn:oasis:names:tc:SAML:2.0:assertion"
+				Version="2.42" ID="a9329" IssueInstant="2024-02-03T18:24:14Z">
+	<Issuer>https://idp.example.com/Saml2</Issuer>
+	<!--Signature dynamically computed and insert by unit test-->
+	<Subject>
+		<NameID>x987654</NameID>
+		<SubjectConfirmation Method="urn:oasis:names:tc:SAML:2.0:cm:bearer">
+			<SubjectConfirmationData NotBefore="2024-02-10T17:45:14Z"
+									 NotOnOrAfter="2024-02-10T17:50:14Z"
+									 Recipient="https://sp.example.com/Saml2/Acs"
+									 InResponseTo="b123456"
+									 Address="192.168.42.17"/>
+		</SubjectConfirmation>
+	</Subject>
+	<Conditions NotBefore="2024-02-10T17:45:14Z">
+		<AudienceRestriction>
+			<Audience>https://sp.example.com/Saml2</Audience>
+			<Audience>https://other.example.com/Saml2</Audience>
+		</AudienceRestriction>
+		<OneTimeUse/>
+		<ProxyRestriction/>
+	</Conditions>
+	<Advice />
+	<AuthnStatement AuthnInstant="2024-02-10T15:27:34Z"
+					SessionIndex="42"
+					SessionNotOnOrAfter="2024-02-10T19:45:14Z">
+		<SubjectLocality Address="192.168.42.17" />
+		<AuthnContext>
+			<AuthnContextClassRef>urn:oasis:names:tc:SAML:2.0:ac:classes:PasswordProtectedTransport</AuthnContextClassRef>
+		</AuthnContext>
+	</AuthnStatement>
+	<AuthzDecisionStatement Resource="" Decision="Permit">
+		<Action Namespace="https://ns.example.com">Ignored</Action>
+	</AuthzDecisionStatement>
+	<AttributeStatement>
+		<Attribute Name="role">
+			<AttributeValue>coder</AttributeValue>
+			<AttributeValue>OSS Maintainer</AttributeValue>
+		</Attribute>
+		<Attribute Name="organisation">
+			<AttributeValue>Sustainsys AB</AttributeValue>
+		</Attribute>
+	</AttributeStatement>
+</Assertion>

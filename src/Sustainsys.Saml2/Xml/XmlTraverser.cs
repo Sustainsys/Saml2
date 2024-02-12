@@ -34,10 +34,9 @@ public class XmlTraverser
     private readonly XmlTraverser? parent;
 
     /// <summary>
-    /// Are the children of the current node handled? Default to true
-    /// as we're setting it to false whenever we hit an element.
+    /// Are the children of the current node handled?
     /// </summary>
-    private bool childrenHandled = true;
+    private bool childrenHandled;
 
     internal XmlNode? RootNode { get; set; }
 
@@ -54,6 +53,7 @@ public class XmlTraverser
     {
         RootNode = rootNode;
         CurrentNode = rootNode;
+        childrenHandled = !rootNode.HasChildNodes;
         Errors = [];
     }
 
@@ -67,6 +67,10 @@ public class XmlTraverser
         this.parent = parent;
         firstNode = parent.CurrentNode!.FirstChild;
         Errors = errors;
+
+        // Initial position is *before* first node, so there
+        // are no children to handle on this position.
+        childrenHandled = true;
     }
 
     private void AddError(ErrorReason reason, string message, string? localName = null)
@@ -74,7 +78,6 @@ public class XmlTraverser
         Errors.Add(new(reason, localName ?? CurrentNode!.LocalName, CurrentNode, message));
     }
 
-    //TODO: Add callback function as parameter that allows ignoring - easier way to wire up with events.
     /// <summary>
     /// Throws exception if the error collection is non-empty.
     /// </summary>
@@ -288,27 +291,6 @@ public class XmlTraverser
     }
 
     /// <summary>
-    /// Ensure that there is a current node and that the current node is an element. Typically used
-    /// if the expectation of further elements is not known when <see cref="MoveNext(bool)"/> is called.
-    /// </summary>
-    /// <returns>Was there an element?</returns>
-    public bool EnsureElement()
-    {
-        if (CurrentNode == null || CurrentNode.NodeType != XmlNodeType.Element)
-        {
-            Errors.Add(new(
-                ErrorReason.MissingElement,
-                parent!.CurrentNode?.LocalName,
-                parent.CurrentNode,
-                "There is no current node or current node is not an element."));
-
-            return false;
-        }
-
-        return true;
-    }
-
-    /// <summary>
     /// Checks if the current node has the qualified name.
     /// </summary>
     /// <param name="namespaceUri">Expected namespace</param>
@@ -361,7 +343,7 @@ public class XmlTraverser
     /// </summary>
     /// <param name="localName"></param>
     /// <returns></returns>
-    public string? GetRequiredAbsoluteUriAttribute(string localName)
+    public string GetRequiredAbsoluteUriAttribute(string localName)
     {
         var value = GetRequiredAttribute(localName);
 
@@ -377,7 +359,7 @@ public class XmlTraverser
             });
         }
 
-        return value;
+        return value!;
     }
 
     /// <summary>

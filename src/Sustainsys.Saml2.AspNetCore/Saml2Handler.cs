@@ -14,6 +14,8 @@ namespace Sustainsys.Saml2.AspNetCore;
 
 // TODO: OTel Metrics + Activities + logging/traces
 
+// TODO: Fold into main package. Same dependencies => same package.
+
 /// <summary>
 /// Saml2 authentication handler
 /// </summary>

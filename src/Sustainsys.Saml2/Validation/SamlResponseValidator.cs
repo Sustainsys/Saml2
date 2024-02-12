@@ -33,7 +33,7 @@ public class SamlResponseValidator : ISamlResponseValidator
     /// </summary>
     /// <param name="samlResponse">Saml Response</param>
     /// <exception cref="SamlValidationException">On validation failure</exception>
-    protected void ValidateStatusCode(SamlResponse samlResponse)
+    protected virtual void ValidateStatusCode(SamlResponse samlResponse)
     {
         if (samlResponse.Status?.StatusCode?.Value != Constants.StatusCodes.Success)
         {

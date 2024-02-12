@@ -7,21 +7,15 @@ namespace Sustainsys.Saml2.Serialization;
 partial class SamlXmlReader
 {
     /// <summary>
-    /// Create an IDPSSODescriptor instance.
-    /// </summary>
-    protected virtual IDPSSODescriptor CreateIDPSSODescriptor() => new();
-
-    /// <summary>
     /// Read the current node as an IDPSSODescriptor
     /// </summary>
     /// <param name="source"></param>
     /// <returns></returns>
     protected virtual IDPSSODescriptor ReadIDPSSODescriptor(XmlTraverser source)
     {
-        var result = CreateIDPSSODescriptor();
+        var result = Create<IDPSSODescriptor>();
 
         ReadAttributes(source, result);
-
         ReadElements(source.GetChildren(), result);
 
         return result;
@@ -49,8 +43,7 @@ partial class SamlXmlReader
         ReadElements(source, (SSODescriptor)result);
 
         // We must have at least one SingleSignOnService in an IDPSSODescriptor and now we should be at it.
-        if(!source.EnsureElement() &&             
-            !source.EnsureName(Namespaces.MetadataUri, Elements.SingleSignOnService))
+        if(!source.EnsureName(Namespaces.MetadataUri, Elements.SingleSignOnService))
         {
             return;
         }

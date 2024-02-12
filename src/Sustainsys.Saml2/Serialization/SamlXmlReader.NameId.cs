@@ -5,15 +5,13 @@ namespace Sustainsys.Saml2.Serialization;
 public partial class SamlXmlReader
 {
     /// <summary>
-    /// Factory for NameId
+    /// Read a NameId
     /// </summary>
-    /// <returns></returns>
-    protected virtual NameId CreateNameId() => new();
-
-    /// <inheritdoc/>
+    /// <param name="source">Xml Traverser to read from</param>
+    /// <returns>NameId</returns>
     public virtual NameId ReadNameId(XmlTraverser source)
     {
-        var result = CreateNameId();
+        var result = Create<NameId>();
 
         result.Value = source.GetTextContents();
 

@@ -23,7 +23,7 @@ public partial class SamlXmlReader : ISamlXmlReader
     public virtual IEnumerable<string>? AllowedHashAlgorithms { get; set; } =
         defaultAllowedHashAlgorithms;
 
-    private static IEnumerable<string> defaultAllowedHashAlgorithms =
+    private static readonly IEnumerable<string> defaultAllowedHashAlgorithms =
         new ReadOnlyCollection<string>(new[]
         {
             SignedXml.XmlDsigRSASHA256Url,
@@ -45,6 +45,14 @@ public partial class SamlXmlReader : ISamlXmlReader
     protected virtual void ThrowOnErrors(XmlTraverser source)
         => source.ThrowOnErrors();
 
+    /// <summary>
+    /// Default factory for read types is just to new it up. Override this method
+    /// to create a derived/specialized type instead.
+    /// </summary>
+    /// <typeparam name="T">Type to create</typeparam>
+    /// <returns>New instance of <typeparamref name="T"/></returns>
+    protected virtual T Create<T>() where T : new() => new();
+        
     /// <summary>
     /// Helper method to get the signing keys and allowed signature algorithms for
     /// an issuer.
@@ -81,12 +89,12 @@ public partial class SamlXmlReader : ISamlXmlReader
         return (trustedSigningKeys, allowedHashAlgorithms);
     }
 
-    private void CallErrorInspector<TData>(
+    private static void CallErrorInspector<TData>(
         Action<ReadErrorInspectorContext<TData>>? errorInspector,
         TData data,
         XmlTraverser source)
     {
-        if (errorInspector != null)
+        if (errorInspector != null && source.Errors.Count != 0)
         {
             var context = new ReadErrorInspectorContext<TData>()
             {

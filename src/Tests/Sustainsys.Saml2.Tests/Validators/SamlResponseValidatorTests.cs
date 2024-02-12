@@ -12,8 +12,8 @@ namespace Sustainsys.Saml2.Tests.Validators;
 
 public class SamlResponseValidatorTests
 {
-    SamlResponse CreateSamlResponse() =>
-        new SamlResponse()
+    private static SamlResponse CreateSamlResponse() =>
+        new()
         {
             Issuer = new()
             {
@@ -28,8 +28,8 @@ public class SamlResponseValidatorTests
             }
         };
 
-    SamlResponseValidationParameters CreateValidationParameters() =>
-        new SamlResponseValidationParameters()
+    private static SamlResponseValidationParameters CreateValidationParameters() =>
+        new()
         {
             AssertionValidationParameters = new()
             {

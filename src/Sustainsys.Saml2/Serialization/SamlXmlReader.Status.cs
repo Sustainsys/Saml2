@@ -8,19 +8,13 @@ partial class SamlXmlReader
 
 {
 	/// <summary>
-	/// Factory for SamlStatus
-	/// </summary>
-	/// <returns>SamlStatus</returns>
-	protected virtual SamlStatus CreateSamlStatus() => new();
-
-	/// <summary>
 	/// Reads Status
 	/// </summary>
 	/// <param name="source">Xml Traverser</param>
 	/// <returns>Status</returns>
 	protected virtual SamlStatus ReadStatus(XmlTraverser source)
 	{
-		var result = CreateSamlStatus();
+		var result = Create<SamlStatus>();
 
 		ReadElements(source.GetChildren(), result);
 
@@ -36,7 +30,7 @@ partial class SamlXmlReader
 	{
 		source.MoveNext();
 
-		if (source.EnsureName(Constants.Namespaces.SamlpUri, Constants.Elements.StatusCode))
+		if (source.EnsureName(Namespaces.SamlpUri, Elements.StatusCode))
 		{
 			status.StatusCode = ReadStatusCode(source);
 			source.MoveNext(true);
@@ -44,18 +38,12 @@ partial class SamlXmlReader
 	}
 
 	/// <summary>
-	/// Factory for StatusCode
-	/// </summary>
-	/// <returns>StatusCode</returns>
-	protected virtual StatusCode CreateStatusCode() => new();
-
-	/// <summary>
 	/// Reads a status code
 	/// </summary>
 	/// <param name="source"></param>
 	protected virtual StatusCode ReadStatusCode(XmlTraverser source)
 	{
-		var result = CreateStatusCode();
+		var result = Create<StatusCode>();
 
 		ReadAttributes(source, result);
 

@@ -16,5 +16,8 @@ public class Subject
     /// </summary>
     public NameId? NameId { get; set; }
 
-    // TODO: Support full Subject, including SubjectConfirmation
+    /// <summary>
+    /// SubjectConfirmation
+    /// </summary>
+    public SubjectConfirmation? SubjectConfirmation { get; set; }
 }

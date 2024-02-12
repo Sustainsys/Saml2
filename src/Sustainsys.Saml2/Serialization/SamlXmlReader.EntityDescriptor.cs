@@ -6,29 +6,39 @@ namespace Sustainsys.Saml2.Serialization;
 
 partial class SamlXmlReader
 {
-    /// <summary>
-    /// Create EntityDescriptor instance. Override to use subclass.
-    /// </summary>
-    /// <returns>EntityDescriptor</returns>
-    protected virtual EntityDescriptor CreateEntityDescriptor() => new();
-
-    /// <summary>
-    /// Read an EntityDescriptor
-    /// </summary>
-    /// <returns>EntityDescriptor</returns>
-    public virtual EntityDescriptor ReadEntityDescriptor(XmlTraverser source)
+    /// <inheritdoc/>
+    public EntityDescriptor ReadEntityDescriptor(
+        XmlTraverser source,
+        Action<ReadErrorInspectorContext<EntityDescriptor>>? errorInspector = null)
     {
-        var entityDescriptor = CreateEntityDescriptor();
+        EntityDescriptor entityDescriptor = default!;
 
         if (source.EnsureName(Namespaces.MetadataUri, Elements.EntityDescriptor))
         {
-            ReadAttributes(source, entityDescriptor);
-            ReadElements(source.GetChildren(), entityDescriptor);
+            entityDescriptor = ReadEntityDescriptor(source);
         }
 
         source.MoveNext(true);
 
+        // TODO: Test case for error inspector. Including test that it's not call on no errors.
+        CallErrorInspector(errorInspector, entityDescriptor, source);
+
         ThrowOnErrors(source);
+
+        return entityDescriptor;
+    }
+
+    /// <summary>
+    /// Read an EntityDescriptor
+    /// </summary>
+    /// <param name="source">Source data</param>
+    /// <returns>EntityDescriptor</returns>
+    protected EntityDescriptor ReadEntityDescriptor(XmlTraverser source)
+    {
+        var entityDescriptor = Create<EntityDescriptor>();
+        
+        ReadAttributes(source, entityDescriptor);
+        ReadElements(source.GetChildren(), entityDescriptor);
 
         return entityDescriptor;
     }
@@ -94,5 +104,8 @@ partial class SamlXmlReader
                 }
             }
         } while (wasRoleDescriptor && source.MoveNext(true));
+
+        // There can be more data after the role descriptors that we currently do not support, skip them.
+        source.Skip();
     }
 }

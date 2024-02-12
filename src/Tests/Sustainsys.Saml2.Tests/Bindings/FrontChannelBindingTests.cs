@@ -39,7 +39,8 @@ public class FrontChannelBindingTests
         var message = new Saml2Message()
         {
             Name = name!,
-            Xml = xmlDocument?.DocumentElement!
+            Xml = xmlDocument?.DocumentElement!,
+            Destination = default!
         };
 
         var subject = new Subject();

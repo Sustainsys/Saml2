@@ -85,6 +85,7 @@ public class XmlTraverserTests
 
         subject.EnsureName("whatever", "root");
 
+        subject.IgnoreChildren();
         subject.MoveNext(true);
 
         subject.Invoking(s => s.ThrowOnErrors())
@@ -102,9 +103,11 @@ public class XmlTraverserTests
 
         subject.MoveNext(true);
 
+        // 3 errors: local name, namespace and children not processed.
+
         subject.Invoking(s => s.ThrowOnErrors())
             .Should().Throw<SamlXmlException>()
-            .Which.Errors.Count().Should().Be(2);
+            .Which.Errors.Count().Should().Be(3);
     }
 
     [Fact]
@@ -144,6 +147,7 @@ public class XmlTraverserTests
 
         subject.EnsureName("whatever", "something");
 
+        subject.IgnoreChildren();
         subject.MoveNext(true);
 
         subject.Errors.Single(e => e.Reason == ErrorReason.UnexpectedLocalName).Ignore = true;
@@ -234,7 +238,7 @@ public class XmlTraverserTests
 
     private static void ValidateMissing(XmlTraverser subject)
     {
-        subject.Errors.Count().Should().Be(1);
+        subject.Errors.Count.Should().Be(1);
         var error = subject.Errors.Single();
 
         error.Reason.Should().Be(ErrorReason.MissingAttribute);
@@ -442,7 +446,7 @@ public class XmlTraverserTests
     }
 
     [Fact]
-    public void DetectSkippedChildren_NotAllChildren()
+    public void DetectSkippedChildren_NotAllChildrenNested()
     {
         var xml = "<r><a><b/></a></r>";
 
@@ -464,6 +468,28 @@ public class XmlTraverserTests
         error.Reason.Should().Be(ErrorReason.ExtraElements);
         error.Node.Should().BeSameAs(a);
         error.LocalName.Should().Be("a");
+        error.Message.Should().Match("*not been processed*");
+    }
+
+    [Fact]
+    public void DetectSkippedChildren_NotAllChildren()
+    {
+        var xml = "<r><a/><b/><c/></r>";
+
+        var subject = GetXmlTraverser(xml);
+
+        var children = subject.GetChildren();
+        children.MoveNext().Should().BeTrue();
+        var a = children.CurrentNode!;
+
+        subject.MoveNext(true).Should().BeFalse();
+
+        subject.Errors.Should().HaveCount(1);
+
+        var error = subject.Errors[0];
+        error.Reason.Should().Be(ErrorReason.ExtraElements);
+        error.Node.Should().BeSameAs(a.ParentNode);
+        error.LocalName.Should().Be("r");
         error.Message.Should().Match("*not been processed*");
     }
 
@@ -492,32 +518,6 @@ public class XmlTraverserTests
         subject.MoveNext(true);
 
         subject.Errors.Should().HaveCount(0);
-    }
-
-    [Theory]
-    [InlineData("<r/>", false)]
-    [InlineData("<r><a/></r>", true)]
-    [InlineData("<r>text</r>", false)]
-    public void EnsureElement(string xml, bool expected)
-    {
-        var subject = GetXmlTraverser(xml);
-
-        var children = subject.GetChildren();
-        children.MoveNext(true).Should().Be(expected);
-
-        children.EnsureElement().Should().Be(expected);
-
-        if(!expected)
-        { 
-            // For the text node, there's first a text node error.
-            subject.Errors.Should().NotBeEmpty();
-            var e = subject.Errors.Last();
-
-            e.Reason.Should().Be(ErrorReason.MissingElement);
-            e.Node.Should().BeSameAs(subject.CurrentNode);
-            e.LocalName.Should().Be("r");
-            e.Message.Should().Match("*not*element*");
-        }
     }
 
     [Fact]

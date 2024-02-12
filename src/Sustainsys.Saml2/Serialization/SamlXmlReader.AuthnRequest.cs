@@ -6,12 +6,6 @@ using static Sustainsys.Saml2.Constants;
 namespace Sustainsys.Saml2.Serialization;
 public partial class SamlXmlReader
 {
-    /// <summary>
-    /// Create an empty AuthnRequest instance
-    /// </summary>
-    /// <returns>AuthnRequest</returns>
-    protected virtual AuthnRequest CreateAuthnRequest() => new();
-
     // TODO: Convert other reads to follow this pattern with a callback for errors
 
     /// <inheritdoc/>
@@ -19,7 +13,13 @@ public partial class SamlXmlReader
         XmlTraverser source,
         Action<ReadErrorInspectorContext<AuthnRequest>>? errorInspector = null)
     {
-        var authnRequest = ReadAuthnRequest(source);
+        AuthnRequest authnRequest = default!;
+
+        if (source.EnsureName(Namespaces.SamlpUri, Elements.AuthnRequest))
+        {
+            authnRequest = ReadAuthnRequest(source);
+            source.MoveNext(true);
+        }
 
         CallErrorInspector(errorInspector, authnRequest, source);
 
@@ -33,15 +33,12 @@ public partial class SamlXmlReader
     /// </summary>
     /// <param name="source">Xml Traverser to read from</param>
     /// <returns><see cref="AuthnRequest"/>The AuthnRequest read</returns>
-    protected virtual AuthnRequest ReadAuthnRequest(XmlTraverser source)
+    protected AuthnRequest ReadAuthnRequest(XmlTraverser source)
     {
-        var authnRequest = CreateAuthnRequest();
+        var authnRequest = Create<AuthnRequest>();
 
-        if (source.EnsureName(Namespaces.SamlpUri, Elements.AuthnRequest))
-        {
-            ReadAttributes(source, authnRequest);
-            ReadElements(source.GetChildren(), authnRequest);
-        }
+        ReadAttributes(source, authnRequest);
+        ReadElements(source.GetChildren(), authnRequest);
 
         source.MoveNext(true);
 
@@ -60,6 +57,7 @@ public partial class SamlXmlReader
         if (source.HasName(Namespaces.SamlUri, Elements.Subject))
         {
             authnRequest.Subject = ReadSubject(source);
+            source.MoveNext(true);
         }
     }
 
