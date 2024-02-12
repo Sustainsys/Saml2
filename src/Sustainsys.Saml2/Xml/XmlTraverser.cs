@@ -15,7 +15,7 @@ namespace Sustainsys.Saml2.Xml;
 /// EnvelopedSignatureReader of the Microsoft.IdentityModel.Xml library is just too complex and error
 /// prone in my opinion, I prefer using the SignedXml implementation for signature handling.
 /// </summary>
-[DebuggerDisplay("{CurrentNode}")]
+[DebuggerDisplay("{RootNode.Name,nq}/{CurrentNode?.Name,nq}")]
 public class XmlTraverser
 {
     /// <summary>

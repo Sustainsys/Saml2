@@ -1,5 +1,5 @@
 ﻿<samlp:Response xmlns:samlp="urn:oasis:names:tc:SAML:2.0:protocol" xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion"
-				ID="x123" InResponseTo="x789" Version="2.0" IssueInstant="2023-10-14T13:46:32Z" 
+				ID="x123" InResponseTo="x789" Version="2.0" IssueInstant="2023-10-14T13:46:32Z"
 				Destination="https://sp.example.com/Saml2/Acs" Consent="urn:oasis:names:tc:SAML:2.0:consent:obtained">
 	<saml:Issuer Format="urn:oasis:names:tc:SAML:1.1:nameid-format:entity">https://idp.example.com/Metadata</saml:Issuer>
 	<samlp:Extensions>
@@ -8,4 +8,37 @@
 	<samlp:Status>
 		<samlp:StatusCode Value="urn:oasis:names:tc:SAML:2.0:status:Success" />
 	</samlp:Status>
+	<saml:Assertion
+			Version="2.42"
+			ID="_0f9174fb-a286-43cf-93c8-197dfc6c58d2"
+			IssueInstant="2024-02-12T13:00:53Z">
+		<saml:Issuer>https://idp.example.com/Metadata</saml:Issuer>
+		<saml:Subject>
+			<saml:NameID Format="urn:oasis:names:tc:SAML:1.1:nameid-format:unspecified">x123456</saml:NameID>
+			<saml:SubjectConfirmation
+                Method="urn:oasis:names:tc:SAML:2.0:cm:bearer">
+				<saml:SubjectConfirmationData
+                    NotOnOrAfter="2024-02-12T13:02:53Z"
+                    Recipient="https://sp.example.com/Saml2/Acs" />
+			</saml:SubjectConfirmation>
+		</saml:Subject>
+		<saml:Conditions
+            NotOnOrAfter="2024-02-12T13:02:53Z">
+			<saml:AudienceRestriction>
+				<saml:Audience>https://sp.example.com/Saml2</saml:Audience>
+			</saml:AudienceRestriction>
+		</saml:Conditions>
+		<saml:AuthnStatement
+            AuthnInstant="2024-02-12T13:00:53Z"
+            SessionIndex="42">
+			<saml:AuthnContext>
+				<saml:AuthnContextClassRef>urn:oasis:names:tc:SAML:2.0:ac:classes:unspecified</saml:AuthnContextClassRef>
+			</saml:AuthnContext>
+		</saml:AuthnStatement>
+		<saml:AttributeStatement>
+			<saml:Attribute Name="organisation">
+				<saml:AttributeValue>Sustainsys AB</saml:AttributeValue>
+			</saml:Attribute>
+		</saml:AttributeStatement>
+	</saml:Assertion>
 </samlp:Response>

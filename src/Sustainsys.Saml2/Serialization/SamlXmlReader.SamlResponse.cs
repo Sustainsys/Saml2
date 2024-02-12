@@ -1,5 +1,6 @@
 ﻿using Sustainsys.Saml2.Samlp;
 using Sustainsys.Saml2.Xml;
+using static Sustainsys.Saml2.Constants;
 
 namespace Sustainsys.Saml2.Serialization;
 
@@ -21,7 +22,7 @@ partial class SamlXmlReader
 
         // TODO: Test for error inspector call
         CallErrorInspector(errorInspector, samlResponse, source);
-        
+
         source.ThrowOnErrors();
 
         return samlResponse;
@@ -33,14 +34,14 @@ partial class SamlXmlReader
     /// <param name="source">Source Data</param>
     /// <returns>SamlResponse</returns>
     protected virtual SamlResponse ReadSamlResponse(XmlTraverser source)
-    { 
+    {
         var samlResponse = Create<SamlResponse>();
 
         ReadAttributes(source, samlResponse);
         ReadElements(source.GetChildren(), samlResponse);
 
         return samlResponse;
-	}
+    }
 
     /// <summary>
     /// Read elements of SamlResponse
@@ -50,5 +51,11 @@ partial class SamlXmlReader
     protected virtual void ReadElements(XmlTraverser source, SamlResponse samlResponse)
     {
         ReadElements(source, (StatusResponseType)samlResponse);
+
+        while (source.HasName(Namespaces.SamlUri, Elements.Assertion))
+        {
+            samlResponse.Assertions.Add(ReadAssertion(source));
+            source.MoveNext(true);
+        }
     }
 }

@@ -54,7 +54,7 @@ public partial class SamlXmlReader
     protected virtual void ReadAttributes(XmlTraverser source, Assertion assertion)
     {
         assertion.Id = source.GetRequiredAttribute(Attributes.ID);
-        assertion.IssueInstance = source.GetRequiredDateTimeAttribute(Attributes.IssueInstant);
+        assertion.IssueInstant = source.GetRequiredDateTimeAttribute(Attributes.IssueInstant);
         assertion.Version = source.GetRequiredAttribute(Attributes.Version);
     }
 

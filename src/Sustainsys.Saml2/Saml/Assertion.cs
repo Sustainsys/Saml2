@@ -29,9 +29,9 @@ public class Assertion
     public string Version { get; set; } = "2.0";
 
     /// <summary>
-    /// Isssue instance of the assertion
+    /// Isssue instant of the assertion
     /// </summary>
-    public DateTime IssueInstance { get; set; } = DateTime.UtcNow;
+    public DateTime IssueInstant { get; set; } = DateTime.UtcNow;
 
     /// <summary>
     /// Subject of the assertion

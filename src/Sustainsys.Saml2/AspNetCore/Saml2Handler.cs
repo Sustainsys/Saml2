@@ -7,6 +7,7 @@ using Sustainsys.Saml2.Bindings;
 using Sustainsys.Saml2.Samlp;
 using Sustainsys.Saml2.Serialization;
 using Sustainsys.Saml2.Xml;
+using System;
 using System.Runtime.Serialization;
 using System.Text.Encodings.Web;
 
@@ -22,21 +23,24 @@ namespace Sustainsys.Saml2.AspNetCore;
 /// <param name="options">Options</param>
 /// <param name="logger">Logger factory</param>
 /// <param name="encoder">Url encoder</param>
-/// <param name="keyedServiceProvider">Keyed service provider used to resolve services</param>
+/// <param name="serviceProvider">Service provider used to resolve services</param>
 public class Saml2Handler(
     IOptionsMonitor<Saml2Options> options,
     ILoggerFactory logger,
     UrlEncoder encoder,
-    IKeyedServiceProvider keyedServiceProvider) 
+    IServiceProvider serviceProvider) 
     : RemoteAuthenticationHandler<Saml2Options>(options, logger, encoder)
 {
     private TService GetRequiredService<TService>() where TService : notnull =>
-        keyedServiceProvider.GetKeyedService<TService>(Scheme.Name) ??
-        keyedServiceProvider.GetRequiredService<TService>();
+        serviceProvider.GetKeyedService<TService>(Scheme.Name) ??
+        serviceProvider.GetRequiredService<TService>();
+
+    private IEnumerable<IFrontChannelBinding> GetAllFrontChannelBindings() =>
+        serviceProvider.GetKeyedServices<IFrontChannelBinding>(Scheme.Name)
+        .Union(serviceProvider.GetServices<IFrontChannelBinding>());
 
     private IFrontChannelBinding GetFrontChannelBinding(string uri) =>
-        GetRequiredService<IEnumerable<IFrontChannelBinding>>()
-        .Single(b => b.Identifier == uri);
+        GetAllFrontChannelBindings().First(b => b.Identifier == uri);
 
     /// <summary>
     /// Resolves events as keyed service from DI, falls back to non-keyed service and 
@@ -44,7 +48,7 @@ public class Saml2Handler(
     /// </summary>
     /// <returns><see cref="Saml2Events"/>Saml2 events instance</returns>
     protected override Task<object> CreateEventsAsync() => Task.FromResult<object>(
-        keyedServiceProvider.GetKeyedService<Saml2Events>(Scheme.Name) ??
+        serviceProvider.GetKeyedService<Saml2Events>(Scheme.Name) ??
         new Saml2Events());
 
     /// <summary>
@@ -63,9 +67,9 @@ public class Saml2Handler(
     /// <returns></returns>
     protected override async Task<HandleRequestResult> HandleRemoteAuthenticateAsync()
     {
-        var bindings = GetRequiredService<IEnumerable<IFrontChannelBinding>>();
+        var bindings = GetAllFrontChannelBindings();
 
-        var binding = bindings.SingleOrDefault(b => b.CanUnbind(Context.Request));
+        var binding = bindings.FirstOrDefault(b => b.CanUnbind(Context.Request));
 
         if (binding == null)
         {

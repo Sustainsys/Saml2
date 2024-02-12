@@ -31,6 +31,8 @@ public class Saml2HandlerTests
         var keyedServiceProvider = Substitute.For<IKeyedServiceProvider>();
         keyedServiceProvider.GetService(typeof(ISamlXmlReader)).Returns(new SamlXmlReader());
         keyedServiceProvider.GetService(typeof(ISamlXmlWriter)).Returns(new SamlXmlWriter());
+        keyedServiceProvider.GetRequiredKeyedService(typeof(IEnumerable<IFrontChannelBinding>), Arg.Any<string>())
+            .Returns(Enumerable.Empty<IFrontChannelBinding>());
         keyedServiceProvider.GetService(typeof(IEnumerable<IFrontChannelBinding>)).Returns(
             new IFrontChannelBinding[]
         {

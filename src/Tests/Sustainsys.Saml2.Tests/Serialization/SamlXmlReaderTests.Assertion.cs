@@ -29,7 +29,7 @@ public partial class SamlXmlReaderTests
             Id = "a9329",
             Issuer = "https://idp.example.com/Saml2",
             Version = "2.42", // For the purpose of this test to ensure value is read.
-            IssueInstance = new DateTime(2024, 02, 03, 18, 24, 14, DateTimeKind.Utc),
+            IssueInstant = new DateTime(2024, 02, 03, 18, 24, 14, DateTimeKind.Utc),
             Subject = new()
             {
                 NameId = new()
@@ -130,7 +130,7 @@ public partial class SamlXmlReaderTests
         {
             Version = "2.42",
             Id = "a9329",
-            IssueInstance = new(2024, 2, 3, 18, 24, 14, DateTimeKind.Utc),
+            IssueInstant = new(2024, 2, 3, 18, 24, 14, DateTimeKind.Utc),
             Issuer = "https://idp.example.com/Saml2",
             Subject = new()
             {
