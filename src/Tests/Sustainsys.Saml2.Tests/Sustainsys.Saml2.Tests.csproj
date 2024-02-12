@@ -30,6 +30,7 @@
 	<ItemGroup>
 		<ProjectReference Include="..\..\Sustainsys.Saml2\Sustainsys.Saml2.csproj" />
 		<ProjectReference Include="..\Sustainsys.Saml2.Tests.Helpers\Sustainsys.Saml2.Tests.Helpers.csproj" />
+		<PackageReference Include="Microsoft.Extensions.TimeProvider.Testing" Version="8.1.0"/>
 	</ItemGroup>
 
 	<ItemGroup>

@@ -14,8 +14,9 @@ using Sustainsys.Saml2.Tests.Helpers;
 using System.Text;
 using Sustainsys.Saml2.Serialization;
 using Microsoft.Extensions.DependencyInjection;
+using Sustainsys.Saml2.AspNetCore;
 
-namespace Sustainsys.Saml2.AspNetCore.Tests;
+namespace Sustainsys.Saml2.Tests.AspNetCore;
 public class Saml2HandlerTests
 {
     private readonly static DateTime CurrentFakeTime = new(2023, 09, 08, 14, 53, 02, DateTimeKind.Utc);
