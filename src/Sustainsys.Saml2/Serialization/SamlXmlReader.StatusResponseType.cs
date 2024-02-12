@@ -30,7 +30,7 @@ partial class SamlXmlReader
     {
         source.MoveNext();
 
-        if (source.HasName(Namespaces.SamlUri, Elements.Issuer))
+        if (source.HasName(Elements.Issuer, Namespaces.SamlUri))
         {
             response.Issuer = ReadNameId(source);
 
@@ -46,13 +46,13 @@ partial class SamlXmlReader
             source.MoveNext();
         }
 
-        if (source.HasName(Namespaces.SamlpUri, Elements.Extensions))
+        if (source.HasName(Elements.Extensions, Namespaces.SamlpUri))
         {
             response.Extensions = ReadExtensions(source);
             source.MoveNext();
         }
 
-        if (source.EnsureName(Namespaces.SamlpUri, Elements.Status))
+        if (source.EnsureName(Elements.Status, Namespaces.SamlpUri))
         {
             response.Status = ReadStatus(source);
             source.MoveNext(true);

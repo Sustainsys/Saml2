@@ -41,7 +41,7 @@ partial class SamlXmlReader
     {
         source.MoveNext(true);
 
-        if (source.HasName(Namespaces.SamlUri, Elements.SubjectConfirmationData))
+        if (source.HasName(Elements.SubjectConfirmationData, Namespaces.SamlUri))
         {
             subjectConfirmation.SubjectConfirmationData = ReadSubjectConfirmationData(source);
             source.MoveNext(true);

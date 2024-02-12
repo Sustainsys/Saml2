@@ -34,7 +34,7 @@ public partial class SamlXmlReader
     {
         source.MoveNext(true);
 
-        if (source.HasName(Namespaces.SamlUri, Elements.Issuer))
+        if (source.HasName(Elements.Issuer, Namespaces.SamlUri))
         {
             request.Issuer = ReadNameId(source);
             source.MoveNext(true);
@@ -49,7 +49,7 @@ public partial class SamlXmlReader
             source.MoveNext();
         }
 
-        if (source.HasName(Namespaces.SamlpUri, Elements.Extensions))
+        if (source.HasName(Elements.Extensions, Namespaces.SamlpUri))
         {
             request.Extensions = ReadExtensions(source);
             source.MoveNext(true);

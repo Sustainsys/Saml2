@@ -15,7 +15,7 @@ public partial class SamlXmlReader
     {
         AuthnRequest authnRequest = default!;
 
-        if (source.EnsureName(Namespaces.SamlpUri, Elements.AuthnRequest))
+        if (source.EnsureName(Elements.AuthnRequest, Namespaces.SamlpUri))
         {
             authnRequest = ReadAuthnRequest(source);
             source.MoveNext(true);
@@ -54,7 +54,7 @@ public partial class SamlXmlReader
     {
         ReadElements(source, (RequestAbstractType)authnRequest);
 
-        if (source.HasName(Namespaces.SamlUri, Elements.Subject))
+        if (source.HasName(Elements.Subject, Namespaces.SamlUri))
         {
             authnRequest.Subject = ReadSubject(source);
             source.MoveNext(true);

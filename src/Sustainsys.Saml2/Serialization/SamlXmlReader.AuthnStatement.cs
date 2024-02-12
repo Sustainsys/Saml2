@@ -43,13 +43,13 @@ partial class SamlXmlReader
     {
         source.MoveNext(true);
 
-        if (source.HasName(Namespaces.SamlUri, Elements.SubjectLocality))
+        if (source.HasName(Elements.SubjectLocality, Namespaces.SamlUri))
         {
             // We're not supporting Subject Locality.
             source.MoveNext(true);
         }
 
-        if (source.EnsureName(Namespaces.SamlUri, Elements.AuthnContext))
+        if (source.EnsureName(Elements.AuthnContext, Namespaces.SamlUri))
         {
             authnStatement.AuthnContext = ReadAuthnContext(source);
             source.MoveNext(true);

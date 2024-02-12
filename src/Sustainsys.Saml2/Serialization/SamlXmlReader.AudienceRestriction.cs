@@ -28,7 +28,7 @@ public partial class SamlXmlReader
     {
         source.MoveNext();
 
-        while (source.EnsureName(Namespaces.SamlUri, Elements.Audience))
+        while (source.EnsureName(Elements.Audience, Namespaces.SamlUri))
         {
             result.Audiences.Add(source.GetTextContents());
             source.MoveNext(true);

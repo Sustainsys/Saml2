@@ -13,7 +13,7 @@ partial class SamlXmlReader
     {
         EntityDescriptor entityDescriptor = default!;
 
-        if (source.EnsureName(Namespaces.MetadataUri, Elements.EntityDescriptor))
+        if (source.EnsureName(Elements.EntityDescriptor, Namespaces.MetadataUri))
         {
             entityDescriptor = ReadEntityDescriptor(source);
         }
@@ -72,7 +72,7 @@ partial class SamlXmlReader
             source.MoveNext();
         }
 
-        if (source.HasName(Namespaces.MetadataUri, Elements.Extensions))
+        if (source.HasName(Elements.Extensions, Namespaces.MetadataUri))
         {
             entityDescriptor.Extensions = ReadExtensions(source);
             source.MoveNext();

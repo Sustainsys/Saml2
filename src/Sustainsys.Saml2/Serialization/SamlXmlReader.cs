@@ -68,7 +68,7 @@ public partial class SamlXmlReader : ISamlXmlReader
     {
         var trustedSigningKeys = TrustedSigningKeys;
         var allowedHashAlgorithms = AllowedHashAlgorithms;
-        if (source.HasName(SignedXml.XmlDsigNamespaceUrl, Elements.Signature))
+        if (source.HasName(Elements.Signature, SignedXml.XmlDsigNamespaceUrl))
         {
             if (issuer == null)
             {

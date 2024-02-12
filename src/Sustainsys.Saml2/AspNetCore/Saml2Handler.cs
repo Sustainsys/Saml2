@@ -15,8 +15,6 @@ namespace Sustainsys.Saml2.AspNetCore;
 
 // TODO: OTel Metrics + Activities + logging/traces
 
-// TODO: Fold into main package. Same dependencies => same package.
-
 /// <summary>
 /// Saml2 authentication handler
 /// </summary>
@@ -104,6 +102,8 @@ public class Saml2Handler(
         await Events.AuthnRequestGeneratedAsync(authnRequestGeneratedContext);
 
         var xmlDoc = GetRequiredService<ISamlXmlWriter>().Write(authnRequest);
+
+        //TODO: Don't use Options.IdentityProvider directly, access via event/callback.
 
         var message = new Saml2Message
         {

@@ -19,7 +19,7 @@ public partial class SamlXmlReader
     {
         Assertion assertion = default!;
 
-        if (source.EnsureName(Namespaces.SamlUri, Elements.Assertion))
+        if (source.EnsureName(Elements.Assertion, Namespaces.SamlUri))
         {
             assertion = ReadAssertion(source);
             source.MoveNext(true);
@@ -67,7 +67,7 @@ public partial class SamlXmlReader
     {
         source.MoveNext();
 
-        if (source.EnsureName(Namespaces.SamlUri, Elements.Issuer))
+        if (source.EnsureName(Elements.Issuer, Namespaces.SamlUri))
         {
             assertion.Issuer = ReadNameId(source);
             source.MoveNext();
@@ -85,45 +85,45 @@ public partial class SamlXmlReader
         // Status is optional on XML schema level, but Core 2.3.3. says that
         // "an assertion without a subject has no defined meaning in this specification."
         // so we are treating it as mandatory.
-        if (source.EnsureName(Namespaces.SamlUri, Elements.Subject))
+        if (source.EnsureName(Elements.Subject, Namespaces.SamlUri))
         {
             assertion.Subject = ReadSubject(source);
             source.MoveNext(true);
         }
 
-        if (source.HasName(Namespaces.SamlUri, Elements.Conditions))
+        if (source.HasName(Elements.Conditions, Namespaces.SamlUri))
         {
             assertion.Conditions = ReadConditions(source);
             source.MoveNext(true);
         }
 
-        if (source.HasName(Namespaces.SamlUri, Elements.Advice))
+        if (source.HasName(Elements.Advice, Namespaces.SamlUri))
         {
             // We're not supporting Advice
             source.IgnoreChildren();
             source.MoveNext(true);
         }
 
-        if (source.HasName(Namespaces.SamlUri, Elements.AuthnStatement))
+        if (source.HasName(Elements.AuthnStatement, Namespaces.SamlUri))
         {
             assertion.AuthnStatement = ReadAuthnStatement(source);
             source.MoveNext(true);
         }
 
-        if (source.HasName(Namespaces.SamlUri, Elements.AuthzDecisionStatement))
+        if (source.HasName(Elements.AuthzDecisionStatement, Namespaces.SamlUri))
         {
             // Not supporting AuthzDecisionStatement, skip it
             source.IgnoreChildren();
             source.MoveNext(true);
         }
 
-        if (source.HasName(Namespaces.SamlUri, Elements.AttributeStatement))
+        if (source.HasName(Elements.AttributeStatement, Namespaces.SamlUri))
         {
             var attributes = source.GetChildren();
 
             while(attributes.MoveNext(true))
             {
-                if(attributes.EnsureName(Namespaces.SamlUri, Elements.Attribute))
+                if(attributes.EnsureName(Elements.Attribute, Namespaces.SamlUri))
                 {
                     assertion.Attributes.Add(ReadAttribute(attributes));
                 }

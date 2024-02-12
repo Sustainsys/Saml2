@@ -30,7 +30,7 @@ partial class SamlXmlReader
     {
         source.MoveNext(true);
 
-        if (source.HasName(Namespaces.SamlUri, Elements.AuthnContextClassRef))
+        if (source.HasName(Elements.AuthnContextClassRef, Namespaces.SamlUri))
         {
             authnContext.AuthnContextClassRef = source.GetTextContents();
             source.MoveNext(true);

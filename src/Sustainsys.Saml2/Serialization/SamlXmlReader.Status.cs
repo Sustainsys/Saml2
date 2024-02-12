@@ -30,7 +30,7 @@ partial class SamlXmlReader
 	{
 		source.MoveNext();
 
-		if (source.EnsureName(Namespaces.SamlpUri, Elements.StatusCode))
+		if (source.EnsureName(Elements.StatusCode, Namespaces.SamlpUri))
 		{
 			status.StatusCode = ReadStatusCode(source);
 			source.MoveNext(true);

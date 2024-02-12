@@ -71,7 +71,7 @@ public class XmlTraverserTests
     {
         var subject = GetXmlTraverser();
 
-        var actual = subject.EnsureName(ns, localName);
+        var actual = subject.EnsureName(localName, ns);
 
         actual.Should().Be(errorReasons.Length == 0);
 
@@ -83,7 +83,7 @@ public class XmlTraverserTests
     {
         var subject = GetXmlTraverser();
 
-        subject.EnsureName("whatever", "root");
+        subject.EnsureName("root", "whatever");
 
         subject.IgnoreChildren();
         subject.MoveNext(true);
@@ -99,7 +99,7 @@ public class XmlTraverserTests
     {
         var subject = GetXmlTraverser();
 
-        subject.EnsureName("whatever", "something");
+        subject.EnsureName("something", "whatever");
 
         subject.MoveNext(true);
 
@@ -127,7 +127,7 @@ public class XmlTraverserTests
     {
         var subject = GetXmlTraverser();
 
-        subject.EnsureName("whatever", "something");
+        subject.EnsureName("something", "whatever");
 
         subject.MoveNext(true);
 
@@ -145,7 +145,7 @@ public class XmlTraverserTests
     {
         var subject = GetXmlTraverser();
 
-        subject.EnsureName("whatever", "something");
+        subject.EnsureName("something", "whatever");
 
         subject.IgnoreChildren();
         subject.MoveNext(true);

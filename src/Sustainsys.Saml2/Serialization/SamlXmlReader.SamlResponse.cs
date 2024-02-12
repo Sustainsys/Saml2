@@ -13,7 +13,7 @@ partial class SamlXmlReader
     {
         SamlResponse samlResponse = default!;
 
-        if (source.EnsureName(Constants.Namespaces.SamlpUri, Constants.Elements.Response))
+        if (source.EnsureName(Elements.Response, Namespaces.SamlpUri))
         {
             samlResponse = ReadSamlResponse(source);
         }
@@ -52,7 +52,7 @@ partial class SamlXmlReader
     {
         ReadElements(source, (StatusResponseType)samlResponse);
 
-        while (source.HasName(Namespaces.SamlUri, Elements.Assertion))
+        while (source.HasName(Elements.Assertion, Namespaces.SamlUri))
         {
             samlResponse.Assertions.Add(ReadAssertion(source));
             source.MoveNext(true);

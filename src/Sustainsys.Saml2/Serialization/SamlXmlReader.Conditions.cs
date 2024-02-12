@@ -39,19 +39,19 @@ partial class SamlXmlReader
     {
         source.MoveNext(true);
 
-        while (source.HasName(Namespaces.SamlUri, Elements.AudienceRestriction))
+        while (source.HasName(Elements.AudienceRestriction, Namespaces.SamlUri))
         {
             conditions.AudienceRestrictions.Add(ReadAudienceRestriction(source));
             source.MoveNext(true);
         }
 
-        if (source.HasName(Namespaces.SamlUri, Elements.OneTimeUse))
+        if (source.HasName(Elements.OneTimeUse, Namespaces.SamlUri))
         {
             conditions.OneTimeUse = true;
             source.MoveNext(true);
         }
 
-        if (source.HasName(Namespaces.SamlUri, Elements.ProxyRestriction))
+        if (source.HasName(Elements.ProxyRestriction, Namespaces.SamlUri))
         {
             // TODO: Support proxy restrictions
             source.IgnoreChildren();

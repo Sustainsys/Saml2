@@ -24,22 +24,22 @@ partial class SamlXmlReader
     {
         ReadElements(source, (RoleDescriptor)result);
 
-        while (source.HasName(Namespaces.MetadataUri, Elements.ArtifactResolutionService))
+        while (source.HasName(Elements.ArtifactResolutionService, Namespaces.MetadataUri))
         {
             result.ArtifactResolutionServices.Add(ReadIndexedEndpoint(source));
 
             source.MoveNext(true);
         }
 
-        while(source.HasName(Namespaces.MetadataUri, Elements.SingleLogoutService))
+        while(source.HasName(Elements.SingleLogoutService, Namespaces.MetadataUri))
         {
             result.SingleLogoutServices.Add(ReadEndpoint(source));
 
             source.MoveNext(true);
         }
 
-        while(source.HasName(Namespaces.MetadataUri, Elements.ManageNameIDService)
-            || source.HasName(Namespaces.MetadataUri, Elements.NameIDFormat))
+        while(source.HasName(Elements.ManageNameIDService, Namespaces.MetadataUri)
+            || source.HasName(Elements.NameIDFormat, Namespaces.MetadataUri))
         {
             // We're not supporting ManageNameIDService nor NameIDFormat.
             source.IgnoreChildren();

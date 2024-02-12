@@ -30,7 +30,7 @@ partial class SamlXmlReader
     {
         source.MoveNext(true);
 
-        if (source.HasName(Namespaces.SamlUri, Elements.NameID))
+        if (source.HasName(Elements.NameID, Namespaces.SamlUri))
         {
             subject.NameId = ReadNameId(source);
             source.MoveNext(true);
@@ -40,7 +40,7 @@ partial class SamlXmlReader
             // TODO: Support BaseID and EncryptedID
         }
 
-        if (source.HasName(Namespaces.SamlUri, Elements.SubjectConfirmation))
+        if (source.HasName(Elements.SubjectConfirmation, Namespaces.SamlUri))
         {
             subject.SubjectConfirmation = ReadSubjectConfirmation(source);
             source.MoveNext(true);

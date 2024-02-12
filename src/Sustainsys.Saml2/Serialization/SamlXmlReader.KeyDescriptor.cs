@@ -22,7 +22,7 @@ partial class SamlXmlReader
         var children = source.GetChildren();
 
         if (children.MoveNext()
-            && children.EnsureName(SignedXml.XmlDsigNamespaceUrl, Elements.KeyInfo))
+            && children.EnsureName(Elements.KeyInfo, SignedXml.XmlDsigNamespaceUrl))
         {
             children.IgnoreChildren();
 

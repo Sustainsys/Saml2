@@ -38,7 +38,7 @@ public partial class SamlXmlReader
     protected virtual void ReadElements(XmlTraverser source, SamlAttribute attribute) 
     {
         while(source.MoveNext(true) 
-            && source.EnsureName(Namespaces.SamlUri, Elements.AttributeValue))
+            && source.EnsureName(Elements.AttributeValue, Namespaces.SamlUri))
         {
             // TODO: Test + support for null values.
             attribute.Values.Add(source.GetTextContents());

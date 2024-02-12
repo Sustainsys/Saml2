@@ -45,7 +45,7 @@ partial class SamlXmlReader
     {
         source.MoveNext(true);
 
-        if (source.HasName(SignedXml.XmlDsigNamespaceUrl, Elements.Signature))
+        if (source.HasName(Elements.Signature, SignedXml.XmlDsigNamespaceUrl))
         {
             // Signatures on RoleDescriptors are not supported.
             source.IgnoreChildren();
@@ -53,7 +53,7 @@ partial class SamlXmlReader
             source.MoveNext(true);
         }
 
-        if (source.HasName(Namespaces.MetadataUri, Elements.Extensions))
+        if (source.HasName(Elements.Extensions, Namespaces.MetadataUri))
         {
             // Extensions on RoleDescriptors are not supported.
             source.IgnoreChildren();
@@ -61,13 +61,13 @@ partial class SamlXmlReader
             source.MoveNext(true);
         }
 
-        while (source.HasName(Namespaces.MetadataUri, Elements.KeyDescriptor))
+        while (source.HasName(Elements.KeyDescriptor, Namespaces.MetadataUri))
         {
             result.Keys.Add(ReadKeyDescriptor(source));
             source.MoveNext(true);
         }
 
-        if (source.HasName(Namespaces.MetadataUri, Elements.Organization))
+        if (source.HasName(Elements.Organization, Namespaces.MetadataUri))
         {
             // Organization reading is not supported.
             source.IgnoreChildren();
@@ -75,7 +75,7 @@ partial class SamlXmlReader
             source.MoveNext(true);
         }
 
-        if (source.HasName(Namespaces.MetadataUri, Elements.ContactPerson))
+        if (source.HasName(Elements.ContactPerson, Namespaces.MetadataUri))
         {
             // Contact person reading is not supported.
             source.IgnoreChildren();

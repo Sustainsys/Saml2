@@ -256,14 +256,13 @@ public class XmlTraverser
         return true;
     }
 
-    // TODO: Reorder params to follow XmlNode convention with localName, namespaceUri
     /// <summary>
     /// Ensure that the current node has a specific localName and namespace.
     /// </summary>
-    /// <param name="namespaceUri">Expected Namespace uri</param>
     /// <param name="localName">Expected local name</param>
+    /// <param name="namespaceUri">Expected Namespace uri</param>
     /// <returns>True if both are ok</returns>
-    public bool EnsureName(string namespaceUri, string localName)
+    public bool EnsureName(string localName, string namespaceUri)
     {
         var namespaceOk = EnsureNamespace(namespaceUri);
 
@@ -293,10 +292,10 @@ public class XmlTraverser
     /// <summary>
     /// Checks if the current node has the qualified name.
     /// </summary>
-    /// <param name="namespaceUri">Expected namespace</param>
     /// <param name="localName">Expected local name</param>
+    /// <param name="namespaceUri">Expected namespace</param>
     /// <returns>True if expected</returns>
-    public bool HasName(string namespaceUri, string localName)
+    public bool HasName(string localName, string namespaceUri)
         => CurrentNode != null && CurrentNode.LocalName == localName && CurrentNode.NamespaceURI == namespaceUri;
 
     /// <summary>
