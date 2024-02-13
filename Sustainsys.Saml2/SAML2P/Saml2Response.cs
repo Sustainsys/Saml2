@@ -510,14 +510,14 @@ namespace Sustainsys.Saml2.Saml2P
         {
             if (InResponseTo == null)
             {
-                if (idp.AllowUnsolicitedAuthnResponse)
+                if (idp?.AllowUnsolicitedAuthnResponse == true)
                 {
-                    options.SPOptions.Logger.WriteVerbose("Received unsolicited Saml Response " + Id 
-                        + " which is allowed for idp " + idp.EntityId.Id);
+                    options.SPOptions.Logger.WriteVerbose("Received unsolicited Saml Response " + Id
+                        + " which is allowed for idp " + idp?.EntityId?.Id);
                     return;
                 }
                 string msg = string.Format(CultureInfo.InvariantCulture,
-                    "Unsolicited responses are not allowed for idp \"{0}\".", Issuer.Id);
+                    "Unsolicited responses are not allowed for idp \"{0}\".", Issuer?.Id);
                 throw new Saml2ResponseFailedValidationException(msg);
             }
         }
