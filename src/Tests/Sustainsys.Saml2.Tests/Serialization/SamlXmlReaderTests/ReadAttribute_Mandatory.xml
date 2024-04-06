@@ -1,0 +1,9 @@
+﻿<saml:Attribute xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion" Name="http://schemas.xmlsoap.org/ws/2005/05/identity/claims/roles"
+                NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:basic">
+	<saml:AttributeValue xsi:type="xs:string"
+		xmlns:xs="http://www.w3.org/2001/XMLSchema"
+		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">developer</saml:AttributeValue>
+	<saml:AttributeValue xsi:type="xs:string"
+		xmlns:xs="http://www.w3.org/2001/XMLSchema"
+		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">administrator</saml:AttributeValue>
+</saml:Attribute>

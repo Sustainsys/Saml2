@@ -40,8 +40,11 @@ public partial class SamlXmlReader
         while(source.MoveNext(true) 
             && source.EnsureName(Elements.AttributeValue, Namespaces.SamlUri))
         {
-            // TODO: Test + support for null values.
-            attribute.Values.Add(source.GetTextContents());
+            var attributeValue = source.GetTextContents();
+            if (!string.IsNullOrEmpty(attributeValue))
+            {
+                attribute.Values.Add(attributeValue);
+            }
         }
     }
 }
