@@ -41,7 +41,7 @@ public partial class SamlXmlReader
             && source.EnsureName(Elements.AttributeValue, Namespaces.SamlUri))
         {
             var attributeValue = source.GetTextContents();
-            if (!string.IsNullOrEmpty(attributeValue))
+            if (attributeValue != null)
             {
                 attribute.Values.Add(attributeValue);
             }

@@ -282,10 +282,17 @@ public class XmlTraverser
     /// Ensures that the contents of the current node is only text and returns the text.
     /// </summary>
     /// <returns></returns>
-    public string GetTextContents()
+    public string? GetTextContents()
     {
         //TODO: Test case + error handling for non text content.
         IgnoreChildren();
+        
+        var nullNodeValue = CurrentNode?.Attributes?.GetNamedItem("xsi:nil")?.Value;
+        if (!string.IsNullOrEmpty(nullNodeValue) && (nullNodeValue.Equals("true") || nullNodeValue.Equals("1")) )
+        {
+            return null;
+        }
+        
         return CurrentNode!.InnerText;
     }
 

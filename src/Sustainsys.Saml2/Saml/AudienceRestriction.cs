@@ -8,5 +8,5 @@ public class AudienceRestriction
     /// <summary>
     /// Audiences, a list of URIs identifying the audiences.
     /// </summary>
-    public List<string> Audiences { get; } = [];
+    public List<string?> Audiences { get; } = [];
 }

@@ -1,0 +1,6 @@
+﻿<saml:Attribute xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion"
+				Name="http://schemas.xmlsoap.org/ws/2005/05/identity/claims/roles"
+				NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:basic"
+				xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<saml:AttributeValue xsi:nil="true" />
+</saml:Attribute>

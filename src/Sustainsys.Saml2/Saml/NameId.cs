@@ -14,7 +14,7 @@ public class NameId
     /// Ctor
     /// </summary>
     /// <param name="value">NameId value</param>
-    public NameId(string value)
+    public NameId(string? value)
     {
         Value = value;
     }
@@ -22,19 +22,19 @@ public class NameId
     /// <summary>
     /// The value, i.e. string contents of the XML node.
     /// </summary>
-    public string Value { get; set; } = default!;
+    public string? Value { get; set; } = default!;
 
     /// <summary>
     /// Implicit operator creating a NameId with the string supplied as value.
     /// </summary>
     /// <param name="value">The value of the NameId</param>
-    public static implicit operator NameId(string value) => new(value);
+    public static implicit operator NameId(string? value) => new(value);
 
     /// <summary>
     /// Shows debugger friendly string
     /// </summary>
     /// <returns>string</returns>
-    public override string ToString() => Value;
+    public override string? ToString() => Value;
 
     /// <summary>
     /// Comparison
