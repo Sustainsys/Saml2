@@ -51,8 +51,8 @@ authentication model.
 
 Nuget Package to use: `Sustainsys.Saml2.AspNetCore2 <https://www.nuget.org/packages/Sustainsys.Saml2.AspNetCore2/>`_
 
-IdentityServer4 Integration
--------------------------------
+IdentityServer4 / Duende IdentityServer Integration
+---------------------------------------------------
 If you're using ``IdentityServer``, you may want to 
 configure SAML identity providers like Okta or Ping as external
 identity providers within your IdentityServer implementation.
