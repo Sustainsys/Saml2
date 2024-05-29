@@ -1,11 +1,15 @@
-Configuration
-=============
+Configuration in web.config
+===========================
+Web.config based configuration is the preferred configuration method for the ``HttpModule`` 
+and ``Mvc`` libraries. It can be used for ``Owin`` too by indicating that the configuration
+from file shoudl be loaded. The preferred configuration method for ``Owin`` is in code and for
+``Asp.Net Core`` code based configuration is the only method possible.
+
 To use Sustainsys.Saml2 in an application and configure it in ``web.config``
-(which is the default for the ``HttpModule`` and ``MVC`` libraries) it must be **enabled**
-in the application's ``web.config``. The sample applications contains complete
+it must be **enabled** in the application's ``web.config``. The sample applications contains complete
 working `web.config <https://github.com/Sustainsys/Saml2/blob/v2/Samples/SampleHttpModuleApplication/Web.config>`_ examples. For 
 ASP.NET MVC applications see `this working web.config <https://github.com/Sustainsys/Saml2/blob/v2/Samples/SampleMvcApplication/Web.config>`_
-example. 
+example.
 
 .. note::
 

@@ -46,7 +46,9 @@ the license change only applies to the new versions, the old versions are still 
 
    getting-started
    configuration
+   code-configuration
    owin-middleware
+   asp.net-core
    troubleshooting
    contributing
 
