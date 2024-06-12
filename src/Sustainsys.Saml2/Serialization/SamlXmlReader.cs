@@ -1,15 +1,7 @@
-﻿using Sustainsys.Saml2.Common;
-using Sustainsys.Saml2.Saml;
-using Sustainsys.Saml2.Samlp;
+﻿using Sustainsys.Saml2.Saml;
 using Sustainsys.Saml2.Xml;
-using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
 using System.Security.Cryptography.Xml;
-using System.Text;
-using System.Threading.Tasks;
-using System.Xml;
 using static Sustainsys.Saml2.Constants;
 
 namespace Sustainsys.Saml2.Serialization;

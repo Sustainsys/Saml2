@@ -1,14 +1,14 @@
 ﻿using Microsoft.AspNetCore.Authentication;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
-using Sustainsys.Saml2.AspNetCore;
 using Sustainsys.Saml2.Bindings;
 using Sustainsys.Saml2.Serialization;
 
 
 // By convention, the extension methods are placed in the Microsoft shared 
 // namespace to allow convenient access from intellisense.
-namespace Microsoft.Extensions.DependencyInjection;
+namespace Sustainsys.Saml2.AspNetCore;
 
 /// <summary>
 /// Extension methods to configure Saml2 authentication.

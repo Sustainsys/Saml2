@@ -1,8 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using NSubstitute;
 using Sustainsys.Saml2.Bindings;
-using System;
-using System.Threading.Tasks;
 using System.Xml;
 
 namespace Sustainsys.Saml2.Tests.Bindings;

@@ -1,7 +1,6 @@
 ﻿using Microsoft.Extensions.Options;
-using Sustainsys.Saml2.AspNetCore;
 
-namespace Microsoft.Extensions.DependencyInjection;
+namespace Sustainsys.Saml2.AspNetCore;
 
 /// <summary>
 /// Post configure options for Saml2. Validates config and sets the default 

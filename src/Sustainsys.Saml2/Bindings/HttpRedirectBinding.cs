@@ -1,11 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.WebUtilities;
 using System.IO.Compression;
-using System.Linq;
-using System.Text;
-using System.Text.Unicode;
 using System.Xml;
-using static Microsoft.AspNetCore.WebUtilities.QueryStringEnumerable;
 
 namespace Sustainsys.Saml2.Bindings;
 

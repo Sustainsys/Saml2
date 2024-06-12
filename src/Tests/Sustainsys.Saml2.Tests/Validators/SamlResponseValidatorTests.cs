@@ -1,12 +1,5 @@
-﻿using Microsoft.AspNetCore.Components.Forms;
-using Sustainsys.Saml2.Samlp;
+﻿using Sustainsys.Saml2.Samlp;
 using Sustainsys.Saml2.Validation;
-using System;
-using System.Collections.Generic;
-using System.Data.Common;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Sustainsys.Saml2.Tests.Validators;
 

@@ -1,9 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc.Routing;
-using Sustainsys.Saml2.Metadata;
-using Sustainsys.Saml2.Saml;
+﻿using Sustainsys.Saml2.Saml;
 using Sustainsys.Saml2.Xml;
-using System.Diagnostics;
-using System.Security.Cryptography.X509Certificates;
 using static Sustainsys.Saml2.Constants;
 
 namespace Sustainsys.Saml2.Serialization;

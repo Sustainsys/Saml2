@@ -1,5 +1,4 @@
-﻿using FluentAssertions;
-using FluentAssertions.Specialized;
+﻿using FluentAssertions.Specialized;
 using Sustainsys.Saml2.Xml;
 
 namespace Sustainsys.Saml2.Tests.Helpers;

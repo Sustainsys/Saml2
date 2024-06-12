@@ -1,10 +1,4 @@
-﻿using Microsoft.Extensions.Logging;
-using Sustainsys.Saml2.Samlp;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Sustainsys.Saml2.Samlp;
 
 namespace Sustainsys.Saml2.Validation;
 

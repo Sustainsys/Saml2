@@ -1,9 +1,6 @@
 ﻿using Sustainsys.Saml2.Tests.Helpers;
 using System.Runtime.CompilerServices;
 using Sustainsys.Saml2.Xml;
-using Sustainsys.Saml2.Samlp;
-using Sustainsys.Saml2.Serialization;
-using System.Xml;
 
 namespace Sustainsys.Saml2.Tests.Serialization;
 

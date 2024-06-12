@@ -1,6 +1,5 @@
 ﻿using Sustainsys.Saml2.Samlp;
 using System.Xml;
-using System.Xml.Linq;
 
 namespace Sustainsys.Saml2.Tests.Samlp;
 public class RequestAbstractTypeTests

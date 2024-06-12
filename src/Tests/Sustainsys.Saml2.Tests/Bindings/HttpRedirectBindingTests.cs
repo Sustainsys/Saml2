@@ -1,11 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using NSubstitute;
 using Sustainsys.Saml2.Bindings;
-using System;
-using System.ComponentModel;
-using System.IO;
 using System.IO.Compression;
-using System.Threading.Tasks;
 using System.Xml;
 
 namespace Sustainsys.Saml2.Tests.Bindings;

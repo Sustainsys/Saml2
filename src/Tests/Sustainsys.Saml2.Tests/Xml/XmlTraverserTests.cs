@@ -1,11 +1,6 @@
 ﻿using Sustainsys.Saml2.Xml;
 using Sustainsys.Saml2.Tests.Helpers;
-using System;
-using System.Linq;
 using System.Xml;
-using Microsoft.AspNetCore.Authentication.Cookies;
-using Sustainsys.Saml2.Saml;
-using NSubstitute;
 
 namespace Sustainsys.Saml2.Tests.Xml;
 

@@ -1,11 +1,5 @@
 ﻿using Sustainsys.Saml2.Saml;
 using Sustainsys.Saml2.Xml;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using static Sustainsys.Saml2.Constants;
 
 namespace Sustainsys.Saml2.Serialization;

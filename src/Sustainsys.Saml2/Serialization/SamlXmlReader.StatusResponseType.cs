@@ -1,7 +1,5 @@
-﻿using Sustainsys.Saml2.Saml;
-using Sustainsys.Saml2.Samlp;
+﻿using Sustainsys.Saml2.Samlp;
 using Sustainsys.Saml2.Xml;
-using System.Security.Cryptography.Xml;
 using static Sustainsys.Saml2.Constants;
 
 namespace Sustainsys.Saml2.Serialization;
