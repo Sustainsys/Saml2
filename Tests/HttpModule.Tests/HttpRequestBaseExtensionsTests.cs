@@ -41,7 +41,7 @@ namespace Sustainsys.Saml2.HttpModule.Tests
             var cookieValue = HttpRequestData.ConvertBinaryData(
                 MachineKey.Protect(
                     new StoredRequestState(null, new Uri("urn:someUri"), null, null).Serialize(),
-                    HttpRequestBaseExtensions.ProtectionPurpose));
+                    HttpRequestBaseExtensions.ProtectionPurpose, "/saml2"));
             request.Cookies.Returns(new HttpCookieCollection());
             request.Cookies.Add(new HttpCookie(StoredRequestState.CookieNameBase + "SomeState", cookieValue));
 

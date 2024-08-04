@@ -93,7 +93,7 @@ namespace Sustainsys.Saml2.HttpModule.Tests
         {
             return MachineKey.Unprotect(
                 HttpRequestData.GetBinaryData(data),
-                "Sustainsys.Saml2");
+                "Sustainsys.Saml2", "/saml2");
         }
 
         [TestMethod]

@@ -151,7 +151,7 @@ namespace Sustainsys.Saml2.Mvc.Tests
                 HttpRequestData.ConvertBinaryData(
                     MachineKey.Protect(
                         new StoredRequestState(null, null, new Saml2Id("InResponseToId"), null).Serialize(),
-                        HttpRequestBaseExtensions.ProtectionPurpose))));
+                        HttpRequestBaseExtensions.ProtectionPurpose, "/Saml2"))));
 
             var httpContext = Substitute.For<HttpContextBase>();
             httpContext.Request.Returns(request);
