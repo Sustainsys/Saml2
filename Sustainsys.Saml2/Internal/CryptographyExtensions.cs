@@ -111,7 +111,10 @@ namespace Sustainsys.Saml2.Internal
 
             var encryptedXml = new EncryptedXml();
             byte[] encryptedElement;
-            using (var symmetricAlgorithm = new RijndaelManaged())
+            using (var symmetricAlgorithm =
+                CryptoConfig.AllowOnlyFipsAlgorithms
+                ? (SymmetricAlgorithm)new AesCryptoServiceProvider()
+                : (SymmetricAlgorithm)new RijndaelManaged())
             {
                 symmetricAlgorithm.KeySize = 256;
                 encryptedKey.CipherData = new CipherData(EncryptedXml.EncryptKey(symmetricAlgorithm.Key, (RSA)certificate.PublicKey.Key, useOaep));

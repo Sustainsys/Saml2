@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Security.Cryptography;
 using System.Security.Cryptography.Xml;
 using System.Xml;
@@ -66,6 +67,35 @@ namespace Sustainsys.Saml2.Internal
               return iv;
           }
           return base.GetDecryptionIV(encryptedData, symmetricAlgorithmUri);
+        }
+
+        private static bool IsAes(string uri) =>
+            uri.StartsWith("http://www.w3.org/2001/04/xmlenc#aes")
+            || uri.StartsWith("http://www.w3.org/2001/04/xmlenc#kw-aes");
+
+        public override SymmetricAlgorithm GetDecryptionKey(EncryptedData encryptedData, string symmetricAlgorithmUri)
+        {
+            if(CryptoConfig.AllowOnlyFipsAlgorithms
+                && IsAes(encryptedData?.EncryptionMethod?.KeyAlgorithm))
+            {
+                var encryptedKey = encryptedData.KeyInfo.OfType<KeyInfoEncryptedKey>().FirstOrDefault().EncryptedKey;
+
+                if(encryptedKey != null)
+                {
+                    var key = DecryptEncryptedKey(encryptedKey);
+
+                    if(key != null)
+                    {
+                        return new AesCryptoServiceProvider()
+                        {
+                            Key = key,
+                        };
+                    }
+                }
+
+            }
+
+            return base.GetDecryptionKey(encryptedData, symmetricAlgorithmUri);
         }
     }
 }
