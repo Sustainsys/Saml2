@@ -1,12 +1,4 @@
-Version 2.9.2
-* Security Fix: Bind state and assertion to response issuer.
-* Security Fix: Bind request state to module path to prevent substitution.
-
-Version 2.9.1
-* Support modern crypto providers
-
-Version 2.9.0
-* Add runtime detection for .NET 5+
-* Deserialize LogoutResponse
+Version 2.10.0
+* FIPS compliance
 
 See GitHub milestone issue list for details.
