@@ -21,6 +21,11 @@
 # import sys
 # sys.path.insert(0, os.path.abspath('.'))
 
+import os
+
+# Set canonical URL from the Read the Docs Domain
+html_baseurl = os.environ.get("READTHEDOCS_CANONICAL_URL", "")
+
 
 # -- General configuration ------------------------------------------------
 
@@ -47,7 +52,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = 'Sustainsys.Saml2'
-copyright = '2018, Sustainsys and Contributors'
+copyright = '2024, Sustainsys and Contributors'
 author = 'Anders Abel'
 
 # The version info for the project you're documenting, acts as replacement for
