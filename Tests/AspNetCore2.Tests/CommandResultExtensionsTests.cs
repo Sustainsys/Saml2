@@ -96,7 +96,7 @@ namespace Sustainsys.Saml2.AspNetCore2.Tests
                 Arg.Is<CookieOptions>(co => co.Secure)
             );
 
-            context.Response.Headers.Received().Add("header", "value");
+            context.Response.Headers["header"].Equals("value");
 
             context.Response.ContentType
                 .Should().Be("application/json", "content type should be set");

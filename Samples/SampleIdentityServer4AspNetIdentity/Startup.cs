@@ -94,9 +94,7 @@ namespace SampleIdentityServer4AspNetIdentity
         {
             if (env.IsDevelopment())
             {
-                app.UseBrowserLink();
                 app.UseDeveloperExceptionPage();
-				app.UseDatabaseErrorPage();
 			}
             else
             {
@@ -104,16 +102,17 @@ namespace SampleIdentityServer4AspNetIdentity
             }
 
             app.UseStaticFiles();
-			app.UseIdentityServer();
+            app.UseRouting();
+            app.UseIdentityServer();
 
-            app.UseMvc(routes =>
+            app.UseEndpoints(endpoints =>
             {
-                routes.MapRoute(
+                endpoints.MapControllerRoute(
                     name: "default",
-                    template: "{controller=Home}/{action=Index}/{id?}");
+                    pattern: "{controller=Home}/{action=Index}/{id?}");
             });
 
-			dbContext.Database.EnsureCreated();
+            dbContext.Database.EnsureCreated();
 		}
     }
 }

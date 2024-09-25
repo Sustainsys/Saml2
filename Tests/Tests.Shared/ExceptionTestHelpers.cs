@@ -36,6 +36,7 @@ namespace Sustainsys.Saml2.Tests
 
             using (var ms = new MemoryStream())
             {
+#pragma warning disable SYSLIB0011
                 var formatter = new BinaryFormatter();
 
                 formatter.Serialize(ms, original);
@@ -46,6 +47,7 @@ namespace Sustainsys.Saml2.Tests
 
                 deserialized.Message.Should().Be(msg);
                 deserialized.Should().BeEquivalentTo(original);
+#pragma warning restore
             }
 
         }

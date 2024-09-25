@@ -76,7 +76,7 @@ namespace Sustainsys.Saml2.Tests.Saml2P
 
             var parsed = DateTime.Parse(issueInstant).ToUniversalTime();
 
-            parsed.Should().BeCloseTo(DateTime.UtcNow, 1200);
+            parsed.Should().BeCloseTo(DateTime.UtcNow, TimeSpan.FromMilliseconds(1200));
             parsed.Kind.Should().Be(DateTimeKind.Utc);
         }
 

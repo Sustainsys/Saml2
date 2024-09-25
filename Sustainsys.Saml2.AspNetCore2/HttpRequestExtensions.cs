@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 
 namespace Sustainsys.Saml2.AspNetCore2
 {
-    static class HttpRequestExtensions
+    public static class HttpRequestExtensions
     {
         public static HttpRequestData ToHttpRequestData(
             this HttpContext httpContext,

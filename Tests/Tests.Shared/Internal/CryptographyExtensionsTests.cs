@@ -39,8 +39,8 @@ namespace Sustainsys.Saml2.Tests.Internal
         [TestMethod]
         public void XmlHelpers_Encrypt_NullCert()
         {
-            XmlHelpers.CreateSafeXmlDocument().DocumentElement.Invoking(
-                e => e.Encrypt(false, null))
+            XmlHelpers.XmlDocumentFromString("<xml />").DocumentElement.Invoking(
+                e => ((XmlElement)null).Encrypt(false, null))
                 .Should().Throw<ArgumentNullException>()
                 .And.ParamName.Should().Be("certificate");
         }

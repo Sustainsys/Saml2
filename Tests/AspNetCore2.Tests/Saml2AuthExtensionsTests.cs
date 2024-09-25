@@ -93,9 +93,10 @@ namespace Sustainsys.Saml2.AspNetCore2.Tests
         [TestMethod]
         public void Saml2AuthExtensions_AddSaml2_NullCheckBuilder()
         {
-            AuthenticationBuilder builder = null;
+            var serviceCollection = new ServiceCollection();
+            var builder = new AuthenticationBuilder(serviceCollection);
 
-            builder.Invoking(b => b.AddSaml2(opt => { }))
+            builder.Invoking(b => ((AuthenticationBuilder)null).AddSaml2(opt => { }))
                 .Should().Throw<ArgumentNullException>();
         }
     }

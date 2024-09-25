@@ -31,7 +31,7 @@ namespace Sustainsys.Saml2.Tests.WebSso
 
             var queries = HttpUtility.ParseQueryString(result.Location.Query);
 
-            queries.Should().HaveCount(2);
+            queries.AllKeys.Should().HaveCount(2);
             queries["SAMLRequest"].Should().NotBeEmpty();
             queries["RelayState"].Should().NotBeEmpty();
         }

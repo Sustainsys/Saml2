@@ -74,7 +74,7 @@ namespace Sustainsys.Saml2.Metadata
 		}
 	}
 
-#if !NET461
+#if !NET462
 
     public class EcKeyValue : KeyValue
 	{
@@ -113,7 +113,7 @@ namespace Sustainsys.Saml2.Metadata
 				{
 					ski.Add(new DsaKeyIdentifierClause(dsaKeyValue.Parameters));
 				}
-#if !NET461
+#if !NET462
                 else if (keyValue is EcKeyValue ecKeyValue)
 				{
 					ski.Add(new EcKeyIdentifierClause(ecKeyValue.Parameters));

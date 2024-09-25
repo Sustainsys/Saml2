@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>netstandard2.0;net47;net461;net6.0</TargetFrameworks>
+    <TargetFrameworks>netstandard2.0;net462;net47;net6.0;net8.0</TargetFrameworks>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <PackageReleaseNotes>$releaseNotes$</PackageReleaseNotes>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
@@ -10,10 +10,7 @@
     <Copyright>Copyright © Sustainsys and contributors 2017-2020</Copyright>
     <PackageTags>SAML2 authentication AspNet SAML SSO</PackageTags>
     <PackageDescription>ASP.NET Core authentication handler for the SAML2 protocol, compatible with Asp.Net Core 2.X and 3.X</PackageDescription>
-  </PropertyGroup>
-
-  <PropertyGroup>
-    <DocumentationFile>C:\git\Sustainsys.Saml2\Sustainsys.Saml2.AspNetCore2\bin\Sustainsys.Saml2.AspNetCore2.xml</DocumentationFile>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
 
   <PropertyGroup>
@@ -26,8 +23,7 @@
 
   <ItemGroup Condition="!('$(TargetFrameworkIdentifier)' == '.NETCoreApp' And $([MSBuild]::VersionGreaterThanOrEquals($(TargetFrameworkVersion), '6.0')))">
     <PackageReference Include="Microsoft.AspNetCore.Authentication" Version="2.1.2" />
-    <PackageReference Include="Microsoft.AspNetCore.Authentication.Cookies" Version="2.1.2" />
-    <PackageReference Include="Microsoft.AspNetCore.Http" Version="2.1.1" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.Cookies" Version="2.1.34" />
   </ItemGroup>
 
   <ItemGroup>
@@ -37,5 +33,4 @@
   <ItemGroup>
     <None Include="..\nuget\sustainsys.png" Pack="true" PackagePath="\" />
   </ItemGroup>
-
 </Project>

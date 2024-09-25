@@ -43,8 +43,8 @@ namespace Sustainsys.Saml2.Tests
         [TestMethod]
         public void XmlHelpers_Sign_Nullcheck_xmlElement()
         {
-            ((XmlElement)null).Invoking(
-                x => x.Sign(SignedXmlHelper.TestCert, true))
+            xmlDocument.DocumentElement.Invoking(
+                x => ((XmlElement)null).Sign(SignedXmlHelper.TestCert, true))
                 .Should().Throw<ArgumentNullException>()
                 .And.ParamName.Should().Be("xmlElement");
         }
@@ -110,8 +110,8 @@ namespace Sustainsys.Saml2.Tests
         [TestMethod]
         public void XmlHelpers_Remove_NullcheckAttribute()
         {
-            ((XmlAttributeCollection)null).Invoking(
-                a => a.Remove("attributeName"))
+            xmlDocument.DocumentElement.Invoking(
+                a => ((XmlAttributeCollection)null).Remove("attributeName"))
                 .Should().Throw<ArgumentNullException>()
                 .And.ParamName.Should().Be("attributes");
         }
@@ -128,8 +128,8 @@ namespace Sustainsys.Saml2.Tests
         [TestMethod]
         public void XmlHelpers_RemoveChild_NullcheckXmlElement()
         {
-            XmlHelpers.CreateSafeXmlDocument().DocumentElement.Invoking(
-                e => e.RemoveChild("name", "ns"))
+            xmlDocument.DocumentElement.Invoking(
+                e => ((XmlElement)null).RemoveChild("name", "ns"))
                 .Should().Throw<ArgumentNullException>()
                 .And.ParamName.Should().Be("xmlElement");
         }
@@ -155,8 +155,8 @@ namespace Sustainsys.Saml2.Tests
         [TestMethod]
         public void XmlHelpers_IsSignedBy_NullcheckXmlElement()
         {
-            ((XmlElement)null).Invoking(
-                x => x.IsSignedBy(SignedXmlHelper.TestCert))
+            xmlDocument.DocumentElement.Invoking(
+                x => ((XmlElement)null).IsSignedBy(SignedXmlHelper.TestCert))
                 .Should().Throw<ArgumentNullException>("xmlElement");
         }
 

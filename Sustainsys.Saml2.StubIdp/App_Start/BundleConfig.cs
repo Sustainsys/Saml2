@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Optimization;
-using Sustainsys.Saml2.StubIdp.App_Start;
 
 namespace Sustainsys.Saml2.StubIdp
 {
@@ -12,12 +11,10 @@ namespace Sustainsys.Saml2.StubIdp
         public static void RegisterBundles(BundleCollection bundles)
         {
             bundles.Add(new Bundle("~/Content/css-bundle")
-                {
-                    Transforms = { new LessTransform() }
-                }
                 .Include(
                 "~/Content/css/select2.css",
-                "~/Content/site.less"));
+                "~/Content/site.css"
+            ));
 
             bundles.Add(new ScriptBundle("~/Scripts/js").Include(
                 "~/Scripts/jquery-{version}.js",

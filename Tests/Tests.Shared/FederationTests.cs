@@ -166,7 +166,7 @@ namespace Sustainsys.Saml2.Tests
                 false,
                 StubFactory.CreateOptions());
 
-            subject.MetadataValidUntil.Should().BeCloseTo(DateTime.UtcNow);
+            subject.MetadataValidUntil.Should().BeCloseTo(DateTime.UtcNow, TimeSpan.FromMilliseconds(20));
         }
 
         [TestMethod]

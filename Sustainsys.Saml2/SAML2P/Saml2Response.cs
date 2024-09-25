@@ -463,7 +463,7 @@ namespace Sustainsys.Saml2.Saml2P
                 {
                     try
                     {
-                        assertions.AddRange(encryptedAssertions.Decrypt(serviceCertificate.PrivateKey)
+                        assertions.AddRange(DecryptXmlElements(encryptedAssertions, serviceCertificate.PrivateKey)
                                 .Select(xe => (XmlElement)xe.GetElementsByTagName("Assertion", Saml2Namespaces.Saml2Name)[0]));
                         decrypted = true;
                         options.SPOptions.Logger.WriteVerbose($"Assertion decryption succeeded using {serviceCertificate.Thumbprint}");
@@ -485,6 +485,31 @@ namespace Sustainsys.Saml2.Saml2P
 
             return assertions;
         }
+
+        internal IEnumerable<XmlElement> DecryptXmlElements(IEnumerable<XmlElement> elements, AsymmetricAlgorithm key)
+        {
+            foreach (var element in elements)
+            {
+                yield return DecryptXmlElement(element, key);
+            }
+        }
+
+        public virtual XmlElement DecryptXmlElement(XmlElement element, AsymmetricAlgorithm key)
+        {
+            var xmlDoc = XmlHelpers.XmlDocumentFromString(element.OuterXml);
+
+            var exml = GetEncryptedXml(key, xmlDoc);
+
+            exml.DecryptDocument();
+
+            return xmlDoc.DocumentElement;
+        }
+
+        public virtual EncryptedXml GetEncryptedXml(AsymmetricAlgorithm key, XmlDocument xmlDoc)
+        {
+            return new RSAEncryptedXml(xmlDoc, (RSA)key);
+        }
+
 
         private static IEnumerable<X509Certificate2> GetCertificatesValidForDecryption(IOptions options)
         {

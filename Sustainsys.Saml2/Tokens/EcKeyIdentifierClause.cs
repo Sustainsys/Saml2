@@ -2,7 +2,7 @@
 using System.Security.Cryptography;
 using Sustainsys.Saml2.Internal;
 
-#if !NET461
+#if !NET462
 
 namespace Sustainsys.Saml2.Tokens
 {

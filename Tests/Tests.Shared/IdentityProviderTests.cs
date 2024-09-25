@@ -480,7 +480,7 @@ namespace Sustainsys.Saml2.Tests
 
             var expectedValidUntil = DateTime.UtcNow.AddMinutes(15);
             // Comparison on the second is more than enough if we're adding 15 minutes.
-            subject.MetadataValidUntil.Should().BeCloseTo(expectedValidUntil, 1000);
+            subject.MetadataValidUntil.Should().BeCloseTo(expectedValidUntil, TimeSpan.FromMilliseconds(1000));
         }
 
         IdentityProvider CreateSubjectForMetadataRefresh(bool setLoggerToNull = false)
@@ -783,7 +783,7 @@ namespace Sustainsys.Saml2.Tests
             subject.LoadMetadata.Should().BeTrue();
             subject.MetadataLocation.Should().Be("http://localhost:13428/idpMetadataOtherEntityId");
             subject.MetadataValidUntil.Should().BeCloseTo(
-                DateTime.UtcNow.Add(MetadataRefreshScheduler.DefaultMetadataCacheDuration.ToTimeSpan()), precision: 100);
+                DateTime.UtcNow.Add(MetadataRefreshScheduler.DefaultMetadataCacheDuration.ToTimeSpan()), precision: TimeSpan.FromMilliseconds(100));
             subject.SingleSignOnServiceUrl.Should().Be("http://wrong.entityid.example.com/acs");
             subject.WantAuthnRequestsSigned.Should().Be(true, "WantAuthnRequestsSigned should have been loaded from metadata");
 
@@ -969,7 +969,13 @@ namespace Sustainsys.Saml2.Tests
 
             subject.Invoking(s => s.CreateLogoutRequest(user))
                 .Should().Throw<ArgumentNullException>()
-                .And.Message.Should().Be("Value cannot be null.\r\nParameter name: user");
+                .And.Message.Should().Be(
+#if NETCOREAPP
+                "Value cannot be null. (Parameter 'user')"
+#else
+                "Value cannot be null.\r\nParameter name: user"
+#endif
+                );
         }
 
         [TestMethod]

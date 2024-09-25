@@ -14,8 +14,8 @@ namespace Sustainsys.Saml2.HttpModule.Tests
         [TestMethod]
         public void CommandResultHttp_ApplyCookies_NullCheck_CommandResult()
         {
-            ((CommandResult)null)
-                .Invoking(cr => cr.ApplyCookies(Substitute.For<HttpResponseBase>(), true, "/saml2"))
+            new CommandResult()
+                .Invoking(cr => ((CommandResult)null).ApplyCookies(Substitute.For<HttpResponseBase>(), true, "/saml2"))
                 .Should().Throw<ArgumentNullException>()
                 .And.ParamName.Should().Be("commandResult");
         }
@@ -32,8 +32,8 @@ namespace Sustainsys.Saml2.HttpModule.Tests
         [TestMethod]
         public void CommandResultHttp_ApplyHeaders_NullCheck_CommandResult()
         {
-            ((CommandResult)null)
-                .Invoking(cr => cr.ApplyHeaders(Substitute.For<HttpResponseBase>()))
+            new CommandResult()
+                .Invoking(cr => ((CommandResult)null).ApplyHeaders(Substitute.For<HttpResponseBase>()))
                 .Should().Throw<ArgumentNullException>()
                 .And.ParamName.Should().Be("commandResult");
         }

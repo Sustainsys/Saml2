@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace Sustainsys.Saml2.AspNetCore2
 {
-    static class CommandResultExtensions
+    public static class CommandResultExtensions
     {
         public static async Task Apply(
             this CommandResult commandResult,
@@ -49,7 +49,7 @@ namespace Sustainsys.Saml2.AspNetCore2
 
             foreach(var h in commandResult.Headers)
             {
-                httpContext.Response.Headers.Add(h.Key, h.Value);
+                httpContext.Response.Headers[h.Key] = h.Value;
             }
 
             if(!string.IsNullOrEmpty(commandResult.ClearCookieName))

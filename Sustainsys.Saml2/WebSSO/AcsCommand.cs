@@ -50,7 +50,7 @@ namespace Sustainsys.Saml2.WebSso
 
                     options.Notifications.MessageUnbound(unbindResult);
 
-                    var samlResponse = new Saml2Response(unbindResult.Data, request.StoredRequestState?.MessageId, options);
+                    var samlResponse = this.GetSaml2Response(request, options, unbindResult);
 
                     var idpContext = GetIdpContext(unbindResult.Data, request, options);
 
@@ -98,6 +98,11 @@ namespace Sustainsys.Saml2.WebSso
             throw new NoSamlResponseFoundException();
         }
 
+        public virtual Saml2Response GetSaml2Response(HttpRequestData request, IOptions options, UnbindResult unbindResult)
+        {
+            return new Saml2Response(unbindResult.Data, request.StoredRequestState?.MessageId, options);
+        }
+
         private static IdentityProvider GetIdpContext(XmlElement xml, HttpRequestData request, IOptions options)
         {
             var entityId = new EntityId(xml["Issuer", Saml2Namespaces.Saml2Name].GetTrimmedTextIfNotNull());
@@ -139,7 +144,7 @@ namespace Sustainsys.Saml2.WebSso
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "returnUrl")]
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "SpOptions")]
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "ReturnUrl")]
-        private static CommandResult ProcessResponse(
+        public virtual CommandResult ProcessResponse(
             IOptions options,
             Saml2Response samlResponse,
             StoredRequestState storedRequestState,

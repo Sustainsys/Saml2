@@ -1304,6 +1304,7 @@ namespace Sustainsys.Saml2.Owin.Tests
             context.Authentication.AuthenticationResponseGrant.Properties
                 .ExpiresUtc.Should().BeCloseTo(
                 new DateTimeOffset(2050, 1, 1, 0, 0, 0, new TimeSpan(0)),
+                precision: TimeSpan.Zero,
                 because: "SessionNotOnOrAfter should be honored.");
         }
 
@@ -1357,7 +1358,7 @@ namespace Sustainsys.Saml2.Owin.Tests
         }
 
         [TestMethod]
-        public void Saml2AuthenticationMiddleware_WorksOnNullDiscoveryResponseUrl()
+        public async Task Saml2AuthenticationMiddleware_WorksOnNullDiscoveryResponseUrl()
         {
             var context = OwinTestHelpers.CreateOwinContext();
 
@@ -1372,7 +1373,8 @@ namespace Sustainsys.Saml2.Owin.Tests
                     }
                 });
 
-            subject.Awaiting(async s => await s.Invoke(context)).Should().NotThrow();
+            Func<Task> act = async () => await subject.Invoke(context);
+            await act.Should().NotThrowAsync();
         }
 
         [TestMethod]
@@ -1529,7 +1531,7 @@ namespace Sustainsys.Saml2.Owin.Tests
         }
 
         [TestMethod]
-        public void Saml2AuthenticationMiddleware_LogsCommandExceptions()
+        public async Task Saml2AuthenticationMiddleware_LogsCommandExceptions()
         {
             var context = OwinTestHelpers.CreateOwinContext();
             context.Request.Path = new PathString("/Saml2/SignIn");
@@ -1543,7 +1545,7 @@ namespace Sustainsys.Saml2.Owin.Tests
                 CreateAppBuilder(),
                 options);
 
-            subject.Awaiting(async s => await s.Invoke(context)).Should().Throw<InvalidOperationException>();
+            await subject.Invoking(async s => await s.Invoke(context)).Should().ThrowAsync<InvalidOperationException>();
             
             options.SPOptions.Logger.Received().WriteError(
                 "Error in Saml2 for /Saml2/SignIn", Arg.Any<Exception>());

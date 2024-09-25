@@ -116,7 +116,7 @@ namespace Sustainsys.Saml2.Tests
             var a = ci.ToSaml2Assertion(new EntityId("http://idp.example.com"));
 
             // Default validity time is hearby defined to two minutes.
-            a.Conditions.NotOnOrAfter.Value.Should().BeCloseTo(DateTime.UtcNow.AddMinutes(2));
+            a.Conditions.NotOnOrAfter.Value.Should().BeCloseTo(DateTime.UtcNow.AddMinutes(2), TimeSpan.FromMilliseconds(20));
         }
 
         [TestMethod]

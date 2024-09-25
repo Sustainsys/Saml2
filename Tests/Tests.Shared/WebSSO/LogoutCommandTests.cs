@@ -640,7 +640,7 @@ namespace Sustainsys.Saml2.Tests.WebSso
                 .Run(httpRequest, options);
 
             HttpUtility.ParseQueryString(actual.Location.Query)
-                .Keys.Should().Contain("SAMLResponse", "if the request was properly detected a response should be generated");
+                .AllKeys.Should().Contain("SAMLResponse", "if the request was properly detected a response should be generated");
         }
 
         [TestMethod]

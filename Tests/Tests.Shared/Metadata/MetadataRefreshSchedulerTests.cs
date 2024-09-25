@@ -16,7 +16,7 @@ namespace Sustainsys.Saml2.Tests.Metadata
 
             var subject = MetadataRefreshScheduler.GetDelay(validUntil);
 
-            subject.Should().BeCloseTo(new TimeSpan(1, 0, 0));
+            subject.Should().BeCloseTo(new TimeSpan(1, 0, 0), TimeSpan.FromMilliseconds(20));
         }
 
         [TestMethod]
@@ -26,7 +26,7 @@ namespace Sustainsys.Saml2.Tests.Metadata
 
             var subject = MetadataRefreshScheduler.GetDelay(validUntil);
 
-            subject.Should().BeCloseTo(new TimeSpan(0, 1, 0));
+            subject.Should().BeCloseTo(new TimeSpan(0, 1, 0), TimeSpan.FromMilliseconds(20));
         }
 
         [TestMethod]
@@ -38,7 +38,7 @@ namespace Sustainsys.Saml2.Tests.Metadata
 
             var maxDelay = new TimeSpan(0, 0, 0, 0, int.MaxValue);
 
-            subject.Should().BeCloseTo(maxDelay);
+            subject.Should().BeCloseTo(maxDelay, TimeSpan.FromMilliseconds(20));
         }
 
         [TestMethod]
@@ -48,7 +48,7 @@ namespace Sustainsys.Saml2.Tests.Metadata
 
             var subject = metadata.CalculateMetadataValidUntil();
 
-            subject.Should().BeCloseTo(DateTime.UtcNow.AddHours(1));
+            subject.Should().BeCloseTo(DateTime.UtcNow.AddHours(1), TimeSpan.FromMilliseconds(20));
         }
     }
 }

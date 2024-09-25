@@ -1,4 +1,4 @@
-﻿#if NETSTANDARD2_0
+﻿#if NETSTANDARD2_0 || NET6_0_OR_GREATER
 using Microsoft.Extensions.Caching.Memory;
 #else
 using System.Runtime.Caching;
@@ -10,7 +10,7 @@ namespace Sustainsys.Saml2.Tokens
 {
 	class TokenReplayCache : ITokenReplayCache
 	{
-#if NETSTANDARD2_0
+#if NETSTANDARD2_0 || NET6_0_OR_GREATER
         readonly MemoryCache cache = new MemoryCache(new MemoryCacheOptions());
 #else
         readonly MemoryCache cache = new MemoryCache(nameof(TokenReplayCache));
@@ -21,7 +21,7 @@ namespace Sustainsys.Saml2.Tokens
 
 		public bool TryAdd(string securityToken, DateTime expiresOn)
 		{
-#if NETSTANDARD2_0
+#if NETSTANDARD2_0 || NET6_0_OR_GREATER
             cache.Set(securityToken, cacheObject, new DateTimeOffset(expiresOn));
 #else
             cache.Add(securityToken, cache, new DateTimeOffset(expiresOn));

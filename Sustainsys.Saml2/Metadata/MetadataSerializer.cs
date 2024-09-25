@@ -683,7 +683,7 @@ namespace Sustainsys.Saml2.Metadata
 			return intValue.ToByteArray();
 		}
 
-#if !NET461
+#if !NET462
 
         protected virtual EcKeyValue ReadECDSAKeyValue(XmlReader reader)
 		{
@@ -871,7 +871,7 @@ namespace Sustainsys.Saml2.Metadata
 			{
 				value = ReadRSAKeyValue(reader);
 			}
-#if !NET461
+#if !NET462
             else if (reader.IsStartElement("ECKeyValue", DSig11Ns))
 			{
 				value = ReadECKeyValue(reader);
@@ -3879,7 +3879,7 @@ namespace Sustainsys.Saml2.Metadata
 			writer.WriteEndElement();
 		}
 
-#if !NET461
+#if !NET462
 
         protected virtual void WriteECKeyValue(XmlWriter writer, EcKeyValue ec)
 		{
@@ -3932,7 +3932,7 @@ namespace Sustainsys.Saml2.Metadata
 			{
 				WriteDSAKeyValue(writer, dsa);
 			}
-#if !NET461
+#if !NET462
             else if (keyValue is EcKeyValue ec)
 			{
 				WriteECKeyValue(writer, ec);

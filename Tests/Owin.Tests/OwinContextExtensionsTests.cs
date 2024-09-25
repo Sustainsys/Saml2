@@ -85,7 +85,7 @@ namespace Sustainsys.Saml2.Owin.Tests
             ctx.Request.QueryString = new QueryString("RelayState", "SomeState");
 
             ctx.Invoking(async c => await c.ToHttpRequestData(Substitute.For<ICookieManager>(), null))
-                .Should().NotThrow();
+                .Should().NotThrowAsync();
         }
     }
 }

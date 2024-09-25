@@ -60,7 +60,7 @@ namespace Sustainsys.Saml2.Tests.WebSso
 
             // Test and then drop validUntil, can't be text compared.
             DateTime.Parse(payloadXml.DocumentElement.Attributes["validUntil"].Value).ToUniversalTime()
-                .Should().BeCloseTo(DateTime.UtcNow.AddDays(24), 2000);
+                .Should().BeCloseTo(DateTime.UtcNow.AddDays(24), TimeSpan.FromMilliseconds(2000));
             payloadXml.DocumentElement.Attributes.Remove("validUntil");
 
             var expectedXml =

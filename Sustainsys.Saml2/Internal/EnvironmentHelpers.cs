@@ -6,7 +6,9 @@ namespace Sustainsys.Saml2.Internal
 	public class EnvironmentHelpers
     {
         public static bool IsNetCore =>
-#if NETSTANDARD2_0
+#if NET6_0_OR_GREATER
+        true;
+#elif NETSTANDARD2_0
         // To support .NET 5.0 and up, specifically check if this is not .NET Framework.
         // Since .NET 5.0, the description no longer starts with ".NET Core", but simply ".NET". 
         !RuntimeInformation.FrameworkDescription.StartsWith(".NET Framework", StringComparison.OrdinalIgnoreCase);

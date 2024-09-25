@@ -6,7 +6,7 @@ using System.Xml;
 
 namespace Sustainsys.Saml2.Internal
 {
-    internal class RSAEncryptedXml : EncryptedXml
+    public class RSAEncryptedXml : EncryptedXml
     {
         private readonly RSA privateKey;
 
