@@ -44,7 +44,7 @@ An absolute URI that identifiers the Identity Provider.
 
 ``LoadMetadata``
 ^^^^^^^^^^^^^^^^
-Enable loding of Metadata to get the Identity Provider's configuration. By convention the
+Enable loading of Metadata to get the Identity Provider's configuration. By convention the
 ``EntityId`` is the address of the metadata.
 
 ``MetadataLocation``
