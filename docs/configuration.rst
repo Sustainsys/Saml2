@@ -2,7 +2,7 @@ Configuration in web.config
 ===========================
 Web.config based configuration is the preferred configuration method for the ``HttpModule`` 
 and ``Mvc`` libraries. It can be used for ``Owin`` too by indicating that the configuration
-from file shoudl be loaded. The preferred configuration method for ``Owin`` is in code and for
+from file should be loaded. The preferred configuration method for ``Owin`` is in code and for
 ``Asp.Net Core`` code based configuration is the only method possible.
 
 To use Sustainsys.Saml2 in an application and configure it in ``web.config``
