@@ -22,7 +22,7 @@ jobs:
       with:
         repo-token: ${{ secrets.GITHUB_TOKEN }}
         days-before-stale: 15
-        days-before-close: 10
+        days-before-close: 20
         stale-issue-label: 'no-issue-activity'
         stale-pr-label: 'no-pr-activity'
         any-of-issue-labels: question, triage
