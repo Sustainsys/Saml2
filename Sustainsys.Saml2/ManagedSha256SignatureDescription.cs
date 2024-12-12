@@ -12,15 +12,31 @@ namespace Sustainsys.Saml2
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1709:IdentifiersShouldBeCasedCorrectly", MessageId = "SHA")]
 	public abstract class ManagedRSASignatureDescription : SignatureDescription
 	{
-		public abstract string HashAlgorithm { get; }
+		public string HashAlgorithm { get; }
 
         /// <summary>
         /// Ctor
         /// </summary>
-        public ManagedRSASignatureDescription()
+        public ManagedRSASignatureDescription(int keyLength)
         {
             KeyAlgorithm = typeof(RSACryptoServiceProvider).FullName;
-            DigestAlgorithm = typeof(SHA256Managed).FullName;
+            switch (keyLength)
+            {
+	            case 256:
+		            HashAlgorithm =  "sha256";
+		            DigestAlgorithm = typeof(SHA256Managed).FullName;
+		            break;
+	            case 384:
+		            HashAlgorithm =  "sha384";
+		            DigestAlgorithm = typeof(SHA384Managed).FullName;
+		            break;
+	            case 512:
+		            HashAlgorithm =  "sha512";
+		            DigestAlgorithm = typeof(SHA512Managed).FullName;
+		            break;
+	            default:
+		            throw new InvalidOperationException($"Unexpected SHA key length= {keyLength}");
+            }
         }
 
         /// <summary>
@@ -64,16 +80,22 @@ namespace Sustainsys.Saml2
 
 	public class ManagedRSASHA256SignatureDescription : ManagedRSASignatureDescription
 	{
-		public override string HashAlgorithm => "sha256";
+		public ManagedRSASHA256SignatureDescription() : base(256)
+		{
+		}
 	}
 
 	public class ManagedRSASHA384SignatureDescription : ManagedRSASignatureDescription
 	{
-		public override string HashAlgorithm => "sha384";
+		public ManagedRSASHA384SignatureDescription() : base(384)
+		{
+		}
 	}
 
 	public class ManagedRSASHA512SignatureDescription : ManagedRSASignatureDescription
 	{
-		public override string HashAlgorithm => "sha512";
+		public ManagedRSASHA512SignatureDescription() : base(512)
+		{
+		}
 	}
 }
