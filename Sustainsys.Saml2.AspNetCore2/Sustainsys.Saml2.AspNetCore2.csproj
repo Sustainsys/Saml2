@@ -12,12 +12,10 @@
     <PackageDescription>ASP.NET Core authentication handler for the SAML2 protocol, compatible with Asp.Net Core 2.X and 3.X</PackageDescription>
   </PropertyGroup>
 
-  <PropertyGroup>
-    <DocumentationFile>C:\git\Sustainsys.Saml2\Sustainsys.Saml2.AspNetCore2\bin\Sustainsys.Saml2.AspNetCore2.xml</DocumentationFile>
-  </PropertyGroup>
 
   <PropertyGroup>
     <Authors>Sustainsys</Authors>
+    <GenerateDocumentationFile>True</GenerateDocumentationFile>
   </PropertyGroup>
 
   <ItemGroup Condition="('$(TargetFrameworkIdentifier)' == '.NETCoreApp' And $([MSBuild]::VersionGreaterThanOrEquals($(TargetFrameworkVersion), '6.0')))">
