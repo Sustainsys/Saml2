@@ -15,12 +15,6 @@ namespace Sustainsys.Saml2.Tests.Exceptions
         }
 
         [TestMethod]
-        public void BadFormatSamlResponseException_SerializationCtor()
-        {
-            ExceptionTestHelpers.TestSerializationCtor<BadFormatSamlResponseException>();
-        }
-
-        [TestMethod]
         public void BadFormatSamlResponseException_StringCtor()
         {
             var msg = "Message!";

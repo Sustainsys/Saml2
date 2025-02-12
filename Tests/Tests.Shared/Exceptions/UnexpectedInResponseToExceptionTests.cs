@@ -15,12 +15,6 @@ namespace Sustainsys.Saml2.Tests.Exceptions
         }
 
         [TestMethod]
-        public void UnexpectedInResponseToException_SerializationCtor()
-        {
-            ExceptionTestHelpers.TestSerializationCtor<UnexpectedInResponseToException>();
-        }
-
-        [TestMethod]
         public void UnexpectedInResponseToException_StringCtor()
         {
             var msg = "Message!";

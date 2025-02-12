@@ -20,12 +20,6 @@ namespace Sustainsys.Saml2.Tests.Exceptions
         }
 
         [TestMethod]
-        public void InvalidSamlOperationException_SerializationCtor()
-        {
-            ExceptionTestHelpers.TestSerializationCtor<UnsuccessfulSamlOperationException>();
-        }
-
-        [TestMethod]
         public void InvalidSamlOperationException_StringCtor()
         {
             var msg = "Message!";

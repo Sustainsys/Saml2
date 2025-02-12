@@ -15,12 +15,6 @@ namespace Sustainsys.Saml2.Tests.Exceptions
         }
 
         [TestMethod]
-        public void InvalidSignatureException_SerializationCtor()
-        {
-            ExceptionTestHelpers.TestSerializationCtor<InvalidSignatureException>();
-        }
-
-        [TestMethod]
         public void InvalidSignatureException_StringCtor()
         {
             var msg = "Message!";

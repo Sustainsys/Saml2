@@ -161,13 +161,13 @@
       <Project>{fa1e7723-124c-4d2d-a731-e16400b0073b}</Project>
       <Name>Sustainsys.Saml2.Owin</Name>
     </ProjectReference>
-    <ProjectReference Include="..\TestHelpers\TestHelpers.csproj">
-      <Project>{cf1e517e-b2fe-48e1-8bb9-4d9981695c47}</Project>
-      <Name>TestHelpers</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\Sustainsys.Saml2\Sustainsys.Saml2.csproj">
       <Project>{93BA675E-A159-4701-B68B-C4B81015C556}</Project>
       <Name>Sustainsys.Saml2</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\TestHelpers\TestHelpers.csproj">
+      <Project>{cf1e517e-b2fe-48e1-8bb9-4d9981695c47}</Project>
+      <Name>TestHelpers</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

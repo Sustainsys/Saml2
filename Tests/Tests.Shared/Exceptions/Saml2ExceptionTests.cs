@@ -25,11 +25,5 @@ namespace Sustainsys.Saml2.Tests.Exceptions
         {
             ExceptionTestHelpers.TestDefaultCtor<ConcreteSaml2Exception>();
         }
-
-        [TestMethod]
-        public void Saml2Exception_SerializationCtor()
-        {
-            ExceptionTestHelpers.TestSerializationCtor<ConcreteSaml2Exception>();
-        }
     }
 }

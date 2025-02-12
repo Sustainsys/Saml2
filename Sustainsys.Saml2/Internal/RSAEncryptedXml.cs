@@ -79,6 +79,7 @@ namespace Sustainsys.Saml2.Internal
         }
 
         internal const string AesGcm128Identifier = "http://www.w3.org/2009/xmlenc11#aes128-gcm";
+        internal const string AesGcm256Identifier = "http://www.w3.org/2009/xmlenc11#aes256-gcm";
 
         /// <summary>
         /// AES-GCM Nonce size defined in https://www.w3.org/TR/xmlenc-core1/#sec-AES-GCM
@@ -93,15 +94,18 @@ namespace Sustainsys.Saml2.Internal
               symmetricAlgorithmUri = encryptedData.EncryptionMethod.KeyAlgorithm;
           }
 
-          if (symmetricAlgorithmUri == AesGcm128Identifier)
-          {
-              const int initBytesSize = AesGcm128NonceSizeInBits / 8;
-              var iv = new byte[initBytesSize];
-              var cipherValue = encryptedData.CipherData.CipherValue;
-              Buffer.BlockCopy(cipherValue, 0, iv, 0, iv.Length);
-              return iv;
-          }
-          return base.GetDecryptionIV(encryptedData, symmetricAlgorithmUri);
+            switch (symmetricAlgorithmUri)
+            {
+                case AesGcm128Identifier:
+                case AesGcm256Identifier:
+                    const int initBytesSize = AesGcm128NonceSizeInBits / 8;
+                    var iv = new byte[initBytesSize];
+                    var cipherValue = encryptedData.CipherData.CipherValue;
+                    Buffer.BlockCopy(cipherValue, 0, iv, 0, iv.Length);
+                    return iv;
+                default:
+                    return base.GetDecryptionIV(encryptedData, symmetricAlgorithmUri);
+            }
         }
 
         private static bool IsAes(string uri) =>

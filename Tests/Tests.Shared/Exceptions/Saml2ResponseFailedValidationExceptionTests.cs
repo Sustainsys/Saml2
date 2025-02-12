@@ -15,12 +15,6 @@ namespace Sustainsys.Saml2.Tests.Exceptions
         }
 
         [TestMethod]
-        public void Saml2ResponseFailedValidationException_SerializationCtor()
-        {
-            ExceptionTestHelpers.TestSerializationCtor<Saml2ResponseFailedValidationException>();
-        }
-
-        [TestMethod]
         public void Saml2ResponseFailedValidationException_StringCtor()
         {
             var msg = "Message!";

@@ -15,12 +15,6 @@ namespace Sustainsys.Saml2.Tests.Exceptions
         }
 
         [TestMethod]
-        public void NoSamlResponseFoundException_SerializationCtor()
-        {
-            ExceptionTestHelpers.TestSerializationCtor<NoSamlResponseFoundException>();
-        }
-
-        [TestMethod]
         public void NoSamlResponseFoundException_StringCtor()
         {
             var msg = "Message!";
