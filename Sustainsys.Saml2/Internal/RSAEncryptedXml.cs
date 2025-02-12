@@ -9,6 +9,7 @@ namespace Sustainsys.Saml2.Internal
     internal class RSAEncryptedXml : EncryptedXml
     {
         private readonly RSA privateKey;
+        public const string XmlEncRSAOAEPGenericUrl = "http://www.w3.org/2009/xmlenc11#rsa-oaep";
 
         public RSAEncryptedXml(XmlDocument document, RSA rsaKey)
             : base(document)
@@ -37,12 +38,46 @@ namespace Sustainsys.Saml2.Internal
                 return base.DecryptEncryptedKey(encryptedKey);
             }
 
+          if(encryptedKey.EncryptionMethod != null &&
+                encryptedKey.EncryptionMethod.KeyAlgorithm == XmlEncRSAOAEPGenericUrl)
+            {
+                return GenericOaepDecryptKey(encryptedKey.CipherData.CipherValue, privateKey, encryptedKey.EncryptionMethod);
+            }
+
             var useOaep = (encryptedKey.EncryptionMethod != null &&
                          encryptedKey.EncryptionMethod.KeyAlgorithm == XmlEncRSAOAEPUrl);
 
             return DecryptKey(encryptedKey.CipherData.CipherValue, privateKey, useOaep);
         }
-        
+
+        private byte[] GenericOaepDecryptKey(byte[] cipherValue, RSA privateKey, EncryptionMethod encryptionMethod)
+        {
+            var xml = encryptionMethod.GetXml();
+            var hashAlgorithm = xml["DigestMethod", SignedXml.XmlDsigNamespaceUrl].Attributes["Algorithm"].Value;
+
+            RSAEncryptionPadding padding;
+
+            switch(hashAlgorithm)
+            {
+                case SignedXml.XmlDsigRSASHA1Url:
+                    padding = RSAEncryptionPadding.OaepSHA1;
+                    break;
+                case "http://www.w3.org/2001/04/xmlenc#sha256":
+                    padding = RSAEncryptionPadding.OaepSHA256;
+                    break;
+                case "http://www.w3.org/2001/04/xmlenc#sha384":
+                    padding = RSAEncryptionPadding.OaepSHA384;
+                    break;
+                case "http://www.w3.org/2001/04/xmlenc#sha512":
+                    padding = RSAEncryptionPadding.OaepSHA512;
+                    break;
+                default:
+                    throw new NotImplementedException($"Unknown hash algorithm for OAEP {hashAlgorithm}");
+            };
+
+            return privateKey.Decrypt(cipherValue, padding);
+        }
+
         internal const string AesGcm128Identifier = "http://www.w3.org/2009/xmlenc11#aes128-gcm";
 
         /// <summary>
