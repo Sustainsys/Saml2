@@ -21,7 +21,7 @@ namespace Sustainsys.Saml2.Tests.Internal
             var dummyData = new EncryptedData();
             dummyData.CipherData = new CipherData(dummyBytes);
             var rex = new RSAEncryptedXml(new XmlDocument(), null );
-            var iv = rex.GetDecryptionIV(dummyData, RSAEncryptedXml.AesGcm128Identifier);
+            var iv = rex.GetDecryptionIV(dummyData, AesGcmAlgorithm.AesGcm128Identifier);
             iv.Should().NotBeNull();
             iv.Should().BeEquivalentTo(expectedIv);
         }

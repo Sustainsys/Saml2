@@ -6,7 +6,7 @@ using System.Text;
 
 #if NETSTANDARD2_1
 
-namespace Sustainsys.Saml2
+namespace Sustainsys.Saml2.Internal
 {
 
     internal class AesGcmDecryptor : ICryptoTransform

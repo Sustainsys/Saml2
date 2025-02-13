@@ -3,18 +3,23 @@ using System.Collections.Generic;
 using System.Security.Cryptography;
 using System.Text;
 
-#if NETSTANDARD2_1
 
-namespace Sustainsys.Saml2
+namespace Sustainsys.Saml2.Internal
 {
     /// <summary>
     /// SymmetricAlgorithm decrypting implementation for http://www.w3.org/2009/xmlenc11#aes128-gcm.
     /// This is class is not a general implementation and can only do decryption.
     /// </summary>
-    public class AesGcmAlgorithm : SymmetricAlgorithm
+    public class AesGcmAlgorithm
+#if NETSTANDARD2_1
+
+        : SymmetricAlgorithm
+#endif
     {
         public const string AesGcm128Identifier = "http://www.w3.org/2009/xmlenc11#aes128-gcm";
         public const string AesGcm256Identifier = "http://www.w3.org/2009/xmlenc11#aes256-gcm";
+
+#if NETSTANDARD2_1
 
         // "For the purposes of this specification, AES-GCM shall be used with a 96 bit Initialization Vector (IV) and a 128 bit Authentication Tag (T)."
         // Source: https://www.w3.org/TR/xmlenc-core1/#sec-AES-GCM
@@ -52,8 +57,10 @@ namespace Sustainsys.Saml2
         {
             throw new NotImplementedException();
         }
+#endif
     }
 
+#if NETSTANDARD2_1
     public class AesGcmAlgorithm128 : AesGcmAlgorithm
     {
         public AesGcmAlgorithm128() : base(128) {}
@@ -62,6 +69,5 @@ namespace Sustainsys.Saml2
     {
         public AesGcmAlgorithm256() : base(256) { }
     }
-}
-
 #endif
+}

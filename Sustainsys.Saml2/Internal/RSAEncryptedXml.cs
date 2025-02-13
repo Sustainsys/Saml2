@@ -38,8 +38,8 @@ namespace Sustainsys.Saml2.Internal
                 return base.DecryptEncryptedKey(encryptedKey);
             }
 
-          if(encryptedKey.EncryptionMethod != null &&
-                encryptedKey.EncryptionMethod.KeyAlgorithm == XmlEncRSAOAEPGenericUrl)
+            if (encryptedKey.EncryptionMethod != null &&
+                  encryptedKey.EncryptionMethod.KeyAlgorithm == XmlEncRSAOAEPGenericUrl)
             {
                 return GenericOaepDecryptKey(encryptedKey.CipherData.CipherValue, privateKey, encryptedKey.EncryptionMethod);
             }
@@ -57,7 +57,7 @@ namespace Sustainsys.Saml2.Internal
 
             RSAEncryptionPadding padding;
 
-            switch(hashAlgorithm)
+            switch (hashAlgorithm)
             {
                 case SignedXml.XmlDsigRSASHA1Url:
                     padding = RSAEncryptionPadding.OaepSHA1;
@@ -78,26 +78,23 @@ namespace Sustainsys.Saml2.Internal
             return privateKey.Decrypt(cipherValue, padding);
         }
 
-        internal const string AesGcm128Identifier = "http://www.w3.org/2009/xmlenc11#aes128-gcm";
-        internal const string AesGcm256Identifier = "http://www.w3.org/2009/xmlenc11#aes256-gcm";
-
         /// <summary>
         /// AES-GCM Nonce size defined in https://www.w3.org/TR/xmlenc-core1/#sec-AES-GCM
         /// </summary>
         internal const int AesGcm128NonceSizeInBits = 96;
-    
+
         public override byte[] GetDecryptionIV(EncryptedData encryptedData, string symmetricAlgorithmUri)
         {
-          //adapted from https://github.com/dotnet/runtime/blob/a5192d4963531579166d7f43df2a1ed44a96900f/src/libraries/System.Security.Cryptography.Xml/src/System/Security/Cryptography/Xml/EncryptedXml.cs#L267
-          if (symmetricAlgorithmUri == null && encryptedData.EncryptionMethod != null)
-          {
-              symmetricAlgorithmUri = encryptedData.EncryptionMethod.KeyAlgorithm;
-          }
+            //adapted from https://github.com/dotnet/runtime/blob/a5192d4963531579166d7f43df2a1ed44a96900f/src/libraries/System.Security.Cryptography.Xml/src/System/Security/Cryptography/Xml/EncryptedXml.cs#L267
+            if (symmetricAlgorithmUri == null && encryptedData.EncryptionMethod != null)
+            {
+                symmetricAlgorithmUri = encryptedData.EncryptionMethod.KeyAlgorithm;
+            }
 
             switch (symmetricAlgorithmUri)
             {
-                case AesGcm128Identifier:
-                case AesGcm256Identifier:
+                case AesGcmAlgorithm.AesGcm128Identifier:
+                case AesGcmAlgorithm.AesGcm256Identifier:
                     const int initBytesSize = AesGcm128NonceSizeInBits / 8;
                     var iv = new byte[initBytesSize];
                     var cipherValue = encryptedData.CipherData.CipherValue;
@@ -114,27 +111,56 @@ namespace Sustainsys.Saml2.Internal
 
         public override SymmetricAlgorithm GetDecryptionKey(EncryptedData encryptedData, string symmetricAlgorithmUri)
         {
-            if(CryptoConfig.AllowOnlyFipsAlgorithms
-                && IsAes(encryptedData?.EncryptionMethod?.KeyAlgorithm))
+            if (IsAes(encryptedData?.EncryptionMethod?.KeyAlgorithm))
             {
-                var encryptedKey = encryptedData.KeyInfo.OfType<KeyInfoEncryptedKey>().FirstOrDefault().EncryptedKey;
+                EnsureAesRegistered();
 
-                if(encryptedKey != null)
+                if (CryptoConfig.AllowOnlyFipsAlgorithms)
                 {
-                    var key = DecryptEncryptedKey(encryptedKey);
+                    var encryptedKey = encryptedData.KeyInfo.OfType<KeyInfoEncryptedKey>().FirstOrDefault().EncryptedKey;
 
-                    if(key != null)
+                    if (encryptedKey != null)
                     {
-                        return new AesCryptoServiceProvider()
-                        {
-                            Key = key,
-                        };
-                    }
-                }
+                        var key = DecryptEncryptedKey(encryptedKey);
 
+                        if (key != null)
+                        {
+                            return new AesCryptoServiceProvider()
+                            {
+                                Key = key,
+                            };
+                        }
+                    }
+
+                }
             }
 
             return base.GetDecryptionKey(encryptedData, symmetricAlgorithmUri);
+        }
+
+        private static bool aesRegistered = false;
+
+        private void EnsureAesRegistered()
+        {
+
+#if NETSTANDARD2_1
+            if (!aesRegistered)
+            {
+                var aes128 = CryptoConfig.CreateFromName(AesGcmAlgorithm.AesGcm128Identifier);
+                if (aes128 == null)
+                {
+                    CryptoConfig.AddAlgorithm(typeof(AesGcmAlgorithm128), AesGcmAlgorithm.AesGcm128Identifier);
+                }
+
+                var aes256 = CryptoConfig.CreateFromName(AesGcmAlgorithm.AesGcm256Identifier);
+                if (aes256 == null)
+                {
+                    CryptoConfig.AddAlgorithm(typeof(AesGcmAlgorithm256), AesGcmAlgorithm.AesGcm256Identifier);
+                }
+
+                aesRegistered = true;
+            }
+#endif
         }
     }
 }
