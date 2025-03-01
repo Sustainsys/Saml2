@@ -8,11 +8,11 @@ using System.Collections;
 
 namespace Sustainsys.Saml2.AspNetCore2.Tests
 {
-    class StubCookieCollection : IRequestCookieCollection
+    class StubRequestCookieCollection : IRequestCookieCollection
     {
         IDictionary<string, string> cookies;
 
-        public StubCookieCollection(IEnumerable<KeyValuePair<string, string>> cookies)
+        public StubRequestCookieCollection(IEnumerable<KeyValuePair<string, string>> cookies)
         {
             this.cookies = cookies.ToDictionary(kv => kv.Key, kv => kv.Value);
         }
