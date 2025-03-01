@@ -138,7 +138,9 @@ namespace Sustainsys.Saml2.Internal
             return base.GetDecryptionKey(encryptedData, symmetricAlgorithmUri);
         }
 
+#if NETSTANDARD2_1
         private static bool aesRegistered = false;
+#endif
 
         private void EnsureAesRegistered()
         {
