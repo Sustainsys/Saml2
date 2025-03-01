@@ -56,7 +56,7 @@ namespace Sustainsys.Saml2.Configuration
         {
             var xmlDoc = XmlHelpers.XmlDocumentFromString("<xml/>");
             var elementToEncrypt = xmlDoc.DocumentElement;
-            elementToEncrypt.Encrypt(useOaep: false, certificate: certificate);
+            elementToEncrypt.Encrypt(useOaep: true, certificate: certificate);
 
             try
             {
