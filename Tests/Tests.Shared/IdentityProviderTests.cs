@@ -969,7 +969,7 @@ namespace Sustainsys.Saml2.Tests
 
             subject.Invoking(s => s.CreateLogoutRequest(user))
                 .Should().Throw<ArgumentNullException>()
-                .And.Message.Should().Match("Value cannot be null*Parameter name*user*");
+                .And.Message.Should().Match("Value cannot be null*Parameter*user*");
         }
 
         [TestMethod]
