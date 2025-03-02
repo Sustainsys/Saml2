@@ -13,7 +13,7 @@ There are samples in the `v1` and `v2` branches. Newer samples are available in 
 [samples repo](https://github.com/Sustainsys/Saml2.Samples).
 
 ## Commercial Options and a Sustainable model for Open Source
-When I started the Sustainsys company, the idea was to try to find a sustainable model for open
+When I started the [Sustainsys company](https://sustainsys.com/), the idea was to try to find a sustainable model for open
 source work. Maintaining an open source library takes time. The issue and PR list and constantly
 requires work to keep it clean (I've not always succeeded, I know). Bug reports by e-mail of possible
 security vulnerabilities need to be evaluated and handled - even if they often turn out to be incorrect.
