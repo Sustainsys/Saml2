@@ -167,12 +167,10 @@ namespace Sustainsys.Saml2.Internal
 
         internal static RSA GetSha256EnabledRSACryptoServiceProvider(this RSA rsa)
         {
+#if !NETFRAMEWORK
             // For .NET Core, everything supports SHA256 out of the box.
-            if (EnvironmentHelpers.IsNetCore)
-            {
-                return rsa;
-            }
-
+            return rsa;
+#else
             var original = rsa as RSACryptoServiceProvider;
             if (original == null)
             {
@@ -204,6 +202,7 @@ namespace Sustainsys.Saml2.Internal
             }
 
             return original;
+#endif
         }
 
         // We don't want to use Machine Key store during tests, so let's

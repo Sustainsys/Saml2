@@ -663,7 +663,11 @@ $@"<xml>
         {
             var actual = XmlHelpers.CreateSafeXmlDocument();
 
-			string fieldName = (EnvironmentHelpers.IsNetCore ? "_": "") +"resolver";
+#if NET8_0_OR_GREATER
+            var fieldName = "_resolver";
+#else
+            var fieldName = "resolver";
+#endif
             typeof(XmlDocument).GetField(fieldName, BindingFlags.NonPublic | BindingFlags.Instance)
                 .GetValue(actual).Should().BeNull();
 
