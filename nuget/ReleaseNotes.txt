@@ -1,4 +1,6 @@
-Version 2.10.0
-* FIPS compliance
+Version 2.11.0
+* Support RSA-OAEP for encrypted XML with specified mask generation function
+* Built in support for AES-GCM (.NET 8 target only)
+* Dropped .NET Standard 2.1 target in favour of .NET 8.
 
 See GitHub milestone issue list for details.
