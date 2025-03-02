@@ -1,0 +1,20 @@
+{
+  "solution": {
+    "path": "Sustainsys.Saml2.sln",
+    "projects": [
+      "Sustainsys.Saml2.AspNetCore2\\Sustainsys.Saml2.AspNetCore2.csproj",
+      "Sustainsys.Saml2.HttpModule\\Sustainsys.Saml2.HttpModule.csproj",
+      "Sustainsys.Saml2.Mvc\\Sustainsys.Saml2.Mvc.csproj",
+      "Sustainsys.Saml2.Owin\\Sustainsys.Saml2.Owin.csproj",
+      "Sustainsys.Saml2\\Sustainsys.Saml2.csproj",
+      "Tests\\AspNetCore2.Tests\\AspNetCore2.Tests.csproj",
+      "Tests\\HttpModule.Tests\\HttpModule.Tests.csproj",
+      "Tests\\Mvc.Tests\\Mvc.Tests.csproj",
+      "Tests\\Owin.Tests\\Owin.Tests.csproj",
+      "Tests\\TestHelpers\\TestHelpers.csproj",
+      "Tests\\Tests.NETCore\\Tests.NETCore.csproj",
+      "Tests\\Tests.NETFramework\\Tests.NETFramework.csproj",
+      "Tests\\Tests.Shared\\Tests.Shared.shproj"
+    ]
+  }
+}
