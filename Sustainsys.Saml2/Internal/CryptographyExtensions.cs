@@ -205,6 +205,7 @@ namespace Sustainsys.Saml2.Internal
 #endif
         }
 
+#if NETFRAMEWORK
         // We don't want to use Machine Key store during tests, so let's
         // put this one in an own method that's not included in coverage metrics.
         [ExcludeFromCodeCoverage]
@@ -215,6 +216,7 @@ namespace Sustainsys.Saml2.Internal
                 cspParams.Flags = CspProviderFlags.UseMachineKeyStore;
             }
         }
+#endif
 
         // CryptoConfig.CreateFromName doesn't know about these
         static Dictionary<string, Type> s_extraAlgorithms = new Dictionary<string, Type>(StringComparer.OrdinalIgnoreCase)
