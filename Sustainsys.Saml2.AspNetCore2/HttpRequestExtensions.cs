@@ -3,13 +3,24 @@ using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication.Cookies;
 
 namespace Sustainsys.Saml2.AspNetCore2
 {
+
+    /// <summary>
+    /// Extensions methods for Asp.Net Core Http Request.
+    /// </summary>
     public static class HttpRequestExtensions
     {
+        /// <summary>
+        /// Create a Sustainsys.Saml2 internal HttpRequestData from the Asp.Net Core
+        /// HttpRequest
+        /// </summary>
+        /// <param name="httpContext">HttpContext</param>
+        /// <param name="cookieManager">Cookie manager to use to read cookies</param>
+        /// <param name="cookieDecryptor">Decryptor for encrypted cookie data</param>
+        /// <returns></returns>
         public static HttpRequestData ToHttpRequestData(
             this HttpContext httpContext,
             ICookieManager cookieManager,
@@ -43,6 +54,11 @@ namespace Sustainsys.Saml2.AspNetCore2
                 httpContext.User);
         }
 
+        /// <summary>
+        /// Get the user agent.
+        /// </summary>
+        /// <param name="request"></param>
+        /// <returns></returns>
         public static string GetUserAgent(this HttpRequest request)
         {
             return request.Headers["user-agent"].FirstOrDefault() ?? "";
