@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>netstandard2.0;net47;net461;net6.0</TargetFrameworks>
+    <TargetFrameworks>net8.0</TargetFrameworks>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <PackageReleaseNotes>$releaseNotes$</PackageReleaseNotes>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
@@ -18,14 +18,8 @@
     <GenerateDocumentationFile>True</GenerateDocumentationFile>
   </PropertyGroup>
 
-  <ItemGroup Condition="('$(TargetFrameworkIdentifier)' == '.NETCoreApp' And $([MSBuild]::VersionGreaterThanOrEquals($(TargetFrameworkVersion), '6.0')))">
+  <ItemGroup>
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
-  </ItemGroup>
-
-  <ItemGroup Condition="!('$(TargetFrameworkIdentifier)' == '.NETCoreApp' And $([MSBuild]::VersionGreaterThanOrEquals($(TargetFrameworkVersion), '6.0')))">
-    <PackageReference Include="Microsoft.AspNetCore.Authentication" Version="2.1.2" />
-    <PackageReference Include="Microsoft.AspNetCore.Authentication.Cookies" Version="2.1.2" />
-    <PackageReference Include="Microsoft.AspNetCore.Http" Version="2.1.1" />
   </ItemGroup>
 
   <ItemGroup>
