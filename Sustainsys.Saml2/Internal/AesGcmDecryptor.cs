@@ -30,10 +30,7 @@ namespace Sustainsys.Saml2.Internal
 
         public int OutputBlockSize => throw new NotImplementedException();
 
-        public void Dispose()
-        {
-            throw new NotImplementedException();
-        }
+        public void Dispose() { }
 
         public int TransformBlock(byte[] inputBuffer, int inputOffset, int inputCount, byte[] outputBuffer, int outputOffset)
         {
