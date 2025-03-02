@@ -4,7 +4,7 @@ using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 
-#if NETSTANDARD2_1
+#if NET8_0_OR_GREATER
 
 namespace Sustainsys.Saml2.Internal
 {

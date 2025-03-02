@@ -11,7 +11,7 @@ namespace Sustainsys.Saml2.Internal
     /// This is class is not a general implementation and can only do decryption.
     /// </summary>
     public class AesGcmAlgorithm
-#if NETSTANDARD2_1
+#if NET8_0_OR_GREATER
 
         : SymmetricAlgorithm
 #endif
@@ -19,7 +19,7 @@ namespace Sustainsys.Saml2.Internal
         public const string AesGcm128Identifier = "http://www.w3.org/2009/xmlenc11#aes128-gcm";
         public const string AesGcm256Identifier = "http://www.w3.org/2009/xmlenc11#aes256-gcm";
 
-#if NETSTANDARD2_1
+#if NET8_0_OR_GREATER
 
         // "For the purposes of this specification, AES-GCM shall be used with a 96 bit Initialization Vector (IV) and a 128 bit Authentication Tag (T)."
         // Source: https://www.w3.org/TR/xmlenc-core1/#sec-AES-GCM
@@ -60,7 +60,7 @@ namespace Sustainsys.Saml2.Internal
 #endif
     }
 
-#if NETSTANDARD2_1
+#if NET8_0_OR_GREATER
     public class AesGcmAlgorithm128 : AesGcmAlgorithm
     {
         public AesGcmAlgorithm128() : base(128) {}

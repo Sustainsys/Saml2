@@ -138,14 +138,14 @@ namespace Sustainsys.Saml2.Internal
             return base.GetDecryptionKey(encryptedData, symmetricAlgorithmUri);
         }
 
-#if NETSTANDARD2_1
+#if NET8_0_OR_GREATER
         private static bool aesRegistered = false;
 #endif
 
         private void EnsureAesRegistered()
         {
 
-#if NETSTANDARD2_1
+#if NET8_0_OR_GREATER
             if (!aesRegistered)
             {
                 var aes128 = CryptoConfig.CreateFromName(AesGcmAlgorithm.AesGcm128Identifier);
