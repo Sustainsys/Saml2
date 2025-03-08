@@ -125,7 +125,7 @@ namespace Sustainsys.Saml2.Saml2P
 				if (string.IsNullOrEmpty(value))
 					throw LogReadException(LogMessages.IDX13106, Saml2Constants.Elements.Assertion, Saml2Constants.Attributes.IssueInstant);
 
-				assertion.IssueInstant = DateTime.ParseExact(value, Saml2Constants.AcceptedDateTimeFormats, DateTimeFormatInfo.InvariantInfo, DateTimeStyles.None).ToUniversalTime();
+				assertion.IssueInstant = DateTime.Parse(value, CultureInfo.InvariantCulture, DateTimeStyles.AdjustToUniversal);
 
 				// will move to next element
 				// <ds:Signature> 0-1 read by EnvelopedSignatureReader
