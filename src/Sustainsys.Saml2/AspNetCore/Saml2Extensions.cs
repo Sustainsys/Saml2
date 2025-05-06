@@ -8,7 +8,9 @@ using Sustainsys.Saml2.Serialization;
 
 // By convention, the extension methods are placed in the Microsoft shared 
 // namespace to allow convenient access from intellisense.
+#pragma warning disable IDE0130 // Namespace does not match folder structure
 namespace Microsoft.Extensions.DependencyInjection;
+#pragma warning restore IDE0130 // Namespace does not match folder structure
 
 /// <summary>
 /// Extension methods to configure Saml2 authentication.

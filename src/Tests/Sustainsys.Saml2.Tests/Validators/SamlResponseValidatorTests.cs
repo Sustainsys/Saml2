@@ -69,12 +69,14 @@ public class SamlResponseValidatorTests
     [InlineData("2.0", true)]
     [InlineData("2.1", false)]
     [InlineData(null, false)]
-    public void Validate_Version(string version, bool valid)
+    public void Validate_Version(string? version, bool valid)
     {
         var subject = new SamlResponseValidator();
 
         var response = CreateSamlResponse();
-        response.Version = version;
+        
+        // Yes, it can be null - we're testing!
+        response.Version = version!;
 
         var parameters = CreateValidationParameters();
 

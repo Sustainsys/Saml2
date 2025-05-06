@@ -57,7 +57,7 @@ public class XmlTraverserTests
     [InlineData("x", "1")]
     [InlineData("y", null)]
     [InlineData("five", "5")]
-    public void GetAttribute(string localName, string expectedValue)
+    public void GetAttribute(string localName, string? expectedValue)
     {
         GetXmlTraverser().GetAttribute(localName).Should().Be(expectedValue);
     }

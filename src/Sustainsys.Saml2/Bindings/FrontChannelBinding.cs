@@ -41,19 +41,11 @@ public interface IFrontChannelBinding
 /// <summary>
 /// A SAML2 Binding that operates on the front channel, i.e. browser.
 /// </summary>
-public abstract class FrontChannelBinding : IFrontChannelBinding
+/// <param name="identifier">Identifying Uri for this binding</param>
+public abstract class FrontChannelBinding(string identifier) : IFrontChannelBinding
 {
-    /// <summary>
-    /// Constructor
-    /// </summary>
-    /// <param name="identifier">Identifying Uri for this binding</param>
-    protected FrontChannelBinding(string identifier)
-    {
-        Identifier = identifier;
-    }
-
     /// <inheritdoc/>
-    public string Identifier { get;  }
+    public string Identifier { get; } = identifier;
 
     /// <inheritdoc/>
     public abstract bool CanUnbind(HttpRequest httpRequest);

@@ -24,13 +24,13 @@ public partial class SamlXmlReader : ISamlXmlReader
         defaultAllowedHashAlgorithms;
 
     private static readonly IEnumerable<string> defaultAllowedHashAlgorithms =
-        new ReadOnlyCollection<string>(new[]
-        {
+        new ReadOnlyCollection<string>(
+        [
             SignedXml.XmlDsigRSASHA256Url,
             SignedXml.XmlDsigRSASHA384Url,
             SignedXml.XmlDsigRSASHA512Url,
             SignedXml.XmlDsigDSAUrl
-        });
+        ]);
 
     /// <inheritdoc/>
     public virtual IEnumerable<SigningKey>? TrustedSigningKeys { get; set; }
