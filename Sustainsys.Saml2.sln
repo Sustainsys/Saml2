@@ -5,8 +5,6 @@ VisualStudioVersion = 17.0.32112.339
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{92934DC3-A1E1-48D0-BBBF-8499A94EB9DC}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Docs", "docs\Docs.csproj", "{4C2AFA12-245B-4ACD-AB92-60EA2317C485}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{67939779-582A-4972-9393-280BB0A6678B}"
 	ProjectSection(SolutionItems) = preProject
 		CONTRIBUTING.md = CONTRIBUTING.md
@@ -28,10 +26,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{4C2AFA12-245B-4ACD-AB92-60EA2317C485}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{4C2AFA12-245B-4ACD-AB92-60EA2317C485}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{4C2AFA12-245B-4ACD-AB92-60EA2317C485}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{4C2AFA12-245B-4ACD-AB92-60EA2317C485}.Release|Any CPU.Build.0 = Release|Any CPU
 		{A5EEC055-2C50-4E34-98D4-A2B5B1CB0F8D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{A5EEC055-2C50-4E34-98D4-A2B5B1CB0F8D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A5EEC055-2C50-4E34-98D4-A2B5B1CB0F8D}.Release|Any CPU.ActiveCfg = Release|Any CPU
