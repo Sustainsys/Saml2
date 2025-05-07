@@ -60,6 +60,10 @@ partial class SamlXmlReaderTests
                 AllowCreate=true,
                 SPNameQualifier= "urn:oasis:names:tc:SAML:1.1:nameid-format:persistent"
             },
+            Conditions = new()
+            {
+                NotBefore = new DateTime(2023, 11, 24, 22, 44, 14, DateTimeKind.Utc)
+            },
             // TODO: Add NameIDPolicy
             // TODO: Add Conditions
             // TODO: Add RequestedAuthnContext

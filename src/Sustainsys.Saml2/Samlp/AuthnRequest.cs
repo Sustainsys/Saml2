@@ -28,6 +28,12 @@ public class AuthnRequest : RequestAbstractType
     public NameIdPolicy? NameIdPolicy { get; set; }
 
     /// <summary>
+    /// SAML constructs that place constraints on the use of SAML assertion.
+    /// </summary>
+    /// 
+    public Conditions? Conditions { get; set; }
+
+    /// <summary>
     /// Indicates that the identity provider should force (re)authentication and not
     /// rely on an existing session to do single sign on.
     /// </summary>

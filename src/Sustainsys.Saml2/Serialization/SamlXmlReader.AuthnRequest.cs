@@ -64,6 +64,12 @@ public partial class SamlXmlReader
             authnRequest.NameIdPolicy = ReadNameIdPolicy(source);
             source.MoveNext(true);
         }
+
+        if (source.HasName(Elements.Conditions, Namespaces.SamlUri))
+        {
+            authnRequest.Conditions = ReadConditions(source);
+            source.MoveNext(true);
+        }
     }
 
     /// <summary>
