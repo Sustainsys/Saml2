@@ -18,6 +18,8 @@ jobs:
         dotnet-version: "8.0.x" # use the latest version of the 8.0 channel
     - name: Restore dependencies
       run: dotnet restore
+    - name: Verify format
+      run: dotnet format --verify-no-changes
     - name: Build
       run: dotnet build --no-restore
     - name: Test
