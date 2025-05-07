@@ -23,6 +23,11 @@ public class AuthnRequest : RequestAbstractType
     public Subject? Subject { get; set; }
 
     /// <summary>
+    /// Tailors the name identifier in the sucject's of assertions. 
+    /// </summary>
+    public NameIdPolicy? NameIdPolicy { get; set; }
+
+    /// <summary>
     /// Indicates that the identity provider should force (re)authentication and not
     /// rely on an existing session to do single sign on.
     /// </summary>

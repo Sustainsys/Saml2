@@ -48,7 +48,7 @@ public partial class SamlXmlReader
     /// Reads the child elements of an AuthnRequest.
     /// </summary>
     /// <param name="source">Xml traverser to read from</param>
-    /// <param name="authnRequest">AuthnRequest to pupulate</param>
+    /// <param name="authnRequest">AuthnRequest to populate</param>
     protected virtual void ReadElements(XmlTraverser source, AuthnRequest authnRequest)
     {
         ReadElements(source, (RequestAbstractType)authnRequest);
@@ -56,6 +56,12 @@ public partial class SamlXmlReader
         if (source.HasName(Elements.Subject, Namespaces.SamlUri))
         {
             authnRequest.Subject = ReadSubject(source);
+            source.MoveNext(true);
+        }
+
+        if (source.HasName(Elements.NameIDPolicy, Namespaces.SamlpUri))
+        {
+            authnRequest.NameIdPolicy = ReadNameIdPolicy(source);
             source.MoveNext(true);
         }
     }

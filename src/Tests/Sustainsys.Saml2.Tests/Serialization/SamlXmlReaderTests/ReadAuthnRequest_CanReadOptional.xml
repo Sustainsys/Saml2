@@ -11,4 +11,8 @@
 	<saml:Subject>
 		<saml:NameID>abc12345</saml:NameID>
 	</saml:Subject>
+	<samlp:NameIDPolicy
+		   Format = "urn:oasis:names:tc:SAML:2.0:nameid-format:encrypted"
+           AllowCreate="true"
+           SPNameQualifier= "urn:oasis:names:tc:SAML:1.1:nameid-format:persistent" />
 </samlp:AuthnRequest>

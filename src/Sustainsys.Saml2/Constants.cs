@@ -68,6 +68,7 @@ public static class Constants
         public const string ManageNameIDService = nameof(ManageNameIDService);
         public const string NameID = nameof(NameID);
         public const string NameIDFormat = nameof(NameIDFormat);
+        public const string NameIDPolicy = nameof(NameIDPolicy);
         public const string OneTimeUse = nameof(OneTimeUse);
         public const string Organization = nameof(Organization);
         public const string PDPDescriptor = nameof(PDPDescriptor);
@@ -113,6 +114,9 @@ public static class Constants
         public const string Location = nameof(Location);
         public const string Method = nameof(Method);
         public const string Name = nameof(Name);
+        public const string Format = nameof(Format);
+        public const string SPNameQualifier = nameof(SPNameQualifier);
+        public const string AllowCreate = nameof(AllowCreate);
         public const string NotBefore = nameof(NotBefore);
         public const string NotOnOrAfter = nameof(NotOnOrAfter);
         public const string ProtocolBinding = nameof(ProtocolBinding);

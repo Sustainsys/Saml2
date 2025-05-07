@@ -332,17 +332,8 @@ public class XmlTraverser
         return value!;
     }
 
-    /// <summary>
-    /// Gets a string attribute and validates that the value is an absolute URI.
-    /// Note that even if the validation fails, the value is still returned to
-    /// make it possible for consumers to supress the errors.
-    /// </summary>
-    /// <param name="localName"></param>
-    /// <returns></returns>
-    public string GetRequiredAbsoluteUriAttribute(string localName)
+    private string ValidateAbsoluteUri(string localName, string? value)
     {
-        var value = GetRequiredAttribute(localName);
-
         if (value != null && !Uri.TryCreate(value, UriKind.Absolute, out var _))
         {
             Errors.Add(new Error(
@@ -356,6 +347,34 @@ public class XmlTraverser
         }
 
         return value!;
+    }
+
+    /// <summary>
+    /// Gets a required string attribute and validates that the value is an absolute URI.
+    /// Note that even if the validation fails, the value is still returned to
+    /// make it possible for consumers to supress the errors.
+    /// </summary>
+    /// <param name="localName"></param>
+    /// <returns></returns>
+    public string GetRequiredAbsoluteUriAttribute(string localName)
+    {
+        var value = GetRequiredAttribute(localName);
+
+        return ValidateAbsoluteUri(localName, value);
+    }
+
+    /// <summary>
+    /// Gets a string attribute and validates that the value is an absolute URI.
+    /// Note that even if the validation fails, the value is still returned to
+    /// make it possible for consumers to supress the errors.
+    /// </summary>
+    /// <param name="localName"></param>
+    /// <returns></returns>
+    public string? GetAbsoluteUriAttribute(string localName)
+    {
+        var value = GetAttribute(localName);
+
+        return ValidateAbsoluteUri(localName, value);
     }
 
     /// <summary>

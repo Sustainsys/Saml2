@@ -54,6 +54,12 @@ partial class SamlXmlReaderTests
             {
                 NameId = "abc12345"
             },
+            NameIdPolicy = new()
+            {
+                Format = "urn:oasis:names:tc:SAML:2.0:nameid-format:encrypted",
+                AllowCreate=true,
+                SPNameQualifier= "urn:oasis:names:tc:SAML:1.1:nameid-format:persistent"
+            },
             // TODO: Add NameIDPolicy
             // TODO: Add Conditions
             // TODO: Add RequestedAuthnContext
