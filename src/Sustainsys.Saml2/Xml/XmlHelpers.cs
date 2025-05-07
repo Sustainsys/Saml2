@@ -44,7 +44,7 @@ public static class XmlHelpers
     /// <param name="value">String value. If null, no attribute is set/created</param>
     public static void SetAttributeIfValue(this XmlElement element, string name, string? value)
     {
-        if(value != null)
+        if (value != null)
         {
             element.SetAttribute(name, value);
         }

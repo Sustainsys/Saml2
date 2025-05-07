@@ -37,7 +37,7 @@ public static class TestData
         TrustLevel = TrustLevel.ConfiguredKey
     };
 
-    public static SigningKey[] SingleSigningKey { get; } =  
+    public static SigningKey[] SingleSigningKey { get; } =
     {
         SigningKey
     };

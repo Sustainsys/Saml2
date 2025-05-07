@@ -26,7 +26,7 @@ public class Saml2Handler(
     IOptionsMonitor<Saml2Options> options,
     ILoggerFactory logger,
     UrlEncoder encoder,
-    IServiceProvider serviceProvider) 
+    IServiceProvider serviceProvider)
     : RemoteAuthenticationHandler<Saml2Options>(options, logger, encoder)
 {
     private TService GetRequiredService<TService>() where TService : notnull =>

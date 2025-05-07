@@ -74,7 +74,7 @@ public class SamlResponseValidatorTests
         var subject = new SamlResponseValidator();
 
         var response = CreateSamlResponse();
-        
+
         // Yes, it can be null - we're testing!
         response.Version = version!;
 

@@ -1,20 +1,20 @@
 ﻿using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using NSubstitute;
+using Sustainsys.Saml2.AspNetCore;
 using Sustainsys.Saml2.Bindings;
-using Sustainsys.Saml2.Xml;
 using Sustainsys.Saml2.Saml;
 using Sustainsys.Saml2.Samlp;
+using Sustainsys.Saml2.Serialization;
+using Sustainsys.Saml2.Tests.Helpers;
+using Sustainsys.Saml2.Xml;
 using System.Net.Http;
+using System.Text;
 using System.Text.Encodings.Web;
 using System.Xml;
-using Sustainsys.Saml2.Tests.Helpers;
-using System.Text;
-using Sustainsys.Saml2.Serialization;
-using Microsoft.Extensions.DependencyInjection;
-using Sustainsys.Saml2.AspNetCore;
 
 namespace Sustainsys.Saml2.Tests.AspNetCore;
 public class Saml2HandlerTests
@@ -132,11 +132,11 @@ public class Saml2HandlerTests
         (var subject, var httpContext) = await CreateSubject(options);
 
         var props = new AuthenticationProperties();
-        
+
         httpContext.Response.Redirect(Arg.Do<string>(validateLocation));
 
         bool validated = false;
-      
+
         await subject.ChallengeAsync(props);
 
         void validateLocation(string location)

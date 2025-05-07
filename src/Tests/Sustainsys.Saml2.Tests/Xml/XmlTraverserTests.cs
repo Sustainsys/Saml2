@@ -1,11 +1,11 @@
-﻿using Sustainsys.Saml2.Xml;
+﻿using Microsoft.AspNetCore.Authentication.Cookies;
+using NSubstitute;
+using Sustainsys.Saml2.Saml;
 using Sustainsys.Saml2.Tests.Helpers;
+using Sustainsys.Saml2.Xml;
 using System;
 using System.Linq;
 using System.Xml;
-using Microsoft.AspNetCore.Authentication.Cookies;
-using Sustainsys.Saml2.Saml;
-using NSubstitute;
 
 namespace Sustainsys.Saml2.Tests.Xml;
 
@@ -28,7 +28,7 @@ public class XmlTraverserTests
         return new(xd.DocumentElement!);
     }
 
-    private XmlTraverser GetSignatureNode() 
+    private XmlTraverser GetSignatureNode()
     {
         var traverser = new XmlTraverser(signedXmlDocument!.DocumentElement!);
 
@@ -343,7 +343,7 @@ public class XmlTraverserTests
     public void TraverseChildren()
     {
         var subject = GetXmlTraverser();
-       
+
         var childElements = subject.GetChildren();
 
         childElements.MoveNext().Should().BeTrue();
@@ -394,7 +394,7 @@ public class XmlTraverserTests
         subject.Errors.Should().HaveCount(1);
 
         var error = subject.Errors[0];
-        
+
         error.Message.Should().Match("*contained key*not*trusted*");
         error.Reason.Should().Be(ErrorReason.SignatureFailure);
     }
@@ -456,14 +456,14 @@ public class XmlTraverserTests
         rChildren.MoveNext().Should().BeTrue();
         var a = rChildren.CurrentNode;
         var aChildren = rChildren.GetChildren();
-        
+
         aChildren.MoveNext().Should().BeTrue();
         aChildren.CurrentNode!.LocalName.Should().Be("b");
 
         rChildren.MoveNext(true).Should().BeFalse();
 
         subject.Errors.Should().HaveCount(1);
-        
+
         var error = subject.Errors[0];
         error.Reason.Should().Be(ErrorReason.ExtraElements);
         error.Node.Should().BeSameAs(a);

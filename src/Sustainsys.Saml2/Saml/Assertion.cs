@@ -41,8 +41,8 @@ public class Assertion
     /// <summary>
     /// Conditions of the assertion
     /// </summary>
-    public Conditions? Conditions {  get; set; }
-    
+    public Conditions? Conditions { get; set; }
+
     /// <summary>
     /// Authentication Statement
     /// </summary>

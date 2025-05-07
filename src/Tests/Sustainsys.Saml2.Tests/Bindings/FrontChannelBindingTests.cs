@@ -16,10 +16,10 @@ public class FrontChannelBindingTests
 
         public override Task<Saml2Message> UnbindAsync(
             HttpRequest httpRequest,
-            Func<string, Task<Saml2Entity>> getSaml2Entity) 
+            Func<string, Task<Saml2Entity>> getSaml2Entity)
             => throw new NotImplementedException();
-        
-        protected override Task DoBindAsync(HttpResponse httpResponse, Saml2Message message) 
+
+        protected override Task DoBindAsync(HttpResponse httpResponse, Saml2Message message)
             => throw new NotImplementedException();
     }
 

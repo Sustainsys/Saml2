@@ -7,7 +7,7 @@
 /// Ctor
 /// </remarks>
 /// <param name="errors">Error list</param>
-public class SamlXmlException(IEnumerable<Error> errors) : 
+public class SamlXmlException(IEnumerable<Error> errors) :
     Exception(string.Join(" ", errors.Where(e => !e.Ignore).Select(e => e.Message)))
 {
     /// <summary>

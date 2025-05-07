@@ -72,7 +72,7 @@ public class HttpRedirectBinding : FrontChannelBinding, IHttpRedirectBinding
 
             if (encodedName == Constants.RelayState)
             {
-                if(relayState != null)
+                if (relayState != null)
                 {
                     throw new InvalidOperationException("Duplicate RelayState parameters found");
                 }

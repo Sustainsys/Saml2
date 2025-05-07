@@ -15,8 +15,8 @@ public class Saml2Events : RemoteAuthenticationEvents
     /// Invoked after the AuthnRequest has been generated. Can be used to modify the
     /// AuthnRequest before it is sent
     /// </summary>
-    public Func<AuthnRequestGeneratedContext, Task>
-        OnAuthnRequestGeneratedAsync { get; set; } = ctx => Task.CompletedTask;
+    public Func<AuthnRequestGeneratedContext, Task> OnAuthnRequestGeneratedAsync
+    { get; set; } = ctx => Task.CompletedTask;
 
     /// <summary>
     /// Invoked after the AuthnRequest has been generated. Can be used to modify the

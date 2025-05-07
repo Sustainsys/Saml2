@@ -70,6 +70,6 @@ public class NameId
     /// Get hash code
     /// </summary>
     /// <returns>Hash code</returns>
-    public override int GetHashCode() => 
+    public override int GetHashCode() =>
         Value.GetHashCode();
 }

@@ -9,7 +9,7 @@ public class IdentityProvider : Saml2Entity
     /// The Sso service url of the identity provider
     /// </summary>
     public string? SsoServiceUrl { get; set; }
-    
+
     /// <summary>
     /// Identifying Uri for SSO Service binding
     /// </summary>

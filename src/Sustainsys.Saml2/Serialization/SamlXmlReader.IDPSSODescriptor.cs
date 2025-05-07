@@ -43,7 +43,7 @@ partial class SamlXmlReader
         ReadElements(source, (SSODescriptor)result);
 
         // We must have at least one SingleSignOnService in an IDPSSODescriptor and now we should be at it.
-        if(!source.EnsureName(Elements.SingleSignOnService, Namespaces.MetadataUri))
+        if (!source.EnsureName(Elements.SingleSignOnService, Namespaces.MetadataUri))
         {
             return;
         }

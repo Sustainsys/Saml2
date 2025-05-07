@@ -11,7 +11,7 @@ public class EntityDescriptor
     /// Id of the Entity. MUST be an absolute URI
     /// </summary>
     public string EntityId { get; set; } = "";
-    
+
     /// <summary>
     /// Id of the EntityDescriptor node.
     /// </summary>
@@ -36,7 +36,7 @@ public class EntityDescriptor
     /// Role Descriptors.
     /// </summary>
     public List<RoleDescriptor> RoleDescriptors { get; } = [];
-    
+
     /// <summary>
     /// Trustlevel, set from validation of the signature, if there was one.
     /// </summary>

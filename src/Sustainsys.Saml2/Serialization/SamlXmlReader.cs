@@ -52,7 +52,7 @@ public partial class SamlXmlReader : ISamlXmlReader
     /// <typeparam name="T">Type to create</typeparam>
     /// <returns>New instance of <typeparamref name="T"/></returns>
     protected virtual T Create<T>() where T : new() => new();
-        
+
     /// <summary>
     /// Helper method to get the signing keys and allowed signature algorithms for
     /// an issuer.

@@ -84,4 +84,3 @@ partial class SamlXmlReader
         }
     }
 }
-

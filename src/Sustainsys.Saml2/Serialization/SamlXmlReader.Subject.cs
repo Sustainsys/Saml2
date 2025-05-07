@@ -15,7 +15,7 @@ partial class SamlXmlReader
     protected Subject ReadSubject(XmlTraverser source)
     {
         var result = Create<Subject>();
-        
+
         ReadElements(source.GetChildren(), result);
 
         return result;

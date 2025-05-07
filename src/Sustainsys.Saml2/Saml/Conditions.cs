@@ -8,7 +8,7 @@ public class Conditions
     /// <summary>
     /// Not before
     /// </summary>
-    public DateTime? NotBefore {  get; set; }
+    public DateTime? NotBefore { get; set; }
 
     /// <summary>
     /// Audience restrictions

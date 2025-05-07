@@ -36,7 +36,7 @@ public class StatusResponseType
     /// <summary>
     /// Destination of the message
     /// </summary>
-    public string? Destination {  get; set; }
+    public string? Destination { get; set; }
 
     /// <summary>
     /// Issuer of the message

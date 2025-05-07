@@ -121,14 +121,14 @@ public partial class SamlXmlReader
         {
             var attributes = source.GetChildren();
 
-            while(attributes.MoveNext(true))
+            while (attributes.MoveNext(true))
             {
-                if(attributes.EnsureName(Elements.Attribute, Namespaces.SamlUri))
+                if (attributes.EnsureName(Elements.Attribute, Namespaces.SamlUri))
                 {
                     assertion.Attributes.Add(ReadAttribute(attributes));
                 }
             }
-            
+
             source.MoveNext(true);
         }
     }

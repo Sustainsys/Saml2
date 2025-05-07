@@ -35,9 +35,9 @@ public partial class SamlXmlReader
     /// </summary>
     /// <param name="source">Source data</param>
     /// <param name="attribute">Attribute to populate</param>
-    protected virtual void ReadElements(XmlTraverser source, SamlAttribute attribute) 
+    protected virtual void ReadElements(XmlTraverser source, SamlAttribute attribute)
     {
-        while(source.MoveNext(true) 
+        while (source.MoveNext(true)
             && source.EnsureName(Elements.AttributeValue, Namespaces.SamlUri))
         {
             // TODO: Test + support for null values.

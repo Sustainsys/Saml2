@@ -13,7 +13,7 @@ public class SubjectConfirmationData
     /// <summary>
     /// Not on or after
     /// </summary>
-    public DateTime? NotOnOrAfter {  get; set; }
+    public DateTime? NotOnOrAfter { get; set; }
 
     /// <summary>
     /// Recipient, for Web SSO this must be the 

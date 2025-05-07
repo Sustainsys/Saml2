@@ -25,5 +25,5 @@ public class SigningKey
     /// <summary>
     /// TrustLevel of the key.
     /// </summary>
-    public TrustLevel TrustLevel { get; init;}
+    public TrustLevel TrustLevel { get; init; }
 }

@@ -19,7 +19,7 @@ public enum ErrorReason
     /// A required attribute was missing.
     /// </summary>
     MissingAttribute = 3,
-    
+
     /// <summary>
     /// Value conversion failed for the attribute. The string
     /// representation is stored as <see cref="Error.StringValue"/>.

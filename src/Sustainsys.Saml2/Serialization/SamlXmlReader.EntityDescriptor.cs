@@ -36,7 +36,7 @@ partial class SamlXmlReader
     protected EntityDescriptor ReadEntityDescriptor(XmlTraverser source)
     {
         var entityDescriptor = Create<EntityDescriptor>();
-        
+
         ReadAttributes(source, entityDescriptor);
         ReadElements(source.GetChildren(), entityDescriptor);
 
@@ -82,7 +82,7 @@ partial class SamlXmlReader
         bool wasRoleDescriptor = true; // Assume the best.
         do
         {
-            if(source.EnsureNamespace(Namespaces.MetadataUri))
+            if (source.EnsureNamespace(Namespaces.MetadataUri))
             {
                 switch (source.CurrentNode?.LocalName)
                 {

@@ -18,7 +18,7 @@ public class AuthnRequestGeneratedContext(
     AuthenticationScheme scheme,
     Saml2Options options,
     AuthenticationProperties properties,
-    AuthnRequest authnRequest) 
+    AuthnRequest authnRequest)
     : PropertiesContext<Saml2Options>(context, scheme, options, properties)
 {
 

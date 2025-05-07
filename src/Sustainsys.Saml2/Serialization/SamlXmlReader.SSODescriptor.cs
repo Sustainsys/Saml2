@@ -31,14 +31,14 @@ partial class SamlXmlReader
             source.MoveNext(true);
         }
 
-        while(source.HasName(Elements.SingleLogoutService, Namespaces.MetadataUri))
+        while (source.HasName(Elements.SingleLogoutService, Namespaces.MetadataUri))
         {
             result.SingleLogoutServices.Add(ReadEndpoint(source));
 
             source.MoveNext(true);
         }
 
-        while(source.HasName(Elements.ManageNameIDService, Namespaces.MetadataUri)
+        while (source.HasName(Elements.ManageNameIDService, Namespaces.MetadataUri)
             || source.HasName(Elements.NameIDFormat, Namespaces.MetadataUri))
         {
             // We're not supporting ManageNameIDService nor NameIDFormat.

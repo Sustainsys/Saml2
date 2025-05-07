@@ -1,5 +1,5 @@
-﻿using Sustainsys.Saml2.Xml;
-using Sustainsys.Saml2.Tests.Helpers;
+﻿using Sustainsys.Saml2.Tests.Helpers;
+using Sustainsys.Saml2.Xml;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 using System.Security.Cryptography.Xml;
