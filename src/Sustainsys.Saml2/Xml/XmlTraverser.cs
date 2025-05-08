@@ -156,8 +156,8 @@ public class XmlTraverser
     /// <summary>
     /// Moves to the next child node in the current collection, if one is available.
     /// </summary>
-    /// <param name="expectEnd">Do we expect this MoveNext call to hit the end of the child list? If not
-    /// an error is recorded if we do not find any more nodes.</param>
+    /// <param name="expectEnd">Is it correct if this MoveNext call hits the end of the 
+    /// child list? If not an error is recorded if we do not find any more nodes.</param>
     /// <returns>true if the move was successful</returns>
     public bool MoveNext(bool expectEnd = false)
     {

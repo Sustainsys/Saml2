@@ -34,6 +34,16 @@ public class AuthnRequest : RequestAbstractType
     public Conditions? Conditions { get; set; }
 
     /// <summary>
+    /// Specifies the authentication Context requirements of authentication statements.
+    /// </summary>
+    public RequestedAuthnContext? RequestedAuthnContext { get; set; }
+
+    /// <summary>
+    /// The scoping identifies the identity providers that are trusted by the requester to authenticate the presenter. 
+    /// </summary>
+    public Scoping? Scoping { get; set; }   
+
+    /// <summary>
     /// Indicates that the identity provider should force (re)authentication and not
     /// rely on an existing session to do single sign on.
     /// </summary>

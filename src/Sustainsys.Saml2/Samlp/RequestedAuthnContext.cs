@@ -1,0 +1,31 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace Sustainsys.Saml2.Samlp;
+
+/// <summary>
+/// Specifies the authentication Context requirements of authentication statements.
+/// </summary>
+public class RequestedAuthnContext
+{
+    /// <summary>
+    /// A comparison method.
+    /// One of "exact", "minimum", "maximum" or "better". Default is´"exact".
+    /// </summary>
+    public string Comparison { get; set; } = "";
+    /// One or more authentication Context Class References.
+    /// It describes the authentication context declarations that follows.
+    /// </summary>
+    public List<string> AuthnContextClassRef { get; } = [];
+    /// <summary>
+    /// One or more authentication Context Class References.
+    /// Either a authentication context declaration provided by value or a URI reference.
+    /// </summary>
+    public List<string> AuthnContextDeclRef { get; } = [];
+
+
+
+}

@@ -70,6 +70,18 @@ public partial class SamlXmlReader
             authnRequest.Conditions = ReadConditions(source);
             source.MoveNext(true);
         }
+
+        if (source.HasName(Elements.RequestedAuthnContext, Namespaces.SamlpUri))
+        {
+            authnRequest.RequestedAuthnContext = ReadRequestedAuthnContext(source);
+            source.MoveNext(true);
+        }
+
+        if (source.HasName(Elements.Scoping, Namespaces.SamlpUri))
+        {
+            authnRequest.Scoping = ReadScoping(source);
+            source.MoveNext(true);
+        }
     }
 
     /// <summary>

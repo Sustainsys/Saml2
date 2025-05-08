@@ -57,12 +57,43 @@ partial class SamlXmlReaderTests
             NameIdPolicy = new()
             {
                 Format = "urn:oasis:names:tc:SAML:2.0:nameid-format:encrypted",
-                AllowCreate=true,
-                SPNameQualifier= "urn:oasis:names:tc:SAML:1.1:nameid-format:persistent"
+                AllowCreate = true,
+                SPNameQualifier = "urn:oasis:names:tc:SAML:1.1:nameid-format:persistent"
             },
             Conditions = new()
             {
                 NotBefore = new DateTime(2023, 11, 24, 22, 44, 14, DateTimeKind.Utc)
+            },
+            RequestedAuthnContext = new()
+            {
+                Comparison = "better",
+                AuthnContextClassRef = { "urn:ContextClassRef", "urn:AnotherContextClassRef" },
+                AuthnContextDeclRef = { "urn:ContextDeclRef" }
+            },
+            Scoping = new()
+            {
+                ProxyCount = 1,
+                IDPList = new()
+                {
+                    IdpEntries =
+                    {
+                        new()
+                        {
+                            ProviderId = "https://stubidp.sustainsys.com/Metadata",
+                            Name = "Sustainsys Stub Idp",
+                            Loc = "https://stubidp.sustainsys.com"
+                        },
+                        new()
+                        {
+                            ProviderId = "https://idp.example.com/Metadata",
+                            Name = "Example Stub Idp",
+                            Loc = "https://idp.example.com/SsoEndpoint"
+                        },
+                    },
+                    GetComplete = "https://example.com/IdpList"
+
+                },
+                RequesterID = { "1", "2" },
             },
             // TODO: Add NameIDPolicy
             // TODO: Add Conditions
