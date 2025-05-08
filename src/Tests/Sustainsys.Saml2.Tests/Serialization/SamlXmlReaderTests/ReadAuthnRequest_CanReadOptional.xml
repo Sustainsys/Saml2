@@ -5,7 +5,9 @@
 					AssertionConsumerServiceURL = "https://sp.example.com/Acs"
 					AssertionConsumerServiceIndex = "42"
 					ForceAuthn="true" IsPassive="true"
-					ProtocolBinding = "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST">
+					ProtocolBinding = "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST"
+					AttributeConsumingServiceIndex="42"
+					ProviderName="test">
 	<saml:Issuer>https://sp.example.com/Metadata</saml:Issuer>
 	<samlp:Extensions></samlp:Extensions>
 	<saml:Subject>

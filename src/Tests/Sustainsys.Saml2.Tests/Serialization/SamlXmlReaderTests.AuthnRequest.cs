@@ -95,17 +95,13 @@ partial class SamlXmlReaderTests
                 },
                 RequesterID = { "1", "2" },
             },
-            // TODO: Add NameIDPolicy
-            // TODO: Add Conditions
-            // TODO: Add RequestedAuthnContext
-            // TODO: Add Scoping
             ForceAuthn = true,
             IsPassive = true,
             AssertionConsumerServiceUrl = "https://sp.example.com/Acs",
             AssertionConsumerServiceIndex = 42,
             ProtocolBinding = Constants.BindingUris.HttpPOST,
-            // TODO: Add AttributeConsumingServiceIndex
-            // TODO: Add ProviderName
+            AttributeConsumingServiceIndex = 42,
+            ProviderName = "test"
         };
 
         actual.Should().BeEquivalentTo(expected);

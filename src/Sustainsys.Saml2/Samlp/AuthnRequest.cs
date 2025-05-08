@@ -53,9 +53,19 @@ public class AuthnRequest : RequestAbstractType
     /// Indicates that the identity provider should not show any UI nor require interaction.
     /// </summary>
     public bool IsPassive { get; set; } = false;
+    /// <summary>
+    /// The identity provider may use this information to populate one or more Attribute statement elements.
+    /// </summary>
+    public int? AttributeConsumingServiceIndex { get; set; }
 
     /// <summary>
     /// Index of assertion consumer service where the SP wants the response.
     /// </summary>
+
     public int? AssertionConsumerServiceIndex { get; set; }
+
+    /// <summary>
+    /// Specifies the human readable name of the requester.
+    /// </summary>
+    public string? ProviderName { get; set; }
 }

@@ -133,6 +133,7 @@ public static class Constants
         public const string ProtocolBinding = nameof(ProtocolBinding);
         public const string protocolSupportEnumeration = nameof(protocolSupportEnumeration);
         public const string ProviderID = nameof(ProviderID);
+        public const string ProviderName= nameof(ProviderName);
         public const string ProxyCount = nameof(ProxyCount);
         public const string Recipient = nameof(Recipient);
         public const string SessionIndex = nameof(SessionIndex);
