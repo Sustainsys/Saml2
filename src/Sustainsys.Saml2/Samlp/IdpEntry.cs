@@ -10,12 +10,12 @@ public class IdpEntry
     /// Unique identifier of the identity provider.
     /// </summary>
     public string ProviderId { get; set; } = default!;
-    
+
     /// <summary>
     /// Name for the identity provider.
     /// </summary>
     public string? Name { get; set; }
-    
+
     /// <summary>
     /// URI reference.
     /// </summary>

@@ -35,7 +35,7 @@ partial class SamlXmlReader
         }
 
         // Check if source.HasName GetComplete => read it.
-        if(source.HasName(Elements.GetComplete, Namespaces.SamlpUri))
+        if (source.HasName(Elements.GetComplete, Namespaces.SamlpUri))
         {
             result.GetComplete = source.GetTextContents();
             source.MoveNext(true);

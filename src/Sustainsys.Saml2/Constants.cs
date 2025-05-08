@@ -65,7 +65,7 @@ public static class Constants
         public const string ContactPerson = nameof(ContactPerson);
         public const string EntityDescriptor = nameof(EntityDescriptor);
         public const string Extensions = nameof(Extensions);
-        public const string GetComplete= nameof(GetComplete);
+        public const string GetComplete = nameof(GetComplete);
         public const string IDPEntry = nameof(IDPEntry);
         public const string IDPList = nameof(IDPList);
         public const string IDPSSODescriptor = nameof(IDPSSODescriptor);
@@ -133,7 +133,7 @@ public static class Constants
         public const string ProtocolBinding = nameof(ProtocolBinding);
         public const string protocolSupportEnumeration = nameof(protocolSupportEnumeration);
         public const string ProviderID = nameof(ProviderID);
-        public const string ProviderName= nameof(ProviderName);
+        public const string ProviderName = nameof(ProviderName);
         public const string ProxyCount = nameof(ProxyCount);
         public const string Recipient = nameof(Recipient);
         public const string SessionIndex = nameof(SessionIndex);

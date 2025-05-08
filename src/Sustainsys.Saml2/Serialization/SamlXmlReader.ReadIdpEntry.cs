@@ -11,19 +11,19 @@ namespace Sustainsys.Saml2.Serialization;
 
 partial class SamlXmlReader
 {
-	public virtual IdpEntry ReadIdpEntry(XmlTraverser source)
-	{
-		var result = Create<IdpEntry>();
+    public virtual IdpEntry ReadIdpEntry(XmlTraverser source)
+    {
+        var result = Create<IdpEntry>();
 
-		ReadAttributes(source, result);
+        ReadAttributes(source, result);
 
-		return result;
-	}
+        return result;
+    }
 
-	public virtual void ReadAttributes(XmlTraverser source, IdpEntry result)
-	{
-		result.ProviderId = source.GetRequiredAbsoluteUriAttribute(Attributes.ProviderID);
-		result.Name = source.GetAttribute(Attributes.Name);
-		result.Loc = source.GetAbsoluteUriAttribute(Attributes.Loc);
-	}
+    public virtual void ReadAttributes(XmlTraverser source, IdpEntry result)
+    {
+        result.ProviderId = source.GetRequiredAbsoluteUriAttribute(Attributes.ProviderID);
+        result.Name = source.GetAttribute(Attributes.Name);
+        result.Loc = source.GetAbsoluteUriAttribute(Attributes.Loc);
+    }
 }

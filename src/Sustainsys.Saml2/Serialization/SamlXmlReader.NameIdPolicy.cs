@@ -1,12 +1,12 @@
-﻿using System;
+﻿using Sustainsys.Saml2.Samlp;
+using Sustainsys.Saml2.Xml;
+using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Sustainsys.Saml2.Xml;
-using System.Diagnostics;
 using static Sustainsys.Saml2.Constants;
-using Sustainsys.Saml2.Samlp;
 
 namespace Sustainsys.Saml2.Serialization;
 partial class SamlXmlReader

@@ -67,6 +67,6 @@ partial class SamlXmlReader
     protected virtual void ReadAttributes(XmlTraverser source, RequestedAuthnContext requestedAuthnContext)
     {
         requestedAuthnContext.Comparison = source.GetAttribute(Attributes.Comparison) ?? "";
-  
+
     }
 }

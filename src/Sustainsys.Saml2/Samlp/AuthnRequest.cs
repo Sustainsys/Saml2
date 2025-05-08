@@ -41,7 +41,7 @@ public class AuthnRequest : RequestAbstractType
     /// <summary>
     /// The scoping identifies the identity providers that are trusted by the requester to authenticate the presenter. 
     /// </summary>
-    public Scoping? Scoping { get; set; }   
+    public Scoping? Scoping { get; set; }
 
     /// <summary>
     /// Indicates that the identity provider should force (re)authentication and not
