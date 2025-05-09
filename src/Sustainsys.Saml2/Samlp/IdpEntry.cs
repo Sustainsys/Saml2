@@ -17,7 +17,7 @@ public class IdpEntry
     public string? Name { get; set; }
 
     /// <summary>
-    /// URI reference.
+    /// URI reference representing the location of a profile-specific endpoint.
     /// </summary>
     public string? Loc { get; set; }
 

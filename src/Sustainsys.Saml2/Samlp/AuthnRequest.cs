@@ -54,7 +54,7 @@ public class AuthnRequest : RequestAbstractType
     /// </summary>
     public bool IsPassive { get; set; } = false;
     /// <summary>
-    /// The identity provider may use this information to populate one or more Attribute statement elements.
+    /// Indirectly identifies information associated with the requester. The information is describing the SAML attributes.
     /// </summary>
     public int? AttributeConsumingServiceIndex { get; set; }
 
@@ -65,7 +65,7 @@ public class AuthnRequest : RequestAbstractType
     public int? AssertionConsumerServiceIndex { get; set; }
 
     /// <summary>
-    /// Specifies the human readable name of the requester.
+    /// The name of the requester.
     /// </summary>
     public string? ProviderName { get; set; }
 }

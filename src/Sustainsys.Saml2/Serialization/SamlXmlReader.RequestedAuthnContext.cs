@@ -14,7 +14,7 @@ partial class SamlXmlReader
     /// Reads a RequestedAuthnContext.
     /// </summary>
     /// <param name="source">Source data</param>
-    /// <returns>RequestedAuthnContext read</returns>
+    /// <returns>read</returns>
     protected RequestedAuthnContext ReadRequestedAuthnContext(XmlTraverser source)
     {
         var result = Create<RequestedAuthnContext>();
@@ -29,7 +29,7 @@ partial class SamlXmlReader
     /// Reads elements of a requestedAuthnContext.
     /// </summary>
     /// <param name="source">Source Xml Reader</param>
-    /// <param name="requestedAuthnContext">Subject to populate</param>
+    /// <param name="requestedAuthnContext">RequestedAuthnContext to populate</param>
     protected virtual void ReadElements(XmlTraverser source, RequestedAuthnContext requestedAuthnContext)
     {
         // We require at least one element.
@@ -63,7 +63,7 @@ partial class SamlXmlReader
     /// Read RequestedAuthnContext attributes.
     /// </summary>
     /// <param name="source">Source</param>
-    /// <param name="requestedAuthnContext">Endpoint</param>
+    /// <param name="requestedAuthnContext">RequestedAuthnContext</param>
     protected virtual void ReadAttributes(XmlTraverser source, RequestedAuthnContext requestedAuthnContext)
     {
         requestedAuthnContext.Comparison = source.GetAttribute(Attributes.Comparison) ?? "";

@@ -14,7 +14,7 @@ partial class SamlXmlReader
     /// Reads a Scoping.
     /// </summary>
     /// <param name="source">Source data</param>
-    /// <returns>Scoping read</returns>
+    /// <returns>read</returns>
 
 
     protected Scoping ReadScoping(XmlTraverser source)
@@ -32,7 +32,7 @@ partial class SamlXmlReader
     /// Reads elements of a Scoping.
     /// </summary>
     /// <param name="source">Source Xml Reader</param>
-    /// <param name="scoping">Subject to populate</param>
+    /// <param name="scoping">Scoping</param>
     protected virtual void ReadElements(XmlTraverser source, Scoping scoping)
     {
         // We require at least one element.
@@ -48,7 +48,7 @@ partial class SamlXmlReader
             {
                 if (source.HasName(Elements.RequesterID, Namespaces.SamlpUri))
                 {
-                    scoping.RequesterID.Add(source.GetTextContents());
+                    scoping.RequesterID.Add(source.GetAbsoluteUriContents());
                 }
                 else
                 {
@@ -58,10 +58,10 @@ partial class SamlXmlReader
         } while (source.MoveNext(true));
     }
     /// <summary>
-    /// Read RequestedAuthnContext attributes.
+    /// Read Scoping attributes.
     /// </summary>
     /// <param name="source">Source</param>
-    /// <param name="requestedAuthnContext">Endpoint</param>
+    /// <param name="scoping">Scoping</param>
     protected virtual void ReadAttributes(XmlTraverser source, Scoping scoping)
     {
         scoping.ProxyCount = source.GetIntAttribute(Attributes.ProxyCount) ?? 0;

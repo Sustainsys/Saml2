@@ -90,10 +90,10 @@ partial class SamlXmlReaderTests
                             Loc = "https://idp.example.com/SsoEndpoint"
                         },
                     },
-                    GetComplete = "https://example.com/IdpList"
+                    GetComplete = "https://example.com/GetComplete"
 
                 },
-                RequesterID = { "1", "2" },
+                RequesterID = { "https://example.com/RequesterID?query=123", "https://example.com/RequesterID?query=123" },
             },
             ForceAuthn = true,
             IsPassive = true,

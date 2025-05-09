@@ -10,6 +10,11 @@ using static Sustainsys.Saml2.Constants;
 namespace Sustainsys.Saml2.Serialization;
 partial class SamlXmlReader
 {
+    /// <summary>
+    /// Read IdpList.
+    /// </summary>
+    /// <param name="source">Xml Traverser to read from</param>
+    /// <returns>IdpList</returns>
     public virtual IdpList ReadIdpList(XmlTraverser source)
     {
         var result = Create<IdpList>();
@@ -18,6 +23,11 @@ partial class SamlXmlReader
 
         return result;
     }
+    /// <summary>
+    /// Reads elements of a IdpList.
+    /// </summary>
+    /// <param name="source">Source Xml Reader</param>
+    /// <param name="result">Subject to populate</param>
 
     protected virtual void ReadElements(XmlTraverser source, IdpList result)
     {

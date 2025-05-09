@@ -33,10 +33,9 @@
 				ProviderID="https://idp.example.com/Metadata"
 				Name="Example Stub Idp"
 				Loc="https://idp.example.com/SsoEndpoint"/>
-			<samlp:GetComplete>https://example.com/IdpList</samlp:GetComplete>
+			<samlp:GetComplete>https://example.com/GetComplete</samlp:GetComplete>
 		</samlp:IDPList>
-		<samlp:RequesterID>1</samlp:RequesterID>
-		<samlp:RequesterID>2</samlp:RequesterID>
-
+		<samlp:RequesterID>https://example.com/RequesterID?query=123</samlp:RequesterID>
+		<samlp:RequesterID>https://example.com/RequesterID?query=123</samlp:RequesterID>
 	</samlp:Scoping>
 </samlp:AuthnRequest>

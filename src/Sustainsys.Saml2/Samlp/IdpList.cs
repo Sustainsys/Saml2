@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 namespace Sustainsys.Saml2.Samlp;
 /// <summary>
 /// An advisory list of identity providers and associated information.
+/// Element IdpList, 3.4.1.3
 /// </summary>
 public class IdpList
 {
