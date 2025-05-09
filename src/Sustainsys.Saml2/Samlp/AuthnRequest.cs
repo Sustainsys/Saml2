@@ -23,14 +23,13 @@ public class AuthnRequest : RequestAbstractType
     public Subject? Subject { get; set; }
 
     /// <summary>
-    /// Tailors the name identifier in the sucject's of assertions. 
+    /// Tailors the name identifier in the subjects of assertions. 
     /// </summary>
     public NameIdPolicy? NameIdPolicy { get; set; }
 
     /// <summary>
     /// SAML constructs that place constraints on the use of SAML assertion.
     /// </summary>
-    /// 
     public Conditions? Conditions { get; set; }
 
     /// <summary>
@@ -53,15 +52,15 @@ public class AuthnRequest : RequestAbstractType
     /// Indicates that the identity provider should not show any UI nor require interaction.
     /// </summary>
     public bool IsPassive { get; set; } = false;
+
     /// <summary>
-    /// Indirectly identifies information associated with the requester. The information is describing the SAML attributes.
+    /// Indicates requested attributes by referencing an attribution consumer service in the SP metadata.
     /// </summary>
     public int? AttributeConsumingServiceIndex { get; set; }
 
     /// <summary>
     /// Index of assertion consumer service where the SP wants the response.
     /// </summary>
-
     public int? AssertionConsumerServiceIndex { get; set; }
 
     /// <summary>

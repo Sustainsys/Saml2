@@ -1,10 +1,5 @@
 ﻿using Sustainsys.Saml2.Samlp;
 using Sustainsys.Saml2.Xml;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using static Sustainsys.Saml2.Constants;
 
 namespace Sustainsys.Saml2.Serialization;
@@ -28,7 +23,6 @@ partial class SamlXmlReader
     /// </summary>
     /// <param name="source">Source Xml Reader</param>
     /// <param name="result">Subject to populate</param>
-
     protected virtual void ReadElements(XmlTraverser source, IdpList result)
     {
         // We require at least one element.
@@ -50,6 +44,5 @@ partial class SamlXmlReader
             result.GetComplete = source.GetTextContents();
             source.MoveNext(true);
         }
-
     }
 }

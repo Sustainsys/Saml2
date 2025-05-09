@@ -6,7 +6,6 @@ namespace Sustainsys.Saml2.Serialization;
 public partial class SamlXmlReader
 {
     // TODO: Convert other reads to follow this pattern with a callback for errors
-
     /// <inheritdoc/>
     public AuthnRequest ReadAuthnRequest(
         XmlTraverser source,

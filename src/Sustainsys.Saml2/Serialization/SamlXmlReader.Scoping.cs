@@ -1,10 +1,5 @@
 ﻿using Sustainsys.Saml2.Samlp;
 using Sustainsys.Saml2.Xml;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using static Sustainsys.Saml2.Constants;
 
 namespace Sustainsys.Saml2.Serialization;
@@ -15,8 +10,6 @@ partial class SamlXmlReader
     /// </summary>
     /// <param name="source">Source data</param>
     /// <returns>read</returns>
-
-
     protected Scoping ReadScoping(XmlTraverser source)
     {
         var result = Create<Scoping>();
@@ -26,7 +19,6 @@ partial class SamlXmlReader
 
         return result;
     }
-
 
     /// <summary>
     /// Reads elements of a Scoping.
@@ -57,6 +49,7 @@ partial class SamlXmlReader
             }
         } while (source.MoveNext(true));
     }
+
     /// <summary>
     /// Read Scoping attributes.
     /// </summary>
@@ -64,9 +57,6 @@ partial class SamlXmlReader
     /// <param name="scoping">Scoping</param>
     protected virtual void ReadAttributes(XmlTraverser source, Scoping scoping)
     {
-        scoping.ProxyCount = source.GetIntAttribute(Attributes.ProxyCount) ?? 0;
-
+        scoping.ProxyCount = source.GetIntAttribute(Attributes.ProxyCount);
     }
-
-
 }

@@ -1,13 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Sustainsys.Saml2.Samlp;
+﻿namespace Sustainsys.Saml2.Samlp;
 /// <summary>
 /// An advisory list of identity providers and associated information.
-/// Element IdpList, 3.4.1.3
+/// Element IdpList, Core 3.4.1.3
 /// </summary>
 public class IdpList
 {
@@ -20,5 +14,4 @@ public class IdpList
     /// If the IdpList is not complete, use URI reference.
     /// </summary>
     public string? GetComplete { get; set; }
-
 }

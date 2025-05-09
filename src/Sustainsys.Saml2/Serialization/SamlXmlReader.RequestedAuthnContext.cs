@@ -1,10 +1,5 @@
 ﻿using Sustainsys.Saml2.Samlp;
 using Sustainsys.Saml2.Xml;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using static Sustainsys.Saml2.Constants;
 
 namespace Sustainsys.Saml2.Serialization;
@@ -53,7 +48,6 @@ partial class SamlXmlReader
                 }
             }
         } while (source.MoveNext(true)); // Read all elements found.
-
         // TODO: Add Test case if we have both ClassRef and DeclRef and add an error that it
         // is not allowed.
         //source.Errors.Add(new(ErrorReason.ExtraElements))
@@ -67,6 +61,5 @@ partial class SamlXmlReader
     protected virtual void ReadAttributes(XmlTraverser source, RequestedAuthnContext requestedAuthnContext)
     {
         requestedAuthnContext.Comparison = source.GetAttribute(Attributes.Comparison) ?? "";
-
     }
 }

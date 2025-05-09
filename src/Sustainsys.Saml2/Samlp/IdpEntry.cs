@@ -1,8 +1,6 @@
-﻿using System.Globalization;
-
-namespace Sustainsys.Saml2.Samlp;
+﻿namespace Sustainsys.Saml2.Samlp;
 /// <summary>
-/// Specifies a single identity provider.
+/// Specifies a single identity provider, Core 3.4.1.3.1
 /// </summary>
 public class IdpEntry
 {
@@ -20,6 +18,4 @@ public class IdpEntry
     /// URI reference representing the location of a profile-specific endpoint.
     /// </summary>
     public string? Loc { get; set; }
-
-
 }
