@@ -6,15 +6,12 @@ using Microsoft.Extensions.Options;
 using NSubstitute;
 using Sustainsys.Saml2.AspNetCore;
 using Sustainsys.Saml2.Bindings;
-using Sustainsys.Saml2.Saml;
 using Sustainsys.Saml2.Samlp;
 using Sustainsys.Saml2.Serialization;
 using Sustainsys.Saml2.Tests.Helpers;
 using Sustainsys.Saml2.Xml;
-using System.Net.Http;
 using System.Text;
 using System.Text.Encodings.Web;
-using System.Xml;
 
 namespace Sustainsys.Saml2.Tests.AspNetCore;
 public class Saml2HandlerTests

@@ -2,12 +2,7 @@
 using Sustainsys.Saml2.Serialization;
 using Sustainsys.Saml2.Tests.Helpers;
 using Sustainsys.Saml2.Xml;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Security.Cryptography.Xml;
-using System.Text;
-using System.Threading.Tasks;
 using System.Xml;
 
 namespace Sustainsys.Saml2.Tests.Serialization;

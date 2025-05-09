@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Sustainsys.Saml2;
+﻿namespace Sustainsys.Saml2;
 
 /// <summary>
 /// What is the trust level of a piece of data? The levels reflect

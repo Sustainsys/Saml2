@@ -7,8 +7,6 @@ using Sustainsys.Saml2.Bindings;
 using Sustainsys.Saml2.Samlp;
 using Sustainsys.Saml2.Serialization;
 using Sustainsys.Saml2.Xml;
-using System;
-using System.Runtime.Serialization;
 using System.Text.Encodings.Web;
 
 namespace Sustainsys.Saml2.AspNetCore;

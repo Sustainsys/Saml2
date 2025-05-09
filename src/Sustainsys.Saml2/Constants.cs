@@ -1,12 +1,4 @@
-﻿using Sustainsys.Saml2.Samlp;
-using Sustainsys.Saml2.Xml;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Sustainsys.Saml2;
+﻿namespace Sustainsys.Saml2;
 
 /// <summary>
 /// Constants

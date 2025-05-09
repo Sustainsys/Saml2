@@ -1,5 +1,4 @@
-﻿using System.Collections.ObjectModel;
-using System.Xml;
+﻿using System.Xml;
 
 namespace Sustainsys.Saml2.Serialization;
 
