@@ -293,7 +293,7 @@ public class XmlTraverser
     {
         var value = GetTextContents();
 
-        if(string.IsNullOrEmpty(value))
+        if (string.IsNullOrEmpty(value))
         {
             Errors.Add(new(
                 ErrorReason.EmptyElement,

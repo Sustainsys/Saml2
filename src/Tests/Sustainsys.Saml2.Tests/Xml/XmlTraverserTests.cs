@@ -242,7 +242,7 @@ public class XmlTraverserTests
         var actualValue = subject.GetAbsoluteUriContents();
 
         actualValue.Should().Be(expectedValue);
-        
+
         if (expectedError == null)
         {
             subject.Errors.Count().Should().Be(0);
