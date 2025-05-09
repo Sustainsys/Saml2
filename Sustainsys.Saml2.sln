@@ -7,6 +7,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{92934DC3
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{67939779-582A-4972-9393-280BB0A6678B}"
 	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
 		CONTRIBUTING.md = CONTRIBUTING.md
 		src\exclusion.dic = src\exclusion.dic
 		LICENSE = LICENSE
