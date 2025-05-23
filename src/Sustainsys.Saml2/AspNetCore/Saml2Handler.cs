@@ -6,6 +6,7 @@ using Sustainsys.Saml2.AspNetCore.Events;
 using Sustainsys.Saml2.Bindings;
 using Sustainsys.Saml2.Samlp;
 using Sustainsys.Saml2.Serialization;
+using Sustainsys.Saml2.Validation;
 using Sustainsys.Saml2.Xml;
 using System.Text.Encodings.Web;
 
@@ -78,8 +79,28 @@ public class Saml2Handler(
         var reader = GetRequiredService<ISamlXmlReader>();
         var samlResponse = reader.ReadSamlResponse(source);
 
-        // For now, to make half-baked test pass.
-        return HandleRequestResult.Handle();
+        var validator = GetRequiredService<ISamlResponseValidator>();
+
+        // TODO: Do proper validation! + Tests!
+        SamlResponseValidationParameters validationParameters = new()
+        {
+            AssertionValidationParameters = new()
+            {
+                ValidIssuer = Options.IdentityProvider!.EntityId!
+            },
+        };
+
+        // TODO: Add error handler callback
+        validator.Validate(samlResponse, validationParameters);
+
+        var claimsFactory = GetRequiredService<IClaimsFactory>();
+
+        // TODO: Handle multiple assertions.
+        var identity = claimsFactory.GetClaimsIdentity(samlResponse.Assertions.Single());
+
+        AuthenticationTicket authenticationTicket = new(new(identity), Scheme.Name);
+
+        return HandleRequestResult.Success(authenticationTicket);
     }
 
     /// <summary>

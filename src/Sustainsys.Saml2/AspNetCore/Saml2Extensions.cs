@@ -1,9 +1,11 @@
 ﻿using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
+using Sustainsys.Saml2;
 using Sustainsys.Saml2.AspNetCore;
 using Sustainsys.Saml2.Bindings;
 using Sustainsys.Saml2.Serialization;
+using Sustainsys.Saml2.Validation;
 
 
 // By convention, the extension methods are placed in the Microsoft shared 
@@ -74,6 +76,9 @@ public static class Saml2Extensions
             ServiceDescriptor.Singleton<IFrontChannelBinding, HttpRedirectBinding>());
         builder.Services.TryAddEnumerable(
             ServiceDescriptor.Singleton<IFrontChannelBinding, HttpPostBinding>());
+
+        builder.Services.TryAddSingleton<ISamlResponseValidator, SamlResponseValidator>();
+        builder.Services.TryAddSingleton<IClaimsFactory, ClaimsFactory>();
 
         return builder.AddRemoteScheme<Saml2Options, Saml2Handler>(authenticationScheme, displayName, configureOptions);
     }

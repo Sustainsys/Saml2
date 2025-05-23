@@ -24,5 +24,17 @@
             <button name="Action" value="SignIn">Sign In</button>
         }
     </form>
+
+    @if(User!.Identity!.IsAuthenticated)
+    {
+        <h2>Claims</h2>
+        <dl>
+            @foreach(var c in User.Claims)
+            {
+                <dt>@c.Type</dt>
+                <dd>@c.Value</dd>
+            }
+        </dl>
+    }
 </body>
 </html>
