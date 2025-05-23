@@ -156,8 +156,8 @@ public class XmlTraverser
     /// <summary>
     /// Moves to the next child node in the current collection, if one is available.
     /// </summary>
-    /// <param name="expectEnd">Do we expect this MoveNext call to hit the end of the child list? If not
-    /// an error is recorded if we do not find any more nodes.</param>
+    /// <param name="expectEnd">Is it correct if this MoveNext call hits the end of the 
+    /// child list? If not an error is recorded if we do not find any more nodes.</param>
     /// <returns>true if the move was successful</returns>
     public bool MoveNext(bool expectEnd = false)
     {
@@ -285,6 +285,36 @@ public class XmlTraverser
         IgnoreChildren();
         return CurrentNode!.InnerText;
     }
+    /// <summary>
+    /// Ensures that the contents of the current node is an absolute URI and returns the URI.
+    /// </summary>
+    /// <returns>URI as string</returns>
+    public string GetAbsoluteUriContents()
+    {
+        var value = GetTextContents();
+
+        if (string.IsNullOrEmpty(value))
+        {
+            Errors.Add(new(
+                ErrorReason.EmptyElement,
+                CurrentNode!.LocalName,
+                CurrentNode!,
+                $"Contents of element \"{CurrentNode!.LocalName}\" should be an absolute URI, but element is empty."));
+        }
+        else
+        {
+            if (!Uri.TryCreate(value, UriKind.Absolute, out var _))
+            {
+                Errors.Add(new(
+                    ErrorReason.NotAbsoluteUri,
+                    CurrentNode!.LocalName,
+                    CurrentNode!,
+                    $"Contents of element \"{CurrentNode!.LocalName}\" should be an absolute URI, but \"{value}\" isn't."));
+            }
+        }
+
+        return value;
+    }
 
     /// <summary>
     /// Checks if the current node has the qualified name.
@@ -332,17 +362,8 @@ public class XmlTraverser
         return value!;
     }
 
-    /// <summary>
-    /// Gets a string attribute and validates that the value is an absolute URI.
-    /// Note that even if the validation fails, the value is still returned to
-    /// make it possible for consumers to supress the errors.
-    /// </summary>
-    /// <param name="localName"></param>
-    /// <returns></returns>
-    public string GetRequiredAbsoluteUriAttribute(string localName)
+    private string ValidateAttributeIsAbsoluteUri(string localName, string? value)
     {
-        var value = GetRequiredAttribute(localName);
-
         if (value != null && !Uri.TryCreate(value, UriKind.Absolute, out var _))
         {
             Errors.Add(new Error(
@@ -356,6 +377,34 @@ public class XmlTraverser
         }
 
         return value!;
+    }
+
+    /// <summary>
+    /// Gets a required string attribute and validates that the value is an absolute URI.
+    /// Note that even if the validation fails, the value is still returned to
+    /// make it possible for consumers to supress the errors.
+    /// </summary>
+    /// <param name="localName"></param>
+    /// <returns></returns>
+    public string GetRequiredAbsoluteUriAttribute(string localName)
+    {
+        var value = GetRequiredAttribute(localName);
+
+        return ValidateAttributeIsAbsoluteUri(localName, value);
+    }
+
+    /// <summary>
+    /// Gets a string attribute and validates that the value is an absolute URI.
+    /// Note that even if the validation fails, the value is still returned to
+    /// make it possible for consumers to supress the errors.
+    /// </summary>
+    /// <param name="localName"></param>
+    /// <returns></returns>
+    public string? GetAbsoluteUriAttribute(string localName)
+    {
+        var value = GetAttribute(localName);
+
+        return ValidateAttributeIsAbsoluteUri(localName, value);
     }
 
     /// <summary>

@@ -6,7 +6,6 @@ namespace Sustainsys.Saml2.Serialization;
 public partial class SamlXmlReader
 {
     // TODO: Convert other reads to follow this pattern with a callback for errors
-
     /// <inheritdoc/>
     public AuthnRequest ReadAuthnRequest(
         XmlTraverser source,
@@ -48,7 +47,7 @@ public partial class SamlXmlReader
     /// Reads the child elements of an AuthnRequest.
     /// </summary>
     /// <param name="source">Xml traverser to read from</param>
-    /// <param name="authnRequest">AuthnRequest to pupulate</param>
+    /// <param name="authnRequest">AuthnRequest to populate</param>
     protected virtual void ReadElements(XmlTraverser source, AuthnRequest authnRequest)
     {
         ReadElements(source, (RequestAbstractType)authnRequest);
@@ -56,6 +55,30 @@ public partial class SamlXmlReader
         if (source.HasName(Elements.Subject, Namespaces.SamlUri))
         {
             authnRequest.Subject = ReadSubject(source);
+            source.MoveNext(true);
+        }
+
+        if (source.HasName(Elements.NameIDPolicy, Namespaces.SamlpUri))
+        {
+            authnRequest.NameIdPolicy = ReadNameIdPolicy(source);
+            source.MoveNext(true);
+        }
+
+        if (source.HasName(Elements.Conditions, Namespaces.SamlUri))
+        {
+            authnRequest.Conditions = ReadConditions(source);
+            source.MoveNext(true);
+        }
+
+        if (source.HasName(Elements.RequestedAuthnContext, Namespaces.SamlpUri))
+        {
+            authnRequest.RequestedAuthnContext = ReadRequestedAuthnContext(source);
+            source.MoveNext(true);
+        }
+
+        if (source.HasName(Elements.Scoping, Namespaces.SamlpUri))
+        {
+            authnRequest.Scoping = ReadScoping(source);
             source.MoveNext(true);
         }
     }
@@ -74,5 +97,7 @@ public partial class SamlXmlReader
         authnRequest.AssertionConsumerServiceIndex = source.GetIntAttribute(Attributes.AssertionConsumerServiceIndex);
         authnRequest.AssertionConsumerServiceUrl = source.GetAttribute(Attributes.AssertionConsumerServiceURL);
         authnRequest.ProtocolBinding = source.GetAttribute(Attributes.ProtocolBinding);
+        authnRequest.AttributeConsumingServiceIndex = source.GetIntAttribute(Attributes.AssertionConsumerServiceIndex);
+        authnRequest.ProviderName = source.GetAttribute(Attributes.ProviderName);
     }
 }

@@ -54,17 +54,54 @@ partial class SamlXmlReaderTests
             {
                 NameId = "abc12345"
             },
-            // TODO: Add NameIDPolicy
-            // TODO: Add Conditions
-            // TODO: Add RequestedAuthnContext
-            // TODO: Add Scoping
+            NameIdPolicy = new()
+            {
+                Format = "urn:oasis:names:tc:SAML:2.0:nameid-format:encrypted",
+                AllowCreate = true,
+                SPNameQualifier = "urn:oasis:names:tc:SAML:1.1:nameid-format:persistent"
+            },
+            Conditions = new()
+            {
+                NotBefore = new DateTime(2023, 11, 24, 22, 44, 14, DateTimeKind.Utc)
+            },
+            RequestedAuthnContext = new()
+            {
+                Comparison = "better",
+                AuthnContextClassRef = { "urn:ContextClassRef", "urn:AnotherContextClassRef" },
+                AuthnContextDeclRef = { "urn:ContextDeclRef" }
+            },
+            Scoping = new()
+            {
+                ProxyCount = 1,
+                IDPList = new()
+                {
+                    IdpEntries =
+                    {
+                        new()
+                        {
+                            ProviderId = "https://stubidp.sustainsys.com/Metadata",
+                            Name = "Sustainsys Stub Idp",
+                            Loc = "https://stubidp.sustainsys.com"
+                        },
+                        new()
+                        {
+                            ProviderId = "https://idp.example.com/Metadata",
+                            Name = "Example Stub Idp",
+                            Loc = "https://idp.example.com/SsoEndpoint"
+                        },
+                    },
+                    GetComplete = "https://example.com/GetComplete"
+
+                },
+                RequesterID = { "https://example.com/RequesterID?query=123", "https://example.com/RequesterID?query=123" },
+            },
             ForceAuthn = true,
             IsPassive = true,
             AssertionConsumerServiceUrl = "https://sp.example.com/Acs",
             AssertionConsumerServiceIndex = 42,
             ProtocolBinding = Constants.BindingUris.HttpPOST,
-            // TODO: Add AttributeConsumingServiceIndex
-            // TODO: Add ProviderName
+            AttributeConsumingServiceIndex = 42,
+            ProviderName = "test"
         };
 
         actual.Should().BeEquivalentTo(expected);

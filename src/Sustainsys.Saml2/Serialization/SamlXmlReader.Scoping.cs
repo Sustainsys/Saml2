@@ -1,0 +1,62 @@
+﻿using Sustainsys.Saml2.Samlp;
+using Sustainsys.Saml2.Xml;
+using static Sustainsys.Saml2.Constants;
+
+namespace Sustainsys.Saml2.Serialization;
+partial class SamlXmlReader
+{
+    /// <summary>
+    /// Reads a Scoping.
+    /// </summary>
+    /// <param name="source">Source data</param>
+    /// <returns>read</returns>
+    protected Scoping ReadScoping(XmlTraverser source)
+    {
+        var result = Create<Scoping>();
+
+        ReadElements(source.GetChildren(), result);
+        ReadAttributes(source, result);
+
+        return result;
+    }
+
+    /// <summary>
+    /// Reads elements of a Scoping.
+    /// </summary>
+    /// <param name="source">Source Xml Reader</param>
+    /// <param name="scoping">Scoping</param>
+    protected virtual void ReadElements(XmlTraverser source, Scoping scoping)
+    {
+        // We require at least one element.
+        source.MoveNext(false);
+
+        do
+        {
+            if (source.HasName(Elements.IDPList, Namespaces.SamlpUri))
+            {
+                scoping.IDPList = ReadIdpList(source);
+            }
+            else
+            {
+                if (source.HasName(Elements.RequesterID, Namespaces.SamlpUri))
+                {
+                    scoping.RequesterID.Add(source.GetAbsoluteUriContents());
+                }
+                else
+                {
+                    // TODO: Add test for extra elements and report errors.
+                }
+            }
+        } while (source.MoveNext(true));
+    }
+
+    /// <summary>
+    /// Read Scoping attributes.
+    /// </summary>
+    /// <param name="source">Source</param>
+    /// <param name="scoping">Scoping</param>
+    protected virtual void ReadAttributes(XmlTraverser source, Scoping scoping)
+    {
+        scoping.ProxyCount = source.GetIntAttribute(Attributes.ProxyCount);
+    }
+}

@@ -54,6 +54,7 @@ public static class Constants
         public const string AuthnAuthorityDescriptor = nameof(AuthnAuthorityDescriptor);
         public const string AuthnContext = nameof(AuthnContext);
         public const string AuthnContextClassRef = nameof(AuthnContextClassRef);
+        public const string AuthnContextDeclRef = nameof(AuthnContextDeclRef);
         public const string AuthnRequest = nameof(AuthnRequest);
         public const string AuthnStatement = nameof(AuthnStatement);
         public const string AuthzDecisionStatement = nameof(AuthzDecisionStatement);
@@ -61,6 +62,9 @@ public static class Constants
         public const string ContactPerson = nameof(ContactPerson);
         public const string EntityDescriptor = nameof(EntityDescriptor);
         public const string Extensions = nameof(Extensions);
+        public const string GetComplete = nameof(GetComplete);
+        public const string IDPEntry = nameof(IDPEntry);
+        public const string IDPList = nameof(IDPList);
         public const string IDPSSODescriptor = nameof(IDPSSODescriptor);
         public const string Issuer = nameof(Issuer);
         public const string KeyDescriptor = nameof(KeyDescriptor);
@@ -68,12 +72,16 @@ public static class Constants
         public const string ManageNameIDService = nameof(ManageNameIDService);
         public const string NameID = nameof(NameID);
         public const string NameIDFormat = nameof(NameIDFormat);
+        public const string NameIDPolicy = nameof(NameIDPolicy);
         public const string OneTimeUse = nameof(OneTimeUse);
         public const string Organization = nameof(Organization);
         public const string PDPDescriptor = nameof(PDPDescriptor);
         public const string ProxyRestriction = nameof(ProxyRestriction);
         public const string Response = nameof(Response);
+        public const string RequestedAuthnContext = nameof(RequestedAuthnContext);
+        public const string RequesterID = nameof(RequesterID);
         public const string RoleDescriptor = nameof(RoleDescriptor);
+        public const string Scoping = nameof(Scoping);
         public const string Signature = nameof(Signature);
         public const string SingleLogoutService = nameof(SingleLogoutService);
         public const string SingleSignOnService = nameof(SingleSignOnService);
@@ -95,21 +103,25 @@ public static class Constants
     public static class Attributes
     {
         public const string Address = nameof(Address);
+        public const string AllowCreate = nameof(AllowCreate);
         public const string AssertionConsumerServiceIndex = nameof(AssertionConsumerServiceIndex);
         public const string AssertionConsumerServiceURL = nameof(AssertionConsumerServiceURL);
         public const string AuthnInstant = nameof(AuthnInstant);
         public const string Binding = nameof(Binding);
         public const string cacheDuration = nameof(cacheDuration);
+        public const string Comparison = nameof(Comparison);
         public const string Consent = nameof(Consent);
         public const string Destination = nameof(Destination);
         public const string entityID = nameof(entityID);
         public const string ForceAuthn = nameof(ForceAuthn);
+        public const string Format = nameof(Format);
         public const string ID = nameof(ID);
         public const string index = nameof(index);
         public const string isDefault = nameof(isDefault);
         public const string IsPassive = nameof(IsPassive);
         public const string InResponseTo = nameof(InResponseTo);
         public const string IssueInstant = nameof(IssueInstant);
+        public const string Loc = nameof(Loc);
         public const string Location = nameof(Location);
         public const string Method = nameof(Method);
         public const string Name = nameof(Name);
@@ -117,9 +129,13 @@ public static class Constants
         public const string NotOnOrAfter = nameof(NotOnOrAfter);
         public const string ProtocolBinding = nameof(ProtocolBinding);
         public const string protocolSupportEnumeration = nameof(protocolSupportEnumeration);
+        public const string ProviderID = nameof(ProviderID);
+        public const string ProviderName = nameof(ProviderName);
+        public const string ProxyCount = nameof(ProxyCount);
         public const string Recipient = nameof(Recipient);
         public const string SessionIndex = nameof(SessionIndex);
         public const string SessionNotOnOrAfter = nameof(SessionNotOnOrAfter);
+        public const string SPNameQualifier = nameof(SPNameQualifier);
         public const string use = nameof(use);
         public const string validUntil = nameof(validUntil);
         public const string Value = nameof(Value);

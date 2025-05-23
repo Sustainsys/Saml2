@@ -231,6 +231,29 @@ public class XmlTraverserTests
         ValidateMissing(subject);
     }
 
+    [Theory]
+    [InlineData("<a></a>", "", ErrorReason.EmptyElement)]
+    [InlineData("<a>https://example.com</a>", "https://example.com", null)]
+    [InlineData("<a>example.com</a>", "example.com", ErrorReason.NotAbsoluteUri)]
+    public void GetAbsoluteUriContents(string xml, string expectedValue, ErrorReason? expectedError)
+    {
+        var subject = GetXmlTraverser(xml);
+
+        var actualValue = subject.GetAbsoluteUriContents();
+
+        actualValue.Should().Be(expectedValue);
+
+        if (expectedError == null)
+        {
+            subject.Errors.Count().Should().Be(0);
+        }
+        else
+        {
+            subject.Errors.Count().Should().Be(1);
+            subject.Errors[0].Reason.Should().Be(expectedError);
+        }
+    }
+
     private static void ValidateMissing(XmlTraverser subject)
     {
         subject.Errors.Count.Should().Be(1);

@@ -50,4 +50,9 @@ public enum ErrorReason
     /// There are extra elements that were neither processed nor ignored.
     /// </summary>
     ExtraElements = 9,
+
+    /// <summary>
+    /// The element is present, but contains nothing.
+    /// </summary>
+    EmptyElement = 10,
 }
