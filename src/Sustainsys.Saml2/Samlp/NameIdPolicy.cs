@@ -6,7 +6,7 @@
 public class NameIdPolicy
 {
     /// <summary>
-    /// An URI reference. 
+    /// A URI reference identifying the name identifier format.
     /// </summary>
     public string? Format { get; set; }
 
@@ -16,8 +16,8 @@ public class NameIdPolicy
     public string? SPNameQualifier { get; set; }
 
     /// <summary>
-    /// If the requester grants to the Identity provider.
-    /// Default is false.
+    /// If the requester grants permission to the Identity provider to
+    /// create a new identifier. If no value is present it indicates false.
     /// </summary>
-    public bool? AllowCreate { get; set; } = false;
+    public bool? AllowCreate { get; set; }
 }

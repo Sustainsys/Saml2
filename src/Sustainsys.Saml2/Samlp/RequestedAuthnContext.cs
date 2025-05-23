@@ -8,7 +8,7 @@ public class RequestedAuthnContext
 {
     /// <summary>
     /// A comparison method.
-    /// One of "exact", "minimum", "maximum" or "better". Default is´"exact".
+    /// One of "exact", "minimum", "maximum" or "better". Default is "exact".
     /// </summary>
     public string Comparison { get; set; } = "";
 
@@ -20,7 +20,7 @@ public class RequestedAuthnContext
 
     /// <summary>
     /// One or more authentication Context Class References.
-    /// Either a authentication context declaration provided by value or a URI reference.
+    /// Either an authentication context declaration provided by value or a URI reference.
     /// </summary>
     public List<string> AuthnContextDeclRef { get; } = [];
 }

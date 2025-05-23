@@ -23,17 +23,18 @@ public class AuthnRequest : RequestAbstractType
     public Subject? Subject { get; set; }
 
     /// <summary>
-    /// Tailors the name identifier in the subjects of assertions. 
+    /// Specifies constraints on the name identifier to be used to represent the requested subject.
     /// </summary>
     public NameIdPolicy? NameIdPolicy { get; set; }
 
     /// <summary>
-    /// SAML constructs that place constraints on the use of SAML assertion.
+    /// Specifies the SAML conditions the requester expects to limit the validity and/or use of the resulting assertion(s)
     /// </summary>
     public Conditions? Conditions { get; set; }
 
     /// <summary>
-    /// Specifies the authentication Context requirements of authentication statements.
+    /// Specifies a set of identity providers trusted by the requester to authenticate the
+    /// presenter, as well as limitations and context related to proxying
     /// </summary>
     public RequestedAuthnContext? RequestedAuthnContext { get; set; }
 

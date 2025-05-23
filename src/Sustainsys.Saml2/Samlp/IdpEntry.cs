@@ -5,12 +5,12 @@
 public class IdpEntry
 {
     /// <summary>
-    /// Unique identifier of the identity provider.
+    /// Unique identifier (the Entity Id) of the identity provider.
     /// </summary>
     public string ProviderId { get; set; } = default!;
 
     /// <summary>
-    /// Name for the identity provider.
+    /// Human readable name of the identity provider.
     /// </summary>
     public string? Name { get; set; }
 

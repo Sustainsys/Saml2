@@ -1,7 +1,4 @@
-﻿using Microsoft.Extensions.Primitives;
-using System.Globalization;
-using System.Runtime.CompilerServices;
-namespace Sustainsys.Saml2;
+﻿namespace Sustainsys.Saml2;
 
 /// <summary>
 /// Constants
