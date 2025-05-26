@@ -24,4 +24,9 @@ public class SamlAssertionValidationParameters
     /// Valid issuer of the response and assertions
     /// </summary>
     public NameId? ValidIssuer { get; set; }
+
+    /// <summary>
+    /// Valid destination of the response and assertions
+    /// </summary>
+    public string? ValidDestination { get; set; }
 }

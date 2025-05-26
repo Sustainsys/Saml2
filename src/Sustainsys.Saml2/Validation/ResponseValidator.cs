@@ -8,22 +8,39 @@ namespace Sustainsys.Saml2.Validation;
 /// </summary>
 public class ResponseValidator : IResponseValidator
 {
+
+
     /// <inheritdoc/>
     public void Validate(
         Response samlResponse,
         SamlResponseValidationParameters validationParameters)
     {
-        // TODO: ValidateDestination
-
         ValidateAssertions(samlResponse.Assertions, validationParameters.AssertionValidationParameters);
         // Core 2.7.2 AuthnStatement
         ValidateVersion(samlResponse);
-
+        // Core 3.2.1
+        ValidateDestination(samlResponse, validationParameters);
         // Profile 4.1.4.2, 4.1.4.3
         ValidateIssuer(samlResponse, validationParameters);
         ValidateStatusCode(samlResponse);
     }
-
+    /// <summary> 
+    /// Validate the destination.
+    /// </summary>
+    /// <param name="samlResponse">Saml response</param>
+    /// <param name="validationParameters">Validation parameters</param>
+    /// <exception cref="SamlValidationException">On validation failure</exception>
+    protected virtual void ValidateDestination(
+     Response samlResponse,
+     SamlResponseValidationParameters validationParameters)
+    {
+        if (samlResponse.Destination != null &&
+            samlResponse.Destination != validationParameters.ValidDestination)
+        {
+            throw new SamlValidationException(
+                $"Response destination {samlResponse.Destination} does not match expected {validationParameters.ValidDestination}");
+        }
+    }
     /// <summary>
     /// Validate that the status code is <see cref="Constants.StatusCodes.Success"/>
     /// </summary>

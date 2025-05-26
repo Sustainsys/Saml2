@@ -116,4 +116,35 @@ public class SamlResponseValidatorTests
             .Should().Throw<SamlValidationException>()
             .WithMessage("*status*Requester*");
     }
+
+    [Fact]
+    public void Validate_Destination_IsIncorrect()
+    {
+        var subject = new ResponseValidator();
+
+        var response = CreateSamlResponse();
+        response.Destination = "https://example.com/Acs";
+
+        var parameters = CreateValidationParameters();
+        parameters.ValidDestination = "https://example.com/AnotherEndpoint";
+
+        subject.Invoking(s => s.Validate(response, parameters))
+            .Should().Throw<SamlValidationException>()
+            .WithMessage("*destination*https://example.com/Acs*");
+    }
+
+    [Fact]
+    public void Validate_Destination_IsCorrect()
+    {
+        var subject = new ResponseValidator();
+
+        var response = CreateSamlResponse();
+        response.Destination = "https://example.com/Acs";
+
+        var parameters = CreateValidationParameters();
+        parameters.ValidDestination = "https://example.com/Acs";
+
+        subject.Invoking(s => s.Validate(response, parameters))
+            .Should().NotThrow();
+    }
 }

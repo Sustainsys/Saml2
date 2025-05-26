@@ -33,4 +33,10 @@ public class SamlResponseValidationParameters
     /// of the embedded SamlAssertionValidationParameters to ensure they are the same.
     /// </summary>
     public NameId? ValidIssuer { get => AssertionValidationParameters.ValidIssuer; }
+
+    /// <summary>
+    /// Valid destination of the response and assertions. 
+    /// A URI reference indicating the address to which this request has been sent.
+    /// </summary>
+    public string? ValidDestination { get; set; }
 }
