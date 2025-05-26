@@ -15,9 +15,9 @@ partial class SamlXmlReaderTests
 
         var subject = new SamlXmlReader();
 
-        var actual = subject.ReadSamlResponse(source);
+        var actual = subject.ReadResponse(source);
 
-        var expected = new SamlResponse()
+        var expected = new Response()
         {
             Id = "x123",
             IssueInstant = new DateTime(2023, 10, 14, 13, 46, 32, DateTimeKind.Utc),
@@ -57,7 +57,7 @@ partial class SamlXmlReaderTests
 
         var subject = new SamlXmlReader();
 
-        subject.Invoking(s => s.ReadSamlResponse(source))
+        subject.Invoking(s => s.ReadResponse(source))
             .Should().Throw<SamlXmlException>()
             .WithErrors(expectedError);
     }
@@ -73,9 +73,9 @@ partial class SamlXmlReaderTests
 
         var subject = new SamlXmlReader();
 
-        var actual = subject.ReadSamlResponse(source);
+        var actual = subject.ReadResponse(source);
 
-        var expected = new SamlResponse
+        var expected = new Response
         {
             Id = "x123",
             InResponseTo = "x789",
@@ -158,7 +158,7 @@ partial class SamlXmlReaderTests
 
         var subject = new SamlXmlReader();
 
-        subject.Invoking(s => s.ReadSamlResponse(source))
+        subject.Invoking(s => s.ReadResponse(source))
             .Should().Throw<SamlXmlException>()
             .WithErrors(ErrorReason.MissingElement);
     }

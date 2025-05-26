@@ -9,6 +9,7 @@ using Sustainsys.Saml2.Bindings;
 using Sustainsys.Saml2.Samlp;
 using Sustainsys.Saml2.Serialization;
 using Sustainsys.Saml2.Tests.Helpers;
+using Sustainsys.Saml2.Validation;
 using Sustainsys.Saml2.Xml;
 using System.Text;
 using System.Text.Encodings.Web;
@@ -43,6 +44,12 @@ public class Saml2HandlerTests
             UrlEncoder.Default,
             keyedServiceProvider);
 
+        keyedServiceProvider.GetService(typeof(IResponseValidator)).Returns(new ResponseValidator());
+        keyedServiceProvider.GetService(typeof(IClaimsFactory)).Returns(new ClaimsFactory());
+
+        var authenticationService = Substitute.For<IAuthenticationService>();
+        keyedServiceProvider.GetService(typeof(IAuthenticationService)).Returns(authenticationService);
+
         var scheme = new AuthenticationScheme("Saml2", "Saml2", typeof(Saml2Handler));
 
         var httpContext = Substitute.For<HttpContext>();
@@ -51,6 +58,9 @@ public class Saml2HandlerTests
         httpContext.Request.Scheme = "https";
         httpContext.Request.Host = new HostString("sp.example.com", 8888);
         httpContext.Request.Path = "/path";
+
+        httpContext.RequestServices.GetService(Arg.Is<Type>(t => t == typeof(IAuthenticationService)))
+            .Returns(authenticationService);
 
         await handler.InitializeAsync(scheme, httpContext);
 
@@ -64,7 +74,7 @@ public class Saml2HandlerTests
             EntityId = "https://sp.example.com/Metadata",
             IdentityProvider = new()
             {
-                EntityId = "https://idp.example.com",
+                EntityId = "https://idp.example.com/Saml2",
                 SsoServiceUrl = "https://idp.example.com/sso",
                 SsoServiceBinding = Constants.BindingUris.HttpRedirect
             },

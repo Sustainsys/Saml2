@@ -5,7 +5,7 @@ namespace Sustainsys.Saml2.Validation;
 /// <summary>
 /// Saml Assertion validator
 /// </summary>
-public class SamlAssertionValidator : ISamlAssertionValidator
+public class AssertionValidator : IAssertionValidator
 {
     /// <inheritdoc/>
     public void Validate(

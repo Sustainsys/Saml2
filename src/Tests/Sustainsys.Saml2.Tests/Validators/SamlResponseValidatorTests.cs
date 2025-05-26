@@ -5,7 +5,7 @@ namespace Sustainsys.Saml2.Tests.Validators;
 
 public class SamlResponseValidatorTests
 {
-    private static SamlResponse CreateSamlResponse() =>
+    private static Response CreateSamlResponse() =>
         new()
         {
             Issuer = new()
@@ -35,7 +35,7 @@ public class SamlResponseValidatorTests
     [Fact]
     public void Validate()
     {
-        var subject = new SamlResponseValidator();
+        var subject = new ResponseValidator();
 
         var response = CreateSamlResponse();
         var parameters = CreateValidationParameters();
@@ -47,7 +47,7 @@ public class SamlResponseValidatorTests
     [Fact]
     public void Validate_Issuer_IsMissing()
     {
-        var subject = new SamlResponseValidator();
+        var subject = new ResponseValidator();
 
         var response = CreateSamlResponse();
         response.Issuer = null;
@@ -64,7 +64,7 @@ public class SamlResponseValidatorTests
     [InlineData(null, false)]
     public void Validate_Version(string? version, bool valid)
     {
-        var subject = new SamlResponseValidator();
+        var subject = new ResponseValidator();
 
         var response = CreateSamlResponse();
 
@@ -88,7 +88,7 @@ public class SamlResponseValidatorTests
     [Fact]
     public void Validate_Issuer_IsIncorrect()
     {
-        var subject = new SamlResponseValidator();
+        var subject = new ResponseValidator();
 
         var response = CreateSamlResponse();
         response.Issuer!.Value = "https://unexpected";
@@ -105,7 +105,7 @@ public class SamlResponseValidatorTests
     [Fact]
     public void Validate_Status_IsNonSuccess()
     {
-        var subject = new SamlResponseValidator();
+        var subject = new ResponseValidator();
 
         var response = CreateSamlResponse();
         response.Status.StatusCode.Value = Constants.StatusCodes.Requester;

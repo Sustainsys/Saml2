@@ -1,19 +1,21 @@
-﻿using Sustainsys.Saml2.Samlp;
+﻿using Sustainsys.Saml2.Saml;
+using Sustainsys.Saml2.Samlp;
 
 namespace Sustainsys.Saml2.Validation;
 
 /// <summary>
 /// Validates a Saml Response
 /// </summary>
-public class SamlResponseValidator : ISamlResponseValidator
+public class ResponseValidator : IResponseValidator
 {
     /// <inheritdoc/>
     public void Validate(
-        SamlResponse samlResponse,
+        Response samlResponse,
         SamlResponseValidationParameters validationParameters)
     {
-        // Core 2.5.1
-        ValidateConditions(samlResponse, validationParameters);
+        // TODO: ValidateDestination
+
+        ValidateAssertions(samlResponse.Assertions, validationParameters.AssertionValidationParameters);
         // Core 2.7.2 AuthnStatement
         ValidateVersion(samlResponse);
 
@@ -27,7 +29,7 @@ public class SamlResponseValidator : ISamlResponseValidator
     /// </summary>
     /// <param name="samlResponse">Saml Response</param>
     /// <exception cref="SamlValidationException">On validation failure</exception>
-    protected virtual void ValidateStatusCode(SamlResponse samlResponse)
+    protected virtual void ValidateStatusCode(Response samlResponse)
     {
         if (samlResponse.Status?.StatusCode?.Value != Constants.StatusCodes.Success)
         {
@@ -42,7 +44,7 @@ public class SamlResponseValidator : ISamlResponseValidator
     /// <param name="validationParameters">Validation parameters</param>
     /// <exception cref="SamlValidationException">On validation failure</exception>
     protected virtual void ValidateIssuer(
-        SamlResponse samlResponse,
+        Response samlResponse,
         SamlResponseValidationParameters validationParameters)
     {
         if (samlResponse.Issuer != null &&
@@ -58,7 +60,7 @@ public class SamlResponseValidator : ISamlResponseValidator
     /// </summary>
     /// <param name="samlResponse">Saml response</param>
     /// <exception cref="SamlValidationException">On validation failure</exception>
-    protected virtual void ValidateVersion(SamlResponse samlResponse)
+    protected virtual void ValidateVersion(Response samlResponse)
     {
         if (samlResponse.Version != "2.0")
         {
@@ -67,19 +69,34 @@ public class SamlResponseValidator : ISamlResponseValidator
     }
 
     /// <summary>
-    /// 
+    /// Validate assertions.
     /// </summary>
-    /// <param name="samlResponse">Saml response</param>
+    /// <param name="assertions">Assertions to validate</param>
+    /// <param name="validationParameters">Validation Parameters</param>
+    protected virtual void ValidateAssertions(
+        IEnumerable<Assertion> assertions,
+        SamlAssertionValidationParameters validationParameters)
+    {
+        foreach (var assertion in assertions)
+        {
+            // Core 2.5.1
+            ValidateConditions(assertion, validationParameters);
+        }
+    }
+
+    /// <summary>
+    /// Validate conditions of an assertion
+    /// </summary>
+    /// <param name="assertion">Saml assertion</param>
     /// <param name="validationParameters">Validation parameters</param>
     /// <exception cref="SamlValidationException">On validation failure</exception>
     protected virtual void ValidateConditions(
-        SamlResponse samlResponse,
-        SamlResponseValidationParameters validationParameters)
+        Assertion assertion,
+        SamlAssertionValidationParameters validationParameters)
     {
         // Core 2.5.1.2 NotBefore, NotOnOrAfter
         // Core 2.5.1.4 AudienceRestriction, Audience
         // Core 2.5.1.5 OneTimeUse
         // Core 2.5.1.6 ProxyRestriction
     }
-
 }

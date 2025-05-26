@@ -77,7 +77,7 @@ public static class Saml2Extensions
         builder.Services.TryAddEnumerable(
             ServiceDescriptor.Singleton<IFrontChannelBinding, HttpPostBinding>());
 
-        builder.Services.TryAddSingleton<ISamlResponseValidator, SamlResponseValidator>();
+        builder.Services.TryAddSingleton<IResponseValidator, ResponseValidator>();
         builder.Services.TryAddSingleton<IClaimsFactory, ClaimsFactory>();
 
         return builder.AddRemoteScheme<Saml2Options, Saml2Handler>(authenticationScheme, displayName, configureOptions);

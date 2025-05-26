@@ -77,9 +77,9 @@ public class Saml2Handler(
 
         var source = XmlHelpers.GetXmlTraverser(samlMessage.Xml);
         var reader = GetRequiredService<ISamlXmlReader>();
-        var samlResponse = reader.ReadSamlResponse(source);
+        var samlResponse = reader.ReadResponse(source);
 
-        var validator = GetRequiredService<ISamlResponseValidator>();
+        var validator = GetRequiredService<IResponseValidator>();
 
         // TODO: Do proper validation! + Tests!
         SamlResponseValidationParameters validationParameters = new()
@@ -90,7 +90,6 @@ public class Saml2Handler(
             },
         };
 
-        // TODO: Add error handler callback
         validator.Validate(samlResponse, validationParameters);
 
         var claimsFactory = GetRequiredService<IClaimsFactory>();

@@ -5,7 +5,7 @@ namespace Sustainsys.Saml2.Samlp;
 /// <summary>
 /// A Saml2p SamlResponse
 /// </summary>
-public class SamlResponse : StatusResponseType
+public class Response : StatusResponseType
 {
     /// <summary>
     /// Assertions
