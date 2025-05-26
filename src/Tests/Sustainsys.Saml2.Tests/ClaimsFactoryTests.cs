@@ -47,6 +47,10 @@ public class ClaimsFactoryTests
                 new("role", "boss")
             ];
 
-        actual.Claims.Should().BeEquivalentTo(expectedClaims);
+        ClaimsIdentity expected = new ClaimsIdentity(expectedClaims, "saml2");
+
+        actual.Should().BeEquivalentTo(
+            expected,
+            opt => opt.For(ci => ci.Claims).Exclude(c => c.Subject));
     }
 }

@@ -20,7 +20,19 @@ public class ClaimsFactory : IClaimsFactory
             claims.Add(new(ClaimTypes.NameIdentifier, assertion.Subject.NameId!.Value));
         }
 
-        // TODO: Make claims for all attributes/attribute values.
+        if (assertion.Attributes != null)
+        {
+            foreach (var attribute in assertion.Attributes)
+            {
+                foreach (var value in attribute.Values)
+                {
+                    if (value != null)
+                    {
+                        claims.Add(new(attribute.Name, value));
+                    }
+                }
+            }
+        }
 
         return new ClaimsIdentity(claims, "saml2");
     }

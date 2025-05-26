@@ -1,8 +1,11 @@
-﻿namespace Sustainsys.Saml2.Saml;
+﻿using System.Diagnostics;
+
+namespace Sustainsys.Saml2.Saml;
 
 /// <summary>
 /// Saml Attribute, Core 2.7.3.1
 /// </summary>
+[DebuggerDisplay("{Name,nq}:{AllValues}")]
 public class SamlAttribute
 {
     /// <summary>
@@ -14,4 +17,6 @@ public class SamlAttribute
     /// Attribute values.
     /// </summary>
     public List<string?> Values { get; } = [];
+
+    private string AllValues { get => string.Join(", ", Values); }
 }
