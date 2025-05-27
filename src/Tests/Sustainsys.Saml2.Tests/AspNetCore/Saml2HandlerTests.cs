@@ -57,7 +57,7 @@ public class Saml2HandlerTests
 
         httpContext.Request.Scheme = "https";
         httpContext.Request.Host = new HostString("sp.example.com", 8888);
-        httpContext.Request.Path = "/path";
+        httpContext.Request.Path = "/Saml2/Acs";
 
         httpContext.RequestServices.GetService(Arg.Is<Type>(t => t == typeof(IAuthenticationService)))
             .Returns(authenticationService);
@@ -78,7 +78,7 @@ public class Saml2HandlerTests
                 SsoServiceUrl = "https://idp.example.com/sso",
                 SsoServiceBinding = Constants.BindingUris.HttpRedirect
             },
-            TimeProvider = new Microsoft.Extensions.Time.Testing.FakeTimeProvider(CurrentFakeTime)
+            TimeProvider = new Microsoft.Extensions.Time.Testing.FakeTimeProvider(CurrentFakeTime),
         };
     }
 
@@ -172,9 +172,10 @@ public class Saml2HandlerTests
         var options = CreateOptions();
         var (subject, _) = await CreateSubject(options);
 
-        var result = await subject.HandleRequestAsync();
-
-        result.Should().BeFalse();
+        await subject.Invoking(async s => await s.HandleRequestAsync())
+            .Should().ThrowAsync<AuthenticationFailureException>()
+            .WithInnerException<AuthenticationFailureException, AuthenticationFailureException>()
+            .WithMessage("No binding*");
     }
 
 

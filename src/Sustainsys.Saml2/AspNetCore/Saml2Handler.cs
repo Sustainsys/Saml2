@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -88,6 +89,7 @@ public class Saml2Handler(
             {
                 ValidIssuer = Options.IdentityProvider!.EntityId!
             },
+            ValidDestination = GetAbsoluteUrl(Options.CallbackPath)
         };
 
         validator.Validate(samlResponse, validationParameters);
@@ -101,6 +103,9 @@ public class Saml2Handler(
 
         return HandleRequestResult.Success(authenticationTicket);
     }
+
+    private string GetAbsoluteUrl(PathString callbackPath) =>
+        $"{Request.Scheme}://{Request.Host}{callbackPath}";
 
     /// <summary>
     /// Redirects to identity provider with an authentication request.

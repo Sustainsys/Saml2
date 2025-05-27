@@ -30,7 +30,6 @@ public class AssertionValidator : IAssertionValidator
     {
         // Core 2.5.1.2 NotBefore, NotOnOrAfter
         // Core 2.5.1.4 AudienceRestriction, Audience
-        // Core 2.5.1.5 OneTimeUse
         // Core 2.5.1.6 ProxyRestriction
     }
 }
