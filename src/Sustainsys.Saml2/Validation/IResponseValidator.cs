@@ -14,19 +14,19 @@ public interface IResponseValidator
     /// <param name="samlResponse"></param>
     /// <param name="parameters">Expected values and settings for validation</param>
     /// <exception cref="SamlValidationException">On validation failure</exception>
-    void Validate(Response samlResponse, SamlResponseValidationParameters parameters);
+    void Validate(Response samlResponse, ResponseValidationParameters parameters);
 }
 
 
 /// <summary>
 /// DTO carrying parameters for Saml response validation.
 /// </summary>
-public class SamlResponseValidationParameters
+public class ResponseValidationParameters
 {
     /// <summary>
     /// Validation parameters for assertions embedded in the response.
     /// </summary>
-    public required SamlAssertionValidationParameters AssertionValidationParameters { get; set; }
+    public required AssertionValidationParameters AssertionValidationParameters { get; set; }
 
     /// <summary>
     /// Valid issuer of the response and assertions - returns the ValidIssuer

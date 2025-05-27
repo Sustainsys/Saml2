@@ -12,21 +12,16 @@ public interface IAssertionValidator
     /// </summary>
     /// <param name="assertion"></param>
     /// <param name="parameters"></param>
-    void Validate(Assertion assertion, SamlAssertionValidationParameters parameters);
+    void Validate(Assertion assertion, AssertionValidationParameters parameters);
 }
 
 /// <summary>
 /// DTO carrying parameters for Saml assertion validation
 /// </summary>
-public class SamlAssertionValidationParameters
+public class AssertionValidationParameters
 {
     /// <summary>
     /// Valid issuer of the response and assertions
     /// </summary>
     public NameId? ValidIssuer { get; set; }
-
-    /// <summary>
-    /// Valid destination of the response and assertions
-    /// </summary>
-    public string? ValidDestination { get; set; }
 }

@@ -10,7 +10,7 @@ public class AssertionValidator : IAssertionValidator
     /// <inheritdoc/>
     public void Validate(
         Assertion assertion,
-        SamlAssertionValidationParameters parameters)
+        AssertionValidationParameters parameters)
     {
         // TODO: Remember to validate issuer.
     }

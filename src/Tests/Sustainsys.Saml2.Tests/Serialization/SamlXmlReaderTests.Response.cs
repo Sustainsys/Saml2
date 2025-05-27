@@ -9,7 +9,7 @@ namespace Sustainsys.Saml2.Tests.Serialization;
 partial class SamlXmlReaderTests
 {
     [Fact]
-    public void ReadSamlResponse_MinimalErrorRequester()
+    public void ReadResponse_MinimalErrorRequester()
     {
         var source = GetXmlTraverser();
 
@@ -40,9 +40,9 @@ partial class SamlXmlReaderTests
     [InlineData("./samlp:Status", ErrorReason.MissingElement)]
     [InlineData("./samlp:Status/samlp:StatusCode", ErrorReason.MissingElement)]
     [InlineData("./samlp:Status/samlp:StatusCode/@Value", ErrorReason.MissingAttribute)]
-    public void ReadSamlResponse_MissingMandatory(string removeXPath, ErrorReason expectedError)
+    public void ReadResponse_MissingMandatory(string removeXPath, ErrorReason expectedError)
     {
-        var source = GetXmlTraverser(nameof(ReadSamlResponse_MinimalErrorRequester));
+        var source = GetXmlTraverser(nameof(ReadResponse_MinimalErrorRequester));
 
         var deleteNode = source.CurrentNode!.SelectSingleNode(removeXPath, source.CurrentNode.GetNsMgr());
 
@@ -65,7 +65,7 @@ partial class SamlXmlReaderTests
     // Test that a response with all optional content present in the Response can be read. This doesn't
     // mean that we actually read everything, a lot of rarely used stuff is just ignored (for now)
     [Fact]
-    public void ReadSamlResponse_CanReadCompleteResponse()
+    public void ReadResponse_CanReadCompleteResponse()
     {
         var source = GetXmlTraverser();
         ((XmlElement)source.CurrentNode!).Sign(
@@ -140,12 +140,12 @@ partial class SamlXmlReaderTests
     }
 
     [Fact]
-    public void ReadSamlResponse_SignedWithoutIssuerFails()
+    public void ReadResponse_SignedWithoutIssuerFails()
     {
         // Profiles 4.1.4.2: If the <Response> message is signed or if an enclosed assertion is
         // encrypted, then the <Issuer> element MUST be present.
 
-        var source = GetXmlTraverser(nameof(ReadSamlResponse_MinimalErrorRequester));
+        var source = GetXmlTraverser(nameof(ReadResponse_MinimalErrorRequester));
 
         var documentElement = (XmlElement)source.CurrentNode!;
 

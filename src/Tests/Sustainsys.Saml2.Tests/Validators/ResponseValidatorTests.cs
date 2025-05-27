@@ -3,9 +3,9 @@ using Sustainsys.Saml2.Validation;
 
 namespace Sustainsys.Saml2.Tests.Validators;
 
-public class SamlResponseValidatorTests
+public class ResponseValidatorTests
 {
-    private static Response CreateSamlResponse() =>
+    private static Response CreateResponse() =>
         new()
         {
             Issuer = new()
@@ -21,7 +21,7 @@ public class SamlResponseValidatorTests
             }
         };
 
-    private static SamlResponseValidationParameters CreateValidationParameters() =>
+    private static ResponseValidationParameters CreateValidationParameters() =>
         new()
         {
             AssertionValidationParameters = new()
@@ -37,7 +37,7 @@ public class SamlResponseValidatorTests
     {
         var subject = new ResponseValidator();
 
-        var response = CreateSamlResponse();
+        var response = CreateResponse();
         var parameters = CreateValidationParameters();
 
         // Should not throw.
@@ -49,7 +49,7 @@ public class SamlResponseValidatorTests
     {
         var subject = new ResponseValidator();
 
-        var response = CreateSamlResponse();
+        var response = CreateResponse();
         response.Issuer = null;
 
         var parameters = CreateValidationParameters();
@@ -66,7 +66,7 @@ public class SamlResponseValidatorTests
     {
         var subject = new ResponseValidator();
 
-        var response = CreateSamlResponse();
+        var response = CreateResponse();
 
         // Yes, it can be null - we're testing!
         response.Version = version!;
@@ -90,7 +90,7 @@ public class SamlResponseValidatorTests
     {
         var subject = new ResponseValidator();
 
-        var response = CreateSamlResponse();
+        var response = CreateResponse();
         response.Issuer!.Value = "https://unexpected";
 
         var parameters = CreateValidationParameters();
@@ -107,7 +107,7 @@ public class SamlResponseValidatorTests
     {
         var subject = new ResponseValidator();
 
-        var response = CreateSamlResponse();
+        var response = CreateResponse();
         response.Status.StatusCode.Value = Constants.StatusCodes.Requester;
 
         var parameters = CreateValidationParameters();
@@ -122,7 +122,7 @@ public class SamlResponseValidatorTests
     {
         var subject = new ResponseValidator();
 
-        var response = CreateSamlResponse();
+        var response = CreateResponse();
         response.Destination = "https://example.com/Acs";
 
         var parameters = CreateValidationParameters();
@@ -138,7 +138,7 @@ public class SamlResponseValidatorTests
     {
         var subject = new ResponseValidator();
 
-        var response = CreateSamlResponse();
+        var response = CreateResponse();
         response.Destination = "https://example.com/Acs";
 
         var parameters = CreateValidationParameters();

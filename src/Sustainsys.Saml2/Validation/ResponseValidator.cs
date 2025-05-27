@@ -13,7 +13,7 @@ public class ResponseValidator : IResponseValidator
     /// <inheritdoc/>
     public void Validate(
         Response samlResponse,
-        SamlResponseValidationParameters validationParameters)
+        ResponseValidationParameters validationParameters)
     {
         ValidateAssertions(samlResponse.Assertions, validationParameters.AssertionValidationParameters);
         // Core 2.7.2 AuthnStatement
@@ -32,7 +32,7 @@ public class ResponseValidator : IResponseValidator
     /// <exception cref="SamlValidationException">On validation failure</exception>
     protected virtual void ValidateDestination(
      Response samlResponse,
-     SamlResponseValidationParameters validationParameters)
+     ResponseValidationParameters validationParameters)
     {
         if (samlResponse.Destination != null &&
             samlResponse.Destination != validationParameters.ValidDestination)
@@ -62,7 +62,7 @@ public class ResponseValidator : IResponseValidator
     /// <exception cref="SamlValidationException">On validation failure</exception>
     protected virtual void ValidateIssuer(
         Response samlResponse,
-        SamlResponseValidationParameters validationParameters)
+        ResponseValidationParameters validationParameters)
     {
         if (samlResponse.Issuer != null &&
             samlResponse.Issuer != validationParameters.ValidIssuer)
@@ -92,7 +92,7 @@ public class ResponseValidator : IResponseValidator
     /// <param name="validationParameters">Validation Parameters</param>
     protected virtual void ValidateAssertions(
         IEnumerable<Assertion> assertions,
-        SamlAssertionValidationParameters validationParameters)
+        AssertionValidationParameters validationParameters)
     {
         foreach (var assertion in assertions)
         {
@@ -109,7 +109,7 @@ public class ResponseValidator : IResponseValidator
     /// <exception cref="SamlValidationException">On validation failure</exception>
     protected virtual void ValidateConditions(
         Assertion assertion,
-        SamlAssertionValidationParameters validationParameters)
+        AssertionValidationParameters validationParameters)
     {
         // Core 2.5.1.2 NotBefore, NotOnOrAfter
         // Core 2.5.1.4 AudienceRestriction, Audience

@@ -82,7 +82,7 @@ public class Saml2Handler(
         var validator = GetRequiredService<IResponseValidator>();
 
         // TODO: Do proper validation! + Tests!
-        SamlResponseValidationParameters validationParameters = new()
+        ResponseValidationParameters validationParameters = new()
         {
             AssertionValidationParameters = new()
             {
