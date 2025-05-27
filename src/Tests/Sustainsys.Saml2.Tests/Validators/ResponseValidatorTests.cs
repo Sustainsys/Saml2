@@ -35,7 +35,7 @@ public class ResponseValidatorTests
     [Fact]
     public void Validate()
     {
-        var subject = new ResponseValidator();
+        var subject = new ResponseValidator(new AssertionValidator());
 
         var response = CreateResponse();
         var parameters = CreateValidationParameters();
@@ -47,7 +47,7 @@ public class ResponseValidatorTests
     [Fact]
     public void Validate_Issuer_IsMissing()
     {
-        var subject = new ResponseValidator();
+        var subject = new ResponseValidator(new AssertionValidator());
 
         var response = CreateResponse();
         response.Issuer = null;
@@ -64,7 +64,7 @@ public class ResponseValidatorTests
     [InlineData(null, false)]
     public void Validate_Version(string? version, bool valid)
     {
-        var subject = new ResponseValidator();
+        var subject = new ResponseValidator(new AssertionValidator());
 
         var response = CreateResponse();
 
@@ -88,7 +88,7 @@ public class ResponseValidatorTests
     [Fact]
     public void Validate_Issuer_IsIncorrect()
     {
-        var subject = new ResponseValidator();
+        var subject = new ResponseValidator(new AssertionValidator());
 
         var response = CreateResponse();
         response.Issuer!.Value = "https://unexpected";
@@ -105,7 +105,7 @@ public class ResponseValidatorTests
     [Fact]
     public void Validate_Status_IsNonSuccess()
     {
-        var subject = new ResponseValidator();
+        var subject = new ResponseValidator(new AssertionValidator());
 
         var response = CreateResponse();
         response.Status.StatusCode.Value = Constants.StatusCodes.Requester;
@@ -120,7 +120,7 @@ public class ResponseValidatorTests
     [Fact]
     public void Validate_Destination_IsIncorrect()
     {
-        var subject = new ResponseValidator();
+        var subject = new ResponseValidator(new AssertionValidator());
 
         var response = CreateResponse();
         response.Destination = "https://example.com/Acs";
@@ -136,7 +136,7 @@ public class ResponseValidatorTests
     [Fact]
     public void Validate_Destination_IsCorrect()
     {
-        var subject = new ResponseValidator();
+        var subject = new ResponseValidator(new AssertionValidator());
 
         var response = CreateResponse();
         response.Destination = "https://example.com/Acs";

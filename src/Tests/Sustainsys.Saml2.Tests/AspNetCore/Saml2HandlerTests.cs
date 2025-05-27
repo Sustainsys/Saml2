@@ -44,7 +44,7 @@ public class Saml2HandlerTests
             UrlEncoder.Default,
             keyedServiceProvider);
 
-        keyedServiceProvider.GetService(typeof(IResponseValidator)).Returns(new ResponseValidator());
+        keyedServiceProvider.GetService(typeof(IResponseValidator)).Returns(new ResponseValidator(new AssertionValidator()));
         keyedServiceProvider.GetService(typeof(IClaimsFactory)).Returns(new ClaimsFactory());
 
         var authenticationService = Substitute.For<IAuthenticationService>();
