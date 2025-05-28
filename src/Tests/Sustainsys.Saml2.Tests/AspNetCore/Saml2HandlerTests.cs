@@ -6,6 +6,7 @@ using Microsoft.Extensions.Options;
 using NSubstitute;
 using Sustainsys.Saml2.AspNetCore;
 using Sustainsys.Saml2.Bindings;
+using Sustainsys.Saml2.Common;
 using Sustainsys.Saml2.Samlp;
 using Sustainsys.Saml2.Serialization;
 using Sustainsys.Saml2.Tests.Helpers;
@@ -98,7 +99,7 @@ public class Saml2HandlerTests
                 ctx.AuthnRequest.Issuer?.Value.Should().Be("https://sp.example.com/Metadata");
 
                 // Core 3.2.1: Issue instant is required
-                ctx.AuthnRequest.IssueInstant.Should().Be(CurrentFakeTime);
+                ctx.AuthnRequest.IssueInstant.Should().Be((DateTimeUtc)CurrentFakeTime);
 
                 // Core 3.4.1 AssertionConsumerServicerUrl is optional, but our StubIdp requires it
                 ctx.AuthnRequest.AssertionConsumerServiceUrl.Should().Be("https://sp.example.com:8888/Saml2/Acs");

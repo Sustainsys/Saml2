@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using Sustainsys.Saml2.Common;
+using System.Diagnostics;
 using System.Security.Cryptography.Xml;
 using System.Xml;
 
@@ -422,8 +423,8 @@ public class XmlTraverser
     /// </summary>
     /// <param name="localName">Local name of attribute</param>
     /// <returns>Parsed DateTime or null if parse fails</returns>
-    public DateTime? GetDateTimeAttribute(string localName)
-        => TryGetAttribute(localName, s => XmlConvert.ToDateTime(s, XmlDateTimeSerializationMode.RoundtripKind));
+    public DateTimeUtc? GetDateTimeAttribute(string localName)
+        => TryGetAttribute(localName, s => XmlConvert.ToDateTime(s, XmlDateTimeSerializationMode.Utc));
 
     /// <summary>
     /// Gets a required attribute as DateTime. On missing attribute or parse errors the Error
@@ -431,8 +432,8 @@ public class XmlTraverser
     /// </summary>
     /// <param name="localName">Local name of attribute</param>
     /// <returns>Parsed DateTime or null if parse fails</returns>
-    public DateTime GetRequiredDateTimeAttribute(string localName)
-        => GetRequiredAttribute(localName, s => XmlConvert.ToDateTime(s, XmlDateTimeSerializationMode.RoundtripKind));
+    public DateTimeUtc GetRequiredDateTimeAttribute(string localName)
+        => GetRequiredAttribute(localName, s => XmlConvert.ToDateTime(s, XmlDateTimeSerializationMode.Utc));
 
     /// <summary>
     /// Gets an optional bool attribute. On parse errors the Error

@@ -1,4 +1,6 @@
-﻿namespace Sustainsys.Saml2.Saml;
+﻿using Sustainsys.Saml2.Common;
+
+namespace Sustainsys.Saml2.Saml;
 
 /// <summary>
 /// Conditions, core 2.5.1
@@ -8,7 +10,7 @@ public class Conditions
     /// <summary>
     /// Not before
     /// </summary>
-    public DateTime? NotBefore { get; set; }
+    public DateTimeUtc? NotBefore { get; set; }
 
     /// <summary>
     /// Audience restrictions

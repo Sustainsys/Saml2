@@ -1,4 +1,6 @@
-﻿namespace Sustainsys.Saml2.Saml;
+﻿using Sustainsys.Saml2.Common;
+
+namespace Sustainsys.Saml2.Saml;
 
 /// <summary>
 /// SubjectConfirmationData, Core 2.4.1.2
@@ -8,12 +10,12 @@ public class SubjectConfirmationData
     /// <summary>
     /// Not before
     /// </summary>
-    public DateTime? NotBefore { get; set; }
+    public DateTimeUtc? NotBefore { get; set; }
 
     /// <summary>
     /// Not on or after
     /// </summary>
-    public DateTime? NotOnOrAfter { get; set; }
+    public DateTimeUtc? NotOnOrAfter { get; set; }
 
     /// <summary>
     /// Recipient, for Web SSO this must be the 
