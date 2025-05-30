@@ -5,23 +5,28 @@ namespace Sustainsys.Saml2.Validation;
 /// <summary>
 /// Validates an asseriton
 /// </summary>
-public interface ISamlAssertionValidator
+public interface IAssertionValidator
 {
     /// <summary>
     /// Validate a Saml assertion
     /// </summary>
     /// <param name="assertion"></param>
     /// <param name="parameters"></param>
-    void Validate(Assertion assertion, SamlAssertionValidationParameters parameters);
+    void Validate(Assertion assertion, AssertionValidationParameters parameters);
 }
 
 /// <summary>
 /// DTO carrying parameters for Saml assertion validation
 /// </summary>
-public class SamlAssertionValidationParameters
+public class AssertionValidationParameters
 {
     /// <summary>
     /// Valid issuer of the response and assertions
     /// </summary>
     public NameId? ValidIssuer { get; set; }
+
+    /// <summary>
+    ///  A URI reference that identifies an intended audience.
+    /// </summary>
+    public string? ValidAudience { get; set; }
 }

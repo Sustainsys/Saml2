@@ -1,10 +1,31 @@
 ﻿<samlp:Response xmlns:samlp="urn:oasis:names:tc:SAML:2.0:protocol" xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion"
-				ID="x123" Version="2.0" IssueInstant="2023-10-14T13:46:32Z">
-	<!--<saml:Issuer>https:/idp.example.com</saml:Issuer>
-	<saml:Assertion>
-		
-	</saml:Assertion>-->
+				ID="x123" Version="2.0" IssueInstant="2023-10-14T13:46:32Z"
+				Destination="https://sp.example.com:8888/Saml2/Acs">
+	<saml:Issuer>https://idp.example.com/Saml2</saml:Issuer>
 	<samlp:Status>
 		<samlp:StatusCode Value="urn:oasis:names:tc:SAML:2.0:status:Success" />
 	</samlp:Status>
+	<saml:Assertion Version="2.0" ID="ABC456"
+			IssueInstant="2025-05-26T00:00:00Z">
+		<saml:Issuer>https://idp.example.com/Saml2</saml:Issuer>
+		<saml:Subject>
+			<saml:NameID>SomeUser</saml:NameID>
+			<saml:SubjectConfirmation Method="urn:oasis:names:tc:SAML:2.0:cm:bearer=" />
+		</saml:Subject>
+		<saml:Conditions NotOnOrAfter="2100-01-01T00:00:00Z" />
+		<saml:AuthnStatement AuthnInstant="2025-05-26T07:00:00Z" >
+			<saml:AuthnContext>
+				<saml:AuthnContextClassRef>urn:oasis:names:tc:SAML:2.0:ac:classes:PasswordProtectedTransport</saml:AuthnContextClassRef>
+			</saml:AuthnContext>
+		</saml:AuthnStatement>
+		<saml:AttributeStatement>
+			<saml:Attribute Name="email">
+				<saml:AttributeValue>Someone@example.com</saml:AttributeValue>
+			</saml:Attribute>
+			<saml:Attribute Name="role">
+				<saml:AttributeValue>marketing</saml:AttributeValue>
+				<saml:AttributeValue>sales</saml:AttributeValue>
+			</saml:Attribute>
+		</saml:AttributeStatement>
+	</saml:Assertion>
 </samlp:Response>

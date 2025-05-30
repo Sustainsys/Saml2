@@ -1,4 +1,5 @@
-﻿using Sustainsys.Saml2.Xml;
+﻿using Sustainsys.Saml2.Common;
+using Sustainsys.Saml2.Xml;
 
 namespace Sustainsys.Saml2.Saml;
 
@@ -25,7 +26,7 @@ public class Assertion
     /// <summary>
     /// Isssue instant of the assertion
     /// </summary>
-    public DateTime IssueInstant { get; set; } = DateTime.UtcNow;
+    public DateTimeUtc IssueInstant { get; set; } = DateTime.UtcNow;
 
     /// <summary>
     /// Subject of the assertion

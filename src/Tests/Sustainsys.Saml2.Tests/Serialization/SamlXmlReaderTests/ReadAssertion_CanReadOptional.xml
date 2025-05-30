@@ -32,13 +32,25 @@
 	<AuthzDecisionStatement Resource="" Decision="Permit">
 		<Action Namespace="https://ns.example.com">Ignored</Action>
 	</AuthzDecisionStatement>
-	<AttributeStatement>
+	<AttributeStatement xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 		<Attribute Name="role">
 			<AttributeValue>coder</AttributeValue>
 			<AttributeValue>OSS Maintainer</AttributeValue>
 		</Attribute>
 		<Attribute Name="organisation">
 			<AttributeValue>Sustainsys AB</AttributeValue>
+		</Attribute>
+		<Attribute Name="role">
+			<AttributeValue>bug-slayer</AttributeValue>
+		</Attribute>
+		<Attribute Name="NullAttribute1">
+			<AttributeValue xsi:nil="true" />
+		</Attribute>
+		<Attribute Name="NullAttribute2">
+			<AttributeValue xsi:nil="1" />
+		</Attribute>
+		<Attribute Name="NotNullAttribute">
+			<AttributeValue xsi:nil="false" />
 		</Attribute>
 	</AttributeStatement>
 </Assertion>

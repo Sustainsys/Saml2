@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -6,6 +7,7 @@ using Sustainsys.Saml2.AspNetCore.Events;
 using Sustainsys.Saml2.Bindings;
 using Sustainsys.Saml2.Samlp;
 using Sustainsys.Saml2.Serialization;
+using Sustainsys.Saml2.Validation;
 using Sustainsys.Saml2.Xml;
 using System.Text.Encodings.Web;
 
@@ -76,11 +78,35 @@ public class Saml2Handler(
 
         var source = XmlHelpers.GetXmlTraverser(samlMessage.Xml);
         var reader = GetRequiredService<ISamlXmlReader>();
-        var samlResponse = reader.ReadSamlResponse(source);
+        var samlResponse = reader.ReadResponse(source);
 
-        // For now, to make half-baked test pass.
-        return HandleRequestResult.Handle();
+        var validator = GetRequiredService<IResponseValidator>();
+
+        // TODO: Do proper validation! + Tests!
+        ResponseValidationParameters validationParameters = new()
+        {
+            AssertionValidationParameters = new()
+            {
+                ValidIssuer = Options.IdentityProvider!.EntityId!,
+                ValidAudience = Options.EntityId!.Value
+            },
+            ValidDestination = GetAbsoluteUrl(Options.CallbackPath)
+        };
+
+        validator.Validate(samlResponse, validationParameters);
+
+        var claimsFactory = GetRequiredService<IClaimsFactory>();
+
+        // TODO: Handle multiple assertions.
+        var identity = claimsFactory.GetClaimsIdentity(samlResponse.Assertions.Single());
+
+        AuthenticationTicket authenticationTicket = new(new(identity), Scheme.Name);
+
+        return HandleRequestResult.Success(authenticationTicket);
     }
+
+    private string GetAbsoluteUrl(PathString callbackPath) =>
+        $"{Request.Scheme}://{Request.Host}{callbackPath}";
 
     /// <summary>
     /// Redirects to identity provider with an authentication request.
@@ -92,7 +118,7 @@ public class Saml2Handler(
         var authnRequest = new AuthnRequest()
         {
             Issuer = Options.EntityId,
-            IssueInstant = TimeProvider.GetUtcNow().DateTime,
+            IssueInstant = TimeProvider.GetUtcNow().UtcDateTime,
             AssertionConsumerServiceUrl = BuildRedirectUri(Options.CallbackPath)
         };
 

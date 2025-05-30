@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using Sustainsys.Saml2.Common;
+using System.Diagnostics;
 using System.Security.Cryptography.Xml;
 using System.Xml;
 
@@ -335,6 +336,15 @@ public class XmlTraverser
         => CurrentNode?.Attributes?.GetNamedItem(localName)?.Value;
 
     /// <summary>
+    /// Get attribute value with specified <paramref name="localName"/> and namespace Uri.
+    /// </summary>
+    /// <param name="localName">Local name of attribute</param>
+    /// <param name="namespaceUri">Namespace Uri of attribute</param>
+    /// <returns>Attribute value, null if none.</returns>
+    public string? GetAttribute(string localName, string namespaceUri)
+        => CurrentNode?.Attributes?.GetNamedItem(localName, namespaceUri)?.Value;
+
+    /// <summary>
     /// Get required attribute value with specified <paramref name="localName"/> and where there is no namespace
     /// qualifier on the attribute.
     /// </summary>
@@ -422,8 +432,8 @@ public class XmlTraverser
     /// </summary>
     /// <param name="localName">Local name of attribute</param>
     /// <returns>Parsed DateTime or null if parse fails</returns>
-    public DateTime? GetDateTimeAttribute(string localName)
-        => TryGetAttribute(localName, s => XmlConvert.ToDateTime(s, XmlDateTimeSerializationMode.RoundtripKind));
+    public DateTimeUtc? GetDateTimeAttribute(string localName)
+        => TryGetAttribute(localName, s => XmlConvert.ToDateTime(s, XmlDateTimeSerializationMode.Utc));
 
     /// <summary>
     /// Gets a required attribute as DateTime. On missing attribute or parse errors the Error
@@ -431,8 +441,8 @@ public class XmlTraverser
     /// </summary>
     /// <param name="localName">Local name of attribute</param>
     /// <returns>Parsed DateTime or null if parse fails</returns>
-    public DateTime GetRequiredDateTimeAttribute(string localName)
-        => GetRequiredAttribute(localName, s => XmlConvert.ToDateTime(s, XmlDateTimeSerializationMode.RoundtripKind));
+    public DateTimeUtc GetRequiredDateTimeAttribute(string localName)
+        => GetRequiredAttribute(localName, s => XmlConvert.ToDateTime(s, XmlDateTimeSerializationMode.Utc));
 
     /// <summary>
     /// Gets an optional bool attribute. On parse errors the Error

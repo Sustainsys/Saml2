@@ -3,12 +3,15 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Microsoft.Extensions.Time.Testing;
 using NSubstitute;
 using Sustainsys.Saml2.AspNetCore;
 using Sustainsys.Saml2.Bindings;
+using Sustainsys.Saml2.Common;
 using Sustainsys.Saml2.Samlp;
 using Sustainsys.Saml2.Serialization;
 using Sustainsys.Saml2.Tests.Helpers;
+using Sustainsys.Saml2.Validation;
 using Sustainsys.Saml2.Xml;
 using System.Text;
 using System.Text.Encodings.Web;
@@ -16,7 +19,7 @@ using System.Text.Encodings.Web;
 namespace Sustainsys.Saml2.Tests.AspNetCore;
 public class Saml2HandlerTests
 {
-    private readonly static DateTime CurrentFakeTime = new(2023, 09, 08, 14, 53, 02, DateTimeKind.Utc);
+    private readonly static DateTimeUtc CurrentFakeTime = new(2023, 09, 08, 14, 53, 02);
 
     private static async Task<(Saml2Handler subject, HttpContext httpContext)> CreateSubject(Saml2Options options)
     {
@@ -43,6 +46,16 @@ public class Saml2HandlerTests
             UrlEncoder.Default,
             keyedServiceProvider);
 
+        FakeTimeProvider timeProvider = new FakeTimeProvider(new(2025, 05, 28, 11, 14, 53, TimeSpan.Zero));
+
+        keyedServiceProvider.GetService(typeof(IResponseValidator)).Returns(
+            new ResponseValidator(new AssertionValidator(timeProvider)));
+
+        keyedServiceProvider.GetService(typeof(IClaimsFactory)).Returns(new ClaimsFactory());
+
+        var authenticationService = Substitute.For<IAuthenticationService>();
+        keyedServiceProvider.GetService(typeof(IAuthenticationService)).Returns(authenticationService);
+
         var scheme = new AuthenticationScheme("Saml2", "Saml2", typeof(Saml2Handler));
 
         var httpContext = Substitute.For<HttpContext>();
@@ -50,7 +63,10 @@ public class Saml2HandlerTests
 
         httpContext.Request.Scheme = "https";
         httpContext.Request.Host = new HostString("sp.example.com", 8888);
-        httpContext.Request.Path = "/path";
+        httpContext.Request.Path = "/Saml2/Acs";
+
+        httpContext.RequestServices.GetService(Arg.Is<Type>(t => t == typeof(IAuthenticationService)))
+            .Returns(authenticationService);
 
         await handler.InitializeAsync(scheme, httpContext);
 
@@ -64,11 +80,11 @@ public class Saml2HandlerTests
             EntityId = "https://sp.example.com/Metadata",
             IdentityProvider = new()
             {
-                EntityId = "https://idp.example.com",
+                EntityId = "https://idp.example.com/Saml2",
                 SsoServiceUrl = "https://idp.example.com/sso",
                 SsoServiceBinding = Constants.BindingUris.HttpRedirect
             },
-            TimeProvider = new Microsoft.Extensions.Time.Testing.FakeTimeProvider(CurrentFakeTime)
+            TimeProvider = new Microsoft.Extensions.Time.Testing.FakeTimeProvider(CurrentFakeTime),
         };
     }
 
@@ -162,9 +178,10 @@ public class Saml2HandlerTests
         var options = CreateOptions();
         var (subject, _) = await CreateSubject(options);
 
-        var result = await subject.HandleRequestAsync();
-
-        result.Should().BeFalse();
+        await subject.Invoking(async s => await s.HandleRequestAsync())
+            .Should().ThrowAsync<AuthenticationFailureException>()
+            .WithInnerException<AuthenticationFailureException, AuthenticationFailureException>()
+            .WithMessage("No binding*");
     }
 
 

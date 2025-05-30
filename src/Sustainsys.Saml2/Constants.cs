@@ -15,6 +15,8 @@ public static class Constants
         public const string Saml = "saml";
         public const string MetadataUri = "urn:oasis:names:tc:SAML:2.0:metadata";
         public const string Metadata = "md";
+        public const string Xsi = "xsi";
+        public const string XsiUri = "http://www.w3.org/2001/XMLSchema-instance";
     }
 
     public const string SamlRequest = "SAMLRequest";

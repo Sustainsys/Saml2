@@ -9,18 +9,18 @@ namespace Sustainsys.Saml2.Tests.Serialization;
 partial class SamlXmlReaderTests
 {
     [Fact]
-    public void ReadSamlResponse_MinimalErrorRequester()
+    public void ReadResponse_MinimalErrorRequester()
     {
         var source = GetXmlTraverser();
 
         var subject = new SamlXmlReader();
 
-        var actual = subject.ReadSamlResponse(source);
+        var actual = subject.ReadResponse(source);
 
-        var expected = new SamlResponse()
+        var expected = new Response()
         {
             Id = "x123",
-            IssueInstant = new DateTime(2023, 10, 14, 13, 46, 32, DateTimeKind.Utc),
+            IssueInstant = new(2023, 10, 14, 13, 46, 32),
             Status = new()
             {
                 StatusCode = new()
@@ -40,9 +40,9 @@ partial class SamlXmlReaderTests
     [InlineData("./samlp:Status", ErrorReason.MissingElement)]
     [InlineData("./samlp:Status/samlp:StatusCode", ErrorReason.MissingElement)]
     [InlineData("./samlp:Status/samlp:StatusCode/@Value", ErrorReason.MissingAttribute)]
-    public void ReadSamlResponse_MissingMandatory(string removeXPath, ErrorReason expectedError)
+    public void ReadResponse_MissingMandatory(string removeXPath, ErrorReason expectedError)
     {
-        var source = GetXmlTraverser(nameof(ReadSamlResponse_MinimalErrorRequester));
+        var source = GetXmlTraverser(nameof(ReadResponse_MinimalErrorRequester));
 
         var deleteNode = source.CurrentNode!.SelectSingleNode(removeXPath, source.CurrentNode.GetNsMgr());
 
@@ -57,7 +57,7 @@ partial class SamlXmlReaderTests
 
         var subject = new SamlXmlReader();
 
-        subject.Invoking(s => s.ReadSamlResponse(source))
+        subject.Invoking(s => s.ReadResponse(source))
             .Should().Throw<SamlXmlException>()
             .WithErrors(expectedError);
     }
@@ -65,7 +65,7 @@ partial class SamlXmlReaderTests
     // Test that a response with all optional content present in the Response can be read. This doesn't
     // mean that we actually read everything, a lot of rarely used stuff is just ignored (for now)
     [Fact]
-    public void ReadSamlResponse_CanReadCompleteResponse()
+    public void ReadResponse_CanReadCompleteResponse()
     {
         var source = GetXmlTraverser();
         ((XmlElement)source.CurrentNode!).Sign(
@@ -73,14 +73,14 @@ partial class SamlXmlReaderTests
 
         var subject = new SamlXmlReader();
 
-        var actual = subject.ReadSamlResponse(source);
+        var actual = subject.ReadResponse(source);
 
-        var expected = new SamlResponse
+        var expected = new Response
         {
             Id = "x123",
             InResponseTo = "x789",
             Version = "2.0",
-            IssueInstant = new DateTime(2023, 10, 14, 13, 46, 32, DateTimeKind.Utc),
+            IssueInstant = new(2023, 10, 14, 13, 46, 32),
             Destination = "https://sp.example.com/Saml2/Acs",
             Issuer = "https://idp.example.com/Metadata",
             Status = new()
@@ -97,7 +97,7 @@ partial class SamlXmlReaderTests
                 {
                     Version = "2.42",
                     Id = "_0f9174fb-a286-43cf-93c8-197dfc6c58d2",
-                    IssueInstant = new(2024,02,12,13,00,53,DateTimeKind.Utc),
+                    IssueInstant = new(2024,02,12,13,00,53),
                     Issuer = "https://idp.example.com/Metadata",
                     Subject = new()
                     {
@@ -107,7 +107,7 @@ partial class SamlXmlReaderTests
                             Method = "urn:oasis:names:tc:SAML:2.0:cm:bearer",
                             SubjectConfirmationData = new()
                             {
-                                NotOnOrAfter = new(2024,02,12,13,02,53,DateTimeKind.Utc),
+                                NotOnOrAfter = new(2024,02,12,13,02,53),
                                 Recipient = "https://sp.example.com/Saml2/Acs"
                             }
                         }
@@ -124,7 +124,7 @@ partial class SamlXmlReaderTests
                     },
                     AuthnStatement = new()
                     {
-                        AuthnInstant = new(2024,2,12,13,0,53,DateTimeKind.Utc),
+                        AuthnInstant = new(2024,2,12,13,0,53),
                         SessionIndex = "42",
                         AuthnContext = new()
                         {
@@ -140,12 +140,12 @@ partial class SamlXmlReaderTests
     }
 
     [Fact]
-    public void ReadSamlResponse_SignedWithoutIssuerFails()
+    public void ReadResponse_SignedWithoutIssuerFails()
     {
         // Profiles 4.1.4.2: If the <Response> message is signed or if an enclosed assertion is
         // encrypted, then the <Issuer> element MUST be present.
 
-        var source = GetXmlTraverser(nameof(ReadSamlResponse_MinimalErrorRequester));
+        var source = GetXmlTraverser(nameof(ReadResponse_MinimalErrorRequester));
 
         var documentElement = (XmlElement)source.CurrentNode!;
 
@@ -158,7 +158,7 @@ partial class SamlXmlReaderTests
 
         var subject = new SamlXmlReader();
 
-        subject.Invoking(s => s.ReadSamlResponse(source))
+        subject.Invoking(s => s.ReadResponse(source))
             .Should().Throw<SamlXmlException>()
             .WithErrors(ErrorReason.MissingElement);
     }

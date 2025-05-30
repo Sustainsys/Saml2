@@ -7,25 +7,25 @@ namespace Sustainsys.Saml2.Serialization;
 partial class SamlXmlReader
 {
     /// <inheritdoc/>
-    public SamlResponse ReadSamlResponse(
+    public Response ReadResponse(
         XmlTraverser source,
-        Action<ReadErrorInspectorContext<SamlResponse>>? errorInspector = null)
+        Action<ReadErrorInspectorContext<Response>>? errorInspector = null)
     {
-        SamlResponse samlResponse = default!;
+        Response response = default!;
 
         if (source.EnsureName(Elements.Response, Namespaces.SamlpUri))
         {
-            samlResponse = ReadSamlResponse(source);
+            response = ReadResponse(source);
         }
 
         source.MoveNext(true);
 
         // TODO: Test for error inspector call
-        CallErrorInspector(errorInspector, samlResponse, source);
+        CallErrorInspector(errorInspector, response, source);
 
         source.ThrowOnErrors();
 
-        return samlResponse;
+        return response;
     }
 
     /// <summary>
@@ -33,9 +33,9 @@ partial class SamlXmlReader
     /// </summary>
     /// <param name="source">Source Data</param>
     /// <returns>SamlResponse</returns>
-    protected virtual SamlResponse ReadSamlResponse(XmlTraverser source)
+    protected virtual Response ReadResponse(XmlTraverser source)
     {
-        var samlResponse = Create<SamlResponse>();
+        var samlResponse = Create<Response>();
 
         ReadAttributes(source, samlResponse);
         ReadElements(source.GetChildren(), samlResponse);
@@ -47,14 +47,14 @@ partial class SamlXmlReader
     /// Read elements of SamlResponse
     /// </summary>
     /// <param name="source">XmlTraverser</param>
-    /// <param name="samlResponse">SamlResponse to populate</param>
-    protected virtual void ReadElements(XmlTraverser source, SamlResponse samlResponse)
+    /// <param name="response">Response to populate</param>
+    protected virtual void ReadElements(XmlTraverser source, Response response)
     {
-        ReadElements(source, (StatusResponseType)samlResponse);
+        ReadElements(source, (StatusResponseType)response);
 
         while (source.HasName(Elements.Assertion, Namespaces.SamlUri))
         {
-            samlResponse.Assertions.Add(ReadAssertion(source));
+            response.Assertions.Add(ReadAssertion(source));
             source.MoveNext(true);
         }
     }

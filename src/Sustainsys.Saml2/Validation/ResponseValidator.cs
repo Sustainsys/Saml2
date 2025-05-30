@@ -1,33 +1,50 @@
-﻿using Sustainsys.Saml2.Samlp;
+﻿using Sustainsys.Saml2.Saml;
+using Sustainsys.Saml2.Samlp;
 
 namespace Sustainsys.Saml2.Validation;
 
 /// <summary>
 /// Validates a Saml Response
 /// </summary>
-public class SamlResponseValidator : ISamlResponseValidator
+public class ResponseValidator(IAssertionValidator assertionValidator) : IResponseValidator
 {
     /// <inheritdoc/>
     public void Validate(
-        SamlResponse samlResponse,
-        SamlResponseValidationParameters validationParameters)
+        Response samlResponse,
+        ResponseValidationParameters validationParameters)
     {
-        // Core 2.5.1
-        ValidateConditions(samlResponse, validationParameters);
+        ValidateAssertions(samlResponse.Assertions, validationParameters.AssertionValidationParameters);
         // Core 2.7.2 AuthnStatement
         ValidateVersion(samlResponse);
-
+        // Core 3.2.1
+        ValidateDestination(samlResponse, validationParameters);
         // Profile 4.1.4.2, 4.1.4.3
         ValidateIssuer(samlResponse, validationParameters);
         ValidateStatusCode(samlResponse);
     }
-
+    /// <summary> 
+    /// Validate the destination.
+    /// </summary>
+    /// <param name="samlResponse">Saml response</param>
+    /// <param name="validationParameters">Validation parameters</param>
+    /// <exception cref="SamlValidationException">On validation failure</exception>
+    protected virtual void ValidateDestination(
+     Response samlResponse,
+     ResponseValidationParameters validationParameters)
+    {
+        if (samlResponse.Destination != null &&
+            samlResponse.Destination != validationParameters.ValidDestination)
+        {
+            throw new SamlValidationException(
+                $"Response destination {samlResponse.Destination} does not match expected {validationParameters.ValidDestination}");
+        }
+    }
     /// <summary>
     /// Validate that the status code is <see cref="Constants.StatusCodes.Success"/>
     /// </summary>
     /// <param name="samlResponse">Saml Response</param>
     /// <exception cref="SamlValidationException">On validation failure</exception>
-    protected virtual void ValidateStatusCode(SamlResponse samlResponse)
+    protected virtual void ValidateStatusCode(Response samlResponse)
     {
         if (samlResponse.Status?.StatusCode?.Value != Constants.StatusCodes.Success)
         {
@@ -42,8 +59,8 @@ public class SamlResponseValidator : ISamlResponseValidator
     /// <param name="validationParameters">Validation parameters</param>
     /// <exception cref="SamlValidationException">On validation failure</exception>
     protected virtual void ValidateIssuer(
-        SamlResponse samlResponse,
-        SamlResponseValidationParameters validationParameters)
+        Response samlResponse,
+        ResponseValidationParameters validationParameters)
     {
         if (samlResponse.Issuer != null &&
             samlResponse.Issuer != validationParameters.ValidIssuer)
@@ -58,7 +75,7 @@ public class SamlResponseValidator : ISamlResponseValidator
     /// </summary>
     /// <param name="samlResponse">Saml response</param>
     /// <exception cref="SamlValidationException">On validation failure</exception>
-    protected virtual void ValidateVersion(SamlResponse samlResponse)
+    protected virtual void ValidateVersion(Response samlResponse)
     {
         if (samlResponse.Version != "2.0")
         {
@@ -67,19 +84,17 @@ public class SamlResponseValidator : ISamlResponseValidator
     }
 
     /// <summary>
-    /// 
+    /// Validate assertions.
     /// </summary>
-    /// <param name="samlResponse">Saml response</param>
-    /// <param name="validationParameters">Validation parameters</param>
-    /// <exception cref="SamlValidationException">On validation failure</exception>
-    protected virtual void ValidateConditions(
-        SamlResponse samlResponse,
-        SamlResponseValidationParameters validationParameters)
+    /// <param name="assertions">Assertions to validate</param>
+    /// <param name="validationParameters">Validation Parameters</param>
+    protected virtual void ValidateAssertions(
+        IEnumerable<Assertion> assertions,
+        AssertionValidationParameters validationParameters)
     {
-        // Core 2.5.1.2 NotBefore, NotOnOrAfter
-        // Core 2.5.1.4 AudienceRestriction, Audience
-        // Core 2.5.1.5 OneTimeUse
-        // Core 2.5.1.6 ProxyRestriction
+        foreach (var assertion in assertions)
+        {
+            assertionValidator.Validate(assertion, validationParameters);
+        }
     }
-
 }

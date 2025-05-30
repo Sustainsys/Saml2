@@ -1,11 +1,17 @@
-﻿using Sustainsys.Saml2.Samlp;
+﻿using Microsoft.Extensions.Time.Testing;
+using Sustainsys.Saml2.Samlp;
 using Sustainsys.Saml2.Validation;
 
 namespace Sustainsys.Saml2.Tests.Validators;
 
-public class SamlResponseValidatorTests
+public class ResponseValidatorTests
 {
-    private static SamlResponse CreateSamlResponse() =>
+    private static ResponseValidator CreateSubject() =>
+     new ResponseValidator(
+         new AssertionValidator(
+             new FakeTimeProvider(new(2025, 05, 28, 11, 14, 53, TimeSpan.Zero))));
+
+    private static Response CreateResponse() =>
         new()
         {
             Issuer = new()
@@ -21,7 +27,7 @@ public class SamlResponseValidatorTests
             }
         };
 
-    private static SamlResponseValidationParameters CreateValidationParameters() =>
+    private static ResponseValidationParameters CreateValidationParameters() =>
         new()
         {
             AssertionValidationParameters = new()
@@ -35,9 +41,9 @@ public class SamlResponseValidatorTests
     [Fact]
     public void Validate()
     {
-        var subject = new SamlResponseValidator();
+        var subject = CreateSubject();
 
-        var response = CreateSamlResponse();
+        var response = CreateResponse();
         var parameters = CreateValidationParameters();
 
         // Should not throw.
@@ -47,9 +53,9 @@ public class SamlResponseValidatorTests
     [Fact]
     public void Validate_Issuer_IsMissing()
     {
-        var subject = new SamlResponseValidator();
+        var subject = CreateSubject();
 
-        var response = CreateSamlResponse();
+        var response = CreateResponse();
         response.Issuer = null;
 
         var parameters = CreateValidationParameters();
@@ -64,9 +70,9 @@ public class SamlResponseValidatorTests
     [InlineData(null, false)]
     public void Validate_Version(string? version, bool valid)
     {
-        var subject = new SamlResponseValidator();
+        var subject = CreateSubject();
 
-        var response = CreateSamlResponse();
+        var response = CreateResponse();
 
         // Yes, it can be null - we're testing!
         response.Version = version!;
@@ -88,9 +94,9 @@ public class SamlResponseValidatorTests
     [Fact]
     public void Validate_Issuer_IsIncorrect()
     {
-        var subject = new SamlResponseValidator();
+        var subject = CreateSubject();
 
-        var response = CreateSamlResponse();
+        var response = CreateResponse();
         response.Issuer!.Value = "https://unexpected";
 
         var parameters = CreateValidationParameters();
@@ -105,9 +111,9 @@ public class SamlResponseValidatorTests
     [Fact]
     public void Validate_Status_IsNonSuccess()
     {
-        var subject = new SamlResponseValidator();
+        var subject = CreateSubject();
 
-        var response = CreateSamlResponse();
+        var response = CreateResponse();
         response.Status.StatusCode.Value = Constants.StatusCodes.Requester;
 
         var parameters = CreateValidationParameters();
@@ -115,5 +121,36 @@ public class SamlResponseValidatorTests
         subject.Invoking(s => s.Validate(response, parameters))
             .Should().Throw<SamlValidationException>()
             .WithMessage("*status*Requester*");
+    }
+
+    [Fact]
+    public void Validate_Destination_IsIncorrect()
+    {
+        var subject = CreateSubject();
+
+        var response = CreateResponse();
+        response.Destination = "https://example.com/Acs";
+
+        var parameters = CreateValidationParameters();
+        parameters.ValidDestination = "https://example.com/AnotherEndpoint";
+
+        subject.Invoking(s => s.Validate(response, parameters))
+            .Should().Throw<SamlValidationException>()
+            .WithMessage("*destination*https://example.com/Acs*");
+    }
+
+    [Fact]
+    public void Validate_Destination_IsCorrect()
+    {
+        var subject = CreateSubject();
+
+        var response = CreateResponse();
+        response.Destination = "https://example.com/Acs";
+
+        var parameters = CreateValidationParameters();
+        parameters.ValidDestination = "https://example.com/Acs";
+
+        subject.Invoking(s => s.Validate(response, parameters))
+            .Should().NotThrow();
     }
 }
