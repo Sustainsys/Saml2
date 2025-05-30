@@ -16,7 +16,7 @@ public class SamlAttribute
     /// <summary>
     /// Attribute values.
     /// </summary>
-    public List<string?> Values { get; } = [];
+    public List<string?> Values { get; init; } = [];
 
     private string AllValues { get => string.Join(", ", Values); }
 }

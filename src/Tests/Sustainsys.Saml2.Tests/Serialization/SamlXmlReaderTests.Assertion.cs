@@ -168,12 +168,12 @@ public partial class SamlXmlReaderTests
             },
             Attributes =
             {
-                new()
-                {
-                    Name = "role",
-                    Values = {"coder", "OSS Maintainer"}
-                },
-                { "organisation", "Sustainsys AB" }
+                { "role", "coder", "OSS Maintainer" },
+                { "organisation", "Sustainsys AB" },
+                { "role", "bug-slayer" },
+                { "NullAttribute1", (string?)null },
+                { "NullAttribute2", (string?)null },
+                { "NotNullAttribute", "" }
             }
         };
 

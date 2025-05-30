@@ -16,7 +16,9 @@ public class AssertionValidator(TimeProvider timeProvider) : IAssertionValidator
         ValidateConditions(assertion.Conditions, parameters);
         // Validate TrustLevel
         // Validate Conditions
-        // ...
+        // Attributes: Attributes within an AttributeStatement must have at least one AttributeValue
+
+
     }
 
     /// <summary>

@@ -40,8 +40,16 @@ public partial class SamlXmlReader
         while (source.MoveNext(true)
             && source.EnsureName(Elements.AttributeValue, Namespaces.SamlUri))
         {
-            // TODO: Test + support for null values.
-            attribute.Values.Add(source.GetTextContents());
+            var nilAttribute = source.GetAttribute("nil", Namespaces.XsiUri);
+
+            if (nilAttribute == "true" || nilAttribute == "1")
+            {
+                attribute.Values.Add(null);
+            }
+            else
+            {
+                attribute.Values.Add(source.GetTextContents());
+            }
         }
     }
 }

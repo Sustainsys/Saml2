@@ -22,17 +22,9 @@ public class ClaimsFactoryTests
             Attributes =
             {
                 // Single valued attribute
-                new()
-                {
-                    Name = "email",
-                    Values = { "john.doe@example.com" }
-                },
+                { "email", "john.doe@example.com" },
                 // Multi valued attribute
-                new()
-                {
-                    Name = "role",
-                    Values = { "admin", "boss" }
-                }
+                { "role", "admin", "boss" }
                 // TODO: Test for multiple attribute statements with same attribute name
             }
         };

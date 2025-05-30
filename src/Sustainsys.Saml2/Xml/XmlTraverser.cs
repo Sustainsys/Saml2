@@ -336,6 +336,15 @@ public class XmlTraverser
         => CurrentNode?.Attributes?.GetNamedItem(localName)?.Value;
 
     /// <summary>
+    /// Get attribute value with specified <paramref name="localName"/> and namespace Uri.
+    /// </summary>
+    /// <param name="localName">Local name of attribute</param>
+    /// <param name="namespaceUri">Namespace Uri of attribute</param>
+    /// <returns>Attribute value, null if none.</returns>
+    public string? GetAttribute(string localName, string namespaceUri)
+        => CurrentNode?.Attributes?.GetNamedItem(localName, namespaceUri)?.Value;
+
+    /// <summary>
     /// Get required attribute value with specified <paramref name="localName"/> and where there is no namespace
     /// qualifier on the attribute.
     /// </summary>
