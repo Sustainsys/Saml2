@@ -11,6 +11,11 @@ public class Conditions
     public DateTime? NotBefore { get; set; }
 
     /// <summary>
+    /// Not after
+    /// </summary>
+    public DateTime? NotOnOrAfter { get; set; }
+
+    /// <summary>
     /// Audience restrictions
     /// </summary>
     public List<AudienceRestriction> AudienceRestrictions { get; } = [];

@@ -87,7 +87,8 @@ public class Saml2Handler(
         {
             AssertionValidationParameters = new()
             {
-                ValidIssuer = Options.IdentityProvider!.EntityId!
+                ValidIssuer = Options.IdentityProvider!.EntityId!,
+                ValidAudience = Options.EntityId!.Value
             },
             ValidDestination = GetAbsoluteUrl(Options.CallbackPath)
         };
