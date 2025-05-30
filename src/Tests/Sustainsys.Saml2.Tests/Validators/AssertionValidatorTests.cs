@@ -21,8 +21,8 @@ public class AssertionValidatorTests
             {
                 // Check with current time from TimeProvider
                 // TODO: Set sample values that match the Fake above.
-                NotBefore = new(2025, 05, 28, 9, 34, 42, DateTimeKind.Utc),
-                NotOnOrAfter = new(2026, 05, 28, 9, 34, 41, DateTimeKind.Utc),
+                NotBefore = new(2025, 05, 28, 9, 34, 42),
+                NotOnOrAfter = new(2026, 05, 28, 9, 34, 41),
                 AudienceRestrictions =
                 {
                     new()
@@ -125,7 +125,7 @@ public class AssertionValidatorTests
         var subject = CreateSubject();
 
         var assertion = CreateAssertion();
-        assertion.Conditions!.NotBefore = new(2025, 05, 28, 9, 34, 43, DateTimeKind.Utc);
+        assertion.Conditions!.NotBefore = new(2025, 05, 28, 9, 34, 43);
         var parameters = CreateValidationParameters();
 
         subject.Invoking(s => s.Validate(assertion, parameters))
@@ -138,7 +138,7 @@ public class AssertionValidatorTests
         var subject = CreateSubject();
 
         var assertion = CreateAssertion();
-        assertion.Conditions!.NotOnOrAfter = new(2025, 05, 28, 9, 34, 42, DateTimeKind.Utc);
+        assertion.Conditions!.NotOnOrAfter = new(2025, 05, 28, 9, 34, 42);
         var parameters = CreateValidationParameters();
 
         subject.Invoking(s => s.Validate(assertion, parameters))

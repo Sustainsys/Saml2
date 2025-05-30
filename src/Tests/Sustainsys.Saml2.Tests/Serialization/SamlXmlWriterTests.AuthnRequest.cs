@@ -10,7 +10,7 @@ public partial class SamlXmlWriterTests
     {
         AuthnRequest authnRequest = new()
         {
-            IssueInstant = new DateTime(2023, 09, 14, 15, 23, 47, DateTimeKind.Utc),
+            IssueInstant = new(2023, 09, 14, 15, 23, 47),
         };
 
         var subject = new SamlXmlWriter();
@@ -32,7 +32,7 @@ public partial class SamlXmlWriterTests
     {
         AuthnRequest authnRequest = new()
         {
-            IssueInstant = new DateTime(2023, 09, 14, 15, 23, 47, DateTimeKind.Utc),
+            IssueInstant = new(2023, 09, 14, 15, 23, 47),
             AssertionConsumerServiceUrl = "https://sp.example.com/acs",
             Issuer = new("https://sp.example.com/Metadata")
         };

@@ -13,9 +13,9 @@ public class Conditions
     public DateTimeUtc? NotBefore { get; set; }
 
     /// <summary>
-    /// Not after
+    /// Not on or after
     /// </summary>
-    public DateTime? NotOnOrAfter { get; set; }
+    public DateTimeUtc? NotOnOrAfter { get; set; }
 
     /// <summary>
     /// Audience restrictions

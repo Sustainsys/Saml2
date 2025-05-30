@@ -19,7 +19,7 @@ using System.Text.Encodings.Web;
 namespace Sustainsys.Saml2.Tests.AspNetCore;
 public class Saml2HandlerTests
 {
-    private readonly static DateTime CurrentFakeTime = new(2023, 09, 08, 14, 53, 02, DateTimeKind.Utc);
+    private readonly static DateTimeUtc CurrentFakeTime = new(2023, 09, 08, 14, 53, 02);
 
     private static async Task<(Saml2Handler subject, HttpContext httpContext)> CreateSubject(Saml2Options options)
     {
@@ -104,7 +104,7 @@ public class Saml2HandlerTests
                 ctx.AuthnRequest.Issuer?.Value.Should().Be("https://sp.example.com/Metadata");
 
                 // Core 3.2.1: Issue instant is required
-                ctx.AuthnRequest.IssueInstant.Should().Be((DateTimeUtc)CurrentFakeTime);
+                ctx.AuthnRequest.IssueInstant.Should().Be(CurrentFakeTime);
 
                 // Core 3.4.1 AssertionConsumerServicerUrl is optional, but our StubIdp requires it
                 ctx.AuthnRequest.AssertionConsumerServiceUrl.Should().Be("https://sp.example.com:8888/Saml2/Acs");

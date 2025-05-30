@@ -10,9 +10,29 @@ public struct DateTimeUtc
     /// </summary>
     public long Ticks { get; init; }
 
-    private DateTimeUtc(long ticks)
+    /// <summary>
+    /// Construct a DateTimeUtc from ticks
+    /// </summary>
+    /// <param name="ticks"></param>
+    public DateTimeUtc(long ticks)
     {
         Ticks = ticks;
+    }
+
+    /// <summary>
+    /// Construct a DateTimeUtc
+    /// </summary>
+    /// <param name="year">Year</param>
+    /// <param name="month">Month</param>
+    /// <param name="day">Day</param>
+    /// <param name="hour">Hour</param>
+    /// <param name="minute">Minute</param>
+    /// <param name="second">Second</param>
+    public DateTimeUtc(int year, int month, int day, int hour, int minute, int second)
+    {
+        DateTime dt = new(year, month, day, hour, minute, second, DateTimeKind.Utc);
+
+        Ticks = dt.Ticks;
     }
 
     /// <summary>
@@ -38,4 +58,55 @@ public struct DateTimeUtc
     {
         return new(source.Ticks, DateTimeKind.Utc);
     }
+
+    /// <summary>
+    /// Implicit conversion to DateTimeOffset
+    /// </summary>
+    /// <param name="source">Source DateTimeUtc</param>
+    public static implicit operator DateTimeOffset(DateTimeUtc source)
+        => new(source);
+
+    /// <summary>
+    /// Operator greater than
+    /// </summary>
+    /// <param name="dto">DateTimeOffset</param>
+    /// <param name="dtu">DateTimeUtc</param>
+    /// <returns>Bool result</returns>
+    public static bool operator <(DateTimeOffset dto, DateTimeUtc dtu) =>
+        dto < (DateTime)dtu;
+
+    /// <summary>
+    /// Operator less than
+    /// </summary>
+    /// <param name="dto">DateTimeOffset</param>
+    /// <param name="dtu">DateTimeUtc</param>
+    /// <returns>Bool result</returns>
+    /// <exception cref="NotImplementedException">Method is not implemented</exception>
+    public static bool operator >(DateTimeOffset dto, DateTimeUtc dtu) =>
+        throw new NotImplementedException();
+
+    /// <summary>
+    /// Operator greater or equal than
+    /// </summary>
+    /// <param name="dto">DateTimeOffset</param>
+    /// <param name="dtu">DateTimeUtc</param>
+    /// <returns>Bool result</returns>
+    public static bool operator >=(DateTimeOffset dto, DateTimeUtc dtu) =>
+        dto >= (DateTime)dtu;
+
+    /// <summary>
+    /// Operator less or equal than
+    /// </summary>
+    /// <param name="dto">DateTimeOffset</param>
+    /// <param name="dtu">DateTimeUtc</param>
+    /// <returns>Bool result</returns>
+    /// <exception cref="NotImplementedException">Method is not implemented</exception>
+    public static bool operator <=(DateTimeOffset dto, DateTimeUtc dtu) =>
+        throw new NotImplementedException();
+
+    /// <summary>
+    /// ToString
+    /// </summary>
+    /// <returns>String</returns>
+    public override string ToString() => ((DateTime)this).ToString();
 }

@@ -20,7 +20,7 @@ partial class SamlXmlReaderTests
         var expected = new Response()
         {
             Id = "x123",
-            IssueInstant = new DateTime(2023, 10, 14, 13, 46, 32, DateTimeKind.Utc),
+            IssueInstant = new(2023, 10, 14, 13, 46, 32),
             Status = new()
             {
                 StatusCode = new()
@@ -80,7 +80,7 @@ partial class SamlXmlReaderTests
             Id = "x123",
             InResponseTo = "x789",
             Version = "2.0",
-            IssueInstant = new DateTime(2023, 10, 14, 13, 46, 32, DateTimeKind.Utc),
+            IssueInstant = new(2023, 10, 14, 13, 46, 32),
             Destination = "https://sp.example.com/Saml2/Acs",
             Issuer = "https://idp.example.com/Metadata",
             Status = new()
@@ -97,7 +97,7 @@ partial class SamlXmlReaderTests
                 {
                     Version = "2.42",
                     Id = "_0f9174fb-a286-43cf-93c8-197dfc6c58d2",
-                    IssueInstant = new DateTime(2024,02,12,13,00,53,DateTimeKind.Utc),
+                    IssueInstant = new(2024,02,12,13,00,53),
                     Issuer = "https://idp.example.com/Metadata",
                     Subject = new()
                     {
@@ -107,7 +107,7 @@ partial class SamlXmlReaderTests
                             Method = "urn:oasis:names:tc:SAML:2.0:cm:bearer",
                             SubjectConfirmationData = new()
                             {
-                                NotOnOrAfter = new DateTime(2024,02,12,13,02,53,DateTimeKind.Utc),
+                                NotOnOrAfter = new(2024,02,12,13,02,53),
                                 Recipient = "https://sp.example.com/Saml2/Acs"
                             }
                         }
@@ -124,7 +124,7 @@ partial class SamlXmlReaderTests
                     },
                     AuthnStatement = new()
                     {
-                        AuthnInstant = new DateTime(2024,2,12,13,0,53,DateTimeKind.Utc),
+                        AuthnInstant = new(2024,2,12,13,0,53),
                         SessionIndex = "42",
                         AuthnContext = new()
                         {

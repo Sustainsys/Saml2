@@ -19,7 +19,7 @@ partial class SamlXmlReaderTests
         var expected = new AuthnRequest
         {
             Id = "x123",
-            IssueInstant = new DateTime(2023, 11, 24, 22, 44, 14, DateTimeKind.Utc),
+            IssueInstant = new(2023, 11, 24, 22, 44, 14),
             Version = "2.0"
         };
 
@@ -44,7 +44,7 @@ partial class SamlXmlReaderTests
         var expected = new AuthnRequest
         {
             Id = "x123",
-            IssueInstant = new DateTime(2023, 11, 24, 22, 44, 14, DateTimeKind.Utc),
+            IssueInstant = new(2023, 11, 24, 22, 44, 14),
             Version = "2.0",
             Destination = "https://idp.example.com/Sso",
             Consent = "urn:oasis:names:tc:SAML:2.0:consent:obtained",
@@ -62,7 +62,7 @@ partial class SamlXmlReaderTests
             },
             Conditions = new()
             {
-                NotBefore = new DateTime(2023, 11, 24, 22, 44, 14, DateTimeKind.Utc)
+                NotBefore = new(2023, 11, 24, 22, 44, 14)
             },
             RequestedAuthnContext = new()
             {

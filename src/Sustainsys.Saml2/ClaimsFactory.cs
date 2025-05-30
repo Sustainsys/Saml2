@@ -26,10 +26,8 @@ public class ClaimsFactory : IClaimsFactory
             {
                 foreach (var value in attribute.Values)
                 {
-                    if (value != null)
-                    {
-                        claims.Add(new(attribute.Name, value));
-                    }
+                    // TODO: Add support for xs:nil
+                    claims.Add(new(attribute.Name, value));
                 }
             }
         }
