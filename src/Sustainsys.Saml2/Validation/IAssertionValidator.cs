@@ -24,6 +24,7 @@ public class AssertionValidationParameters
     /// Valid issuer of the response and assertions
     /// </summary>
     public NameId? ValidIssuer { get; set; }
+
     /// <summary>
     ///  A URI reference that identifies an intended audience.
     /// </summary>

@@ -68,17 +68,15 @@ public class AssertionValidator(TimeProvider timeProvider) : IAssertionValidator
         foreach (var audienceRestriction in conditions.AudienceRestrictions)
         {
             if (!audienceRestriction.Audiences
-         .Where(a => a != null)
-         .Any(a => a == parameters.ValidAudience))
+                .Where(a => a != null)
+                .Any(a => a == parameters.ValidAudience))
             {
                 throw new SamlValidationException(
-                    $"Assertion conditions do not match expected {parameters.ValidAudience}");
+                    $"None of audiences {string.Join(", ", audienceRestriction.Audiences)} matches expected {parameters.ValidAudience}");
             }
 
         }
 
         // Core 2.5.1.6 ProxyRestriction
-
-
     }
 }

@@ -20,7 +20,6 @@ public class AssertionValidatorTests
             Conditions = new()
             {
                 // Check with current time from TimeProvider
-                // TODO: Set sample values that match the Fake above.
                 NotBefore = new(2025, 05, 28, 9, 34, 42),
                 NotOnOrAfter = new(2026, 05, 28, 9, 34, 41),
                 AudienceRestrictions =
@@ -45,8 +44,6 @@ public class AssertionValidatorTests
             {
                 Value = "https://idp.example.com/Saml2"
             },
-            // TODO: One expected audience. The assertion should contain this, but
-            // the assertion may contain other values too - that's fine.
             ValidAudience = "https://sp.example.com/Saml2",
         };
 
@@ -115,6 +112,7 @@ public class AssertionValidatorTests
         var assertion = CreateAssertion();
         assertion.Conditions!.NotOnOrAfter = null;
         var parameters = CreateValidationParameters();
+
         // Should not throw.
         subject.Validate(assertion, parameters);
     }
@@ -152,20 +150,12 @@ public class AssertionValidatorTests
         var subject = CreateSubject();
 
         var assertion = CreateAssertion();
-        foreach (var audienceRestriction in assertion.Conditions!.AudienceRestrictions)
-        {
-
-            for (int i = 0; i < audienceRestriction.Audiences.Count; i++)
-            {
-                audienceRestriction.Audiences[i] = "https://unexpected";
-            }
-        }
+        assertion.Conditions!.AudienceRestrictions[0].Audiences[1] = "https://unexpected";
 
         var parameters = CreateValidationParameters();
 
         subject.Invoking(s => s.Validate(assertion, parameters))
-    .Should().Throw<SamlValidationException>()
-    .WithMessage($"Assertion conditions do not match expected https://sp.example.com/Saml2");
-
+            .Should().Throw<SamlValidationException>()
+            .WithMessage($"*audiences*expected https://sp.example.com/Saml2");
     }
 }
