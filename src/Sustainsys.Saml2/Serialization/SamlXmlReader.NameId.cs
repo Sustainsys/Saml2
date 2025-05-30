@@ -9,7 +9,7 @@ public partial class SamlXmlReader
     /// </summary>
     /// <param name="source">Xml Traverser to read from</param>
     /// <returns>NameId</returns>
-    public virtual NameId ReadNameId(XmlTraverser source)
+    protected virtual NameId ReadNameId(XmlTraverser source)
     {
         var result = Create<NameId>();
 

@@ -10,7 +10,7 @@ public partial class SamlXmlReader
     /// </summary>
     /// <param name="source">Xml Traverser to read from</param>
     /// <returns>Attribute</returns>
-    public SamlAttribute ReadAttribute(XmlTraverser source)
+    protected SamlAttribute ReadAttribute(XmlTraverser source)
     {
         var attribute = Create<SamlAttribute>();
 
