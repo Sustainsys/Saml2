@@ -97,7 +97,7 @@ partial class SamlXmlReaderTests
                 {
                     Version = "2.42",
                     Id = "_0f9174fb-a286-43cf-93c8-197dfc6c58d2",
-                    IssueInstant = new(2024,02,12,13,00,53,DateTimeKind.Utc),
+                    IssueInstant = new DateTime(2024,02,12,13,00,53,DateTimeKind.Utc),
                     Issuer = "https://idp.example.com/Metadata",
                     Subject = new()
                     {
@@ -107,7 +107,7 @@ partial class SamlXmlReaderTests
                             Method = "urn:oasis:names:tc:SAML:2.0:cm:bearer",
                             SubjectConfirmationData = new()
                             {
-                                NotOnOrAfter = new(2024,02,12,13,02,53,DateTimeKind.Utc),
+                                NotOnOrAfter = new DateTime(2024,02,12,13,02,53,DateTimeKind.Utc),
                                 Recipient = "https://sp.example.com/Saml2/Acs"
                             }
                         }
@@ -124,7 +124,7 @@ partial class SamlXmlReaderTests
                     },
                     AuthnStatement = new()
                     {
-                        AuthnInstant = new(2024,2,12,13,0,53,DateTimeKind.Utc),
+                        AuthnInstant = new DateTime(2024,2,12,13,0,53,DateTimeKind.Utc),
                         SessionIndex = "42",
                         AuthnContext = new()
                         {

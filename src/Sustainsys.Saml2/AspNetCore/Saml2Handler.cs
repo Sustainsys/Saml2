@@ -118,7 +118,7 @@ public class Saml2Handler(
         var authnRequest = new AuthnRequest()
         {
             Issuer = Options.EntityId,
-            IssueInstant = TimeProvider.GetUtcNow().DateTime,
+            IssueInstant = TimeProvider.GetUtcNow().UtcDateTime,
             AssertionConsumerServiceUrl = BuildRedirectUri(Options.CallbackPath)
         };
 

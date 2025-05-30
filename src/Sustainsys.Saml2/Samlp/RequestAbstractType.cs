@@ -22,7 +22,7 @@ public class RequestAbstractType
     /// <summary>
     /// Issue instant
     /// </summary>
-    public DateTime IssueInstant { get; set; }
+    public DateTimeUtc IssueInstant { get; set; }
 
     /// <summary>
     /// Identifies the entity that generated the request message.

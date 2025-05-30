@@ -122,7 +122,7 @@ public partial class SamlXmlReaderTests
         {
             Version = "2.42",
             Id = "a9329",
-            IssueInstant = new(2024, 2, 3, 18, 24, 14, DateTimeKind.Utc),
+            IssueInstant = new DateTime(2024, 2, 3, 18, 24, 14, DateTimeKind.Utc),
             Issuer = "https://idp.example.com/Saml2",
             Subject = new()
             {
@@ -132,8 +132,8 @@ public partial class SamlXmlReaderTests
                     Method = Constants.SubjectConfirmationMethods.Bearer,
                     SubjectConfirmationData = new()
                     {
-                        NotBefore = new(2024, 2, 10, 17, 45, 14, DateTimeKind.Utc),
-                        NotOnOrAfter = new(2024, 2, 10, 17, 50, 14, DateTimeKind.Utc),
+                        NotBefore = new DateTime(2024, 2, 10, 17, 45, 14, DateTimeKind.Utc),
+                        NotOnOrAfter = new DateTime(2024, 2, 10, 17, 50, 14, DateTimeKind.Utc),
                         Recipient = "https://sp.example.com/Saml2/Acs",
                         InResponseTo = "b123456",
                         Address = "192.168.42.17"
@@ -142,7 +142,7 @@ public partial class SamlXmlReaderTests
             },
             Conditions = new()
             {
-                NotBefore = new(2024, 2, 10, 17, 45, 14, DateTimeKind.Utc),
+                NotBefore = new DateTime(2024, 2, 10, 17, 45, 14, DateTimeKind.Utc),
                 AudienceRestrictions =
                 {
                     new()
@@ -158,9 +158,9 @@ public partial class SamlXmlReaderTests
             },
             AuthnStatement = new()
             {
-                AuthnInstant = new(2024, 2, 10, 15, 27, 34, DateTimeKind.Utc),
+                AuthnInstant = new DateTime(2024, 2, 10, 15, 27, 34, DateTimeKind.Utc),
                 SessionIndex = "42",
-                SessionNotOnOrAfter = new(2024, 2, 10, 19, 45, 14, DateTimeKind.Utc),
+                SessionNotOnOrAfter = new DateTime(2024, 2, 10, 19, 45, 14, DateTimeKind.Utc),
                 AuthnContext = new()
                 {
                     AuthnContextClassRef = Constants.AuthnContextClasses.PasswordProtectedTransport

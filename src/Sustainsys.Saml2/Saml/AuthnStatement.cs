@@ -1,4 +1,6 @@
-﻿namespace Sustainsys.Saml2.Saml;
+﻿using Sustainsys.Saml2.Common;
+
+namespace Sustainsys.Saml2.Saml;
 
 /// <summary>
 /// AuthnStatement, Core 2.7.2
@@ -8,7 +10,7 @@ public class AuthnStatement
     /// <summary>
     /// Authentication instant
     /// </summary>
-    public DateTime AuthnInstant { get; set; }
+    public DateTimeUtc AuthnInstant { get; set; }
 
     /// <summary>
     /// Session Index
@@ -18,7 +20,7 @@ public class AuthnStatement
     /// <summary>
     /// A session established based on this assertion must expire by this time.
     /// </summary>
-    public DateTime? SessionNotOnOrAfter { get; set; }
+    public DateTimeUtc? SessionNotOnOrAfter { get; set; }
 
     /// <summary>
     /// Authentication Context

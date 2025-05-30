@@ -25,7 +25,7 @@ public class EntityDescriptor
     /// <summary>
     /// Absolute expiry time of any cached data.
     /// </summary>
-    public DateTime? ValidUntil { get; set; }
+    public DateTimeUtc? ValidUntil { get; set; }
 
     /// <summary>
     /// The extensions node of the metadata.
