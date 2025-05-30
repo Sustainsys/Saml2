@@ -57,4 +57,3 @@ public class DateTimeUtcTests
         a.Should().Throw<ArgumentException>();
     }
 }
-
