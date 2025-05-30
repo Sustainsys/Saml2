@@ -77,6 +77,20 @@ public class AssertionValidatorTests
     }
 
     [Fact]
+    public void Validate_Conditions_IsNotNull()
+    {
+        var subject = CreateSubject();
+
+        var assertion = CreateAssertion();
+        assertion.Conditions = null;
+        var parameters = CreateValidationParameters();
+
+        subject.Invoking(subject => subject.Validate(assertion, parameters))
+            .Should().Throw<SamlValidationException>()
+            .WithMessage("*conditions*");
+    }
+
+    [Fact]
     public void Validate_Conditions_AudienceRestriction_IsMissing()
     {
         // AudienceRestriction is indeed optional, so if it is missing, validation should pass.
@@ -130,6 +144,7 @@ public class AssertionValidatorTests
            .Should().Throw<SamlValidationException>()
            .WithMessage("*notbefore*");
     }
+
     [Fact]
     public void Validate_Conditions_NotOnOrAfter_IsAfter()
     {
