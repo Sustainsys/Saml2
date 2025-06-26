@@ -52,6 +52,12 @@ public class AssertionValidator(TimeProvider timeProvider) : IAssertionValidator
         // TODO: Validate that conditions are not null - if they are throw SamlValidationException
         // TODO: Add Clock Skew Support
 
+        if (conditions == null)
+        {
+            throw new SamlValidationException(
+                $"No conditions found on assertion, conditions are required.");
+        }
+
         // Core 2.5.1.2 NotBefore, NotOnOrAfter
         if (timeProvider.GetUtcNow() < conditions.NotBefore)
         {
