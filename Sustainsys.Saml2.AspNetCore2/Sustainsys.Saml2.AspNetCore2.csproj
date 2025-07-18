@@ -30,4 +30,10 @@
     <None Include="..\nuget\sustainsys.png" Pack="true" PackagePath="\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Compile Include="..\VersionInfo.cs">
+      <Link>VersionInfo.cs</Link>
+    </Compile>
+  </ItemGroup>
+
 </Project>
