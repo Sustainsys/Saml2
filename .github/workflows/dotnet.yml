@@ -13,9 +13,11 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     - name: Setup .NET
-      uses: actions/setup-dotnet@v3
+      uses: actions/setup-dotnet@v4.3.1
       with:
-        dotnet-version: "8.0.x" # use the latest version of the 8.0 channel
+        dotnet-version: | 
+          9.0.x
+          8.0.x
     - name: Restore dependencies
       run: dotnet restore
     - name: Verify format
