@@ -17,8 +17,6 @@ public class AssertionValidator(TimeProvider timeProvider) : IAssertionValidator
         // Validate TrustLevel
         // Validate Conditions
         // Attributes: Attributes within an AttributeStatement must have at least one AttributeValue
-
-
     }
 
     /// <summary>
@@ -70,7 +68,8 @@ public class AssertionValidator(TimeProvider timeProvider) : IAssertionValidator
             throw new SamlValidationException(
                         $"NotOnOrAfter {conditions.NotOnOrAfter} is before {timeProvider.GetUtcNow()}");
         }
-        //// Core 2.5.1.4 AudienceRestriction, Audience
+
+        // Core 2.5.1.4 AudienceRestriction, Audience
         foreach (var audienceRestriction in conditions.AudienceRestrictions)
         {
             if (!audienceRestriction.Audiences
@@ -83,6 +82,6 @@ public class AssertionValidator(TimeProvider timeProvider) : IAssertionValidator
 
         }
 
-        // Core 2.5.1.6 ProxyRestriction
+        // Core 2.5.1.6 ProxyRestriction. For first cut: throw NotImplementedException if there are any ProxyRestrictions
     }
 }
