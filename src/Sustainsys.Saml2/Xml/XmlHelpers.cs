@@ -1,4 +1,5 @@
-﻿using System.Security.Cryptography;
+﻿using Microsoft.AspNetCore.WebUtilities;
+using System.Security.Cryptography;
 using System.Xml;
 
 namespace Sustainsys.Saml2.Xml;
@@ -24,8 +25,7 @@ public static class XmlHelpers
         // Ensure starting char will be a letter.
         bytes[0] = (byte)(bytes[0] & 0x7F);
 
-        // Manually do Base 64 URL as we do not have a reference to Base64UrlTextEncoder here.
-        return Convert.ToBase64String(bytes).Replace('+', '-').Replace('/', '_').TrimEnd('=');
+        return Base64UrlTextEncoder.Encode(bytes);
     }
 
     /// <summary>
