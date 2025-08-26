@@ -15,8 +15,7 @@ public class AssertionValidator(TimeProvider timeProvider) : IAssertionValidator
         ValidateIssuer(assertion, parameters);
         ValidateConditions(assertion.Conditions, parameters);
         // Validate TrustLevel
-        // Validate Conditions
-        // Attributes: Attributes within an AttributeStatement must have at least one AttributeValue
+        // Attributes: An AttributeStatement must have at least one Attribute (Core 2.7.3).
     }
 
     /// <summary>
@@ -47,7 +46,6 @@ public class AssertionValidator(TimeProvider timeProvider) : IAssertionValidator
         Conditions? conditions,
         AssertionValidationParameters parameters)
     {
-        // TODO: Validate that conditions are not null - if they are throw SamlValidationException
         // TODO: Add Clock Skew Support
 
         if (conditions == null)
@@ -82,6 +80,8 @@ public class AssertionValidator(TimeProvider timeProvider) : IAssertionValidator
 
         }
 
-        // Core 2.5.1.6 ProxyRestriction. For first cut: throw NotImplementedException if there are any ProxyRestrictions
+        // Later: Core 2.5.1.6 ProxyRestriction. A simple service provider (client application) do not have
+        // to care about proxy restrictions. They are only valid if the SP is a proxy that acts as an IDP
+        // to other applications. We'll just ignore proxy restrictions for now.
     }
 }
