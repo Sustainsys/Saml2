@@ -14,8 +14,15 @@ public class AssertionValidator(TimeProvider timeProvider) : IAssertionValidator
     {
         ValidateIssuer(assertion, parameters);
         ValidateConditions(assertion.Conditions, parameters);
+        ValidateSubjectConfirmation(assertion, parameters);
+        ValidateSubjectConfirmationData(assertion, parameters);
+        // TODO: Validate Subject/SubjectConfirmation
+
+        // TODO: Validate SubjectConfirmationData (Recipient, NotOnOrAfter, InResponseTo, Address)
         // Validate TrustLevel
         // Attributes: An AttributeStatement must have at least one Attribute (Core 2.7.3).
+        // In our object model, we allow an empty list. The validation of empty AttributeStatements
+        // is handled in the serializer.
     }
 
     /// <summary>
@@ -84,4 +91,50 @@ public class AssertionValidator(TimeProvider timeProvider) : IAssertionValidator
         // to care about proxy restrictions. They are only valid if the SP is a proxy that acts as an IDP
         // to other applications. We'll just ignore proxy restrictions for now.
     }
+    /// <summary>
+    /// Validate Subject Confirmation of an assertion. 
+    /// </summary>
+    /// <param name="assertion"></param>
+    /// <param name="parameters"></param>
+    /// <exception cref="SamlValidationException"></exception>
+    protected virtual void ValidateSubjectConfirmation(Assertion assertion, AssertionValidationParameters parameters)
+    {
+        var method = assertion.Subject.SubjectConfirmation!.Method;
+
+        if (method != null && method != parameters.ValidSubjectConfirmationMethod)
+        {
+            throw new SamlValidationException($"The method {method} in subject confirmation does not match the expected {parameters.ValidSubjectConfirmationMethod}");
+        }
+    }
+    /// <summary>
+    /// Validate Subject Confirmation Data .
+    /// </summary>
+    /// <param name="assertion"></param>
+    /// <param name="parameters"></param>
+    /// <exception cref="SamlValidationException"></exception>
+
+    protected virtual void ValidateSubjectConfirmationData(Assertion assertion, AssertionValidationParameters parameters)
+    {
+        if (assertion.Subject.SubjectConfirmation!.SubjectConfirmationData == null)
+        {
+            throw new SamlValidationException("Required SubjectConfirmationData is missing in SubjectConfirmation");
+        }
+        var subjectConfirmation = assertion.Subject.SubjectConfirmation!.SubjectConfirmationData!;
+        var date = assertion.Subject.SubjectConfirmation!.SubjectConfirmationData!.NotOnOrAfter;
+
+        if (subjectConfirmation != null && subjectConfirmation.Recipient != parameters.ValidRecipient)
+        {
+            throw new SamlValidationException(
+                $"The recipient {subjectConfirmation.Recipient} in subject confirmation data does not match the expected {parameters.ValidRecipient}");
+        }
+        if (timeProvider.GetUtcNow() >= date)
+        {
+            throw new SamlValidationException(
+                        $"NotOnOrAfter {date} is before {timeProvider.GetUtcNow()}");
+        }
+
+
+    }
+
+
 }

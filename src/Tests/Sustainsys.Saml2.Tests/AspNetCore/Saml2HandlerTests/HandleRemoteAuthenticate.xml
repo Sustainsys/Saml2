@@ -10,7 +10,9 @@
 		<saml:Issuer>https://idp.example.com/Saml2</saml:Issuer>
 		<saml:Subject>
 			<saml:NameID>SomeUser</saml:NameID>
-			<saml:SubjectConfirmation Method="urn:oasis:names:tc:SAML:2.0:cm:bearer=" />
+			<saml:SubjectConfirmation Method="urn:oasis:names:tc:SAML:2.0:cm:bearer">
+				<saml:SubjectConfirmationData />
+			</saml:SubjectConfirmation>
 		</saml:Subject>
 		<saml:Conditions NotOnOrAfter="2100-01-01T00:00:00Z" />
 		<saml:AuthnStatement AuthnInstant="2025-05-26T07:00:00Z" >

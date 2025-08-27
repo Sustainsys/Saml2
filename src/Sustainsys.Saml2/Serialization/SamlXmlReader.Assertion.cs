@@ -114,6 +114,15 @@ public partial class SamlXmlReader
         if (source.HasName(Elements.AttributeStatement, Namespaces.SamlUri))
         {
             var attributes = source.GetChildren();
+            //var length = attributes?.Count ?? 0;
+
+            //if (length == 0)
+            //{
+            //    throw new Exception("Attributes needs to contain at least one element if it is not null");
+            //}
+
+            // TODO: Check if no children - then add error.
+
 
             while (attributes.MoveNext(true))
             {
