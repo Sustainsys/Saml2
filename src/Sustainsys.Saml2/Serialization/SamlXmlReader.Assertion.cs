@@ -114,24 +114,20 @@ public partial class SamlXmlReader
         if (source.HasName(Elements.AttributeStatement, Namespaces.SamlUri))
         {
             var attributes = source.GetChildren();
-            //var length = attributes?.Count ?? 0;
 
-            //if (length == 0)
-            //{
-            //    throw new Exception("Attributes needs to contain at least one element if it is not null");
-            //}
+            // TODO: Add test first.
+            var hasAttributes = attributes.MoveNext(false);
 
-            // TODO: Check if no children - then add error.
-
-
-            while (attributes.MoveNext(true))
+            if (hasAttributes)
             {
-                if (attributes.EnsureName(Elements.Attribute, Namespaces.SamlUri))
+                do
                 {
-                    assertion.Attributes.Add(ReadAttribute(attributes));
-                }
+                    if (attributes.EnsureName(Elements.Attribute, Namespaces.SamlUri))
+                    {
+                        assertion.Attributes.Add(ReadAttribute(attributes));
+                    }
+                } while (attributes.MoveNext(true));
             }
-
             source.MoveNext(true);
         }
     }
