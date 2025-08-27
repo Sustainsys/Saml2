@@ -29,4 +29,14 @@ public class AssertionValidationParameters
     ///  A URI reference that identifies an intended audience.
     /// </summary>
     public string? ValidAudience { get; set; }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    public string ValidSubjectConfirmationMethod { get; set; } = "urn:oasis:names:tc:SAML:2.0:cm:bearer";
+
+    /// <summary>
+    /// Valid Recipient that matches the assertion consumer service URL.
+    /// </summary>
+    public string? ValidRecipient { get; set; }
 }

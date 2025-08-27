@@ -17,6 +17,21 @@ public class AssertionValidatorTests
                 // Should match value from validation parameters.
                 Value = "https://idp.example.com/Saml2"
             },
+            Subject = new()
+            {
+                SubjectConfirmation = new()
+                {
+                    Method = "urn:oasis:names:tc:SAML:2.0:cm:bearer",
+                    SubjectConfirmationData = new()
+                    {
+                        NotBefore = new(2025, 05, 28, 9, 34, 40),
+                        NotOnOrAfter = new(2025, 05, 28, 9, 39, 40),
+                        Recipient = "https://sp.example.com/Saml2/Acs",
+                        InResponseTo = "b123456",
+                        Address = "192.168.42.17"
+                    }
+                }
+            },
             Conditions = new()
             {
                 // Check with current time from TimeProvider
@@ -45,6 +60,7 @@ public class AssertionValidatorTests
                 Value = "https://idp.example.com/Saml2"
             },
             ValidAudience = "https://sp.example.com/Saml2",
+            ValidRecipient = "https://sp.example.com/Saml2/Acs"
         };
 
     // The happy path that should just validate the default response
@@ -173,4 +189,74 @@ public class AssertionValidatorTests
             .Should().Throw<SamlValidationException>()
             .WithMessage($"*audiences*expected https://sp.example.com/Saml2");
     }
+
+    [Fact]
+    public void Validate_Subject_SubjectConfirmation_InCorrectMethod()
+    {
+        var subject = CreateSubject();
+
+        var assertion = CreateAssertion();
+        var urn = assertion.Subject.SubjectConfirmation!.Method = "urn:Invalid";
+
+        var parameters = CreateValidationParameters();
+
+        subject.Invoking(s => s.Validate(assertion, parameters))
+            .Should().Throw<SamlValidationException>()
+            .WithMessage($"*confirmation*urn:oasis:names:tc:SAML:2.0:cm:bearer*");
+    }
+
+    [Fact]
+    public void Validate_Subject_SubjectConfirmation_SubjectConfirmationData_Missing()
+    {
+        var subject = CreateSubject();
+        var assertion = CreateAssertion();
+        var urn = assertion.Subject.SubjectConfirmation!.SubjectConfirmationData = null;
+
+        var parameters = CreateValidationParameters();
+
+        subject.Invoking(s => s.Validate(assertion, parameters))
+            .Should().Throw<SamlValidationException>()
+            .WithMessage($"*SubjectConfirmationData*missing*");
+    }
+
+    [Fact]
+    public void Validate_Subject_SubjectConfirmation_SubjectConfirmationData_InCorrectRecipient()
+    {
+        var subject = CreateSubject();
+        var assertion = CreateAssertion();
+        assertion.Subject.SubjectConfirmation!.SubjectConfirmationData!.Recipient = "https://unexpected";
+
+        var parameters = CreateValidationParameters();
+
+        subject.Invoking(s => s.Validate(assertion, parameters))
+            .Should().Throw<SamlValidationException>()
+            .WithMessage("*recipient*https://unexpected*https://sp.example.com/Saml2/Acs*");
+    }
+
+    [Fact]
+    public void Validate_Subject_SubjectConfirmation_SubjectConfirmationData_MissingRecipient()
+    {
+        var subject = CreateSubject();
+        var assertion = CreateAssertion();
+        assertion.Subject.SubjectConfirmation!.SubjectConfirmationData!.Recipient = null;
+
+        var parameters = CreateValidationParameters();
+
+        subject.Invoking(s => s.Validate(assertion, parameters))
+            .Should().Throw<SamlValidationException>()
+            .WithMessage("*recipient  *expected*");
+    }
+
+    [Fact]
+    public void Validate_Subject_SubjectConfirmation_SubjectConfirmationData_IsAfter()
+    {
+        var subject = CreateSubject();
+        var assertion = CreateAssertion();
+        assertion.Subject.SubjectConfirmation!.SubjectConfirmationData!.NotOnOrAfter = new(2024, 02, 10, 17, 50, 13);
+        var parameters = CreateValidationParameters();
+        subject.Invoking(s => s.Validate(assertion, parameters))
+            .Should().Throw<SamlValidationException>()
+            .WithMessage("*notonorafter*");
+    }
+
 }
