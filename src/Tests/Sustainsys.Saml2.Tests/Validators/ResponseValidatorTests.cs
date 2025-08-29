@@ -132,7 +132,7 @@ public class ResponseValidatorTests
         response.Destination = "https://example.com/Acs";
 
         var parameters = CreateValidationParameters();
-        parameters.ValidDestination = "https://example.com/AnotherEndpoint";
+        parameters.AssertionValidationParameters.ValidRecipient = "https://example.com/AnotherEndpoint";
 
         subject.Invoking(s => s.Validate(response, parameters))
             .Should().Throw<SamlValidationException>()
@@ -148,7 +148,7 @@ public class ResponseValidatorTests
         response.Destination = "https://example.com/Acs";
 
         var parameters = CreateValidationParameters();
-        parameters.ValidDestination = "https://example.com/Acs";
+        parameters.AssertionValidationParameters.ValidRecipient = "https://example.com/Acs";
 
         subject.Invoking(s => s.Validate(response, parameters))
             .Should().NotThrow();
