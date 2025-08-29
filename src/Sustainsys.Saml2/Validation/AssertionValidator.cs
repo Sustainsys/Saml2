@@ -101,7 +101,6 @@ public class AssertionValidator(TimeProvider timeProvider) : IAssertionValidator
         {
             throw new SamlValidationException($"No subject found on assertion, subject is required.");
         }
-
         ValidateSubjectConfirmation(subject.SubjectConfirmation, parameters);
     }
 
@@ -113,16 +112,17 @@ public class AssertionValidator(TimeProvider timeProvider) : IAssertionValidator
     /// <exception cref="SamlValidationException">On validation failure</exception>
     protected virtual void ValidateSubjectConfirmation(SubjectConfirmation? subject, AssertionValidationParameters parameters)
     {
+        var method = subject!.Method;
+
         if (subject == null)
         {
             throw new SamlValidationException($"No SubjectConfirmation found on assertion, SubjectConfirmation is required.");
         }
+
         if (subject.SubjectConfirmationData == null)
         {
             throw new SamlValidationException($"No SubjectConfirmationData found on SubjectConfirmation, SubjectConfirmationData is required.");
         }
-
-        var method = subject.Method;
 
         if (method != null && method != parameters.ValidSubjectConfirmationMethod)
         {
@@ -147,6 +147,7 @@ public class AssertionValidator(TimeProvider timeProvider) : IAssertionValidator
         {
             errors.Add($"The recipient {subject.Recipient} in subject confirmation data does not match the expected {parameters.ValidRecipient}.");
         }
+
         if (subject.Recipient == null)
         {
             errors.Add($"Recipient is required in SubjectConfirmationData");
@@ -156,10 +157,12 @@ public class AssertionValidator(TimeProvider timeProvider) : IAssertionValidator
         {
             errors.Add($"NotOnOrAfter {notOnOrAfter} has passed, time is now {timeProvider.GetUtcNow()}");
         }
+
         if (notOnOrAfter == null)
         {
             errors.Add($"NotOnOrAfter is required in SubjectConfirmationData");
         }
+
         if (notBefore.HasValue && timeProvider.GetUtcNow() < notBefore)
         {
             errors.Add($"NotBefore {notBefore} is after current time {timeProvider.GetUtcNow()}");
