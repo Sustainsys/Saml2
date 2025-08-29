@@ -119,22 +119,30 @@ public class AssertionValidator(TimeProvider timeProvider) : IAssertionValidator
         {
             throw new SamlValidationException("Required SubjectConfirmationData is missing in SubjectConfirmation");
         }
-        var subjectConfirmation = assertion.Subject.SubjectConfirmation!.SubjectConfirmationData!;
+        var subjectConfirmationData = assertion.Subject.SubjectConfirmation!.SubjectConfirmationData!;
         var date = assertion.Subject.SubjectConfirmation!.SubjectConfirmationData!.NotOnOrAfter;
+        var errors = new List<string>();
 
-        if (subjectConfirmation != null && subjectConfirmation.Recipient != parameters.ValidRecipient)
+        if (subjectConfirmationData.Recipient != parameters.ValidRecipient)
         {
-            throw new SamlValidationException(
-                $"The recipient {subjectConfirmation.Recipient} in subject confirmation data does not match the expected {parameters.ValidRecipient}");
+            errors.Add($"The recipient {subjectConfirmationData.Recipient} in subject confirmation data does not match the expected {parameters.ValidRecipient}.");
         }
+
         if (timeProvider.GetUtcNow() >= date)
         {
-            throw new SamlValidationException(
-                        $"NotOnOrAfter {date} is before {timeProvider.GetUtcNow()}");
+            errors.Add($"NotOnOrAfter {date} is before or equal to current time {timeProvider.GetUtcNow()}");
         }
 
+        if (subjectConfirmationData.InResponseTo != parameters.ValidInResponseTo)
+        {
+            errors.Add($"The InResponseTo {subjectConfirmationData.InResponseTo} does not match the expected {parameters.ValidInResponseTo}");
+        }
 
+        if (errors.Any())
+        {
+            throw new SamlValidationException("SubjectConfirmationData validation is incorrect:\n" + string.Join("\n", errors));
+        }
     }
-
-
 }
+
+

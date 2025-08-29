@@ -39,4 +39,9 @@ public class AssertionValidationParameters
     /// Valid Recipient that matches the assertion consumer service URL.
     /// </summary>
     public string? ValidRecipient { get; set; }
+
+    /// <summary>
+    /// The expected value for InResponseTo, set to null to allow unsolicited.
+    /// </summary>
+    public string? ValidInResponseTo { get; set; }
 }
