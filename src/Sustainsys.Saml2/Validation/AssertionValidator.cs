@@ -119,7 +119,7 @@ public class AssertionValidator(TimeProvider timeProvider) : IAssertionValidator
         }
         if (subject.SubjectConfirmationData == null)
         {
-            throw new SamlValidationException($"Required SubjectConfirmationData is missing in SubjectConfirmation");
+            throw new SamlValidationException($"No SubjectConfirmationData found on SubjectConfirmation, SubjectConfirmationData is required.");
         }
 
         var method = subject.Method;
@@ -132,7 +132,7 @@ public class AssertionValidator(TimeProvider timeProvider) : IAssertionValidator
     }
 
     /// <summary>
-    /// Validate Subject Confirmation Data .
+    /// Validate Subject Confirmation Data.
     /// </summary>
     /// <param name="subject">Saml subject</param>
     /// <param name="parameters">Validation parameters</param>

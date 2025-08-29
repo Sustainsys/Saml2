@@ -197,7 +197,9 @@ public class AssertionValidatorTests
         var subject = CreateSubject();
         var assertion = CreateAssertion();
         assertion.Subject = null;
+
         var parameters = CreateValidationParameters();
+
         subject.Invoking(s => s.Validate(assertion, parameters))
             .Should().Throw<SamlValidationException>()
             .WithMessage($"*subject*");
@@ -208,8 +210,10 @@ public class AssertionValidatorTests
     {
         var subject = CreateSubject();
         var assertion = CreateAssertion();
-        assertion.Subject.SubjectConfirmation = null;
+        assertion.Subject!.SubjectConfirmation = null;
+
         var parameters = CreateValidationParameters();
+
         subject.Invoking(s => s.Validate(assertion, parameters))
             .Should().Throw<SamlValidationException>()
             .WithMessage($"*subjectconfirmation*");
@@ -220,7 +224,7 @@ public class AssertionValidatorTests
     {
         var subject = CreateSubject();
         var assertion = CreateAssertion();
-        assertion.Subject.SubjectConfirmation!.SubjectConfirmationData = null;
+        assertion.Subject!.SubjectConfirmation!.SubjectConfirmationData = null;
 
         var parameters = CreateValidationParameters();
 
@@ -233,9 +237,8 @@ public class AssertionValidatorTests
     public void Validate_Subject_SubjectConfirmation_InCorrectMethod()
     {
         var subject = CreateSubject();
-
         var assertion = CreateAssertion();
-        assertion.Subject.SubjectConfirmation!.Method = "urn:Invalid";
+        assertion.Subject!.SubjectConfirmation!.Method = "urn:Invalid";
 
         var parameters = CreateValidationParameters();
 
@@ -249,10 +252,9 @@ public class AssertionValidatorTests
     {
         var subject = CreateSubject();
         var assertion = CreateAssertion();
-        var notonorafter = assertion.Subject.SubjectConfirmation!.SubjectConfirmationData!.NotOnOrAfter = new(2024, 02, 10, 17, 50, 13);
+        var notonorafter = assertion.Subject!.SubjectConfirmation!.SubjectConfirmationData!.NotOnOrAfter = new(2024, 02, 10, 17, 50, 13);
         var inresponseto = assertion.Subject.SubjectConfirmation!.SubjectConfirmationData!.InResponseTo = "123";
         var recipient = assertion.Subject.SubjectConfirmation!.SubjectConfirmationData!.Recipient = "https://invalid";
-
 
         var parameters = CreateValidationParameters();
 
@@ -266,7 +268,7 @@ public class AssertionValidatorTests
     {
         var subject = CreateSubject();
         var assertion = CreateAssertion();
-        assertion.Subject.SubjectConfirmation!.SubjectConfirmationData!.Recipient = "https://unexpected";
+        assertion.Subject!.SubjectConfirmation!.SubjectConfirmationData!.Recipient = "https://unexpected";
 
         var parameters = CreateValidationParameters();
 
@@ -280,7 +282,7 @@ public class AssertionValidatorTests
     {
         var subject = CreateSubject();
         var assertion = CreateAssertion();
-        assertion.Subject.SubjectConfirmation!.SubjectConfirmationData!.Recipient = null;
+        assertion.Subject!.SubjectConfirmation!.SubjectConfirmationData!.Recipient = null;
 
         var parameters = CreateValidationParameters();
 
@@ -294,8 +296,10 @@ public class AssertionValidatorTests
     {
         var subject = CreateSubject();
         var assertion = CreateAssertion();
-        assertion.Subject.SubjectConfirmation!.SubjectConfirmationData!.NotBefore = new(2025, 05, 28, 9, 34, 43);
+        assertion.Subject!.SubjectConfirmation!.SubjectConfirmationData!.NotBefore = new(2025, 05, 28, 9, 34, 43);
+
         var parameters = CreateValidationParameters();
+
         subject.Invoking(s => s.Validate(assertion, parameters))
             .Should().Throw<SamlValidationException>()
             .WithMessage("*notbefore*");
@@ -306,8 +310,10 @@ public class AssertionValidatorTests
     {
         var subject = CreateSubject();
         var assertion = CreateAssertion();
-        assertion.Subject.SubjectConfirmation!.SubjectConfirmationData!.NotOnOrAfter = new(2024, 02, 10, 17, 50, 13);
+        assertion.Subject!.SubjectConfirmation!.SubjectConfirmationData!.NotOnOrAfter = new(2024, 02, 10, 17, 50, 13);
+
         var parameters = CreateValidationParameters();
+
         subject.Invoking(s => s.Validate(assertion, parameters))
             .Should().Throw<SamlValidationException>()
             .WithMessage("*notonorafter*");
@@ -318,8 +324,10 @@ public class AssertionValidatorTests
     {
         var subject = CreateSubject();
         var assertion = CreateAssertion();
-        assertion.Subject.SubjectConfirmation!.SubjectConfirmationData!.NotOnOrAfter = null;
+        assertion.Subject!.SubjectConfirmation!.SubjectConfirmationData!.NotOnOrAfter = null;
+
         var parameters = CreateValidationParameters();
+
         subject.Invoking(s => s.Validate(assertion, parameters))
             .Should().Throw<SamlValidationException>()
             .WithMessage("*notonorafter*required*");
@@ -330,8 +338,7 @@ public class AssertionValidatorTests
     {
         var subject = CreateSubject();
         var assertion = CreateAssertion();
-        var inResponseTo = assertion.Subject.SubjectConfirmation!.SubjectConfirmationData!.InResponseTo!;
-
+        var inResponseTo = assertion.Subject!.SubjectConfirmation!.SubjectConfirmationData!.InResponseTo!;
         assertion.Subject.SubjectConfirmation!.SubjectConfirmationData!.InResponseTo = "1234";
 
         var parameters = CreateValidationParameters();
