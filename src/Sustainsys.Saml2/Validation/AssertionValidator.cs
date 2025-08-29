@@ -108,7 +108,7 @@ public class AssertionValidator(TimeProvider timeProvider) : IAssertionValidator
     /// <summary>
     /// Validate Subject Confirmation of an assertion. 
     /// </summary>
-    /// <param name="assertion">Saml conditions</param>
+    /// <param name="subject">Saml subject</param>
     /// <param name="parameters">Validation parameters</param>
     /// <exception cref="SamlValidationException">On validation failure</exception>
     protected virtual void ValidateSubjectConfirmation(SubjectConfirmation? subject, AssertionValidationParameters parameters)
@@ -134,7 +134,7 @@ public class AssertionValidator(TimeProvider timeProvider) : IAssertionValidator
     /// <summary>
     /// Validate Subject Confirmation Data .
     /// </summary>
-    /// <param name="assertion">Saml conditions</param>
+    /// <param name="subject">Saml subject</param>
     /// <param name="parameters">Validation parameters</param>
     /// <exception cref="SamlValidationException">On validation failure</exception>
     protected virtual void ValidateSubjectConfirmationData(SubjectConfirmationData? subject, AssertionValidationParameters parameters)
@@ -176,5 +176,3 @@ public class AssertionValidator(TimeProvider timeProvider) : IAssertionValidator
         }
     }
 }
-
-
