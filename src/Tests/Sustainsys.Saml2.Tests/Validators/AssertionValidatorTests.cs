@@ -60,7 +60,8 @@ public class AssertionValidatorTests
                 Value = "https://idp.example.com/Saml2"
             },
             ValidAudience = "https://sp.example.com/Saml2",
-            ValidRecipient = "https://sp.example.com/Saml2/Acs"
+            ValidRecipient = "https://sp.example.com/Saml2/Acs",
+            ValidInResponseTo = "b123456"
         };
 
     // The happy path that should just validate the default response
@@ -204,6 +205,22 @@ public class AssertionValidatorTests
             .Should().Throw<SamlValidationException>()
             .WithMessage($"*confirmation*urn:oasis:names:tc:SAML:2.0:cm:bearer*");
     }
+    [Fact]
+    public void Validate_Subject_SubjectConfirmation_SubjectConfirmationData_IsInCorrect()
+    {
+        var subject = CreateSubject();
+        var assertion = CreateAssertion();
+        var notonorafter = assertion.Subject.SubjectConfirmation!.SubjectConfirmationData!.NotOnOrAfter = new(2024, 02, 10, 17, 50, 13);
+        var inresponseto = assertion.Subject.SubjectConfirmation!.SubjectConfirmationData!.InResponseTo = "123";
+        var recipient = assertion.Subject.SubjectConfirmation!.SubjectConfirmationData!.Recipient = "https://invalid";
+
+
+        var parameters = CreateValidationParameters();
+
+        subject.Invoking(s => s.Validate(assertion, parameters))
+            .Should().Throw<SamlValidationException>()
+            .WithMessage($"*SubjectConfirmationData*incorrect*");
+    }
 
     [Fact]
     public void Validate_Subject_SubjectConfirmation_SubjectConfirmationData_Missing()
@@ -259,5 +276,20 @@ public class AssertionValidatorTests
             .WithMessage("*notonorafter*");
     }
 
+    [Fact]
+    public void Validate_Subject_SubjectConfirmation_SubjectConfirmationData_InCorrectInResponseTo()
+    {
+        var subject = CreateSubject();
+        var assertion = CreateAssertion();
+        var inResponseTo = assertion.Subject.SubjectConfirmation!.SubjectConfirmationData!.InResponseTo!;
+
+        assertion.Subject.SubjectConfirmation!.SubjectConfirmationData!.InResponseTo = "1234";
+
+        var parameters = CreateValidationParameters();
+
+        subject.Invoking(s => s.Validate(assertion, parameters))
+        .Should().Throw<SamlValidationException>()
+        .WithMessage("*inresponseto*b123456*");
+    }
 
 }
