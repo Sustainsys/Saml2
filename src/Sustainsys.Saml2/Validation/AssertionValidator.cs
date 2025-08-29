@@ -136,7 +136,7 @@ public class AssertionValidator(TimeProvider timeProvider) : IAssertionValidator
     {
         if (subjectConfirmationData == null)
         {
-            throw new SamlValidationException($"No SubjectConfirmationData found on SubjectConfirmation, SubjectConfirmationData is required.");
+            throw new SamlValidationException($"SubjectConfirmationData is missing, SubjectConfirmationData is required.");
         }
 
         var notOnOrAfter = subjectConfirmationData.NotOnOrAfter;
