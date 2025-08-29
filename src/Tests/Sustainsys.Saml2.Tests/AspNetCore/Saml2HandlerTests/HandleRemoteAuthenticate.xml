@@ -11,7 +11,10 @@
 		<saml:Subject>
 			<saml:NameID>SomeUser</saml:NameID>
 			<saml:SubjectConfirmation Method="urn:oasis:names:tc:SAML:2.0:cm:bearer">
-				<saml:SubjectConfirmationData />
+				<saml:SubjectConfirmationData
+					NotBefore="2025-05-28T11:13:53Z" 
+					NotOnOrAfter="2025-05-28T11:15:53Z" 
+					Recipient="https://sp.example.com:8888/Saml2/Acs" />
 			</saml:SubjectConfirmation>
 		</saml:Subject>
 		<saml:Conditions NotOnOrAfter="2100-01-01T00:00:00Z" />

@@ -192,12 +192,50 @@ public class AssertionValidatorTests
     }
 
     [Fact]
+    public void Validate_Subject_Missing()
+    {
+        var subject = CreateSubject();
+        var assertion = CreateAssertion();
+        assertion.Subject = null;
+        var parameters = CreateValidationParameters();
+        subject.Invoking(s => s.Validate(assertion, parameters))
+            .Should().Throw<SamlValidationException>()
+            .WithMessage($"*subject*");
+    }
+
+    [Fact]
+    public void Validate_SubjectConfirmation_Missing()
+    {
+        var subject = CreateSubject();
+        var assertion = CreateAssertion();
+        assertion.Subject.SubjectConfirmation = null;
+        var parameters = CreateValidationParameters();
+        subject.Invoking(s => s.Validate(assertion, parameters))
+            .Should().Throw<SamlValidationException>()
+            .WithMessage($"*subjectconfirmation*");
+    }
+
+    [Fact]
+    public void Validate_Subject_SubjectConfirmation_SubjectConfirmationData_Missing()
+    {
+        var subject = CreateSubject();
+        var assertion = CreateAssertion();
+        assertion.Subject.SubjectConfirmation!.SubjectConfirmationData = null;
+
+        var parameters = CreateValidationParameters();
+
+        subject.Invoking(s => s.Validate(assertion, parameters))
+            .Should().Throw<SamlValidationException>()
+            .WithMessage($"*SubjectConfirmationData*missing*");
+    }
+
+    [Fact]
     public void Validate_Subject_SubjectConfirmation_InCorrectMethod()
     {
         var subject = CreateSubject();
 
         var assertion = CreateAssertion();
-        var urn = assertion.Subject.SubjectConfirmation!.Method = "urn:Invalid";
+        assertion.Subject.SubjectConfirmation!.Method = "urn:Invalid";
 
         var parameters = CreateValidationParameters();
 
@@ -205,6 +243,7 @@ public class AssertionValidatorTests
             .Should().Throw<SamlValidationException>()
             .WithMessage($"*confirmation*urn:oasis:names:tc:SAML:2.0:cm:bearer*");
     }
+
     [Fact]
     public void Validate_Subject_SubjectConfirmation_SubjectConfirmationData_IsInCorrect()
     {
@@ -220,20 +259,6 @@ public class AssertionValidatorTests
         subject.Invoking(s => s.Validate(assertion, parameters))
             .Should().Throw<SamlValidationException>()
             .WithMessage($"*SubjectConfirmationData*incorrect*");
-    }
-
-    [Fact]
-    public void Validate_Subject_SubjectConfirmation_SubjectConfirmationData_Missing()
-    {
-        var subject = CreateSubject();
-        var assertion = CreateAssertion();
-        var urn = assertion.Subject.SubjectConfirmation!.SubjectConfirmationData = null;
-
-        var parameters = CreateValidationParameters();
-
-        subject.Invoking(s => s.Validate(assertion, parameters))
-            .Should().Throw<SamlValidationException>()
-            .WithMessage($"*SubjectConfirmationData*missing*");
     }
 
     [Fact]
@@ -261,7 +286,19 @@ public class AssertionValidatorTests
 
         subject.Invoking(s => s.Validate(assertion, parameters))
             .Should().Throw<SamlValidationException>()
-            .WithMessage("*recipient  *expected*");
+            .WithMessage("*recipient  *required*");
+    }
+
+    [Fact]
+    public void Validate_Subject_SubjectConfirmation_SubjectConfirmationData_IsBefore()
+    {
+        var subject = CreateSubject();
+        var assertion = CreateAssertion();
+        assertion.Subject.SubjectConfirmation!.SubjectConfirmationData!.NotBefore = new(2025, 05, 28, 9, 34, 43);
+        var parameters = CreateValidationParameters();
+        subject.Invoking(s => s.Validate(assertion, parameters))
+            .Should().Throw<SamlValidationException>()
+            .WithMessage("*notbefore*");
     }
 
     [Fact]
@@ -274,6 +311,18 @@ public class AssertionValidatorTests
         subject.Invoking(s => s.Validate(assertion, parameters))
             .Should().Throw<SamlValidationException>()
             .WithMessage("*notonorafter*");
+    }
+
+    [Fact]
+    public void Validate_Subject_SubjectConfirmation_SubjectConfirmationData_MissingIsAfter()
+    {
+        var subject = CreateSubject();
+        var assertion = CreateAssertion();
+        assertion.Subject.SubjectConfirmation!.SubjectConfirmationData!.NotOnOrAfter = null;
+        var parameters = CreateValidationParameters();
+        subject.Invoking(s => s.Validate(assertion, parameters))
+            .Should().Throw<SamlValidationException>()
+            .WithMessage("*notonorafter*required*");
     }
 
     [Fact]
