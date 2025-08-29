@@ -115,8 +115,7 @@ public partial class SamlXmlReader
         {
             var attributes = source.GetChildren();
 
-            var hasAttributes = attributes.MoveNext(false);
-            if (hasAttributes)
+            if (attributes.MoveNext(false))
             {
                 do
                 {

@@ -107,48 +107,48 @@ public class AssertionValidator(TimeProvider timeProvider) : IAssertionValidator
     /// <summary>
     /// Validate Subject Confirmation of an assertion. 
     /// </summary>
-    /// <param name="subject">Saml subject</param>
+    /// <param name="subjectConfirmation">Saml subjectConfirmation</param>
     /// <param name="parameters">Validation parameters</param>
     /// <exception cref="SamlValidationException">On validation failure</exception>
-    protected virtual void ValidateSubjectConfirmation(SubjectConfirmation? subject, AssertionValidationParameters parameters)
+    protected virtual void ValidateSubjectConfirmation(SubjectConfirmation? subjectConfirmation, AssertionValidationParameters parameters)
     {
-        var method = subject!.Method;
-
-        if (subject == null)
+        if (subjectConfirmation == null)
         {
             throw new SamlValidationException($"No SubjectConfirmation found on assertion, SubjectConfirmation is required.");
         }
 
-        if (subject.SubjectConfirmationData == null)
-        {
-            throw new SamlValidationException($"No SubjectConfirmationData found on SubjectConfirmation, SubjectConfirmationData is required.");
-        }
+        var method = subjectConfirmation.Method;
 
         if (method != null && method != parameters.ValidSubjectConfirmationMethod)
         {
             throw new SamlValidationException($"The method {method} in subject confirmation does not match the expected {parameters.ValidSubjectConfirmationMethod}");
         }
-        ValidateSubjectConfirmationData(subject.SubjectConfirmationData, parameters);
+        ValidateSubjectConfirmationData(subjectConfirmation.SubjectConfirmationData, parameters);
     }
 
     /// <summary>
     /// Validate Subject Confirmation Data.
     /// </summary>
-    /// <param name="subject">Saml subject</param>
+    /// <param name="subjectConfirmationData">Saml subjectConfirmationData</param>
     /// <param name="parameters">Validation parameters</param>
     /// <exception cref="SamlValidationException">On validation failure</exception>
-    protected virtual void ValidateSubjectConfirmationData(SubjectConfirmationData? subject, AssertionValidationParameters parameters)
+    protected virtual void ValidateSubjectConfirmationData(SubjectConfirmationData? subjectConfirmationData, AssertionValidationParameters parameters)
     {
-        var notOnOrAfter = subject!.NotOnOrAfter;
-        var notBefore = subject.NotBefore;
-        var errors = new List<string>();
-
-        if (subject.Recipient != parameters.ValidRecipient)
+        if (subjectConfirmationData == null)
         {
-            errors.Add($"The recipient {subject.Recipient} in subject confirmation data does not match the expected {parameters.ValidRecipient}.");
+            throw new SamlValidationException($"No SubjectConfirmationData found on SubjectConfirmation, SubjectConfirmationData is required.");
         }
 
-        if (subject.Recipient == null)
+        var notOnOrAfter = subjectConfirmationData.NotOnOrAfter;
+        var notBefore = subjectConfirmationData.NotBefore;
+        var errors = new List<string>();
+
+        if (subjectConfirmationData.Recipient != parameters.ValidRecipient)
+        {
+            errors.Add($"The recipient {subjectConfirmationData.Recipient} in subject confirmation data does not match the expected {parameters.ValidRecipient}.");
+        }
+
+        if (subjectConfirmationData.Recipient == null)
         {
             errors.Add($"Recipient is required in SubjectConfirmationData");
         }
@@ -168,9 +168,9 @@ public class AssertionValidator(TimeProvider timeProvider) : IAssertionValidator
             errors.Add($"NotBefore {notBefore} is after current time {timeProvider.GetUtcNow()}");
         }
 
-        if (subject.InResponseTo != parameters.ValidInResponseTo)
+        if (subjectConfirmationData.InResponseTo != parameters.ValidInResponseTo)
         {
-            errors.Add($"The InResponseTo {subject.InResponseTo} does not match the expected {parameters.ValidInResponseTo}");
+            errors.Add($"The InResponseTo {subjectConfirmationData.InResponseTo} does not match the expected {parameters.ValidInResponseTo}");
         }
 
         if (errors.Any())
