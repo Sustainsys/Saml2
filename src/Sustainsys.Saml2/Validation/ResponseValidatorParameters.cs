@@ -1,21 +1,6 @@
 ﻿using Sustainsys.Saml2.Saml;
-using Sustainsys.Saml2.Samlp;
 
 namespace Sustainsys.Saml2.Validation;
-
-/// <summary>
-/// Validates a Saml response
-/// </summary>
-public interface IResponseValidator
-{
-    /// <summary>
-    /// Validates a Saml response.
-    /// </summary>
-    /// <param name="samlResponse"></param>
-    /// <param name="parameters">Expected values and settings for validation</param>
-    /// <exception cref="SamlValidationException">On validation failure</exception>
-    void Validate(Response samlResponse, ResponseValidationParameters parameters);
-}
 
 
 /// <summary>

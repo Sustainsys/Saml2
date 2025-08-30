@@ -86,7 +86,7 @@ public class ResponseValidatorTests
         else
         {
             subject.Invoking(s => s.Validate(response, parameters))
-                .Should().Throw<SamlValidationException>()
+                .Should().Throw<ValidationException<Response>>()
                 .WithMessage("*version*incorrect*");
         }
     }
@@ -102,7 +102,7 @@ public class ResponseValidatorTests
         var parameters = CreateValidationParameters();
 
         subject.Invoking(s => s.Validate(response, parameters))
-            .Should().Throw<SamlValidationException>()
+            .Should().Throw<ValidationException<Response>>()
             .WithMessage("*issuer*https://unexpected*https://idp.example.com/Saml2*");
 
         // TODO: Validate NameID format once it is supported.
@@ -119,7 +119,7 @@ public class ResponseValidatorTests
         var parameters = CreateValidationParameters();
 
         subject.Invoking(s => s.Validate(response, parameters))
-            .Should().Throw<SamlValidationException>()
+            .Should().Throw<ValidationException<Response>>()
             .WithMessage("*status*Requester*");
     }
 
@@ -135,7 +135,7 @@ public class ResponseValidatorTests
         parameters.AssertionValidationParameters.ValidRecipient = "https://example.com/AnotherEndpoint";
 
         subject.Invoking(s => s.Validate(response, parameters))
-            .Should().Throw<SamlValidationException>()
+            .Should().Throw<ValidationException<Response>>()
             .WithMessage("*destination*https://example.com/Acs*");
     }
 

@@ -1,4 +1,5 @@
 ﻿using Sustainsys.Saml2.Saml;
+using Sustainsys.Saml2.Validation;
 using System.Security.Claims;
 
 namespace Sustainsys.Saml2;
@@ -9,9 +10,11 @@ namespace Sustainsys.Saml2;
 public class ClaimsFactory : IClaimsFactory
 {
     /// <inheritdoc/>
-    public ClaimsIdentity GetClaimsIdentity(Assertion assertion)
+    public ClaimsIdentity GetClaimsIdentity(Validated<Assertion> validatedAssertion)
     {
         List<Claim> claims = new();
+
+        Assertion assertion = validatedAssertion;
 
         if (assertion.Subject.NameId != null)
         {
@@ -27,7 +30,7 @@ public class ClaimsFactory : IClaimsFactory
                 foreach (var value in attribute.Values)
                 {
                     // TODO: Add support for xs:nil
-                    claims.Add(new(attribute.Name, value));
+                    claims.Add(new(attribute.Name, value!));
                 }
             }
         }

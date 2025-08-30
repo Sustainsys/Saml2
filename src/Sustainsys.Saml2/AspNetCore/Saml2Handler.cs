@@ -80,7 +80,7 @@ public class Saml2Handler(
         var reader = GetRequiredService<ISamlXmlReader>();
         var samlResponse = reader.ReadResponse(source);
 
-        var validator = GetRequiredService<IResponseValidator>();
+        var validator = GetRequiredService<IValidator<Response, ResponseValidationParameters>>();
 
         // TODO: Do proper validation! + Tests!
         ResponseValidationParameters validationParameters = new()
@@ -93,12 +93,14 @@ public class Saml2Handler(
             },
         };
 
-        validator.Validate(samlResponse, validationParameters);
+        var validatedResponse = samlResponse.Validate(validator, validationParameters);
+
+        // TODO: Handle multiple assertions.
+        var validatedAssertion = validatedResponse.GetValidated(r => r.Assertions.Single());
 
         var claimsFactory = GetRequiredService<IClaimsFactory>();
 
-        // TODO: Handle multiple assertions.
-        var identity = claimsFactory.GetClaimsIdentity(samlResponse.Assertions.Single());
+        var identity = claimsFactory.GetClaimsIdentity(validatedAssertion);
 
         AuthenticationTicket authenticationTicket = new(new(identity), Scheme.Name);
 

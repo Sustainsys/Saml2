@@ -48,7 +48,7 @@ public class Saml2HandlerTests
 
         FakeTimeProvider timeProvider = new FakeTimeProvider(new(2025, 05, 28, 11, 14, 53, TimeSpan.Zero));
 
-        keyedServiceProvider.GetService(typeof(IResponseValidator)).Returns(
+        keyedServiceProvider.GetService(typeof(IValidator<Response, ResponseValidationParameters>)).Returns(
             new ResponseValidator(new AssertionValidator(timeProvider)));
 
         keyedServiceProvider.GetService(typeof(IClaimsFactory)).Returns(new ClaimsFactory());

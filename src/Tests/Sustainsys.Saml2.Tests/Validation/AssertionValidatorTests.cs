@@ -129,7 +129,7 @@ public class AssertionValidatorTests
         var parameters = CreateValidationParameters();
 
         subject.Invoking(s => s.Validate(assertion, parameters))
-            .Should().Throw<SamlValidationException>()
+            .Should().Throw<ValidationException<Assertion>>()
             .WithMessage(messagePattern);
     }
 }
