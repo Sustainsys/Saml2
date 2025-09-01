@@ -41,6 +41,7 @@ public partial class SamlXmlReaderTests
     [InlineData("./saml:Issuer", ErrorReason.UnexpectedLocalName)]
     [InlineData("./saml:Subject", ErrorReason.UnexpectedLocalName)]
     [InlineData("./saml:AttributeStatement/saml:Attribute", ErrorReason.MissingElement)]
+    [InlineData("./saml:Subject/saml:SubjectConfirmation/@Method", ErrorReason.MissingAttribute)]
     public void ReadAssertion_MissingMandatory(string removeXPath, ErrorReason expectedError)
     {
         var source = GetXmlTraverser();
@@ -57,6 +58,11 @@ public partial class SamlXmlReaderTests
     private static void DeleteNode(string removeXPath, XmlTraverser source)
     {
         var deleteNodes = source.CurrentNode!.SelectNodes(removeXPath, source.CurrentNode.GetNsMgr())!;
+
+        if (deleteNodes.Count == 0)
+        {
+            throw new InvalidOperationException("Didn't find any node to delete.");
+        }
 
         foreach (XmlNode deleteNode in deleteNodes)
         {
