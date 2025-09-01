@@ -347,5 +347,4 @@ public class AssertionValidatorTests
            .Should().Throw<SamlValidationException>()
            .WithMessage("*inresponseto*b123456*");
     }
-
 }
