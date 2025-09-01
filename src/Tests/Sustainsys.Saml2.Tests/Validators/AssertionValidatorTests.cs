@@ -27,8 +27,7 @@ public class AssertionValidatorTests
                         NotBefore = new(2025, 05, 28, 9, 34, 40),
                         NotOnOrAfter = new(2025, 05, 28, 9, 39, 40),
                         Recipient = "https://sp.example.com/Saml2/Acs",
-                        InResponseTo = "b123456",
-                        Address = "192.168.42.17"
+                        InResponseTo = "b123456"
                     }
                 }
             },
@@ -191,173 +190,40 @@ public class AssertionValidatorTests
             .WithMessage($"*audiences*expected https://sp.example.com/Saml2");
     }
 
-    [Fact]
-    public void Validate_Subject_Missing()
+    public static TheoryData<Action<Assertion>, string> Validate_MissingOrIncorrect_Data =>
+        new TheoryData<Action<Assertion>, string>
+        {
+            {a => {a.Subject = null!; },  "*subject*" },
+            {a => {a.Subject!.SubjectConfirmation = null!; }, "*subjectconfirmation*"},
+            {a => {a.Subject!.SubjectConfirmation!.Method = null!;}, "*method*subjectconfirmation*" },
+            {a => {a.Subject!.SubjectConfirmation!.SubjectConfirmationData = null!;}, "*subjectconfirmationdata*missing*"},
+            {a => {a.Subject!.SubjectConfirmation!.SubjectConfirmationData!.Recipient = null!; }, "*recipient  *required*"},
+            {a => {a.Subject!.SubjectConfirmation!.SubjectConfirmationData!.NotOnOrAfter = null!; }, "*notonorafter*required*"},
+            {a => {a.Subject!.SubjectConfirmation!.Method ="urn:Invalid"; }, $"*confirmation*urn:oasis:names:tc:SAML:2.0:cm:bearer*"},
+            {a => {
+                a.Subject!.SubjectConfirmation!.SubjectConfirmationData!.NotOnOrAfter = new(2024, 02, 10, 17, 50, 13);
+                a.Subject.SubjectConfirmation.SubjectConfirmationData.InResponseTo = "123";
+                a.Subject.SubjectConfirmation.SubjectConfirmationData.Recipient = "https://invalid";
+            },"*SubjectConfirmationData*incorrect*"},
+            {a => {a.Subject!.SubjectConfirmation!.SubjectConfirmationData!.Recipient ="https://unexpected"; },"*recipient*https://unexpected*https://sp.example.com/Saml2/Acs*" },
+            {a => {a.Subject!.SubjectConfirmation!.SubjectConfirmationData!.NotBefore = new(2025, 05, 28, 9, 34, 43); },"*notbefore*" },
+            {a => {a.Subject!.SubjectConfirmation!.SubjectConfirmationData!.NotOnOrAfter = new(2024,02,10,17,50,13); }, "*notonorafter*" },
+            {a => {a.Subject!.SubjectConfirmation!.SubjectConfirmationData!.InResponseTo = "1234"; }, "*inresponseto*b123456*" },
+        };
+
+    [Theory]
+    [MemberData(nameof(Validate_MissingOrIncorrect_Data))]
+    public void Validate_MissingOrIncorrect(Action<Assertion> destroy, string messagePattern)
     {
         var subject = CreateSubject();
         var assertion = CreateAssertion();
-        assertion.Subject = null;
+
+        destroy(assertion);
 
         var parameters = CreateValidationParameters();
 
         subject.Invoking(s => s.Validate(assertion, parameters))
             .Should().Throw<SamlValidationException>()
-            .WithMessage($"*subject*");
-    }
-
-    [Fact]
-    public void Validate_SubjectConfirmation_Missing()
-    {
-        var subject = CreateSubject();
-        var assertion = CreateAssertion();
-        assertion.Subject!.SubjectConfirmation = null;
-
-        var parameters = CreateValidationParameters();
-
-        subject.Invoking(s => s.Validate(assertion, parameters))
-            .Should().Throw<SamlValidationException>()
-            .WithMessage($"*subjectconfirmation*");
-    }
-    [Fact]
-    public void Validate_SubjectConfirmation_Method_Missing()
-    {
-        var subject = CreateSubject();
-        var assertion = CreateAssertion();
-        assertion.Subject!.SubjectConfirmation!.Method = null!;
-
-        var parameters = CreateValidationParameters();
-
-        subject.Invoking(s => s.Validate(assertion, parameters))
-            .Should().Throw<SamlValidationException>()
-            .WithMessage($"*method*subjectconfirmation*");
-    }
-
-    [Fact]
-    public void Validate_Subject_SubjectConfirmation_SubjectConfirmationData_Missing()
-    {
-        var subject = CreateSubject();
-        var assertion = CreateAssertion();
-        assertion.Subject!.SubjectConfirmation!.SubjectConfirmationData = null;
-
-        var parameters = CreateValidationParameters();
-
-        subject.Invoking(s => s.Validate(assertion, parameters))
-            .Should().Throw<SamlValidationException>()
-            .WithMessage($"*SubjectConfirmationData*missing*");
-    }
-
-    [Fact]
-    public void Validate_Subject_SubjectConfirmation_InCorrectMethod()
-    {
-        var subject = CreateSubject();
-        var assertion = CreateAssertion();
-        assertion.Subject!.SubjectConfirmation!.Method = "urn:Invalid";
-
-        var parameters = CreateValidationParameters();
-
-        subject.Invoking(s => s.Validate(assertion, parameters))
-            .Should().Throw<SamlValidationException>()
-            .WithMessage($"*confirmation*urn:oasis:names:tc:SAML:2.0:cm:bearer*");
-    }
-
-    [Fact]
-    public void Validate_Subject_SubjectConfirmation_SubjectConfirmationData_IsInCorrect()
-    {
-        var subject = CreateSubject();
-        var assertion = CreateAssertion();
-        var notonorafter = assertion.Subject!.SubjectConfirmation!.SubjectConfirmationData!.NotOnOrAfter = new(2024, 02, 10, 17, 50, 13);
-        var inresponseto = assertion.Subject.SubjectConfirmation!.SubjectConfirmationData!.InResponseTo = "123";
-        var recipient = assertion.Subject.SubjectConfirmation!.SubjectConfirmationData!.Recipient = "https://invalid";
-
-        var parameters = CreateValidationParameters();
-
-        subject.Invoking(s => s.Validate(assertion, parameters))
-            .Should().Throw<SamlValidationException>()
-            .WithMessage($"*SubjectConfirmationData*incorrect*");
-    }
-
-    [Fact]
-    public void Validate_Subject_SubjectConfirmation_SubjectConfirmationData_InCorrectRecipient()
-    {
-        var subject = CreateSubject();
-        var assertion = CreateAssertion();
-        assertion.Subject!.SubjectConfirmation!.SubjectConfirmationData!.Recipient = "https://unexpected";
-
-        var parameters = CreateValidationParameters();
-
-        subject.Invoking(s => s.Validate(assertion, parameters))
-            .Should().Throw<SamlValidationException>()
-            .WithMessage("*recipient*https://unexpected*https://sp.example.com/Saml2/Acs*");
-    }
-
-    [Fact]
-    public void Validate_Subject_SubjectConfirmation_SubjectConfirmationData_MissingRecipient()
-    {
-        var subject = CreateSubject();
-        var assertion = CreateAssertion();
-        assertion.Subject!.SubjectConfirmation!.SubjectConfirmationData!.Recipient = null;
-
-        var parameters = CreateValidationParameters();
-
-        subject.Invoking(s => s.Validate(assertion, parameters))
-            .Should().Throw<SamlValidationException>()
-            .WithMessage("*recipient  *required*");
-    }
-
-    [Fact]
-    public void Validate_Subject_SubjectConfirmation_SubjectConfirmationData_IsBefore()
-    {
-        var subject = CreateSubject();
-        var assertion = CreateAssertion();
-        assertion.Subject!.SubjectConfirmation!.SubjectConfirmationData!.NotBefore = new(2025, 05, 28, 9, 34, 43);
-
-        var parameters = CreateValidationParameters();
-
-        subject.Invoking(s => s.Validate(assertion, parameters))
-            .Should().Throw<SamlValidationException>()
-            .WithMessage("*notbefore*");
-    }
-
-    [Fact]
-    public void Validate_Subject_SubjectConfirmation_SubjectConfirmationData_IsAfter()
-    {
-        var subject = CreateSubject();
-        var assertion = CreateAssertion();
-        assertion.Subject!.SubjectConfirmation!.SubjectConfirmationData!.NotOnOrAfter = new(2024, 02, 10, 17, 50, 13);
-
-        var parameters = CreateValidationParameters();
-
-        subject.Invoking(s => s.Validate(assertion, parameters))
-            .Should().Throw<SamlValidationException>()
-            .WithMessage("*notonorafter*");
-    }
-
-    [Fact]
-    public void Validate_Subject_SubjectConfirmation_SubjectConfirmationData_MissingIsAfter()
-    {
-        var subject = CreateSubject();
-        var assertion = CreateAssertion();
-        assertion.Subject!.SubjectConfirmation!.SubjectConfirmationData!.NotOnOrAfter = null;
-
-        var parameters = CreateValidationParameters();
-
-        subject.Invoking(s => s.Validate(assertion, parameters))
-            .Should().Throw<SamlValidationException>()
-            .WithMessage("*notonorafter*required*");
-    }
-
-    [Fact]
-    public void Validate_Subject_SubjectConfirmation_SubjectConfirmationData_InCorrectInResponseTo()
-    {
-        var subject = CreateSubject();
-        var assertion = CreateAssertion();
-        var inResponseTo = assertion.Subject!.SubjectConfirmation!.SubjectConfirmationData!.InResponseTo!;
-        assertion.Subject.SubjectConfirmation!.SubjectConfirmationData!.InResponseTo = "1234";
-
-        var parameters = CreateValidationParameters();
-
-        subject.Invoking(s => s.Validate(assertion, parameters))
-           .Should().Throw<SamlValidationException>()
-           .WithMessage("*inresponseto*b123456*");
+            .WithMessage(messagePattern);
     }
 }
