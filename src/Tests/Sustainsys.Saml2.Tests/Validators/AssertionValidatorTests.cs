@@ -63,8 +63,6 @@ public class AssertionValidatorTests
             ValidInResponseTo = "b123456"
         };
 
-
-
     public static TheoryData<Action<Assertion>> Validate_MissingIsValid_Data =>
         new TheoryData<Action<Assertion>>
         {
@@ -84,6 +82,7 @@ public class AssertionValidatorTests
     {
         var subject = CreateSubject();
         var assertion = CreateAssertion();
+
         destroy(assertion);
 
         var parameters = CreateValidationParameters();
