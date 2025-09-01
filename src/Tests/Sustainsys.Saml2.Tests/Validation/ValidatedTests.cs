@@ -9,7 +9,7 @@ public class ValidatedTests
         public object Property { get; set; }
     }
 
-    private static Validated<MyClass> CreateSubject(out MyClass data)
+    private static Valid<MyClass> CreateSubject(out MyClass data)
     {
         data = new()
         {
@@ -37,7 +37,7 @@ public class ValidatedTests
     {
         var validated = CreateSubject(out MyClass data);
 
-        var validatedProperty = validated.GetValidated(c => c.Property);
+        var validatedProperty = validated.GetValid(c => c.Property);
 
         validatedProperty.Value.Should().BeSameAs(data.Property);
     }

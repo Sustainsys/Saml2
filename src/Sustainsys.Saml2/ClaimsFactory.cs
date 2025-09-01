@@ -10,7 +10,7 @@ namespace Sustainsys.Saml2;
 public class ClaimsFactory : IClaimsFactory
 {
     /// <inheritdoc/>
-    public ClaimsIdentity GetClaimsIdentity(Validated<Assertion> validatedAssertion)
+    public ClaimsIdentity GetClaimsIdentity(Valid<Assertion> validatedAssertion)
     {
         List<Claim> claims = new();
 

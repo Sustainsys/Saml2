@@ -96,7 +96,7 @@ public class Saml2Handler(
         var validatedResponse = samlResponse.Validate(validator, validationParameters);
 
         // TODO: Handle multiple assertions.
-        var validatedAssertion = validatedResponse.GetValidated(r => r.Assertions.Single());
+        var validatedAssertion = validatedResponse.GetValid(r => r.Assertions.Single());
 
         var claimsFactory = GetRequiredService<IClaimsFactory>();
 

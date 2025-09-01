@@ -15,5 +15,5 @@ public interface IClaimsFactory
     /// </summary>
     /// <param name="assertion">Source data</param>
     /// <returns>ClaimsIdentity</returns>
-    ClaimsIdentity GetClaimsIdentity(Validated<Assertion> assertion);
+    ClaimsIdentity GetClaimsIdentity(Valid<Assertion> assertion);
 }

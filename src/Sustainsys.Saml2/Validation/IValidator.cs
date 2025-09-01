@@ -30,7 +30,7 @@ public interface IValidator<TData, TValidatorParams>
 public static class ValidationExtensions
 {
     /// <summary>
-    /// Performs validation and returns <see cref="Validated{TData}"/>
+    /// Performs validation and returns <see cref="Valid{TData}"/>
     /// </summary>
     /// <typeparam name="TData">Type of the validated data</typeparam>
     /// <typeparam name="TValidationParams">Validation parameters</typeparam>
@@ -39,11 +39,11 @@ public static class ValidationExtensions
     /// <param name="validator">Validators to run</param>
     /// <returns>Validated wrapper around data</returns>
     /// <exception cref="ValidationException{T}">if validation fails</exception> 
-    public static Validated<TData> Validate<TData, TValidationParams>(
+    public static Valid<TData> Validate<TData, TValidationParams>(
         this TData data,
         IValidator<TData, TValidationParams> validator,
         TValidationParams validationParams)
-        => new Validated<TData, TValidationParams>(data, validationParams, validator);
+        => new Valid<TData, TValidationParams>(data, validationParams, validator);
 }
 
 /// <summary>
@@ -54,14 +54,14 @@ public static class ValidationExtensions
 /// mark that they require the passed argument to be validated before being used.
 /// </remarks>
 /// <typeparam name="TData">The type of the data</typeparam>
-public class Validated<TData>
+public class Valid<TData>
 {
     /// <summary>
     /// Constructor. Caller must ensure that the data is validated as
     /// part of the construction.
     /// </summary>
     /// <param name="data">The data to wrap.</param>
-    protected Validated(TData data) => Value = data;
+    protected Valid(TData data) => Value = data;
 
     /// <summary>
     /// The validated value
@@ -72,7 +72,7 @@ public class Validated<TData>
     /// Implicit operator returning the validated value.
     /// </summary>
     /// <param name="valid">The Validated wrapper of the value</param>
-    public static implicit operator TData(Validated<TData> valid)
+    public static implicit operator TData(Valid<TData> valid)
         => valid.Value;
 
     /// <summary>
@@ -81,17 +81,17 @@ public class Validated<TData>
     /// <typeparam name="TProperty">Type of the property</typeparam>
     /// <param name="selector">Property selector function</param>
     /// <returns>Validated property</returns>
-    public Validated<TProperty> GetValidated<TProperty>(Func<TData, TProperty> selector) =>
+    public Valid<TProperty> GetValid<TProperty>(Func<TData, TProperty> selector) =>
         new(selector(Value));
 }
 
 /// <summary>
-/// Derived helper for <see cref="Validated{TData}"/> that handles
+/// Derived helper for <see cref="Valid{TData}"/> that handles
 /// the validation parameters type.
 /// </summary>
 /// <typeparam name="TData"></typeparam>
 /// <typeparam name="TValidatorParams"></typeparam>
-public class Validated<TData, TValidatorParams> : Validated<TData>
+public class Valid<TData, TValidatorParams> : Valid<TData>
 {
     /// <summary>
     /// Constructor
@@ -100,7 +100,7 @@ public class Validated<TData, TValidatorParams> : Validated<TData>
     /// <param name="validatorParams"></param>
     /// <param name="validator"></param>
     /// <exception cref="ArgumentException"></exception>
-    public Validated(
+    public Valid(
         TData data,
         TValidatorParams validatorParams,
         IValidator<TData, TValidatorParams> validator)

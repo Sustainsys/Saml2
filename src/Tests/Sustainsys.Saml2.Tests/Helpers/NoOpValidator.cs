@@ -4,7 +4,7 @@ namespace Sustainsys.Saml2.Tests.Helpers;
 
 /// <summary>
 /// A no operations (i.e. dummy) validator. Used to make test data available as
-/// <see cref="Validated{TData}"/>
+/// <see cref="Valid{TData}"/>
 /// </summary>
 /// <typeparam name="TData"></typeparam>
 /// <typeparam name="TValidatorParams"></typeparam>
@@ -16,7 +16,7 @@ class NoOpValidator<TData> : IValidator<TData, object>
 
 public static class NoOpValidatorExtensions
 {
-    public static Validated<TData> FakeValidate<TData>(this TData data)
+    public static Valid<TData> FakeValidate<TData>(this TData data)
     {
         var validator = new NoOpValidator<TData>();
 
