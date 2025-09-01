@@ -31,7 +31,7 @@ public class AssertionValidationParameters
     public string? ValidAudience { get; set; }
 
     /// <summary>
-    /// 
+    /// A URI reference that identifies a protocol or mechanism to be used to confirm the subject.
     /// </summary>
     public string ValidSubjectConfirmationMethod { get; set; } = "urn:oasis:names:tc:SAML:2.0:cm:bearer";
 
