@@ -218,6 +218,19 @@ public class AssertionValidatorTests
             .Should().Throw<SamlValidationException>()
             .WithMessage($"*subjectconfirmation*");
     }
+    [Fact]
+    public void Validate_SubjectConfirmation_Method_Missing()
+    {
+        var subject = CreateSubject();
+        var assertion = CreateAssertion();
+        assertion.Subject!.SubjectConfirmation!.Method = null!;
+
+        var parameters = CreateValidationParameters();
+
+        subject.Invoking(s => s.Validate(assertion, parameters))
+            .Should().Throw<SamlValidationException>()
+            .WithMessage($"*method*subjectconfirmation*");
+    }
 
     [Fact]
     public void Validate_Subject_SubjectConfirmation_SubjectConfirmationData_Missing()

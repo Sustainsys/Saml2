@@ -3,6 +3,7 @@
 	<Issuer>https://idp.example.com/Saml2</Issuer>
 	<Subject>
 		<NameID>x987654</NameID>
+		<SubjectConfirmation Method="urn:foo" />
 	</Subject>
 	<AttributeStatement>
 		<Attribute Name="foo">

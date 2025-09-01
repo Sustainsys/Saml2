@@ -119,9 +119,9 @@ public class AssertionValidator(TimeProvider timeProvider) : IAssertionValidator
 
         var method = subjectConfirmation.Method;
 
-        if (method != null && method != parameters.ValidSubjectConfirmationMethod)
+        if (method != parameters.ValidSubjectConfirmationMethod)
         {
-            throw new SamlValidationException($"The method {method} in subject confirmation does not match the expected {parameters.ValidSubjectConfirmationMethod}");
+            throw new SamlValidationException($"The method {method} in SubjectConfirmation does not match the expected {parameters.ValidSubjectConfirmationMethod}");
         }
         ValidateSubjectConfirmationData(subjectConfirmation.SubjectConfirmationData, parameters);
     }
