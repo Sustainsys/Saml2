@@ -50,6 +50,9 @@ partial class SamlXmlReader
             source.MoveNext();
         }
 
+        // Status is optional on XML schema level, but Core 2.3.3. says that
+        // "an assertion without a subject has no defined meaning in this specification."
+        // so we are treating it as mandatory.
         if (source.EnsureName(Elements.Status, Namespaces.SamlpUri))
         {
             response.Status = ReadStatus(source);

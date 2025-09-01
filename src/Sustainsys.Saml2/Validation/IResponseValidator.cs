@@ -38,5 +38,5 @@ public class ResponseValidationParameters
     /// Valid destination of the response and assertions. 
     /// A URI reference indicating the address to which this request has been sent.
     /// </summary>
-    public string? ValidDestination { get; set; }
+    public string? ValidDestination { get => AssertionValidationParameters.ValidRecipient; }
 }

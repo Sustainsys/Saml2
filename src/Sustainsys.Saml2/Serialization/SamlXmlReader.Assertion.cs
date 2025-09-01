@@ -75,10 +75,6 @@ public partial class SamlXmlReader
             assertion.TrustLevel = trustLevel;
             source.MoveNext();
         }
-
-        // Status is optional on XML schema level, but Core 2.3.3. says that
-        // "an assertion without a subject has no defined meaning in this specification."
-        // so we are treating it as mandatory.
         if (source.EnsureName(Elements.Subject, Namespaces.SamlUri))
         {
             assertion.Subject = ReadSubject(source);
@@ -115,14 +111,16 @@ public partial class SamlXmlReader
         {
             var attributes = source.GetChildren();
 
-            while (attributes.MoveNext(true))
+            if (attributes.MoveNext(false))
             {
-                if (attributes.EnsureName(Elements.Attribute, Namespaces.SamlUri))
+                do
                 {
-                    assertion.Attributes.Add(ReadAttribute(attributes));
-                }
+                    if (attributes.EnsureName(Elements.Attribute, Namespaces.SamlUri))
+                    {
+                        assertion.Attributes.Add(ReadAttribute(attributes));
+                    }
+                } while (attributes.MoveNext(true));
             }
-
             source.MoveNext(true);
         }
     }

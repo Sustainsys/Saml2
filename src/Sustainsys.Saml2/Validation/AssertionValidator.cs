@@ -14,8 +14,12 @@ public class AssertionValidator(TimeProvider timeProvider) : IAssertionValidator
     {
         ValidateIssuer(assertion, parameters);
         ValidateConditions(assertion.Conditions, parameters);
+        ValidateSubject(assertion.Subject, parameters);
+
         // Validate TrustLevel
         // Attributes: An AttributeStatement must have at least one Attribute (Core 2.7.3).
+        // In our object model, we allow an empty list. The validation of empty AttributeStatements
+        // is handled in the serializer.
     }
 
     /// <summary>
@@ -83,5 +87,95 @@ public class AssertionValidator(TimeProvider timeProvider) : IAssertionValidator
         // Later: Core 2.5.1.6 ProxyRestriction. A simple service provider (client application) do not have
         // to care about proxy restrictions. They are only valid if the SP is a proxy that acts as an IDP
         // to other applications. We'll just ignore proxy restrictions for now.
+    }
+
+    /// <summary>
+    /// Validate Subject of an assertion.
+    /// </summary>
+    /// <param name="subject">Saml subject</param>
+    /// <param name="parameters">Validation parameters</param>
+    /// <exception cref="SamlValidationException">On validation failure</exception>
+    protected virtual void ValidateSubject(Subject? subject, AssertionValidationParameters parameters)
+    {
+        if (subject == null)
+        {
+            throw new SamlValidationException($"No subject found on assertion, subject is required.");
+        }
+        ValidateSubjectConfirmation(subject.SubjectConfirmation, parameters);
+    }
+
+    /// <summary>
+    /// Validate Subject Confirmation of an assertion. 
+    /// </summary>
+    /// <param name="subjectConfirmation">Saml subjectConfirmation</param>
+    /// <param name="parameters">Validation parameters</param>
+    /// <exception cref="SamlValidationException">On validation failure</exception>
+    protected virtual void ValidateSubjectConfirmation(SubjectConfirmation? subjectConfirmation, AssertionValidationParameters parameters)
+    {
+        if (subjectConfirmation == null)
+        {
+            throw new SamlValidationException($"No SubjectConfirmation found on assertion, SubjectConfirmation is required.");
+        }
+
+        var method = subjectConfirmation.Method;
+
+        if (method != parameters.ValidSubjectConfirmationMethod)
+        {
+            throw new SamlValidationException($"The method {method} in SubjectConfirmation does not match the expected {parameters.ValidSubjectConfirmationMethod}");
+        }
+        ValidateSubjectConfirmationData(subjectConfirmation.SubjectConfirmationData, parameters);
+    }
+
+    /// <summary>
+    /// Validate Subject Confirmation Data.
+    /// </summary>
+    /// <param name="subjectConfirmationData">Saml subjectConfirmationData</param>
+    /// <param name="parameters">Validation parameters</param>
+    /// <exception cref="SamlValidationException">On validation failure</exception>
+    protected virtual void ValidateSubjectConfirmationData(SubjectConfirmationData? subjectConfirmationData, AssertionValidationParameters parameters)
+    {
+        if (subjectConfirmationData == null)
+        {
+            throw new SamlValidationException($"SubjectConfirmationData is missing, SubjectConfirmationData is required.");
+        }
+
+        var notOnOrAfter = subjectConfirmationData.NotOnOrAfter;
+        var notBefore = subjectConfirmationData.NotBefore;
+        var errors = new List<string>();
+
+        if (subjectConfirmationData.Recipient != parameters.ValidRecipient)
+        {
+            errors.Add($"The recipient {subjectConfirmationData.Recipient} in subject confirmation data does not match the expected {parameters.ValidRecipient}.");
+        }
+
+        if (subjectConfirmationData.Recipient == null)
+        {
+            errors.Add($"Recipient is required in SubjectConfirmationData");
+        }
+
+        if (timeProvider.GetUtcNow() >= notOnOrAfter)
+        {
+            errors.Add($"NotOnOrAfter {notOnOrAfter} has passed, time is now {timeProvider.GetUtcNow()}");
+        }
+
+        if (notOnOrAfter == null)
+        {
+            errors.Add($"NotOnOrAfter is required in SubjectConfirmationData");
+        }
+
+        if (notBefore.HasValue && timeProvider.GetUtcNow() < notBefore)
+        {
+            errors.Add($"NotBefore {notBefore} is after current time {timeProvider.GetUtcNow()}");
+        }
+
+        if (subjectConfirmationData.InResponseTo != parameters.ValidInResponseTo)
+        {
+            errors.Add($"The InResponseTo {subjectConfirmationData.InResponseTo} does not match the expected {parameters.ValidInResponseTo}");
+        }
+
+        if (errors.Any())
+        {
+            throw new SamlValidationException("SubjectConfirmationData validation is incorrect:\n" + string.Join("\n", errors));
+        }
     }
 }

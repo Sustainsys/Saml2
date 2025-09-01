@@ -31,7 +31,7 @@ public class Assertion
     /// <summary>
     /// Subject of the assertion
     /// </summary>
-    public Subject Subject { get; set; } = default!;
+    public Subject? Subject { get; set; }
 
     /// <summary>
     /// Conditions of the assertion

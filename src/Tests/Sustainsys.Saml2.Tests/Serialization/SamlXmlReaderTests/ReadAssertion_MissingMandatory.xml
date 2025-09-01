@@ -1,0 +1,13 @@
+﻿<Assertion xmlns="urn:oasis:names:tc:SAML:2.0:assertion"
+				Version="2.42" ID="a9329" IssueInstant="2024-02-03T18:24:14Z">
+	<Issuer>https://idp.example.com/Saml2</Issuer>
+	<Subject>
+		<NameID>x987654</NameID>
+		<SubjectConfirmation Method="urn:foo" />
+	</Subject>
+	<AttributeStatement>
+		<Attribute Name="foo">
+			<AttributeValue>Bar</AttributeValue>
+		</Attribute>
+	</AttributeStatement>
+</Assertion>
