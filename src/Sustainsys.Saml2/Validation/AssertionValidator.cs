@@ -5,7 +5,7 @@ namespace Sustainsys.Saml2.Validation;
 /// <summary>
 /// Saml Assertion validator
 /// </summary>
-public class AssertionValidator(TimeProvider timeProvider) : IAssertionValidator
+public class AssertionValidator(TimeProvider timeProvider) : IValidator<Assertion, AssertionValidationParameters>
 {
     /// <inheritdoc/>
     public void Validate(
@@ -27,7 +27,7 @@ public class AssertionValidator(TimeProvider timeProvider) : IAssertionValidator
     /// </summary>
     /// <param name="assertion">Saml assertion</param>
     /// <param name="parameters">Validation parameters</param>
-    /// <exception cref="SamlValidationException">On validation failure</exception>
+    /// <exception cref="ValidationException{Assertion}">On validation failure</exception>
     protected virtual void ValidateIssuer(
         Assertion assertion,
         AssertionValidationParameters parameters)
@@ -35,7 +35,7 @@ public class AssertionValidator(TimeProvider timeProvider) : IAssertionValidator
         if (assertion.Issuer != null &&
             assertion.Issuer != parameters.ValidIssuer)
         {
-            throw new SamlValidationException(
+            throw new ValidationException<Assertion>(
                 $"Assertion issuer {assertion.Issuer} does not match expected {parameters.ValidIssuer}");
         }
     }
@@ -45,7 +45,7 @@ public class AssertionValidator(TimeProvider timeProvider) : IAssertionValidator
     /// </summary>
     /// <param name="conditions">Saml conditions</param>
     /// <param name="parameters">Validation parameters</param>
-    /// <exception cref="SamlValidationException">On validation failure</exception>
+    /// <exception cref="ValidationException{Assertion}">On validation failure</exception>
     protected virtual void ValidateConditions(
         Conditions? conditions,
         AssertionValidationParameters parameters)
@@ -54,20 +54,20 @@ public class AssertionValidator(TimeProvider timeProvider) : IAssertionValidator
 
         if (conditions == null)
         {
-            throw new SamlValidationException(
+            throw new ValidationException<Assertion>(
                 $"No conditions found on assertion, conditions are required.");
         }
 
         // Core 2.5.1.2 NotBefore, NotOnOrAfter
         if (timeProvider.GetUtcNow() < conditions.NotBefore)
         {
-            throw new SamlValidationException(
+            throw new ValidationException<Assertion>(
                         $"NotBefore {conditions.NotBefore} is after {timeProvider.GetUtcNow()}");
         }
 
         if (timeProvider.GetUtcNow() >= conditions.NotOnOrAfter)
         {
-            throw new SamlValidationException(
+            throw new ValidationException<Assertion>(
                         $"NotOnOrAfter {conditions.NotOnOrAfter} is before {timeProvider.GetUtcNow()}");
         }
 
@@ -78,7 +78,7 @@ public class AssertionValidator(TimeProvider timeProvider) : IAssertionValidator
                 .Where(a => a != null)
                 .Any(a => a == parameters.ValidAudience))
             {
-                throw new SamlValidationException(
+                throw new ValidationException<Assertion>(
                     $"None of audiences {string.Join(", ", audienceRestriction.Audiences)} matches expected {parameters.ValidAudience}");
             }
 
@@ -94,12 +94,12 @@ public class AssertionValidator(TimeProvider timeProvider) : IAssertionValidator
     /// </summary>
     /// <param name="subject">Saml subject</param>
     /// <param name="parameters">Validation parameters</param>
-    /// <exception cref="SamlValidationException">On validation failure</exception>
+    /// <exception cref="ValidationException{Assertion}">On validation failure</exception>
     protected virtual void ValidateSubject(Subject? subject, AssertionValidationParameters parameters)
     {
         if (subject == null)
         {
-            throw new SamlValidationException($"No subject found on assertion, subject is required.");
+            throw new ValidationException<Assertion>($"No subject found on assertion, subject is required.");
         }
         ValidateSubjectConfirmation(subject.SubjectConfirmation, parameters);
     }
@@ -109,19 +109,19 @@ public class AssertionValidator(TimeProvider timeProvider) : IAssertionValidator
     /// </summary>
     /// <param name="subjectConfirmation">Saml subjectConfirmation</param>
     /// <param name="parameters">Validation parameters</param>
-    /// <exception cref="SamlValidationException">On validation failure</exception>
+    /// <exception cref="ValidationException{Assertion}">On validation failure</exception>
     protected virtual void ValidateSubjectConfirmation(SubjectConfirmation? subjectConfirmation, AssertionValidationParameters parameters)
     {
         if (subjectConfirmation == null)
         {
-            throw new SamlValidationException($"No SubjectConfirmation found on assertion, SubjectConfirmation is required.");
+            throw new ValidationException<Assertion>($"No SubjectConfirmation found on assertion, SubjectConfirmation is required.");
         }
 
         var method = subjectConfirmation.Method;
 
         if (method != parameters.ValidSubjectConfirmationMethod)
         {
-            throw new SamlValidationException($"The method {method} in SubjectConfirmation does not match the expected {parameters.ValidSubjectConfirmationMethod}");
+            throw new ValidationException<Assertion>($"The method {method} in SubjectConfirmation does not match the expected {parameters.ValidSubjectConfirmationMethod}");
         }
         ValidateSubjectConfirmationData(subjectConfirmation.SubjectConfirmationData, parameters);
     }
@@ -131,12 +131,12 @@ public class AssertionValidator(TimeProvider timeProvider) : IAssertionValidator
     /// </summary>
     /// <param name="subjectConfirmationData">Saml subjectConfirmationData</param>
     /// <param name="parameters">Validation parameters</param>
-    /// <exception cref="SamlValidationException">On validation failure</exception>
+    /// <exception cref="ValidationException{Assertion}">On validation failure</exception>
     protected virtual void ValidateSubjectConfirmationData(SubjectConfirmationData? subjectConfirmationData, AssertionValidationParameters parameters)
     {
         if (subjectConfirmationData == null)
         {
-            throw new SamlValidationException($"SubjectConfirmationData is missing, SubjectConfirmationData is required.");
+            throw new ValidationException<Assertion>($"SubjectConfirmationData is missing, SubjectConfirmationData is required.");
         }
 
         var notOnOrAfter = subjectConfirmationData.NotOnOrAfter;
@@ -175,7 +175,7 @@ public class AssertionValidator(TimeProvider timeProvider) : IAssertionValidator
 
         if (errors.Any())
         {
-            throw new SamlValidationException("SubjectConfirmationData validation is incorrect:\n" + string.Join("\n", errors));
+            throw new ValidationException<Assertion>("SubjectConfirmationData validation is incorrect:\n" + string.Join("\n", errors));
         }
     }
 }

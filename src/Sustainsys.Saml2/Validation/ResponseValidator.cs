@@ -6,14 +6,14 @@ namespace Sustainsys.Saml2.Validation;
 /// <summary>
 /// Validates a Saml Response
 /// </summary>
-public class ResponseValidator(IAssertionValidator assertionValidator) : IResponseValidator
+public class ResponseValidator(IValidator<Assertion, AssertionValidationParameters> assertionValidator)
+    : IValidator<Response, ResponseValidationParameters>
 {
     /// <inheritdoc/>
     public void Validate(
         Response samlResponse,
         ResponseValidationParameters validationParameters)
     {
-        ValidateAssertions(samlResponse.Assertions, validationParameters.AssertionValidationParameters);
         // Core 2.7.2 AuthnStatement
         ValidateVersion(samlResponse);
         // Core 3.2.1
@@ -21,13 +21,15 @@ public class ResponseValidator(IAssertionValidator assertionValidator) : IRespon
         // Profile 4.1.4.2, 4.1.4.3
         ValidateIssuer(samlResponse, validationParameters);
         ValidateStatusCode(samlResponse);
+
+        ValidateAssertions(samlResponse.Assertions, validationParameters.AssertionValidationParameters);
     }
     /// <summary> 
     /// Validate the destination.
     /// </summary>
     /// <param name="samlResponse">Saml response</param>
     /// <param name="validationParameters">Validation parameters</param>
-    /// <exception cref="SamlValidationException">On validation failure</exception>
+    /// <exception cref="ValidationException{T}">On validation failure</exception>
     protected virtual void ValidateDestination(
      Response samlResponse,
      ResponseValidationParameters validationParameters)
@@ -35,7 +37,7 @@ public class ResponseValidator(IAssertionValidator assertionValidator) : IRespon
         if (samlResponse.Destination != null &&
             samlResponse.Destination != validationParameters.ValidDestination)
         {
-            throw new SamlValidationException(
+            throw new ValidationException<Response>(
                 $"Response destination {samlResponse.Destination} does not match expected {validationParameters.ValidDestination}");
         }
     }
@@ -43,12 +45,12 @@ public class ResponseValidator(IAssertionValidator assertionValidator) : IRespon
     /// Validate that the status code is <see cref="Constants.StatusCodes.Success"/>
     /// </summary>
     /// <param name="samlResponse">Saml Response</param>
-    /// <exception cref="SamlValidationException">On validation failure</exception>
+    /// <exception cref="ValidationException{Response}">On validation failure</exception>
     protected virtual void ValidateStatusCode(Response samlResponse)
     {
         if (samlResponse.Status?.StatusCode?.Value != Constants.StatusCodes.Success)
         {
-            throw new SamlValidationException($"Saml status code {samlResponse.Status?.StatusCode?.Value} is not success");
+            throw new ValidationException<Response>($"Saml status code {samlResponse.Status?.StatusCode?.Value} is not success");
         }
     }
 
@@ -57,7 +59,7 @@ public class ResponseValidator(IAssertionValidator assertionValidator) : IRespon
     /// </summary>
     /// <param name="samlResponse">Saml response</param>
     /// <param name="validationParameters">Validation parameters</param>
-    /// <exception cref="SamlValidationException">On validation failure</exception>
+    /// <exception cref="ValidationException{Response}">On validation failure</exception>
     protected virtual void ValidateIssuer(
         Response samlResponse,
         ResponseValidationParameters validationParameters)
@@ -65,7 +67,7 @@ public class ResponseValidator(IAssertionValidator assertionValidator) : IRespon
         if (samlResponse.Issuer != null &&
             samlResponse.Issuer != validationParameters.ValidIssuer)
         {
-            throw new SamlValidationException(
+            throw new ValidationException<Response>(
                 $"Response issuer {samlResponse.Issuer} does not match expected {validationParameters.ValidIssuer}");
         }
     }
@@ -74,12 +76,12 @@ public class ResponseValidator(IAssertionValidator assertionValidator) : IRespon
     /// Validate the version
     /// </summary>
     /// <param name="samlResponse">Saml response</param>
-    /// <exception cref="SamlValidationException">On validation failure</exception>
+    /// <exception cref="ValidationException{Response}">On validation failure</exception>
     protected virtual void ValidateVersion(Response samlResponse)
     {
         if (samlResponse.Version != "2.0")
         {
-            throw new SamlValidationException($"Saml version \"{samlResponse.Version}\" is incorrect, it must be exactly \"2.0\"");
+            throw new ValidationException<Response>($"Saml version \"{samlResponse.Version}\" is incorrect, it must be exactly \"2.0\"");
         }
     }
 

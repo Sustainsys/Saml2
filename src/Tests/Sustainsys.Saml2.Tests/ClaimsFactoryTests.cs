@@ -1,4 +1,5 @@
 ﻿using Sustainsys.Saml2.Saml;
+using Sustainsys.Saml2.Tests.Helpers;
 using System.Security.Claims;
 
 namespace Sustainsys.Saml2.Tests;
@@ -29,7 +30,7 @@ public class ClaimsFactoryTests
             }
         };
 
-        var actual = subject.GetClaimsIdentity(assertion);
+        var actual = subject.GetClaimsIdentity(assertion.FakeValidate());
 
         Claim[] expectedClaims =
             [

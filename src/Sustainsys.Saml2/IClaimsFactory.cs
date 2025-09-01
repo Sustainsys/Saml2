@@ -1,4 +1,5 @@
 ﻿using Sustainsys.Saml2.Saml;
+using Sustainsys.Saml2.Validation;
 using System.Security.Claims;
 
 namespace Sustainsys.Saml2;
@@ -14,5 +15,5 @@ public interface IClaimsFactory
     /// </summary>
     /// <param name="assertion">Source data</param>
     /// <returns>ClaimsIdentity</returns>
-    ClaimsIdentity GetClaimsIdentity(Assertion assertion);
+    ClaimsIdentity GetClaimsIdentity(Valid<Assertion> assertion);
 }

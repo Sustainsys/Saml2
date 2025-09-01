@@ -4,6 +4,8 @@ using Microsoft.Extensions.Options;
 using Sustainsys.Saml2;
 using Sustainsys.Saml2.AspNetCore;
 using Sustainsys.Saml2.Bindings;
+using Sustainsys.Saml2.Saml;
+using Sustainsys.Saml2.Samlp;
 using Sustainsys.Saml2.Serialization;
 using Sustainsys.Saml2.Validation;
 
@@ -77,8 +79,9 @@ public static class Saml2Extensions
         builder.Services.TryAddEnumerable(
             ServiceDescriptor.Singleton<IFrontChannelBinding, HttpPostBinding>());
 
-        builder.Services.TryAddSingleton<IResponseValidator, ResponseValidator>();
-        builder.Services.TryAddSingleton<IAssertionValidator, AssertionValidator>();
+        builder.Services.TryAddSingleton<
+            IValidator<Response, ResponseValidationParameters>, ResponseValidator>();
+        builder.Services.TryAddSingleton<IValidator<Assertion, AssertionValidationParameters>, AssertionValidator>();
         builder.Services.TryAddSingleton<IClaimsFactory, ClaimsFactory>();
 
         return builder.AddRemoteScheme<Saml2Options, Saml2Handler>(authenticationScheme, displayName, configureOptions);
