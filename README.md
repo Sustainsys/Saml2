@@ -1,4 +1,4 @@
-[![.NET Core](https://github.com/Sustainsys/Saml2/workflows/.NET/badge.svg)](https://github.com/Sustainsys/Saml2/actions/workflows/dotnet.yml)
+[![.NET Core](https://github.com/Sustainsys/Saml2/actions/workflows/dotnet.yml/badge.svg?branch=develop)](https://github.com/Sustainsys/Saml2/actions/workflows/dotnet.yml)
 
 Sustainsys.Saml2
 =============
@@ -47,3 +47,4 @@ The current development goals are to get a new, more flexible architecture.
 
 Sustainsys.Saml2 is open sourced and contributions are welcome, please see [contribution guidelines](CONTRIBUTING.md)
 for info on coding standards etc.
+
