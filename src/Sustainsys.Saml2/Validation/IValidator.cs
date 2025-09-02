@@ -43,7 +43,7 @@ public static class ValidationExtensions
         this TData data,
         IValidator<TData, TValidationParams> validator,
         TValidationParams validationParams)
-        => new Valid<TData, TValidationParams>(data, validationParams, validator);
+        => Valid<TData>.Create(data, validationParams, validator);
 }
 
 /// <summary>
@@ -54,14 +54,14 @@ public static class ValidationExtensions
 /// mark that they require the passed argument to be validated before being used.
 /// </remarks>
 /// <typeparam name="TData">The type of the data</typeparam>
-public class Valid<TData>
+public struct Valid<TData>
 {
     /// <summary>
     /// Constructor. Caller must ensure that the data is validated as
     /// part of the construction.
     /// </summary>
     /// <param name="data">The data to wrap.</param>
-    protected Valid(TData data) => Value = data;
+    private Valid(TData data) => Value = data;
 
     /// <summary>
     /// The validated value
@@ -83,29 +83,21 @@ public class Valid<TData>
     /// <returns>Validated property</returns>
     public Valid<TProperty> GetValid<TProperty>(Func<TData, TProperty> selector) =>
         new(selector(Value));
-}
 
-/// <summary>
-/// Derived helper for <see cref="Valid{TData}"/> that handles
-/// the validation parameters type.
-/// </summary>
-/// <typeparam name="TData"></typeparam>
-/// <typeparam name="TValidatorParams"></typeparam>
-public class Valid<TData, TValidatorParams> : Valid<TData>
-{
     /// <summary>
-    /// Constructor
+    /// Factory method
     /// </summary>
     /// <param name="data"></param>
     /// <param name="validatorParams"></param>
     /// <param name="validator"></param>
     /// <exception cref="ArgumentException"></exception>
-    public Valid(
+    public static Valid<TData> Create<TValidatorParams>(
         TData data,
         TValidatorParams validatorParams,
         IValidator<TData, TValidatorParams> validator)
-        : base(data)
     {
         validator.Validate(data, validatorParams);
+
+        return new(data);
     }
 }
