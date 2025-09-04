@@ -16,7 +16,7 @@ public class ClaimsFactory : IClaimsFactory
 
         Assertion assertion = validatedAssertion;
 
-        if (assertion.Subject.NameId != null)
+        if (assertion.Subject != null && assertion.Subject.NameId != null)
         {
             // TODO: Make Claim Type Configurable.
             // TODO: Add Claims issuer (configurable?)
