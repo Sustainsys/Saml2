@@ -8,5 +8,4 @@ public partial class SamlXmlReaderTests
 {
     private static XmlTraverser GetXmlTraverser([CallerMemberName] string? fileName = null)
         => TestData.GetXmlTraverser<SamlXmlReaderTests>(fileName);
-
 }

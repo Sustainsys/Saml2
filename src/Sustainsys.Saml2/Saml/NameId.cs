@@ -5,6 +5,7 @@
 /// </summary>
 public class NameId
 {
+
     /// <summary>
     /// Ctor
     /// </summary>
@@ -13,11 +14,16 @@ public class NameId
     /// <summary>
     /// Ctor
     /// </summary>
-    /// <param name="value">NameId value</param>
-    public NameId(string value)
+    public NameId(string value, string? format = null)
     {
         Value = value;
+        Format = format;
     }
+
+    /// <summary>
+    /// A URI reference representing the classification of string-based identifier information. 
+    /// </summary>
+    public string? Format { get; set; }
 
     /// <summary>
     /// The value, i.e. string contents of the XML node.
@@ -41,12 +47,13 @@ public class NameId
     /// </summary>
     /// <param name="other">Object to compare to</param>
     /// <returns>Are they equal?</returns>
-    public override bool Equals(object? other) =>
-        (other is NameId otherNameId
-        && otherNameId.Value == Value)
-        ||
-        (other is string otherString
-        && otherString == Value);
+    public override bool Equals(object? other)
+    =>
+    (other is NameId othernameid
+    && othernameid.Value == Value && othernameid.Format == Format)
+    ||
+    (other is string otherstring
+    && otherstring == Value && Format == null);
 
     /// <summary>
     /// Operator ==
@@ -55,7 +62,7 @@ public class NameId
     /// <param name="n2"></param>
     /// <returns></returns>
     public static bool operator ==(NameId? n1, NameId? n2) =>
-        n1?.Value == n2?.Value;
+        n1?.Value == n2?.Value && n1?.Format == n2?.Format;
 
     /// <summary>
     /// Operator !=
@@ -64,7 +71,7 @@ public class NameId
     /// <param name="n2"></param>
     /// <returns></returns>
     public static bool operator !=(NameId? n1, NameId? n2) =>
-        n1?.Value != n2?.Value;
+        n1?.Value != n2?.Value && n1?.Format == n2?.Format;
 
     /// <summary>
     /// Get hash code

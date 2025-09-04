@@ -80,6 +80,15 @@ public partial class SamlXmlReader : ISamlXmlReader
 
         return (trustedSigningKeys, allowedHashAlgorithms);
     }
+    /// <summary>
+    /// Read a NameId element. This is made public for use by other readers.
+    /// </summary>
+    /// <param name="source"></param>
+    /// <returns></returns>
+    public NameId ReadNameIdPublic(XmlTraverser source)
+    {
+        return ReadNameId(source);
+    }
 
     private static void CallErrorInspector<TData>(
         Action<ReadErrorInspectorContext<TData>>? errorInspector,

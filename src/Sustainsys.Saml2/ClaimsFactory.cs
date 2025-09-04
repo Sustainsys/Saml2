@@ -12,7 +12,7 @@ public class ClaimsFactory : IClaimsFactory
     /// <inheritdoc/>
     public ClaimsIdentity GetClaimsIdentity(Valid<Assertion> validatedAssertion)
     {
-        List<Claim> claims = new();
+        List<Claim> claims = [];
 
         Assertion assertion = validatedAssertion;
 

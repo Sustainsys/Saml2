@@ -7,7 +7,7 @@ namespace Sustainsys.Saml2.Tests.Validators;
 public class ResponseValidatorTests
 {
     private static ResponseValidator CreateSubject() =>
-     new ResponseValidator(
+     new(
          new AssertionValidator(
              new FakeTimeProvider(new(2025, 05, 28, 11, 14, 53, TimeSpan.Zero))));
 
