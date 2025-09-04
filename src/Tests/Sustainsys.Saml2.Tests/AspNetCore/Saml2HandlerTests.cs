@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -20,8 +21,12 @@ namespace Sustainsys.Saml2.Tests.AspNetCore;
 public class Saml2HandlerTests
 {
     private readonly static DateTimeUtc CurrentFakeTime = new(2023, 09, 08, 14, 53, 02);
+    const string SchemeName = "Saml2";
 
-    private static async Task<(Saml2Handler subject, HttpContext httpContext)> CreateSubject(Saml2Options options)
+    private static async Task<(
+        Saml2Handler subject,
+        HttpContext httpContext)>
+        CreateSubject(Saml2Options options)
     {
         var optionsMonitor = Substitute.For<IOptionsMonitor<Saml2Options>>();
         optionsMonitor.Get(Arg.Any<string>()).Returns(options);
@@ -56,7 +61,7 @@ public class Saml2HandlerTests
         var authenticationService = Substitute.For<IAuthenticationService>();
         keyedServiceProvider.GetService(typeof(IAuthenticationService)).Returns(authenticationService);
 
-        var scheme = new AuthenticationScheme("Saml2", "Saml2", typeof(Saml2Handler));
+        var scheme = new AuthenticationScheme(SchemeName, "Saml 2.0", typeof(Saml2Handler));
 
         var httpContext = Substitute.For<HttpContext>();
         httpContext.Response.HttpContext.Returns(httpContext);
@@ -75,7 +80,7 @@ public class Saml2HandlerTests
 
     private static Saml2Options CreateOptions()
     {
-        return new Saml2Options()
+        var options = new Saml2Options()
         {
             EntityId = "https://sp.example.com/Metadata",
             IdentityProvider = new()
@@ -84,16 +89,24 @@ public class Saml2HandlerTests
                 SsoServiceUrl = "https://idp.example.com/sso",
                 SsoServiceBinding = Constants.BindingUris.HttpRedirect
             },
-            TimeProvider = new Microsoft.Extensions.Time.Testing.FakeTimeProvider(CurrentFakeTime),
+            TimeProvider = new FakeTimeProvider(CurrentFakeTime)
         };
+
+        var postConfigure = new Saml2PostConfigureOptions(new FakeDataProtectionProvider());
+        postConfigure.PostConfigure(SchemeName, options);
+
+        return options;
     }
 
     [Fact]
-    public async Task ChallengeCreatesAuthnRequest()
+    public async Task ChallengeAsync()
     {
         var options = CreateOptions();
+        var cookieManager = Substitute.For<ICookieManager>();
+        options.StateCookieManager = cookieManager;
 
-        bool eventCalled = false;
+        AuthnRequest? authnRequest = null;
+        AuthenticationProperties? authenticationProperties = null;
 
         options.Events = new()
         {
@@ -109,46 +122,29 @@ public class Saml2HandlerTests
                 // Core 3.4.1 AssertionConsumerServicerUrl is optional, but our StubIdp requires it
                 ctx.AuthnRequest.AssertionConsumerServiceUrl.Should().Be("https://sp.example.com:8888/Saml2/Acs");
 
-                eventCalled = true;
-                return Task.CompletedTask;
-            }
-        };
-
-        (var subject, var httpContext) = await CreateSubject(options);
-
-        var props = new AuthenticationProperties();
-
-        await subject.ChallengeAsync(props);
-
-        eventCalled.Should().BeTrue("The OnAuthnRequestGeneratedAsync event should have been called");
-    }
-
-    [Fact]
-    public async Task ChallengeSetsRedirect()
-    {
-        // This test only validates that the AuthnRequest ends up as a redirect. The contents of
-        // the AuthnRequest are validated in ChallengeCreatesAuthnRequest through the event.
-
-        var options = CreateOptions();
-
-        AuthnRequest? authnRequest = null;
-
-        options.Events = new()
-        {
-            OnAuthnRequestGeneratedAsync = ctx =>
-            {
                 authnRequest = ctx.AuthnRequest;
+                authenticationProperties = ctx.Properties;
+
                 return Task.CompletedTask;
             }
         };
 
         (var subject, var httpContext) = await CreateSubject(options);
 
-        var props = new AuthenticationProperties();
+        var props = new AuthenticationProperties()
+        {
+            RedirectUri = "https://example.com/redirectUri"
+        };
+
+        var idpEntityIdHash = options.IdentityProvider!.EntityId!.Sha256(10);
 
         httpContext.Response.Redirect(Arg.Do<string>(validateLocation));
 
-        bool validated = false;
+        cookieManager.AppendResponseCookie(
+            httpContext,
+            Arg.Do<string>(validateCookieName),
+            Arg.Do<string>(validateCookieContents),
+            Arg.Do<CookieOptions>(validateCookieOptions));
 
         await subject.ChallengeAsync(props);
 
@@ -158,25 +154,49 @@ public class Saml2HandlerTests
 
             var message = new HttpRedirectBinding().UnBindAsync(location, _ => throw new NotImplementedException()).Result;
 
+            message.RelayState.Should().Be($"{idpEntityIdHash}.{authnRequest!.Id}");
+
             var deserializedAuthnRequest = new SamlXmlReader()
                 .ReadAuthnRequest(message.Xml.GetXmlTraverser());
 
             deserializedAuthnRequest.Should().BeEquivalentTo(authnRequest);
+        }
 
-            validated = true;
+        void validateCookieName(string cookieName)
+        {
+            var expectedName = "Saml2." + idpEntityIdHash;
+            cookieName.Should().Be(expectedName);
+        }
+
+        void validateCookieContents(string contents)
+        {
+            var actualAuthProps = options.StateCookieDataFormat.Unprotect(contents)!;
+
+            // We should store the ID of the request and the Idp we're interacting with.
+            actualAuthProps.Items[".reqId"].Should().Be(authnRequest!.Id);
+            actualAuthProps.Items[".idp"].Should().Be(options.IdentityProvider!.EntityId);
+
+            actualAuthProps.Should().BeEquivalentTo(authenticationProperties);
+        }
+
+        void validateCookieOptions(CookieOptions options)
+        {
+            options.HttpOnly.Should().BeTrue();
+            options.Secure.Should().BeTrue();
+            options.Expires.Should().Be(((DateTimeOffset)CurrentFakeTime).AddHours(1));
         }
 
         httpContext.Response.Received().Redirect(Arg.Any<string>());
 
-        validated.Should().BeTrue("The validation should have been called.");
+        cookieManager.Received().AppendResponseCookie(
+            Arg.Any<HttpContext>(), Arg.Any<string>(), Arg.Any<string?>(), Arg.Any<CookieOptions>());
     }
-
 
     [Fact]
     public async Task HandleRemoteAuthenticate_CannotUnbind()
     {
         var options = CreateOptions();
-        var (subject, _) = await CreateSubject(options);
+        (var subject, _) = await CreateSubject(options);
 
         await subject.Invoking(async s => await s.HandleRequestAsync())
             .Should().ThrowAsync<AuthenticationFailureException>()
@@ -208,6 +228,12 @@ public class Saml2HandlerTests
         var result = await subject.HandleRequestAsync();
 
         result.Should().BeTrue();
+    }
+
+    [Fact]
+    public async Task HandleRemoteAsync_RejectsIncorrectInResponseTo()
+    {
+
     }
 
     // TODO: Use event to resolve IdentityProvider - presence of EntityId indicates if challenge or response processing

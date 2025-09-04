@@ -5,6 +5,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Sustainsys.Saml2.AspNetCore.Events;
 using Sustainsys.Saml2.Bindings;
+using Sustainsys.Saml2.Common;
 using Sustainsys.Saml2.Samlp;
 using Sustainsys.Saml2.Serialization;
 using Sustainsys.Saml2.Validation;
@@ -29,6 +30,9 @@ public class Saml2Handler(
     IServiceProvider serviceProvider)
     : RemoteAuthenticationHandler<Saml2Options>(options, logger, encoder)
 {
+    private const string RequestIdKey = ".reqId";
+    private const string IdpKey = ".idp";
+
     private TService GetRequiredService<TService>() where TService : notnull =>
         serviceProvider.GetKeyedService<TService>(Scheme.Name) ??
         serviceProvider.GetRequiredService<TService>();
@@ -124,19 +128,34 @@ public class Saml2Handler(
             AssertionConsumerServiceUrl = BuildRedirectUri(Options.CallbackPath)
         };
 
-        var authnRequestGeneratedContext = new AuthnRequestGeneratedContext(Context, Scheme, Options, properties, authnRequest);
+        //TODO: Don't use Options.IdentityProvider directly, access via event/callback.
+        var authnRequestGeneratedContext = new AuthnRequestGeneratedContext(
+            Context, Scheme, Options, properties, authnRequest, Options.IdentityProvider!);
+
         await Events.AuthnRequestGeneratedAsync(authnRequestGeneratedContext);
+
+        // Capture the security sensitive state after the event
+        properties.Items[RequestIdKey] = authnRequest.Id;
+        properties.Items[IdpKey] = Options.IdentityProvider!.EntityId;
 
         var xmlDoc = GetRequiredService<ISamlXmlWriter>().Write(authnRequest);
 
-        //TODO: Don't use Options.IdentityProvider directly, access via event/callback.
-
+        var idpEntityIdHash = Options.IdentityProvider.EntityId!.Sha256(10);
         var message = new Saml2Message
         {
             Destination = Options.IdentityProvider!.SsoServiceUrl!,
             Name = Constants.SamlRequest,
             Xml = xmlDoc.DocumentElement!,
+            RelayState = $"{idpEntityIdHash}.{authnRequest.Id}"
         };
+
+        var cookieOptions = Options.CorrelationCookie.Build(Context, TimeProvider.GetUtcNow());
+
+        // TODO: If needed: make an alternative to this to allow multiple concurrent sign in attempts to same Idp
+        var cookieName = "Saml2." + idpEntityIdHash;
+        var cookieValue = Options.StateCookieDataFormat.Protect(properties);
+
+        Options.StateCookieManager.AppendResponseCookie(Context, cookieName, cookieValue, cookieOptions);
 
         var binding = GetFrontChannelBinding(Options.IdentityProvider.SsoServiceBinding!);
 
