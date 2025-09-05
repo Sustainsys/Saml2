@@ -15,7 +15,7 @@ public partial class SamlXmlReader
 
         // Read the text value of the NameID element
         result.Value = source.GetTextContents();
-        //result.Format = source.GetAbsoluteUriAttribute("Format");
+        result.Format = source.GetAbsoluteUriAttribute("Format");
 
         return result;
     }
