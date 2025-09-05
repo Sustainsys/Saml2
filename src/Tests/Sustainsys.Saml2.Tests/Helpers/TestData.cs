@@ -28,12 +28,7 @@ public static class TestData
         document.Load(fileName);
         return document;
     }
-    public static X509Certificate2 Certificate
-#if NET9_0_OR_GREATER
-    { get; } = X509CertificateLoader.LoadCertificateFromFile("Sustainsys.Saml2.Tests.pfx");
-#else
-    { get; } = new X509Certificate2("Sustainsys.Saml2.Tests.pfx");
-#endif
+    public static X509Certificate2 Certificate { get; } = LoadCertificate("Sustainsys.Saml2.Tests.pfx");
 
     public static SigningKey SigningKey { get; } = new()
     {
@@ -55,7 +50,7 @@ public static class TestData
     private static X509Certificate2 LoadCertificate(string path)
     {
 #if NET9_0_OR_GREATER
-        return X509CertificateLoader.LoadCertificateFromFile(path);
+        return X509CertificateLoader.LoadPkcs12FromFile(path, "", X509KeyStorageFlags.EphemeralKeySet);
 #else
         return new X509Certificate2(path);
 #endif
