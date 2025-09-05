@@ -105,7 +105,11 @@ public partial class SamlXmlReaderTests
         {
             new SigningKey
             {
+#if NET9_0_OR_GREATER
+                Certificate = X509CertificateLoader.LoadCertificateFromFile("stubidp.sustainsys.com.cer"),
+#else
                 Certificate = new X509Certificate2("stubidp.sustainsys.com.cer"),
+#endif
                 TrustLevel = TrustLevel.ConfiguredKey
             }
         };

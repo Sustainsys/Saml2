@@ -6,7 +6,7 @@ public class ValidatedTests
 {
     private class MyClass
     {
-        public object Property { get; set; }
+        public required object Property { get; set; }
     }
 
     private static Valid<MyClass> CreateSubject(out MyClass data)
