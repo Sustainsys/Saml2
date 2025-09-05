@@ -8,9 +8,19 @@ namespace Sustainsys.Saml2.Validation;
 public class AssertionValidationParameters
 {
     /// <summary>
-    /// Valid issuer of the response and assertions
+    /// Valid issuer value of the response and assertions
     /// </summary>
-    public NameId? ValidIssuer { get; set; }
+    /// <remarks>
+    /// Deliberately only a plain string here as the issuer value and not
+    /// a full <see cref="NameId"/> as there are special rules for the format
+    /// when a <see cref="NameId"/> is used as an Issuer.
+    /// </remarks>
+    public string? ValidIssuer { get; set; }
+
+    /// <summary>
+    /// Valid format of the issuer. 
+    /// </summary>
+    public string? ValidFormat { get; set; }
 
     /// <summary>
     ///  A URI reference that identifies an intended audience.

@@ -32,16 +32,19 @@ public class AssertionValidator(TimeProvider timeProvider) : IValidator<Assertio
         Assertion assertion,
         AssertionValidationParameters parameters)
     {
-        if (assertion.Issuer.Format != null && assertion.Issuer.Format != parameters.ValidIssuer!.Format)
+        if (assertion.Issuer == null)
         {
-            throw new ValidationException<Assertion>(
-                "Issuer format does not match urn:oasis:names:tc:SAML:2.0:nameid-format:entity and must be omitted");
+            throw new ValidationException<Assertion>("Issuer is missing");
         }
-        if (assertion.Issuer != null &&
-            assertion.Issuer != parameters.ValidIssuer)
+        if (assertion.Issuer.Value != parameters.ValidIssuer)
         {
             throw new ValidationException<Assertion>(
-                $"Assertion issuer {assertion.Issuer} does not match expected {parameters.ValidIssuer}");
+                $"Assertion issuer value {assertion.Issuer.Value} does not match expected {parameters.ValidIssuer}");
+        }
+        if (assertion.Issuer.Format != null && assertion.Issuer.Format != parameters.ValidFormat)
+        {
+            throw new ValidationException<Assertion>(
+                $"Issuer format does not match {parameters.ValidFormat} and must be null");
         }
     }
 

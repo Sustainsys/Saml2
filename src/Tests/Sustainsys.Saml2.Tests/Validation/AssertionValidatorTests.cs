@@ -15,6 +15,7 @@ public class AssertionValidatorTests
             Issuer = new()
             {
                 // Should match value from validation parameters.
+                Format = "urn:oasis:names:tc:SAML:2.0:nameid-format:entity",
                 Value = "https://idp.example.com/Saml2"
             },
             Subject = new()
@@ -54,12 +55,10 @@ public class AssertionValidatorTests
     private static AssertionValidationParameters CreateValidationParameters() =>
         new()
         {
-            ValidIssuer = new()
-            {
-                Value = "https://idp.example.com/Saml2"
-            },
+            ValidIssuer = "https://idp.example.com/Saml2",
             ValidAudience = "https://sp.example.com/Saml2",
             ValidRecipient = "https://sp.example.com/Saml2/Acs",
+            ValidFormat = "urn:oasis:names:tc:SAML:2.0:nameid-format:entity",
             ValidInResponseTo = "b123456"
         };
 
@@ -114,7 +113,9 @@ public class AssertionValidatorTests
             {a => {a.Conditions!.NotOnOrAfter = new(2025, 05, 28, 9, 34, 42);}, "*notonorafter*"},
             {a => {a.Conditions!.NotBefore = new(2025, 05, 28, 9, 34, 43);}, "*notbefore*"},
             {a => {a.Conditions = null!;}, "*conditions*"},
-            {a => {a.Issuer = "https://unexpected";},"*issuer*https://unexpected*https://idp.example.com/Saml2*"},
+            {a => {a.Issuer = null!;}, "*issuer*missing*"},
+            {a => {a.Issuer.Value = "https://unexpected";},"*issuer*https://unexpected*https://idp.example.com/Saml2*"},
+            {a => {a.Issuer.Format ="urn:invalid"; },"*issuer*format*urn:oasis:names:tc:SAML:2.0:nameid-format:entity*"},
         };
 
     [Theory]
