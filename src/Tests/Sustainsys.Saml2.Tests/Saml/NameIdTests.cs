@@ -40,6 +40,14 @@ public class NameIdTests
         subject.Equals(other).Should().Be(expected);
     }
 
+    [Fact]
+    public void Equals_NameId_Null()
+    {
+        NameId subject = value1;
+        NameId? other = null;
+        subject.Equals(other).Should().BeFalse();
+    }
+
     [Theory]
     [InlineData(value1, null, value1, null, true)]
     [InlineData(value1, null, value2, null, false)]
@@ -47,13 +55,29 @@ public class NameIdTests
     [InlineData(value1, format1, value1, format2, false)]
     [InlineData(value1, format1, value2, format1, false)]
     [InlineData(value1, format1, value2, format2, false)]
-    public void Equals_NameId_Operator_Equal(
+    public void Operator_Equal(
         string v1, string? f1, string v2, string? f2, bool expected)
     {
         NameId subject = new(v1, f1);
         NameId other = new(v2, f2);
 
         (subject == other).Should().Be(expected);
+    }
+
+    [Fact]
+    public void Operator_Equal_Null()
+    {
+        NameId? subject = null;
+        NameId? other = null;
+        (subject == other).Should().BeTrue();
+    }
+
+    [Fact]
+    public void Operator_Equal_Null_vs_NullProperties()
+    {
+        NameId? subject = new();
+        NameId? other = null;
+        (subject == other).Should().BeFalse();
     }
 
     [Theory]
@@ -72,19 +96,19 @@ public class NameIdTests
     [InlineData(value1, null, value1, true)]
     [InlineData(value1, null, "xyz", false)]
     [InlineData(value1, "urn:format", value1, false)]
-    public void Equals_String_Operator_Equal(string nameIdValue, string? nameIdFormat, string str, bool expected)
+    public void Operator_Equals_String(string nameIdValue, string? nameIdFormat, string str, bool expected)
     {
         NameId subject = new(nameIdValue, nameIdFormat);
 
         (subject == str).Should().Be(expected);
     }
 
-
     [Fact]
-    public void Equals_String_Operator_NotEqual()
+    public void GetHashCode_NullFormat_ShouldNotThrow()
     {
-        NameId subject = value1;
+        NameId? subject = new("xyz", null);
 
-        (subject == "xyz").Should().BeFalse();
+        // Should not throw
+        subject.GetHashCode();
     }
 }

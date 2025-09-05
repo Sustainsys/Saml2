@@ -5,7 +5,6 @@
 /// </summary>
 public class NameId
 {
-
     /// <summary>
     /// Ctor
     /// </summary>
@@ -61,8 +60,20 @@ public class NameId
     /// <param name="n1"></param>
     /// <param name="n2"></param>
     /// <returns></returns>
-    public static bool operator ==(NameId? n1, NameId? n2) =>
-        n1?.Value == n2?.Value && n1?.Format == n2?.Format;
+    public static bool operator ==(NameId? n1, NameId? n2)
+    {
+        if (ReferenceEquals(n1, n2))
+        {
+            return true;
+        }
+
+        if (n1 is null || n2 is null)
+        {
+            return false;
+        }
+
+        return n1.Value == n2.Value && n1.Format == n2.Format;
+    }
 
     /// <summary>
     /// Operator !=
@@ -71,12 +82,12 @@ public class NameId
     /// <param name="n2"></param>
     /// <returns></returns>
     public static bool operator !=(NameId? n1, NameId? n2) =>
-        n1?.Value != n2?.Value && n1?.Format == n2?.Format;
+     !(n1 == n2);
 
     /// <summary>
     /// Get hash code
     /// </summary>
     /// <returns>Hash code</returns>
     public override int GetHashCode() =>
-        Value.GetHashCode();
+        HashCode.Combine(Value, Format);
 }
