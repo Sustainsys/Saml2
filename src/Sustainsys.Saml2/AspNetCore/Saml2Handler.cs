@@ -32,6 +32,8 @@ public class Saml2Handler(
 {
     private const string RequestIdKey = ".reqId";
     private const string IdpKey = ".idp";
+    private const string CookiePrefix = "Saml2.";
+    private const int StateIdpHashLength = 10;
 
     private TService GetRequiredService<TService>() where TService : notnull =>
         serviceProvider.GetKeyedService<TService>(Scheme.Name) ??
@@ -80,6 +82,9 @@ public class Saml2Handler(
 
         var samlMessage = await binding.UnbindAsync(Context.Request, str => Task.FromResult<Saml2Entity>(Options.IdentityProvider!));
 
+        AuthenticationProperties authenticationProperties =
+            ProcessResponseRelayState(samlMessage);
+
         var source = XmlHelpers.GetXmlTraverser(samlMessage.Xml);
         var reader = GetRequiredService<ISamlXmlReader>();
         var samlResponse = reader.ReadResponse(source);
@@ -87,13 +92,14 @@ public class Saml2Handler(
         var validator = GetRequiredService<IValidator<Response, ResponseValidationParameters>>();
 
         // TODO: Do proper validation! + Tests!
+        // - TrustLevel
         ResponseValidationParameters validationParameters = new()
         {
             AssertionValidationParameters = new()
             {
                 ValidIssuer = Options.IdentityProvider!.EntityId!,
                 ValidAudience = Options.EntityId!.Value,
-                ValidRecipient = GetAbsoluteUrl(Options.CallbackPath)
+                ValidRecipient = GetAbsoluteUrl(Options.CallbackPath),
             },
         };
 
@@ -111,8 +117,66 @@ public class Saml2Handler(
         return HandleRequestResult.Success(authenticationTicket);
     }
 
+    private AuthenticationProperties ProcessResponseRelayState(Saml2Message samlMessage)
+    {
+        if (string.IsNullOrEmpty(samlMessage.RelayState))
+        {
+            throw new ValidationException<Saml2Message>("No RelayState found.");
+        }
+
+        var dotIndex = samlMessage.RelayState.IndexOf('.');
+        var idpEntityIdHash = samlMessage.RelayState.Substring(0, dotIndex);
+        var inResponseTo = samlMessage.RelayState.Substring(dotIndex + 1);
+
+        var cookieName = CookiePrefix + idpEntityIdHash;
+
+        var cookieValue = Options.StateCookieManager.GetRequestCookie(Context, cookieName);
+
+        if (string.IsNullOrEmpty(cookieValue))
+        {
+            throw new ValidationException<Saml2Message>($"The state cookie {cookieName} was not found.");
+        }
+
+        try
+        {
+            var authenticationProperties = Options.StateCookieDataFormat.Unprotect(cookieValue);
+
+            if (authenticationProperties == null)
+            {
+                throw new InvalidOperationException("Failed to unprotect state cookie");
+            }
+
+            var idpEntityId = authenticationProperties.Items[IdpKey];
+
+            var hashedStoredIdpEntityId = idpEntityId.Sha256(StateIdpHashLength);
+
+            if (idpEntityIdHash != hashedStoredIdpEntityId)
+            {
+                throw new ValidationException<Saml2Message>(
+                    $"Hash from RelayState {idpEntityIdHash} does not match {hashedStoredIdpEntityId} calculated from {idpEntityId}");
+            }
+
+            var storedRequestId = authenticationProperties.Items[RequestIdKey];
+
+            if (storedRequestId != inResponseTo)
+            {
+                throw new ValidationException<Saml2Message>(
+                    $"RelayState InResponseTo {inResponseTo} doens't matched stored request Id {storedRequestId}");
+            }
+
+            return authenticationProperties;
+        }
+        finally
+        {
+            Options.StateCookieManager.DeleteCookie(Context, cookieName, BuildCookieOptions());
+        }
+    }
+
     private string GetAbsoluteUrl(PathString callbackPath) =>
         $"{Request.Scheme}://{Request.Host}{callbackPath}";
+
+    private CookieOptions BuildCookieOptions() =>
+        Options.CorrelationCookie.Build(Context, TimeProvider.GetUtcNow());
 
     /// <summary>
     /// Redirects to identity provider with an authentication request.
@@ -140,7 +204,7 @@ public class Saml2Handler(
 
         var xmlDoc = GetRequiredService<ISamlXmlWriter>().Write(authnRequest);
 
-        var idpEntityIdHash = Options.IdentityProvider.EntityId!.Sha256(10);
+        var idpEntityIdHash = Options.IdentityProvider.EntityId!.Sha256(StateIdpHashLength);
         var message = new Saml2Message
         {
             Destination = Options.IdentityProvider!.SsoServiceUrl!,
@@ -149,13 +213,11 @@ public class Saml2Handler(
             RelayState = $"{idpEntityIdHash}.{authnRequest.Id}"
         };
 
-        var cookieOptions = Options.CorrelationCookie.Build(Context, TimeProvider.GetUtcNow());
-
         // TODO: If needed: make an alternative to this to allow multiple concurrent sign in attempts to same Idp
-        var cookieName = "Saml2." + idpEntityIdHash;
+        var cookieName = CookiePrefix + idpEntityIdHash;
         var cookieValue = Options.StateCookieDataFormat.Protect(properties);
 
-        Options.StateCookieManager.AppendResponseCookie(Context, cookieName, cookieValue, cookieOptions);
+        Options.StateCookieManager.AppendResponseCookie(Context, cookieName, cookieValue, BuildCookieOptions());
 
         var binding = GetFrontChannelBinding(Options.IdentityProvider.SsoServiceBinding!);
 

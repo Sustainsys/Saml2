@@ -18,8 +18,13 @@ public static class CryptoExtensions
     /// the hash is no longer cryptographically secure when truncated.
     /// </param>
     /// <returns>Base64UrlEncode(Sha256(input))</returns>
-    public static string Sha256(this string input, int? truncateLength = null)
+    public static string Sha256(this string? input, int? truncateLength = null)
     {
+        if (string.IsNullOrEmpty(input))
+        {
+            return "";
+        }
+
         using var sha256 = SHA256.Create();
         var hash = sha256.ComputeHash(Encoding.UTF8.GetBytes(input));
 

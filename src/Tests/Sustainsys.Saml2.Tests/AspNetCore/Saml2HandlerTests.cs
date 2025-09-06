@@ -69,6 +69,7 @@ public class Saml2HandlerTests
         httpContext.Request.Scheme = "https";
         httpContext.Request.Host = new HostString("sp.example.com", 8888);
         httpContext.Request.Path = "/Saml2/Acs";
+        httpContext.Request.Method = "POST";
 
         httpContext.RequestServices.GetService(Arg.Is<Type>(t => t == typeof(IAuthenticationService)))
             .Returns(authenticationService);
@@ -89,7 +90,8 @@ public class Saml2HandlerTests
                 SsoServiceUrl = "https://idp.example.com/sso",
                 SsoServiceBinding = Constants.BindingUris.HttpRedirect
             },
-            TimeProvider = new FakeTimeProvider(CurrentFakeTime)
+            TimeProvider = new FakeTimeProvider(CurrentFakeTime),
+            StateCookieManager = Substitute.For<ICookieManager>()
         };
 
         var postConfigure = new Saml2PostConfigureOptions(new FakeDataProtectionProvider());
@@ -212,9 +214,71 @@ public class Saml2HandlerTests
         var options = CreateOptions();
         var (subject, httpContext) = await CreateSubject(options);
 
-        // Have to match callback path.
-        httpContext.Request.Path = "/Saml2/Acs";
-        httpContext.Request.Method = "POST";
+        var xmlDoc = TestData.GetXmlDocument<Saml2HandlerTests>();
+
+        var encodedResponse = Convert.ToBase64String(Encoding.UTF8.GetBytes(xmlDoc.OuterXml));
+
+        var relayState = "bil3roIxTb.123";
+        var cookieName = "Saml2." + relayState.Split('.')[0];
+
+        httpContext.Request.Form = new FormCollection(new()
+        {
+            { "SAMLResponse", new(encodedResponse) },
+            { "RelayState",  relayState }
+        });
+
+        var authProps = new AuthenticationProperties();
+        authProps.Items[".idp"] = "https://idp.example.com";
+        authProps.Items[".reqId"] = "123";
+
+        options.StateCookieManager.GetRequestCookie(httpContext, cookieName)
+            .Returns(options.StateCookieDataFormat.Protect(authProps));
+
+        var result = await subject.HandleRequestAsync();
+
+        result.Should().BeTrue();
+
+        options.StateCookieManager.Received()
+            .DeleteCookie(httpContext, cookieName, Arg.Any<CookieOptions>());
+    }
+
+    [Fact]
+    public async Task HandleRemoteAsync_RejectsStoredInResponseDoesntMatchState()
+    {
+        var options = CreateOptions();
+        var (subject, httpContext) = await CreateSubject(options);
+
+        var xmlDoc = TestData.GetXmlDocument<Saml2HandlerTests>();
+
+        var encodedResponse = Convert.ToBase64String(Encoding.UTF8.GetBytes(xmlDoc.OuterXml));
+
+        var relayState = "bil3roIxTb.123";
+        var cookieName = "Saml2." + relayState.Split('.')[0];
+
+        httpContext.Request.Form = new FormCollection(new()
+        {
+            { "SAMLResponse", new(encodedResponse) },
+            { "RelayState",  relayState }
+        });
+
+        var authProps = new AuthenticationProperties();
+        authProps.Items[".idp"] = "https://idp.example.com";
+        authProps.Items[".reqId"] = "456";
+
+        options.StateCookieManager.GetRequestCookie(httpContext, cookieName)
+            .Returns(options.StateCookieDataFormat.Protect(authProps));
+
+        await subject.Invoking(s => s.HandleRequestAsync())
+            .Should().ThrowAsync<AuthenticationFailureException>()
+            .WithInnerException<AuthenticationFailureException, ValidationException<Saml2Message>>()
+            .WithMessage("*InResponseTo*");
+    }
+
+    [Fact]
+    public async Task HandleRemoteAsync_RejectsStoredIssuerDoesntMatchState()
+    {
+        var options = CreateOptions();
+        var (subject, httpContext) = await CreateSubject(options);
 
         var xmlDoc = TestData.GetXmlDocument<Saml2HandlerTests>();
 
@@ -222,18 +286,63 @@ public class Saml2HandlerTests
 
         httpContext.Request.Form = new FormCollection(new()
         {
-            { "SAMLResponse", new(encodedResponse) }
+            { "SAMLResponse", new(encodedResponse) },
+            { "RelayState", "abc.123" }
         });
 
-        var result = await subject.HandleRequestAsync();
+        var authProps = new AuthenticationProperties();
+        authProps.Items[".idp"] = "https://idp.example.com";
 
-        result.Should().BeTrue();
+        options.StateCookieManager.GetRequestCookie(httpContext, "Saml2.abc")
+            .Returns(options.StateCookieDataFormat.Protect(authProps));
+
+        await subject.Invoking(s => s.HandleRequestAsync())
+            .Should().ThrowAsync<AuthenticationFailureException>()
+            .WithInnerException<AuthenticationFailureException, ValidationException<Saml2Message>>()
+            .WithMessage("*RelayState*Idp*");
     }
 
     [Fact]
-    public async Task HandleRemoteAsync_RejectsIncorrectInResponseTo()
+    public async Task HandleRemoteAsync_RejectsOnMissingStateCookie()
     {
+        var options = CreateOptions();
+        var (subject, httpContext) = await CreateSubject(options);
 
+        var xmlDoc = TestData.GetXmlDocument<Saml2HandlerTests>();
+
+        var encodedResponse = Convert.ToBase64String(Encoding.UTF8.GetBytes(xmlDoc.OuterXml));
+
+        httpContext.Request.Form = new FormCollection(new()
+        {
+            { "SAMLResponse", new(encodedResponse) },
+            { "RelayState", "abc.123" }
+        });
+
+        await subject.Invoking(s => s.HandleRequestAsync())
+            .Should().ThrowAsync<AuthenticationFailureException>()
+            .WithInnerException<AuthenticationFailureException, ValidationException<Saml2Message>>()
+            .WithMessage("*cookie*");
+    }
+
+    [Fact]
+    public async Task HandleRemoteAsync_RejectsOnMissingRelaystateParam()
+    {
+        var options = CreateOptions();
+        var (subject, httpContext) = await CreateSubject(options);
+
+        var xmlDoc = TestData.GetXmlDocument<Saml2HandlerTests>();
+
+        var encodedResponse = Convert.ToBase64String(Encoding.UTF8.GetBytes(xmlDoc.OuterXml));
+
+        httpContext.Request.Form = new FormCollection(new()
+        {
+            { "SAMLResponse", new(encodedResponse) },
+        });
+
+        await subject.Invoking(s => s.HandleRequestAsync())
+            .Should().ThrowAsync<AuthenticationFailureException>()
+            .WithInnerException<AuthenticationFailureException, ValidationException<Saml2Message>>()
+            .WithMessage("*RelayState*");
     }
 
     // TODO: Use event to resolve IdentityProvider - presence of EntityId indicates if challenge or response processing
