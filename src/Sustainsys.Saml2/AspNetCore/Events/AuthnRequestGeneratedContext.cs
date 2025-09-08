@@ -12,12 +12,14 @@ namespace Sustainsys.Saml2.AspNetCore.Events;
 /// <param name="options">Options</param>
 /// <param name="properties">Authentication Properties</param>
 /// <param name="authnRequest">AuthnRequest</param>
+/// <param name="identityProvider">The IdentityProvider the request is being generated for</param>
 public class AuthnRequestGeneratedContext(
     HttpContext context,
     AuthenticationScheme scheme,
     Saml2Options options,
     AuthenticationProperties properties,
-    AuthnRequest authnRequest)
+    AuthnRequest authnRequest,
+    IdentityProvider identityProvider)
     : PropertiesContext<Saml2Options>(context, scheme, options, properties)
 {
 
@@ -25,4 +27,9 @@ public class AuthnRequestGeneratedContext(
     /// The generated AuthnRequest
     /// </summary>
     public AuthnRequest AuthnRequest { get; set; } = authnRequest;
+
+    /// <summary>
+    /// The IdentityProvider the request is being generated for.
+    /// </summary>
+    public IdentityProvider IdentityProvider { get; } = identityProvider;
 }

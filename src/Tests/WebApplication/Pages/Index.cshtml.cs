@@ -1,27 +1,46 @@
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Sustainsys.Saml2.AspNetCore;
 
 namespace WebApplication.Pages;
 
 [IgnoreAntiforgeryToken]
 public class IndexModel : PageModel
 {
-    public void OnGet()
+    public async Task OnGet()
     {
+        var authResult = await HttpContext.AuthenticateAsync();
+
+        Items = authResult?.Properties?.Items;
     }
+
+    public IDictionary<string, string?>? Items { get; set; }
 
     [BindProperty]
     public string? Action { get; set; }
 
-    public IActionResult OnPost()
+    public async Task<IActionResult> OnPost()
     {
-        return Action switch
+        switch (Action)
         {
-            "SignOut" => SignOut(CookieAuthenticationDefaults.AuthenticationScheme, Saml2Defaults.AuthenticationScheme),
-            "SignIn" => Challenge(),
-            _ => throw new NotImplementedException(),
-        };
+            case "SignIn":
+                {
+                    AuthenticationProperties properties = new()
+                    {
+                        Items =
+                        {
+                            { "TestKey", "TestValue" }
+                        }
+                    };
+                    return Challenge(properties);
+                }
+            case "SignOut":
+                await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+                return Redirect("/");
+            default:
+                throw new NotImplementedException();
+
+        }
     }
 }

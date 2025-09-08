@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Http;
 using Sustainsys.Saml2.Saml;
 
@@ -15,6 +16,13 @@ public class Saml2Options : RemoteAuthenticationOptions
     public Saml2Options()
     {
         CallbackPath = new PathString("/Saml2/Acs");
+
+        // Other providers use 15 minutes, which sometimes causes problems for login
+        // flows that includes a password reset/recovery or waiting for an email. But
+        // with a higher value, there's a risk the user gets too many cookies created so
+        // I guess that's why they stick to 15 minutes default.
+        // We can allow a full hour thanks to overwriting the cookie on repeated login attempts.
+        RemoteAuthenticationTimeout = TimeSpan.FromHours(1);
     }
 
     /// <summary>
@@ -38,4 +46,20 @@ public class Saml2Options : RemoteAuthenticationOptions
     /// NameId of the service provider.
     /// </summary>
     public NameId? EntityId { get; set; }
+
+    /// <summary>
+    /// Gets or sets the type used to encrypt and sign data for the state cookie used across redirects.
+    /// </summary>
+    public ISecureDataFormat<AuthenticationProperties> StateCookieDataFormat { get; set; } = default!;
+
+    /// <summary>
+    /// Gets or sets the cookie manager that is used for the state data cookie.
+    /// </summary>
+    /// <remarks>
+    /// Saml2 has a strict limitation on relayState size, so we cannot pass the encrypted 
+    /// AuthenticationProperties as state in the redirect like OpenIdConnect does. We need
+    /// to store it all in a cookie and that cookie can become large. So we're using the
+    /// CookieManager to get chunking support.
+    /// </remarks>
+    public ICookieManager StateCookieManager { get; set; } = default!;
 }

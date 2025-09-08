@@ -1,4 +1,7 @@
-﻿using Microsoft.Extensions.Options;
+﻿using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.DataProtection;
+using Microsoft.Extensions.Options;
 
 namespace Sustainsys.Saml2.AspNetCore;
 
@@ -6,7 +9,7 @@ namespace Sustainsys.Saml2.AspNetCore;
 /// Post configure options for Saml2. Validates config and sets the default 
 /// for parameters that have not been set.
 /// </summary>
-public class Saml2PostConfigureOptions : IPostConfigureOptions<Saml2Options>
+public class Saml2PostConfigureOptions(IDataProtectionProvider dataProtectionProvider) : IPostConfigureOptions<Saml2Options>
 {
     /// <summary>
     /// Validates config and sets the default for parameters that have not
@@ -16,6 +19,12 @@ public class Saml2PostConfigureOptions : IPostConfigureOptions<Saml2Options>
     /// <param name="options">Options to validate and set defaults on</param>
     public void PostConfigure(string? name, Saml2Options options)
     {
+        options.DataProtectionProvider ??= dataProtectionProvider;
 
+        options.StateCookieDataFormat ??=
+            new PropertiesDataFormat(options.DataProtectionProvider!.CreateProtector(
+                typeof(Saml2Handler).FullName!, name!, "v3"));
+
+        options.StateCookieManager ??= new ChunkingCookieManager();
     }
 }

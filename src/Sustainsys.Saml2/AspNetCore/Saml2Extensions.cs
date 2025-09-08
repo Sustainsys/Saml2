@@ -71,8 +71,10 @@ public static class Saml2Extensions
             ServiceDescriptor.Singleton<IPostConfigureOptions<Saml2Options>,
             Saml2PostConfigureOptions>());
 
-        builder.Services.TryAddSingleton<ISamlXmlReader, SamlXmlReader>();
         builder.Services.TryAddSingleton<ISamlXmlWriter, SamlXmlWriter>();
+
+        // Reader has state for trusted keys, so had to be transient.
+        builder.Services.TryAddTransient<ISamlXmlReader, SamlXmlReader>();
 
         builder.Services.TryAddEnumerable(
             ServiceDescriptor.Singleton<IFrontChannelBinding, HttpRedirectBinding>());
