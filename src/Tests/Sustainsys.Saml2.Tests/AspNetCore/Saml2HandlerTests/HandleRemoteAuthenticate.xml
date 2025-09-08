@@ -1,6 +1,7 @@
 ﻿<samlp:Response xmlns:samlp="urn:oasis:names:tc:SAML:2.0:protocol" xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion"
 				ID="x123" Version="2.0" IssueInstant="2023-10-14T13:46:32Z"
-				Destination="https://sp.example.com:8888/Saml2/Acs">
+				Destination="https://sp.example.com:8888/Saml2/Acs"
+				InResponseTo="abc123">
 	<saml:Issuer>https://idp.example.com/Saml2</saml:Issuer>
 	<samlp:Status>
 		<samlp:StatusCode Value="urn:oasis:names:tc:SAML:2.0:status:Success" />
@@ -14,7 +15,8 @@
 				<saml:SubjectConfirmationData
 					NotBefore="2025-05-28T11:13:53Z" 
 					NotOnOrAfter="2025-05-28T11:15:53Z" 
-					Recipient="https://sp.example.com:8888/Saml2/Acs" />
+					Recipient="https://sp.example.com:8888/Saml2/Acs"
+					InResponseTo="abc123"/>
 			</saml:SubjectConfirmation>
 		</saml:Subject>
 		<saml:Conditions NotOnOrAfter="2100-01-01T00:00:00Z" />
