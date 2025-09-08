@@ -18,11 +18,6 @@ public class AssertionValidationParameters
     public string? ValidIssuer { get; set; }
 
     /// <summary>
-    /// Valid format of the issuer. 
-    /// </summary>
-    public string? ValidFormat { get; set; }
-
-    /// <summary>
     ///  A URI reference that identifies an intended audience.
     /// </summary>
     public string? ValidAudience { get; set; }

@@ -104,8 +104,30 @@ public class ResponseValidatorTests
         subject.Invoking(s => s.Validate(response, parameters))
             .Should().Throw<ValidationException<Response>>()
             .WithMessage("*issuer*https://unexpected*https://idp.example.com/Saml2*");
+    }
 
-        // TODO: Validate NameID format once it is supported.
+    [Fact]
+    public void Validate_Issuer_FormatIsIncorrect()
+    {
+        var subject = CreateSubject();
+        var response = CreateResponse();
+        response.Issuer!.Format = "urn:invalid";
+        var parameters = CreateValidationParameters();
+        subject.Invoking(s => s.Validate(response, parameters))
+            .Should().Throw<ValidationException<Response>>()
+            .WithMessage("*format*urn:invalid*urn:oasis:names:tc:SAML:2.0:nameid-format:entity*");
+    }
+
+    [Fact]
+    public void Validate_Issuer_FormatIsSpecified()
+    {
+        var subject = CreateSubject();
+        var response = CreateResponse();
+        response.Issuer!.Format = "urn:oasis:names:tc:SAML:2.0:nameid-format:entity";
+        var parameters = CreateValidationParameters();
+
+        // Should not Throw
+        subject.Validate(response, parameters);
     }
 
     [Fact]

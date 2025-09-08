@@ -17,7 +17,7 @@ public class ResponseValidationParameters
     /// Valid issuer of the response and assertions - returns the ValidIssuer
     /// of the embedded SamlAssertionValidationParameters to ensure they are the same.
     /// </summary>
-    public NameId? ValidIssuer { get => AssertionValidationParameters.ValidIssuer; }
+    public NameId? ValidIssuer { get => AssertionValidationParameters.ValidIssuer!; }
 
     /// <summary>
     /// Valid destination of the response and assertions. 

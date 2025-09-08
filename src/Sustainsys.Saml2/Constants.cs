@@ -150,6 +150,11 @@ public static class Constants
         public const string Bearer = "urn:oasis:names:tc:SAML:2.0:cm:bearer";
     }
 
+    public static class NameIdFormats
+    {
+        public const string Entity = "urn:oasis:names:tc:SAML:2.0:nameid-format:entity";
+    }
+
     public static class AuthnContextClasses
     {
         public const string PasswordProtectedTransport = "urn:oasis:names:tc:SAML:2.0:ac:classes:PasswordProtectedTransport";

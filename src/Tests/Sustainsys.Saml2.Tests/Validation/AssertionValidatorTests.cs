@@ -14,8 +14,8 @@ public class AssertionValidatorTests
         {
             Issuer = new()
             {
-                // Should match value from validation parameters.
                 Format = "urn:oasis:names:tc:SAML:2.0:nameid-format:entity",
+                // Should match value from validation parameters.
                 Value = "https://idp.example.com/Saml2"
             },
             Subject = new()
@@ -58,7 +58,6 @@ public class AssertionValidatorTests
             ValidIssuer = "https://idp.example.com/Saml2",
             ValidAudience = "https://sp.example.com/Saml2",
             ValidRecipient = "https://sp.example.com/Saml2/Acs",
-            ValidFormat = "urn:oasis:names:tc:SAML:2.0:nameid-format:entity",
             ValidInResponseTo = "b123456"
         };
 
@@ -73,6 +72,9 @@ public class AssertionValidatorTests
             {a => {a.Conditions!.NotOnOrAfter = null!;}},
             {a => {a.Conditions!.NotBefore = null!;}},
             {a => {a.Conditions!.AudienceRestrictions.Clear();}},
+
+            // Removing Issuer format is ok
+            {a => {a.Issuer!.Format = null!;}}
         };
 
     [Theory]

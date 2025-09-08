@@ -41,10 +41,10 @@ public class AssertionValidator(TimeProvider timeProvider) : IValidator<Assertio
             throw new ValidationException<Assertion>(
                 $"Assertion issuer value {assertion.Issuer.Value} does not match expected {parameters.ValidIssuer}");
         }
-        if (assertion.Issuer.Format != null && assertion.Issuer.Format != parameters.ValidFormat)
+        if (assertion.Issuer.Format != null && assertion.Issuer.Format != Constants.NameIdFormats.Entity)
         {
             throw new ValidationException<Assertion>(
-                $"Issuer format does not match {parameters.ValidFormat} and must be null");
+                $"Issuer format does not match {Constants.NameIdFormats.Entity} and must be null");
         }
     }
 

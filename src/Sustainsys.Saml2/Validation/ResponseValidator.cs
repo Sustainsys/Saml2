@@ -64,11 +64,16 @@ public class ResponseValidator(IValidator<Assertion, AssertionValidationParamete
         Response samlResponse,
         ResponseValidationParameters validationParameters)
     {
-        if (samlResponse.Issuer != null &&
-            samlResponse.Issuer != validationParameters.ValidIssuer)
+
+        if (samlResponse.Issuer != null && samlResponse.Issuer.Value != validationParameters.ValidIssuer)
         {
             throw new ValidationException<Response>(
                 $"Response issuer {samlResponse.Issuer} does not match expected {validationParameters.ValidIssuer}");
+        }
+        if (samlResponse.Issuer != null && samlResponse.Issuer.Format != null && samlResponse.Issuer.Format != Constants.NameIdFormats.Entity)
+        {
+            throw new ValidationException<Response>(
+                $"Issuer format {samlResponse.Issuer.Format} does not match {Constants.NameIdFormats.Entity} and must be null");
         }
     }
 
