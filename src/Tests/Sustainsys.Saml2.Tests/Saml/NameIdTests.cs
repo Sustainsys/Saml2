@@ -13,7 +13,7 @@ public class NameIdTests
     {
         NameId subject = value1;
 
-        subject.Value.Should().Be(value1); ;
+        subject.Value.Should().Be(value1);
     }
 
     [Fact]
@@ -45,6 +45,7 @@ public class NameIdTests
     {
         NameId subject = value1;
         NameId? other = null;
+
         subject.Equals(other).Should().BeFalse();
     }
 
@@ -69,6 +70,7 @@ public class NameIdTests
     {
         NameId? subject = null;
         NameId? other = null;
+
         (subject == other).Should().BeTrue();
     }
 
@@ -77,6 +79,7 @@ public class NameIdTests
     {
         NameId? subject = new();
         NameId? other = null;
+
         (subject == other).Should().BeFalse();
     }
 
