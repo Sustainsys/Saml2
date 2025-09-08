@@ -14,6 +14,7 @@ using Sustainsys.Saml2.Serialization;
 using Sustainsys.Saml2.Tests.Helpers;
 using Sustainsys.Saml2.Validation;
 using Sustainsys.Saml2.Xml;
+using System.Security.Claims;
 using System.Text;
 using System.Text.Encodings.Web;
 
@@ -231,9 +232,12 @@ public class Saml2HandlerTests
         var authProps = new AuthenticationProperties();
         authProps.Items[".idp"] = "https://idp.example.com";
         authProps.Items[".reqId"] = "abc123";
+        authProps.Items["TestKey"] = "TestValue";
 
         options.StateCookieManager.GetRequestCookie(httpContext, cookieName)
             .Returns(options.StateCookieDataFormat.Protect(authProps));
+
+        var authenticationService = httpContext.RequestServices.GetRequiredService<IAuthenticationService>();
 
         var result = await subject.HandleRequestAsync();
 
@@ -241,6 +245,12 @@ public class Saml2HandlerTests
 
         options.StateCookieManager.Received()
             .DeleteCookie(httpContext, cookieName, Arg.Any<CookieOptions>());
+
+        await authenticationService.Received().SignInAsync(
+            Arg.Any<HttpContext>(),
+            Arg.Is<string?>(value: null),
+            Arg.Is<ClaimsPrincipal>(p => p.FindFirstValue("email") == "Someone@example.com"),
+            Arg.Is<AuthenticationProperties>(p => p.Items["TestKey"] == "TestValue"));
     }
 
     [Fact]

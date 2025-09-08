@@ -113,7 +113,7 @@ public class Saml2Handler(
 
         var identity = claimsFactory.GetClaimsIdentity(validatedAssertion);
 
-        AuthenticationTicket authenticationTicket = new(new(identity), Scheme.Name);
+        AuthenticationTicket authenticationTicket = new(new(identity), authenticationProperties, Scheme.Name);
 
         return HandleRequestResult.Success(authenticationTicket);
     }
@@ -217,8 +217,9 @@ public class Saml2Handler(
         // TODO: If needed: make an alternative to this to allow multiple concurrent sign in attempts to same Idp
         var cookieName = CookiePrefix + idpEntityIdHash;
         var cookieValue = Options.StateCookieDataFormat.Protect(properties);
+        var cookieOptions = BuildCookieOptions();
 
-        Options.StateCookieManager.AppendResponseCookie(Context, cookieName, cookieValue, BuildCookieOptions());
+        Options.StateCookieManager.AppendResponseCookie(Context, cookieName, cookieValue, cookieOptions);
 
         var binding = GetFrontChannelBinding(Options.IdentityProvider.SsoServiceBinding!);
 

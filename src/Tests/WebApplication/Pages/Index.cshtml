@@ -36,5 +36,16 @@
             }
         </dl>
     }
+    @if(Model.Items != null)
+    {
+        <h2>Properties</h2>
+        <dl>
+            @foreach (var i in Model.Items)
+            {
+                <dt>@i.Key</dt>
+                <dd>@i.Value</dd>
+            }
+        </dl>
+    }
 </body>
 </html>
