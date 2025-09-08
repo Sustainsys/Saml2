@@ -81,9 +81,11 @@ public class NameId
     /// <summary>
     /// Operator !=
     /// </summary>
-    /// <param name="n1"></param>
-    /// <param name="n2"></param>
-    /// <returns></returns>
+    /// <param name="n1">Object</param>
+    /// <param name="n2">Object to compare to</param>
+    /// <returns>
+    /// <c>True</c> if the two instances are not equal, otherwise <c>false</c>
+    /// </returns>
     public static bool operator !=(NameId? n1, NameId? n2) =>
      !(n1 == n2);
 
