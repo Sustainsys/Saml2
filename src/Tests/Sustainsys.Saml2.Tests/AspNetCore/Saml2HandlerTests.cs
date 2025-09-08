@@ -186,6 +186,7 @@ public class Saml2HandlerTests
             options.HttpOnly.Should().BeTrue();
             options.Secure.Should().BeTrue();
             options.Expires.Should().Be(((DateTimeOffset)CurrentFakeTime).AddHours(1));
+            options.Path.Should().Be("/Saml2/Acs");
         }
 
         httpContext.Response.Received().Redirect(Arg.Any<string>());
