@@ -7,17 +7,14 @@ namespace Sustainsys.Saml2.Tests.Validators;
 public class ResponseValidatorTests
 {
     private static ResponseValidator CreateSubject() =>
-     new ResponseValidator(
+     new(
          new AssertionValidator(
              new FakeTimeProvider(new(2025, 05, 28, 11, 14, 53, TimeSpan.Zero))));
 
     private static Response CreateResponse() =>
         new()
         {
-            Issuer = new()
-            {
-                Value = "https://idp.example.com/Saml2"
-            },
+            Issuer = "https://idp.example.com/Saml2",
             Status = new()
             {
                 StatusCode = new()
@@ -32,37 +29,10 @@ public class ResponseValidatorTests
         {
             AssertionValidationParameters = new()
             {
-                ValidIssuer = "https://idp.example.com/Saml2"
+                ValidIssuer = "https://idp.example.com/Saml2",
+                ValidRecipient = "https://example.com/Acs"
             }
         };
-
-    // The happy path that should just validate the default response
-    // from the factory with the default parameters from the factory.
-    [Fact]
-    public void Validate()
-    {
-        var subject = CreateSubject();
-
-        var response = CreateResponse();
-        var parameters = CreateValidationParameters();
-
-        // Should not throw.
-        subject.Validate(response, parameters);
-    }
-
-    [Fact]
-    public void Validate_Issuer_IsMissing()
-    {
-        var subject = CreateSubject();
-
-        var response = CreateResponse();
-        response.Issuer = null;
-
-        var parameters = CreateValidationParameters();
-
-        // Should not throw. Missing issuers are allowed.
-        subject.Validate(response, parameters);
-    }
 
     [Theory]
     [InlineData("2.0", true)]
@@ -91,66 +61,55 @@ public class ResponseValidatorTests
         }
     }
 
-    [Fact]
-    public void Validate_Issuer_IsIncorrect()
+    public static TheoryData<Action<Response>> Validate_IsSpecifiedOrIsMissing_Data =>
+        new TheoryData<Action<Response>>
+        {   
+            // The happy path that should just validate the default response
+            // from the factory with the default parameters from the factory.
+            { r => { }},
+
+            { r => {r.Issuer = null; }},
+            { r => {r.Issuer!.Format = "urn:oasis:names:tc:SAML:2.0:nameid-format:entity"; }},
+            { r => {r.Destination = "https://example.com/Acs"; }}
+        };
+
+    [Theory]
+    [MemberData(nameof(Validate_IsSpecifiedOrIsMissing_Data))]
+    public void Validate_IsSpecifiedOrIsMissing(Action<Response> modify)
     {
         var subject = CreateSubject();
-
         var response = CreateResponse();
-        response.Issuer!.Value = "https://unexpected";
+
+        modify(response);
 
         var parameters = CreateValidationParameters();
-
-        subject.Invoking(s => s.Validate(response, parameters))
-            .Should().Throw<ValidationException<Response>>()
-            .WithMessage("*issuer*https://unexpected*https://idp.example.com/Saml2*");
-
-        // TODO: Validate NameID format once it is supported.
-    }
-
-    [Fact]
-    public void Validate_Status_IsNonSuccess()
-    {
-        var subject = CreateSubject();
-
-        var response = CreateResponse();
-        response.Status.StatusCode.Value = Constants.StatusCodes.Requester;
-
-        var parameters = CreateValidationParameters();
-
-        subject.Invoking(s => s.Validate(response, parameters))
-            .Should().Throw<ValidationException<Response>>()
-            .WithMessage("*status*Requester*");
-    }
-
-    [Fact]
-    public void Validate_Destination_IsIncorrect()
-    {
-        var subject = CreateSubject();
-
-        var response = CreateResponse();
-        response.Destination = "https://example.com/Acs";
-
-        var parameters = CreateValidationParameters();
-        parameters.AssertionValidationParameters.ValidRecipient = "https://example.com/AnotherEndpoint";
-
-        subject.Invoking(s => s.Validate(response, parameters))
-            .Should().Throw<ValidationException<Response>>()
-            .WithMessage("*destination*https://example.com/Acs*");
-    }
-
-    [Fact]
-    public void Validate_Destination_IsCorrect()
-    {
-        var subject = CreateSubject();
-
-        var response = CreateResponse();
-        response.Destination = "https://example.com/Acs";
-
-        var parameters = CreateValidationParameters();
-        parameters.AssertionValidationParameters.ValidRecipient = "https://example.com/Acs";
 
         subject.Invoking(s => s.Validate(response, parameters))
             .Should().NotThrow();
+    }
+
+    public static TheoryData<Action<Response>, string> Validate_IsMissingOrIncorrect_Data =>
+        new TheoryData<Action<Response>, string>
+        {
+            { r => { r.Issuer = "https://unexpected"; }, "*issuer*https://unexpected*https://idp.example.com/Saml2*" },
+            { r => { r.Issuer!.Format = "urn:Invalid"; }, "*format*urn:invalid*urn:oasis:names:tc:SAML:2.0:nameid-format:entity*" },
+            { r => { r.Destination = "https://example.com/OtherAcs"; }, "*destination*https://example.com/OtherAcs*" },
+            { r => { r.Status.StatusCode.Value = Constants.StatusCodes.Requester; }, "*status*Requester*" }
+        };
+
+    [Theory]
+    [MemberData(nameof(Validate_IsMissingOrIncorrect_Data))]
+    public void Validate_IsMissingOrIncorrect(Action<Response> destroy, string messagePattern)
+    {
+        var subject = CreateSubject();
+        var response = CreateResponse();
+
+        destroy(response);
+
+        var parameters = CreateValidationParameters();
+
+        subject.Invoking(s => s.Validate(response, parameters))
+            .Should().Throw<ValidationException<Response>>()
+            .WithMessage($"*{messagePattern}*");
     }
 }

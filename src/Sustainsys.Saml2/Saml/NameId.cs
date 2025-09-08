@@ -13,11 +13,16 @@ public class NameId
     /// <summary>
     /// Ctor
     /// </summary>
-    /// <param name="value">NameId value</param>
-    public NameId(string value)
+    public NameId(string value, string? format = null)
     {
         Value = value;
+        Format = format;
     }
+
+    /// <summary>
+    /// A URI reference representing the classification of string-based identifier information. 
+    /// </summary>
+    public string? Format { get; set; }
 
     /// <summary>
     /// The value, i.e. string contents of the XML node.
@@ -42,34 +47,51 @@ public class NameId
     /// <param name="other">Object to compare to</param>
     /// <returns>Are they equal?</returns>
     public override bool Equals(object? other) =>
-        (other is NameId otherNameId
-        && otherNameId.Value == Value)
+        (other is NameId othernameid
+        && othernameid.Value == Value && othernameid.Format == Format)
         ||
-        (other is string otherString
-        && otherString == Value);
+        (other is string otherstring
+        && otherstring == Value && Format == null);
 
     /// <summary>
     /// Operator ==
     /// </summary>
-    /// <param name="n1"></param>
-    /// <param name="n2"></param>
-    /// <returns></returns>
-    public static bool operator ==(NameId? n1, NameId? n2) =>
-        n1?.Value == n2?.Value;
+    /// <param name="n1">Object</param>
+    /// <param name="n2">Object to compare to</param>
+    /// <returns>
+    /// <c>true</c> if both instances are non-null and their Format and Value properties are equal. 
+    /// <c>true</c> if both instances are the same reference, otherwise returns <c>false</c>.
+    /// </returns>
+    public static bool operator ==(NameId? n1, NameId? n2)
+    {
+        if (ReferenceEquals(n1, n2))
+        {
+            return true;
+        }
+
+        if (n1 is null || n2 is null)
+        {
+            return false;
+        }
+
+        return n1.Value == n2.Value && n1.Format == n2.Format;
+    }
 
     /// <summary>
     /// Operator !=
     /// </summary>
-    /// <param name="n1"></param>
-    /// <param name="n2"></param>
-    /// <returns></returns>
+    /// <param name="n1">Object</param>
+    /// <param name="n2">Object to compare to</param>
+    /// <returns>
+    /// <c>True</c> if the two instances are not equal, otherwise <c>false</c>
+    /// </returns>
     public static bool operator !=(NameId? n1, NameId? n2) =>
-        n1?.Value != n2?.Value;
+        !(n1 == n2);
 
     /// <summary>
     /// Get hash code
     /// </summary>
     /// <returns>Hash code</returns>
     public override int GetHashCode() =>
-        Value.GetHashCode();
+        HashCode.Combine(Value, Format);
 }

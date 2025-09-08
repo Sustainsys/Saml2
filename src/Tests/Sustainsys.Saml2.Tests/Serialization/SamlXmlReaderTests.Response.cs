@@ -82,7 +82,11 @@ partial class SamlXmlReaderTests
             Version = "2.0",
             IssueInstant = new(2023, 10, 14, 13, 46, 32),
             Destination = "https://sp.example.com/Saml2/Acs",
-            Issuer = "https://idp.example.com/Metadata",
+            Issuer = new()
+            {
+                Value = "https://idp.example.com/Metadata",
+                Format = "urn:oasis:names:tc:SAML:1.1:nameid-format:entity",
+            },
             Status = new()
             {
                 StatusCode = new()
@@ -101,7 +105,10 @@ partial class SamlXmlReaderTests
                     Issuer = "https://idp.example.com/Metadata",
                     Subject = new()
                     {
-                        NameId = "x123456",
+                        NameId = new() {
+                            Value ="x123456",
+                            Format = "urn:oasis:names:tc:SAML:1.1:nameid-format:unspecified"
+                        },
                         SubjectConfirmation = new()
                         {
                             Method = "urn:oasis:names:tc:SAML:2.0:cm:bearer",

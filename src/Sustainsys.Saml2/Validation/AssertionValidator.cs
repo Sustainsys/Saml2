@@ -32,11 +32,21 @@ public class AssertionValidator(TimeProvider timeProvider) : IValidator<Assertio
         Assertion assertion,
         AssertionValidationParameters parameters)
     {
-        if (assertion.Issuer != null &&
-            assertion.Issuer != parameters.ValidIssuer)
+        if (assertion.Issuer == null)
+        {
+            throw new ValidationException<Assertion>("Issuer is missing");
+        }
+
+        if (assertion.Issuer.Value != parameters.ValidIssuer)
         {
             throw new ValidationException<Assertion>(
-                $"Assertion issuer {assertion.Issuer} does not match expected {parameters.ValidIssuer}");
+                $"Assertion issuer value {assertion.Issuer.Value} does not match expected {parameters.ValidIssuer}");
+        }
+
+        if (assertion.Issuer.Format != null && assertion.Issuer.Format != Constants.NameIdFormats.Entity)
+        {
+            throw new ValidationException<Assertion>(
+                $"Issuer format does not match {Constants.NameIdFormats.Entity} and must be null");
         }
     }
 
