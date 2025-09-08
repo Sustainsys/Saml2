@@ -14,10 +14,7 @@ public class ResponseValidatorTests
     private static Response CreateResponse() =>
         new()
         {
-            Issuer = new()
-            {
-                Value = "https://idp.example.com/Saml2"
-            },
+            Issuer = "https://idp.example.com/Saml2",
             Status = new()
             {
                 StatusCode = new()
@@ -32,7 +29,8 @@ public class ResponseValidatorTests
         {
             AssertionValidationParameters = new()
             {
-                ValidIssuer = "https://idp.example.com/Saml2"
+                ValidIssuer = "https://idp.example.com/Saml2",
+                ValidRecipient = "https://example.com/Acs"
             }
         };
 
@@ -63,30 +61,28 @@ public class ResponseValidatorTests
         }
     }
 
-    public static TheoryData<Action<Response>, Action<ResponseValidationParameters>> Validate_IsSpecifiedOrIsMissing_Data =>
-        new TheoryData<Action<Response>, Action<ResponseValidationParameters>>
+    public static TheoryData<Action<Response>> Validate_IsSpecifiedOrIsMissing_Data =>
+        new TheoryData<Action<Response>>
         {   
             // The happy path that should just validate the default response
             // from the factory with the default parameters from the factory.
-            { r => { }, p => {}},
+            { r => { }},
 
-            { r => {r.Issuer = null; },p => {}},
-            { r => {r.Issuer!.Format = null; }, p => {}},
-            { r => {r.Issuer!.Format = "urn:oasis:names:tc:SAML:2.0:nameid-format:entity"; }, p => {}},
-            { r => {r.Destination = "https://example.com/Acs"; }, p => {p.AssertionValidationParameters.ValidRecipient = "https://example.com/Acs"; } }
+            { r => {r.Issuer = null; }},
+            { r => {r.Issuer!.Format = "urn:oasis:names:tc:SAML:2.0:nameid-format:entity"; }},
+            { r => {r.Destination = "https://example.com/Acs"; }}
         };
 
     [Theory]
     [MemberData(nameof(Validate_IsSpecifiedOrIsMissing_Data))]
-    public void Validate_IsSpecifiedOrIsMissing(Action<Response> destroy, Action<ResponseValidationParameters> modifyParameters)
+    public void Validate_IsSpecifiedOrIsMissing(Action<Response> modify)
     {
         var subject = CreateSubject();
         var response = CreateResponse();
 
-        destroy(response);
+        modify(response);
 
         var parameters = CreateValidationParameters();
-        modifyParameters(parameters);
 
         subject.Invoking(s => s.Validate(response, parameters))
             .Should().NotThrow();
@@ -97,7 +93,7 @@ public class ResponseValidatorTests
         {
             { r => { r.Issuer = "https://unexpected"; }, "*issuer*https://unexpected*https://idp.example.com/Saml2*" },
             { r => { r.Issuer!.Format = "urn:Invalid"; }, "*format*urn:invalid*urn:oasis:names:tc:SAML:2.0:nameid-format:entity*" },
-            { r => { r.Destination = "https://example.com/Acs"; }, "*destination*https://example.com/Acs*" },
+            { r => { r.Destination = "https://example.com/OtherAcs"; }, "*destination*https://example.com/OtherAcs*" },
             { r => { r.Status.StatusCode.Value = Constants.StatusCodes.Requester; }, "*status*Requester*" }
         };
 

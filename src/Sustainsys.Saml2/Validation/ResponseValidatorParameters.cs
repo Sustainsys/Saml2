@@ -14,10 +14,15 @@ public class ResponseValidationParameters
     public required AssertionValidationParameters AssertionValidationParameters { get; set; }
 
     /// <summary>
-    /// Valid issuer of the response and assertions - returns the ValidIssuer
-    /// of the embedded SamlAssertionValidationParameters to ensure they are the same.
+    /// Valid issuer of the response. Returns the ValidIssuer of the embedded
+    /// SamlAssertionValidationParameters to ensure they are the same.
     /// </summary>
-    public NameId? ValidIssuer { get => AssertionValidationParameters.ValidIssuer!; }
+    /// <remarks>
+    /// Deliberately only a plain string here as the issuer value and not
+    /// a full <see cref="NameId"/> as there are special rules for the format
+    /// when a <see cref="NameId"/> is used as an Issuer.
+    /// </remarks>
+    public string? ValidIssuer { get => AssertionValidationParameters.ValidIssuer; }
 
     /// <summary>
     /// Valid destination of the response and assertions. 

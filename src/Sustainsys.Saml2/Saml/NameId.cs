@@ -46,13 +46,12 @@ public class NameId
     /// </summary>
     /// <param name="other">Object to compare to</param>
     /// <returns>Are they equal?</returns>
-    public override bool Equals(object? other)
-    =>
-    (other is NameId othernameid
-    && othernameid.Value == Value && othernameid.Format == Format)
-    ||
-    (other is string otherstring
-    && otherstring == Value && Format == null);
+    public override bool Equals(object? other) =>
+        (other is NameId othernameid
+        && othernameid.Value == Value && othernameid.Format == Format)
+        ||
+        (other is string otherstring
+        && otherstring == Value && Format == null);
 
     /// <summary>
     /// Operator ==
@@ -87,7 +86,7 @@ public class NameId
     /// <c>True</c> if the two instances are not equal, otherwise <c>false</c>
     /// </returns>
     public static bool operator !=(NameId? n1, NameId? n2) =>
-     !(n1 == n2);
+        !(n1 == n2);
 
     /// <summary>
     /// Get hash code

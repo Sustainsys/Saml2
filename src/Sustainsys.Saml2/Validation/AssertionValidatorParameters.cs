@@ -8,7 +8,7 @@ namespace Sustainsys.Saml2.Validation;
 public class AssertionValidationParameters
 {
     /// <summary>
-    /// Valid issuer of the response and assertions
+    /// Valid issuer of and assertion
     /// </summary>
     /// <remarks>
     /// Deliberately only a plain string here as the issuer value and not

@@ -15,7 +15,6 @@ public class AssertionValidatorTests
             Issuer = new()
             {
                 Format = "urn:oasis:names:tc:SAML:2.0:nameid-format:entity",
-                // Should match value from validation parameters.
                 Value = "https://idp.example.com/Saml2"
             },
             Subject = new()
