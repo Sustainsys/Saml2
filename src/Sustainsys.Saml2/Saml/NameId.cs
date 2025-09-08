@@ -57,9 +57,12 @@ public class NameId
     /// <summary>
     /// Operator ==
     /// </summary>
-    /// <param name="n1"></param>
-    /// <param name="n2"></param>
-    /// <returns></returns>
+    /// <param name="n1">Object</param>
+    /// <param name="n2">Object to compare to</param>
+    /// <returns>
+    ///<c>true</c> if both instances are non-null and their Format and Value properties are equal. 
+    /// <c>true</c> if both instances are the same reference, otherwise returns <c>false</c>.
+    /// </returns>
     public static bool operator ==(NameId? n1, NameId? n2)
     {
         if (ReferenceEquals(n1, n2))
