@@ -15,6 +15,7 @@ public class ResponseValidatorTests
         new()
         {
             Issuer = "https://idp.example.com/Saml2",
+            InResponseTo = "123",
             Status = new()
             {
                 StatusCode = new()
@@ -30,7 +31,8 @@ public class ResponseValidatorTests
             AssertionValidationParameters = new()
             {
                 ValidIssuer = "https://idp.example.com/Saml2",
-                ValidRecipient = "https://example.com/Acs"
+                ValidRecipient = "https://example.com/Acs",
+                ValidInResponseTo = "123"
             }
         };
 
@@ -94,7 +96,9 @@ public class ResponseValidatorTests
             { r => { r.Issuer = "https://unexpected"; }, "*issuer*https://unexpected*https://idp.example.com/Saml2*" },
             { r => { r.Issuer!.Format = "urn:Invalid"; }, "*format*urn:invalid*urn:oasis:names:tc:SAML:2.0:nameid-format:entity*" },
             { r => { r.Destination = "https://example.com/OtherAcs"; }, "*destination*https://example.com/OtherAcs*" },
-            { r => { r.Status.StatusCode.Value = Constants.StatusCodes.Requester; }, "*status*Requester*" }
+            { r => { r.Status.StatusCode.Value = Constants.StatusCodes.Requester; }, "*status*Requester*" },
+            { r => { r.InResponseTo = null; }, "*InResponseTo*missing" },
+            { r => { r.InResponseTo = "invalid"; }, "*InResponseTo*" }
         };
 
     [Theory]

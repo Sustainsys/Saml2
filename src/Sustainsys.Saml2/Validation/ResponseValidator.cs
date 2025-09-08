@@ -20,6 +20,7 @@ public class ResponseValidator(IValidator<Assertion, AssertionValidationParamete
         ValidateDestination(samlResponse, validationParameters);
         // Profile 4.1.4.2, 4.1.4.3
         ValidateIssuer(samlResponse, validationParameters);
+        ValidateInResponseTo(samlResponse, validationParameters);
         ValidateStatusCode(samlResponse);
 
         ValidateAssertions(samlResponse.Assertions, validationParameters.AssertionValidationParameters);
@@ -30,7 +31,7 @@ public class ResponseValidator(IValidator<Assertion, AssertionValidationParamete
     /// </summary>
     /// <param name="samlResponse">Saml response</param>
     /// <param name="validationParameters">Validation parameters</param>
-    /// <exception cref="ValidationException{T}">On validation failure</exception>
+    /// <exception cref="ValidationException{Response}">On validation failure</exception>
     protected virtual void ValidateDestination(
      Response samlResponse,
      ResponseValidationParameters validationParameters)
@@ -40,6 +41,27 @@ public class ResponseValidator(IValidator<Assertion, AssertionValidationParamete
         {
             throw new ValidationException<Response>(
                 $"Response destination {samlResponse.Destination} does not match expected {validationParameters.ValidDestination}");
+        }
+    }
+
+    /// <summary>
+    /// Validate InResponseTo
+    /// </summary>
+    /// <param name="samlResponse">Saml Response</param>
+    /// <param name="validationParameters">Validation Parameters</param>
+    /// <exception cref="ValidationException{Response}">On validation failure</exception>
+    protected virtual void ValidateInResponseTo(Response samlResponse, ResponseValidationParameters validationParameters)
+    {
+        if (samlResponse.InResponseTo == null)
+        {
+            throw new ValidationException<Response>(
+                $"InResponseTo is missing in response, expected {validationParameters.ValidInResponseTo}");
+        }
+
+        if (samlResponse.InResponseTo != validationParameters.ValidInResponseTo)
+        {
+            throw new ValidationException<Response>(
+                $"InResponseTo {samlResponse.InResponseTo} doesn't match expected value {validationParameters.ValidInResponseTo}");
         }
     }
 

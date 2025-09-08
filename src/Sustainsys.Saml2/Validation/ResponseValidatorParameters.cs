@@ -29,4 +29,9 @@ public class ResponseValidationParameters
     /// A URI reference indicating the address to which this request has been sent.
     /// </summary>
     public string? ValidDestination { get => AssertionValidationParameters.ValidRecipient; }
+
+    /// <summary>
+    /// Valid/Expected InResponseTo
+    /// </summary>
+    public string? ValidInResponseTo { get => AssertionValidationParameters.ValidInResponseTo; }
 }

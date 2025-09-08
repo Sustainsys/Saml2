@@ -33,6 +33,7 @@ public static class Constants
     public static class StatusCodes
     {
         public const string Requester = "urn:oasis:names:tc:SAML:2.0:status:Requester";
+        public const string Responder = "urn:oasis:names:tc:SAML:2.0:status:Responder";
         public const string Success = "urn:oasis:names:tc:SAML:2.0:status:Success";
     }
 
