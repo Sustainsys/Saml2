@@ -24,6 +24,7 @@ public class ResponseValidator(IValidator<Assertion, AssertionValidationParamete
 
         ValidateAssertions(samlResponse.Assertions, validationParameters.AssertionValidationParameters);
     }
+
     /// <summary> 
     /// Validate the destination.
     /// </summary>
@@ -41,6 +42,7 @@ public class ResponseValidator(IValidator<Assertion, AssertionValidationParamete
                 $"Response destination {samlResponse.Destination} does not match expected {validationParameters.ValidDestination}");
         }
     }
+
     /// <summary>
     /// Validate that the status code is <see cref="Constants.StatusCodes.Success"/>
     /// </summary>

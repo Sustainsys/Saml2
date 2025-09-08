@@ -148,7 +148,10 @@ public static class Constants
     public static class SubjectConfirmationMethods
     {
         public const string Bearer = "urn:oasis:names:tc:SAML:2.0:cm:bearer";
+        public const string Recipient = "https://example.com/Acs";
     }
+
+
 
     public static class NameIdFormats
     {

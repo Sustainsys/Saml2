@@ -36,34 +36,6 @@ public class ResponseValidatorTests
             }
         };
 
-    // The happy path that should just validate the default response
-    // from the factory with the default parameters from the factory.
-    [Fact]
-    public void Validate()
-    {
-        var subject = CreateSubject();
-
-        var response = CreateResponse();
-        var parameters = CreateValidationParameters();
-
-        // Should not throw.
-        subject.Validate(response, parameters);
-    }
-
-    [Fact]
-    public void Validate_Issuer_IsMissing()
-    {
-        var subject = CreateSubject();
-
-        var response = CreateResponse();
-        response.Issuer = null;
-
-        var parameters = CreateValidationParameters();
-
-        // Should not throw. Missing issuers are allowed.
-        subject.Validate(response, parameters);
-    }
-
     [Theory]
     [InlineData("2.0", true)]
     [InlineData("2.1", false)]
@@ -91,88 +63,59 @@ public class ResponseValidatorTests
         }
     }
 
-    [Fact]
-    public void Validate_Issuer_IsIncorrect()
-    {
-        var subject = CreateSubject();
+    public static TheoryData<Action<Response>, Action<ResponseValidationParameters>> Validate_IsSpecifiedOrIsMissing_Data =>
+        new TheoryData<Action<Response>, Action<ResponseValidationParameters>>
+        {   
+            // The happy path that should just validate the default response
+            // from the factory with the default parameters from the factory.
+            { r => { }, p => {}},
 
-        var response = CreateResponse();
-        response.Issuer!.Value = "https://unexpected";
+            { r => {r.Issuer = null; },p => {}},
+            { r => {r.Issuer!.Format = null; }, p => {}},
+            { r => {r.Issuer!.Format = "urn:oasis:names:tc:SAML:2.0:nameid-format:entity"; }, p => {}},
+            { r => {r.Destination = "https://example.com/Acs"; }, p => {p.AssertionValidationParameters.ValidRecipient = "https://example.com/Acs"; } }
+        };
 
-        var parameters = CreateValidationParameters();
-
-        subject.Invoking(s => s.Validate(response, parameters))
-            .Should().Throw<ValidationException<Response>>()
-            .WithMessage("*issuer*https://unexpected*https://idp.example.com/Saml2*");
-    }
-
-    [Fact]
-    public void Validate_Issuer_FormatIsIncorrect()
-    {
-        var subject = CreateSubject();
-        var response = CreateResponse();
-        response.Issuer!.Format = "urn:invalid";
-        var parameters = CreateValidationParameters();
-        subject.Invoking(s => s.Validate(response, parameters))
-            .Should().Throw<ValidationException<Response>>()
-            .WithMessage("*format*urn:invalid*urn:oasis:names:tc:SAML:2.0:nameid-format:entity*");
-    }
-
-    [Fact]
-    public void Validate_Issuer_FormatIsSpecified()
+    [Theory]
+    [MemberData(nameof(Validate_IsSpecifiedOrIsMissing_Data))]
+    public void Validate_IsSpecifiedOrIsMissing(Action<Response> destroy, Action<ResponseValidationParameters> modifyParameters)
     {
         var subject = CreateSubject();
         var response = CreateResponse();
-        response.Issuer!.Format = "urn:oasis:names:tc:SAML:2.0:nameid-format:entity";
+
+        destroy(response);
+
+
         var parameters = CreateValidationParameters();
+        modifyParameters(parameters);
 
         // Should not Throw
-        subject.Validate(response, parameters);
-    }
-
-    [Fact]
-    public void Validate_Status_IsNonSuccess()
-    {
-        var subject = CreateSubject();
-
-        var response = CreateResponse();
-        response.Status.StatusCode.Value = Constants.StatusCodes.Requester;
-
-        var parameters = CreateValidationParameters();
-
-        subject.Invoking(s => s.Validate(response, parameters))
-            .Should().Throw<ValidationException<Response>>()
-            .WithMessage("*status*Requester*");
-    }
-
-    [Fact]
-    public void Validate_Destination_IsIncorrect()
-    {
-        var subject = CreateSubject();
-
-        var response = CreateResponse();
-        response.Destination = "https://example.com/Acs";
-
-        var parameters = CreateValidationParameters();
-        parameters.AssertionValidationParameters.ValidRecipient = "https://example.com/AnotherEndpoint";
-
-        subject.Invoking(s => s.Validate(response, parameters))
-            .Should().Throw<ValidationException<Response>>()
-            .WithMessage("*destination*https://example.com/Acs*");
-    }
-
-    [Fact]
-    public void Validate_Destination_IsCorrect()
-    {
-        var subject = CreateSubject();
-
-        var response = CreateResponse();
-        response.Destination = "https://example.com/Acs";
-
-        var parameters = CreateValidationParameters();
-        parameters.AssertionValidationParameters.ValidRecipient = "https://example.com/Acs";
-
         subject.Invoking(s => s.Validate(response, parameters))
             .Should().NotThrow();
+    }
+
+    public static TheoryData<Action<Response>, string> Validate_IsMissingOrIncorrect_Data =>
+        new TheoryData<Action<Response>, string>
+        {
+            { r => { r.Issuer = "https://unexpected"; }, "*issuer*https://unexpected*https://idp.example.com/Saml2*" },
+            { r => { r.Issuer!.Format = "urn:Invalid"; }, "*format*urn:invalid*urn:oasis:names:tc:SAML:2.0:nameid-format:entity*" },
+            { r => { r.Destination = "https://example.com/Acs"; }, "*destination*https://example.com/Acs*" },
+            { r => { r.Status.StatusCode.Value = Constants.StatusCodes.Requester; }, "*status*Requester*" }
+        };
+
+    [Theory]
+    [MemberData(nameof(Validate_IsMissingOrIncorrect_Data))]
+    public void Validate_IsMissingOrIncorrect(Action<Response> destroy, string messagePattern)
+    {
+        var subject = CreateSubject();
+        var response = CreateResponse();
+
+        destroy(response);
+
+        var parameters = CreateValidationParameters();
+
+        subject.Invoking(s => s.Validate(response, parameters))
+            .Should().Throw<ValidationException<Response>>()
+            .WithMessage($"*{messagePattern}*");
     }
 }
