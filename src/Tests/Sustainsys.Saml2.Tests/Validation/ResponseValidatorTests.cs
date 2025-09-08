@@ -85,11 +85,9 @@ public class ResponseValidatorTests
 
         destroy(response);
 
-
         var parameters = CreateValidationParameters();
         modifyParameters(parameters);
 
-        // Should not Throw
         subject.Invoking(s => s.Validate(response, parameters))
             .Should().NotThrow();
     }
