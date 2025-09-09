@@ -17,8 +17,8 @@ public class Saml2Entity
     public IEnumerable<string>? AllowedHashAlgorithms { get; set; }
 
     /// <summary>
-    /// Signing keys to trust when validating signatures of the metadata.
+    /// Signing keys of the entity.
     /// </summary>
-    public IEnumerable<SigningKey>? TrustedSigningKeys { get; set; }
+    public IEnumerable<SigningKey>? SigningKeys { get; set; }
 
 }

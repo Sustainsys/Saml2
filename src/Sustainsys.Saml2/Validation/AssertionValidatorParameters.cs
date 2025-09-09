@@ -36,4 +36,10 @@ public class AssertionValidationParameters
     /// The expected value for InResponseTo, set to null to allow unsolicited.
     /// </summary>
     public string? ValidInResponseTo { get; set; }
+
+    /// <summary>
+    /// Mininum required trust level required to accept the data.
+    /// </summary>
+    /// <remarks>Defaults to <see cref="TrustLevel.TLS"/></remarks>
+    public TrustLevel RequiredTrustLevel { get; set; } = TrustLevel.TLS;
 }

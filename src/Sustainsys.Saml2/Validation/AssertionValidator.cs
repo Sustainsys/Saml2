@@ -12,6 +12,7 @@ public class AssertionValidator(TimeProvider timeProvider) : IValidator<Assertio
         Assertion assertion,
         AssertionValidationParameters parameters)
     {
+        ValidateTrustLevel(assertion, parameters);
         ValidateIssuer(assertion, parameters);
         ValidateConditions(assertion.Conditions, parameters);
         ValidateSubject(assertion.Subject, parameters);
@@ -20,6 +21,22 @@ public class AssertionValidator(TimeProvider timeProvider) : IValidator<Assertio
         // Attributes: An AttributeStatement must have at least one Attribute (Core 2.7.3).
         // In our object model, we allow an empty list. The validation of empty AttributeStatements
         // is handled in the serializer.
+    }
+
+    /// <summary>
+    /// Validates the trust level of the assertion
+    /// </summary>
+    /// <param name="assertion">Saml ssseertion</param>
+    /// <param name="parameters">Validation parameters</param>
+    /// <exception cref="ValidationException{Assertion}">On validation failure</exception>
+    protected void ValidateTrustLevel(Assertion assertion, AssertionValidationParameters parameters)
+    {
+        if (assertion.TrustLevel < parameters.RequiredTrustLevel)
+        {
+            throw new ValidationException<Assertion>(
+                $"TrustLevel of assertion is {assertion.TrustLevel}, which is less than required {parameters.RequiredTrustLevel}");
+        }
+
     }
 
     /// <summary>

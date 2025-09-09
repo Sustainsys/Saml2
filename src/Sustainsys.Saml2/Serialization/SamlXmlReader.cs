@@ -72,7 +72,7 @@ public partial class SamlXmlReader : ISamlXmlReader
                 if (EntityResolver != null)
                 {
                     var entity = EntityResolver(issuer.Value);
-                    trustedSigningKeys = entity.TrustedSigningKeys;
+                    trustedSigningKeys = entity.SigningKeys;
                     allowedHashAlgorithms = entity.AllowedHashAlgorithms ?? AllowedHashAlgorithms;
                 }
             }
