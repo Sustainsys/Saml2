@@ -87,6 +87,7 @@ public class Saml2Handler(
 
         var source = XmlHelpers.GetXmlTraverser(samlMessage.Xml);
         var reader = GetRequiredService<ISamlXmlReader>();
+        reader.TrustedSigningKeys = Options.IdentityProvider!.SigningKeys;
         var samlResponse = reader.ReadResponse(source);
 
         var validator = GetRequiredService<IValidator<Response, ResponseValidationParameters>>();

@@ -11,7 +11,8 @@ namespace Sustainsys.Saml2.Serialization;
 public interface ISamlXmlReader
 {
     /// <summary>
-    /// Allowed hash algorithms if validating signatures.
+    /// Allowed hash algorithms if validating signatures. Values should be e.g. "sha256"
+    /// which is compared to the end of the algorithm identifier Url.
     /// </summary>
     IEnumerable<string>? AllowedHashAlgorithms { get; set; }
 

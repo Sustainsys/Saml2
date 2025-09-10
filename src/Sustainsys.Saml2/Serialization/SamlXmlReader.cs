@@ -18,10 +18,10 @@ public partial class SamlXmlReader : ISamlXmlReader
     private static readonly IEnumerable<string> defaultAllowedHashAlgorithms =
         new ReadOnlyCollection<string>(
         [
-            SignedXml.XmlDsigRSASHA256Url,
-            SignedXml.XmlDsigRSASHA384Url,
-            SignedXml.XmlDsigRSASHA512Url,
-            SignedXml.XmlDsigDSAUrl
+            "sha256",
+            "sha384",
+            "sha512",
+            SignedXml.XmlDsigRSASHA256Url
         ]);
 
     /// <inheritdoc/>
