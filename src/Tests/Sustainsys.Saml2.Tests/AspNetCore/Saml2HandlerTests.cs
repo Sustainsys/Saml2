@@ -225,6 +225,7 @@ public class Saml2HandlerTests
 
     [Theory]
     [InlineData("/samlp:Response/saml:Assertion")]
+    [InlineData("/samlp:Response")]
     // Full happy path test case for a signed response via Http POST binding
     public async Task HandleRemoteAuthenticate(string xPathToSign)
     {

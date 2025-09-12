@@ -70,11 +70,14 @@ public partial class SamlXmlReader
         (var trustedSigningKeys, var allowedHashAlgorithms) =
             GetSignatureValidationParametersFromIssuer(source, assertion.Issuer);
 
-        if (source.ReadAndValidateOptionalSignature(trustedSigningKeys, allowedHashAlgorithms, out var trustLevel))
+        if (source.ReadAndValidateOptionalSignature(trustedSigningKeys, allowedHashAlgorithms))
         {
-            assertion.TrustLevel = trustLevel;
             source.MoveNext();
         }
+        // Set this regardles if a signature was read - the TrustLevel could be inherited
+        // from a signature on the enclosing Response.
+        assertion.TrustLevel = source.TrustLevel;
+
         if (source.EnsureName(Elements.Subject, Namespaces.SamlUri))
         {
             assertion.Subject = ReadSubject(source);

@@ -22,6 +22,12 @@ public class XmlTraverser
     public List<Error> Errors { get; }
 
     /// <summary>
+    /// Trust level of the currently read data. Is set/updated when a signature
+    /// is read/validated.
+    /// </summary>
+    public TrustLevel TrustLevel { get; private set; }
+
+    /// <summary>
     /// First Node to move to if current is null because it is before start.
     /// </summary>
     private XmlNode? firstNode;
@@ -65,6 +71,7 @@ public class XmlTraverser
         this.parent = parent;
         firstNode = parent.CurrentNode!.FirstChild;
         Errors = errors;
+        TrustLevel = parent.TrustLevel;
 
         // Initial position is *before* first node, so there
         // are no children to handle on this position.
@@ -107,17 +114,13 @@ public class XmlTraverser
     /// <summary>
     /// If the current node is a signature node, read and validate it and 
     /// </summary>
-    /// <param name="trustedSigningKeys">Signing keys trusted when validating the signature.</param>
+    /// <param name="trustedSigningKeys">Signing keys trusted when validating the signature. If null, nothing is done.</param>
     /// <param name="allowedHashAlgorithms">Allowed hash algorithms.</param>
-    /// <param name="trustLevel">Trust level outcome. None if no signature was processed.</param>
     /// <returns>True if there was a signature node.</returns>
     public bool ReadAndValidateOptionalSignature(
-        IEnumerable<SigningKey>? trustedSigningKeys,
-        IEnumerable<string>? allowedHashAlgorithms,
-        out TrustLevel trustLevel)
+        IEnumerable<SigningKey>? trustedSigningKeys = null,
+        IEnumerable<string>? allowedHashAlgorithms = null)
     {
-        trustLevel = TrustLevel.None;
-
         if (CurrentNode != null
             && CurrentNode.LocalName == "Signature"
             && CurrentNode.NamespaceURI == SignedXml.XmlDsigNamespaceUrl)
@@ -127,7 +130,8 @@ public class XmlTraverser
             if (trustedSigningKeys != null
                 && trustedSigningKeys.Any())
             {
-                trustLevel = ReadAndValidateSignature(trustedSigningKeys, allowedHashAlgorithms);
+                ArgumentNullException.ThrowIfNull(allowedHashAlgorithms);
+                ReadAndValidateSignature(trustedSigningKeys, allowedHashAlgorithms);
             }
 
             return true;
@@ -137,12 +141,10 @@ public class XmlTraverser
     }
 
     // Private worker method, assumes we've already validated current node is a signature.
-    private TrustLevel ReadAndValidateSignature(
+    private void ReadAndValidateSignature(
         IEnumerable<SigningKey> trustedSigningKeys,
-        IEnumerable<string>? allowedHashAlgorithms)
+        IEnumerable<string> allowedHashAlgorithms)
     {
-        ArgumentNullException.ThrowIfNull(allowedHashAlgorithms);
-
         var (error, workingKey) = ((XmlElement)CurrentNode!)
             .VerifySignature(trustedSigningKeys, allowedHashAlgorithms);
 
@@ -151,7 +153,10 @@ public class XmlTraverser
             AddError(ErrorReason.SignatureFailure, error);
         }
 
-        return workingKey?.TrustLevel ?? TrustLevel.None;
+        if (workingKey != null && workingKey.TrustLevel > TrustLevel)
+        {
+            TrustLevel = workingKey.TrustLevel;
+        }
     }
 
     /// <summary>
