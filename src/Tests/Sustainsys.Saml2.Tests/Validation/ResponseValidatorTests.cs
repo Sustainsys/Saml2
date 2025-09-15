@@ -57,20 +57,6 @@ public class ResponseValidatorTests
             }
         };
 
-    [Fact]
-    public void Validate_Response_OnSuccess()
-    {
-        var subject = CreateSubject();
-        var response = CreateResponse();
-
-        response.Assertions.Clear();
-        var parameters = CreateValidationParameters();
-
-        subject.Invoking(s => s.Validate(response, parameters))
-            .Should().Throw<ValidationException<Response>>()
-            .WithMessage("*assertion*missing*");
-    }
-
     [Theory]
     [InlineData("2.0", true)]
     [InlineData("2.1", false)]
@@ -138,6 +124,7 @@ public class ResponseValidatorTests
                 },
                 "*status*Requester*"
             },
+            { r => r.Assertions.Clear(), "*assertion*missing*" },
             { r => {r.Status.StatusCode.Value = Constants.StatusCodes.Requester; }, "*assertions*not*expected*" },
             { r => { r.InResponseTo = null; }, "*InResponseTo*missing" },
             { r => { r.InResponseTo = "invalid"; }, "*InResponseTo*" }
