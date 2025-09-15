@@ -124,8 +124,8 @@ public class ResponseValidatorTests
                 },
                 "*status*Requester*"
             },
-            { r => r.Assertions.Clear(), "*assertion*missing*" },
-            { r => {r.Status.StatusCode.Value = Constants.StatusCodes.Requester; }, "*assertions*not*expected*" },
+            { r => { r.Assertions.Clear(); }, "*assertion*missing*" },
+            { r => { r.Status.StatusCode.Value = Constants.StatusCodes.Requester; }, "*assertions*not*expected*" },
             { r => { r.InResponseTo = null; }, "*InResponseTo*missing" },
             { r => { r.InResponseTo = "invalid"; }, "*InResponseTo*" }
         };
