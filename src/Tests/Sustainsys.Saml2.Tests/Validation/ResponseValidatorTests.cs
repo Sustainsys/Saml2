@@ -70,19 +70,6 @@ public class ResponseValidatorTests
             .Should().Throw<ValidationException<Response>>()
             .WithMessage("*assertion*missing*");
     }
-    [Fact]
-    public void Validate_Response_WithErrorStatus_AndAssertions_Throws()
-    {
-        var subject = CreateSubject();
-        var response = CreateResponse();
-        response.Status.StatusCode.Value = Constants.StatusCodes.Requester;
-
-        var parameters = CreateValidationParameters();
-
-        subject.Invoking(s => s.Validate(response, parameters))
-                .Should().Throw<ValidationException<Response>>()
-                .WithMessage("*assertions*not*expected*");
-    }
 
     [Theory]
     [InlineData("2.0", true)]
@@ -151,6 +138,7 @@ public class ResponseValidatorTests
                 },
                 "*status*Requester*"
             },
+            { r => {r.Status.StatusCode.Value = Constants.StatusCodes.Requester; }, "*assertions*not*expected*" },
             { r => { r.InResponseTo = null; }, "*InResponseTo*missing" },
             { r => { r.InResponseTo = "invalid"; }, "*InResponseTo*" }
         };

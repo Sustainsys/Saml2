@@ -70,7 +70,7 @@ public class ResponseValidator(IValidator<Assertion, AssertionValidationParamete
     }
 
     /// <summary>
-    /// Validate the status code.
+    /// Validate that the status code is <see cref="Constants.StatusCodes.Success"/>
     /// </summary>
     /// <param name="samlResponse"></param>
     /// <exception cref="ValidationException{Response}"></exception>
@@ -122,7 +122,7 @@ public class ResponseValidator(IValidator<Assertion, AssertionValidationParamete
     }
 
     /// <summary>
-    /// Validate assertions on success status code.
+    /// Validate assertions on success and non success status code.
     /// </summary>
     /// <param name="samlResponse"></param>
     /// <param name="validationParameters"></param>
