@@ -21,9 +21,13 @@ public class ResponseValidator(IValidator<Assertion, AssertionValidationParamete
         // Profile 4.1.4.2, 4.1.4.3
         ValidateIssuer(samlResponse, validationParameters);
         ValidateInResponseTo(samlResponse, validationParameters);
-        ValidateStatusCode(samlResponse);
-
+        ValidateAssertionContentsAllowedForStatus(samlResponse, validationParameters);
         ValidateAssertions(samlResponse.Assertions, validationParameters.AssertionValidationParameters);
+
+        // Last, check status code. Someone may want to override it to do different
+        // error handling if non-success status, but then all other validations should
+        // have been run to make sure message contents are legal.
+        ValidateStatusCode(samlResponse);
     }
 
     /// <summary> 
@@ -66,10 +70,10 @@ public class ResponseValidator(IValidator<Assertion, AssertionValidationParamete
     }
 
     /// <summary>
-    /// Validate that the status code is <see cref="Constants.StatusCodes.Success"/>
+    /// Validate the status code.
     /// </summary>
-    /// <param name="samlResponse">Saml Response</param>
-    /// <exception cref="ValidationException{Response}">On validation failure</exception>
+    /// <param name="samlResponse"></param>
+    /// <exception cref="ValidationException{Response}"></exception>
     protected virtual void ValidateStatusCode(Response samlResponse)
     {
         if (samlResponse.Status?.StatusCode?.Value != Constants.StatusCodes.Success)
@@ -114,6 +118,26 @@ public class ResponseValidator(IValidator<Assertion, AssertionValidationParamete
         if (samlResponse.Version != "2.0")
         {
             throw new ValidationException<Response>($"Saml version \"{samlResponse.Version}\" is incorrect, it must be exactly \"2.0\"");
+        }
+    }
+
+    /// <summary>
+    /// Validate assertions on success status code.
+    /// </summary>
+    /// <param name="samlResponse"></param>
+    /// <param name="validationParameters"></param>
+    /// <exception cref="ValidationException{Response}"></exception>
+    protected virtual void ValidateAssertionContentsAllowedForStatus(Response samlResponse, ResponseValidationParameters validationParameters)
+    {
+        var statusCode = samlResponse.Status?.StatusCode?.Value;
+
+        if (statusCode == Constants.StatusCodes.Success && samlResponse.Assertions.Count == 0)
+        {
+            throw new ValidationException<Response>("No assertions found in response, assertion is missing.");
+        }
+        if (statusCode != Constants.StatusCodes.Success && samlResponse.Assertions?.Count >= 1)
+        {
+            throw new ValidationException<Response>("Assertions found in response, but assertions was not expected.");
         }
     }
 

@@ -14,15 +14,36 @@ public class ResponseValidatorTests
     private static Response CreateResponse() =>
         new()
         {
-            Issuer = "https://idp.example.com/Saml2",
             InResponseTo = "123",
+            Issuer = "https://idp.example.com/Saml2",
             Status = new()
             {
                 StatusCode = new()
                 {
                     Value = Constants.StatusCodes.Success
                 }
-            }
+            },
+            Assertions = {
+                new() {
+                    Issuer = new()
+                    {
+                        Format = "urn:oasis:names:tc:SAML:2.0:nameid-format:entity",
+                        Value = "https://idp.example.com/Saml2"
+                    },
+                    Conditions = new(),
+                    Subject = new(){
+                        SubjectConfirmation = new() {
+                            Method = "urn:oasis:names:tc:SAML:2.0:cm:bearer",
+                            SubjectConfirmationData = new() {
+                                NotBefore = new(2025, 05, 28, 11, 14, 51),
+                                NotOnOrAfter = new(2025, 05, 28, 11, 19, 51),
+                                Recipient = "https://example.com/Acs",
+                                InResponseTo = "123"
+                            },
+                        }
+                    },
+                }
+            },
         };
 
     private static ResponseValidationParameters CreateValidationParameters() =>
@@ -35,6 +56,33 @@ public class ResponseValidatorTests
                 ValidInResponseTo = "123"
             }
         };
+
+    [Fact]
+    public void Validate_Response_OnSuccess()
+    {
+        var subject = CreateSubject();
+        var response = CreateResponse();
+
+        response.Assertions.Clear();
+        var parameters = CreateValidationParameters();
+
+        subject.Invoking(s => s.Validate(response, parameters))
+            .Should().Throw<ValidationException<Response>>()
+            .WithMessage("*assertion*missing*");
+    }
+    [Fact]
+    public void Validate_Response_WithErrorStatus_AndAssertions_Throws()
+    {
+        var subject = CreateSubject();
+        var response = CreateResponse();
+        response.Status.StatusCode.Value = Constants.StatusCodes.Requester;
+
+        var parameters = CreateValidationParameters();
+
+        subject.Invoking(s => s.Validate(response, parameters))
+                .Should().Throw<ValidationException<Response>>()
+                .WithMessage("*assertions*not*expected*");
+    }
 
     [Theory]
     [InlineData("2.0", true)]
@@ -96,7 +144,13 @@ public class ResponseValidatorTests
             { r => { r.Issuer = "https://unexpected"; }, "*issuer*https://unexpected*https://idp.example.com/Saml2*" },
             { r => { r.Issuer!.Format = "urn:Invalid"; }, "*format*urn:invalid*urn:oasis:names:tc:SAML:2.0:nameid-format:entity*" },
             { r => { r.Destination = "https://example.com/OtherAcs"; }, "*destination*https://example.com/OtherAcs*" },
-            { r => { r.Status.StatusCode.Value = Constants.StatusCodes.Requester; }, "*status*Requester*" },
+            { r =>
+                {
+                    r.Status.StatusCode.Value = Constants.StatusCodes.Requester;
+                    r.Assertions.Clear();
+                },
+                "*status*Requester*"
+            },
             { r => { r.InResponseTo = null; }, "*InResponseTo*missing" },
             { r => { r.InResponseTo = "invalid"; }, "*InResponseTo*" }
         };
