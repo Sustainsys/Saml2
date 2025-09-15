@@ -49,10 +49,10 @@ public class ResponseValidator(IValidator<Assertion, AssertionValidationParamete
     }
 
     /// <summary>
-    /// Validate InResponseTo
+    /// Validate InResponseTo.
     /// </summary>
-    /// <param name="samlResponse">Saml Response</param>
-    /// <param name="validationParameters">Validation Parameters</param>
+    /// <param name="samlResponse">Saml response</param>
+    /// <param name="validationParameters">Validation parameters</param>
     /// <exception cref="ValidationException{Response}">On validation failure</exception>
     protected virtual void ValidateInResponseTo(Response samlResponse, ResponseValidationParameters validationParameters)
     {
@@ -70,10 +70,10 @@ public class ResponseValidator(IValidator<Assertion, AssertionValidationParamete
     }
 
     /// <summary>
-    /// Validate that the status code is <see cref="Constants.StatusCodes.Success"/>
+    /// Validate that the status code is <see cref="Constants.StatusCodes.Success"/>.
     /// </summary>
-    /// <param name="samlResponse"></param>
-    /// <exception cref="ValidationException{Response}"></exception>
+    /// <param name="samlResponse">Saml response</param>
+    /// <exception cref="ValidationException{Response}">On validation failure</exception>
     protected virtual void ValidateStatusCode(Response samlResponse)
     {
         if (samlResponse.Status?.StatusCode?.Value != Constants.StatusCodes.Success)
@@ -83,7 +83,7 @@ public class ResponseValidator(IValidator<Assertion, AssertionValidationParamete
     }
 
     /// <summary>
-    /// Validate the issuer
+    /// Validate the issuer.
     /// </summary>
     /// <param name="samlResponse">Saml response</param>
     /// <param name="validationParameters">Validation parameters</param>
@@ -109,7 +109,7 @@ public class ResponseValidator(IValidator<Assertion, AssertionValidationParamete
     }
 
     /// <summary>
-    /// Validate the version
+    /// Validate the version.
     /// </summary>
     /// <param name="samlResponse">Saml response</param>
     /// <exception cref="ValidationException{Response}">On validation failure</exception>
@@ -124,9 +124,9 @@ public class ResponseValidator(IValidator<Assertion, AssertionValidationParamete
     /// <summary>
     /// Validate assertions on success and non success status code.
     /// </summary>
-    /// <param name="samlResponse"></param>
-    /// <param name="validationParameters"></param>
-    /// <exception cref="ValidationException{Response}"></exception>
+    /// <param name="samlResponse">Saml response</param>
+    /// <param name="validationParameters">Validation parameters</param>
+    /// <exception cref="ValidationException{Response}">On validation failure</exception>
     protected virtual void ValidateAssertionContentsAllowedForStatus(Response samlResponse, ResponseValidationParameters validationParameters)
     {
         var statusCode = samlResponse.Status?.StatusCode?.Value;
@@ -145,7 +145,7 @@ public class ResponseValidator(IValidator<Assertion, AssertionValidationParamete
     /// Validate assertions.
     /// </summary>
     /// <param name="assertions">Assertions to validate</param>
-    /// <param name="validationParameters">Validation Parameters</param>
+    /// <param name="validationParameters">Validation parameters</param>
     protected virtual void ValidateAssertions(
         IEnumerable<Assertion> assertions,
         AssertionValidationParameters validationParameters)
