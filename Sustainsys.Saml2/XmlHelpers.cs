@@ -648,7 +648,7 @@ namespace Sustainsys.Saml2
             typeof(SignedXml).GetFields()
                 .Where(f => f.Name.StartsWith("XmlDsigSHA", StringComparison.Ordinal))
                 .Select(f => (string)f.GetRawConstantValue())
-                .OrderBy(f => f)
+                .OrderBy(f => f.Split('#')[1])
                 .ToArray();
 
         internal static readonly string[] DigestAlgorithms = GetKnownDigestAlgorithms();
