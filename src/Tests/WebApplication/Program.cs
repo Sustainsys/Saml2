@@ -23,6 +23,7 @@ builder.Services.AddAuthentication(opt =>
             SigningKeys = [new()
             {
 #if NET9_0_OR_GREATER
+                Certificate = X509CertificateLoader.LoadCertificate(certificateData),
 #else
                 Certificate =  new X509Certificate2(certificateData),
 #endif
