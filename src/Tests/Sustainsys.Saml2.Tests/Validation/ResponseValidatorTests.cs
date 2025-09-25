@@ -42,6 +42,7 @@ public class ResponseValidatorTests
                             },
                         }
                     },
+                    TrustLevel = TrustLevel.TLS
                 }
             },
         };
