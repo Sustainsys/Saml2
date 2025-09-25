@@ -7,40 +7,31 @@ using System.Xml;
 namespace Sustainsys.Saml2.Tests.Serialization;
 partial class SamlXmlReaderTests
 {
-    [Fact]
+    [Test]
     public void ReadAuthnRequest_Mandatory()
     {
         var source = GetXmlTraverser();
-
         var subject = new SamlXmlReader();
-
         var actual = subject.ReadAuthnRequest(source);
-
         var expected = new AuthnRequest
         {
             Id = "x123",
             IssueInstant = new(2023, 11, 24, 22, 44, 14),
             Version = "2.0"
         };
-
         actual.Should().BeEquivalentTo(expected);
     }
 
     // TODO: Test for missing mandatory
-
     // Test that an AuthnRequest with optional content present can be read. Start with the most common,
     // add more later.
-    [Fact]
+    [Test]
     public void ReadAuthnRequest_CanReadOptional()
     {
         var source = GetXmlTraverser();
-        ((XmlElement)source.CurrentNode!).Sign(
-            TestData.Certificate, source.CurrentNode![Constants.Elements.Issuer, Constants.Namespaces.SamlUri]!);
-
+        ((XmlElement)source.CurrentNode!).Sign(TestData.Certificate, source.CurrentNode![Constants.Elements.Issuer, Constants.Namespaces.SamlUri]!);
         var subject = new SamlXmlReader();
-
         var actual = subject.ReadAuthnRequest(source);
-
         var expected = new AuthnRequest
         {
             Id = "x123",
@@ -67,8 +58,15 @@ partial class SamlXmlReaderTests
             RequestedAuthnContext = new()
             {
                 Comparison = "better",
-                AuthnContextClassRef = { "urn:ContextClassRef", "urn:AnotherContextClassRef" },
-                AuthnContextDeclRef = { "urn:ContextDeclRef" }
+                AuthnContextClassRef =
+                {
+                    "urn:ContextClassRef",
+                    "urn:AnotherContextClassRef"
+                },
+                AuthnContextDeclRef =
+                {
+                    "urn:ContextDeclRef"
+                }
             },
             Scoping = new()
             {
@@ -91,9 +89,12 @@ partial class SamlXmlReaderTests
                         },
                     },
                     GetComplete = "https://example.com/GetComplete"
-
                 },
-                RequesterID = { "https://example.com/RequesterID?query=123", "https://example.com/RequesterID?query=123" },
+                RequesterID =
+                {
+                    "https://example.com/RequesterID?query=123",
+                    "https://example.com/RequesterID?query=123"
+                },
             },
             ForceAuthn = true,
             IsPassive = true,
@@ -103,53 +104,40 @@ partial class SamlXmlReaderTests
             AttributeConsumingServiceIndex = 42,
             ProviderName = "test"
         };
-
         actual.Should().BeEquivalentTo(expected);
     }
 
-    [Fact]
+    [Test]
     public void ReadAuthnRequest_ErrorCallback()
     {
         var source = GetXmlTraverser(nameof(ReadAuthnRequest_Error));
-
         var subject = new SamlXmlReader();
-
         bool errorInspectorCalled = false;
-
         void errorInspector(ReadErrorInspectorContext<AuthnRequest> context)
         {
             context.Data.Id.Should().Be("x123");
-
             var xmlSourceElement = context.XmlSource as XmlElement;
             xmlSourceElement.Should().NotBeNull();
             xmlSourceElement!.GetAttribute("ID").Should().Be("x123");
-
             context.Errors.Count.Should().Be(1);
             var error = context.Errors.Single();
             error.Node.Should().BeSameAs(context.XmlSource);
             error.LocalName.Should().Be("Version");
             error.Reason.Should().Be(ErrorReason.MissingAttribute);
             error.Ignore.Should().BeFalse();
-
             error.Ignore = true;
-
             errorInspectorCalled = true;
         }
 
         subject.ReadAuthnRequest(source, errorInspector);
-
         errorInspectorCalled.Should().BeTrue();
     }
 
-    [Fact]
+    [Test]
     public void ReadAuthnRequest_Error()
     {
         var source = GetXmlTraverser();
-
         var subject = new SamlXmlReader();
-
-        subject.Invoking(s => s.ReadAuthnRequest(source))
-            .Should().Throw<SamlXmlException>()
-            .WithMessage("*Version*not found*");
+        subject.Invoking(s => s.ReadAuthnRequest(source)).Should().Throw<SamlXmlException>().WithMessage("*Version*not found*");
     }
 }

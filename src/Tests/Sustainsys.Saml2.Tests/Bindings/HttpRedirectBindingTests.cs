@@ -5,17 +5,14 @@ using System.IO.Compression;
 using System.Xml;
 
 namespace Sustainsys.Saml2.Tests.Bindings;
-
 public class HttpRedirectBindingTests
 {
     private const string Xml = "<xml />";
-
-    [Fact]
+    [Test]
     public async Task Bind()
     {
         var xd = new XmlDocument();
         xd.LoadXml(Xml);
-
         var message = new Saml2Message
         {
             Name = "SamlRequest",
@@ -23,46 +20,31 @@ public class HttpRedirectBindingTests
             Destination = "https://example.com/destination",
             RelayState = "someRelayState"
         };
-
         var subject = new HttpRedirectBinding();
-
         var httpResponse = Substitute.For<HttpResponse>();
-
         bool validated = false;
-
         httpResponse.Redirect(Arg.Do<string>(validateUrl));
-
         await subject.BindAsync(httpResponse, message);
-
         void validateUrl(string url)
         {
             url.Should().StartWith(message.Destination);
-
             Uri uri = new Uri(url);
-
             var query = uri.Query.TrimStart('?').Split("&");
-
             var expectedParam = $"{message!.Name}=";
-
             query[0].Should().StartWith(expectedParam);
-
             var value = query[0][expectedParam.Length..];
-
             using var inflated = new MemoryStream(Convert.FromBase64String(Uri.UnescapeDataString(value)));
             using var deflateStream = new DeflateStream(inflated, CompressionMode.Decompress);
             using var reader = new StreamReader(deflateStream);
-
             reader.ReadToEnd().Should().Be(Xml);
-
             query[1].Should().Be("RelayState=someRelayState");
-
             validated = true;
         }
 
         httpResponse.Received().Redirect(Arg.Any<string>());
-
         validated.Should().BeTrue();
     }
+
     private static string GetEncodedXml()
     {
         using var compressed = new MemoryStream();
@@ -75,25 +57,21 @@ public class HttpRedirectBindingTests
         return Uri.EscapeDataString(Convert.ToBase64String(compressed.ToArray()));
     }
 
-    [Theory]
-    [InlineData(Constants.SamlRequest, null)]
-    [InlineData(Constants.SamlResponse, null)]
-    [InlineData("Invalid", "SAMLResponse or SAMLRequest parameter not found")]
-    [InlineData("SAMLRequest=x&SAMLResponse", "Duplicate message parameters*")]
-    [InlineData("SAMLRequest=x&SAMLRequest", "Duplicate message parameters found*")]
-    [InlineData("SAMLResponse=x&SAMLRequest", "Duplicate message parameters found: SAMLResponse, SAMLRequest")]
-    [InlineData("RelayState=x&SAMLRequest", "Duplicate RelayState parameters found")]
+    [Test]
+    [Arguments(Constants.SamlRequest, null)]
+    [Arguments(Constants.SamlResponse, null)]
+    [Arguments("Invalid", "SAMLResponse or SAMLRequest parameter not found")]
+    [Arguments("SAMLRequest=x&SAMLResponse", "Duplicate message parameters*")]
+    [Arguments("SAMLRequest=x&SAMLRequest", "Duplicate message parameters found*")]
+    [Arguments("SAMLResponse=x&SAMLRequest", "Duplicate message parameters found: SAMLResponse, SAMLRequest")]
+    [Arguments("RelayState=x&SAMLRequest", "Duplicate RelayState parameters found")]
     public async Task UnBind_String(string messageName, string? expectedException)
     {
         var encoded = GetEncodedXml();
-
         var url = $"https://idp.example.com/sso?{messageName}={encoded}&RelayState=xyz123";
-
         var subject = new HttpRedirectBinding();
-
         var xd = new XmlDocument();
         xd.LoadXml(Xml);
-
         var expected = new Saml2Message
         {
             Destination = "https://idp.example.com/sso",
@@ -101,9 +79,8 @@ public class HttpRedirectBindingTests
             RelayState = "xyz123",
             Xml = xd.DocumentElement!
         };
-
         bool caughtException = false;
-        Saml2Message actual = default!;
+        Saml2Message actual = default !;
         try
         {
             actual = await subject.UnBindAsync(url, x => Task.FromResult(new Saml2Entity()));

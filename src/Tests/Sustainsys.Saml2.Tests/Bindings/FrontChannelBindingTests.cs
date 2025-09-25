@@ -6,25 +6,20 @@ using System.Xml;
 namespace Sustainsys.Saml2.Tests.Bindings;
 public class FrontChannelBindingTests
 {
-    private class Subject : FrontChannelBinding
+    private class Subject : Sustainsys.Saml2.Bindings.FrontChannelBinding, Sustainsys.Saml2.Bindings.IFrontChannelBinding
     {
-        public Subject() : base("Mock") { }
+        public Subject() : base("Mock")
+        {
+        }
 
         public override bool CanUnbind(HttpRequest httpRequest) => throw new NotImplementedException();
-
-        public override Task<Saml2Message> UnbindAsync(
-            HttpRequest httpRequest,
-            Func<string, Task<Saml2Entity>> getSaml2Entity)
-            => throw new NotImplementedException();
-
-        protected override Task DoBindAsync(HttpResponse httpResponse, Saml2Message message)
-            => throw new NotImplementedException();
+        public override Task<Saml2Message> UnbindAsync(HttpRequest httpRequest, Func<string, Task<Saml2Entity>> getSaml2Entity) => throw new NotImplementedException();
+        protected override Task DoBindAsync(HttpResponse httpResponse, Saml2Message message) => throw new NotImplementedException();
     }
 
-    [Theory]
-    [InlineData(null, "<xml/>", "Name*")]
-    [InlineData("Name", null, "Xml*")]
-
+    [Test]
+    [Arguments(null, "<xml/>", "Name*")]
+    [Arguments("Name", null, "Xml*")]
     public void Bind_ValidateMessage(string? name, string? xml, string expectedMessage)
     {
         XmlDocument? xmlDocument = null;
@@ -38,14 +33,10 @@ public class FrontChannelBindingTests
         {
             Name = name!,
             Xml = xmlDocument?.DocumentElement!,
-            Destination = default!
+            Destination = default !
         };
-
         var subject = new Subject();
-
         var httpResponse = Substitute.For<HttpResponse>();
-
-        subject.Invoking(s => s.BindAsync(httpResponse, message))
-            .Should().ThrowAsync<ArgumentException>().WithParameterName("message").WithMessage(expectedMessage);
+        subject.Invoking(s => s.BindAsync(httpResponse, message)).Should().ThrowAsync<ArgumentException>().WithParameterName("message").WithMessage(expectedMessage);
     }
 }

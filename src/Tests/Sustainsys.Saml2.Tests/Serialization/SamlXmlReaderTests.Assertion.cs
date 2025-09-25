@@ -7,15 +7,12 @@ using System.Xml;
 namespace Sustainsys.Saml2.Tests.Serialization;
 public partial class SamlXmlReaderTests
 {
-    [Fact]
+    [Test]
     public void ReadAssertion_Mandatory()
     {
         var source = GetXmlTraverser();
-
         var subject = new SamlXmlReader();
-
         var actual = subject.ReadAssertion(source);
-
         var expected = new Assertion
         {
             Id = "a9329",
@@ -30,35 +27,28 @@ public partial class SamlXmlReaderTests
                 }
             }
         };
-
         actual.Should().BeEquivalentTo(expected);
     }
 
-    [Theory]
-    [InlineData("./@ID", ErrorReason.MissingAttribute)]
-    [InlineData("./@Version", ErrorReason.MissingAttribute)]
-    [InlineData("./@IssueInstant", ErrorReason.MissingAttribute)]
-    [InlineData("./saml:Issuer", ErrorReason.UnexpectedLocalName)]
-    [InlineData("./saml:Subject", ErrorReason.UnexpectedLocalName)]
-    [InlineData("./saml:AttributeStatement/saml:Attribute", ErrorReason.MissingElement)]
-    [InlineData("./saml:Subject/saml:SubjectConfirmation/@Method", ErrorReason.MissingAttribute)]
+    [Test]
+    [Arguments("./@ID", ErrorReason.MissingAttribute)]
+    [Arguments("./@Version", ErrorReason.MissingAttribute)]
+    [Arguments("./@IssueInstant", ErrorReason.MissingAttribute)]
+    [Arguments("./saml:Issuer", ErrorReason.UnexpectedLocalName)]
+    [Arguments("./saml:Subject", ErrorReason.UnexpectedLocalName)]
+    [Arguments("./saml:AttributeStatement/saml:Attribute", ErrorReason.MissingElement)]
+    [Arguments("./saml:Subject/saml:SubjectConfirmation/@Method", ErrorReason.MissingAttribute)]
     public void ReadAssertion_MissingMandatory(string removeXPath, ErrorReason expectedError)
     {
         var source = GetXmlTraverser();
-
         DeleteNode(removeXPath, source);
-
         var subject = new SamlXmlReader();
-
-        subject.Invoking(s => s.ReadAssertion(source))
-            .Should().Throw<SamlXmlException>()
-            .WithErrors(expectedError);
+        subject.Invoking(s => s.ReadAssertion(source)).Should().Throw<SamlXmlException>().WithErrors(expectedError);
     }
 
     private static void DeleteNode(string removeXPath, XmlTraverser source)
     {
         var deleteNodes = source.CurrentNode!.SelectNodes(removeXPath, source.CurrentNode.GetNsMgr())!;
-
         if (deleteNodes.Count == 0)
         {
             throw new InvalidOperationException("Didn't find any node to delete.");
@@ -77,57 +67,42 @@ public partial class SamlXmlReaderTests
         }
     }
 
-    [Fact]
+    [Test]
     public void ReadAssertion_ErrorCallback()
     {
         var source = GetXmlTraverser(nameof(ReadAssertion_Mandatory));
-
         DeleteNode("./@IssueInstant", source);
-
         var subject = new SamlXmlReader();
-
         var errorInspectorCalled = false;
-
         void errorInspector(ReadErrorInspectorContext<Assertion> context)
         {
             context.Data.Id.Should().Be("a9329");
-
             var xmlSourceElement = context.XmlSource as XmlElement;
             xmlSourceElement.Should().NotBeNull();
             xmlSourceElement!.GetAttribute("ID").Should().Be("a9329");
-
             context.Errors.Count.Should().Be(1);
             var error = context.Errors.Single();
             error.Node.Should().BeSameAs(context.XmlSource);
             error.LocalName.Should().Be("IssueInstant");
             error.Reason.Should().Be(ErrorReason.MissingAttribute);
             error.Ignore.Should().BeFalse();
-
             error.Ignore = true;
-
             errorInspectorCalled = true;
         }
 
         subject.ReadAssertion(source, errorInspector);
-
         errorInspectorCalled.Should().BeTrue();
     }
 
-    [Fact]
+    [Test]
     public void ReadAssertion_CanReadOptional()
     {
         // TODO: Go through spec and check that there are tests for minimal/maximal
         // sub-contents. E.g. a minimal SubjectConfirmationData
-
         var source = GetXmlTraverser();
-
-        ((XmlElement)source.CurrentNode!).Sign(
-            TestData.Certificate, source.CurrentNode![Constants.Elements.Issuer, Constants.Namespaces.SamlUri]!);
-
+        ((XmlElement)source.CurrentNode!).Sign(TestData.Certificate, source.CurrentNode![Constants.Elements.Issuer, Constants.Namespaces.SamlUri]!);
         var subject = new SamlXmlReader();
-
         var actual = subject.ReadAssertion(source, null);
-
         var expected = new Assertion()
         {
             Version = "2.42",
@@ -178,15 +153,33 @@ public partial class SamlXmlReaderTests
             },
             Attributes =
             {
-                { "role", "coder", "OSS Maintainer" },
-                { "organisation", "Sustainsys AB" },
-                { "role", "bug-slayer" },
-                { "NullAttribute1", (string?)null },
-                { "NullAttribute2", (string?)null },
-                { "NotNullAttribute", "" }
+                {
+                    "role",
+                    "coder",
+                    "OSS Maintainer"
+                },
+                {
+                    "organisation",
+                    "Sustainsys AB"
+                },
+                {
+                    "role",
+                    "bug-slayer"
+                },
+                {
+                    "NullAttribute1",
+                    (string? )null
+                },
+                {
+                    "NullAttribute2",
+                    (string? )null
+                },
+                {
+                    "NotNullAttribute",
+                    ""
+                }
             }
         };
-
         actual.Should().BeEquivalentTo(expected);
     }
 }

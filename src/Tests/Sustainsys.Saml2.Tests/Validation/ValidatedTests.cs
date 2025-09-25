@@ -17,28 +17,23 @@ public class ValidatedTests
         };
         object pars = new();
         NoOpValidator<MyClass> validator = new();
-
         return data.Validate(validator, pars);
     }
 
-    [Fact]
+    [Test]
     public void Validate()
     {
         var validated = CreateSubject(out var data);
-
         validated.Value.Should().BeSameAs(data);
         MyClass implicitConvert = validated;
         implicitConvert.Should().BeSameAs(data);
     }
 
-
-    [Fact]
+    [Test]
     public void GetValidated()
     {
         var validated = CreateSubject(out MyClass data);
-
         var validatedProperty = validated.GetValid(c => c.Property);
-
         validatedProperty.Value.Should().BeSameAs(data.Property);
     }
 }

@@ -6,16 +6,13 @@ using Sustainsys.Saml2.Xml;
 using System.Security.Cryptography.X509Certificates;
 
 namespace Sustainsys.Saml2.Tests.Serialization;
-
 public partial class SamlXmlReaderTests
 {
-    [Fact]
+    [Test]
     public void ReadEntityDescriptor_Mandatory()
     {
         var xmlTraverser = GetXmlTraverser();
-
         var actual = new SamlXmlReader().ReadEntityDescriptor(xmlTraverser);
-
         var expected = new EntityDescriptor
         {
             EntityId = "https://stubidp.sustainsys.com/Metadata",
@@ -27,48 +24,35 @@ public partial class SamlXmlReaderTests
                 }
             }
         };
-
         actual.Should().BeEquivalentTo(expected);
     }
 
-    [Fact]
+    [Test]
     public void ReadEntityDescriptor_MissingEntityId()
     {
         var xmlTraverser = GetXmlTraverser();
-
-        new SamlXmlReader().Invoking(s => s.ReadEntityDescriptor(xmlTraverser))
-            .Should().Throw<SamlXmlException>()
-            .WithErrors(ErrorReason.MissingAttribute);
+        new SamlXmlReader().Invoking(s => s.ReadEntityDescriptor(xmlTraverser)).Should().Throw<SamlXmlException>().WithErrors(ErrorReason.MissingAttribute);
     }
 
-    [Fact]
+    [Test]
     public void ReadEntityDescriptor_ValidatesNamespace()
     {
         var xmlTraverser = GetXmlTraverser();
-
-        new SamlXmlReader().Invoking(s => s.ReadEntityDescriptor(xmlTraverser))
-            .Should().Throw<SamlXmlException>()
-            .WithErrors(ErrorReason.UnexpectedNamespace);
+        new SamlXmlReader().Invoking(s => s.ReadEntityDescriptor(xmlTraverser)).Should().Throw<SamlXmlException>().WithErrors(ErrorReason.UnexpectedNamespace);
     }
 
-    [Fact]
+    [Test]
     public void ReadEntityDescriptor_ValidatesLocalName()
     {
         var xmlTraverser = GetXmlTraverser();
-
-        new SamlXmlReader().Invoking(s => s.ReadEntityDescriptor(xmlTraverser))
-            .Should().Throw<SamlXmlException>()
-            .WithErrors(ErrorReason.UnexpectedLocalName)
-            .WithMessage("*name*EntityDescriptor*");
+        new SamlXmlReader().Invoking(s => s.ReadEntityDescriptor(xmlTraverser)).Should().Throw<SamlXmlException>().WithErrors(ErrorReason.UnexpectedLocalName).WithMessage("*name*EntityDescriptor*");
     }
 
-    [Fact]
+    [Test]
     public void ReadEntityDescriptor_OptionalAttributes()
     {
         var xmlTraverser = GetXmlTraverser();
-
         var actual = new SamlXmlReader().ReadEntityDescriptor(xmlTraverser);
-
         var expected = new EntityDescriptor
         {
             EntityId = "https://stubidp.sustainsys.com/Metadata",
@@ -83,21 +67,17 @@ public partial class SamlXmlReaderTests
                 }
             }
         };
-
         actual.Should().BeEquivalentTo(expected);
     }
 
-    [Fact]
+    [Test]
     public void ReadEntityDescriptor_MissingChildren()
     {
         var xmlTraverser = GetXmlTraverser();
-
-        new SamlXmlReader().Invoking(s => s.ReadEntityDescriptor(xmlTraverser))
-            .Should().Throw<SamlXmlException>()
-            .WithErrors(ErrorReason.MissingElement);
+        new SamlXmlReader().Invoking(s => s.ReadEntityDescriptor(xmlTraverser)).Should().Throw<SamlXmlException>().WithErrors(ErrorReason.MissingElement);
     }
 
-    [Fact]
+    [Test]
     public void ReadEntityDescriptor_ValidateSignature()
     {
         var xmlTraverser = GetXmlTraverser();
@@ -113,82 +93,57 @@ public partial class SamlXmlReaderTests
                 TrustLevel = TrustLevel.ConfiguredKey
             }
         };
-
         var actual = new SamlXmlReader
         {
             TrustedSigningKeys = signingKeys,
             AllowedHashAlgorithms = SignedXmlHelperTests.allowedHashes
-        }
-        .ReadEntityDescriptor(xmlTraverser);
-
+        }.ReadEntityDescriptor(xmlTraverser);
         actual.TrustLevel.Should().Be(TrustLevel.ConfiguredKey);
     }
 
-    [Fact]
+    [Test]
     public void ReadEntityDescriptor_ValidateSignature_ReportsError()
     {
         var xmlTraverser = GetXmlTraverser();
-
         var actual = new SamlXmlReader
         {
             TrustedSigningKeys = TestData.SingleSigningKey,
             AllowedHashAlgorithms = SignedXmlHelperTests.allowedHashes
-        }
-            .Invoking(s => s.ReadEntityDescriptor(xmlTraverser))
-            .Should().Throw<SamlXmlException>()
-            .WithErrors(ErrorReason.SignatureFailure);
+        }.Invoking(s => s.ReadEntityDescriptor(xmlTraverser)).Should().Throw<SamlXmlException>().WithErrors(ErrorReason.SignatureFailure);
     }
 
-    [Fact]
+    [Test]
     public void ReadEntityDescriptor_ValidateElementName()
     {
         var xmlTraverser = GetXmlTraverser();
-
-        var actual = new SamlXmlReader()
-            .Invoking(s => s.ReadEntityDescriptor(xmlTraverser))
-            .Should().Throw<SamlXmlException>()
-            .WithErrors(ErrorReason.UnexpectedLocalName, ErrorReason.UnexpectedNamespace)
-            .WithMessage("Unexpected*metadata*");
+        var actual = new SamlXmlReader().Invoking(s => s.ReadEntityDescriptor(xmlTraverser)).Should().Throw<SamlXmlException>().WithErrors(ErrorReason.UnexpectedLocalName, ErrorReason.UnexpectedNamespace).WithMessage("Unexpected*metadata*");
     }
 
-    [Fact]
+    [Test]
     public void ReadEntityDescriptor_ReadsExtensions()
     {
         var xmlTraverser = GetXmlTraverser();
-
-        new SamlXmlReader()
-            .Invoking(s => s.ReadEntityDescriptor(xmlTraverser))
-            .Should().NotThrow();
+        new SamlXmlReader().Invoking(s => s.ReadEntityDescriptor(xmlTraverser)).Should().NotThrow();
     }
 
-    [Fact]
+    [Test]
     public void ReadEntityDescriptor_ReadsNonSupportedRoleDescriptors()
     {
         var xmlTraverser = GetXmlTraverser();
-
-        new SamlXmlReader()
-            .Invoking(s => s.ReadEntityDescriptor(xmlTraverser))
-            .Should().NotThrow();
+        new SamlXmlReader().Invoking(s => s.ReadEntityDescriptor(xmlTraverser)).Should().NotThrow();
     }
 
-    [Fact]
+    [Test]
     public void ReadEntityDescriptor_ADFS()
     {
         var xmlTraverser = GetXmlTraverser();
-
-        new SamlXmlReader()
-            .Invoking(s => s.ReadEntityDescriptor(xmlTraverser))
-            .Should().NotThrow();
+        new SamlXmlReader().Invoking(s => s.ReadEntityDescriptor(xmlTraverser)).Should().NotThrow();
     }
 
-    [Fact]
+    [Test]
     public void ReadEntityDescriptor_WrongNamespaceRoleDescriptor()
     {
         var xmlTraverser = GetXmlTraverser();
-
-        new SamlXmlReader()
-            .Invoking(s => s.ReadEntityDescriptor(xmlTraverser))
-            .Should().Throw<SamlXmlException>()
-            .WithErrors(ErrorReason.UnexpectedNamespace);
+        new SamlXmlReader().Invoking(s => s.ReadEntityDescriptor(xmlTraverser)).Should().Throw<SamlXmlException>().WithErrors(ErrorReason.UnexpectedNamespace);
     }
 }
