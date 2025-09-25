@@ -14,9 +14,11 @@ using Sustainsys.Saml2.Serialization;
 using Sustainsys.Saml2.Tests.Helpers;
 using Sustainsys.Saml2.Validation;
 using Sustainsys.Saml2.Xml;
+using System.Runtime.CompilerServices;
 using System.Security.Claims;
 using System.Text;
 using System.Text.Encodings.Web;
+using System.Xml;
 
 namespace Sustainsys.Saml2.Tests.AspNetCore;
 public class Saml2HandlerTests
@@ -89,7 +91,8 @@ public class Saml2HandlerTests
             {
                 EntityId = "https://idp.example.com/Saml2",
                 SsoServiceUrl = "https://idp.example.com/sso",
-                SsoServiceBinding = Constants.BindingUris.HttpRedirect
+                SsoServiceBinding = Constants.BindingUris.HttpRedirect,
+                SigningKeys = TestData.SingleSigningKey,
             },
             TimeProvider = new FakeTimeProvider(CurrentFakeTime),
             StateCookieManager = Substitute.For<ICookieManager>()
@@ -99,6 +102,17 @@ public class Saml2HandlerTests
         postConfigure.PostConfigure(SchemeName, options);
 
         return options;
+    }
+
+    private XmlDocument GetSignedXmlDoc(string xPath, [CallerMemberName] string? name = null)
+    {
+        var xmlDoc = TestData.GetXmlDocument<Saml2HandlerTests>(name);
+        var signedElement = (XmlElement?)xmlDoc.SelectSingleNode(xPath, xmlDoc.GetNsMgr())
+            ?? throw new ArgumentException();
+        var issuerElement = signedElement!["Issuer", Constants.Namespaces.SamlUri];
+        signedElement.Sign(TestData.Certificate, issuerElement!);
+
+        return xmlDoc;
     }
 
     [Fact]
@@ -209,14 +223,16 @@ public class Saml2HandlerTests
     }
 
 
-    [Fact]
+    [Theory]
+    [InlineData("/samlp:Response/saml:Assertion")]
+    [InlineData("/samlp:Response")]
     // Full happy path test case for a signed response via Http POST binding
-    public async Task HandleRemoteAuthenticate()
+    public async Task HandleRemoteAuthenticate(string xPathToSign)
     {
         var options = CreateOptions();
         var (subject, httpContext) = await CreateSubject(options);
 
-        var xmlDoc = TestData.GetXmlDocument<Saml2HandlerTests>();
+        var xmlDoc = GetSignedXmlDoc(xPathToSign);
 
         var encodedResponse = Convert.ToBase64String(Encoding.UTF8.GetBytes(xmlDoc.OuterXml));
 
@@ -254,7 +270,7 @@ public class Saml2HandlerTests
     }
 
     [Fact]
-    public async Task HandleRemoteAsync_RejectsRequestIdDoesntMatchState()
+    public async Task HandleRemoteAuthenticate_RejectsRequestIdDoesntMatchState()
     {
         var options = CreateOptions();
         var (subject, httpContext) = await CreateSubject(options);
@@ -286,7 +302,7 @@ public class Saml2HandlerTests
     }
 
     [Fact]
-    public async Task HandleRemoteAsync_RejectsRequestIdDoesntMatchInResponseTo()
+    public async Task HandleRemoteAuthenticate_RejectsRequestIdDoesntMatchInResponseTo()
     {
         var options = CreateOptions();
         var (subject, httpContext) = await CreateSubject(options);
@@ -318,7 +334,7 @@ public class Saml2HandlerTests
     }
 
     [Fact]
-    public async Task HandleRemoteAsync_RejectsStoredIssuerDoesntMatchState()
+    public async Task HandleRemoteAuthenticate_RejectsStoredIssuerDoesntMatchState()
     {
         var options = CreateOptions();
         var (subject, httpContext) = await CreateSubject(options);
@@ -346,7 +362,7 @@ public class Saml2HandlerTests
     }
 
     [Fact]
-    public async Task HandleRemoteAsync_RejectsOnMissingStateCookie()
+    public async Task HandleRemoteAuthenticate_RejectsOnMissingStateCookie()
     {
         var options = CreateOptions();
         var (subject, httpContext) = await CreateSubject(options);
@@ -368,7 +384,7 @@ public class Saml2HandlerTests
     }
 
     [Fact]
-    public async Task HandleRemoteAsync_RejectsOnMissingRelaystateParam()
+    public async Task HandleRemoteAuthenticate_RejectsOnMissingRelaystateParam()
     {
         var options = CreateOptions();
         var (subject, httpContext) = await CreateSubject(options);

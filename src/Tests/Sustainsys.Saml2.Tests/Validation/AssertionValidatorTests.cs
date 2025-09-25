@@ -12,6 +12,7 @@ public class AssertionValidatorTests
     private static Assertion CreateAssertion() =>
         new()
         {
+            TrustLevel = TrustLevel.TLS,
             Issuer = new()
             {
                 Format = "urn:oasis:names:tc:SAML:2.0:nameid-format:entity",
@@ -117,6 +118,7 @@ public class AssertionValidatorTests
             {a => {a.Issuer = null!;}, "*issuer*missing*"},
             {a => {a.Issuer.Value = "https://unexpected";},"*issuer*https://unexpected*https://idp.example.com/Saml2*"},
             {a => {a.Issuer.Format ="urn:invalid"; },"*issuer*format*urn:oasis:names:tc:SAML:2.0:nameid-format:entity*"},
+            {a => {a.TrustLevel = TrustLevel.Http; }, "*TrustLevel*Http*" }
         };
 
     [Theory]

@@ -38,9 +38,9 @@ partial class SamlXmlReader
         (var trustedSigningKeys, var allowedHashAlgorithms) =
              GetSignatureValidationParametersFromIssuer(source, response.Issuer);
 
-        if (source.ReadAndValidateOptionalSignature(trustedSigningKeys, allowedHashAlgorithms, out var trustLevel))
+        if (source.ReadAndValidateOptionalSignature(trustedSigningKeys, allowedHashAlgorithms))
         {
-            response.TrustLevel = trustLevel;
+            response.TrustLevel = source.TrustLevel;
             source.MoveNext();
         }
 
