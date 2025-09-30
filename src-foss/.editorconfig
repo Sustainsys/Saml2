@@ -1,5 +1,0 @@
-# Remove the line below if you want to inherit .editorconfig settings from higher directories
-# root = true
-
-[*.cs]
-file_header_template = Copyright (c) Sustainsys AB. All rights reserved.\nLicensed under the MIT license. See LICENSE in the project root for license information.

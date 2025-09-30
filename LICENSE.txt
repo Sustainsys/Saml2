@@ -4,7 +4,7 @@ versions
 * v1.x and earlier are licensed under LGPL-3.0. See https://github.com/Sustainsys/Saml2/blob/v1/LICENSE
 * v2.x is licensed under the MIT license, see https://github.com/Sustainsys/Saml2/blob/v2/LICENSE
 * v3.x (the current develop branch) is dual licensed.
-  - The basic client side functionality and protocol packages found under /src-foss 
+  - The basic client side functionality and protocol packages found under /src/foss 
     are licensed under the MIT license, see LICENSE_MIT.txt.
-  - Everything under /src-commercial requires a license agreement with Sustainsys AB for
+  - Everything under /src/commercial requires a license agreement with Sustainsys AB for
     for any use.
