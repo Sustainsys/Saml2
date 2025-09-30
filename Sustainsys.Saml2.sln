@@ -9,17 +9,17 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
 		CONTRIBUTING.md = CONTRIBUTING.md
-		src\exclusion.dic = src\exclusion.dic
+		src-foss\exclusion.dic = src-foss\exclsusion.dic
 		LICENSE = LICENSE
 		README.md = README.md
 		SECURITY.md = SECURITY.md
 	EndProjectSection
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sustainsys.Saml2", "src\Sustainsys.Saml2\Sustainsys.Saml2.csproj", "{A5EEC055-2C50-4E34-98D4-A2B5B1CB0F8D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sustainsys.Saml2", "src-foss\Sustainsys.Saml2\Sustainsys.Saml2.csproj", "{A5EEC055-2C50-4E34-98D4-A2B5B1CB0F8D}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebApplication", "src\Tests\WebApplication\WebApplication.csproj", "{A03937C8-9CBA-4B60-8116-4EFF2531DF0A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebApplication", "src-foss\Tests\WebApplication\WebApplication.csproj", "{A03937C8-9CBA-4B60-8116-4EFF2531DF0A}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sustainsys.Saml2.Tests", "src\Tests\Sustainsys.Saml2.Tests\Sustainsys.Saml2.Tests.csproj", "{F4B928E9-9E1D-4760-BA36-91BA46C2AA33}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sustainsys.Saml2.Tests", "src-foss\Tests\Sustainsys.Saml2.Tests\Sustainsys.Saml2.Tests.csproj", "{F4B928E9-9E1D-4760-BA36-91BA46C2AA33}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
