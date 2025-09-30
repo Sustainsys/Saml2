@@ -36,8 +36,7 @@ The coding conventions follow the classic .NET style of coding, with the followi
 * Private members in classes are named with camelCasing, no underscores.
 * Member variables are not prefixed with ``this``. unless required to resolve ambiguity (such as in a 
   constructor having parameters with the same name as the members).
-* Any single method is short enough to fit on one screen (on a typical laptop monitor, 
-  not a 30-inch development monster-monitor).
+* Any single method is short enough to fit on one screen (on a typical laptop monitor).
 * The code is formatted to (mostly) fit in 80 columns.
 
 Unit Tests
@@ -46,14 +45,8 @@ The Sustainsys.Saml2 library has been developed using TDD (Test Driven Developme
 by tests, and it will remain that way. Pull requests will only be merged if they contain tests covering the 
 added functionality.
 
-Branching
----------
-To make a clean pull request, it is important to follow some git best practices. Nancy has an 
-[excellent guide](https://github.com/NancyFx/Nancy/wiki/Git-Workflow) that outlines the steps required.
-
 Licensing
 ---------
-The library is licensed under MIT (for the `develop` branch) and by submitting code it is accepted that the
-submitted code will be released under the same license. Third party code may only be added to the
+Any contributions to the library are done under the MIT license. Third party code may only be added to the
 library if the author of the pull request holds the copyright to the code, or the code is previously
 licensed under a license compatible with MIT.

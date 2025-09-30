@@ -7,9 +7,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{92934DC3
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{67939779-582A-4972-9393-280BB0A6678B}"
 	ProjectSection(SolutionItems) = preProject
-		.editorconfig = .editorconfig
 		CONTRIBUTING.md = CONTRIBUTING.md
-		src-foss\exclusion.dic = src-foss\exclusion.dic
 		LICENSE = LICENSE
 		README.md = README.md
 		SECURITY.md = SECURITY.md
@@ -27,7 +25,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "commercial", "commercial", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sustainsys.Saml2.Plus", "src\commercial\Sustainsys.Saml2.Plus\Sustainsys.Saml2.Plus.csproj", "{DAD5157D-0583-4789-963E-5112D402C6F4}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "foss", "foss", "{0C021604-164F-D580-3E58-045C9843FE74}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sustainsys.Saml2.DuendeIdentityServer", "src\commercial\Sustainsys.Saml2.DuendeIdentityServer\Sustainsys.Saml2.DuendeIdentityServer.csproj", "{F587ED90-9657-4828-9612-632260216A5A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -51,6 +49,10 @@ Global
 		{DAD5157D-0583-4789-963E-5112D402C6F4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DAD5157D-0583-4789-963E-5112D402C6F4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DAD5157D-0583-4789-963E-5112D402C6F4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F587ED90-9657-4828-9612-632260216A5A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F587ED90-9657-4828-9612-632260216A5A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F587ED90-9657-4828-9612-632260216A5A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F587ED90-9657-4828-9612-632260216A5A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -61,7 +63,7 @@ Global
 		{A03937C8-9CBA-4B60-8116-4EFF2531DF0A} = {92934DC3-A1E1-48D0-BBBF-8499A94EB9DC}
 		{F4B928E9-9E1D-4760-BA36-91BA46C2AA33} = {92934DC3-A1E1-48D0-BBBF-8499A94EB9DC}
 		{DAD5157D-0583-4789-963E-5112D402C6F4} = {6941732A-EE8F-0657-99DC-FA435846C4C2}
-		{0C021604-164F-D580-3E58-045C9843FE74} = {67939779-582A-4972-9393-280BB0A6678B}
+		{F587ED90-9657-4828-9612-632260216A5A} = {6941732A-EE8F-0657-99DC-FA435846C4C2}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {6B39DC3D-AD4E-4DC4-A9BC-74CF3F38E9CC}

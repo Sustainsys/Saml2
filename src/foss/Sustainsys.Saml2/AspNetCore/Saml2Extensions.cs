@@ -76,7 +76,7 @@ public static class Saml2Extensions
 
         builder.Services.TryAddSingleton<ISamlXmlWriter, SamlXmlWriter>();
 
-        // Reader has state for trusted keys, so had to be transient.
+        // Reader has state for trusted keys, so it has to be transient.
         builder.Services.TryAddTransient<ISamlXmlReader, SamlXmlReader>();
 
         builder.Services.TryAddEnumerable(
