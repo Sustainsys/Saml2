@@ -1,4 +1,7 @@
-﻿using FluentAssertions.Specialized;
+﻿// Copyright (c) Sustainsys AB. All rights reserved.
+// Licensed under the MIT license. See LICENSE in the project root for license information.
+
+using FluentAssertions.Specialized;
 using Sustainsys.Saml2.Xml;
 
 namespace Sustainsys.Saml2.Tests.Helpers;

@@ -1,4 +1,7 @@
-﻿namespace Sustainsys.Saml2.Metadata;
+﻿// Copyright (c) Sustainsys AB. All rights reserved.
+// Licensed under the MIT license. See LICENSE in the project root for license information.
+
+namespace Sustainsys.Saml2.Metadata;
 
 /// <summary>
 /// Metadata IndexedEndpoint

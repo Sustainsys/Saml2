@@ -1,4 +1,7 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿// Copyright (c) Sustainsys AB. All rights reserved.
+// Licensed under the MIT license. See LICENSE in the project root for license information.
+
+using Microsoft.AspNetCore.Http;
 using System.Text;
 using System.Xml;
 

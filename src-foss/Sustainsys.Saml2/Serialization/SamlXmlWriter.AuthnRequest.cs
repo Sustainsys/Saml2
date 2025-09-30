@@ -1,4 +1,7 @@
-﻿using Sustainsys.Saml2.Samlp;
+﻿// Copyright (c) Sustainsys AB. All rights reserved.
+// Licensed under the MIT license. See LICENSE in the project root for license information.
+
+using Sustainsys.Saml2.Samlp;
 using Sustainsys.Saml2.Xml;
 using System.Xml;
 using static Sustainsys.Saml2.Constants;

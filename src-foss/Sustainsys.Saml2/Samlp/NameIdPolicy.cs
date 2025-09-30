@@ -1,4 +1,7 @@
-﻿namespace Sustainsys.Saml2.Samlp;
+﻿// Copyright (c) Sustainsys AB. All rights reserved.
+// Licensed under the MIT license. See LICENSE in the project root for license information.
+
+namespace Sustainsys.Saml2.Samlp;
 
 /// <summary>
 /// Element NameIDPolicy, Core 3.4.1.1

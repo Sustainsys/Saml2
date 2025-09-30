@@ -1,4 +1,7 @@
-﻿namespace Sustainsys.Saml2.Xml;
+﻿// Copyright (c) Sustainsys AB. All rights reserved.
+// Licensed under the MIT license. See LICENSE in the project root for license information.
+
+namespace Sustainsys.Saml2.Xml;
 
 /// <summary>
 /// Exception type thrown for Xml-related errors from the Saml2 library.

@@ -1,4 +1,7 @@
-﻿using Sustainsys.Saml2.Common;
+﻿// Copyright (c) Sustainsys AB. All rights reserved.
+// Licensed under the MIT license. See LICENSE in the project root for license information.
+
+using Sustainsys.Saml2.Common;
 
 namespace Sustainsys.Saml2.Tests;
 

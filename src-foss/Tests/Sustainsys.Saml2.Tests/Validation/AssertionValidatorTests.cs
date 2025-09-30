@@ -1,4 +1,7 @@
-﻿using Microsoft.Extensions.Time.Testing;
+﻿// Copyright (c) Sustainsys AB. All rights reserved.
+// Licensed under the MIT license. See LICENSE in the project root for license information.
+
+using Microsoft.Extensions.Time.Testing;
 using Sustainsys.Saml2.Saml;
 using Sustainsys.Saml2.Validation;
 
