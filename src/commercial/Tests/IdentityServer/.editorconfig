@@ -1,0 +1,6 @@
+# Remove the line below if you want to inherit .editorconfig settings from higher directories
+# root = true
+
+[*.cs]
+file_header_template = unset
+dotnet_diagnostic.IDE0073.severity = suggestion

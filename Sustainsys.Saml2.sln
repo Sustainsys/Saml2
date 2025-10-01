@@ -27,6 +27,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sustainsys.Saml2.Plus", "sr
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sustainsys.Saml2.DuendeIdentityServer", "src\commercial\Sustainsys.Saml2.DuendeIdentityServer\Sustainsys.Saml2.DuendeIdentityServer.csproj", "{F587ED90-9657-4828-9612-632260216A5A}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{8904A032-99F3-AFCD-AFBD-12F878AC12DB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IdentityServer", "src\commercial\Tests\IdentityServer\IdentityServer.csproj", "{6A89DF47-0743-69F7-235D-8C3B94464593}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -53,6 +57,10 @@ Global
 		{F587ED90-9657-4828-9612-632260216A5A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F587ED90-9657-4828-9612-632260216A5A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F587ED90-9657-4828-9612-632260216A5A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6A89DF47-0743-69F7-235D-8C3B94464593}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6A89DF47-0743-69F7-235D-8C3B94464593}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6A89DF47-0743-69F7-235D-8C3B94464593}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6A89DF47-0743-69F7-235D-8C3B94464593}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -64,6 +72,8 @@ Global
 		{F4B928E9-9E1D-4760-BA36-91BA46C2AA33} = {92934DC3-A1E1-48D0-BBBF-8499A94EB9DC}
 		{DAD5157D-0583-4789-963E-5112D402C6F4} = {6941732A-EE8F-0657-99DC-FA435846C4C2}
 		{F587ED90-9657-4828-9612-632260216A5A} = {6941732A-EE8F-0657-99DC-FA435846C4C2}
+		{8904A032-99F3-AFCD-AFBD-12F878AC12DB} = {6941732A-EE8F-0657-99DC-FA435846C4C2}
+		{6A89DF47-0743-69F7-235D-8C3B94464593} = {8904A032-99F3-AFCD-AFBD-12F878AC12DB}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {6B39DC3D-AD4E-4DC4-A9BC-74CF3F38E9CC}
