@@ -1,0 +1,11 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<GenerateDocumentationFile>True</GenerateDocumentationFile>
+	</PropertyGroup>
+
+	<ItemGroup>
+    <ProjectReference Include="..\..\foss\Sustainsys.Saml2\Sustainsys.Saml2.csproj" />
+  </ItemGroup>
+
+</Project>

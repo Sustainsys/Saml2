@@ -1,0 +1,12 @@
+﻿<Project DefaultTargets="Build">
+	<PropertyGroup>
+		<TargetFrameworks>net8.0;net9.0</TargetFrameworks>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+		<TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+		<IncludeSymbols>True</IncludeSymbols>
+		<SymbolPackageFormat>snupkg</SymbolPackageFormat>
+		<Copyright>Sustainsys AB</Copyright>
+		<Authors>Sustainsys</Authors>
+	</PropertyGroup>
+</Project>

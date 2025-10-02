@@ -1,0 +1,8 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+	<PropertyGroup>
+		<GenerateDocumentationFile>True</GenerateDocumentationFile>
+	</PropertyGroup>
+	<ItemGroup>
+    <PackageReference Include="Duende.IdentityServer" Version="7.3.2" />
+  </ItemGroup>
+</Project>
