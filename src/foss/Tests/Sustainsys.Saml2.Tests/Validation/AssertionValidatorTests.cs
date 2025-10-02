@@ -21,6 +21,14 @@ public class AssertionValidatorTests
                 Format = "urn:oasis:names:tc:SAML:2.0:nameid-format:entity",
                 Value = "https://idp.example.com/Saml2"
             },
+            AuthnStatement = new()
+            {
+                AuthnInstant = new(2025, 05, 28, 11, 14, 51),
+                AuthnContext = new()
+                {
+                    AuthnContextClassRef = "urn:oasis:names:tc:SAML:2.0:ac:classes:PasswordProtectedTransport"
+                }
+            },
             Subject = new()
             {
                 SubjectConfirmation = new()
@@ -121,7 +129,10 @@ public class AssertionValidatorTests
             {a => {a.Issuer = null!;}, "*issuer*missing*"},
             {a => {a.Issuer.Value = "https://unexpected";},"*issuer*https://unexpected*https://idp.example.com/Saml2*"},
             {a => {a.Issuer.Format ="urn:invalid"; },"*issuer*format*urn:oasis:names:tc:SAML:2.0:nameid-format:entity*"},
-            {a => {a.TrustLevel = TrustLevel.Http; }, "*TrustLevel*Http*" }
+            {a => {a.TrustLevel = TrustLevel.Http; }, "*TrustLevel*Http*" },
+            {a => {a.AuthnStatement = null!; }, "*authnstatement*missing*required*"},
+            {a => {a.AuthnStatement!.AuthnContext = null!; }, "*authncontext*missing*required*"},
+            {a => {a.AuthnStatement!.AuthnInstant = default; }, "*authninstant*missing*required*"},
         };
 
     [Theory]

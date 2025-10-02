@@ -34,6 +34,12 @@ public class ResponseValidatorTests
                         Value = "https://idp.example.com/Saml2"
                     },
                     Conditions = new(),
+                    AuthnStatement = new() {
+                        AuthnInstant = new(2025, 05, 28, 11, 14, 51),
+                        AuthnContext = new() {
+                            AuthnContextClassRef = "urn:oasis:names:tc:SAML:2.0:ac:classes:PasswordProtectedTransport"
+                        }
+                    },
                     Subject = new(){
                         SubjectConfirmation = new() {
                             Method = "urn:oasis:names:tc:SAML:2.0:cm:bearer",

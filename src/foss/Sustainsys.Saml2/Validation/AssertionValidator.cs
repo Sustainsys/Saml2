@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Sustainsys AB. All rights reserved.
 // Licensed under the MIT license. See LICENSE in the project root for license information.
 
+using Sustainsys.Saml2.Common;
 using Sustainsys.Saml2.Saml;
 
 namespace Sustainsys.Saml2.Validation;
@@ -17,6 +18,7 @@ public class AssertionValidator(TimeProvider timeProvider) : IValidator<Assertio
     {
         ValidateTrustLevel(assertion, parameters);
         ValidateIssuer(assertion, parameters);
+        ValidateAuthnStatement(assertion, parameters);
         ValidateConditions(assertion.Conditions, parameters);
         ValidateSubject(assertion.Subject, parameters);
 
@@ -39,7 +41,6 @@ public class AssertionValidator(TimeProvider timeProvider) : IValidator<Assertio
             throw new ValidationException<Assertion>(
                 $"TrustLevel of assertion is {assertion.TrustLevel}, which is less than required {parameters.RequiredTrustLevel}");
         }
-
     }
 
     /// <summary>
@@ -67,6 +68,30 @@ public class AssertionValidator(TimeProvider timeProvider) : IValidator<Assertio
         {
             throw new ValidationException<Assertion>(
                 $"Issuer format does not match {Constants.NameIdFormats.Entity} and must be null");
+        }
+    }
+
+    ///<summary>
+    /// Validate AuthnStatement of an assertion
+    /// </summary>
+    /// <param name="assertion">Saml assertions</param>
+    /// <param name="parameters">Validation parameters</param>
+    /// <exception cref="ValidationException{Assertion}">On validation failure</exception>
+    protected virtual void ValidateAuthnStatement(Assertion assertion, AssertionValidationParameters parameters)
+    {
+        if (assertion.AuthnStatement == null)
+        {
+            throw new ValidationException<Assertion>("AuthnStatement is missing, at least one is required.");
+        }
+
+        if (assertion.AuthnStatement.AuthnInstant.Equals(default(DateTimeUtc)))
+        {
+            throw new ValidationException<Assertion>("AuthnInstant is missing, AuthnInstant is required.");
+        }
+
+        if (assertion.AuthnStatement.AuthnContext == null)
+        {
+            throw new ValidationException<Assertion>("AuthnContext is missing, AuthnContext is required.");
         }
     }
 
