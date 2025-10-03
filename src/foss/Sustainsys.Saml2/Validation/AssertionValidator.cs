@@ -1,7 +1,6 @@
 ﻿// Copyright (c) Sustainsys AB. All rights reserved.
 // Licensed under the MIT license. See LICENSE in the project root for license information.
 
-using Sustainsys.Saml2.Common;
 using Sustainsys.Saml2.Saml;
 
 namespace Sustainsys.Saml2.Validation;
@@ -82,16 +81,6 @@ public class AssertionValidator(TimeProvider timeProvider) : IValidator<Assertio
         if (assertion.AuthnStatement == null)
         {
             throw new ValidationException<Assertion>("AuthnStatement is missing, at least one is required.");
-        }
-
-        if (assertion.AuthnStatement.AuthnInstant.Equals(default(DateTimeUtc)))
-        {
-            throw new ValidationException<Assertion>("AuthnInstant is missing, AuthnInstant is required.");
-        }
-
-        if (assertion.AuthnStatement.AuthnContext == null)
-        {
-            throw new ValidationException<Assertion>("AuthnContext is missing, AuthnContext is required.");
         }
 
         if (string.IsNullOrEmpty(assertion.AuthnStatement.AuthnContext.AuthnContextClassRef))

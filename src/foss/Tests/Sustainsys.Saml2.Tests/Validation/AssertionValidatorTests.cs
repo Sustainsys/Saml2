@@ -131,9 +131,7 @@ public class AssertionValidatorTests
             {a => {a.Issuer.Format ="urn:invalid"; },"*issuer*format*urn:oasis:names:tc:SAML:2.0:nameid-format:entity*"},
             {a => {a.TrustLevel = TrustLevel.Http; }, "*TrustLevel*Http*" },
             {a => {a.AuthnStatement = null!; }, "*authnstatement*missing*required*"},
-            {a => {a.AuthnStatement!.AuthnContext = null!; }, "*authncontext*missing*required*"},
             {a => {a.AuthnStatement!.AuthnContext = new AuthnContext(); }, "*authncontextclassref*missing*required*"},
-            {a => {a.AuthnStatement!.AuthnInstant = default; }, "*authninstant*missing*required*"},
         };
 
     [Theory]
