@@ -44,7 +44,6 @@ public class ResponseValidatorTests
                         SubjectConfirmation = new() {
                             Method = "urn:oasis:names:tc:SAML:2.0:cm:bearer",
                             SubjectConfirmationData = new() {
-                                NotBefore = new(2025, 05, 28, 11, 14, 51),
                                 NotOnOrAfter = new(2025, 05, 28, 11, 19, 51),
                                 Recipient = "https://example.com/Acs",
                                 InResponseTo = "123"

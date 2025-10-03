@@ -12,14 +12,13 @@
 		<saml:Subject>
 			<saml:NameID>SomeUser</saml:NameID>
 			<saml:SubjectConfirmation Method="urn:oasis:names:tc:SAML:2.0:cm:bearer">
-				<saml:SubjectConfirmationData
-					NotBefore="2025-05-28T11:13:53Z" 
+				<saml:SubjectConfirmationData 
 					NotOnOrAfter="2025-05-28T11:15:53Z" 
 					Recipient="https://sp.example.com:8888/Saml2/Acs"
 					InResponseTo="abc123"/>
 			</saml:SubjectConfirmation>
 		</saml:Subject>
-		<saml:Conditions NotOnOrAfter="2100-01-01T00:00:00Z" />
+		<saml:Conditions NotOnOrAfter="2100-01-01T00:00:00Z" NotBefore="2025-05-28T11:13:53Z"/>
 		<saml:AuthnStatement AuthnInstant="2025-05-26T07:00:00Z" >
 			<saml:AuthnContext>
 				<saml:AuthnContextClassRef>urn:oasis:names:tc:SAML:2.0:ac:classes:PasswordProtectedTransport</saml:AuthnContextClassRef>
