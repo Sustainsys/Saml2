@@ -42,6 +42,10 @@ partial class SamlXmlReader
     {
         source.MoveNext(true);
 
+        // The XML schema allows custom conditions. Anyone that wants to support
+        // those would have to extend the reader and override this method to handle
+        // reading of those.
+
         while (source.HasName(Elements.AudienceRestriction, Namespaces.SamlUri))
         {
             conditions.AudienceRestrictions.Add(ReadAudienceRestriction(source));
