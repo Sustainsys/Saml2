@@ -127,11 +127,11 @@ public class AssertionValidatorTests
             {a => {a.Conditions!.NotBefore = new(2025, 05, 28, 9, 34, 43);}, "*notbefore*"},
             {a => {a.Conditions = null!;}, "*conditions*"},
             {a => {a.Issuer = null!;}, "*issuer*missing*"},
-            {a => {a.Issuer.Value = "https://unexpected";},"*issuer*https://unexpected*https://idp.example.com/Saml2*"},
-            {a => {a.Issuer.Format ="urn:invalid"; },"*issuer*format*urn:oasis:names:tc:SAML:2.0:nameid-format:entity*"},
-            {a => {a.TrustLevel = TrustLevel.Http; }, "*TrustLevel*Http*" },
-            {a => {a.AuthnStatement = null!; }, "*authnstatement*missing*required*"},
-            {a => {a.AuthnStatement!.AuthnContext = new AuthnContext(); }, "*authncontextclassref*missing*required*"},
+            {a => {a.Issuer.Value = "https://unexpected";}, "*issuer*https://unexpected*https://idp.example.com/Saml2*"},
+            {a => {a.Issuer.Format ="urn:invalid";}, "*issuer*format*urn:oasis:names:tc:SAML:2.0:nameid-format:entity*"},
+            {a => {a.TrustLevel = TrustLevel.Http;}, "*TrustLevel*Http*"},
+            {a => {a.AuthnStatement = null!;}, "*authnstatement*missing*required*"},
+            {a => {a.AuthnStatement!.AuthnContext = new AuthnContext();}, "*authncontextclassref*missing*required*"},
         };
 
     [Theory]
