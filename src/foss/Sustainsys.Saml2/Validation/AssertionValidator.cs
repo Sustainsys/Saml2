@@ -93,6 +93,11 @@ public class AssertionValidator(TimeProvider timeProvider) : IValidator<Assertio
         {
             throw new ValidationException<Assertion>("AuthnContext is missing, AuthnContext is required.");
         }
+
+        if (string.IsNullOrEmpty(assertion.AuthnStatement.AuthnContext.AuthnContextClassRef))
+        {
+            throw new ValidationException<Assertion>("AuthnContextClassRef is missing, AuthnContextClassRef is required.");
+        }
     }
 
     /// <summary>

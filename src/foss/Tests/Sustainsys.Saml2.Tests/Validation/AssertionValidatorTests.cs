@@ -26,7 +26,7 @@ public class AssertionValidatorTests
                 AuthnInstant = new(2025, 05, 28, 11, 14, 51),
                 AuthnContext = new()
                 {
-                    AuthnContextClassRef = "urn:oasis:names:tc:SAML:2.0:ac:classes:PasswordProtectedTransport"
+                    AuthnContextClassRef = Constants.AuthnContextClasses.PasswordProtectedTransport
                 }
             },
             Subject = new()
@@ -132,6 +132,7 @@ public class AssertionValidatorTests
             {a => {a.TrustLevel = TrustLevel.Http; }, "*TrustLevel*Http*" },
             {a => {a.AuthnStatement = null!; }, "*authnstatement*missing*required*"},
             {a => {a.AuthnStatement!.AuthnContext = null!; }, "*authncontext*missing*required*"},
+            {a => {a.AuthnStatement!.AuthnContext = new AuthnContext(); }, "*authncontextclassref*missing*required*"},
             {a => {a.AuthnStatement!.AuthnInstant = default; }, "*authninstant*missing*required*"},
         };
 

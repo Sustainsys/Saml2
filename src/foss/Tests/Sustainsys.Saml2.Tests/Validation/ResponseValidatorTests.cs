@@ -37,7 +37,7 @@ public class ResponseValidatorTests
                     AuthnStatement = new() {
                         AuthnInstant = new(2025, 05, 28, 11, 14, 51),
                         AuthnContext = new() {
-                            AuthnContextClassRef = "urn:oasis:names:tc:SAML:2.0:ac:classes:PasswordProtectedTransport"
+                            AuthnContextClassRef = Constants.AuthnContextClasses.PasswordProtectedTransport
                         }
                     },
                     Subject = new(){
