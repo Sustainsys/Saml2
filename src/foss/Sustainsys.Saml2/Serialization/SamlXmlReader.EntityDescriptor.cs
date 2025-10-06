@@ -69,7 +69,7 @@ partial class SamlXmlReader
         source.MoveNext();
 
         if (source.ReadAndValidateOptionalSignature(
-            TrustedSigningKeys, AllowedHashAlgorithms))
+            TrustedSigningKeys, AllowedAlgorithms))
         {
             entityDescriptor.TrustLevel = source.TrustLevel;
             source.MoveNext();

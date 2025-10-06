@@ -120,7 +120,7 @@ public partial class SamlXmlReaderTests
         var actual = new SamlXmlReader
         {
             TrustedSigningKeys = signingKeys,
-            AllowedHashAlgorithms = SignedXmlHelperTests.allowedHashes
+            AllowedAlgorithms = SignedXmlHelperTests.allowedHashes
         }
         .ReadEntityDescriptor(xmlTraverser);
 
@@ -135,7 +135,7 @@ public partial class SamlXmlReaderTests
         var actual = new SamlXmlReader
         {
             TrustedSigningKeys = TestData.SingleSigningKey,
-            AllowedHashAlgorithms = SignedXmlHelperTests.allowedHashes
+            AllowedAlgorithms = SignedXmlHelperTests.allowedHashes
         }
             .Invoking(s => s.ReadEntityDescriptor(xmlTraverser))
             .Should().Throw<SamlXmlException>()

@@ -12,7 +12,7 @@ namespace Sustainsys.Saml2.Tests.Xml;
 
 public class SignedXmlHelperTests
 {
-    public static readonly string[] allowedHashes = { "sha256" };
+    public static readonly string[] allowedHashes = { SignedXml.XmlDsigRSASHA256Url, SignedXml.XmlDsigSHA256Url };
 
     private static XmlDocument CreateSignedDocument()
     {

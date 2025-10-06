@@ -15,16 +15,18 @@ namespace Sustainsys.Saml2.Serialization;
 public partial class SamlXmlReader : ISamlXmlReader
 {
     /// <inheritdoc/>
-    public virtual IEnumerable<string>? AllowedHashAlgorithms { get; set; } =
-        defaultAllowedHashAlgorithms;
+    public virtual IEnumerable<string>? AllowedAlgorithms { get; set; } =
+        defaultAllowedAlgorithms;
 
-    private static readonly IEnumerable<string> defaultAllowedHashAlgorithms =
+    private static readonly IEnumerable<string> defaultAllowedAlgorithms =
         new ReadOnlyCollection<string>(
         [
-            "sha256",
-            "sha384",
-            "sha512",
-            SignedXml.XmlDsigRSASHA256Url
+            SignedXml.XmlDsigSHA256Url,
+            SignedXml.XmlDsigSHA384Url,
+            SignedXml.XmlDsigSHA512Url,
+            SignedXml.XmlDsigRSASHA256Url,
+            SignedXml.XmlDsigRSASHA384Url,
+            SignedXml.XmlDsigRSASHA512Url,
         ]);
 
     /// <inheritdoc/>
@@ -55,14 +57,14 @@ public partial class SamlXmlReader : ISamlXmlReader
     /// <param name="source">Xml Travers source - used to report errors</param>
     /// <param name="issuer">The issuer to find parameters for</param>
     /// <returns>
-    /// Trusted signig keys and allowedHashAlgorithms. Hash algorithms uses the <see cref="AllowedHashAlgorithms"/>
+    /// Trusted signig keys and allowedHashAlgorithms. Hash algorithms uses the <see cref="AllowedAlgorithms"/>
     /// if there is no specific configuration on the Issuer.
     /// </returns>
     protected (IEnumerable<SigningKey>? trustedSigningKeys, IEnumerable<string>? allowedHashAlgorithms)
     GetSignatureValidationParametersFromIssuer(XmlTraverser source, NameId? issuer)
     {
         var trustedSigningKeys = TrustedSigningKeys;
-        var allowedHashAlgorithms = AllowedHashAlgorithms;
+        var allowedHashAlgorithms = AllowedAlgorithms;
         if (source.HasName(Elements.Signature, SignedXml.XmlDsigNamespaceUrl))
         {
             if (issuer == null)
@@ -76,7 +78,7 @@ public partial class SamlXmlReader : ISamlXmlReader
                 {
                     var entity = EntityResolver(issuer.Value);
                     trustedSigningKeys = entity.SigningKeys;
-                    allowedHashAlgorithms = entity.AllowedHashAlgorithms ?? AllowedHashAlgorithms;
+                    allowedHashAlgorithms = entity.AllowedHashAlgorithms ?? AllowedAlgorithms;
                 }
             }
         }

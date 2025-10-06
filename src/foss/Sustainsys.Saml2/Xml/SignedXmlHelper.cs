@@ -150,6 +150,7 @@ public static class SignedXmlHelper
                 if (signedXml.CheckSignature(key.Certificate, true))
                 {
                     workingKey = key;
+                    break;
                 }
             }
 
@@ -198,16 +199,14 @@ public static class SignedXmlHelper
             }
 
             // The algorithm names has the form http://foo/bar/xyz#sha256
-            var digestHash = reference.DigestMethod[(reference.DigestMethod.LastIndexOf('#') + 1)..];
-            if (!allowedHashAlgorithms.Contains(digestHash))
+            if (!allowedHashAlgorithms.Contains(reference.DigestMethod))
             {
                 error += $"Digest algorithm {reference.DigestMethod} does not match configured [{string.Join(", ", allowedHashAlgorithms)}]. ";
             }
         }
 
         // The algorithm names has the form http://foo/bar/xyz#rsa-sha256
-        var signingHash = signedXml.SignatureMethod![(signedXml.SignatureMethod!.LastIndexOf('-') + 1)..];
-        if (!allowedHashAlgorithms.Contains(signingHash))
+        if (!allowedHashAlgorithms.Contains(signedXml.SignatureMethod))
         {
             var allowed = string.Join(", ", allowedHashAlgorithms);
             error += $"Signature algorithm {signedXml.SignatureMethod} does not match configured [{allowed}]. ";

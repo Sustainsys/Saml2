@@ -17,7 +17,7 @@ public interface ISamlXmlReader
     /// Allowed hash algorithms if validating signatures. Values should be e.g. "sha256"
     /// which is compared to the end of the algorithm identifier Url.
     /// </summary>
-    IEnumerable<string>? AllowedHashAlgorithms { get; set; }
+    IEnumerable<string>? AllowedAlgorithms { get; set; }
 
     /// <summary>
     /// Signing keys to trust when validating signatures of the metadata. In addition
