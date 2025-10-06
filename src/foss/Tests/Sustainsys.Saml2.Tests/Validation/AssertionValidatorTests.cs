@@ -112,14 +112,14 @@ public class AssertionValidatorTests
             {a => {a.Subject!.SubjectConfirmation!.SubjectConfirmationData = null!;}, "*subjectconfirmationdata*missing*"},
             {a => {a.Subject!.SubjectConfirmation!.SubjectConfirmationData!.Recipient = null!;}, "*recipient  *required*"},
             {a => {a.Subject!.SubjectConfirmation!.SubjectConfirmationData!.NotOnOrAfter = null!;}, "*notonorafter*required*"},
-            {a => {a.Subject!.SubjectConfirmation!.Method ="urn:Invalid"; }, $"*confirmation*urn:oasis:names:tc:SAML:2.0:cm:bearer*"},
-            {a => {a.Subject!.SubjectConfirmation!.SubjectConfirmationData!.NotBefore = new(2025, 05, 28, 9, 34, 42); }, "*notbefore*not*allowed*" },
+            {a => {a.Subject!.SubjectConfirmation!.Method ="urn:Invalid";}, $"*confirmation*urn:oasis:names:tc:SAML:2.0:cm:bearer*"},
+            {a => {a.Subject!.SubjectConfirmation!.SubjectConfirmationData!.NotBefore = new(2025, 05, 28, 9, 34, 42);}, "*notbefore*not*allowed*"},
             {a => {
                 a.Subject!.SubjectConfirmation!.SubjectConfirmationData!.NotOnOrAfter = new(2024, 02, 10, 17, 50, 13);
                 a.Subject.SubjectConfirmation.SubjectConfirmationData.InResponseTo = "123";
                 a.Subject.SubjectConfirmation.SubjectConfirmationData.Recipient = "https://invalid";
-            },"*SubjectConfirmationData*incorrect*Recipient*NotOnOrAfter*InResponseTo*"},
-            {a => {a.Subject!.SubjectConfirmation!.SubjectConfirmationData!.Recipient ="https://unexpected";},"*recipient*https://unexpected*https://sp.example.com/Saml2/Acs*"},
+            }, "*SubjectConfirmationData*incorrect*Recipient*NotOnOrAfter*InResponseTo*"},
+            {a => {a.Subject!.SubjectConfirmation!.SubjectConfirmationData!.Recipient ="https://unexpected";}, "*recipient*https://unexpected*https://sp.example.com/Saml2/Acs*"},
             {a => {a.Subject!.SubjectConfirmation!.SubjectConfirmationData!.NotOnOrAfter = new(2024,02,10,17,50,13);}, "*notonorafter*"},
             {a => {a.Subject!.SubjectConfirmation!.SubjectConfirmationData!.InResponseTo = "1234";}, "*inresponseto*b123456*"},
             {a => {a.Conditions!.AudienceRestrictions[0].Audiences[1] = "https://unexpected";}, "*audiences*expected https://sp.example.com/Saml2*"},
