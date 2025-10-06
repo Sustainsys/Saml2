@@ -218,7 +218,7 @@ public class AssertionValidator(TimeProvider timeProvider) : IValidator<Assertio
 
         if (notBefore != null)
         {
-            errors.Add($"NotBefore is not allowed.");
+            errors.Add($"SubjectConformation.NotBefore is not allowed in the web SSO profile.");
         }
 
         if (subjectConfirmationData.InResponseTo != parameters.ValidInResponseTo)
