@@ -9,6 +9,10 @@ namespace Sustainsys.Saml2.Validation;
 /// <summary>
 /// Validates a Saml Response
 /// </summary>
+/// /// <remarks>
+/// The response validator specifically enforces the WebSSO profile rules. It may require or disallow some
+/// elements that are optional according to the core spec.
+/// </remarks>
 public class ResponseValidator(IValidator<Assertion, AssertionValidationParameters> assertionValidator)
     : IValidator<Response, ResponseValidationParameters>
 {

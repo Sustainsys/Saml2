@@ -8,6 +8,10 @@ namespace Sustainsys.Saml2.Validation;
 /// <summary>
 /// Saml Assertion validator
 /// </summary>
+/// <remarks>
+/// The assertion validator specifically enforces the WebSSO profile rules. It may require or disallow some
+/// elements that are optional according to the core spec.
+/// </remarks>
 public class AssertionValidator(TimeProvider timeProvider) : IValidator<Assertion, AssertionValidationParameters>
 {
     /// <inheritdoc/>
@@ -212,9 +216,9 @@ public class AssertionValidator(TimeProvider timeProvider) : IValidator<Assertio
             errors.Add($"NotOnOrAfter is required in SubjectConfirmationData");
         }
 
-        if (notBefore.HasValue && timeProvider.GetUtcNow() < notBefore)
+        if (notBefore != null)
         {
-            errors.Add($"NotBefore {notBefore} is after current time {timeProvider.GetUtcNow()}");
+            errors.Add($"SubjectConformation.NotBefore is not allowed in the web SSO profile.");
         }
 
         if (subjectConfirmationData.InResponseTo != parameters.ValidInResponseTo)
