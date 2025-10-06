@@ -17,6 +17,7 @@ public class AssertionValidator(TimeProvider timeProvider) : IValidator<Assertio
     {
         ValidateTrustLevel(assertion, parameters);
         ValidateIssuer(assertion, parameters);
+        ValidateAuthnStatement(assertion.AuthnStatement, parameters);
         ValidateConditions(assertion.Conditions, parameters);
         ValidateSubject(assertion.Subject, parameters);
 
@@ -39,7 +40,6 @@ public class AssertionValidator(TimeProvider timeProvider) : IValidator<Assertio
             throw new ValidationException<Assertion>(
                 $"TrustLevel of assertion is {assertion.TrustLevel}, which is less than required {parameters.RequiredTrustLevel}");
         }
-
     }
 
     /// <summary>
@@ -67,6 +67,25 @@ public class AssertionValidator(TimeProvider timeProvider) : IValidator<Assertio
         {
             throw new ValidationException<Assertion>(
                 $"Issuer format does not match {Constants.NameIdFormats.Entity} and must be null");
+        }
+    }
+
+    ///<summary>
+    /// Validate AuthnStatement of an assertion
+    /// </summary>
+    /// <param name="authnStatement">AuthnStatement to validate</param>
+    /// <param name="parameters">Validation parameters</param>
+    /// <exception cref="ValidationException{Assertion}">On validation failure</exception>
+    protected virtual void ValidateAuthnStatement(AuthnStatement? authnStatement, AssertionValidationParameters parameters)
+    {
+        if (authnStatement == null)
+        {
+            throw new ValidationException<Assertion>("AuthnStatement is missing, at least one is required.");
+        }
+
+        if (string.IsNullOrEmpty(authnStatement.AuthnContext.AuthnContextClassRef))
+        {
+            throw new ValidationException<Assertion>("AuthnContextClassRef is missing, AuthnContextClassRef is required.");
         }
     }
 
