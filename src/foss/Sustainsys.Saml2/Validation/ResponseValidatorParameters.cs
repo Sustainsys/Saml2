@@ -28,6 +28,11 @@ public class ResponseValidationParameters
     public string? ValidIssuer { get => AssertionValidationParameters.ValidIssuer; }
 
     /// <summary>
+    ///  A URI reference that identifies an intended audience.
+    /// </summary>
+    public string? ValidAudience { get; set; }
+
+    /// <summary>
     /// Valid destination of the response and assertions. 
     /// A URI reference indicating the address to which this request has been sent.
     /// </summary>

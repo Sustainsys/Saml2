@@ -33,7 +33,19 @@ public class ResponseValidatorTests
                         Format = "urn:oasis:names:tc:SAML:2.0:nameid-format:entity",
                         Value = "https://idp.example.com/Saml2"
                     },
-                    Conditions = new(),
+                    Conditions = new()
+                    {
+                        NotBefore = new(2025, 05, 28, 11, 14, 51),
+                        NotOnOrAfter = new(2025, 05, 28, 11, 19, 51),
+                        AudienceRestrictions = {
+                            new() {
+                                Audiences = {
+                                    "https://example.com/Saml2",
+                                    "https://other.example.com/Saml2"
+                                }
+                            }
+                        },
+                    },
                     AuthnStatement = new() {
                         AuthnInstant = new(2025, 05, 28, 11, 14, 51),
                         AuthnContext = new() {
@@ -61,6 +73,7 @@ public class ResponseValidatorTests
             AssertionValidationParameters = new()
             {
                 ValidIssuer = "https://idp.example.com/Saml2",
+                ValidAudience = "https://example.com/Saml2",
                 ValidRecipient = "https://example.com/Acs",
                 ValidInResponseTo = "123"
             }
