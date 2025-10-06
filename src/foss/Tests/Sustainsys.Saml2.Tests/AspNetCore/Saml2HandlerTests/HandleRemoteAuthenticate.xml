@@ -18,7 +18,11 @@
 					InResponseTo="abc123"/>
 			</saml:SubjectConfirmation>
 		</saml:Subject>
-		<saml:Conditions NotOnOrAfter="2100-01-01T00:00:00Z" NotBefore="2025-05-28T11:13:53Z"/>
+		<saml:Conditions NotOnOrAfter="2100-01-01T00:00:00Z" NotBefore="2025-05-28T11:13:53Z">
+			<saml:AudienceRestriction>
+				<saml:Audience>https://sp.example.com/Metadata</saml:Audience>
+			</saml:AudienceRestriction>
+		</saml:Conditions>
 		<saml:AuthnStatement AuthnInstant="2025-05-26T07:00:00Z" >
 			<saml:AuthnContext>
 				<saml:AuthnContextClassRef>urn:oasis:names:tc:SAML:2.0:ac:classes:PasswordProtectedTransport</saml:AuthnContextClassRef>

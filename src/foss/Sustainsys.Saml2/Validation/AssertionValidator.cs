@@ -124,8 +124,16 @@ public class AssertionValidator(TimeProvider timeProvider) : IValidator<Assertio
                         $"NotOnOrAfter {conditions.NotOnOrAfter} is before {timeProvider.GetUtcNow()}");
         }
 
+        var audienceRestrictions = conditions.AudienceRestrictions;
+
+        if (audienceRestrictions.Count == 0)
+        {
+            throw new ValidationException<Assertion>(
+                $"At least one AudienceRestriction is required in Conditions");
+        }
+
         // Core 2.5.1.4 AudienceRestriction, Audience
-        foreach (var audienceRestriction in conditions.AudienceRestrictions)
+        foreach (var audienceRestriction in audienceRestrictions)
         {
             if (!audienceRestriction.Audiences
                 .Where(a => a != null)
@@ -134,7 +142,6 @@ public class AssertionValidator(TimeProvider timeProvider) : IValidator<Assertio
                 throw new ValidationException<Assertion>(
                     $"None of audiences {string.Join(", ", audienceRestriction.Audiences)} matches expected {parameters.ValidAudience}");
             }
-
         }
 
         // Later: Core 2.5.1.6 ProxyRestriction. A simple service provider (client application) do not have

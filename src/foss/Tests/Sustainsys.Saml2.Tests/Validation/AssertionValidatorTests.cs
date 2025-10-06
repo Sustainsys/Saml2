@@ -81,7 +81,6 @@ public class AssertionValidatorTests
             // Removing non-required things should still pass validation.
             {a => {a.Conditions!.NotOnOrAfter = null!;}},
             {a => {a.Conditions!.NotBefore = null!;}},
-            {a => {a.Conditions!.AudienceRestrictions.Clear();}},
 
             // Removing Issuer format is ok
             {a => {a.Issuer!.Format = null!;}},
@@ -123,6 +122,7 @@ public class AssertionValidatorTests
             {a => {a.Subject!.SubjectConfirmation!.SubjectConfirmationData!.NotOnOrAfter = new(2024,02,10,17,50,13);}, "*notonorafter*"},
             {a => {a.Subject!.SubjectConfirmation!.SubjectConfirmationData!.InResponseTo = "1234";}, "*inresponseto*b123456*"},
             {a => {a.Conditions!.AudienceRestrictions[0].Audiences[1] = "https://unexpected";}, "*audiences*expected https://sp.example.com/Saml2*"},
+            {a => {a.Conditions!.AudienceRestrictions.Clear();}, "*audiencerestriction*is*required*"},
             {a => {a.Conditions!.NotOnOrAfter = new(2025, 05, 28, 9, 34, 42);}, "*notonorafter*"},
             {a => {a.Conditions!.NotBefore = new(2025, 05, 28, 9, 34, 43);}, "*notbefore*"},
             {a => {a.Conditions = null!;}, "*conditions*"},
