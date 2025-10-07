@@ -11,7 +11,7 @@ namespace Sustainsys.Saml2.Tests.Helpers;
 /// </summary>
 /// <typeparam name="TData"></typeparam>
 /// <typeparam name="TValidatorParams"></typeparam>
-class NoOpValidator<TData> : IValidator<TData, object>
+public class NoOpValidator<TData> : IValidator<TData, object>
 {
     public void Validate(TData data, object _) { }
 }

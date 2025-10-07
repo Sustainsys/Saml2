@@ -53,16 +53,6 @@ public interface ISamlXmlReader
         Action<ReadErrorInspectorContext<Response>>? errorInspector = null);
 
     /// <summary>
-    /// Read an <see cref="AuthnRequest"/>
-    /// </summary>
-    /// <param name="source">Xml Traverser to read from</param>
-    /// <param name="errorInspector">Callback that can inspect and alter errors before throwing</param>
-    /// <returns><see cref="AuthnRequest"/></returns>
-    AuthnRequest ReadAuthnRequest(
-        XmlTraverser source,
-        Action<ReadErrorInspectorContext<AuthnRequest>>? errorInspector = null);
-
-    /// <summary>
     /// Read an <see cref="Assertion"/>
     /// </summary>
     /// <param name="source">Xml Traverser to read from</param>

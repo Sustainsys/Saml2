@@ -86,7 +86,14 @@ public partial class SamlXmlReader : ISamlXmlReader
         return (trustedSigningKeys, allowedHashAlgorithms);
     }
 
-    private static void CallErrorInspector<TData>(
+    /// <summary>
+    /// Call the supplied error inspector callback if there are errors.
+    /// </summary>
+    /// <typeparam name="TData">Type of data being handled</typeparam>
+    /// <param name="errorInspector">Error inspector callback</param>
+    /// <param name="data">The data</param>
+    /// <param name="source">Source xml</param>
+    protected static void CallErrorInspector<TData>(
         Action<ReadErrorInspectorContext<TData>>? errorInspector,
         TData data,
         XmlTraverser source)

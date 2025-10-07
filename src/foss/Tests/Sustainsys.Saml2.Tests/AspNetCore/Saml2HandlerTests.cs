@@ -176,10 +176,10 @@ public class Saml2HandlerTests
 
             message.RelayState.Should().Be($"{idpEntityIdHash}.{authnRequest!.Id}");
 
-            var deserializedAuthnRequest = new SamlXmlReader()
-                .ReadAuthnRequest(message.Xml.GetXmlTraverser());
+            var writer = new SamlXmlWriter();
+            var expectedXml = writer.Write(authnRequest);
 
-            deserializedAuthnRequest.Should().BeEquivalentTo(authnRequest);
+            message.Xml.Should().BeEquivalentTo(expectedXml);
         }
 
         void validateCookieName(string cookieName)

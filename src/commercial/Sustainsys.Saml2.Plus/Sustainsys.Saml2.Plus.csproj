@@ -2,6 +2,7 @@
 
 	<PropertyGroup>
 		<GenerateDocumentationFile>True</GenerateDocumentationFile>
+		<RootNamespace>Sustainsys.Saml2</RootNamespace>
 	</PropertyGroup>
 
 	<ItemGroup>

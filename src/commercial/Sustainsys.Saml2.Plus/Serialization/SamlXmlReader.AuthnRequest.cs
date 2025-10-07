@@ -1,12 +1,12 @@
 ﻿// Copyright (c) Sustainsys AB. All rights reserved.
-// Licensed under the MIT license. See LICENSE in the project root for license information.
+// Any usage requires a valid license agreement with Sustainsys AB
 
 using Sustainsys.Saml2.Samlp;
 using Sustainsys.Saml2.Xml;
 using static Sustainsys.Saml2.Constants;
 
 namespace Sustainsys.Saml2.Serialization;
-public partial class SamlXmlReader
+public partial class SamlXmlReaderPlus
 {
     // TODO: Convert other reads to follow this pattern with a callback for errors
     /// <inheritdoc/>

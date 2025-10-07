@@ -1,21 +1,22 @@
 ﻿// Copyright (c) Sustainsys AB. All rights reserved.
-// Licensed under the MIT license. See LICENSE in the project root for license information.
+// Any usage requires a valid license agreement with Sustainsys AB
 
+using FluentAssertions;
 using Sustainsys.Saml2.Samlp;
 using Sustainsys.Saml2.Serialization;
 using Sustainsys.Saml2.Tests.Helpers;
 using Sustainsys.Saml2.Xml;
 using System.Xml;
 
-namespace Sustainsys.Saml2.Tests.Serialization;
-partial class SamlXmlReaderTests
+namespace Sustainsys.Saml2.Plus.Tests.Serialization;
+partial class SamlXmlReaderPlusTests
 {
     [Fact]
     public void ReadAuthnRequest_Mandatory()
     {
         var source = GetXmlTraverser();
 
-        var subject = new SamlXmlReader();
+        var subject = new SamlXmlReaderPlus();
 
         var actual = subject.ReadAuthnRequest(source);
 
@@ -40,7 +41,7 @@ partial class SamlXmlReaderTests
         ((XmlElement)source.CurrentNode!).Sign(
             TestData.Certificate, source.CurrentNode![Constants.Elements.Issuer, Constants.Namespaces.SamlUri]!);
 
-        var subject = new SamlXmlReader();
+        var subject = new SamlXmlReaderPlus();
 
         var actual = subject.ReadAuthnRequest(source);
 
@@ -115,9 +116,9 @@ partial class SamlXmlReaderTests
     {
         var source = GetXmlTraverser(nameof(ReadAuthnRequest_Error));
 
-        var subject = new SamlXmlReader();
+        var subject = new SamlXmlReaderPlus();
 
-        bool errorInspectorCalled = false;
+        var errorInspectorCalled = false;
 
         void errorInspector(ReadErrorInspectorContext<AuthnRequest> context)
         {
@@ -149,7 +150,7 @@ partial class SamlXmlReaderTests
     {
         var source = GetXmlTraverser();
 
-        var subject = new SamlXmlReader();
+        var subject = new SamlXmlReaderPlus();
 
         subject.Invoking(s => s.ReadAuthnRequest(source))
             .Should().Throw<SamlXmlException>()
