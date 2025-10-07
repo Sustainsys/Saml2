@@ -6,7 +6,7 @@ using System.Xml;
 namespace Sustainsys.Saml2.Serialization;
 
 /// <summary>
-/// Serializer for Saml assertion classes
+/// Xml writer for Saml classes
 /// </summary>
 public partial class SamlXmlWriter : ISamlXmlWriter
 {

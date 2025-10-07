@@ -62,5 +62,4 @@ partial class SamlXmlReader
     {
         statusCode.Value = source.GetRequiredAbsoluteUriAttribute(Attributes.Value)!;
     }
-
 }

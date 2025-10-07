@@ -2,6 +2,7 @@
 // Licensed under the MIT license. See LICENSE in the project root for license information.
 
 using Sustainsys.Saml2.Samlp;
+using Sustainsys.Saml2.Xml;
 using System.Xml;
 using static Sustainsys.Saml2.Constants;
 
@@ -18,7 +19,7 @@ partial class SamlXmlWriter
     {
         var element = Append(parent, Namespaces.Samlp, localName);
         element.SetAttribute(Attributes.ID, request.Id);
-        element.SetAttribute(Attributes.IssueInstant, XmlConvert.ToString(request.IssueInstant, XmlDateTimeSerializationMode.RoundtripKind));
+        element.SetAttribute(Attributes.IssueInstant, request.IssueInstant);
         element.SetAttribute(Attributes.Version, request.Version);
 
         return element;

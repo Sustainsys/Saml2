@@ -2,6 +2,7 @@
 // Licensed under the MIT license. See LICENSE in the project root for license information.
 
 using Microsoft.AspNetCore.WebUtilities;
+using Sustainsys.Saml2.Common;
 using System.Security.Cryptography;
 using System.Xml;
 
@@ -51,5 +52,16 @@ public static class XmlHelpers
         {
             element.SetAttribute(name, value);
         }
+    }
+
+    /// <summary>
+    /// Sets a DateTimeUtc attribute in the correct format.
+    /// </summary>
+    /// <param name="element">Element to set attribute on.</param>
+    /// <param name="name">Name of attribute</param>
+    /// <param name="value">DateTimeUtc value.</param>
+    public static void SetAttribute(this XmlElement element, string name, DateTimeUtc value)
+    {
+        element.SetAttribute(name, XmlConvert.ToString(value, XmlDateTimeSerializationMode.RoundtripKind));
     }
 }
