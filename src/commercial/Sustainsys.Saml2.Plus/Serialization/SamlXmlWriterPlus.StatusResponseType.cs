@@ -21,8 +21,14 @@ partial class SamlXmlWriterPlus
         element.SetAttribute(Attributes.ID, statusResponseType.Id);
         element.SetAttribute(Attributes.Version, statusResponseType.Version);
         element.SetAttribute(Attributes.IssueInstant, statusResponseType.IssueInstant);
+        element.SetAttribute(Attributes.Destination, statusResponseType.Destination);
+        element.SetAttribute(Attributes.InResponseTo, statusResponseType.InResponseTo);
 
+
+        Append(element, statusResponseType.Issuer);
         Append(element, statusResponseType.Status);
+
+
 
         return element;
     }

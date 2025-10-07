@@ -40,6 +40,10 @@ public class StatusResponseType
     /// Destination of the message
     /// </summary>
     public string? Destination { get; set; }
+    /// <summary>
+    /// Assertion of the response
+    /// </summary>
+    public Assertion? Assertion { get; set; }
 
     /// <summary>
     /// Issuer of the message

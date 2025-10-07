@@ -25,6 +25,7 @@ partial class SamlXmlWriterPlus
     /// <param name="response">Response</param>
     protected virtual void Append(XmlNode node, Response response)
     {
-        Append(node, response, Elements.Response);
+        var responseElement = Append(node, response, Elements.Response);
+
     }
 }
