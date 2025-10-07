@@ -40,9 +40,9 @@ public static class TestData
     };
 
     public static SigningKey[] SingleSigningKey { get; } =
-    {
+    [
         SigningKey
-    };
+    ];
 
     public static SigningKey SigningKey2 { get; } = new()
     {
@@ -59,8 +59,8 @@ public static class TestData
 #endif
     }
 
-    public static SigningKey[] SingleSigningKey2 { get; } = new[]
-    {
+    public static SigningKey[] SingleSigningKey2 { get; } =
+    [
         SigningKey2
-    };
+    ];
 }

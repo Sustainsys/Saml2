@@ -6,7 +6,8 @@ namespace Sustainsys.Saml2.Common;
 /// <summary>
 /// DateTime that only allows DateTimeKind UTC.
 /// </summary>
-public struct DateTimeUtc
+[Serializable]
+public readonly struct DateTimeUtc
 {
     /// <summary>
     /// Ticks of the DateTime

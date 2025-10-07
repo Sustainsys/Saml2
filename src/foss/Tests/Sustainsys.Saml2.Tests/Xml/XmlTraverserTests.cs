@@ -248,11 +248,11 @@ public class XmlTraverserTests
 
         if (expectedError == null)
         {
-            subject.Errors.Count().Should().Be(0);
+            subject.Errors.Count.Should().Be(0);
         }
         else
         {
-            subject.Errors.Count().Should().Be(1);
+            subject.Errors.Count.Should().Be(1);
             subject.Errors[0].Reason.Should().Be(expectedError);
         }
     }

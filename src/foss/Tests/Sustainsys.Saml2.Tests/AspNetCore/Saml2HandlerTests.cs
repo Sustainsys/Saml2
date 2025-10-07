@@ -107,11 +107,11 @@ public class Saml2HandlerTests
         return options;
     }
 
-    private XmlDocument GetSignedXmlDoc(string xPath, [CallerMemberName] string? name = null)
+    private static XmlDocument GetSignedXmlDoc(string xPath, [CallerMemberName] string? name = null)
     {
         var xmlDoc = TestData.GetXmlDocument<Saml2HandlerTests>(name);
         var signedElement = (XmlElement?)xmlDoc.SelectSingleNode(xPath, xmlDoc.GetNsMgr())
-            ?? throw new ArgumentException();
+            ?? throw new ArgumentException(xPath);
         var issuerElement = signedElement!["Issuer", Constants.Namespaces.SamlUri];
         signedElement.Sign(TestData.Certificate, issuerElement!);
 
@@ -235,7 +235,7 @@ public class Saml2HandlerTests
         var options = CreateOptions();
         var (subject, httpContext) = await CreateSubject(options);
 
-        var xmlDoc = GetSignedXmlDoc(xPathToSign);
+        var xmlDoc = Saml2HandlerTests.GetSignedXmlDoc(xPathToSign);
 
         var encodedResponse = Convert.ToBase64String(Encoding.UTF8.GetBytes(xmlDoc.OuterXml));
 

@@ -130,8 +130,8 @@ public class Saml2Handler(
         }
 
         var dotIndex = samlMessage.RelayState.IndexOf('.');
-        var idpEntityIdHash = samlMessage.RelayState.Substring(0, dotIndex);
-        var inResponseTo = samlMessage.RelayState.Substring(dotIndex + 1);
+        var idpEntityIdHash = samlMessage.RelayState[..dotIndex];
+        var inResponseTo = samlMessage.RelayState[(dotIndex + 1)..];
 
         var cookieName = CookiePrefix + idpEntityIdHash;
 
@@ -144,12 +144,8 @@ public class Saml2Handler(
 
         try
         {
-            var authenticationProperties = Options.StateCookieDataFormat.Unprotect(cookieValue);
-
-            if (authenticationProperties == null)
-            {
-                throw new InvalidOperationException("Failed to unprotect state cookie");
-            }
+            var authenticationProperties = Options.StateCookieDataFormat.Unprotect(cookieValue)
+                ?? throw new InvalidOperationException("Failed to unprotect state cookie");
 
             var idpEntityId = authenticationProperties.Items[IdpKey];
 

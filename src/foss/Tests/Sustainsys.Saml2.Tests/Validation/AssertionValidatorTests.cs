@@ -5,7 +5,7 @@ using Microsoft.Extensions.Time.Testing;
 using Sustainsys.Saml2.Saml;
 using Sustainsys.Saml2.Validation;
 
-namespace Sustainsys.Saml2.Tests.Validators;
+namespace Sustainsys.Saml2.Tests.Validation;
 
 public class AssertionValidatorTests
 {
@@ -72,7 +72,7 @@ public class AssertionValidatorTests
         };
 
     public static TheoryData<Action<Assertion>> Validate_MissingIsValid_Data =>
-        new TheoryData<Action<Assertion>>
+        new()
         {
             // The happy path that should just validate the default response
             // from the factory with the default parameters from the factory.
@@ -103,7 +103,7 @@ public class AssertionValidatorTests
     }
 
     public static TheoryData<Action<Assertion>, string> Validate_MissingOrIncorrect_Data =>
-        new TheoryData<Action<Assertion>, string>
+        new()
         {
             {a => {a.Subject = null!;}, "*subject*"},
             {a => {a.Subject!.SubjectConfirmation = null!;}, "*subjectconfirmation*"},

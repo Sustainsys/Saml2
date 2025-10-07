@@ -57,7 +57,7 @@ public static class ValidationExtensions
 /// mark that they require the passed argument to be validated before being used.
 /// </remarks>
 /// <typeparam name="TData">The type of the data</typeparam>
-public struct Valid<TData>
+public readonly struct Valid<TData>
 {
     /// <summary>
     /// Constructor. Caller must ensure that the data is validated as
@@ -69,7 +69,7 @@ public struct Valid<TData>
     /// <summary>
     /// The validated value
     /// </summary>
-    public TData Value { get; private set; }
+    public readonly TData Value { get; }
 
     /// <summary>
     /// Implicit operator returning the validated value.
@@ -84,7 +84,7 @@ public struct Valid<TData>
     /// <typeparam name="TProperty">Type of the property</typeparam>
     /// <param name="selector">Property selector function</param>
     /// <returns>Validated property</returns>
-    public Valid<TProperty> GetValid<TProperty>(Func<TData, TProperty> selector) =>
+    public readonly Valid<TProperty> GetValid<TProperty>(Func<TData, TProperty> selector) =>
         new(selector(Value));
 
     /// <summary>

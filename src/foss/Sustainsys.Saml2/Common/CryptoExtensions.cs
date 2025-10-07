@@ -27,15 +27,13 @@ public static class CryptoExtensions
         {
             return "";
         }
-
-        using var sha256 = SHA256.Create();
-        var hash = sha256.ComputeHash(Encoding.UTF8.GetBytes(input));
+        var hash = SHA256.HashData(Encoding.UTF8.GetBytes(input));
 
         var result = Base64UrlTextEncoder.Encode(hash);
 
         if (truncateLength.HasValue)
         {
-            return result.Substring(0, truncateLength.Value);
+            return result[..truncateLength.Value];
         }
 
         return result;

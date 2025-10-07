@@ -3,7 +3,10 @@
 
 using Sustainsys.Saml2.DuendeIdentityServer.Endpoints;
 
+// Builder extensions are by convention placed in the Microsoft.Extensions.DependencyInjection namespace
+#pragma warning disable IDE0130 // Namespace does not match folder structure
 namespace Microsoft.Extensions.DependencyInjection;
+#pragma warning restore IDE0130 // Namespace does not match folder structure
 
 /// <summary>
 /// Extension methods for Saml2 for IdentityServerBuilder.

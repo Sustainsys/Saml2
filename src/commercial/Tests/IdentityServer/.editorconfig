@@ -1,6 +1,19 @@
 # Remove the line below if you want to inherit .editorconfig settings from higher directories
-# root = true
+# root = false
 
 [*.cs]
 file_header_template = unset
-dotnet_diagnostic.IDE0073.severity = suggestion
+
+# The IdentityServer template code violates a bunch of best practicies, we don't
+# want those to show up in our build.
+dotnet_diagnostic.IDE0017.severity = none
+dotnet_diagnostic.IDE0028.severity = none
+dotnet_diagnostic.IDE0044.severity = none
+dotnet_diagnostic.IDE0073.severity = none
+dotnet_diagnostic.IDE0079.severity = none
+dotnet_diagnostic.IDE0090.severity = none
+dotnet_diagnostic.IDE0130.severity = none
+dotnet_diagnostic.IDE0290.severity = none
+dotnet_diagnostic.IDE0300.severity = none
+dotnet_diagnostic.IDE0301.severity = none
+dotnet_diagnostic.IDE0305.severity = none

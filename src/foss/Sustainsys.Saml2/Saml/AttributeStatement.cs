@@ -14,5 +14,5 @@ public class AttributeStatement : List<SamlAttribute>
     /// <param name="attributeName">Name of the attribute</param>
     /// <param name="attributeValues">Values of the attribute</param>
     public void Add(string attributeName, params string?[] attributeValues)
-        => Add(new SamlAttribute() { Name = attributeName, Values = attributeValues.ToList() });
+        => Add(new SamlAttribute() { Name = attributeName, Values = [.. attributeValues] });
 }

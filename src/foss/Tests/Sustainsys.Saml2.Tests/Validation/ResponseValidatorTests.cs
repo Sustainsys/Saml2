@@ -5,7 +5,7 @@ using Microsoft.Extensions.Time.Testing;
 using Sustainsys.Saml2.Samlp;
 using Sustainsys.Saml2.Validation;
 
-namespace Sustainsys.Saml2.Tests.Validators;
+namespace Sustainsys.Saml2.Tests.Validation;
 
 public class ResponseValidatorTests
 {
@@ -107,7 +107,7 @@ public class ResponseValidatorTests
     }
 
     public static TheoryData<Action<Response>> Validate_IsSpecifiedOrIsMissing_Data =>
-        new TheoryData<Action<Response>>
+        new()
         {   
             // The happy path that should just validate the default response
             // from the factory with the default parameters from the factory.
@@ -134,7 +134,7 @@ public class ResponseValidatorTests
     }
 
     public static TheoryData<Action<Response>, string> Validate_IsMissingOrIncorrect_Data =>
-        new TheoryData<Action<Response>, string>
+        new()
         {
             { r => { r.Issuer = "https://unexpected"; }, "*issuer*https://unexpected*https://idp.example.com/Saml2*" },
             { r => { r.Issuer!.Format = "urn:Invalid"; }, "*format*urn:invalid*urn:oasis:names:tc:SAML:2.0:nameid-format:entity*" },

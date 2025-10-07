@@ -37,7 +37,7 @@ public class AssertionValidator(TimeProvider timeProvider) : IValidator<Assertio
     /// <param name="assertion">Saml ssseertion</param>
     /// <param name="parameters">Validation parameters</param>
     /// <exception cref="ValidationException{Assertion}">On validation failure</exception>
-    protected void ValidateTrustLevel(Assertion assertion, AssertionValidationParameters parameters)
+    protected virtual void ValidateTrustLevel(Assertion assertion, AssertionValidationParameters parameters)
     {
         if (assertion.TrustLevel < parameters.RequiredTrustLevel)
         {
@@ -233,7 +233,7 @@ public class AssertionValidator(TimeProvider timeProvider) : IValidator<Assertio
             errors.Add($"The InResponseTo {subjectConfirmationData.InResponseTo} does not match the expected {parameters.ValidInResponseTo}");
         }
 
-        if (errors.Any())
+        if (errors.Count != 0)
         {
             throw new ValidationException<Assertion>("SubjectConfirmationData validation is incorrect:\n" + string.Join("\n", errors));
         }
