@@ -2,6 +2,7 @@
 // Any usage requires a valid license agreement with Sustainsys AB
 
 using FluentAssertions;
+using Sustainsys.Saml2.Saml;
 using Sustainsys.Saml2.Samlp;
 using Sustainsys.Saml2.Serialization;
 
@@ -30,5 +31,36 @@ partial class SamlXmlWriterPlusTests
         var expected = GetXmlDocument();
 
         actual.Should().BeEquivalentTo(expected);
+    }
+
+    [Fact]
+    public void WriteSamlResponse_CompleteSuccess()
+    {
+        Response response = new()
+        {
+            Id = "x123",
+            InResponseTo = "x789",
+            IssueInstant = new(2025, 10, 07, 13, 46, 32),
+            Assertions =
+            {
+                new()
+                {
+                    Attributes =
+                    {
+                        new SamlAttribute()
+                        {
+                            Name = "NullAttribute",
+                            Values = { null }
+                        },
+                        new SamlAttribute()
+                        {
+                            Name = "EmptyAttribute",
+                            Values = { "" }
+                        }
+                    }
+                }
+            }
+        };
+
     }
 };
