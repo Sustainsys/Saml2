@@ -14,10 +14,10 @@ public static class TestData
     {
         var document = GetXmlDocument<TDirectory>(testName);
 
-        return new XmlTraverser(document.DocumentElement ?? throw new InvalidOperationException("XmlDoc contained no DocumentElement"));
+        return new XmlTraverser(document?.DocumentElement ?? throw new InvalidOperationException("Missing file or XmlDoc contained no DocumentElement"));
     }
 
-    public static XmlDocument GetXmlDocument<TDirectory>([CallerMemberName] string? testName = null)
+    public static XmlDocument? GetXmlDocument<TDirectory>([CallerMemberName] string? testName = null)
     {
         ArgumentNullException.ThrowIfNull(testName);
 
@@ -26,6 +26,11 @@ public static class TestData
         var fileName = "../../.."
             + typeof(TDirectory).FullName![assemblyName.Length..].Replace('.', '/')
             + "/" + testName + ".xml";
+
+        if (!File.Exists(fileName))
+        {
+            return null;
+        }
 
         var document = new XmlDocument();
         document.Load(fileName);

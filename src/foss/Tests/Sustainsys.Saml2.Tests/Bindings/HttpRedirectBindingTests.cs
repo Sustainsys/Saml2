@@ -2,6 +2,7 @@
 // Licensed under the MIT license. See LICENSE in the project root for license information.
 
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.WebUtilities;
 using NSubstitute;
 using Sustainsys.Saml2.Bindings;
 using System.IO.Compression;
@@ -76,6 +77,23 @@ public class HttpRedirectBindingTests
         }
 
         return Uri.EscapeDataString(Convert.ToBase64String(compressed.ToArray()));
+    }
+
+    [Theory]
+    [InlineData("POST", "?SamlRequest=xyz", false)]
+    [InlineData("GET", "?SamlRequest=xyz", true)]
+    [InlineData("GET", "?SamlResponse=xyz", true)]
+    [InlineData("GET", "?Other=xyz", false)]
+    public void CanUnbind(string method, string queryString, bool expected)
+    {
+        var subject = new HttpRedirectBinding();
+
+        var httpRequest = Substitute.For<HttpRequest>();
+
+        httpRequest.Method = method;
+        httpRequest.Query = new QueryCollection(QueryHelpers.ParseQuery(queryString));
+
+        subject.CanUnBind(httpRequest).Should().Be(expected);
     }
 
     [Theory]

@@ -20,9 +20,11 @@ builder.Services.AddAuthentication(opt =>
     {
         opt.IdentityProvider = new()
         {
-            EntityId = "https://stubidp.sustainsys.com/Metadata",
+            EntityId = "https://localhost:5000/Saml2",
+            SsoServiceUrl = "https://localhost:5000/Saml2/Sso",
+            //EntityId = "https://stubidp.sustainsys.com/Metadata",
+            //SsoServiceUrl = "https://stubidp.sustainsys.com",
             SsoServiceBinding = Constants.BindingUris.HttpRedirect,
-            SsoServiceUrl = "https://stubidp.sustainsys.com",
             SigningKeys = [new()
             {
 #if NET9_0_OR_GREATER

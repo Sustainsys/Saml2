@@ -9,4 +9,8 @@
 		<Copyright>Sustainsys AB</Copyright>
 		<Authors>Sustainsys</Authors>
 	</PropertyGroup>
+
+	<ItemGroup>
+		<InternalsVisibleTo Include="$(AssemblyName).Tests" />
+	</ItemGroup>
 </Project>

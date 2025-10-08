@@ -29,7 +29,7 @@ public class HttpPostBindingTests
         });
 
         var subject = new HttpPostBinding();
-        subject.CanUnbind(request).Should().BeFalse();
+        subject.CanUnBind(request).Should().BeFalse();
     }
 
     [Theory]
@@ -46,7 +46,7 @@ public class HttpPostBindingTests
         });
 
         var subject = new HttpPostBinding();
-        subject.CanUnbind(request).Should().Be(expected);
+        subject.CanUnBind(request).Should().Be(expected);
     }
 
     [Theory]
@@ -69,7 +69,7 @@ public class HttpPostBindingTests
         Func<string, Task<Saml2Entity>> getEntity = str =>
             Task.FromResult<Saml2Entity>(new IdentityProvider());
 
-        var actual = await subject.UnbindAsync(request, getEntity);
+        var actual = await subject.UnBindAsync(request, getEntity);
 
         var xd = new XmlDocument();
         xd.LoadXml("<xml><a/></xml>");
@@ -103,7 +103,7 @@ public class HttpPostBindingTests
         Func<string, Task<Saml2Entity>> getEntity = str =>
             Task.FromResult<Saml2Entity>(new IdentityProvider());
 
-        await subject.Invoking(s => s.UnbindAsync(request, getEntity))
+        await subject.Invoking(s => s.UnBindAsync(request, getEntity))
             .Should().ThrowAsync<ArgumentException>().WithMessage("*both*");
     }
 }

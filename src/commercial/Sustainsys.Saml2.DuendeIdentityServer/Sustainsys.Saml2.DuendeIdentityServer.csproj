@@ -3,6 +3,9 @@
 		<GenerateDocumentationFile>True</GenerateDocumentationFile>
 	</PropertyGroup>
 	<ItemGroup>
-    <PackageReference Include="Duende.IdentityServer" Version="7.3.2" />
-  </ItemGroup>
+		<PackageReference Include="Duende.IdentityServer" Version="7.3.2" />
+	</ItemGroup>
+	<ItemGroup>
+	  <ProjectReference Include="..\Sustainsys.Saml2.Plus\Sustainsys.Saml2.Plus.csproj" />
+	</ItemGroup>
 </Project>

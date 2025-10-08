@@ -18,17 +18,17 @@ public class HttpPostBinding : FrontChannelBinding
     public HttpPostBinding() : base(Constants.BindingUris.HttpPOST) { }
 
     /// <inheritdoc/>
-    public override bool CanUnbind(HttpRequest httpRequest)
+    public override bool CanUnBind(HttpRequest httpRequest)
         => httpRequest.Method == "POST"
         && httpRequest.Form.Keys.Any(
             k => k == Constants.SamlRequest || k == Constants.SamlResponse);
 
     /// <inheritdoc/>
-    public override Task<Saml2Message> UnbindAsync(
+    public override Task<Saml2Message> UnBindAsync(
         HttpRequest httpRequest,
         Func<string, Task<Saml2Entity>> getSaml2Entity)
     {
-        if (!CanUnbind(httpRequest))
+        if (!CanUnBind(httpRequest))
         {
             throw new InvalidOperationException("Cannot unbind from this request. Always call CanUnbind before UnbindAsync to validate.");
         }
