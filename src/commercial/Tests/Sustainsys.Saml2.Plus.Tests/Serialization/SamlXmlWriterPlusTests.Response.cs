@@ -70,7 +70,7 @@ partial class SamlXmlWriterPlusTests
                     {
                         NameId= new()
                         {
-                            Format="urn:oasis: names: tc: SAML: 1.1:nameid - format:unspecified",
+                            Format="urn:oasis:names:tc:SAML:1.1:nameid-format:unspecified",
                             Value="x123456"
                         },
                         SubjectConfirmation = new()
@@ -78,7 +78,7 @@ partial class SamlXmlWriterPlusTests
                           Method = Constants.SubjectConfirmationMethods.Bearer,
                           SubjectConfirmationData = new()
                           {
-                              NotOnOrAfter= new(2024,02, 12,13,02,53),
+                              NotOnOrAfter= new(2024,02,12,13,02,53),
                               Recipient= "https://sp.example.com/Saml2/Acs"
                           },
                         },
@@ -108,7 +108,7 @@ partial class SamlXmlWriterPlusTests
                          new SamlAttribute()
                         {
                             Name= "organisation",
-                            Values= new() {"Sustainsys AB" },
+                            Values= new() {"Sustainsys AB"},
                         },
                         new SamlAttribute()
                         {

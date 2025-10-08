@@ -20,7 +20,7 @@ partial class SamlXmlWriter
     {
         if (nameId != null)
         {
-            var element = Append(parent, namespacePrefix, localName);
+            var element = AppendElement(parent, namespacePrefix, localName);
             element.InnerText = nameId.Value;
 
             return element;

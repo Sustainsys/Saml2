@@ -17,7 +17,7 @@ partial class SamlXmlWriter
     /// <param name="localName">Local name of the new element.</param>
     protected virtual XmlElement Append(XmlNode parent, RequestAbstractType request, string localName)
     {
-        var element = Append(parent, Namespaces.Samlp, localName);
+        var element = AppendElement(parent, Namespaces.Samlp, localName);
         element.SetAttribute(Attributes.ID, request.Id);
         element.SetAttribute(Attributes.IssueInstant, request.IssueInstant);
         element.SetAttribute(Attributes.Version, request.Version);
