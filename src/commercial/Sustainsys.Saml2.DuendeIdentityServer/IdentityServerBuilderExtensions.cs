@@ -30,6 +30,8 @@ public static class IdentityServerBuilderExtensions
         identityServerBuilder.Services.TryAddSingleton<IFrontChannelBinding, HttpPostBinding>();
         identityServerBuilder.Services.TryAddTransient<ISamlXmlReaderPlus, SamlXmlReaderPlus>();
 
+        identityServerBuilder.AddHttpWriter<Saml2FrontChannelResult, Saml2FrontChannelHttpWriter>();
+
         return identityServerBuilder;
     }
 }

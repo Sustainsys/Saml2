@@ -1,4 +1,5 @@
 using Duende.IdentityServer.Models;
+using Sustainsys.Saml2.DuendeIdentityServer;
 
 namespace IdentityServer;
 
@@ -48,5 +49,11 @@ public static class Config
                 AllowOfflineAccess = true,
                 AllowedScopes = { "openid", "profile", "scope2" }
             },
+
+            new Client
+            {
+                ClientId = "https://localhost:5001/Saml2",
+                ProtocolType = Saml2Constants.Saml2Protocol,
+            }
         };
 }

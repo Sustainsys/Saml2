@@ -1,7 +1,13 @@
 ﻿// Copyright (c) Sustainsys AB. All rights reserved.
 // Any usage requires a valid license agreement with Sustainsys AB
 
+using Duende.IdentityServer;
+using Duende.IdentityServer.Configuration;
 using Duende.IdentityServer.Endpoints.Results;
+using Duende.IdentityServer.Hosting;
+using Duende.IdentityServer.Models;
+using Duende.IdentityServer.Stores;
+using Microsoft.AspNetCore.Http;
 using Sustainsys.Saml2.Bindings;
 
 namespace Sustainsys.Saml2.DuendeIdentityServer.Endpoints;
@@ -31,4 +37,57 @@ public class Saml2FrontChannelResult : EndpointResult<Saml2FrontChannelResult>
     /// Url to redirect to
     /// </summary>
     public string? RedirectUrl { get; set; }
+}
+
+/// <summary>
+/// Write an Saml2 front channel result to the HttpContext
+/// </summary>
+public class Saml2FrontChannelHttpWriter(
+    IClock clock,
+    IMessageStore<ErrorMessage> errorMessageStore,
+    IdentityServerOptions identityServerOptions)
+    : IHttpResponseWriter<Saml2FrontChannelResult>
+{
+    /// <inheritdoc/>
+    public async Task WriteHttpResponse(Saml2FrontChannelResult result, HttpContext context)
+    {
+        if (!string.IsNullOrEmpty(result.Error))
+        {
+            var errorMessage = new ErrorMessage()
+            {
+                Error = "Saml2 error",
+                ErrorDescription = result.Error,
+                ClientId = result.SpEntityID,
+                RequestId = context.TraceIdentifier,
+                ActivityId = System.Diagnostics.Activity.Current?.Id
+            };
+
+            var message = new Message<ErrorMessage>(errorMessage, clock.UtcNow.UtcDateTime);
+            var id = await errorMessageStore.WriteAsync(message);
+
+            var errorUrl = identityServerOptions.UserInteraction.ErrorUrl;
+
+            if (errorUrl.Contains('?'))
+            {
+                if (!errorUrl.EndsWith('&'))
+                {
+                    errorUrl += "&";
+                }
+            }
+            else
+            {
+                errorUrl += "?";
+            }
+
+            var url = errorUrl += identityServerOptions.UserInteraction.ErrorIdParameter + "=" + id;
+            context.Response.Redirect(url);
+            return;
+        }
+
+        if (!string.IsNullOrEmpty(result.RedirectUrl))
+        {
+            context.Response.Redirect(result.RedirectUrl);
+            return;
+        }
+    }
 }

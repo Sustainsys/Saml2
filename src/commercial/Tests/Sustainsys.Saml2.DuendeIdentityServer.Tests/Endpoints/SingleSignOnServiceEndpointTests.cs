@@ -59,7 +59,8 @@ public class SingleSignOnServiceEndpointTests
                 new Client()
                 {
                     ClientId = "https://sp.example.com/Saml2",
-                    RedirectUris = { "https://sp.example.com/Saml2/Acs"}
+                    RedirectUris = { "https://sp.example.com/Saml2/Acs"},
+                    ProtocolType = Saml2Constants.Saml2Protocol
                 }
             ]);
 
@@ -97,7 +98,8 @@ public class SingleSignOnServiceEndpointTests
 
         var expectedXml = GetXmlDocument();
 
-        actual.Message?.Xml.Should().BeEquivalentTo(expectedXml);
+        actual.Message.Should().NotBeNull();
+        actual.Message!.Xml.Should().BeEquivalentTo(expectedXml);
     }
 
     [Fact]

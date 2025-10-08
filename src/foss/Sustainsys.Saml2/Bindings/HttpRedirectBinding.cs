@@ -39,7 +39,7 @@ public class HttpRedirectBinding : FrontChannelBinding, IHttpRedirectBinding
     /// <inheritdoc/>
     public override bool CanUnBind(HttpRequest httpRequest)
         => httpRequest.Method == "GET"
-        && messageNames.Any(n => httpRequest.Query.ContainsKey(n));
+        && messageNames.Any(httpRequest.Query.ContainsKey);
 
     /// <inheritdoc/>
     public virtual Task<Saml2Message> UnBindAsync(
