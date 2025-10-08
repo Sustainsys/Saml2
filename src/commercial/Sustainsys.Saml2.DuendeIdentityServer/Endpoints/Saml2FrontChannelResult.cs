@@ -26,4 +26,9 @@ public class Saml2FrontChannelResult : EndpointResult<Saml2FrontChannelResult>
     /// Entity Id of Sp as received in incoming message, may not be validated.
     /// </summary>
     public string? SpEntityID { get; set; }
+
+    /// <summary>
+    /// Url to redirect to
+    /// </summary>
+    public string? RedirectUrl { get; set; }
 }

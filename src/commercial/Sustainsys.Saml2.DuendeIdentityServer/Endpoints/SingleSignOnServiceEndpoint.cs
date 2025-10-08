@@ -1,7 +1,9 @@
 ﻿// Copyright (c) Sustainsys AB. All rights reserved.
 // Any usage requires a valid license agreement with Sustainsys AB
 
+using Duende.IdentityServer.Configuration;
 using Duende.IdentityServer.Hosting;
+using Duende.IdentityServer.Services;
 using Duende.IdentityServer.Stores;
 using Microsoft.AspNetCore.Http;
 using Sustainsys.Saml2.Bindings;
@@ -13,7 +15,9 @@ namespace Sustainsys.Saml2.DuendeIdentityServer.Endpoints;
 internal class SingleSignOnServiceEndpoint(
     IEnumerable<IFrontChannelBinding> frontChannelBindings,
     ISamlXmlReaderPlus samlXmlReader,
-    IClientStore clientStore)
+    IClientStore clientStore,
+    IUserSession userSession,
+    IdentityServerOptions identityServerOptions)
     : IEndpointHandler
 {
     public async Task<IEndpointResult?> ProcessAsync(HttpContext context)
@@ -38,6 +42,19 @@ internal class SingleSignOnServiceEndpoint(
         if (client == null)
         {
             result.Error = "Invalid SP EntityID.";
+            return result;
+        }
+
+        var user = await userSession.GetUserAsync();
+
+        if (user == null)
+        {
+            var encodedUrl = Uri.EscapeDataString(
+                context.Request.PathBase + context.Request.Path + context.Request.QueryString);
+
+            result.RedirectUrl = identityServerOptions.UserInteraction.LoginUrl
+                + "?ReturnUrl=" + encodedUrl;
+            return result;
         }
 
         return result;
