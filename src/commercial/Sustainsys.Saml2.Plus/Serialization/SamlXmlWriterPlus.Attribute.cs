@@ -11,8 +11,8 @@ partial class SamlXmlWriterPlus
     /// <summary>
     /// Append an AttributeStatement element
     /// </summary>
-    /// <param name="parent"></param>
-    /// <param name="attributeStatement"></param>
+    /// <param name="parent">Parent node</param>
+    /// <param name="attributeStatement">data</param>
     protected virtual XmlElement Append(XmlNode parent, AttributeStatement attributeStatement)
     {
         var statementElement = AppendElement(parent, Namespaces.Saml, "AttributeStatement");
@@ -23,9 +23,10 @@ partial class SamlXmlWriterPlus
             foreach (var value in attribute.Values)
             {
                 var valueElement = AppendElement(attributeElement, Namespaces.Saml, "AttributeValue");
+
                 if (value == null)
                 {
-                    valueElement.SetAttribute("nil", "http://www.w3.org/2001/XMLSchema-instance", "true");
+                    valueElement.SetAttribute("nil", Namespaces.XsiUri, "true");
                 }
                 else if (value != "")
                 {
@@ -33,7 +34,7 @@ partial class SamlXmlWriterPlus
                 }
             }
         }
+
         return statementElement;
     }
-
 }

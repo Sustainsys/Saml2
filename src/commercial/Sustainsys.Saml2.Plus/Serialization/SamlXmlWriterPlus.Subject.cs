@@ -12,8 +12,8 @@ partial class SamlXmlWriterPlus
     /// <summary>
     /// Append a Subject element
     /// </summary>
-    /// <param name="parent"></param>
-    /// <param name="subject"></param>
+    /// <param name="parent">Parent node</param>
+    /// <param name="subject">Subject</param>
     protected virtual void Append(XmlNode parent, Subject subject)
     {
         if (subject != null)
@@ -34,8 +34,8 @@ partial class SamlXmlWriterPlus
     /// <summary>
     /// Append a SubjectConfirmation element
     /// </summary>
-    /// <param name="parent"></param>
-    /// <param name="subjectConfirmation"></param>
+    /// <param name="parent">Parent node</param>
+    /// <param name="subjectConfirmation">Write subjectConfirmation</param>
     protected virtual void Append(XmlNode parent, SubjectConfirmation subjectConfirmation)
     {
         var subjectConfirmationElement = AppendElement(parent, Namespaces.Saml, Elements.SubjectConfirmation);
@@ -46,11 +46,12 @@ partial class SamlXmlWriterPlus
             Append(subjectConfirmationElement, subjectConfirmation.SubjectConfirmationData);
         }
     }
+
     /// <summary>
     /// Append a SubjectConfirmationData element
     /// </summary>
-    /// <param name="parent"></param>
-    /// <param name="subjectConfirmationData"></param>
+    /// <param name="parent">Parent node</param>
+    /// <param name="subjectConfirmationData">Write subjectConfirmationData</param>
     protected virtual void Append(XmlNode parent, SubjectConfirmationData subjectConfirmationData)
     {
         var subjectConfirmationDataElement = AppendElement(parent, Namespaces.Saml, Elements.SubjectConfirmationData);

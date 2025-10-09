@@ -11,8 +11,8 @@ partial class SamlXmlWriterPlus
     /// <summary>
     /// Append an AuthnStatement element
     /// </summary>
-    /// <param name="parent"></param>
-    /// <param name="authnStatement"></param>
+    /// <param name="parent">Parent node</param>
+    /// <param name="authnStatement">authnStatement</param>
     protected virtual void Append(XmlNode parent, AuthnStatement authnStatement)
     {
         var authnStatementElement = AppendElement(parent, Namespaces.Saml, Elements.AuthnStatement);

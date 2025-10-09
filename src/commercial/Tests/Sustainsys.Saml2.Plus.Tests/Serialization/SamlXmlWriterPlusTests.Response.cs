@@ -52,7 +52,7 @@ partial class SamlXmlWriterPlusTests
             {
                 StatusCode = new()
                 {
-                    Value = "urn:oasis:names:tc:SAML:2.0:status:Success",
+                    Value = Constants.StatusCodes.Success,
                 },
             },
             Assertions =

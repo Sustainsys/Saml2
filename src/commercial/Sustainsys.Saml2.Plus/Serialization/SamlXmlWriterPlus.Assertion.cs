@@ -12,9 +12,9 @@ partial class SamlXmlWriterPlus
     /// <summary>
     /// Append an Assertion element
     /// </summary>
-    /// <param name="parent"></param>
-    /// <param name="assertion"></param>
-    /// <returns></returns>
+    /// <param name="parent">Parent node</param>
+    /// <param name="assertion">Saml assertion</param>
+    /// <returns>XmlElement</returns>
     protected virtual XmlElement Append(XmlNode parent, Assertion assertion)
     {
         var element = AppendElement(parent, Namespaces.Saml, Elements.Assertion);
@@ -33,14 +33,12 @@ partial class SamlXmlWriterPlus
         {
             Append(element, assertion.Conditions);
         }
+
         if (assertion.AuthnStatement != null)
         {
             Append(element, assertion.AuthnStatement);
         }
-        if (assertion.Attributes != null)
-        {
-            Append(element, assertion.Attributes);
-        }
+        Append(element, assertion.Attributes);
 
         return element;
     }

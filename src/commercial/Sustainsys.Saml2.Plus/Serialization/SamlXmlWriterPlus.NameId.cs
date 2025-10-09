@@ -23,6 +23,7 @@ partial class SamlXmlWriterPlus
             element.InnerText = nameId.Value;
             element.SetAttributeIfValue(Attributes.Format, nameId.Format);
         }
+
         return element;
     }
 }
