@@ -40,7 +40,7 @@
 				<saml:AttributeValue>primary@example.com</saml:AttributeValue>
 				<saml:AttributeValue>secondary@example.com</saml:AttributeValue>
 			</saml:Attribute>
-			<saml:Attribute Name="NullAttribute">
+			<saml:Attribute Name="NullAttribute" >
 				<saml:AttributeValue xsi:nil="true" />
 			</saml:Attribute>
 			<saml:Attribute Name="EmptyAttribute">

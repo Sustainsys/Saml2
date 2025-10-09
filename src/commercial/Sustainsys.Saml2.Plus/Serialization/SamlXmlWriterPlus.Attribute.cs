@@ -23,7 +23,11 @@ partial class SamlXmlWriterPlus
             foreach (var value in attribute.Values)
             {
                 var valueElement = AppendElement(attributeElement, Namespaces.Saml, "AttributeValue");
-                if (value != null)
+                if (value == null)
+                {
+                    valueElement.SetAttribute("nil", "http://www.w3.org/2001/XMLSchema-instance", "true");
+                }
+                else if (value != "")
                 {
                     valueElement.InnerText = value;
                 }

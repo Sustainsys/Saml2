@@ -110,6 +110,14 @@ partial class SamlXmlWriterPlusTests
                             Name= "organisation",
                             Values= new() {"Sustainsys AB"},
                         },
+                           new SamlAttribute()
+                        {
+                            Name= "email",
+                            Values= new() {
+                                "primary@example.com",
+                                "secondary@example.com"
+                            },
+                        },
                         new SamlAttribute()
                         {
                             Name= "NullAttribute",
