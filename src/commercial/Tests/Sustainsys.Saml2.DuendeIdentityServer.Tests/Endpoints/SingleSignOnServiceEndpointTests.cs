@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Sustainsys AB. All rights reserved.
 // Any usage requires a valid license agreement with Sustainsys AB
 
+using Duende.IdentityServer;
 using Duende.IdentityServer.Configuration;
 using Duende.IdentityServer.Models;
 using Duende.IdentityServer.Services;
@@ -75,12 +76,18 @@ public class SingleSignOnServiceEndpointTests
             }
         };
 
+        DateTimeOffset utcNow = new(2025, 10, 08, 13, 46, 32, TimeSpan.Zero);
+        var clock = Substitute.For<IClock>();
+        clock.UtcNow.Returns(utcNow);
+
         var subject = new SingleSignOnServiceEndpoint(
             frontChannelBindings,
             new SamlXmlReaderPlus(),
             clientStore,
             userSession,
-            idSrvOptions);
+            idSrvOptions,
+            new SamlXmlWriterPlus(),
+            clock);
 
         return (httpContext, subject);
     }
@@ -89,7 +96,10 @@ public class SingleSignOnServiceEndpointTests
     [Fact]
     public async Task Process()
     {
-        (var httpContext, var subject) = CreateSubject();
+        ClaimsIdentity identity = new(
+            [new("sub", "123")], "pwd", "name", "role");
+
+        (var httpContext, var subject) = CreateSubject(new(identity));
 
         var iActual = await subject.ProcessAsync(httpContext);
 
@@ -97,6 +107,9 @@ public class SingleSignOnServiceEndpointTests
         var actual = (Saml2FrontChannelResult)iActual;
 
         var expectedXml = GetXmlDocument();
+
+        // ID is generated, set value in expected to value from actual to make comparison pass.
+        expectedXml!.DocumentElement!.Attributes["ID"]!.Value = actual.Message!.Xml.GetAttribute("ID");
 
         actual.Message.Should().NotBeNull();
         actual.Message!.Xml.Should().BeEquivalentTo(expectedXml);

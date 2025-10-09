@@ -9,6 +9,8 @@ using Duende.IdentityServer.Models;
 using Duende.IdentityServer.Stores;
 using Microsoft.AspNetCore.Http;
 using Sustainsys.Saml2.Bindings;
+using Sustainsys.Saml2.Xml;
+using System.Security.Cryptography.X509Certificates;
 
 namespace Sustainsys.Saml2.DuendeIdentityServer.Endpoints;
 
@@ -89,5 +91,21 @@ public class Saml2FrontChannelHttpWriter(
             context.Response.Redirect(result.RedirectUrl);
             return;
         }
+
+        if (result.Message != null)
+        {
+            var xmlElement = result.Message.Xml;
+
+            var path = "Sustainsys.Saml2.Tests.pfx";
+#if NET9_0_OR_GREATER
+            var cert = X509CertificateLoader.LoadPkcs12FromFile(path, "", X509KeyStorageFlags.EphemeralKeySet);
+#else
+            var cert = new X509Certificate2(path);
+#endif
+            var issuerElement = xmlElement["issuer", Constants.Namespaces.SamlUri]!;
+            xmlElement.Sign(cert, issuerElement);
+        }
+
+        throw new InvalidOperationException("Saml2FrontChannelResponse contains no properties to take action on");
     }
 }

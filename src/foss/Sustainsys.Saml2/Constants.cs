@@ -157,6 +157,7 @@ public static class Constants
     public static class NameIdFormats
     {
         public const string Entity = "urn:oasis:names:tc:SAML:2.0:nameid-format:entity";
+        public const string Unspecified = "urn:oasis:names:tc:SAML:1.1:nameid-format:unspecified";
     }
 
     public static class AuthnContextClasses
