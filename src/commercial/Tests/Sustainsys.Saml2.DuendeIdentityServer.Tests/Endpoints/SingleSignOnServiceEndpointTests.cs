@@ -98,7 +98,7 @@ public class SingleSignOnServiceEndpointTests
     public async Task Process()
     {
         ClaimsIdentity identity = new(
-            [new("sub", "123")], "pwd", "name", "role");
+            [new("sub", "x123456")], "pwd", "name", "role");
 
         (var httpContext, var subject) = CreateSubject(new(identity));
 
@@ -111,6 +111,8 @@ public class SingleSignOnServiceEndpointTests
 
         // ID is generated, set value in expected to value from actual to make comparison pass.
         expectedXml!.DocumentElement!.Attributes["ID"]!.Value = actual.Message!.Xml.GetAttribute("ID");
+        expectedXml!.DocumentElement![Constants.Elements.Assertion, Constants.Namespaces.SamlUri]!.Attributes["ID"]!.Value =
+            actual.Message!.Xml[Constants.Elements.Assertion, Constants.Namespaces.SamlUri]!.Attributes["ID"]!.Value;
 
         actual.Message.Should().NotBeNull();
         actual.Message!.Xml.Should().BeEquivalentTo(expectedXml);

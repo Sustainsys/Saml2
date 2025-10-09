@@ -71,7 +71,7 @@ internal class SingleSignOnServiceEndpoint(
             return result;
         }
 
-        var issuer = $"{context.Request.Scheme}://{context.Request.Host}/Saml2";
+        var issuer = $"{context.Request.Scheme.ToLowerInvariant()}://{context.Request.Host}/Saml2";
         var destination = client.RedirectUris.Single();
         Response response = new()
         {
@@ -105,13 +105,29 @@ internal class SingleSignOnServiceEndpoint(
                             SubjectConfirmationData = new()
                             {
                                 NotOnOrAfter = clock.UtcNow.UtcDateTime.AddMinutes(5),
-                                Recipient = destination
+                                Recipient = destination,
+                                InResponseTo = authnRequest.Id
                             }
                         }
                     },
                     Conditions = new()
                     {
-                        NotOnOrAfter = clock.UtcNow.UtcDateTime.AddMinutes(5)
+                        NotOnOrAfter = clock.UtcNow.UtcDateTime.AddMinutes(5),
+                        AudienceRestrictions =
+                        {
+                            new()
+                            {
+                                Audiences = { result.SpEntityID }
+                            }
+                        }
+                    },
+                    AuthnStatement = new()
+                    {
+                        AuthnInstant = clock.UtcNow.UtcDateTime,
+                        AuthnContext = new()
+                        {
+                            AuthnContextClassRef = Constants.AuthnContextClasses.Unspecified
+                        }
                     }
                 }
             }

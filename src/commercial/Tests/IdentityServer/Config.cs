@@ -54,6 +54,7 @@ public static class Config
             {
                 ClientId = "https://localhost:5001/Saml2",
                 ProtocolType = Saml2Constants.Saml2Protocol,
+                RedirectUris = { "https://localhost:5001/Saml2/Acs" }
             }
         };
 }

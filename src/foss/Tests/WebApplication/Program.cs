@@ -25,7 +25,8 @@ builder.Services.AddAuthentication(opt =>
             //EntityId = "https://stubidp.sustainsys.com/Metadata",
             //SsoServiceUrl = "https://stubidp.sustainsys.com",
             SsoServiceBinding = Constants.BindingUris.HttpRedirect,
-            SigningKeys = [new()
+            SigningKeys = [
+            new()
             {
 #if NET9_0_OR_GREATER
                 Certificate = X509CertificateLoader.LoadCertificate(certificateData),
@@ -33,7 +34,17 @@ builder.Services.AddAuthentication(opt =>
                 Certificate =  new X509Certificate2(certificateData),
 #endif
                 TrustLevel = TrustLevel.TLS
-            }]
+            },
+            new()
+            {
+#if NET9_0_OR_GREATER
+                Certificate = X509CertificateLoader.LoadPkcs12FromFile("Sustainsys.Saml2.Tests.pfx", "", X509KeyStorageFlags.EphemeralKeySet),
+#else
+                Certificate = new("Sustainsys.Saml2.Tests.pfx"),
+#endif
+                TrustLevel = TrustLevel.ConfiguredKey
+            }
+            ]
         };
         opt.EntityId = "https://localhost:5001/Saml2";
     });

@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Sustainsys AB. All rights reserved.
 // Any usage requires a valid license agreement with Sustainsys AB
 
+using Duende.IdentityServer.Hosting;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Sustainsys.Saml2.Bindings;
 using Sustainsys.Saml2.DuendeIdentityServer.Endpoints;
@@ -26,11 +27,16 @@ public static class IdentityServerBuilderExtensions
         identityServerBuilder.AddEndpoint<SingleSignOnServiceEndpoint>(
             "Saml2 SingleSignOnService", "/saml2/sso");
 
-        identityServerBuilder.Services.TryAddSingleton<IFrontChannelBinding, HttpRedirectBinding>();
-        identityServerBuilder.Services.TryAddSingleton<IFrontChannelBinding, HttpPostBinding>();
-        identityServerBuilder.Services.TryAddTransient<ISamlXmlReaderPlus, SamlXmlReaderPlus>();
+        // Use singletons for stateless light weight services
+        identityServerBuilder.Services.TryAddEnumerable(
+            new ServiceDescriptor(typeof(IFrontChannelBinding), typeof(HttpRedirectBinding), ServiceLifetime.Singleton));
+        identityServerBuilder.Services.TryAddEnumerable(
+            new ServiceDescriptor(typeof(IFrontChannelBinding), typeof(HttpPostBinding), ServiceLifetime.Singleton));
+        identityServerBuilder.Services.AddSingleton<IHttpResponseWriter<Saml2FrontChannelResult>, Saml2FrontChannelHttpWriter>();
+        identityServerBuilder.Services.TryAddSingleton<ISamlXmlWriterPlus, SamlXmlWriterPlus>();
 
-        identityServerBuilder.AddHttpWriter<Saml2FrontChannelResult, Saml2FrontChannelHttpWriter>();
+        // The reader has state and must be transient.
+        identityServerBuilder.Services.TryAddTransient<ISamlXmlReaderPlus, SamlXmlReaderPlus>();
 
         return identityServerBuilder;
     }

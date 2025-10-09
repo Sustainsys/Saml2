@@ -163,5 +163,6 @@ public static class Constants
     public static class AuthnContextClasses
     {
         public const string PasswordProtectedTransport = "urn:oasis:names:tc:SAML:2.0:ac:classes:PasswordProtectedTransport";
+        public const string Unspecified = "urn:oasis:names:tc:SAML:2.0:ac:classes:unspecified";
     }
 }
