@@ -58,8 +58,7 @@ partial class SamlXmlWriterPlus
 
         if (subjectConfirmationData.NotOnOrAfter.HasValue)
         {
-            var dt = new DateTime(subjectConfirmationData.NotOnOrAfter.Value.Ticks, DateTimeKind.Utc);
-            subjectConfirmationDataElement.SetAttribute(Attributes.NotOnOrAfter, dt.ToString("yyyy-MM-ddTHH:mm:ss\\Z"));
+            subjectConfirmationDataElement.SetAttribute(Attributes.NotOnOrAfter, subjectConfirmationData.NotOnOrAfter.Value);
         }
         subjectConfirmationDataElement.SetAttributeIfValue(Attributes.Recipient, subjectConfirmationData.Recipient);
     }

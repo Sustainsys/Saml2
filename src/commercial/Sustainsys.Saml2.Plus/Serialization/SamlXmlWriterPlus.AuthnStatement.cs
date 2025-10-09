@@ -2,6 +2,7 @@
 // Any usage requires a valid license agreement with Sustainsys AB
 
 using Sustainsys.Saml2.Saml;
+using Sustainsys.Saml2.Xml;
 using System.Xml;
 using static Sustainsys.Saml2.Constants;
 
@@ -17,12 +18,19 @@ partial class SamlXmlWriterPlus
     {
         var authnStatementElement = AppendElement(parent, Namespaces.Saml, Elements.AuthnStatement);
 
-        var dt = new DateTime(authnStatement.AuthnInstant.Ticks, DateTimeKind.Utc);
-        authnStatementElement.SetAttribute(Attributes.AuthnInstant, dt.ToString("yyyy-MM-ddTHH:mm:ss\\Z"));
-        authnStatementElement.SetAttribute(Attributes.SessionIndex, authnStatement.SessionIndex);
+        authnStatementElement.SetAttribute(Attributes.AuthnInstant, authnStatement.AuthnInstant);
+        authnStatementElement.SetAttributeIfValue(Attributes.SessionIndex, authnStatement.SessionIndex);
 
-        var authnContextElement = AppendElement(authnStatementElement, Namespaces.Saml, Elements.AuthnContext);
-        var authnContextClassRefElement = AppendElement(authnContextElement, Namespaces.Saml, Elements.AuthnContextClassRef);
-        authnContextClassRefElement.InnerText = "urn:oasis:names:tc:SAML:2.0:ac:classes:unspecified";
+
+        if (authnStatement.AuthnContext != null)
+        {
+            var authnContextElement = AppendElement(authnStatementElement, Namespaces.Saml, Elements.AuthnContext);
+
+            if (authnStatement.AuthnContext.AuthnContextClassRef != null)
+            {
+                var authnContextClassRefElement = AppendElement(authnContextElement, Namespaces.Saml, Elements.AuthnContextClassRef);
+                authnContextClassRefElement.InnerText = authnStatement.AuthnContext.AuthnContextClassRef;
+            }
+        }
     }
 }

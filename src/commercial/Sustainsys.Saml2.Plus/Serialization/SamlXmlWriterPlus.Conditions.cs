@@ -2,6 +2,7 @@
 // Any usage requires a valid license agreement with Sustainsys AB
 
 using Sustainsys.Saml2.Saml;
+using Sustainsys.Saml2.Xml;
 using System.Xml;
 using static Sustainsys.Saml2.Constants;
 
@@ -20,8 +21,7 @@ partial class SamlXmlWriterPlus
             var conditionsElement = AppendElement(parent, Namespaces.Saml, Elements.Conditions);
             if (conditions.NotOnOrAfter.HasValue)
             {
-                var dt = new DateTime(conditions.NotOnOrAfter.Value.Ticks, DateTimeKind.Utc);
-                conditionsElement.SetAttribute(Attributes.NotOnOrAfter, dt.ToString("yyyy-MM-ddTHH:mm:ss\\Z"));
+                conditionsElement.SetAttribute(Attributes.NotOnOrAfter, conditions.NotOnOrAfter.Value);
             }
 
             var audienceRestrictionElement = AppendElement(conditionsElement, Namespaces.Saml, Elements.AudienceRestriction);
