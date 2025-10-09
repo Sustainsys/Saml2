@@ -21,10 +21,17 @@ partial class SamlXmlWriterPlus
     /// <summary>
     /// Append the response as a child node
     /// </summary>
-    /// <param name="node">parent node</param>
-    /// <param name="response">Response</param>
-    protected virtual void Append(XmlNode node, Response response)
+    /// <param name="node">Parent node</param>
+    /// <param name="response">Saml response</param>
+    protected virtual XmlElement Append(XmlNode node, Response response)
     {
-        Append(node, response, Elements.Response);
+        var responseElement = Append(node, response, Elements.Response);
+
+        foreach (var assertion in response.Assertions)
+        {
+            Append(responseElement, assertion);
+        }
+
+        return responseElement;
     }
 }

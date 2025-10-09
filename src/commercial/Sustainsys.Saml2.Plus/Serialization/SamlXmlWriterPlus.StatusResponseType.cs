@@ -17,11 +17,17 @@ partial class SamlXmlWriterPlus
     /// <param name="localName">Local name of the new element</param>
     protected virtual XmlElement Append(XmlNode parent, StatusResponseType statusResponseType, string localName)
     {
-        var element = Append(parent, Namespaces.Samlp, localName);
+        var element = AppendElement(parent, Namespaces.Samlp, localName);
         element.SetAttribute(Attributes.ID, statusResponseType.Id);
         element.SetAttribute(Attributes.Version, statusResponseType.Version);
         element.SetAttribute(Attributes.IssueInstant, statusResponseType.IssueInstant);
+        element.SetAttributeIfValue(Attributes.Destination, statusResponseType.Destination);
+        element.SetAttributeIfValue(Attributes.InResponseTo, statusResponseType.InResponseTo);
 
+        if (statusResponseType.Issuer != null)
+        {
+            Append(element, statusResponseType.Issuer, Elements.Issuer);
+        }
         Append(element, statusResponseType.Status);
 
         return element;

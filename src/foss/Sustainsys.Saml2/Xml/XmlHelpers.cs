@@ -64,4 +64,18 @@ public static class XmlHelpers
     {
         element.SetAttribute(name, XmlConvert.ToString(value, XmlDateTimeSerializationMode.RoundtripKind));
     }
+
+    /// <summary>
+    /// Sets a DateTimeUtc attribute in the correct format, if the value is not null (HasValue)
+    /// </summary>
+    /// <param name="element">Element to set attribute on.</param>
+    /// <param name="name">Name of attribute</param>
+    /// <param name="value">DateTimeUtc value.</param>
+    public static void SetAttributeIfValue(this XmlElement element, string name, DateTimeUtc? value)
+    {
+        if (value.HasValue)
+        {
+            element.SetAttribute(name, value.Value);
+        }
+    }
 }

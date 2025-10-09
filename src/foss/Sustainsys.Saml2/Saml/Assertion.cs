@@ -49,6 +49,12 @@ public class Assertion
     /// <summary>
     /// Attributes
     /// </summary>
+    /// <remarks>
+    /// Saml2 Core 2.7.3 requires an AttributeStatement to have at least one Attribute,
+    /// if there are no attributes, then the entire AttributeStatement should be omitted.
+    /// But, in C# it's more convenient to have an empty list instead of null. So we do
+    /// that on the C# side, but check on serialization.
+    /// </remarks>
     public AttributeStatement Attributes { get; } = [];
 
     /// <summary>

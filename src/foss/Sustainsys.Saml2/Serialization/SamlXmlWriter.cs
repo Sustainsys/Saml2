@@ -30,7 +30,7 @@ public partial class SamlXmlWriter : ISamlXmlWriter
     /// <param name="namespacePrefix">Namespace prefix. The actual namespace URL is
     /// looked up in <see cref="NamespacePrefixMap"/></param>
     /// <returns>The new element</returns>
-    protected virtual XmlElement Append(XmlNode node, string namespacePrefix, string localName)
+    protected virtual XmlElement AppendElement(XmlNode node, string namespacePrefix, string localName)
     {
         var ownerDoc = node as XmlDocument ?? node.OwnerDocument ??
             throw new InvalidOperationException("Owning document cannot be resolved");

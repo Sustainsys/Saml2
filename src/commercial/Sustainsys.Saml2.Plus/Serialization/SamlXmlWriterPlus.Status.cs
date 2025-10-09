@@ -15,9 +15,9 @@ partial class SamlXmlWriterPlus
     /// <param name="status">value</param>
     protected virtual void Append(XmlNode parent, SamlStatus status)
     {
-        var statusElement = Append(parent, Namespaces.Samlp, Elements.Status);
+        var statusElement = AppendElement(parent, Namespaces.Samlp, Elements.Status);
 
-        var statusCodeElement = Append(statusElement, Namespaces.Samlp, Elements.StatusCode);
+        var statusCodeElement = AppendElement(statusElement, Namespaces.Samlp, Elements.StatusCode);
         statusCodeElement.SetAttribute(Attributes.Value, status.StatusCode.Value);
     }
 }
