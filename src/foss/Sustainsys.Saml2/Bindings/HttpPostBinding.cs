@@ -2,6 +2,8 @@
 // Licensed under the MIT license. See LICENSE in the project root for license information.
 
 using Microsoft.AspNetCore.Http;
+using Sustainsys.Saml2.Xml;
+using System.Globalization;
 using System.Text;
 using System.Xml;
 
@@ -65,13 +67,74 @@ public class HttpPostBinding : FrontChannelBinding
             Destination = httpRequest.PathBase + httpRequest.Path,
             Name = name,
             RelayState = httpRequest.Form[Constants.RelayState].SingleOrDefault(),
-            Xml = xd.DocumentElement!
+            Xml = xd.DocumentElement!,
+            Binding = Identifier
         });
     }
 
     /// <inheritdoc/>
-    protected override Task DoBindAsync(
+    protected override async Task DoBindAsync(
         HttpResponse httpResponse,
         Saml2Message message)
-        => throw new NotImplementedException();
+
+    {
+        var xmlDoc = message.Xml;
+        if (message.SigningCertificate != null)
+        {
+            var issuerElement = xmlDoc["Issuer", Constants.Namespaces.SamlUri]!;
+
+            xmlDoc.Sign(message.SigningCertificate, issuerElement);
+        }
+
+        var relayStateHtml = string.IsNullOrEmpty(message.RelayState) ? null
+            : string.Format(CultureInfo.InvariantCulture, PostHtmlRelayStateFormatString, message.RelayState);
+
+        var encodedXml = Convert.ToBase64String(Encoding.UTF8.GetBytes(xmlDoc.OuterXml));
+
+        var content = string.Format(
+                    CultureInfo.InvariantCulture,
+                    PostHtmlFormatString,
+                    message.Destination,
+                    relayStateHtml,
+                    message.Name,
+                    encodedXml);
+
+        httpResponse.ContentType = "text/html";
+        await httpResponse.WriteAsync(content);
+    }
+
+    private const string PostHtmlRelayStateFormatString = @"
+<input type=""hidden"" name=""RelayState"" value=""{0}""/>";
+
+    private const string PostHtmlFormatString = @"<?xml version=""1.0"" encoding=""UTF-8""?>
+<!DOCTYPE html PUBLIC ""-//W3C//DTD XHTML 1.1//EN""
+""http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd"">
+<html xmlns=""http://www.w3.org/1999/xhtml"" xml:lang=""en"">
+<head>
+<meta http-equiv=""Content-Security-Policy"" content=""script-src 'sha256-H3SVZBYrbqBt3ncrT/nNmOb6nwCjC12cPQzh5jnW4Y0='"">
+</head>
+<body>
+<noscript>
+<p>
+<strong>Note:</strong> Since your browser does not support JavaScript, 
+you must press the Continue button once to proceed.
+</p>
+</noscript>
+<form action=""{0}"" method=""post"" name=""sustainsysSamlPostBindingSubmit"">
+<div>{1}
+<input type=""hidden"" name=""{2}""
+value=""{3}""/>
+</div>
+<noscript>
+<div>
+<input type=""submit"" value=""Continue""/>
+</div>
+</noscript>
+</form>
+<script type=""text/javascript"">
+document.forms.sustainsysSamlPostBindingSubmit.submit();
+</script>
+</body>
+</html>";
+
 }

@@ -25,7 +25,8 @@ public class HttpRedirectBindingTests
             Name = "SamlRequest",
             Xml = xd.DocumentElement!,
             Destination = "https://example.com/destination",
-            RelayState = "someRelayState"
+            RelayState = "someRelayState",
+            Binding = Constants.BindingUris.HttpRedirect
         };
 
         var subject = new HttpRedirectBinding();
@@ -120,7 +121,8 @@ public class HttpRedirectBindingTests
             Destination = "https://idp.example.com/sso",
             Name = messageName,
             RelayState = "xyz123",
-            Xml = xd.DocumentElement!
+            Xml = xd.DocumentElement!,
+            Binding = Constants.BindingUris.HttpRedirect
         };
 
         bool caughtException = false;

@@ -211,7 +211,8 @@ public class Saml2Handler(
             Destination = Options.IdentityProvider!.SsoServiceUrl!,
             Name = Constants.SamlRequest,
             Xml = xmlDoc.DocumentElement!,
-            RelayState = $"{idpEntityIdHash}.{authnRequest.Id}"
+            RelayState = $"{idpEntityIdHash}.{authnRequest.Id}",
+            Binding = Constants.BindingUris.HttpRedirect
         };
 
         // TODO: If needed: make an alternative to this to allow multiple concurrent sign in attempts to same Idp

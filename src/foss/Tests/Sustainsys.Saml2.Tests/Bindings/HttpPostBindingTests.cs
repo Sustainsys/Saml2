@@ -79,7 +79,8 @@ public class HttpPostBindingTests
             Destination = "/subdir/Saml2/Acs",
             Name = messageName,
             RelayState = "ABC123",
-            Xml = xd.DocumentElement!
+            Xml = xd.DocumentElement!,
+            Binding = Constants.BindingUris.HttpPOST
         };
 
         actual.Should().BeEquivalentTo(expected);

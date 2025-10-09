@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Sustainsys AB. All rights reserved.
 // Licensed under the MIT license. See LICENSE in the project root for license information.
 
+using System.Security.Cryptography.X509Certificates;
 using System.Xml;
 
 namespace Sustainsys.Saml2.Bindings;
@@ -32,4 +33,15 @@ public class Saml2Message
     /// received at.
     /// </summary>
     public required string Destination { get; init; }
+
+    /// <summary>
+    /// Signing certificate that the message should be signed with. The
+    /// method for signing is binding dependent.
+    /// </summary>
+    public X509Certificate2? SigningCertificate { get; init; }
+
+    /// <summary>
+    /// Binding to use when sending the message, or used when messaged was read.
+    /// </summary>
+    public required string Binding { get; init; }
 }

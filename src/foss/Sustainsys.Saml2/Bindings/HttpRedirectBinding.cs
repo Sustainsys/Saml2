@@ -96,7 +96,8 @@ public class HttpRedirectBinding : FrontChannelBinding, IHttpRedirectBinding
             Destination = uri.Scheme + "://" + uri.Host + uri.AbsolutePath,
             Name = messageName,
             RelayState = relayState,
-            Xml = xd.DocumentElement!
+            Xml = xd.DocumentElement!,
+            Binding = Identifier
         });
     }
 

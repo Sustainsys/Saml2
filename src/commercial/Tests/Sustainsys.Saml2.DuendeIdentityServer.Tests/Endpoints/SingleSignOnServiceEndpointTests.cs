@@ -40,7 +40,8 @@ public class SingleSignOnServiceEndpointTests
             {
                 Name = Constants.SamlRequest,
                 Xml = requestDoc.DocumentElement ?? throw new InvalidOperationException(),
-                Destination = "https://idp.example.com/Saml2/Sso"
+                Destination = "https://idp.example.com/Saml2/Sso",
+                Binding = Constants.BindingUris.HttpRedirect
             };
 
             var queryString = HttpRedirectBinding.GetQueryString(message);

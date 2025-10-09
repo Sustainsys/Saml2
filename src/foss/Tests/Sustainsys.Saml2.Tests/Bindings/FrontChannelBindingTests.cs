@@ -42,7 +42,8 @@ public class FrontChannelBindingTests
         {
             Name = name!,
             Xml = xmlDocument?.DocumentElement!,
-            Destination = default!
+            Destination = default!,
+            Binding = "Mock"
         };
 
         var subject = new Subject();

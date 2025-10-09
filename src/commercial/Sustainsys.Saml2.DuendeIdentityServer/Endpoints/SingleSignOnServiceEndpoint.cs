@@ -12,6 +12,7 @@ using Sustainsys.Saml2.Samlp;
 using Sustainsys.Saml2.Serialization;
 using Sustainsys.Saml2.Xml;
 using System.Security.Claims;
+using System.Security.Cryptography.X509Certificates;
 
 namespace Sustainsys.Saml2.DuendeIdentityServer.Endpoints;
 
@@ -25,6 +26,14 @@ internal class SingleSignOnServiceEndpoint(
     IClock clock)
     : IEndpointHandler
 {
+    const string certPath = "Sustainsys.Saml2.Tests.pfx";
+    private static readonly X509Certificate2 signingCertificate =
+#if NET9_0_OR_GREATER
+        X509CertificateLoader.LoadPkcs12FromFile(certPath, "", X509KeyStorageFlags.EphemeralKeySet);
+#else
+        new(certPath);
+#endif
+
     public async Task<IEndpointResult?> ProcessAsync(HttpContext context)
     {
         var result = new Saml2FrontChannelResult();
@@ -113,7 +122,9 @@ internal class SingleSignOnServiceEndpoint(
             Destination = destination,
             Name = Constants.SamlResponse,
             RelayState = requestMessage.RelayState,
-            Xml = samlXmlWriter.Write(response).DocumentElement!
+            Xml = samlXmlWriter.Write(response).DocumentElement!,
+            SigningCertificate = signingCertificate,
+            Binding = Constants.BindingUris.HttpPOST
         };
 
         return result;
