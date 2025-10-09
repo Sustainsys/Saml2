@@ -79,7 +79,8 @@ partial class SamlXmlWriterPlusTests
                           SubjectConfirmationData = new()
                           {
                               NotOnOrAfter= new(2024,02,12,13,02,53),
-                              Recipient= "https://sp.example.com/Saml2/Acs"
+                              Recipient= "https://sp.example.com/Saml2/Acs",
+                              InResponseTo = "x789"
                           },
                         },
                     },

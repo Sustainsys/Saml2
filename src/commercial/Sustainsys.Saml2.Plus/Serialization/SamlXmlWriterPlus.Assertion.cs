@@ -38,7 +38,11 @@ partial class SamlXmlWriterPlus
         {
             Append(element, assertion.AuthnStatement);
         }
-        Append(element, assertion.Attributes);
+
+        if (assertion.Attributes.Count > 0)
+        {
+            Append(element, assertion.Attributes);
+        }
 
         return element;
     }

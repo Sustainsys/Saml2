@@ -16,17 +16,18 @@ partial class SamlXmlWriterPlus
     /// <param name="conditions">value</param>
     protected virtual void Append(XmlNode parent, Conditions conditions)
     {
-        if (conditions != null)
-        {
-            var conditionsElement = AppendElement(parent, Namespaces.Saml, Elements.Conditions);
-            if (conditions.NotOnOrAfter.HasValue)
-            {
-                conditionsElement.SetAttribute(Attributes.NotOnOrAfter, conditions.NotOnOrAfter.Value);
-            }
+        var conditionsElement = AppendElement(parent, Namespaces.Saml, Elements.Conditions);
 
+        conditionsElement.SetAttributeIfValue(Attributes.NotOnOrAfter, conditions.NotOnOrAfter);
+
+        foreach (var restriction in conditions.AudienceRestrictions)
+        {
             var audienceRestrictionElement = AppendElement(conditionsElement, Namespaces.Saml, Elements.AudienceRestriction);
-            var audienceElement = AppendElement(audienceRestrictionElement, Namespaces.Saml, Elements.Audience);
-            audienceElement.InnerText = "https://sp.example.com/Saml2";
+            foreach (var audience in restriction.Audiences)
+            {
+                var audienceElement = AppendElement(audienceRestrictionElement, Namespaces.Saml, Elements.Audience);
+                audienceElement.InnerText = audience;
+            }
         }
     }
 }

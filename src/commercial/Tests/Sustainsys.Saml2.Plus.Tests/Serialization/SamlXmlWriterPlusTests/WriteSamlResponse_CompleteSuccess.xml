@@ -16,7 +16,8 @@
                 Method="urn:oasis:names:tc:SAML:2.0:cm:bearer">
 				<saml:SubjectConfirmationData
                     NotOnOrAfter="2024-02-12T13:02:53Z"
-                    Recipient="https://sp.example.com/Saml2/Acs" />
+                    Recipient="https://sp.example.com/Saml2/Acs"
+					InResponseTo="x789"/>
 			</saml:SubjectConfirmation>
 		</saml:Subject>
 		<saml:Conditions

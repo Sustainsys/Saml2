@@ -26,7 +26,7 @@ partial class SamlXmlWriterPlus
 
         if (statusResponseType.Issuer != null)
         {
-            Append(element, statusResponseType.Issuer, "Issuer");
+            Append(element, statusResponseType.Issuer, Elements.Issuer);
         }
         Append(element, statusResponseType.Status);
 

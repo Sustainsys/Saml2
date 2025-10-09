@@ -16,18 +16,15 @@ partial class SamlXmlWriterPlus
     /// <param name="subject">Subject</param>
     protected virtual void Append(XmlNode parent, Subject subject)
     {
-        if (subject != null)
+        var subjectElement = AppendElement(parent, Namespaces.Saml, Elements.Subject);
+        if (subject.NameId != null)
         {
-            var subjectElement = AppendElement(parent, Namespaces.Saml, Elements.Subject);
-            if (subject.NameId != null)
-            {
-                Append(subjectElement, subject.NameId, "NameID");
-            }
+            Append(subjectElement, subject.NameId, Constants.Elements.NameID);
+        }
 
-            if (subject.SubjectConfirmation != null)
-            {
-                Append(subjectElement, subject.SubjectConfirmation);
-            }
+        if (subject.SubjectConfirmation != null)
+        {
+            Append(subjectElement, subject.SubjectConfirmation);
         }
     }
 
@@ -55,11 +52,8 @@ partial class SamlXmlWriterPlus
     protected virtual void Append(XmlNode parent, SubjectConfirmationData subjectConfirmationData)
     {
         var subjectConfirmationDataElement = AppendElement(parent, Namespaces.Saml, Elements.SubjectConfirmationData);
-
-        if (subjectConfirmationData.NotOnOrAfter.HasValue)
-        {
-            subjectConfirmationDataElement.SetAttribute(Attributes.NotOnOrAfter, subjectConfirmationData.NotOnOrAfter.Value);
-        }
+        subjectConfirmationDataElement.SetAttributeIfValue(Attributes.NotOnOrAfter, subjectConfirmationData.NotOnOrAfter);
         subjectConfirmationDataElement.SetAttributeIfValue(Attributes.Recipient, subjectConfirmationData.Recipient);
+        subjectConfirmationDataElement.SetAttributeIfValue(Attributes.InResponseTo, subjectConfirmationData.InResponseTo);
     }
 }

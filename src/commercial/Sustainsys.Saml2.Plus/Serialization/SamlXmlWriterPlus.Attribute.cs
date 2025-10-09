@@ -15,22 +15,25 @@ partial class SamlXmlWriterPlus
     /// <param name="attributeStatement">data</param>
     protected virtual XmlElement Append(XmlNode parent, AttributeStatement attributeStatement)
     {
-        var statementElement = AppendElement(parent, Namespaces.Saml, "AttributeStatement");
+        var statementElement = AppendElement(parent, Namespaces.Saml, Elements.AttributeStatement);
         foreach (var attribute in attributeStatement)
         {
-            var attributeElement = AppendElement(statementElement, Namespaces.Saml, "Attribute");
+            var attributeElement = AppendElement(statementElement, Namespaces.Saml, Elements.Attribute);
             attributeElement.SetAttribute("Name", attribute.Name);
             foreach (var value in attribute.Values)
             {
-                var valueElement = AppendElement(attributeElement, Namespaces.Saml, "AttributeValue");
+                var valueElement = AppendElement(attributeElement, Namespaces.Saml, Elements.AttributeValue);
 
                 if (value == null)
                 {
                     valueElement.SetAttribute("nil", Namespaces.XsiUri, "true");
                 }
-                else if (value != "")
+                else
                 {
-                    valueElement.InnerText = value;
+                    if (value != "")
+                    {
+                        valueElement.InnerText = value;
+                    }
                 }
             }
         }

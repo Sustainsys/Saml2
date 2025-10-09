@@ -21,7 +21,6 @@ partial class SamlXmlWriterPlus
         authnStatementElement.SetAttribute(Attributes.AuthnInstant, authnStatement.AuthnInstant);
         authnStatementElement.SetAttributeIfValue(Attributes.SessionIndex, authnStatement.SessionIndex);
 
-
         if (authnStatement.AuthnContext != null)
         {
             var authnContextElement = AppendElement(authnStatementElement, Namespaces.Saml, Elements.AuthnContext);
