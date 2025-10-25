@@ -1,9 +1,12 @@
 ﻿// Copyright (c) Sustainsys AB. All rights reserved.
 // Any usage requires a valid license agreement with Sustainsys AB
 
+using Duende.IdentityServer.Configuration;
 using Duende.IdentityServer.Hosting;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Options;
 using Sustainsys.Saml2.Bindings;
+using Sustainsys.Saml2.DuendeIdentityServer;
 using Sustainsys.Saml2.DuendeIdentityServer.Endpoints;
 using Sustainsys.Saml2.Serialization;
 
@@ -34,6 +37,7 @@ public static class IdentityServerBuilderExtensions
             new ServiceDescriptor(typeof(IFrontChannelBinding), typeof(HttpPostBinding), ServiceLifetime.Singleton));
         identityServerBuilder.Services.AddSingleton<IHttpResponseWriter<Saml2FrontChannelResult>, Saml2FrontChannelHttpWriter>();
         identityServerBuilder.Services.TryAddSingleton<ISamlXmlWriterPlus, SamlXmlWriterPlus>();
+        identityServerBuilder.Services.AddSingleton<IPostConfigureOptions<IdentityServerOptions>, PostConfigureIdentityServerOptions>();
 
         // The reader has state and must be transient.
         identityServerBuilder.Services.TryAddTransient<ISamlXmlReaderPlus, SamlXmlReaderPlus>();
