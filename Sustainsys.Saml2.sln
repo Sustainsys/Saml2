@@ -37,6 +37,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sustainsys.Saml2.Tests.Help
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sustainsys.Saml2.DuendeIdentityServer.Tests", "src\commercial\Tests\Sustainsys.Saml2.DuendeIdentityServer.Tests\Sustainsys.Saml2.DuendeIdentityServer.Tests.csproj", "{EF6D6115-F894-4F0A-A6FC-E05296FD6E12}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OidcClient", "src\commercial\Tests\OidcClient\OidcClient.csproj", "{2B039462-32BF-47E6-ABFB-87D9E4B5BD85}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -79,6 +81,10 @@ Global
 		{EF6D6115-F894-4F0A-A6FC-E05296FD6E12}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EF6D6115-F894-4F0A-A6FC-E05296FD6E12}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EF6D6115-F894-4F0A-A6FC-E05296FD6E12}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2B039462-32BF-47E6-ABFB-87D9E4B5BD85}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2B039462-32BF-47E6-ABFB-87D9E4B5BD85}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2B039462-32BF-47E6-ABFB-87D9E4B5BD85}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2B039462-32BF-47E6-ABFB-87D9E4B5BD85}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -95,6 +101,7 @@ Global
 		{BB403B3E-3B35-4CC2-9B2F-0FECF36CFB84} = {8904A032-99F3-AFCD-AFBD-12F878AC12DB}
 		{2C4810C2-132A-43E0-868E-A49F55FCA49B} = {92934DC3-A1E1-48D0-BBBF-8499A94EB9DC}
 		{EF6D6115-F894-4F0A-A6FC-E05296FD6E12} = {8904A032-99F3-AFCD-AFBD-12F878AC12DB}
+		{2B039462-32BF-47E6-ABFB-87D9E4B5BD85} = {8904A032-99F3-AFCD-AFBD-12F878AC12DB}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {6B39DC3D-AD4E-4DC4-A9BC-74CF3F38E9CC}

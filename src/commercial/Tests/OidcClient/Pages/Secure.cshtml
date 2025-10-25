@@ -1,0 +1,22 @@
+﻿@page
+@model OidcClient.Pages.SecureModel
+@{
+}
+
+<h2>Claims</h2>
+<dl>
+    @foreach(var c in Model.Claims)
+    {
+        <dt>@c.Type</dt>
+        <dd>@c.Value</dd>
+    }
+</dl>
+
+<h2>Properties</h2>
+<dl>
+    @foreach(var p in Model.Properties)
+    {
+        <dt>@p.Key</dt>
+        <dd>@p.Value</dd>
+    }
+</dl>
