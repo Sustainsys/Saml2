@@ -27,7 +27,7 @@ public class IndexModel : PageModel
     {
         switch (Action)
         {
-            case "SignIn":
+            case "SignInStubIdp":
                 {
                     AuthenticationProperties properties = new()
                     {
@@ -36,7 +36,11 @@ public class IndexModel : PageModel
                             { "TestKey", "TestValue" }
                         }
                     };
-                    return Challenge(properties);
+                    return Challenge(properties, "stubidp");
+                }
+            case "SignInIdSrv":
+                {
+                    return Challenge("idsrv");
                 }
             case "SignOut":
                 await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
