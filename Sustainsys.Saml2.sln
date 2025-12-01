@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.29613.14
+# Visual Studio Version 18
+VisualStudioVersion = 18.0.11222.15 d18.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sustainsys.Saml2", "Sustainsys.Saml2\Sustainsys.Saml2.csproj", "{93BA675E-A159-4701-B68B-C4B81015C556}"
 EndProject
@@ -52,8 +52,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Owin.Tests", "Tests\Owin.Te
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HttpModule.Tests", "Tests\HttpModule.Tests\HttpModule.Tests.csproj", "{4D3EADFB-93E9-4F66-BD61-FBAC9E30A294}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SampleAspNetCore2ApplicationNetFramework", "Samples\SampleAspNetCore2ApplicationNETFramework\SampleAspNetCore2ApplicationNetFramework.csproj", "{8EB3820A-4DB4-4875-A155-6C3D7458983E}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sustainsys.Saml2.AspNetCore2", "Sustainsys.Saml2.AspNetCore2\Sustainsys.Saml2.AspNetCore2.csproj", "{0A1A7E8C-838C-4114-894B-564592417AFA}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AspNetCore2.Tests", "Tests\AspNetCore2.Tests\AspNetCore2.Tests.csproj", "{20359A9A-6435-4264-8B36-22CD76731432}"
@@ -100,11 +98,6 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SampleAesGcmNetCore31", "Samples\SampleAesGcmStartupNetCore31\SampleAesGcmNetCore31.csproj", "{309367E0-32C7-4916-9287-7C8CF7D626DF}"
 EndProject
 Global
-	GlobalSection(SharedMSBuildProjectFiles) = preSolution
-		Tests\Tests.Shared\Tests.Shared.projitems*{82f84e61-1292-47cf-b0dc-59f26ec56c32}*SharedItemsImports = 13
-		Tests\Tests.Shared\Tests.Shared.projitems*{c5c43d57-3a9c-4edf-97af-ee55a950284c}*SharedItemsImports = 4
-		Tests\Tests.Shared\Tests.Shared.projitems*{ff774b2e-51d4-4c64-ba0e-c061683a9b93}*SharedItemsImports = 5
-	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
@@ -158,10 +151,6 @@ Global
 		{4D3EADFB-93E9-4F66-BD61-FBAC9E30A294}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4D3EADFB-93E9-4F66-BD61-FBAC9E30A294}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4D3EADFB-93E9-4F66-BD61-FBAC9E30A294}.Release|Any CPU.Build.0 = Release|Any CPU
-		{8EB3820A-4DB4-4875-A155-6C3D7458983E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{8EB3820A-4DB4-4875-A155-6C3D7458983E}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{8EB3820A-4DB4-4875-A155-6C3D7458983E}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{8EB3820A-4DB4-4875-A155-6C3D7458983E}.Release|Any CPU.Build.0 = Release|Any CPU
 		{0A1A7E8C-838C-4114-894B-564592417AFA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{0A1A7E8C-838C-4114-894B-564592417AFA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0A1A7E8C-838C-4114-894B-564592417AFA}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -202,7 +191,6 @@ Global
 		{CF1E517E-B2FE-48E1-8BB9-4D9981695C47} = {F3C8CC66-4CE9-4683-BC31-B89AF47A5897}
 		{0E01A985-54CC-4190-851F-6475C7BB1A5D} = {F3C8CC66-4CE9-4683-BC31-B89AF47A5897}
 		{4D3EADFB-93E9-4F66-BD61-FBAC9E30A294} = {F3C8CC66-4CE9-4683-BC31-B89AF47A5897}
-		{8EB3820A-4DB4-4875-A155-6C3D7458983E} = {09639770-8C2B-4D30-BBFC-4F6DD1A92C89}
 		{20359A9A-6435-4264-8B36-22CD76731432} = {F3C8CC66-4CE9-4683-BC31-B89AF47A5897}
 		{FF774B2E-51D4-4C64-BA0E-C061683A9B93} = {F3C8CC66-4CE9-4683-BC31-B89AF47A5897}
 		{C5C43D57-3A9C-4EDF-97AF-EE55A950284C} = {F3C8CC66-4CE9-4683-BC31-B89AF47A5897}
@@ -214,5 +202,10 @@ Global
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {A8812E38-A212-46DD-B51F-AB653F39E4ED}
+	EndGlobalSection
+	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		Tests\Tests.Shared\Tests.Shared.projitems*{82f84e61-1292-47cf-b0dc-59f26ec56c32}*SharedItemsImports = 13
+		Tests\Tests.Shared\Tests.Shared.projitems*{c5c43d57-3a9c-4edf-97af-ee55a950284c}*SharedItemsImports = 4
+		Tests\Tests.Shared\Tests.Shared.projitems*{ff774b2e-51d4-4c64-ba0e-c061683a9b93}*SharedItemsImports = 5
 	EndGlobalSection
 EndGlobal
