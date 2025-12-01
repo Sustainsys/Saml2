@@ -63,6 +63,10 @@ public class SingleSignOnServiceEndpointTests
                 {
                     EntityId = "https://sp.example.com/Saml2",
                     AsssertionConsumerServices = { "https://sp.example.com/Saml2/Acs"},
+                },
+                new Client()
+                {
+                    ClientId = "urn:notSaml2"
                 }
             ]);
 
@@ -136,7 +140,7 @@ public class SingleSignOnServiceEndpointTests
     }
 
     [Fact]
-    public async Task Process_InvalidClient()
+    public async Task Process_MissingSaml2Sp()
     {
         (var httpContext, var subject) = CreateSubject();
 
@@ -146,5 +150,18 @@ public class SingleSignOnServiceEndpointTests
 
         actual.Error.Should().Be("Invalid SP EntityID.");
         actual.SpEntityID.Should().Be("https://invalid-sp.example.com/Saml2");
+    }
+
+    [Fact]
+    public async Task Process_NotSaml2Sp()
+    {
+        (var httpContext, var subject) = CreateSubject();
+
+        var iActual = await subject.ProcessAsync(httpContext);
+        iActual.Should().BeOfType<Saml2FrontChannelResult>();
+        var actual = (Saml2FrontChannelResult)iActual;
+
+        actual.Error.Should().Be("Invalid SP EntityID.");
+        actual.SpEntityID.Should().Be("urn:notSaml2");
     }
 }

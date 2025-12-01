@@ -54,12 +54,12 @@ internal class SingleSignOnServiceEndpoint(
 
         var client = await clientStore.FindEnabledClientByIdAsync(result.SpEntityID);
         
-        if (client == null)
+        if (client == null || client.ProtocolType != Saml2Constants.Saml2Protocol)
         {
             result.Error = "Invalid SP EntityID.";
             return result;
         }
-        
+       
         var saml2Sp = client.AsSaml2Sp();
 
         var user = await userSession.GetUserAsync();
