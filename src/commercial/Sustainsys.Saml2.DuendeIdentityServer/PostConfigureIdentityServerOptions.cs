@@ -9,6 +9,9 @@ internal class PostConfigureIdentityServerOptions : IPostConfigureOptions<Identi
 {
     public void PostConfigure(string? name, IdentityServerOptions options)
     {
+        // TODO: See if this can be replaced by dynamically wrapping existing keys in an X509Certificate. This would require
+        // the certificates to become binary identical.
+
         var signingAlgorithms = options.KeyManagement.SigningAlgorithms;
 
         // If no signing algorithms are configured, add the default RS256
