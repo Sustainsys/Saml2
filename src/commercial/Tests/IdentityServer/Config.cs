@@ -1,5 +1,6 @@
 using Duende.IdentityServer.Models;
 using Sustainsys.Saml2.DuendeIdentityServer;
+using Sustainsys.Saml2.DuendeIdentityServer.Models;
 
 namespace IdentityServer;
 
@@ -37,12 +38,10 @@ public static class Config
                 AllowedScopes = { "openid", "profile", "api1" }
             },
 
-            // Saml2 client (Saml2 Service Provider)
-            new Client
+            new Saml2Sp
             {
-                ClientId = "https://localhost:5001/Saml2IdSrv",
-                ProtocolType = Saml2Constants.Saml2Protocol,
-                RedirectUris = { "https://localhost:5001/Saml2IdSrv/Acs" }
+                EntityId = "https://localhost:5001/Saml2IdSrv",
+                AsssertionConsumerServices = { "https://localhost:5001/Saml2IdSrv/Acs" }
             }
         };
 }

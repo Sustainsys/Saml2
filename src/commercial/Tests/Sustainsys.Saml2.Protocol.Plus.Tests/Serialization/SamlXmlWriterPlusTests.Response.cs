@@ -6,7 +6,7 @@ using Sustainsys.Saml2.Saml;
 using Sustainsys.Saml2.Samlp;
 using Sustainsys.Saml2.Serialization;
 
-namespace Sustainsys.Saml2.Plus.Tests.Serialization;
+namespace Sustainsys.Saml2.Protocol.Plus.Tests.Serialization;
 
 partial class SamlXmlWriterPlusTests
 {

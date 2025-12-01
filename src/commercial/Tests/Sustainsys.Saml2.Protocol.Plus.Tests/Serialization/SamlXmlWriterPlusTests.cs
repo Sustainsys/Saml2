@@ -5,7 +5,7 @@ using Sustainsys.Saml2.Tests.Helpers;
 using System.Runtime.CompilerServices;
 using System.Xml;
 
-namespace Sustainsys.Saml2.Plus.Tests.Serialization;
+namespace Sustainsys.Saml2.Protocol.Plus.Tests.Serialization;
 
 public partial class SamlXmlWriterPlusTests
 {

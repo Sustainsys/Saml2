@@ -8,6 +8,7 @@ using Duende.IdentityServer.Services;
 using Duende.IdentityServer.Stores;
 using Microsoft.AspNetCore.Http;
 using Sustainsys.Saml2.Bindings;
+using Sustainsys.Saml2.DuendeIdentityServer.Models;
 using Sustainsys.Saml2.Samlp;
 using Sustainsys.Saml2.Serialization;
 using Sustainsys.Saml2.Xml;
@@ -52,12 +53,14 @@ internal class SingleSignOnServiceEndpoint(
         result.SpEntityID = authnRequest.Issuer.Value;
 
         var client = await clientStore.FindEnabledClientByIdAsync(result.SpEntityID);
-
-        if (client == null || client.ProtocolType != Saml2Constants.Saml2Protocol)
+        
+        if (client == null)
         {
             result.Error = "Invalid SP EntityID.";
             return result;
         }
+        
+        var saml2Sp = client.AsSaml2Sp();
 
         var user = await userSession.GetUserAsync();
 
@@ -72,7 +75,7 @@ internal class SingleSignOnServiceEndpoint(
         }
 
         var issuer = $"{context.Request.Scheme.ToLowerInvariant()}://{context.Request.Host}/Saml2";
-        var destination = client.RedirectUris.Single();
+        var destination = saml2Sp.AsssertionConsumerServices.Single().Location;
         Response response = new()
         {
             Destination = destination,

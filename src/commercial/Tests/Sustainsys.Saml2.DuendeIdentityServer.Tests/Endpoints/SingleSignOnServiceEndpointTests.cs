@@ -13,6 +13,7 @@ using Microsoft.AspNetCore.WebUtilities;
 using NSubstitute;
 using Sustainsys.Saml2.Bindings;
 using Sustainsys.Saml2.DuendeIdentityServer.Endpoints;
+using Sustainsys.Saml2.DuendeIdentityServer.Models;
 using Sustainsys.Saml2.Serialization;
 using Sustainsys.Saml2.Tests.Helpers;
 using System.Runtime.CompilerServices;
@@ -58,11 +59,10 @@ public class SingleSignOnServiceEndpointTests
 
         var clientStore = new InMemoryClientStore(
             [
-                new Client()
+                new Saml2Sp()
                 {
-                    ClientId = "https://sp.example.com/Saml2",
-                    RedirectUris = { "https://sp.example.com/Saml2/Acs"},
-                    ProtocolType = Saml2Constants.Saml2Protocol
+                    EntityId = "https://sp.example.com/Saml2",
+                    AsssertionConsumerServices = { "https://sp.example.com/Saml2/Acs"},
                 }
             ]);
 
