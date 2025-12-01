@@ -10,7 +10,7 @@
 
 	<ItemGroup>
 		<ProjectReference Include="..\..\..\foss\Tests\Sustainsys.Saml2.Tests.Helpers\Sustainsys.Saml2.Tests.Helpers.csproj" />
-		<ProjectReference Include="..\..\Sustainsys.Saml2.Plus\Sustainsys.Saml2.Plus.csproj" />
+		<ProjectReference Include="..\..\Sustainsys.Saml2.Protocol.Plus\Sustainsys.Saml2.Protocol.Plus.csproj" />
 		<PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.13.0" />
 		<PackageReference Include="xunit" Version="2.9.3" />
 		<PackageReference Include="xunit.runner.visualstudio" Version="3.1.0">

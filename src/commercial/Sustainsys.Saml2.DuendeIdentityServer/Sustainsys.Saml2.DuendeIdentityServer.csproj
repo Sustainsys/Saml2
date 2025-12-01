@@ -6,6 +6,6 @@
 		<PackageReference Include="Duende.IdentityServer" Version="7.3.2" />
 	</ItemGroup>
 	<ItemGroup>
-	  <ProjectReference Include="..\Sustainsys.Saml2.Plus\Sustainsys.Saml2.Plus.csproj" />
+	  <ProjectReference Include="..\Sustainsys.Saml2.Protocol.Plus\Sustainsys.Saml2.Protocol.Plus.csproj" />
 	</ItemGroup>
 </Project>
