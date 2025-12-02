@@ -99,7 +99,7 @@ public class Saml2SSoResponseGenerator(
             IssueInstant = clock.UtcNow.UtcDateTime,
             Subject = CreateSubject(validatedAuthnRequest, destination),
             Conditions = CreateConditions(validatedAuthnRequest),
-            AuthnStatement = CreateAuthnStatement()
+            AuthnStatement = CreateAuthnStatement(),
         };
 
     /// <summary>
