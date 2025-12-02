@@ -15,7 +15,7 @@ namespace Sustainsys.Saml2.DuendeIdentityServer.Models;
 /// </summary>
 public class Saml2Sp
 {
-    private Client inner;
+    private readonly Client inner;
 
     /// <summary>
     /// Default Ctor creating a new Client to wrap.
@@ -84,6 +84,6 @@ public static class Saml2SpExtensions
     /// </summary>
     /// <param name="client">Client</param>
     /// <returns>Saml2 SP</returns>
-    public static Saml2Sp AsSaml2Sp(this Client client) => new Saml2Sp(client);
+    public static Saml2Sp AsSaml2Sp(this Client client) => new(client);
 }
 

@@ -73,7 +73,7 @@ public record struct IndexedEndpoint
     /// Returns the serialized string format.
     /// </summary>
     /// <returns>String</returns>
-    public string Serialize()
+    public readonly string Serialize()
     {
         return $"{signature}{separator}{Index}{separator}{IsDefault}{separator}{Binding}{separator}{Location}";
     }
