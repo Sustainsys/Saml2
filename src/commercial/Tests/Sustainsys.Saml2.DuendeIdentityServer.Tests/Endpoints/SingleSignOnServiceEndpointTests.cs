@@ -16,6 +16,7 @@ using Sustainsys.Saml2.DuendeIdentityServer.Endpoints;
 using Sustainsys.Saml2.DuendeIdentityServer.Endpoints.Results;
 using Sustainsys.Saml2.DuendeIdentityServer.Models;
 using Sustainsys.Saml2.DuendeIdentityServer.ResponseHandling.Default;
+using Sustainsys.Saml2.DuendeIdentityServer.Services;
 using Sustainsys.Saml2.DuendeIdentityServer.Validation;
 using Sustainsys.Saml2.Serialization;
 using Sustainsys.Saml2.Tests.Helpers;
@@ -89,15 +90,18 @@ public class SingleSignOnServiceEndpointTests
         var clock = Substitute.For<IClock>();
         clock.UtcNow.Returns(utcNow);
 
+        var saml2IssuerNameService = Substitute.For<ISaml2IssuerNameService>();
+        saml2IssuerNameService.GetCurrentAsync().Returns("https://idp.example.com/Saml2");
+
         var subject = new SingleSignOnServiceEndpoint(
             frontChannelBindings,
             new SamlXmlReaderPlus(),
             userSession,
             idSrvOptions,
-            new SamlXmlWriterPlus(),
             new AuthnRequestValidator(clientStore),
             new Saml2SsoInteractionResponseGenerator(),
-            clock);
+            new Saml2SSoResponseGenerator(saml2IssuerNameService, clock, new SamlXmlWriterPlus()),
+            saml2IssuerNameService);
 
         return (httpContext, subject);
     }

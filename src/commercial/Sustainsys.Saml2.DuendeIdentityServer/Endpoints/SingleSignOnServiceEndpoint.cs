@@ -12,6 +12,7 @@ using Sustainsys.Saml2.Bindings;
 using Sustainsys.Saml2.DuendeIdentityServer.Endpoints.Results;
 using Sustainsys.Saml2.DuendeIdentityServer.Models;
 using Sustainsys.Saml2.DuendeIdentityServer.ResponseHandling;
+using Sustainsys.Saml2.DuendeIdentityServer.Services;
 using Sustainsys.Saml2.DuendeIdentityServer.Validation;
 using Sustainsys.Saml2.Samlp;
 using Sustainsys.Saml2.Serialization;
@@ -26,24 +27,14 @@ internal class SingleSignOnServiceEndpoint(
     ISamlXmlReaderPlus samlXmlReader,
     IUserSession userSession,
     IdentityServerOptions identityServerOptions,
-    ISamlXmlWriterPlus samlXmlWriter,
     IAuthnRequestValidator authnRequestValidator,
     ISaml2SsoInteractionResponseGenerator interactionResponseGenerator,
-    IClock clock)
+    ISaml2SsoResponseGenerator responseGenerator,
+    ISaml2IssuerNameService saml2IssuerNameService)
     : IEndpointHandler
 {
-    const string certPath = "Sustainsys.Saml2.Tests.pfx";
-    private static readonly X509Certificate2 signingCertificate =
-#if NET9_0_OR_GREATER
-        X509CertificateLoader.LoadPkcs12FromFile(certPath, "", X509KeyStorageFlags.EphemeralKeySet);
-#else
-        new(certPath);
-#endif
-
     public async Task<IEndpointResult?> ProcessAsync(HttpContext context)
     {
-        var result = new Saml2FrontChannelResult();
-
         var binding = frontChannelBindings.Single(b => b.CanUnBind(context.Request));
         var requestMessage = await binding.UnBindAsync(context.Request, s => default!);
         var authnRequest = samlXmlReader.ReadAuthnRequest(new XmlTraverser(requestMessage.Xml));
@@ -55,16 +46,19 @@ internal class SingleSignOnServiceEndpoint(
             AuthnRequest = authnRequest,
             Binding = binding.Identifier,
             Saml2Message = requestMessage,
-            Subject = user
+            Subject = user,
+            Saml2IdpEntityId = await saml2IssuerNameService.GetCurrentAsync(),
         };
 
         var requestValidationResult = await authnRequestValidator.ValidateAsync(validatedAuthnRequest);
 
         if (requestValidationResult.IsError)
         {
-            result.Error = requestValidationResult.ErrorDescription;
-            result.SpEntityId = requestValidationResult.ValidatedRequest.AuthnRequest.Issuer?.Value;
-            return result;
+            return new Saml2FrontChannelResult()
+            {
+                Error = requestValidationResult.ErrorDescription,
+                SpEntityId = requestValidationResult.ValidatedRequest.AuthnRequest.Issuer?.Value,
+            };
         }
 
         var interactionResponse = await interactionResponseGenerator.ProcessInteractionAsync(validatedAuthnRequest);
@@ -76,85 +70,12 @@ internal class SingleSignOnServiceEndpoint(
             return interactionResult;
         }
 
+        var response = await responseGenerator.CreateResponse(validatedAuthnRequest);
 
-
-        var issuer = $"{context.Request.Scheme.ToLowerInvariant()}://{context.Request.Host}/Saml2";
-        var destination = requestValidationResult.ValidatedRequest.Saml2Sp!.AsssertionConsumerServices.Single().Location;
-
-        Response response = new()
-        {
-            Destination = destination,
-            Issuer = issuer,
-            Status = new()
-            {
-                StatusCode = new()
-                {
-                    Value = Constants.StatusCodes.Success
-                }
-            },
-            IssueInstant = clock.UtcNow.UtcDateTime,
-            InResponseTo = authnRequest.Id,
-            Assertions =
-            {
-                new()
-                {
-                    Issuer = issuer,
-                    IssueInstant = clock.UtcNow.UtcDateTime,
-                    Subject = new()
-                    {
-                        NameId = new()
-                        {
-                            Value = user!.FindFirstValue("sub")!,
-                            Format = Constants.NameIdFormats.Unspecified
-                        },
-                        SubjectConfirmation = new()
-                        {
-                            Method = Constants.SubjectConfirmationMethods.Bearer,
-                            SubjectConfirmationData = new()
-                            {
-                                NotOnOrAfter = clock.UtcNow.UtcDateTime.AddMinutes(5),
-                                Recipient = destination,
-                                InResponseTo = authnRequest.Id
-                            }
-                        }
-                    },
-                    Conditions = new()
-                    {
-                        NotOnOrAfter = clock.UtcNow.UtcDateTime.AddMinutes(5),
-                        AudienceRestrictions =
-                        {
-                            new()
-                            {
-                                Audiences = { requestValidationResult.ValidatedRequest.Saml2Sp.EntityId }
-                            }
-                        }
-                    },
-                    AuthnStatement = new()
-                    {
-                        AuthnInstant = clock.UtcNow.UtcDateTime,
-                        AuthnContext = new()
-                        {
-                            AuthnContextClassRef = Constants.AuthnContextClasses.Unspecified
-                        }
-                    }
-                }
-            }
-        };
-
-        result.Message = new()
-        {
-            Destination = destination,
-            Name = Constants.SamlResponse,
-            RelayState = requestMessage.RelayState,
-            Xml = samlXmlWriter.Write(response).DocumentElement!,
-            SigningCertificate = signingCertificate,
-            Binding = Constants.BindingUris.HttpPOST
-        };
-
-        return result;
+        return response;
     }
 
-    private IEndpointResult? CreateInteractionResult(ValidatedAuthnRequest validatedAuthnRequest, InteractionResponse interactionResponse)
+    private LoginPageResult? CreateInteractionResult(ValidatedAuthnRequest validatedAuthnRequest, InteractionResponse interactionResponse)
     {
         if (interactionResponse.IsLogin)
         {

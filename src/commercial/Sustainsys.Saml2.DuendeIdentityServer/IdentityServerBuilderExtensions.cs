@@ -11,6 +11,7 @@ using Sustainsys.Saml2.DuendeIdentityServer.Endpoints;
 using Sustainsys.Saml2.DuendeIdentityServer.Endpoints.Results;
 using Sustainsys.Saml2.DuendeIdentityServer.ResponseHandling;
 using Sustainsys.Saml2.DuendeIdentityServer.ResponseHandling.Default;
+using Sustainsys.Saml2.DuendeIdentityServer.Services;
 using Sustainsys.Saml2.DuendeIdentityServer.Validation;
 using Sustainsys.Saml2.Serialization;
 
@@ -47,6 +48,8 @@ public static class IdentityServerBuilderExtensions
         // Use transient for services that have dependencies that might have any lifespan
         identityServerBuilder.Services.TryAddTransient<IAuthnRequestValidator, AuthnRequestValidator>();
         identityServerBuilder.Services.TryAddTransient<ISaml2SsoInteractionResponseGenerator, Saml2SsoInteractionResponseGenerator>();
+        identityServerBuilder.Services.TryAddTransient<ISaml2SsoResponseGenerator, Saml2SSoResponseGenerator>();
+        identityServerBuilder.Services.TryAddTransient<ISaml2IssuerNameService, Saml2IssuerNameService>();
 
         // The reader has state and must be transient.
         identityServerBuilder.Services.TryAddTransient<ISamlXmlReaderPlus, SamlXmlReaderPlus>();

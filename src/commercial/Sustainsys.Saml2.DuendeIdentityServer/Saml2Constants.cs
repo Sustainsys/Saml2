@@ -12,4 +12,15 @@ public static class Saml2Constants
     /// Protocol type to set on clients.
     /// </summary>
     public const string Saml2Protocol = "SAML2";
+
+    /// <summary>
+    /// Default values
+    /// </summary>
+    public static class Defaults
+    {
+        /// <summary>
+        /// Default path for Saml2
+        /// </summary>
+        public const string Saml2Path = "/Saml2";
+    }
 }

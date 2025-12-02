@@ -46,6 +46,11 @@ public class ValidatedAuthnRequest
     public ClaimsPrincipal? Subject { get; set; }
 
     /// <summary>
+    /// The Saml2 identifier for IdentityServer
+    /// </summary>
+    public required string Saml2IdpEntityId { get; set; }
+
+    /// <summary>
     /// AssertionConsumerService to respond to, set once we have enough validation to be able
     /// to trust it and return error responses to it.
     /// </summary>
