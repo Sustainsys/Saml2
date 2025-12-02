@@ -80,7 +80,8 @@ public class SingleSignOnServiceEndpointTests
         {
             UserInteraction = new()
             {
-                LoginUrl = "/X123/Login456"
+                LoginUrl = "/X123/Login456",
+                LoginReturnUrlParameter = "goHereWhenDone"
             }
         };
 
@@ -133,14 +134,13 @@ public class SingleSignOnServiceEndpointTests
 
         var iActual = await subject.ProcessAsync(httpContext);
 
-        iActual.Should().BeOfType<Saml2FrontChannelResult>();
-        var actual = (Saml2FrontChannelResult)iActual;
+        iActual.Should().BeOfType<LoginPageResult>();
+        var actual = (LoginPageResult)iActual;
 
-        var currentUrl = "/Saml2/Sso" + httpContext.Request.QueryString.Value;
-
-        var expectedRedirectUrl = "/X123/Login456?ReturnUrl=" + Uri.EscapeDataString(currentUrl);
+        var expectedRedirectUrl = "/X123/Login456";
 
         actual.RedirectUrl.Should().Be(expectedRedirectUrl);
+        actual.ReturnUrlParameterName.Should().Be("goHereWhenDone");
     }
 
     [Fact]

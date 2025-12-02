@@ -18,29 +18,36 @@ namespace Sustainsys.Saml2.DuendeIdentityServer.Endpoints.Results;
 /// <summary>
 /// Result when Saml2 single sign on resulted in login being required.
 /// </summary>
-public class LoginPageResult : EndpointResult<LoginPageResult>
+/// <param name="validatedAuthnRequest">AuthnRequest validation context</param>
+/// <param name="redirectUrl">Url to redirect to</param>
+/// <param name="returnUrlParameter">Name of returnUrl query string param</param>
+public class LoginPageResult(
+    ValidatedAuthnRequest validatedAuthnRequest,
+    string? redirectUrl,
+    string? returnUrlParameter)
+    : EndpointResult<LoginPageResult>
 {
     /// <summary>
     /// AuthnRequest validation context
     /// </summary>
-    public required ValidatedAuthnRequest Request { get; init; }
+    public ValidatedAuthnRequest Request { get; } = validatedAuthnRequest;
 
     /// <summary>
     /// Url to redirect to (i.e. the login endpoint)
     /// </summary>
-    public required string RedirectUrl { get; init; }
+    public string RedirectUrl { get; } = redirectUrl ?? throw new ArgumentNullException(nameof(redirectUrl));
 
     /// <summary>
     /// Name of the returnUrl parameter to attach to redirect
     /// </summary>
-    public required string ReturnUrlParameterName { get; init; }
+    public string ReturnUrlParameterName { get; } = returnUrlParameter
+        ?? throw new ArgumentNullException(nameof(returnUrlParameter));
 }
 
 /// <summary>
 /// Response writer for redirecting to the login page.
 /// </summary>
-public class LoginPageResultHttpWriter(
-    IdentityServerOptions identityServerOptions)
+public class LoginPageResultHttpWriter
     : IHttpResponseWriter<LoginPageResult>
 {
     /// <inheritdoc/>
@@ -49,8 +56,7 @@ public class LoginPageResultHttpWriter(
         var encodedUrl = Uri.EscapeDataString(
             context.Request.PathBase + context.Request.Path + context.Request.QueryString);
 
-        var url = identityServerOptions.UserInteraction.LoginUrl
-            + "?ReturnUrl=" + encodedUrl;
+        var url = $"{result.RedirectUrl}?{result.ReturnUrlParameterName}={encodedUrl}";
 
         context.Response.Redirect(url);
 

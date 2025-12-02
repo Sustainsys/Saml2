@@ -64,22 +64,19 @@ internal class SingleSignOnServiceEndpoint(
         {
             result.Error = requestValidationResult.ErrorDescription;
             result.SpEntityId = requestValidationResult.ValidatedRequest.AuthnRequest.Issuer?.Value;
+            return result;
         }
 
-        var interaction = await interactionResponseGenerator.ProcessInteractionAsync(validatedAuthnRequest);
+        var interactionResponse = await interactionResponseGenerator.ProcessInteractionAsync(validatedAuthnRequest);
 
-        if (interaction.IsLogin)
+        var interactionResult = CreateInteractionResult(validatedAuthnRequest, interactionResponse);
+
+        if (interactionResult != null)
         {
-            ArgumentNullException.ThrowIfNull(identityServerOptions.UserInteraction.LoginUrl);
-            ArgumentNullException.ThrowIfNull(identityServerOptions.UserInteraction.LoginReturnUrlParameter);
-
-            return new LoginPageResult()
-            {
-                Request = validatedAuthnRequest,
-                RedirectUrl = identityServerOptions.UserInteraction.LoginUrl,
-                ReturnUrlParameterName = identityServerOptions.UserInteraction.LoginReturnUrlParameter
-            };
+            return interactionResult;
         }
+
+
 
         var issuer = $"{context.Request.Scheme.ToLowerInvariant()}://{context.Request.Host}/Saml2";
         var destination = requestValidationResult.ValidatedRequest.Saml2Sp!.AsssertionConsumerServices.Single().Location;
@@ -155,5 +152,18 @@ internal class SingleSignOnServiceEndpoint(
         };
 
         return result;
+    }
+
+    private IEndpointResult? CreateInteractionResult(ValidatedAuthnRequest validatedAuthnRequest, InteractionResponse interactionResponse)
+    {
+        if (interactionResponse.IsLogin)
+        {
+            return new LoginPageResult(
+                validatedAuthnRequest,
+                identityServerOptions.UserInteraction.LoginUrl,
+                identityServerOptions.UserInteraction.LoginReturnUrlParameter);
+        };
+
+        return null;
     }
 }
