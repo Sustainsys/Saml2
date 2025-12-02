@@ -10,7 +10,7 @@ using Duende.IdentityServer.Stores;
 using Microsoft.AspNetCore.Http;
 using Sustainsys.Saml2.Bindings;
 
-namespace Sustainsys.Saml2.DuendeIdentityServer.Endpoints;
+namespace Sustainsys.Saml2.DuendeIdentityServer.Endpoints.Results;
 
 /// <summary>
 /// Result from a Saml2 endpoint that wraps a Saml2 message and should be handled by

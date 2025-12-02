@@ -9,6 +9,7 @@ using Sustainsys.Saml2.Samlp;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -38,6 +39,11 @@ public class ValidatedAuthnRequest
     /// The Saml2 SP
     /// </summary>
     public Saml2Sp? Saml2Sp { get; set; }
+
+    /// <summary>
+    /// The current user
+    /// </summary>
+    public ClaimsPrincipal? Subject { get; set; }
 
     /// <summary>
     /// AssertionConsumerService to respond to, set once we have enough validation to be able

@@ -13,7 +13,9 @@ using Microsoft.AspNetCore.WebUtilities;
 using NSubstitute;
 using Sustainsys.Saml2.Bindings;
 using Sustainsys.Saml2.DuendeIdentityServer.Endpoints;
+using Sustainsys.Saml2.DuendeIdentityServer.Endpoints.Results;
 using Sustainsys.Saml2.DuendeIdentityServer.Models;
+using Sustainsys.Saml2.DuendeIdentityServer.ResponseHandling.Default;
 using Sustainsys.Saml2.DuendeIdentityServer.Validation;
 using Sustainsys.Saml2.Serialization;
 using Sustainsys.Saml2.Tests.Helpers;
@@ -93,6 +95,7 @@ public class SingleSignOnServiceEndpointTests
             idSrvOptions,
             new SamlXmlWriterPlus(),
             new AuthnRequestValidator(clientStore),
+            new Saml2SsoInteractionResponseGenerator(),
             clock);
 
         return (httpContext, subject);

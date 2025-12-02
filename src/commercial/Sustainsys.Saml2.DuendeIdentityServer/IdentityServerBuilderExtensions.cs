@@ -8,6 +8,9 @@ using Microsoft.Extensions.Options;
 using Sustainsys.Saml2.Bindings;
 using Sustainsys.Saml2.DuendeIdentityServer;
 using Sustainsys.Saml2.DuendeIdentityServer.Endpoints;
+using Sustainsys.Saml2.DuendeIdentityServer.Endpoints.Results;
+using Sustainsys.Saml2.DuendeIdentityServer.ResponseHandling;
+using Sustainsys.Saml2.DuendeIdentityServer.ResponseHandling.Default;
 using Sustainsys.Saml2.DuendeIdentityServer.Validation;
 using Sustainsys.Saml2.Serialization;
 
@@ -36,12 +39,14 @@ public static class IdentityServerBuilderExtensions
             new ServiceDescriptor(typeof(IFrontChannelBinding), typeof(HttpRedirectBinding), ServiceLifetime.Singleton));
         identityServerBuilder.Services.TryAddEnumerable(
             new ServiceDescriptor(typeof(IFrontChannelBinding), typeof(HttpPostBinding), ServiceLifetime.Singleton));
-        identityServerBuilder.Services.AddSingleton<IHttpResponseWriter<Saml2FrontChannelResult>, Saml2FrontChannelHttpWriter>();
+        identityServerBuilder.Services.TryAddSingleton<IHttpResponseWriter<Saml2FrontChannelResult>, Saml2FrontChannelHttpWriter>();
+        identityServerBuilder.Services.TryAddSingleton<IHttpResponseWriter<LoginPageResult>, LoginPageResultHttpWriter>();
         identityServerBuilder.Services.TryAddSingleton<ISamlXmlWriterPlus, SamlXmlWriterPlus>();
         identityServerBuilder.Services.AddSingleton<IPostConfigureOptions<IdentityServerOptions>, PostConfigureIdentityServerOptions>();
 
         // Use transient for services that have dependencies that might have any lifespan
-        identityServerBuilder.Services.TryAddTransient<IAuthnRequestValidator,  AuthnRequestValidator>();
+        identityServerBuilder.Services.TryAddTransient<IAuthnRequestValidator, AuthnRequestValidator>();
+        identityServerBuilder.Services.TryAddTransient<ISaml2SsoInteractionResponseGenerator, Saml2SsoInteractionResponseGenerator>();
 
         // The reader has state and must be transient.
         identityServerBuilder.Services.TryAddTransient<ISamlXmlReaderPlus, SamlXmlReaderPlus>();

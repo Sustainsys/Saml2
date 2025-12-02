@@ -4,11 +4,14 @@
 using Duende.IdentityServer;
 using Duende.IdentityServer.Configuration;
 using Duende.IdentityServer.Hosting;
+using Duende.IdentityServer.ResponseHandling;
 using Duende.IdentityServer.Services;
 using Duende.IdentityServer.Stores;
 using Microsoft.AspNetCore.Http;
 using Sustainsys.Saml2.Bindings;
+using Sustainsys.Saml2.DuendeIdentityServer.Endpoints.Results;
 using Sustainsys.Saml2.DuendeIdentityServer.Models;
+using Sustainsys.Saml2.DuendeIdentityServer.ResponseHandling;
 using Sustainsys.Saml2.DuendeIdentityServer.Validation;
 using Sustainsys.Saml2.Samlp;
 using Sustainsys.Saml2.Serialization;
@@ -25,6 +28,7 @@ internal class SingleSignOnServiceEndpoint(
     IdentityServerOptions identityServerOptions,
     ISamlXmlWriterPlus samlXmlWriter,
     IAuthnRequestValidator authnRequestValidator,
+    ISaml2SsoInteractionResponseGenerator interactionResponseGenerator,
     IClock clock)
     : IEndpointHandler
 {
@@ -44,11 +48,14 @@ internal class SingleSignOnServiceEndpoint(
         var requestMessage = await binding.UnBindAsync(context.Request, s => default!);
         var authnRequest = samlXmlReader.ReadAuthnRequest(new XmlTraverser(requestMessage.Xml));
 
+        var user = await userSession.GetUserAsync();
+
         ValidatedAuthnRequest validatedAuthnRequest = new()
         {
             AuthnRequest = authnRequest,
             Binding = binding.Identifier,
             Saml2Message = requestMessage,
+            Subject = user
         };
 
         var requestValidationResult = await authnRequestValidator.ValidateAsync(validatedAuthnRequest);
@@ -59,16 +66,19 @@ internal class SingleSignOnServiceEndpoint(
             result.SpEntityId = requestValidationResult.ValidatedRequest.AuthnRequest.Issuer?.Value;
         }
 
-        var user = await userSession.GetUserAsync();
+        var interaction = await interactionResponseGenerator.ProcessInteractionAsync(validatedAuthnRequest);
 
-        if (user == null)
+        if (interaction.IsLogin)
         {
-            var encodedUrl = Uri.EscapeDataString(
-                context.Request.PathBase + context.Request.Path + context.Request.QueryString);
+            ArgumentNullException.ThrowIfNull(identityServerOptions.UserInteraction.LoginUrl);
+            ArgumentNullException.ThrowIfNull(identityServerOptions.UserInteraction.LoginReturnUrlParameter);
 
-            result.RedirectUrl = identityServerOptions.UserInteraction.LoginUrl
-                + "?ReturnUrl=" + encodedUrl;
-            return result;
+            return new LoginPageResult()
+            {
+                Request = validatedAuthnRequest,
+                RedirectUrl = identityServerOptions.UserInteraction.LoginUrl,
+                ReturnUrlParameterName = identityServerOptions.UserInteraction.LoginReturnUrlParameter
+            };
         }
 
         var issuer = $"{context.Request.Scheme.ToLowerInvariant()}://{context.Request.Host}/Saml2";
@@ -97,7 +107,7 @@ internal class SingleSignOnServiceEndpoint(
                     {
                         NameId = new()
                         {
-                            Value = user.FindFirstValue("sub")!,
+                            Value = user!.FindFirstValue("sub")!,
                             Format = Constants.NameIdFormats.Unspecified
                         },
                         SubjectConfirmation = new()
