@@ -14,6 +14,7 @@ using NSubstitute;
 using Sustainsys.Saml2.Bindings;
 using Sustainsys.Saml2.DuendeIdentityServer.Endpoints;
 using Sustainsys.Saml2.DuendeIdentityServer.Models;
+using Sustainsys.Saml2.DuendeIdentityServer.Validation;
 using Sustainsys.Saml2.Serialization;
 using Sustainsys.Saml2.Tests.Helpers;
 using System.Runtime.CompilerServices;
@@ -88,10 +89,10 @@ public class SingleSignOnServiceEndpointTests
         var subject = new SingleSignOnServiceEndpoint(
             frontChannelBindings,
             new SamlXmlReaderPlus(),
-            clientStore,
             userSession,
             idSrvOptions,
             new SamlXmlWriterPlus(),
+            new AuthnRequestValidator(clientStore),
             clock);
 
         return (httpContext, subject);
@@ -148,8 +149,8 @@ public class SingleSignOnServiceEndpointTests
         iActual.Should().BeOfType<Saml2FrontChannelResult>();
         var actual = (Saml2FrontChannelResult)iActual;
 
-        actual.Error.Should().Be("Invalid SP EntityID.");
-        actual.SpEntityID.Should().Be("https://invalid-sp.example.com/Saml2");
+        actual.Error.Should().Be("Invalid SP EntityId.");
+        actual.SpEntityId.Should().Be("https://invalid-sp.example.com/Saml2");
     }
 
     [Fact]
@@ -161,7 +162,7 @@ public class SingleSignOnServiceEndpointTests
         iActual.Should().BeOfType<Saml2FrontChannelResult>();
         var actual = (Saml2FrontChannelResult)iActual;
 
-        actual.Error.Should().Be("Invalid SP EntityID.");
-        actual.SpEntityID.Should().Be("urn:notSaml2");
+        actual.Error.Should().Be("Invalid SP EntityId.");
+        actual.SpEntityId.Should().Be("urn:notSaml2");
     }
 }

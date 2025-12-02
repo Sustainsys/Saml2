@@ -8,6 +8,7 @@ using Microsoft.Extensions.Options;
 using Sustainsys.Saml2.Bindings;
 using Sustainsys.Saml2.DuendeIdentityServer;
 using Sustainsys.Saml2.DuendeIdentityServer.Endpoints;
+using Sustainsys.Saml2.DuendeIdentityServer.Validation;
 using Sustainsys.Saml2.Serialization;
 
 // Builder extensions are by convention placed in the Microsoft.Extensions.DependencyInjection namespace
@@ -38,6 +39,9 @@ public static class IdentityServerBuilderExtensions
         identityServerBuilder.Services.AddSingleton<IHttpResponseWriter<Saml2FrontChannelResult>, Saml2FrontChannelHttpWriter>();
         identityServerBuilder.Services.TryAddSingleton<ISamlXmlWriterPlus, SamlXmlWriterPlus>();
         identityServerBuilder.Services.AddSingleton<IPostConfigureOptions<IdentityServerOptions>, PostConfigureIdentityServerOptions>();
+
+        // Use transient for services that have dependencies that might have any lifespan
+        identityServerBuilder.Services.TryAddTransient<IAuthnRequestValidator,  AuthnRequestValidator>();
 
         // The reader has state and must be transient.
         identityServerBuilder.Services.TryAddTransient<ISamlXmlReaderPlus, SamlXmlReaderPlus>();

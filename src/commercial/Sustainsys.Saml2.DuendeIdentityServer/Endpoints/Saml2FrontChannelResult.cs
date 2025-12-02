@@ -31,7 +31,7 @@ public class Saml2FrontChannelResult : EndpointResult<Saml2FrontChannelResult>
     /// <summary>
     /// Entity Id of Sp as received in incoming message, may not be validated.
     /// </summary>
-    public string? SpEntityID { get; set; }
+    public string? SpEntityId { get; set; }
 
     /// <summary>
     /// Url to redirect to
@@ -58,7 +58,7 @@ public class Saml2FrontChannelHttpWriter(
             {
                 Error = "Saml2 error",
                 ErrorDescription = result.Error,
-                ClientId = result.SpEntityID,
+                ClientId = result.SpEntityId,
                 RequestId = context.TraceIdentifier,
                 ActivityId = System.Diagnostics.Activity.Current?.Id
             };

@@ -64,6 +64,14 @@ public class Saml2Sp
     /// Assertion Consumer Services
     /// </summary>
     public ICollection<IndexedEndpoint> AsssertionConsumerServices { get; }
+
+    /// <summary>
+    /// IdentityResources indicating what claims this SP should get.
+    /// </summary>
+    /// <remarks>
+    /// The OpenId IdentityResource is required and is used to populate the NameIdentifier.
+    /// </remarks>
+    public ICollection<string> IdentityResources { get => inner.AllowedScopes; }
 }
 
 /// <summary>

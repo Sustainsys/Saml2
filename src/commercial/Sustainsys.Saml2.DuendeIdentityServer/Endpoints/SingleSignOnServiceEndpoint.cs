@@ -9,6 +9,7 @@ using Duende.IdentityServer.Stores;
 using Microsoft.AspNetCore.Http;
 using Sustainsys.Saml2.Bindings;
 using Sustainsys.Saml2.DuendeIdentityServer.Models;
+using Sustainsys.Saml2.DuendeIdentityServer.Validation;
 using Sustainsys.Saml2.Samlp;
 using Sustainsys.Saml2.Serialization;
 using Sustainsys.Saml2.Xml;
@@ -20,10 +21,10 @@ namespace Sustainsys.Saml2.DuendeIdentityServer.Endpoints;
 internal class SingleSignOnServiceEndpoint(
     IEnumerable<IFrontChannelBinding> frontChannelBindings,
     ISamlXmlReaderPlus samlXmlReader,
-    IClientStore clientStore,
     IUserSession userSession,
     IdentityServerOptions identityServerOptions,
     ISamlXmlWriterPlus samlXmlWriter,
+    IAuthnRequestValidator authnRequestValidator,
     IClock clock)
     : IEndpointHandler
 {
@@ -40,27 +41,23 @@ internal class SingleSignOnServiceEndpoint(
         var result = new Saml2FrontChannelResult();
 
         var binding = frontChannelBindings.Single(b => b.CanUnBind(context.Request));
-
         var requestMessage = await binding.UnBindAsync(context.Request, s => default!);
-
         var authnRequest = samlXmlReader.ReadAuthnRequest(new XmlTraverser(requestMessage.Xml));
 
-        if (authnRequest.Issuer == null)
+        ValidatedAuthnRequest validatedAuthnRequest = new()
         {
-            throw new InvalidOperationException();
-        }
+            AuthnRequest = authnRequest,
+            Binding = binding.Identifier,
+            Saml2Message = requestMessage,
+        };
 
-        result.SpEntityID = authnRequest.Issuer.Value;
+        var requestValidationResult = await authnRequestValidator.ValidateAsync(validatedAuthnRequest);
 
-        var client = await clientStore.FindEnabledClientByIdAsync(result.SpEntityID);
-        
-        if (client == null || client.ProtocolType != Saml2Constants.Saml2Protocol)
+        if (requestValidationResult.IsError)
         {
-            result.Error = "Invalid SP EntityID.";
-            return result;
+            result.Error = requestValidationResult.ErrorDescription;
+            result.SpEntityId = requestValidationResult.ValidatedRequest.AuthnRequest.Issuer?.Value;
         }
-       
-        var saml2Sp = client.AsSaml2Sp();
 
         var user = await userSession.GetUserAsync();
 
@@ -75,7 +72,8 @@ internal class SingleSignOnServiceEndpoint(
         }
 
         var issuer = $"{context.Request.Scheme.ToLowerInvariant()}://{context.Request.Host}/Saml2";
-        var destination = saml2Sp.AsssertionConsumerServices.Single().Location;
+        var destination = requestValidationResult.ValidatedRequest.Saml2Sp!.AsssertionConsumerServices.Single().Location;
+
         Response response = new()
         {
             Destination = destination,
@@ -120,7 +118,7 @@ internal class SingleSignOnServiceEndpoint(
                         {
                             new()
                             {
-                                Audiences = { result.SpEntityID }
+                                Audiences = { requestValidationResult.ValidatedRequest.Saml2Sp.EntityId }
                             }
                         }
                     },
