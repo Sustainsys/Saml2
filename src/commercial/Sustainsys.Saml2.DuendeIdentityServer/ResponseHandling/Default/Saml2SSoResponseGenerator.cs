@@ -78,51 +78,87 @@ public class Saml2SSoResponseGenerator(
             IssueInstant = clock.UtcNow.UtcDateTime,
             InResponseTo = validatedAuthnRequest.AuthnRequest.Id,
             Assertions =
-            {
-                new()
-                {
-                    Issuer = issuer,
-                    IssueInstant = clock.UtcNow.UtcDateTime,
-                    Subject = new()
-                    {
-                        NameId = new()
-                        {
-                            Value = validatedAuthnRequest.Subject!.FindFirstValue(JwtClaimTypes.Subject)!,
-                            Format = Constants.NameIdFormats.Unspecified
-                        },
-                        SubjectConfirmation = new()
-                        {
-                            Method = Constants.SubjectConfirmationMethods.Bearer,
-                            SubjectConfirmationData = new()
-                            {
-                                NotOnOrAfter = clock.UtcNow.UtcDateTime.AddMinutes(5),
-                                Recipient = destination,
-                                InResponseTo = validatedAuthnRequest.AuthnRequest.Id
-                            }
-                        }
-                    },
-                    Conditions = new()
-                    {
-                        NotOnOrAfter = clock.UtcNow.UtcDateTime.AddMinutes(5),
-                        AudienceRestrictions =
-                        {
-                            new()
-                            {
-                                Audiences = { validatedAuthnRequest.Saml2Sp.EntityId }
-                            }
-                        }
-                    },
-                    AuthnStatement = new()
-                    {
-                        AuthnInstant = clock.UtcNow.UtcDateTime,
-                        AuthnContext = new()
-                        {
-                            AuthnContextClassRef = Constants.AuthnContextClasses.Unspecified
-                        }
-                    }
-                }
+            { 
+                CreateAssertion(validatedAuthnRequest, issuer, destination)
             }
         };
         return response;
+    }
+
+    /// <summary>
+    /// Create the Assertion
+    /// </summary>
+    /// <param name="validatedAuthnRequest">AuthnRequest validation context</param>
+    /// <param name="issuer">The issuer to use</param>
+    /// <param name="destination">Destination URL</param>
+    /// <returns>Assertion</returns>
+    protected virtual Saml.Assertion CreateAssertion(ValidatedAuthnRequest validatedAuthnRequest, string issuer, string destination)
+        => new()
+        {
+            Issuer = issuer,
+            IssueInstant = clock.UtcNow.UtcDateTime,
+            Subject = CreateSubject(validatedAuthnRequest, destination),
+            Conditions = CreateConditions(validatedAuthnRequest),
+            AuthnStatement = CreateAuthnStatement()
+        };
+
+    /// <summary>
+    /// Create the AuthnStatement
+    /// </summary>
+    /// <returns>AuthnStatement</returns>
+    protected virtual Saml.AuthnStatement CreateAuthnStatement()
+        => new()
+        {
+            AuthnInstant = clock.UtcNow.UtcDateTime,
+            AuthnContext = new()
+            {
+                AuthnContextClassRef = Constants.AuthnContextClasses.Unspecified
+            }
+        };
+
+    /// <summary>
+    /// Create the Conditions
+    /// </summary>
+    /// <param name="validatedAuthnRequest">AuthnRequest validation context</param>
+    /// <returns>Conditions</returns>
+    protected virtual Saml.Conditions CreateConditions(ValidatedAuthnRequest validatedAuthnRequest)
+        => new()
+        {
+            NotOnOrAfter = clock.UtcNow.UtcDateTime.AddMinutes(5),
+            AudienceRestrictions =
+            {
+                new()
+                {
+                    Audiences = { validatedAuthnRequest.Saml2Sp!.EntityId }
+                }
+            }
+        };
+
+    /// <summary>
+    /// Creat the Subject
+    /// </summary>
+    /// <param name="validatedAuthnRequest">AuthnRequest validation context</param>
+    /// <param name="destination">Destination URL</param>
+    /// <returns>Subject</returns>
+    protected virtual Saml.Subject CreateSubject(ValidatedAuthnRequest validatedAuthnRequest, string destination)
+    {
+        return new()
+        {
+            NameId = new()
+            {
+                Value = validatedAuthnRequest.Subject!.FindFirstValue(JwtClaimTypes.Subject)!,
+                Format = Constants.NameIdFormats.Unspecified
+            },
+            SubjectConfirmation = new()
+            {
+                Method = Constants.SubjectConfirmationMethods.Bearer,
+                SubjectConfirmationData = new()
+                {
+                    NotOnOrAfter = clock.UtcNow.UtcDateTime.AddMinutes(5),
+                    Recipient = destination,
+                    InResponseTo = validatedAuthnRequest.AuthnRequest.Id
+                }
+            }
+        };
     }
 }
