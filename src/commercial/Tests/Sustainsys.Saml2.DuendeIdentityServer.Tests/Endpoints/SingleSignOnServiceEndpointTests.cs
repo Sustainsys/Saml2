@@ -6,6 +6,7 @@ using Duende.IdentityServer.Configuration;
 using Duende.IdentityServer.Models;
 using Duende.IdentityServer.Services;
 using Duende.IdentityServer.Stores;
+using Duende.IdentityServer.Validation;
 using FluentAssertions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Server.Kestrel.Core.Internal.Http;
@@ -93,14 +94,18 @@ public class SingleSignOnServiceEndpointTests
         var saml2IssuerNameService = Substitute.For<ISaml2IssuerNameService>();
         saml2IssuerNameService.GetCurrentAsync().Returns("https://idp.example.com/Saml2");
 
+        var resourceValidator = Substitute.For<IResourceValidator>();
+
+        var profileService = Substitute.For<IProfileService>();
+
         var subject = new SingleSignOnServiceEndpoint(
             frontChannelBindings,
             new SamlXmlReaderPlus(),
             userSession,
             idSrvOptions,
-            new AuthnRequestValidator(clientStore),
+            new AuthnRequestValidator(clientStore, resourceValidator),
             new Saml2SsoInteractionResponseGenerator(),
-            new Saml2SSoResponseGenerator(saml2IssuerNameService, clock, new SamlXmlWriterPlus()),
+            new Saml2SSoResponseGenerator(saml2IssuerNameService, clock, new SamlXmlWriterPlus(), profileService),
             saml2IssuerNameService);
 
         return (httpContext, subject);

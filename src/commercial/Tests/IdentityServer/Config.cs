@@ -41,7 +41,8 @@ public static class Config
             new Saml2Sp
             {
                 EntityId = "https://localhost:5001/Saml2IdSrv",
-                AsssertionConsumerServices = { "https://localhost:5001/Saml2IdSrv/Acs" }
+                AsssertionConsumerServices = { "https://localhost:5001/Saml2IdSrv/Acs" },
+                IdentityResources = { "profile" }
             }
         };
 }

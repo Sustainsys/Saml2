@@ -2,6 +2,7 @@
 // Any usage requires a valid license agreement with Sustainsys AB
 
 using Duende.IdentityServer.Models;
+using Duende.IdentityServer.Validation;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -69,7 +70,7 @@ public class Saml2Sp
     /// IdentityResources indicating what claims this SP should get.
     /// </summary>
     /// <remarks>
-    /// The OpenId IdentityResource is required and is used to populate the NameIdentifier.
+    /// The sub claims is always used and to populate the NameIdentifier regardless of configured IdentityResources
     /// </remarks>
     public ICollection<string> IdentityResources { get => inner.AllowedScopes; }
 }

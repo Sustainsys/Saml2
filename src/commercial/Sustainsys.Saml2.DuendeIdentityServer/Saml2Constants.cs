@@ -11,7 +11,12 @@ public static class Saml2Constants
     /// <summary>
     /// Protocol type to set on clients.
     /// </summary>
-    public const string Saml2Protocol = "SAML2";
+    public const string Saml2Protocol = "Saml2";
+
+    /// <summary>
+    /// Profile service caller identifier.
+    /// </summary>
+    public const string SsoResponseProfileCaller = "Saml2SsoResponseGenerator";
 
     /// <summary>
     /// Default values

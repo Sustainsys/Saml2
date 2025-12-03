@@ -40,13 +40,16 @@ internal class SingleSignOnServiceEndpoint(
         var authnRequest = samlXmlReader.ReadAuthnRequest(new XmlTraverser(requestMessage.Xml));
 
         var user = await userSession.GetUserAsync();
+        var sid = await userSession.GetSessionIdAsync();
 
         ValidatedAuthnRequest validatedAuthnRequest = new()
         {
+            IdentityServerOptions = identityServerOptions,
             AuthnRequest = authnRequest,
             Binding = binding.Identifier,
             Saml2Message = requestMessage,
             Subject = user,
+            SessionId = sid,
             Saml2IdpEntityId = await saml2IssuerNameService.GetCurrentAsync(),
         };
 

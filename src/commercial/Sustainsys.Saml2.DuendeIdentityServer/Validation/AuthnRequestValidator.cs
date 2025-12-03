@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Sustainsys AB. All rights reserved.
 // Any usage requires a valid license agreement with Sustainsys AB
 
+using Duende.IdentityServer.Configuration;
 using Duende.IdentityServer.Stores;
 using Duende.IdentityServer.Validation;
 using Sustainsys.Saml2.Bindings;
@@ -20,6 +21,11 @@ namespace Sustainsys.Saml2.DuendeIdentityServer.Validation;
 /// </summary>
 public class ValidatedAuthnRequest
 {
+    /// <summary>
+    /// The current IdentityServerOptions
+    /// </summary>
+    public required IdentityServerOptions IdentityServerOptions { get; init; }
+
     /// <summary>
     /// The AuthnRequest
     /// </summary>
@@ -43,7 +49,12 @@ public class ValidatedAuthnRequest
     /// <summary>
     /// The current user
     /// </summary>
-    public ClaimsPrincipal? Subject { get; set; }
+    public ClaimsPrincipal? Subject { get; init; }
+
+    /// <summary>
+    /// The current SessionId
+    /// </summary>
+    public string? SessionId { get; init; }
 
     /// <summary>
     /// The Saml2 identifier for IdentityServer
@@ -55,6 +66,31 @@ public class ValidatedAuthnRequest
     /// to trust it and return error responses to it.
     /// </summary>
     public IndexedEndpoint AssertionConsumerService { get; set; }
+
+    /// <summary>
+    /// Resource "validation" results. Used to get list of claims to include in response.
+    /// </summary>
+    public ResourceValidationResult? ValidatedResources { get; set; }
+
+    /// <summary>
+    /// Generate a OIDC ValidatedRequest as good as possible from the ValidatedAuthnRequest.
+    /// </summary>
+    /// <remarks>
+    /// The ValidatedRequest base class is built for OpenId Connect, that's why the ValidatedAuthnRequest
+    /// class does not inherit it. But in some cases, e.g. the profile service call, it's better to supply
+    /// a ValidatedRequest on a best-effort than to supply nothing.
+    /// </remarks>
+    /// <returns>ValidatedRequest</returns>
+    public ValidatedRequest ToValidatedRequest()
+        => new()
+        {
+            ClientId = Saml2Sp?.EntityId ?? throw new ArgumentNullException(nameof(Saml2Sp)),
+            Client = Saml2Sp,
+            IssuerName = Saml2IdpEntityId,
+            Options = IdentityServerOptions,
+            Subject = Subject,
+            SessionId = SessionId,
+        };
 }
 
 /// <summary>
@@ -115,8 +151,9 @@ public interface IAuthnRequestValidator
 /// <summary>
 /// AuthnRequest validator
 /// </summary>
-public class AuthnRequestValidator
-    (IClientStore clientStore)
+public class AuthnRequestValidator(
+    IClientStore clientStore,
+    IResourceValidator resourceValidator)
     : IAuthnRequestValidator
 {
     /// <inheritdoc />
@@ -126,6 +163,14 @@ public class AuthnRequestValidator
         if (spResult.IsError)
         {
             return spResult;
+        }
+
+        var resourceResult = await ValidateResourcesAsync(request);
+        if (resourceResult.IsError)
+        {
+            {
+                return resourceResult;
+            }
         }
 
         return AuthnRequestValidationResult.Valid(request);
@@ -153,6 +198,37 @@ public class AuthnRequestValidator
         }
 
         request.Saml2Sp = client.AsSaml2Sp();
+
+        return AuthnRequestValidationResult.Valid(request);
+    }
+
+    /// <summary>
+    /// "Validates" the request resources
+    /// </summary>
+    /// <param name="request">AuthnRequest validation context</param>
+    /// <returns>Validation results</returns>
+    /// <remarks>
+    /// Most saml2 deployments do not use any mechanism for the SP/client to request specific claims/attributes,
+    /// so we use the AllowedScopes to indicate what IdentityResources should be used to generate claims. The
+    /// "validation" is done because the validator also loads the scopes and extracts the list of claims.
+    /// </remarks>
+    protected virtual async Task<AuthnRequestValidationResult> ValidateResourcesAsync(ValidatedAuthnRequest request)
+    {
+        ResourceValidationRequest resourceValidationRequest = new()
+        {
+            Client = request.Saml2Sp ?? throw new ArgumentNullException(nameof(request.Saml2Sp)),
+            Scopes = request.Saml2Sp.IdentityResources
+        };
+
+        var result = await resourceValidator.ValidateRequestedResourcesAsync(resourceValidationRequest);
+
+        // There is really no way this could fail because we just validate the allowed list. But let's be safe.
+        if (!result.Succeeded)
+        {
+            return AuthnRequestValidationResult.InValid(request, Constants.StatusCodes.Responder, "IdentityResource configuration error");
+        }
+
+        request.ValidatedResources = result;
 
         return AuthnRequestValidationResult.Valid(request);
     }

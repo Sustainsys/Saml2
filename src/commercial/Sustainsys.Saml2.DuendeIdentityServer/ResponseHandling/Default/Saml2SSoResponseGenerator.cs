@@ -4,26 +4,32 @@
 using Duende.IdentityModel;
 using Duende.IdentityServer;
 using Duende.IdentityServer.Models;
+using Duende.IdentityServer.Services;
+using Duende.IdentityServer.Validation;
 using Sustainsys.Saml2.DuendeIdentityServer.Endpoints.Results;
+using Sustainsys.Saml2.DuendeIdentityServer.Models;
 using Sustainsys.Saml2.DuendeIdentityServer.Services;
 using Sustainsys.Saml2.DuendeIdentityServer.Validation;
+using Sustainsys.Saml2.Saml;
 using Sustainsys.Saml2.Samlp;
 using Sustainsys.Saml2.Serialization;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Security.Claims;
 using System.Security.Cryptography.X509Certificates;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Sustainsys.Saml2.DuendeIdentityServer.ResponseHandling.Default;
 
-/// <inheritdoc/>
+/// <summary>
+/// Response Generator for Saml2 Single Sign On.
+/// </summary>
+/// <param name="saml2IssuerNameService">Issuer name service for Saml2</param>
+/// <param name="clock">Clock</param>
+/// <param name="samlXmlWriter">Xml Writer/serializer</param>
+/// <param name="profileService">Profile Service</param>
 public class Saml2SSoResponseGenerator(
     ISaml2IssuerNameService saml2IssuerNameService,
     IClock clock,
-    ISamlXmlWriterPlus samlXmlWriter) 
+    ISamlXmlWriterPlus samlXmlWriter,
+    IProfileService profileService) 
     : ISaml2SsoResponseGenerator
 {
 
@@ -79,7 +85,7 @@ public class Saml2SSoResponseGenerator(
             InResponseTo = validatedAuthnRequest.AuthnRequest.Id,
             Assertions =
             { 
-                CreateAssertion(validatedAuthnRequest, issuer, destination)
+                await CreateAssertionAsync(validatedAuthnRequest, issuer, destination)
             }
         };
         return response;
@@ -92,7 +98,7 @@ public class Saml2SSoResponseGenerator(
     /// <param name="issuer">The issuer to use</param>
     /// <param name="destination">Destination URL</param>
     /// <returns>Assertion</returns>
-    protected virtual Saml.Assertion CreateAssertion(ValidatedAuthnRequest validatedAuthnRequest, string issuer, string destination)
+    protected async Task<Saml.Assertion> CreateAssertionAsync(ValidatedAuthnRequest validatedAuthnRequest, string issuer, string destination)
         => new()
         {
             Issuer = issuer,
@@ -100,6 +106,7 @@ public class Saml2SSoResponseGenerator(
             Subject = CreateSubject(validatedAuthnRequest, destination),
             Conditions = CreateConditions(validatedAuthnRequest),
             AuthnStatement = CreateAuthnStatement(),
+            Attributes = [ .. await CreateAttributesAsync(validatedAuthnRequest) ]
         };
 
     /// <summary>
@@ -112,6 +119,7 @@ public class Saml2SSoResponseGenerator(
             AuthnInstant = clock.UtcNow.UtcDateTime,
             AuthnContext = new()
             {
+                // TODO: Map this based on acr/amr claims
                 AuthnContextClassRef = Constants.AuthnContextClasses.Unspecified
             }
         };
@@ -135,7 +143,7 @@ public class Saml2SSoResponseGenerator(
         };
 
     /// <summary>
-    /// Creat the Subject
+    /// Create the Subject
     /// </summary>
     /// <param name="validatedAuthnRequest">AuthnRequest validation context</param>
     /// <param name="destination">Destination URL</param>
@@ -160,5 +168,42 @@ public class Saml2SSoResponseGenerator(
                 }
             }
         };
+    }
+
+    /// <summary>
+    /// Create Attributes
+    /// </summary>
+    /// <param name="validatedAuthnRequest">AuthnRequest validation context</param>
+    /// <returns>Attributes</returns>
+    protected virtual async Task<IList<SamlAttribute>> CreateAttributesAsync(ValidatedAuthnRequest validatedAuthnRequest)
+    {
+        List<Claim> claims = [];
+
+        ArgumentNullException.ThrowIfNull(validatedAuthnRequest.ValidatedResources);
+
+        var requestedClaims = validatedAuthnRequest.ValidatedResources.Resources.IdentityResources
+            .SelectMany(ir => ir.UserClaims)
+            .Distinct();
+
+        ProfileDataRequestContext profileRequest = new()
+        {
+            Caller = Saml2Constants.SsoResponseProfileCaller,
+            Client = validatedAuthnRequest.Saml2Sp!,
+            Subject = validatedAuthnRequest.Subject!,
+            ValidatedRequest = validatedAuthnRequest.ToValidatedRequest(),
+            RequestedClaimTypes = requestedClaims
+        };
+
+        await profileService.GetProfileDataAsync(profileRequest);
+
+        claims.AddRange(profileRequest.IssuedClaims);
+
+        // TODO: Add mapping mechanism for attribute names
+        var attributes = claims
+            .GroupBy(c => c.Type)
+            .Select(g => new SamlAttribute() { Name = g.Key, Values = [.. g.Select(c => c.Value)] })
+            .ToList();
+
+        return attributes;
     }
 }
