@@ -1,5 +1,5 @@
 ﻿// Copyright (c) Sustainsys AB. All rights reserved.
-// Licensed under the MIT license. See LICENSE in the project root for license information.
+// Any usage requires a valid license agreement with Sustainsys AB
 
 using Sustainsys.Saml2.Samlp;
 using Sustainsys.Saml2.Xml;
@@ -7,7 +7,7 @@ using static Sustainsys.Saml2.Constants;
 
 namespace Sustainsys.Saml2.Serialization;
 
-partial class SamlXmlReader
+partial class SamlXmlReaderPlus
 {
     /// <summary>
     /// Reads a RequestedAuthnContext.
