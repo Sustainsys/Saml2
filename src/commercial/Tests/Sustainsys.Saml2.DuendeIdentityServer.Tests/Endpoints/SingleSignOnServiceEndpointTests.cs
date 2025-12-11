@@ -62,6 +62,13 @@ public class SingleSignOnServiceEndpointTests
 
         IEnumerable<IFrontChannelBinding> frontChannelBindings = [new HttpRedirectBinding(), new HttpPostBinding()];
 
+        IdentityResource[] identityResources =
+            [
+                new("profile", ["name", "given_name", "family_name"])
+            ];
+
+        var identityResourceNames = identityResources.Select(ir => ir.Name);
+
         var clientStore = new InMemoryClientStore(
             [
                 new Saml2Sp()
@@ -95,6 +102,8 @@ public class SingleSignOnServiceEndpointTests
         saml2IssuerNameService.GetCurrentAsync().Returns("https://idp.example.com/Saml2");
 
         var resourceValidator = Substitute.For<IResourceValidator>();
+        resourceValidator.ValidateRequestedResourcesAsync(Arg.Any<ResourceValidationRequest>())
+            .Returns(new ResourceValidationResult(new Resources(identityResources, null, null)));
 
         var profileService = Substitute.For<IProfileService>();
 
