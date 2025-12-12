@@ -1,4 +1,4 @@
-[![.NET Core](https://github.com/Sustainsys/Saml2/actions/workflows/dotnet.yml/badge.svg?branch=develop)](https://github.com/Sustainsys/Saml2/actions/workflows/dotnet.yml)
+[![.NET Core](https://github.com/Sustainsys/Saml2/actions/workflows/dotnet.yml/badge.svg?branch=main)](https://github.com/Sustainsys/Saml2/actions/workflows/dotnet.yml)
 
 Sustainsys.Saml2
 =============
@@ -27,8 +27,7 @@ organisation support - and also support maintenance and development of the libra
 
 ## Branches
 There are three active branches in the repo.
-* `develop` is development for a new version (will be released as v3 eventually) that only
-  supports Asp.Net Core.
+* `main` is the version in active development (currently v3) that only supports Asp.Net Core.
 * `v1` is a supported version that uses the `System.IdentityModel` library for token handling
   and supports HttpModule, Mvc, Owin and AspNetCore2 (only on full. Net Framework). This branch 
   will only receive security fixes or critical compatibility fixes for major browsers.

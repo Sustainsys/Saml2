@@ -2,9 +2,9 @@ name: .NET
 
 on:
   push:
-    branches: [ develop ]
+    branches: [ main ]
   pull_request:
-    branches: [ develop ]
+    branches: [ main ]
 
 permissions:
   contents: read
@@ -19,6 +19,7 @@ jobs:
       uses: actions/setup-dotnet@v4.3.1
       with:
         dotnet-version: | 
+          10.0.x
           9.0.x
           8.0.x
     - name: Restore dependencies
