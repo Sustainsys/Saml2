@@ -6,6 +6,7 @@ using System.Runtime.CompilerServices;
 using System.Xml;
 
 namespace Sustainsys.Saml2.Plus.Tests.Serialization;
+
 public partial class SamlXmlWriterPlusTests
 {
     private static XmlDocument GetXmlDocument([CallerMemberName] string? fileName = null)

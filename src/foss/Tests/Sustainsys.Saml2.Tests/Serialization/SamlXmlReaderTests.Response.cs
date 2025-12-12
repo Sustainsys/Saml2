@@ -9,6 +9,7 @@ using System.Security.Cryptography.Xml;
 using System.Xml;
 
 namespace Sustainsys.Saml2.Tests.Serialization;
+
 partial class SamlXmlReaderTests
 {
     [Fact]

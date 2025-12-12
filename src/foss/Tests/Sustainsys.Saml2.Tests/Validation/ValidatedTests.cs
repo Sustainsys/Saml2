@@ -5,6 +5,7 @@ using Sustainsys.Saml2.Tests.Helpers;
 using Sustainsys.Saml2.Validation;
 
 namespace Sustainsys.Saml2.Tests.Validation;
+
 public class ValidatedTests
 {
     private class MyClass

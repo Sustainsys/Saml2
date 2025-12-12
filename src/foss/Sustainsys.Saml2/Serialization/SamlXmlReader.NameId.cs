@@ -5,6 +5,7 @@ using Sustainsys.Saml2.Saml;
 using Sustainsys.Saml2.Xml;
 
 namespace Sustainsys.Saml2.Serialization;
+
 public partial class SamlXmlReader
 {
     /// <summary>

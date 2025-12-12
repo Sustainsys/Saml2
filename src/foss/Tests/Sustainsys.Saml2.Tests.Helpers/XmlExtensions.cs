@@ -4,6 +4,7 @@
 using System.Xml;
 
 namespace Sustainsys.Saml2.Tests.Helpers;
+
 public static class XmlExtensions
 {
     public static XmlNamespaceManager GetNsMgr(this XmlNode xmlNode)

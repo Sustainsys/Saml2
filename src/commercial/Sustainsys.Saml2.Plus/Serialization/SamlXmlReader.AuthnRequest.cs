@@ -6,6 +6,7 @@ using Sustainsys.Saml2.Xml;
 using static Sustainsys.Saml2.Constants;
 
 namespace Sustainsys.Saml2.Serialization;
+
 public partial class SamlXmlReaderPlus
 {
     // TODO: Convert other reads to follow this pattern with a callback for errors

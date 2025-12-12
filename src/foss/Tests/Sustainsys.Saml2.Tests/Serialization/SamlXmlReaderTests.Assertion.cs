@@ -8,6 +8,7 @@ using Sustainsys.Saml2.Xml;
 using System.Xml;
 
 namespace Sustainsys.Saml2.Tests.Serialization;
+
 public partial class SamlXmlReaderTests
 {
     [Fact]

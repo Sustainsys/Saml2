@@ -5,6 +5,7 @@ using Duende.IdentityServer.Hosting;
 using Microsoft.AspNetCore.Http;
 
 namespace Sustainsys.Saml2.DuendeIdentityServer.Endpoints;
+
 internal class SingleSignOnServiceEndpoint : IEndpointHandler
 {
     public Task<IEndpointResult?> ProcessAsync(HttpContext context)

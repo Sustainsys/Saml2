@@ -5,6 +5,7 @@ using Sustainsys.Saml2.Samlp;
 using System.Xml;
 
 namespace Sustainsys.Saml2.Tests.Samlp;
+
 public class RequestAbstractTypeTests
 {
     private class ConcreteRequest : RequestAbstractType

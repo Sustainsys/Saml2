@@ -7,6 +7,7 @@ using Sustainsys.Saml2.Bindings;
 using System.Xml;
 
 namespace Sustainsys.Saml2.Tests.Bindings;
+
 public class FrontChannelBindingTests
 {
     private class Subject : FrontChannelBinding

@@ -4,6 +4,7 @@
 using Microsoft.AspNetCore.DataProtection;
 
 namespace Sustainsys.Saml2.Tests.Helpers;
+
 public class FakeDataProtectionProvider : IDataProtectionProvider
 {
     public IDataProtector CreateProtector(string _) => new FakeDataProtector();

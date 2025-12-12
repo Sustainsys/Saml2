@@ -6,6 +6,7 @@ using Sustainsys.Saml2.Xml;
 using static Sustainsys.Saml2.Constants;
 
 namespace Sustainsys.Saml2.Serialization;
+
 partial class SamlXmlReader
 {
     /// <summary>

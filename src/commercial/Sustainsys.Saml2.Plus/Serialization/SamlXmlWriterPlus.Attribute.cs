@@ -6,6 +6,7 @@ using System.Xml;
 using static Sustainsys.Saml2.Constants;
 
 namespace Sustainsys.Saml2.Serialization;
+
 partial class SamlXmlWriterPlus
 {
     /// <summary>

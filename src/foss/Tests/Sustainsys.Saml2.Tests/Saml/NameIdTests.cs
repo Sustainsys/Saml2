@@ -4,6 +4,7 @@
 using Sustainsys.Saml2.Saml;
 
 namespace Sustainsys.Saml2.Tests.Saml;
+
 public class NameIdTests
 {
     private const string value1 = "https://idp1.example.com";

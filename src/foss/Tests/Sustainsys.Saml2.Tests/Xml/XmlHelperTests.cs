@@ -5,6 +5,7 @@ using Sustainsys.Saml2.Xml;
 using System.Xml;
 
 namespace Sustainsys.Saml2.Tests.Xml;
+
 public class XmlHelperTests
 {
     [Fact]

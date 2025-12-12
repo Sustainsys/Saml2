@@ -24,6 +24,7 @@ using System.Text.Encodings.Web;
 using System.Xml;
 
 namespace Sustainsys.Saml2.Tests.AspNetCore;
+
 public class Saml2HandlerTests
 {
     private readonly static DateTimeUtc CurrentFakeTime = new(2023, 09, 08, 14, 53, 02);
