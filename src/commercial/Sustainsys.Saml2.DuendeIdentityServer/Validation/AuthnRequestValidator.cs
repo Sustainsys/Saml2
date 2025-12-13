@@ -216,7 +216,10 @@ public class AuthnRequestValidator(
     {
         ResourceValidationRequest resourceValidationRequest = new()
         {
+#pragma warning disable CA2208 // ArgumentNullException param should match method param.
             Client = request.Saml2Sp ?? throw new ArgumentNullException(nameof(request.Saml2Sp)),
+#pragma warning restore CA2208 
+
             Scopes = request.Saml2Sp.IdentityResources
         };
 
