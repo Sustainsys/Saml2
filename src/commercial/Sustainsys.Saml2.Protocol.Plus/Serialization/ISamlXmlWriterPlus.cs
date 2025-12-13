@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Sustainsys AB. All rights reserved.
 // Any usage requires a valid license agreement with Sustainsys AB
 
+using Sustainsys.Saml2.Metadata;
 using Sustainsys.Saml2.Samlp;
 using System.Xml;
 
@@ -21,4 +22,11 @@ public interface ISamlXmlWriterPlus : ISamlXmlWriter
     /// <param name="response">Saml Response</param>
     /// <returns>Created XmlDoc</returns>
     XmlDocument Write(Response response);
+
+    /// <summary>
+    /// Create an Xml document and write an EtnityDescriptor to it.
+    /// </summary>
+    /// <param name="entityDescriptor">Entity Descriptor</param>
+    /// <returns>Created XmlDoc</returns>
+    XmlDocument Write(EntityDescriptor entityDescriptor);
 }

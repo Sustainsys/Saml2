@@ -9,9 +9,10 @@ namespace Sustainsys.Saml2.Metadata;
 public class RoleDescriptor
 {
     /// <summary>
-    /// ProtocolSupportEnumeration attribute value.
+    /// ProtocolSupportEnumeration attribute value. Defaults to <see cref="Constants.Saml2Protocol"/>
     /// </summary>
-    public string? ProtocolSupportEnumeration { get; set; }
+    public string ProtocolSupportEnumeration { get; set; }
+        = Constants.Saml2Protocol;
 
     /// <summary>
     /// Cryptographif keys for signing and encryption.

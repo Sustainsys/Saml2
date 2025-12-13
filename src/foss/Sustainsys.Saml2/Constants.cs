@@ -25,6 +25,9 @@ public static class Constants
     public const string SamlRequest = "SAMLRequest";
     public const string SamlResponse = "SAMLResponse";
     public const string RelayState = "RelayState";
+    public const string Saml2Protocol = "urn:oasis:names:tc:SAML:2.0:protocol";
+
+    public const string MetadataContentType = "application/samlmetadata+xml";
 
     public static class BindingUris
     {

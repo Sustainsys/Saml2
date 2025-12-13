@@ -16,5 +16,5 @@ public class IDPSSODescriptor : SSODescriptor
     /// <summary>
     /// Does the Idp wants any AuthnRequests to be signed?
     /// </summary>
-    public bool WantAuthnRequestsSigned { get; set; }
+    public bool? WantAuthnRequestsSigned { get; set; }
 }

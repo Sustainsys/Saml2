@@ -36,6 +36,9 @@ internal class SingleSignOnServiceEndpoint(
     public async Task<IEndpointResult?> ProcessAsync(HttpContext context)
     {
         var binding = frontChannelBindings.Single(b => b.CanUnBind(context.Request));
+
+        // TODO: Check that the binding is allowed in options.
+
         var requestMessage = await binding.UnBindAsync(context.Request, s => default!);
         var authnRequest = samlXmlReader.ReadAuthnRequest(new XmlTraverser(requestMessage.Xml));
 

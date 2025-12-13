@@ -32,17 +32,12 @@ public class Saml2FrontChannelResult : EndpointResult<Saml2FrontChannelResult>
     /// Entity Id of Sp as received in incoming message, may not be validated.
     /// </summary>
     public string? SpEntityId { get; set; }
-
-    /// <summary>
-    /// Url to redirect to
-    /// </summary>
-    public string? RedirectUrl { get; set; }
 }
 
 /// <summary>
-/// Write an Saml2 front channel result to the HttpContext
+/// Write a Saml2 front channel result to the HttpContext
 /// </summary>
-public class Saml2FrontChannelHttpWriter(
+public class Saml2FrontChannelResultHttpWriter(
     IClock clock,
     IMessageStore<ErrorMessage> errorMessageStore,
     IdentityServerOptions identityServerOptions,
@@ -82,12 +77,6 @@ public class Saml2FrontChannelHttpWriter(
 
             var url = errorUrl += identityServerOptions.UserInteraction.ErrorIdParameter + "=" + id;
             context.Response.Redirect(url);
-            return;
-        }
-
-        if (!string.IsNullOrEmpty(result.RedirectUrl))
-        {
-            context.Response.Redirect(result.RedirectUrl);
             return;
         }
 

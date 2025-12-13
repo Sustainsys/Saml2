@@ -27,5 +27,27 @@ public static class Saml2Constants
         /// Default path for Saml2
         /// </summary>
         public const string Saml2Path = "/Saml2";
+
+        /// <summary>
+        /// Default path for SSO endpoint
+        /// </summary>
+        public const string SingleSignOnServicePath = "/Saml2/SSO";
+    }
+
+
+    /// <summary>
+    /// Name of endpoints.
+    /// </summary>
+    public static class EndPoints
+    {
+        /// <summary>
+        /// Name of Saml2 Single Sign On Service endpoint.
+        /// </summary>
+        public const string SingleSignonService = "Saml2 SingleSignOnService";
+
+        /// <summary>
+        /// Name of Saml2 Metadata endpoint.
+        /// </summary>
+        public const string Metadata = "Saml2 Metadata";
     }
 }

@@ -76,7 +76,7 @@ public partial class SamlXmlReaderTests
         {
             EntityId = "https://stubidp.sustainsys.com/Metadata",
             Id = "_eb83b59a-572a-480b-b36c-e3a3edfd92d0",
-            CacheDuraton = TimeSpan.FromMinutes(15),
+            CacheDuration = TimeSpan.FromMinutes(15),
             ValidUntil = new(2022, 03, 15, 20, 47, 00),
             RoleDescriptors =
             {
