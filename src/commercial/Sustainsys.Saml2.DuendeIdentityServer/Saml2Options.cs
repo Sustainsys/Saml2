@@ -50,7 +50,7 @@ public class Saml2Options
         /// <summary>
         /// Path for the SingleSignOnService Endpoint.
         /// </summary>
-        public string SingleSignOnServicePath { get; set; } 
+        public string SingleSignOnServicePath { get; set; }
             = Saml2Constants.Defaults.SingleSignOnServicePath;
 
         /// <summary>

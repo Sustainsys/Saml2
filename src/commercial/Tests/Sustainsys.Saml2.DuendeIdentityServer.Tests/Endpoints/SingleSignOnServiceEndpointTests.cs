@@ -26,6 +26,7 @@ using System.Security.Claims;
 using System.Xml;
 
 namespace Sustainsys.Saml2.DuendeIdentityServer.Tests.Endpoints;
+
 public class SingleSignOnServiceEndpointTests
 {
     static XmlDocument? GetXmlDocument([CallerMemberName] string? fileName = null) =>

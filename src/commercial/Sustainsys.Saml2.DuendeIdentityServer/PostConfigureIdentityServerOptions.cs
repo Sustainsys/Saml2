@@ -5,6 +5,7 @@ using Duende.IdentityServer.Configuration;
 using Microsoft.Extensions.Options;
 
 namespace Sustainsys.Saml2.DuendeIdentityServer;
+
 internal class PostConfigureIdentityServerOptions : IPostConfigureOptions<IdentityServerOptions>
 {
     public void PostConfigure(string? name, IdentityServerOptions options)

@@ -35,9 +35,9 @@ public class Saml2MetadataResultWriter : IHttpResponseWriter<Saml2MetadataResult
         // makes the browser download the file instead of displaying. A middle ground
         // is to check if accept header indicates it's a browser and then give it XML,
         // and if not respond with the correct content type.
-        context.Response.ContentType = 
+        context.Response.ContentType =
         context.Request.Headers.Accept.First()?.Contains("text/html") ?? false
-            ? "text/xml" 
+            ? "text/xml"
             : Constants.MetadataContentType;
 
         // TODO: Add metadata signing.

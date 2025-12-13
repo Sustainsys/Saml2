@@ -22,9 +22,9 @@ public class Saml2SsoInteractionResponseGenerator : ISaml2SsoInteractionResponse
 
         if (request.Subject == null)
         {
-            return new InteractionResponse() 
-            { 
-                IsLogin = true 
+            return new InteractionResponse()
+            {
+                IsLogin = true
             };
         }
 

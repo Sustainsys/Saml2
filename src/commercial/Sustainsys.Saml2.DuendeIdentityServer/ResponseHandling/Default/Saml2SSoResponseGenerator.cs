@@ -29,7 +29,7 @@ public class Saml2SSoResponseGenerator(
     ISaml2IssuerNameService saml2IssuerNameService,
     IClock clock,
     ISamlXmlWriterPlus samlXmlWriter,
-    IProfileService profileService) 
+    IProfileService profileService)
     : ISaml2SsoResponseGenerator
 {
 
@@ -84,7 +84,7 @@ public class Saml2SSoResponseGenerator(
             IssueInstant = clock.UtcNow.UtcDateTime,
             InResponseTo = validatedAuthnRequest.AuthnRequest.Id,
             Assertions =
-            { 
+            {
                 await CreateAssertionAsync(validatedAuthnRequest, issuer, destination)
             }
         };
@@ -106,7 +106,7 @@ public class Saml2SSoResponseGenerator(
             Subject = CreateSubject(validatedAuthnRequest, destination),
             Conditions = CreateConditions(validatedAuthnRequest),
             AuthnStatement = CreateAuthnStatement(),
-            Attributes = [ .. await CreateAttributesAsync(validatedAuthnRequest) ]
+            Attributes = [.. await CreateAttributesAsync(validatedAuthnRequest)]
         };
 
     /// <summary>

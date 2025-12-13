@@ -18,7 +18,7 @@ internal class SerializingCollectionWrapper(Client client) : ICollection<Indexed
     public bool IsReadOnly => client.RedirectUris.IsReadOnly;
 
     public void Add(IndexedEndpoint item) => client.RedirectUris.Add(item.Serialize());
-   
+
     public void Clear() => client.RedirectUris.Clear();
     public bool Contains(IndexedEndpoint item) => client.RedirectUris.Contains(item.Serialize());
     public void CopyTo(IndexedEndpoint[] array, int arrayIndex) => throw new NotImplementedException();

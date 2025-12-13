@@ -87,4 +87,3 @@ public static class Saml2SpExtensions
     /// <returns>Saml2 SP</returns>
     public static Saml2Sp AsSaml2Sp(this Client client) => new(client);
 }
-

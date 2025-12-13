@@ -89,7 +89,8 @@ internal class SingleSignOnServiceEndpoint(
                 validatedAuthnRequest,
                 identityServerOptions.UserInteraction.LoginUrl,
                 identityServerOptions.UserInteraction.LoginReturnUrlParameter);
-        };
+        }
+        ;
 
         return null;
     }
