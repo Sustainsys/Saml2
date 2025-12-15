@@ -1,0 +1,5 @@
+﻿<samlp:AuthnRequest xmlns:samlp="urn:oasis:names:tc:SAML:2.0:protocol" xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion"
+					ID="request123" Version="2.0" IssueInstant="2025-10-08T15:28:14Z"
+					Destination="https://idp.example.com/Saml2/SSO">
+	<saml:Issuer>https://sp.example.com/Saml2</saml:Issuer>
+</samlp:AuthnRequest>

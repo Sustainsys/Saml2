@@ -25,6 +25,9 @@ public static class Constants
     public const string SamlRequest = "SAMLRequest";
     public const string SamlResponse = "SAMLResponse";
     public const string RelayState = "RelayState";
+    public const string Saml2Protocol = "urn:oasis:names:tc:SAML:2.0:protocol";
+
+    public const string MetadataContentType = "application/samlmetadata+xml";
 
     public static class BindingUris
     {
@@ -157,10 +160,12 @@ public static class Constants
     public static class NameIdFormats
     {
         public const string Entity = "urn:oasis:names:tc:SAML:2.0:nameid-format:entity";
+        public const string Unspecified = "urn:oasis:names:tc:SAML:1.1:nameid-format:unspecified";
     }
 
     public static class AuthnContextClasses
     {
         public const string PasswordProtectedTransport = "urn:oasis:names:tc:SAML:2.0:ac:classes:PasswordProtectedTransport";
+        public const string Unspecified = "urn:oasis:names:tc:SAML:2.0:ac:classes:unspecified";
     }
 }

@@ -59,11 +59,6 @@ public static class ValidationExtensions
 /// <typeparam name="TData">The type of the data</typeparam>
 public readonly struct Valid<TData>
 {
-    /// <summary>
-    /// Constructor. Caller must ensure that the data is validated as
-    /// part of the construction.
-    /// </summary>
-    /// <param name="data">The data to wrap.</param>
     private Valid(TData data) => Value = data;
 
     /// <summary>

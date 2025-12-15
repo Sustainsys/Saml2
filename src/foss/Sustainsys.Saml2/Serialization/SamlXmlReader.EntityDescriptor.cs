@@ -55,7 +55,7 @@ partial class SamlXmlReader
     {
         entityDescriptor.EntityId = source.GetRequiredAbsoluteUriAttribute(Attributes.entityID) ?? "";
         entityDescriptor.Id = source.GetAttribute(Attributes.ID);
-        entityDescriptor.CacheDuraton = source.GetTimeSpanAttribute(Attributes.cacheDuration);
+        entityDescriptor.CacheDuration = source.GetTimeSpanAttribute(Attributes.cacheDuration);
         entityDescriptor.ValidUntil = source.GetDateTimeAttribute(Attributes.validUntil);
     }
 

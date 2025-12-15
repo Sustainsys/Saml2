@@ -14,9 +14,9 @@ public class FrontChannelBindingTests
     {
         public Subject() : base("Mock") { }
 
-        public override bool CanUnbind(HttpRequest httpRequest) => throw new NotImplementedException();
+        public override bool CanUnBind(HttpRequest httpRequest) => throw new NotImplementedException();
 
-        public override Task<Saml2Message> UnbindAsync(
+        public override Task<Saml2Message> UnBindAsync(
             HttpRequest httpRequest,
             Func<string, Task<Saml2Entity>> getSaml2Entity)
             => throw new NotImplementedException();
@@ -42,7 +42,8 @@ public class FrontChannelBindingTests
         {
             Name = name!,
             Xml = xmlDocument?.DocumentElement!,
-            Destination = default!
+            Destination = default!,
+            Binding = "Mock"
         };
 
         var subject = new Subject();

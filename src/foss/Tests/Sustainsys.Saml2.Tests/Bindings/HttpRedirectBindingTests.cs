@@ -2,6 +2,7 @@
 // Licensed under the MIT license. See LICENSE in the project root for license information.
 
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.WebUtilities;
 using NSubstitute;
 using Sustainsys.Saml2.Bindings;
 using System.IO.Compression;
@@ -24,7 +25,8 @@ public class HttpRedirectBindingTests
             Name = "SamlRequest",
             Xml = xd.DocumentElement!,
             Destination = "https://example.com/destination",
-            RelayState = "someRelayState"
+            RelayState = "someRelayState",
+            Binding = Constants.BindingUris.HttpRedirect
         };
 
         var subject = new HttpRedirectBinding();
@@ -79,6 +81,23 @@ public class HttpRedirectBindingTests
     }
 
     [Theory]
+    [InlineData("POST", "?SamlRequest=xyz", false)]
+    [InlineData("GET", "?SamlRequest=xyz", true)]
+    [InlineData("GET", "?SamlResponse=xyz", true)]
+    [InlineData("GET", "?Other=xyz", false)]
+    public void CanUnbind(string method, string queryString, bool expected)
+    {
+        var subject = new HttpRedirectBinding();
+
+        var httpRequest = Substitute.For<HttpRequest>();
+
+        httpRequest.Method = method;
+        httpRequest.Query = new QueryCollection(QueryHelpers.ParseQuery(queryString));
+
+        subject.CanUnBind(httpRequest).Should().Be(expected);
+    }
+
+    [Theory]
     [InlineData(Constants.SamlRequest, null)]
     [InlineData(Constants.SamlResponse, null)]
     [InlineData("Invalid", "SAMLResponse or SAMLRequest parameter not found")]
@@ -102,7 +121,8 @@ public class HttpRedirectBindingTests
             Destination = "https://idp.example.com/sso",
             Name = messageName,
             RelayState = "xyz123",
-            Xml = xd.DocumentElement!
+            Xml = xd.DocumentElement!,
+            Binding = Constants.BindingUris.HttpRedirect
         };
 
         bool caughtException = false;

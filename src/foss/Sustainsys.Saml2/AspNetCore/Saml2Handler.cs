@@ -76,14 +76,14 @@ public class Saml2Handler(
     {
         var bindings = GetAllFrontChannelBindings();
 
-        var binding = bindings.FirstOrDefault(b => b.CanUnbind(Context.Request));
+        var binding = bindings.FirstOrDefault(b => b.CanUnBind(Context.Request));
 
         if (binding == null)
         {
             return HandleRequestResult.Fail("No binding could find a Saml message in the request");
         }
 
-        var samlMessage = await binding.UnbindAsync(Context.Request, str => Task.FromResult<Saml2Entity>(Options.IdentityProvider!));
+        var samlMessage = await binding.UnBindAsync(Context.Request, str => Task.FromResult<Saml2Entity>(Options.IdentityProvider!));
 
         AuthenticationProperties authenticationProperties =
             ProcessResponseRelayState(samlMessage);
@@ -211,7 +211,8 @@ public class Saml2Handler(
             Destination = Options.IdentityProvider!.SsoServiceUrl!,
             Name = Constants.SamlRequest,
             Xml = xmlDoc.DocumentElement!,
-            RelayState = $"{idpEntityIdHash}.{authnRequest.Id}"
+            RelayState = $"{idpEntityIdHash}.{authnRequest.Id}",
+            Binding = Constants.BindingUris.HttpRedirect
         };
 
         // TODO: If needed: make an alternative to this to allow multiple concurrent sign in attempts to same Idp

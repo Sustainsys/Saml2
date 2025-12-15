@@ -23,7 +23,7 @@ public class EntityDescriptor
     /// <summary>
     /// Recommended interval for cache renewal.
     /// </summary>
-    public TimeSpan? CacheDuraton { get; set; }
+    public TimeSpan? CacheDuration { get; set; }
 
     /// <summary>
     /// Absolute expiry time of any cached data.

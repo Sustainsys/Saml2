@@ -34,9 +34,12 @@ public class HttpRedirectBinding : FrontChannelBinding, IHttpRedirectBinding
     /// </summary>
     public HttpRedirectBinding() : base(Constants.BindingUris.HttpRedirect) { }
 
+    private static readonly string[] messageNames = [Constants.SamlRequest, Constants.SamlResponse];
+
     /// <inheritdoc/>
-    public override bool CanUnbind(HttpRequest httpRequest)
-        => false; // Because we haven't implemented redirect unbind yet.
+    public override bool CanUnBind(HttpRequest httpRequest)
+        => httpRequest.Method == "GET"
+        && messageNames.Any(httpRequest.Query.ContainsKey);
 
     /// <inheritdoc/>
     public virtual Task<Saml2Message> UnBindAsync(
@@ -93,27 +96,43 @@ public class HttpRedirectBinding : FrontChannelBinding, IHttpRedirectBinding
             Destination = uri.Scheme + "://" + uri.Host + uri.AbsolutePath,
             Name = messageName,
             RelayState = relayState,
-            Xml = xd.DocumentElement!
+            Xml = xd.DocumentElement!,
+            Binding = Identifier
         });
     }
 
     /// <inheritdoc/>    
-    public override Task<Saml2Message> UnbindAsync(
+    public override Task<Saml2Message> UnBindAsync(
         HttpRequest httpRequest,
-        Func<string, Task<Saml2Entity>> getSaml2Entity) => throw new NotImplementedException();
+        Func<string, Task<Saml2Entity>> getSaml2Entity) =>
+        UnBindAsync(
+            $"{httpRequest.Scheme}://{httpRequest.Host}{httpRequest.PathBase}{httpRequest.Path}{httpRequest.QueryString.Value}",
+            getSaml2Entity);
 
     /// <inheritdoc/>
     protected override Task DoBindAsync(HttpResponse httpResponse, Saml2Message message)
     {
-        var xmlString = message.Xml.OuterXml;
+        var queryString = GetQueryString(message);
 
-        var encoded = Deflate(xmlString);
-
-        var location = $"{message.Destination}?{message.Name}={encoded}&RelayState={message.RelayState}";
+        var location = $"{message.Destination}{queryString}";
 
         httpResponse.Redirect(location);
 
         return Task.CompletedTask;
+    }
+
+    /// <summary>
+    /// Gets the query string with the message.
+    /// </summary>
+    /// <param name="message">Saml2 message</param>
+    /// <returns>Query string contents as string</returns>
+    /// <remarks>This method is convenient to use from tests, but should probably not be used in produciton code</remarks>
+    public static string GetQueryString(Saml2Message message)
+    {
+        var xmlString = message.Xml.OuterXml;
+        var encoded = Deflate(xmlString);
+
+        return $"?{message.Name}={encoded}&RelayState={message.RelayState}";
     }
 
     private static string Deflate(string source)

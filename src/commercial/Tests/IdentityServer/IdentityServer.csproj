@@ -14,5 +14,11 @@
     <ProjectReference Include="..\..\Sustainsys.Saml2.DuendeIdentityServer\Sustainsys.Saml2.DuendeIdentityServer.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="Sustainsys.Saml2.Tests.pfx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 
 </Project>
