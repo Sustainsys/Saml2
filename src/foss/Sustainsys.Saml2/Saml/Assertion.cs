@@ -55,7 +55,7 @@ public class Assertion
     /// But, in C# it's more convenient to have an empty list instead of null. So we do
     /// that on the C# side, but check on serialization.
     /// </remarks>
-    public AttributeStatement Attributes { get; } = [];
+    public AttributeStatement Attributes { get; init;  } = [];
 
     /// <summary>
     /// Trust level derived from the signature validation
