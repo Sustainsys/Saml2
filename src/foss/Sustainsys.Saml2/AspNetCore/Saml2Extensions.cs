@@ -10,6 +10,7 @@ using Sustainsys.Saml2.Bindings;
 using Sustainsys.Saml2.Saml;
 using Sustainsys.Saml2.Samlp;
 using Sustainsys.Saml2.Serialization;
+using Sustainsys.Saml2.Services;
 using Sustainsys.Saml2.Validation;
 
 
@@ -88,6 +89,9 @@ public static class Saml2Extensions
             IValidator<Response, ResponseValidationParameters>, ResponseValidator>();
         builder.Services.TryAddSingleton<IValidator<Assertion, AssertionValidationParameters>, AssertionValidator>();
         builder.Services.TryAddSingleton<IClaimsFactory, ClaimsFactory>();
+
+        builder.Services.TryAddSingleton<IMetadadataLoader, MetadataLoader>();
+        builder.Services.TryAddSingleton<IIdentityProviderConfigurationResolver, IdentityProviderConfigurationResolver>();
 
         return builder.AddRemoteScheme<Saml2Options, Saml2Handler>(authenticationScheme, displayName, configureOptions);
     }

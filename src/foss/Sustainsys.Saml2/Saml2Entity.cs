@@ -15,13 +15,23 @@ public class Saml2Entity
     public string? EntityId { get; set; }
 
     /// <summary>
-    /// Allowed hash algorithms if validating signatures.
+    /// Use Metadata for configuration. Defaults to true.
     /// </summary>
-    public IEnumerable<string>? AllowedHashAlgorithms { get; set; }
+    public bool LoadMetadata { get; set; } = true;
+
+    /// <summary>
+    /// Location of metadata. If null, the EntityId is used.
+    /// </summary>
+    public string? MetadataLocation { get; set; }
+
+    /// <summary>
+    /// Allowed algorithms if validating signatures.
+    /// </summary>
+    public IEnumerable<string> AllowedAlgorithms { get; set; }
+        = Constants.DefaultAllowedAlgorithms;
 
     /// <summary>
     /// Signing keys of the entity.
     /// </summary>
     public IEnumerable<SigningKey>? SigningKeys { get; set; }
-
 }

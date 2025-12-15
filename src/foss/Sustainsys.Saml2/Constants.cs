@@ -1,6 +1,9 @@
 ﻿// Copyright (c) Sustainsys AB. All rights reserved.
 // Licensed under the MIT license. See LICENSE in the project root for license information.
 
+using System.Collections.ObjectModel;
+using System.Security.Cryptography.Xml;
+
 namespace Sustainsys.Saml2;
 
 /// <summary>
@@ -168,4 +171,18 @@ public static class Constants
         public const string PasswordProtectedTransport = "urn:oasis:names:tc:SAML:2.0:ac:classes:PasswordProtectedTransport";
         public const string Unspecified = "urn:oasis:names:tc:SAML:2.0:ac:classes:unspecified";
     }
+
+    /// <summary>
+    /// Default allowed algorithms.
+    /// </summary>
+    public static readonly IEnumerable<string> DefaultAllowedAlgorithms =
+    new ReadOnlyCollection<string>(
+    [
+        SignedXml.XmlDsigSHA256Url,
+            SignedXml.XmlDsigSHA384Url,
+            SignedXml.XmlDsigSHA512Url,
+            SignedXml.XmlDsigRSASHA256Url,
+            SignedXml.XmlDsigRSASHA384Url,
+            SignedXml.XmlDsigRSASHA512Url,
+    ]);
 }
