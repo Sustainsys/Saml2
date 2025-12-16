@@ -62,7 +62,7 @@ public static class XmlHelpers
     /// <param name="value">DateTimeUtc value.</param>
     public static void SetAttribute(this XmlElement element, string name, DateTimeUtc value)
     {
-        element.SetAttribute(name, XmlConvert.ToString(value, XmlDateTimeSerializationMode.RoundtripKind));
+        element.SetAttribute(name, value.ToString());
     }
 
     /// <summary>

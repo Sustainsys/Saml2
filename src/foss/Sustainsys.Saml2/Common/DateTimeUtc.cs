@@ -112,5 +112,5 @@ public readonly struct DateTimeUtc
     /// ToString
     /// </summary>
     /// <returns>String</returns>
-    public override string ToString() => ((DateTime)this).ToString();
+    public override string ToString() => ((DateTime)this).ToString("yyyy-MM-ddTHH:mm:ssZ");
 }
