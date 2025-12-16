@@ -20,7 +20,8 @@ public class SigningKey
     public X509Certificate2? Certificate { get; set; }
 
     /// <summary>
-    /// TrustLevel of the key.
+    /// TrustLevel of the key. Defaults to ConfiguredKey because if you create
+    /// a SigninKey yourself, the source is most likely configuration.
     /// </summary>
-    public TrustLevel TrustLevel { get; init; }
+    public TrustLevel TrustLevel { get; init; } = TrustLevel.ConfiguredKey;
 }

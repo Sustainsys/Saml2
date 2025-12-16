@@ -4,6 +4,7 @@
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.DataProtection;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
 
 namespace Sustainsys.Saml2.AspNetCore;
@@ -29,5 +30,10 @@ public class Saml2PostConfigureOptions(IDataProtectionProvider dataProtectionPro
                 typeof(Saml2Handler).FullName!, name!, "v3"));
 
         options.StateCookieManager ??= new ChunkingCookieManager();
+
+        if (options.CallbackPath == null)
+        {
+            options.CallbackPath = new PathString(options.BasePath + Saml2Defaults.CallbackPathSuffix);
+        }
     }
 }

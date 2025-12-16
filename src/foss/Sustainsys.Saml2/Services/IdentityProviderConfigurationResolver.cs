@@ -66,7 +66,8 @@ public class IdentityProviderConfigurationResolver
                 context.StaticConfiguration.MetadataLocation
                 ?? context.StaticConfiguration.EntityId
                 ?? throw new InvalidOperationException("EntityId or MetadataLocation must be set."),
-                null);
+                context.StaticConfiguration.SigningKeys,
+                context.StaticConfiguration.AllowedAlgorithms);
         }
 
         await ResolveEffectiveConfigurationAsync(context, metadata);
@@ -81,9 +82,8 @@ public class IdentityProviderConfigurationResolver
     protected virtual async Task ResolveEffectiveConfigurationAsync(
         IdentityProviderConfigurationResolverContext context, MetadataBase? metadata)
     {
-        var entityDescriptor = metadata as EntityDescriptor;
-
-        if (entityDescriptor == null)
+        // TODO: Plus package add compat to unpack EntitiesDescriptor with single EntityDescriptor.
+        if (metadata is not EntityDescriptor entityDescriptor)
         {
             context.EffectiveConfiguration = context.StaticConfiguration;
         }

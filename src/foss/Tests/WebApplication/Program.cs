@@ -19,8 +19,16 @@ builder.Services.AddAuthentication(opt =>
     {
         opt.IdentityProvider.EntityId = "https://stubidp.sustainsys.com/Metadata";
 
-        // TODO: Automatically derive this from request if not set.
-        opt.EntityId = "https://localhost:5001/Saml2";
+        // Adding the signing key should validate metadata signature and get
+        opt.IdentityProvider.SigningKeys = [
+            new()
+            {
+#if NET9_0_OR_GREATER
+                Certificate = X509CertificateLoader.LoadCertificate(certificateData),
+#else
+                Certificate =  new X509Certificate2(certificateData),
+#endif
+            }];
     })
         .AddSaml2("idsrv", opt =>
         {

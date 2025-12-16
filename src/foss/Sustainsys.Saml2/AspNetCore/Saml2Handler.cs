@@ -9,6 +9,7 @@ using Microsoft.Extensions.Options;
 using Sustainsys.Saml2.AspNetCore.Events;
 using Sustainsys.Saml2.Bindings;
 using Sustainsys.Saml2.Common;
+using Sustainsys.Saml2.Saml;
 using Sustainsys.Saml2.Samlp;
 using Sustainsys.Saml2.Serialization;
 using Sustainsys.Saml2.Services;
@@ -39,7 +40,7 @@ public class Saml2Handler(
     private const string CookiePrefix = "Saml2.";
     private const int StateIdpHashLength = 10;
 
-    // TODO: Make protected virtual and move keyed service fallback to plus package.
+    // TODO: Make protected virtual and move keyed services to plus package.
     private TService GetRequiredService<TService>() where TService : notnull =>
         serviceProvider.GetKeyedService<TService>(Scheme.Name) ??
         serviceProvider.GetRequiredService<TService>();
@@ -92,6 +93,10 @@ public class Saml2Handler(
         return effectiveIdentityProvider;
     }
 
+    private NameId GetEntityId() =>
+        Options.EntityId ??
+        $"{Context.Request.Scheme}://{Context.Request.Host}{Context.Request.PathBase}{Options.BasePath}";
+
     /// <summary>
     /// Handles incoming request on the callback path.
     /// </summary>
@@ -131,7 +136,7 @@ public class Saml2Handler(
             {
                 ValidInResponseTo = authenticationProperties.Items[RequestIdKey],
                 ValidIssuer = effectiveIdentityProvider.EntityId,
-                ValidAudience = Options.EntityId!.Value,
+                ValidAudience = GetEntityId().Value,
                 ValidRecipient = GetAbsoluteUrl(Options.CallbackPath),
             },
         };
@@ -202,7 +207,7 @@ public class Saml2Handler(
     }
 
     private string GetAbsoluteUrl(PathString callbackPath) =>
-        $"{Request.Scheme}://{Request.Host}{callbackPath}";
+        $"{Request.Scheme}://{Request.Host}{Request.PathBase}{callbackPath}";
 
     private CookieOptions BuildCookieOptions() =>
         Options.CorrelationCookie.Build(Context, TimeProvider.GetUtcNow());
@@ -216,7 +221,7 @@ public class Saml2Handler(
     {
         var authnRequest = new AuthnRequest()
         {
-            Issuer = Options.EntityId,
+            Issuer = GetEntityId(),
             IssueInstant = TimeProvider.GetUtcNow().UtcDateTime,
             AssertionConsumerServiceUrl = BuildRedirectUri(Options.CallbackPath)
         };

@@ -25,10 +25,13 @@ public interface IMetadadataLoader
     /// the cacheDuration and validUntil values.
     /// </summary>
     /// <param name="location">Location: URL or path</param>
-    /// <param name="signingKey">Signing key used to validate metadata</param>
+    /// <param name="trustedSigningKeys">Signing key used to validate metadata</param>
+    /// <param name="allowedAlgorithms">Allowed algorithms for signing/hashing</param>
     /// <returns>Metadata</returns>
-    Task<MetadataBase?> GetMetadataAsync
-        (string location, SigningKey? signingKey);
+    Task<MetadataBase?> GetMetadataAsync(
+        string location,
+        IEnumerable<SigningKey>? trustedSigningKeys,
+        IEnumerable<string>? allowedAlgorithms);
 }
 
 /// <summary>
@@ -36,13 +39,16 @@ public interface IMetadadataLoader
 /// </summary>
 public class MetadataLoader(ISamlXmlReader samlXmlReader) : IMetadadataLoader
 {
-    private HttpClient metadataClient = new();
+    private readonly HttpClient metadataClient = new();
 
     /// <inheritdoc/>
-    public async Task<MetadataBase?> GetMetadataAsync(string location, SigningKey? signingKey)
+    public async Task<MetadataBase?> GetMetadataAsync(
+        string location,
+        IEnumerable<SigningKey>? trustedSigningKeys,
+        IEnumerable<string>? allowedAlgorithms)
     {
         XmlDocument xmlDoc = new();
-        TrustLevel trustLevel = TrustLevel.None;
+        TrustLevel trustLevel;
         if (Uri.TryCreate(location, UriKind.Absolute, out var uri))
         {
             trustLevel = uri.Scheme switch
@@ -69,7 +75,7 @@ public class MetadataLoader(ISamlXmlReader samlXmlReader) : IMetadadataLoader
         {
             // TODO: Implement.
             // TODO: Use File change monitor for caching.
-            trustLevel = TrustLevel.ConfiguredKey;
+            //trustLevel = TrustLevel.ConfiguredKey;
             throw new NotImplementedException("File metadata not implemented");
         }
 
@@ -82,7 +88,10 @@ public class MetadataLoader(ISamlXmlReader samlXmlReader) : IMetadadataLoader
 
         if (xmlTraverser.HasName(Constants.Elements.EntityDescriptor, Constants.Namespaces.MetadataUri))
         {
-            // TODO: Add ErrorInspector from config.
+            samlXmlReader.TrustedSigningKeys = trustedSigningKeys;
+            samlXmlReader.AllowedAlgorithms = allowedAlgorithms;
+
+            // TODO: Plus package: add ErrorInspector from config.
             return samlXmlReader.ReadEntityDescriptor(xmlTraverser);
         }
 

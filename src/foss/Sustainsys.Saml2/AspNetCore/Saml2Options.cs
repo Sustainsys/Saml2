@@ -18,7 +18,7 @@ public class Saml2Options : RemoteAuthenticationOptions
     /// </summary>
     public Saml2Options()
     {
-        CallbackPath = new PathString("/Saml2/Acs");
+        BasePath = Saml2Defaults.BasePath;
 
         // Other providers use 15 minutes, which sometimes causes problems for login
         // flows that includes a password reset/recovery or waiting for an email. But
@@ -44,6 +44,11 @@ public class Saml2Options : RemoteAuthenticationOptions
     /// Identityprovider configuration for this scheme.
     /// </summary>
     public IdentityProvider IdentityProvider { get; set; } = new();
+
+    /// <summary>
+    /// Base path for default paths for endpoints. Defaults to /Saml2.
+    /// </summary>
+    public string BasePath { get; set; }
 
     /// <summary>
     /// NameId of the service provider.

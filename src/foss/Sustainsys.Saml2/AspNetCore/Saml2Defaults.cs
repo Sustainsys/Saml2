@@ -20,4 +20,14 @@ public class Saml2Defaults
     /// Default display name.
     /// </summary>
     public const string DisplayName = "SAML2";
+
+    /// <summary>
+    /// Default base path for Saml2 endpoints.
+    /// </summary>
+    public const string BasePath = "/Saml2";
+
+    /// <summary>
+    /// Default suffix for Callback/Assertion consumer service.
+    /// </summary>
+    public const string CallbackPathSuffix = "/Acs";
 }

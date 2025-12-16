@@ -118,14 +118,14 @@ public static class SignedXmlHelper
     /// </summary>
     /// <param name="signatureElement">The signature element to verify.</param>
     /// <param name="keys">They signing keys that can be used to verify.</param>
-    /// <param name="allowedHashAlgorithms">Allowed hash algorithms. Values must be short form, 
+    /// <param name="allowedAlgorithms">Allowed hash algorithms. Values must be short form, 
     /// lower case e.g. sha256 to match end of algorithm identifier URI, both for
     /// signing and hashing algorithms."</param>
     /// <returns>Tuple with possibly error message, and the signing key that worked.</returns>
     public static (string? Error, SigningKey? WorkingKey) VerifySignature(
         this XmlElement signatureElement,
         IEnumerable<SigningKey> keys,
-        IEnumerable<string> allowedHashAlgorithms)
+        IEnumerable<string> allowedAlgorithms)
     {
         var signedXml = new SignedXmlWithStrictIdResolution(signatureElement.OwnerDocument);
 
@@ -198,17 +198,16 @@ public static class SignedXmlHelper
                 }
             }
 
-            // The algorithm names has the form http://foo/bar/xyz#sha256
-            if (!allowedHashAlgorithms.Contains(reference.DigestMethod))
+            if (!allowedAlgorithms.Contains(reference.DigestMethod))
             {
-                error += $"Digest algorithm {reference.DigestMethod} does not match configured [{string.Join(", ", allowedHashAlgorithms)}]. ";
+                var allowed = string.Join(", ", allowedAlgorithms);
+                error += $"Digest algorithm {reference.DigestMethod} does not match configured [{allowed}]. ";
             }
         }
 
-        // The algorithm names has the form http://foo/bar/xyz#rsa-sha256
-        if (!allowedHashAlgorithms.Contains(signedXml.SignatureMethod))
+        if (!allowedAlgorithms.Contains(signedXml.SignatureMethod))
         {
-            var allowed = string.Join(", ", allowedHashAlgorithms);
+            var allowed = string.Join(", ", allowedAlgorithms);
             error += $"Signature algorithm {signedXml.SignatureMethod} does not match configured [{allowed}]. ";
         }
 
