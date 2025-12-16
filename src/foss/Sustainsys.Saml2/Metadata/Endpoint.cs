@@ -17,9 +17,4 @@ public class Endpoint
     /// URL of the endpoint.
     /// </summary>
     public string Location { get; set; } = "";
-
-    /// <summary>
-    /// Type of endpoint.
-    /// </summary>
-    public string? Type { get; set; }
 }

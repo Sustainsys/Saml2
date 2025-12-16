@@ -11,8 +11,6 @@ namespace Sustainsys.Saml2.Serialization;
 
 partial class SamlXmlWriterPlus
 {
-    /// <inheritdoc/>
-  
     /// <summary>
     /// Append the descriptor as a child node
     /// </summary>
@@ -23,12 +21,14 @@ partial class SamlXmlWriterPlus
         var idpSsoDescriptorElement = AppendElement(node, Namespaces.Metadata, Elements.IDPSSODescriptor);
         idpSsoDescriptorElement.SetAttribute(Attributes.protocolSupportEnumeration, idpSsoDescriptor.ProtocolSupportEnumeration);
 
-        foreach(var singleSignOnService in idpSsoDescriptor.SingleSignOnServices)
+        foreach (var singleLogoutService in idpSsoDescriptor.SingleLogoutServices)
         {
-            Append(idpSsoDescriptorElement, singleSignOnService);
+            Append(idpSsoDescriptorElement, singleLogoutService, Elements.SingleLogoutService);
         }
-
-        node.AppendChild(idpSsoDescriptorElement);
+        foreach (var singleSignOnService in idpSsoDescriptor.SingleSignOnServices)
+        {
+            Append(idpSsoDescriptorElement, singleSignOnService, Elements.SingleSignOnService);
+        }
 
         return idpSsoDescriptorElement;
     }

@@ -12,7 +12,7 @@ namespace Sustainsys.Saml2.Protocol.Plus.Tests.Serialization;
 
 partial class SamlXmlWriterPlusTests
 {
-   
+
 
     [Fact]
     public void WriteMetaData_CompleteSuccess()
@@ -26,33 +26,32 @@ partial class SamlXmlWriterPlusTests
             RoleDescriptors =
             {
                 new IDPSSODescriptor
-                {             
+                {
+                    SingleLogoutServices =
+                    {
+                        new Endpoint
+                        {
+                            Binding = "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect",
+                            Location = "https://stubidp.sustainsys.com/Logout"
+                        },
+                        new Endpoint
+                        {
+                            Binding = "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST",
+                            Location = "https://stubidp.sustainsys.com/Logout"
+                        }
+                    },
                     SingleSignOnServices =
                     {
                         new Endpoint
                         {
                             Binding = "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect",
-                            Location = "https://stubidp.sustainsys.com/Logout",
-                            Type = "SingleLogoutService"
-                        },
-                        new Endpoint
-                        {
-                            Binding = "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST",
-                            Location = "https://stubidp.sustainsys.com/Logout",
-                            Type = "SingleLogoutService"
-                        },
-                        new Endpoint
-                        {
-                            Binding = "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect",
-                            Location = "https://stubidp.sustainsys.com/",
-                            Type = "SingleSignOnService"
+                            Location = "https://stubidp.sustainsys.com/"
                         },
 
                         new Endpoint
                         {
                             Binding = "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST",
-                            Location = "https://stubidp.sustainsys.com/",
-                            Type = "SingleSignOnService"
+                            Location = "https://stubidp.sustainsys.com/"
                         }
                     }
                 }

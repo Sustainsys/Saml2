@@ -11,17 +11,16 @@ namespace Sustainsys.Saml2.Serialization;
 
 partial class SamlXmlWriterPlus
 {
-    /// <inheritdoc/>
-
     /// <summary>
     /// Append the service as a child node
     /// </summary>
     /// <param name="node">parent node</param>
     /// <param name="service">Single Sign On Service</param>
-    protected virtual XmlElement Append(XmlNode node, Endpoint service)
+    /// <param name="elementName">Name of the type of element</param>
+    protected virtual XmlElement Append(XmlNode node, Endpoint service, string elementName)
     {
         var serviceElement = null as XmlElement;
-        switch (service.Type)
+        switch (elementName)
         {
             case Elements.SingleSignOnService:
                 serviceElement = AppendElement(node, Namespaces.Metadata, Elements.SingleSignOnService);
@@ -30,12 +29,10 @@ partial class SamlXmlWriterPlus
                 serviceElement = AppendElement(node, Namespaces.Metadata, Elements.SingleLogoutService);
                 break;
             default:
-                throw new ArgumentException($"Unknown service type: {service.Type}");
+                throw new ArgumentException($"Unknown element name {elementName}");
         }
         serviceElement.SetAttribute(Attributes.Binding, service.Binding);
         serviceElement.SetAttribute(Attributes.Location, service.Location);
-
-        node.AppendChild(serviceElement);
 
         return serviceElement;
     }

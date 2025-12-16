@@ -41,6 +41,8 @@ partial class SamlXmlWriterPlus
                 case IDPSSODescriptor idpSsoDescriptor:
                     Append(entityDescriptorElement, idpSsoDescriptor);
                     break;
+                default:
+                    throw new NotImplementedException();
             }
         }
 
