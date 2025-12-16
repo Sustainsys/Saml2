@@ -39,6 +39,7 @@ public class Saml2Handler(
     private const string CookiePrefix = "Saml2.";
     private const int StateIdpHashLength = 10;
 
+    // TODO: Make protected virtual and move keyed service fallback to plus package.
     private TService GetRequiredService<TService>() where TService : notnull =>
         serviceProvider.GetKeyedService<TService>(Scheme.Name) ??
         serviceProvider.GetRequiredService<TService>();
@@ -51,8 +52,7 @@ public class Saml2Handler(
         GetAllFrontChannelBindings().First(b => b.Identifier == uri);
 
     /// <summary>
-    /// Resolves events as keyed service from DI, falls back to non-keyed service and 
-    /// finally falls back to creating an events instance.
+    /// Resolves events as keyed service from DI, falls back to creating an events instance.
     /// </summary>
     /// <returns><see cref="Saml2Events"/>Saml2 events instance</returns>
     protected override Task<object> CreateEventsAsync() => Task.FromResult<object>(
