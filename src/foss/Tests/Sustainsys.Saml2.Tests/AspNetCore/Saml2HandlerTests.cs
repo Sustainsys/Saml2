@@ -73,7 +73,7 @@ public class Saml2HandlerTests
         keyedServiceProvider.GetService(typeof(IIdentityProviderConfigurationResolver)).Returns(identityProviderResolver);
         await identityProviderResolver.GetEffectiveConfigurationAsync(Arg.Do<IdentityProviderConfigurationResolverContext>(
             ctx => ctx.EffectiveConfiguration = ctx.StaticConfiguration));
-        
+
         var scheme = new AuthenticationScheme(SchemeName, "Saml 2.0", typeof(Saml2Handler));
 
         var httpContext = Substitute.For<HttpContext>();

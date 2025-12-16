@@ -80,12 +80,12 @@ public class Saml2Handler(
             {
                 HttpContext = Context,
                 // TODO: Plus package should use callback to resolve this.
-                StaticConfiguration = Options.IdentityProvider 
+                StaticConfiguration = Options.IdentityProvider
                     ?? throw new InvalidOperationException("Missing IdentityProvider config")
             };
 
             await resolver.GetEffectiveConfigurationAsync(context);
-            
+
             effectiveIdentityProvider = context.EffectiveConfiguration
                 ?? throw new InvalidOperationException("No effective configuration returned");
         }
@@ -108,7 +108,7 @@ public class Saml2Handler(
             return HandleRequestResult.Fail("No binding could find a Saml message in the request");
         }
 
-        var samlMessage = await binding.UnBindAsync(Context.Request, 
+        var samlMessage = await binding.UnBindAsync(Context.Request,
             async str => await GetEffectiveIdentityProviderAsync());
 
         AuthenticationProperties authenticationProperties =
@@ -223,7 +223,7 @@ public class Saml2Handler(
         };
 
         var effectiveIdentityProvider = await GetEffectiveIdentityProviderAsync();
-        
+
         var authnRequestGeneratedContext = new AuthnRequestGeneratedContext(
             Context, Scheme, Options, properties, authnRequest, effectiveIdentityProvider);
 

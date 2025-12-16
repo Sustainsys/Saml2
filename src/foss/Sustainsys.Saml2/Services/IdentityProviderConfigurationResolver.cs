@@ -89,7 +89,7 @@ public class IdentityProviderConfigurationResolver
         }
         else
         {
-            if(context.StaticConfiguration.EntityId != null 
+            if (context.StaticConfiguration.EntityId != null
                 && context.StaticConfiguration.EntityId !=
                 entityDescriptor.EntityId)
             {
@@ -110,7 +110,7 @@ public class IdentityProviderConfigurationResolver
             {
                 EntityId = entityDescriptor.EntityId,
                 AllowedAlgorithms = context.StaticConfiguration.AllowedAlgorithms,
-                
+
                 // TODO: Union with configured keys and use best trust level for keys in both.
                 SigningKeys = IdpSsoDescriptor.Keys.Select(k =>
                     new Xml.SigningKey()
