@@ -1,6 +1,9 @@
 ﻿// Copyright (c) Sustainsys AB. All rights reserved.
 // Licensed under the MIT license. See LICENSE in the project root for license information.
 
+using System.Collections.ObjectModel;
+using System.Security.Cryptography.Xml;
+
 namespace Sustainsys.Saml2.AspNetCore;
 
 /// <summary>

@@ -56,12 +56,14 @@ public class XmlTraverser
     /// Ctor
     /// </summary>
     /// <param name="rootNode">Root node for this traverser</param>
-    public XmlTraverser(XmlNode rootNode)
+    /// <param name="trustLevel">Inherited trust level, e.g. if transport is validated</param>
+    public XmlTraverser(XmlNode rootNode, TrustLevel trustLevel = TrustLevel.None)
     {
         RootNode = rootNode;
         CurrentNode = rootNode;
         childrenHandled = !rootNode.HasChildNodes;
         Errors = [];
+        TrustLevel = trustLevel;
     }
 
     /// <summary>
@@ -118,11 +120,11 @@ public class XmlTraverser
     /// If the current node is a signature node, read and validate it and 
     /// </summary>
     /// <param name="trustedSigningKeys">Signing keys trusted when validating the signature. If null, nothing is done.</param>
-    /// <param name="allowedHashAlgorithms">Allowed hash algorithms.</param>
+    /// <param name="allowedAlgorithms">Allowed hash algorithms.</param>
     /// <returns>True if there was a signature node.</returns>
     public bool ReadAndValidateOptionalSignature(
         IEnumerable<SigningKey>? trustedSigningKeys = null,
-        IEnumerable<string>? allowedHashAlgorithms = null)
+        IEnumerable<string>? allowedAlgorithms = null)
     {
         if (CurrentNode != null
             && CurrentNode.LocalName == "Signature"
@@ -133,8 +135,8 @@ public class XmlTraverser
             if (trustedSigningKeys != null
                 && trustedSigningKeys.Any())
             {
-                ArgumentNullException.ThrowIfNull(allowedHashAlgorithms);
-                ReadAndValidateSignature(trustedSigningKeys, allowedHashAlgorithms);
+                ArgumentNullException.ThrowIfNull(allowedAlgorithms);
+                ReadAndValidateSignature(trustedSigningKeys, allowedAlgorithms);
             }
 
             return true;

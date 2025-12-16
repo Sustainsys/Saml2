@@ -14,6 +14,7 @@ using Sustainsys.Saml2.Bindings;
 using Sustainsys.Saml2.Common;
 using Sustainsys.Saml2.Samlp;
 using Sustainsys.Saml2.Serialization;
+using Sustainsys.Saml2.Services;
 using Sustainsys.Saml2.Tests.Helpers;
 using Sustainsys.Saml2.Validation;
 using Sustainsys.Saml2.Xml;
@@ -68,6 +69,11 @@ public class Saml2HandlerTests
         var authenticationService = Substitute.For<IAuthenticationService>();
         keyedServiceProvider.GetService(typeof(IAuthenticationService)).Returns(authenticationService);
 
+        var identityProviderResolver = Substitute.For<IIdentityProviderConfigurationResolver>();
+        keyedServiceProvider.GetService(typeof(IIdentityProviderConfigurationResolver)).Returns(identityProviderResolver);
+        await identityProviderResolver.GetEffectiveConfigurationAsync(Arg.Do<IdentityProviderConfigurationResolverContext>(
+            ctx => ctx.EffectiveConfiguration = ctx.StaticConfiguration));
+        
         var scheme = new AuthenticationScheme(SchemeName, "Saml 2.0", typeof(Saml2Handler));
 
         var httpContext = Substitute.For<HttpContext>();

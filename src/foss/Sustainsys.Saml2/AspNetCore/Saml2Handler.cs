@@ -11,6 +11,7 @@ using Sustainsys.Saml2.Bindings;
 using Sustainsys.Saml2.Common;
 using Sustainsys.Saml2.Samlp;
 using Sustainsys.Saml2.Serialization;
+using Sustainsys.Saml2.Services;
 using Sustainsys.Saml2.Validation;
 using Sustainsys.Saml2.Xml;
 using System.Text.Encodings.Web;
@@ -38,6 +39,7 @@ public class Saml2Handler(
     private const string CookiePrefix = "Saml2.";
     private const int StateIdpHashLength = 10;
 
+    // TODO: Make protected virtual and move keyed service fallback to plus package.
     private TService GetRequiredService<TService>() where TService : notnull =>
         serviceProvider.GetKeyedService<TService>(Scheme.Name) ??
         serviceProvider.GetRequiredService<TService>();
@@ -50,8 +52,7 @@ public class Saml2Handler(
         GetAllFrontChannelBindings().First(b => b.Identifier == uri);
 
     /// <summary>
-    /// Resolves events as keyed service from DI, falls back to non-keyed service and 
-    /// finally falls back to creating an events instance.
+    /// Resolves events as keyed service from DI, falls back to creating an events instance.
     /// </summary>
     /// <returns><see cref="Saml2Events"/>Saml2 events instance</returns>
     protected override Task<object> CreateEventsAsync() => Task.FromResult<object>(
@@ -66,6 +67,30 @@ public class Saml2Handler(
     {
         get => (Saml2Events)base.Events;
         set { base.Events = value; }
+    }
+
+    private IdentityProvider? effectiveIdentityProvider = null;
+    private async Task<IdentityProvider> GetEffectiveIdentityProviderAsync()
+    {
+        if (effectiveIdentityProvider == null)
+        {
+            var resolver = GetRequiredService<IIdentityProviderConfigurationResolver>();
+
+            IdentityProviderConfigurationResolverContext context = new()
+            {
+                HttpContext = Context,
+                // TODO: Plus package should use callback to resolve this.
+                StaticConfiguration = Options.IdentityProvider 
+                    ?? throw new InvalidOperationException("Missing IdentityProvider config")
+            };
+
+            await resolver.GetEffectiveConfigurationAsync(context);
+            
+            effectiveIdentityProvider = context.EffectiveConfiguration
+                ?? throw new InvalidOperationException("No effective configuration returned");
+        }
+
+        return effectiveIdentityProvider;
     }
 
     /// <summary>
@@ -83,14 +108,18 @@ public class Saml2Handler(
             return HandleRequestResult.Fail("No binding could find a Saml message in the request");
         }
 
-        var samlMessage = await binding.UnBindAsync(Context.Request, str => Task.FromResult<Saml2Entity>(Options.IdentityProvider!));
+        var samlMessage = await binding.UnBindAsync(Context.Request, 
+            async str => await GetEffectiveIdentityProviderAsync());
 
         AuthenticationProperties authenticationProperties =
             ProcessResponseRelayState(samlMessage);
 
+        var effectiveIdentityProvider = await GetEffectiveIdentityProviderAsync();
+
         var source = XmlHelpers.GetXmlTraverser(samlMessage.Xml);
         var reader = GetRequiredService<ISamlXmlReader>();
-        reader.TrustedSigningKeys = Options.IdentityProvider!.SigningKeys;
+        reader.TrustedSigningKeys = effectiveIdentityProvider.SigningKeys;
+        reader.AllowedAlgorithms = effectiveIdentityProvider.AllowedAlgorithms;
         var samlResponse = reader.ReadResponse(source);
 
         var validator = GetRequiredService<IValidator<Response, ResponseValidationParameters>>();
@@ -102,7 +131,7 @@ public class Saml2Handler(
             AssertionValidationParameters = new()
             {
                 ValidInResponseTo = authenticationProperties.Items[RequestIdKey],
-                ValidIssuer = Options.IdentityProvider!.EntityId!,
+                ValidIssuer = effectiveIdentityProvider.EntityId,
                 ValidAudience = Options.EntityId!.Value,
                 ValidRecipient = GetAbsoluteUrl(Options.CallbackPath),
             },
@@ -193,22 +222,23 @@ public class Saml2Handler(
             AssertionConsumerServiceUrl = BuildRedirectUri(Options.CallbackPath)
         };
 
-        //TODO: Don't use Options.IdentityProvider directly, access via event/callback.
+        var effectiveIdentityProvider = await GetEffectiveIdentityProviderAsync();
+        
         var authnRequestGeneratedContext = new AuthnRequestGeneratedContext(
-            Context, Scheme, Options, properties, authnRequest, Options.IdentityProvider!);
+            Context, Scheme, Options, properties, authnRequest, effectiveIdentityProvider);
 
         await Events.AuthnRequestGeneratedAsync(authnRequestGeneratedContext);
 
         // Capture the security sensitive state after the event
         properties.Items[RequestIdKey] = authnRequest.Id;
-        properties.Items[IdpKey] = Options.IdentityProvider!.EntityId;
+        properties.Items[IdpKey] = effectiveIdentityProvider!.EntityId;
 
         var xmlDoc = GetRequiredService<ISamlXmlWriter>().Write(authnRequest);
 
-        var idpEntityIdHash = Options.IdentityProvider.EntityId!.Sha256(StateIdpHashLength);
+        var idpEntityIdHash = effectiveIdentityProvider.EntityId!.Sha256(StateIdpHashLength);
         var message = new Saml2Message
         {
-            Destination = Options.IdentityProvider!.SsoServiceUrl!,
+            Destination = effectiveIdentityProvider!.SsoServiceUrl!,
             Name = Constants.SamlRequest,
             Xml = xmlDoc.DocumentElement!,
             RelayState = $"{idpEntityIdHash}.{authnRequest.Id}",
@@ -222,7 +252,7 @@ public class Saml2Handler(
 
         Options.StateCookieManager.AppendResponseCookie(Context, cookieName, cookieValue, cookieOptions);
 
-        var binding = GetFrontChannelBinding(Options.IdentityProvider.SsoServiceBinding!);
+        var binding = GetFrontChannelBinding(effectiveIdentityProvider.SsoServiceBinding!);
 
         await binding.BindAsync(Response, message);
     }

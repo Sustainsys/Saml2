@@ -15,19 +15,7 @@ namespace Sustainsys.Saml2.Serialization;
 public partial class SamlXmlReader : ISamlXmlReader
 {
     /// <inheritdoc/>
-    public virtual IEnumerable<string>? AllowedAlgorithms { get; set; } =
-        defaultAllowedAlgorithms;
-
-    private static readonly IEnumerable<string> defaultAllowedAlgorithms =
-        new ReadOnlyCollection<string>(
-        [
-            SignedXml.XmlDsigSHA256Url,
-            SignedXml.XmlDsigSHA384Url,
-            SignedXml.XmlDsigSHA512Url,
-            SignedXml.XmlDsigRSASHA256Url,
-            SignedXml.XmlDsigRSASHA384Url,
-            SignedXml.XmlDsigRSASHA512Url,
-        ]);
+    public virtual IEnumerable<string>? AllowedAlgorithms { get; set; }
 
     /// <inheritdoc/>
     public virtual IEnumerable<SigningKey>? TrustedSigningKeys { get; set; }
@@ -60,11 +48,11 @@ public partial class SamlXmlReader : ISamlXmlReader
     /// Trusted signig keys and allowedHashAlgorithms. Hash algorithms uses the <see cref="AllowedAlgorithms"/>
     /// if there is no specific configuration on the Issuer.
     /// </returns>
-    protected (IEnumerable<SigningKey>? trustedSigningKeys, IEnumerable<string>? allowedHashAlgorithms)
+    protected (IEnumerable<SigningKey>? trustedSigningKeys, IEnumerable<string>? allowedAlgorithms)
     GetSignatureValidationParametersFromIssuer(XmlTraverser source, NameId? issuer)
     {
         var trustedSigningKeys = TrustedSigningKeys;
-        var allowedHashAlgorithms = AllowedAlgorithms;
+        var allowedAlgorithms = AllowedAlgorithms;
         if (source.HasName(Elements.Signature, SignedXml.XmlDsigNamespaceUrl))
         {
             if (issuer == null)
@@ -78,12 +66,12 @@ public partial class SamlXmlReader : ISamlXmlReader
                 {
                     var entity = EntityResolver(issuer.Value);
                     trustedSigningKeys = entity.SigningKeys;
-                    allowedHashAlgorithms = entity.AllowedHashAlgorithms ?? AllowedAlgorithms;
+                    allowedAlgorithms = entity.AllowedAlgorithms;
                 }
             }
         }
 
-        return (trustedSigningKeys, allowedHashAlgorithms);
+        return (trustedSigningKeys, allowedAlgorithms);
     }
 
     /// <summary>
