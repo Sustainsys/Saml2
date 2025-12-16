@@ -43,7 +43,7 @@ public class Saml2Options : RemoteAuthenticationOptions
     /// <summary>
     /// Identityprovider configuration for this scheme.
     /// </summary>
-    public IdentityProvider? IdentityProvider { get; set; }
+    public IdentityProvider IdentityProvider { get; set; } = new();
 
     /// <summary>
     /// NameId of the service provider.

@@ -81,7 +81,6 @@ public class Saml2Handler(
                 HttpContext = Context,
                 // TODO: Plus package should use callback to resolve this.
                 StaticConfiguration = Options.IdentityProvider
-                    ?? throw new InvalidOperationException("Missing IdentityProvider config")
             };
 
             await resolver.GetEffectiveConfigurationAsync(context);

@@ -17,10 +17,9 @@ builder.Services.AddAuthentication(opt =>
     .AddCookie()
     .AddSaml2("stubidp", opt =>
     {
-        opt.IdentityProvider = new()
-        {
-            EntityId = "https://stubidp.sustainsys.com/Metadata",
-        };
+        opt.IdentityProvider.EntityId = "https://stubidp.sustainsys.com/Metadata";
+
+        // TODO: Automatically derive this from request if not set.
         opt.EntityId = "https://localhost:5001/Saml2";
     })
         .AddSaml2("idsrv", opt =>
