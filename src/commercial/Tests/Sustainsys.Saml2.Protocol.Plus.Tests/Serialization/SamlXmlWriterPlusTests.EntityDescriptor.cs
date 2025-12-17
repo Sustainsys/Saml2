@@ -15,7 +15,7 @@ partial class SamlXmlWriterPlusTests
 
 
     [Fact]
-    public void WriteMetaData_CompleteSuccess()
+    public void WriteEntityDescriptor()
     {
         EntityDescriptor metaData = new()
         {
