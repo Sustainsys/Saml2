@@ -15,22 +15,12 @@ partial class SamlXmlWriterPlus
     /// Append the service as a child node
     /// </summary>
     /// <param name="node">parent node</param>
-    /// <param name="service">Single Sign On Service</param>
-    /// <param name="elementName">Name of the type of element</param>
+    /// <param name="service">Service that will become child node</param>
+    /// <param name="elementName">Name of the element</param>
     protected virtual XmlElement Append(XmlNode node, Endpoint service, string elementName)
     {
-        var serviceElement = null as XmlElement;
-        switch (elementName)
-        {
-            case Elements.SingleSignOnService:
-                serviceElement = AppendElement(node, Namespaces.Metadata, Elements.SingleSignOnService);
-                break;
-            case Elements.SingleLogoutService:
-                serviceElement = AppendElement(node, Namespaces.Metadata, Elements.SingleLogoutService);
-                break;
-            default:
-                throw new ArgumentException($"Unknown element name {elementName}");
-        }
+        var serviceElement = AppendElement(node, Namespaces.Metadata, elementName);
+
         serviceElement.SetAttribute(Attributes.Binding, service.Binding);
         serviceElement.SetAttribute(Attributes.Location, service.Location);
 
