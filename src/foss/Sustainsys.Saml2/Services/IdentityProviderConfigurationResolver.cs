@@ -3,6 +3,7 @@
 
 using Microsoft.AspNetCore.Http;
 using Sustainsys.Saml2.Metadata;
+using Sustainsys.Saml2.Xml;
 using System.Security.Cryptography.X509Certificates;
 using System.Security.Cryptography.Xml;
 
@@ -106,19 +107,28 @@ public class IdentityProviderConfigurationResolver
                 .First(sso => sso.Binding == Constants.BindingUris.HttpRedirect)
                 ?? IdpSsoDescriptor.SingleSignOnServices.First();
 
+            List<SigningKey> signingKeys = [.. context.StaticConfiguration.SigningKeys ?? []];
+
+            foreach (var key in IdpSsoDescriptor.Keys)
+            {
+                var certificate = key.KeyInfo!.OfType<KeyInfoX509Data>()
+                    .Single().Certificates!.Cast<X509Certificate2>().Single();
+
+                if (!signingKeys.Any(k => k.Certificate!.Thumbprint == certificate.Thumbprint))
+                {
+                    signingKeys.Add(new()
+                    {
+                        Certificate = certificate,
+                        TrustLevel = entityDescriptor.TrustLevel
+                    });
+                }
+            }
+
             context.EffectiveConfiguration = new()
             {
                 EntityId = entityDescriptor.EntityId,
                 AllowedAlgorithms = context.StaticConfiguration.AllowedAlgorithms,
-
-                // TODO: Union with configured keys and use best trust level for keys in both.
-                SigningKeys = IdpSsoDescriptor.Keys.Select(k =>
-                    new Xml.SigningKey()
-                    {
-                        Certificate = k.KeyInfo!.OfType<KeyInfoX509Data>()
-                            .Single().Certificates!.OfType<X509Certificate2>().Single(),
-                        TrustLevel = entityDescriptor.TrustLevel
-                    }),
+                SigningKeys = signingKeys,
                 SsoServiceUrl = context.StaticConfiguration.SsoServiceUrl ?? ssoService.Location,
                 SsoServiceBinding = context.StaticConfiguration.SsoServiceBinding ?? ssoService.Binding,
             };

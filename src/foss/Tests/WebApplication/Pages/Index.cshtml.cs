@@ -34,7 +34,8 @@ public class IndexModel : PageModel
                         Items =
                         {
                             { "TestKey", "TestValue" }
-                        }
+                        },
+                        RedirectUri = Request.PathBase
                     };
                     return Challenge(properties, "stubidp");
                 }
