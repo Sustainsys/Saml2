@@ -98,7 +98,7 @@ public class Saml2SSoResponseGenerator(
     /// <param name="issuer">The issuer to use</param>
     /// <param name="destination">Destination URL</param>
     /// <returns>Assertion</returns>
-    protected async Task<Saml.Assertion> CreateAssertionAsync(ValidatedAuthnRequest validatedAuthnRequest, string issuer, string destination)
+    protected virtual async Task<Saml.Assertion> CreateAssertionAsync(ValidatedAuthnRequest validatedAuthnRequest, string issuer, string destination)
         => new()
         {
             Issuer = issuer,
