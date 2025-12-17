@@ -3,6 +3,7 @@
 
 using Sustainsys.Saml2.Metadata;
 using Sustainsys.Saml2.Samlp;
+using Sustainsys.Saml2.Xml;
 using System.Xml;
 using static Sustainsys.Saml2.Constants;
 
@@ -21,14 +22,29 @@ partial class SamlXmlWriterPlus
     }
 
     /// <summary>
-    /// Append the response as a child node
+    /// Append the descriptor as a child node
     /// </summary>
     /// <param name="node">parent node</param>
     /// <param name="entityDescriptor">Entity Descriptor</param>
     protected virtual XmlElement Append(XmlNode node, EntityDescriptor entityDescriptor)
     {
-        var entityDescriptorElement = AppendElement(
-            node, Namespaces.Metadata, Elements.EntityDescriptor);
+        var entityDescriptorElement = AppendElement(node, Namespaces.Metadata, Elements.EntityDescriptor);
+        entityDescriptorElement.SetAttribute(Attributes.ID, entityDescriptor.Id);
+        entityDescriptorElement.SetAttribute(Attributes.entityID, entityDescriptor.EntityId);
+        entityDescriptorElement.SetAttributeIfValue(Attributes.cacheDuration, entityDescriptor.CacheDuration);
+        entityDescriptorElement.SetAttributeIfValue(Attributes.validUntil, entityDescriptor.ValidUntil);
+
+        foreach (var roleDescriptor in entityDescriptor.RoleDescriptors)
+        {
+            switch (roleDescriptor)
+            {
+                case IDPSSODescriptor idpSsoDescriptor:
+                    Append(entityDescriptorElement, idpSsoDescriptor);
+                    break;
+                default:
+                    throw new NotImplementedException();
+            }
+        }
 
         return entityDescriptorElement;
     }

@@ -78,4 +78,29 @@ public static class XmlHelpers
             element.SetAttribute(name, value.Value);
         }
     }
+
+    /// <summary>
+    /// Sets a TimeSpan attribute in the correct format.
+    /// </summary>
+    /// <param name="element">Element to set attribute on.</param>
+    /// <param name="name">Name of attribute</param>
+    /// <param name="value">TimeSpan value.</param>
+    public static void SetAttribute(this XmlElement element, string name, TimeSpan value)
+    {
+        element.SetAttribute(name, XmlConvert.ToString(value));
+    }
+
+    /// <summary>
+    /// Sets a TimeSpan attribute in the correct format, if the value is not null (HasValue)
+    /// </summary>
+    /// <param name="element">Element to set attribute on.</param>
+    /// <param name="name">Name of attribute</param>
+    /// <param name="value">TimeSpan value.</param>
+    public static void SetAttributeIfValue(this XmlElement element, string name, TimeSpan? value)
+    {
+        if (value.HasValue)
+        {
+            element.SetAttribute(name, value.Value);
+        }
+    }
 }
