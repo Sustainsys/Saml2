@@ -148,10 +148,12 @@ public class Saml2SSoResponseGenerator(
     /// <param name="validatedAuthnRequest">AuthnRequest validation context</param>
     /// <param name="destination">Destination URL</param>
     /// <returns>Subject</returns>
-    protected virtual Saml.Subject CreateSubject(ValidatedAuthnRequest validatedAuthnRequest, string destination)
+    protected virtual Subject CreateSubject(ValidatedAuthnRequest validatedAuthnRequest, string destination)
     {
         return new()
         {
+            // TODO: Consider to allow config to select claim to use and format. This would
+            // require the subject creation to use the profile service results.
             NameId = new()
             {
                 Value = validatedAuthnRequest.Subject!.FindFirstValue(JwtClaimTypes.Subject)!,
