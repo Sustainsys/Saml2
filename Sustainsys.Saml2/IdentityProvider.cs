@@ -538,7 +538,13 @@ namespace Sustainsys.Saml2
             {
                 lock (metadataLoadLock)
                 {
-                    DoLoadMetadata();
+					// check the metadata is still expired now we've waited
+					// for the lock to be free - it was probably locked by
+					// another thread performing the refresh
+					if (LoadMetadata && MetadataValidUntil.Value < DateTime.UtcNow)
+					{
+                    	DoLoadMetadata();
+					}
                 }
             }
         }
