@@ -105,7 +105,7 @@ partial class SamlXmlReaderPlusTests
             AssertionConsumerServiceUrl = "https://sp.example.com/Acs",
             AssertionConsumerServiceIndex = 42,
             ProtocolBinding = Constants.BindingUris.HttpPOST,
-            AttributeConsumingServiceIndex = 42,
+            AttributeConsumingServiceIndex = 17,
             ProviderName = "test"
         };
 

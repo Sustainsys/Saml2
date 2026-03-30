@@ -6,7 +6,7 @@
 					AssertionConsumerServiceIndex = "42"
 					ForceAuthn="true" IsPassive="true"
 					ProtocolBinding = "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST"
-					AttributeConsumingServiceIndex="42"
+					AttributeConsumingServiceIndex="17"
 					ProviderName="test">
 	<saml:Issuer>https://sp.example.com/Metadata</saml:Issuer>
 	<samlp:Extensions></samlp:Extensions>

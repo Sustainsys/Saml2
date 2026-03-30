@@ -118,6 +118,7 @@ public static class Constants
         public const string AllowCreate = nameof(AllowCreate);
         public const string AssertionConsumerServiceIndex = nameof(AssertionConsumerServiceIndex);
         public const string AssertionConsumerServiceURL = nameof(AssertionConsumerServiceURL);
+        public const string AttributeConsumingServiceIndex = nameof(AttributeConsumingServiceIndex);
         public const string AuthnInstant = nameof(AuthnInstant);
         public const string Binding = nameof(Binding);
         public const string cacheDuration = nameof(cacheDuration);

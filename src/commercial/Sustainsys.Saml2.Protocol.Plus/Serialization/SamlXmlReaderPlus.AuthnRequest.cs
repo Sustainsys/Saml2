@@ -101,7 +101,7 @@ public partial class SamlXmlReaderPlus
         authnRequest.AssertionConsumerServiceIndex = source.GetIntAttribute(Attributes.AssertionConsumerServiceIndex);
         authnRequest.AssertionConsumerServiceUrl = source.GetAttribute(Attributes.AssertionConsumerServiceURL);
         authnRequest.ProtocolBinding = source.GetAttribute(Attributes.ProtocolBinding);
-        authnRequest.AttributeConsumingServiceIndex = source.GetIntAttribute(Attributes.AssertionConsumerServiceIndex);
+        authnRequest.AttributeConsumingServiceIndex = source.GetIntAttribute(Attributes.AttributeConsumingServiceIndex);
         authnRequest.ProviderName = source.GetAttribute(Attributes.ProviderName);
     }
 }
