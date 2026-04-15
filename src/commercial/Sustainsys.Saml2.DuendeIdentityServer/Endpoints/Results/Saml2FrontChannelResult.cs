@@ -75,7 +75,7 @@ public class Saml2FrontChannelResultHttpWriter(
                 errorUrl += "?";
             }
 
-            var url = errorUrl += identityServerOptions.UserInteraction.ErrorIdParameter + "=" + id;
+            var url = errorUrl + identityServerOptions.UserInteraction.ErrorIdParameter + "=" + id;
             context.Response.Redirect(url);
             return;
         }

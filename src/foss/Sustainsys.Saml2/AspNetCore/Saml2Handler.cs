@@ -172,6 +172,7 @@ public class Saml2Handler(
 
         if (string.IsNullOrEmpty(cookieValue))
         {
+            // TODO: Consider better error handling with a recovery strategy if the same user is already logged in.
             throw new ValidationException<Saml2Message>($"The state cookie {cookieName} was not found.");
         }
 
@@ -202,6 +203,7 @@ public class Saml2Handler(
         }
         finally
         {
+            // TODO: Consider setting a "consumed marker" on the cookie to allow better error handling on re-post/re-processing.
             Options.StateCookieManager.DeleteCookie(Context, cookieName, BuildCookieOptions());
         }
     }

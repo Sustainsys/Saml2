@@ -13,12 +13,13 @@ namespace Sustainsys.Saml2.Xml;
 /// </summary>
 public static class SignedXmlHelper
 {
+    // TODO: Move this method to test project.
     /// <summary>
     /// Adds an enveloped signature to the node.
     /// </summary>
     /// <param name="element">Element to sign</param>
     /// <param name="certificate">Certificate to use to sign</param>
-    public static void Sign(
+    internal static void Sign(
         this XmlElement element,
         X509Certificate2 certificate)
     {
@@ -122,11 +123,14 @@ public static class SignedXmlHelper
     /// lower case e.g. sha256 to match end of algorithm identifier URI, both for
     /// signing and hashing algorithms."</param>
     /// <returns>Tuple with possibly error message, and the signing key that worked.</returns>
-    public static (string? Error, SigningKey? WorkingKey) VerifySignature(
+    internal static (string? Error, SigningKey? WorkingKey) VerifySignature(
         this XmlElement signatureElement,
         IEnumerable<SigningKey> keys,
         IEnumerable<string> allowedAlgorithms)
     {
+        // TODO: Wrap in try-catch and report any exceptions as error messages. One example
+        // is if the signature reference is incorrect - then GetIdElement will throw an exception.
+
         var signedXml = new SignedXmlWithStrictIdResolution(signatureElement.OwnerDocument);
 
         signedXml.LoadXml(signatureElement);
@@ -140,6 +144,7 @@ public static class SignedXmlHelper
         }
         else
         {
+            // TODO: Try looking up the right key first instead of trying them one by one?
             foreach (var key in keys)
             {
                 if (key.Certificate == null)

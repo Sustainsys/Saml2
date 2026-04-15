@@ -18,6 +18,7 @@ partial class SamlXmlWriterPlus
     {
         var statusElement = AppendElement(parent, Namespaces.Samlp, Elements.Status);
 
+        // TODO: Extract to method and make recursive to allow nested StatusCode.
         var statusCodeElement = AppendElement(statusElement, Namespaces.Samlp, Elements.StatusCode);
         statusCodeElement.SetAttribute(Attributes.Value, status.StatusCode.Value);
     }

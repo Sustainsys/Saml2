@@ -23,7 +23,7 @@ partial class SamlXmlWriterPlus
         element.SetAttribute(Attributes.Version, assertion.Version);
         element.SetAttribute(Attributes.IssueInstant, assertion.IssueInstant);
 
-        Append(element, assertion.Issuer, "Issuer");
+        Append(element, assertion.Issuer, Elements.Issuer);
 
         if (assertion.Subject != null)
         {

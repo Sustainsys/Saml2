@@ -3,6 +3,7 @@
 
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Sustainsys.Saml2;
+using Sustainsys.Saml2.Saml;
 using System.Security.Cryptography.X509Certificates;
 
 var builder = Microsoft.AspNetCore.Builder.WebApplication.CreateBuilder(args);

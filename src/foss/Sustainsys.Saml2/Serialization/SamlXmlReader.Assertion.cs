@@ -33,7 +33,7 @@ public partial class SamlXmlReader
     /// Read an <see cref="Assertion"/>
     /// </summary>
     /// <param name="source">Xml Traverser to read from</param>
-    protected Assertion ReadAssertion(XmlTraverser source)
+    protected virtual Assertion ReadAssertion(XmlTraverser source)
     {
         var assertion = Create<Assertion>();
 
@@ -62,12 +62,12 @@ public partial class SamlXmlReader
     /// <param name="assertion"></param>
     protected virtual void ReadElements(XmlTraverser source, Assertion assertion)
     {
-        source.MoveNext();
+        source.MoveNext(false);
 
         if (source.EnsureName(Elements.Issuer, Namespaces.SamlUri))
         {
             assertion.Issuer = ReadNameId(source);
-            source.MoveNext();
+            source.MoveNext(false);
         }
 
         (var trustedSigningKeys, var allowedHashAlgorithms) =
@@ -75,7 +75,7 @@ public partial class SamlXmlReader
 
         if (source.ReadAndValidateOptionalSignature(trustedSigningKeys, allowedHashAlgorithms))
         {
-            source.MoveNext();
+            source.MoveNext(false);
         }
         // Set this regardles if a signature was read - the TrustLevel could be inherited
         // from a signature on the enclosing Response.

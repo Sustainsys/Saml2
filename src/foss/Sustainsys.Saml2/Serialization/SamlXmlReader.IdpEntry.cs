@@ -14,7 +14,7 @@ partial class SamlXmlReader
     /// </summary>
     /// <param name="source">Xml Traverser to read from</param>
     /// <returns>IdpEntry</returns>
-    protected virtual IdpEntry ReadIdpEntry(XmlTraverser source)
+    protected IdpEntry ReadIdpEntry(XmlTraverser source)
     {
         var result = Create<IdpEntry>();
 

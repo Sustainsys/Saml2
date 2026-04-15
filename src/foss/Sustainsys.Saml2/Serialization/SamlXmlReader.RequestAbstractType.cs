@@ -44,7 +44,7 @@ public partial class SamlXmlReader
         if (source.ReadAndValidateOptionalSignature(trustedSigningKeys, allowedHashAlgorithms))
         {
             request.TrustLevel = source.TrustLevel;
-            source.MoveNext();
+            source.MoveNext(true);
         }
 
         if (source.HasName(Elements.Extensions, Namespaces.SamlpUri))

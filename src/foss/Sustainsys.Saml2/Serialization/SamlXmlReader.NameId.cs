@@ -15,6 +15,10 @@ public partial class SamlXmlReader
     /// <returns>NameId</returns>
     protected virtual NameId ReadNameId(XmlTraverser source)
     {
+        // TODO: Extract reading of contents to separate method (check all reader files)
+        // TODO: Extract reading of attribute to separate method (check all reader files)
+        // TODO: Check that all "root" methods in reader are non-virtual.
+
         var result = Create<NameId>();
 
         // Read the text value of the NameID element and the Format attribute

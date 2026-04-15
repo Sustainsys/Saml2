@@ -58,6 +58,8 @@ public class HttpPostBinding : FrontChannelBinding
             }
         }
 
+        // TODO: Size limit of incoming message.
+
         var xd = new XmlDocument();
         xd.LoadXml(Encoding.UTF8.GetString(Convert.FromBase64String(httpRequest.Form[name].Single()
             ?? throw new InvalidOperationException("No form content found"))));
@@ -86,11 +88,13 @@ public class HttpPostBinding : FrontChannelBinding
             xmlDoc.Sign(message.SigningCertificate, issuerElement);
         }
 
+        // TODO: Change to use string interpolation instead, it has better performance
         var relayStateHtml = string.IsNullOrEmpty(message.RelayState) ? null
             : string.Format(CultureInfo.InvariantCulture, PostHtmlRelayStateFormatString, message.RelayState);
 
         var encodedXml = Convert.ToBase64String(Encoding.UTF8.GetBytes(xmlDoc.OuterXml));
 
+        // TODO: Change to use string interpolation instead, it has better performance
         var content = string.Format(
                     CultureInfo.InvariantCulture,
                     PostHtmlFormatString,
@@ -105,6 +109,8 @@ public class HttpPostBinding : FrontChannelBinding
 
     private const string PostHtmlRelayStateFormatString = @"
 <input type=""hidden"" name=""RelayState"" value=""{0}""/>";
+
+// TODO: Is xml marker and doctype needed? Bindings 3.5.4 requires XHTML.
 
     private const string PostHtmlFormatString = @"<?xml version=""1.0"" encoding=""UTF-8""?>
 <!DOCTYPE html PUBLIC ""-//W3C//DTD XHTML 1.1//EN""

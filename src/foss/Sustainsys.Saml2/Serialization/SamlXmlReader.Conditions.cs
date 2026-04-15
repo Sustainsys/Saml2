@@ -25,7 +25,7 @@ partial class SamlXmlReader
     }
 
     /// <summary>
-    /// Extension point to add reading of attributes for Conditions
+    /// Reads attributes of conditions.
     /// </summary>
     /// <param name="source">Source</param>
     /// <param name="conditions">Conditions</param>
@@ -46,6 +46,9 @@ partial class SamlXmlReader
         // The XML schema allows custom conditions. Anyone that wants to support
         // those would have to extend the reader and override this method to handle
         // reading of those.
+        // TODO: The extension point is before the known elements (which is awkard)
+        // should probably call an empty protected virtual method here to allow
+        // easier override.
 
         while (source.HasName(Elements.AudienceRestriction, Namespaces.SamlUri))
         {

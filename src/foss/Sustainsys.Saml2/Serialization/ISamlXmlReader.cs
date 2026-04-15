@@ -13,12 +13,13 @@ namespace Sustainsys.Saml2.Serialization;
 /// </summary>
 public interface ISamlXmlReader
 {
+    // TODO: Is this really a good idea? Better to always use EntityResolver?
     /// <summary>
-    /// Allowed hash algorithms if validating signatures. Values should be e.g. "sha256"
-    /// which is compared to the end of the algorithm identifier Url.
+    /// Allowed full URI identifiers of hash algorithms if validating signatures.
     /// </summary>
     IEnumerable<string>? AllowedAlgorithms { get; set; }
 
+    // TODO: Is this really a good idea? Better to always use EntityResolver?
     /// <summary>
     /// Signing keys to trust when validating signatures of the metadata. In addition
     /// to these, the signing keys configured for a known issuer are considered. This
@@ -26,6 +27,8 @@ public interface ISamlXmlReader
     /// </summary>
     IEnumerable<SigningKey>? TrustedSigningKeys { get; set; }
 
+    // TODO: Make Async and include Cancellation Token. Consider making everything Async
+    // to allow extensions to call into Async code as part of reading.
     /// <summary>
     /// Called when information about a Saml entity is needed, e.g. to get the signing
     /// keys configured for an entity.

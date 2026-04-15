@@ -30,13 +30,13 @@ partial class SamlXmlReader
     /// <param name="response">Response to populate</param>
     protected virtual void ReadElements(XmlTraverser source, StatusResponseType response)
     {
-        source.MoveNext();
+        source.MoveNext(false);
 
         if (source.HasName(Elements.Issuer, Namespaces.SamlUri))
         {
             response.Issuer = ReadNameId(source);
 
-            source.MoveNext();
+            source.MoveNext(false);
         }
 
         (var trustedSigningKeys, var allowedHashAlgorithms) =
@@ -45,13 +45,13 @@ partial class SamlXmlReader
         if (source.ReadAndValidateOptionalSignature(trustedSigningKeys, allowedHashAlgorithms))
         {
             response.TrustLevel = source.TrustLevel;
-            source.MoveNext();
+            source.MoveNext(false);
         }
 
         if (source.HasName(Elements.Extensions, Namespaces.SamlpUri))
         {
             response.Extensions = ReadExtensions(source);
-            source.MoveNext();
+            source.MoveNext(false);
         }
 
         // Status is optional on XML schema level, but Core 2.3.3. says that

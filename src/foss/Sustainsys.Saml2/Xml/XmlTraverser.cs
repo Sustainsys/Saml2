@@ -2,6 +2,7 @@
 // Licensed under the MIT license. See LICENSE in the project root for license information.
 
 using Sustainsys.Saml2.Common;
+using Sustainsys.Saml2.Saml;
 using System.Diagnostics;
 using System.Security.Cryptography.Xml;
 using System.Xml;
@@ -83,9 +84,12 @@ public class XmlTraverser
         childrenHandled = true;
     }
 
-    private void AddError(ErrorReason reason, string message, string? localName = null)
+    private void AddError(ErrorReason reason, string message, string? localName = null, string? stringValue = null)
     {
-        Errors.Add(new(reason, localName ?? CurrentNode!.LocalName, CurrentNode, message));
+        Errors.Add(new(reason, localName ?? CurrentNode!.LocalName, CurrentNode, message)
+        {
+            StringValue = stringValue
+        });
     }
 
     /// <summary>
@@ -117,7 +121,7 @@ public class XmlTraverser
     public XmlTraverser GetChildren() => new(this, Errors);
 
     /// <summary>
-    /// If the current node is a signature node, read and validate it and 
+    /// If the current node is a signature node, read and validate it 
     /// </summary>
     /// <param name="trustedSigningKeys">Signing keys trusted when validating the signature. If null, nothing is done.</param>
     /// <param name="allowedAlgorithms">Allowed hash algorithms.</param>
@@ -170,7 +174,7 @@ public class XmlTraverser
     /// <param name="expectEnd">Is it correct if this MoveNext call hits the end of the 
     /// child list? If not an error is recorded if we do not find any more nodes.</param>
     /// <returns>true if the move was successful</returns>
-    public bool MoveNext(bool expectEnd = false)
+    public bool MoveNext(bool expectEnd)
     {
         while (true)
         {
@@ -364,9 +368,7 @@ public class XmlTraverser
     {
         if (CurrentNode == null)
         {
-            // If there's already an error so we're not on a node, just do nothing. There
-            // should already be an error reported for missing node.
-            return null!;
+            throw new InvalidOperationException("Shouldn't read attributes if we're not on a node.");
         }
 
         var value = GetAttribute(localName);
@@ -386,14 +388,11 @@ public class XmlTraverser
     {
         if (value != null && !Uri.TryCreate(value, UriKind.Absolute, out var _))
         {
-            Errors.Add(new Error(
+            AddError(
                 ErrorReason.NotAbsoluteUri,
+                $"Attribute \"{localName}\" should be an absolute Uri, but \"{value}\" isn't.",
                 localName,
-                CurrentNode,
-                $"Attribute \"{localName}\" should be an absolute Uri, but \"{value}\" isn't.")
-            {
-                StringValue = value
-            });
+                value);
         }
 
         return value!;
@@ -530,14 +529,11 @@ public class XmlTraverser
             ex is FormatException // Thrown by XmlConvert
             || ex is ArgumentException) // Thrown by Enum.Parse
         {
-            Errors.Add(new Error(
+            AddError(
                 ErrorReason.ConversionFailed,
+                $"Conversion to {typeof(TTarget).Name} failed for {stringValue}.",
                 localName,
-                CurrentNode,
-                $"Conversion to {typeof(TTarget).Name} failed for {stringValue}.")
-            {
-                StringValue = stringValue
-            });
+                stringValue);
         }
 
         return default;

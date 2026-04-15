@@ -2,7 +2,9 @@
 // Licensed under the MIT license. See LICENSE in the project root for license information.
 
 using Sustainsys.Saml2.Saml;
+using Sustainsys.Saml2.Xml;
 using System.Xml;
+using static Sustainsys.Saml2.Constants;
 
 namespace Sustainsys.Saml2.Serialization;
 
@@ -14,17 +16,29 @@ partial class SamlXmlWriter
     /// <param name="parent">Parent to append to</param>
     /// <param name="nameId">The NameId</param>
     /// <param name="localName">Local name of element</param>
-    /// <param name="namespacePrefix">Namespace prefix of element.</param>
     /// <returns></returns>
-    public XmlElement? AppendIfValue(XmlNode parent, NameId? nameId, string namespacePrefix, string localName)
+    public XmlElement? AppendIfValue(XmlNode parent, NameId? nameId, string localName)
     {
         if (nameId != null)
         {
-            var element = AppendElement(parent, namespacePrefix, localName);
-            element.InnerText = nameId.Value;
-
-            return element;
+            return Append(parent, nameId, localName);
         }
         return null;
+    }
+
+    /// <summary>
+    /// Append a NameId
+    /// </summary>
+    /// <param name="parent">Parent node to append child element to</param>
+    /// <param name="nameId">value</param>
+    /// <param name="localName">Local name of the new element</param>
+    protected virtual XmlElement Append(XmlNode parent, NameId nameId, string localName)
+    {
+        var element = AppendElement(parent, Namespaces.Saml, localName);
+
+        element.InnerText = nameId.Value;
+        element.SetAttributeIfValue(Attributes.Format, nameId.Format);
+
+        return element;
     }
 }

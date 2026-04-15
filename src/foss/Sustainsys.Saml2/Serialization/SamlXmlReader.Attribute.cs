@@ -44,6 +44,7 @@ public partial class SamlXmlReader
         while (source.MoveNext(true)
             && source.EnsureName(Elements.AttributeValue, Namespaces.SamlUri))
         {
+            // TODO: Add GetBoolAttribute
             var nilAttribute = source.GetAttribute("nil", Namespaces.XsiUri);
 
             if (nilAttribute == "true" || nilAttribute == "1")

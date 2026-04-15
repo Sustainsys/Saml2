@@ -31,7 +31,7 @@ partial class SamlXmlReader
     /// <param name="status">Status to populate</param>
     protected virtual void ReadElements(XmlTraverser source, SamlStatus status)
     {
-        source.MoveNext();
+        source.MoveNext(false);
 
         if (source.EnsureName(Elements.StatusCode, Namespaces.SamlpUri))
         {
@@ -49,6 +49,8 @@ partial class SamlXmlReader
         var result = Create<StatusCode>();
 
         ReadAttributes(source, result);
+
+        // TODO: Add support for nested Status Code
 
         return result;
     }

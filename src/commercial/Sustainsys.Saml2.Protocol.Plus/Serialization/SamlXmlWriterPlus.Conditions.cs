@@ -23,6 +23,7 @@ partial class SamlXmlWriterPlus
 
         foreach (var restriction in conditions.AudienceRestrictions)
         {
+            // TODO: Move to separate method (same file is fine)
             var audienceRestrictionElement = AppendElement(conditionsElement, Namespaces.Saml, Elements.AudienceRestriction);
             foreach (var audience in restriction.Audiences)
             {

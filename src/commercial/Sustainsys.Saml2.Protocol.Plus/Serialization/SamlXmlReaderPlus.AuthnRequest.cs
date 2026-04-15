@@ -99,8 +99,8 @@ public partial class SamlXmlReaderPlus
         authnRequest.ForceAuthn = source.GetBoolAttribute(Attributes.ForceAuthn) ?? authnRequest.ForceAuthn;
         authnRequest.IsPassive = source.GetBoolAttribute(Attributes.IsPassive) ?? authnRequest.IsPassive;
         authnRequest.AssertionConsumerServiceIndex = source.GetIntAttribute(Attributes.AssertionConsumerServiceIndex);
-        authnRequest.AssertionConsumerServiceUrl = source.GetAttribute(Attributes.AssertionConsumerServiceURL);
-        authnRequest.ProtocolBinding = source.GetAttribute(Attributes.ProtocolBinding);
+        authnRequest.AssertionConsumerServiceUrl = source.GetAbsoluteUriAttribute(Attributes.AssertionConsumerServiceURL);
+        authnRequest.ProtocolBinding = source.GetAbsoluteUriAttribute(Attributes.ProtocolBinding);
         authnRequest.AttributeConsumingServiceIndex = source.GetIntAttribute(Attributes.AttributeConsumingServiceIndex);
         authnRequest.ProviderName = source.GetAttribute(Attributes.ProviderName);
     }

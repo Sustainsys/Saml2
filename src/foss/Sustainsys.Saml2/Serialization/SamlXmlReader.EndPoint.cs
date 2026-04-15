@@ -30,7 +30,7 @@ partial class SamlXmlReader
     protected virtual void ReadAttributes(XmlTraverser source, Endpoint endpoint)
     {
         endpoint.Binding = source.GetRequiredAbsoluteUriAttribute(Attributes.Binding) ?? "";
-        endpoint.Location = source.GetRequiredAttribute(Attributes.Location) ?? "";
+        endpoint.Location = source.GetRequiredAbsoluteUriAttribute(Attributes.Location) ?? "";
     }
 
     /// <summary>

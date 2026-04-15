@@ -1,7 +1,7 @@
 ﻿// Copyright (c) Sustainsys AB. All rights reserved.
 // Licensed under the MIT license. See LICENSE in the project root for license information.
 
-namespace Sustainsys.Saml2;
+namespace Sustainsys.Saml2.Saml;
 
 /// <summary>
 /// What is the trust level of a piece of data? The levels reflect

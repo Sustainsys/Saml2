@@ -30,7 +30,7 @@ public partial class SamlXmlReader
     /// <param name="result">AudienceRestriction to populate</param>
     protected virtual void ReadElements(XmlTraverser source, AudienceRestriction result)
     {
-        source.MoveNext();
+        source.MoveNext(false);
 
         while (source.EnsureName(Elements.Audience, Namespaces.SamlUri))
         {

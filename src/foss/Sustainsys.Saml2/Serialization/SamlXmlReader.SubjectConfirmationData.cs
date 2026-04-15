@@ -24,7 +24,7 @@ partial class SamlXmlReader
     }
 
     /// <summary>
-    /// Extension point to add reading of attributes for Subject
+    /// Read SubjectConfirmationData attributes
     /// </summary>
     /// <param name="source">Source</param>
     /// <param name="subjectConfirmationData">SubjectConfirmationData</param>

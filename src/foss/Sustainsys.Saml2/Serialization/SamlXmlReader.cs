@@ -45,8 +45,7 @@ public partial class SamlXmlReader : ISamlXmlReader
     /// <param name="source">Xml Travers source - used to report errors</param>
     /// <param name="issuer">The issuer to find parameters for</param>
     /// <returns>
-    /// Trusted signig keys and allowedHashAlgorithms. Hash algorithms uses the <see cref="AllowedAlgorithms"/>
-    /// if there is no specific configuration on the Issuer.
+    /// Trusted signig keys and allowedHashAlgorithms.
     /// </returns>
     protected virtual (IEnumerable<SigningKey>? trustedSigningKeys, IEnumerable<string>? allowedAlgorithms)
     GetSignatureValidationParametersFromIssuer(XmlTraverser source, NameId? issuer)

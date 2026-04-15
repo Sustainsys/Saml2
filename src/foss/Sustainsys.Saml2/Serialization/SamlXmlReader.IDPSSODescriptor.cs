@@ -14,7 +14,7 @@ partial class SamlXmlReader
     /// </summary>
     /// <param name="source"></param>
     /// <returns></returns>
-    protected virtual IDPSSODescriptor ReadIDPSSODescriptor(XmlTraverser source)
+    protected IDPSSODescriptor ReadIDPSSODescriptor(XmlTraverser source)
     {
         var result = Create<IDPSSODescriptor>();
 

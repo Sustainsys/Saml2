@@ -2,6 +2,7 @@
 // Licensed under the MIT license. See LICENSE in the project root for license information.
 
 using Microsoft.Extensions.Time.Testing;
+using Sustainsys.Saml2.Saml;
 using Sustainsys.Saml2.Samlp;
 using Sustainsys.Saml2.Validation;
 

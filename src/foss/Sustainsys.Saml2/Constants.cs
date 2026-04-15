@@ -180,10 +180,10 @@ public static class Constants
     new ReadOnlyCollection<string>(
     [
         SignedXml.XmlDsigSHA256Url,
-            SignedXml.XmlDsigSHA384Url,
-            SignedXml.XmlDsigSHA512Url,
-            SignedXml.XmlDsigRSASHA256Url,
-            SignedXml.XmlDsigRSASHA384Url,
-            SignedXml.XmlDsigRSASHA512Url,
+        SignedXml.XmlDsigSHA384Url,
+        SignedXml.XmlDsigSHA512Url,
+        SignedXml.XmlDsigRSASHA256Url,
+        SignedXml.XmlDsigRSASHA384Url,
+        SignedXml.XmlDsigRSASHA512Url,
     ]);
 }

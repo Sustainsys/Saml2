@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Sustainsys AB. All rights reserved.
 // Licensed under the MIT license. See LICENSE in the project root for license information.
 
+using Sustainsys.Saml2.Saml;
 using Sustainsys.Saml2.Tests.Helpers;
 using Sustainsys.Saml2.Xml;
 using System.Xml;
@@ -32,7 +33,7 @@ public class XmlTraverserTests
 
         var subject = traverser.GetChildren();
 
-        subject.MoveNext().Should().BeTrue();
+        subject.MoveNext(false).Should().BeTrue();
 
         return subject;
     }
@@ -367,11 +368,11 @@ public class XmlTraverserTests
 
         var childElements = subject.GetChildren();
 
-        childElements.MoveNext().Should().BeTrue();
+        childElements.MoveNext(false).Should().BeTrue();
 
         childElements.CurrentNode!.LocalName.Should().Be("p");
 
-        childElements.MoveNext().Should().BeTrue();
+        childElements.MoveNext(false).Should().BeTrue();
 
         childElements.CurrentNode.LocalName.Should().Be("q");
 
@@ -425,7 +426,7 @@ public class XmlTraverserTests
     {
         var subject = GetXmlTraverser("<xml><a/></xml>").GetChildren();
 
-        subject.MoveNext();
+        subject.MoveNext(false);
 
         subject.ReadAndValidateOptionalSignature(null, null).Should().BeFalse();
 
@@ -437,7 +438,7 @@ public class XmlTraverserTests
     {
         var subject = GetXmlTraverser("<xml/>").GetChildren();
 
-        subject.MoveNext();
+        subject.MoveNext(false);
 
         subject.ReadAndValidateOptionalSignature(null, null).Should().BeFalse();
 
@@ -461,8 +462,8 @@ public class XmlTraverserTests
         ((XmlElement)subject.CurrentNode!).Sign(TestData.Certificate, subject.RootNode!.SelectSingleNode("/root/x")!);
 
         var children = subject.GetChildren();
-        children.MoveNext().Should().BeTrue(); // Step to X
-        children.MoveNext().Should().BeTrue(); // Step to signature
+        children.MoveNext(false).Should().BeTrue(); // Step to X
+        children.MoveNext(false).Should().BeTrue(); // Step to signature
 
         // Read and validate the signature of root as TrustLevel.TLS.
         SigningKey[] tlsKey =
@@ -477,7 +478,7 @@ public class XmlTraverserTests
         children.ReadAndValidateOptionalSignature(tlsKey, ["sha256"]).Should().BeTrue();
         children.TrustLevel.Should().Be(TrustLevel.TLS);
 
-        children.MoveNext();
+        children.MoveNext(false);
 
         var grandChildren = children.GetChildren();
 
@@ -509,7 +510,7 @@ public class XmlTraverserTests
         var subject = GetXmlTraverser(xml);
 
         var rChildren = subject.GetChildren();
-        rChildren.MoveNext().Should().BeTrue();
+        rChildren.MoveNext(false).Should().BeTrue();
         var a = rChildren.CurrentNode;
 
         rChildren.MoveNext(true).Should().BeFalse();
@@ -531,11 +532,11 @@ public class XmlTraverserTests
         var subject = GetXmlTraverser(xml);
 
         var rChildren = subject.GetChildren();
-        rChildren.MoveNext().Should().BeTrue();
+        rChildren.MoveNext(false).Should().BeTrue();
         var a = rChildren.CurrentNode;
         var aChildren = rChildren.GetChildren();
 
-        aChildren.MoveNext().Should().BeTrue();
+        aChildren.MoveNext(false).Should().BeTrue();
         aChildren.CurrentNode!.LocalName.Should().Be("b");
 
         rChildren.MoveNext(true).Should().BeFalse();
@@ -557,7 +558,7 @@ public class XmlTraverserTests
         var subject = GetXmlTraverser(xml);
 
         var children = subject.GetChildren();
-        children.MoveNext().Should().BeTrue();
+        children.MoveNext(false).Should().BeTrue();
         var a = children.CurrentNode!;
 
         subject.MoveNext(true).Should().BeFalse();

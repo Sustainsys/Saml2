@@ -16,15 +16,19 @@ partial class SamlXmlReader
     /// </summary>
     /// <param name="source"></param>
     /// <returns></returns>
-    protected virtual KeyDescriptor ReadKeyDescriptor(XmlTraverser source)
+    protected KeyDescriptor ReadKeyDescriptor(XmlTraverser source)
     {
         var result = Create<KeyDescriptor>();
 
+        // TODO: Extract ReadAttributes method.
+
         result.Use = source.GetEnumAttribute<KeyUse>(Attributes.use, true) ?? KeyUse.Both;
+
+        // TODO: Extract a ReadElement method
 
         var children = source.GetChildren();
 
-        if (children.MoveNext()
+        if (children.MoveNext(false)
             && children.EnsureName(Elements.KeyInfo, SignedXml.XmlDsigNamespaceUrl))
         {
             children.IgnoreChildren();

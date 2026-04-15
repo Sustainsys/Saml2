@@ -2,6 +2,7 @@
 // Licensed under the MIT license. See LICENSE in the project root for license information.
 
 using Sustainsys.Saml2.Metadata;
+using Sustainsys.Saml2.Saml;
 using Sustainsys.Saml2.Serialization;
 using Sustainsys.Saml2.Tests.Helpers;
 using Sustainsys.Saml2.Tests.Xml;

@@ -66,19 +66,21 @@ partial class SamlXmlReader
     /// <param name="entityDescriptor">Entity Descriptor to populate</param>
     protected virtual void ReadElements(XmlTraverser source, EntityDescriptor entityDescriptor)
     {
-        source.MoveNext();
+        source.MoveNext(false);
+
+        // TODO: Use EntityResolver instead of properties on the reader.
 
         if (source.ReadAndValidateOptionalSignature(
             TrustedSigningKeys, AllowedAlgorithms))
         {
             entityDescriptor.TrustLevel = source.TrustLevel;
-            source.MoveNext();
+            source.MoveNext(false);
         }
 
         if (source.HasName(Elements.Extensions, Namespaces.MetadataUri))
         {
             entityDescriptor.Extensions = ReadExtensions(source);
-            source.MoveNext();
+            source.MoveNext(false);
         }
 
         // Now we're at the actual role descriptors - or possibly an AffiliationDescriptor.

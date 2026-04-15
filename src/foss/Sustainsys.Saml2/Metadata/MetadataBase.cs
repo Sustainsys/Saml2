@@ -2,6 +2,7 @@
 // Licensed under the MIT license. See LICENSE in the project root for license information.
 
 using Sustainsys.Saml2.Common;
+using Sustainsys.Saml2.Saml;
 using System;
 using System.Collections.Generic;
 using System.Linq;
