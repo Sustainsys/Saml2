@@ -1,9 +1,9 @@
 <Solution>
   <Folder Name="/commercial/">
-    <Project Path="src/commercial/Sustainsys.Saml2.Protocol.Plus/Sustainsys.Saml2.Protocol.Plus.csproj" />
+    <Project Path="src/commercial/Sustainsys.Saml2.Plus/Sustainsys.Saml2.Plus.csproj" />
   </Folder>
   <Folder Name="/commercial/Tests/">
-    <Project Path="src/commercial/Tests/Sustainsys.Saml2.Protocol.Plus.Tests/Sustainsys.Saml2.Protocol.Plus.Tests.csproj" />
+    <Project Path="src/commercial/Tests/Sustainsys.Saml2.Plus.Tests/Sustainsys.Saml2.Plus.Tests.csproj" />
   </Folder>
   <Folder Name="/foss/">
     <Project Path="src/foss/Sustainsys.Saml2/Sustainsys.Saml2.csproj" />
