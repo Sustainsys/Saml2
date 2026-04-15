@@ -30,40 +30,7 @@ builder.Services.AddAuthentication(opt =>
                 Certificate =  new X509Certificate2(certificateData),
 #endif
             }];
-    })
-        .AddSaml2("idsrv", opt =>
-        {
-            opt.IdentityProvider = new()
-            {
-                EntityId = "https://localhost:5000/Saml2",
-                SsoServiceUrl = "https://localhost:5000/Saml2/Sso",
-                SsoServiceBinding = Constants.BindingUris.HttpRedirect,
-                SigningKeys = [
-                new()
-            {
-#if NET9_0_OR_GREATER
-                Certificate = X509CertificateLoader.LoadCertificate(certificateData),
-#else
-                Certificate =  new X509Certificate2(certificateData),
-#endif
-                TrustLevel = TrustLevel.TLS
-            },
-            new()
-            {
-#if NET9_0_OR_GREATER
-                Certificate = X509CertificateLoader.LoadPkcs12FromFile("Sustainsys.Saml2.Tests.pfx", "", X509KeyStorageFlags.EphemeralKeySet),
-#else
-                Certificate = new("Sustainsys.Saml2.Tests.pfx"),
-#endif
-                TrustLevel = TrustLevel.ConfiguredKey
-            }
-                ]
-            };
-            opt.EntityId = "https://localhost:5001/Saml2IdSrv";
-
-            opt.CallbackPath = "/Saml2IdSrv/Acs";
-        });
-;
+    });
 
 builder.Services.AddRazorPages();
 
