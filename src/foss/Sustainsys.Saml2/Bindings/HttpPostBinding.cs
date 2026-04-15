@@ -110,7 +110,7 @@ public class HttpPostBinding : FrontChannelBinding
     private const string PostHtmlRelayStateFormatString = @"
 <input type=""hidden"" name=""RelayState"" value=""{0}""/>";
 
-// TODO: Is xml marker and doctype needed? Bindings 3.5.4 requires XHTML.
+    // TODO: Is xml marker and doctype needed? Bindings 3.5.4 requires XHTML.
 
     private const string PostHtmlFormatString = @"<?xml version=""1.0"" encoding=""UTF-8""?>
 <!DOCTYPE html PUBLIC ""-//W3C//DTD XHTML 1.1//EN""

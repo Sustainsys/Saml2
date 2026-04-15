@@ -22,15 +22,15 @@ builder.Services.AddAuthentication(opt =>
 
         // Adding the signing key should validate metadata signature and get
         // a higher trust level.
-//        opt.IdentityProvider.SigningKeys = [
-//            new()
-//            {
-//#if NET9_0_OR_GREATER
-//                Certificate = X509CertificateLoader.LoadCertificate(certificateData),
-//#else
-//                Certificate =  new X509Certificate2(certificateData),
-//#endif
-//            }];
+        //        opt.IdentityProvider.SigningKeys = [
+        //            new()
+        //            {
+        //#if NET9_0_OR_GREATER
+        //                Certificate = X509CertificateLoader.LoadCertificate(certificateData),
+        //#else
+        //                Certificate =  new X509Certificate2(certificateData),
+        //#endif
+        //            }];
     });
 
 builder.Services.AddRazorPages();
