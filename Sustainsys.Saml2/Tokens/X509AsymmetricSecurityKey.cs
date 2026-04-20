@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 using System.Security.Cryptography.Xml;
@@ -45,7 +46,10 @@ namespace Sustainsys.Saml2.Tokens
 				case SecurityAlgorithms.RsaSha256Signature:
 				case SecurityAlgorithms.RsaSha384Signature:
 				case SecurityAlgorithms.RsaSha512Signature:
-					if (aa is RSA)
+#if NET8_0_OR_GREATER
+				case AdditionalSecurityAlgorithms.RsaSha256MGF1Signature:
+#endif
+                    if (aa is RSA)
 						return aa;
 					throw new NotSupportedException("The certificate does not support RSA signing");
 			}

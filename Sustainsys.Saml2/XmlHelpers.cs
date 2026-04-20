@@ -611,6 +611,15 @@ namespace Sustainsys.Saml2
             }
         }
 
+
+        private static readonly string[] _additionalAlgorithms = new string[]
+        {
+#if NET8_0_OR_GREATER
+            AdditionalSecurityAlgorithms.RsaSha256MGF1Signature
+#endif
+        };
+
+
         /// <summary>
         /// Store a list of signing algorithms that are available in SignedXml.
         /// This needs to be done through reflection, to keep the library
@@ -623,6 +632,7 @@ namespace Sustainsys.Saml2
                 .Where(f => f.Name.StartsWith("XmlDsigRSASHA", StringComparison.Ordinal))
                 .Select(f => (string)f.GetRawConstantValue())
                 .OrderBy(f => f)
+                .Concat(_additionalAlgorithms)
                 .ToArray();
 
         internal static readonly string[] KnownSigningAlgorithms =
