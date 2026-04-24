@@ -54,14 +54,16 @@ public static class SignedXmlHelper
             {
                 "RSA" => certificate.GetRSAPrivateKey(),
                 _ => throw new NotImplementedException(),
-            }
+            },
         };
+
+        signedXml.SignedInfo!.CanonicalizationMethod = SignedXml.XmlDsigCanonicalizationWithCommentsUrl;
 
         var id = element.Attributes!["ID"]?.Value;
 
         var reference = new Reference($"#{id}");
         reference.AddTransform(new XmlDsigEnvelopedSignatureTransform());
-        reference.AddTransform(new XmlDsigExcC14NTransform());
+        reference.AddTransform(new XmlDsigExcC14NWithCommentsTransform());
         signedXml.AddReference(reference);
 
         signedXml.KeyInfo.AddClause(new KeyInfoX509Data(certificate));
