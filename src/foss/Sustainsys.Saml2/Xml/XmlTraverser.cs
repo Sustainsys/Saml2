@@ -64,7 +64,9 @@ public class XmlTraverser
         CurrentNode = rootNode;
         childrenHandled = !rootNode.HasChildNodes;
         Errors = [];
-        TrustLevel = trustLevel;
+
+        // TODO: Test that checks the removal of HasSignature
+        TrustLevel = trustLevel & ~TrustLevel.HasSignature;
     }
 
     /// <summary>
@@ -77,7 +79,7 @@ public class XmlTraverser
         this.parent = parent;
         firstNode = parent.CurrentNode!.FirstChild;
         Errors = errors;
-        TrustLevel = parent.TrustLevel;
+        TrustLevel = parent.TrustLevel & ~TrustLevel.HasSignature;
 
         // Initial position is *before* first node, so there
         // are no children to handle on this position.
@@ -164,7 +166,7 @@ public class XmlTraverser
 
         if (workingKey != null && workingKey.TrustLevel > TrustLevel)
         {
-            TrustLevel = workingKey.TrustLevel;
+            TrustLevel = workingKey.TrustLevel | TrustLevel.HasSignature;
         }
     }
 

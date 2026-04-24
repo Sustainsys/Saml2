@@ -125,7 +125,7 @@ public partial class SamlXmlReaderTests
         }
         .ReadEntityDescriptor(xmlTraverser);
 
-        actual.TrustLevel.Should().Be(TrustLevel.ConfiguredKey);
+        actual.TrustLevel.Should().Be(TrustLevel.ConfiguredKey | TrustLevel.HasSignature);
     }
 
     [Fact]

@@ -400,7 +400,7 @@ public class XmlTraverserTests
         subject.ReadAndValidateOptionalSignature(TestData.SingleSigningKey, SignedXmlHelperTests.allowedHashes)
             .Should().BeTrue();
 
-        subject.TrustLevel.Should().Be(TestData.SigningKey.TrustLevel);
+        subject.TrustLevel.Should().Be(TestData.SigningKey.TrustLevel | TrustLevel.HasSignature);
     }
 
     [Fact]
@@ -448,7 +448,7 @@ public class XmlTraverserTests
     [Theory]
     [InlineData(null, TrustLevel.TLS)]
     [InlineData(TrustLevel.Http, TrustLevel.TLS)]
-    [InlineData(TrustLevel.ConfiguredKey, TrustLevel.ConfiguredKey)]
+    [InlineData(TrustLevel.ConfiguredKey, TrustLevel.ConfiguredKey | TrustLevel.HasSignature)]
     public void TrustLevel_Inheritance(TrustLevel? childTrustLevel, TrustLevel expected)
     {
         var subject = GetXmlTraverser("<root ID=\"r1\"><x/><child ID=\"c1\"/></root>");
@@ -476,7 +476,7 @@ public class XmlTraverserTests
             ];
 
         children.ReadAndValidateOptionalSignature(tlsKey, ["sha256"]).Should().BeTrue();
-        children.TrustLevel.Should().Be(TrustLevel.TLS);
+        children.TrustLevel.Should().Be(TrustLevel.TLS | TrustLevel.HasSignature);
 
         children.MoveNext(false);
 

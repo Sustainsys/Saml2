@@ -8,6 +8,8 @@ namespace Sustainsys.Saml2.Saml;
 /// how trustworthy the data is based on if it is signed and how
 /// the signature can be validated.
 /// </summary>
+/// <remarks>Values 0x2, 0x8 and 0x20 are available for extensions.</remarks>
+[Flags]
 public enum TrustLevel
 {
     /// <summary>
@@ -16,12 +18,18 @@ public enum TrustLevel
     None = 0,
 
     /// <summary>
+    /// The node has a valid signature, it was not inherited. For writing, this
+    /// indicates that the current node should be signed.
+    /// </summary>
+    HasSignature = 1,
+
+    /// <summary>
     /// The data was retreived over an outbound network connection,
     /// but the transport was not protected. This level is also set
     /// on all data that is verified as signed by a key that was retrieved
     /// over plain http.
     /// </summary>
-    Http = 10,
+    Http = 4,
 
     /// <summary>
     /// The data was directly retreived from the source using a valid
@@ -29,12 +37,12 @@ public enum TrustLevel
     /// is verified as signed by a key that was retrieved over TLS/https.
     /// In most setups, this level is regarded as secure.
     /// </summary>
-    TLS = 20,
+    TLS = 0x10,
 
     /// <summary>
     /// The data was verified by a signature where signing key or a strong
     /// identifier of the key (such as a SHA256 cert thumbprint) was read 
     /// from configuration.
     /// </summary>
-    ConfiguredKey = 30
+    ConfiguredKey = 0x40
 }
