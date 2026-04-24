@@ -22,15 +22,15 @@ public interface IFrontChannelBinding
     /// <param name="httpResponse">Http response to bind message to</param>
     /// <returns>Task</returns>
     /// <exception cref="System.ArgumentException">If message properties not properly set</exception>
-    Task BindAsync(HttpResponse httpResponse, Saml2Message message);
+    Task BindAsync(HttpResponse httpResponse, OutboundSaml2Message message);
 
     /// <summary>
     /// Unbinds a Saml2 message from an http request.
     /// </summary>
     /// <param name="httpRequest">HttpRequest to unbind from</param>
     /// <param name="getSaml2Entity">Func that returns a Saml2 entity from an entity id</param>
-    /// <returns></returns>
-    Task<Saml2Message> UnBindAsync(HttpRequest httpRequest,
+    /// <returns>Saml2 message</returns>
+    Task<InboundSaml2Message> UnBindAsync(HttpRequest httpRequest,
         Func<string, Task<Saml2Entity>> getSaml2Entity);
 
     /// <summary>
@@ -54,7 +54,7 @@ public abstract class FrontChannelBinding(string identifier) : IFrontChannelBind
     public abstract bool CanUnBind(HttpRequest httpRequest);
 
     /// <inheritdoc/>
-    public Task BindAsync(HttpResponse httpResponse, Saml2Message message)
+    public Task BindAsync(HttpResponse httpResponse, OutboundSaml2Message message)
     {
         if (string.IsNullOrWhiteSpace(message.Name))
         {
@@ -75,10 +75,21 @@ public abstract class FrontChannelBinding(string identifier) : IFrontChannelBind
     /// <param name="message">Saml2 message</param>
     /// <param name="httpResponse">Http response to bind message to</param>
     /// <returns>Task</returns>
-    protected abstract Task DoBindAsync(HttpResponse httpResponse, Saml2Message message);
+    protected abstract Task DoBindAsync(HttpResponse httpResponse, OutboundSaml2Message message);
 
     /// <inheritdoc />
-    public abstract Task<Saml2Message> UnBindAsync(
+    public Task<InboundSaml2Message> UnBindAsync(
+        HttpRequest httpRequest,
+        Func<string, Task<Saml2Entity>> getSaml2Entity) =>
+        DoUnBindAsync(httpRequest, getSaml2Entity);
+
+    /// <summary>
+    /// Unbinds a Saml2 message from an http request.
+    /// </summary>
+    /// <param name="httpRequest">HttpRequest to unbind from</param>
+    /// <param name="getSaml2Entity">Func that returns a Saml2 entity from an entity id</param>
+    /// <returns>Saml2 message</returns>
+    protected abstract Task<InboundSaml2Message> DoUnBindAsync(
         HttpRequest httpRequest,
         Func<string, Task<Saml2Entity>> getSaml2Entity);
 }

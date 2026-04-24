@@ -19,7 +19,7 @@ public interface IHttpRedirectBinding : IFrontChannelBinding
     /// <param name="url">Url to unbind from</param>
     /// <param name="getSaml2Entity">Func that returns Identity provider from an entity id</param>
     /// <returns>Unbound message</returns>
-    Task<Saml2Message> UnBindAsync(
+    Task<InboundSaml2Message> UnBindAsync(
         string url,
         Func<string, Task<Saml2Entity>> getSaml2Entity);
 }
@@ -42,7 +42,7 @@ public class HttpRedirectBinding : FrontChannelBinding, IHttpRedirectBinding
         && messageNames.Any(httpRequest.Query.ContainsKey);
 
     /// <inheritdoc/>
-    public virtual Task<Saml2Message> UnBindAsync(
+    public virtual Task<InboundSaml2Message> UnBindAsync(
         string url,
         Func<string, Task<Saml2Entity>> getSaml2Entity)
     {
@@ -90,7 +90,7 @@ public class HttpRedirectBinding : FrontChannelBinding, IHttpRedirectBinding
         var xd = new XmlDocument();
         xd.LoadXml(Inflate(message));
 
-        return Task.FromResult(new Saml2Message()
+        return Task.FromResult(new InboundSaml2Message()
         {
             // We're not supporting destinations containing a query string.
             Destination = uri.Scheme + "://" + uri.Host + uri.AbsolutePath,
@@ -102,7 +102,7 @@ public class HttpRedirectBinding : FrontChannelBinding, IHttpRedirectBinding
     }
 
     /// <inheritdoc/>    
-    public override Task<Saml2Message> UnBindAsync(
+    protected override Task<InboundSaml2Message> DoUnBindAsync(
         HttpRequest httpRequest,
         Func<string, Task<Saml2Entity>> getSaml2Entity) =>
         UnBindAsync(
@@ -110,7 +110,7 @@ public class HttpRedirectBinding : FrontChannelBinding, IHttpRedirectBinding
             getSaml2Entity);
 
     /// <inheritdoc/>
-    protected override Task DoBindAsync(HttpResponse httpResponse, Saml2Message message)
+    protected override Task DoBindAsync(HttpResponse httpResponse, OutboundSaml2Message message)
     {
         var queryString = GetQueryString(message);
 

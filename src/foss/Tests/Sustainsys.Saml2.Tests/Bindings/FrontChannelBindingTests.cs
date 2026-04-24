@@ -16,12 +16,12 @@ public class FrontChannelBindingTests
 
         public override bool CanUnBind(HttpRequest httpRequest) => throw new NotImplementedException();
 
-        public override Task<Saml2Message> UnBindAsync(
+        protected override Task<InboundSaml2Message> DoUnBindAsync(
             HttpRequest httpRequest,
             Func<string, Task<Saml2Entity>> getSaml2Entity)
             => throw new NotImplementedException();
 
-        protected override Task DoBindAsync(HttpResponse httpResponse, Saml2Message message)
+        protected override Task DoBindAsync(HttpResponse httpResponse, OutboundSaml2Message message)
             => throw new NotImplementedException();
     }
 
@@ -38,7 +38,7 @@ public class FrontChannelBindingTests
             xmlDocument.LoadXml(xml);
         }
 
-        var message = new Saml2Message()
+        var message = new OutboundSaml2Message()
         {
             Name = name!,
             Xml = xmlDocument?.DocumentElement!,

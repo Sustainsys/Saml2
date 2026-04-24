@@ -26,7 +26,7 @@ public class HttpPostBinding : FrontChannelBinding
             k => k == Constants.SamlRequest || k == Constants.SamlResponse);
 
     /// <inheritdoc/>
-    public override Task<Saml2Message> UnBindAsync(
+    protected override Task<InboundSaml2Message> DoUnBindAsync(
         HttpRequest httpRequest,
         Func<string, Task<Saml2Entity>> getSaml2Entity)
     {
@@ -64,7 +64,7 @@ public class HttpPostBinding : FrontChannelBinding
         xd.LoadXml(Encoding.UTF8.GetString(Convert.FromBase64String(httpRequest.Form[name].Single()
             ?? throw new InvalidOperationException("No form content found"))));
 
-        return Task.FromResult(new Saml2Message
+        return Task.FromResult(new InboundSaml2Message
         {
             Destination = httpRequest.PathBase + httpRequest.Path,
             Name = name,
@@ -77,7 +77,7 @@ public class HttpPostBinding : FrontChannelBinding
     /// <inheritdoc/>
     protected override async Task DoBindAsync(
         HttpResponse httpResponse,
-        Saml2Message message)
+        OutboundSaml2Message message)
 
     {
         var xmlDoc = message.Xml;

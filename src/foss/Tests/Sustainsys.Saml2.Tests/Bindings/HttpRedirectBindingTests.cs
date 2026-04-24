@@ -20,7 +20,7 @@ public class HttpRedirectBindingTests
         var xd = new XmlDocument();
         xd.LoadXml(Xml);
 
-        var message = new Saml2Message
+        var message = new OutboundSaml2Message
         {
             Name = "SamlRequest",
             Xml = xd.DocumentElement!,
@@ -116,7 +116,7 @@ public class HttpRedirectBindingTests
         var xd = new XmlDocument();
         xd.LoadXml(Xml);
 
-        var expected = new Saml2Message
+        InboundSaml2Message expected = new()
         {
             Destination = "https://idp.example.com/sso",
             Name = messageName,

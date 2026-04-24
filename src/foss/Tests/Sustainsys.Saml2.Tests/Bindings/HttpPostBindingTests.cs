@@ -74,7 +74,7 @@ public class HttpPostBindingTests
         var xd = new XmlDocument();
         xd.LoadXml("<xml><a/></xml>");
 
-        var expected = new Saml2Message
+        InboundSaml2Message expected = new()
         {
             Destination = "/subdir/Saml2/Acs",
             Name = messageName,

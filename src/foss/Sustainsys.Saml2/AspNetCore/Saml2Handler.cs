@@ -242,7 +242,7 @@ public class Saml2Handler(
         var xmlDoc = GetRequiredService<ISamlXmlWriter>().Write(authnRequest);
 
         var idpEntityIdHash = effectiveIdentityProvider.EntityId!.Sha256(StateIdpHashLength);
-        var message = new Saml2Message
+        var message = new OutboundSaml2Message
         {
             Destination = effectiveIdentityProvider!.SsoServiceUrl!,
             Name = Constants.SamlRequest,

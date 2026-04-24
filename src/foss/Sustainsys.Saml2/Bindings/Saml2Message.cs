@@ -9,7 +9,7 @@ namespace Sustainsys.Saml2.Bindings;
 /// <summary>
 /// Represents a Saml2 message as seen by the binding.
 /// </summary>
-public class Saml2Message
+public abstract class Saml2Message
 {
     /// <summary>
     /// Name of the message to be used in query strings, form fields etc.
@@ -18,7 +18,7 @@ public class Saml2Message
     public required string Name { get; init; }
 
     /// <summary>
-    /// RelayState to include with message
+    /// RelayState included with the message
     /// </summary>
     public string? RelayState { get; init; }
 
@@ -35,13 +35,27 @@ public class Saml2Message
     public required string Destination { get; init; }
 
     /// <summary>
+    /// Binding to use when sending the message, or used when messaged was read.
+    /// </summary>
+    public required string Binding { get; init; }
+}
+
+/// <summary>
+/// An outbound Saml2 message as seen by the binding.
+/// </summary>
+public class OutboundSaml2Message : Saml2Message
+{
+    /// <summary>
     /// Signing certificate that the message should be signed with. The
     /// method for signing is binding dependent.
     /// </summary>
     public X509Certificate2? SigningCertificate { get; init; }
+}
 
-    /// <summary>
-    /// Binding to use when sending the message, or used when messaged was read.
-    /// </summary>
-    public required string Binding { get; init; }
+/// <summary>
+/// An inbound Saml2 message as received by the binding.
+/// </summary>
+public class InboundSaml2Message: Saml2Message
+{
+    // TODO: Add Trustlevel when implementing Redirect binding signatures.
 }
