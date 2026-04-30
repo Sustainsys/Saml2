@@ -57,7 +57,8 @@ public class HttpPostBinding() : FrontChannelBinding(Constants.BindingUris.HttpP
 
         if (relayState != null && relayState.Length > bindingOptions.MaxRelayStateSize)
         {
-            throw new InvalidOperationException($"RelayState length of {relayState.Length} exceeds maximum allowed {bindingOptions.MaxRelayStateSize}");
+            throw new InvalidOperationException($"RelayState length of {relayState.Length} exceeds maximum " +
+                $"allowed {bindingOptions.MaxRelayStateSize}. Change BindingOptions to allow larger RelayState.");
         }
 
         return relayState;
@@ -71,7 +72,8 @@ public class HttpPostBinding() : FrontChannelBinding(Constants.BindingUris.HttpP
         if (encoded.Length > bindingOptions.MaxMessageSize + bindingOptions.MaxMessageSize / 3)
         {
             throw new InvalidOperationException($"Encoded size of {name} is {encoded.Length} " +
-                $"which is too large for configured max message size of {bindingOptions.MaxMessageSize}");
+                $"which is too large for configured max message size of {bindingOptions.MaxMessageSize}. " +
+                $"Change BindingOptions to allow larger messages.");
         }
 
         var decoded = Convert.FromBase64String(encoded);
@@ -79,7 +81,8 @@ public class HttpPostBinding() : FrontChannelBinding(Constants.BindingUris.HttpP
         if (decoded.Length > bindingOptions.MaxMessageSize)
         {
             throw new InvalidOperationException($"Decoded size of {name} is {decoded.Length} " +
-                $"which is larger than allowed {bindingOptions.MaxMessageSize}");
+                $"which is larger than allowed {bindingOptions.MaxMessageSize}. " +
+                $"Change BindingOptions to allow larger messages.");
         }
 
         return Encoding.UTF8.GetString(decoded);
@@ -148,6 +151,8 @@ public class HttpPostBinding() : FrontChannelBinding(Constants.BindingUris.HttpP
     private readonly CompositeFormat PostHtmlRelayStateFormatString = CompositeFormat.Parse(@"
 <input type=""hidden"" name=""RelayState"" value=""{0}""/>");
 
+    // TODO: Move CSP to HTTP header
+    // TODO: Set cache-control no-cache, no-store (Bindings 3.5.5.1)
     private readonly CompositeFormat PostHtmlFormatString =
         CompositeFormat.Parse(@"<?xml version=""1.0"" encoding=""UTF-8""?>
 <!DOCTYPE html PUBLIC ""-//W3C//DTD XHTML 1.1//EN""

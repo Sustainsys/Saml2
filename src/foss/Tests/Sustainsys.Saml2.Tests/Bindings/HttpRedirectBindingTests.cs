@@ -12,7 +12,7 @@ namespace Sustainsys.Saml2.Tests.Bindings;
 
 public class HttpRedirectBindingTests
 {
-    private const string Xml = "<xml />";
+    private const string Xml = "<xml><Foo><Bar>Gazonk</Bar></Foo></xml>";
 
     [Fact]
     public async Task Bind()
@@ -142,5 +142,51 @@ public class HttpRedirectBindingTests
             expectedException.Should().BeNull();
             actual.Should().BeEquivalentTo(expected);
         }
+    }
+
+    [Fact]
+    public async Task Unbind_String_MessageMaxLength()
+    {
+        var encoded = GetEncodedXml();
+
+        var url = $"https://idp.example.com/sso?SAMLRequest={encoded}";
+
+        var subject = new HttpRedirectBinding();
+
+        var xd = new XmlDocument();
+        xd.LoadXml(Xml);
+
+        BindingOptions bindingOptions = new()
+        {
+            MaxMessageSize = 10
+        };
+
+        await subject.Invoking(
+            s => s.UnBindAsync(url, bindingOptions, x => Task.FromResult(new Saml2Entity())))
+            .Should().ThrowAsync<InvalidOperationException>()
+            .WithMessage("Maximum*decompressed*");
+    }
+
+    [Fact]
+    public async Task Unbind_String_RelayStateMaxLength()
+    {
+        var encoded = GetEncodedXml();
+
+        var url = $"https://idp.example.com/sso?SAMLRequest={encoded}&RelayState=ABC123";
+
+        var subject = new HttpRedirectBinding();
+
+        var xd = new XmlDocument();
+        xd.LoadXml(Xml);
+
+        BindingOptions bindingOptions = new()
+        {
+            MaxRelayStateSize = 2
+        };
+
+        await subject.Invoking(
+            s => s.UnBindAsync(url, bindingOptions, x => Task.FromResult(new Saml2Entity())))
+            .Should().ThrowAsync<InvalidOperationException>()
+            .WithMessage("RelayState*length*exceeds*");
     }
 }

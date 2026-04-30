@@ -19,4 +19,5 @@ public class BindingOptions
     /// Max allowed size in bytes for RelayState.
     /// </summary>
     public int MaxRelayStateSize { get; set; } = Saml2Defaults.MaxRelayStateSize;
+
 }

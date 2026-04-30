@@ -3,6 +3,8 @@
 
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.WebUtilities;
+using Sustainsys.Saml2.Xml;
+using System.Buffers;
 using System.IO.Compression;
 using System.Xml;
 
@@ -82,9 +84,13 @@ public class HttpRedirectBinding : FrontChannelBinding, IHttpRedirectBinding
                     throw new InvalidOperationException("Duplicate RelayState parameters found");
                 }
 
-                // TODO: Size limit of RelayState
-
                 relayState = param.DecodeValue().ToString();
+
+                if (relayState.Length > bindingOptions.MaxRelayStateSize)
+                {
+                    throw new InvalidOperationException($"RelayState length {relayState.Length} exceeds maximum permitted length of {bindingOptions.MaxRelayStateSize} " +
+                        $"Change BindingOptions to allow larger RelayState.");
+                }
             }
         }
 
@@ -93,8 +99,7 @@ public class HttpRedirectBinding : FrontChannelBinding, IHttpRedirectBinding
             throw new InvalidOperationException("SAMLResponse or SAMLRequest parameter not found");
         }
 
-        var xd = new XmlDocument();
-        xd.LoadXml(Inflate(message));
+        var xd = XmlHelpers.LoadXml(Inflate(message, bindingOptions));
 
         return Task.FromResult(new InboundSaml2Message()
         {
@@ -155,15 +160,14 @@ public class HttpRedirectBinding : FrontChannelBinding, IHttpRedirectBinding
         return Uri.EscapeDataString(Convert.ToBase64String(compressed.ToArray()));
     }
 
-    private static string Inflate(string source)
+    private static string Inflate(string source, BindingOptions bindingOptions)
     {
-        // TODO: Size limit of incoming message.
-
         var compressedBytes = Convert.FromBase64String(Uri.UnescapeDataString(source));
 
         using var compressed = new MemoryStream(compressedBytes);
-        using var deflateStream = new DeflateStream(compressed, CompressionMode.Decompress);
-        using var reader = new StreamReader(deflateStream);
+        using var deflateStream = new ReadLimitedDeflateStream(
+            compressed, CompressionMode.Decompress, bindingOptions.MaxMessageSize);
+        var reader = new StreamReader(deflateStream);
 
         return reader.ReadToEnd();
     }
