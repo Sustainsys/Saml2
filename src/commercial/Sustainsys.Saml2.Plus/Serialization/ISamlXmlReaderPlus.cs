@@ -24,5 +24,4 @@ public interface ISamlXmlReaderPlus : ISamlXmlReader
     AuthnRequest ReadAuthnRequest(
         XmlTraverser source,
         Action<ReadErrorInspectorContext<AuthnRequest>>? errorInspector = null);
-
 }

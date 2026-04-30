@@ -50,4 +50,7 @@ public class Saml2HandlerPlus(
     protected override Task<object> CreateEventsAsync() => Task.FromResult<object>(
         ServiceProvider.GetKeyedService<Saml2Events>(Scheme.Name) ??
         new Saml2Events());
+
+    // TODO: Use event to resolve IdentityProvider - presence of EntityId indicates if challenge or response processing
+    // TODO: Event when Xml was created
 }

@@ -415,7 +415,4 @@ public class Saml2HandlerTests
             .WithInnerException<AuthenticationFailureException, ValidationException<Saml2Message>>()
             .WithMessage("*RelayState*");
     }
-
-    // TODO: Use event to resolve IdentityProvider - presence of EntityId indicates if challenge or response processing
-    // TODO: Event when Xml was created
 }
