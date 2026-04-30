@@ -2,4 +2,4 @@
 # root = true
 
 [*.cs]
-file_header_template = Copyright (c) Sustainsys AB. All rights reserved.\nAny usage requires a valid license agreement with Sustainsys AB
+file_header_template = Copyright (c) Sustainsys AB. All rights reserved.\nAny usage requires a valid license agreement with Sustainsys AB.

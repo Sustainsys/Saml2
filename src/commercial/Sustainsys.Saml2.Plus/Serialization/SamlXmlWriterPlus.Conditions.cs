@@ -1,5 +1,5 @@
 ﻿// Copyright (c) Sustainsys AB. All rights reserved.
-// Any usage requires a valid license agreement with Sustainsys AB
+// Any usage requires a valid license agreement with Sustainsys AB.
 
 using Sustainsys.Saml2.Saml;
 using Sustainsys.Saml2.Xml;
