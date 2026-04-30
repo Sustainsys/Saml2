@@ -28,8 +28,9 @@ public class ClaimsFactoryTests
                 // Single valued attribute
                 { "email", "john.doe@example.com" },
                 // Multi valued attribute
-                { "role", "admin", "boss" }
-                // TODO: Test for multiple attribute statements with same attribute name
+                { "role", "admin", "boss" },
+                { "department", "sales" },
+                { "department", "tech" }
             }
         };
 
@@ -40,7 +41,9 @@ public class ClaimsFactoryTests
                 new(ClaimTypes.NameIdentifier, "NameIdValue"),
                 new("email", "john.doe@example.com"),
                 new("role", "admin"),
-                new("role", "boss")
+                new("role", "boss"),
+                new("department", "sales"),
+                new("department", "tech")
             ];
 
         ClaimsIdentity expected = new ClaimsIdentity(expectedClaims, "saml2");
