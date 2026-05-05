@@ -132,7 +132,7 @@ public class Saml2Handler : RemoteAuthenticationHandler<Saml2Options>
 
         var samlMessage = await binding.UnBindAsync(
             Context.Request,
-            Options.bindingOptions,
+            Options.BindingOptions,
             async str => await GetEffectiveIdentityProviderAsync());
 
         AuthenticationProperties authenticationProperties =

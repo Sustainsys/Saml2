@@ -74,5 +74,5 @@ public class Saml2Options : RemoteAuthenticationOptions
     /// <summary>
     /// Options for bindings
     /// </summary>
-    public BindingOptions bindingOptions { get; set; } = new();
+    public BindingOptions BindingOptions { get; set; } = new();
 }

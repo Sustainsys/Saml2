@@ -180,7 +180,7 @@ public class Saml2HandlerTests
 
             var message = new HttpRedirectBinding().UnBindAsync(
                 location,
-                options.bindingOptions,
+                options.BindingOptions,
                 _ => throw new NotImplementedException()).Result;
 
             message.RelayState.Should().Be($"{idpEntityIdHash}.{authnRequest!.Id}");
