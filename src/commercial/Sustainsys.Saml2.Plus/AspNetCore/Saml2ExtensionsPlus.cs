@@ -3,11 +3,14 @@
 
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using Microsoft.Extensions.Options;
 using Sustainsys.Saml2.AspNetCore;
 using Sustainsys.Saml2.Serialization;
 
+// Convention to put the extensions in the Microsoft.Extensions.DependencyInjection namespace
+// for visibility.
+#pragma warning disable IDE0130 // Namespace does not match folder structure
 namespace Microsoft.Extensions.DependencyInjection;
+#pragma warning restore IDE0130 // Namespace does not match folder structure
 
 /// <summary>
 /// Extension methods to configure Saml2 plus authentication.
