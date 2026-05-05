@@ -7,7 +7,7 @@ using System.Security.Cryptography.Xml;
 namespace Sustainsys.Saml2;
 
 /// <summary>
-/// Constants
+/// Constants for Saml2.
 /// </summary>
 public static class Constants
 {
@@ -138,6 +138,7 @@ public static class Constants
         public const string Location = nameof(Location);
         public const string Method = nameof(Method);
         public const string Name = nameof(Name);
+        public const string nil = nameof(nil);
         public const string NotBefore = nameof(NotBefore);
         public const string NotOnOrAfter = nameof(NotOnOrAfter);
         public const string ProtocolBinding = nameof(ProtocolBinding);

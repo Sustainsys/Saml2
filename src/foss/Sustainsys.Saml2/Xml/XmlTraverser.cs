@@ -349,7 +349,7 @@ public class XmlTraverser
     /// <param name="localName">Local name of attribute</param>
     /// <returns>Attribute value, null if none.</returns>
     public string? GetAttribute(string localName)
-        => CurrentNode?.Attributes?.GetNamedItem(localName)?.Value;
+        => CurrentNode!.Attributes?.GetNamedItem(localName)?.Value;
 
     /// <summary>
     /// Get attribute value with specified <paramref name="localName"/> and namespace Uri.
@@ -357,7 +357,7 @@ public class XmlTraverser
     /// <param name="localName">Local name of attribute</param>
     /// <param name="namespaceUri">Namespace Uri of attribute</param>
     /// <returns>Attribute value, null if none.</returns>
-    public string? GetAttribute(string localName, string namespaceUri)
+    public string? GetAttribute(string localName, string? namespaceUri)
         => CurrentNode?.Attributes?.GetNamedItem(localName, namespaceUri)?.Value;
 
     /// <summary>
@@ -465,6 +465,16 @@ public class XmlTraverser
         => TryGetAttribute(localName, XmlConvert.ToBoolean);
 
     /// <summary>
+    /// Gets an optional bool attribute. On parse errors the Error
+    /// is reported to the errors collection.
+    /// </summary>
+    /// <param name="localName">Local name of attribute</param>
+    /// <param name="namespaceUri">Namespace Uri</param>
+    /// <returns>Parsed bool or null if parse fails.</returns>
+    public bool? GetBoolAttribute(string localName, string namespaceUri)
+        => TryGetAttribute(localName, XmlConvert.ToBoolean, namespaceUri);
+
+    /// <summary>
     /// Gets an optional enum attribute. On parse errors the Error
     /// is reported to the errors collection.
     /// </summary>
@@ -507,10 +517,14 @@ public class XmlTraverser
         return TryConvertAttribute(localName, converter, stringValue) ?? default;
     }
 
-    private TTarget? TryGetAttribute<TTarget>(string localName, Func<string, TTarget> converter)
+    private TTarget? TryGetAttribute<TTarget>(
+        string localName, Func<string, TTarget> converter,
+        string? namespaceUri = null)
         where TTarget : struct
     {
-        var stringValue = GetAttribute(localName);
+        var stringValue = namespaceUri == null
+            ? GetAttribute(localName)
+            : GetAttribute(localName, namespaceUri);
 
         if (stringValue == null)
         {

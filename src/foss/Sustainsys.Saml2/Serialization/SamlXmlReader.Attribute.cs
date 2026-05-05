@@ -41,19 +41,20 @@ public partial class SamlXmlReader
     /// <param name="attribute">Attribute to populate</param>
     protected virtual void ReadElements(XmlTraverser source, SamlAttribute attribute)
     {
-        while (source.MoveNext(true)
-            && source.EnsureName(Elements.AttributeValue, Namespaces.SamlUri))
+        while (source.MoveNext(true))
         {
-            // TODO: Add GetBoolAttribute
-            var nilAttribute = source.GetAttribute("nil", Namespaces.XsiUri);
+            if (source.EnsureName(Elements.AttributeValue, Namespaces.SamlUri))
+            {
+                var isNull = source.GetBoolAttribute(Attributes.nil, Namespaces.XsiUri);
 
-            if (nilAttribute == "true" || nilAttribute == "1")
-            {
-                attribute.Values.Add(null);
-            }
-            else
-            {
-                attribute.Values.Add(source.GetTextContents());
+                if (isNull.HasValue && isNull.Value)
+                {
+                    attribute.Values.Add(null);
+                }
+                else
+                {
+                    attribute.Values.Add(source.GetTextContents());
+                }
             }
         }
     }
