@@ -111,8 +111,10 @@ public static class XmlHelpers
     /// <returns>XmlDocument</returns>
     public static XmlDocument LoadXml(string xml)
     {
-        var xr = new XmlTextReader(new StringReader(xml));
-        xr.DtdProcessing = DtdProcessing.Prohibit;
+        var xr = new XmlTextReader(new StringReader(xml))
+        {
+            DtdProcessing = DtdProcessing.Prohibit
+        };
 
         // We do preserve white space though, to not break signatures.
         var xd = new XmlDocument()
