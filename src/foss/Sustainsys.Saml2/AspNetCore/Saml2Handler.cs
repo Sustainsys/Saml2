@@ -24,27 +24,21 @@ namespace Sustainsys.Saml2.AspNetCore;
 /// <summary>
 /// Saml2 authentication handler
 /// </summary>
+/// <remarks>Ctor</remarks>
+/// <param name="options">Options</param>
+/// <param name="logger">Logger factory</param>
+/// <param name="serviceProvider"> Service provider used to resolve services.</param>
+/// <remarks>
+/// Service provider resolver is used instead of injected parameters to improve performance.
+/// The authentication handlers are created and initialized for every request so services
+/// are resolved only when they are actually needed.
+/// </remarks>
 
-public class Saml2Handler : RemoteAuthenticationHandler<Saml2Options>
+public class Saml2Handler(
+    IOptionsMonitor<Saml2Options> options,
+    ILoggerFactory logger,
+    IServiceProvider serviceProvider) : RemoteAuthenticationHandler<Saml2Options>(options, logger, UrlEncoder.Default)
 {
-    /// <summary>Ctor</summary>
-    /// <param name="options">Options</param>
-    /// <param name="logger">Logger factory</param>
-    /// <param name="serviceProvider"> Service provider used to resolve services.</param>
-    /// <remarks>
-    /// Service provider resolver is used instead of injected parameters to improve performance.
-    /// The authentication handlers are created and initialized for every request so services
-    /// are resolved only when they are actually needed.
-    /// </remarks>
-    public Saml2Handler(
-        IOptionsMonitor<Saml2Options> options,
-        ILoggerFactory logger,
-        IServiceProvider serviceProvider)
-        : base(options, logger, UrlEncoder.Default)
-    {
-        ServiceProvider = serviceProvider;
-    }
-
     private const string RequestIdKey = ".reqId";
     private const string IdpKey = ".idp";
     private const string CookiePrefix = "Saml2.";
@@ -53,7 +47,7 @@ public class Saml2Handler : RemoteAuthenticationHandler<Saml2Options>
     /// <summary>
     /// Service Provider to use for resolving services.
     /// </summary>
-    protected IServiceProvider ServiceProvider { get; }
+    protected IServiceProvider ServiceProvider { get; } = serviceProvider;
 
     /// <summary>
     /// Gets a required service.
