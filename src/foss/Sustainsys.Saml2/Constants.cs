@@ -73,6 +73,7 @@ public static class Constants
         public const string Conditions = nameof(Conditions);
         public const string ContactPerson = nameof(ContactPerson);
         public const string EntityDescriptor = nameof(EntityDescriptor);
+        public const string EntitiesDescriptor = nameof(EntitiesDescriptor);
         public const string Extensions = nameof(Extensions);
         public const string GetComplete = nameof(GetComplete);
         public const string IDPEntry = nameof(IDPEntry);

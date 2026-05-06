@@ -96,7 +96,13 @@ public class MetadataLoader(ISamlXmlReader samlXmlReader) : IMetadadataLoader
             return samlXmlReader.ReadEntityDescriptor(xmlTraverser);
         }
 
-        // TODO: Add support for EntitiesDescriptor too.
+        if (xmlTraverser.HasName(Constants.Elements.EntitiesDescriptor, Constants.Namespaces.MetadataUri))
+        {
+            samlXmlReader.TrustedSigningKeys = trustedSigningKeys;
+            samlXmlReader.AllowedAlgorithms = allowedAlgorithms;
+
+            return samlXmlReader.ReadEntitiesDescriptor(xmlTraverser);
+        }
 
         return null;
     }

@@ -46,6 +46,16 @@ public interface ISamlXmlReader
         Action<ReadErrorInspectorContext<EntityDescriptor>>? errorInspector = null);
 
     /// <summary>
+    /// Read an Entities Descriptor
+    /// </summary>
+    /// <param name="source">Xml Traverser to read from</param>
+    /// <param name="errorInspector">Callback that can inspect and alter errors before throwing</param>
+    /// <returns>EntitiesDescriptor</returns>
+    EntitiesDescriptor ReadEntitiesDescriptor(
+        XmlTraverser source,
+        Action<ReadErrorInspectorContext<EntitiesDescriptor>>? errorInspector = null);
+
+    /// <summary>
     /// Read a Saml response
     /// </summary>
     /// <param name="source">Xml Traverser to read from</param>
