@@ -30,6 +30,5 @@ partial class SamlXmlWriter
         var xe = Append(node, authnRequest, Elements.AuthnRequest);
         // TODO: Move to separate methods
         xe.SetAttributeIfValue(Attributes.AssertionConsumerServiceURL, authnRequest.AssertionConsumerServiceUrl);
-        AppendIfValue(xe, authnRequest.Issuer, Elements.Issuer);
     }
 }

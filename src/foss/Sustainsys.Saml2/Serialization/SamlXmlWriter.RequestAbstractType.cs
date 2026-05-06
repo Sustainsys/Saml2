@@ -22,6 +22,16 @@ partial class SamlXmlWriter
         element.SetAttribute(Attributes.ID, request.Id);
         element.SetAttribute(Attributes.IssueInstant, request.IssueInstant);
         element.SetAttribute(Attributes.Version, request.Version);
+        
+        AppendIfValue(element, request.Issuer, Elements.Issuer);
+
+        if (request.Extensions != null) {
+            var extensionsElement = AppendElement(element, Namespaces.Samlp, Elements.Extensions);
+            foreach (var extension in request.Extensions.Contents.OfType<XmlElement>()) {
+                var extensionNode = extensionsElement.OwnerDocument.ImportNode(extension, true);
+                extensionsElement.AppendChild(extensionNode);
+            }
+        }
 
         return element;
     }
