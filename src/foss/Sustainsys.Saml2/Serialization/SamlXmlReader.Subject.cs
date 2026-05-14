@@ -37,10 +37,6 @@ partial class SamlXmlReader
             subject.NameId = ReadNameId(source);
             source.MoveNext(true);
         }
-        else
-        {
-            // TODO: Support BaseID and EncryptedID
-        }
 
         if (source.HasName(Elements.SubjectConfirmation, Namespaces.SamlUri))
         {
