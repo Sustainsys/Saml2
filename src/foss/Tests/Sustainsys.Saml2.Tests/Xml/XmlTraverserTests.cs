@@ -448,6 +448,7 @@ public class XmlTraverserTests
     [Theory]
     [InlineData(null, TrustLevel.TLS)]
     [InlineData(TrustLevel.Http, TrustLevel.TLS)]
+    [InlineData(TrustLevel.TLS, TrustLevel.TLS | TrustLevel.HasSignature)]
     [InlineData(TrustLevel.ConfiguredKey, TrustLevel.ConfiguredKey | TrustLevel.HasSignature)]
     public void TrustLevel_Inheritance(TrustLevel? childTrustLevel, TrustLevel expected)
     {

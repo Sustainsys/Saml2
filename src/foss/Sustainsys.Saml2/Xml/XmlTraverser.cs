@@ -164,7 +164,7 @@ public class XmlTraverser
             AddError(ErrorReason.SignatureFailure, error);
         }
 
-        if (workingKey != null && workingKey.TrustLevel > TrustLevel)
+        if (workingKey != null && workingKey.TrustLevel >= TrustLevel)
         {
             TrustLevel = workingKey.TrustLevel | TrustLevel.HasSignature;
         }
