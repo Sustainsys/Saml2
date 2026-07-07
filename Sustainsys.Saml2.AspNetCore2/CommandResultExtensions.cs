@@ -38,6 +38,7 @@ namespace Sustainsys.Saml2.AspNetCore2
                     cookieData,
                     new CookieOptions()
                     {
+                        MaxAge = TimeSpan.FromMinutes(30),
                         HttpOnly = true,
                         Secure = commandResult.SetCookieSecureFlag,
                         // We are expecting a different site to POST back to us,

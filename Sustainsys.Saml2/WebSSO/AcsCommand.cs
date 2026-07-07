@@ -90,6 +90,11 @@ namespace Sustainsys.Saml2.WebSso
                     {
                         // Add the payload to the existing exception
                         ex.Data["Saml2Response"] = unbindResult.Data.OuterXml;
+
+                        if (request.StoredRequestState?.RelayData != null && request.StoredRequestState.RelayData.TryGetValue("RelayState", out var relayState))
+                        {
+                            ex.Data["RelayState"] = relayState?.ToString();
+                        }
                     }
                     throw;
                 }

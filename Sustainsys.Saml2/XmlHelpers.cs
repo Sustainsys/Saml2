@@ -16,8 +16,65 @@ using Sustainsys.Saml2.Tokens;
 
 namespace Sustainsys.Saml2
 {
+    public static class AdditionalSecurityAlgorithms
+    {
+        public const string RsaSha256MGF1Signature = "http://www.w3.org/2007/05/xmldsig-more#sha256-rsa-MGF1";
+    }
+
+    public class RsaPssSha256SignatureDescription : SignatureDescription
+    {
+        public RsaPssSha256SignatureDescription()
+        {
+            this.KeyAlgorithm = typeof(RSA).AssemblyQualifiedName;
+            this.DigestAlgorithm = "SHA256";
+            this.FormatterAlgorithm = typeof(RsaPssSha256SignatureFormatter).FullName;
+            this.DeformatterAlgorithm = typeof(RsaPssSha256SignatureFormatter).FullName;
+        }
+
+        public override HashAlgorithm CreateDigest() => SHA256.Create();
+
+        public override AsymmetricSignatureDeformatter CreateDeformatter(AsymmetricAlgorithm key)
+            => new RsaPssSha256SignatureDeformatter(key);
+
+        public override AsymmetricSignatureFormatter CreateFormatter(AsymmetricAlgorithm key)
+            => new RsaPssSha256SignatureFormatter(key);
+    }
+
+    public sealed class RsaPssSha256SignatureDeformatter : AsymmetricSignatureDeformatter
+    {
+        private RSA _key;
+        public RsaPssSha256SignatureDeformatter() { }
+        public RsaPssSha256SignatureDeformatter(AsymmetricAlgorithm key) => SetKey(key);
+        public override void SetKey(AsymmetricAlgorithm key)
+            => _key = (RSA)(key ?? throw new ArgumentNullException(nameof(key)));
+        public override void SetHashAlgorithm(string strName) { } // fixed to SHA256
+        public override bool VerifySignature(byte[] rgbHash, byte[] rgbSignature)
+            => _key.VerifyHash(rgbHash, rgbSignature, HashAlgorithmName.SHA256, RSASignaturePadding.Pss);
+    }
+
+    public sealed class RsaPssSha256SignatureFormatter : AsymmetricSignatureFormatter
+    {
+        private RSA _key;
+        public RsaPssSha256SignatureFormatter() { }
+        public RsaPssSha256SignatureFormatter(AsymmetricAlgorithm key) => SetKey(key);
+        public override void SetKey(AsymmetricAlgorithm key)
+            => _key = (RSA)(key ?? throw new ArgumentNullException(nameof(key)));
+        public override void SetHashAlgorithm(string strName) { } // fixed to SHA256
+        public override byte[] CreateSignature(byte[] rgbHash)
+            => _key.SignHash(rgbHash, HashAlgorithmName.SHA256, RSASignaturePadding.Pss);
+    }
+
     public class SignedXmlWithIdFix : SignedXml
     {
+        static SignedXmlWithIdFix()
+        {
+#if NET8_0_OR_GREATER
+            CryptoConfig.AddAlgorithm(
+                typeof(RsaPssSha256SignatureDescription),
+                "http://www.w3.org/2007/05/xmldsig-more#sha256-rsa-MGF1");
+#endif
+        }
+
         public SignedXmlWithIdFix(XmlElement element) :
             base(element)
         {
@@ -610,6 +667,12 @@ namespace Sustainsys.Saml2
                 return strWriter.ToString();
             }
         }
+        private static readonly string[] _additionalAlgorithms = new string[]
+       {
+#if NET8_0_OR_GREATER
+            AdditionalSecurityAlgorithms.RsaSha256MGF1Signature
+#endif
+       };
 
         /// <summary>
         /// Store a list of signing algorithms that are available in SignedXml.
@@ -623,6 +686,7 @@ namespace Sustainsys.Saml2
                 .Where(f => f.Name.StartsWith("XmlDsigRSASHA", StringComparison.Ordinal))
                 .Select(f => (string)f.GetRawConstantValue())
                 .OrderBy(f => f)
+                .Concat(_additionalAlgorithms)
                 .ToArray();
 
         internal static readonly string[] KnownSigningAlgorithms =
