@@ -39,10 +39,19 @@
     <PackageReference Include="System.ValueTuple" Version="4.5.0" />
   </ItemGroup>
 
+  <ItemGroup Condition=" '$(TargetFrameworkIdentifier)' == '.NETFramework' ">
+    <PackageReference Include="Microsoft.IdentityModel.Protocols" Version="5.7.1" />
+    <PackageReference Include="Microsoft.IdentityModel.Tokens" Version="5.7.1" />
+    <PackageReference Include="Microsoft.IdentityModel.Tokens.Saml" Version="5.7.1" />
+  </ItemGroup>
+
+  <ItemGroup Condition=" '$(TargetFrameworkIdentifier)' != '.NETFramework' ">
+    <PackageReference Include="Microsoft.IdentityModel.Protocols" Version="8.23.0" />
+    <PackageReference Include="Microsoft.IdentityModel.Tokens" Version="8.23.0" />
+    <PackageReference Include="Microsoft.IdentityModel.Tokens.Saml" Version="8.23.0" />
+  </ItemGroup>
+
   <ItemGroup>
-    <PackageReference Include="Microsoft.IdentityModel.Protocols" Version="5.2.4" />
-    <PackageReference Include="Microsoft.IdentityModel.Tokens" Version="5.2.4" />
-    <PackageReference Include="Microsoft.IdentityModel.Tokens.Saml" Version="5.2.4" />
     <PackageReference Include="System.Configuration.ConfigurationManager" Version="4.4.1" />
     <PackageReference Include="System.Security.Cryptography.Xml" Version="4.7.1" />
   </ItemGroup>
