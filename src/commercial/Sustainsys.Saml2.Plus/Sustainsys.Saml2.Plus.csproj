@@ -1,12 +1,27 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<GenerateDocumentationFile>True</GenerateDocumentationFile>
+		
 		<RootNamespace>Sustainsys.Saml2</RootNamespace>
+		<PackageId>Sustainsys.Saml2.Plus</PackageId>
+		
+		<Title>Sustainsys.Saml2.Plus</Title>
+		<PackageReleaseNotes>$releaseNotes$</PackageReleaseNotes>
+		<Company>Sustainsys AB</Company>
+		<Description>Additional features for Sustainsys.Saml2 protocol support</Description>
+		<PackageTags>SAML2 authentication AspNet SAML SSO</PackageTags>
+		<PackageIcon>sustainsys.png</PackageIcon>
+		
+		<RepositoryUrl>https://github.com/Sustainsys/Saml2</RepositoryUrl>
+		<RepositoryType>git</RepositoryType>
+		<PackageProjectUrl>https://github.com/Sustainsys/Saml2</PackageProjectUrl>
+
+		<GenerateDocumentationFile>True</GenerateDocumentationFile>
+		<PackageLicenseExpression>MIT</PackageLicenseExpression>
 	</PropertyGroup>
 
 	<ItemGroup>
     <ProjectReference Include="..\..\foss\Sustainsys.Saml2\Sustainsys.Saml2.csproj" />
+	<None Include="../../../nuget/sustainsys.png" Pack="true" PackagePath="\" />
   </ItemGroup>
-
 </Project>

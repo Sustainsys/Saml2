@@ -1,5 +1,9 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
 
+	<PropertyGroup>
+		<IsPackable>false</IsPackable>
+	</PropertyGroup>
+	
 	<ItemGroup>
 		<ProjectReference Include="..\..\Sustainsys.Saml2.Plus\Sustainsys.Saml2.Plus.csproj" />
 	</ItemGroup>
