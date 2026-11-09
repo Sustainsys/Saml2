@@ -31,8 +31,6 @@ partial class SamlXmlReaderPlusTests
         actual.Should().BeEquivalentTo(expected);
     }
 
-    // TODO: Test for missing mandatory
-
     // Test that an AuthnRequest with optional content present can be read. Start with the most common,
     // add more later.
     [Fact]

@@ -47,9 +47,6 @@ partial class SamlXmlReader
         // The XML schema allows custom conditions. Anyone that wants to support
         // those would have to extend the reader and override this method to handle
         // reading of those.
-        // TODO: The extension point is before the known elements (which is awkard)
-        // should probably call an empty protected virtual method here to allow
-        // easier override.
 
         while (source.HasName(Elements.AudienceRestriction, Namespaces.SamlUri))
         {
@@ -65,7 +62,6 @@ partial class SamlXmlReader
 
         if (source.HasName(Elements.ProxyRestriction, Namespaces.SamlUri))
         {
-            // TODO: Support proxy restrictions
             source.IgnoreChildren();
             source.MoveNext(true);
         }

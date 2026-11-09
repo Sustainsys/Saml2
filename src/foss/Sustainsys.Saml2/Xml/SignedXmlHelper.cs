@@ -13,7 +13,6 @@ namespace Sustainsys.Saml2.Xml;
 /// </summary>
 public static class SignedXmlHelper
 {
-    // TODO: Move this method to test project.
     /// <summary>
     /// Adds an enveloped signature to the node.
     /// </summary>
@@ -130,9 +129,6 @@ public static class SignedXmlHelper
         IEnumerable<SigningKey> keys,
         IEnumerable<string> allowedAlgorithms)
     {
-        // TODO: Wrap in try-catch and report any exceptions as error messages. One example
-        // is if the signature reference is incorrect - then GetIdElement will throw an exception.
-
         var signedXml = new SignedXmlWithStrictIdResolution(signatureElement.OwnerDocument);
 
         signedXml.LoadXml(signatureElement);
@@ -146,7 +142,6 @@ public static class SignedXmlHelper
         }
         else
         {
-            // TODO: Try looking up the right key first instead of trying them one by one?
             foreach (var key in keys)
             {
                 if (key.Certificate == null)

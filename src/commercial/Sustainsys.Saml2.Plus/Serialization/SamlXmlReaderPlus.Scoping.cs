@@ -48,7 +48,7 @@ partial class SamlXmlReaderPlus
                 }
                 else
                 {
-                    // TODO: Add test for extra elements and report errors.
+
                 }
             }
         } while (source.MoveNext(true));

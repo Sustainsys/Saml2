@@ -23,7 +23,6 @@ partial class SamlXmlReader
 
         source.MoveNext(true);
 
-        // TODO: Test case for error inspector. Including test that it's not call on no errors.
         CallErrorInspector(errorInspector, entityDescriptor, source);
 
         ThrowOnErrors(source);
@@ -67,8 +66,6 @@ partial class SamlXmlReader
     protected virtual void ReadElements(XmlTraverser source, EntityDescriptor entityDescriptor)
     {
         source.MoveNext(false);
-
-        // TODO: Use EntityResolver instead of properties on the reader.
 
         if (source.ReadAndValidateOptionalSignature(
             TrustedSigningKeys, AllowedAlgorithms))

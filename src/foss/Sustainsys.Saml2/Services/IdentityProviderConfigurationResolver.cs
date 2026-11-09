@@ -83,7 +83,6 @@ public class IdentityProviderConfigurationResolver
     protected virtual async Task ResolveEffectiveConfigurationAsync(
         IdentityProviderConfigurationResolverContext context, MetadataBase? metadata)
     {
-        // TODO: Plus package add compat to unpack EntitiesDescriptor with single EntityDescriptor.
         if (metadata is not EntityDescriptor entityDescriptor)
         {
             context.EffectiveConfiguration = context.StaticConfiguration;

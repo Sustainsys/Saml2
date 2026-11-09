@@ -14,7 +14,6 @@ namespace Sustainsys.Saml2.Serialization;
 /// </remarks>
 public interface ISamlXmlReaderPlus : ISamlXmlReader
 {
-    // TODO: Don't use default values in public interfaces/types
     /// <summary>
     /// Read an <see cref="AuthnRequest"/>
     /// </summary>
