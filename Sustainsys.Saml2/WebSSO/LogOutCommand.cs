@@ -114,7 +114,7 @@ namespace Sustainsys.Saml2.WebSso
         {
             if (unbindResult.TrustLevel < TrustLevel.Signature)
             {
-                var issuer = unbindResult.Data["Issuer", Saml2Namespaces.Saml2Name]?.InnerText;
+                var issuer = unbindResult.Data["Issuer", Saml2Namespaces.Saml2Name]?.GetTrimmedTextIfNotNull();
 
                 if(issuer == null)
                 {
@@ -130,7 +130,7 @@ namespace Sustainsys.Saml2.WebSso
                     throw new UnsuccessfulSamlOperationException(string.Format(CultureInfo.InvariantCulture,
                         "Received a {0} from {1} that cannot be processed because it is not signed.",
                         unbindResult.Data.LocalName,
-                        unbindResult.Data["Issuer", Saml2Namespaces.Saml2Name].InnerText));
+                        unbindResult.Data["Issuer", Saml2Namespaces.Saml2Name].GetTrimmedTextIfNotNull()));
                 }
             }
         }

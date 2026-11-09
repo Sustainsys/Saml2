@@ -581,7 +581,7 @@ $@"<xml>
         {
             var xd = XmlHelpers.CreateSafeXmlDocument();
             var e = xd.CreateElement("someElement");
-            e.InnerText = "\r\n     Some Text";
+            e.InnerText = "\r\n     Some Text    \r\n    ";
 
             e.GetTrimmedTextIfNotNull().Should().Be("Some Text");
         }
@@ -592,6 +592,38 @@ $@"<xml>
             XmlElement e = null;
 
             e.GetTrimmedTextIfNotNull().Should().BeNull();
+        }
+
+        [TestMethod]
+        public void XmlHelpers_GetTrimmedTextIfNotNull_Empty()
+        {
+            var xd = XmlHelpers.CreateSafeXmlDocument();
+            var e = xd.CreateElement("someElement");
+
+            e.GetTrimmedTextIfNotNull().Should().Be("");
+        }
+
+        [TestMethod]
+        public void XmlHelpers_GetTrimmedTextIfNotNull_IgnoresComments()
+        {
+            var xd = XmlHelpers.CreateSafeXmlDocument();
+            var e = xd.CreateElement("someElement");
+            e.InnerXml = "Some<!-- Comment --> Text";
+
+            e.GetTrimmedTextIfNotNull().Should().Be("Some Text");
+        }
+
+        [TestMethod]
+        public void XmlHelpers_GetTrimmedTextIfNotNull_RejectsElements()
+        {
+            var xd = XmlHelpers.CreateSafeXmlDocument();
+            var e = xd.CreateElement("someElement");
+            e.InnerXml = "Some Text <a/>";
+
+            e.Invoking(el => el.GetTrimmedTextIfNotNull())
+                .Should()
+                .Throw<Saml2Exception>()
+                .WithMessage("*element*");
         }
 
         [TestMethod]

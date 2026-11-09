@@ -504,7 +504,27 @@ namespace Sustainsys.Saml2
                 return null;
             }
 
-            return xmlElement.InnerText.Trim();
+            var child = xmlElement.FirstChild;
+            string result = "";
+
+            while(child != null)
+            {
+                switch(child.NodeType)
+                {
+                    case XmlNodeType.Whitespace:
+                    case XmlNodeType.Text:
+                        result += child.InnerText;
+                        break;
+                    case XmlNodeType.Comment:
+                        break;
+                    default:
+                        throw new BadFormatSamlResponseException("Found nested element when text content only was expected");
+                }
+
+                child = child.NextSibling;
+            }
+
+            return result.Trim();
         }
 
         internal static string GetRequiredAttributeValue(this XmlElement node, string attributeName)
