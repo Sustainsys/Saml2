@@ -47,7 +47,7 @@ namespace Sustainsys.Saml2.Saml2P
             var request = new Saml2LogoutRequest()
             {
                 NameId = new Saml2NameIdentifier(
-                    xml["NameID", Saml2Namespaces.Saml2Name].InnerText),
+                    xml["NameID", Saml2Namespaces.Saml2Name].GetTrimmedTextIfNotNull()),
                 RelayState = null
             };
 
@@ -62,7 +62,7 @@ namespace Sustainsys.Saml2.Saml2P
             var sessionIndexElement = xml["SessionIndex", Saml2Namespaces.Saml2PName];
             if(sessionIndexElement != null)
             {
-                request.SessionIndex = sessionIndexElement.InnerText;
+                request.SessionIndex = sessionIndexElement.GetTrimmedTextIfNotNull();
             }
 
             return request;
