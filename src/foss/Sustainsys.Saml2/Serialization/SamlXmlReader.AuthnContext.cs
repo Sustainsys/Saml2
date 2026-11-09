@@ -34,7 +34,6 @@ partial class SamlXmlReader
 
         if (source.HasName(Elements.AuthnContextClassRef, Namespaces.SamlUri))
         {
-            // TODO: Should there be a source.GetAbsoluteUriContents?
             authnContext.AuthnContextClassRef = source.GetTextContents();
             source.MoveNext(true);
         }

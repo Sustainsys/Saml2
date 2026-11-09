@@ -5,7 +5,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Sustainsys.Saml2.Bindings;
-using System.Text.Encodings.Web;
 
 namespace Sustainsys.Saml2.AspNetCore;
 
@@ -51,6 +50,4 @@ public class Saml2HandlerPlus(
         ServiceProvider.GetKeyedService<Saml2Events>(Scheme.Name) ??
         new Saml2Events());
 
-    // TODO: Use event to resolve IdentityProvider - presence of EntityId indicates if challenge or response processing
-    // TODO: Event when Xml was created
 }

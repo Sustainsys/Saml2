@@ -5,12 +5,6 @@ using Sustainsys.Saml2.Metadata;
 using Sustainsys.Saml2.Saml;
 using Sustainsys.Saml2.Serialization;
 using Sustainsys.Saml2.Xml;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Xml;
 
 namespace Sustainsys.Saml2.Services;
@@ -59,8 +53,6 @@ public class MetadataLoader(ISamlXmlReader samlXmlReader) : IMetadadataLoader
                 _ => throw new InvalidOperationException("Unrecoqnized scheme " + uri.Scheme)
             };
 
-            // TODO: Add caching
-
             var result = await metadataClient.GetAsync(uri);
 
             if (!result.IsSuccessStatusCode)
@@ -68,15 +60,10 @@ public class MetadataLoader(ISamlXmlReader samlXmlReader) : IMetadadataLoader
                 return null;
             }
 
-            // TODO: Add validation of Content type, with compatibility/option to relax.
-
             xmlDoc.Load(await result.Content.ReadAsStreamAsync());
         }
         else
         {
-            // TODO: Implement.
-            // TODO: Use File change monitor for caching.
-            //trustLevel = TrustLevel.ConfiguredKey;
             throw new NotImplementedException("File metadata not implemented");
         }
 
@@ -92,11 +79,8 @@ public class MetadataLoader(ISamlXmlReader samlXmlReader) : IMetadadataLoader
             samlXmlReader.TrustedSigningKeys = trustedSigningKeys;
             samlXmlReader.AllowedAlgorithms = allowedAlgorithms;
 
-            // TODO: Plus package: add ErrorInspector from config.
             return samlXmlReader.ReadEntityDescriptor(xmlTraverser);
         }
-
-        // TODO: Add support for EntitiesDescriptor too.
 
         return null;
     }

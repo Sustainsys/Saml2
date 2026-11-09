@@ -103,8 +103,6 @@ public class AssertionValidator(TimeProvider timeProvider) : IValidator<Assertio
         Conditions? conditions,
         AssertionValidationParameters parameters)
     {
-        // TODO: Add Clock Skew Support
-
         if (conditions == null)
         {
             throw new ValidationException<Assertion>(

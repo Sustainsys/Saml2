@@ -20,11 +20,7 @@ partial class SamlXmlReader
     {
         var result = Create<KeyDescriptor>();
 
-        // TODO: Extract ReadAttributes method.
-
         result.Use = source.GetEnumAttribute<KeyUse>(Attributes.use, true) ?? KeyUse.Both;
-
-        // TODO: Extract a ReadElement method
 
         var children = source.GetChildren();
 

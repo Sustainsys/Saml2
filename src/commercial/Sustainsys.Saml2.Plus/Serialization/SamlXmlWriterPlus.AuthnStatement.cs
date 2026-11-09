@@ -24,7 +24,6 @@ partial class SamlXmlWriterPlus
 
         if (authnStatement.AuthnContext != null)
         {
-            // TODO: Move to separate method (same file is fine)
             var authnContextElement = AppendElement(authnStatementElement, Namespaces.Saml, Elements.AuthnContext);
 
             if (authnStatement.AuthnContext.AuthnContextClassRef != null)

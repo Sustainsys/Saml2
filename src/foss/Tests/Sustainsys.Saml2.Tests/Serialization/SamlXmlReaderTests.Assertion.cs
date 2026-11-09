@@ -120,9 +120,6 @@ public partial class SamlXmlReaderTests
     [Fact]
     public void ReadAssertion_CanReadOptional()
     {
-        // TODO: Go through spec and check that there are tests for minimal/maximal
-        // sub-contents. E.g. a minimal SubjectConfirmationData
-
         var source = GetXmlTraverser();
 
         ((XmlElement)source.CurrentNode!).Sign(

@@ -21,8 +21,6 @@ public class ClaimsFactory : IClaimsFactory
 
         if (assertion.Subject?.NameId != null)
         {
-            // TODO: Make Claim Type Configurable.
-            // TODO: Add Claims issuer (configurable?)
             claims.Add(new(ClaimTypes.NameIdentifier, assertion.Subject.NameId!.Value));
         }
 
@@ -32,7 +30,6 @@ public class ClaimsFactory : IClaimsFactory
             {
                 foreach (var value in attribute.Values)
                 {
-                    // TODO: Add support for xs:nil
                     claims.Add(new(attribute.Name, value!));
                 }
             }

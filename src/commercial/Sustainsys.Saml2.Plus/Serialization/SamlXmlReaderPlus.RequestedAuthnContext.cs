@@ -48,12 +48,11 @@ partial class SamlXmlReaderPlus
                 }
                 else
                 {
-                    // TODO: Add test for extra elements and report errors.
+
                 }
             }
         } while (source.MoveNext(true)); // Read all elements found.
-        // TODO: Add Test case if we have both ClassRef and DeclRef and add an error that it
-        // is not allowed.
+
         //source.Errors.Add(new(ErrorReason.ExtraElements))
     }
 

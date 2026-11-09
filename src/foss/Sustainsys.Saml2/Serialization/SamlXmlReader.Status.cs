@@ -50,8 +50,6 @@ partial class SamlXmlReader
 
         ReadAttributes(source, result);
 
-        // TODO: Add support for nested Status Code
-
         return result;
     }
 

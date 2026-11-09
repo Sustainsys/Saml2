@@ -23,7 +23,6 @@ public class XmlTraverser
     /// <summary>
     /// Errors encountered so far during the traversal.
     /// </summary>
-    // TODO: Make public property a ReadOnlyCollection.
     public List<Error> Errors { get; }
 
     /// <summary>
@@ -66,7 +65,6 @@ public class XmlTraverser
         childrenHandled = !rootNode.HasChildNodes;
         Errors = [];
 
-        // TODO: Test that checks the removal of HasSignature
         TrustLevel = trustLevel & ~TrustLevel.HasSignature;
     }
 
@@ -177,8 +175,6 @@ public class XmlTraverser
     /// <param name="expectEnd">Is it correct if this MoveNext call hits the end of the 
     /// child list? If not an error is recorded if we do not find any more nodes.</param>
     /// <returns>true if the move was successful</returns>
-    // TODO: Introduce WasHandled flag that is set by HasName and EnsureName. If flag is not set
-    // on call to MoveNext, add an error. Add new public API IgnoreElement that sets flag.
     public bool MoveNext(bool expectEnd)
     {
         while (true)
@@ -301,7 +297,6 @@ public class XmlTraverser
     /// <returns></returns>
     public string GetTextContents()
     {
-        //TODO: Test case + error handling for non text content.
         IgnoreChildren();
         return CurrentNode!.InnerText;
     }

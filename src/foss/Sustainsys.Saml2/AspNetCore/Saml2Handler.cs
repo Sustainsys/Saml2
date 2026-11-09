@@ -19,7 +19,6 @@ using System.Text.Encodings.Web;
 
 namespace Sustainsys.Saml2.AspNetCore;
 
-// TODO: OTel Metrics + Activities + logging/traces
 
 /// <summary>
 /// Saml2 authentication handler
@@ -92,7 +91,6 @@ public class Saml2Handler(
             IdentityProviderConfigurationResolverContext context = new()
             {
                 HttpContext = Context,
-                // TODO: Plus package should use callback to resolve this.
                 StaticConfiguration = Options.IdentityProvider
             };
 
@@ -142,8 +140,6 @@ public class Saml2Handler(
 
         var validator = GetRequiredService<IValidator<Response, ResponseValidationParameters>>();
 
-        // TODO: Do proper validation! + Tests!
-        // - TrustLevel
         ResponseValidationParameters validationParameters = new()
         {
             AssertionValidationParameters = new()
@@ -157,7 +153,6 @@ public class Saml2Handler(
 
         var validatedResponse = samlResponse.Validate(validator, validationParameters);
 
-        // TODO: Handle multiple assertions.
         var validatedAssertion = validatedResponse.GetValid(r => r.Assertions.Single());
 
         var claimsFactory = GetRequiredService<IClaimsFactory>();
@@ -186,7 +181,6 @@ public class Saml2Handler(
 
         if (string.IsNullOrEmpty(cookieValue))
         {
-            // TODO: Consider better error handling with a recovery strategy if the same user is already logged in.
             throw new ValidationException<Saml2Message>($"The state cookie {cookieName} was not found.");
         }
 
@@ -217,7 +211,6 @@ public class Saml2Handler(
         }
         finally
         {
-            // TODO: Consider setting a "consumed marker" on the cookie to allow better error handling on re-post/re-processing.
             Options.StateCookieManager.DeleteCookie(Context, cookieName, BuildCookieOptions());
         }
     }
@@ -265,7 +258,6 @@ public class Saml2Handler(
             Binding = Constants.BindingUris.HttpRedirect
         };
 
-        // TODO: If needed: make an alternative to this to allow multiple concurrent sign in attempts to same Idp
         var cookieName = CookiePrefix + idpEntityIdHash;
         var cookieValue = Options.StateCookieDataFormat.Protect(properties);
         var cookieOptions = BuildCookieOptions();

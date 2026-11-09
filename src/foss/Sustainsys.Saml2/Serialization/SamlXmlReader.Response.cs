@@ -12,7 +12,6 @@ partial class SamlXmlReader
     /// <inheritdoc/>
     public Response ReadResponse(
         XmlTraverser source,
-        // TODO: Remove default value of parameter, but still allow null.
         Action<ReadErrorInspectorContext<Response>>? errorInspector = null)
     {
         Response response = default!;
@@ -24,7 +23,6 @@ partial class SamlXmlReader
 
         source.MoveNext(true);
 
-        // TODO: Test for error inspector call
         CallErrorInspector(errorInspector, response, source);
 
         source.ThrowOnErrors();
