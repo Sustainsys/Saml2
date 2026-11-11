@@ -62,7 +62,8 @@ namespace Sustainsys.Saml2.Saml2P
         /// <exception cref="XmlException">On xml errors or unexpected xml structure.</exception>
         public static Saml2Response Read(string xml, Saml2Id expectedInResponseTo, IOptions options)
         {
-            var x = XmlHelpers.XmlDocumentFromString(xml);
+            var x = XmlHelpers.XmlDocumentFromString(xml, 
+                options?.SPOptions?.MaxXmlDepth ?? XmlHelpers.DefaultFallbackMaxDepth);
 
             return new Saml2Response(x.DocumentElement, expectedInResponseTo, options);
         }

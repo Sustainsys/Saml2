@@ -437,5 +437,10 @@ namespace Sustainsys.Saml2.Configuration
                 RequireSignedTokens = false,
                 ValidateIssuer = false
             }.SetRequireAudience(false); // RequireAudience must be set to false for versions 5.5.0+ that have it.
+
+        /// <summary>
+        /// Maximum allowed nesting depth of XML messages.
+        /// </summary>
+        public int MaxXmlDepth { get; set; } = 64;
     }
 }
