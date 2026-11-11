@@ -686,5 +686,30 @@ $@"<xml>
 
             actual.PreserveWhitespace.Should().BeTrue();
         }
+
+        [TestMethod]
+        public void XmlHelpers_XmlDocumentFromStringMaxDepth()
+        {
+            var xml = "<a><b><c/></b></a>";
+
+            // Should pass
+            XmlHelpers.XmlDocumentFromString(xml, 2);
+
+            Action a = () => XmlHelpers.XmlDocumentFromString(xml, 1);
+            a.ShouldThrow<XmlException>();
+
+            // Test default value
+            xml = "";
+            for(int i = 0; i < 65; i++)
+            {
+                xml += "<a>";
+            }
+            for (int i = 0; i < 65; i++)
+            {
+                xml += "</a>";
+            }
+
+            a.ShouldThrow<XmlException>($"*65*");
+        }
     }
 }

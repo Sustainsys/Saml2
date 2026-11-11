@@ -98,7 +98,7 @@ namespace Sustainsys.Saml2.WebSso
 
             if (options.SPOptions.SigningServiceCertificate != null)
             {
-                var xmlDoc = XmlHelpers.XmlDocumentFromString(payload);
+                var xmlDoc = XmlHelpers.XmlDocumentFromString(payload, options.SPOptions.MaxXmlDepth);
                 xmlDoc.Sign(options.SPOptions.SigningServiceCertificate, true);
                 payload = xmlDoc.OuterXml;
             }

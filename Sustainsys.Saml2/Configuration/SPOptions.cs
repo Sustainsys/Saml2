@@ -409,5 +409,10 @@ namespace Sustainsys.Saml2.Configuration
         /// Adapter to logging framework of hosting application.
         /// </summary>
         public ILoggerAdapter Logger { get; set; }
+
+        /// <summary>
+        /// Maximum allowed nesting depth of XML messages.
+        /// </summary>
+        public int MaxXmlDepth { get; set; } = 64;
     }
 }
