@@ -365,16 +365,19 @@ public class XmlTraverserTests
     public void TraverseChildren()
     {
         var subject = GetXmlTraverser();
+        subject.EnsureName("root", "urn:r");
 
         var childElements = subject.GetChildren();
 
         childElements.MoveNext(false).Should().BeTrue();
 
         childElements.CurrentNode!.LocalName.Should().Be("p");
+        childElements.HasName("p", "urn:r").Should().BeTrue();
 
         childElements.MoveNext(false).Should().BeTrue();
 
         childElements.CurrentNode.LocalName.Should().Be("q");
+        childElements.HasName("q", "urn:r").Should().BeTrue();
 
         var grandChildElements = childElements.GetChildren();
 
@@ -512,6 +515,7 @@ public class XmlTraverserTests
 
         var rChildren = subject.GetChildren();
         rChildren.MoveNext(false).Should().BeTrue();
+        rChildren.EnsureName("a", "");
         var a = rChildren.CurrentNode;
 
         rChildren.MoveNext(true).Should().BeFalse();
@@ -534,6 +538,7 @@ public class XmlTraverserTests
 
         var rChildren = subject.GetChildren();
         rChildren.MoveNext(false).Should().BeTrue();
+        rChildren.EnsureName("a", "");
         var a = rChildren.CurrentNode;
         var aChildren = rChildren.GetChildren();
 
@@ -562,6 +567,7 @@ public class XmlTraverserTests
         children.MoveNext(false).Should().BeTrue();
         var a = children.CurrentNode!;
 
+        subject.EnsureName("r", "");
         subject.MoveNext(true).Should().BeFalse();
 
         subject.Errors.Should().HaveCount(1);
@@ -593,6 +599,7 @@ public class XmlTraverserTests
 
         var subject = GetXmlTraverser(xml);
 
+        subject.EnsureName("r", "");
         subject.IgnoreChildren();
 
         subject.MoveNext(true);
@@ -606,6 +613,7 @@ public class XmlTraverserTests
         var xml = "<r><a/></r>";
 
         var subject = GetXmlTraverser(xml);
+        subject.EnsureName("r", "");
 
         subject.GetChildren().Skip();
 
@@ -613,5 +621,126 @@ public class XmlTraverserTests
 
         subject.Invoking(s => s.ThrowOnErrors())
             .Should().NotThrow();
+    }
+
+    [Fact]
+    public void MoveNext_UnhandledElement_AddsError()
+    {
+        var subject = GetXmlTraverser("<r/>");
+        var node = subject.CurrentNode;
+
+        subject.MoveNext(true).Should().BeFalse();
+
+        subject.Errors.Should().ContainSingle();
+        var error = subject.Errors.Single();
+        error.Reason.Should().Be(ErrorReason.ExtraElements);
+        error.Node.Should().BeSameAs(node);
+        error.LocalName.Should().Be("r");
+    }
+
+    [Fact]
+    public void MoveNext_AfterMatchingHasName_DoesNotAddError()
+    {
+        var subject = GetXmlTraverser("<r/>");
+
+        subject.HasName("r", "").Should().BeTrue();
+        subject.MoveNext(true);
+
+        subject.Errors.Should().BeEmpty();
+    }
+
+    [Fact]
+    public void HasName_MatchingName_MarksElementAsHandled()
+    {
+        var subject = GetXmlTraverser("<r/>");
+
+        subject.wasHandled.Should().BeFalse();
+
+        var matches = subject.HasName("r", "");
+
+        matches.Should().BeTrue();
+        subject.wasHandled.Should().BeTrue();
+    }
+
+    [Fact]
+    public void HasName_NonmatchingName_LeavesElementUnhandled()
+    {
+        var subject = GetXmlTraverser("<r/>");
+
+        subject.HasName("other", "").Should().BeFalse();
+
+        subject.wasHandled.Should().BeFalse();
+
+        subject.MoveNext(true);
+
+        subject.Errors.Should().ContainSingle()
+            .Which.Reason.Should().Be(ErrorReason.ExtraElements);
+    }
+
+    [Fact]
+    public void HasName_NonmatchingName_PreservesPreviousMatch()
+    {
+        var subject = GetXmlTraverser("<r/>");
+
+        subject.HasName("r", "").Should().BeTrue();
+        subject.HasName("other", "").Should().BeFalse();
+
+        subject.wasHandled.Should().BeTrue();
+
+        subject.MoveNext(true);
+
+        subject.Errors.Should().BeEmpty();
+    }
+
+    [Theory]
+    [InlineData("r", "", true)]
+    [InlineData("other", "", false)]
+    [InlineData("r", "urn:other", false)]
+    public void EnsureName_MarksElementAsHandled(
+    string localName, string namespaceUri, bool expectedResult)
+    {
+        var subject = GetXmlTraverser("<r/>");
+
+        subject.wasHandled.Should().BeFalse();
+
+        var result = subject.EnsureName(localName, namespaceUri);
+
+        result.Should().Be(expectedResult);
+        subject.wasHandled.Should().BeTrue();
+    }
+
+    [Fact]
+    public void MoveNext_ResetsHandledStateForNextElement()
+    {
+        var subject = GetXmlTraverser("<r><a/><b/></r>")
+            .GetChildren();
+
+        subject.MoveNext(false).Should().BeTrue();
+        subject.HasName("a", "").Should().BeTrue();
+
+        subject.MoveNext(false).Should().BeTrue();
+        var secondNode = subject.CurrentNode;
+
+        subject.wasHandled.Should().BeFalse();
+        subject.Errors.Should().BeEmpty();
+
+        subject.MoveNext(true).Should().BeFalse();
+
+        subject.Errors.Should().ContainSingle();
+        var error = subject.Errors.Single();
+        error.Reason.Should().Be(ErrorReason.ExtraElements);
+        error.Node.Should().BeSameAs(secondNode);
+        error.LocalName.Should().Be("b");
+    }
+
+    [Fact]
+    public void MoveNext_AfterIgnoreElement_DoesNotAddError()
+    {
+        var subject = GetXmlTraverser("<r/>");
+
+        subject.IgnoreElement();
+        subject.MoveNext(true);
+
+        subject.Errors.Should().BeEmpty();
     }
 }
