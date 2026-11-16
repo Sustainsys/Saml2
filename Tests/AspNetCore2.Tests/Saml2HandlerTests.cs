@@ -487,7 +487,7 @@ namespace Sustainsys.Saml2.AspNetCore2.Tests
 
             var request = new Saml2LogoutRequest()
             {
-                SessionIndex = "SessionId",
+                SessionIndex = "SessionID",
                 DestinationUrl = new Uri("http://sp.example.com/Saml2/Logout"),
                 NameId = new Saml2NameIdentifier("NameId"),
                 Issuer = new EntityId("https://idp.example.com"),
@@ -500,6 +500,11 @@ namespace Sustainsys.Saml2.AspNetCore2.Tests
 
             context.HttpContext.Request.Path = new PathString(url.AbsolutePath);
             context.HttpContext.Request.QueryString = new QueryString(url.Query);
+            context.HttpContext.User = new ClaimsPrincipal(
+                new ClaimsIdentity(new Claim[]
+                {
+                    new Claim(Saml2ClaimTypes.SessionIndex, "SessionID", null, "https://idp.example.com")
+                }, "Federation"));
 
             var authService = Substitute.For<IAuthenticationService>();
 
