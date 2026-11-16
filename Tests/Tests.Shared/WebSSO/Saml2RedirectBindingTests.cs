@@ -319,6 +319,7 @@ namespace Sustainsys.Saml2.Tests.WebSso
 
             actual.TrustLevel.Should().Be(TrustLevel.Signature);
         }
+
         
         [TestMethod]
         public void Saml2RedirectBinding_Unbind_HandlesValidSignature_WithoutRelayState()
@@ -384,6 +385,22 @@ namespace Sustainsys.Saml2.Tests.WebSso
             var url = CreateAndBindMessageWithSignature(messageName: "SAMLRequest").Location.OriginalString;
 
             url = url.Replace("RelayState=", "RelayState=X");
+
+            var request = new HttpRequestData("GET", new Uri(url));
+
+            Saml2Binding.Get(request)
+                .Invoking(b => b.Unbind(request, StubFactory.CreateOptions()))
+                .Should().Throw<InvalidSignatureException>("contents has been tampered with. Tampered URL: " + url)
+                .WithMessage("Message from https://idp.example.com failed signature verification");
+        }
+
+        [TestMethod]
+        public void Saml2RedirectBinding_Unbind_ThrowsOnSignatureWithTamperedData_RelayState()
+        {
+            var url = CreateAndBindMessageWithSignature(messageName: "SAMLRequest").Location.OriginalString;
+
+            // Add some data to the RelayState
+            url = url.Replace("&SigAlg", "=Added&SigAlg");
 
             var request = new HttpRequestData("GET", new Uri(url));
 

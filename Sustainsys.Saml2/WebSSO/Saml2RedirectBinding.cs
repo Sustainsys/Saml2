@@ -140,12 +140,14 @@ namespace Sustainsys.Saml2.WebSso
             return TrustLevel.Signature;
         }
 
+        private static readonly char[] equalSign = { '=' };
+
         private static void CheckSignature(HttpRequestData request, IdentityProvider idp, IOptions options)
         {
             // Can't use the query string params as found in HttpReqeustData
             // because they are already unescaped and we need the exact format
             // of the original data.
-            var rawQueryStringParams = request.Url.Query.TrimStart('?').Split('&').Select(qp => qp.Split('=')).ToDictionary(kv => kv[0], kv => kv[1]);
+            var rawQueryStringParams = request.Url.Query.TrimStart('?').Split('&').Select(qp => qp.Split(equalSign, 2)).ToDictionary(kv => kv[0], kv => kv[1]);
 
             var msgParam = "";
             if (rawQueryStringParams.TryGetValue("SAMLRequest", out string msg))
