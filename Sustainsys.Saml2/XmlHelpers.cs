@@ -23,6 +23,12 @@ namespace Sustainsys.Saml2
     public static class XmlHelpers
     {
         /// <summary>
+        /// Default fallback max depth for XML reading, used where there is no
+        /// separate configuration of MaxDepth.
+        /// </summary>
+        public static int DefaultFallbackMaxDepth = 64;
+
+        /// <summary>
         /// Sign an xml document with the supplied cert.
         /// </summary>
         /// <param name="xmlDocument">XmlDocument to be signed. The signature is
@@ -33,6 +39,31 @@ namespace Sustainsys.Saml2
             Sign(xmlDocument, cert, false);
         }
 
+        class LimitingXmlTextReader : XmlTextReader
+        {
+            private int maxDepth;
+
+            public LimitingXmlTextReader(StringReader reader, XmlNameTable nameTable, int maxDepth)
+            : base(reader, nameTable)
+            {
+                this.maxDepth = maxDepth;
+            }
+
+            public override bool Read()
+            {
+                var result = base.Read();
+
+                if (Depth > maxDepth)
+                {
+                    throw new XmlException(
+                        string.Format(CultureInfo.InvariantCulture, "Max XML nesting depth {0} exceeded", maxDepth));
+                }
+
+                return result;
+            }
+
+        }
+
         /// <summary>
         /// Creates an Xml document with secure settings and initialized it from
         /// a string.
@@ -40,10 +71,26 @@ namespace Sustainsys.Saml2
         /// <param name="source">Source string to load</param>
         /// <returns>Xml document</returns>
         public static XmlDocument XmlDocumentFromString(string source)
+            => XmlDocumentFromString(source, DefaultFallbackMaxDepth);
+
+        /// <summary>
+        /// Creates an Xml document with secure settings and initialized it from
+        /// a string.
+        /// </summary>
+        /// <param name="source">Source string to load</param>
+        /// <param name="maxDepth">Maximum allowed depth of XML document</param>
+        /// <returns>Xml document</returns>
+        public static XmlDocument XmlDocumentFromString(string source, int maxDepth)
         {
             var xmlDoc = CreateSafeXmlDocument();
 
-            xmlDoc.LoadXml(source);
+            using (var reader = new LimitingXmlTextReader(new StringReader(source), xmlDoc.NameTable, maxDepth)
+            {
+                EntityHandling = EntityHandling.ExpandCharEntities
+            })
+            {
+                xmlDoc.Load(reader);
+            }
 
             return xmlDoc;
         }
@@ -482,7 +529,27 @@ namespace Sustainsys.Saml2
                 return null;
             }
 
-            return xmlElement.InnerText.Trim();
+            var child = xmlElement.FirstChild;
+            string result = "";
+
+            while (child != null)
+            {
+                switch (child.NodeType)
+                {
+                    case XmlNodeType.Whitespace:
+                    case XmlNodeType.Text:
+                        result += child.InnerText;
+                        break;
+                    case XmlNodeType.Comment:
+                        break;
+                    default:
+                        throw new BadFormatSamlResponseException("Found nested element when text content only was expected");
+                }
+
+                child = child.NextSibling;
+            }
+
+            return result.Trim();
         }
 
         internal static XmlElement StartElement(this XmlNode parent, string name, Uri namespaceUri)

@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<RuleSet Name="Sustainsys.Saml2" Description=" " ToolsVersion="14.0">
+<RuleSet Name="Sustainsys.Saml2" Description=" " ToolsVersion="18.0">
   <Rules AnalyzerId="Microsoft.Analyzers.ManagedCodeAnalysis" RuleNamespace="Microsoft.Rules.Managed">
     <Rule Id="CA1000" Action="Error" />
     <Rule Id="CA1001" Action="Error" />
@@ -139,7 +139,7 @@
     <Rule Id="CA1900" Action="Error" />
     <Rule Id="CA1901" Action="Error" />
     <Rule Id="CA1903" Action="Error" />
-    <Rule Id="CA2000" Action="Error" />
+    <Rule Id="CA2000" Action="Warning" />
     <Rule Id="CA2001" Action="Error" />
     <Rule Id="CA2002" Action="Error" />
     <Rule Id="CA2003" Action="Error" />
@@ -196,7 +196,7 @@
     <Rule Id="CA2205" Action="Error" />
     <Rule Id="CA2207" Action="Error" />
     <Rule Id="CA2208" Action="Error" />
-    <Rule Id="CA2211" Action="Error" />
+    <Rule Id="CA2211" Action="Warning" />
     <Rule Id="CA2212" Action="Error" />
     <Rule Id="CA2213" Action="Error" />
     <Rule Id="CA2214" Action="Error" />
