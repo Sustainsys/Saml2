@@ -728,6 +728,7 @@ $@"<xml>
                 xml += "</a>";
             }
 
+            a = () => XmlHelpers.XmlDocumentFromString(xml);
             a.Should().Throw<XmlException>($"*65*");
         }
     }
