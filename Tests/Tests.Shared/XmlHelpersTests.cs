@@ -719,17 +719,17 @@ $@"<xml>
 
             // Test default value
             xml = "";
-            for(int i = 0; i < 65; i++)
+            for(int i = 0; i < 66; i++)
             {
                 xml += "<a>";
             }
-            for (int i = 0; i < 65; i++)
+            for (int i = 0; i < 66; i++)
             {
                 xml += "</a>";
             }
 
             a = () => XmlHelpers.XmlDocumentFromString(xml);
-            a.Should().Throw<XmlException>($"*65*");
+            a.Should().Throw<XmlException>().WithMessage("*64*");
         }
     }
 }
