@@ -3,6 +3,7 @@ using Sustainsys.Saml2.Saml2P;
 using System;
 using System.Globalization;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Xml;
 
@@ -69,7 +70,10 @@ namespace Sustainsys.Saml2.WebSso
             var encodedXml = Convert.ToBase64String(Encoding.UTF8.GetBytes(xml));
 
             var relayStateHtml = string.IsNullOrEmpty(message.RelayState) ? null 
-                : string.Format(CultureInfo.InvariantCulture, PostHtmlRelayStateFormatString, message.RelayState);
+                : string.Format(
+                    CultureInfo.InvariantCulture,
+                    PostHtmlRelayStateFormatString,
+                    WebUtility.HtmlEncode(message.RelayState));
 
             var cr = new CommandResult()
             {
