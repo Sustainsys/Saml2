@@ -470,7 +470,7 @@ namespace Sustainsys.Saml2.Owin.Tests
 
             var request = new Saml2LogoutRequest()
             {
-                SessionIndex = "SessionId",
+                SessionIndex = "SessionID",
                 DestinationUrl = new Uri("http://sp.example.com/Saml2/Logout"),
                 NameId = new Saml2NameIdentifier("NameId"),
                 Issuer = new EntityId("https://idp.example.com"),
@@ -483,6 +483,12 @@ namespace Sustainsys.Saml2.Owin.Tests
 
             context.Request.Path = new PathString(url.AbsolutePath);
             context.Request.QueryString = new QueryString(url.Query.TrimStart('?'));
+            context.Request.User = new ClaimsPrincipal(
+                new ClaimsIdentity(new Claim[]
+                {
+                    new Claim(Saml2ClaimTypes.SessionIndex, "SessionID", null, "https://idp.example.com")
+                }, "Federation"));
+
 
             await subject.Invoke(context);
 
@@ -514,7 +520,7 @@ namespace Sustainsys.Saml2.Owin.Tests
 
             var request = new Saml2LogoutRequest()
             {
-                SessionIndex = "SessionId",
+                SessionIndex = "SessionID",
                 DestinationUrl = new Uri("http://sp.example.com/Saml2/Logout"),
                 NameId = new Saml2NameIdentifier("NameId"),
                 Issuer = new EntityId("https://idp.example.com"),
@@ -527,6 +533,11 @@ namespace Sustainsys.Saml2.Owin.Tests
 
             context.Request.Path = new PathString(url.AbsolutePath);
             context.Request.QueryString = new QueryString(url.Query.TrimStart('?'));
+            context.Request.User = new ClaimsPrincipal(
+                new ClaimsIdentity(new Claim[]
+                {
+                                new Claim(Saml2ClaimTypes.SessionIndex, "SessionID", null, "https://idp.example.com")
+                }, "Federation"));
 
             await subject.Invoke(context);
 

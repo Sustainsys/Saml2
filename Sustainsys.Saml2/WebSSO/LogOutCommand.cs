@@ -87,7 +87,7 @@ namespace Sustainsys.Saml2.WebSso
                 switch (unbindResult.Data.LocalName)
                 {
                     case "LogoutRequest":
-                        commandResult = HandleRequest(unbindResult, options);
+                        commandResult = HandleRequest(request, unbindResult, options);
                         break;
                     case "LogoutResponse":
                         var storedRequestState = options.Notifications.GetLogoutResponseState(request);
@@ -240,11 +240,12 @@ namespace Sustainsys.Saml2.WebSso
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "SingleLogoutServiceUrl")]
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "SingleLogoutService")]
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "LogoutRequest")]
-        private static CommandResult HandleRequest(UnbindResult unbindResult, IOptions options)
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "SessionIndex")]
+        private static CommandResult HandleRequest(HttpRequestData request, UnbindResult unbindResult, IOptions options)
         {
-            var request = Saml2LogoutRequest.FromXml(unbindResult.Data);
+            var logoutRequest = Saml2LogoutRequest.FromXml(unbindResult.Data);
 
-            var idp = options.IdentityProviders[request.Issuer];
+            var idp = options.IdentityProviders[logoutRequest.Issuer];
 
             if(options.SPOptions.SigningServiceCertificate == null)
             {
@@ -252,7 +253,7 @@ namespace Sustainsys.Saml2.WebSso
                     "Received a LogoutRequest from \"{0}\" but cannot reply because single logout responses " +
                     "must be signed and there is no signing certificate configured. Looks like the idp is " +
                     "configured for Single Logout despite Saml2 not exposing that functionality in the metadata.",
-                    request.Issuer.Id));
+                    logoutRequest.Issuer.Id));
             }
 
             if(idp.SingleLogoutServiceResponseUrl == null)
@@ -264,17 +265,28 @@ namespace Sustainsys.Saml2.WebSso
                     idp.EntityId.Id));
             }
 
+            var existingSessionId = request.User.FindFirst(Saml2ClaimTypes.SessionIndex)?.Value;
+            var requestSessionId = logoutRequest.SessionIndex;
+            
+            if(existingSessionId != requestSessionId)
+            {
+                throw new InvalidOperationException(string.Format(CultureInfo.InvariantCulture,
+                    "Received a LogoutRequest from \"{0}\" for SessionIndex \"{1}\", but the current session " +
+                    "has SessionIndex \"{2}\".",
+                    idp.EntityId.Id, requestSessionId, existingSessionId));
+            }
+
             var response = new Saml2LogoutResponse(Saml2StatusCode.Success)
             {
                 DestinationUrl = idp.SingleLogoutServiceResponseUrl,
                 SigningCertificate = options.SPOptions.SigningServiceCertificate,
                 SigningAlgorithm = idp.OutboundSigningAlgorithm,
-                InResponseTo = request.Id,
+                InResponseTo = logoutRequest.Id,
                 Issuer = options.SPOptions.EntityId,
                 RelayState = unbindResult.RelayState
             };
 
-            options.SPOptions.Logger.WriteInformation("Got a logout request " + request.Id
+            options.SPOptions.Logger.WriteInformation("Got a logout request " + logoutRequest.Id
                 + ", responding with logout response " + response.Id);
 
             var result = Saml2Binding.Get(idp.SingleLogoutServiceBinding).Bind(response);

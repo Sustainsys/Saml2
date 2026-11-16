@@ -124,7 +124,7 @@ namespace Sustainsys.Saml2.Tests.WebSSO
 
             var relayState = HttpUtility.ParseQueryString(actual.Location.Query)["RelayState"];
             actual.SetCookieName.Should().Be(StoredRequestState.CookieNameBase + relayState);
-            actual.RelayState.Should().Be( relayState );
+            actual.RelayState.Should().Be(relayState);
             actual.Location.GetLeftPart(UriPartial.Path).Should().Be("https://idp.example.com/logout");
         }
 
@@ -175,7 +175,7 @@ namespace Sustainsys.Saml2.Tests.WebSSO
 
             var relayState = HttpUtility.ParseQueryString(actual.Location.Query)["RelayState"];
             actual.SetCookieName.Should().Be(null);
-            actual.RelayState.Should().Be( relayState );
+            actual.RelayState.Should().Be(relayState);
             actual.Location.GetLeftPart(UriPartial.Path).Should().Be("https://idp.example.com/logout");
         }
 
@@ -333,7 +333,7 @@ namespace Sustainsys.Saml2.Tests.WebSSO
                 "http://sp-internal.example.com/path/Saml2",
                 null,
                 new StoredRequestState(null, new Uri("http://loggedout.example.com"), null, null));
-            
+
             var options = StubFactory.CreateOptions();
             options.SPOptions.PublicOrigin = new Uri("https://sp.example.com/path/");
 
@@ -382,7 +382,7 @@ namespace Sustainsys.Saml2.Tests.WebSSO
             xml.Sign(SignedXmlHelper.TestCert);
 
             var responseData = Convert.ToBase64String(Encoding.UTF8.GetBytes(xml.OuterXml));
-            
+
             var httpRequest = new HttpRequestData(
                 "POST",
                 new Uri("http://something"),
@@ -431,6 +431,12 @@ namespace Sustainsys.Saml2.Tests.WebSSO
 
             var httpRequest = new HttpRequestData("GET", bindResult.Location);
 
+            httpRequest.User = new ClaimsPrincipal(
+                new ClaimsIdentity(new Claim[]
+                {
+                    new Claim(Saml2ClaimTypes.SessionIndex, "SessionID", null, "https://idp.example.com")
+                }, "Federation"));
+
             var options = StubFactory.CreateOptions();
             options.SPOptions.ServiceCertificates.Add(SignedXmlHelper.TestCert);
 
@@ -439,7 +445,7 @@ namespace Sustainsys.Saml2.Tests.WebSSO
             {
                 notifiedCommandResult = cr;
             };
-            
+
             // We're using unbind to verify the created message and UnBind
             // expects the issuer to be a known Idp for signature validation.
             // Add a dummy with the right issuer name and key.
@@ -507,7 +513,13 @@ namespace Sustainsys.Saml2.Tests.WebSSO
             xml.Sign(SignedXmlHelper.TestCert);
 
             var requestData = Convert.ToBase64String(Encoding.UTF8.GetBytes(xml.OuterXml));
-            
+
+            var user = new ClaimsPrincipal(
+                new ClaimsIdentity(new Claim[]
+                {
+                    new Claim(Saml2ClaimTypes.SessionIndex, "SessionID", null, "https://idp.example.com")
+                }, "Federation"));
+
             var httpRequest = new HttpRequestData(
                 "POST",
                 new Uri("http://something"),
@@ -517,7 +529,8 @@ namespace Sustainsys.Saml2.Tests.WebSSO
                     new KeyValuePair<string, IEnumerable<string>>("SAMLRequest", new[] { requestData })
                 },
                 null,
-                null);
+                null,
+                user);
 
             var options = StubFactory.CreateOptions();
             options.SPOptions.ServiceCertificates.Add(SignedXmlHelper.TestCert);
@@ -527,6 +540,50 @@ namespace Sustainsys.Saml2.Tests.WebSSO
 
             HttpUtility.ParseQueryString(actual.Location.Query)
                 .Keys.Should().Contain("SAMLResponse", "if the request was properly detected a response should be generated");
+        }
+
+        [TestMethod]
+        public void LogoutCommand_Run_RejectsLogoutRequestWithWrongSessionIndex()
+        {
+            var request = new Saml2LogoutRequest()
+            {
+                DestinationUrl = new Uri("http://sp.example.com/path/Saml2/logout"),
+                Issuer = new EntityId("https://idp.example.com"),
+                SigningCertificate = SignedXmlHelper.TestCert,
+                NameId = new Saml2NameIdentifier("NameId"),
+                SessionIndex = "SessionID",
+                SigningAlgorithm = SignedXml.XmlDsigRSASHA256Url
+            };
+
+            var xml = XmlHelpers.XmlDocumentFromString(request.ToXml());
+            xml.Sign(SignedXmlHelper.TestCert);
+
+            var requestData = Convert.ToBase64String(Encoding.UTF8.GetBytes(xml.OuterXml));
+
+            var user = new ClaimsPrincipal(
+                new ClaimsIdentity(new Claim[]
+                {
+                    new Claim(Saml2ClaimTypes.SessionIndex, "AnotherSessionID", null, "https://idp.example.com")
+                }, "Federation"));
+
+            var httpRequest = new HttpRequestData(
+                "POST",
+                new Uri("http://something"),
+                "/path",
+                new KeyValuePair<string, IEnumerable<string>>[]
+                {
+                    new KeyValuePair<string, IEnumerable<string>>("SAMLRequest", new[] { requestData })
+                },
+                null,
+                null,
+                user);
+
+            var options = StubFactory.CreateOptions();
+            options.SPOptions.ServiceCertificates.Add(SignedXmlHelper.TestCert);
+
+            CommandFactory.GetCommand(CommandFactory.LogoutCommandName)
+                .Invoking(c => c.Run(httpRequest, options))
+                .ShouldThrow<InvalidOperationException>().WithMessage("*SessionIndex*");
         }
 
         [TestMethod]
@@ -766,7 +823,7 @@ namespace Sustainsys.Saml2.Tests.WebSSO
         private void LogoutCommand_Run_LocalLogout(IOptions options, ClaimsPrincipal user)
         {
             var subject = CommandFactory.GetCommand(CommandFactory.LogoutCommandName);
-                       
+
             var actual = subject.Run(
                 new HttpRequestData("GET", new Uri("http://localhost/Logout?ReturnUrl=%2FLoggedOut"))
                 {
@@ -890,7 +947,7 @@ namespace Sustainsys.Saml2.Tests.WebSSO
                 MessageName = "SAMLRequest",
                 SigningCertificate = SignedXmlHelper.TestCert,
                 DestinationUrl = new Uri("http://localhost"),
-                XmlData = $"<Unknown><Issuer xmlns=\"{Saml2Namespaces.Saml2Name}\">https://idp.example.com</Issuer></Unknown>"                
+                XmlData = $"<Unknown><Issuer xmlns=\"{Saml2Namespaces.Saml2Name}\">https://idp.example.com</Issuer></Unknown>"
             };
 
             var url = Saml2Binding.Get(Saml2BindingType.HttpRedirect)
@@ -1001,7 +1058,7 @@ namespace Sustainsys.Saml2.Tests.WebSSO
 
             var expected = new CommandResult
             {
-                Location = new Uri( returnPath ),
+                Location = new Uri(returnPath),
                 HttpStatusCode = HttpStatusCode.SeeOther,
                 ClearCookieName = null
             };
