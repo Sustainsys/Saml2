@@ -36,8 +36,8 @@ namespace Sustainsys.Saml2.WebSso
             }
 
             var xmlDoc = XmlHelpers.XmlDocumentFromString(
-                Encoding.UTF8.GetString(
-                    Convert.FromBase64String(encodedMessage)));
+                Encoding.UTF8.GetString(Convert.FromBase64String(encodedMessage)),
+                options?.SPOptions?.MaxXmlDepth ?? XmlHelpers.DefaultFallbackMaxDepth);
 
             options?.SPOptions.Logger.WriteVerbose("Http POST binding extracted message\n" + xmlDoc.OuterXml);
 

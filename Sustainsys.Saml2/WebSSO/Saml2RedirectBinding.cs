@@ -95,7 +95,8 @@ namespace Sustainsys.Saml2.WebSso
                             decompressedStream.CopyTo(deCompressed);
 
                             var xml = XmlHelpers.XmlDocumentFromString(
-                                Encoding.UTF8.GetString(deCompressed.GetBuffer(), 0, (int)deCompressed.Length));
+                                Encoding.UTF8.GetString(deCompressed.GetBuffer(), 0, (int)deCompressed.Length),
+                                options?.SPOptions?.MaxXmlDepth ?? XmlHelpers.DefaultFallbackMaxDepth);
 
                             options?.SPOptions.Logger.WriteVerbose("Http Redirect binding extracted message\n" + xml.OuterXml);
 
@@ -122,7 +123,7 @@ namespace Sustainsys.Saml2.WebSso
                 return TrustLevel.None;
             }
 
-            var issuer = documentElement["Issuer", Saml2Namespaces.Saml2Name]?.InnerText;
+            var issuer = documentElement["Issuer", Saml2Namespaces.Saml2Name]?.GetTrimmedTextIfNotNull();
 
             if (string.IsNullOrEmpty(issuer))
             {

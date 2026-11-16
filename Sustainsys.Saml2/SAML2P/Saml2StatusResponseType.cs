@@ -116,7 +116,7 @@ namespace Sustainsys.Saml2.Saml2P
             var issuerNode = xml["Issuer", Saml2Namespaces.Saml2Name];
             if (issuerNode != null)
             {
-                Issuer = new EntityId(issuerNode.InnerXml);
+                Issuer = new EntityId(issuerNode.GetTrimmedTextIfNotNull());
             }
 
             var inResponseTo = xml.GetAttribute("InResponseTo");
