@@ -12,27 +12,37 @@ Usage documentation is available at [our documentation site](https://saml2.susta
 There are samples in the `v1` and `v2` branches. Newer samples are available in the 
 [samples repo](https://github.com/Sustainsys/Saml2.Samples).
 
+## Supported Versions
+* :warning: The version 1.x packages are end of life March 2027.
+* :white_check_mark: The version 2.x packages are supported for production use.
+* :construction: The `main` branch will eventually be released as version 3, but is not yet ready.
+
+See our [Security Policy](SECURITY.md) for details.
+
 ## Commercial Options and a Sustainable model for Open Source
-When I started the [Sustainsys company](https://sustainsys.com/), the idea was to try to find a sustainable model for open
-source work. Maintaining an open source library takes time. The issue and PR list and constantly
-requires work to keep it clean (I've not always succeeded, I know). Bug reports by e-mail of possible
-security vulnerabilities need to be evaluated and handled - even if they often turn out to be incorrect.
+When I started the [Sustainsys company](https://sustainsys.com/), the idea was to try to find
+a sustainable model for open source work. Maintaining an open source library takes time. The
+issue and PR list and constantly requires work to keep it clean (I've not always succeeded, 
+I know). Bug reports by e-mail of possible security vulnerabilities need to be evaluated
+and handled - even if they often turn out to be incorrect.
 Any pull request - especially for a security library - need to be carefully evaluated to make sure
 it works and doesn't break any existing behaviour. All of this takes time and my idea was to create
 commercial options that were attractive enough to fund actual working time on the library. It has
-partly succeeded, but not to the extent that I can spend the time I want on the library.
-If you are using the Sustainsys.Saml2 package in a larger organisation, please sign up for a
-commercial support package (mail to support@sustainsys.com for options). That will give your
-organisation support - and also support maintenance and development of the library.
+partly succeeded, but not to the extent that we can spend the time we want on the library.
+With the upcoming v3 release we will move to an open core model. If you just want to connect
+a single application to a SAML 2.0 Identity Provider, that will still be available as an Open
+Source option. But anything more advanced: dynamic configuration, custom validation or high
+security features such as encryption will be moved to a paid tier.
 
 ## Branches
 There are three active branches in the repo.
-* `main` is the version in active development (currently v3) that only supports Asp.Net Core.
-* `v1` is a supported version that uses the `System.IdentityModel` library for token handling
-  and supports HttpModule, Mvc, Owin and AspNetCore2 (only on full. Net Framework). This branch 
-  will only receive security fixes or critical compatibility fixes for major browsers.
+* `main` is the version in active development (currently v3) that only supports ASP.NET Core.
+* `v1` is a legacy version that is going out of support. It uses the `System.IdentityModel`
+  library for token handling and supports HttpModule, Mvc, Owin and AspNetCore2 (only on full
+  .NET Framework). This branch  will only receive security fixes or critical compatibility
+  fixes for major browsers.
 * `v2` is a supported version that uses the `Microsoft.IdentityModel` nuget packages
-  for tokeng handling, multi-targets and supports HttpModule, Mvc, Owin and AspNetCore2. 
+  for token handling, multi-targets and supports HttpModule, Mvc, Owin and AspNetCore2. 
   This branch will only receive security fixes or critical compatibility fixes for major 
   browsers. Exceptions for new features can also be done for paying customers with support contracts.
 * `master` is deprecated and only kept around to ensure all old links pointing to it works.
