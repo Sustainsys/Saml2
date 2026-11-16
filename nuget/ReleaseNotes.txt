@@ -1,3 +1,9 @@
+Version 2.11.1
+* Security Fix: Insufficient Validation of LogoutRequests
+* Security Fix: Missing HTML Output Encoding
+* Security Fix: Incorrect RelayState Integrity Validation
+* Security Fix: Denial of Service caused by Missing Input Validation
+
 Version 2.11.0
 * Support RSA-OAEP for encrypted XML with specified mask generation function
 * Built in support for AES-GCM (.NET 8 target only)
