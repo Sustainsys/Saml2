@@ -246,7 +246,7 @@ namespace Sustainsys.Saml2.WebSso
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "SingleLogoutService")]
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "LogoutRequest")]
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "SessionIndex")]
-        private static CommandResult HandleRequest(HttpRequestData request, UnbindResult unbindResult, IOptions options)
+        private static CommandResult HandleRequest(UnbindResult unbindResult, HttpRequestData request, IOptions options)
         {
             var logoutRequest = Saml2LogoutRequest.FromXml(unbindResult.Data);
 
@@ -291,9 +291,9 @@ namespace Sustainsys.Saml2.WebSso
                 RelayState = unbindResult.RelayState
             };
 
-            options.Notifications.LogoutResponseCreated(response, request, httpRequest.User, idp);
+            options.Notifications.LogoutResponseCreated(response, logoutRequest, request.User, idp);
 
-            options.SPOptions.Logger.WriteInformation("Got a logout request " + request.Id
+            options.SPOptions.Logger.WriteInformation("Got a logout request " + logoutRequest.Id
                 + ", responding with logout response " + response.Id);
 
             var result = Saml2Binding.Get(idp.SingleLogoutServiceBinding).Bind(

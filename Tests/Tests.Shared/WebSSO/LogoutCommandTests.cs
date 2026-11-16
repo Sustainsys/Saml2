@@ -628,12 +628,6 @@ namespace Sustainsys.Saml2.Tests.WebSso
 
             var requestData = Convert.ToBase64String(Encoding.UTF8.GetBytes(xml.OuterXml));
 
-            var user = new ClaimsPrincipal(
-                new ClaimsIdentity(new Claim[]
-                {
-                    new Claim(Saml2ClaimTypes.SessionIndex, "SessionID", null, "https://idp.example.com")
-                }, "Federation"));
-
             var httpRequest = new HttpRequestData(
                 "POST",
                 new Uri("http://something"),
@@ -643,8 +637,13 @@ namespace Sustainsys.Saml2.Tests.WebSso
                     new KeyValuePair<string, IEnumerable<string>>("SAMLRequest", new[] { requestData })
                 },
                 null,
-                null,
-                user);
+                null);
+
+            httpRequest.User = new ClaimsPrincipal(
+                new ClaimsIdentity(new Claim[]
+                {
+                    new Claim(Saml2ClaimTypes.SessionIndex, "SessionID", null, "https://idp.example.com")
+                }, "Federation"));
 
             var options = StubFactory.CreateOptions();
             options.SPOptions.ServiceCertificates.Add(SignedXmlHelper.TestCert);
@@ -674,12 +673,6 @@ namespace Sustainsys.Saml2.Tests.WebSso
 
             var requestData = Convert.ToBase64String(Encoding.UTF8.GetBytes(xml.OuterXml));
 
-            var user = new ClaimsPrincipal(
-                new ClaimsIdentity(new Claim[]
-                {
-                    new Claim(Saml2ClaimTypes.SessionIndex, "AnotherSessionID", null, "https://idp.example.com")
-                }, "Federation"));
-
             var httpRequest = new HttpRequestData(
                 "POST",
                 new Uri("http://something"),
@@ -689,15 +682,20 @@ namespace Sustainsys.Saml2.Tests.WebSso
                     new KeyValuePair<string, IEnumerable<string>>("SAMLRequest", new[] { requestData })
                 },
                 null,
-                null,
-                user);
+                null);
+
+            httpRequest.User = new ClaimsPrincipal(
+                new ClaimsIdentity(new Claim[]
+                {
+                    new Claim(Saml2ClaimTypes.SessionIndex, "AnotherSessionID", null, "https://idp.example.com")
+                }, "Federation"));
 
             var options = StubFactory.CreateOptions();
             options.SPOptions.ServiceCertificates.Add(SignedXmlHelper.TestCert);
 
             CommandFactory.GetCommand(CommandFactory.LogoutCommandName)
                 .Invoking(c => c.Run(httpRequest, options))
-                .ShouldThrow<InvalidOperationException>().WithMessage("*SessionIndex*");
+                .Should().Throw<InvalidOperationException>().WithMessage("*SessionIndex*");
         }
 
         [TestMethod]
