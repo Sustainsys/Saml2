@@ -13,7 +13,7 @@
     <description>
       SAML2 Protocol library for ASP.NET. Don't reference this directly, use one of the API modules: Sustainsys.Saml2.HttpModule/Mvc/Owin/AspNetCore2.
     </description>
-    <copyright>Copyright Sustainsys and contributors 2013-2018</copyright>
+    <copyright>Copyright Sustainsys and contributors 2013-2026</copyright>
     <tags>SAML2 authentication AspNet SAML SSO</tags>
     <releaseNotes />
   </metadata>
