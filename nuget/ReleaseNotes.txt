@@ -1,3 +1,6 @@
+Version 2.11.2
+* Dependency Fix: Drop incorrect System.Drawing reference
+
 Version 2.11.1
 * Security Fix: Insufficient Validation of LogoutRequests
 * Security Fix: Missing HTML Output Encoding

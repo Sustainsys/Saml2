@@ -1,27 +1,31 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFrameworks>net47;net8.0</TargetFrameworks>
-    <TargetFrameworkProfile />
-  </PropertyGroup>
+	<PropertyGroup>
+		<TargetFrameworks>net47;net8.0</TargetFrameworks>
+		<TargetFrameworkProfile />
+	</PropertyGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\..\Sustainsys.Saml2\Sustainsys.Saml2.csproj" />
-  </ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\..\Sustainsys.Saml2\Sustainsys.Saml2.csproj" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <None Update="Sustainsys.Saml2.Tests.CngProvider.pfx">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="Sustainsys.Saml2.Tests.pfx">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="Sustainsys.Saml2.Tests2.pfx">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="Sustainsys.Saml2.TestsSignOnly.pfx">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
+	<ItemGroup Condition=" '$(TargetFramework)' == 'net47' ">
+		<Reference Include="System.Security" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<None Update="Sustainsys.Saml2.Tests.CngProvider.pfx">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Sustainsys.Saml2.Tests.pfx">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Sustainsys.Saml2.Tests2.pfx">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Sustainsys.Saml2.TestsSignOnly.pfx">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+	</ItemGroup>
 
 </Project>
