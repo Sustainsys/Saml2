@@ -1,7 +1,8 @@
 ---
 name: Bug report
 about: Report a (non-security) bug
-labels: ["bug", "triage"]
+labels: ["triage"]
+type: "Bug"
 
 ---
 
