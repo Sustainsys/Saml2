@@ -46,6 +46,11 @@ public class XmlTraverser
     /// </summary>
     private bool childrenHandled;
 
+    /// <summary>
+    /// Whether the current node was handled.
+    /// </summary>
+    public bool wasHandled;
+
     internal XmlNode? RootNode { get; set; }
 
     /// <summary>
@@ -179,6 +184,13 @@ public class XmlTraverser
     {
         while (true)
         {
+            if (CurrentNode?.NodeType == XmlNodeType.Element && !wasHandled)
+            {
+                AddError(
+                    ErrorReason.ExtraElements,
+                    $"Element {CurrentNode.LocalName} has not been processed.");
+            }
+
             if (!childrenHandled && CurrentNode!.HasChildNodes)
             {
                 Errors.Add(new(
@@ -216,6 +228,7 @@ public class XmlTraverser
             if (CurrentNode.NodeType == XmlNodeType.Element)
             {
                 childrenHandled = !CurrentNode.HasChildNodes;
+                wasHandled = false;
 
                 // We're happy, we found an element. 
                 return true;
@@ -235,6 +248,14 @@ public class XmlTraverser
     public void IgnoreChildren()
     {
         childrenHandled = true;
+    }
+
+    /// <summary>
+    /// Ignore element
+    /// </summary>
+    public void IgnoreElement()
+    {
+        wasHandled = true;
     }
 
     /// <summary>
@@ -278,6 +299,11 @@ public class XmlTraverser
     public bool EnsureName(string localName, string namespaceUri)
     {
         var namespaceOk = EnsureNamespace(namespaceUri);
+
+        if (CurrentNode != null)
+        {
+            wasHandled = true;
+        }
 
         if (CurrentNode != null && CurrentNode.LocalName != localName)
         {
@@ -338,7 +364,18 @@ public class XmlTraverser
     /// <param name="namespaceUri">Expected namespace</param>
     /// <returns>True if expected</returns>
     public bool HasName(string localName, string namespaceUri)
-        => CurrentNode != null && CurrentNode.LocalName == localName && CurrentNode.NamespaceURI == namespaceUri;
+    {
+        var matches = CurrentNode != null
+            && CurrentNode.LocalName == localName
+            && CurrentNode.NamespaceURI == namespaceUri;
+
+        if (matches)
+        {
+            wasHandled = true;
+        }
+
+        return matches;
+    }
 
     /// <summary>
     /// Get attribute value with specified <paramref name="localName"/> and where there is no namespace
